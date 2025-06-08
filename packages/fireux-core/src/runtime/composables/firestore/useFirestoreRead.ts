@@ -3,18 +3,17 @@ import { collection, doc, query, where } from 'firebase/firestore'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useFirestoreUtils } from './useFirestoreUtils'
 import type { Ref } from 'vue'
-import { getApp } from 'firebase/app'
 
 export function useFirestoreRead() {
   const db = useFirestore()
-  const { tenantId } = useFireUXConfig()
+  const { appId } = useFireUXConfig() // Updated to use `appId`
   const { waitForCurrentUser } = useFirestoreUtils()
 
   async function firestoreFetchCollection<T>(
     name: string
   ): Promise<Ref<T[] | undefined>> {
     await waitForCurrentUser()
-    const q = query(collection(db, name), where('tenant_id', '==', tenantId))
+    const q = query(collection(db, name), where('tenant_id', '==', appId)) // Updated to use `appId`
     const { data } = useCollection<T>(q, { ssrKey: name })
     return data as Ref<T[] | undefined> // Explicitly cast the type
   }

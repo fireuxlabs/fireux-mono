@@ -7,7 +7,7 @@ import { useFireUXConfig } from '../FireUXConfig'
 export function useMediaStorage() {
   const { uploadFile } = useAppFirebaseStorage()
   const storage = getStorage()
-  const { tenantId } = useFireUXConfig()
+  const { appName, appId } = useFireUXConfig()
 
   // Convert Data-URL to Blob
   const dataUrlToBlob = (dataUrl: string): Promise<Blob> =>
@@ -53,7 +53,7 @@ export function useMediaStorage() {
       typeof source === 'string' ? await dataUrlToBlob(source) : source
 
     const resized = await resizeBlob(blob)
-    const path = `${tenantId}/${collection}/${id}/${type}Image.jpg`
+    const path = `${appName}/${collection}/${id}/${type}Image.jpg`
     return uploadBlobToStorage(resized, path)
   }
 

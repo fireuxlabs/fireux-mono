@@ -11,11 +11,9 @@ interface FirebaseConfig {
   measurementId: string
 }
 
-interface PublicConfig {
-  firebaseConfig: FirebaseConfig
+interface AppSettings {
   domain: string
   pin: string
-  tenantId: string
   appName: string
   appShortName: string
   appThemeColor: string
@@ -24,12 +22,21 @@ interface PublicConfig {
   nodeEnv: string
 }
 
-interface RuntimeConfig {
-  public: PublicConfig
+interface PublicConfig {
+  firebaseConfig: FirebaseConfig
+  appSettings: AppSettings
+}
+
+interface PrivateConfig {
   stripePublishableKey: string
   stripeSecretKey: string
   stripeWebhookSecret: string
   githubToken: string
+}
+
+interface RuntimeConfig {
+  public: PublicConfig
+  private: PrivateConfig
 }
 
 export default defineEventHandler(() => {
@@ -38,37 +45,15 @@ export default defineEventHandler(() => {
 
   const runtimeConfig = useRuntimeConfig() as unknown as RuntimeConfig
 
-  const publicConfig = runtimeConfig.public
-  const privateConfig = {
-    stripePublishableKey: runtimeConfig.stripePublishableKey,
-    stripeSecretKey: runtimeConfig.stripeSecretKey,
-    stripeWebhookSecret: runtimeConfig.stripeWebhookSecret,
-    githubToken: runtimeConfig.githubToken,
-  }
+  const { public: publicConfig, private: privateConfig } = runtimeConfig
 
   const requiredVars = {
-    firebaseConfig: {
-      apiKey: publicConfig.firebaseConfig.apiKey,
-      authDomain: publicConfig.firebaseConfig.authDomain,
-      projectId: publicConfig.firebaseConfig.projectId,
-      storageBucket: publicConfig.firebaseConfig.storageBucket,
-      messagingSenderId: publicConfig.firebaseConfig.messagingSenderId,
-      appId: publicConfig.firebaseConfig.appId,
-      measurementId: publicConfig.firebaseConfig.measurementId,
-    },
-    domain: publicConfig.domain,
-    pin: publicConfig.pin,
-    tenantId: publicConfig.tenantId,
-    appName: publicConfig.appName,
-    appShortName: publicConfig.appShortName,
-    appThemeColor: publicConfig.appThemeColor,
-    appBackgroundColor: publicConfig.appBackgroundColor,
-    appIcon: publicConfig.appIcon,
-    nodeEnv: publicConfig.nodeEnv,
-    stripePublishableKey: privateConfig.stripePublishableKey,
-    stripeSecretKey: privateConfig.stripeSecretKey,
-    stripeWebhookSecret: privateConfig.stripeWebhookSecret,
-    githubToken: privateConfig.githubToken,
+    firebaseConfig: publicConfig.firebaseConfig,
+    appSettings: publicConfig.appSettings,
+    stripePublishableKey: privateConfig?.stripePublishableKey || null, // Fallback to null
+    stripeSecretKey: privateConfig?.stripeSecretKey || null, // Fallback to null
+    stripeWebhookSecret: privateConfig?.stripeWebhookSecret || null, // Fallback to null
+    githubToken: privateConfig?.githubToken || null, // Fallback to null
   }
 
   const missingVars = Object.entries(requiredVars)

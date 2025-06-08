@@ -10,7 +10,7 @@ import { useFireUXConfig } from '../FireUXConfig'
 
 export function useFirestoreCreate() {
   const db = useFirestore()
-  const { tenantId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
 
   async function createDocument<T>(name: string, data: T): Promise<void> {
     const ref = collection(db, name)
@@ -47,7 +47,7 @@ export function useFirestoreCreate() {
   > {
     return {
       ...data,
-      tenant_id: tenantId,
+      tenant_id: appId,
       created_at: serverTimestamp(),
       creator_id: getCurrentUserId(),
     }

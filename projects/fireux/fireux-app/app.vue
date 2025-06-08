@@ -6,8 +6,8 @@
     </NuxtLayout>
 
     <UModal
-    :open="!useApp.isInitialized"
-    prevent-close
+      :open="!useApp.isInitialized"
+      prevent-close
       title="🚫 Blocked"
       description="This app needs to be initialized."
     >
@@ -19,12 +19,9 @@
 </template>
 
 <script setup>
-
-
 useHead({
-  link: [{ rel: "manifest", href: "/manifest.webmanifest" }],
-});
-
+  link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
+})
 </script>
 
 <style scoped>

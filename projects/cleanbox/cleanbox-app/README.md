@@ -147,7 +147,6 @@ const { products } = await useProducts()
 
 For more detailed information, see:
 
-- [DOCUMENTATION.md](./DOCUMENTATION.md) - Detailed integration guide
 - [FireUX Core README](../../packages/fireux-core/README.md) - Core module documentation
 
 ## License

@@ -8,6 +8,7 @@
     "dev:misebox": "pnpm --filter ./projects/misebox/misebox-app dev",
     "dev:fireux": "pnpm --filter ./projects/fireux/fireux-app dev",
     "dev:playground": "pnpm --filter playground dev",
+    "dev:cleanbox": "pnpm --filter ./projects/cleanbox/cleanbox-app dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .js,.ts,.vue",
     "format": "prettier --write ."
@@ -22,7 +23,7 @@
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-vue": "^10.1.0",
-    "nuxt": "^3.17.0",
+    "nuxt": "^3.17.5",
     "prettier": "^3.5.3",
     "sass-embedded": "^1.89.1",
     "typescript": "^5.0.0"

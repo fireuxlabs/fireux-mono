@@ -5,7 +5,7 @@ import { useFireUXConfig } from '../FireUXConfig'
 
 export function useFirestoreUtils() {
   const db = useFirestore()
-  const { tenantId } = useFireUXConfig()
+  const { appName, appId } = useFireUXConfig()
 
   /**
    * Checks whether a given field/value pair is unique in a collection,
@@ -22,7 +22,7 @@ export function useFirestoreUtils() {
 
     // If tenant scoping is on, grab tenantId from runtime config
     if (tenantScoped) {
-      constraints.push(where('tenant_id', '==', tenantId))
+      constraints.push(where('tenant_id', '==', appId))
     }
 
     // Query and return whether any docs matched
@@ -32,7 +32,7 @@ export function useFirestoreUtils() {
   }
 
   function getCollectionPath(name: string): string {
-    return `${tenantId}/${name}`
+    return `${appId}/${name}`
   }
 
   async function fetchDocumentsByField<T>(
@@ -41,7 +41,7 @@ export function useFirestoreUtils() {
     value: unknown
   ): Promise<T[]> {
     const constraints = [where(field, '==', value)]
-    constraints.push(where('tenant_id', '==', tenantId))
+    constraints.push(where('tenant_id', '==', appId))
     const q = query(collection(db, collectionName), ...constraints)
     const snapshot = await getDocs(q)
     return snapshot.docs.map((doc) => doc.data() as T)
@@ -57,7 +57,7 @@ export function useFirestoreUtils() {
   ): Promise<T | null> {
     const constraints = [
       where(field, '==', value),
-      where('tenant_id', '==', tenantId),
+      where('tenant_id', '==', appId),
     ]
     const q = query(collection(db, collectionName), ...constraints)
     const snapshot = await getDocs(q)

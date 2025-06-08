@@ -6,7 +6,7 @@ import { useFirestoreUtils } from './useFirestoreUtils'
 
 export function useFirestoreUpdate() {
   const db = useFirestore()
-  const { tenantId } = useFireUXConfig()
+  const { appName, appId } = useFireUXConfig()
   const { waitForCurrentUser } = useFirestoreUtils()
 
   async function updateDocument<T extends { updated_at?: unknown }>(
@@ -24,7 +24,7 @@ export function useFirestoreUpdate() {
       await waitForCurrentUser()
       const ref = doc(db, name, id)
       data.updated_at = serverTimestamp() // Ensure `updated_at` is optional
-      await updateDoc(ref, { ...data, tenant_id: tenantId })
+      await updateDoc(ref, { ...data, app_name: appName, app_id: appId })
       console.log(`✅ Document updated in '${name}' with ID: ${id}`)
     } catch (error) {
       console.error(`❌ Error updating document in '${name}':`, error)

@@ -8,7 +8,7 @@ import type { App } from '../../models/app.model'
 import { getApps, getApp } from 'firebase/app'
 
 export function useApp() {
-  const { tenantId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
 
   // Ensure Firebase is initialized
   if (!getApps().length) {
@@ -20,7 +20,7 @@ export function useApp() {
   const db = useFirestore()
 
   const appDocRef = computed(() => {
-    return doc(db, 'apps', tenantId)
+    return doc(db, 'apps', appId)
   })
 
   const { data: app } = useDocument<App>(appDocRef)

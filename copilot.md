@@ -1,3 +1,63 @@
+# FireUX Workspace Copilot Guide
+
+## Overview
+
+The FireUX workspace is a monorepo designed to manage multiple interconnected projects, packages, and playgrounds. It provides a modular structure for building scalable applications using the FireUX Core framework.
+
+## Top-Level Directories
+
+### `packages/`
+
+- Contains reusable modules and libraries, such as `fireux-core`.
+- These packages are shared across multiple projects and provide core functionality.
+- **Further Information**: Refer to `packages/README.md` and `packages/copilot.md` for details.
+
+### `playground/`
+
+- A testing ground for experimenting with FireUX Core features and components.
+- Used for prototyping and validating new ideas.
+- **Further Information**: Refer to `playground/README.md` and `playground/copilot.md` for details.
+
+### `projects/`
+
+- Houses individual applications built using FireUX Core.
+- Each project has its own `README.md` and `copilot.md` for app-specific details.
+- **Further Information**: Refer to `projects/README.md` and `projects/copilot.md` for details.
+
+## Relationships
+
+- **Root**:
+  - Serves as the central hub for managing the workspace.
+  - Provides shared configuration files (`pnpm-workspace.yaml`, `tsconfig.json`, etc.).
+- **Packages**:
+  - Provide core functionality and are consumed by both `playground` and `projects`.
+- **Playground**:
+  - Uses `packages` for testing and prototyping.
+- **Projects**:
+  - Depend on `packages` for core functionality and may use `playground` for testing.
+
+## Index and Table of Contents
+
+- **Root-Level Documentation**:
+
+  - `README.md`: General overview of the workspace.
+  - `copilot.md`: AI-specific guide for understanding the workspace structure.
+
+- **Packages**:
+
+  - `packages/README.md`: Overview of all packages.
+  - `packages/copilot.md`: Detailed guide for AI on packages.
+
+- **Playground**:
+
+  - `playground/README.md`: Overview of the playground.
+  - `playground/copilot.md`: Detailed guide for AI on the playground.
+
+- **Projects**:
+  - `projects/README.md`: Overview of all projects.
+  - `projects/copilot.md`: Detailed guide for AI on projects.
+  - Each project (e.g., `cleanbox`, `fireux`, `misebox`) has its own `README.md` and `copilot.md` for app-specific details.
+
 # Fireux Monorepo Setup
 
 ## What We Did to Set Up
@@ -367,3 +427,34 @@ FireUX is a powerful and flexible system for building modern web applications. B
 
 - This guideline helps maintain clarity and organization in the project, especially in a large workspace.
 - Use this as a reference for all future edits.
+
+# Coding Hygiene Guidelines
+
+## Environment File Order
+
+- Always maintain the same order of variables in `.env` files across all projects.
+- Place `PROJECT_NAME` at the top, followed by other app settings, Firebase configuration, and additional keys.
+
+## General Guidelines
+
+- Ensure consistent naming conventions for variables and files.
+- Use absolute paths for critical configurations like `GOOGLE_APPLICATION_CREDENTIALS`.
+- Avoid unnecessary reordering of code or variables unless explicitly required.
+
+## Runtime Configuration
+
+- Keep runtime configuration keys in the same order as they appear in `.env` files.
+- Ensure proper typing and descriptive variable names.
+
+## Refactoring
+
+- Maintain the logical grouping of related code.
+- Add comments to explain non-obvious logic or configurations.
+
+## Testing
+
+- Test all changes thoroughly to ensure no breaking changes are introduced.
+
+## Documentation
+
+- Update documentation whenever significant changes are made to the codebase or configurations.

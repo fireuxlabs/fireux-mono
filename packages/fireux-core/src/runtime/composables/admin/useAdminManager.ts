@@ -10,27 +10,27 @@ import { useFireUXConfig } from '../FireUXConfig'
 
 export function useAdminManager() {
   const db = useFirestore()
-  const { tenantId } = useFireUXConfig()
+  const { appName, appId } = useFireUXConfig()
 
   async function promoteAdmin(uid: string): Promise<void> {
     await updateAppProfileRole(uid, 'admin')
     await updateAppAdmins(uid, true)
-    console.log(`✅ User ${uid} promoted to admin for ${tenantId}`)
+    console.log(`✅ User ${uid} promoted to admin for ${appName}`)
   }
 
   async function demoteAdmin(uid: string): Promise<void> {
     await updateAppProfileRole(uid, 'user')
     await updateAppAdmins(uid, false)
-    console.log(`✅ User ${uid} demoted from admin for ${tenantId}`)
+    console.log(`✅ User ${uid} demoted from admin for ${appName}`)
   }
 
   async function updateAppProfileRole(uid: string, role: 'user' | 'admin') {
-    const profileRef = doc(db, `users/${uid}/profiles`, tenantId)
+    const profileRef = doc(db, `users/${uid}/profiles`, appId)
     await setDoc(profileRef, { role }, { merge: true })
   }
 
   async function updateAppAdmins(uid: string, add: boolean) {
-    const appRef = doc(db, 'apps', tenantId)
+    const appRef = doc(db, 'apps', appId)
     await updateDoc(appRef, {
       admins: add ? arrayUnion(uid) : arrayRemove(uid),
     })

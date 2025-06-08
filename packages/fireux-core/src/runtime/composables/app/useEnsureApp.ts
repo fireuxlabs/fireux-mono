@@ -7,7 +7,7 @@ import { useFirestoreManager } from '../firestore/useFirestoreManager'
 export async function useAppEnsure() {
   const db = useFirestore()
   const { waitForCurrentUser, setDocument } = useFirestoreManager()
-  const { tenantId, appName } = useFireUXConfig()
+  const { appId, appName } = useFireUXConfig()
 
   async function ensureApp() {
     const currentUser = (await waitForCurrentUser()) as NonNullable<
@@ -15,35 +15,35 @@ export async function useAppEnsure() {
     >
     const uid = currentUser.uid
 
-    const appDocRef = doc(db, 'apps', tenantId)
+    const appDocRef = doc(db, 'apps', appId)
     const appSnap = await getDoc(appDocRef)
 
     if (appSnap.exists()) {
       const createdAt = appSnap.data()?.created_at || 'unknown date'
       console.log(
-        `✅ [ensureApp] App '${tenantId}' already exists. Created on ${createdAt}.`
+        `✅ [ensureApp] App '${appId}' already exists. Created on ${createdAt}.`
       )
       return
     }
 
     const appData: Partial<App> = {
-      id: tenantId,
+      id: appId,
       app_name: appName,
       admin_ids: [uid],
     }
     // Create the app document (includes created_at, created_in automatically)
-    await setDocument('apps', tenantId, appData)
+    await setDocument('apps', appId, appData)
 
     // ✅ Update Core User to reflect admin role
     const coreUserRef = doc(db, 'users', uid)
     await updateDoc(coreUserRef, {
-      adminOf: arrayUnion(tenantId),
+      adminOf: arrayUnion(appId),
     })
 
     console.log(
-      `🎉 [ensureApp] App '${tenantId}' created and user '${uid}' added as admin.`
+      `🎉 [ensureApp] App '${appId}' created and user '${uid}' added as admin.`
     )
-    return tenantId
+    return appId
   }
 
   return { ensureApp }

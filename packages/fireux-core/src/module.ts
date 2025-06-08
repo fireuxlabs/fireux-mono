@@ -3,19 +3,31 @@ import {
   createResolver,
   addComponentsDir,
   addImportsDir,
-  addImports,
   addPlugin,
   addServerHandler,
 } from '@nuxt/kit'
 import { version } from '../package.json'
 
-// Simple module options
+// Module options interface
 export interface ModuleOptions {
   /**
    * Prefix for components
    * @defaultValue `Fire`
    */
   prefix?: string
+}
+
+// AppSettings interface
+interface AppSettings {
+  domain: string
+  pin: string
+  appName: string
+  appShortName: string
+  appThemeColor: string
+  appBackgroundColor: string
+  appIcon: string
+  nodeEnv: string
+  projectName: string
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -31,7 +43,7 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
     const resolvePath = (p: string) => resolver.resolve(p)
 
-    // Register all components with a single registration
+    // Register components
     addComponentsDir({
       path: resolvePath('./runtime/components'),
       pattern: '**/*.vue',
@@ -40,7 +52,8 @@ export default defineNuxtModule<ModuleOptions>({
       pathPrefix: true,
       watch: true,
     })
-    // Add top-level composables
+
+    // Add composables
     addImportsDir([resolvePath('./runtime/composables/**/*.ts')])
 
     // Register API routes
@@ -61,35 +74,51 @@ export default defineNuxtModule<ModuleOptions>({
         appId: process.env.FIREBASE_APP_ID,
         measurementId: process.env.FIREBASE_MEASUREMENT_ID,
       },
-      domain: process.env.DOMAIN,
-      pin: process.env.PIN,
-      tenantId: process.env.TENANT_ID,
-      appName: process.env.APP_NAME,
-      appShortName: process.env.APP_SHORT_NAME,
-      appThemeColor: process.env.APP_THEME_COLOR,
-      appBackgroundColor: process.env.APP_BACKGROUND_COLOR,
-      appIcon: process.env.APP_ICON,
-      nodeEnv: process.env.NODE_ENV || 'development',
+      appSettings: {
+        projectName: process.env.PROJECT_NAME, // Moved to the top to match `.env` order
+        appName: process.env.APP_NAME,
+        appId: process.env.APP_ID, // Added appId to match `.env`
+        nodeEnv: process.env.NODE_ENV || 'development',
+        domain: process.env.DOMAIN,
+        pin: process.env.PIN,
+        appShortName: process.env.APP_SHORT_NAME,
+        appThemeColor: process.env.APP_THEME_COLOR,
+        appBackgroundColor: process.env.APP_BACKGROUND_COLOR,
+        appIcon: process.env.APP_ICON,
+      } as AppSettings,
     }
+
     // Extend private runtimeConfig
     nuxt.options.runtimeConfig = {
       ...nuxt.options.runtimeConfig,
-      authorName: process.env.AUTHOR_NAME,
-      projectName: process.env.PROJECT_NAME,
-      openaiApiKeyName: process.env.OPENAI_API_KEY_NAME,
-      openaiApiKey: process.env.OPENAI_API_KEY,
-      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
-      stripeSecretKey: process.env.STRIPE_SECRET_KEY,
-      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
-      githubToken: process.env.GITHUB_TOKEN,
+      authorDetails: {
+        authorName: process.env.AUTHOR_NAME,
+        projectName: process.env.PROJECT_NAME,
+      },
+      openaiConfig: {
+        openaiApiKeyName: process.env.OPENAI_API_KEY_NAME,
+        openaiApiKey: process.env.OPENAI_API_KEY,
+      },
+      stripeConfig: {
+        stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+        stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+        stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+      },
+      githubConfig: {
+        githubToken: process.env.GITHUB_TOKEN,
+      },
+      firebaseAdmin: {
+        serviceAccountPath: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+      },
     }
-    // Register the Firebase client plugin
+
+    // Register Firebase client plugin
     addPlugin({
       src: resolvePath('./runtime/firebase.client.ts'),
       mode: 'client',
     })
 
-    // Expose the runtime/public directory
+    // Expose public directory
     nuxt.options.alias['#fireux-core-public'] = resolvePath('./runtime/public')
     nuxt.hook('nitro:config', (config) => {
       config.publicAssets = config.publicAssets || []

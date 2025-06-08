@@ -1,7 +1,12 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-06-07',
+  css: [
+    'fireux-core/assets/css/main.css',
+    'fireux-core/assets/design-system/main.scss',
+  ],
   modules: [
     'fireux-core',
     [
@@ -18,5 +23,6 @@ export default defineNuxtConfig({
         auth: { enabled: true },
       },
     ],
+    '@nuxt/ui',
   ],
 })

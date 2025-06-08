@@ -8,8 +8,7 @@
     <UModal
       :open="!useApp.isInitialized"
       prevent-close
-      title="
-🚫 Blocked"
+      title="🚫 Blocked"
       description="This app needs to be initialized."
     >
       <template #body>

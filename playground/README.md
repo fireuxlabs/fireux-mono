@@ -1,75 +1,37 @@
-# Nuxt Minimal Starter
+# Playground App
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Overview
 
-## Setup
+The Playground app serves as a testing ground for FireUX Core features and components.
 
-Make sure to install dependencies:
+## Development
 
-```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+### Start the Development Server
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+Visit http://localhost:3000 to see the app in action.
 
-Build the application for production:
+### Firebase Setup
 
-```bash
-# npm
-npm run build
+Ensure the following Firebase services are configured:
 
-# pnpm
-pnpm build
+- Cloud Firestore
+- Authentication (Google, Email/Password, Anonymous)
+- Storage
 
-# yarn
-yarn build
+## Deployment
 
-# bun
-bun run build
-```
+To deploy the app:
 
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+1. Build the application:
+   ```bash
+   pnpm build
+   ```
+2. Preview the production build:
+   ```bash
+   pnpm preview
+   ```
+3. Deploy to your hosting provider.

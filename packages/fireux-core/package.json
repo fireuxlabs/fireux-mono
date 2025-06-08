@@ -11,26 +11,29 @@
     },
     "./components/*": "./src/runtime/components/*",
     "./runtime/*": "./src/runtime/*",
-    "./assets/*": "./src/runtime/assets/*",
+    "./assets/css/main.css": "./src/runtime/assets/css/main.css",
+    "./assets/design-system/main.scss": "./src/runtime/assets/design-system/main.scss",
     "./composables/*": "./src/runtime/composables/**/*",
     "./models/*": "./src/runtime/models/*",
     "./server/*": "./src/runtime/server/**/*",
     "./public/*": "./src/runtime/public/*"
   },
   "files": [
-    "src/**/*"
+    "src/**/*",
+    "dist/**/*"
   ],
   "scripts": {
     "dev": "nuxt dev",
-    "build": "sass src/runtime/assets/design-system:src/runtime/assets/design-system --no-source-map",
+    "build": "nuxt build",
     "postbuild": "rimraf src/**/*.map",
-    "compile:scss": "sass src/runtime/assets/design-system:src/runtime/assets/design-system --no-source-map",
     "start": "nuxt start"
   },
   "dependencies": {
     "@nuxt/ui": "3.1.3",
     "dompurify": "^3.2.6",
-    "nuxt": "^3.17.0"
+    "firebase-admin": "^13.4.0",
+    "nuxt": "^3.17.0",
+    "nuxt-vuefire": "^1.0.5"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^1.4.1",
@@ -44,5 +47,6 @@
     "rollup-plugin-copy": "^3.5.0",
     "sass": "^1.89.1",
     "vite-plugin-static-copy": "^3.0.0"
-  }
+  },
+  "type": "module"
 }

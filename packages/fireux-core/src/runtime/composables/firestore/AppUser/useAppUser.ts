@@ -11,14 +11,14 @@ import { useFireUXConfig } from '../../FireUXConfig'
 export function useAppUser() {
   const db = useFirestore()
   const currentUser = useCurrentUser()
-  const { tenantId } = useFireUXConfig()
+  const { appName, appId } = useFireUXConfig()
 
   const appUserDocRef = computed<DocumentReference<AppUserProfile> | null>(
     () =>
-      currentUser.value && tenantId
+      currentUser.value && appId
         ? (doc(
             db,
-            `users/${currentUser.value.uid}/apps/${tenantId}`
+            `users/${currentUser.value.uid}/apps/${appId}`
           ) as DocumentReference<AppUserProfile>)
         : null
   )

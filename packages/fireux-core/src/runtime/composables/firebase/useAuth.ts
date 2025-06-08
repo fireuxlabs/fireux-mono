@@ -18,7 +18,7 @@ export function useAuth() {
   //   try {
   //     const functions = getFunctions()
   //     const setCustomClaims = httpsCallable(functions, 'setTenantIdClaim')
-  //     await setCustomClaims({ uid: user.uid, tenantId })
+  //     await setCustomClaims({ uid: user.uid, appId })
   //     await user.getIdToken(true)
   //   } catch (error) {
   //     console.error('❌ Failed to set custom claims:', error.message)
