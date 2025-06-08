@@ -1,14 +1,13 @@
 <template>
   <UApp>
-    <FireOrganismsAppOnboarding />
-
+    <FireAppDebug />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-    <FireAppDebug />
+
     <UModal
-      :open="true"
-      prevent-close
+    :open="!useApp.isInitialized"
+    prevent-close
       title="🚫 Blocked"
       description="This app needs to be initialized."
     >
@@ -21,9 +20,10 @@
 
 <script setup>
 
+
 useHead({
-  link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
-})
+  link: [{ rel: "manifest", href: "/manifest.webmanifest" }],
+});
 
 </script>
 

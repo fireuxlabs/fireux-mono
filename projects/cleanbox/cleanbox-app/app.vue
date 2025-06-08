@@ -1,14 +1,15 @@
 <template>
   <UApp>
+    <FireAppDebug />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-    <FireAppDebug />
+
     <UModal
-      v-if="!appInitialized"
-      :open="true"
+      :open="!useApp.isInitialized"
       prevent-close
-      title="🚫 Blocked"
+      title="
+🚫 Blocked"
       description="This app needs to be initialized."
     >
       <template #body>
@@ -19,8 +20,6 @@
 </template>
 
 <script setup>
-const appInitialized = ref(false)
-
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
 })

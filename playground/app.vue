@@ -1,19 +1,30 @@
 <template>
-  <div>
-    <h1>Nuxt Playground</h1>
-    <p>Welcome to the Nuxt playground!</p>
+  <UApp>
+    <FireAppDebug />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
 
-    <!-- Using FireUX Core component with the 'Fire' prefix -->
-    <FireHello />
-    <FireHello />
-    <p>{{ greeting }}</p>
-  </div>
+    <UModal
+      :open="!useApp.isInitialized"
+      prevent-close
+      title="
+🚫 Blocked"
+      description="This app needs to be initialized."
+    >
+      <template #body>
+        <FireOrganismsAppOnboarding />
+      </template>
+    </UModal>
+  </UApp>
 </template>
 
 <script setup>
-const greeting = useGreeting()
+useHead({
+  link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
+})
 </script>
 
-<style>
-/* Your styles here */
+<style scoped>
+/* No debug styles needed */
 </style>
