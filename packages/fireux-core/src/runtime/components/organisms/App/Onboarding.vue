@@ -49,7 +49,7 @@
 // Auto-import should work now
 const { coreUser } = await useCoreUser()
 const { pin, isUnlocked, checkPin, createAppHandler } = useApp()
-const { data: envData } = await useFetch('/api/env-check', { server: false })
+const { data: envData } = await useFetch('/api/env-check')
 </script>
 <style scoped>
 .pin-section {

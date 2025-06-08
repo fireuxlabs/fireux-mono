@@ -2,10 +2,10 @@
   <UContainer class="widget center-content">
     <ClientOnly>
       <Transition name="fade">
-        <OrganismsAuthAuthenticated v-if="authState === 'AUTHENTICATED'" />
+        <FireOrganismsAuthAuthenticated v-if="authState === 'AUTHENTICATED'" />
         <div v-else class="auth-central">
-          <OrganismsAuthGoogle />
-          <OrganismsAuthEmail />
+          <FireOrganismsAuthGoogle />
+          <FireOrganismsAuthEmail />
         </div>
       </Transition>
     </ClientOnly>
@@ -39,10 +39,12 @@ const { authState } = useAuth()
 }
 
 /* Fade transition styles */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.6s ease;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

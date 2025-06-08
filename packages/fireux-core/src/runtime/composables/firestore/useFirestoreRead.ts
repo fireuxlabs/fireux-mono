@@ -10,11 +10,6 @@ export function useFirestoreRead() {
   const { tenantId } = useFireUXConfig()
   const { waitForCurrentUser } = useFirestoreUtils()
 
-  console.log(
-    '[fireux-core] Firebase app instance in useFirestoreRead:',
-    getApp()
-  )
-
   async function firestoreFetchCollection<T>(
     name: string
   ): Promise<Ref<T[] | undefined>> {

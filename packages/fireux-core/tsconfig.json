@@ -11,9 +11,12 @@
     "outDir": "dist",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"]
-    }
+      "@/*": ["src/*"],
+      "#imports": [".nuxt/imports.d.ts"],
+      "#fireux-core-public/*": ["src/runtime/public/*"]
+    },
+    "types": ["@nuxt/types", "vue"]
   },
-  "include": ["src/**/*", "src/**/*.vue", "package.json"],
+  "include": ["src/**/*", "src/**/*.vue", "package.json", ".nuxt"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

@@ -12,8 +12,10 @@
     "./components/*": "./src/runtime/components/*",
     "./runtime/*": "./src/runtime/*",
     "./assets/*": "./src/runtime/assets/*",
-    "./composables/*": "./src/runtime/composables/*",
-    "./models/*": "./src/runtime/models/*"
+    "./composables/*": "./src/runtime/composables/**/*",
+    "./models/*": "./src/runtime/models/*",
+    "./server/*": "./src/runtime/server/**/*",
+    "./public/*": "./src/runtime/public/*"
   },
   "files": [
     "src/**/*"

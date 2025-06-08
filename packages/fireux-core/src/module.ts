@@ -5,6 +5,7 @@ import {
   addImportsDir,
   addImports,
   addPlugin,
+  addServerHandler,
 } from '@nuxt/kit'
 import { version } from '../package.json'
 
@@ -42,6 +43,11 @@ export default defineNuxtModule<ModuleOptions>({
     // Add top-level composables
     addImportsDir([resolvePath('./runtime/composables/**/*.ts')])
 
+    // Register API routes
+    addServerHandler({
+      route: '/api/env-check',
+      handler: resolvePath('./runtime/server/api/env-check'),
+    })
 
     // Extend public runtimeConfig
     nuxt.options.runtimeConfig.public = {
@@ -81,6 +87,16 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin({
       src: resolvePath('./runtime/firebase.client.ts'),
       mode: 'client',
+    })
+
+    // Expose the runtime/public directory
+    nuxt.options.alias['#fireux-core-public'] = resolvePath('./runtime/public')
+    nuxt.hook('nitro:config', (config) => {
+      config.publicAssets = config.publicAssets || []
+      config.publicAssets.push({
+        dir: resolvePath('./runtime/public'),
+        baseURL: '/fireux-core',
+      })
     })
   },
 })

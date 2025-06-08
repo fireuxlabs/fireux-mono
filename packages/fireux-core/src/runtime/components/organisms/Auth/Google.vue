@@ -14,7 +14,9 @@ const { ensureAppUser } = useAppUserEnsure()
 const isDark = computed(() => useColorMode().value === 'dark')
 
 const logoSrc = computed(() =>
-  isDark.value ? '/img/sign-in-dark.svg' : '/img/sign-in-light.svg'
+  isDark.value
+    ? '/fireux-core/img/sign-in-dark.svg'
+    : '/fireux-core/img/sign-in-light.svg'
 )
 
 const handleGoogleSignIn = async () => {

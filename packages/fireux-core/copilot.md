@@ -89,3 +89,44 @@ The module extends Nuxt's runtime config with:
 - Use `test-component-registration.js` to verify component registration
 - Use `test-composable-registration.js` to verify composable exports
 - Check the module.ts for proper configuration
+
+## Side Quest: Prefixing Components with `Fire`
+
+### Background
+
+To avoid component resolution issues, all components in the `fireux-core` module need to be prefixed with `Fire`. For example, `OrganismsAuthAuthenticated` should be renamed to `FireOrganismsAuthAuthenticated`.
+
+### Why This is Necessary
+
+This ensures that components from the `fireux-core` module do not conflict with similarly named components in other modules or applications.
+
+### Action Plan
+
+1. **Incremental Updates**: This task will be addressed incrementally as errors arise. Each time a component resolution error occurs, the affected component will be renamed with the `Fire` prefix.
+2. **Documentation**: Ensure that this convention is followed for all new components added to the `fireux-core` module.
+
+### Example
+
+- Before: `OrganismsAuthAuthenticated`
+- After: `FireOrganismsAuthAuthenticated`
+
+### Notes
+
+- This is a long-term task and does not need to be completed immediately.
+- Keep this in mind when debugging component resolution issues.
+
+## Side Quest: Prefix All Components with `Fire`
+
+As part of the ongoing development and maintenance of the `fireux-core` module, we need to ensure that all components are prefixed with `Fire` to avoid naming conflicts and improve clarity. This task will be addressed incrementally as errors arise.
+
+### Steps:
+
+1. When encountering an error related to a missing or unresolved component (e.g., `Failed to resolve component: OrganismsAuthAuthenticated`), locate the component in the `fireux-core` module.
+2. Rename the component to include the `Fire` prefix (e.g., `OrganismsAuthAuthenticated` → `FireOrganismsAuthAuthenticated`).
+3. Update all references to the renamed component throughout the codebase.
+4. Test the changes to ensure the component is resolved correctly and functions as expected.
+
+### Notes:
+
+- This task will be completed incrementally to minimize disruption to ongoing development.
+- Ensure that the `Fire` prefix is consistently applied to all new components added to the `fireux-core` module.
