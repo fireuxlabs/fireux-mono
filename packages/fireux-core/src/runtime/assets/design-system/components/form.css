@@ -1,0 +1,27 @@
+.edit-component {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  max-width: none; /* Override any Nuxt UI defaults */
+}
+
+/* Shared styles for any form-field components inside this container */
+.form-field {
+  position: relative;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-1);
+  width: 100%;
+}
+.form-field:nth-child(odd) {
+  background-color: var(--ui-bg);
+}
+.form-field:nth-child(even) {
+  background-color: var(--ui-bg-muted);
+}
+
+.display,
+.editing {
+  margin-top: var(--space-1);
+  text-align: left;
+}

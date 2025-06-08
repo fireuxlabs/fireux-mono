@@ -1,0 +1,62 @@
+/* ============================
+   app/assets/design-system/main.scss
+   ============================ */
+
+@use './atoms/atoms.scss';
+@use './base.scss';
+@use './utilities.scss';
+
+@use './grids.scss';
+
+@use './components/create.scss';
+@use './components/page.scss';
+@use './components/layout.scss';
+@use './components/fuel.scss';
+@use './components/button.scss';
+@use './components/form.scss';
+
+//    Here’s a  list of our CSS classes grouped by the file in which they reside:
+
+// ⸻
+
+// app/assets/design-system/atoms.scss
+// 	•	.flame-icon
+// (Note: UI Icons are mentioned, but no specific classes were provided.)
+
+// ⸻
+
+// app/assets/design-system/base.scss
+// (No custom CSS classes defined in this file.)
+
+// ⸻
+
+// app/assets/design-system/components/fuel.scss
+// 	•	.fuel-logos
+// 	•	.fuel-item
+
+// ⸻
+
+// app/assets/design-system/components/layout.scss
+// 	•	.layout-container
+// 	•	.layout-content
+// 	•	.layout-main-content
+// 	•	.layout-breadcrumbs
+
+// ⸻
+
+// app/assets/design-system/components/page.scss
+// 	•	.page
+
+// ⸻
+
+// app/assets/design-system/utilities.scss
+// 	•	.flex
+// 	•	.flex-center
+// 	•	.flex-column
+// 	•	.flex-between
+// 	•	.grid
+// 	•	.centered-section
+// 	•	.section
+// 	•	.button-group
+// 	•	.fade-in
+// 	•	.highlight

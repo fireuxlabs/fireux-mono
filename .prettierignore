@@ -1,0 +1,12 @@
+node_modules
+.DS_Store
+dist
+output
+*.log
+*.lock
+*.tmp
+*.swp
+.idea
+.vscode
+coverage
+*.local

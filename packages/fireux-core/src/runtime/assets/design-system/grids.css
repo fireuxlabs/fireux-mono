@@ -1,0 +1,51 @@
+@charset "UTF-8";
+/* ============================
+   🔥 FIReUX Grid System
+   ============================ */
+/* General Grid Defaults */
+.grid {
+  display: grid;
+  gap: var(--space-4); /* ✅ Consistent spacing */
+}
+
+/* Mobile: 1 Column */
+.grid-cols-1 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr); /* ✅ Two columns on medium screens */
+  }
+}
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr); /* ✅ Three columns on large screens */
+  }
+}
+/* ============================
+   📌 Dashboard Page Grid Layout (Shared)
+   ============================ */
+/* Optional semantic wrapper, currently no styles */
+/* Shared masonry grid styling */
+.dashboard-page-grid {
+  column-count: 1;
+  column-gap: var(--space-4);
+}
+
+/* Tablets: Two columns */
+@media (min-width: 768px) {
+  .dashboard-page-grid {
+    column-count: 2;
+  }
+}
+/* Desktops: Three columns */
+@media (min-width: 1024px) {
+  .dashboard-page-grid {
+    column-count: 3;
+  }
+}
+.dashboard-page-grid > div {
+  break-inside: avoid;
+  margin-bottom: var(--space-4);
+}

@@ -1,0 +1,10 @@
+.google-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    margin-bottom: var(--space-5);
+  }
+  .google-btn:hover {
+    transform: scale(1.05);
+  }

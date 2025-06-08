@@ -1,0 +1,15 @@
+/* ============================
+   app/assets/design-system/atoms/atoms.scss
+   ============================ */
+/* Flame Icon */
+.flame-icon {
+  width: 24px;
+  height: auto;
+}
+
+/* UI Icons */
+.badge {
+  display: inline-block;
+  width: fit-content;
+  align-self: start;
+}
