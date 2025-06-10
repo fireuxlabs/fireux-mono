@@ -23,13 +23,28 @@
 
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoutes } from '../composables/utils/useRoutes'
 
 const { width } = useWindowSize()
 const isMobile = computed(() => width.value < 1024)
 
-const { appLinks, mobileLinks, dashboardLinks, subHeader } = await useRoutes()
+const appLinks = ref([])
+const mobileLinks = ref([])
+const dashboardLinks = ref([])
+const subHeader = ref('')
+
+onMounted(async () => {
+  const routes = await useRoutes()
+  appLinks.value = routes.appLinks
+  mobileLinks.value = routes.mobileLinks
+  dashboardLinks.value = routes.dashboardLinks
+  subHeader.value = routes.subHeader
+})
+
+defineOptions({
+  name: 'CoreDashboard',
+})
 </script>
 
 <style scoped>

@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAppUser } from '../firestore/AppUser/useAppUser'
 import { useFireUXConfig } from '../FireUXConfig'
@@ -157,5 +157,5 @@ export async function useRoutes() {
     }
   })
 
-  return { appLinks, dashboardLinks, mobileLinks, subHeader }
+  return reactive({ appLinks, dashboardLinks, mobileLinks, subHeader })
 }

@@ -197,7 +197,13 @@ async function testLayouts() {
       // Simulate consumption by parsing the layout using @vue/compiler-sfc
       try {
         const parsedLayout = parse(content)
+        const exportName =
+          parsedLayout.descriptor.scriptSetup?.content.match(
+            /name:\s+'(.*?)'/
+          )?.[1] ||
+          parsedLayout.descriptor.script?.content.match(/name:\s+'(.*?)'/)?.[1]
         console.log(`  Parse: ${parsedLayout ? '✓' : '✗'}`)
+        console.log(`  Export Name: ${exportName || 'Not Found'}`)
       } catch (error) {
         console.error(`  Parse: ✗ - ${error.message}`)
       }

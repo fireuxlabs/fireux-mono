@@ -1,23 +1,16 @@
 <template>
-  <CoreDashboard>
-    <div>
-      <h1>FireUX Dashboard</h1>
-      <p>Dummy data for testing the dashboard layout.</p>
-    </div>
-  </CoreDashboard>
+  <div>
+    <h1>Dashboard</h1>
+    <p>This is the dashboard page of the FireUX app.</p>
+  </div>
 </template>
 
-<script>
-export default {
-  name: 'DashboardPage',
-}
+<script setup lang="ts">
+definePageMeta({
+  layout: 'dashboard',
+})
 </script>
 
 <style scoped>
-h1 {
-  color: #ff5733;
-}
-p {
-  font-size: 1.2rem;
-}
+/* Add any necessary styles here */
 </style>

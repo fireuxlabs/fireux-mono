@@ -16,6 +16,10 @@
 <script setup>
 // const breadcrumbLinks = useBreadcrumbs()
 const { appLinks, mobileLinks } = useRoutes()
+
+defineOptions({
+  name: 'CoreDefault',
+})
 </script>
 
 <style scoped>

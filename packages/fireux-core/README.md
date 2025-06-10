@@ -5,6 +5,7 @@
 A comprehensive Nuxt module that provides a standardized foundation for rapidly building web applications with consistent architecture, styling, and features. It serves as the backbone for all FireUX platform applications.
 
 - [✨ &nbsp;Release Notes](/CHANGELOG.md)
+- [🖼️ &nbsp;Layout Integration](/LAYOUT-INTEGRATION.md)
 
 ## Features
 
@@ -15,6 +16,7 @@ A comprehensive Nuxt module that provides a standardized foundation for rapidly 
 - 📝 &nbsp;**Blog System**: Content management for blog posts
 - 🛒 &nbsp;**Product Management**: E-commerce capabilities
 - 🎨 &nbsp;**Design System**: Consistent styling and layout utilities
+- 🖼️ &nbsp;**Layout System**: Reusable layouts across applications
 
 ## Quick Setup
 
@@ -31,6 +33,12 @@ pnpm add fireux-core
 // nuxt.config.ts
 export default defineNuxtConfig({
   modules: ['fireux-core', 'nuxt-vuefire'],
+
+  // CSS imports
+  css: [
+    'fireux-core/assets/css/main.css',
+    'fireux-core/assets/design-system/main.scss',
+  ],
 
   // FireUX Core module options
   fireuxCore: {
@@ -58,16 +66,30 @@ export default defineNuxtConfig({
 
 FireUX Core provides standardized layouts that can be used across all apps:
 
+1. First, create wrapper layouts in your app:
+
 ```vue
-<!-- In your app's layouts/default.vue -->
+<!-- layouts/default.vue -->
 <template>
   <CoreDefault />
 </template>
+```
 
-<!-- In your app's layouts/dashboard.vue -->
+```vue
+<!-- layouts/dashboard.vue -->
 <template>
   <CoreDashboard />
 </template>
+```
+
+2. Then use them in your pages:
+
+```vue
+<script setup>
+definePageMeta({
+  layout: 'default', // or 'dashboard'
+})
+</script>
 ```
 
 This approach allows you to:

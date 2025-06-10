@@ -9,7 +9,8 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["packages/fireux-core/src/*"],
-      "~models/*": ["packages/fireux-core/src/runtime/models/*"]
+      "~models/*": ["packages/fireux-core/src/runtime/models/*"],
+      "fireux-core/*": ["packages/fireux-core/src/runtime/*"]
     },
     "types": ["@nuxt/schema", "nuxt"]
   },

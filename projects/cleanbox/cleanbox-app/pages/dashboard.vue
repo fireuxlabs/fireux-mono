@@ -1,23 +1,16 @@
-<template>
-  <CoreDashboard>
-    <div>
-      <h1>Cleanbox Dashboard</h1>
-      <p>Dummy data for testing the dashboard layout.</p>
-    </div>
-  </CoreDashboard>
-</template>
-
-<script>
-export default {
-  name: 'DashboardPage',
-}
+<script setup lang="ts">
+definePageMeta({
+  layout: 'dashboard',
+})
 </script>
 
+<template>
+  <div>
+    <h1>Dashboard</h1>
+    <p>This is the dashboard page of the Cleanbox app.</p>
+  </div>
+</template>
+
 <style scoped>
-h1 {
-  color: #007bff;
-}
-p {
-  font-size: 1.2rem;
-}
+/* Add any necessary styles here */
 </style>

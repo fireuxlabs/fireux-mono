@@ -14,7 +14,8 @@
     "paths": {
       "@/*": ["src/*"],
       "#imports": [".nuxt/imports.d.ts"],
-      "#fireux-core-public/*": ["src/runtime/public/*"]
+      "#fireux-core-public/*": ["src/runtime/public/*"],
+      "fireux-core/assets/*": ["src/runtime/assets/*"]
     },
     "types": ["@nuxt/types", "vue"]
   },

@@ -9,15 +9,8 @@
       "import": "./src/module.ts",
       "types": "./src/module.ts"
     },
-    "./components/*": "./src/runtime/components/*",
-    "./runtime/*": "./src/runtime/*",
-    "./assets/css/main.css": "./src/runtime/assets/css/main.css",
-    "./assets/design-system/main.scss": "./src/runtime/assets/design-system/main.scss",
-    "./composables/*": "./src/runtime/composables/**/*",
-    "./models/*": "./src/runtime/models/*",
-    "./server/*": "./src/runtime/server/**/*",
-    "./public/*": "./src/runtime/public/*",
-    "./layouts/*": "./src/runtime/layouts/*"
+    "./layouts/*": "./src/runtime/layouts/*",
+    "./assets/*": "./src/runtime/assets/*"
   },
   "files": [
     "src/**/*",
@@ -48,8 +41,6 @@
     "rimraf": "^6.0.1",
     "rollup": "^3.0.0",
     "rollup-plugin-copy": "^3.5.0",
-    "sass": "^1.89.1",
-    "vite-plugin-static-copy": "^3.0.0"
-  },
-  "type": "module"
+    "sass": "^1.89.1"
+  }
 }

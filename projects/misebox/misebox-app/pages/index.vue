@@ -5,17 +5,4 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'IndexPage',
-}
-</script>
-
-<style scoped>
-h1 {
-  color: #28a745;
-}
-p {
-  font-size: 1.2rem;
-}
-</style>
+<script setup lang="ts"></script>
