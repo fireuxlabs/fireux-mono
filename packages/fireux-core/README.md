@@ -48,12 +48,33 @@ export default defineNuxtConfig({
   <!-- FireUX Core components use the 'Fire' prefix -->
   <FireOrganismsAppOnboarding />
   <FireLogoType size="medium" />
-
   <!-- Nuxt UI components use the 'U' prefix -->
   <UButton>Click Me</UButton>
   <UModal>Content</UModal>
 </template>
 ```
+
+### Layouts
+
+FireUX Core provides standardized layouts that can be used across all apps:
+
+```vue
+<!-- In your app's layouts/default.vue -->
+<template>
+  <CoreDefault />
+</template>
+
+<!-- In your app's layouts/dashboard.vue -->
+<template>
+  <CoreDashboard />
+</template>
+```
+
+This approach allows you to:
+
+- Maintain consistent layout structure across all apps
+- Centralize layout updates in the core package
+- Customize layouts at the app level when needed
 
 ### Composables
 

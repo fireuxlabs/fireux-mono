@@ -1,47 +1,63 @@
-import { getDoc, doc } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFirestoreManager } from '../../firestore/useFirestoreManager'
 import { useMediaStorage } from '../../firebase/useMediaStorage'
 import { CoreUser } from '../../../models/coreUser.model'
+import { useFirestoreManager } from '../useFirestoreManager'
+import { useFirestoreCreate } from '../useFirestoreCreate'
+import { useAppUserEnsure } from '../AppUser/useAppUserEnsure'
 
 export function useCoreUserEnsure() {
-  const { waitForCurrentUser, setDocument } = useFirestoreManager()
-
+  /**
+   * Ensures a core user exists for the current authenticated user
+   */
   async function ensureCoreUser() {
-    const currentUser = await waitForCurrentUser()
+    try {
+      // Wait for current user to be available
+      const { waitForCurrentUser } = useFirestoreManager()
+      const user = await waitForCurrentUser()
 
-    if (!currentUser || !currentUser.uid) {
-      throw new Error('Current user is not available or invalid.')
+      if (!user || !user.uid) {
+        console.warn('⚠️ [ensureCoreUser] No current user found after waiting')
+        return
+      }
+
+      const uid = user.uid
+      const db = useFirestore()
+      const coreUserRef = doc(db, 'core-users', uid)
+
+      // Check if core user already exists
+      const coreUserDoc = await getDoc(coreUserRef)
+
+      if (coreUserDoc.exists()) {
+        console.log(`✅ [ensureCoreUser] Core user ${uid} exists`)
+        return
+      }
+
+      // Create new core user
+      const { uploadUserAvatar } = useMediaStorage()
+      const { setDocument } = useFirestoreCreate()
+
+      const avatar =
+        user.photoURL || (await uploadUserAvatar('img/default-avatar.png', uid))
+
+      const coreUserData: Partial<CoreUser> = {
+        id: uid,
+        email: user.email || '',
+        avatar,
+        adminOf: [],
+        userOf: [],
+      }
+
+      // Use setDocument from useFirestoreCreate to automatically add timestamps
+      await setDocument('core-users', uid, coreUserData)
+      console.log(`✅ [ensureCoreUser] Created new core user ${uid}`)
+
+      // Call ensureAppUser with the core user data
+      const ensureAppUser = useAppUserEnsure()
+      await ensureAppUser(coreUserData)
+    } catch (error) {
+      console.error(`❌ [ensureCoreUser] Error: ${error}`)
     }
-
-    const uid = currentUser.uid
-    const collectionName = 'core-users'
-    const db = useFirestore()
-    const coreUserDocRef = doc(db, collectionName, uid)
-    const coreUserSnap = await getDoc(coreUserDocRef)
-
-    if (coreUserSnap.exists()) {
-      const createdAt = coreUserSnap.data()?.created_at || 'unknown date'
-      console.log(
-        `✅ [ensureCoreUser] Core user with ID '${uid}' already exists. Continuing with established user created on ${createdAt}.`
-      )
-      return
-    }
-
-    const { uploadUserAvatar } = useMediaStorage()
-    let avatar = currentUser?.photoURL || ''
-
-    if (!avatar) {
-      avatar = await uploadUserAvatar('img/default-avatar.png', uid)
-    }
-
-    const coreUserData: Partial<CoreUser> = {
-      id: uid,
-      adminOf: [],
-      avatar,
-    }
-
-    return await setDocument(collectionName, uid, coreUserData)
   }
 
   return { ensureCoreUser }

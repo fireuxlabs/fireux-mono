@@ -3,7 +3,6 @@
 import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useDocument, useCurrentUser, useFirestore } from 'vuefire'
-import type { DocumentReference } from 'firebase/firestore'
 import { useCoreUserEnsure } from './useCoreUserEnsure'
 import { useCoreUserUpdate } from './useCoreUserUpdate'
 import { useCoreUserDelete } from './useCoreUserDelete'
@@ -13,13 +12,13 @@ export async function useCoreUser() {
   const db = useFirestore()
   const currentUser = useCurrentUser()
 
-  const coreUserDocRef = computed<DocumentReference<CoreUser> | null>(() =>
-    currentUser.value
-      ? (doc(db, 'users', currentUser.value.uid) as DocumentReference<CoreUser>)
+  const coreUserDocRef = computed(() => {
+    return currentUser.value
+      ? doc(db, 'core-users', currentUser.value.uid)
       : null
-  )
+  })
 
-  const { data: coreUser } = useDocument<CoreUser>(coreUserDocRef)
+  const { data: coreUser } = useDocument<CoreUser>(coreUserDocRef) // Updated to use CoreUser model
 
   return {
     coreUser,

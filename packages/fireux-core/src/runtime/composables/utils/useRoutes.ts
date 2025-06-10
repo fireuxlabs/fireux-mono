@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAppUser } from '../firestore/AppUser/useAppUser'
+import { useFireUXConfig } from '../FireUXConfig'
 
 // Define a type for our route links.
 interface RouteLink {
@@ -12,11 +13,7 @@ interface RouteLink {
 
 // Function to generate route links, using runtime config for appName.
 export function getRouteLinks() {
-  const { useRuntimeConfig } = require('#imports')
-  const {
-    public: { appIcon },
-    appName,
-  } = useRuntimeConfig()
+  const { appIcon, appName } = useFireUXConfig()
   return {
     app: [
       {
@@ -156,7 +153,7 @@ export async function useRoutes() {
     const icon = route.meta?.icon
     return {
       label: typeof title === 'string' ? title : 'Dashboard',
-      icon: typeof icon === 'string'
+      icon: typeof icon === 'string',
     }
   })
 

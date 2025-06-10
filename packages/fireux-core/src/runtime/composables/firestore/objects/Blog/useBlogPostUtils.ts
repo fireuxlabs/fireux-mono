@@ -36,7 +36,7 @@ export function useBlogPostUtils() {
   // Default images for a blog post
   function getDefaultImages(): Pick<BlogPost, 'featuredImage' | 'socialImage'> {
     return {
-      featuredImage: '/img/logo-type-dark.png',
+      featuredImage: '/img/logo-type-dark.svg',
       socialImage: '/img/logo.png',
     }
   }

@@ -1,81 +1,128 @@
-import { getDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore'
-import { useFirestore, useCurrentUser } from 'vuefire'
+import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
 import { useAppUserUtils } from './useAppUserUtils'
-import { useCoreUser } from '../CoreUser/useCoreUser'
-import { useFirestoreManager } from '../useFirestoreManager'
 import type { AppUserProfile } from '../../../models/appUser.model'
 import { useFireUXConfig } from '../../FireUXConfig'
+import { useFirestoreCreate } from '../useFirestoreCreate'
+import { useFirestoreManager } from '../useFirestoreManager'
 
-export async function useAppUserEnsure() {
-  const db = useFirestore()
-  const { waitForCurrentUser, setDocument } = useFirestoreManager()
-  const { tenantId } = useFireUXConfig()
-  const { generateHandle } = useAppUserUtils()
+// Import useCoreUserEnsure dynamically to avoid circular dependency
+// It will be imported only when needed inside the function
 
-  async function ensureAppUser(onSuccess?: () => void) {
-    console.log('🚀 [ensureAppUser] Function invoked.')
+export function useAppUserEnsure() {
+  /**
+   * Ensures an app user exists for the current authenticated user and app
+   * @param coreUser Optional core user object to use instead of fetching from Firestore
+   */
+  async function ensureAppUser(coreUser?: any): Promise<void> {
+    try {
+      console.log('🚀 [ensureAppUser] Function invoked.')
 
-    const { coreUser } = await useCoreUser()
+      // Get app ID
+      const { appId } = useFireUXConfig()
+      if (!appId) {
+        console.warn('⚠️ [ensureAppUser] No app ID configured')
+        return
+      }
 
-    const user = (await waitForCurrentUser()) as NonNullable<
-      ReturnType<typeof useCurrentUser>['value']
-    >
+      // Wait for current user to be available
+      const { waitForCurrentUser } = useFirestoreManager()
+      const user = await waitForCurrentUser()
 
-    const uid = user.uid
+      if (!user || !user.uid) {
+        console.warn('⚠️ [ensureAppUser] No current user found after waiting')
+        return
+      }
 
-    if (
-      !uid ||
-      !tenantId ||
-      typeof tenantId !== 'string' ||
-      tenantId.length === 0
-    ) {
-      console.warn('🐶 [ensureAppUser] Missing UID or tenantId. Aborting.')
-      return
-    }
+      const uid = user.uid
 
-    const appRef = doc(db, 'apps', tenantId)
-    const appSnap = await getDoc(appRef)
-    const isAdmin = appSnap.exists() && appSnap.data().admin_ids?.includes(uid)
-    const role = isAdmin ? 'admin' : 'user'
+      // First, ensure a core user exists if not provided
+      if (!coreUser) {
+        // Dynamically import useCoreUserEnsure to avoid circular dependency
+        const { useCoreUserEnsure } = await import(
+          '../CoreUser/useCoreUserEnsure'
+        )
+        const { ensureCoreUser } = useCoreUserEnsure()
+        await ensureCoreUser()
+      }
 
-    const appUserData: Partial<AppUserProfile> = {
-      uid,
-      role,
-      display_name: user?.displayName ?? '',
-      avatar:
-        coreUser.value?.avatar || user?.photoURL || 'img/default-avatar.png',
-      handle: generateHandle(user?.displayName ?? ''),
-      bio: '',
-    }
+      const db = useFirestore()
 
-    const appUserDocRef = doc(db, 'users', uid, 'apps', tenantId)
-    const appUserSnap = await getDoc(appUserDocRef)
+      // Check if app exists
+      const appRef = doc(db, 'apps', appId)
+      const appDoc = await getDoc(appRef)
 
-    if (!appUserSnap.exists()) {
-      await setDocument('users', `${uid}/apps/${tenantId}`, appUserData)
-      console.log(`✅ [ensureAppUser] Created new app user for ${tenantId}.`)
-    } else {
+      if (!appDoc.exists()) {
+        console.warn(`❌ [ensureAppUser] App [${appId}] does not exist`)
+        return
+      }
+
+      const app = appDoc.data()
+
+      // Check if app user already exists in the new path
+      const appUserRef = doc(db, `apps/${appId}/users`, uid)
+      const appUserDoc = await getDoc(appUserRef)
+
+      if (appUserDoc.exists()) {
+        console.log(`✅ [ensureAppUser] App user exists for ${appId}`)
+        return
+      }
+
+      // Get core user info if not provided
+      let coreUserData = coreUser
+      if (!coreUserData) {
+        const coreUserRef = doc(db, 'core-users', uid)
+        const coreUserDoc = await getDoc(coreUserRef)
+
+        if (!coreUserDoc.exists()) {
+          console.warn(`❌ [ensureAppUser] Core user [${uid}] not found`)
+          return
+        }
+
+        coreUserData = coreUserDoc.data()
+        if (!coreUserData) {
+          console.warn(
+            `❌ [ensureAppUser] Core user data for [${uid}] is empty`
+          )
+          return
+        }
+      }
+
+      // Create new app user
+      const { generateHandle } = useAppUserUtils()
+      const { setDocument } = useFirestoreCreate()
+
+      const appUserData: Partial<AppUserProfile> = {
+        uid,
+        email: coreUserData.email || user.email || '',
+        role: app.admin_ids?.includes(uid) ? 'admin' : 'user',
+        display_name: coreUserData.email || user.displayName || 'Unknown User',
+        avatar:
+          coreUserData.avatar || user.photoURL || 'img/default-avatar.png',
+        handle: generateHandle(
+          coreUserData.email || user.displayName || 'Anonymous'
+        ),
+        bio: '',
+      }
+
+      // Use setDocument from useFirestoreCreate to automatically add timestamps
+      await setDocument(`apps/${appId}/users`, uid, appUserData)
+      console.log(`✅ [ensureAppUser] Created app user for ${appId}`)
+
+      // Update core user's userOf array
+      const coreUserRef = doc(db, 'core-users', uid)
+      await updateDoc(coreUserRef, {
+        userOf: arrayUnion(appId),
+      })
+
       console.log(
-        `✅ [ensureAppUser] App user already exists. No changes made.`
+        `✅ [ensureAppUser] Added ${appId} to core user's userOf array`
       )
-    }
-
-    const coreUserRef = doc(db, 'users', uid)
-    await updateDoc(coreUserRef, {
-      userOf: arrayUnion(tenantId),
-    })
-
-    console.log(
-      `✅ [ensureAppUser] App User ensured with role: ${role} and tenantId ensured in core user.`
-    )
-
-    if (typeof onSuccess === 'function') {
-      console.log(
-        '📢 [ensureAppUser] Calling onSuccess callback for redirection.'
-      )
-      onSuccess()
+    } catch (error) {
+      console.error(`❌ [ensureAppUser] Error: ${error}`)
     }
   }
 
-  return { ensureAppUser }
+  // Export the function directly instead of returning an object
+  return ensureAppUser
 }

@@ -1,15 +1,21 @@
 <template>
   <div>
-    <h1>Hello App Debug Page</h1>
-    <p>Welcome to the Hello Page!</p>
-    <FireAppDebug />
+    <h1>Welcome to FireUX!</h1>
+    <p>This is the main page of the FireUX app.</p>
   </div>
 </template>
 
-<script setup>
-// Removed FireUX-specific logic for debugging purposes
+<script>
+export default {
+  name: 'IndexPage',
+}
 </script>
 
 <style scoped>
-/* Simplified styles for a clean debug page */
+h1 {
+  color: #ff5733;
+}
+p {
+  font-size: 1.2rem;
+}
 </style>

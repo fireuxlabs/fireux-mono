@@ -25,13 +25,13 @@
 <script setup>
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
 const { ensureAppUser } = useAppUserEnsure()
-const { isInitialised } = useApp()
+const { isInitialized } = useApp()
 const router = useRouter()
 
 const isSignUp = ref(true)
 const state = reactive({
   email: '',
-  password: ''
+  password: '',
 })
 
 const handleEmailAuth = async () => {
@@ -42,7 +42,7 @@ const handleEmailAuth = async () => {
   const user = await authMethod(state.email, state.password)
 
   if (user?.uid) {
-    if (isInitialised.value) {
+    if (isInitialized.value) {
       await ensureAppUser(() => router.push('/dashboard')) // ✅ Ensure app user after authentication and redirect
     }
   }

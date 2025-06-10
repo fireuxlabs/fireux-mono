@@ -13,7 +13,7 @@ export function useFirestoreRead() {
     name: string
   ): Promise<Ref<T[] | undefined>> {
     await waitForCurrentUser()
-    const q = query(collection(db, name), where('tenant_id', '==', appId)) // Updated to use `appId`
+    const q = query(collection(db, name), where('appId', '==', appId)) // Updated to use `appId`
     const { data } = useCollection<T>(q, { ssrKey: name })
     return data as Ref<T[] | undefined> // Explicitly cast the type
   }

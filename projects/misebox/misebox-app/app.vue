@@ -6,7 +6,7 @@
     </NuxtLayout>
 
     <UModal
-      :open="!useApp.isInitialized"
+      :open="!isInitialized"
       prevent-close
       title="🚫 Blocked"
       description="This app needs to be initialized."
@@ -19,6 +19,8 @@
 </template>
 
 <script setup>
+const { isInitialized } = await useApp()
+
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
 })

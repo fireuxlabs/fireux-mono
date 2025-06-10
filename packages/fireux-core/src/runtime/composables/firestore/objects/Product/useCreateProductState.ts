@@ -99,7 +99,7 @@ export async function useCreateProductState() {
   // Populate creator_id and tenant_id on mount
   onMounted(() => {
     if (currentUser.value?.uid) product.value.creator_id = currentUser.value.uid
-    if (tenantId) product.value.tenant_id = tenantId as string
+    if (tenantId) product.value.app_id = tenantId as string
   })
 
   function resetCreateProductState() {

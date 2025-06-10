@@ -13,7 +13,7 @@ import type {
 } from '../../../../models/product.model'
 
 export async function useProductCreate() {
-  const { tenantId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
   const currentUser = useCurrentUser()
 
   const {
@@ -110,7 +110,7 @@ export async function useProductCreate() {
 
       await updateProduct(response.id, {
         main_image: product.value.main_image,
-        tenant_id: tenantId as string,
+        appId: appId as string,
         creator_id: currentUser.value?.uid || '',
         slug: product.value.slug,
         content: product.value.content,

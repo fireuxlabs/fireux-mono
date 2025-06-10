@@ -4,7 +4,7 @@
       <div class="header-content">
         <!-- Left Section: Logo -->
         <div class="left-section">
-          <LogoType size="small" />
+          <FireLogoType size="small" />
         </div>
 
         <!-- Desktop Navigation Menu -->
@@ -16,17 +16,13 @@
         <div class="right-section">
           <template v-if="route.path !== '/auth'">
             <template v-if="appUser">
-              <MoleculesProfileAvatar />
+              <FireMoleculesProfileAvatar />
             </template>
             <template v-else-if="!coreUser">
-              <UButton size="sm" @click="navigateToAuth">
-                Sign In
-              </UButton>
+              <UButton size="sm" @click="navigateToAuth"> Sign In </UButton>
             </template>
             <template v-else>
-              <UButton size="sm" @click="handleJoinApp">
-                Join App
-              </UButton>
+              <UButton size="sm" @click="handleJoinApp"> Join App </UButton>
             </template>
           </template>
           <UIcon
@@ -46,7 +42,7 @@
       :close="{
         color: 'primary',
         variant: 'outline',
-        class: 'rounded-full'
+        class: 'rounded-full',
       }"
     >
       <template #body>
@@ -65,7 +61,6 @@
 <script setup>
 import { useWindowSize } from '@vueuse/core'
 import { useRoute } from 'vue-router'
-
 
 const { coreUser } = useCoreUser()
 const { appUser } = useAppUser()
@@ -90,7 +85,7 @@ const toggleMobileNav = () => (mobileMenuOpen.value = !mobileMenuOpen.value)
 
 defineProps({
   appLinks: { type: Array, default: () => [] },
-  mobileLinks: { type: Array, default: () => [] }
+  mobileLinks: { type: Array, default: () => [] },
 })
 </script>
 

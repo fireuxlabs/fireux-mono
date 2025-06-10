@@ -40,14 +40,14 @@ export function useFirestoreCreate() {
 
   async function stampDoc<T>(data: T): Promise<
     T & {
-      tenant_id: string
+      appId: string
       created_at: ReturnType<typeof serverTimestamp>
       creator_id: string
     }
   > {
     return {
       ...data,
-      tenant_id: appId,
+      appId: appId, // Replaced tenant_id with appId
       created_at: serverTimestamp(),
       creator_id: getCurrentUserId(),
     }

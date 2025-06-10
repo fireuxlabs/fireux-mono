@@ -1,11 +1,12 @@
 <template>
   <UCard>
     <template #header v-if="variant === 'cell'">
-      <h3 class="cell-title">{{ display(product?.name) || 'Unnamed Product' }}</h3>
+      <h3 class="cell-title">
+        {{ display(product?.name) || 'Unnamed Product' }}
+      </h3>
     </template>
 
     <template #default>
-
       <div v-if="variant === 'cell'" class="product-cell">
         <div v-if="product?.main_image" class="cell-image">
           <img :src="product.main_image" alt="Product image" />
@@ -13,24 +14,37 @@
         <div class="cell-text">
           <p class="cell-description">{{ display(product?.description) }}</p>
           <p v-if="product?.default_price" class="cell-price">
-            €{{ product.default_price.unit_amount }}<span v-if="product.default_price.interval">/{{ product.default_price.interval }}</span>
+            €{{ product.default_price.unit_amount
+            }}<span v-if="product.default_price.interval"
+              >/{{ product.default_price.interval }}</span
+            >
           </p>
           <div class="purchace-buttons">
-            <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
-            <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
+            <UButton :disabled="props.mode === 'preview'" color="primary"
+              >Buy Now</UButton
+            >
+            <UButton :disabled="props.mode === 'preview'" variant="outline"
+              >Add to Basket</UButton
+            >
           </div>
         </div>
       </div>
 
       <div v-else-if="variant === 'customer'">
-        <p><strong>{{ display(product?.name) }}</strong></p>
+        <p>
+          <strong>{{ display(product?.name) }}</strong>
+        </p>
         <p>{{ display(product?.description) }}</p>
         <p v-if="product?.default_price">
           €{{ product.default_price.unit_amount }}
         </p>
         <div class="purchace-buttons">
-          <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
-          <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
+          <UButton :disabled="props.mode === 'preview'" color="primary"
+            >Buy Now</UButton
+          >
+          <UButton :disabled="props.mode === 'preview'" variant="outline"
+            >Add to Basket</UButton
+          >
         </div>
       </div>
 
@@ -41,17 +55,36 @@
           <li><strong>Slug:</strong> {{ display(product?.slug) }}</li>
           <li><strong>Created:</strong> {{ display(product?.created_at) }}</li>
           <li><strong>Updated:</strong> {{ display(product?.updated_at) }}</li>
-          <li><strong>Tenant:</strong> {{ display(product?.tenant_id) }}</li>
+          <li><strong>Tenant:</strong> {{ display(product?.appId) }}</li>
           <li><strong>Creator:</strong> {{ display(product?.creator_id) }}</li>
-          <li><strong>Image Supplied:</strong> {{ product?.main_image ? 'Yes' : 'No' }}</li>
-          <li><strong>Type:</strong> {{ display(product?.product_type) }}</li>
-          <li><strong>Stock:</strong>
-            <span :style="{ color: product?.stock == null ? 'red' : 'inherit' }">{{ product?.stock ?? '!' }}</span>
+          <li>
+            <strong>Image Supplied:</strong>
+            {{ product?.main_image ? 'Yes' : 'No' }}
           </li>
-          <li><strong>Track Stock:</strong> {{ display(product?.track_stock ? 'Yes' : 'No') }}</li>
+          <li><strong>Type:</strong> {{ display(product?.product_type) }}</li>
+          <li>
+            <strong>Stock:</strong>
+            <span
+              :style="{ color: product?.stock == null ? 'red' : 'inherit' }"
+              >{{ product?.stock ?? '!' }}</span
+            >
+          </li>
+          <li>
+            <strong>Track Stock:</strong>
+            {{ display(product?.track_stock ? 'Yes' : 'No') }}
+          </li>
           <li><strong>Content:</strong> {{ display(product?.content) }}</li>
-          <li><strong>Default Price:</strong>
-            <span :style="{ color: product?.default_price?.unit_amount == null ? 'red' : 'inherit' }">{{ product?.default_price?.unit_amount ?? '!' }}</span>
+          <li>
+            <strong>Default Price:</strong>
+            <span
+              :style="{
+                color:
+                  product?.default_price?.unit_amount == null
+                    ? 'red'
+                    : 'inherit',
+              }"
+              >{{ product?.default_price?.unit_amount ?? '!' }}</span
+            >
           </li>
         </ul>
       </div>
@@ -62,8 +95,12 @@
         <div v-html="product?.content" v-if="product?.content" />
         <p v-else class="missing">!</p>
         <div class="purchace-buttons">
-          <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
-          <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
+          <UButton :disabled="props.mode === 'preview'" color="primary"
+            >Buy Now</UButton
+          >
+          <UButton :disabled="props.mode === 'preview'" variant="outline"
+            >Add to Basket</UButton
+          >
         </div>
       </div>
     </template>
@@ -71,6 +108,8 @@
 </template>
 
 <script setup lang="ts">
+import type { FirebaseProduct } from '../../../../models/product.model'
+
 const props = defineProps<{
   product?: Partial<FirebaseProduct>
   variant?: 'customer' | 'info' | 'cell' | 'page'

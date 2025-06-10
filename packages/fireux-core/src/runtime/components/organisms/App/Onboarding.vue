@@ -28,28 +28,37 @@
       <UButton v-if="envData?.isValid" block @click="createAppHandler"
         >Create App</UButton
       >
-
-      <p v-else class="setup-reminder">
-        ⚠️ Some required environment variables are missing. Please set them
-        before creating an app.<br />
-        After updating your credentials, <strong>restart your server:</strong
-        ><br />
-        <input
-          class="copy-code"
-          readonly
-          value="npm run dev"
-          @click="event.target.select()"
-        />
-      </p>
     </div>
   </UContainer>
 </template>
 
 <script setup>
-// Auto-import should work now
 const { coreUser } = await useCoreUser()
-const { pin, isUnlocked, checkPin, createAppHandler } = useApp()
 const { data: envData } = await useFetch('/api/env-check')
+const { ensureApp, app, isInitialized } = await useApp()
+
+const pin = ref([])
+const isUnlocked = ref(false)
+
+function checkPin() {
+  console.log('PIN input complete:', pin.value)
+  if (pin.value.join('') === '1234') {
+    console.log('Correct PIN entered! Unlocking...')
+    isUnlocked.value = true
+  } else {
+    console.log('Incorrect PIN. Please try again.')
+  }
+}
+
+async function createAppHandler() {
+  try {
+    // Pass the coreUser object to avoid refetching it
+    const appId = await ensureApp(coreUser.value)
+    console.log(`App '${appId}' successfully created or already exists.`)
+  } catch (error) {
+    console.error('Error creating app:', error)
+  }
+}
 </script>
 <style scoped>
 .pin-section {

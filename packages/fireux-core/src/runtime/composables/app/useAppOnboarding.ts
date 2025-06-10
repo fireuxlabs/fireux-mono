@@ -12,22 +12,8 @@ export interface EnvCheckResult {
 }
 
 export async function useAppOnboarding() {
-  const pin = ref<string[]>([])
-  const isUnlocked = ref(false)
-  const { coreUser } = await useCoreUser()
-
-  const showPin = computed(() => !!coreUser.value)
-
-  const { PIN } = useRuntimeConfig().public
-
   const envCheckResult = ref<EnvCheckResult | null>(null)
   const isEnvValid = computed(() => envCheckResult.value?.isValid ?? false)
-
-  function checkPin() {
-    if (pin.value.join('') === PIN) {
-      isUnlocked.value = true
-    }
-  }
 
   async function checkEnv() {
     const { data } = await useFetch<EnvCheckResult>('/api/env-check', {
@@ -52,10 +38,6 @@ export async function useAppOnboarding() {
   }
 
   return {
-    pin,
-    isUnlocked,
-    showPin,
-    checkPin,
     checkEnv,
     createAppHandler,
     envCheckResult,

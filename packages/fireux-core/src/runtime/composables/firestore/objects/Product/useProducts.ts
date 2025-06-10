@@ -17,7 +17,7 @@ export async function useProducts() {
     firestoreFetchSubcollection,
   } = useFirestoreManager()
 
-  // Fetch all products (scoped by tenant_id automatically)
+  // Fetch all products (scoped by appId automatically)
   const productsCollection =
     (await firestoreFetchCollection<FirebaseProduct>('products')) || ref([])
 

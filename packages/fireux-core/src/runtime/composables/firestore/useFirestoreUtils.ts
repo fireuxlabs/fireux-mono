@@ -22,7 +22,7 @@ export function useFirestoreUtils() {
 
     // If tenant scoping is on, grab tenantId from runtime config
     if (tenantScoped) {
-      constraints.push(where('tenant_id', '==', appId))
+      constraints.push(where('appId', '==', appId))
     }
 
     // Query and return whether any docs matched
@@ -41,7 +41,7 @@ export function useFirestoreUtils() {
     value: unknown
   ): Promise<T[]> {
     const constraints = [where(field, '==', value)]
-    constraints.push(where('tenant_id', '==', appId))
+    constraints.push(where('appId', '==', appId))
     const q = query(collection(db, collectionName), ...constraints)
     const snapshot = await getDocs(q)
     return snapshot.docs.map((doc) => doc.data() as T)
@@ -55,10 +55,7 @@ export function useFirestoreUtils() {
     field: string,
     value: string
   ): Promise<T | null> {
-    const constraints = [
-      where(field, '==', value),
-      where('tenant_id', '==', appId),
-    ]
+    const constraints = [where(field, '==', value), where('appId', '==', appId)]
     const q = query(collection(db, collectionName), ...constraints)
     const snapshot = await getDocs(q)
     return snapshot.empty ? null : (snapshot.docs[0].data() as T)

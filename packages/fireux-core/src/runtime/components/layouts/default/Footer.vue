@@ -3,7 +3,7 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-logo">
-        <LogoType />
+        <FireLogoType />
       </div>
       <p class="footer-text">
         &copy; {{ new Date().getFullYear() }} FIReUX. All rights reserved.

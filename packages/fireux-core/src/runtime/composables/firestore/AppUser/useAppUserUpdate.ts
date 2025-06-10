@@ -7,13 +7,13 @@ import type { AppUserProfile } from '../../../models/appUser.model'
 export function useAppUserUpdate() {
   const db = useFirestore()
   const currentUser = useCurrentUser()
-  const { tenantId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
 
   async function updateAppProfile(
     fields: Partial<AppUserProfile>
   ): Promise<void> {
     if (!currentUser.value) throw new Error('No authenticated user.')
-    const profileRef = doc(db, `users/${currentUser.value.uid}/apps`, tenantId)
+    const profileRef = doc(db, `apps/${appId}/users`, currentUser.value.uid)
     await updateDoc(profileRef, fields)
   }
 

@@ -1,7 +1,7 @@
 <template>
   <ClientOnly>
     <div class="layout-wrapper">
-      <LayoutsHeader :app-links="appLinks" :mobile-links="mobileLinks" />
+      <FireLayoutsHeader :app-links="appLinks" :mobile-links="mobileLinks" />
       <div class="layout-content">
         <main class="layout-main-content">
           <UNavigationMenu
@@ -11,11 +11,12 @@
             :items="dashboardLinks"
           />
           <div class="main-section">
-            <LayoutsSubHeader :icon-title="subHeader" />
+            <FireLayoutsSubHeader :icon-title="subHeader" />
             <NuxtPage />
           </div>
         </main>
       </div>
+      <FireLayoutsDefaultFooter />
     </div>
   </ClientOnly>
 </template>
@@ -48,10 +49,5 @@ const { appLinks, mobileLinks, dashboardLinks, subHeader } = await useRoutes()
   display: flex;
   flex-direction: row;
   align-items: start;
-}
-.main-section {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
 }
 </style>

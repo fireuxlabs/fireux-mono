@@ -2,10 +2,17 @@
   <UContainer class="widget center-content">
     <ClientOnly>
       <Transition name="fade">
-        <FireOrganismsAuthAuthenticated v-if="authState === 'AUTHENTICATED'" />
-        <div v-else class="auth-central">
-          <FireOrganismsAuthGoogle />
-          <FireOrganismsAuthEmail />
+        <div>
+          <FireOrganismsAuthAuthenticated
+            v-if="authState === 'AUTHENTICATED'"
+          />
+          <button v-if="authState === 'AUTHENTICATED' && !coreUser">
+            <UButton @click="handleEnsureCoreUser">Recreate Core User</UButton>
+          </button>
+          <div v-else class="auth-central">
+            <FireOrganismsAuthGoogle />
+            <FireOrganismsAuthEmail />
+          </div>
         </div>
       </Transition>
     </ClientOnly>
@@ -14,6 +21,16 @@
 
 <script setup>
 const { authState } = useAuth()
+const { coreUser, ensureCoreUser } = await useCoreUser()
+
+async function handleEnsureCoreUser() {
+  try {
+    await ensureCoreUser()
+    console.log('✅ Core User successfully recreated.')
+  } catch (error) {
+    console.error('❌ Failed to recreate Core User:', error)
+  }
+}
 </script>
 
 <style scoped>

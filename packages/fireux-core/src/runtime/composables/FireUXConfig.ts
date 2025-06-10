@@ -8,16 +8,14 @@ interface AppSettings {
   // domain: string
   // pin: string
   // appShortName: string
-  // appThemeColor: string
-  // appBackgroundColor: string
   // appIcon: string
 }
 
 export function useFireUXConfig() {
   const runtimeConfig = useRuntimeConfig()
-  const appSettings = runtimeConfig.public.appSettings as AppSettings
 
-  const devMode = appSettings.nodeEnv === 'development'
+  const appSettings = runtimeConfig.public.appSettings as AppSettings
+  const devMode = runtimeConfig.public.devMode
 
   const { projectName, appName, appId } = appSettings // Reordered destructuring to match `.env` order
 

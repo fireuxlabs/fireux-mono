@@ -34,7 +34,7 @@ export type StripeProductInput = Omit<StripeProduct, 'id' | 'prices'> & {
 }
 
 export interface FirebaseProduct extends StripeProduct {
-  tenant_id: string
+  appId: string
   slug: string
   created_at: Date | string
   updated_at: Date | string

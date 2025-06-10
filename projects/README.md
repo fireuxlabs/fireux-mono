@@ -221,3 +221,52 @@ When setting up your app, you need to pick your Tailwind colors and their associ
 ### Playground App
 
 - Serves as a testing ground for FireUX Core features and components.
+
+## Setting Up Stripe for Cleanbox
+
+Currently, Cleanbox does not have a Stripe account. To set up Stripe for Cleanbox, follow these steps:
+
+1. **Create a Stripe Account**:
+
+   - Visit [Stripe's website](https://stripe.com) and sign up for a new account.
+   - Ensure the account is created under the appropriate organization for Cleanbox.
+
+2. **Obtain API Keys**:
+
+   - Once the account is set up, navigate to the Developers section in the Stripe dashboard.
+   - Copy the Publishable Key, Secret Key, and Webhook Secret.
+
+3. **Update the `.env` File**:
+
+   - Add the following keys to the `.env` file for the Cleanbox project:
+     ```properties
+     STRIPE_PUBLISHABLE_KEY=<your-publishable-key>
+     STRIPE_SECRET_KEY=<your-secret-key>
+     STRIPE_WEBHOOK_SECRET=<your-webhook-secret>
+     ```
+
+4. **Test the Integration**:
+
+   - Use Stripe's test mode to ensure the keys are working correctly.
+   - Verify webhook events are received properly.
+
+5. **Deploy the Changes**:
+
+   - Commit the updated `.env` file (excluding sensitive keys) and deploy the project.
+
+6. **Complete Business Profile**:
+   - After creating the Stripe account, navigate to the **Settings** section in the Stripe dashboard.
+   - Fill out the business profile with accurate information about Cleanbox.
+   - Ensure the business name, address, and tax details are correct to avoid any issues with payouts.
+
+For further assistance, refer to the [Stripe Documentation](https://stripe.com/docs).
+
+## Icons for Projects
+
+We use icons from [Lucide](https://lucide.dev/icons) for our projects. Below are the icons assigned to each project:
+
+- **FireUX**: `flame`
+- **Misebox**: `croissant`
+- **Cleanbox**: `brush-cleaning`
+
+Visit [Lucide Icons](https://lucide.dev/icons) to explore more icons.

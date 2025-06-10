@@ -5,7 +5,7 @@ import { useFireUXConfig } from '../../FireUXConfig'
 import { useCurrentUser } from 'vuefire'
 
 export function useAppUserDelete() {
-  const { tenantId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
 
   const db = useFirestore()
   const { waitForCurrentUser } = useFirestoreManager()
@@ -18,19 +18,19 @@ export function useAppUserDelete() {
 
     try {
       // 🔥 Delete app-specific profile
-      const profileRef = doc(db, `users/${uid}/profiles`, tenantId)
+      const profileRef = doc(db, `apps/${appId}/users`, uid)
       await deleteDoc(profileRef)
-      console.log(`✅ Deleted profile for tenant ${tenantId}`)
+      console.log(`✅ Deleted profile for app ${appId}`)
 
       // 🗂️ Remove app ID from core user (userOf array)
-      const coreUserRef = doc(db, 'users', uid)
+      const coreUserRef = doc(db, 'core-users', uid)
       await updateDoc(coreUserRef, {
-        userOf: arrayRemove(tenantId),
+        userOf: arrayRemove(appId),
       })
-      console.log(`✅ Removed tenant ID ${tenantId} from core user ${uid}`)
+      console.log(`✅ Removed app ID ${appId} from core user ${uid}`)
 
       // 🔒 Remove user from app's admin list (admin_ids on App model)
-      const appRef = doc(db, 'apps', tenantId)
+      const appRef = doc(db, 'apps', appId)
       await updateDoc(appRef, {
         admin_ids: arrayRemove(uid),
       })

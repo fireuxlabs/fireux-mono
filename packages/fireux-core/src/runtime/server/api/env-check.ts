@@ -1,64 +1,41 @@
 import { defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
 
-interface FirebaseConfig {
-  apiKey: string
-  authDomain: string
-  projectId: string
-  storageBucket: string
-  messagingSenderId: string
-  appId: string
-  measurementId: string
-}
-
-interface AppSettings {
-  domain: string
-  pin: string
-  appName: string
-  appShortName: string
-  appThemeColor: string
-  appBackgroundColor: string
-  appIcon: string
-  nodeEnv: string
-}
-
-interface PublicConfig {
-  firebaseConfig: FirebaseConfig
-  appSettings: AppSettings
-}
-
-interface PrivateConfig {
-  stripePublishableKey: string
-  stripeSecretKey: string
-  stripeWebhookSecret: string
-  githubToken: string
-}
-
-interface RuntimeConfig {
-  public: PublicConfig
-  private: PrivateConfig
-}
-
 export default defineEventHandler(() => {
-  const isValidEnv = (val: unknown): boolean =>
-    typeof val === 'string' && val.trim().length > 0
+  const runtimeConfig = useRuntimeConfig()
 
-  const runtimeConfig = useRuntimeConfig() as unknown as RuntimeConfig
+  const requiredVars = [
+    'public.firebaseConfig.apiKey',
+    'public.firebaseConfig.authDomain',
+    'public.firebaseConfig.projectId',
+    'public.firebaseConfig.storageBucket',
+    'public.firebaseConfig.messagingSenderId',
+    'public.firebaseConfig.appId',
+    'public.firebaseConfig.measurementId',
+    'public.appSettings.projectName',
+    'public.appSettings.appName',
+    'public.appSettings.appId',
+    'public.appSettings.appShortName',
+    'public.appSettings.appPrimaryColor',
+    'public.appSettings.appNeutralColor',
+    'public.appSettings.appIcon',
+    'public.appSettings.domain',
+    'stripeConfig.publishableKey',
+    'stripeConfig.secretKey',
+  ]
 
-  const { public: publicConfig, private: privateConfig } = runtimeConfig
-
-  const requiredVars = {
-    firebaseConfig: publicConfig.firebaseConfig,
-    appSettings: publicConfig.appSettings,
-    stripePublishableKey: privateConfig?.stripePublishableKey || null, // Fallback to null
-    stripeSecretKey: privateConfig?.stripeSecretKey || null, // Fallback to null
-    stripeWebhookSecret: privateConfig?.stripeWebhookSecret || null, // Fallback to null
-    githubToken: privateConfig?.githubToken || null, // Fallback to null
-  }
-
-  const missingVars = Object.entries(requiredVars)
-    .filter(([_, value]) => !isValidEnv(value))
-    .map(([key]) => key)
+  const missingVars = requiredVars.filter((key) => {
+    const keys = key.split('.')
+    let value = runtimeConfig
+    for (const k of keys) {
+      if (value && k in value) {
+        value = value[k]
+      } else {
+        return true
+      }
+    }
+    return !value
+  })
 
   return {
     isValid: missingVars.length === 0,

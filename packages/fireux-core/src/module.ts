@@ -19,15 +19,14 @@ export interface ModuleOptions {
 
 // AppSettings interface
 interface AppSettings {
-  domain: string
-  pin: string
-  appName: string
-  appShortName: string
-  appThemeColor: string
-  appBackgroundColor: string
-  appIcon: string
-  nodeEnv: string
   projectName: string
+  appName: string
+  appId: string
+  appShortName: string
+  appPrimaryColor: string
+  appNeutralColor: string
+  appIcon: string
+  domain: string
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -53,6 +52,16 @@ export default defineNuxtModule<ModuleOptions>({
       watch: true,
     })
 
+    // Register layouts as components
+    addComponentsDir({
+      path: resolvePath('./runtime/layouts'),
+      pattern: '**/*.vue',
+      prefix: 'Core',
+      global: true,
+      pathPrefix: false,
+      watch: true,
+    })
+
     // Add composables
     addImportsDir([resolvePath('./runtime/composables/**/*.ts')])
 
@@ -65,6 +74,7 @@ export default defineNuxtModule<ModuleOptions>({
     // Extend public runtimeConfig
     nuxt.options.runtimeConfig.public = {
       ...nuxt.options.runtimeConfig.public,
+      devMode: process.env.NODE_ENV === 'development', // Add devMode based on NODE_ENV
       firebaseConfig: {
         apiKey: process.env.FIREBASE_API_KEY,
         authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -75,16 +85,14 @@ export default defineNuxtModule<ModuleOptions>({
         measurementId: process.env.FIREBASE_MEASUREMENT_ID,
       },
       appSettings: {
-        projectName: process.env.PROJECT_NAME, // Moved to the top to match `.env` order
+        projectName: process.env.PROJECT_NAME,
         appName: process.env.APP_NAME,
-        appId: process.env.APP_ID, // Added appId to match `.env`
-        nodeEnv: process.env.NODE_ENV || 'development',
-        domain: process.env.DOMAIN,
-        pin: process.env.PIN,
+        appId: process.env.APP_ID,
         appShortName: process.env.APP_SHORT_NAME,
-        appThemeColor: process.env.APP_THEME_COLOR,
-        appBackgroundColor: process.env.APP_BACKGROUND_COLOR,
+        appPrimaryColor: process.env.APP_PRIMARY_COLOR,
+        appNeutralColor: process.env.APP_NEUTRAL_COLOR,
         appIcon: process.env.APP_ICON,
+        domain: process.env.DOMAIN,
       } as AppSettings,
     }
 
@@ -100,16 +108,14 @@ export default defineNuxtModule<ModuleOptions>({
         openaiApiKey: process.env.OPENAI_API_KEY,
       },
       stripeConfig: {
-        stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
-        stripeSecretKey: process.env.STRIPE_SECRET_KEY,
-        stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+        publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+        secretKey: process.env.STRIPE_SECRET_KEY,
+        webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
       },
       githubConfig: {
-        githubToken: process.env.GITHUB_TOKEN,
+        token: process.env.GITHUB_TOKEN,
       },
-      firebaseAdmin: {
-        serviceAccountPath: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-      },
+      consolidatedPin: process.env.PIN,
     }
 
     // Register Firebase client plugin

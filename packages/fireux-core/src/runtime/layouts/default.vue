@@ -1,6 +1,6 @@
 <template>
   <div class="layout-container">
-    <LayoutsHeader :app-links="appLinks" :mobile-links="mobileLinks" />
+    <FireLayoutsHeader :app-links="appLinks" :mobile-links="mobileLinks" />
     <div class="layout-content">
       <main class="layout-main-content">
         <client-only>
@@ -9,7 +9,7 @@
         <NuxtPage />
       </main>
     </div>
-    <LayoutsDefaultFooter />
+    <FireLayoutsDefaultFooter />
   </div>
 </template>
 
