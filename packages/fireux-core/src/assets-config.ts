@@ -12,17 +12,28 @@ export function configureAssets(resolver: any, nuxt: any) {
   // Expose assets directory for CSS imports
   nuxt.options.alias['fireux-core/assets'] = resolvePath('./runtime/assets')
 
-  nuxt.hook('nitro:config', (config) => {
-    config.publicAssets = config.publicAssets || []
-    config.publicAssets.push({
-      dir: resolvePath('./runtime/public'),
-      baseURL: '/fireux-core',
-    })
+  nuxt.hook(
+    'nitro:config',
+    (config: { publicAssets?: Array<{ dir: string; baseURL: string }> }) => {
+      config.publicAssets = config.publicAssets || []
 
-    // Also expose assets as public assets
-    config.publicAssets.push({
-      dir: resolvePath('./runtime/assets'),
-      baseURL: '/fireux-core/assets',
-    })
-  })
+      // Ensure CSS directory is exposed
+      config.publicAssets.push({
+        dir: resolvePath('./runtime/assets/css'),
+        baseURL: '/fireux-core/assets/css',
+      })
+
+      // Also expose other assets
+      config.publicAssets.push({
+        dir: resolvePath('./runtime/assets'),
+        baseURL: '/fireux-core/assets',
+      })
+
+      // Expose public directory for images and static files
+      config.publicAssets.push({
+        dir: resolvePath('./runtime/public'),
+        baseURL: '/fireux-core',
+      })
+    }
+  )
 }

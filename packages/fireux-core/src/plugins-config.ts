@@ -12,4 +12,12 @@ export function configurePlugins(resolver: any) {
     src: resolvePath('./runtime/firebase.client.ts'),
     mode: 'client',
   })
+
+  // Register debug tracers (dev mode only)
+  if (process.env.NODE_ENV === 'development') {
+    addPlugin({
+      src: resolvePath('./runtime/plugins/comprehensive-tracer.client.ts'),
+      mode: 'client',
+    })
+  }
 }

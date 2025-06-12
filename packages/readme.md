@@ -1,38 +1,64 @@
-# README Template for New Packages
+# Packages
 
-## Package Name
+This directory contains reusable modules and libraries shared across all FireUX applications.
 
-### Description
+## `fireux-core`
 
-Provide a brief description of the package and its purpose.
+The core module that provides foundational functionality for all FireUX applications.
 
-### Installation
+### What it provides:
+
+- **Components**: 200+ Vue components for forms, authentication, admin panels
+- **Layouts**: Dashboard and default layouts with responsive navigation
+- **Composables**: Firebase integration, user management, app configuration
+- **Assets**: Complete design system with SCSS variables and utilities
+- **Runtime Configuration**: Server and client setup for Nuxt applications
+
+### Key Features:
+
+- Auto-imported components and composables
+- Centralized asset serving at `/fireux-core/assets/*`
+- Firebase authentication and Firestore integration
+- Stripe payment processing
+- Blog and product management systems
+- Pro subscription functionality
+
+### Development:
 
 ```bash
-pnpm install <package-name>
+# Navigate to core module
+cd packages/fireux-core
+
+# Install dependencies
+pnpm install
+
+# Build for distribution
+pnpm build
+
+# Test registration and exports
+node test-reg.js
 ```
 
-### Usage
+### Documentation:
 
-Provide examples of how to use the package.
+- [`fireux-core/README.md`](fireux-core/README.md) - Detailed module documentation
+- [`fireux-core/copilot.md`](fireux-core/copilot.md) - AI development guide
 
-### Development
+## Adding New Packages
 
-1. **Prepare the Module**:
+To add a new shared package:
 
-   - Run `npx nuxi prepare` or `pnpm nuxi prepare` to generate the `.nuxt` folder and type declarations.
+1. Create directory: `packages/new-package`
+2. Initialize with `package.json` and proper exports
+3. Add to workspace in root `pnpm-workspace.yaml`
+4. Update this README with package information
 
-2. **Verify TypeScript Configuration**:
+## Package Dependencies
 
-   - Ensure `tsconfig.json` includes the `.nuxt` folder in the `include` array.
+All packages should:
 
-3. **Test in Isolation**:
-   - Confirm the package works independently without relying on a consuming app.
-
-### Contributing
-
-Provide guidelines for contributing to the package.
-
-### License
-
-Specify the license for the package.
+- Use TypeScript for type safety
+- Export via proper `package.json` exports field
+- Include comprehensive documentation
+- Provide testing utilities
+- Follow FireUX naming conventions

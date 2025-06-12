@@ -1,6 +1,6 @@
 <template>
   <div class="user-cell">
-    <UAvatar :src="props.user.avatar" size="lg" />
+    <UAvatar :src="proxiedAvatarUrl" size="lg" />
     <div class="info">
       <strong class="name">{{ props.user.display_name }}</strong>
       <span class="handle">@{{ props.user.handle }}</span>
@@ -12,12 +12,19 @@
 </template>
 
 <script setup>
+import { useAvatarProxy } from '../../../composables/utils/useAvatarProxy'
+
+const { getProxiedAvatarUrl } = useAvatarProxy()
+
 const props = defineProps({
   user: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 })
+
+// Use proxied avatar URL to bypass CORS issues with Google images
+const proxiedAvatarUrl = computed(() => getProxiedAvatarUrl(props.user?.avatar))
 </script>
 
 <style scoped>

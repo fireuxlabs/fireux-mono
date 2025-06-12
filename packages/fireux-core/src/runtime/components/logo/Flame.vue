@@ -2,11 +2,11 @@
 <template>
   <img
     ref="logoRef"
-    src="/img/logo.png"
+    src="/fireux-core/img/logo.png"
     alt="FIReUX Logo"
     class="logo mx-auto"
     :class="logoSizeClass"
-  >
+  />
 </template>
 
 <script setup>
@@ -14,8 +14,8 @@ const props = defineProps({
   size: {
     type: String,
     default: 'medium', // Default size
-    validator: value => ['small', 'medium', 'large'].includes(value)
-  }
+    validator: (value) => ['small', 'medium', 'large'].includes(value),
+  },
 })
 
 const logoRef = ref(null)
@@ -27,7 +27,7 @@ const logoSizeClass = computed(() => ({
   'h-10 w-auto aspect-[3/4] flex items-center justify-center':
     props.size === 'medium', // 40px height
   'h-14 w-auto aspect-[3/4] flex items-center justify-center':
-    props.size === 'large' // 56px height
+    props.size === 'large', // 56px height
 }))
 </script>
 

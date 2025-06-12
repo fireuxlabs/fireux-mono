@@ -13,5 +13,11 @@ export function configureServer(resolver: any) {
     handler: resolvePath('./runtime/server/api/env-check'),
   })
 
+  // Add Google avatar proxy endpoint
+  addServerHandler({
+    route: '/api/proxy/google-avatar',
+    handler: resolvePath('./runtime/server/api/proxy/google-avatar'),
+  })
+
   // Additional server handlers can be added here as the module grows
 }

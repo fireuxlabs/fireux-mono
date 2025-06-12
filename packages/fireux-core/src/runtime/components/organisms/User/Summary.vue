@@ -1,10 +1,6 @@
 <template>
   <div class="user-summary">
-    <UAvatar
-      :src="props.user.avatar || '/placeholder-avatar.png'"
-      size="lg"
-      class="avatar"
-    />
+    <UAvatar :src="proxiedAvatarUrl" size="lg" class="avatar" />
     <div class="info">
       <strong class="name">{{ props.user.display_name }}</strong>
       <span class="handle">@{{ props.user.handle }}</span>
@@ -29,12 +25,21 @@
 </template>
 
 <script setup>
+import { useAvatarProxy } from '../../../composables/utils/useAvatarProxy'
+
+const { getProxiedAvatarUrl } = useAvatarProxy()
+
 const props = defineProps({
   user: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 })
+
+// Use proxied avatar URL to bypass CORS issues with Google images
+const proxiedAvatarUrl = computed(
+  () => getProxiedAvatarUrl(props.user?.avatar) || '/placeholder-avatar.png'
+)
 
 const formattedJoinDate = computed(() => {
   if (!props.user?.created_at) return ''
@@ -42,7 +47,7 @@ const formattedJoinDate = computed(() => {
   return date.toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   })
 })
 </script>

@@ -4,12 +4,9 @@
 
 A comprehensive Nuxt module that provides a standardized foundation for rapidly building web applications with consistent architecture, styling, and features. It serves as the backbone for all FireUX platform applications.
 
-- [✨ &nbsp;Release Notes](/CHANGELOG.md)
-- [🖼️ &nbsp;Layout Integration](/LAYOUT-INTEGRATION.md)
-
 ## Features
 
-- 🧩 &nbsp;**Component Library**: Prefixed UI components with consistent styling
+- 🧩 &nbsp;**Component Library**: 200+ prefixed UI components with consistent styling
 - 🪝 &nbsp;**Auto-imported Composables**: Authentication, data management, and more
 - 🔥 &nbsp;**Firebase Integration**: Built-in authentication and Firestore database
 - 💳 &nbsp;**Stripe Integration**: Payment processing for products and subscriptions
@@ -17,6 +14,7 @@ A comprehensive Nuxt module that provides a standardized foundation for rapidly 
 - 🛒 &nbsp;**Product Management**: E-commerce capabilities
 - 🎨 &nbsp;**Design System**: Consistent styling and layout utilities
 - 🖼️ &nbsp;**Layout System**: Reusable layouts across applications
+- 📦 &nbsp;**Asset Serving**: Centralized CSS/SCSS serving at `/fireux-core/assets/*`
 
 ## Quick Setup
 
@@ -25,8 +23,6 @@ Add the module to your Nuxt application:
 ```bash
 # Install the module
 pnpm add fireux-core
-
-# Configure in nuxt.config.ts
 ```
 
 ```typescript
@@ -47,7 +43,57 @@ export default defineNuxtConfig({
 })
 ```
 
-## Usage
+## Layout Integration
+
+FireUX Core provides reusable layouts that are automatically registered when the module is loaded.
+
+### Available Layouts
+
+- **CoreDefault**: Basic layout with header and navigation
+- **CoreDashboard**: Full dashboard layout with sidebar and navigation
+
+### Using Layouts in Your App
+
+Create wrapper layouts in your app's `/layouts` directory:
+
+```vue
+<!-- layouts/default.vue -->
+<template>
+  <CoreDefault />
+</template>
+```
+
+```vue
+<!-- layouts/dashboard.vue -->
+<template>
+  <CoreDashboard />
+</template>
+```
+
+Then use them in your pages:
+
+```typescript
+// pages/index.vue
+definePageMeta({
+  layout: 'default',
+})
+```
+
+### Layout Registration
+
+Layouts are registered automatically using the `addLayout` function:
+
+```typescript
+addLayout(
+  {
+    src: join(layoutsDir, 'default.vue'),
+    filename: 'fireux-core-default.vue',
+  },
+  'CoreDefault'
+)
+```
+
+This ensures layouts are properly accessible across all consuming applications.
 
 ### Components
 

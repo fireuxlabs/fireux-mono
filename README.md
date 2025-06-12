@@ -1,40 +1,119 @@
 # FireUX Monorepo
 
-## Overview
+A comprehensive monorepo for building scalable web applications with Firebase integration, authentication, and modern UI components.
 
-FireUX is a platform for rapidly deploying standardized web applications with consistent architecture and features. This monorepo contains:
+## Quick Start
 
-- **packages/fireux-core**: The core module shared across all applications
-- **projects/**: Individual client applications built on the FireUX Core
-- **playground/**: Development environment for testing FireUX Core features
+```bash
+# Install dependencies
+pnpm install
+
+# Start development servers
+pnpm dev:playground    # Test environment (http://localhost:3004)
+pnpm dev:fireux       # FireUX app (http://localhost:3005)
+pnpm dev:misebox      # Misebox app (http://localhost:3006)
+pnpm dev:cleanbox     # Cleanbox app (http://localhost:3007)
+```
 
 ## Architecture
 
 ```
 fireux/
-├── packages/
-│   └── fireux-core/        # Core module with shared components, composables, and utilities
-├── projects/
-│   ├── fireux/             # FireUX company website and application
-│   │   └── fireux-app/     # Main FireUX application
-│   ├── misebox/            # MiseBox project
-│   │   └── misebox-app/    # MiseBox application
-│   ├── cleanbox/           # CleanBox project (reference implementation)
-│   │   └── cleanbox-app/   # CleanBox application
-│   └── [future-projects]/  # Future client projects
-└── playground/             # Development and testing environment
+├── packages/          # Shared modules and libraries
+│   └── fireux-core/   # Core module with components, layouts, assets
+├── playground/        # Development testing environment
+└── projects/          # Production applications
+    ├── fireux/        # Main FireUX application
+    ├── misebox/       # Data management application
+    └── cleanbox/      # Organization application
 ```
+
+## Technology Stack
+
+- **Framework**: Nuxt 3 with Vue 3
+- **Styling**: SCSS with design system
+- **Backend**: Firebase (Firestore, Auth, Functions)
+- **UI Components**: @nuxt/ui + custom FireUX components
+- **Package Manager**: pnpm with workspace support
+- **Development**: TypeScript, Vite, Hot Module Replacement
+
+## Package Structure
+
+### `packages/fireux-core`
+
+The core module providing:
+
+- **Components**: 200+ Vue components for UI, forms, authentication
+- **Layouts**: Dashboard and default layouts with navigation
+- **Composables**: Firebase integration, user management, app state
+- **Assets**: Design system, CSS variables, SCSS utilities
+- **Runtime**: Client/server configurations and plugins
+
+### `playground`
+
+Development environment for testing fireux-core features in isolation.
+
+### `projects/*`
+
+Production applications that consume fireux-core:
+
+- Each project has its own Firebase configuration
+- Shared core functionality with project-specific customizations
+- Individual deployment pipelines
 
 ## Key Features
 
-- **Standardized Architecture**: All applications follow the same architecture and patterns
-- **Shared Components**: UI components with consistent styling and behavior
-- **Auto-imported Composables**: Utilities for authentication, data management, and more
-- **Firebase Integration**: Built-in Firebase authentication and Firestore database
-- **Stripe Integration**: Payment processing for products and subscriptions
-- **Blog System**: Content management for blog posts
-- **Product Management**: E-commerce capabilities for digital and physical products
-- **Pro Subscription**: Every app includes a standard subscription upgrade feature
+- **Standardized Architecture**: All applications follow the same patterns
+- **Shared Components**: UI components with consistent styling
+- **Auto-imported Composables**: Authentication, data management utilities
+- **Firebase Integration**: Built-in auth and Firestore database
+- **Stripe Integration**: Payment processing for subscriptions
+- **Blog System**: Content management capabilities
+- **Product Management**: E-commerce functionality
+- **Pro Subscription**: Standard upgrade feature across all apps
+
+## Asset & Layout System
+
+All CSS/SCSS assets are served from `fireux-core` using:
+
+- **Asset Alias**: `fireux-core/assets` points to runtime assets
+- **Public Assets**: Served at `/fireux-core/assets/*` URLs
+- **Layout Integration**: Core layouts available as `CoreDefault`, `CoreDashboard`
+- **Design System**: Centralized SCSS variables and utilities
+
+Apps include CSS in their `nuxt.config.ts`:
+
+```typescript
+css: [
+  'fireux-core/assets/css/main.css',
+  'fireux-core/assets/design-system/main.scss',
+]
+```
+
+## Documentation Structure
+
+- [`packages/`](packages/README.md) - Package development guide
+- [`playground/`](playground/README.md) - Testing environment setup
+- [`projects/`](projects/README.md) - Application development guide
+- [`copilot.md`](copilot.md) - AI assistant workspace guide
+
+## Development Workflow
+
+1. **Core Development**: Work in `packages/fireux-core` and test in `playground`
+2. **Feature Testing**: Use `playground` to validate new components/features
+3. **Application Development**: Build in `projects/*` using core functionality
+4. **Asset Management**: All CSS/SCSS served from fireux-core assets
+
+## Adding a New Project
+
+1. Create project directory: `projects/new-project/new-project-app`
+2. Initialize Nuxt app: `pnpm dlx nuxi init .`
+3. Configure to use fireux-core (see project documentation)
+4. Add development script to root `package.json`
+
+## Contributing
+
+Each directory contains its own README with specific contribution guidelines. Start with the relevant section based on your development focus.
 
 ## Getting Started
 
@@ -118,4 +197,5 @@ For AI assistants like GitHub Copilot, we provide specialized documentation:
 - **[Root Copilot Guide](/copilot.md)** - System-wide patterns and conventions
 - **[FireUX Core Copilot Guide](/packages/fireux-core/copilot.md)** - Core module implementation details
 - **[CleanBox Copilot Guide](/projects/cleanbox/cleanbox-app/copilot.md)** - App implementation guidance
+
 # fireux-mono

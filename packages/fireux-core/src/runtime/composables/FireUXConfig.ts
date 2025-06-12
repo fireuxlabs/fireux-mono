@@ -5,10 +5,11 @@ interface AppSettings {
   appName: string
   appId: string
   nodeEnv: string
-  // domain: string
-  // pin: string
-  // appShortName: string
-  // appIcon: string
+  appShortName: string
+  appPrimaryColor: string
+  appNeutralColor: string
+  appIcon: string
+  domain: string
 }
 
 export function useFireUXConfig() {
@@ -17,7 +18,7 @@ export function useFireUXConfig() {
   const appSettings = runtimeConfig.public.appSettings as AppSettings
   const devMode = runtimeConfig.public.devMode
 
-  const { projectName, appName, appId } = appSettings // Reordered destructuring to match `.env` order
+  const { projectName, appName, appId, appIcon } = appSettings // Added appIcon to destructuring
 
   if (!projectName || typeof projectName !== 'string') {
     throw new Error('❌ Project Name must be a valid string.')
@@ -36,5 +37,6 @@ export function useFireUXConfig() {
     projectName, // Reordered return values to match `.env` order
     appName,
     appId,
+    appIcon, // Added appIcon to return values
   }
 }

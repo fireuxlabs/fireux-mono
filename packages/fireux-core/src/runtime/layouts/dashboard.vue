@@ -2,7 +2,7 @@
   <ClientOnly>
     <div class="layout-wrapper">
       <FireLayoutsHeader :app-links="appLinks" :mobile-links="mobileLinks" />
-      <div class="layout-content">
+      <!-- <div class="layout-content">
         <main class="layout-main-content">
           <UNavigationMenu
             v-if="!isMobile"
@@ -16,31 +16,20 @@
           </div>
         </main>
       </div>
-      <FireLayoutsDefaultFooter />
+      <FireLayoutsDefaultFooter /> -->
+      <NuxtPage />
     </div>
   </ClientOnly>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { useWindowSize } from '@vueuse/core'
-import { computed, ref, onMounted } from 'vue'
-import { useRoutes } from '../composables/utils/useRoutes'
+import { computed } from 'vue'
 
 const { width } = useWindowSize()
 const isMobile = computed(() => width.value < 1024)
 
-const appLinks = ref([])
-const mobileLinks = ref([])
-const dashboardLinks = ref([])
-const subHeader = ref('')
-
-onMounted(async () => {
-  const routes = await useRoutes()
-  appLinks.value = routes.appLinks
-  mobileLinks.value = routes.mobileLinks
-  dashboardLinks.value = routes.dashboardLinks
-  subHeader.value = routes.subHeader
-})
+const { appLinks, mobileLinks, dashboardLinks, subHeader } = useRoutes()
 
 defineOptions({
   name: 'CoreDashboard',
@@ -64,5 +53,9 @@ defineOptions({
   display: flex;
   flex-direction: row;
   align-items: start;
+}
+.main-section {
+  flex: 1;
+  width: 100%;
 }
 </style>

@@ -5,11 +5,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-definePageMeta({
-  layout: 'dashboard',
-})
-</script>
+<script setup lang="ts"></script>
 
 <style scoped>
 /* Add any necessary styles here */

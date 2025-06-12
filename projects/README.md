@@ -1,272 +1,134 @@
-# Human Developer Setup Guide for FireUX Projects
+# Projects
 
-## Overview
+This directory contains production applications built on the FireUX Core module.
 
-This document provides a step-by-step guide for human developers to set up and contribute to FireUX projects.
+## Applications
 
-## Prerequisites
+### `fireux/fireux-app`
+**Main FireUX application** - Company website and primary application
+- **URL**: http://localhost:3005/
+- **Purpose**: FireUX company website with authentication, blog, products
+- **Firebase**: Primary FireUX project configuration
+- **Features**: Full feature set including Pro subscriptions, admin panel
 
-- **Node.js**: Version 18 or higher.
-- **pnpm**: Install using `npm install -g pnpm`.
-- **Firebase Account**: For authentication and database integration.
-- **Stripe Account**: For payment processing.
+### `misebox/misebox-app` 
+**Data management application** - Organized data and content management
+- **URL**: http://localhost:3006/
+- **Purpose**: Data organization and management tools
+- **Firebase**: Dedicated misebox project configuration
+- **Features**: Content organization, data management, user collaboration
 
-## General Setup
+### `cleanbox/cleanbox-app`
+**Organization application** - Clean, minimal organization tools
+- **URL**: http://localhost:3007/
+- **Purpose**: Reference implementation and template for new projects
+- **Firebase**: Dedicated cleanbox project configuration  
+- **Features**: Task management, organization tools, clean UI
 
-1. Clone the repository:
+## Shared Architecture
 
-   ```bash
-   git clone <repository-url>
-   cd fireux
-   ```
+All applications follow the same architectural patterns:
 
-2. Install dependencies:
+### Configuration
+- **Nuxt 3** with TypeScript
+- **FireUX Core** module for shared functionality
+- **@nuxt/ui** for additional UI components
+- **nuxt-vuefire** for Firebase integration
 
-   ```bash
-   pnpm install
-   ```
-
-3. Set up environment variables:
-
-   - Copy `.env.example` to `.env` and fill in the required values.
-
-4. Start the development server for the desired project:
-   - FireUX App:
-     ```bash
-     pnpm dev:fireux
-     ```
-   - Misebox App:
-     ```bash
-     pnpm dev:misebox
-     ```
-   - Cleanbox App:
-     ```bash
-     pnpm dev:cleanbox
-     ```
-
-## Firebase Setup for All Projects
-
-1. **Create a Database**:
-
-   - Navigate to the Firebase Console.
-   - Select your project and click on **Cloud Firestore**.
-   - Click **Create Database** and follow the prompts to set up Firestore.
-
-2. **Upgrade to Blaze Plan**:
-
-   - Go to the **Billing** section in the Firebase Console.
-   - Upgrade your project to the **Blaze** plan.
-
-3. **Enable Authentication**:
-
-   - In the Firebase Console, go to **Authentication** > **Sign-in method**.
-   - Enable **Google**, **Email/Password**, and **Anonymous** authentication methods.
-
-4. **Enable Storage**:
-   - Navigate to **Storage** in the Firebase Console.
-   - Click **Get Started** and configure your storage bucket.
-
-## Project Structure
-
-- `packages/`: Shared modules and utilities.
-- `projects/`: Individual client applications.
-- `playground/`: Development environment for testing features.
-
-## Coding Standards
-
-- Follow the linting and formatting rules defined in `.eslintrc.js` and `.prettierrc`.
-- Write clear and concise commit messages.
-- Test all changes thoroughly before pushing.
-
-## Troubleshooting
-
-- If you encounter issues, check the `copilot.md` files in each project for additional guidance.
-- For further assistance, contact the project maintainer.
-
-## Mission, Vision, and Values
-
-### FireUX
-
-- **Mission**: To empower developers with a standardized platform for building web applications efficiently.
-- **Vision**: To become the go-to developer platform for rapid and consistent application deployment.
-- **Values**: Innovation, collaboration, and developer-centric design.
-
-### Misebox
-
-- **Mission**: To revolutionize the cooking experience with a comprehensive app for chefs and home cooks.
-- **Vision**: To be the ultimate digital companion for culinary enthusiasts.
-- **Values**: Passion, creativity, and user-first design.
-
-### Cleanbox
-
-- **Mission**: To dominate the cleaning market with a no-nonsense, efficient application.
-- **Vision**: To be the leading app for cleaning services and solutions.
-- **Values**: Precision, efficiency, and market focus.
-
-## Modus Operandi
-
-All projects/apps follow a standardized structure and development process:
-
-1. **Structure**:
-
-   - Each project is located under `projects/projectname/projectname-app`.
-   - The app serves as the ecosystem for the respective project.
-
-2. **Core Features**:
-
-   - Built on the `fireux-core` module.
-   - Integrated with Firebase for authentication and database management.
-   - Uses Stripe for payment processing.
-   - Includes a Pro version upgrade feature, setting `pro: true` for app users.
-
-3. **Development Goals**:
-   - All apps will have identical initial functionality.
-   - Focus on achieving a consistent stage of development across all apps.
-   - Deploy all apps to Firebase for production use.
-
-### Nuxt Configuration Example
-
+### CSS Assets
 ```typescript
-import { defineNuxtConfig } from 'nuxt/config'
-
-export default defineNuxtConfig({
-  devtools: { enabled: true },
-  compatibilityDate: '2025-06-07',
-  modules: [
-    'fireux-core',
-    [
-      'nuxt-vuefire',
-      {
-        config: {
-          apiKey: process.env.FIREBASE_API_KEY,
-          authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-          messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-          appId: process.env.FIREBASE_APP_ID,
-        },
-        auth: { enabled: true },
-      },
-    ],
-    '@nuxt/ui',
-  ],
-})
+css: [
+  'fireux-core/assets/css/main.css',
+  'fireux-core/assets/design-system/main.scss',
+]
 ```
 
-## Tailwind Color Selection Matrix
+### Layouts
+Each app includes wrapper layouts:
+- `layouts/default.vue` → Uses `<CoreDefault />`
+- `layouts/dashboard.vue` → Uses `<CoreDashboard />`
 
-When setting up your app, you need to pick your Tailwind colors and their associated hex codes. Use the matrix below for reference:
+### Firebase Configuration
+Each app connects to its own Firebase project via environment variables:
+```env
+FIREBASE_API_KEY=
+FIREBASE_AUTH_DOMAIN=
+FIREBASE_PROJECT_ID=
+# ... other Firebase config
+```
 
-| Tailwind Color Name | Primary Hex Code | Neutral Hex Code |
-| ------------------- | ---------------- | ---------------- |
-| **Blue**            | `#3B82F6`        | `#6B7280`        |
-| **Yellow**          | `#FACC15`        | `#71717A`        |
-| **Green**           | `#22C55E`        | `#64748B`        |
-| **Red**             | `#EF4444`        | `#475569`        |
-| **Slate**           | `#475569`        | `#6B7280`        |
-| **Zinc**            | `#71717A`        | `#6B7280`        |
-| **Stone**           | `#64748B`        | `#6B7280`        |
+## Development
 
-### Instructions
+### Starting Applications
+```bash
+# From root directory
+pnpm dev:fireux       # Start FireUX app
+pnpm dev:misebox      # Start Misebox app  
+pnpm dev:cleanbox     # Start Cleanbox app
+```
 
-1. Choose a **Primary Color** and a **Neutral Color** from the matrix above.
-2. Update your `.env` file with the selected colors:
-   ```env
-   APP_PRIMARY_COLOR=<Primary Hex Code>
-   APP_NEUTRAL_COLOR=<Neutral Hex Code>
+### Creating New Projects
+
+1. **Create directory structure**:
+   ```bash
+   mkdir -p projects/new-project/new-project-app
+   cd projects/new-project/new-project-app
    ```
-3. Ensure the colors align with your app's branding and design requirements.
 
-# FireUX Projects Documentation
+2. **Initialize Nuxt app**:
+   ```bash
+   pnpm dlx nuxi init .
+   ```
 
-## Firebase Setup
+3. **Configure FireUX Core**:
+   ```typescript
+   // nuxt.config.ts
+   export default defineNuxtConfig({
+     modules: ['fireux-core', 'nuxt-vuefire'],
+     css: [
+       'fireux-core/assets/css/main.css',
+       'fireux-core/assets/design-system/main.scss',
+     ],
+   })
+   ```
 
-1. **Create a Database**:
+4. **Add wrapper layouts**:
+   ```vue
+   <!-- layouts/default.vue -->
+   <template>
+     <CoreDefault />
+   </template>
+   ```
 
-   - Navigate to the Firebase Console.
-   - Select your project and click on **Cloud Firestore**.
-   - Click **Create Database** and follow the prompts to set up Firestore.
+5. **Configure Firebase**: Set up environment variables and project
 
-2. **Upgrade to Blaze Plan**:
+6. **Add dev script** to root `package.json`:
+   ```json
+   "dev:new-project": "pnpm --filter ./projects/new-project/new-project-app dev"
+   ```
 
-   - Go to the **Billing** section in the Firebase Console.
-   - Upgrade your project to the **Blaze** plan.
+### Environment Setup
 
-3. **Enable Authentication**:
+Each application requires:
+- Firebase project configuration
+- Stripe keys (for payment processing)
+- Environment variables in `.env` file
+- Service account JSON for server-side Firebase
 
-   - In the Firebase Console, go to **Authentication** > **Sign-in method**.
-   - Enable **Google**, **Email/Password**, and **Anonymous** authentication methods.
+## Documentation
 
-4. **Enable Storage**:
-   - Navigate to **Storage** in the Firebase Console.
-   - Click **Get Started** and configure your storage bucket.
+- [`fireux/fireux-app/README.md`](fireux/fireux-app/README.md) - FireUX app specifics
+- [`misebox/misebox-app/README.md`](misebox/misebox-app/README.md) - Misebox app guide
+- [`cleanbox/cleanbox-app/README.md`](cleanbox/cleanbox-app/README.md) - Reference implementation
+- [`cleanbox/cleanbox-app/copilot.md`](cleanbox/cleanbox-app/copilot.md) - AI development guide
 
-## App-Specific Notes
+## Common Patterns
 
-### CleanBox App
-
-- Designed to manage and organize cleaning services efficiently.
-- Includes features for adding pressure washers and car cleaning tenants.
-
-### FireUX App
-
-- Showcases the core features of the FireUX framework.
-- Includes modular components and Firebase integration.
-
-### MiseBox App
-
-- A versatile tool for managing and organizing various tasks.
-- Powered by FireUX Core.
-
-### Playground App
-
-- Serves as a testing ground for FireUX Core features and components.
-
-## Setting Up Stripe for Cleanbox
-
-Currently, Cleanbox does not have a Stripe account. To set up Stripe for Cleanbox, follow these steps:
-
-1. **Create a Stripe Account**:
-
-   - Visit [Stripe's website](https://stripe.com) and sign up for a new account.
-   - Ensure the account is created under the appropriate organization for Cleanbox.
-
-2. **Obtain API Keys**:
-
-   - Once the account is set up, navigate to the Developers section in the Stripe dashboard.
-   - Copy the Publishable Key, Secret Key, and Webhook Secret.
-
-3. **Update the `.env` File**:
-
-   - Add the following keys to the `.env` file for the Cleanbox project:
-     ```properties
-     STRIPE_PUBLISHABLE_KEY=<your-publishable-key>
-     STRIPE_SECRET_KEY=<your-secret-key>
-     STRIPE_WEBHOOK_SECRET=<your-webhook-secret>
-     ```
-
-4. **Test the Integration**:
-
-   - Use Stripe's test mode to ensure the keys are working correctly.
-   - Verify webhook events are received properly.
-
-5. **Deploy the Changes**:
-
-   - Commit the updated `.env` file (excluding sensitive keys) and deploy the project.
-
-6. **Complete Business Profile**:
-   - After creating the Stripe account, navigate to the **Settings** section in the Stripe dashboard.
-   - Fill out the business profile with accurate information about Cleanbox.
-   - Ensure the business name, address, and tax details are correct to avoid any issues with payouts.
-
-For further assistance, refer to the [Stripe Documentation](https://stripe.com/docs).
-
-## Icons for Projects
-
-We use icons from [Lucide](https://lucide.dev/icons) for our projects. Below are the icons assigned to each project:
-
-- **FireUX**: `flame`
-- **Misebox**: `croissant`
-- **Cleanbox**: `brush-cleaning`
-
-Visit [Lucide Icons](https://lucide.dev/icons) to explore more icons.
+All projects share:
+- **Authentication**: Firebase Auth with user management
+- **Database**: Firestore with shared composables
+- **Payments**: Stripe integration for Pro features
+- **Blog**: Content management system
+- **Products**: E-commerce functionality
+- **Admin Panel**: Management interface
+- **Responsive Design**: Mobile-first approach

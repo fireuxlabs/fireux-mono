@@ -9,8 +9,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const { signInWithGoogle } = useAuth()
-const { isInitialized } = useApp()
-const { ensureAppUser } = useAppUserEnsure()
+const { ensureApp } = await useAppEnsure()
 const isDark = computed(() => useColorMode().value === 'dark')
 
 const logoSrc = computed(() =>
@@ -23,8 +22,11 @@ const handleGoogleSignIn = async () => {
   const user = await signInWithGoogle()
   if (user?.uid) {
     console.log('[handleGoogleSignIn] ✅ Got UID:', user.uid)
-    if (isInitialized.value) {
-      await ensureAppUser(() => router.push('/dashboard'))
+    try {
+      await ensureApp(user)
+      router.push('/dashboard')
+    } catch (error) {
+      console.error('[handleGoogleSignIn] ❌ Error ensuring app:', error)
     }
   } else {
     console.warn('[handleGoogleSignIn] ❌ No UID returned from Google sign-in')

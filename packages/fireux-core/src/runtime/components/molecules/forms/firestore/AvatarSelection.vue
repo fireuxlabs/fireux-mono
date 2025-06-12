@@ -1,6 +1,6 @@
 <template>
   <div class="avatar-container">
-    <UAvatar :src="useravatar" alt="User Avatar" class="avatar" />
+    <UAvatar :src="proxiedAvatarUrl" alt="User Avatar" class="avatar" />
     <label class="upload-label">
       <UIcon name="i-lucide-camera" />
       <input
@@ -14,11 +14,17 @@
 </template>
 
 <script setup>
+import { useAvatarProxy } from '../../../../composables/utils/useAvatarProxy'
+
 const currentUser = useCurrentUser()
 const { appUser, updateUser } = useAppUser()
 const { uploadUserAvatar } = useMediaStorage()
+const { getProxiedAvatarUrl } = useAvatarProxy()
 
-const useravatar = computed(() => appUser.value?.avatar || '')
+// Use proxied avatar URL to bypass CORS issues with Google images
+const proxiedAvatarUrl = computed(
+  () => getProxiedAvatarUrl(appUser.value?.avatar) || ''
+)
 
 async function handleFileChange(e) {
   const file = e.target?.files?.[0]
