@@ -1,24 +1,78 @@
-# FireUX Workspace Copilot Guide
+# 🚀 FireUX Dev Relay - ROOT
 
-## Overview
+## Quick Start
 
-The FireUX workspace is a monorepo designed to manage multiple interconnected projects, packages, and playgrounds. It provides a modular structure for building scalable applications using the FireUX Core framework.
+```bash
+pnpm dev:fireux      # Yellow app  :3005
+pnpm dev:cleanbox    # Green app   :3007
+pnpm dev:misebox     # Blue app    :3009
+pnpm dev:playground  # Test env    :3000
+```
 
-## Top-Level Directories
+## Architecture
 
-### `packages/`
+- **Core**: All shared functionality → `packages/copilot.md`
+- **Apps**: Theme variants only → `projects/copilot.md`
+- **99% shared, 1% unique**
 
-- Contains reusable modules and libraries, such as `fireux-core`.
-- These packages are shared across multiple projects and provide core functionality.
-- **Further Information**: Refer to `packages/README.md` and `packages/copilot.md` for details.
+## Navigation Relay
 
-### `playground/`
+**Working on shared features?** → `packages/copilot.md`
+**Working on specific app?** → `projects/copilot.md`
+**Need overview first?** → `README.md`
 
-- A testing ground for experimenting with FireUX Core features and components.
-- Used for prototyping and validating new ideas.
-- **Further Information**: Refer to `playground/README.md` and `playground/copilot.md` for details.
+### `/projects/`
 
-### `projects/`
+**Production applications** - Each app inherits from FireUX Core:
+
+- `fireux/` - Yellow theme, main company app
+- `cleanbox/` - Green theme, organization tools
+- `misebox/` - Blue theme, data management
+- Each contains only unique `index.vue` and app-specific config
+
+### `/playground/`
+
+**Development testing** - Red theme, comprehensive landing page for testing components
+
+## 🛠️ Development Commands
+
+```bash
+# Development servers
+pnpm dev:fireux      # http://localhost:3005
+pnpm dev:cleanbox    # http://localhost:3007
+pnpm dev:misebox     # http://localhost:3006
+pnpm dev:playground  # http://localhost:3004
+
+# Package management
+pnpm install         # Install all dependencies
+pnpm build          # Build all packages
+```
+
+## 🎨 Creating New Apps
+
+1. Copy existing app structure from `projects/fireux/fireux-app/`
+2. Update `app.config.ts` with new color theme
+3. Create unique `pages/index.vue` landing page
+4. Configure Firebase project in `.env`
+5. Add dev script to root `package.json`
+
+## 🔧 Key Files
+
+- **Root**: `pnpm-workspace.yaml`, `package.json` - Workspace configuration
+- **Apps**: `app.config.ts`, `nuxt.config.ts`, `package.json` - App configuration
+- **Core**: `src/module.ts`, `src/pages-config.ts` - Module definition
+
+## 📋 Best Practices
+
+- **Never duplicate code** - Add shared functionality to FireUX Core
+- **Keep apps minimal** - Only unique landing pages and configurations
+- **Use TypeScript** - Maintain type safety across all modules
+- **Test in playground** - Validate components before production use
+- **Follow naming conventions** - Prefix components with `Fire*`
+
+## 🚀 Deployment
+
+Each app can be deployed independently while sharing the same FireUX Core module. This ensures consistency across deployments while allowing for app-specific customizations.
 
 - Houses individual applications built using FireUX Core.
 - Each project has its own `README.md` and `copilot.md` for app-specific details.

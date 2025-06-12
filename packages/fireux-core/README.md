@@ -2,23 +2,53 @@
 
 [![Nuxt][nuxt-src]][nuxt-href]
 
-A comprehensive Nuxt module that provides a standardized foundation for rapidly building web applications with consistent architecture, styling, and features. It serves as the backbone for all FireUX platform applications.
+The foundational Nuxt module that powers all FireUX applications. Provides 25+ shared pages, 200+ components, and complete application functionality out of the box.
 
-## Features
+## ✨ What It Provides
 
-- 🧩 &nbsp;**Component Library**: 200+ prefixed UI components with consistent styling
-- 🪝 &nbsp;**Auto-imported Composables**: Authentication, data management, and more
-- 🔥 &nbsp;**Firebase Integration**: Built-in authentication and Firestore database
-- 💳 &nbsp;**Stripe Integration**: Payment processing for products and subscriptions
-- 📝 &nbsp;**Blog System**: Content management for blog posts
-- 🛒 &nbsp;**Product Management**: E-commerce capabilities
-- 🎨 &nbsp;**Design System**: Consistent styling and layout utilities
-- 🖼️ &nbsp;**Layout System**: Reusable layouts across applications
-- 📦 &nbsp;**Asset Serving**: Centralized CSS/SCSS serving at `/fireux-core/assets/*`
+### 📄 25+ Shared Pages
 
-## Quick Setup
+- **Authentication**: `/auth` - Complete login/signup flow
+- **Dashboard**: `/dashboard/*` - User account management, profile, orders
+- **Admin**: `/admin/*` - User management, blog, products, settings
+- **Blog**: `/blog/*` - Content management and display
+- **Products**: `/products/*` - E-commerce catalog and details
+- **Design System**: `/design/*` - Typography, colors, tokens, components
+- **Developer**: `/developer/*` - Skills and technology showcase
 
-Add the module to your Nuxt application:
+### 🧩 200+ Components
+
+All components are **auto-imported** with `Fire` prefix:
+
+```vue
+<template>
+  <!-- No imports needed! -->
+  <FireButton color="primary">Click Me</FireButton>
+  <FireModal v-model="isOpen">Content</FireModal>
+  <FireDataTable :data="users" />
+</template>
+```
+
+### 🎨 Complete Design System
+
+- **Consistent Styling**: SCSS variables and utilities
+- **Theme Support**: Works with any color scheme
+- **Responsive Layouts**: Dashboard and default layouts
+- **Asset Serving**: CSS/SCSS served at `/fireux-core/assets/*`
+
+### 🔥 Firebase Integration
+
+- **Authentication**: Login, signup, password reset
+- **Firestore Database**: Real-time data synchronization
+- **Auto-imported Composables**: `useCurrentUser()`, `useFirestore()`, etc.
+
+### 💳 Stripe Integration
+
+- **Payment Processing**: Products and subscriptions
+- **Pro Upgrades**: Built-in subscription management
+- **Auto-imported Utilities**: `useStripe()`, `useSubscription()`
+
+## 🚀 Quick Setup
 
 ```bash
 # Install the module
@@ -28,26 +58,83 @@ pnpm add fireux-core
 ```typescript
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ['fireux-core', 'nuxt-vuefire'],
+  modules: ['fireux-core', 'nuxt-vuefire', '@nuxt/ui'],
 
-  // CSS imports
   css: [
     'fireux-core/assets/css/main.css',
     'fireux-core/assets/design-system/main.scss',
   ],
+})
+```
 
-  // FireUX Core module options
-  fireuxCore: {
-    prefix: 'Fire', // Component prefix
+```typescript
+// app.config.ts - Define your theme
+export default defineAppConfig({
+  ui: {
+    colors: {
+      primary: 'blue', // Your brand color
+      neutral: 'gray',
+    },
   },
 })
 ```
 
-## Layout Integration
+That's it! All 25+ pages, 200+ components, and functionality are now available.
 
-FireUX Core provides reusable layouts that are automatically registered when the module is loaded.
+## 📁 Module Structure
 
-### Available Layouts
+```
+fireux-core/
+├── src/
+│   ├── module.ts              # Module registration
+│   ├── pages-config.ts        # Shared pages setup
+│   ├── components-config.ts   # Auto-import config
+│   └── runtime/
+│       ├── pages/             # 25+ Vue pages
+│       │   ├── auth.vue
+│       │   ├── dashboard/
+│       │   ├── admin/
+│       │   ├── blog/
+│       │   └── products/
+│       ├── components/        # 200+ components
+│       ├── composables/       # Firebase/Stripe utilities
+│       ├── layouts/          # Responsive layouts
+│       └── assets/           # Design system
+└── README.md
+```
+
+## 🛠️ Development
+
+```bash
+# Test module registration
+node test-reg.js
+
+# View all available components and pages
+node test-reg.js
+# Choose option 1 for pages, 2 for components
+```
+
+## 📋 Key Features
+
+- **Zero Configuration**: Works out of the box with sensible defaults
+- **Theme Agnostic**: Adapts to any color scheme you define
+- **TypeScript Ready**: Full type safety across all components
+- **Hot Reload**: Changes reflect immediately in development
+- **Production Ready**: Optimized builds for deployment
+
+## 🎯 Perfect For
+
+- **Rapid Prototyping**: Get a full app running in minutes
+- **Consistent Design**: All apps share the same high-quality components
+- **Multi-app Projects**: Share functionality across multiple applications
+- **Enterprise Development**: Standardized architecture and patterns
+
+The FireUX Core module eliminates the need to build basic application functionality from scratch, letting you focus on what makes your app unique.
+
+---
+
+[nuxt-src]: https://img.shields.io/badge/Nuxt-020420?logo=nuxt.js
+[nuxt-href]: https://nuxt.com
 
 - **CoreDefault**: Basic layout with header and navigation
 - **CoreDashboard**: Full dashboard layout with sidebar and navigation

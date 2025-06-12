@@ -2,7 +2,7 @@
   <ClientOnly>
     <div class="layout-wrapper">
       <FireLayoutsHeader :app-links="appLinks" :mobile-links="mobileLinks" />
-      <!-- <div class="layout-content">
+      <div class="layout-content">
         <main class="layout-main-content">
           <UNavigationMenu
             v-if="!isMobile"
@@ -16,8 +16,7 @@
           </div>
         </main>
       </div>
-      <FireLayoutsDefaultFooter /> -->
-      <NuxtPage />
+      <FireLayoutsDefaultFooter />
     </div>
   </ClientOnly>
 </template>

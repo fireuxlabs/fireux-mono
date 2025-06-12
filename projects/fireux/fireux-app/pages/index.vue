@@ -1,8 +1,28 @@
+<script setup lang="ts">
+
+</script>
+
 <template>
-  <div>
-    <h1>Welcome to FireUX!</h1>
-    <p>This is the main page of the FireUX app.</p>
+  <div class="page">
+    <EffectsStarfield />
+    <LogoType size="hero" />
+    <LandingHero />
+    <LandingFireUX first />
+    <LandingFuel />
+    <LandingSkillsIcons />
+    <LandingSolutions />
+    <LandingFireUX second />
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<style scoped>
+.page {
+  gap: var(--space-12);
+}
+@media (min-width: 768px) {
+  .page {
+    gap: var(--space-20);
+    max-width: 900px;
+  }
+}
+</style>

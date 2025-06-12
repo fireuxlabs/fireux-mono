@@ -2,7 +2,7 @@
 
 A comprehensive monorepo for building scalable web applications with Firebase integration, authentication, and modern UI components.
 
-## Quick Start
+## 🚀 Quick Start
 
 ```bash
 # Install dependencies
@@ -15,20 +15,49 @@ pnpm dev:misebox      # Misebox app (http://localhost:3006)
 pnpm dev:cleanbox     # Cleanbox app (http://localhost:3007)
 ```
 
-## Architecture
+## 📁 Monorepo Structure
 
 ```
 fireux/
 ├── packages/          # Shared modules and libraries
-│   └── fireux-core/   # Core module with components, layouts, assets
-├── playground/        # Development testing environment
+│   └── fireux-core/   # Core module with 25+ shared pages, components, layouts
+├── playground/        # Development testing environment (Red theme)
 └── projects/          # Production applications
-    ├── fireux/        # Main FireUX application
-    ├── misebox/       # Data management application
-    └── cleanbox/      # Organization application
+    ├── fireux/        # Main FireUX application (Yellow theme)
+    ├── misebox/       # Data management application (Blue theme)
+    └── cleanbox/      # Organization application (Green theme)
 ```
 
-## Technology Stack
+## 🛠️ Technology Stack
+
+- **Framework**: Nuxt 3 with TypeScript
+- **UI**: @nuxt/ui + Tailwind CSS
+- **Database**: Firebase Firestore
+- **Authentication**: Firebase Auth
+- **Payments**: Stripe Integration
+- **Package Manager**: pnpm
+- **Module System**: Custom FireUX Core module
+
+## 🎯 Key Features
+
+- **Shared Architecture**: All apps use identical structure via FireUX Core
+- **Theme Consistency**: Each app has unique color theming while sharing functionality
+- **25+ Shared Pages**: Authentication, dashboard, admin, blog, products, design system
+- **Auto-imported Components**: 200+ prefixed UI components
+- **Firebase Integration**: Built-in auth and Firestore across all apps
+- **Development Ready**: Hot reload, TypeScript, ESLint, Prettier
+
+## 📝 Documentation
+
+- [Projects Overview](./projects/README.md) - Details about each application
+- [Packages Overview](./packages/README.md) - Shared modules and libraries
+- [FireUX Core Module](./packages/fireux-core/README.md) - Core functionality
+
+## 🔧 Development
+
+Each app is nearly identical except for theming and unique landing pages. All shared functionality is provided by the FireUX Core module, ensuring consistency and maintainability across the entire ecosystem.
+
+See individual documentation for specific setup instructions and development guidelines.
 
 - **Framework**: Nuxt 3 with Vue 3
 - **Styling**: SCSS with design system

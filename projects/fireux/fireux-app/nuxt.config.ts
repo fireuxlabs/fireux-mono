@@ -3,6 +3,9 @@ import { defineNuxtConfig } from 'nuxt/config'
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-06-07',
+  imports: {
+    dirs: ['composables/**', 'models/**', 'utils/**'],
+  },
   css: [
     'fireux-core/assets/css/main.css',
     'fireux-core/assets/design-system/main.scss',

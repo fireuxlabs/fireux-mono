@@ -1,37 +1,208 @@
-# FireUX Core Module - AI Assistant Guide
+# ⚡ Core Module Dev Relay - CORE
 
-## Module Overview
+## File Locations
 
-The FireUX Core module is a Nuxt module that provides:
+```
+src/runtime/
+├── pages/           # 25+ shared pages
+├── components/      # 200+ auto-imported (Fire* prefix)
+├── composables/     # Auto-imported utilities
+├── layouts/         # App layouts
+└── assets/         # Design system
+```
 
-1. Auto-imported composables
-2. Pre-registered components with the "Fire" prefix
-3. Firebase integration
-4. Styling and assets
+## Quick Tasks
 
-## Key Files and Their Purpose
+```bash
+# New shared page
+Add: src/runtime/pages/newpage.vue
+Register: src/pages-config.ts → extendPages()
 
-- `src/module.ts`: Entry point for the Nuxt module, registers components and composables
-- `src/runtime/components/`: UI components following atomic design principles
-- `src/runtime/composables/`: Auto-imported utilities organized by function
-- `src/runtime/models/`: TypeScript interfaces for data structures
-- `src/runtime/assets/`: SCSS and CSS for the design system
-- `src/runtime/firebase.client.ts`: Firebase client initialization
+# New component
+Add: src/runtime/components/organisms/NewFeature.vue
+→ Auto-imports as <FireNewFeature>
 
-## Component Registration Pattern
+# New composable
+Add: src/runtime/composables/useNewThing.ts
+→ Auto-available everywhere
 
-Components are registered with the "Fire" prefix and pathPrefix enabled:
+# Config files
+pages-config.ts     # Page routing
+components-config.ts # Component auto-imports
+module.ts           # Main orchestration
+```
+
+## Navigation Relay
+
+**Back to packages level?** → `../copilot.md`
+**Working on specific app?** → `../../projects/copilot.md`
+**Need architecture overview?** → `README.md`
+
+- `src/components-config.ts` - Component auto-import configuration
+- `src/composables-config.ts` - Composable auto-import setup
+- `src/layouts-config.ts` - Layout registration
+- `src/assets-config.ts` - CSS/SCSS asset serving
+
+## 📁 Runtime Structure
+
+```
+runtime/
+├── pages/                   # 25+ shared Vue pages
+│   ├── auth.vue            # Authentication
+│   ├── dashboard/          # User dashboard pages
+│   ├── admin/              # Admin panel pages
+│   ├── blog/               # Blog system
+│   ├── products/           # E-commerce pages
+│   └── design/             # Design system documentation
+├── components/             # 200+ auto-imported components
+│   ├── atoms/              # Basic UI elements
+│   ├── molecules/          # Composite components
+│   └── organisms/          # Complex components
+├── composables/            # Auto-imported utilities
+│   ├── auth/               # Authentication utilities
+│   ├── data/               # Firestore operations
+│   ├── payments/           # Stripe integration
+│   └── utils/              # General utilities
+├── layouts/                # Application layouts
+│   ├── default.vue         # Standard layout
+│   └── dashboard.vue       # Dashboard layout
+└── assets/                 # Design system
+    ├── css/                # Compiled CSS
+    └── design-system/      # SCSS source
+```
+
+## 🔧 Development Workflow
+
+### Testing Module Registration
+
+```bash
+# Test all module exports and registration
+node test-reg.js
+
+# Options:
+# 1. pages - View all registered pages
+# 2. components - View all auto-imported components
+# 3. modules - View module configuration
+# 4. composables - View auto-imported composables
+# 5. layouts - View available layouts
+```
+
+### Adding New Shared Pages
+
+1. **Create Page**: Add Vue file to `src/runtime/pages/`
+2. **Register Route**: Add to `modulePages` array in `src/pages-config.ts`
+3. **Test Registration**: Run `node test-reg.js` and select option 1
+4. **Verify**: Check that page appears in test output
+5. **Test in App**: Available immediately in all apps
+
+### Adding New Components
+
+1. **Create Component**: Add to `src/runtime/components/` with `Fire` prefix
+2. **Auto-import**: Configured automatically via `components-config.ts`
+3. **Test**: Use in playground or any app without imports
+4. **Document**: Add to design system if needed
+
+### Adding New Composables
+
+1. **Create Function**: Add to appropriate `src/runtime/composables/` directory
+2. **Export**: Add to index file in composables directory
+3. **Auto-import**: Configured via `composables-config.ts`
+4. **Test**: Use in components with `use` prefix
+
+## 📋 Best Practices
+
+### Page Development
+
+- **Route Structure**: Use descriptive, RESTful routes
+- **Page Meta**: Include `definePageMeta` for layout/auth requirements
+- **Composables**: Leverage auto-imported utilities for Firebase/Stripe
+- **Styling**: Use design system classes and theme colors
+
+### Component Development
+
+- **Naming**: Always use `Fire` prefix (e.g., `FireButton.vue`)
+- **Props**: Define clear TypeScript interfaces
+- **Styling**: Use theme-aware CSS variables
+- **Composition**: Prefer atomic design principles
+
+### Composable Development
+
+- **Naming**: Use `use` prefix for composable functions
+- **TypeScript**: Provide full type definitions
+- **Error Handling**: Include proper error states
+- **Reactivity**: Use Vue 3 composition API patterns
+
+## 🚀 Advanced Features
+
+### Theme Integration
+
+Components automatically adapt to theme colors:
+
+```vue
+<template>
+  <!-- Uses theme primary color -->
+  <UButton color="primary">Themed Button</UButton>
+</template>
+```
+
+### Auto-import Magic
+
+Everything is available without imports:
+
+```vue
+<script setup>
+// Auto-imported composables
+const { currentUser } = useCurrentUser()
+const { data } = useFirestore('collection')
+
+// Auto-imported utilities
+const router = useRouter()
+const route = useRoute()
+</script>
+
+<template>
+  <!-- Auto-imported components -->
+  <FireButton @click="handleClick">
+    <FireIcon name="star" />
+    Click Me
+  </FireButton>
+</template>
+```
+
+### Page Registration System
+
+Pages are registered using Nuxt's `extendPages`:
 
 ```typescript
-addComponentsDir({
-  path: resolvePath('./runtime/components'),
-  pattern: '**/*.vue',
-  prefix: options.prefix, // 'Fire'
-  global: true,
-  pathPrefix: true,
-  watch: true,
-})
+// In pages-config.ts
+const modulePages = [
+  {
+    name: 'auth',
+    path: '/auth',
+    file: resolvePath('./runtime/pages/auth.vue'),
+  },
+  {
+    name: 'dashboard',
+    path: '/dashboard',
+    file: resolvePath('./runtime/pages/dashboard/index.vue'),
+  },
+  // ... 25+ more pages
+]
 ```
+
+## 💡 Development Tips
+
+- **Hot Reload**: Changes to module trigger rebuilds in consuming apps
+- **Playground Testing**: Always test new features in playground first
+- **Type Safety**: Leverage TypeScript for better developer experience
+- **Performance**: Use dynamic imports for heavy components
+- **Documentation**: Keep README updated with new features
+
+The FireUX Core module is designed to be the complete foundation for web applications, eliminating the need to rebuild common functionality!
+watch: true,
+})
+
+````
 
 This means:
 
@@ -44,7 +215,7 @@ Composables are auto-imported from all subdirectories:
 
 ```typescript
 addImportsDir([resolvePath('./runtime/composables/**/*.ts')])
-```
+````
 
 Common patterns:
 
