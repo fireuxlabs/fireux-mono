@@ -1,23 +1,23 @@
+<script setup lang="ts"></script>
+
 <template>
-  <CoreDefault>
-    <div>
-      <h1>Welcome to Cleanbox!</h1>
-      <p>This is the main page of the Cleanbox app.</p>
-    </div>
-  </CoreDefault>
+  <div class="page">
+    <FireLogoBrand size="hero" />
+    <h1>Hello FireUX!</h1>
+  </div>
 </template>
 
-<script>
-export default {
-  name: 'IndexPage',
-}
-</script>
-
 <style scoped>
-h1 {
-  color: #007bff;
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
 }
-p {
-  font-size: 1.2rem;
+
+h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--color-primary-500);
 }
 </style>

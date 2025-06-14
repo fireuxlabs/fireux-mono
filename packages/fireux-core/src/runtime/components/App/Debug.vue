@@ -57,6 +57,13 @@
         </div>
       </div>
 
+      <div class="debug-section">
+        <h2>Current User Debug</h2>
+        <pre>User ID: {{ currentUser?.uid }}</pre>
+        <pre>Email: {{ currentUser?.email }}</pre>
+        <pre>Display Name: {{ currentUser?.displayName }}</pre>
+      </div>
+
       <div class="debug-actions">
         <UButton v-if="!appUser" @click="createAppUser" color="green"
           >Force Create App User</UButton
@@ -65,6 +72,7 @@
           >Refresh Data</UButton
         >
       </div>
+      add curent user debug here
     </UCard>
   </div>
 </template>
@@ -161,14 +169,7 @@ async function refreshData() {
 .debug-section h2 {
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
-  color: var(--primary);
-}
-
-.debug-section h3 {
-  font-size: 1.2rem;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  color: var(--secondary);
+  color: var(--primary
 }
 
 .debug-actions {

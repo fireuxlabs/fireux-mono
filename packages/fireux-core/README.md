@@ -188,7 +188,7 @@ This ensures layouts are properly accessible across all consuming applications.
 <template>
   <!-- FireUX Core components use the 'Fire' prefix -->
   <FireOrganismsAppOnboarding />
-  <FireLogoType size="medium" />
+  <FireLogoBrand size="medium" />
   <!-- Nuxt UI components use the 'U' prefix -->
   <UButton>Click Me</UButton>
   <UModal>Content</UModal>

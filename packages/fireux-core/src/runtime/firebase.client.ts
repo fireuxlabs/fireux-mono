@@ -18,5 +18,21 @@ export default defineNuxtPlugin(() => {
 
   // No longer automatically signing in anonymously
   // Users will need to explicitly sign in through the auth system
+
+  // ✅ Ensure anonymous sign-in if no user is logged in
+  if (import.meta.client) {
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        try {
+          await signInAnonymously(auth)
+          console.log('✅ Signed in anonymously.')
+        } catch (error) {
+          const errorMessage = (error as Error)?.message || 'Unknown error'
+          console.error('❌ Anonymous sign-in failed:', errorMessage)
+        }
+      }
+    })
+  }
+
   console.log('✅ Firebase initialized successfully')
 })

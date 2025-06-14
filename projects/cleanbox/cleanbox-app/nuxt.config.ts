@@ -3,6 +3,10 @@ import { defineNuxtConfig } from 'nuxt/config'
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-06-07',
+  srcDir: 'app/',
+  dir: {
+    public: '../public',
+  },
   imports: {
     dirs: ['composables/**', 'models/**', 'utils/**'],
   },

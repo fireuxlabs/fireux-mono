@@ -4,11 +4,7 @@
       <div class="auth-content">
         <!-- App Logo and Branding -->
         <div class="auth-header">
-          <FireLogoType size="large" class="auth-logo" />
           <h1 class="auth-title">Welcome to {{ appName }}</h1>
-          <p class="auth-subtitle">
-            Sign in to access your account and get started
-          </p>
         </div>
 
         <!-- Auth System Component -->

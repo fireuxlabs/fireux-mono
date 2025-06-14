@@ -22,7 +22,7 @@
     </div>
 
     <div v-else class="edit-component">
-      <FireLogoType size="medium" class="logo-wrapper" />
+      <FireLogoBrand size="medium" class="logo-wrapper" />
       <FireOrganismsAppOnboardingVariables />
 
       <UButton v-if="envData?.isValid" block @click="createAppHandler"
