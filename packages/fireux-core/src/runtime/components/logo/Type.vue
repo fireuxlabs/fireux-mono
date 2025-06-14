@@ -16,8 +16,8 @@ const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
 const logos = {
-  light: '/fireux-core/img/logo-type-light.svg',
-  dark: '/fireux-core/img/logo-type-dark.svg',
+  light: '/img/logo-type-light.svg',
+  dark: '/img/logo-type-dark.svg',
 }
 
 const props = defineProps({
@@ -72,10 +72,6 @@ const logoSizeClass = computed(() => ({
 
 /* Hero size - 80px height, constrained width */
 .logo.h-20 {
-  height: 5rem; /* 80px */
-  width: auto;
-  max-width: 10rem; /* 160px */
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+ 
 }
 </style>

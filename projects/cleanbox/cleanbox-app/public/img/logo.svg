@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 100">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #4caf50;
+        font-family: Arial, sans-serif;
+        font-size: 48px;
+        font-weight: bold;
+      }
+      .cls-2 {
+        fill: #ffffff;
+        font-family: Arial, sans-serif;
+        font-size: 24px;
+      }
+    </style>
+  </defs>
+  <rect width="350" height="100" fill="#f0f0f0" />
+  <text class="cls-1" x="20" y="60">CleanBox</text>
+  <text class="cls-2" x="20" y="90">Your Clean Solution</text>
+</svg>

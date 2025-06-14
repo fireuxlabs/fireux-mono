@@ -21,7 +21,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   first: Boolean,
-  second: Boolean,
+  second: Boolean
 })
 
 const allFeatures = [
@@ -30,52 +30,104 @@ const allFeatures = [
     icon: 'i-lucide-smartphone',
     title: 'PWA First',
     description:
-      'A fully installable app with notifications, no app store, no updates.',
+      'A fully installable app with notifications, no app store, no updates.'
   },
   {
     key: 'templates',
     icon: 'i-lucide-square-dashed',
     title: 'Pre-Built Templates',
     description:
-      'Customizable, low-code UI kits with built-in data integrations.',
+      'Customizable, low-code UI kits with built-in data integrations.'
   },
   {
     key: 'saas',
     icon: 'i-lucide-cloud',
     title: 'SaaS Solutions',
     description:
-      'Fully managed, subscription-based applications built for scale.',
+      'Fully managed, subscription-based applications built for scale.'
   },
   {
     key: 'whitelabel',
     icon: 'i-lucide-layers-2',
-    title: 'White Label',
+    title: 'White-Label Products',
     description:
-      'Easily customizable, ready-to-deploy solutions for your brand.',
+      'Your branded software bundles, ready for duplication and resale.'
   },
+  {
+    key: 'low-code',
+    icon: 'i-lucide-code',
+    title: 'Low-Code System',
+    description:
+      'FIReUX enables rapid development with reusable components and automation.'
+  },
+  {
+    key: 'dashboard',
+    icon: 'i-lucide-layout-dashboard',
+    title: 'Dashboard Driven',
+    description:
+      'Structured, data-driven layouts optimized for control and clarity.'
+  },
+  {
+    key: 'security',
+    icon: 'i-lucide-lock',
+    title: 'Authentication & Payments',
+    description: 'Google Auth & Stripe for frictionless logins & transactions.'
+  },
+  {
+    key: 'cookie-free',
+    icon: 'material-symbols-light:cookie-off-outline-rounded',
+    title: 'Zero Cookies',
+    description:
+      'No landing popups, no hidden storage or trackers. A user-first experience.'
+  },
+  {
+    key: 'automation',
+    icon: 'i-lucide-zap',
+    title: 'Automated Workflows',
+    description:
+      'Trigger real-time actions & integrations with zero manual effort.'
+  },
+  {
+    key: 'analytics',
+    icon: 'i-lucide-bar-chart',
+    title: 'Advanced Analytics',
+    description: 'Track & optimize with real-time insights.'
+  },
+  {
+    key: 'security-first',
+    icon: 'i-lucide-shield',
+    title: 'Security First',
+    description: 'Built-in security & compliance without extra effort.'
+  },
+  {
+    key: 'performance',
+    icon: 'i-lucide-rocket',
+    title: 'Blazing Fast',
+    description:
+      'Optimized for speed—lightweight, no bloat, and instant load times.'
+  }
 ]
 
 const filteredFeatures = computed(() => {
-  return allFeatures.filter((feature) => {
-    if (props.first) return feature.key === 'pwa'
-    if (props.second) return feature.key === 'templates'
-    return true
-  })
+  if (props.first) return allFeatures.slice(0, 6)
+  if (props.second) return allFeatures.slice(6, 12)
+  return allFeatures.slice(0, 6) // Default to first six if no props are provided
 })
 </script>
 
 <style scoped>
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  gap: var(--space-4);
 }
-
 .feature {
-  text-align: center;
+  display: flex;
+  gap: var(--space-6);
+  padding: var(--space-1);
+  text-align: left;
+  width: 100%;
+}
+.feature-content {
+  width: 100%;
 }
 
-.feature-content {
-  margin-top: 0.5rem;
-}
 </style>

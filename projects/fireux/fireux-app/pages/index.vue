@@ -5,7 +5,7 @@
 <template>
   <div class="page">
     <EffectsStarfield />
-    <LogoType size="hero" />
+    <FireLogoType size="hero" />
     <LandingHero />
     <LandingFireUX first />
     <LandingFuel />

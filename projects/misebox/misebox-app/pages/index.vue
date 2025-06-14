@@ -1,8 +1,22 @@
+<script setup lang="ts">
+
+</script>
+
 <template>
-  <div>
-    <h1>Welcome to Misebox!</h1>
-    <p>This is the main page of the Misebox app.</p>
+  <div class="page">
+    <EffectsStarfield />
+    <FireLogoType size="hero" />
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<style scoped>
+.page {
+  gap: var(--space-12);
+}
+@media (min-width: 768px) {
+  .page {
+    gap: var(--space-20);
+    max-width: 900px;
+  }
+}
+</style>
