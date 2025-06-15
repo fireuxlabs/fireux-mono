@@ -5,6 +5,7 @@ import { CoreUser } from '../../../models/coreUser.model'
 import { useFirestoreManager } from '../useFirestoreManager'
 import { useFirestoreCreate } from '../useFirestoreCreate'
 import { useAppUserEnsure } from '../AppUser/useAppUserEnsure'
+import { useFireUXConfig } from '../../FireUXConfig'
 
 export function useCoreUserEnsure() {
   /**
@@ -33,19 +34,21 @@ export function useCoreUserEnsure() {
         return
       }
 
-      // Create new core user
+      // Create new core user with all required fields
       const { uploadUserAvatar } = useMediaStorage()
       const { setDocument } = useFirestoreCreate()
+      const { appId } = useFireUXConfig()
 
       const avatar =
         user.photoURL || (await uploadUserAvatar('img/default-avatar.png', uid))
 
       const coreUserData: Partial<CoreUser> = {
         id: uid,
-        email: user.email || '',
-        avatar,
+        email: user.email || '', // Should always exist from auth
+        avatar, // Always guaranteed to have a value
         adminOf: [],
         userOf: [],
+        created_in: appId || 'unknown', // Track which app this user was created in
       }
 
       // Use setDocument from useFirestoreCreate to automatically add timestamps

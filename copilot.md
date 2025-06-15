@@ -453,9 +453,43 @@ These are Nuxt-based applications that consume `fireux-core`. They are configure
 
 ---
 
-## Conclusion
+## Image Management System
 
-FireUX is a powerful and flexible system for building modern web applications. By following the guidelines in this document, you can effectively develop, debug, and extend the system. If you encounter any issues, refer to the "Common Issues and Resolutions" section or explore the source code for more insights.
+### Two-Tier Architecture
+
+**Direct Database Integration** (`molecules/forms/firestore/`):
+
+- `AvatarSelection.vue` - Immediate Firestore updates for profiles
+- Real-time upload progress, file validation (5MB max)
+- Flow: Upload → Firebase Storage → Update Firestore → Real-time UI
+
+**State Management** (`molecules/forms/state/`):
+
+- `ImagePicker.vue` - Temporary storage for content creation
+- Batch operations for blogs/products
+- Flow: Upload → Local Storage → Batch Upload → Database Update
+
+### Enhanced Features
+
+- File validation (size, type checking)
+- Real-time progress tracking
+- `defineExpose()` API for file access
+- TypeScript support with metadata storage
+
+## Profile System
+
+### Components
+
+- `AvatarSelection.vue` - Enhanced avatar upload with validation
+- `User/Edit.vue` - Organized profile editing interface
+- `User/Summary.vue` - Smart display name fallback system
+
+### Features
+
+- Real-time Firestore updates
+- Mobile-responsive design
+- Admin badge detection
+- Comprehensive field validation
 
 # FireUX Project Guidelines
 
@@ -512,3 +546,30 @@ FireUX is a powerful and flexible system for building modern web applications. B
 ## Documentation
 
 - Update documentation whenever significant changes are made to the codebase or configurations.
+
+## 📁 Documentation Structure
+
+```
+fireux/
+├── README.md                    # 🏠 Technical overview & implementation
+├── copilot.md                   # 🤖 AI workflows & quick reference
+├── BUSINESS.md                  # 💼 Business strategy & value props
+├── packages/
+│   ├── README.md                # 📦 Package architecture & development
+│   ├── copilot.md               # 🛠️ Module development workflows
+│   ├── BUSINESS.md              # 💰 Technical foundation business value
+│   └── fireux-core/
+│       ├── README.md            # 🎯 Core API & feature documentation
+│       ├── copilot.md           # ⚙️ Internal development guide
+│       └── BUSINESS.md          # 💎 Core module revenue impact
+└── projects/
+    ├── README.md                # 🎨 App development & deployment
+    ├── copilot.md               # 🚀 App development workflows
+    └── BUSINESS.md              # 🏢 Three-platform business validation
+```
+
+**Three-Document System**:
+
+- **README.md** = Technical teams (setup, implementation, APIs)
+- **copilot.md** = AI assistants (workflows, commands, patterns)
+- **BUSINESS.md** = Business stakeholders (strategy, value, revenue)

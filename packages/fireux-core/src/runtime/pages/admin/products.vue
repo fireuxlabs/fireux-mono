@@ -2,7 +2,7 @@
   <ClientOnly>
     <div class="dashboard-page-grid">
       <!-- Product Create Section -->
-      <OrganismsProductCreateSystem class="dashboard-grid-section" />
+      <FireOrganismsProductCreateSystem class="dashboard-grid-section" />
 
       <!-- Future sections can be added here, such as product stats or links -->
     </div>

@@ -9,15 +9,13 @@ import type {
 import { ref, watch, onMounted } from 'vue'
 import type { Ref } from 'vue'
 import { useProducts } from './useProducts' // Adjusted to use alias
+import { useFireUXConfig } from '../../../FireUXConfig'
 
 export async function useCreateProductState() {
   const now = new Date().toISOString()
 
   const currentUser = useCurrentUser()
-  const { useRuntimeConfig } = require('#imports')
-  const {
-    public: { tenantId },
-  } = useRuntimeConfig()
+  const { appId: tenantId } = useFireUXConfig()
 
   const defaultProduct: Partial<FirebaseProduct> = {
     id: '',
@@ -30,7 +28,7 @@ export async function useCreateProductState() {
     updated_at: now,
     slug: '',
     creator_id: currentUser.value?.uid || '',
-    tenant_id: tenantId as string,
+    appId: tenantId as string,
     stock: null,
     track_stock: false,
     product_type: 'physical',
@@ -96,10 +94,10 @@ export async function useCreateProductState() {
     }
   )
 
-  // Populate creator_id and tenant_id on mount
+  // Populate creator_id and appId on mount
   onMounted(() => {
     if (currentUser.value?.uid) product.value.creator_id = currentUser.value.uid
-    if (tenantId) product.value.app_id = tenantId as string
+    if (tenantId) product.value.appId = tenantId as string
   })
 
   function resetCreateProductState() {
@@ -114,7 +112,7 @@ export async function useCreateProductState() {
       updated_at: new Date().toISOString(),
       slug: '',
       creator_id: currentUser.value?.uid || '',
-      tenant_id: tenantId as string,
+      appId: tenantId as string,
       stock: null,
       track_stock: false,
       product_type: 'physical',

@@ -1,13 +1,11 @@
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useAppUserUtils } from './useAppUserUtils'
-import type { AppUserProfile } from '../../../models/appUser.model'
+import type { AppUser } from '../../../models/appUser.model'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useFirestoreCreate } from '../useFirestoreCreate'
 import { useFirestoreManager } from '../useFirestoreManager'
-
-// Import useCoreUserEnsure dynamically to avoid circular dependency
-// It will be imported only when needed inside the function
+import { useMediaStorage } from '../../firebase/useMediaStorage'
 
 export function useAppUserEnsure() {
   /**
@@ -88,20 +86,17 @@ export function useAppUserEnsure() {
         }
       }
 
-      // Create new app user
+      // Create new app user using strong CoreUser data
       const { generateHandle } = useAppUserUtils()
       const { setDocument } = useFirestoreCreate()
 
-      const appUserData: Partial<AppUserProfile> = {
+      const appUserData: Partial<AppUser> = {
         uid,
-        email: coreUserData.email || user.email || '',
+        email: coreUserData.email, // CoreUser always has email
         role: app.admin_ids?.includes(uid) ? 'admin' : 'user',
-        display_name: coreUserData.email || user.displayName || 'Unknown User',
-        avatar:
-          coreUserData.avatar || user.photoURL || 'img/default-avatar.png',
-        handle: generateHandle(
-          coreUserData.email || user.displayName || 'Anonymous'
-        ),
+        display_name: coreUserData.email, // Use email as display name initially
+        avatar: coreUserData.avatar, // CoreUser always has avatar (from photoURL or uploaded default)
+        handle: generateHandle(coreUserData.email),
         bio: '',
       }
 

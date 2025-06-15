@@ -160,23 +160,4 @@ async function refreshData() {
   opacity: 1;
 }
 
-.debug-section {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.debug-section h2 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: var(--primary
-}
-
-.debug-actions {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 1rem;
-}
 </style>

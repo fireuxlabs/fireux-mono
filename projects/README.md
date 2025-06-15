@@ -1,208 +1,184 @@
-# FireUX Projects
+# 🎨 FireUX Projects
 
-Production applications built on the FireUX Core module. Each app is nearly identical in functionality but maintains unique theming and branding.
+_Production applications built on the FireUX Core ecosystem_
 
-## 🎨 Applications
+## 🏗️ Project Architecture
 
-### 🟡 FireUX (`fireux/fireux-app`)
+Three production applications sharing 99% of functionality via `fireux-core`:
 
-**Main company application**
+### 🟡 FireUX (`fireux/fireux-app`) - Port 3005
 
-- **URL**: http://localhost:3005/
-- **Theme**: Yellow primary, zinc neutral
-- **Purpose**: FireUX company website and primary application
-- **Features**: Full feature set including authentication, blog, products, admin panel
+**Main company platform** showcasing the FireUX ecosystem:
 
-### 🟢 Cleanbox (`cleanbox/cleanbox-app`)
+- **Purpose**: Marketing site + customer portal for FireUX products
+- **Theme**: Yellow primary (`amber`), zinc neutral
+- **Content**: Platform demos, template sales, documentation
+- **Unique Features**: Pricing pages, template showcase, contact forms
 
-**Organization and productivity tools**
+### 🧼 CleanBox (`cleanbox/cleanbox-app`) - Port 3007
 
-- **URL**: http://localhost:3007/
-- **Theme**: Green primary, stone neutral
-- **Purpose**: Clean, minimal organization and task management
-- **Features**: Organization tools, task management, clean UI design
+**Cleaning industry marketplace platform**:
 
-### 🔵 Misebox (`misebox/misebox-app`)
+- **Purpose**: Service marketplace for cleaning professionals/businesses
+- **Theme**: Green primary (`emerald`), stone neutral
+- **Content**: Cleaning job board, professional profiles, business management
+- **Industry Focus**: Residential cleaning, commercial maintenance, specialized services
 
-**Data management platform**
+### 🍳 Misebox (`misebox/misebox-app`) - Port 3009
 
-- **URL**: http://localhost:3006/
-- **Theme**: Blue primary, gray neutral
-- **Purpose**: Data organization and content management
-- **Features**: Content organization, data management, user collaboration
+**Culinary industry marketplace platform**:
 
-## 🏗️ Shared Architecture
+- **Purpose**: Service marketplace for culinary professionals/businesses
+- **Theme**: Blue primary (`blue`), gray neutral
+- **Content**: Kitchen job board, chef profiles, event catering
+- **Industry Focus**: Restaurant staffing, catering, private chef services
 
-All applications inherit from FireUX Core module:
+## 🚀 Development Workflow
 
-### ✅ Identical Components
+### Shared vs. Unique
 
-- **Pages**: 25+ shared pages (auth, dashboard, admin, blog, products, design system)
-- **Components**: 200+ auto-imported UI components
-- **Layouts**: Consistent layout system across all apps
-- **Configuration**: Same `nuxt.config.ts` and `package.json` structure
-- **Firebase Integration**: Authentication and Firestore database
-- **Stripe Integration**: Payment processing capabilities
+**99% Shared** (via `fireux-core`):
 
-### 🎯 Unique Per App
+- All pages (`/auth`, `/dashboard`, `/admin`, `/blog`, `/products`)
+- All components (200+ with `Fire*` prefix)
+- All composables (Firebase, Stripe, app state)
+- All layouts and styling system
+- Complete authentication and payment systems
 
-- **Landing Page**: Custom `pages/index.vue` for each app
-- **Color Theme**: Primary and neutral colors via `app.config.ts`
-- **Firebase Project**: Separate Firebase projects per app
-- **Branding**: App-specific logos and content
+**1% Unique** (per app):
 
-## 🛠️ Development
+- Landing page (`pages/index.vue`)
+- Theme colors (`app.config.ts`)
+- Firebase configuration (`config/service-account.json`)
+- Domain-specific content and copy
+
+### Creating New Apps
 
 ```bash
-# Start individual apps
-pnpm dev:fireux      # FireUX app
-pnpm dev:cleanbox    # Cleanbox app
-pnpm dev:misebox     # Misebox app
+# Copy existing app structure
+cp -r fireux/fireux-app newapp/newapp-app
 
-# Install dependencies for all projects
-pnpm install
+# Customize the unique parts:
+# 1. Update app.config.ts with new theme colors
+# 2. Create new landing page in pages/index.vue
+# 3. Setup Firebase config in config/
+# 4. Add dev script to root package.json
+
+# Result: Full platform in <1 day
 ```
 
-## 📁 Structure
+## 🛠️ Technical Implementation
 
-Each app follows identical structure:
+### App Configuration
 
-```
-app-name/
-├── app.config.ts     # Theme configuration
-├── app.vue          # App root (identical)
-├── nuxt.config.ts   # Nuxt config (identical)
-├── package.json     # Dependencies (identical)
-├── pages/
-│   └── index.vue    # Unique landing page
-├── config/          # Firebase service account
-├── layouts/         # Shared layouts
-└── public/          # Static assets
-```
+Each app customizes the shared core via configuration:
 
-## 🔧 Adding New Apps
-
-1. Copy existing app directory structure
-2. Update `app.config.ts` with new color theme
-3. Create unique `pages/index.vue` landing page
-4. Configure Firebase project in `config/service-account.json`
-5. Add development script to root `package.json`
-
-All shared functionality is automatically available through the FireUX Core module.
-
-### Configuration
-
-- **Nuxt 3** with TypeScript
-- **FireUX Core** module for shared functionality
-- **@nuxt/ui** for additional UI components
-- **nuxt-vuefire** for Firebase integration
-
-### CSS Assets
+**`app.config.ts`** - Theme customization:
 
 ```typescript
-css: [
-  'fireux-core/assets/css/main.css',
-  'fireux-core/assets/design-system/main.scss',
-]
+export default defineAppConfig({
+  ui: {
+    colors: {
+      primary: 'emerald', // App-specific brand color
+      neutral: 'stone', // Supporting neutral palette
+    },
+  },
+})
 ```
 
-### Layouts
+**`nuxt.config.ts`** - Module integration:
 
-Each app includes wrapper layouts:
+```typescript
+export default defineNuxtConfig({
+  modules: ['fireux-core'], // Inherit all functionality
 
-- `layouts/default.vue` → Uses `<CoreDefault />`
-- `layouts/dashboard.vue` → Uses `<CoreDashboard />`
-
-### Firebase Configuration
-
-Each app connects to its own Firebase project via environment variables:
-
-```env
-FIREBASE_API_KEY=
-FIREBASE_AUTH_DOMAIN=
-FIREBASE_PROJECT_ID=
-# ... other Firebase config
+  css: [
+    'fireux-core/assets/css/main.css',
+    'fireux-core/assets/design-system/main.scss',
+  ],
+})
 ```
 
-## Development
+### Firebase Setup
 
-### Starting Applications
+Each app maintains separate Firebase projects for data isolation:
 
 ```bash
-# From root directory
-pnpm dev:fireux       # Start FireUX app
-pnpm dev:misebox      # Start Misebox app
-pnpm dev:cleanbox     # Start Cleanbox app
+# Each app has its own Firebase config
+config/
+├── service-account.json  # Admin SDK credentials
+└── .env                 # Client-side config
 ```
 
-### Creating New Projects
+### Development Commands
 
-1. **Create directory structure**:
+```bash
+# Start all apps in parallel
+pnpm dev              # All apps + playground
 
-   ```bash
-   mkdir -p projects/new-project/new-project-app
-   cd projects/new-project/new-project-app
-   ```
+# Individual app development
+pnpm dev:fireux       # localhost:3005
+pnpm dev:cleanbox     # localhost:3007
+pnpm dev:misebox      # localhost:3009
+```
 
-2. **Initialize Nuxt app**:
+## 📊 Performance Benefits
 
-   ```bash
-   pnpm dlx nuxi init .
-   ```
+### Development Velocity
 
-3. **Configure FireUX Core**:
+- **New App Creation**: 1 day vs. 6 months
+- **Feature Development**: Write once, deploy everywhere
+- **Bug Fixes**: Single fix benefits all apps
+- **Security Updates**: Ecosystem-wide protection
 
-   ```typescript
-   // nuxt.config.ts
-   export default defineNuxtConfig({
-     modules: ['fireux-core', 'nuxt-vuefire'],
-     css: [
-       'fireux-core/assets/css/main.css',
-       'fireux-core/assets/design-system/main.scss',
-     ],
-   })
-   ```
+### Maintenance Efficiency
 
-4. **Add wrapper layouts**:
+- **Shared Codebase**: 99% less duplication
+- **Consistent UX**: Users familiar with one app understand all
+- **Type Safety**: TypeScript across entire ecosystem
+- **Testing**: Shared test suite covers all functionality
 
-   ```vue
-   <!-- layouts/default.vue -->
-   <template>
-     <CoreDefault />
-   </template>
-   ```
+## 📚 Documentation Structure
 
-5. **Configure Firebase**: Set up environment variables and project
+### Per-App Documentation
 
-6. **Add dev script** to root `package.json`:
-   ```json
-   "dev:new-project": "pnpm --filter ./projects/new-project/new-project-app dev"
-   ```
+Each app includes:
 
-### Environment Setup
+- **README.md** - Setup and deployment instructions
+- **Firebase Configuration** - Database and auth setup
+- **Environment Variables** - Required configuration
+- **Deployment Guide** - Production deployment steps
 
-Each application requires:
+### Shared Documentation
 
-- Firebase project configuration
-- Stripe keys (for payment processing)
-- Environment variables in `.env` file
-- Service account JSON for server-side Firebase
+Common functionality documented in:
 
-## Documentation
+- **[Core Module](../packages/fireux-core/README.md)** - Shared features
+- **[Packages Guide](../packages/README.md)** - Module development
+- **[Root Documentation](../README.md)** - Ecosystem overview
 
-- [`fireux/fireux-app/README.md`](fireux/fireux-app/README.md) - FireUX app specifics
-- [`misebox/misebox-app/README.md`](misebox/misebox-app/README.md) - Misebox app guide
-- [`cleanbox/cleanbox-app/README.md`](cleanbox/cleanbox-app/README.md) - Reference implementation
-- [`cleanbox/cleanbox-app/copilot.md`](cleanbox/cleanbox-app/copilot.md) - AI development guide
+## 📚 Documentation
 
-## Common Patterns
+### Three-Document System
 
-All projects share:
+- **[README.md](README.md)** - Technical app development and deployment guide
+- **[copilot.md](copilot.md)** - AI assistant workflows for app development
+- **[BUSINESS.md](BUSINESS.md)** - Three-platform business model validation
 
-- **Authentication**: Firebase Auth with user management
-- **Database**: Firestore with shared composables
-- **Payments**: Stripe integration for Pro features
-- **Blog**: Content management system
-- **Products**: E-commerce functionality
-- **Admin Panel**: Management interface
-- **Responsive Design**: Mobile-first approach
+### Related Documentation
+
+- **[Core Module](../packages/fireux-core/README.md)** - Shared functionality reference
+- **[Packages Guide](../packages/README.md)** - Module development
+- **[Root Overview](../README.md)** - Ecosystem architecture
+- **[Business Strategy](../BUSINESS.md)** - Overall business model
+
+## 🤝 Contributing
+
+1. **Focus on unique value** - Only add app-specific features, everything else goes in core
+2. **Test across platforms** - Changes should work in all three apps
+3. **Maintain consistency** - Follow established patterns and conventions
+4. **Document changes** - Update relevant documentation for modifications
+
+---
+
+**The FireUX projects demonstrate that complex, industry-specific platforms can be built rapidly when you have the right foundation. Each app proves the business model while showcasing the technical capabilities of the shared core module.**

@@ -1,4 +1,9 @@
-import { defineEventHandler, getQuery, setResponseHeaders } from 'h3'
+import {
+  defineEventHandler,
+  getQuery,
+  setResponseHeaders,
+  createError,
+} from 'h3'
 
 export default defineEventHandler(async (event) => {
   const { url } = getQuery(event)

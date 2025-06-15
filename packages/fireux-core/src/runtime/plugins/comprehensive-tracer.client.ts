@@ -1,4 +1,4 @@
-import { defineNuxtPlugin } from '#app'
+import { defineNuxtPlugin } from 'nuxt/app'
 
 export default defineNuxtPlugin(() => {
   if (import.meta.dev && typeof window !== 'undefined') {
@@ -271,7 +271,7 @@ export default defineNuxtPlugin(() => {
 
     // Track when composables are called
     const trackComposable = (name: string, fn: Function) => {
-      return function (...args: any[]) {
+      return function (this: any, ...args: any[]) {
         const startTime = performance.now()
 
         try {

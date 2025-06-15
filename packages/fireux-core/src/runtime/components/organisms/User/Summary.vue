@@ -2,7 +2,7 @@
   <div class="user-summary">
     <UAvatar :src="proxiedAvatarUrl" size="lg" class="avatar" />
     <div class="info">
-      <strong class="name">{{ props.user.display_name }}</strong>
+      <strong class="name">{{ displayName }}</strong>
       <span class="handle">@{{ props.user.handle }}</span>
       <span v-if="props.user.status" class="status">{{
         props.user.status
@@ -14,7 +14,7 @@
         >Joined: {{ formattedJoinDate }}</span
       >
       <UBadge
-        v-if="props.user?.isAdmin"
+        v-if="props.user?.isAdmin || props.user?.role === 'admin'"
         color="primary"
         variant="subtle"
         class="badge"
@@ -43,12 +43,43 @@ const proxiedAvatarUrl = computed(
 
 const formattedJoinDate = computed(() => {
   if (!props.user?.created_at) return ''
-  const date = new Date(props.user.created_at)
+
+  // Handle Firebase timestamp objects
+  let date
+  if (props.user.created_at.seconds) {
+    // Firebase timestamp object
+    date = new Date(props.user.created_at.seconds * 1000)
+  } else if (props.user.created_at.toDate) {
+    // Firebase timestamp method
+    date = props.user.created_at.toDate()
+  } else {
+    // Regular date string/number
+    date = new Date(props.user.created_at)
+  }
+
   return date.toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   })
+})
+
+// Computed property for display name with fallback logic
+const displayName = computed(() => {
+  // Priority: display_name -> displayName -> email (without @domain)
+  if (
+    props.user?.display_name &&
+    props.user.display_name !== props.user?.email
+  ) {
+    return props.user.display_name
+  }
+  if (props.user?.displayName && props.user.displayName !== props.user?.email) {
+    return props.user.displayName
+  }
+  if (props.user?.email) {
+    return props.user.email.split('@')[0] // Just username part
+  }
+  return 'Unknown User'
 })
 </script>
 

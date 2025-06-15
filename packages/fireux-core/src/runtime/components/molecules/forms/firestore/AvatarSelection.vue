@@ -17,7 +17,7 @@
 import { useAvatarProxy } from '../../../../composables/utils/useAvatarProxy'
 
 const currentUser = useCurrentUser()
-const { appUser, updateUser } = useAppUser()
+const { appUser, updateAvatar } = useAppUser()
 const { uploadUserAvatar } = useMediaStorage()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 
@@ -32,7 +32,7 @@ async function handleFileChange(e) {
   if (!file || !uid) return
 
   const url = await uploadUserAvatar(file, uid)
-  if (url) await updateUser({ avatar: url })
+  if (url) await updateAvatar(url)
 }
 </script>
 

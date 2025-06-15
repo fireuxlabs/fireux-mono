@@ -2,9 +2,12 @@
   <div class="user-cell">
     <UAvatar :src="proxiedAvatarUrl" size="lg" />
     <div class="info">
-      <strong class="name">{{ props.user.display_name }}</strong>
+      <strong class="name">{{ displayName }}</strong>
       <span class="handle">@{{ props.user.handle }}</span>
-      <UBadge v-if="props.user?.isAdmin" variant="subtle" class="badge"
+      <UBadge
+        v-if="props.user?.isAdmin || props.user?.role === 'admin'"
+        variant="subtle"
+        class="badge"
         >Admin</UBadge
       >
     </div>
@@ -21,6 +24,24 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+})
+
+// Computed property for display name with fallback logic
+const displayName = computed(() => {
+  // Priority: display_name -> displayName -> email (without @domain)
+  if (
+    props.user?.display_name &&
+    props.user.display_name !== props.user?.email
+  ) {
+    return props.user.display_name
+  }
+  if (props.user?.displayName && props.user.displayName !== props.user?.email) {
+    return props.user.displayName
+  }
+  if (props.user?.email) {
+    return props.user.email.split('@')[0] // Just username part
+  }
+  return 'Unknown User'
 })
 
 // Use proxied avatar URL to bypass CORS issues with Google images

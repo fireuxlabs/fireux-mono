@@ -3,7 +3,7 @@
   <div class="images-system">
     <!-- Main Product Image -->
     <div class="image-wrapper main">
-      <MoleculesFormsStateImagePicker
+      <FireMoleculesFormsStateImagePicker
         label="Main Product Image"
         state-key="createProductMainImage"
       />

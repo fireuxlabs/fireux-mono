@@ -1,230 +1,166 @@
-# FireUX Monorepo
+# 🔥 FireUX Ecosystem
 
-A comprehensive monorepo for building scalable web applications with Firebase integration, authentication, and modern UI components.
+_Modern Nuxt 3 monorepo powering the next generation of service business platforms_
 
 ## 🚀 Quick Start
 
 ```bash
-# Install dependencies
+# Clone and install
+git clone https://github.com/your-org/fireux
+cd fireux
 pnpm install
 
-# Start development servers
-pnpm dev:playground    # Test environment (http://localhost:3004)
-pnpm dev:fireux       # FireUX app (http://localhost:3005)
-pnpm dev:misebox      # Misebox app (http://localhost:3006)
-pnpm dev:cleanbox     # Cleanbox app (http://localhost:3007)
+# Start development
+pnpm dev:fireux      # Main app    (localhost:3005)
+pnpm dev:cleanbox    # CleanBox    (localhost:3007)
+pnpm dev:misebox     # Misebox     (localhost:3009)
+pnpm dev:playground  # Testing     (localhost:3000)
 ```
+
+## 🏗️ Architecture
+
+**99% Shared, 1% Unique** - Three production apps powered by one core module:
+
+- **`packages/fireux-core/`** - Shared Nuxt 3 module (200+ components, pages, composables)
+- **`projects/fireux/`** - Main company app (yellow theme)
+- **`projects/cleanbox/`** - Cleaning industry platform (green theme)
+- **`projects/misebox/`** - Culinary industry platform (blue theme)
+
+## 🛠️ Technology Stack
+
+### Frontend
+
+- **Nuxt 3** - Full-stack Vue framework
+- **TypeScript** - Type-safe development
+- **TailwindCSS** - Utility-first styling
+- **Nuxt UI** - Component library
+
+### Backend & Services
+
+- **Firebase Auth** - Authentication system
+- **Firestore** - NoSQL database
+- **Stripe** - Payment processing
+- **Cloudinary** - Image management
+
+### Development
+
+- **pnpm Workspaces** - Monorepo management
+- **ESLint & Prettier** - Code quality
+- **Auto-imports** - Component/composable resolution
 
 ## 📁 Monorepo Structure
 
 ```
 fireux/
-├── packages/          # Shared modules and libraries
-│   └── fireux-core/   # Core module with 25+ shared pages, components, layouts
-├── playground/        # Development testing environment (Red theme)
-└── projects/          # Production applications
-    ├── fireux/        # Main FireUX application (Yellow theme)
-    ├── misebox/       # Data management application (Blue theme)
-    └── cleanbox/      # Organization application (Green theme)
+├── packages/fireux-core/    # Shared Nuxt 3 module
+│   ├── src/runtime/         # 200+ components, pages, layouts
+│   ├── src/module.ts        # Module configuration
+│   └── src/*-config.ts      # Auto-import configurations
+├── projects/                # Production applications
+│   ├── fireux/fireux-app/   # Main company app (yellow)
+│   ├── cleanbox/cleanbox-app/ # Cleaning platform (green)
+│   └── misebox/misebox-app/   # Culinary platform (blue)
+├── playground/              # Development testing (red)
+└── pnpm-workspace.yaml      # Workspace configuration
 ```
-
-## 🛠️ Technology Stack
-
-- **Framework**: Nuxt 3 with TypeScript
-- **UI**: @nuxt/ui + Tailwind CSS
-- **Database**: Firebase Firestore
-- **Authentication**: Firebase Auth
-- **Payments**: Stripe Integration
-- **Package Manager**: pnpm
-- **Module System**: Custom FireUX Core module
 
 ## 🎯 Key Features
 
-- **Shared Architecture**: All apps use identical structure via FireUX Core
-- **Theme Consistency**: Each app has unique color theming while sharing functionality
-- **25+ Shared Pages**: Authentication, dashboard, admin, blog, products, design system
-- **Auto-imported Components**: 200+ prefixed UI components
-- **Firebase Integration**: Built-in auth and Firestore across all apps
-- **Development Ready**: Hot reload, TypeScript, ESLint, Prettier
+### Shared Functionality (via FireUX Core)
 
-## 📝 Documentation
+- **Authentication** - Firebase Auth with user management
+- **Database** - Firestore with auto-imported composables
+- **Payments** - Stripe integration for subscriptions
+- **Blog System** - Content management with rich text editor
+- **Product System** - E-commerce with inventory management
+- **Admin Panel** - Complete management interface
+- **Design System** - TailwindCSS + Nuxt UI components
 
-- [Projects Overview](./projects/README.md) - Details about each application
-- [Packages Overview](./packages/README.md) - Shared modules and libraries
-- [FireUX Core Module](./packages/fireux-core/README.md) - Core functionality
+### App-Specific
 
-## 🔧 Development
+Each app inherits all shared functionality but customizes:
 
-Each app is nearly identical except for theming and unique landing pages. All shared functionality is provided by the FireUX Core module, ensuring consistency and maintainability across the entire ecosystem.
+- Landing page (`pages/index.vue`)
+- Theme colors (`app.config.ts`)
+- Firebase configuration
+- Domain-specific content
 
-See individual documentation for specific setup instructions and development guidelines.
+## 🚀 Development
 
-- **Framework**: Nuxt 3 with Vue 3
-- **Styling**: SCSS with design system
-- **Backend**: Firebase (Firestore, Auth, Functions)
-- **UI Components**: @nuxt/ui + custom FireUX components
-- **Package Manager**: pnpm with workspace support
-- **Development**: TypeScript, Vite, Hot Module Replacement
+### Adding Shared Features
 
-## Package Structure
+All shared functionality goes in `packages/fireux-core/`:
 
-### `packages/fireux-core`
+```bash
+# Add new shared page
+touch packages/fireux-core/src/runtime/pages/new-feature.vue
+# Register in packages/fireux-core/src/pages-config.ts
+# Available in all apps immediately
 
-The core module providing:
+# Add new component
+touch packages/fireux-core/src/runtime/components/organisms/NewComponent.vue
+# Auto-imported as <FireNewComponent> in all apps
 
-- **Components**: 200+ Vue components for UI, forms, authentication
-- **Layouts**: Dashboard and default layouts with navigation
-- **Composables**: Firebase integration, user management, app state
-- **Assets**: Design system, CSS variables, SCSS utilities
-- **Runtime**: Client/server configurations and plugins
-
-### `playground`
-
-Development environment for testing fireux-core features in isolation.
-
-### `projects/*`
-
-Production applications that consume fireux-core:
-
-- Each project has its own Firebase configuration
-- Shared core functionality with project-specific customizations
-- Individual deployment pipelines
-
-## Key Features
-
-- **Standardized Architecture**: All applications follow the same patterns
-- **Shared Components**: UI components with consistent styling
-- **Auto-imported Composables**: Authentication, data management utilities
-- **Firebase Integration**: Built-in auth and Firestore database
-- **Stripe Integration**: Payment processing for subscriptions
-- **Blog System**: Content management capabilities
-- **Product Management**: E-commerce functionality
-- **Pro Subscription**: Standard upgrade feature across all apps
-
-## Asset & Layout System
-
-All CSS/SCSS assets are served from `fireux-core` using:
-
-- **Asset Alias**: `fireux-core/assets` points to runtime assets
-- **Public Assets**: Served at `/fireux-core/assets/*` URLs
-- **Layout Integration**: Core layouts available as `CoreDefault`, `CoreDashboard`
-- **Design System**: Centralized SCSS variables and utilities
-
-Apps include CSS in their `nuxt.config.ts`:
-
-```typescript
-css: [
-  'fireux-core/assets/css/main.css',
-  'fireux-core/assets/design-system/main.scss',
-]
+# Add new composable
+touch packages/fireux-core/src/runtime/composables/useNewFeature.ts
+# Auto-imported in all apps
 ```
 
-## Documentation Structure
+### Creating New Apps
 
-- [`packages/`](packages/README.md) - Package development guide
-- [`playground/`](playground/README.md) - Testing environment setup
-- [`projects/`](projects/README.md) - Application development guide
-- [`copilot.md`](copilot.md) - AI assistant workspace guide
+```bash
+# Copy existing app structure
+cp -r projects/fireux/fireux-app projects/newapp/newapp-app
+# Customize theme, Firebase config, and landing page
+```
 
-## Development Workflow
+## 📚 Documentation
 
-1. **Core Development**: Work in `packages/fireux-core` and test in `playground`
-2. **Feature Testing**: Use `playground` to validate new components/features
-3. **Application Development**: Build in `projects/*` using core functionality
-4. **Asset Management**: All CSS/SCSS served from fireux-core assets
+### Three-Document System
 
-## Adding a New Project
+Each level of the monorepo maintains three types of documentation:
 
-1. Create project directory: `projects/new-project/new-project-app`
-2. Initialize Nuxt app: `pnpm dlx nuxi init .`
-3. Configure to use fireux-core (see project documentation)
-4. Add development script to root `package.json`
+**README.md** - Technical overview and implementation guide  
+**copilot.md** - AI assistant development workflows and fast reference  
+**BUSINESS.md** - Business model, value propositions, and strategic context
 
-## Contributing
+### Documentation Hierarchy
 
-Each directory contains its own README with specific contribution guidelines. Start with the relevant section based on your development focus.
+### Documentation Structure Overview
 
-## Getting Started
+```
+fireux/
+├── README.md                    # 🏠 Technical overview & implementation
+├── copilot.md                   # 🤖 AI workflows & quick reference
+├── BUSINESS.md                  # 💼 Business strategy & value props
+├── packages/
+│   ├── README.md                # 📦 Package architecture & development
+│   ├── copilot.md               # 🛠️ Module development workflows
+│   ├── BUSINESS.md              # 💰 Technical foundation business value
+│   └── fireux-core/
+│       ├── README.md            # 🎯 Core API & feature documentation
+│       ├── copilot.md           # ⚙️ Internal development guide
+│       └── BUSINESS.md          # 💎 Core module revenue impact
+└── projects/
+    ├── README.md                # 🎨 App development & deployment
+    ├── copilot.md               # 🚀 App development workflows
+    └── BUSINESS.md              # 🏢 Three-platform business validation
+```
 
-### Prerequisites
+**Three-Document Purpose**:
 
-- Node.js 18+
-- pnpm (recommended)
-- Firebase account
-- Stripe account (for payment processing)
+- **README.md** = Technical teams (setup, APIs, implementation)
+- **copilot.md** = AI assistants (workflows, commands, quick reference)
+- **BUSINESS.md** = Business stakeholders (strategy, revenue, value propositions)
 
-### Setup
+## 🤝 Contributing
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-3. Build the core module:
-   ```bash
-   cd packages/fireux-core
-   pnpm build
-   ```
-4. Run a project:
+1. **Never duplicate code** - Add shared functionality to FireUX Core
+2. **Keep apps minimal** - Only unique content and configurations
+3. **Use TypeScript** - Maintain type safety across modules
+4. **Test in playground** - Validate components before production
+5. **Follow naming** - Prefix components with `Fire*`
 
-   ```bash
-   # Run the FireUX app
-   pnpm dev:fireux
+## 📄 License
 
-   # Run the MiseBox app
-   pnpm dev:misebox
-
-   # Run the CleanBox app
-   pnpm dev:cleanbox
-
-   # Run the playground
-   pnpm dev:playground
-   ```
-
-## Adding a New Project
-
-To create a new project:
-
-1. Create a new directory in the `projects/` folder:
-
-   ```bash
-   mkdir -p projects/new-project/new-project-app
-   ```
-
-2. Initialize a new Nuxt app:
-
-   ```bash
-   cd projects/new-project/new-project-app
-   pnpm dlx nuxi init .
-   ```
-
-3. Configure to use FireUX Core (see project-level README for details)
-
-## Documentation
-
-This monorepo contains README files at different levels to help you understand the structure and functionality:
-
-### Core Documentation
-
-- **[Root README](/README.md)** - Overview of the monorepo structure and setup
-- **[FireUX Core README](/packages/fireux-core/README.md)** - Documentation for the core module
-- **[Playground README](/playground/README.md)** - Instructions for the development playground
-
-### Project Documentation
-
-- **FireUX App**
-  - **[FireUX App README](/projects/fireux/fireux-app/README.md)** - FireUX company website and application
-- **MiseBox App**
-  - **[MiseBox App README](/projects/misebox/misebox-app/README.md)** - MiseBox application
-- **CleanBox App (Reference Implementation)**
-  - **[CleanBox App README](/projects/cleanbox/cleanbox-app/README.md)** - Reference implementation and template
-
-### AI Assistant Guides
-
-For AI assistants like GitHub Copilot, we provide specialized documentation:
-
-- **[Root Copilot Guide](/copilot.md)** - System-wide patterns and conventions
-- **[FireUX Core Copilot Guide](/packages/fireux-core/copilot.md)** - Core module implementation details
-- **[CleanBox Copilot Guide](/projects/cleanbox/cleanbox-app/copilot.md)** - App implementation guidance
-
-# fireux-mono
+MIT License - see [LICENSE](LICENSE) for details.

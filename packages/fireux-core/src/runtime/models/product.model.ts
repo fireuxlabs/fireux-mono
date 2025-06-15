@@ -40,9 +40,14 @@ export interface FirebaseProduct extends StripeProduct {
   updated_at: Date | string
   creator_id: string
   content: string
-  product_type: 'physical' | 'digital' | 'service'
+  product_type: 'physical' | 'digital' | 'service' | 'subscription'
   stock: number | null
   track_stock: boolean
   main_image: string
   default_price?: DefaultPrice
+
+  // Subscription-specific fields
+  subscription_type?: 'pro' | 'premium' | 'enterprise'
+  features?: string[] // List of features included
+  is_default_plan?: boolean // Mark as default app subscription
 }

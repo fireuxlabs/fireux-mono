@@ -40,7 +40,7 @@ export function configureLayouts(resolver: any, nuxt: any) {
   })
 
   // Explicitly register layouts in components directories
-  nuxt.hook('components:dirs', (dirs) => {
+  nuxt.hook('components:dirs', (dirs: any) => {
     dirs.push({
       path: layoutsDir,
       prefix: 'Core',

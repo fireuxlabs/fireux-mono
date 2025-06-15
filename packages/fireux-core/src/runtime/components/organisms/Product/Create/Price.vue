@@ -7,7 +7,7 @@
         :format-options="{
           style: 'decimal',
           minimumFractionDigits: 2,
-          maximumFractionDigits: 2
+          maximumFractionDigits: 2,
         }"
         placeholder="0.00"
         :min="0"
@@ -15,7 +15,7 @@
       />
     </div>
 
-    <div v-if="isService" class="billing-frequency">
+    <div v-if="showBillingFrequency" class="billing-frequency">
       <URadioGroup v-model="uiFrequency" :items="billingFrequencyOptions" />
     </div>
 
@@ -49,7 +49,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
+import { useCreatePricesState } from '../../../../composables/firestore/objects/Product/Prices/useCreatePricesState'
+import { useCreateProductState } from '../../../../composables/firestore/objects/Product/useCreateProductState'
+import { useProducts } from '../../../../composables/firestore/objects/Product/useProducts'
 
 const props = defineProps<{
   index: number
@@ -68,10 +72,16 @@ function movePriceToTop(index: number) {
 }
 
 const { prices } = useCreatePricesState()
-const { product } = useCreateProductState()
-const { defaultCurrency } = await useProducts()
+const { product } = await useCreateProductState()
+const defaultCurrency = 'EUR'
 
 const isService = computed(() => product.value.product_type === 'service')
+const isSubscription = computed(
+  () => product.value.product_type === 'subscription'
+)
+const showBillingFrequency = computed(
+  () => isService.value || isSubscription.value
+)
 
 const price = computed(() => {
   const base = prices.value[props.index]
@@ -81,15 +91,22 @@ const price = computed(() => {
       unit_amount: 0,
       type: 'one_time',
       interval: undefined,
-      interval_count: undefined
+      interval_count: undefined,
     }
   }
 
-  // Enforce one_time for non-service
-  if (!isService.value) {
+  // Enforce one_time for non-service and non-subscription
+  if (!isService.value && !isSubscription.value) {
     base.type = 'one_time'
     base.interval = undefined
     base.interval_count = undefined
+  }
+
+  // Default subscriptions to monthly recurring
+  if (isSubscription.value && (!base.type || base.type === 'one_time')) {
+    base.type = 'recurring'
+    base.interval = 'month'
+    base.interval_count = 1
   }
 
   return base
@@ -99,7 +116,7 @@ const price = computed(() => {
 const billingFrequencyOptions: RadioGroupItem[] = [
   { label: 'Once', value: 'once' },
   { label: 'Monthly', value: 'monthly' },
-  { label: 'Yearly', value: 'yearly' }
+  { label: 'Yearly', value: 'yearly' },
 ]
 
 // Computed value that maps to Stripe fields
@@ -110,7 +127,7 @@ const uiFrequency = computed<RadioGroupValue>({
     if (price.value.interval === 'year') return 'yearly'
     return 'once'
   },
-  set: val => {
+  set: (val) => {
     if (val === 'once') {
       price.value.type = 'one_time'
       price.value.interval = undefined
@@ -120,7 +137,7 @@ const uiFrequency = computed<RadioGroupValue>({
       price.value.interval = val === 'monthly' ? 'month' : 'year'
       price.value.interval_count = 1
     }
-  }
+  },
 })
 </script>
 

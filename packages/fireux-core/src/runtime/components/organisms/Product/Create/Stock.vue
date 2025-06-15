@@ -19,7 +19,9 @@
 </template>
 
 <script setup lang="ts">
-const { product } = useCreateProductState()
+import { useCreateProductState } from '../../../../composables/firestore/objects/Product/useCreateProductState'
+
+const { product } = await useCreateProductState()
 </script>
 
 <style scoped>

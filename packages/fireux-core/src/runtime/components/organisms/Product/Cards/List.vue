@@ -2,7 +2,7 @@
   <div class="product-list">
     <pre>{{ props.products }}</pre>
     <template v-if="props.products.length">
-      <OrganismsProductCardsProduct
+      <FireOrganismsProductCardsProduct
         v-for="product in props.products"
         :key="product.slug"
         :product="product"
@@ -15,6 +15,7 @@
 </template>
 
 <script setup lang="ts">
+import type { FirebaseProduct } from '../../../../models/product.model'
 
 const props = defineProps<{ products: FirebaseProduct[] }>()
 </script>

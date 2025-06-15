@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
 import type { DocumentReference } from 'firebase/firestore'
-import type { AppUserProfile } from '../../../models/appUser.model'
+import type { AppUser } from '../../../models/appUser.model'
 import { useAppUserUtils } from './useAppUserUtils'
 import { useAppUserEnsure } from './useAppUserEnsure'
 import { useAppUserUpdate } from './useAppUserUpdate'
@@ -13,24 +13,72 @@ export function useAppUser() {
   const currentUser = useCurrentUser()
   const { appId } = useFireUXConfig()
 
-  const appUserDocRef = computed<DocumentReference<AppUserProfile> | null>(
-    () =>
-      currentUser.value && appId
-        ? (doc(
-            db,
-            `apps/${appId}/users`,
-            currentUser.value.uid
-          ) as DocumentReference<AppUserProfile>)
-        : null
+  const appUserDocRef = computed<DocumentReference<AppUser> | null>(() =>
+    currentUser.value && appId
+      ? (doc(
+          db,
+          `apps/${appId}/users`,
+          currentUser.value.uid
+        ) as DocumentReference<AppUser>)
+      : null
   )
 
-  const { data: appUser } = useDocument<AppUserProfile>(appUserDocRef)
+  const { data: rawAppUser } = useDocument<AppUser>(appUserDocRef)
+
+  // Enhanced app user with normalized data
+  const appUser = computed(() => {
+    if (!rawAppUser.value) return null
+
+    return {
+      ...rawAppUser.value,
+      // Ensure consistent display name
+      display_name:
+        rawAppUser.value.display_name ||
+        currentUser.value?.displayName ||
+        rawAppUser.value.email,
+      // Ensure handle exists
+      handle:
+        rawAppUser.value.handle ||
+        rawAppUser.value.email?.split('@')[0] ||
+        'user',
+      // Ensure arrays exist
+      notifications: rawAppUser.value.notifications || [],
+      followers: rawAppUser.value.followers || [],
+      following: rawAppUser.value.following || [],
+    }
+  })
 
   const isAdmin = computed(() => appUser.value?.role === 'admin')
+  const isPro = computed(() => appUser.value?.subscription?.is_pro === true)
+
+  /**
+   * Check if user has a specific subscription plan
+   */
+  function hasSubscription(
+    planType: 'pro' | 'premium' | 'enterprise' = 'pro'
+  ): boolean {
+    if (planType === 'pro') {
+      return isPro.value
+    }
+    return (
+      appUser.value?.subscription?.plan === planType &&
+      appUser.value?.subscription?.is_pro === true
+    )
+  }
+
+  /**
+   * Get current subscription plan
+   */
+  const subscriptionPlan = computed(
+    () => appUser.value?.subscription?.plan || 'free'
+  )
 
   return {
     appUser,
     isAdmin,
+    isPro,
+    hasSubscription,
+    subscriptionPlan,
     ...useAppUserUtils(),
     ...useAppUserEnsure(),
     ...useAppUserUpdate(),
