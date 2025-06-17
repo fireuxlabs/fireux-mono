@@ -1,6 +1,5 @@
 <template>
   <div class="product-list">
-    <pre>{{ props.products }}</pre>
     <template v-if="props.products.length">
       <FireOrganismsProductCardsProduct
         v-for="product in props.products"

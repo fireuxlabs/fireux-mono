@@ -1,64 +1,8 @@
-<!-- app/components/organisms/Blog/Create<script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useImageUploadBridge } from '../../../composables/utils/useImageUploadBridge'
-
-// base keys for your two image slots (picker will append "Data" internally)
-const FEATURED_IMAGE_KEY = 'createBlogFeaturedImage'
-const SOCIAL_IMAGE_KEY = 'createBlogSocialImage'
-
-// Component refs
-const featuredImageRef = ref()
-const socialImageRef = ref()
-
-// Upload bridge
-const { uploadProgress, uploadErrors, uploadStateImages, clearUploadState } = useImageUploadBridge()
-
-// Show progress when uploading
-const showProgress = computed(() => {
-  return Object.keys(uploadProgress.value).length > 0
-})
-
-// Expose methods for parent component
-defineExpose({
-  async uploadImages(blogId: string) {
-    try {
-      clearUploadState()
-      
-      const imageRefs = {
-        featured: featuredImageRef.value,
-        social: socialImageRef.value
-      }
-      
-      const urls = await uploadStateImages(imageRefs, 'blogs', blogId)
-      
-      return {
-        featuredImage: urls.featured || '',
-        socialImage: urls.social || ''
-      }
-    } catch (error) {
-      console.error('Error uploading blog images:', error)
-      throw error
-    }
-  },
-  
-  getImageFiles() {
-    return {
-      featured: featuredImageRef.value?.getFile(),
-      social: socialImageRef.value?.getFile()
-    }
-  },
-  
-  clearImages() {
-    featuredImageRef.value?.clear()
-    socialImageRef.value?.clear()
-    clearUploadState()
-  }
-})
-</script>es.vue -->
+<!-- Blog Image Upload Component -->
 <template>
   <div class="images-system">
     <div class="image-wrapper featured">
-      <MoleculesFormsStateImagePicker
+      <FireMoleculesFormsStateImagePicker
         ref="featuredImageRef"
         label="Featured Image"
         :state-key="FEATURED_IMAGE_KEY"
@@ -66,7 +10,7 @@ defineExpose({
     </div>
 
     <div class="image-wrapper social">
-      <MoleculesFormsStateImagePicker
+      <FireMoleculesFormsStateImagePicker
         ref="socialImageRef"
         label="Social Image"
         :state-key="SOCIAL_IMAGE_KEY"
@@ -75,17 +19,10 @@ defineExpose({
 
     <!-- Upload Progress Display -->
     <div v-if="showProgress" class="upload-progress">
-      <h4>Upload Progress</h4>
-      <div
-        v-for="(progress, key) in uploadProgress"
-        :key="key"
-        class="progress-item"
-      >
-        <span class="progress-label">{{ key }}</span>
-        <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: `${progress}%` }"></div>
-        </div>
-        <span class="progress-text">{{ progress }}%</span>
+      <h4>Uploading Images...</h4>
+      <div class="uploading-spinner">
+        <UIcon name="i-lucide-loader-2" class="animate-spin" />
+        <span>Processing images...</span>
       </div>
 
       <!-- Error Display -->
@@ -100,9 +37,90 @@ defineExpose({
 </template>
 
 <script setup lang="ts">
-// base keys for your two image slots (picker will append “Data” internally)
+import { ref, computed } from 'vue'
+import { useMediaStorage } from '../../../../composables/firebase/useMediaStorage'
+
+// Base keys for image slots
 const FEATURED_IMAGE_KEY = 'createBlogFeaturedImage'
 const SOCIAL_IMAGE_KEY = 'createBlogSocialImage'
+
+// Component refs
+const featuredImageRef = ref()
+const socialImageRef = ref()
+
+// Upload state
+const uploading = ref(false)
+const uploadErrors = ref<Record<string, string>>({})
+
+// Show progress when uploading
+const showProgress = computed(() => uploading.value)
+
+// Get upload service
+const { uploadImage } = useMediaStorage()
+
+// Expose methods for parent component
+defineExpose({
+  async uploadImages(blogId: string) {
+    try {
+      uploading.value = true
+      uploadErrors.value = {}
+
+      const results: { featuredImage: string; socialImage: string } = {
+        featuredImage: '',
+        socialImage: '',
+      }
+
+      // Upload featured image if available
+      const featuredFile = featuredImageRef.value?.getFile()
+      if (featuredFile) {
+        try {
+          results.featuredImage = await uploadImage(
+            featuredFile,
+            'blogs',
+            blogId,
+            'featured'
+          )
+        } catch (error) {
+          uploadErrors.value.featured =
+            error instanceof Error ? error.message : 'Upload failed'
+        }
+      }
+
+      // Upload social image if available
+      const socialFile = socialImageRef.value?.getFile()
+      if (socialFile) {
+        try {
+          results.socialImage = await uploadImage(
+            socialFile,
+            'blogs',
+            blogId,
+            'social'
+          )
+        } catch (error) {
+          uploadErrors.value.social =
+            error instanceof Error ? error.message : 'Upload failed'
+        }
+      }
+
+      return results
+    } finally {
+      uploading.value = false
+    }
+  },
+
+  getImageFiles() {
+    return {
+      featured: featuredImageRef.value?.getFile(),
+      social: socialImageRef.value?.getFile(),
+    }
+  },
+
+  clearImages() {
+    featuredImageRef.value?.clear()
+    socialImageRef.value?.clear()
+    uploadErrors.value = {}
+  },
+})
 </script>
 
 <style scoped>
@@ -142,12 +160,6 @@ const SOCIAL_IMAGE_KEY = 'createBlogSocialImage'
   max-width: 600px;
 }
 
-/*
-  Any <img> inside .image-wrapper will:
-  • fill the container
-  • crop via object-fit
-  • stay centered
-*/
 .image-wrapper img {
   width: 100%;
   height: 100%;
@@ -171,41 +183,11 @@ const SOCIAL_IMAGE_KEY = 'createBlogSocialImage'
   color: var(--text-primary);
 }
 
-.progress-item {
+.uploading-spinner {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  margin-bottom: var(--space-2);
-}
-
-.progress-label {
-  min-width: 80px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.progress-bar {
-  flex: 1;
-  height: 8px;
-  background: var(--ui-bg);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: var(--color-primary-500);
-  transition: width 0.3s ease;
-  border-radius: var(--radius-full);
-}
-
-.progress-text {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  min-width: 40px;
-  text-align: right;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
 .upload-errors {
@@ -227,7 +209,6 @@ const SOCIAL_IMAGE_KEY = 'createBlogSocialImage'
   margin-bottom: var(--space-2);
 }
 
-/* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .error-item {
     background: var(--color-red-950);

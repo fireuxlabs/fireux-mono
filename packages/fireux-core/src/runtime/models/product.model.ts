@@ -51,3 +51,8 @@ export interface FirebaseProduct extends StripeProduct {
   features?: string[] // List of features included
   is_default_plan?: boolean // Mark as default app subscription
 }
+
+export type ProductCreationInput = Omit<
+  FirebaseProduct,
+  'id' | 'created_at' | 'updated_at' | 'default_price' | 'prices'
+>

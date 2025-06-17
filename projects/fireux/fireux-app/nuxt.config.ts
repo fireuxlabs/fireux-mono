@@ -14,8 +14,14 @@ export default defineNuxtConfig({
     'fireux-core/assets/css/main.css',
     'fireux-core/assets/design-system/main.scss',
   ],
+  nitro: {
+    firebase: {
+      gen: 2
+    }
+  },
   modules: [
     'fireux-core',
+    '@nuxt/content',
     [
       'nuxt-vuefire',
       {

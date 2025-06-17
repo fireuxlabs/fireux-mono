@@ -44,7 +44,7 @@ export function useProductUtils() {
     collection: string,
     id: string
   ): Promise<string> {
-    // Call uploadImage(fileOrUrl, collection, id, type)
+    // Call uploadImageUtility(fileOrUrl, collection, id, type)
     const url = await uploadImage(data, collection, id, 'main')
     return url || ''
   }
@@ -180,7 +180,6 @@ export function useProductUtils() {
     buildSlugIfUnique,
     uploadMainImage,
     checkUnique,
-    uploadImage,
     createAppProProductPayload,
     // Subscription utilities
     getAppSubscriptionProducts,

@@ -1,16 +1,16 @@
 <template>
   <article class="preview-card">
-    {{ post }}
+    {{ blogPost }}
     <!-- TITLE -->
     <h1>
-      <span v-if="post.title">{{ post.title }}</span>
+      <span v-if="blogPost.title">{{ blogPost.title }}</span>
       <em v-else class="warning">Missing title</em>
     </h1>
 
     <!-- SLUG -->
     <p>
       <strong>Slug:</strong>
-      <span v-if="post.slug">{{ post.slug }}</span>
+      <span v-if="blogPost.slug">{{ blogPost.slug }}</span>
       <em v-else class="warning">Missing slug</em>
     </p>
 
@@ -31,8 +31,8 @@
     <!-- AUTHOR -->
     <p>
       <strong>Author:</strong>
-      <span v-if="post.author?.display_name">
-        {{ post.author.display_name }}
+      <span v-if="blogPost.author?.display_name">
+        {{ blogPost.author.display_name }}
       </span>
       <em v-else class="warning">Missing author</em>
     </p>
@@ -40,26 +40,26 @@
     <!-- READING TIME -->
     <p>
       <strong>Reading time:</strong>
-      <span v-if="post.readingTime">{{ post.readingTime }}</span>
+      <span v-if="blogPost.readingTime">{{ blogPost.readingTime }}</span>
       <em v-else class="warning">Missing readingTime</em>
     </p>
 
     <!-- FEATURED IMAGE -->
-    <div v-if="featuredData" class="preview-image">
-      <img :src="featuredData" alt="Featured image preview" />
+    <div v-if="featuredImageData" class="preview-image">
+      <img :src="featuredImageData" alt="Featured image preview" />
     </div>
     <em v-else class="warning">Missing featured image</em>
 
     <!-- SOCIAL IMAGE -->
-    <div v-if="socialData" class="preview-image">
-      <img :src="socialData" alt="Social image preview" />
+    <div v-if="socialImageData" class="preview-image">
+      <img :src="socialImageData" alt="Social image preview" />
     </div>
     <em v-else class="warning">Missing social image</em>
 
     <!-- TYPE -->
     <p>
       <strong>Type:</strong>
-      <span v-if="post.type">{{ post.type }}</span>
+      <span v-if="blogPost.type">{{ blogPost.type }}</span>
       <em v-else class="warning">Missing type</em>
     </p>
 
@@ -73,7 +73,9 @@
     <!-- META DESCRIPTION -->
     <p>
       <strong>Meta Description:</strong>
-      <span v-if="post.metaDescription">{{ post.metaDescription }}</span>
+      <span v-if="blogPost.metaDescription">{{
+        blogPost.metaDescription
+      }}</span>
       <em v-else class="warning">Missing metaDescription</em>
 
       <!-- CONTENT -->
@@ -81,13 +83,13 @@
     </p>
 
     <section v-html="sanitizedContent" />
-    <em v-if="!post.content" class="warning">Missing content</em>
+    <em v-if="!blogPost.content" class="warning">Missing content</em>
 
     <!-- KEYWORDS -->
     <div>
       <strong>Keywords:</strong>
-      <ul v-if="post.keywords.length">
-        <li v-for="kw in post.keywords" :key="kw">{{ kw }}</li>
+      <ul v-if="blogPost.keywords.length">
+        <li v-for="kw in blogPost.keywords" :key="kw">{{ kw }}</li>
       </ul>
       <em v-else class="warning">No keywords provided</em>
     </div>
@@ -95,8 +97,8 @@
     <!-- TAGS -->
     <div>
       <strong>Tags:</strong>
-      <ul v-if="post.tags.length">
-        <li v-for="tag in post.tags" :key="tag">{{ tag }}</li>
+      <ul v-if="blogPost.tags.length">
+        <li v-for="tag in blogPost.tags" :key="tag">{{ tag }}</li>
       </ul>
       <em v-else class="warning">No tags provided</em>
     </div>
@@ -105,12 +107,12 @@
     <p>
       <strong>Canonical URL:</strong>
       <a
-        v-if="post.canonicalUrl"
-        :href="post.canonicalUrl"
+        v-if="blogPost.canonicalUrl"
+        :href="blogPost.canonicalUrl"
         target="_blank"
         rel="noopener"
       >
-        {{ post.canonicalUrl }}
+        {{ blogPost.canonicalUrl }}
       </a>
       <em v-else class="warning">Missing canonicalUrl</em>
     </p>
@@ -119,12 +121,12 @@
     <p>
       <strong>CTA link:</strong>
       <a
-        v-if="post.cta_link"
-        :href="post.cta_link"
+        v-if="blogPost.cta_link"
+        :href="blogPost.cta_link"
         target="_blank"
         rel="noopener"
       >
-        {{ post.cta_link }}
+        {{ blogPost.cta_link }}
       </a>
       <em v-else class="warning">Missing cta_link</em>
     </p>
@@ -133,17 +135,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useState } from 'nuxt/app'
 import DOMPurify from 'dompurify'
-import type { BlogPost } from '../../../../models/blogPost.model'
+import { useCreateBlogPostState } from '../../../../composables/firestore/objects/Blog/useCreateBlogPostState'
 import { useFireUXConfig } from '../../../../composables/FireUXConfig'
 
-// Use full BlogPost so all fields exist
-const post = useState<BlogPost>('createBlogPost')
-
-// Pull the two images from their own state keys (Data-URLs)
-const featuredData = useState<string>('createBlogFeaturedImage')
-const socialData = useState<string>('createBlogSocialImage')
+// Use the centralized state management
+const { blogPost, featuredImageData, socialImageData } =
+  useCreateBlogPostState()
 
 // Timestamps for display-only
 const now = new Date().toISOString()
@@ -152,10 +150,10 @@ const updatedAt = now
 
 // App ID from runtime config
 const config = useFireUXConfig()
-const tenantId = config.tenantId
+const tenantId = config.appId
 
 // Sanitize the HTML before injecting
 const sanitizedContent = computed(() =>
-  DOMPurify.sanitize(post.value.content || '')
+  DOMPurify.sanitize(blogPost.value.content || '')
 )
 </script>

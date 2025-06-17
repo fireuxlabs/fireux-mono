@@ -63,6 +63,12 @@ export async function useProducts() {
     }
   }
 
+  // Await all the async composables
+  const productCreate = await useProductCreate()
+  const productUpdate = useProductUpdate()
+  const productDelete = useProductDelete()
+  const productUtils = useProductUtils()
+
   return {
     defaultCurrency,
     productsCollection,
@@ -71,9 +77,9 @@ export async function useProducts() {
     fetchProductPrices,
     useCreateProductState,
     useCreatePricesState,
-    ...useProductCreate(),
-    ...useProductUpdate(),
-    ...useProductDelete(),
-    ...useProductUtils(),
+    ...productCreate,
+    ...productUpdate,
+    ...productDelete,
+    ...productUtils,
   }
 }

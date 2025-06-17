@@ -42,5 +42,6 @@
     "rollup": "^3.0.0",
     "rollup-plugin-copy": "^3.5.0",
     "sass": "^1.89.1"
-  }
+  },
+  "type": "module"
 }

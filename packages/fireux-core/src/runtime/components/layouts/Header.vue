@@ -8,9 +8,7 @@
         </div>
 
         <!-- Desktop Navigation Menu -->
-        <nav class="hidden md:block">
-          <UNavigationMenu orientation="horizontal" :items="appLinks" />
-        </nav>
+          <UNavigationMenu v-if="!isMobile" orientation="horizontal" :items="appLinks" />
 
         <!-- Right Section: User Profile / Sign-In & Mobile Menu -->
         <div class="right-section">

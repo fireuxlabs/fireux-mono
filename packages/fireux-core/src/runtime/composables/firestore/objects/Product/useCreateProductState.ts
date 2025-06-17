@@ -5,6 +5,7 @@ import { useFirestoreManager } from '../../useFirestoreManager'
 import type {
   FirebaseProduct,
   DefaultPrice,
+  ProductCreationInput,
 } from '../../../../models/product.model'
 import { ref, watch, onMounted } from 'vue'
 import type { Ref } from 'vue'
@@ -40,7 +41,8 @@ export async function useCreateProductState() {
     defaultProduct
   )
 
-  const mainImageData = useStorage<string>('createProductMainImage', '')
+  // Fix: Use the same key that ImagePicker uses (with "Data" suffix)
+  const mainImageData = useStorage<string>('createProductMainImageData', '')
 
   // Replace the problematic `products` assignment with a mock implementation
   const products = {
@@ -128,20 +130,45 @@ export async function useCreateProductState() {
     mainImageData.value = ''
   }
 
-  async function getProductPayload() {
-    const name = product.value.name?.trim()
-    if (!name) throw new Error('❌ Product name is required.')
-    if (!mainImageData.value) throw new Error('❌ Main image is required.')
-    if (!product.value.slug) throw new Error('❌ Slug is required.')
+  // Update the type of `getProductPayload` to return `ProductCreationInput`
+  async function getProductPayload(): Promise<ProductCreationInput> {
+    console.log('📦 [getProductPayload] Starting payload creation...')
+    console.log('📦 [getProductPayload] Current product state:', product.value)
 
+    const name = product.value.name?.trim()
+    if (!name) {
+      console.error('❌ [getProductPayload] Product name is missing')
+      throw new Error('❌ Product name is required.')
+    }
+    console.log('✅ [getProductPayload] Product name validated:', name)
+
+    if (!product.value.slug) {
+      console.error('❌ [getProductPayload] Slug is missing')
+      throw new Error('❌ Slug is required.')
+    }
+    console.log('✅ [getProductPayload] Slug validated:', product.value.slug)
+
+    console.log('🔍 [getProductPayload] Checking slug uniqueness...')
     const slugResult = await buildSlugIfUnique(
       'products',
       name,
       tenantId as string
     )
-    if (!slugResult.success) throw new Error(`❌ ${slugResult.message}`)
+    if (!slugResult.success) {
+      console.error(
+        '❌ [getProductPayload] Slug validation failed:',
+        slugResult.message
+      )
+      throw new Error(`❌ ${slugResult.message}`)
+    }
+    console.log('✅ [getProductPayload] Slug uniqueness confirmed')
 
-    return {
+    console.log(
+      '🖼️ [getProductPayload] Main image data length:',
+      mainImageData.value?.length || 0
+    )
+
+    const payload: ProductCreationInput = {
       name,
       description: product.value.description || '',
       content: product.value.content || '',
@@ -150,16 +177,14 @@ export async function useCreateProductState() {
       stock: product.value.stock ?? null,
       product_type: product.value.product_type ?? 'physical',
       track_stock: product.value.track_stock ?? false,
-      images: [mainImageData.value],
-      default_price: defaultPrice.value
-        ? {
-            id: (defaultPrice.value as DefaultPrice).id || '',
-            unit_amount: (defaultPrice.value as DefaultPrice).unit_amount || 0,
-            interval:
-              (defaultPrice.value as DefaultPrice).interval || undefined,
-          }
-        : undefined,
-    } as Partial<FirebaseProduct>
+      images: [],
+      main_image: mainImageData.value || '', // Use the stored image data
+      appId: tenantId as string,
+      creator_id: currentUser.value?.uid || '',
+    }
+
+    console.log('✅ [getProductPayload] Payload created successfully:', payload)
+    return payload
   }
 
   return {

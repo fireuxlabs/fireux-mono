@@ -118,7 +118,7 @@ async function testModuleExports(type) {
 
       const components = listVueFiles(componentsDir)
       console.log('\nAvailable Components:')
-      components.forEach((comp) => {
+      for (const comp of components) {
         const content = fs.readFileSync(comp.fullPath, 'utf-8')
         const hasTemplate = content.includes('<template>')
         const hasScript = content.includes('<script')
@@ -128,12 +128,12 @@ async function testModuleExports(type) {
 
         // Simulate consumption by checking if the component can be imported and used
         try {
-          const importedComponent = require(comp.fullPath)
+          const importedComponent = await import(comp.fullPath)
           console.log(`  Import: ${importedComponent ? '✓' : '✗'}`)
         } catch (error) {
           console.error(`  Import: ✗ - ${error.message}`)
         }
-      })
+      }
     } else if (type === 'composables') {
       const composablesDir = join(__dirname, 'src/runtime/composables')
       if (!fs.existsSync(composablesDir)) {
@@ -143,7 +143,7 @@ async function testModuleExports(type) {
 
       const composables = listTSFiles(composablesDir)
       console.log('\nDiscovered Composables:')
-      composables.forEach((comp) => {
+      for (const comp of composables) {
         const content = fs.readFileSync(comp.fullPath, 'utf-8')
         const hasExport =
           /export\s+(?:default\s+)?(?:async\s+)?(?:function|const|let|var)/.test(
@@ -153,12 +153,12 @@ async function testModuleExports(type) {
 
         // Simulate consumption by checking if the composable can be imported and used
         try {
-          const importedComposable = require(comp.fullPath)
+          const importedComposable = await import(comp.fullPath)
           console.log(`  Import: ${importedComposable ? '✓' : '✗'}`)
         } catch (error) {
           console.error(`  Import: ✗ - ${error.message}`)
         }
-      })
+      }
     } else if (type === 'modules') {
       const modulePath = join(__dirname, 'src/module.ts')
       if (!fs.existsSync(modulePath)) {
@@ -168,7 +168,7 @@ async function testModuleExports(type) {
 
       // Simulate consumption by checking if the module can be imported and used
       try {
-        const importedModule = require(modulePath)
+        const importedModule = await import(modulePath)
         console.log(`  Import: ${importedModule ? '✓' : '✗'}`)
       } catch (error) {
         console.error(`  Import: ✗ - ${error.message}`)

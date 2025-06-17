@@ -19,5 +19,12 @@ export function configureServer(resolver: any) {
     handler: resolvePath('./runtime/server/api/proxy/google-avatar'),
   })
 
+  // Simple Stripe API routes (without composable imports)
+  addServerHandler({
+    route: '/api/stripe/create-product',
+    method: 'post',
+    handler: resolvePath('./runtime/server/api/stripe/create-product.post'),
+  })
+
   // Additional server handlers can be added here as the module grows
 }

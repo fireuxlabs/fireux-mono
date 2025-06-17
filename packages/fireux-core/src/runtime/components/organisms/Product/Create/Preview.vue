@@ -25,6 +25,11 @@
       :product="previewProduct"
     />
   </div>
+  <pre>product  {{ product }}</pre>
+  <pre>prices  {{ prices }}</pre>
+  <pre>defaultPrice  {{ defaultPrice }}</pre>
+  <pre>mainImageData length: {{ mainImageData?.length || 0 }}</pre>
+  <pre>previewProduct {{ previewProduct }}</pre>
 </template>
 
 <script setup lang="ts">
@@ -37,14 +42,17 @@ import type { FirebaseProduct } from '../../../../models/product.model'
 const { product } = await useCreateProductState()
 const { prices, defaultPrice } = useCreatePricesState()
 
-const mainImageData = useStorage('createProductMainImage', '')
+// Fix: Use the same key that ImagePicker uses (with "Data" suffix)
+const mainImageData = useStorage('createProductMainImageData', '')
 
 const previewProduct = computed(
   () =>
     ({
       ...product.value,
+      // Fix: Connect the prices from useCreatePricesState to the product
       prices: prices.value,
-      main_image: mainImageData.value,
+      // Use main_image field from FirebaseProduct model
+      main_image: mainImageData.value || '/img/placeholder-product.png',
       default_price: defaultPrice.value,
     }) as Partial<FirebaseProduct>
 )

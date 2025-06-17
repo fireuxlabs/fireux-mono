@@ -8,7 +8,7 @@
       block
       :ui="{
         trailingIcon:
-          'group-data-[state=open]:rotate-180 transition-transform duration-200'
+          'group-data-[state=open]:rotate-180 transition-transform duration-200',
       }"
     />
 
@@ -17,21 +17,21 @@
         <!-- Meta Description -->
         <UFormField label="Meta Description">
           <UInput
-            v-model="post.metaDescription"
+            v-model="blogPost.metaDescription"
             placeholder="A short summary for SEO"
           />
         </UFormField>
 
         <!-- Keywords -->
-        <MoleculesFormsArrayOfStrings
-          v-model="post.keywords"
+        <FireMoleculesFormsArrayOfStrings
+          v-model="blogPost.keywords"
           label="Keywords"
           item-placeholder="Keyword"
           new-item-placeholder="Add new keyword"
         />
         <!-- Tags -->
-        <MoleculesFormsArrayOfStrings
-          v-model="post.tags"
+        <FireMoleculesFormsArrayOfStrings
+          v-model="blogPost.tags"
           label="Tags"
           item-placeholder="Tag"
           new-item-placeholder="Add new tag"
@@ -42,7 +42,7 @@
           <div class="input-with-prefix">
             <span class="prefix">https://</span>
             <UInput
-              v-model="post.canonicalUrl"
+              v-model="blogPost.canonicalUrl"
               placeholder="example.com/your-post"
             />
           </div>
@@ -53,7 +53,7 @@
           <div class="input-with-prefix">
             <span class="prefix">https://</span>
             <UInput
-              v-model="post.cta_link"
+              v-model="blogPost.cta_link"
               placeholder="example.com/get-started"
             />
           </div>
@@ -62,7 +62,7 @@
         <!-- CTA Button Text -->
         <UFormField label="CTA Button Text">
           <UInput
-            v-model="post.cta_text"
+            v-model="blogPost.cta_text"
             placeholder="e.g. Read More or Buy Now"
           />
         </UFormField>
@@ -72,7 +72,9 @@
 </template>
 
 <script setup lang="ts">
-const post = useState<BlogPostEntry>('createBlogPost')
+import { useCreateBlogPostState } from '../../../../composables/firestore/objects/Blog/useCreateBlogPostState'
+
+const { blogPost } = useCreateBlogPostState()
 </script>
 
 <style scoped>

@@ -2,7 +2,7 @@
   <div class="page">
     <h1>Products</h1>
     <template v-if="productsCollection">
-      <OrganismsProductCardsList :products="productsCollection" />
+      <FireOrganismsProductCardsList :products="productsCollection" />
     </template>
     <template v-else>
       <div class="spinner">Loading products...</div>
@@ -11,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+import { useProducts } from '../../composables/firestore/objects/Product/useProducts'
+
 const { productsCollection } = await useProducts()
 </script>
 

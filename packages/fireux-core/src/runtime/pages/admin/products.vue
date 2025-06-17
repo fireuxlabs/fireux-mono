@@ -3,8 +3,6 @@
     <div class="dashboard-page-grid">
       <!-- Product Create Section -->
       <FireOrganismsProductCreateSystem class="dashboard-grid-section" />
-
-      <!-- Future sections can be added here, such as product stats or links -->
     </div>
   </ClientOnly>
 </template>
@@ -25,14 +23,31 @@ definePageMeta({
 </script>
 
 <style scoped>
-.dashboard-grid-section {
-  width: 100%;
-  max-width: 100%;
+/* Override the global masonry grid for this specific page */
+.dashboard-page-grid {
+  column-count: unset !important;
+  display: block;
 }
 
+.dashboard-grid-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  break-inside: unset;
+}
+
+/* Tablet and up - center horizontally */
 @media (min-width: 768px) {
-  .dashboard-page-grid .dashboard-grid-section:first-child {
-    max-width: 720px; /* Adjust this value to control width */
+  .dashboard-grid-section {
+    align-items: center;
+  }
+}
+
+/* Desktop - constrain width */
+@media (min-width: 1024px) {
+  .dashboard-grid-section {
+    max-width: 800px;
+    margin: 0 auto;
   }
 }
 </style>

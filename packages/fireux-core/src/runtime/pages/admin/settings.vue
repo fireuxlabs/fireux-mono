@@ -74,9 +74,9 @@ const { label, icon } = getRouteMetaForPath('/admin/settings')
 definePageMeta({
   layout: 'dashboard',
   layoutProps: {
-    dashboardType: 'admin-dashboard'
+    dashboardType: 'admin-dashboard',
   },
   title: label,
-  icon: icon
+  icon: icon,
 })
 </script>

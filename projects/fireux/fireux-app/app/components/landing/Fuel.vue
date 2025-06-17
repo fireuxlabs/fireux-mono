@@ -2,10 +2,9 @@
 <template>
   <ClientOnly>
     <section class="section">
-      <LogoFlame size="small" />
       <div class="grid-layout">
         <div v-for="(logo, key) in logos" :key="key" class="fuel-item">
-          <img :src="isDark ? logo.dark : logo.light" :alt="key + ' Logo'" >
+          <img :src="isDark ? logo.dark : logo.light" :alt="key + ' Logo'" />
         </div>
       </div>
     </section>
@@ -13,7 +12,6 @@
 </template>
 
 <script setup>
-
 const colorMode = useColorMode()
 
 // ✅ Ensure correct initial state (Runs only on the client)
@@ -22,16 +20,16 @@ const isDark = computed(() => colorMode.value === 'dark')
 const logos = {
   nuxt: {
     light: '/img/nuxt-black.png',
-    dark: '/img/nuxt-white.png'
+    dark: '/img/nuxt-white.png',
   },
   firebase: {
     light: '/img/firebase-black.png',
-    dark: '/img/firebase-white.png'
+    dark: '/img/firebase-white.png',
   },
   stripe: {
     light: '/img/stripe-black.png',
-    dark: '/img/stripe-white.png'
-  }
+    dark: '/img/stripe-white.png',
+  },
 }
 </script>
 
@@ -61,14 +59,18 @@ const logos = {
   justify-content: center;
   padding: var(--space-8);
   background-color: var(--ui-bg);
-  transition: transform 0.3s ease-out, box-shadow 0.3s ease-in-out;
+  transition:
+    transform 0.3s ease-out,
+    box-shadow 0.3s ease-in-out;
 }
 
 /* ✅ Fuel Item Image */
 .fuel-item img {
   max-width: 100px;
   filter: grayscale(50%);
-  transition: filter 0.3s ease-out, transform 0.3s ease-in-out;
+  transition:
+    filter 0.3s ease-out,
+    transform 0.3s ease-in-out;
 }
 
 .fuel-item:hover {

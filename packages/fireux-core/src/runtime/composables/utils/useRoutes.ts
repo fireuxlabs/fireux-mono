@@ -125,42 +125,27 @@ export function getRouteMetaForPath(
  * - subHeader: Computed subheader for the current route.
  */
 export function useRoutes() {
-  console.log('%c🔍 useRoutes() called', 'color: blue; font-weight: bold;')
-
   const route = useRoute()
   const ROUTE_LINKS = getRouteLinks()
 
   // Try to get isAdmin safely, default to false if not available
   let isAdmin = ref(false)
-  console.log('%c📊 Initial isAdmin ref:', 'color: cyan;', isAdmin)
 
   try {
     const appUser = useAppUser()
-    console.log('%c✅ useAppUser successful:', 'color: green;', appUser)
     isAdmin = appUser.isAdmin || ref(false)
-    console.log('%c📊 isAdmin from appUser:', 'color: cyan;', isAdmin)
   } catch (error) {
     // If useAppUser fails, just use false
-    console.warn(
-      'useAppUser not available in useRoutes, defaulting isAdmin to false'
-    )
     isAdmin = ref(false)
-    console.log('%c📊 Fallback isAdmin ref:', 'color: orange;', isAdmin)
   }
 
   // Public app links.
   const appLinks = computed<RouteLink[]>(() => {
-    console.log('%c🔗 Computing appLinks', 'color: purple;')
     return ROUTE_LINKS.app
   })
 
   // Dashboard routes for desktop navigation (combined if admin).
   const dashboardLinks = computed<RouteLink[]>(() => {
-    console.log(
-      '%c🔗 Computing dashboardLinks, isAdmin.value:',
-      'color: purple;',
-      isAdmin.value
-    )
     const dashboardParent = ROUTE_LINKS.dashboard[0]
     const dashboardChildren: RouteLink[] =
       dashboardParent && dashboardParent.children
@@ -173,11 +158,6 @@ export function useRoutes() {
 
   // Mobile: group everything into nested arrays.
   const mobileLinks = computed<RouteLink[][]>(() => {
-    console.log(
-      '%c🔗 Computing mobileLinks, isAdmin.value:',
-      'color: purple;',
-      isAdmin.value
-    )
     const groups: RouteLink[][] = []
     groups.push(ROUTE_LINKS.app)
     groups.push(ROUTE_LINKS.dashboard)
@@ -188,7 +168,6 @@ export function useRoutes() {
   })
 
   const subHeader = computed(() => {
-    console.log('%c🔗 Computing subHeader', 'color: purple;')
     const title = route.meta?.title
     const icon = route.meta?.icon
     return {
@@ -197,12 +176,5 @@ export function useRoutes() {
     }
   })
 
-  const result = { appLinks, dashboardLinks, mobileLinks, subHeader }
-  console.log(
-    '%c🎯 useRoutes returning:',
-    'color: green; font-weight: bold;',
-    result
-  )
-
-  return result
+  return { appLinks, dashboardLinks, mobileLinks, subHeader }
 }

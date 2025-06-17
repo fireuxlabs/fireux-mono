@@ -2,16 +2,16 @@
   <ClientOnly>
     <div class="dashboard-page-grid">
       <!-- Blog Create Section -->
-      <OrganismsBlogCreateSystem class="dashboard-grid-section" />
+      <FireOrganismsBlogCreateSystem class="dashboard-grid-section" />
 
       <!-- Blog Post Count Section -->
-      <!-- <OrganismsAdminBlogPostCount class="dashboard-grid-section" :post-count="postCount" /> -->
+      <!-- <FireOrganismsAdminBlogPostCount class="dashboard-grid-section" :post-count="postCount" /> -->
 
       <!-- Last Blog Post Section -->
-      <!-- <OrganismsAdminBlogLastPost class="dashboard-grid-section" :last-post="lastPost" /> -->
+      <!-- <FireOrganismsAdminBlogLastPost class="dashboard-grid-section" :last-post="lastPost" /> -->
 
       <!-- Blog Link Section -->
-      <!-- <OrganismsAdminBlogLink class="dashboard-grid-section" /> -->
+      <!-- <FireOrganismsAdminBlogLink class="dashboard-grid-section" /> -->
     </div>
   </ClientOnly>
 </template>
@@ -30,3 +30,9 @@ definePageMeta({
   icon: icon,
 })
 </script>
+
+<style scoped>
+.dashboard-page-grid {
+  column-count: unset !important;
+}
+</style>

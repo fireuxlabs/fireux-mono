@@ -33,14 +33,16 @@
 </template>
 
 <script setup>
+import { getRouteMetaForPath } from '../../composables/utils/useRoutes'
+
 const { label, icon } = getRouteMetaForPath('/admin/users')
 
 definePageMeta({
   layout: 'dashboard',
   layoutProps: {
-    dashboardType: 'admin-dashboard'
+    dashboardType: 'admin-dashboard',
   },
   title: label,
-  icon: icon
+  icon: icon,
 })
 </script>

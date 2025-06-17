@@ -1,46 +1,46 @@
 <!-- app/components/organisms/Blog/Create/Write.vue -->
 <template>
   <div class="write-system">
-    <UInput v-model="post.title" placeholder="Blog Title" />
+    <UInput v-model="blogPost.title" placeholder="Blog Title" />
 
     <div class="editor-container">
       <ClientOnly>
         <QuillEditor
-          v-model:content="post.content"
+          v-model:content="blogPost.content"
           content-type="html"
           theme="snow"
         />
       </ClientOnly>
     </div>
 
-    <OrganismsBlogCreateAdvanced />
-    <OrganismsBlogCreateImages />
+    <FireOrganismsBlogCreateAdvanced />
+    <FireOrganismsBlogCreateImages />
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted, watch } from 'vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { useCreateBlogPostState } from '../../../../composables/firestore/objects/Blog/useCreateBlogPostState'
+import { useBlogPosts } from '../../../../composables/firestore/objects/Blog/useBlogPosts'
 
-const { getAuthor, generateSlug, computeReadingTime } = useBlogPosts()
-const post = useState<BlogPostEntry>('createBlogPost')
+const { generateSlug, computeReadingTime } = await useBlogPosts()
+const { blogPost } = useCreateBlogPostState()
 
-onMounted(() => {
-  // Seed author
-  post.value.author = getAuthor()
-})
-
+// Watch for title changes to auto-generate slug
 watch(
-  () => post.value.title,
-  title => {
-    post.value.slug = title ? generateSlug(title) : ''
+  () => blogPost.value.title,
+  (title: string) => {
+    blogPost.value.slug = title ? generateSlug(title) : ''
   }
 )
 
+// Watch for content changes to auto-compute reading time
 watch(
-  () => post.value.content,
-  content => {
-    post.value.readingTime = computeReadingTime(content || '')
+  () => blogPost.value.content,
+  (content: string) => {
+    blogPost.value.readingTime = computeReadingTime(content || '')
   }
 )
 </script>
@@ -49,6 +49,6 @@ watch(
 .write-system {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* breathing space between sections */
+  gap: var(--space-6); /* Increased from 1.5rem to match product system */
 }
 </style>

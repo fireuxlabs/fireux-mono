@@ -16,6 +16,7 @@ export default defineNuxtConfig({
   ],
   modules: [
     'fireux-core',
+    '@nuxt/content',
     [
       'nuxt-vuefire',
       {
@@ -32,4 +33,9 @@ export default defineNuxtConfig({
     ],
     '@nuxt/ui',
   ],
+  nitro: {
+    firebase: {
+      gen: 2,
+    },
+  },
 })

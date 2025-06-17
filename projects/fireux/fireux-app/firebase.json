@@ -1,0 +1,18 @@
+{
+  "functions": { 
+    "source": ".output/server" 
+  },
+  "hosting": {
+    "site": "fireux-2005",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      { "source": "**", "function": "server" }
+    ]
+  }
+}

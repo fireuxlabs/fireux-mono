@@ -1,5 +1,5 @@
 <template>
-  <div class="wrte-system">
+  <div class="write-system">
     <!-- Basic Info -->
     <FireOrganismsProductCreateBasic />
 
@@ -76,14 +76,19 @@
     <!-- Pricing -->
     <FireOrganismsProductCreatePrices />
 
-    <!-- Stock -->
+    <!-- Stock & Capacity Management -->
     <FireOrganismsProductCreateStock />
 
     <!-- Shiping -->
     <!-- <FireOrganismsProductCreateShipping /> -->
 
-    <!-- Images -->
-    <FireOrganismsProductCreateImages />
+    <!-- Main Product Image -->
+    <div class="image-section">
+      <FireMoleculesFormsStateImagePicker
+        label="Main Product Image"
+        state-key="createProductMainImage"
+      />
+    </div>
   </div>
 </template>
 
@@ -128,7 +133,9 @@ const productTypeOptions = [
 .write-system {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(
+    --space-6
+  ); /* Increased from space-4 to space-6 for more breathing room */
 }
 
 .product-type-grid {
@@ -157,5 +164,10 @@ const productTypeOptions = [
 .tooltip-section strong {
   display: block;
   margin-bottom: var(--space-1);
+}
+
+.image-section {
+  max-width: 400px;
+  margin-top: var(--space-4);
 }
 </style>

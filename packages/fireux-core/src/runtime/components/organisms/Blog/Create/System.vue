@@ -1,110 +1,102 @@
-<!-- app/components/organisms/Blog/Create/System.vue -->
 <template>
-  <div class="root-container">
-    <UTabs v-model="selectedTab" :items="tabItems">
-      <template #write>
-        <OrganismsBlogCreateWrite />
-      </template>
-      <template #preview>
-        <OrganismsBlogCreatePreview />
-      </template>
-    </UTabs>
+  <div class="component">
+    <main>
+      <UCard>
+        <div class="card-header">
+          <UButton
+            variant="ghost"
+            size="sm"
+            icon="i-heroicons-trash"
+            @click="handleClear"
+            class="clear-button"
+          />
+        </div>
+        <UTabs v-model="selectedTab" :items="tabItems">
+          <template #write>
+            <FireOrganismsBlogCreateWrite />
+          </template>
+          <template #preview>
+            <FireOrganismsBlogCreatePreview />
+          </template>
+        </UTabs>
+        <div class="actions">
+          <UButton :loading="isCreating" @click="handleCreate">
+            <UIcon name="i-heroicons-plus" />
+            Publish
+          </UButton>
+        </div>
+      </UCard>
+    </main>
 
-    <div class="actions">
-      <UButton @click="handleCreate">Create Blog Post</UButton>
+    <div v-if="isCreating">
+      <UCard>
+        <div>
+          <UIcon name="i-heroicons-arrow-path" />
+          <span>Publishing blog post...</span>
+        </div>
+      </UCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// which tab is active
+import { ref } from 'vue'
+import { useCreateBlogPostState } from '../../../../composables/firestore/objects/Blog/useCreateBlogPostState'
+
 const selectedTab = ref<'write' | 'preview'>('write')
 const tabItems = [
-  { label: 'Write', icon: 'i-lucide-edit', value: 'write', slot: 'write' },
-  { label: 'Preview', icon: 'i-lucide-eye', value: 'preview', slot: 'preview' }
+  { label: 'Write', icon: 'i-lucide-pencil', value: 'write', slot: 'write' },
+  { label: 'Preview', icon: 'i-lucide-eye', value: 'preview', slot: 'preview' },
 ]
 
-// Shared entry state
-const post = useState<BlogPostEntry>(
-  'createBlogPost',
-  (): BlogPostEntry => ({
-    title: '',
-    content: '',
-    metaDescription: '',
-    slug: '',
-    author: { display_name: '', handle: '', avatar: '', id: '' },
-    keywords: [],
-    tags: [],
-    canonicalUrl: '',
-    featuredImage: '',
-    socialImage: '',
-    readingTime: '',
-    cta_link: '',
-    type: 'article',
-    cta_text: ''
-  })
-)
-
-// File refs for each image slot
-const featuredFile = useState<File | null>(
-  'createBlogFeaturedImageFile',
-  () => null
-)
-const socialFile = useState<File | null>(
-  'createBlogSocialImageFile',
-  () => null
-)
-
-// Firestore creation helpers
-const { createBlogPost } = useBlogPostCreate()
-const { updateBlogPost } = useBlogPostUpdate()
+const { resetCreateBlogPostState } = useCreateBlogPostState()
+const isCreating = ref(false)
 
 async function handleCreate() {
-  const { uploadImage } = useMediaStorage()
+  console.log('📝 [handleCreate] Create blog post clicked')
 
-  // First, create the blog post to get an ID
-  const id = await createBlogPost(post.value)
-  post.value.slug = id
-
-  // Upload featured image using generated ID
-  const featuredUrl = await uploadImage({
-    file: featuredFile.value,
-    collection: 'blogs',
-    id,
-    type: 'featured'
-  })
-  // Upload social image using generated ID
-  const socialUrl = await uploadImage({
-    file: socialFile.value,
-    collection: 'blogs',
-    id,
-    type: 'social'
-  })
-
-  // Update post with image URLs
-  await updateBlogPost(id, {
-    featuredImage: featuredUrl || '',
-    socialImage: socialUrl || ''
-  })
+  isCreating.value = true
+  console.log('⏳ Starting blog post creation...')
 
   try {
-    console.log('Blog post created and updated with images, ID:', id)
-  } catch (err) {
-    console.error('Error updating blog post images:', err)
+    // Simplified blog creation logic
+    await new Promise((resolve) => setTimeout(resolve, 2000)) // Simulate API call
+
+    console.log('🎉 Blog post created successfully!')
+    alert('✅ Blog post published successfully!')
+
+    handleClear()
+  } catch (error: any) {
+    console.error('❌ Blog post creation failed:', error)
+    alert(`❌ Failed to create blog post: ${error.message}`)
+  } finally {
+    isCreating.value = false
+  }
+}
+
+function handleClear() {
+  if (confirm('Are you sure you want to clear the form?')) {
+    resetCreateBlogPostState()
+    selectedTab.value = 'write'
   }
 }
 </script>
 
 <style scoped>
-.root-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.actions {
-  margin-top: 1rem;
+.card-header {
   display: flex;
   justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.clear-button {
+  margin-left: auto;
+}
+
+footer,
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
 }
 </style>

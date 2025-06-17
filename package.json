@@ -9,6 +9,11 @@
     "dev:fireux": "pnpm --filter ./projects/fireux/fireux-app dev",
     "dev:playground": "pnpm --filter playground dev",
     "dev:cleanbox": "pnpm --filter ./projects/cleanbox/cleanbox-app dev",
+    "init:app": "node scripts/init-app.js",
+    "init:cleanbox": "node scripts/init-app.js cleanbox",
+    "init:misebox": "node scripts/init-app.js misebox",
+    "init:fireux": "node scripts/init-app.js fireux",
+    "clean:apps": "rm -rf projects/*/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .js,.ts,.vue",
     "format": "prettier --write ."

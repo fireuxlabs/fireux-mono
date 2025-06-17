@@ -1,3 +1,4 @@
+// ~/composables/app/useApp.ts
 import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
