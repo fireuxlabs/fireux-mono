@@ -39,6 +39,7 @@ touch packages/fireux-jobs/src/runtime/composables/useJobManagement.ts
 ## 📚 Documentation
 
 Each level has three documentation files for different audiences:
+
 ```bash
 # Clone and install
 git clone https://github.com/your-org/fireux
@@ -220,7 +221,7 @@ fireux/
 ### Development Best Practices
 
 - **Start minimal**: Build working versions first, optimize later
-- **Test integration early**: Real app integration reveals design issues  
+- **Test integration early**: Real app integration reveals design issues
 - **Avoid over-engineering**: Simple prop passing beats complex state management
 - **Commit working features**: Don't commit half-finished implementations
 - **Use semantic versioning**: Follow proper versioning for module releases
