@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addComponent, addImports } from '@nuxt/kit'
+import { defineNuxtModule, createResolver, extendPages } from '@nuxt/kit'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -8,7 +8,7 @@ export interface ModuleOptions {
    */
   posting: boolean
   /**
-   * Enable job application functionality  
+   * Enable job application functionality
    * @default true
    */
   applications: boolean
@@ -33,8 +33,8 @@ export default defineNuxtModule<ModuleOptions>({
     name: 'fireux-jobs',
     configKey: 'fireuxJobs',
     compatibility: {
-      nuxt: '^3.0.0'
-    }
+      nuxt: '^3.0.0',
+    },
   },
   // Default configuration options of the Nuxt module
   defaults: {
@@ -45,78 +45,36 @@ export default defineNuxtModule<ModuleOptions>({
       jobs: 'jobs',
       applications: 'job_applications',
       employers: 'employers',
-      jobSeekers: 'job_seekers'
-    }
+      jobSeekers: 'job_seekers',
+    },
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
     // Add runtime config
     nuxt.options.runtimeConfig.public.fireuxJobs = {
-      ...options
+      ...options,
     }
 
-    // Add plugin
-    addPlugin(resolver.resolve('./runtime/plugin'))
+    // Add pages
+    extendPages((pages) => {
+      pages.push({
+        name: 'dashboard-employer-profile',
+        path: '/dashboard/employer-profile',
+        file: resolver.resolve(
+          './runtime/pages/dashboard/employer-profile.vue'
+        ),
+      })
+      pages.push({
+        name: 'dashboard-professional-profile',
+        path: '/dashboard/professional-profile',
+        file: resolver.resolve(
+          './runtime/pages/dashboard/professional-profile.vue'
+        ),
+      })
+    })
 
-    // Add composables
-    addImports([
-      {
-        name: 'useJobs',
-        from: resolver.resolve('./runtime/composables/useJobs')
-      },
-      {
-        name: 'useJobApplications',
-        from: resolver.resolve('./runtime/composables/useJobApplications')
-      },
-      {
-        name: 'useJobSearch',
-        from: resolver.resolve('./runtime/composables/useJobSearch')
-      },
-      {
-        name: 'useEmployer',
-        from: resolver.resolve('./runtime/composables/useEmployer')
-      },
-      {
-        name: 'useJobSeeker',
-        from: resolver.resolve('./runtime/composables/useJobSeeker')
-      }
-    ])
-
-    // Add components
-    addComponent({
-      name: 'JobCard',
-      filePath: resolver.resolve('./runtime/components/JobCard.vue')
-    })
-    
-    addComponent({
-      name: 'JobPostingForm',
-      filePath: resolver.resolve('./runtime/components/JobPostingForm.vue')
-    })
-    
-    addComponent({
-      name: 'JobApplicationForm',
-      filePath: resolver.resolve('./runtime/components/JobApplicationForm.vue')
-    })
-    
-    addComponent({
-      name: 'JobSearch',
-      filePath: resolver.resolve('./runtime/components/JobSearch.vue')
-    })
-    
-    addComponent({
-      name: 'JobApplicationsList',
-      filePath: resolver.resolve('./runtime/components/JobApplicationsList.vue')
-    })
-    
-    addComponent({
-      name: 'EmployerDashboard',
-      filePath: resolver.resolve('./runtime/components/EmployerDashboard.vue')
-    })
-    
-    addComponent({
-      name: 'JobSeekerDashboard',
-      filePath: resolver.resolve('./runtime/components/JobSeekerDashboard.vue')
-    })
-  }
+    // Module setup complete - ready for job models
+    console.log('FireUX Jobs module configured')
+  },
 })

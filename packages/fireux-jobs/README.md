@@ -22,9 +22,7 @@ Add to your `nuxt.config.ts`:
 
 ```typescript
 export default defineNuxtConfig({
-  modules: [
-    'fireux-jobs'
-  ],
+  modules: ['fireux-jobs'],
   fireuxJobs: {
     posting: true,
     applications: true,
@@ -33,50 +31,63 @@ export default defineNuxtConfig({
       jobs: 'jobs',
       applications: 'job_applications',
       employers: 'employers',
-      jobSeekers: 'job_seekers'
-    }
-  }
+      jobSeekers: 'job_seekers',
+    },
+  },
 })
 ```
 
 ## Components
 
 ### Job Components
+
 - `<JobCard>` - Display job information
 - `<JobPostingForm>` - Create/edit job postings
 - `<JobSearch>` - Search and filter jobs
 
 ### Application Components
+
 - `<JobApplicationForm>` - Apply for jobs
 - `<JobApplicationsList>` - Manage applications
 
 ### Dashboard Components
+
 - `<EmployerDashboard>` - Employer management interface
 - `<JobSeekerDashboard>` - Job seeker interface
 
 ## Composables
 
 ### useJobs()
+
 ```typescript
 const { jobs, loading, createJob, updateJob, deleteJob, searchJobs } = useJobs()
 ```
 
 ### useJobApplications()
+
 ```typescript
-const { applications, applyForJob, getMyApplications, updateApplicationStatus } = useJobApplications()
+const {
+  applications,
+  applyForJob,
+  getMyApplications,
+  updateApplicationStatus,
+} = useJobApplications()
 ```
 
 ### useJobSearch()
+
 ```typescript
 const { searchResults, filters, search, clearFilters } = useJobSearch()
 ```
 
 ### useEmployer()
+
 ```typescript
 const { employer, createEmployerProfile, updateEmployerProfile } = useEmployer()
 ```
 
 ### useJobSeeker()
+
 ```typescript
 const { profile, createProfile, updateProfile, uploadResume } = useJobSeeker()
 ```
@@ -84,6 +95,7 @@ const { profile, createProfile, updateProfile, uploadResume } = useJobSeeker()
 ## Job Categories
 
 ### CleanBox (Cleaning Industry)
+
 - Residential Cleaning
 - Commercial Cleaning
 - Deep Cleaning
@@ -94,6 +106,7 @@ const { profile, createProfile, updateProfile, uploadResume } = useJobSeeker()
 - Janitorial Services
 
 ### MiseBox (Culinary Industry)
+
 - Head Chef
 - Sous Chef
 - Line Cook

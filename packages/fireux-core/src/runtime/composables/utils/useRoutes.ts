@@ -4,7 +4,7 @@ import { useAppUser } from '../firestore/AppUser/useAppUser'
 import { useFireUXConfig } from '../FireUXConfig'
 
 // Define a type for our route links.
-interface RouteLink {
+export interface RouteLink {
   label: string
   icon: string
   to?: string
@@ -124,9 +124,20 @@ export function getRouteMetaForPath(
  * - mobileLinks: Groups all links (app, dashboard, and admin if isAdmin) into nested arrays.
  * - subHeader: Computed subheader for the current route.
  */
-export function useRoutes() {
+export function useRoutes(extras?: {
+  dashboard?: RouteLink[]
+  admin?: RouteLink[]
+  app?: RouteLink[]
+}) {
   const route = useRoute()
-  const ROUTE_LINKS = getRouteLinks()
+  const baseRoutes = getRouteLinks()
+
+  // Merge base routes with extras
+  const ROUTE_LINKS = {
+    app: [...baseRoutes.app, ...(extras?.app || [])],
+    dashboard: [...baseRoutes.dashboard, ...(extras?.dashboard || [])],
+    admin: [...baseRoutes.admin, ...(extras?.admin || [])],
+  }
 
   // Try to get isAdmin safely, default to false if not available
   let isAdmin = ref(false)
@@ -151,9 +162,16 @@ export function useRoutes() {
       dashboardParent && dashboardParent.children
         ? dashboardParent.children
         : []
+
+    // Add extra dashboard routes (these are individual route items)
+    const extraDashboardRoutes = extras?.dashboard || []
+
+    // Combine all dashboard routes
+    const allDashboardRoutes = [...dashboardChildren, ...extraDashboardRoutes]
+
     return isAdmin.value
-      ? [...dashboardChildren, ...ROUTE_LINKS.admin]
-      : dashboardChildren
+      ? [...allDashboardRoutes, ...ROUTE_LINKS.admin]
+      : allDashboardRoutes
   })
 
   // Mobile: group everything into nested arrays.

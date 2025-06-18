@@ -1,23 +1,25 @@
 <template>
   <ClientOnly>
-    <div class="layout-wrapper">
-      <FireLayoutsHeader :app-links="appLinks" :mobile-links="mobileLinks" />
-      <div class="layout-content">
-        <main class="layout-main-content">
-          <UNavigationMenu
-            v-if="!isMobile"
-            class="mt-[var(--header-height)] w-fit"
-            orientation="vertical"
-            :items="dashboardLinks"
-          />
-          <div class="main-section">
-            <FireLayoutsSubHeader :icon-title="subHeader" />
-            <NuxtPage />
-          </div>
-        </main>
+    <FireLayoutsDashboardGuard>
+      <div class="layout-wrapper">
+        <FireLayoutsHeader :app-links="appLinks" :mobile-links="mobileLinks" />
+        <div class="layout-content">
+          <main class="layout-main-content">
+            <UNavigationMenu
+              v-if="!isMobile"
+              class="mt-[var(--header-height)] w-fit"
+              orientation="vertical"
+              :items="dashboardLinks"
+            />
+            <div class="main-section">
+              <FireLayoutsSubHeader :icon-title="subHeader" />
+              <NuxtPage />
+            </div>
+          </main>
+        </div>
+        <FireLayoutsDefaultFooter />
       </div>
-      <FireLayoutsDefaultFooter />
-    </div>
+    </FireLayoutsDashboardGuard>
   </ClientOnly>
 </template>
 
@@ -25,10 +27,19 @@
 import { useWindowSize } from '@vueuse/core'
 import { computed } from 'vue'
 
+const props = defineProps({
+  extras: {
+    type: Object,
+    default: () => ({}),
+  },
+})
+
 const { width } = useWindowSize()
 const isMobile = computed(() => width.value < 1024)
 
-const { appLinks, mobileLinks, dashboardLinks, subHeader } = useRoutes()
+const { appLinks, mobileLinks, dashboardLinks, subHeader } = useRoutes(
+  props.extras
+)
 
 defineOptions({
   name: 'CoreDashboard',
