@@ -78,3 +78,6 @@ export default defineNuxtModule<ModuleOptions>({
     console.log('FireUX Jobs module configured')
   },
 })
+
+// Export composables for direct import
+export { getJobRoutes } from './runtime/composables/useJobRoutes'
