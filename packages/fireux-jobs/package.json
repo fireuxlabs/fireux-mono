@@ -10,8 +10,8 @@
       "require": "./dist/module.cjs"
     },
     "./composables": {
-      "types": "./dist/runtime/composables/useJobRoutes.d.ts",
-      "import": "./dist/runtime/composables/useJobRoutes.mjs"
+      "types": "./dist/runtime/composables/index.d.ts",
+      "import": "./dist/runtime/composables/index.mjs"
     }
   },
   "main": "./dist/module.cjs",
