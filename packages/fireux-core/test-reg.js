@@ -527,6 +527,101 @@ async function testAllPages() {
   process.exit(0)
 }
 
+// Test endpoints registration and functionality
+async function testEndpoints() {
+  console.log('Testing FireUX Core API Endpoints\n')
+
+  try {
+    // Check if server-config.ts exists and has endpoint registrations
+    const serverConfigPath = join(__dirname, 'src/server-config.ts')
+    if (!fs.existsSync(serverConfigPath)) {
+      throw new Error('server-config.ts file not found')
+    }
+
+    console.log('Examining server configuration:', serverConfigPath)
+
+    const serverConfigContent = fs.readFileSync(serverConfigPath, 'utf-8')
+
+    // Look for addServerHandler calls
+    const handlerMatches = serverConfigContent.match(
+      /addServerHandler\s*\(\s*{[^}]*}/g
+    )
+
+    if (!handlerMatches) {
+      console.log('No server handlers found in configuration.')
+      return
+    }
+
+    console.log(`\nFound ${handlerMatches.length} registered endpoints:\n`)
+
+    // Parse each handler registration
+    handlerMatches.forEach((handler, index) => {
+      const routeMatch = handler.match(/route:\s*['"`]([^'"`]+)['"`]/)
+      const handlerMatch = handler.match(/handler:\s*[^,}]+/)
+      const methodMatch = handler.match(/method:\s*['"`]([^'"`]+)['"`]/)
+
+      if (routeMatch) {
+        const route = routeMatch[1]
+        const method = methodMatch ? methodMatch[1].toUpperCase() : 'GET'
+        console.log(`${index + 1}. ${method} ${route}`)
+
+        if (handlerMatch) {
+          const handlerPath = handlerMatch[0]
+            .replace(/handler:\s*/, '')
+            .replace(/resolvePath\(['"`]/, '')
+            .replace(/['"`]\)/, '')
+          console.log(`   Handler: ${handlerPath}`)
+        }
+      }
+    })
+
+    // Check if actual endpoint files exist
+    console.log('\nVerifying endpoint files exist:\n')
+
+    const apiDir = join(__dirname, 'src/runtime/server/api')
+    if (fs.existsSync(apiDir)) {
+      const checkEndpointFile = (relativePath) => {
+        const fullPath = join(apiDir, relativePath)
+        const exists = fs.existsSync(fullPath)
+        console.log(`   ${relativePath}: ${exists ? '✓' : '✗'}`)
+        return exists
+      }
+
+      // Check common endpoints based on server-config.ts
+      checkEndpointFile('env-check.ts')
+      checkEndpointFile('app/theme.get.ts')
+      checkEndpointFile('proxy/google-avatar.ts')
+      checkEndpointFile('stripe/create-product.post.ts')
+
+      // List all API files
+      console.log('\nAll API files in directory:')
+      const listApiFiles = (dir, prefix = '') => {
+        const items = fs.readdirSync(dir)
+        items.forEach((item) => {
+          const itemPath = join(dir, item)
+          const stat = fs.statSync(itemPath)
+          if (stat.isDirectory()) {
+            console.log(`   ${prefix}${item}/`)
+            listApiFiles(itemPath, prefix + '  ')
+          } else if (item.endsWith('.ts') || item.endsWith('.js')) {
+            console.log(`   ${prefix}${item}`)
+          }
+        })
+      }
+      listApiFiles(apiDir)
+    } else {
+      console.log('   API directory not found')
+    }
+
+    console.log('\nEndpoint registration test completed.')
+  } catch (error) {
+    console.error('Error testing endpoints:', error)
+    process.exit(1)
+  }
+
+  process.exit(0)
+}
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -539,8 +634,9 @@ console.log('3. modules')
 console.log('4. composables')
 console.log('5. layouts')
 console.log('6. asset registration')
+console.log('7. endpoints')
 
-rl.question('Enter your choice (1, 2, 3, 4, 5, or 6): ', (answer) => {
+rl.question('Enter your choice (1, 2, 3, 4, 5, 6, or 7): ', (answer) => {
   let type
   switch (answer) {
     case '1':
@@ -561,9 +657,12 @@ rl.question('Enter your choice (1, 2, 3, 4, 5, or 6): ', (answer) => {
     case '6':
       testAssetRegistration()
       return
+    case '7':
+      testEndpoints()
+      return
     default:
       console.error(
-        'Invalid choice. Please run the script again and select 1, 2, 3, 4, 5, or 6.'
+        'Invalid choice. Please run the script again and select 1, 2, 3, 4, 5, 6, or 7.'
       )
       rl.close()
       process.exit(1)
@@ -583,4 +682,10 @@ if (type === 'auth') {
 const testType = process.argv[2]
 if (testType === 'all-pages') {
   testAllPages()
+}
+
+// Add the testEndpoints function to the script execution
+const endpointTestType = process.argv[2]
+if (endpointTestType === 'endpoints') {
+  testEndpoints()
 }

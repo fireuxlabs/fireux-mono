@@ -1,5 +1,5 @@
 import { defineNuxtModule, createResolver } from '@nuxt/kit'
-import { version } from '../package.json'
+// import { version } from '../package.json'
 import { configureRuntime } from './runtime-config'
 import { configureServer } from './server-config'
 import { configureLayouts } from './layouts-config'
@@ -21,7 +21,7 @@ export interface ModuleOptions {
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-core',
-    version,
+    version: '1.0.0',
     configKey: 'fireuxCore',
   },
   defaults: {

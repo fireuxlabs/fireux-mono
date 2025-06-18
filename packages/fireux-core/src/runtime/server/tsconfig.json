@@ -3,7 +3,12 @@
   "compilerOptions": {
     "outDir": "../../../.nuxt/server",
     "target": "esnext",
-    "module": "esnext"
+    "module": "esnext",
+    "types": ["node"]
   },
-  "include": ["./**/*", "../../../.nuxt/imports.d.ts"]
+  "include": [
+    "./**/*",
+    "../../../../../projects/fireux/fireux-app/.nuxt/imports.d.ts",
+    "../../../../../projects/fireux/fireux-app/.nuxt/nuxt.d.ts"
+  ]
 }

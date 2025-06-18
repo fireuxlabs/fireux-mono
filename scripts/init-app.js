@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, rmSync } from 'fs'
+import {
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  cpSync,
+  existsSync,
+  rmSync,
+} from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { execSync } from 'child_process'
@@ -11,10 +18,11 @@ const __dirname = dirname(__filename)
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 })
 
-const question = (query) => new Promise((resolve) => rl.question(query, resolve))
+const question = (query) =>
+  new Promise((resolve) => rl.question(query, resolve))
 
 // App configuration templates - based on existing working apps
 const APP_CONFIGS = {
@@ -28,7 +36,8 @@ const APP_CONFIGS = {
     firebaseSite: 'cleanbox',
     industry: 'cleaning',
     contentTitle: 'My First CleanBox Page',
-    contentDescription: 'Hello World! This is CleanBox.\n\nHere is some content for the cleaning industry platform.'
+    contentDescription:
+      'Hello World! This is CleanBox.\n\nHere is some content for the cleaning industry platform.',
   },
   misebox: {
     name: 'misebox',
@@ -40,7 +49,8 @@ const APP_CONFIGS = {
     firebaseSite: 'misebox-78f9c',
     industry: 'culinary',
     contentTitle: 'My First MiseBox Page',
-    contentDescription: 'Hello World! This is MiseBox.\n\nHere is some content for the culinary industry platform.'
+    contentDescription:
+      'Hello World! This is MiseBox.\n\nHere is some content for the culinary industry platform.',
   },
   fireux: {
     name: 'fireux',
@@ -52,8 +62,9 @@ const APP_CONFIGS = {
     firebaseSite: 'fireux-2005',
     industry: 'development',
     contentTitle: 'Hello FireUX!',
-    contentDescription: 'Welcome to the FireUX ecosystem - the ultimate platform for developers and businesses.\n\nThis content is now being loaded from a markdown file!'
-  }
+    contentDescription:
+      'Welcome to the FireUX ecosystem - the ultimate platform for developers and businesses.\n\nThis content is now being loaded from a markdown file!',
+  },
 }
 
 // Template files
@@ -101,24 +112,23 @@ export default defineNuxtConfig({
 })
 `,
 
-  'firebase.json': (config) => JSON.stringify({
-    "functions": { 
-      "source": ".output/server" 
-    },
-    "hosting": {
-      "site": config.firebaseSite,
-      "public": ".output/public",
-      "cleanUrls": true,
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        { "source": "**", "function": "server" }
-      ]
-    }
-  }, null, 2),
+  'firebase.json': (config) =>
+    JSON.stringify(
+      {
+        functions: {
+          source: '.output/server',
+        },
+        hosting: {
+          site: config.firebaseSite,
+          public: '.output/public',
+          cleanUrls: true,
+          ignore: ['firebase.json', '**/.*', '**/node_modules/**'],
+          rewrites: [{ source: '**', function: 'server' }],
+        },
+      },
+      null,
+      2
+    ),
 
   'app/app.config.ts': (config) => `export default defineAppConfig({
   ui: {
@@ -199,20 +209,27 @@ ${config.contentDescription}
   'content.config.ts': () => `export default defineContentConfig({})
 `,
 
-  'tsconfig.json': () => JSON.stringify({
-    "extends": "./.nuxt/tsconfig.json"
-  }, null, 2)
+  'tsconfig.json': () =>
+    JSON.stringify(
+      {
+        extends: './.nuxt/tsconfig.json',
+      },
+      null,
+      2
+    ),
 }
 
 async function createApp(appName, customConfig = {}) {
   const projectsDir = join(__dirname, '../projects')
   const appDir = join(projectsDir, appName, `${appName}-app`)
-  
+
   console.log(`🚀 Creating ${appName} app...`)
-  
+
   // Check if app already exists
   if (existsSync(appDir)) {
-    const overwrite = await question(`⚠️  App ${appName} already exists. Overwrite? (y/N): `)
+    const overwrite = await question(
+      `⚠️  App ${appName} already exists. Overwrite? (y/N): `
+    )
     if (overwrite.toLowerCase() !== 'y') {
       console.log('❌ Cancelled')
       rl.close()
@@ -220,7 +237,7 @@ async function createApp(appName, customConfig = {}) {
     }
     rmSync(appDir, { recursive: true, force: true })
   }
-  
+
   // Merge custom config with defaults or use predefined
   const config = APP_CONFIGS[appName] || {
     name: appName,
@@ -233,9 +250,9 @@ async function createApp(appName, customConfig = {}) {
     industry: 'general',
     contentTitle: `Welcome to ${appName}`,
     contentDescription: `This is your new ${appName} application.`,
-    ...customConfig
+    ...customConfig,
   }
-  
+
   // Create directory structure
   mkdirSync(join(projectsDir, appName), { recursive: true })
   mkdirSync(appDir, { recursive: true })
@@ -249,34 +266,37 @@ async function createApp(appName, customConfig = {}) {
   mkdirSync(join(appDir, 'public'), { recursive: true })
   mkdirSync(join(appDir, 'public/img'), { recursive: true })
   mkdirSync(join(appDir, 'server'), { recursive: true })
-  
+
   // Create package.json
   const packageJson = {
     name: `${appName}-app`,
     private: true,
-    type: "module",
+    type: 'module',
     scripts: {
-      build: "nuxt build",
-      dev: "nuxt dev",
-      generate: "nuxt generate",
-      preview: "nuxt preview",
-      postinstall: "nuxt prepare",
-      clean: "rimraf dist"
+      build: 'nuxt build',
+      dev: 'nuxt dev',
+      generate: 'nuxt generate',
+      preview: 'nuxt preview',
+      postinstall: 'nuxt prepare',
+      clean: 'rimraf dist',
     },
     dependencies: {
-      "@nuxt/content": "^3.6.0",
-      "@nuxt/ui": "3.1.3",
-      "firebase-admin": "^13.4.0",
-      "fireux-core": "workspace:../packages/fireux-core",
-      "nuxt": "^3.17.4",
-      "nuxt-vuefire": "^1.0.5",
-      "vue": "^3.5.15",
-      "vue-router": "^4.5.1"
-    }
+      '@nuxt/content': '^3.6.0',
+      '@nuxt/ui': '3.1.3',
+      'firebase-admin': '^13.4.0',
+      'fireux-core': 'workspace:../packages/fireux-core',
+      nuxt: '^3.17.4',
+      'nuxt-vuefire': '^1.0.5',
+      vue: '^3.5.15',
+      'vue-router': '^4.5.1',
+    },
   }
-  
-  writeFileSync(join(appDir, 'package.json'), JSON.stringify(packageJson, null, 2))
-  
+
+  writeFileSync(
+    join(appDir, 'package.json'),
+    JSON.stringify(packageJson, null, 2)
+  )
+
   // Create nuxt.config.ts
   const nuxtConfig = `import { defineNuxtConfig } from 'nuxt/config'
 
@@ -320,9 +340,9 @@ export default defineNuxtConfig({
   },
 })
 `
-  
+
   writeFileSync(join(appDir, 'nuxt.config.ts'), nuxtConfig)
-  
+
   // Create app.config.ts
   const appConfig = `export default defineAppConfig({
   ui: {
@@ -336,9 +356,9 @@ export default defineNuxtConfig({
   },
 })
 `
-  
+
   writeFileSync(join(appDir, 'app/app.config.ts'), appConfig)
-  
+
   // Create app.vue
   const appVue = `<template>
   <UApp>
@@ -365,9 +385,9 @@ export default defineNuxtConfig({
 const isInitialized = ref(true) // Set to false for onboarding
 </script>
 `
-  
+
   writeFileSync(join(appDir, 'app/app.vue'), appVue)
-  
+
   // Create pages/index.vue
   const indexPage = `<script setup lang="ts">
 // Fetch the content for the index page
@@ -403,9 +423,9 @@ const { data: page } = await useAsyncData('index', () =>
 }
 </style>
 `
-  
+
   writeFileSync(join(appDir, 'app/pages/index.vue'), indexPage)
-  
+
   // Create content based on industry
   let contentMd = ''
   if (config.industry === 'cleaning') {
@@ -474,58 +494,73 @@ Welcome to the ${config.displayName} ecosystem - the ultimate platform for devel
 This content is now being loaded from a markdown file!
 `
   }
-  
+
   writeFileSync(join(appDir, 'content/index.md'), contentMd)
-  
+
   // Create firebase.json
   const firebaseJson = {
     functions: {
-      source: ".output/server"
+      source: '.output/server',
     },
     hosting: {
       site: config.firebaseSite,
-      public: ".output/public",
+      public: '.output/public',
       cleanUrls: true,
-      ignore: ["firebase.json", "**/.*", "**/node_modules/**"],
-      rewrites: [{ source: "**", function: "server" }]
-    }
+      ignore: ['firebase.json', '**/.*', '**/node_modules/**'],
+      rewrites: [{ source: '**', function: 'server' }],
+    },
   }
-  
-  writeFileSync(join(appDir, 'firebase.json'), JSON.stringify(firebaseJson, null, 2))
-  
+
+  writeFileSync(
+    join(appDir, 'firebase.json'),
+    JSON.stringify(firebaseJson, null, 2)
+  )
+
   // Create .firebaserc
   const firebaserc = {
     projects: {
-      default: config.firebaseProject
-    }
+      default: config.firebaseProject,
+    },
   }
-  
-  writeFileSync(join(appDir, '.firebaserc'), JSON.stringify(firebaserc, null, 2))
-  
+
+  writeFileSync(
+    join(appDir, '.firebaserc'),
+    JSON.stringify(firebaserc, null, 2)
+  )
+
   // Create other config files
-  writeFileSync(join(appDir, 'tsconfig.json'), `{
+  writeFileSync(
+    join(appDir, 'tsconfig.json'),
+    `{
   "extends": "../../../tsconfig.json"
 }
-`)
-  
-  writeFileSync(join(appDir, 'content.config.ts'), `export default defineContentConfig({
+`
+  )
+
+  writeFileSync(
+    join(appDir, 'content.config.ts'),
+    `export default defineContentConfig({
   // Content configuration
 })
-`)
-  
+`
+  )
+
   // Create basic public files
   writeFileSync(join(appDir, 'public/favicon.ico'), '')
-  writeFileSync(join(appDir, 'public/robots.txt'), `User-agent: *
+  writeFileSync(
+    join(appDir, 'public/robots.txt'),
+    `User-agent: *
 Allow: /
-`)
-  
+`
+  )
+
   // Create .gitkeep files
   writeFileSync(join(appDir, 'app/components/.gitkeep'), '')
   writeFileSync(join(appDir, 'app/composables/.gitkeep'), '')
   writeFileSync(join(appDir, 'app/layouts/.gitkeep'), '')
   writeFileSync(join(appDir, 'config/.gitkeep'), '')
   writeFileSync(join(appDir, 'server/.gitkeep'), '')
-  
+
   console.log(`✅ ${config.displayName} app created successfully!`)
   console.log(`📁 Location: ${appDir}`)
   console.log(`🎨 Colors: ${config.primaryColor}/${config.neutralColor}`)

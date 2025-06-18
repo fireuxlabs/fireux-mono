@@ -1,7 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useMediaStorage } from '../../firebase/useMediaStorage'
-import { CoreUser } from '../../../models/coreUser.model'
+import type { CoreUser } from '../../../models/coreUser.model'
 import { useFirestoreManager } from '../useFirestoreManager'
 import { useFirestoreCreate } from '../useFirestoreCreate'
 import { useAppUserEnsure } from '../AppUser/useAppUserEnsure'

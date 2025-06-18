@@ -1,8 +1,7 @@
-import { defineEventHandler } from 'h3'
-import { useRuntimeConfig } from '#imports'
+import { defineEventHandler, } from 'h3'
 
-export default defineEventHandler(() => {
-  const runtimeConfig = useRuntimeConfig()
+export default defineEventHandler((event) => {
+  const runtimeConfig = useRuntimeConfig(event)
 
   const requiredVars = [
     'public.firebaseConfig.apiKey',
@@ -26,9 +25,9 @@ export default defineEventHandler(() => {
 
   const missingVars = requiredVars.filter((key) => {
     const keys = key.split('.')
-    let value = runtimeConfig
+    let value: any = runtimeConfig
     for (const k of keys) {
-      if (value && k in value) {
+      if (value && typeof value === 'object' && k in value) {
         value = value[k]
       } else {
         return true

@@ -71,21 +71,55 @@
           </template>
         </UCard>
       </div>
+      <div class="dashboard-grid-section">
+        <UCard>
+          <template #header>
+            <div>
+              <UIcon name="i-heroicons-user-circle" />
+              <span>Account</span>
+            </div>
+          </template>
+          <div>
+            <p>{{ appUser?.display_name || appUser?.email }}</p>
+            <UButton
+              @click="handleSignOut"
+              color="red"
+              variant="outline"
+              icon="i-heroicons-arrow-right-on-rectangle"
+              block
+              :loading="isSigningOut"
+            >
+              Sign Out
+            </UButton>
+          </div>
+        </UCard>
+      </div>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { getRouteMetaForPath } from '../../composables/utils/useRoutes'
+const { appUser } = useAppUser()
+const { signOutUser } = useAuth()
+const router = useRouter()
 
-const { label, icon } = getRouteMetaForPath('/dashboard')
+const isSigningOut = ref(false)
+
+const handleSignOut = async () => {
+  isSigningOut.value = true
+  try {
+    await signOutUser()
+    await router.push('/auth')
+  } catch (error) {
+    console.error('Sign out failed:', error)
+  } finally {
+    isSigningOut.value = false
+  }
+}
 
 definePageMeta({
   layout: 'dashboard',
-  layoutProps: {
-    dashboardType: 'user-dashboard',
-  },
-  title: label,
-  icon: icon,
+  title: 'Dashboard',
+  icon: 'i-heroicons-squares-2x2',
 })
 </script>

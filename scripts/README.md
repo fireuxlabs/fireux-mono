@@ -5,15 +5,17 @@ This system allows you to create identical app clones with different configurati
 ## Quick Start
 
 ### 1. Clean All Apps (Optional)
+
 ```bash
 pnpm run clean:apps
 ```
 
 ### 2. Initialize Apps
+
 ```bash
 # Initialize all three apps
 pnpm run init:cleanbox
-pnpm run init:misebox  
+pnpm run init:misebox
 pnpm run init:fireux
 
 # Or initialize individually
@@ -23,18 +25,20 @@ pnpm run init:app fireux
 ```
 
 ### 3. Install Dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 4. Deploy Apps
+
 ```bash
 # Build and deploy each app
 cd projects/cleanbox/cleanbox-app
 NITRO_PRESET=firebase pnpm run build
 firebase deploy
 
-cd ../../../projects/misebox/misebox-app  
+cd ../../../projects/misebox/misebox-app
 NITRO_PRESET=firebase pnpm run build
 firebase deploy
 
@@ -48,19 +52,22 @@ firebase deploy
 Each app has the following unique configuration:
 
 ### CleanBox
+
 - **Colors:** `blue` / `slate`
 - **Firebase:** `cleanbox-f15bc` → `cleanbox`
 - **Industry:** Cleaning services platform
 - **URL:** https://cleanbox.web.app
 
-### MiseBox  
+### MiseBox
+
 - **Colors:** `violet` / `gray`
 - **Firebase:** `misebox-78f9c` → `misebox-78f9c`
 - **Industry:** Culinary professionals platform
 - **URL:** https://misebox-78f9c.web.app
 
 ### FireUX
-- **Colors:** `yellow` / `zinc` 
+
+- **Colors:** `yellow` / `zinc`
 - **Firebase:** `fireux-2005` → `fireux-2005`
 - **Industry:** Developer and business platform
 - **URL:** https://fireux-2005.web.app
@@ -108,7 +115,7 @@ projects/{app-name}/{app-name}-app/
 After initialization, you can customize individual apps by editing:
 
 - `app/app.config.ts` - Colors and UI configuration
-- `content/index.md` - Landing page content  
+- `content/index.md` - Landing page content
 - `firebase.json` - Firebase hosting configuration
 - `public/` - Assets and static files
 
@@ -127,7 +134,7 @@ To add a new app, edit `scripts/init-app.js` and add a new configuration to the 
 - `displayName` - Human readable name
 - `description` - App description
 - `primaryColor` - UI primary color
-- `neutralColor` - UI neutral color  
+- `neutralColor` - UI neutral color
 - `firebaseProject` - Firebase project ID
 - `firebaseSite` - Firebase hosting site name
 - `industry` - Industry type for content generation

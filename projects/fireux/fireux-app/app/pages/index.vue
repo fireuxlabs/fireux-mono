@@ -1,69 +1,73 @@
-<script setup lang="ts">
-// Fetch the content for the index page
-const { data: page } = await useAsyncData('index', () =>
-  queryCollection('content').path('/').first()
-)
-</script>
-
 <template>
-  <div class="page">
-    <FireLogoBrand size="hero" />
-    <div v-if="page" class="content">
-      <ContentRenderer :value="page" />
-    </div>
-    <div v-else class="loading">
-      <p>Loading content...</p>
+  <!-- Landing Background Effect -->
+  <EffectsStarfield />
+
+  <!-- Main Content -->
+  <div class="min-h-screen relative z-10">
+    <div class="landing-container">
+      <!-- Hero Component -->
+      <LandingHero />
+
+      <!-- Solutions Component -->
+      <div class="section-spacing">
+        <LandingSolutions />
+      </div>
+
+      <!-- Skills Icons Component -->
+      <div class="section-spacing">
+        <LandingSkillsIcons />
+      </div>
+
+      <!-- Products Component -->
+      <div class="section-spacing">
+        <LandingProducts />
+      </div>
+
+      <!-- Fuel Component -->
+      <div class="section-spacing">
+        <LandingFuel />
+      </div>
+
+      <!-- FireUX Features Component -->
+      <div class="section-spacing">
+        <LandingFireUX />
+      </div>
     </div>
   </div>
 </template>
+<script setup>
+// Simple SEO
+useSeoMeta({
+  title: 'FireUX - Vue.js Development Ecosystem',
+  description:
+    'Build faster with FireUX Core, manage data with Cleanbox, and deploy with Misebox.',
+})
+
+// No additional script needed - effect is handled by the component
+</script>
 
 <style scoped>
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 50vh;
-  padding: var(--space-8);
+/* Landing Page Container */
+.landing-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.content {
-  max-width: 800px;
-  margin-top: var(--space-6);
-  text-align: left;
+/* Vertical breathing space between sections */
+.section-spacing {
+  margin-top: 4rem; /* 64px */
 }
 
-.content h1 {
-  font-size: 3rem;
-  font-weight: bold;
-  color: var(--color-primary-500);
-  text-align: center;
-  margin-bottom: var(--space-6);
-}
+/* Mobile-first: no constraints, let components handle their own spacing */
+@media (min-width: 1024px) {
+  .landing-container {
+    padding: 0 2rem;
+  }
 
-.content h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-top: var(--space-6);
-  margin-bottom: var(--space-3);
-  color: var(--color-primary-600);
-}
-
-.content p {
-  line-height: 1.6;
-  margin-bottom: var(--space-4);
-}
-
-.content ul {
-  margin-bottom: var(--space-4);
-  padding-left: var(--space-6);
-}
-
-.content li {
-  margin-bottom: var(--space-2);
-  line-height: 1.6;
-}
-
-.loading {
-  margin-top: var(--space-6);
+  /* More breathing space on desktop */
+  .section-spacing {
+    margin-top: 6rem; /* 96px */
+  }
 }
 </style>

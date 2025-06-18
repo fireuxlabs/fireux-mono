@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="px-4">
     <div class="grid">
       <div
         v-for="feature in filteredFeatures"
@@ -21,7 +21,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   first: Boolean,
-  second: Boolean
+  second: Boolean,
 })
 
 const allFeatures = [
@@ -30,82 +30,82 @@ const allFeatures = [
     icon: 'i-lucide-smartphone',
     title: 'PWA First',
     description:
-      'A fully installable app with notifications, no app store, no updates.'
+      'A fully installable app with notifications, no app store, no updates.',
   },
   {
     key: 'templates',
     icon: 'i-lucide-square-dashed',
     title: 'Pre-Built Templates',
     description:
-      'Customizable, low-code UI kits with built-in data integrations.'
+      'Customizable, low-code UI kits with built-in data integrations.',
   },
   {
     key: 'saas',
     icon: 'i-lucide-cloud',
     title: 'SaaS Solutions',
     description:
-      'Fully managed, subscription-based applications built for scale.'
+      'Fully managed, subscription-based applications built for scale.',
   },
   {
     key: 'whitelabel',
     icon: 'i-lucide-layers-2',
     title: 'White-Label Products',
     description:
-      'Your branded software bundles, ready for duplication and resale.'
+      'Your branded software bundles, ready for duplication and resale.',
   },
   {
     key: 'low-code',
     icon: 'i-lucide-code',
     title: 'Low-Code System',
     description:
-      'FIReUX enables rapid development with reusable components and automation.'
+      'FIReUX enables rapid development with reusable components and automation.',
   },
   {
     key: 'dashboard',
     icon: 'i-lucide-layout-dashboard',
     title: 'Dashboard Driven',
     description:
-      'Structured, data-driven layouts optimized for control and clarity.'
+      'Structured, data-driven layouts optimized for control and clarity.',
   },
   {
     key: 'security',
     icon: 'i-lucide-lock',
     title: 'Authentication & Payments',
-    description: 'Google Auth & Stripe for frictionless logins & transactions.'
+    description: 'Google Auth & Stripe for frictionless logins & transactions.',
   },
   {
     key: 'cookie-free',
     icon: 'material-symbols-light:cookie-off-outline-rounded',
     title: 'Zero Cookies',
     description:
-      'No landing popups, no hidden storage or trackers. A user-first experience.'
+      'No landing popups, no hidden storage or trackers. A user-first experience.',
   },
   {
     key: 'automation',
     icon: 'i-lucide-zap',
     title: 'Automated Workflows',
     description:
-      'Trigger real-time actions & integrations with zero manual effort.'
+      'Trigger real-time actions & integrations with zero manual effort.',
   },
   {
     key: 'analytics',
     icon: 'i-lucide-bar-chart',
     title: 'Advanced Analytics',
-    description: 'Track & optimize with real-time insights.'
+    description: 'Track & optimize with real-time insights.',
   },
   {
     key: 'security-first',
     icon: 'i-lucide-shield',
     title: 'Security First',
-    description: 'Built-in security & compliance without extra effort.'
+    description: 'Built-in security & compliance without extra effort.',
   },
   {
     key: 'performance',
     icon: 'i-lucide-rocket',
     title: 'Blazing Fast',
     description:
-      'Optimized for speed—lightweight, no bloat, and instant load times.'
-  }
+      'Optimized for speed—lightweight, no bloat, and instant load times.',
+  },
 ]
 
 const filteredFeatures = computed(() => {
@@ -129,5 +129,4 @@ const filteredFeatures = computed(() => {
 .feature-content {
   width: 100%;
 }
-
 </style>

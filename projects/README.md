@@ -5,6 +5,7 @@ This repository contains multiple application projects built using modern web te
 ## Projects
 
 ### CleanBox
+
 A clean and modern web application built with Nuxt.js.
 
 **Deployment Status:** ✅ Deployed  
@@ -12,12 +13,14 @@ A clean and modern web application built with Nuxt.js.
 **Technology Stack:** Nuxt.js, Vue.js, TypeScript
 
 ### MiseBox
+
 A minimalist application framework.
 
 **Deployment Status:** 🔄 Pending  
 **Technology Stack:** Nuxt.js, Vue.js, TypeScript
 
 ### FireUX
+
 A UI component library and framework.
 
 **Deployment Status:** 🔄 Pending  
@@ -30,11 +33,13 @@ All projects in this repository are configured for deployment to Firebase with b
 ### Prerequisites
 
 1. **Firebase CLI** - Install globally:
+
    ```bash
    npm install -g firebase-tools@latest
    ```
 
 2. **Authentication** - Login to Firebase:
+
    ```bash
    firebase login
    ```
@@ -48,11 +53,13 @@ All projects in this repository are configured for deployment to Firebase with b
 For any project (replace `{project-name}` with actual project directory):
 
 1. **Navigate to project directory:**
+
    ```bash
    cd projects/{project-name}/{project-name}-app
    ```
 
 2. **Build with Firebase preset:**
+
    ```bash
    NITRO_PRESET=firebase pnpm run build
    ```
@@ -65,34 +72,30 @@ For any project (replace `{project-name}` with actual project directory):
 ### Configuration Requirements
 
 #### nuxt.config.ts
+
 ```typescript
 export default defineNuxtConfig({
   nitro: {
     firebase: {
-      gen: 2
-    }
-  }
+      gen: 2,
+    },
+  },
 })
 ```
 
 #### firebase.json
+
 ```json
 {
-  "functions": { 
-    "source": ".output/server" 
+  "functions": {
+    "source": ".output/server"
   },
   "hosting": {
     "site": "your-project-id",
     "public": ".output/public",
     "cleanUrls": true,
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      { "source": "**", "function": "server" }
-    ]
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{ "source": "**", "function": "server" }]
   }
 }
 ```
@@ -102,6 +105,7 @@ export default defineNuxtConfig({
 For production environment variables:
 
 1. Copy `.env` to server output after build:
+
    ```bash
    cp .env .output/server/.env
    ```
@@ -123,6 +127,7 @@ For production environment variables:
 ## Development
 
 Each project follows the same development structure:
+
 - `pnpm install` - Install dependencies
 - `pnpm run dev` - Start development server
 - `pnpm run build` - Build for production
@@ -131,6 +136,7 @@ Each project follows the same development structure:
 ## Support
 
 For deployment issues, refer to:
+
 - [Nuxt Firebase Documentation](https://nuxt.com/deploy/firebase)
 - [Firebase CLI Reference](https://firebase.google.com/docs/cli)
 - [Nitro Firebase Provider](https://nitro.unjs.io/deploy/providers/firebase)

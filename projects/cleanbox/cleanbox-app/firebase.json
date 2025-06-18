@@ -1,18 +1,13 @@
 {
-  "functions": { 
-    "source": ".output/server" 
+  "functions": {
+    "source": ".output/server",
+    "runtime": "nodejs22"
   },
   "hosting": {
     "site": "cleanbox",
     "public": ".output/public",
     "cleanUrls": true,
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      { "source": "**", "function": "server" }
-    ]
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{ "source": "**", "function": "server" }]
   }
 }

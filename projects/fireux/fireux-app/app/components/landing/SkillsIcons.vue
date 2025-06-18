@@ -23,7 +23,8 @@ const skills = [
   { name: 'GitHub', icon: 'skill-icons:github-dark' },
   { name: 'CSS3', icon: 'skill-icons:css' },
   { name: 'HTML5', icon: 'skill-icons:html' },
-  { name: 'Node.js', icon: 'vscode-icons:file-type-node' }
+  { name: 'Node.js', icon: 'vscode-icons:file-type-node' },
+  { name: 'Stripe', icon: 'logos:stripe' },
 ]
 </script>
 
@@ -33,7 +34,7 @@ const skills = [
   flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
-  padding: 2rem 0;
+  padding: 2rem 1rem;
 }
 
 .icon {

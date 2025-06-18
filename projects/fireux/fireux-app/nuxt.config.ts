@@ -15,8 +15,17 @@ export default defineNuxtConfig({
     'fireux-core/assets/design-system/main.scss',
   ],
   nitro: {
+    preset: 'firebase',
     firebase: {
-      gen: 2
+      gen: 2,
+      nodeVersion: '22',
+    },
+    // Configure rollup to handle Firebase Functions restrictions
+    rollupConfig: {
+      external: ['#app', '#build/app.config']
+    },
+    experimental: {
+      wasm: true
     }
   },
   modules: [

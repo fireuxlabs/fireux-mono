@@ -19,6 +19,12 @@ export function configureServer(resolver: any) {
     handler: resolvePath('./runtime/server/api/proxy/google-avatar'),
   })
 
+  // Add app theme endpoint for ecosystem integration
+  addServerHandler({
+    route: '/api/app/theme',
+    handler: resolvePath('./runtime/server/api/app/theme.get'),
+  })
+
   // Simple Stripe API routes (without composable imports)
   addServerHandler({
     route: '/api/stripe/create-product',

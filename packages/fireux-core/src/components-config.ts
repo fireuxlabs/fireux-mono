@@ -1,5 +1,5 @@
 import { addComponentsDir } from '@nuxt/kit'
-import { ModuleOptions } from './module'
+import type { ModuleOptions } from './module'
 
 /**
  * Configure components for the Nuxt application

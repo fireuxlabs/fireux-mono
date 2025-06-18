@@ -4,8 +4,5 @@ export default defineAppConfig({
       primary: 'blue',
       neutral: 'slate',
     },
-    icons: {
-      size: '22px',
-    },
   },
 })

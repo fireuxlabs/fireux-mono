@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   },
 
   // Module dependencies for development
-  modules: ['@nuxt/ui', 'nuxt-vuefire'],
+  modules: ['@nuxt/ui'],
 
   // TypeScript configuration
   typescript: {
