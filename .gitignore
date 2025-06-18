@@ -43,8 +43,11 @@ build/
 .nuxt/
 .output/
 
-# Firebase hosting cache
+# Firebase hosting cache and build artifacts
 **/.firebase/hosting.*
+**/.firebase/hosting.*.cache
+**/.firebase/.firebaserc
+**/.firebase/firebase.json
 
 # TypeScript build info
 *.tsbuildinfo
