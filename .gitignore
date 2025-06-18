@@ -43,6 +43,9 @@ build/
 .nuxt/
 .output/
 
+# Firebase hosting cache
+**/.firebase/hosting.*
+
 # TypeScript build info
 *.tsbuildinfo
 
