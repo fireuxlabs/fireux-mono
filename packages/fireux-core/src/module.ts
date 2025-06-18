@@ -17,7 +17,7 @@ export interface ModuleOptions {
    * @defaultValue `Fire`
    */
   prefix?: string
-  
+
   /**
    * Enable PWA functionality
    * @defaultValue `true`

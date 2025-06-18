@@ -12,6 +12,10 @@
     "./composables": {
       "types": "./dist/runtime/composables/index.d.ts",
       "import": "./dist/runtime/composables/index.mjs"
+    },
+    "./dist/runtime/composables/useJobRoutes": {
+      "types": "./dist/runtime/composables/useJobRoutes.d.ts",
+      "import": "./dist/runtime/composables/useJobRoutes.mjs"
     }
   },
   "main": "./dist/module.cjs",

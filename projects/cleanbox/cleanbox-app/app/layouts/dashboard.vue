@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { getJobRoutes } from 'fireux-jobs/composables'
+import { getJobRoutes } from 'fireux-jobs/dist/runtime/composables/useJobRoutes'
 
 const jobRoutes = getJobRoutes()
 </script>
