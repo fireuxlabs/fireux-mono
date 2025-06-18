@@ -1,4 +1,3 @@
-import { addModule } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 
 /**
@@ -8,7 +7,8 @@ import type { Nuxt } from '@nuxt/schema'
 export function configurePWA(nuxt: Nuxt) {
   // Only add PWA module if not already added
   if (!nuxt.options.modules?.includes('@vite-pwa/nuxt')) {
-    addModule('@vite-pwa/nuxt', {
+    nuxt.options.modules = nuxt.options.modules || []
+    nuxt.options.modules.push(['@vite-pwa/nuxt', {
       registerType: 'autoUpdate',
       manifest: {
         name: process.env.APP_NAME || 'FireUX App',
@@ -66,7 +66,7 @@ export function configurePWA(nuxt: Nuxt) {
         navigateFallbackAllowlist: [/^\/$/],
         type: 'module'
       }
-    })
+    }])
   }
 
   // Add PWA-related runtime config

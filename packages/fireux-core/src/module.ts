@@ -8,7 +8,7 @@ import { configureAssets } from './assets-config'
 import { configurePlugins } from './plugins-config'
 import { configureComposables } from './composables-config'
 import { configurePages } from './pages-config'
-// import { configurePWA } from './pwa-config'
+import { configurePWA } from './pwa-config'
 
 // Module options interface
 export interface ModuleOptions {
@@ -62,9 +62,9 @@ export default defineNuxtModule<ModuleOptions>({
     // Configure public assets
     configureAssets(resolver, nuxt)
 
-    // Configure PWA (temporarily disabled for debugging)
-    // if (options.pwa !== false) {
-    //   configurePWA(nuxt)
-    // }
+    // Configure PWA
+    if (options.pwa !== false) {
+      configurePWA(nuxt)
+    }
   },
 })
