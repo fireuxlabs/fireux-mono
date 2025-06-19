@@ -2,52 +2,30 @@
   "name": "fireux-jobs",
   "version": "0.1.0",
   "description": "Job posting and application system for FireUX apps",
-  "type": "module",
+  "private": true,
+  "main": "./src/module.ts",
+  "types": "./src/module.ts",
   "exports": {
     ".": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
-    },
-    "./composables": {
-      "types": "./dist/runtime/composables/index.d.ts",
-      "import": "./dist/runtime/composables/index.mjs"
-    },
-    "./dist/runtime/composables/useJobRoutes": {
-      "types": "./dist/runtime/composables/useJobRoutes.d.ts",
-      "import": "./dist/runtime/composables/useJobRoutes.mjs"
+      "import": "./src/module.ts",
+      "types": "./src/module.ts"
     }
   },
-  "main": "./dist/module.cjs",
-  "types": "./dist/types.d.ts",
   "files": [
-    "dist"
+    "src/**/*",
+    "dist/**/*"
   ],
   "scripts": {
-    "build": "nuxt-module-build",
     "dev": "nuxt-module-build --stub",
-    "dev:build": "nuxt-module-build --stub --watch",
-    "dev:prepare": "nuxt-module-build --stub && nuxt-module-build prepare",
-    "release": "npm run lint && npm run test && npm run prepack && changelogen --release && npm publish && git push --follow-tags",
-    "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest watch",
-    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
-    "prepack": "nuxt-module-build"
+    "build": "nuxt-module-build",
+    "postbuild": "rimraf src/**/*.map"
   },
   "dependencies": {
     "@nuxt/kit": "^3.17.4"
   },
   "devDependencies": {
-    "@nuxt/devtools": "latest",
-    "@nuxt/eslint-config": "^0.2.0",
     "@nuxt/module-builder": "^0.5.5",
-    "@nuxt/schema": "^3.17.4",
-    "@nuxt/test-utils": "^3.17.4",
-    "changelogen": "^0.5.5",
-    "eslint": "^8.57.0",
-    "nuxt": "^3.17.4",
-    "vitest": "^1.6.0",
-    "vue-tsc": "^1.8.27"
-  }
+    "rimraf": "^6.0.1"
+  },
+  "type": "module"
 }

@@ -23,10 +23,11 @@
 </template>
 
 <script setup>
-const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
-const { ensureAppUser } = useAppUserEnsure()
-const { isInitialized } = useApp()
+import { useRouter } from 'vue-router'
+
 const router = useRouter()
+const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
+const { ensureApp } = await useAppEnsure()
 
 const isSignUp = ref(true)
 const state = reactive({
@@ -42,9 +43,15 @@ const handleEmailAuth = async () => {
   const user = await authMethod(state.email, state.password)
 
   if (user?.uid) {
-    if (isInitialized.value) {
-      await ensureAppUser(() => router.push('/dashboard')) // ✅ Ensure app user after authentication and redirect
+    console.log('[handleEmailAuth] ✅ Got UID:', user.uid)
+    try {
+      await ensureApp(user)
+      router.push('/dashboard')
+    } catch (error) {
+      console.error('[handleEmailAuth] ❌ Error ensuring app:', error)
     }
+  } else {
+    console.warn('[handleEmailAuth] ❌ No UID returned from email auth')
   }
 }
 </script>

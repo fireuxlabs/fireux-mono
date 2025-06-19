@@ -1,198 +1,138 @@
-import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { useAppUser } from '../firestore/AppUser/useAppUser'
 import { useFireUXConfig } from '../FireUXConfig'
+import { useAppUser } from '../firestore/AppUser/useAppUser'
+import type { RouteLink } from '../../../types'
 
-// Define a type for our route links.
-export interface RouteLink {
+// Returns route meta data (label and icon) for a given path - simplified version
+export function getRouteMetaForPath(path: string): {
   label: string
   icon: string
-  to?: string
-  children?: RouteLink[]
+} {
+  return { label: '', icon: '' }
 }
 
-// Function to generate route links, using runtime config for appName.
-export function getRouteLinks() {
+export const useRoutes = (appLinks: RouteLink[] = []) => {
   const { appIcon, appName } = useFireUXConfig()
+  const { appUser } = useAppUser()
 
-  // Format appIcon to be compatible with Nuxt UI's icon format
+  // Ensure appLinks is always an array
+  const safeAppLinks = Array.isArray(appLinks) ? appLinks : []
+
   const formattedAppIcon =
     typeof appIcon === 'string' && appIcon
       ? `i-lucide-${appIcon}`
       : 'i-lucide-app'
 
-  return {
-    app: [
-      {
-        label: typeof appName === 'string' ? appName : 'App',
-        icon: formattedAppIcon,
-        to: '/content',
-      },
-      { label: 'Products', icon: 'i-lucide-box', to: '/products' },
-      { label: 'Blog', icon: 'i-lucide-book', to: '/blog' },
-    ],
-    dashboard: [
-      {
-        label: 'User',
-        icon: 'i-lucide-user-circle',
-        children: [
+  // Public routes - visible to everyone
+  const system = [
+    {
+      label: typeof appName === 'string' ? appName : 'App',
+      icon: formattedAppIcon,
+      to: '/content',
+    },
+    { label: 'Products', icon: 'i-lucide-box', to: '/products' },
+    { label: 'Blog', icon: 'i-lucide-book', to: '/blog' },
+  ]
+
+  // App user routes - only visible to authenticated app users
+  const appUserRoutes = appUser
+    ? [
+        {
+          label: 'Overview',
+          icon: 'i-lucide-layout-dashboard',
+          to: '/dashboard',
+        },
+        {
+          label: 'Profile',
+          icon: 'i-lucide-user',
+          to: '/dashboard/profile',
+        },
+        {
+          label: 'Account',
+          icon: 'i-lucide-settings',
+          to: '/dashboard/account',
+        },
+        {
+          label: 'Orders',
+          icon: 'i-lucide-shopping-cart',
+          to: '/dashboard/orders',
+        },
+        {
+          label: 'Subscriptions',
+          icon: 'i-lucide-credit-card',
+          to: '/dashboard/subscriptions',
+        },
+        {
+          label: 'Favorites',
+          icon: 'i-lucide-heart',
+          to: '/dashboard/favorites',
+        },
+      ]
+    : []
+
+  // Admin routes - only visible to admin users
+  const adminRoutes =
+    appUser.value && appUser.value.role === 'admin'
+      ? [
           {
-            label: 'Overview',
-            icon: 'i-lucide-layout-dashboard',
-            to: '/dashboard',
-          },
-          { label: 'Profile', icon: 'i-lucide-user', to: '/dashboard/profile' },
-          {
-            label: 'Account',
-            icon: 'i-lucide-settings',
-            to: '/dashboard/account',
-          },
-          {
-            label: 'Orders',
-            icon: 'i-lucide-shopping-cart',
-            to: '/dashboard/orders',
-          },
-          {
-            label: 'Subscriptions',
-            icon: 'i-lucide-credit-card',
-            to: '/dashboard/subscriptions',
-          },
-          {
-            label: 'Favorites',
-            icon: 'i-lucide-heart',
-            to: '/dashboard/favorites',
-          },
-        ],
-      },
-    ],
-    admin: [
-      {
-        label: 'Admin',
-        icon: 'i-lucide-shield-check',
-        children: [
-          {
-            label: 'Overview',
+            label: 'Admin Overview',
             icon: 'i-lucide-layout-dashboard',
             to: '/admin',
           },
-          { label: 'Users', icon: 'i-lucide-users', to: '/admin/users' },
-          { label: 'Products', icon: 'i-lucide-box', to: '/admin/products' },
-          { label: 'Blog', icon: 'i-lucide-book', to: '/admin/blog' },
+          {
+            label: 'Users',
+            icon: 'i-lucide-users',
+            to: '/admin/users',
+          },
+          {
+            label: 'Products',
+            icon: 'i-lucide-box',
+            to: '/admin/products',
+          },
+          {
+            label: 'Blog',
+            icon: 'i-lucide-book',
+            to: '/admin/blog',
+          },
           {
             label: 'Settings',
             icon: 'i-lucide-sliders',
             to: '/admin/settings',
           },
-        ],
-      },
-    ],
+        ]
+      : []
+
+  // Create nested user group for mobile navigation to save space
+  const userGroup = appUser.value
+    ? [
+        {
+          label: 'User',
+          icon: 'i-lucide-user-circle',
+          children: appUserRoutes,
+        },
+      ]
+    : []
+
+  // Create nested admin group for both mobile and dashboard navigation
+  const adminGroup =
+    adminRoutes.length > 0
+      ? [
+          {
+            label: 'Admin',
+            icon: 'i-lucide-shield',
+            children: adminRoutes,
+          },
+        ]
+      : []
+
+  // Combine routes based on authentication status
+  const menuBarLinks = [...system]
+  const mobileLinks = [...system, ...safeAppLinks, ...userGroup, ...adminGroup]
+  const dashboardLinks = [...appUserRoutes, ...safeAppLinks, ...adminGroup]
+
+  return {
+    menuBarLinks: menuBarLinks,
+    mobileLinks: mobileLinks,
+    dashboardLinks: dashboardLinks,
+    subHeader: { label: '', icon: '' },
   }
-}
-
-// Recursive function to search through route links.
-function findLink(path: string, links: RouteLink[]): RouteLink | null {
-  for (const link of links) {
-    if (link.to === path) return link
-    if (link.children) {
-      const found = findLink(path, link.children)
-      if (found) return found
-    }
-  }
-  return null
-}
-
-// Returns route meta data (label and icon) for a given path.
-export function getRouteMetaForPath(
-  path: string,
-  ROUTE_LINKS?: { app: RouteLink[]; dashboard: RouteLink[]; admin: RouteLink[] }
-): { label: string; icon: string } {
-  if (!ROUTE_LINKS) return { label: '', icon: '' }
-  const match =
-    findLink(path, ROUTE_LINKS.admin) ||
-    findLink(path, ROUTE_LINKS.dashboard) ||
-    findLink(path, ROUTE_LINKS.app)
-  if (!match) return { label: '', icon: '' }
-  return { label: match.label, icon: match.icon }
-}
-
-/**
- * useRoutes
- *
- * Returns:
- * - appLinks: Public routes (e.g. Products, Blog).
- * - dashboardLinks: Flat array of dashboard routes; if isAdmin then also include admin routes.
- * - mobileLinks: Groups all links (app, dashboard, and admin if isAdmin) into nested arrays.
- * - subHeader: Computed subheader for the current route.
- */
-export function useRoutes(extras?: {
-  dashboard?: RouteLink[]
-  admin?: RouteLink[]
-  app?: RouteLink[]
-}) {
-  const route = useRoute()
-  const baseRoutes = getRouteLinks()
-
-  // Merge base routes with extras
-  const ROUTE_LINKS = {
-    app: [...baseRoutes.app, ...(extras?.app || [])],
-    dashboard: [...baseRoutes.dashboard, ...(extras?.dashboard || [])],
-    admin: [...baseRoutes.admin, ...(extras?.admin || [])],
-  }
-
-  // Try to get isAdmin safely, default to false if not available
-  let isAdmin = ref(false)
-
-  try {
-    const appUser = useAppUser()
-    isAdmin = appUser.isAdmin || ref(false)
-  } catch (error) {
-    // If useAppUser fails, just use false
-    isAdmin = ref(false)
-  }
-
-  // Public app links.
-  const appLinks = computed<RouteLink[]>(() => {
-    return ROUTE_LINKS.app
-  })
-
-  // Dashboard routes for desktop navigation (combined if admin).
-  const dashboardLinks = computed<RouteLink[]>(() => {
-    const dashboardParent = ROUTE_LINKS.dashboard[0]
-    const dashboardChildren: RouteLink[] =
-      dashboardParent && dashboardParent.children
-        ? dashboardParent.children
-        : []
-
-    // Add extra dashboard routes (these are individual route items)
-    const extraDashboardRoutes = extras?.dashboard || []
-
-    // Combine all dashboard routes
-    const allDashboardRoutes = [...dashboardChildren, ...extraDashboardRoutes]
-
-    return isAdmin.value
-      ? [...allDashboardRoutes, ...ROUTE_LINKS.admin]
-      : allDashboardRoutes
-  })
-
-  // Mobile: group everything into nested arrays.
-  const mobileLinks = computed<RouteLink[][]>(() => {
-    const groups: RouteLink[][] = []
-    groups.push(ROUTE_LINKS.app)
-    groups.push(ROUTE_LINKS.dashboard)
-    if (isAdmin.value) {
-      groups.push(ROUTE_LINKS.admin)
-    }
-    return groups
-  })
-
-  const subHeader = computed(() => {
-    const title = route.meta?.title
-    const icon = route.meta?.icon
-    return {
-      label: typeof title === 'string' ? title : 'Dashboard',
-      icon: typeof icon === 'string' ? icon : 'i-lucide-layout-dashboard',
-    }
-  })
-
-  return { appLinks, dashboardLinks, mobileLinks, subHeader }
 }

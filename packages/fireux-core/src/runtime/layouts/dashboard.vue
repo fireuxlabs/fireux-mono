@@ -2,7 +2,10 @@
   <ClientOnly>
     <FireLayoutsDashboardGuard>
       <div class="layout-wrapper">
-        <FireLayoutsHeader :app-links="appLinks" :mobile-links="mobileLinks" />
+        <FireLayoutsHeader
+          :menu-bar-links="menuBarLinks"
+          :mobile-links="mobileLinks"
+        />
         <div class="layout-content">
           <main class="layout-main-content">
             <UNavigationMenu
@@ -28,7 +31,7 @@ import { useWindowSize } from '@vueuse/core'
 import { computed } from 'vue'
 
 const props = defineProps({
-  extras: {
+  appLinks: {
     type: Object,
     default: () => ({}),
   },
@@ -37,8 +40,8 @@ const props = defineProps({
 const { width } = useWindowSize()
 const isMobile = computed(() => width.value < 1024)
 
-const { appLinks, mobileLinks, dashboardLinks, subHeader } = useRoutes(
-  props.extras
+const { menuBarLinks, mobileLinks, dashboardLinks, subHeader } = useRoutes(
+  props.appLinks
 )
 
 defineOptions({

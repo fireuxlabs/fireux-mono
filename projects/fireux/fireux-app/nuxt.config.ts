@@ -33,7 +33,9 @@ export default defineNuxtConfig({
           short_name: process.env.APP_SHORT_NAME || 'FireUX',
           start_url: '/',
           display: 'standalone',
-          theme_color: process.env.APP_PRIMARY_COLOR ? `#${process.env.APP_PRIMARY_COLOR}` : '#EAB308',
+          theme_color: process.env.APP_PRIMARY_COLOR
+            ? `#${process.env.APP_PRIMARY_COLOR}`
+            : '#EAB308',
           background_color: '#ffffff',
           icons: [
             {

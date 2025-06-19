@@ -27,7 +27,9 @@ export default defineNuxtConfig({
           short_name: process.env.APP_SHORT_NAME || 'Misebox',
           start_url: '/',
           display: 'standalone',
-          theme_color: process.env.APP_PRIMARY_COLOR ? `#${process.env.APP_PRIMARY_COLOR}` : '#22C55E',
+          theme_color: process.env.APP_PRIMARY_COLOR
+            ? `#${process.env.APP_PRIMARY_COLOR}`
+            : '#22C55E',
           background_color: '#ffffff',
           icons: [
             {

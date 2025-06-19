@@ -1,9 +1,17 @@
 <template>
-  <CoreDashboard :extras="jobRoutes" />
+  <CoreDefault :appLinks="combinedRoutes" />
 </template>
 
 <script setup>
-import { getJobRoutes } from 'fireux-jobs/dist/runtime/composables/useJobRoutes'
+const { appUser } = await useAppUser()
+const jobPublicRoutes = getPublicJobRoutes() || []
+const jobPrivateRoutes = appUser ? getPrivateJobRoutes() || [] : []
 
-const jobRoutes = getJobRoutes()
+// Future-proofed: Add more route sources here when needed
+const combinedRoutes = [
+  ...jobPublicRoutes,
+  ...jobPrivateRoutes,
+  // ...kitchenRoutes, // Add when kitchen module is ready
+  // ...otherRoutes,   // Example for future
+]
 </script>

@@ -17,7 +17,8 @@ A clean and modern web application built with Nuxt.js.
 
 A minimalist application framework.
 
-**Deployment Status:** 🔄 Pending  
+**Deployment Status:** ✅ Deployed  
+**Live URL:** https://misebox-78f9c.web.app  
 **Theme Colors:** Green (`#22C55E`) / Slate (`#64748B`)  
 **Technology Stack:** Nuxt.js, Vue.js, TypeScript
 
@@ -25,29 +26,96 @@ A minimalist application framework.
 
 A UI component library and framework.
 
-**Deployment Status:** 🔄 Pending  
+**Deployment Status:** ✅ Deployed  
+**Live URL:** https://fireux-2005.web.app  
 **Theme Colors:** Yellow (`#EAB308`) / Zinc (`#71717A`)  
 **Technology Stack:** Nuxt.js, Vue.js, TypeScript
+
+## 🚀 Deployment
+
+All projects are successfully deployed to Firebase Hosting:
+
+### Live Applications
+
+| Application  | Status  | Live URL                                               | Firebase Project | Last Deploy |
+| ------------ | ------- | ------------------------------------------------------ | ---------------- | ----------- |
+| **CleanBox** | ✅ Live | [cleanbox.web.app](https://cleanbox.web.app)           | `cleanbox-f15bc` | ✅          |
+| **MiseBox**  | ✅ Live | [misebox-78f9c.web.app](https://misebox-78f9c.web.app) | `misebox-78f9c`  | ✅          |
+| **FireUX**   | ✅ Live | [fireux-2005.web.app](https://fireux-2005.web.app)     | `fireux-2005`    | ✅          |
+
+### Deployment Commands
+
+Each app follows the same Firebase deployment pattern:
+
+```bash
+# Deploy CleanBox
+cd cleanbox/cleanbox-app
+pnpm run build
+firebase deploy --only hosting
+
+# Deploy MiseBox
+cd misebox/misebox-app
+pnpm run build
+firebase deploy --only hosting
+
+# Deploy FireUX
+cd fireux/fireux-app
+pnpm run build
+firebase deploy --only hosting
+```
+
+### Build Configuration
+
+All apps use Firebase preset for optimal hosting:
+
+```typescript
+// nuxt.config.ts (each app)
+export default defineNuxtConfig({
+  nitro: {
+    preset: 'firebase',
+  },
+})
+```
+
+### Firebase Configuration
+
+Each app has its own `firebase.json`:
+
+```json
+{
+  "hosting": {
+    "public": ".output/public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+```
 
 ## 🎨 App Theming
 
 Each app uses a consistent two-color system:
 
-| App | Primary Color | Neutral Color | Config |
-|-----|---------------|---------------|---------|
-| **CleanBox** | `blue` (`#3B82F6`) | `slate` (`#64748B`) | `app.config.ts` |
-| **MiseBox** | `green` (`#22C55E`) | `slate` (`#64748B`) | `app.config.ts` |
-| **FireUX** | `yellow` (`#EAB308`) | `zinc` (`#71717A`) | `app.config.ts` |
+| App          | Primary Color        | Neutral Color       | Config          |
+| ------------ | -------------------- | ------------------- | --------------- |
+| **CleanBox** | `blue` (`#3B82F6`)   | `slate` (`#64748B`) | `app.config.ts` |
+| **MiseBox**  | `green` (`#22C55E`)  | `slate` (`#64748B`) | `app.config.ts` |
+| **FireUX**   | `yellow` (`#EAB308`) | `zinc` (`#71717A`)  | `app.config.ts` |
 
 ### Changing App Colors
 
 1. **Update** `app/app.config.ts`:
+
    ```typescript
    export default defineAppConfig({
      ui: {
        colors: {
-         primary: 'blue',   // Choose from Nuxt UI colors
-         neutral: 'slate',  // Choose neutral color
+         primary: 'blue', // Choose from Nuxt UI colors
+         neutral: 'slate', // Choose neutral color
        },
      },
    })

@@ -68,6 +68,7 @@
 </template>
 
 <script setup>
+import { getRouteMetaForPath } from '../../composables/utils/useRoutes'
 
 const { label, icon } = getRouteMetaForPath('/admin/settings')
 

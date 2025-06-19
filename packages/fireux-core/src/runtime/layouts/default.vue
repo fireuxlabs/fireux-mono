@@ -1,7 +1,10 @@
 <template>
   <ClientOnly>
     <div class="layout-wrapper">
-      <FireLayoutsHeader :app-links="appLinks" :mobile-links="mobileLinks" />
+      <FireLayoutsHeader
+        :menu-bar-links="menuBarLinks"
+        :mobile-links="mobileLinks"
+      />
       <NuxtPage />
       <FireLayoutsDefaultFooter />
     </div>
@@ -10,13 +13,13 @@
 
 <script setup>
 const props = defineProps({
-  extras: {
+  appLinks: {
     type: Object,
     default: () => ({}),
   },
 })
 
-const { appLinks, mobileLinks } = useRoutes(props.extras)
+const { menuBarLinks, mobileLinks } = useRoutes(props.appLinks)
 
 defineOptions({
   name: 'CoreDefault',

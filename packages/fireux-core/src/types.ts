@@ -1,2 +1,11 @@
 // Export types from fireux-core
-export type { RouteLink } from './runtime/composables/utils/useRoutes'
+
+// Route link interface for navigation items
+export interface RouteLink {
+  label: string
+  icon: string
+  to: string
+  children?: RouteLink[]
+  requiresAuth?: boolean
+  requiresCondition?: () => boolean
+}

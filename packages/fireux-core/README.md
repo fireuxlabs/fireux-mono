@@ -164,8 +164,8 @@ Easy customization via app.config.ts:
 export default defineAppConfig({
   ui: {
     colors: {
-      primary: 'blue',    // Choose from Nuxt UI colors
-      neutral: 'slate',   // Secondary color
+      primary: 'blue', // Choose from Nuxt UI colors
+      neutral: 'slate', // Secondary color
     },
   },
 })
@@ -185,11 +185,11 @@ APP_NEUTRAL_COLOR=64748B  # slate-500 (no # prefix)
 
 #### Standard App Colors
 
-| App | Primary | Neutral | 
-|-----|---------|---------|
-| FireUX | `yellow` | `zinc` |
-| CleanBox | `blue` | `slate` |
-| MiseBox | `green` | `slate` |
+| App      | Primary  | Neutral |
+| -------- | -------- | ------- |
+| FireUX   | `yellow` | `zinc`  |
+| CleanBox | `blue`   | `slate` |
+| MiseBox  | `green`  | `slate` |
 
 Colors automatically theme all components:
 
@@ -197,7 +197,7 @@ Colors automatically theme all components:
 <template>
   <!-- Uses your primary color -->
   <UButton color="primary">Themed Button</UButton>
-  
+
   <!-- CSS variables available -->
   <div class="text-primary-500 bg-neutral-100">Themed content</div>
 </template>

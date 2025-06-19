@@ -8,7 +8,11 @@
         </div>
 
         <!-- Desktop Navigation Menu -->
-          <UNavigationMenu v-if="!isMobile" orientation="horizontal" :items="appLinks" />
+        <UNavigationMenu
+          v-if="!isMobile"
+          orientation="horizontal"
+          :items="menuBarLinks"
+        />
 
         <!-- Right Section: User Profile / Sign-In & Mobile Menu -->
         <div class="right-section">
@@ -82,7 +86,7 @@ const mobileMenuOpen = ref(false)
 const toggleMobileNav = () => (mobileMenuOpen.value = !mobileMenuOpen.value)
 
 defineProps({
-  appLinks: { type: Array, default: () => [] },
+  menuBarLinks: { type: Array, default: () => [] },
   mobileLinks: { type: Array, default: () => [] },
 })
 </script>
