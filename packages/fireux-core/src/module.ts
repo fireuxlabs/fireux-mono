@@ -8,7 +8,6 @@ import { configureAssets } from './assets-config'
 import { configurePlugins } from './plugins-config'
 import { configureComposables } from './composables-config'
 import { configurePages } from './pages-config'
-import { configurePWA } from './pwa-config'
 
 // Module options interface
 export interface ModuleOptions {
@@ -17,12 +16,6 @@ export interface ModuleOptions {
    * @defaultValue `Fire`
    */
   prefix?: string
-
-  /**
-   * Enable PWA functionality
-   * @defaultValue `true`
-   */
-  pwa?: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -33,7 +26,6 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults: {
     prefix: 'Fire',
-    pwa: true,
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
@@ -61,10 +53,5 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Configure public assets
     configureAssets(resolver, nuxt)
-
-    // Configure PWA
-    if (options.pwa !== false) {
-      configurePWA(nuxt)
-    }
   },
 })
