@@ -23,11 +23,11 @@ export default defineNuxtConfig({
       {
         registerType: 'autoUpdate',
         manifest: {
-          name: 'Misebox App',
-          short_name: 'Misebox',
+          name: process.env.APP_NAME || 'Misebox',
+          short_name: process.env.APP_SHORT_NAME || 'Misebox',
           start_url: '/',
           display: 'standalone',
-          theme_color: '#1f2937',
+          theme_color: process.env.APP_PRIMARY_COLOR ? `#${process.env.APP_PRIMARY_COLOR}` : '#22C55E',
           background_color: '#ffffff',
           icons: [
             {

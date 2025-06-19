@@ -39,10 +39,10 @@ const { data: page } = await useAsyncData('index', () =>
         <LandingFeatures :second="true" />
       </div>
 
-      <!-- Tech Stack Component -->
-      <div class="section-spacing">
+      <!-- Tech Stack Component - Temporarily commented out -->
+      <!-- <div class="section-spacing">
         <LandingTechStack />
-      </div>
+      </div> -->
 
       <!-- Content from CMS (if available) -->
       <div v-if="page" class="section-spacing">

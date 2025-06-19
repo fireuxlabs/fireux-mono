@@ -208,6 +208,78 @@ fireux/
 - **copilot.md** = AI assistants (workflows, commands, quick reference)
 - **BUSINESS.md** = Business stakeholders (strategy, revenue, value propositions)
 
+## 🎨 Color System & Theming
+
+### App Color Configurations
+
+Each app uses a consistent two-color system based on Nuxt UI colors:
+
+| App | Primary | Neutral | Primary Hex | Neutral Hex |
+|-----|---------|---------|-------------|-------------|
+| **FireUX** | `yellow` | `zinc` | `#EAB308` | `#71717A` |
+| **CleanBox** | `blue` | `slate` | `#3B82F6` | `#64748B` |
+| **MiseBox** | `green` | `slate` | `#22C55E` | `#64748B` |
+| **Playground** | `red` | `slate` | `#EF4444` | `#64748B` |
+
+### How to Choose Colors
+
+1. **Visit [Nuxt UI Colors](https://ui.nuxt.com/getting-started/theming#colors)** to see available color options
+2. **Pick a primary color** that matches your brand (e.g., `blue`, `green`, `yellow`)
+3. **Pick a neutral color** for secondary elements (usually `slate`, `gray`, or `zinc`)
+4. **Update your app configuration** in two places:
+
+#### Step 1: Update `app/app.config.ts`
+
+```typescript
+export default defineAppConfig({
+  ui: {
+    colors: {
+      primary: 'blue',    // Your chosen primary color
+      neutral: 'slate',   // Your chosen neutral color
+    },
+  },
+})
+```
+
+#### Step 2: Update `.env` file
+
+Convert your colors to hex values (without `#` prefix):
+
+```bash
+# Replace with your hex values (no # prefix)
+APP_PRIMARY_COLOR=3B82F6  # blue-500
+APP_NEUTRAL_COLOR=64748B  # slate-500
+```
+
+#### Hex Color Reference
+
+Common Nuxt UI colors and their hex values:
+
+- **red**: `EF4444` | **orange**: `F97316` | **yellow**: `EAB308`
+- **green**: `22C55E` | **blue**: `3B82F6` | **purple**: `8B5CF6`
+- **slate**: `64748B` | **gray**: `6B7280` | **zinc**: `71717A`
+
+> 💡 **Tip**: Use a color picker tool or search "tailwind [color] 500" to find the exact hex values.
+
+### Color Usage in Components
+
+Colors automatically propagate throughout the app:
+
+```vue
+<template>
+  <!-- Uses your primary color -->
+  <UButton color="primary">Primary Button</UButton>
+  
+  <!-- Uses your neutral color -->
+  <UButton color="neutral">Neutral Button</UButton>
+  
+  <!-- CSS variables are also available -->
+  <div class="text-primary-500 bg-neutral-100">
+    Themed content
+  </div>
+</template>
+```
+
 ## 🤝 Contributing
 
 1. **Never duplicate code** - Add shared functionality to FireUX Core

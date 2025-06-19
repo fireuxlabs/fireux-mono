@@ -10,6 +10,7 @@ A clean and modern web application built with Nuxt.js.
 
 **Deployment Status:** ✅ Deployed  
 **Live URL:** https://cleanbox-f15bc.web.app  
+**Theme Colors:** Blue (`#3B82F6`) / Slate (`#64748B`)  
 **Technology Stack:** Nuxt.js, Vue.js, TypeScript
 
 ### MiseBox
@@ -17,6 +18,7 @@ A clean and modern web application built with Nuxt.js.
 A minimalist application framework.
 
 **Deployment Status:** 🔄 Pending  
+**Theme Colors:** Green (`#22C55E`) / Slate (`#64748B`)  
 **Technology Stack:** Nuxt.js, Vue.js, TypeScript
 
 ### FireUX
@@ -24,7 +26,40 @@ A minimalist application framework.
 A UI component library and framework.
 
 **Deployment Status:** 🔄 Pending  
+**Theme Colors:** Yellow (`#EAB308`) / Zinc (`#71717A`)  
 **Technology Stack:** Nuxt.js, Vue.js, TypeScript
+
+## 🎨 App Theming
+
+Each app uses a consistent two-color system:
+
+| App | Primary Color | Neutral Color | Config |
+|-----|---------------|---------------|---------|
+| **CleanBox** | `blue` (`#3B82F6`) | `slate` (`#64748B`) | `app.config.ts` |
+| **MiseBox** | `green` (`#22C55E`) | `slate` (`#64748B`) | `app.config.ts` |
+| **FireUX** | `yellow` (`#EAB308`) | `zinc` (`#71717A`) | `app.config.ts` |
+
+### Changing App Colors
+
+1. **Update** `app/app.config.ts`:
+   ```typescript
+   export default defineAppConfig({
+     ui: {
+       colors: {
+         primary: 'blue',   // Choose from Nuxt UI colors
+         neutral: 'slate',  // Choose neutral color
+       },
+     },
+   })
+   ```
+
+2. **Update** `.env` file with hex values:
+   ```bash
+   APP_PRIMARY_COLOR=3B82F6  # blue-500 (no # prefix)
+   APP_NEUTRAL_COLOR=64748B  # slate-500 (no # prefix)
+   ```
+
+> 📚 **See main README.md** for complete color selection guide and Nuxt UI color references.
 
 ## Firebase Deployment Process
 

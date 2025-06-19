@@ -29,11 +29,11 @@ export default defineNuxtConfig({
       {
         registerType: 'autoUpdate',
         manifest: {
-          name: 'FireUX App',
-          short_name: 'FireUX',
+          name: process.env.APP_NAME || 'FireUX',
+          short_name: process.env.APP_SHORT_NAME || 'FireUX',
           start_url: '/',
           display: 'standalone',
-          theme_color: '#1f2937',
+          theme_color: process.env.APP_PRIMARY_COLOR ? `#${process.env.APP_PRIMARY_COLOR}` : '#EAB308',
           background_color: '#ffffff',
           icons: [
             {

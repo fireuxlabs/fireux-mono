@@ -23,11 +23,11 @@ export default defineNuxtConfig({
       {
         registerType: 'autoUpdate',
         manifest: {
-          name: 'Cleanbox App',
-          short_name: 'Cleanbox',
+          name: process.env.APP_NAME || 'Cleanbox',
+          short_name: process.env.APP_SHORT_NAME || 'Cleanbox',
           start_url: '/',
           display: 'standalone',
-          theme_color: '#1f2937',
+          theme_color: process.env.APP_PRIMARY_COLOR ? `#${process.env.APP_PRIMARY_COLOR}` : '#3B82F6',
           background_color: '#ffffff',
           icons: [
             {

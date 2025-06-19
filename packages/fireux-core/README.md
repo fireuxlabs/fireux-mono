@@ -164,12 +164,43 @@ Easy customization via app.config.ts:
 export default defineAppConfig({
   ui: {
     colors: {
-      primary: 'emerald', // Your brand color
-      neutral: 'slate',
+      primary: 'blue',    // Choose from Nuxt UI colors
+      neutral: 'slate',   // Secondary color
     },
-    theme: 'dark', // Light/dark mode support
   },
 })
+```
+
+#### Color Selection Guide
+
+1. **Visit [Nuxt UI Colors](https://ui.nuxt.com/getting-started/theming#colors)** to explore options
+2. **Choose your colors** and update `app.config.ts`
+3. **Convert to hex** and update `.env` file:
+
+```bash
+# Example for blue/slate theme:
+APP_PRIMARY_COLOR=3B82F6  # blue-500 (no # prefix)
+APP_NEUTRAL_COLOR=64748B  # slate-500 (no # prefix)
+```
+
+#### Standard App Colors
+
+| App | Primary | Neutral | 
+|-----|---------|---------|
+| FireUX | `yellow` | `zinc` |
+| CleanBox | `blue` | `slate` |
+| MiseBox | `green` | `slate` |
+
+Colors automatically theme all components:
+
+```vue
+<template>
+  <!-- Uses your primary color -->
+  <UButton color="primary">Themed Button</UButton>
+  
+  <!-- CSS variables available -->
+  <div class="text-primary-500 bg-neutral-100">Themed content</div>
+</template>
 ```
 
 ## 📄 Page System
