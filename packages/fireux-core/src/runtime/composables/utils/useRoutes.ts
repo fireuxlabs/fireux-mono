@@ -10,12 +10,16 @@ export function getRouteMetaForPath(path: string): {
   return { label: '', icon: '' }
 }
 
-export const useRoutes = (appLinks: RouteLink[] = []) => {
+export const useRoutes = (
+  publicRoutes: RouteLink[] = [],
+  privateRoutes: RouteLink[] = []
+) => {
   const { appIcon, appName } = useFireUXConfig()
   const { appUser } = useAppUser()
 
-  // Ensure appLinks is always an array
-  const safeAppLinks = Array.isArray(appLinks) ? appLinks : []
+  // Ensure routes are always arrays
+  const safePublicRoutes = Array.isArray(publicRoutes) ? publicRoutes : []
+  const safePrivateRoutes = Array.isArray(privateRoutes) ? privateRoutes : []
 
   const formattedAppIcon =
     typeof appIcon === 'string' && appIcon
@@ -33,73 +37,68 @@ export const useRoutes = (appLinks: RouteLink[] = []) => {
     { label: 'Blog', icon: 'i-lucide-book', to: '/blog' },
   ]
 
-  // App user routes - only visible to authenticated app users
-  const appUserRoutes = appUser
-    ? [
-        {
-          label: 'Overview',
-          icon: 'i-lucide-layout-dashboard',
-          to: '/dashboard',
-        },
-        {
-          label: 'Profile',
-          icon: 'i-lucide-user',
-          to: '/dashboard/profile',
-        },
-        {
-          label: 'Account',
-          icon: 'i-lucide-settings',
-          to: '/dashboard/account',
-        },
-        {
-          label: 'Orders',
-          icon: 'i-lucide-shopping-cart',
-          to: '/dashboard/orders',
-        },
-        {
-          label: 'Subscriptions',
-          icon: 'i-lucide-credit-card',
-          to: '/dashboard/subscriptions',
-        },
-        {
-          label: 'Favorites',
-          icon: 'i-lucide-heart',
-          to: '/dashboard/favorites',
-        },
-      ]
-    : []
+  // User account routes - only visible to authenticated app users
+  const appUserRoutes = [
+    {
+      label: 'Overview',
+      icon: 'i-lucide-layout-dashboard',
+      to: '/dashboard',
+    },
+    {
+      label: 'Profile',
+      icon: 'i-lucide-user',
+      to: '/dashboard/profile',
+    },
+    {
+      label: 'Account',
+      icon: 'i-lucide-settings',
+      to: '/dashboard/account',
+    },
+    {
+      label: 'Orders',
+      icon: 'i-lucide-shopping-cart',
+      to: '/dashboard/orders',
+    },
+    {
+      label: 'Subscriptions',
+      icon: 'i-lucide-credit-card',
+      to: '/dashboard/subscriptions',
+    },
+    {
+      label: 'Favorites',
+      icon: 'i-lucide-heart',
+      to: '/dashboard/favorites',
+    },
+  ]
 
   // Admin routes - only visible to admin users
-  const adminRoutes =
-    appUser.value && appUser.value.role === 'admin'
-      ? [
-          {
-            label: 'Admin Overview',
-            icon: 'i-lucide-layout-dashboard',
-            to: '/admin',
-          },
-          {
-            label: 'Users',
-            icon: 'i-lucide-users',
-            to: '/admin/users',
-          },
-          {
-            label: 'Products',
-            icon: 'i-lucide-box',
-            to: '/admin/products',
-          },
-          {
-            label: 'Blog',
-            icon: 'i-lucide-book',
-            to: '/admin/blog',
-          },
-          {
-            label: 'Settings',
-            icon: 'i-lucide-sliders',
-            to: '/admin/settings',
-          },
-        ]
-      : []
+  const adminRoutes = [
+    {
+      label: 'Admin Overview',
+      icon: 'i-lucide-layout-dashboard',
+      to: '/admin',
+    },
+    {
+      label: 'Users',
+      icon: 'i-lucide-users',
+      to: '/admin/users',
+    },
+    {
+      label: 'Products',
+      icon: 'i-lucide-box',
+      to: '/admin/products',
+    },
+    {
+      label: 'Blog',
+      icon: 'i-lucide-book',
+      to: '/admin/blog',
+    },
+    {
+      label: 'Settings',
+      icon: 'i-lucide-sliders',
+      to: '/admin/settings',
+    },
+  ]
 
   // Create nested user group for mobile navigation to save space
   const userGroup = appUser.value
@@ -112,9 +111,9 @@ export const useRoutes = (appLinks: RouteLink[] = []) => {
       ]
     : []
 
-  // Create nested admin group for both mobile and dashboard navigation
+  // Create nested admin group for mobile and admin navigation
   const adminGroup =
-    adminRoutes.length > 0
+    appUser.value?.role === 'admin'
       ? [
           {
             label: 'Admin',
@@ -124,15 +123,14 @@ export const useRoutes = (appLinks: RouteLink[] = []) => {
         ]
       : []
 
-  // Combine routes based on authentication status
-  const menuBarLinks = [...system]
-  const mobileLinks = [...system, ...safeAppLinks, ...userGroup, ...adminGroup]
-  const dashboardLinks = [...appUserRoutes, ...safeAppLinks, ...adminGroup]
+  // Combine system and public routes
+  const publicMenu = [...system, ...safePublicRoutes]
+  const privateMenu = [...safePrivateRoutes]
 
   return {
-    menuBarLinks: menuBarLinks,
-    mobileLinks: mobileLinks,
-    dashboardLinks: dashboardLinks,
+    menuBarLinks: [...system, ...safePublicRoutes],
+    mobileLinks: [...publicMenu, ...privateMenu, ...userGroup, ...adminGroup],
+    dashboardLinks: [...privateMenu, ...userGroup, ...adminGroup],
     subHeader: { label: '', icon: '' },
   }
 }

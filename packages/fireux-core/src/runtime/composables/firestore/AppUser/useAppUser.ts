@@ -23,30 +23,7 @@ export function useAppUser() {
       : null
   )
 
-  const { data: rawAppUser } = useDocument<AppUser>(appUserDocRef)
-
-  // Enhanced app user with normalized data
-  const appUser = computed(() => {
-    if (!rawAppUser.value) return null
-
-    return {
-      ...rawAppUser.value,
-      // Ensure consistent display name
-      display_name:
-        rawAppUser.value.display_name ||
-        currentUser.value?.displayName ||
-        rawAppUser.value.email,
-      // Ensure handle exists
-      handle:
-        rawAppUser.value.handle ||
-        rawAppUser.value.email?.split('@')[0] ||
-        'user',
-      // Ensure arrays exist
-      notifications: rawAppUser.value.notifications || [],
-      followers: rawAppUser.value.followers || [],
-      following: rawAppUser.value.following || [],
-    }
-  })
+  const { data: appUser } = useDocument<AppUser>(appUserDocRef)
 
   const isAdmin = computed(() => appUser.value?.role === 'admin')
   const isPro = computed(() => appUser.value?.subscription?.is_pro === true)
@@ -80,7 +57,7 @@ export function useAppUser() {
     hasSubscription,
     subscriptionPlan,
     ...useAppUserUtils(),
-    ...useAppUserEnsure(),
+    ensureAppUser: useAppUserEnsure(),
     ...useAppUserUpdate(),
   }
 }

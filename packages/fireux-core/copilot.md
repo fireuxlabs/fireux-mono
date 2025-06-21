@@ -43,6 +43,51 @@ module.ts           # Main orchestration
 - `src/layouts-config.ts` - Layout registration
 - `src/assets-config.ts` - CSS/SCSS asset serving
 
+## 🧭 Navigation & Routing System ✅ LOCKED IN
+
+### Core Architecture
+
+**useRoutes(publicRoutes, privateRoutes)** - Main navigation composable
+
+**Location:** `src/runtime/composables/utils/useRoutes.ts`
+
+```typescript
+// ✅ Final Working Pattern
+const { appUser } = useAppUser()
+const jobPublicRoutes = getPublicJobRoutes() || []
+const jobPrivateRoutes = appUser.value ? getPrivateJobRoutes() || [] : []
+const routes = useRoutes(jobPublicRoutes, jobPrivateRoutes)
+```
+
+### Route Structure Output
+
+- **menuBarLinks**: `[...system, ...publicRoutes]` - Desktop top navigation
+- **mobileLinks**: `[...publicMenu, ...privateMenu, ...userGroup, ...adminGroup]` - Mobile menu
+- **dashboardLinks**: `[...privateMenu, ...userGroup, ...adminGroup]` - Dashboard sidebar
+
+### Authentication-Based Visibility
+
+- **System Routes**: Always visible (App, Products, Blog)
+- **Public Routes**: Always visible (Jobs, etc.)
+- **Private Routes**: Only when `appUser.value` exists
+- **User Group**: Nested dashboard routes when authenticated
+- **Admin Group**: Admin features when user has admin role
+
+### Layout Implementation
+
+```vue
+<!-- All Apps Use This Pattern -->
+<template>
+  <CoreDefault :routes="routes" />
+</template>
+<script setup>
+const { appUser } = useAppUser()
+const modulePublicRoutes = getPublicRoutes() || []
+const modulePrivateRoutes = appUser.value ? getPrivateRoutes() || [] : []
+const routes = useRoutes(modulePublicRoutes, modulePrivateRoutes)
+</script>
+```
+
 ## 📁 Runtime Structure
 
 ```
@@ -301,3 +346,49 @@ As part of the ongoing development and maintenance of the `fireux-core` module, 
 
 - This task will be completed incrementally to minimize disruption to ongoing development.
 - Ensure that the `Fire` prefix is consistently applied to all new components added to the `fireux-core` module.
+
+### Authentication Timing Fix ⚡
+
+**Issue Solved**: Layout rendering before user authentication completes
+
+**Problem**: Navigation menus showing incomplete route lists, private routes missing from mobile navigation
+
+**Root Cause**: `useAppUser()` is asynchronous - fetches user data from Firestore after Firebase auth completes
+
+**Solution**: Use `await useAppUser()` in layout script setup
+
+```vue
+<!-- ❌ Problematic -->
+<script setup>
+const { appUser } = useAppUser()
+const jobPrivateRoutes = appUser.value ? getPrivateJobRoutes() || [] : []
+// Layout renders with appUser.value = null initially
+</script>
+
+<!-- ✅ Fixed -->
+<script setup>
+const { appUser } = await useAppUser()
+const jobPrivateRoutes = appUser ? getPrivateJobRoutes() || [] : []
+// Layout waits for user data before rendering
+</script>
+```
+
+**Results**:
+- Mobile navigation shows complete route list immediately
+- No missing private routes for authenticated users
+- Consistent behavior across all layouts
+
+### Layout Implementation
+
+```vue
+<!-- All Apps Use This Pattern -->
+<template>
+  <CoreDefault :routes="routes" />
+</template>
+<script setup>
+const { appUser } = await useAppUser()
+const modulePublicRoutes = getPublicRoutes() || []
+const modulePrivateRoutes = appUser ? getPrivateRoutes() || [] : []
+const routes = useRoutes(modulePublicRoutes, modulePrivateRoutes)
+</script>
+```

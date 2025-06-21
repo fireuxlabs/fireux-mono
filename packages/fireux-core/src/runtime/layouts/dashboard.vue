@@ -31,7 +31,7 @@ import { useWindowSize } from '@vueuse/core'
 import { computed } from 'vue'
 
 const props = defineProps({
-  appLinks: {
+  routes: {
     type: Object,
     default: () => ({}),
   },
@@ -40,9 +40,9 @@ const props = defineProps({
 const { width } = useWindowSize()
 const isMobile = computed(() => width.value < 1024)
 
-const { menuBarLinks, mobileLinks, dashboardLinks, subHeader } = useRoutes(
-  props.appLinks
-)
+// Use the routes object directly instead of calling useRoutes again
+const routes = computed(() => props.routes)
+const { menuBarLinks, mobileLinks, dashboardLinks, subHeader } = routes.value
 
 defineOptions({
   name: 'CoreDashboard',

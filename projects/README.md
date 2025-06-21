@@ -2,66 +2,80 @@
 
 This repository contains multiple application projects built using modern web technologies and deployed to Firebase.
 
-## Projects
+## 🚀 Live Applications
 
-### CleanBox
+| Application | URL | Theme Colors | Status |
+|-------------|-----|--------------|---------|
+| **CleanBox** | https://cleanbox.web.app | Blue (`#3B82F6`) / Slate (`#64748B`) | ✅ Production |
+| **MiseBox** | https://misebox-78f9c.web.app | Green (`#22C55E`) / Slate (`#64748B`) | ✅ Production |
+| **FireUX** | https://fireux-2005.web.app | Yellow (`#EAB308`) / Zinc (`#71717A`) | ✅ Production |
 
-A clean and modern web application built with Nuxt.js.
+**Technology Stack**: Nuxt.js, Vue.js, TypeScript, Firebase, TailwindCSS
 
-**Deployment Status:** ✅ Deployed  
-**Live URL:** https://cleanbox-f15bc.web.app  
-**Theme Colors:** Blue (`#3B82F6`) / Slate (`#64748B`)  
-**Technology Stack:** Nuxt.js, Vue.js, TypeScript
+## Project Architecture
 
-### MiseBox
+### 99% Shared, 1% Unique
 
-A minimalist application framework.
+All apps inherit from **FireUX Core** module:
+- 200+ shared components
+- Complete auth & database system  
+- Universal routing with authentication
+- Shared pages (dashboard, admin, blog, products)
+- **Jobs module integration** with public/private routes
 
-**Deployment Status:** ✅ Deployed  
-**Live URL:** https://misebox-78f9c.web.app  
-**Theme Colors:** Green (`#22C55E`) / Slate (`#64748B`)  
-**Technology Stack:** Nuxt.js, Vue.js, TypeScript
+### App-Specific Customization
 
-### FireUX
+Each app only customizes:
+- Landing page (`pages/index.vue`)
+- Theme colors (`app.config.ts`)
+- Firebase configuration
+- Domain-specific branding
 
-A UI component library and framework.
+### Jobs Module Integration
 
-**Deployment Status:** ✅ Deployed  
-**Live URL:** https://fireux-2005.web.app  
-**Theme Colors:** Yellow (`#EAB308`) / Zinc (`#71717A`)  
-**Technology Stack:** Nuxt.js, Vue.js, TypeScript
+Both CleanBox and MiseBox include the Jobs module:
+- **Public route**: "Jobs" - Always visible for job browsing
+- **Private routes**: "Employer Profile", "Professional Profile" - Authentication required
+- Seamless dashboard integration
+- Industry-specific customization for cleaning and culinary services
 
-## 🚀 Deployment
+## App Initialization System
 
-All projects are successfully deployed to Firebase Hosting:
-
-### Live Applications
-
-| Application  | Status  | Live URL                                               | Firebase Project | Last Deploy |
-| ------------ | ------- | ------------------------------------------------------ | ---------------- | ----------- |
-| **CleanBox** | ✅ Live | [cleanbox.web.app](https://cleanbox.web.app)           | `cleanbox-f15bc` | ✅          |
-| **MiseBox**  | ✅ Live | [misebox-78f9c.web.app](https://misebox-78f9c.web.app) | `misebox-78f9c`  | ✅          |
-| **FireUX**   | ✅ Live | [fireux-2005.web.app](https://fireux-2005.web.app)     | `fireux-2005`    | ✅          |
-
-### Deployment Commands
-
-Each app follows the same Firebase deployment pattern:
+Create identical app clones with different configurations:
 
 ```bash
-# Deploy CleanBox
+# Initialize all apps
+pnpm run init:cleanbox
+pnpm run init:misebox  
+pnpm run init:fireux
+
+# Install dependencies
+pnpm install
+```
+
+## Deployment
+
+### Quick Deploy All
+
+```bash
+# Deploy all three apps at once
+./deploy-all.sh
+```
+
+### Individual Deployment
+
+```bash
+# CleanBox
 cd cleanbox/cleanbox-app
-pnpm run build
-firebase deploy --only hosting
+pnpm build && pnpm exec firebase deploy
 
-# Deploy MiseBox
+# MiseBox
 cd misebox/misebox-app
-pnpm run build
-firebase deploy --only hosting
+pnpm build && pnpm exec firebase deploy
 
-# Deploy FireUX
+# FireUX
 cd fireux/fireux-app
-pnpm run build
-firebase deploy --only hosting
+pnpm build && pnpm exec firebase deploy
 ```
 
 ### Build Configuration

@@ -2,8 +2,8 @@
   <ClientOnly>
     <div class="layout-wrapper">
       <FireLayoutsHeader
-        :menu-bar-links="menuBarLinks"
-        :mobile-links="mobileLinks"
+        :menu-bar-links="routes.menuBarLinks"
+        :mobile-links="routes.mobileLinks"
       />
       <NuxtPage />
       <FireLayoutsDefaultFooter />
@@ -13,13 +13,14 @@
 
 <script setup>
 const props = defineProps({
-  appLinks: {
+  routes: {
     type: Object,
     default: () => ({}),
   },
 })
 
-const { menuBarLinks, mobileLinks } = useRoutes(props.appLinks)
+// Use the routes object directly instead of calling useRoutes again
+const routes = computed(() => props.routes)
 
 defineOptions({
   name: 'CoreDefault',

@@ -340,24 +340,36 @@ This ensures layouts are properly accessible across all consuming applications.
 </template>
 ```
 
-### Layouts
+### Layouts ✅ LOCKED IN
 
-FireUX Core provides standardized layouts that can be used across all apps:
+FireUX Core provides standardized layouts with **authentication-based navigation**:
 
 1. First, create wrapper layouts in your app:
 
 ```vue
 <!-- layouts/default.vue -->
 <template>
-  <CoreDefault />
+  <CoreDefault :routes="routes" />
 </template>
+<script setup>
+const { appUser } = useAppUser()
+const modulePublicRoutes = getPublicModuleRoutes() || []
+const modulePrivateRoutes = appUser.value ? getPrivateModuleRoutes() || [] : []
+const routes = useRoutes(modulePublicRoutes, modulePrivateRoutes)
+</script>
 ```
 
 ```vue
 <!-- layouts/dashboard.vue -->
 <template>
-  <CoreDashboard />
+  <CoreDashboard :routes="routes" />
 </template>
+<script setup>
+const { appUser } = useAppUser()
+const modulePublicRoutes = getPublicModuleRoutes() || []
+const modulePrivateRoutes = appUser.value ? getPrivateModuleRoutes() || [] : []
+const routes = useRoutes(modulePublicRoutes, modulePrivateRoutes)
+</script>
 ```
 
 2. Then use them in your pages:
@@ -370,10 +382,19 @@ definePageMeta({
 </script>
 ```
 
+#### Navigation Features
+
+- **menuBarLinks**: Desktop top navigation (system + public routes only)
+- **mobileLinks**: Mobile menu (all available routes based on auth state)
+- **dashboardLinks**: Dashboard sidebar (private routes + user/admin groups)
+- **Authentication-based visibility**: Private routes only show when authenticated
+- **Module extensibility**: Easy to add routes from any module (jobs, kitchen, etc.)
+
 This approach allows you to:
 
 - Maintain consistent layout structure across all apps
 - Centralize layout updates in the core package
+- Add module-specific routes cleanly
 - Customize layouts at the app level when needed
 
 ### Composables
