@@ -13,13 +13,18 @@ export function configurePages(resolver: any, nuxt: any) {
   const jobPages = [
     {
       name: 'employer-profile',
-      path: '/employer-profile',
-      file: './runtime/pages/employer-profile.vue',
+      path: '/jobs-dashboard/employer-profile',
+      file: './runtime/pages/jobs-dashboard/employer-profile.vue',
     },
     {
       name: 'professional-profile',
-      path: '/professional-profile',
-      file: './runtime/pages/professional-profile.vue',
+      path: '/jobs-dashboard/professional-profile',
+      file: './runtime/pages/jobs-dashboard/professional-profile.vue',
+    },
+    {
+      name: 'jobs',
+      path: '/jobs',
+      file: './runtime/pages/jobs.vue',
     },
   ]
 

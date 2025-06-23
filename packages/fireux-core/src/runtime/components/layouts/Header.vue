@@ -63,6 +63,7 @@
 <script setup>
 import { useWindowSize } from '@vueuse/core'
 import { useRoute } from 'vue-router'
+import { watch } from 'vue'
 
 const { coreUser } = useCoreUser()
 const { appUser } = useAppUser()
@@ -84,6 +85,14 @@ const { width } = useWindowSize()
 const isMobile = computed(() => width.value < 1024)
 const mobileMenuOpen = ref(false)
 const toggleMobileNav = () => (mobileMenuOpen.value = !mobileMenuOpen.value)
+
+// Close mobile menu on route change
+watch(
+  () => route.fullPath,
+  () => {
+    mobileMenuOpen.value = false
+  }
+)
 
 defineProps({
   menuBarLinks: { type: Array, default: () => [] },

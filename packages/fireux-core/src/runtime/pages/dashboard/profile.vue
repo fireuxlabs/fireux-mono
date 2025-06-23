@@ -53,15 +53,18 @@
 <script setup>
 import { getRouteMetaForPath } from '../../composables/utils/useRoutes'
 
-const { label, icon } = getRouteMetaForPath('/dashboard/profile')
+const route = useRoute()
+const { label, icon } = getRouteMetaForPath(route.path)
 
+// Set static meta at build time for Nuxt
 definePageMeta({
   layout: 'dashboard',
-  layoutProps: {
-    dashboardType: 'user-dashboard',
-  },
+})
+
+// Set dynamic head meta at runtime (reactive)
+useHead({
   title: label,
-  icon: icon,
+  meta: [{ name: 'icon', content: icon }],
 })
 
 const { appUser } = useAppUser()
