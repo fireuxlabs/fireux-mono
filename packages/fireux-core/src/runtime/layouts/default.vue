@@ -1,14 +1,12 @@
 <template>
-  <ClientOnly>
-    <div class="layout-wrapper">
-      <FireLayoutsHeader
-        :menu-bar-links="routes.menuBarLinks"
-        :mobile-links="routes.mobileLinks"
-      />
-      <NuxtPage />
-      <FireLayoutsDefaultFooter />
-    </div>
-  </ClientOnly>
+  <div class="layout-wrapper">
+    <FireLayoutsHeader
+      :menu-bar-links="routes.menuBarLinks"
+      :mobile-links="routes.mobileLinks"
+    />
+    <NuxtPage />
+    <FireLayoutsDefaultFooter />
+  </div>
 </template>
 
 <script setup>

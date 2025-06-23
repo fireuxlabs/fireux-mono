@@ -8,9 +8,8 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "@/*": ["packages/fireux-core/src/*"],
-      "~models/*": ["packages/fireux-core/src/runtime/models/*"],
-      "fireux-core/*": ["packages/fireux-core/src/runtime/*"]
+      "@fireux-core/*": ["packages/fireux-core/src/*"],
+      "@fireux-jobs/*": ["packages/fireux-jobs/src/*"]
     },
     "types": ["@nuxt/schema", "nuxt"]
   },

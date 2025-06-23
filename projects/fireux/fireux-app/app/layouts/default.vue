@@ -1,5 +1,7 @@
 <template>
-  <CoreDefault :routes="routes" />
+  <ClientOnly>
+    <CoreDefault :routes="routes" />
+  </ClientOnly>
 </template>
 
 <script setup>

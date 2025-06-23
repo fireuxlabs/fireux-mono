@@ -17,9 +17,10 @@
     "dist/**/*"
   ],
   "scripts": {
-    "dev": "nuxt-module-build --stub",
     "build": "nuxt-module-build",
-    "postbuild": "rimraf src/**/*.map"
+    "dev": "nuxt-module-build --stub",
+    "postbuild": "rimraf src/**/*.map",
+    "clean": "rimraf dist"
   },
   "dependencies": {
     "@nuxt/kit": "^3.17.4"

@@ -1,29 +1,27 @@
 <template>
-  <ClientOnly>
-    <FireLayoutsDashboardGuard>
-      <div class="layout-wrapper">
-        <FireLayoutsHeader
-          :menu-bar-links="menuBarLinks"
-          :mobile-links="mobileLinks"
-        />
-        <div class="layout-content">
-          <main class="layout-main-content">
-            <UNavigationMenu
-              v-if="!isMobile"
-              class="mt-[var(--header-height)] w-fit"
-              orientation="vertical"
-              :items="dashboardLinks"
-            />
-            <div class="main-section">
-              <FireLayoutsSubHeader :icon-title="subHeader" />
-              <NuxtPage />
-            </div>
-          </main>
-        </div>
-        <FireLayoutsDefaultFooter />
+  <FireLayoutsDashboardGuard>
+    <div class="layout-wrapper">
+      <FireLayoutsHeader
+        :menu-bar-links="menuBarLinks"
+        :mobile-links="mobileLinks"
+      />
+      <div class="layout-content">
+        <main class="layout-main-content">
+          <UNavigationMenu
+            v-if="!isMobile"
+            class="mt-[var(--header-height)] w-fit"
+            orientation="vertical"
+            :items="dashboardLinks"
+          />
+          <div class="main-section">
+            <FireLayoutsSubHeader :icon-title="subHeader" />
+            <NuxtPage />
+          </div>
+        </main>
       </div>
-    </FireLayoutsDashboardGuard>
-  </ClientOnly>
+      <FireLayoutsDefaultFooter />
+    </div>
+  </FireLayoutsDashboardGuard>
 </template>
 
 <script setup>

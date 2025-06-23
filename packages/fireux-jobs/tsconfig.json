@@ -13,10 +13,9 @@
     "outDir": "dist",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"],
-      "#imports": [".nuxt/imports.d.ts"]
+      "@/*": ["src/*"]
     },
-    "types": ["@nuxt/types", "vue"]
+    "types": ["@nuxt/schema", "nuxt"]
   },
   "include": ["src/**/*", "src/**/*.vue", "package.json", ".nuxt"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]

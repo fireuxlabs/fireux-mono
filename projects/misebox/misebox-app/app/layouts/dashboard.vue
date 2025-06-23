@@ -1,5 +1,7 @@
 <template>
-  <CoreDashboard :routes="routes" />
+  <ClientOnly>
+    <CoreDashboard :routes="routes" />
+  </ClientOnly>
 </template>
 
 <script setup>
