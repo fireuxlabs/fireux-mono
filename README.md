@@ -4,11 +4,11 @@ _Modern Nuxt 3 monorepo powering the next generation of service business platfor
 
 ## 🚀 Live Applications
 
-| Application | URL | Theme | Status |
-|-------------|-----|-------|---------|
-| **FireUX** | https://fireux-2005.web.app | Yellow/Zinc | ✅ Production |
-| **CleanBox** | https://cleanbox.web.app | Blue/Slate | ✅ Production |
-| **MiseBox** | https://misebox-78f9c.web.app | Green/Slate | ✅ Production |
+| Application  | URL                           | Theme       | Status        |
+| ------------ | ----------------------------- | ----------- | ------------- |
+| **FireUX**   | https://fireux-2005.web.app   | Yellow/Zinc | ✅ Production |
+| **CleanBox** | https://cleanbox.web.app      | Blue/Slate  | ✅ Production |
+| **MiseBox**  | https://misebox-78f9c.web.app | Green/Slate | ✅ Production |
 
 ### Quick Deployment
 
@@ -18,11 +18,11 @@ _Modern Nuxt 3 monorepo powering the next generation of service business platfor
 
 # Or individual deployment
 cd projects/cleanbox/cleanbox-app && pnpm build && pnpm exec firebase deploy
-cd projects/misebox/misebox-app && pnpm build && pnpm exec firebase deploy  
+cd projects/misebox/misebox-app && pnpm build && pnpm exec firebase deploy
 cd projects/fireux/fireux-app && pnpm build && pnpm exec firebase deploy
 ```
 
-### ✅ LOCKED IN: Navigation & Routing System 
+### ✅ LOCKED IN: Navigation & Routing System
 
 Our **authentication-based routing system** is now complete and production-ready across all apps:
 
@@ -40,8 +40,9 @@ const routes = useRoutes(jobPublicRoutes, jobPrivateRoutes)
 ```
 
 **Key Features:**
+
 - **Public routes** (Jobs, Products, Blog) - Always visible
-- **Private routes** (Employer, Professional profiles) - Only when authenticated  
+- **Private routes** (Employer, Professional profiles) - Only when authenticated
 - **User dashboard group** - Collapsed navigation for mobile
 - **Admin group** - Only visible to admin users
 - **Three navigation contexts** - menuBarLinks, mobileLinks, dashboardLinks

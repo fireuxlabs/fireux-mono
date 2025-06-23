@@ -15,11 +15,7 @@ export const useRoutes = (
   privateRoutes: RouteLink[] = []
 ) => {
   const { appIcon, appName } = useFireUXConfig()
-  const { appUser } = useAppUser()
-
-  // Ensure routes are always arrays
-  const safePublicRoutes = Array.isArray(publicRoutes) ? publicRoutes : []
-  const safePrivateRoutes = Array.isArray(privateRoutes) ? privateRoutes : []
+  const { appUser, isAdmin } = useAppUser()
 
   const formattedAppIcon =
     typeof appIcon === 'string' && appIcon
@@ -37,23 +33,11 @@ export const useRoutes = (
     { label: 'Blog', icon: 'i-lucide-book', to: '/blog' },
   ]
 
-  // User account routes - only visible to authenticated app users
+  // App user group routes
   const appUserRoutes = [
-    {
-      label: 'Overview',
-      icon: 'i-lucide-layout-dashboard',
-      to: '/dashboard',
-    },
-    {
-      label: 'Profile',
-      icon: 'i-lucide-user',
-      to: '/dashboard/profile',
-    },
-    {
-      label: 'Account',
-      icon: 'i-lucide-settings',
-      to: '/dashboard/account',
-    },
+    { label: 'Overview', icon: 'i-lucide-layout-dashboard', to: '/dashboard' },
+    { label: 'Profile', icon: 'i-lucide-user', to: '/dashboard/profile' },
+    { label: 'Account', icon: 'i-lucide-settings', to: '/dashboard/account' },
     {
       label: 'Orders',
       icon: 'i-lucide-shopping-cart',
@@ -64,44 +48,10 @@ export const useRoutes = (
       icon: 'i-lucide-credit-card',
       to: '/dashboard/subscriptions',
     },
-    {
-      label: 'Favorites',
-      icon: 'i-lucide-heart',
-      to: '/dashboard/favorites',
-    },
+    { label: 'Favorites', icon: 'i-lucide-heart', to: '/dashboard/favorites' },
   ]
 
-  // Admin routes - only visible to admin users
-  const adminRoutes = [
-    {
-      label: 'Admin Overview',
-      icon: 'i-lucide-layout-dashboard',
-      to: '/admin',
-    },
-    {
-      label: 'Users',
-      icon: 'i-lucide-users',
-      to: '/admin/users',
-    },
-    {
-      label: 'Products',
-      icon: 'i-lucide-box',
-      to: '/admin/products',
-    },
-    {
-      label: 'Blog',
-      icon: 'i-lucide-book',
-      to: '/admin/blog',
-    },
-    {
-      label: 'Settings',
-      icon: 'i-lucide-sliders',
-      to: '/admin/settings',
-    },
-  ]
-
-  // Create nested user group for mobile navigation to save space
-  const userGroup = appUser.value
+  const appUserGroup = appUser.value
     ? [
         {
           label: 'User',
@@ -111,26 +61,40 @@ export const useRoutes = (
       ]
     : []
 
-  // Create nested admin group for mobile and admin navigation
-  const adminGroup =
-    appUser.value?.role === 'admin'
-      ? [
-          {
-            label: 'Admin',
-            icon: 'i-lucide-shield',
-            children: adminRoutes,
-          },
-        ]
-      : []
+  // Admin routes
+  const adminRoutes = [
+    {
+      label: 'Admin Overview',
+      icon: 'i-lucide-layout-dashboard',
+      to: '/admin',
+    },
+    { label: 'Users', icon: 'i-lucide-users', to: '/admin/users' },
+    { label: 'Products', icon: 'i-lucide-box', to: '/admin/products' },
+    { label: 'Blog', icon: 'i-lucide-book', to: '/admin/blog' },
+    { label: 'Settings', icon: 'i-lucide-sliders', to: '/admin/settings' },
+  ]
 
-  // Combine system and public routes
-  const publicMenu = [...system, ...safePublicRoutes]
-  const privateMenu = [...safePrivateRoutes]
+  // Create nested admin group for mobile and dashboard navigation
+  const adminGroup = isAdmin.value
+    ? [
+        {
+          label: 'Admin',
+          icon: 'i-lucide-shield',
+          children: adminRoutes,
+        },
+      ]
+    : []
 
   return {
-    menuBarLinks: [...system, ...safePublicRoutes],
-    mobileLinks: [...publicMenu, ...privateMenu, ...userGroup, ...adminGroup],
-    dashboardLinks: [...privateMenu, ...userGroup, ...adminGroup],
+    menuBarLinks: [...system, ...publicRoutes],
+    mobileLinks: [
+      ...system,
+      ...publicRoutes,
+      ...privateRoutes,
+      ...appUserGroup,
+      ...adminGroup,
+    ],
+    dashboardLinks: [...privateRoutes, ...appUserGroup, ...adminGroup],
     subHeader: { label: '', icon: '' },
   }
 }

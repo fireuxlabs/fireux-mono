@@ -73,7 +73,7 @@ const routes = useRoutes(jobPublicRoutes, jobPrivateRoutes)
 ### Apps Using Jobs Module ✅
 
 - ✅ **Cleanbox App** - Full integration with authentication-based routing
-- ✅ **Misebox App** - Full integration with authentication-based routing  
+- ✅ **Misebox App** - Full integration with authentication-based routing
 - ✅ **Routing System** - Authentication-based visibility working across all contexts
 
 ### Architecture Benefits ✅
@@ -304,3 +304,69 @@ const { profile, createProfile, updateProfile, uploadResume } = useJobSeeker()
 ## License
 
 MIT
+
+# FireUX Jobs Module
+
+## Firestore Data Scoping Pattern
+
+The FireUX ecosystem uses a robust, multi-tenant Firestore architecture. By default, all Firestore operations are **app-scoped** (data is isolated per app). For rare cases where data should be global (shared across all apps), you can explicitly set `appScoped: false`.
+
+### Default (App-Scoped)
+
+- Most collections (jobs, user data, app content) are app-scoped.
+- No need to set `appScoped: true`—this is the default.
+- Example:
+  ```js
+  await createDocument('jobs', jobData) // App-scoped by default
+  await firestoreFetchCollection('jobs') // App-scoped by default
+  ```
+
+### Global Collections
+
+- For global data (e.g., employers, professionals), always set `{ appScoped: false }`.
+- Example:
+  ```js
+  await createDocument('employers', employerData, { appScoped: false })
+  await firestoreFetchCollection('employers', { appScoped: false })
+  ```
+
+### Jobs: Flexible Scoping
+
+- Jobs are app-scoped by default, but can be made global by passing `{ appScoped: false }` if needed (e.g., for cross-app job boards).
+- Example:
+  ```js
+  // App-specific job
+  await createDocument('jobs', jobData) // default
+  // Global job
+  await createDocument('jobs', jobData, { appScoped: false })
+  ```
+
+### Best Practices
+
+- **App-scoped is the default.**
+- **Global collections are opt-in and explicit.**
+- **Document this pattern in your team onboarding.**
+
+---
+
+## Example Employer Composables
+
+All employer CRUD operations are global (not app-scoped):
+
+```js
+// Create employer (global)
+await createDocument('employers', employerData, { appScoped: false })
+
+// Fetch all employers (global)
+await firestoreFetchCollection('employers', { appScoped: false })
+
+// Update employer (global)
+await updateDocument('employers', employerId, updateData, { appScoped: false })
+
+// Delete employer (global)
+await deleteDocument('employers', employerId, { appScoped: false })
+```
+
+---
+
+For more, see the FireUX Core documentation and the Firestore composables in `fireux-core` and `fireux-jobs`.

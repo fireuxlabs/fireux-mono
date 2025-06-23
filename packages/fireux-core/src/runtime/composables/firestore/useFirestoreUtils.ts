@@ -9,19 +9,19 @@ export function useFirestoreUtils() {
 
   /**
    * Checks whether a given field/value pair is unique in a collection,
-   * optionally scoped to the current tenant.
+   * optionally scoped to the current app.
    */
   async function checkUnique(
     collectionName: string,
     field: string,
     value: string,
-    tenantScoped = true
+    appScoped = true
   ): Promise<boolean> {
     // Build base constraint
     const constraints = [where(field, '==', value)]
 
-    // If tenant scoping is on, grab tenantId from runtime config
-    if (tenantScoped) {
+    // If app scoping is on, grab appId from runtime config
+    if (appScoped) {
       constraints.push(where('appId', '==', appId))
     }
 
@@ -38,10 +38,13 @@ export function useFirestoreUtils() {
   async function fetchDocumentsByField<T>(
     collectionName: string,
     field: string,
-    value: unknown
+    value: unknown,
+    appScoped = true
   ): Promise<T[]> {
     const constraints = [where(field, '==', value)]
-    constraints.push(where('appId', '==', appId))
+    if (appScoped) {
+      constraints.push(where('appId', '==', appId))
+    }
     const q = query(collection(db, collectionName), ...constraints)
     const snapshot = await getDocs(q)
     return snapshot.docs.map((doc) => doc.data() as T)
@@ -53,9 +56,13 @@ export function useFirestoreUtils() {
   async function firestoreQueryOneByField<T>(
     collectionName: string,
     field: string,
-    value: string
+    value: string,
+    appScoped = true
   ): Promise<T | null> {
-    const constraints = [where(field, '==', value), where('appId', '==', appId)]
+    const constraints = [where(field, '==', value)]
+    if (appScoped) {
+      constraints.push(where('appId', '==', appId))
+    }
     const q = query(collection(db, collectionName), ...constraints)
     const snapshot = await getDocs(q)
     return snapshot.empty ? null : (snapshot.docs[0].data() as T)

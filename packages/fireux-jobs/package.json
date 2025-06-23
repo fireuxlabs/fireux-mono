@@ -9,7 +9,8 @@
     ".": {
       "import": "./src/module.ts",
       "types": "./src/module.ts"
-    }
+    },
+    "./composables/*": "./src/runtime/composables/*"
   },
   "files": [
     "src/**/*",

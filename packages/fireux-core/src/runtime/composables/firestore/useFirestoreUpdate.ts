@@ -12,7 +12,8 @@ export function useFirestoreUpdate() {
   async function updateDocument<T extends { updated_at?: unknown }>(
     name: string,
     id: string,
-    data: Partial<T>
+    data: Partial<T>,
+    opts?: { appScoped?: boolean }
   ): Promise<void> {
     if (!name || !id || !data) {
       return Promise.reject(
@@ -23,6 +24,10 @@ export function useFirestoreUpdate() {
     try {
       await waitForCurrentUser()
       const ref = doc(db, name, id)
+      // Optionally check appId if appScoped (for extra safety)
+      if (opts?.appScoped !== false) {
+        data.appId = appId
+      }
       data.updated_at = serverTimestamp() // Ensure `updated_at` is optional
       await updateDoc(ref, { ...data, app_name: appName, app_id: appId })
       console.log(`✅ Document updated in '${name}' with ID: ${id}`)

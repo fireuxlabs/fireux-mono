@@ -10,7 +10,8 @@
       "types": "./src/module.ts"
     },
     "./layouts/*": "./src/runtime/layouts/*",
-    "./assets/*": "./src/runtime/assets/*"
+    "./assets/*": "./src/runtime/assets/*",
+    "./composables/*": "./src/runtime/composables/*"
   },
   "files": [
     "src/**/*",

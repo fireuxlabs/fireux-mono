@@ -1,6 +1,23 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types": ["@nuxt/types"]
-  }
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+      "#imports": [".nuxt/imports.d.ts"]
+    },
+    "types": ["@nuxt/types", "vue"]
+  },
+  "include": ["src/**/*", "src/**/*.vue", "package.json", ".nuxt"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

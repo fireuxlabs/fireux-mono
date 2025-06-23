@@ -19,7 +19,6 @@ const props = defineProps({
   },
 })
 
-// Use the routes object directly instead of calling useRoutes again
 const routes = computed(() => props.routes)
 
 defineOptions({
