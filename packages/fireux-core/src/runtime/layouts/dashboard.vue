@@ -1,14 +1,19 @@
+// fireux-core/src/runtime/layouts/Default.vue (CoreDashboard)
+
 <template>
   <ClientOnly>
     <div class="layout-wrapper">
-      <FireLayoutsHeader :menu-bar-links="routes" :mobile-links="routes" />
+      <FireLayoutsHeader
+        :menu-bar-links="routes.menuBarLinks"
+        :mobile-links="routes.mobileLinks"
+      />
       <div class="layout-content">
         <main class="layout-main-content">
           <UNavigationMenu
             v-if="!isMobile"
             class="mt-[var(--header-height)] w-fit"
             orientation="vertical"
-            :items="routes"
+            :items="routes.dashboardLinks"
           />
           <div class="main-section">
             <!-- <FireLayoutsSubHeader :icon-title="subHeader" /> -->
@@ -27,8 +32,8 @@ import { computed } from 'vue'
 
 const props = defineProps({
   routes: {
-    type: Array,
-    default: () => [],
+    type: Object,
+    default: () => ({}),
   },
 })
 
