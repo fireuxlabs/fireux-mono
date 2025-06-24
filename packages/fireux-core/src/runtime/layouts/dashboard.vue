@@ -1,27 +1,24 @@
 <template>
-  <FireLayoutsDashboardGuard>
+  <ClientOnly>
     <div class="layout-wrapper">
-      <FireLayoutsHeader
-        :menu-bar-links="menuBarLinks"
-        :mobile-links="mobileLinks"
-      />
+      <FireLayoutsHeader :menu-bar-links="routes" :mobile-links="routes" />
       <div class="layout-content">
         <main class="layout-main-content">
           <UNavigationMenu
             v-if="!isMobile"
             class="mt-[var(--header-height)] w-fit"
             orientation="vertical"
-            :items="dashboardLinks"
+            :items="routes"
           />
           <div class="main-section">
-            <FireLayoutsSubHeader :icon-title="subHeader" />
+            <!-- <FireLayoutsSubHeader :icon-title="subHeader" /> -->
             <NuxtPage />
           </div>
         </main>
       </div>
       <FireLayoutsDefaultFooter />
     </div>
-  </FireLayoutsDashboardGuard>
+  </ClientOnly>
 </template>
 
 <script setup>
@@ -30,17 +27,13 @@ import { computed } from 'vue'
 
 const props = defineProps({
   routes: {
-    type: Object,
-    default: () => ({}),
+    type: Array,
+    default: () => [],
   },
 })
 
 const { width } = useWindowSize()
 const isMobile = computed(() => width.value < 1024)
-
-// Use the routes object directly instead of calling useRoutes again
-const routes = computed(() => props.routes)
-const { menuBarLinks, mobileLinks, dashboardLinks, subHeader } = routes.value
 
 defineOptions({
   name: 'CoreDashboard',

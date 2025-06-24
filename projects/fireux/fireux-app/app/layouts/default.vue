@@ -5,5 +5,5 @@
 </template>
 
 <script setup>
-const routes = useRoutes()
+const routes = useSystemRoutes()
 </script>

@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { getRouteMetaForPath } from '../../composables/utils/useRoutes'
+import { getRouteMetaForPath } from '../../composables/utils/useAppUserRoutes'
 
 const route = useRoute()
 const { label, icon } = getRouteMetaForPath(route.path)

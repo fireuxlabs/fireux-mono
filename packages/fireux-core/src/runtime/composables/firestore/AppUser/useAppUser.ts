@@ -25,6 +25,7 @@ export function useAppUser() {
 
   const { data: appUser } = useDocument<AppUser>(appUserDocRef)
 
+  const isAppUser = computed(() => !!appUser.value)
   const isAdmin = computed(() => appUser.value?.role === 'admin')
   const isPro = computed(() => appUser.value?.subscription?.is_pro === true)
 
@@ -50,10 +51,13 @@ export function useAppUser() {
     () => appUser.value?.subscription?.plan || 'free'
   )
 
+  // Add isAppUser computed
+
   return {
     appUser,
     isAdmin,
     isPro,
+    isAppUser,
     hasSubscription,
     subscriptionPlan,
     ...useAppUserUtils(),

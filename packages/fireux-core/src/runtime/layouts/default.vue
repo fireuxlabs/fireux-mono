@@ -1,14 +1,13 @@
+// fireux-core/src/runtime/layouts/Default.vue (CoreDefault)
 <template>
-  <ClientOnly>
-    <div class="layout-wrapper">
-      <FireLayoutsHeader
-        :menu-bar-links="routes.menuBarLinks"
-        :mobile-links="routes.mobileLinks"
-      />
-      <NuxtPage />
-      <FireLayoutsDefaultFooter />
-    </div>
-  </ClientOnly>
+  <div class="layout-wrapper">
+    <FireLayoutsHeader
+      :menu-bar-links="routes.menuBarLinks"
+      :mobile-links="routes.mobileLinks"
+    />
+    <NuxtPage />
+    <FireLayoutsDefaultFooter />
+  </div>
 </template>
 
 <script setup>
@@ -18,8 +17,6 @@ const props = defineProps({
     default: () => ({}),
   },
 })
-
-const routes = computed(() => props.routes)
 
 defineOptions({
   name: 'CoreDefault',

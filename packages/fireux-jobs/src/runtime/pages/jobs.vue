@@ -6,10 +6,7 @@
 </template>
 
 <script setup>
-import { getRouteMetaForPath } from 'fireux-core/composables/utils/useRoutes'
 
-const route = useRoute()
-const { label, icon } = getRouteMetaForPath(route.path)
 
 definePageMeta({
   layout: 'dashboard',
