@@ -24,7 +24,7 @@
     "@google-cloud/projectify": "4.0.0",
     "@google-cloud/promisify": "4.0.0",
     "@google-cloud/storage": "7.16.0",
-    "@grpc/grpc-js": "1.13.4",
+    "@grpc/grpc-js": "1.9.15",
     "@grpc/proto-loader": "0.7.15",
     "@iconify/utils": "2.3.0",
     "@internationalized/date": "3.8.2",
