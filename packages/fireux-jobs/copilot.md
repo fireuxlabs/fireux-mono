@@ -204,7 +204,10 @@ packages/fireux-jobs/
     └── runtime/
         ├── models/
         │   ├── index.ts                 # Models export barrel
-        │   └── Job.ts                   # Simple job data model
+        │   ├── Employer.model.ts        # Employer data model
+        │   ├── Job.model.ts             # Job and JobApplication models
+        │   ├── Professional.model.ts    # Professional data model
+        │   └── index.ts                 # Model exports
         ├── composables/
         │   └── useJobRoutes.ts          # Navigation integration composable
         └── pages/

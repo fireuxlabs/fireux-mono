@@ -1,5 +1,5 @@
 // Export for public job routes
-import type { RouteLink } from 'fireux-core/src/types'
+import type { RouteLink } from '../../../../fireux-core/src/runtime/types/routLink'
 
 export function getPublicJobRoutes(): RouteLink[] {
   return [

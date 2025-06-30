@@ -1,5 +1,6 @@
-import type { Professional } from '../../../../../models/Professional.model'
+import type { Professional } from '../../../../models/Professional.model'
 import { ref } from 'vue'
+import { useFirestoreManager } from '../../../../../../../fireux-core/src/runtime/composables/firestore/useFirestoreManager'
 
 export function useProfessionalCreate() {
   const { createDocument } = useFirestoreManager()

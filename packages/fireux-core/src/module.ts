@@ -8,6 +8,7 @@ import { configureAssets } from './config/assets-config'
 import { configurePlugins } from './config/plugins-config'
 import { configureComposables } from './config/composables-config'
 import { configurePages } from './config/pages-config'
+import { configureModels } from './config/models-config'
 
 // Module options interface
 export interface ModuleOptions {
@@ -41,6 +42,9 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Configure composables
     configureComposables(resolver)
+
+    // Configure models
+    configureModels(resolver, nuxt)
 
     // Configure server-side functionality
     configureServer(resolver)

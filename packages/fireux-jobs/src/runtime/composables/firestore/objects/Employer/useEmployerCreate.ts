@@ -1,5 +1,6 @@
-import type { Employer } from '../../../../../models/Employer.model'
+import type { Employer } from '../../../../models/Employer.model'
 import { ref } from 'vue'
+import { useFirestoreManager } from '../../../../../../../fireux-core/src/runtime/composables/firestore/useFirestoreManager'
 
 export function useEmployerCreate() {
   const { createDocument } = useFirestoreManager()

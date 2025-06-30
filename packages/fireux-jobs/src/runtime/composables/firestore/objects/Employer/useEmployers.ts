@@ -1,5 +1,6 @@
-import type { Employer } from '../../../../../models/Employer.model'
+import type { Employer } from '../../../../models/Employer.model'
 import { ref, type Ref } from 'vue'
+import { useFirestoreManager } from '../../../../../../../fireux-core/src/runtime/composables/firestore/useFirestoreManager'
 import { useEmployerCreate } from './useEmployerCreate'
 import { useEmployerUpdate } from './useEmployerUpdate'
 import { useEmployerDelete } from './useEmployerDelete'
