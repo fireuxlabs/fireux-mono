@@ -1,5 +1,5 @@
 // Export for private job routes
-import type { RouteLink } from 'fireux-core/src/types'
+import type { RouteLink } from 'fireux-core'
 
 export function getPrivateJobRoutes(): RouteLink[] {
   return [

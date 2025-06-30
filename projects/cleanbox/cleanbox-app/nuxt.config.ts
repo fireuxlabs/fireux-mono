@@ -10,10 +10,7 @@ export default defineNuxtConfig({
   imports: {
     dirs: ['composables/**', 'models/**', 'utils/**'],
   },
-  css: [
-    'fireux-core/assets/css/main.css',
-    'fireux-core/assets/design-system/main.scss',
-  ],
+
   modules: [
     'fireux-core',
     'fireux-jobs',

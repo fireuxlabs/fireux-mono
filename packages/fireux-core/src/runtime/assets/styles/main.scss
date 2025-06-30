@@ -1,0 +1,55 @@
+/* ============================
+   fireux-core/assets/styles/main.scss
+   FireUX Core Design System - SCSS Entry Point
+   ============================ */
+
+// Import SCSS modules using modern @use syntax (must come first)
+@use './scss/atoms/atoms';
+@use './scss/base';
+@use './scss/utilities';
+@use './scss/grids';
+
+// Import component styles
+@use './scss/components/create';
+@use './scss/components/page';
+@use './scss/components/layout';
+@use './scss/components/fuel';
+@use './scss/components/button';
+@use './scss/components/form';
+
+// Import CSS (for Tailwind/UnoCSS integration)
+@import './main.css';
+
+//    FireUX Core CSS Classes Reference:
+//    ===================================
+
+// atoms.scss
+// 	•	.flame-icon
+
+// base.scss
+// (No custom CSS classes defined in this file.)
+
+// components/fuel.scss
+// 	•	.fuel-logos
+// 	•	.fuel-item
+
+// components/layout.scss
+// 	•	.layout-container
+// 	•	.layout-content
+// 	•	.layout-main-content
+// 	•	.layout-breadcrumbs
+
+// components/page.scss
+// 	•	.page
+
+// utilities.scss
+// 	•	.flex
+// 	•	.flex-center
+// 	•	.flex-column
+// 	•	.flex-between
+// 	•	.grid
+// 	•	.centered-section
+// 	•	.section
+// 	•	.button-group
+// 	•	.fade-in
+// 	•	.highlight

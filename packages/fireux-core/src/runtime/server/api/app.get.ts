@@ -1,36 +1,36 @@
-import { defineEventHandler } from 'h3'
-import type { AppSettings } from '../../../runtime-config'
+import { defineEventHandler, createError } from 'h3'
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig(event)
+  // Access environment variables directly in server context
+  const appName = process.env.APP_NAME || 'FireUX App'
+  const projectName = process.env.PROJECT_NAME || 'FireUX'
+  const appShortName = process.env.APP_SHORT_NAME || 'FireUX'
+  const appId = process.env.APP_ID || 'fireux-app'
+  const domain = process.env.APP_DOMAIN || 'https://fireux.app'
+  const appPrimaryColor = process.env.APP_PRIMARY_COLOR || 'FACC15'
+  const appNeutralColor = process.env.APP_NEUTRAL_COLOR || '71717A'
+  const appIcon = process.env.APP_ICON || 'flame'
 
-  // Get app settings from runtime config (based on actual env structure)
-  const appSettings = config.public.appSettings as AppSettings
-
-  // App info using actual runtime config structure
+  // App info using environment variables
   const appInfo = {
-    name: appSettings.appName || 'FireUX App',
-    projectName: appSettings.projectName || 'FireUX',
-    shortName: appSettings.appShortName || 'FireUX',
-    appId: appSettings.appId || 'fireux-app',
-    description: `${appSettings.appName || 'FireUX App'} - Part of the FireUX ecosystem`,
-    version: '1.0.0', // Could be from package.json later
-    status: 'Available', // Default status, could be env var later
-    url: appSettings.domain || 'https://fireux.app',
+    name: appName,
+    projectName: projectName,
+    shortName: appShortName,
+    appId: appId,
+    description: `${appName} - Part of the FireUX ecosystem`,
+    version: '1.0.0',
+    status: 'Available',
+    url: domain,
 
-    // Theme colors from actual env vars
+    // Theme colors from env vars
     theme: {
-      primary: appSettings.appPrimaryColor
-        ? `#${appSettings.appPrimaryColor}`
-        : '#FACC15',
-      neutral: appSettings.appNeutralColor
-        ? `#${appSettings.appNeutralColor}`
-        : '#71717A',
+      primary: `#${appPrimaryColor}`,
+      neutral: `#${appNeutralColor}`,
     },
 
-    // Assets using actual structure
+    // Assets
     assets: {
-      icon: appSettings.appIcon || 'flame',
+      icon: appIcon,
       logo: '/img/logo-type-light.svg',
       logoDark: '/img/logo-type-dark.svg',
       favicon: '/favicon.ico',
@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
       'Dashboard Templates',
       'Authentication System',
       'Component Library',
-    ], // Default for FireUX
+    ],
     category: 'framework',
     tags: ['vue', 'nuxt', 'firebase', 'ui'],
 

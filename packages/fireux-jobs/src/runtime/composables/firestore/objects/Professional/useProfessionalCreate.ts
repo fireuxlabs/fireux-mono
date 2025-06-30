@@ -1,5 +1,4 @@
-import { useFirestoreManager } from 'fireux-core/composables/firestore/useFirestoreManager'
-import type { Professional } from '../../../models/Professional'
+import type { Professional } from '../../../../../models/Professional.model'
 import { ref } from 'vue'
 
 export function useProfessionalCreate() {

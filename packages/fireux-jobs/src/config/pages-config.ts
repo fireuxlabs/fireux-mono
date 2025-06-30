@@ -13,13 +13,13 @@ export function configurePages(resolver: any, nuxt: any) {
   const jobPages = [
     {
       name: 'employer-profile',
-      path: '/jobs-dashboard/employer-profile',
-      file: './runtime/pages/jobs-dashboard/employer-profile.vue',
+      path: '/employer-profile',
+      file: './runtime/pages/employer-profile.vue',
     },
     {
       name: 'professional-profile',
-      path: '/jobs-dashboard/professional-profile',
-      file: './runtime/pages/jobs-dashboard/professional-profile.vue',
+      path: '/professional-profile',
+      file: './runtime/pages/professional-profile.vue',
     },
     {
       name: 'jobs',
@@ -31,10 +31,15 @@ export function configurePages(resolver: any, nuxt: any) {
   // Add pages to Nuxt
   extendPages((pages) => {
     jobPages.forEach((page) => {
+      const resolvedPath = resolvePath(page.file)
+      console.log(
+        `Registering job page: ${page.name} -> ${page.path} (${resolvedPath})`
+      )
+
       pages.push({
         name: page.name,
         path: page.path,
-        file: resolvePath(page.file),
+        file: resolvedPath,
       })
     })
   })

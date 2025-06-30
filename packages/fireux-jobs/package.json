@@ -6,24 +6,22 @@
   "main": "./src/module.ts",
   "types": "./src/module.ts",
   "exports": {
-    ".": {
-      "import": "./src/module.ts",
-      "types": "./src/module.ts"
-    },
-    "./composables/*": "./src/runtime/composables/*"
+    ".": "./src/module.ts",
+    "./composables": "./src/runtime/composables/*"
   },
   "files": [
-    "src/**/*",
-    "dist/**/*"
+    "src/**/*"
   ],
   "scripts": {
-    "build": "nuxt-module-build",
+    "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
     "postbuild": "rimraf src/**/*.map",
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.17.4"
+    "@nuxt/kit": "^3.17.4",
+    "fireux-core": "workspace:*",
+    "glob": "^11.0.3"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",

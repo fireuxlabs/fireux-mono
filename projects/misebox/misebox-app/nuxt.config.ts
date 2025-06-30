@@ -11,8 +11,7 @@ export default defineNuxtConfig({
     dirs: ['composables/**', 'models/**', 'utils/**'],
   },
   css: [
-    'fireux-core/assets/css/main.css',
-    'fireux-core/assets/design-system/main.scss',
+    // Assets are now automatically included by fireux-core module
   ],
   modules: [
     'fireux-core',

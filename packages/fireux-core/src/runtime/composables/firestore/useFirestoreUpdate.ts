@@ -24,12 +24,19 @@ export function useFirestoreUpdate() {
     try {
       await waitForCurrentUser()
       const ref = doc(db, name, id)
-      // Optionally check appId if appScoped (for extra safety)
+
+      // Prepare update data with required fields
+      const updateData: any = { ...data }
+      updateData.updated_at = serverTimestamp()
+      updateData.app_name = appName
+      updateData.app_id = appId
+
+      // Optionally add appId if appScoped (for extra safety)
       if (opts?.appScoped !== false) {
-        data.appId = appId
+        updateData.appId = appId
       }
-      data.updated_at = serverTimestamp() // Ensure `updated_at` is optional
-      await updateDoc(ref, { ...data, app_name: appName, app_id: appId })
+
+      await updateDoc(ref, updateData)
       console.log(`✅ Document updated in '${name}' with ID: ${id}`)
     } catch (error) {
       console.error(`❌ Error updating document in '${name}':`, error)

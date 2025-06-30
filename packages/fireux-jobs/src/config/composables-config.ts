@@ -7,6 +7,9 @@ import { addImportsDir } from '@nuxt/kit'
 export function configureComposables(resolver: any) {
   const resolvePath = (p: string) => resolver.resolve(p)
 
-  // Add composables
-  addImportsDir([resolvePath('./runtime/composables/**/*.ts')])
+  // Add all composables with wildcard scanning
+  addImportsDir([
+    resolvePath('./runtime/composables'),
+    resolvePath('./runtime/composables/**'),
+  ])
 }

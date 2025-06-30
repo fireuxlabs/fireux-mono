@@ -1,5 +1,4 @@
-import { useFirestoreManager } from 'fireux-core/composables/firestore/useFirestoreManager'
-import type { Employer } from '../../../models/employer.model'
+import type { Employer } from '../../../../../models/Employer.model'
 import { ref, type Ref } from 'vue'
 import { useEmployerCreate } from './useEmployerCreate'
 import { useEmployerUpdate } from './useEmployerUpdate'

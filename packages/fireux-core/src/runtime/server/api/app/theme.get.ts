@@ -1,5 +1,4 @@
 import { defineEventHandler, setHeader } from 'h3'
-import type { AppSettings } from '../../../../runtime-config'
 
 export default defineEventHandler(async (event) => {
   // Add CORS headers for cross-origin access between ecosystem apps
@@ -15,43 +14,43 @@ export default defineEventHandler(async (event) => {
     'Content-Type, Authorization'
   )
 
-  const config = useRuntimeConfig(event)
+  // Access environment variables directly in server context
+  const appName = process.env.APP_NAME || 'FireUX App'
+  const appPrimaryColor = process.env.APP_PRIMARY_COLOR || 'FACC15'
+  const appNeutralColor = process.env.APP_NEUTRAL_COLOR || '71717A'
+  const projectName = process.env.PROJECT_NAME || 'FireUX'
+  const appId = process.env.APP_ID || 'fireux-app'
+  const appShortName = process.env.APP_SHORT_NAME || 'FireUX'
+  const domain = process.env.APP_DOMAIN || 'https://fireux.app'
 
-  // Get app settings from public runtime config
-  const appSettings = config.public.appSettings as AppSettings
-
-  // Only return data that's actually available from runtime config
+  // Only return data that's actually available from environment variables
   const appTheme = {
-    // Core app identity from runtime config
-    projectName: appSettings?.projectName || 'FireUX',
-    name: appSettings?.appName || 'FireUX App',
-    appId: appSettings?.appId || 'fireux-app',
-    shortName: appSettings?.appShortName || 'FireUX',
-    domain: appSettings?.domain || 'https://fireux.app',
+    // Core app identity from environment
+    projectName: projectName,
+    name: appName,
+    appId: appId,
+    shortName: appShortName,
+    domain: domain,
 
     // Theme colors (the main purpose of this endpoint)
     theme: {
-      primary: appSettings?.appPrimaryColor
-        ? `#${appSettings.appPrimaryColor}`
-        : '#FACC15',
-      neutral: appSettings?.appNeutralColor
-        ? `#${appSettings.appNeutralColor}`
-        : '#71717A',
+      primary: `#${appPrimaryColor}`,
+      neutral: `#${appNeutralColor}`,
     },
 
-    // App icon from config
-    icon: appSettings?.appIcon || 'flame',
+    // App icon from environment
+    icon: process.env.APP_ICON || 'flame',
 
     // App logos with absolute URLs
     logos: {
-      light: `${appSettings?.domain || 'https://fireux.app'}/img/logo-type-light.svg`,
-      dark: `${appSettings?.domain || 'https://fireux.app'}/img/logo-type-dark.svg`,
-      default: `${appSettings?.domain || 'https://fireux.app'}/img/logo.svg`,
+      light: `${domain}/img/logo-type-light.svg`,
+      dark: `${domain}/img/logo-type-dark.svg`,
+      default: `${domain}/img/logo.svg`,
     },
 
     // Basic metadata
-    description: `${appSettings?.appName || 'FireUX App'} - Part of the FireUX ecosystem`,
-    status: 'Available', // Simple default
+    description: `${appName} - Part of the FireUX ecosystem`,
+    status: 'Available',
     lastUpdated: new Date().toISOString(),
   }
 

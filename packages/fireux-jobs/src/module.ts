@@ -1,7 +1,7 @@
-import { defineNuxtModule, createResolver } from '@nuxt/kit'
-import { configureRuntime } from './runtime-config'
-import { configurePages } from './pages-config'
-import { configureComposables } from './composables-config'
+import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
+import { configureRuntime } from './config/runtime-config'
+import { configurePages } from './config/pages-config'
+import { configureComposables } from './config/composables-config'
 
 // Module options interface
 export interface ModuleOptions {}
@@ -16,8 +16,11 @@ export default defineNuxtModule<ModuleOptions>({
   },
   // Default configuration options of the Nuxt module
   defaults: {},
-  setup(options, nuxt) {
+  async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+
+    // Install fireux-core module first
+    await installModule('fireux-core')
 
     // Configure pages
     configurePages(resolver, nuxt)

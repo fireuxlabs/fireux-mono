@@ -1,44 +1,48 @@
-import { defineEventHandler, } from 'h3'
+import { defineEventHandler } from 'h3'
 
 export default defineEventHandler((event) => {
-  const runtimeConfig = useRuntimeConfig(event)
-
-  const requiredVars = [
-    'public.firebaseConfig.apiKey',
-    'public.firebaseConfig.authDomain',
-    'public.firebaseConfig.projectId',
-    'public.firebaseConfig.storageBucket',
-    'public.firebaseConfig.messagingSenderId',
-    'public.firebaseConfig.appId',
-    'public.firebaseConfig.measurementId',
-    'public.appSettings.projectName',
-    'public.appSettings.appName',
-    'public.appSettings.appId',
-    'public.appSettings.appShortName',
-    'public.appSettings.appPrimaryColor',
-    'public.appSettings.appNeutralColor',
-    'public.appSettings.appIcon',
-    'public.appSettings.domain',
-    'stripeConfig.publishableKey',
-    'stripeConfig.secretKey',
+  // Check for required environment variables
+  const requiredEnvVars = [
+    'NUXT_PUBLIC_FIREBASE_API_KEY',
+    'NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
+    'NUXT_PUBLIC_FIREBASE_PROJECT_ID',
+    'NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
+    'NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
+    'NUXT_PUBLIC_FIREBASE_APP_ID',
+    'NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID',
   ]
 
-  const missingVars = requiredVars.filter((key) => {
-    const keys = key.split('.')
-    let value: any = runtimeConfig
-    for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k]
-      } else {
-        return true
-      }
-    }
-    return !value
-  })
+  const optionalEnvVars = [
+    'APP_NAME',
+    'APP_SHORT_NAME',
+    'APP_ID',
+    'APP_PRIMARY_COLOR',
+    'APP_NEUTRAL_COLOR',
+    'APP_ICON',
+    'APP_DOMAIN',
+    'STRIPE_PUBLISHABLE_KEY',
+    'STRIPE_SECRET_KEY',
+  ]
+
+  const missingVars = requiredEnvVars.filter((key) => !process.env[key])
+  const presentOptionalVars = optionalEnvVars.filter((key) => process.env[key])
 
   return {
     isValid: missingVars.length === 0,
-    requiredVars,
-    missingVars,
+    required: requiredEnvVars.map((key) => ({
+      key,
+      present: !!process.env[key],
+      value: process.env[key] ? '***' : undefined,
+    })),
+    optional: optionalEnvVars.map((key) => ({
+      key,
+      present: !!process.env[key],
+      value: process.env[key] ? '***' : undefined,
+    })),
+    missingRequired: missingVars,
+    summary: {
+      required: `${requiredEnvVars.length - missingVars.length}/${requiredEnvVars.length}`,
+      optional: `${presentOptionalVars.length}/${optionalEnvVars.length}`,
+    },
   }
 })

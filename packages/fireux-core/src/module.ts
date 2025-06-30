@@ -1,13 +1,13 @@
 import { defineNuxtModule, createResolver } from '@nuxt/kit'
 // import { version } from '../package.json'
-import { configureRuntime } from './runtime-config'
-import { configureServer } from './server-config'
-import { configureLayouts } from './layouts-config'
-import { configureComponents } from './components-config'
-import { configureAssets } from './assets-config'
-import { configurePlugins } from './plugins-config'
-import { configureComposables } from './composables-config'
-import { configurePages } from './pages-config'
+import { configureRuntime } from './config/runtime-config'
+import { configureServer } from './config/server-config'
+import { configureLayouts } from './config/layouts-config'
+import { configureComponents } from './config/components-config'
+import { configureAssets } from './config/assets-config'
+import { configurePlugins } from './config/plugins-config'
+import { configureComposables } from './config/composables-config'
+import { configurePages } from './config/pages-config'
 
 // Module options interface
 export interface ModuleOptions {
