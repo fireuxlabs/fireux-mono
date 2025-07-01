@@ -9,7 +9,7 @@ export function useProfessionalCreate() {
   const creating = ref(false)
   const error = ref<Error | null>(null)
 
-  async function createProfessional() {
+  async function createProfessional(additionalData?: Partial<Professional>) {
     creating.value = true
     error.value = null
 
@@ -22,12 +22,19 @@ export function useProfessionalCreate() {
         throw new Error('User is not authenticated')
       }
 
-      // Create professional object with user data
-      const professionalData: Professional = {
-        uid: currentUser.value.uid, 
+      // Create professional object with user data and additional form data
+      const professionalData: Partial<Professional> = {
+        uid: currentUser.value.uid,
         avatarUrl: appUser.value?.avatar,
-        displayName: appUser.value?.display_name,
+        full_name:
+          additionalData?.full_name ||
+          appUser.value?.full_name ||
+          appUser.value?.display_name,
+        displayName: appUser.value?.full_name || appUser.value?.display_name, // Legacy field
         email: appUser.value?.email || '',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        ...additionalData, // Merge any additional form data (this will override the above if provided)
       }
 
       // Use the authenticated user's ID as the document ID

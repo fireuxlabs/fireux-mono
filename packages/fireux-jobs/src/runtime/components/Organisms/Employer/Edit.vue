@@ -63,7 +63,6 @@
 </template>
 
 <script setup>
-import { useEditHandler } from '../../../../../../../fireux-core/src/runtime/composables/utils/useEditHandler'
 import { useEmployers } from '../../../composables/firestore/objects/Employer/useEmployers'
 
 const { employer, updateEmployer } = useEmployers()

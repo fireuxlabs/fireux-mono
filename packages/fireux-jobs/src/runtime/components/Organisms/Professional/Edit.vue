@@ -22,10 +22,10 @@
           <!-- Single Fields -->
           <FireMoleculesFormsFirestoreSingleField
             label="Full Name"
-            :firebase-value="professional.name"
+            :firebase-value="professional.full_name || professional.name || ''"
             placeholder="Enter your full name"
             :update-function="
-              (newValue) => saveField('Full Name', 'name', newValue)
+              (newValue) => saveField('Full Name', 'full_name', newValue)
             "
           />
           <FireMoleculesFormsFirestoreSingleField
@@ -69,9 +69,6 @@
 </template>
 
 <script setup>
-import { useEditHandler } from '../../../../../../../fireux-core/src/runtime/composables/utils/useEditHandler'
-import { useProfessionals } from '../../../composables/firestore/objects/Professional/useProfessionals'
-
 const { professional, updateProfessional } = useProfessionals()
 const { saveField } = useEditHandler(updateProfessional)
 

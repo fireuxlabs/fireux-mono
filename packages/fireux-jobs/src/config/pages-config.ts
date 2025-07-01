@@ -17,12 +17,12 @@ export function configurePages(resolver: any, nuxt: any) {
       file: './runtime/pages/jobs/index.vue',
     },
     {
-      name: 'jobs-dashboard-employer-profile',
+      name: 'dashboard-employer-profile',
       path: '/dashboard/employer-profile',
       file: './runtime/pages/dashboard/employer-profile.vue',
     },
     {
-      name: 'jobs-dashboard-professional-profile',
+      name: 'dashboard-professional-profile',
       path: '/dashboard/professional-profile',
       file: './runtime/pages/dashboard/professional-profile.vue',
     },

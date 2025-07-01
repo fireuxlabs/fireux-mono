@@ -1,62 +1,58 @@
 <template>
-  <div class="employer-cell">
-    <div class="company-avatar">
-      <UAvatar :src="employer?.logoUrl" size="lg" :alt="employer?.companyName">
-        <template #fallback>
-          <UIcon name="lucide:building-2" class="text-gray-500" />
-        </template>
-      </UAvatar>
+  <UCard
+    class="cursor-pointer hover:shadow-md transition-shadow"
+    @click="navigateTo(`/employers/${employer.uid}`)"
+  >
+    <div class="flex items-center gap-3 mb-3">
+      <UAvatar
+        :src="employer.logoUrl"
+        :alt="employer.companyName || 'Company'"
+        size="md"
+        :text="getInitials(employer.companyName)"
+      />
+      <div>
+        <h3 class="font-semibold">
+          {{ employer.companyName || 'Unknown Company' }}
+        </h3>
+        <p v-if="employer.contactEmail" class="text-sm text-gray-600">
+          {{ employer.contactEmail }}
+        </p>
+      </div>
     </div>
-    <div class="company-info">
-      <strong class="company-name">{{
-        employer?.companyName || 'Company Name'
-      }}</strong>
-      <span class="contact-email">{{ employer?.contactEmail }}</span>
-      <span v-if="employer?.website" class="website">
-        <UIcon name="lucide:globe" class="inline w-3 h-3 mr-1" />
-        {{ employer.website }}
-      </span>
-    </div>
-  </div>
+    <p v-if="employer.description" class="text-sm text-gray-700 line-clamp-2">
+      {{ employer.description }}
+    </p>
+    <ULink
+      v-if="employer.website"
+      :to="employer.website"
+      target="_blank"
+      class="text-xs text-blue-600 mt-2 block"
+    >
+      {{ formatWebsite(employer.website) }}
+    </ULink>
+  </UCard>
 </template>
 
 <script setup>
 const props = defineProps({
   employer: {
     type: Object,
-    default: () => ({}),
+    required: true,
   },
 })
+
+function getInitials(name) {
+  if (!name) return '?'
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}
+
+function formatWebsite(url) {
+  if (!url) return ''
+  return url.replace(/^https?:\/\/(www\.)?/, '')
+}
 </script>
-
-<style scoped>
-.employer-cell {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.company-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.company-name {
-  font-weight: 600;
-  font-size: 1rem;
-  color: var(--text-primary);
-}
-
-.contact-email {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.website {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-}
-</style>

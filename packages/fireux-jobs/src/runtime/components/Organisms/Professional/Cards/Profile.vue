@@ -3,13 +3,13 @@
     <div class="flex items-center gap-4 mb-6">
       <UAvatar
         :src="professional?.avatarUrl"
-        :alt="professional?.displayName"
+        :alt="professionalName"
         size="xl"
-        :text="getInitials(professional?.displayName)"
+        :text="getInitials(professionalName)"
       />
       <div>
         <h2 class="text-xl font-semibold">
-          {{ professional?.displayName || 'Professional' }}
+          {{ professionalName }}
         </h2>
         <p v-if="professional?.email" class="text-gray-600 text-sm">
           {{ professional.email }}
@@ -44,6 +44,17 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+})
+
+// Computed property for professional display name
+const professionalName = computed(() => {
+  if (!props.professional) return 'Professional'
+  return (
+    props.professional.full_name ||
+    props.professional.name ||
+    props.professional.displayName ||
+    'Professional'
+  )
 })
 
 function getInitials(name) {

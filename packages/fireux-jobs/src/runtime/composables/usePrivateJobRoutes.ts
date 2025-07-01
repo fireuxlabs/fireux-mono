@@ -6,12 +6,12 @@ export function getPrivateJobRoutes(): RouteLink[] {
     {
       label: 'Employer Profile',
       icon: 'i-lucide-building',
-      to: '/jobs-dashboard/employer-profile',
+      to: '/dashboard/employer-profile',
     },
     {
       label: 'Professional Profile',
       icon: 'i-lucide-user-check',
-      to: '/jobs-dashboard/professional-profile',
+      to: '/dashboard/professional-profile',
     },
   ]
 }

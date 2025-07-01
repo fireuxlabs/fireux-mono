@@ -1,5 +1,7 @@
 export interface Professional {
   uid: string // Firestore document ID
+  full_name?: string // Professional's full legal/preferred name
+  name?: string // Legacy field - use full_name instead
   title?: string // Professional title/role (e.g., "Sous Chef", "Freelancer")
   bio_short?: string // Short bio description
   bio_long?: string // Long bio description

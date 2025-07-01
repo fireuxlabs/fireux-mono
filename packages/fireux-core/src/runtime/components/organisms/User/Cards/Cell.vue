@@ -26,19 +26,24 @@ const props = defineProps({
   },
 })
 
-// Computed property for display name with fallback logic
+// Computed property for display name with full_name priority logic
 const displayName = computed(() => {
-  // Priority: display_name -> displayName -> email (without @domain)
+  if (!props.user) return 'Unknown User'
+
+  // Priority: full_name -> display_name -> displayName -> email (without @domain)
+  if (props.user.full_name) {
+    return props.user.full_name
+  }
   if (
-    props.user?.display_name &&
+    props.user.display_name &&
     props.user.display_name !== props.user?.email
   ) {
     return props.user.display_name
   }
-  if (props.user?.displayName && props.user.displayName !== props.user?.email) {
+  if (props.user.displayName && props.user.displayName !== props.user?.email) {
     return props.user.displayName
   }
-  if (props.user?.email) {
+  if (props.user.email) {
     return props.user.email.split('@')[0] // Just username part
   }
   return 'Unknown User'

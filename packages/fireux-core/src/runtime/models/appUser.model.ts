@@ -5,7 +5,8 @@
 // App-specific user profile (e.g., for FIReUX)
 export interface AppUser {
   uid: string // ✅ Explicitly store the UID for convenience
-  display_name: string
+  full_name: string // ✅ Full legal/professional name
+  display_name: string // ✅ Preferred display name (could be nickname)
   handle: string
 
   // Avatar Strategy:

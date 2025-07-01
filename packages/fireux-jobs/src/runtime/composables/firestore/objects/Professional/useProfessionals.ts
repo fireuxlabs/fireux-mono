@@ -8,7 +8,7 @@ import { useProfessionalCreate } from './useProfessionalCreate'
 import { useProfessionalUpdate } from './useProfessionalUpdate'
 import { useProfessionalDelete } from './useProfessionalDelete'
 
-export async function useProfessionals() {
+export function useProfessionals() {
   const db = useFirestore()
   const currentUser = useCurrentUser()
   const { firestoreFetchCollection } = useFirestoreManager()
@@ -34,7 +34,7 @@ export async function useProfessionals() {
   const isProfessional = computed(() => !!currentProfessional.value)
 
   // Reactive professionals collection
-  const professionals = await firestoreFetchCollection<Professional>(
+  const professionals = firestoreFetchCollection<Professional>(
     'professionals',
     {
       appScoped: false,

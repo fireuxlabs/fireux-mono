@@ -18,7 +18,7 @@
             <div class="user-field">
               <span class="field-label">Name:</span>
               <span class="field-value">{{
-                appUser.displayName || appUser.email
+                appUser.full_name || appUser.displayName || appUser.email
               }}</span>
             </div>
             <div class="user-field">
@@ -28,54 +28,62 @@
           </div>
         </div>
 
-        <div class="company-info-section">
+        <div class="form-section">
           <h3 class="section-title">Company Information</h3>
-          <UForm
-            :state="employerForm"
-            @submit="onCreateEmployer"
-            class="employer-form"
-          >
-            <UFormGroup label="Company Name" name="companyName" required>
-              <UInput
-                v-model="employerForm.companyName"
-                placeholder="Enter your company name"
-              />
-            </UFormGroup>
+          <form @submit.prevent="onCreateEmployer" class="create-form">
+            <div class="form-grid">
+              <UFormGroup
+                label="Company Name*"
+                required
+                class="form-group full-width"
+              >
+                <UInput
+                  v-model="formData.companyName"
+                  placeholder="Enter your company name"
+                  required
+                />
+              </UFormGroup>
 
-            <UFormGroup label="Contact Email" name="contactEmail">
-              <UInput
-                v-model="employerForm.contactEmail"
-                type="email"
-                placeholder="Company contact email"
-              />
-            </UFormGroup>
+              <UFormGroup label="Contact Email" class="form-group">
+                <UInput
+                  v-model="formData.contactEmail"
+                  type="email"
+                  placeholder="Company contact email"
+                />
+              </UFormGroup>
 
-            <UFormGroup label="Website" name="website">
-              <UInput
-                v-model="employerForm.website"
-                placeholder="yourcompany.com"
-              />
-            </UFormGroup>
+              <UFormGroup label="Website" class="form-group">
+                <UInput
+                  v-model="formData.website"
+                  placeholder="yourcompany.com"
+                />
+              </UFormGroup>
 
-            <UFormGroup label="Company Description" name="description">
-              <UTextarea
-                v-model="employerForm.description"
-                placeholder="Tell us about your company..."
-                rows="4"
-              />
-            </UFormGroup>
+              <UFormGroup
+                label="Company Description"
+                class="form-group full-width"
+              >
+                <UTextarea
+                  v-model="formData.description"
+                  placeholder="Tell us about your company..."
+                  :rows="4"
+                />
+              </UFormGroup>
+            </div>
 
             <div class="form-actions">
               <UButton
                 type="submit"
-                color="primary"
-                size="lg"
                 :loading="creating"
+                :disabled="!isFormValid"
+                size="lg"
+                color="primary"
+                class="create-button"
               >
                 Create Employer Profile
               </UButton>
             </div>
-          </UForm>
+          </form>
         </div>
       </div>
     </UCard>
@@ -83,55 +91,60 @@
 </template>
 
 <script setup>
-import { useEmployerCreate } from '../../../../composables/firestore/objects/Employer/useEmployerCreate'
-
 // Get current user data
 const { appUser } = useAppUser()
 
+// Initialize employer create composable
+const { createEmployer, creating, error } = useEmployerCreate()
+
 // Form state
-const employerForm = reactive({
+const formData = ref({
   companyName: '',
-  contactEmail: computed(() => appUser.value?.email || ''),
+  contactEmail: '',
   website: '',
   description: '',
 })
 
-// Create employer composable
-const { createEmployer, creating, error } = useEmployerCreate()
+// Form validation
+const isFormValid = computed(() => {
+  return formData.value.companyName.trim()
+})
 
 async function onCreateEmployer() {
-  if (!appUser.value) {
-    console.error('No user logged in')
-    return
-  }
+  if (!isFormValid.value || creating.value) return
 
   try {
     // Prepare employer data
     const employerData = {
-      uid: appUser.value.uid,
-      company_name: employerForm.companyName,
-      contact_email: employerForm.contactEmail,
-      website: employerForm.website,
-      description: employerForm.description,
-      created_at: new Date(),
-      updated_at: new Date(),
+      ...formData.value,
+      contactEmail: formData.value.contactEmail || appUser.value?.email,
     }
 
-    console.log('Creating employer profile:', employerData)
+    // Create the employer profile with all form data
+    await createEmployer(employerData)
 
-    const result = await createEmployer(employerData)
+    // Success feedback
+    console.log('Employer profile created successfully!')
 
-    if (result === 'success') {
-      console.log('Employer profile created successfully!')
-      // The employer profile will be automatically detected by the reactive composable
-    }
+    // The page should automatically refresh to show the new profile
+    // thanks to the reactivity in the parent component
   } catch (err) {
     console.error('Failed to create employer profile:', err)
+    // You might want to show a toast or error message here
   }
 }
+
+// Initialize form with user data
+onMounted(() => {
+  if (appUser.value) {
+    formData.value.contactEmail = appUser.value.email || ''
+  }
+})
 </script>
 
 <style scoped>
+/* FireUX Pattern-Compliant Employer Create System */
+
 .employer-create-container {
   max-width: 800px;
   margin: 0 auto;
@@ -139,43 +152,49 @@ async function onCreateEmployer() {
 }
 
 .employer-create-card {
-  width: 100%;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
 }
 
 .create-header {
   text-align: center;
-  margin-bottom: var(--space-4);
+  padding: var(--space-4);
 }
 
 .create-title {
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
   font-weight: 600;
   margin-bottom: var(--space-2);
+  color: var(--text-primary);
 }
 
 .create-description {
+  font-size: var(--text-base);
   color: var(--text-secondary);
-  font-size: 0.875rem;
   margin: 0;
 }
 
 .create-content {
+  padding: var(--space-6);
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
 }
 
 .section-title {
-  font-size: 1.125rem;
+  font-size: var(--text-lg);
   font-weight: 600;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
   color: var(--text-primary);
+  border-bottom: 1px solid var(--ui-border);
+  padding-bottom: var(--space-2);
 }
 
 .user-info-section {
   padding: var(--space-4);
-  background-color: var(--bg-secondary);
-  border-radius: var(--border-radius);
+  background-color: var(--ui-bg-elevated);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--ui-border);
 }
 
 .user-details {
@@ -192,27 +211,67 @@ async function onCreateEmployer() {
 .field-label {
   font-weight: 500;
   min-width: 60px;
-}
-
-.field-value {
   color: var(--text-secondary);
 }
 
-.employer-form {
+.field-value {
+  color: var(--text-primary);
+}
+
+.form-section {
   display: flex;
   flex-direction: column;
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-4);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
 }
 
 .form-actions {
   display: flex;
   justify-content: center;
-  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--ui-border);
 }
 
-@media (max-width: 640px) {
+.create-button {
+  min-width: 200px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .employer-create-container {
     padding: var(--space-4);
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .create-title {
+    font-size: var(--text-xl);
+  }
+
+  .create-description {
+    font-size: var(--text-sm);
   }
 }
 </style>
