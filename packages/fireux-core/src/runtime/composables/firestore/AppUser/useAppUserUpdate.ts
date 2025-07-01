@@ -1,12 +1,14 @@
 // ~/composables/useAppUserUpdate.ts
 import { doc, updateDoc } from 'firebase/firestore'
 import { useFirestore, useCurrentUser } from 'vuefire'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useFirestoreUtils } from '../useFirestoreUtils'
 import type { AppUser } from '../../../models/appUser.model'
 
 export function useAppUserUpdate() {
   const db = useFirestore()
+  const storage = getStorage()
   const { waitForCurrentUser } = useFirestoreUtils()
   const { appId } = useFireUXConfig()
 
@@ -17,7 +19,25 @@ export function useAppUserUpdate() {
     await updateDoc(profileRef, fields)
   }
 
-  async function updateAvatar(avatarUrl: string): Promise<void> {
+  async function updateAvatar(avatarFile: File): Promise<void> {
+    const currentUser = await waitForCurrentUser()
+
+    // Store app-specific avatar in: {appId}/users/{userId}/avatar
+    const avatarPath = `${appId}/users/${currentUser!.uid}/avatar`
+    const avatarRef = ref(storage, avatarPath)
+
+    // Upload the file
+    await uploadBytes(avatarRef, avatarFile)
+
+    // Get the download URL
+    const avatarUrl = await getDownloadURL(avatarRef)
+
+    // Update the AppUser document with the new avatar URL
+    await updateAppProfile({ avatar: avatarUrl })
+  }
+
+  async function updateAvatarFromUrl(avatarUrl: string): Promise<void> {
+    // For cases where you want to set avatar from an existing URL (e.g., copying from CoreUser)
     await updateAppProfile({ avatar: avatarUrl })
   }
 
@@ -60,6 +80,7 @@ export function useAppUserUpdate() {
   return {
     updateAppProfile,
     updateAvatar,
+    updateAvatarFromUrl,
     updateHandle,
     updateDisplayName,
     updateBio,

@@ -12,19 +12,39 @@ export function configurePages(resolver: any, nuxt: any) {
   // Define all job-related pages to be registered from the module
   const jobPages = [
     {
-      name: 'employer-profile',
-      path: '/employer-profile',
-      file: './runtime/pages/employer-profile.vue',
-    },
-    {
-      name: 'professional-profile',
-      path: '/professional-profile',
-      file: './runtime/pages/professional-profile.vue',
-    },
-    {
       name: 'jobs',
       path: '/jobs',
-      file: './runtime/pages/jobs.vue',
+      file: './runtime/pages/jobs/index.vue',
+    },
+    {
+      name: 'jobs-dashboard-employer-profile',
+      path: '/dashboard/employer-profile',
+      file: './runtime/pages/dashboard/employer-profile.vue',
+    },
+    {
+      name: 'jobs-dashboard-professional-profile',
+      path: '/dashboard/professional-profile',
+      file: './runtime/pages/dashboard/professional-profile.vue',
+    },
+    {
+      name: 'employers',
+      path: '/employers',
+      file: './runtime/pages/employers/index.vue',
+    },
+    {
+      name: 'employer-public-profile',
+      path: '/employers/[id]',
+      file: './runtime/pages/employers/[id].vue',
+    },
+    {
+      name: 'professionals',
+      path: '/professionals',
+      file: './runtime/pages/professionals/index.vue',
+    },
+    {
+      name: 'professional-public-profile',
+      path: '/professionals/[id]',
+      file: './runtime/pages/professionals/[id].vue',
     },
   ]
 

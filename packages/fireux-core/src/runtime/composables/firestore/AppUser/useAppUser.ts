@@ -44,14 +44,10 @@ export function useAppUser() {
     )
   }
 
-  /**
-   * Get current subscription plan
-   */
+
   const subscriptionPlan = computed(
     () => appUser.value?.subscription?.plan || 'free'
   )
-
-  // Add isAppUser computed
 
   return {
     appUser,

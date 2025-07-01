@@ -7,6 +7,10 @@ export interface AppUser {
   uid: string // ✅ Explicitly store the UID for convenience
   display_name: string
   handle: string
+
+  // Avatar Strategy:
+  // - Default: Copy from CoreUser.avatar (core-users/{id}/avatar)
+  // - Customized: Store in app-specific location ({app-id}/users/{id}/avatar)
   avatar: string
   bio: string
   created_at: string

@@ -7,5 +7,6 @@ export interface Employer {
   logoUrl?: string
   createdAt: Date | string
   updatedAt?: Date | string
+  updated_at?: unknown // Required for Firestore updateDocument function
   // Add more fields as needed
 }
