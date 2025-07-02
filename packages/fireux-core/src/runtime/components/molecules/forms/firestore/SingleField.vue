@@ -1,57 +1,106 @@
 <template>
   <div class="form-field">
-    <MoleculesFormsTop 
-      :label="label" 
-      :is-editing="isEditing" 
-      :has-data="!!vModel" 
+    <!-- Use the existing Top component with proper namespace -->
+    <FireMoleculesFormsTop
+      :label="label"
+      :is-editing="isEditing"
+      :has-data="!!props.firebaseValue"
       :error-message="errorMessage"
       @start-editing="startEditing"
-      @check="checkButtonClicked"
+      @check="saveChanges"
       @cancel="cancelEditing"
-      @delete="deleteButtonClicked" 
+      @delete="deleteValue"
     />
+
+    <!-- Display mode -->
     <div v-if="!isEditing" class="display">
-      <span>{{ vModel || placeholder }}</span>
+      <span class="text-gray-700">{{ displayValue }}</span>
     </div>
+
+    <!-- Edit mode -->
     <div v-else class="editing">
-      <UInput v-model="vModel" :placeholder="placeholder" class="w-full" />
+      <UInput
+        v-model="localValue"
+        :placeholder="placeholder"
+        class="w-full"
+        @keyup.enter="saveChanges"
+        @keyup.esc="cancelEditing"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
 const props = defineProps({
-  label: { type: String, default: "" },
-  firebaseValue: { type: String, default: "" },
-  placeholder: { type: String, default: "" },
+  label: { type: String, default: '' },
+  firebaseValue: { type: String, default: '' },
+  placeholder: { type: String, default: '' },
   updateFunction: { type: Function, default: () => {} },
-  deleteFunction: { type: Function, default: () => {} }
 })
 
-// Local reactive state.
+// Local reactive state
 const isEditing = ref(false)
-const vModel = ref(props.firebaseValue ? String(props.firebaseValue) : "")
-const errorMessage = ref("")
+const localValue = ref('')
+const errorMessage = ref('')
 
-// Editing handlers.
+// Computed display value
+const displayValue = computed(() => {
+  return props.firebaseValue || 'Not set'
+})
+
+// Watch for prop changes to update local value
+watch(
+  () => props.firebaseValue,
+  (newValue) => {
+    if (!isEditing.value) {
+      localValue.value = newValue || ''
+    }
+  },
+  { immediate: true }
+)
+
+// Editing handlers
 function startEditing() {
-  vModel.value = props.firebaseValue ? String(props.firebaseValue) : ""
+  localValue.value = props.firebaseValue || ''
+  errorMessage.value = ''
   isEditing.value = true
 }
 
 function cancelEditing() {
-  vModel.value = props.firebaseValue ? String(props.firebaseValue) : ""
+  localValue.value = props.firebaseValue || ''
+  errorMessage.value = ''
   isEditing.value = false
 }
 
-async function checkButtonClicked() {
-  await props.updateFunction(vModel.value)
-  isEditing.value = false
+async function saveChanges() {
+  try {
+    await props.updateFunction(localValue.value)
+    errorMessage.value = ''
+    isEditing.value = false
+  } catch (error) {
+    console.error('Error saving field:', error)
+    errorMessage.value = 'Failed to save changes'
+  }
 }
 
-async function deleteButtonClicked() {
-  await props.updateFunction("")
-  vModel.value = ""
-  isEditing.value = false
+async function deleteValue() {
+  try {
+    await props.updateFunction('')
+    localValue.value = ''
+    errorMessage.value = ''
+    isEditing.value = false
+  } catch (error) {
+    console.error('Error deleting field:', error)
+    errorMessage.value = 'Failed to delete value'
+  }
 }
 </script>
+
+<style scoped>
+.display {
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  background-color:;
+}
+</style>

@@ -28,20 +28,24 @@
           <span class="completion-percentage">{{ profileCompletion }}%</span>
         </div>
         <div class="completion-bar">
-          <div 
-            class="completion-progress" 
+          <div
+            class="completion-progress"
             :style="{ width: `${profileCompletion}%` }"
           ></div>
         </div>
         <div class="completion-items">
-          <div 
-            v-for="item in completionItems" 
+          <div
+            v-for="item in completionItems"
             :key="item.key"
             class="completion-item"
-            :class="{ 'completed': item.completed }"
+            :class="{ completed: item.completed }"
           >
-            <UIcon 
-              :name="item.completed ? 'i-heroicons-check-circle' : 'i-heroicons-circle'"
+            <UIcon
+              :name="
+                item.completed
+                  ? 'i-heroicons-check-circle'
+                  : 'i-heroicons-circle'
+              "
               :class="item.completed ? 'text-green-500' : 'text-gray-300'"
             />
             <span class="completion-text">{{ item.label }}</span>
@@ -65,7 +69,9 @@
         </div>
         <div v-if="user.address?.city" class="info-item">
           <span class="info-label">Location:</span>
-          <span class="info-value">{{ user.address.city }}, {{ user.address.state }}</span>
+          <span class="info-value"
+            >{{ user.address.city }}, {{ user.address.state }}</span
+          >
         </div>
       </div>
     </div>
@@ -76,8 +82,8 @@
 const props = defineProps({
   user: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 })
 
 // Computed display name with priority logic
@@ -104,33 +110,35 @@ const completionItems = computed(() => [
   {
     key: 'avatar',
     label: 'Profile Picture',
-    completed: !!props.user.avatar
+    completed: !!props.user.avatar,
   },
   {
     key: 'full_name',
     label: 'Full Name',
-    completed: !!props.user.full_name
+    completed: !!props.user.full_name,
   },
   {
     key: 'display_name',
     label: 'Display Name',
-    completed: !!props.user.display_name
+    completed: !!props.user.display_name,
   },
   {
     key: 'handle',
     label: 'Handle',
-    completed: !!props.user.handle
+    completed: !!props.user.handle,
   },
   {
     key: 'address',
     label: 'Location',
-    completed: !!(props.user.address?.city && props.user.address?.state)
-  }
+    completed: !!(props.user.address?.city && props.user.address?.state),
+  },
 ])
 
 // Profile completion percentage
 const profileCompletion = computed(() => {
-  const completedItems = completionItems.value.filter(item => item.completed).length
+  const completedItems = completionItems.value.filter(
+    (item) => item.completed
+  ).length
   const totalItems = completionItems.value.length
   return Math.round((completedItems / totalItems) * 100)
 })
@@ -274,19 +282,19 @@ const profileCompletion = computed(() => {
   .summary-stats {
     grid-template-columns: 1fr;
   }
-  
+
   .completion-header {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-1);
   }
-  
+
   .info-item {
     flex-direction: column;
     gap: var(--space-1);
     align-items: flex-start;
   }
-  
+
   .info-label {
     min-width: auto;
   }

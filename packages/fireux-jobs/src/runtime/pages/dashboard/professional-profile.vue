@@ -1,22 +1,54 @@
 <template>
   <client-only>
     <div v-if="isProfessional">
+      <!-- Profile Display -->
       <FireOrganismsProfessionalCardsProfile
         :professional="currentProfessional"
       />
-      <FireOrganismsProfessionalEdit :professional="currentProfessional" />
+
+      <!-- Edit Toggle Button -->
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="profile-section-title">Edit Professional Information</h3>
+        <UButton
+          :icon="
+            isEditMode ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'
+          "
+          variant="ghost"
+          size="sm"
+          @click="isEditMode = !isEditMode"
+        >
+          {{ isEditMode ? 'Hide' : 'Edit' }}
+        </UButton>
+      </div>
+
+      <!-- Edit Form (conditionally shown) -->
+      <FireOrganismsProfessionalEdit
+        v-if="isEditMode"
+        :professional="currentProfessional"
+      />
     </div>
     <FireOrganismsProfessionalCreateSystem v-else />
   </client-only>
 </template>
 
 <script setup>
-import { useProfessionals } from '../../composables/firestore/objects/Professional/useProfessionals'
+const route = useRoute()
+const { label, icon } = getRouteMetaForPath(route.path)
+
+// Set static meta at build time for Nuxt
+definePageMeta({
+  layout: 'dashboard',
+})
+
+// Set dynamic head meta at runtime (reactive)
+useHead({
+  title: label,
+  meta: [{ name: 'icon', content: icon }],
+})
 
 // Initialize professionals composable - now reactive and simple!
 const { isProfessional, currentProfessional } = useProfessionals()
 
-definePageMeta({
-  layout: 'dashboard',
-})
+// Edit mode state - controlled by this page
+const isEditMode = ref(false)
 </script>

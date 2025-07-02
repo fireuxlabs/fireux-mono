@@ -28,7 +28,9 @@
               :alt="follower.full_name || follower.display_name"
               size="sm"
             />
-            <span class="follow-name">{{ follower.full_name || follower.display_name }}</span>
+            <span class="follow-name">{{
+              follower.full_name || follower.display_name
+            }}</span>
           </div>
           <div v-if="followers.length > 5" class="follow-more">
             +{{ followers.length - 5 }} more
@@ -59,7 +61,9 @@
               :alt="followedUser.full_name || followedUser.display_name"
               size="sm"
             />
-            <span class="follow-name">{{ followedUser.full_name || followedUser.display_name }}</span>
+            <span class="follow-name">{{
+              followedUser.full_name || followedUser.display_name
+            }}</span>
           </div>
           <div v-if="following.length > 5" class="follow-more">
             +{{ following.length - 5 }} more
@@ -72,9 +76,7 @@
 
       <!-- Quick Actions -->
       <div class="follow-actions">
-        <UButton variant="outline" size="sm">
-          View All Connections
-        </UButton>
+        <UButton variant="outline" size="sm"> View All Connections </UButton>
       </div>
     </div>
   </div>
@@ -84,8 +86,8 @@
 const props = defineProps({
   user: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 })
 
 // Mock data - replace with actual follows data

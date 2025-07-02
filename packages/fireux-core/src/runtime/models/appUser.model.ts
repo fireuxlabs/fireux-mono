@@ -1,35 +1,37 @@
-// ~/models/user.model.ts
-
-// Core user identity (global, never app-specific)
-
-// App-specific user profile (e.g., for FIReUX)
+// App-specific user profile interface
 export interface AppUser {
-  uid: string // ✅ Explicitly store the UID for convenience
-  full_name: string // ✅ Full legal/professional name
-  display_name: string // ✅ Preferred display name (could be nickname)
+  uid: string // Explicitly store the UID for convenience
+  first_name: string
+  middle_name?: string // Optional middle name
+  last_name: string
+  display_name: string // Preferred display name (could be nickname)
   handle: string
-
-  // Avatar Strategy:
-  // - Default: Copy from CoreUser.avatar (core-users/{id}/avatar)
-  // - Customized: Store in app-specific location ({app-id}/users/{id}/avatar)
-  avatar: string
+  avatar: string // Avatar URL
   bio: string
   created_at: string
   email: string
+  phone?: string // Optional phone number
   role?: 'user' | 'admin'
+
+  // Address information
+  address?: {
+    city?: string
+    state?: string
+    country?: string
+  }
 
   // Subscription system - managed by Stripe webhooks
   subscription?: {
     stripe_customer_id?: string
     stripe_subscription_id?: string
-    plan: 'free' | 'pro' | 'premium'
+    plan: 'free' | 'pro' | 'enterprise'
     status: 'active' | 'inactive' | 'cancelled' | 'past_due'
     started_at: string
     ends_at?: string
     is_pro: boolean // Computed from plan/status for easy access
   } | null
 
-  // New properties for notifications, follows, and preferences
+  // User preferences and social features
   notifications?: {
     enabled: boolean
     types: Array<'email' | 'push' | 'sms'>

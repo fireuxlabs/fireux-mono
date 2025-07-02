@@ -1,8 +1,26 @@
 <template>
   <client-only>
     <div v-if="appUser">
+      <!-- Profile Display -->
       <FireOrganismsUserCardsProfile :user="appUser" />
-      <FireOrganismsUserEdit :user="appUser" />
+
+      <!-- Edit Toggle Button -->
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="profile-section-title">Edit Profile Information</h3>
+        <UButton
+          :icon="
+            isEditMode ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'
+          "
+          variant="ghost"
+          size="sm"
+          @click="isEditMode = !isEditMode"
+        >
+          {{ isEditMode ? 'Hide' : 'Edit' }}
+        </UButton>
+      </div>
+
+      <!-- Edit Form (conditionally shown) -->
+      <FireOrganismsUserEdit v-if="isEditMode" :user="appUser" />
     </div>
     <div v-else class="profile-loading-state">
       <UCard>
@@ -34,6 +52,9 @@ useHead({
 
 // Get current user - follows same pattern as employer/professional
 const { appUser } = useAppUser()
+
+// Edit mode state - controlled by this page
+const isEditMode = ref(false)
 </script>
 
 <style scoped>

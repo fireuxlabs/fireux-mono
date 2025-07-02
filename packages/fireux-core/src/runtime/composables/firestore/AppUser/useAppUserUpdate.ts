@@ -45,12 +45,28 @@ export function useAppUserUpdate() {
     await updateAppProfile({ handle: newHandle })
   }
 
+  async function updateFirstName(firstName: string): Promise<void> {
+    await updateAppProfile({ first_name: firstName })
+  }
+
+  async function updateMiddleName(middleName: string): Promise<void> {
+    await updateAppProfile({ middle_name: middleName })
+  }
+
+  async function updateLastName(lastName: string): Promise<void> {
+    await updateAppProfile({ last_name: lastName })
+  }
+
   async function updateDisplayName(displayName: string): Promise<void> {
     await updateAppProfile({ display_name: displayName })
   }
 
   async function updateBio(bio: string): Promise<void> {
     await updateAppProfile({ bio })
+  }
+
+  async function updateEmail(email: string): Promise<void> {
+    await updateAppProfile({ email })
   }
 
   async function updateNotifications(
@@ -77,13 +93,48 @@ export function useAppUserUpdate() {
     await updateAppProfile({ preferences })
   }
 
+  async function updatePhone(phone: string): Promise<void> {
+    await updateAppProfile({ phone })
+  }
+
+  async function updateAddress(
+    addressUpdate: Partial<AppUser['address']>
+  ): Promise<void> {
+    // This is a more robust way to update nested address fields
+    // You might want to fetch current user data first to merge properly
+    await updateAppProfile({
+      address: addressUpdate,
+    })
+  }
+
+  async function updateCity(city: string): Promise<void> {
+    await updateAddress({ city })
+  }
+
+  async function updateState(state: string): Promise<void> {
+    await updateAddress({ state })
+  }
+
+  async function updateCountry(country: string): Promise<void> {
+    await updateAddress({ country })
+  }
+
   return {
     updateAppProfile,
     updateAvatar,
     updateAvatarFromUrl,
+    updateFirstName,
+    updateMiddleName,
+    updateLastName,
     updateHandle,
     updateDisplayName,
     updateBio,
+    updateEmail,
+    updatePhone,
+    updateAddress,
+    updateCity,
+    updateState,
+    updateCountry,
     updateNotifications,
     updateFollowers,
     updateFollowing,

@@ -14,9 +14,6 @@
         <p v-if="user?.email" class="text-gray-600 text-sm">
           {{ user.email }}
         </p>
-        <p v-if="user?.handle" class="text-gray-500 text-sm">
-          @{{ user.handle }}
-        </p>
       </div>
     </div>
 
@@ -26,19 +23,6 @@
     >
       <h3 class="font-medium mb-2">Display Name</h3>
       <p class="text-gray-700">{{ user.display_name }}</p>
-    </div>
-
-    <div v-if="user?.address" class="mb-4">
-      <h3 class="font-medium mb-2">Location</h3>
-      <p class="text-gray-700">
-        {{ user.address.city
-        }}<span v-if="user.address.state">, {{ user.address.state }}</span>
-      </p>
-    </div>
-
-    <div v-if="formattedJoinDate">
-      <h3 class="font-medium mb-2">Member Since</h3>
-      <p class="text-gray-700">{{ formattedJoinDate }}</p>
     </div>
   </UCard>
 </template>
@@ -66,14 +50,28 @@ const userName = computed(() => {
 // Computed property for formatted join date
 const formattedJoinDate = computed(() => {
   if (!props.user?.created_at) return null
-  const date =
-    typeof props.user.created_at === 'string'
-      ? new Date(props.user.created_at)
-      : props.user.created_at
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-  })
+
+  let date
+  try {
+    date =
+      typeof props.user.created_at === 'string'
+        ? new Date(props.user.created_at)
+        : props.user.created_at
+
+    // Check if date is valid
+    if (!date || isNaN(date.getTime())) return null
+
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+    })
+  } catch (error) {
+    console.warn(
+      'Invalid date format for user created_at:',
+      props.user.created_at
+    )
+    return null
+  }
 })
 
 function getInitials(name) {

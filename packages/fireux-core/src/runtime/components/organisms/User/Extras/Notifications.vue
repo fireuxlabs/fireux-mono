@@ -2,9 +2,7 @@
   <div class="notifications-component">
     <div class="notifications-header">
       <h3 class="profile-section-title">Notifications</h3>
-      <p class="profile-section-description">
-        Recent activity and updates
-      </p>
+      <p class="profile-section-description">Recent activity and updates</p>
     </div>
 
     <div class="notifications-content">
@@ -14,7 +12,7 @@
           v-for="notification in displayedNotifications"
           :key="notification.id"
           class="notification-item"
-          :class="{ 'unread': !notification.read }"
+          :class="{ unread: !notification.read }"
         >
           <div class="notification-icon">
             <UIcon
@@ -25,8 +23,12 @@
           <div class="notification-content">
             <p class="notification-message">{{ notification.message }}</p>
             <div class="notification-meta">
-              <span class="notification-time">{{ formatTime(notification.createdAt) }}</span>
-              <span v-if="!notification.read" class="notification-badge">New</span>
+              <span class="notification-time">{{
+                formatTime(notification.createdAt)
+              }}</span>
+              <span v-if="!notification.read" class="notification-badge"
+                >New</span
+              >
             </div>
           </div>
           <div class="notification-actions">
@@ -47,12 +49,16 @@
         <UIcon name="i-heroicons-bell-slash" class="empty-icon" />
         <p class="empty-message">No notifications yet</p>
         <p class="empty-description">
-          You'll see updates about your profile, connections, and activities here.
+          You'll see updates about your profile, connections, and activities
+          here.
         </p>
       </div>
 
       <!-- Show More Button -->
-      <div v-if="notifications?.length > displayLimit" class="notifications-actions">
+      <div
+        v-if="notifications?.length > displayLimit"
+        class="notifications-actions"
+      >
         <UButton variant="outline" size="sm" @click="showMore">
           Show {{ notifications.length - displayLimit }} More
         </UButton>
@@ -65,8 +71,8 @@
 const props = defineProps({
   notifications: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 })
 
 const displayLimit = ref(5)
@@ -82,7 +88,7 @@ function getNotificationIcon(type) {
     comment: 'i-heroicons-chat-bubble-left',
     system: 'i-heroicons-cog-6-tooth',
     job: 'i-heroicons-briefcase',
-    default: 'i-heroicons-bell'
+    default: 'i-heroicons-bell',
   }
   return icons[type] || icons.default
 }
@@ -94,7 +100,7 @@ function getNotificationIconClass(type) {
     comment: 'text-green-500',
     system: 'text-gray-500',
     job: 'text-purple-500',
-    default: 'text-gray-400'
+    default: 'text-gray-400',
   }
   return classes[type] || classes.default
 }

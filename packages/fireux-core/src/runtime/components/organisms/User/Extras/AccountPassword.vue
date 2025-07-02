@@ -68,7 +68,10 @@
           <!-- Security Notice -->
           <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div class="flex items-start">
-              <UIcon name="i-heroicons-shield-check" class="text-blue-600 mt-0.5 mr-2" />
+              <UIcon
+                name="i-heroicons-shield-check"
+                class="text-blue-600 mt-0.5 mr-2"
+              />
               <div class="text-sm text-blue-800">
                 <p class="font-medium">Password Requirements:</p>
                 <ul class="mt-1 list-disc list-inside space-y-1">
@@ -100,7 +103,7 @@ const updating = ref(false)
 const passwordForm = ref({
   currentPassword: '',
   newPassword: '',
-  confirmPassword: ''
+  confirmPassword: '',
 })
 
 // Form validation
@@ -120,14 +123,14 @@ async function updatePassword() {
   try {
     // TODO: Implement password update logic with Firebase Auth
     console.log('Password update requested')
-    
+
     // Reset form on success
     passwordForm.value = {
       currentPassword: '',
       newPassword: '',
-      confirmPassword: ''
+      confirmPassword: '',
     }
-    
+
     // Close the form
     isExpanded.value = false
   } catch (error) {

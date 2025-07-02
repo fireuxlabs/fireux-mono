@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
 import type { DocumentReference } from 'firebase/firestore'
+import { useFirestoreManager } from '../useFirestoreManager'
 import type { AppUser } from '../../../models/appUser.model'
 import { useAppUserUtils } from './useAppUserUtils'
 import { useAppUserEnsure } from './useAppUserEnsure'
@@ -11,6 +12,7 @@ import { useFireUXConfig } from '../../FireUXConfig'
 export function useAppUser() {
   const db = useFirestore()
   const currentUser = useCurrentUser()
+  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreManager()
   const { appId } = useFireUXConfig()
 
   const appUserDocRef = computed<DocumentReference<AppUser> | null>(() =>
@@ -25,16 +27,15 @@ export function useAppUser() {
 
   const { data: appUser } = useDocument<AppUser>(appUserDocRef)
 
+  // Collections
+  const appUsers = firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
+
+  // Computed properties
   const isAppUser = computed(() => !!appUser.value)
-  const isAdmin = computed(() => appUser.value?.role === 'admin')
   const isPro = computed(() => appUser.value?.subscription?.is_pro === true)
 
-  /**
-   * Check if user has a specific subscription plan
-   */
-  function hasSubscription(
-    planType: 'pro' | 'premium' | 'enterprise' = 'pro'
-  ): boolean {
+  // Methods
+  function hasSubscription(planType: 'pro' | 'enterprise' = 'pro'): boolean {
     if (planType === 'pro') {
       return isPro.value
     }
@@ -44,20 +45,28 @@ export function useAppUser() {
     )
   }
 
-
-  const subscriptionPlan = computed(
-    () => appUser.value?.subscription?.plan || 'free'
-  )
+  async function fetchAppUser(userId: string) {
+    return await firestoreFetchDoc(`apps/${appId}/users`, userId)
+  }
 
   return {
+    // Current entity
     appUser,
-    isAdmin,
-    isPro,
+
+    // Collections
+    appUsers,
+
+    // Computed properties
     isAppUser,
+    isPro,
+
+    // Methods
     hasSubscription,
-    subscriptionPlan,
-    ...useAppUserUtils(),
+    fetchAppUser,
+
+    // Utilities
     ensureAppUser: useAppUserEnsure(),
+    ...useAppUserUtils(),
     ...useAppUserUpdate(),
   }
 }

@@ -31,12 +31,10 @@ export function useEmployers() {
   // Reactive check if current user is an employer
   const isEmployer = computed(() => !!currentEmployer.value)
 
-  // Fetch all employers collection (for listings)
-  async function getEmployersCollection() {
-    return await firestoreFetchCollection<Employer>('employers', {
-      appScoped: false,
-    })
-  }
+  // Reactive employers collection
+  const employers = firestoreFetchCollection<Employer>('employers', {
+    appScoped: false,
+  })
 
   // Fetch a specific employer by ID
   async function fetchEmployer(
@@ -56,7 +54,7 @@ export function useEmployers() {
     isEmployer,
     employer: currentEmployer, // Alias for easier usage, like useAppUser returns appUser
     currentEmployer,
-    getEmployersCollection,
+    employers,
     ...employerCreate,
     ...employerUpdate,
     ...employerDelete,

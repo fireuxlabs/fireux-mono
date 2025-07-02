@@ -1,7 +1,9 @@
 export interface Professional {
-  uid: string // Firestore document ID
-  full_name?: string // Professional's full legal/preferred name
-  name?: string // Legacy field - use full_name instead
+  uid: string // Firestore document ID (matches AppUser.uid)
+  // NOTE: Name fields are fetched from AppUser - no duplication
+
+  // Professional-specific identity
+  avatar?: string // Professional avatar (separate from AppUser avatar)
   title?: string // Professional title/role (e.g., "Sous Chef", "Freelancer")
   bio_short?: string // Short bio description
   bio_long?: string // Long bio description
@@ -90,13 +92,10 @@ export interface Professional {
     }>
   }>
 
-  // Legacy fields for backward compatibility
-  displayName?: string // Legacy
-  email?: string // Legacy
-  bio?: string // Legacy
-  avatarUrl?: string // Legacy
-  skills?: string[] // Legacy
-  createdAt?: Date | string // Legacy
-  updatedAt?: Date | string // Legacy
+  // Contact information
+  email?: string
+
+  // Other fields
+  avatarUrl?: string
   updated_at?: unknown // Required for Firestore updateDocument function
 }
