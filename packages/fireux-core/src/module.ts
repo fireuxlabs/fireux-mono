@@ -57,5 +57,10 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Configure public assets
     configureAssets(resolver, nuxt)
+
+    // Exclude documentation files from build
+    nuxt.options.nitro = nuxt.options.nitro || {}
+    nuxt.options.nitro.ignore = nuxt.options.nitro.ignore || []
+    nuxt.options.nitro.ignore.push('**/*.doc.*')
   },
 })

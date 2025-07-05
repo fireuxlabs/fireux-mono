@@ -78,7 +78,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useCurrentUser } from 'vuefire'
 
 // Props to allow overriding default visibility
@@ -90,13 +90,30 @@ const props = defineProps({
 })
 
 const { devMode, appId } = useFireUXConfig()
-const { coreUser } = await useCoreUser()
-const { appUser } = await useAppUser()
-const { app } = await useApp()
 const currentUser = useCurrentUser()
+
+// Initialize reactive refs for data that will be loaded client-side
+const coreUser = ref(null)
+const appUser = ref(null)
+const app = ref(null)
 
 // Debug visibility state - can be overridden by prop
 const isVisible = ref(props.defaultVisible)
+
+// Load data only on client side
+onMounted(async () => {
+  try {
+    const { coreUser: coreUserData } = await useCoreUser()
+    const { appUser: appUserData } = await useAppUser()
+    const { app: appData } = await useApp()
+
+    coreUser.value = coreUserData
+    appUser.value = appUserData
+    app.value = appData
+  } catch (error) {
+    console.error('❌ Error loading debug data:', error)
+  }
+})
 
 // Check URL for debug=true parameter to override default visibility
 if (process.client) {
@@ -159,5 +176,4 @@ async function refreshData() {
 .debug-toggle:hover {
   opacity: 1;
 }
-
 </style>

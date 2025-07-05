@@ -7,30 +7,53 @@ import { addServerHandler } from '@nuxt/kit'
 export function configureServer(resolver: any) {
   const resolvePath = (p: string) => resolver.resolve(p)
 
-  // Register API routes
+  // App metadata and configuration APIs
   addServerHandler({
-    route: '/api/env-check',
-    handler: resolvePath('./runtime/server/api/env-check'),
+    route: '/api/app',
+    handler: resolvePath('./runtime/server/api/app.get'),
   })
 
-  // Add Google avatar proxy endpoint
-  addServerHandler({
-    route: '/api/proxy/google-avatar',
-    handler: resolvePath('./runtime/server/api/proxy/google-avatar'),
-  })
-
-  // Add app theme endpoint for ecosystem integration
   addServerHandler({
     route: '/api/app/theme',
     handler: resolvePath('./runtime/server/api/app/theme.get'),
   })
 
-  // Simple Stripe API routes (without composable imports)
+  addServerHandler({
+    route: '/api/app/env-check',
+    handler: resolvePath('./runtime/server/api/app/env-check'),
+  })
+
+  addServerHandler({
+    route: '/api/app/ensure-app',
+    method: 'post',
+    handler: resolvePath('./runtime/server/api/app/ensure-app.post'),
+  })
+
+  // Utility endpoints
+  addServerHandler({
+    route: '/api/proxy/google-avatar',
+    handler: resolvePath('./runtime/server/api/proxy/google-avatar'),
+  })
+
+  // Firestore endpoints
+  addServerHandler({
+    route: '/api/firestore/update-document',
+    method: 'post',
+    handler: resolvePath('./runtime/server/api/firestore/update-document.post'),
+  })
+
+  // Stripe endpoints
   addServerHandler({
     route: '/api/stripe/create-product',
     method: 'post',
     handler: resolvePath('./runtime/server/api/stripe/create-product.post'),
   })
 
-  // Additional server handlers can be added here as the module grows
+  addServerHandler({
+    route: '/api/stripe/create-subscription',
+    method: 'post',
+    handler: resolvePath(
+      './runtime/server/api/stripe/create-subscription.post'
+    ),
+  })
 }

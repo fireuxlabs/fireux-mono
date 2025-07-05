@@ -90,6 +90,11 @@ export function useFirestoreUtils() {
   async function waitForCurrentUser(
     timeout = 5000
   ): Promise<ReturnType<typeof useCurrentUser>['value']> {
+    // Check if we're on the server side
+    if (typeof window === 'undefined') {
+      throw new Error('waitForCurrentUser cannot be called on server-side')
+    }
+
     const currentUser = useCurrentUser()
     const startTime = Date.now()
 
@@ -98,7 +103,6 @@ export function useFirestoreUtils() {
         if (currentUser.value && currentUser.value.uid) {
           resolve(currentUser.value)
         } else if (Date.now() - startTime > timeout) {
-          console.error('Timeout waiting for current user or invalid user')
           reject(new Error('Timeout waiting for current user or invalid user'))
         } else {
           setTimeout(checkUser, 50)

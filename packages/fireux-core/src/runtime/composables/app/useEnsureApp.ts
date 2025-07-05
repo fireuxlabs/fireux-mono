@@ -68,8 +68,42 @@ export async function useAppEnsure() {
       await setDocument('apps', appId, appData)
       console.log(`🎉 [ensureApp] App '${appId}' created successfully.`)
 
-      // Step 4.5: Create default Pro product for the app
-      await createDefaultProProduct(appId, appName)
+      // Step 4.5: Initialize app with subscription plans and products
+      try {
+        console.log(
+          `🏗️ [ensureApp] Initializing app with subscription plans...`
+        )
+
+        const initResponse = (await $fetch('/api/app/ensure-app', {
+          method: 'POST',
+          body: {
+            appId,
+            appName,
+            userId: uid,
+            setupSubscriptions: true,
+            createDefaultProducts: true,
+            metadata: {
+              created_by: 'ensureApp',
+              created_at: new Date().toISOString(),
+            },
+            ping: `ensure-${Date.now()}`,
+          },
+        })) as any
+
+        console.log(`✅ [ensureApp] App initialization completed:`)
+        console.log(
+          `   - Tasks completed: ${initResponse.tasks_completed?.length || 0}`
+        )
+        console.log(
+          `   - Products created: ${initResponse.products_created?.length || 0}`
+        )
+        console.log(
+          `   - Subscriptions setup: ${initResponse.subscriptions_setup}`
+        )
+      } catch (initError) {
+        console.warn(`⚠️ [ensureApp] App initialization failed:`, initError)
+        // Don't fail the entire app creation if initialization fails
+      }
 
       // Step 5: Update core user with admin role
       if (coreUser && coreUser.adminOf && coreUser.adminOf.includes(appId)) {
@@ -93,96 +127,6 @@ export async function useAppEnsure() {
     } catch (error) {
       console.error('❌ [ensureApp] Error occurred:', error)
       throw error
-    }
-  }
-
-  /**
-   * Helper function to create a default Pro product for the app
-   * @param appId The app identifier
-   * @param appName The app name
-   */
-  async function createDefaultProProduct(
-    appId: string,
-    appName: string
-  ): Promise<void> {
-    console.log(`🚀 [createDefaultProProduct] Starting for ${appId}`)
-    try {
-      // Import the state management composables directly
-      const { useCreateProductState } = await import(
-        '../firestore/objects/Product/useCreateProductState'
-      )
-      const { useCreatePricesState } = await import(
-        '../firestore/objects/Product/Prices/useCreatePricesState'
-      )
-      const { useProductCreate } = await import(
-        '../firestore/objects/Product/useProductCreate'
-      )
-
-      console.log(`📦 [createDefaultProProduct] Imports successful`)
-
-      // Set up the product state
-      const productState = await useCreateProductState()
-      const pricesState = useCreatePricesState()
-      const { createProduct } = await useProductCreate()
-
-      console.log(`🔧 [createDefaultProProduct] State setup complete`)
-
-      // Reset and set the product data
-      productState.resetCreateProductState()
-
-      // Set individual product fields
-      productState.product.value.name = `${appName} Pro`
-      productState.product.value.slug = `${appId}-pro`
-      productState.product.value.description = `Pro subscription for ${appName} - unlock premium features`
-      productState.product.value.content = `Get access to premium features of ${appName}`
-      productState.product.value.product_type = 'subscription'
-      productState.product.value.subscription_type = 'pro'
-      productState.product.value.is_default_plan = true
-      productState.product.value.features = [
-        'Premium support',
-        'Advanced analytics',
-        'Priority features',
-        'Extended storage',
-      ]
-      productState.product.value.stock = null
-      productState.product.value.track_stock = false
-      productState.product.value.main_image = '/img/pro-subscription.png'
-      productState.product.value.active = true
-      productState.product.value.id = `${appId}-pro`
-
-      // Set the price data by modifying the underlying prices array
-      pricesState.resetCreatePricesState() // Reset to default
-      pricesState.prices.value[0] = {
-        unit_amount: 500, // $5.00
-        currency: 'eur',
-        type: 'recurring',
-        interval: 'month',
-        interval_count: 1,
-      }
-
-      // Set a placeholder main image (use a simple 1x1 pixel placeholder for now)
-      // In a real implementation, you'd want to use an actual image
-      productState.mainImageData.value =
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
-
-      console.log(`📝 [createDefaultProProduct] Product data set, creating...`)
-
-      // Now create the product using the state-based API
-      const result = await createProduct()
-
-      console.log(`📋 [createDefaultProProduct] Creation result:`, result)
-
-      if (result.success) {
-        console.log(
-          `✅ [createDefaultProProduct] Created Pro product for ${appId}`
-        )
-      } else {
-        throw new Error(result.error || 'Failed to create product')
-      }
-    } catch (error) {
-      console.error(`❌ [createDefaultProProduct] Error:`, error)
-      // Don't throw here, as the app has been created successfully
-      // We can retry creating the product later if needed
     }
   }
 

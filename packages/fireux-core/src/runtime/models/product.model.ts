@@ -39,11 +39,41 @@ export interface FirebaseProduct extends StripeProduct {
   created_at: Date | string
   updated_at: Date | string
   creator_id: string
-  content: string
   product_type: 'physical' | 'digital' | 'service' | 'subscription'
-  stock: number | null
-  track_stock: boolean
-  main_image: string
+
+  // Stripe compatibility fields
+  tax_code?: string | null
+  metadata: {
+    appId: string
+    slug: string
+    product_type: string
+    [key: string]: any
+  }
+
+  // Stripe metadata as flat fields (for webhook compatibility)
+  stripe_metadata_appId: string
+  stripe_metadata_slug: string
+  stripe_metadata_product_type: string
+
+  // FireUX simplified price structure
+  stripe_prices: {
+    id: string
+    unit_amount: number
+    currency: string
+    interval?: string | null
+    interval_count?: number | null
+    type?: string
+  }[]
+
+  // FireUX tracking fields
+  fireux_created: boolean
+  sync_source: string
+
+  // Optional additional fields
+  content?: string
+  stock?: number | null
+  track_stock?: boolean
+  main_image?: string
   default_price?: DefaultPrice
 
   // Subscription-specific fields

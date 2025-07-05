@@ -1,90 +1,16 @@
 // ~/server/api/stripe/create-product.post.ts
 import { defineEventHandler, readBody, createError } from 'h3'
-import { initializeApp, getApps, cert } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
-import { getStorage } from 'firebase-admin/storage'
-import { readFileSync } from 'fs'
+import Stripe from 'stripe'
 
-// Server-side image upload helper - simplified for server use
-async function uploadImageToStorage(
-  base64Image: string,
-  collection: string,
-  id: string,
-  type: string
-): Promise<string> {
-  try {
-    const storage = getStorage()
-    const bucket = storage.bucket()
-
-    console.log(
-      '📸 [uploadImageToStorage] Attempting to access bucket:',
-      bucket.name
-    )
-
-    // Convert base64 to buffer
-    const base64Data = base64Image.split(',')[1] // Remove data URL prefix
-    const buffer = Buffer.from(base64Data, 'base64')
-
-    // Define storage path (simplified for server)
-    const filePath = `products/${id}/${type}.jpg`
-    const file = bucket.file(filePath)
-
-    console.log('📸 [uploadImageToStorage] Uploading to path:', filePath)
-
-    // Upload the image
-    await file.save(buffer, {
-      metadata: {
-        contentType: 'image/jpeg',
-      },
-    })
-
-    // Make the file public and return its URL
-    await file.makePublic()
-    const url = `https://storage.googleapis.com/${bucket.name}/${filePath}`
-    console.log('✅ [uploadImageToStorage] Image uploaded successfully:', url)
-    return url
-  } catch (error: any) {
-    console.error('❌ [uploadImageToStorage] Failed to upload image:', error)
-
-    if (error.message && error.message.includes('bucket does not exist')) {
-      throw new Error(
-        `Firebase Storage bucket does not exist. Please enable Firebase Storage in the Firebase Console for your project.`
-      )
-    }
-
-    throw new Error(`Failed to upload image: ${error.message}`)
-  }
-}
-
-// Initialize Firebase Admin (only once)
-if (!getApps().length) {
-  const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS
-  if (serviceAccountPath) {
-    try {
-      const serviceAccount = JSON.parse(
-        readFileSync(serviceAccountPath, 'utf8')
-      )
-
-      // Get the storage bucket name from the project_id (new Firebase format)
-      const storageBucket = `${serviceAccount.project_id}.firebasestorage.app`
-
-      initializeApp({
-        credential: cert(serviceAccount),
-        storageBucket: storageBucket,
-      })
-      console.log('✅ Firebase Admin initialized with bucket:', storageBucket)
-    } catch (error) {
-      console.error('❌ Failed to initialize Firebase Admin:', error)
-    }
-  } else {
-    console.warn('⚠️ No GOOGLE_APPLICATION_CREDENTIALS found')
-  }
-}
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-06-30.basil',
+})
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const { product, imageData } = body
+    const { product, ping } = body
 
     if (!product) {
       throw createError({
@@ -93,101 +19,80 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    if (!imageData) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Image data is required',
-      })
+    console.log('🔄 [create-product] Creating Stripe product:', product.name)
+    if (ping) {
+      console.log('🏓 [create-product] Ping received:', ping)
     }
 
-    console.log(
-      '🔄 [create-product] Starting server-side product creation:',
-      product.name
-    )
-
-    // Step 1: Upload image to Firebase Storage
-    console.log('📸 [create-product] Uploading image to Firebase Storage...')
-    const imageUrl = await uploadImageToStorage(
-      imageData,
-      product.slug,
-      'main',
-      'main'
-    )
-    console.log('✅ [create-product] Image uploaded successfully:', imageUrl)
-
-    // Step 2: Create product in Stripe (simulated for now)
-    console.log('📦 [create-product] Step 2: Creating Stripe product...')
-    const mockStripeId = `prod_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-
-    // Simulate Stripe API delay
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    console.log('✅ [create-product] Stripe product created:', mockStripeId)
-
-    // Step 3: Create document in Firestore
-    console.log('📝 [create-product] Step 3: Creating Firestore document...')
-
-    const db = getFirestore()
-    const now = new Date().toISOString()
-
-    // Use the product slug as document ID
-    const documentId = product.slug
-
-    const firestorePayload = {
-      id: mockStripeId, // Stripe product ID stored as field
+    // Create product in Stripe
+    const stripeProduct = await stripe.products.create({
       name: product.name,
       description: product.description || '',
-      content: product.content || '',
-      active: product.active ?? true,
-      images: [imageUrl],
-      main_image: imageUrl,
-      appId: product.appId,
-      creator_id: product.creator_id,
-      slug: product.slug,
-      product_type: product.product_type || 'physical',
-      stock: product.stock,
-      track_stock: product.track_stock ?? false,
-      created_at: now,
-      updated_at: now,
-      // Only include default_price if it's not undefined
-      ...(product.default_price !== undefined && {
-        default_price: product.default_price,
-      }),
-      prices: product.prices || [],
+      metadata: {
+        appId: product.appId || '',
+        slug: product.slug || '',
+      },
+    })
+
+    console.log('✅ [create-product] Stripe product created:', stripeProduct.id)
+
+    // Create prices if provided
+    const stripePrices = []
+    if (product.prices && product.prices.length > 0) {
+      for (const price of product.prices) {
+        const stripePrice = await stripe.prices.create({
+          product: stripeProduct.id,
+          unit_amount: price.unit_amount,
+          currency: price.currency || 'eur',
+          recurring:
+            price.type === 'recurring'
+              ? {
+                  interval: price.interval,
+                  interval_count: price.interval_count || 1,
+                }
+              : undefined,
+        })
+        stripePrices.push(stripePrice)
+        console.log('✅ [create-product] Stripe price created:', stripePrice.id)
+      }
     }
 
-    console.log('📝 [create-product] Firestore payload:', firestorePayload)
-    console.log('📝 [create-product] Document ID:', documentId)
+    // Call Firestore update endpoint if product creation was successful
+    let firestoreResult = null
+    if (stripeProduct.id) {
+      try {
+        console.log('📝 [create-product] Calling Firestore update endpoint...')
+        firestoreResult = await $fetch('/api/stripe/update-firestore', {
+          method: 'POST',
+          body: {
+            stripeProductId: stripeProduct.id,
+            product: product,
+            stripePrices: stripePrices,
+            pong: ping === 'ping' ? 'pong' : undefined,
+          },
+        })
+        console.log('✅ [create-product] Firestore update completed')
+      } catch (firestoreError) {
+        console.warn(
+          '⚠️ [create-product] Firestore update failed:',
+          firestoreError
+        )
+      }
+    }
 
-    // Create the document in Firestore
-    await db.collection('products').doc(documentId).set(firestorePayload)
-
-    console.log('✅ [create-product] Firestore document created successfully')
-
-    // Step 4: Return success response
-    const response = {
+    return {
       success: true,
-      id: mockStripeId,
-      documentId: documentId,
-      imageUrl: imageUrl,
-      message: `Product '${product.name}' created successfully in both Stripe and Firestore`,
-      firestoreUrl: `https://console.firebase.google.com/project/${process.env.FIREBASE_PROJECT_ID}/firestore/data/products/${documentId}`,
+      id: stripeProduct.id,
+      stripe_prices: stripePrices.map((p) => p.id),
+      message: `Product '${product.name}' created successfully in Stripe`,
+      pong: ping === 'ping' ? 'pong' : undefined,
+      firestore: firestoreResult ? 'updated' : 'skipped',
     }
-
-    console.log('🎉 [create-product] Complete success:', response)
-    return response
   } catch (error) {
-    console.error('❌ [create-product] Server-side error:', error)
+    console.error('❌ [create-product] Error:', error)
 
-    // Return detailed error information
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error occurred'
-    const errorStack = error instanceof Error ? error.stack : 'No stack trace'
-
-    console.error('❌ [create-product] Error details:', {
-      message: errorMessage,
-      stack: errorStack,
-    })
 
     throw createError({
       statusCode: 500,
