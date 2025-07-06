@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
 import type { DocumentReference } from 'firebase/firestore'
@@ -7,6 +7,7 @@ import type { AppUser } from '../../../models/appUser.model'
 import { useAppUserUtils } from './useAppUserUtils'
 import { useAppUserEnsure } from './useAppUserEnsure'
 import { useAppUserUpdate } from './useAppUserUpdate'
+import { useAppUserSubscription } from './useAppUserSubscription'
 import { useFireUXConfig } from '../../FireUXConfig'
 
 export function useAppUser() {
@@ -27,12 +28,15 @@ export function useAppUser() {
 
   const { data: appUser } = useDocument<AppUser>(appUserDocRef)
 
-  // Collections
-  const appUsers = firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
+  // Collections - only fetch on client side
+  const appUsers = import.meta.client
+    ? firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
+    : ref([])
 
   // Computed properties
   const isAppUser = computed(() => !!appUser.value)
   const isPro = computed(() => appUser.value?.subscription?.is_pro === true)
+  const isAdmin = computed(() => appUser.value?.role === 'admin')
 
   // Methods
   function hasSubscription(planType: 'pro' | 'enterprise' = 'pro'): boolean {
@@ -59,6 +63,7 @@ export function useAppUser() {
     // Computed properties
     isAppUser,
     isPro,
+    isAdmin,
 
     // Methods
     hasSubscription,
@@ -68,5 +73,6 @@ export function useAppUser() {
     ensureAppUser: useAppUserEnsure(),
     ...useAppUserUtils(),
     ...useAppUserUpdate(),
+    ...useAppUserSubscription(appUser),
   }
 }

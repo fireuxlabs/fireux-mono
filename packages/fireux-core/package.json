@@ -16,6 +16,7 @@
   "scripts": {},
   "dependencies": {
     "@nuxt/kit": "^3.13.0",
+    "dompurify": "^3.2.6",
     "glob": "^11.0.3"
   },
   "devDependencies": {

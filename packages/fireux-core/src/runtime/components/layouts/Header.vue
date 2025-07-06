@@ -134,5 +134,6 @@ defineProps({
   display: flex;
   justify-content: flex-end;
   padding-right: var(--space-4);
+  padding-top: var(--space-8);
 }
 </style>

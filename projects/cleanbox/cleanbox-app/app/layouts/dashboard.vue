@@ -7,12 +7,12 @@
 
 <script setup>
 const systemRoutes = useSystemRoutes()
-const jobPublicRoutes = getPublicJobRoutes() || []
 const { isAppUser, isAdmin } = useAppUser()
-const jobPrivateRoutes = getPrivateJobRoutes() || []
+const appUserGroup = useAppUserRoutes() || []
+const adminGroup = useAdminRoutes() || []
 
-const appUserGroup = useAppUserRoutes()
-const adminGroup = useAdminRoutes()
+const jobPublicRoutes = getPublicJobRoutes() || []
+const jobPrivateRoutes = getPrivateJobRoutes() || []
 
 const routes = {
   menuBarLinks: [...systemRoutes, ...jobPublicRoutes],

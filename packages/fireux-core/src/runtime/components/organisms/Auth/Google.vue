@@ -6,15 +6,14 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { useAuth } from '../../../composables/firebase/useAuth'
 
 const router = useRouter()
 const { signInWithGoogle } = useAuth()
 const isDark = computed(() => useColorMode().value === 'dark')
 
 const logoSrc = computed(() =>
-  isDark.value
-    ? '/fireux-core/img/sign-in-dark.svg'
-    : '/fireux-core/img/sign-in-light.svg'
+  isDark.value ? '/img/sign-in-dark.svg' : '/img/sign-in-light.svg'
 )
 
 const handleGoogleSignIn = async () => {
