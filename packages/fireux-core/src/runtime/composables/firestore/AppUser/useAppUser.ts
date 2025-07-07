@@ -9,12 +9,21 @@ import { useAppUserEnsure } from './useAppUserEnsure'
 import { useAppUserUpdate } from './useAppUserUpdate'
 import { useAppUserSubscription } from './useAppUserSubscription'
 import { useFireUXConfig } from '../../FireUXConfig'
+import { getApps } from 'firebase/app'
 
 export function useAppUser() {
+  const { appId } = useFireUXConfig()
+
+  // Ensure Firebase is initialized
+  if (!getApps().length) {
+    throw new Error(
+      'Firebase is not initialized. Please initialize Firebase before using this composable.'
+    )
+  }
+
   const db = useFirestore()
   const currentUser = useCurrentUser()
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreManager()
-  const { appId } = useFireUXConfig()
 
   const appUserDocRef = computed<DocumentReference<AppUser> | null>(() =>
     currentUser.value && appId
@@ -53,6 +62,9 @@ export function useAppUser() {
     return await firestoreFetchDoc(`apps/${appId}/users`, userId)
   }
 
+  // Get ensure function directly - it's synchronous and returns a function
+  const ensureAppUser = useAppUserEnsure()
+
   return {
     // Current entity
     appUser,
@@ -70,7 +82,7 @@ export function useAppUser() {
     fetchAppUser,
 
     // Utilities
-    ensureAppUser: useAppUserEnsure(),
+    ensureAppUser,
     ...useAppUserUtils(),
     ...useAppUserUpdate(),
     ...useAppUserSubscription(appUser),

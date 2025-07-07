@@ -1,31 +1,16 @@
 <template>
   <client-only>
-    <div v-if="appUser">
+    <div v-if="appUser" class="edit-page">
       <!-- Profile Display -->
       <FireOrganismsUserCardsProfile :user="appUser" />
 
-      <!-- Edit Toggle Button -->
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="profile-section-title">Edit Profile Information</h3>
-        <UButton
-          :icon="
-            isEditMode ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'
-          "
-          variant="ghost"
-          size="sm"
-          @click="isEditMode = !isEditMode"
-        >
-          {{ isEditMode ? 'Hide' : 'Edit' }}
-        </UButton>
-      </div>
-
-      <!-- Edit Form (conditionally shown) -->
-      <FireOrganismsUserEdit v-if="isEditMode" :user="appUser" />
+      <!-- Profile Edit Form -->
+      <FireOrganismsUserEdit :user="appUser" />
     </div>
-    <div v-else class="profile-loading-state">
+    <div v-else class="loading-state">
       <UCard>
-        <div class="profile-loading-content">
-          <UIcon name="i-heroicons-user-circle" class="profile-loading-icon" />
+        <div class="loading-content">
+          <UIcon name="i-heroicons-user-circle" class="loading-icon" />
           <p>Loading profile...</p>
         </div>
       </UCard>
@@ -52,12 +37,52 @@ useHead({
 
 // Get current user - follows same pattern as employer/professional
 const { appUser } = useAppUser()
-
-// Edit mode state - controlled by this page
-const isEditMode = ref(false)
 </script>
 
 <style scoped>
-/* Profile page uses shared styles from main.css */
-/* No custom styles needed - everything is in the shared profile classes */
+.edit-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .edit-page {
+    gap: var(--space-6);
+  }
+}
+
+.loading-state {
+  width: 100%;
+}
+
+.loading-content {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .loading-content {
+    padding: var(--space-12) var(--space-4);
+  }
+}
+
+.loading-icon {
+  width: var(--space-10);
+  height: var(--space-10);
+  color: #d1d5db;
+}
+
+@media (min-width: 640px) {
+  .loading-icon {
+    width: var(--space-12);
+    height: var(--space-12);
+  }
+}
 </style>

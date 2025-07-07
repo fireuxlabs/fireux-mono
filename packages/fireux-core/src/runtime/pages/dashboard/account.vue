@@ -19,7 +19,6 @@
         <UCard>
           <template #default>
             <h2>Two-Factor Authentication</h2>
-            <p>Enable or manage two-factor authentication settings.</p>
           </template>
         </UCard>
       </div>
@@ -27,7 +26,6 @@
         <UCard>
           <template #default>
             <h2>Account Activity</h2>
-            <p>View recent logins and activity on your account.</p>
           </template>
         </UCard>
       </div>
@@ -35,7 +33,6 @@
         <UCard>
           <template #default>
             <h2>Connected Devices</h2>
-            <p>Review and manage devices currently logged into your account.</p>
           </template>
         </UCard>
       </div>
