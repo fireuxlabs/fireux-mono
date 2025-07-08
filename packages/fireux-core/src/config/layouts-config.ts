@@ -1,4 +1,4 @@
-import { addComponentsDir, addLayout, createResolver } from '@nuxt/kit'
+import { addComponentsDir, addLayout } from '@nuxt/kit'
 import { join } from 'path'
 
 /**

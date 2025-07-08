@@ -1,6 +1,6 @@
 import { useFirestoreManager } from '../../useFirestoreManager'
 
-export function useBlogPostDelete() {
+export function useBlogDelete() {
   const { deleteDocument } = useFirestoreManager()
 
   async function deleteBlogPost(slug: string): Promise<boolean> {

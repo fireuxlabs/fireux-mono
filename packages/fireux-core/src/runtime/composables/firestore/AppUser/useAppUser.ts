@@ -8,6 +8,7 @@ import { useAppUserUtils } from './useAppUserUtils'
 import { useAppUserEnsure } from './useAppUserEnsure'
 import { useAppUserUpdate } from './useAppUserUpdate'
 import { useAppUserSubscription } from './useAppUserSubscription'
+import { useAppUserComputed } from './useAppUserComputed'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { getApps } from 'firebase/app'
 
@@ -23,7 +24,7 @@ export function useAppUser() {
 
   const db = useFirestore()
   const currentUser = useCurrentUser()
-  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreManager()
+  const { firestoreFetchCollection } = useFirestoreManager()
 
   const appUserDocRef = computed<DocumentReference<AppUser> | null>(() =>
     currentUser.value && appId
@@ -42,26 +43,6 @@ export function useAppUser() {
     ? firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
     : ref([])
 
-  // Computed properties
-  const isAppUser = computed(() => !!appUser.value)
-  const isPro = computed(() => appUser.value?.subscription?.is_pro === true)
-  const isAdmin = computed(() => appUser.value?.role === 'admin')
-
-  // Methods
-  function hasSubscription(planType: 'pro' | 'enterprise' = 'pro'): boolean {
-    if (planType === 'pro') {
-      return isPro.value
-    }
-    return (
-      appUser.value?.subscription?.plan === planType &&
-      appUser.value?.subscription?.is_pro === true
-    )
-  }
-
-  async function fetchAppUser(userId: string) {
-    return await firestoreFetchDoc(`apps/${appId}/users`, userId)
-  }
-
   // Get ensure function directly - it's synchronous and returns a function
   const ensureAppUser = useAppUserEnsure()
 
@@ -72,19 +53,13 @@ export function useAppUser() {
     // Collections
     appUsers,
 
-    // Computed properties
-    isAppUser,
-    isPro,
-    isAdmin,
-
-    // Methods
-    hasSubscription,
-    fetchAppUser,
-
     // Utilities
     ensureAppUser,
+
+    // Child functions
     ...useAppUserUtils(),
     ...useAppUserUpdate(),
     ...useAppUserSubscription(appUser),
+    ...useAppUserComputed(appUser),
   }
 }

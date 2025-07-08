@@ -5,9 +5,8 @@ import { ref } from 'vue'
 import { useProductCreate } from './useProductCreate'
 import { useProductUpdate } from './useProductUpdate'
 import { useProductDelete } from './useProductDelete'
-import { useProductUtils } from './useProductUtils'
-import { useCreateProductState } from './useCreateProductState'
-import { useCreatePricesState } from './Prices/useCreatePricesState'
+import { useProductValidation } from './utils/useProductValidation'
+import { useProductFormatting } from './utils/useProductFormatting'
 
 export async function useProducts() {
   const {
@@ -67,7 +66,8 @@ export async function useProducts() {
   const productCreate = await useProductCreate()
   const productUpdate = useProductUpdate()
   const productDelete = useProductDelete()
-  const productUtils = useProductUtils()
+  const productValidation = useProductValidation()
+  const productFormatting = useProductFormatting()
 
   return {
     defaultCurrency,
@@ -75,11 +75,10 @@ export async function useProducts() {
     fetchProduct,
     fetchProductBySlug,
     fetchProductPrices,
-    useCreateProductState,
-    useCreatePricesState,
     ...productCreate,
     ...productUpdate,
     ...productDelete,
-    ...productUtils,
+    ...productValidation,
+    ...productFormatting,
   }
 }

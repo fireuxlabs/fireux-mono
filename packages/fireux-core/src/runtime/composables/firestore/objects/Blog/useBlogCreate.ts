@@ -1,7 +1,7 @@
 import { useFirestoreManager } from '../../useFirestoreManager'
 import type { BlogPost } from '../../../../models/blogPost.model'
 
-export function useBlogPostCreate() {
+export function useBlogCreate() {
   const { setDocument } = useFirestoreManager()
 
   const createBlogPost = async (

@@ -5,7 +5,7 @@ import { extendPages } from '@nuxt/kit'
  * @param resolver The resolver instance to resolve file paths
  * @param nuxt The Nuxt instance
  */
-export function configurePages(resolver: any, nuxt: any) {
+export function configurePages(resolver: any, _nuxt: any) {
   const resolvePath = (p: string) => resolver.resolve(p)
 
   // Define all pages to be registered from the module

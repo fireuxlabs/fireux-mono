@@ -7,6 +7,7 @@ import { useFirestoreManager } from '../useFirestoreManager'
 import { useCoreUserEnsure } from './useCoreUserEnsure'
 import { useCoreUserUpdate } from './useCoreUserUpdate'
 import { useCoreUserDelete } from './useCoreUserDelete'
+import { useCoreUserComputed } from './useCoreUserComputed'
 import type { CoreUser } from '../../../models/coreUser.model'
 import { getApps } from 'firebase/app'
 
@@ -20,7 +21,7 @@ export function useCoreUser() {
 
   const db = useFirestore()
   const currentUser = useCurrentUser()
-  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreManager()
+  const { firestoreFetchCollection } = useFirestoreManager()
 
   const coreUserDocRef = computed<DocumentReference<CoreUser> | null>(() =>
     currentUser.value
@@ -39,17 +40,6 @@ export function useCoreUser() {
     ? firestoreFetchCollection<CoreUser>('core-users')
     : ref([])
 
-  // Computed properties
-  const isCoreUser = computed(() => !!coreUser.value)
-  const hasAvatar = computed(() => !!coreUser.value?.avatar)
-  const userOfApps = computed(() => coreUser.value?.userOf?.length || 0)
-  const hasMultipleApps = computed(() => userOfApps.value > 1)
-
-  // Methods
-  async function fetchCoreUser(userId: string) {
-    return await firestoreFetchDoc('core-users', userId)
-  }
-
   // Get utility functions - direct imports for consistency
   const ensureCoreUser = useCoreUserEnsure()
 
@@ -60,18 +50,12 @@ export function useCoreUser() {
     // Collections
     coreUsers,
 
-    // Computed properties
-    isCoreUser,
-    hasAvatar,
-    userOfApps,
-    hasMultipleApps,
-
-    // Methods
-    fetchCoreUser,
-
     // Utilities
     ensureCoreUser,
+
+    // Child functions
     ...useCoreUserUpdate(),
     ...useCoreUserDelete(),
+    ...useCoreUserComputed(coreUser),
   }
 }

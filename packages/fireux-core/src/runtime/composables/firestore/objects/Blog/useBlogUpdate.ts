@@ -1,7 +1,7 @@
 import { useFirestoreUpdate } from '../../useFirestoreUpdate'
 import type { BlogPost } from '../../../../models/blogPost.model'
 
-export function useBlogPostUpdate() {
+export function useBlogUpdate() {
   const { updateDocument } = useFirestoreUpdate()
 
   async function updateBlogPost(
