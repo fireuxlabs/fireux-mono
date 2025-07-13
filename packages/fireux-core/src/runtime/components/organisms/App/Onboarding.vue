@@ -35,7 +35,7 @@
 <script setup>
 const { coreUser } = await useCoreUser()
 const { data: envData } = await useFetch('/api/env-check')
-const { ensureApp } = await useApp()
+const { ensureApp } = await useAppEnsure()
 
 const pin = ref([])
 const isUnlocked = ref(false)

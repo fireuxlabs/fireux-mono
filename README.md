@@ -28,12 +28,29 @@ This monorepo contains:
 
 ## 📚 Documentation
 
-- [`architecture.doc.md`](./architecture.doc.md) - System architecture and design patterns
-- [`business.doc.md`](./business.doc.md) - Business model and strategy
-- [`development.doc.md`](./development.doc.md) - Development workflows and guides
-- [`development-copilot.doc.md`](./development-copilot.doc.md) - AI assistant development guide
-- [`packages/README.md`](./packages/README.md) - Package overview
+### Architecture & Development
+
+- [`manuals/architecture.doc.md`](./manuals/architecture.doc.md) - System architecture and design patterns
+- [`manuals/development.doc.md`](./manuals/development.doc.md) - Development workflows and guides
+- [`manuals/development-copilot.doc.md`](./manuals/development-copilot.doc.md) - AI assistant development guide
+
+### Business & Strategy
+
+- [`manuals/business.doc.md`](./manuals/business.doc.md) - Business model and strategy
 - [`manuals/manuals.doc.md`](./manuals/manuals.doc.md) - Specialized guides and references
+
+### Package & Project Documentation
+
+- [`packages/README.md`](./packages/README.md) - Core packages overview
+- [`packages/fireux-core/core.doc.md`](./packages/fireux-core/core.doc.md) - Core framework documentation
+- [`projects/README.md`](./projects/README.md) - Applications overview
+- [`projects/misebox/misebox.doc.md`](./projects/misebox/misebox.doc.md) - MiseBox culinary marketplace
+
+### Current Focus: Profile System Refactor
+
+> **Status**: Phase 1 Complete - Unified architecture ready for integration
+>
+> **Next**: Integrate config-driven profile cards into Chef/Supplier pages
 
 ## 🚀 Quick Start
 

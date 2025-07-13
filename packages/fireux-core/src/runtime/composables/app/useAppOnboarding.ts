@@ -11,7 +11,7 @@ export interface EnvCheckResult {
   missingVars: string[]
 }
 
-export async function useAppOnboarding() {
+export function useAppOnboarding() {
   const envCheckResult = ref<EnvCheckResult | null>(null)
   const isEnvValid = computed(() => envCheckResult.value?.isValid ?? false)
 
@@ -27,7 +27,7 @@ export async function useAppOnboarding() {
     return envCheckResult.value
   }
 
-  const { ensureApp } = await useAppEnsure()
+  const { ensureApp } = useAppEnsure()
 
   async function createAppHandler() {
     try {

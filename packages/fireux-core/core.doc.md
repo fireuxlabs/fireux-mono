@@ -68,7 +68,28 @@ modules: ['@fireux/core']
 - Consistent design system
 - Responsive layouts
 
-## 📚 Detailed Documentation
+## � Recent Features
+
+### Unified Profile System (July 2025)
+
+**Config-Driven Profile Architecture**
+
+- **Location**: `src/runtime/components/organisms/profiles/`
+- **Components**:
+  - `Card.vue` - Universal profile card component
+  - `configs/chef.config.ts` - Chef profile configuration
+  - `configs/supplier.config.ts` - Supplier profile configuration
+- **Types**: `src/runtime/types/profile-config.ts` - TypeScript interfaces
+- **Benefits**: Scalable, maintainable, reusable across all profile types
+
+**Implementation Status**:
+
+- ✅ Unified Card component with dynamic field rendering
+- ✅ Configuration files for Chef and Supplier profiles
+- ✅ TypeScript interfaces and type safety
+- 🔄 Integration into MiseBox Chef/Supplier pages (next phase)
+
+## �📚 Detailed Documentation
 
 - [API Endpoints](./src/runtime/server/api/api.doc.md)
 - [Authentication](./src/runtime/auth.doc.md)

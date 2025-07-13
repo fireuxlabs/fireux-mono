@@ -6,9 +6,10 @@ import type { DocumentReference } from 'firebase/firestore'
 import { useFirestoreManager } from '../firestore/useFirestoreManager'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useAppUpdate } from './useAppUpdate'
-import { useAppEnsure } from './useEnsureApp'
-import { useAppOnboarding } from './useAppOnboarding'
 import { useAppComputed } from './useAppComputed'
+import { useAppOnboarding } from './useAppOnboarding'
+import { useAppEnsure } from './useEnsureApp'
+import { useAppSubscriptionSetup } from './useAppSubscriptionSetup'
 import type { App } from '../../models/app.model'
 import { getApps } from 'firebase/app'
 
@@ -36,22 +37,6 @@ export function useApp() {
     ? firestoreFetchCollection<App>('apps')
     : ref([])
 
-  // Utilities - direct imports for consistency
-  async function ensureApp() {
-    const { ensureApp } = await useAppEnsure()
-    return ensureApp()
-  }
-
-  async function checkEnv() {
-    const { checkEnv } = await useAppOnboarding()
-    return checkEnv()
-  }
-
-  async function createAppHandler() {
-    const { createAppHandler } = await useAppOnboarding()
-    return createAppHandler()
-  }
-
   return {
     // Current entity
     app,
@@ -59,13 +44,11 @@ export function useApp() {
     // Collections
     apps,
 
-    // Utilities (async)
-    ensureApp,
-    checkEnv,
-    createAppHandler,
-
     // Child functions
     ...useAppUpdate(),
     ...useAppComputed(app),
+    ...useAppSubscriptionSetup(),
+    ...useAppEnsure(),
+    ...useAppOnboarding(),
   }
 }

@@ -10,7 +10,7 @@ import { useFirestoreManager } from '../firestore/useFirestoreManager'
  * - Updates the core user as an admin
  * - Creates an app user profile for the admin
  */
-export async function useAppEnsure() {
+export function useAppEnsure() {
   /**
    * Ensures an app exists for the current configuration
    * @param coreUser Optional core user object to use instead of fetching the current user

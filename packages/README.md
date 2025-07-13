@@ -8,11 +8,14 @@ This directory contains the core Nuxt modules that power the FireUX ecosystem.
 
 Core functionality and shared utilities:
 
-- Firebase/Firestore management
-- Authentication composables
-- Admin utilities
-- Base components and layouts
-- Server API endpoints
+- **Authentication & Database**: Firebase/Firestore management
+- **Components**: 200+ shared Vue components including unified profile system
+- **Composables**: Auth, database, and business logic composables
+- **Server APIs**: Backend endpoints and utilities
+- **Profile System**: Config-driven architecture for Chef, Supplier, and future profile types
+- **Admin Tools**: Administrative interfaces and utilities
+
+**Recent Updates**: Unified profile card system with config-driven architecture ready for MiseBox integration.
 
 ### `fireux-jobs/`
 
@@ -42,6 +45,14 @@ cd packages/fireux-jobs && pnpm dev
 - [`packages.doc.md`](./packages.doc.md) - Detailed module architecture and development guide
 - [`fireux-core/core.doc.md`](./fireux-core/core.doc.md) - Core module documentation
 - [`fireux-jobs/jobs.doc.md`](./fireux-jobs/jobs.doc.md) - Jobs module documentation
+
+## 🚀 Current Development Focus
+
+**Profile System Refactor**: Implementing config-driven, unified profile architecture
+
+- **Status**: Phase 1 Complete (unified components and configs)
+- **Next**: Phase 2 - Integration into MiseBox Chef/Supplier pages
+- **Location**: `fireux-core/src/runtime/components/organisms/profiles/`
 
 ## 🛠️ Module Architecture
 

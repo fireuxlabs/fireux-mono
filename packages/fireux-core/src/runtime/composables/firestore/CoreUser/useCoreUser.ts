@@ -40,9 +40,6 @@ export function useCoreUser() {
     ? firestoreFetchCollection<CoreUser>('core-users')
     : ref([])
 
-  // Get utility functions - direct imports for consistency
-  const ensureCoreUser = useCoreUserEnsure()
-
   return {
     // Current entity
     coreUser,
@@ -50,10 +47,8 @@ export function useCoreUser() {
     // Collections
     coreUsers,
 
-    // Utilities
-    ensureCoreUser,
-
     // Child functions
+    ...useCoreUserEnsure(),
     ...useCoreUserUpdate(),
     ...useCoreUserDelete(),
     ...useCoreUserComputed(coreUser),

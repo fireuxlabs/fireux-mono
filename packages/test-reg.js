@@ -66,7 +66,10 @@ function printHowToAccess(type, relPath, pkg) {
     pkgAccess = `not directly accessible unless exported`
   } else if (type === 'composable') {
     appAccess = `auto-imported: use${relPath.split('/').pop().replace('.ts', '')} (within same package, just use directly; import only needed for async/await or cross-package usage)`
-    const tsPath = resolveTSPath(pkg, 'src/runtime/composables/' + relPath.split('/').pop())
+    const tsPath = resolveTSPath(
+      pkg,
+      'src/runtime/composables/' + relPath.split('/').pop()
+    )
     if (tsPath) {
       pkgAccess = `import { ... } from '${pkg}/${tsPath}'`
     } else {
@@ -81,6 +84,17 @@ function printHowToAccess(type, relPath, pkg) {
   } else if (type === 'asset') {
     appAccess = `public asset: /_nuxt/assets/${relPath}`
     pkgAccess = `import Asset from '${pkg}/src/runtime/assets/${relPath}'`
+  } else if (type === 'model') {
+    const modelName = path.basename(relPath, '.ts').replace('.model', '')
+    const dirPath = path.dirname(relPath).replace('src/runtime/models/', '')
+    appAccess = `import type { ${modelName} } from '#${pkg}-models/${dirPath}/${modelName}.model'`
+
+    // For cross-package imports, show the correct relative path
+    if (pkg === 'fireux-core') {
+      pkgAccess = `import type { ${modelName} } from '../../../../../${pkg}/src/runtime/models/${relPath}'`
+    } else {
+      pkgAccess = `import type { ${modelName} } from '${pkg}/src/runtime/models/${relPath}'`
+    }
   }
   return { appAccess, pkgAccess }
 }
@@ -111,6 +125,10 @@ function printSection(type) {
       dir = path.join(base, 'src/runtime/assets')
       files = scanDir(dir)
       label = 'Assets'
+    } else if (type === 'model') {
+      dir = path.join(base, 'src/runtime/models')
+      files = scanDir(dir, ['.ts'])
+      label = 'Models'
     }
     if (files && files.length) {
       console.log(`\n${label}:`)
@@ -130,6 +148,7 @@ function printAll() {
   printSection('layout')
   printSection('page')
   printSection('composable')
+  printSection('model')
   printSection('asset')
   printStub('server')
   printStub('runtime')
@@ -154,7 +173,7 @@ const rl = readline.createInterface({
 
 console.log('What do you want to test?')
 console.log(
-  '0 = All, 1 = Components, 2 = Layouts, 3 = Pages, 4 = Composables, 5 = Server-side, 6 = Runtime options, 7 = Plugins, 8 = Public assets'
+  '0 = All, 1 = Components, 2 = Layouts, 3 = Pages, 4 = Composables, 5 = Models, 6 = Server-side, 7 = Runtime options, 8 = Plugins, 9 = Public assets'
 )
 rl.question('Enter a number: ', (answer) => {
   if (answer === '0') printAll()
@@ -162,10 +181,11 @@ rl.question('Enter a number: ', (answer) => {
   else if (answer === '2') printSection('layout')
   else if (answer === '3') printSection('page')
   else if (answer === '4') printSection('composable')
-  else if (answer === '5') printStub('server')
-  else if (answer === '6') printStub('runtime')
-  else if (answer === '7') printStub('plugin')
-  else if (answer === '8') printSection('asset')
+  else if (answer === '5') printSection('model')
+  else if (answer === '6') printStub('server')
+  else if (answer === '7') printStub('runtime')
+  else if (answer === '8') printStub('plugin')
+  else if (answer === '9') printSection('asset')
   else console.log('Invalid input.')
   rl.close()
   console.log('\nNote:')

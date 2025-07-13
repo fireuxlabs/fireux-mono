@@ -46,8 +46,17 @@ cd fireux/fireux-app && pnpm build && pnpm exec firebase deploy
 ## 📚 Documentation
 
 - [`projects.doc.md`](./projects.doc.md) - Detailed development and deployment guide
-- [`../development.doc.md`](../development.doc.md) - Main development workflow
-- [`../architecture.doc.md`](../architecture.doc.md) - System architecture overview
+- [`../manuals/development.doc.md`](../manuals/development.doc.md) - Main development workflow
+- [`../manuals/architecture.doc.md`](../manuals/architecture.doc.md) - System architecture overview
+- [`misebox/misebox.doc.md`](./misebox/misebox.doc.md) - MiseBox culinary marketplace documentation
+
+### 🚧 Active Development
+
+**MiseBox Profile System Refactor**
+
+- **Phase 1**: ✅ Complete - Unified profile architecture in fireux-core
+- **Phase 2**: 🔄 In Progress - Integration of config-driven system into Chef/Supplier pages
+- **Goal**: Scalable, maintainable profile listing and card system
 
 ## 🎨 Creating New Projects
 

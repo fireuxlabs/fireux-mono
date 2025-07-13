@@ -118,6 +118,6 @@ export function useAppUserEnsure() {
     }
   }
 
-  // Export the function directly instead of returning an object
-  return ensureAppUser
+  // Return an object to match the pattern
+  return { ensureAppUser }
 }

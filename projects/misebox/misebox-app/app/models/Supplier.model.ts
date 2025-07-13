@@ -1,6 +1,7 @@
-export interface Supplier {
-  id?: string // Document ID in Firestore
-  uid: string // Matches AppUser.uid - the core identity link
+import type { BaseProfile } from '../../../../../packages/fireux-core/src/runtime/models/baseProfile.model'
+
+export interface Supplier extends BaseProfile {
+  // NOTE: uid, id, created_at, updated_at inherited from BaseProfile
 
   // Business Identity
   avatar?: string // Business avatar/logo (separate from AppUser avatar)
@@ -161,8 +162,7 @@ export interface Supplier {
   verification_date?: Date | string
 
   // Timestamps and System Fields
-  created_at: Date | string
-  updated_at?: Date | string
+  // created_at and updated_at inherited from BaseProfile
   deleted?: boolean
 
   // Analytics and Performance

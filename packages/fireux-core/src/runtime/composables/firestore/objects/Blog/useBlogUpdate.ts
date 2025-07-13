@@ -1,5 +1,6 @@
 import { useFirestoreUpdate } from '../../useFirestoreUpdate'
-import type { BlogPost } from '../../../../models/blogPost.model'
+import { serverTimestamp } from 'firebase/firestore'
+import type { BlogPost } from '../../../../models/objects/blogPost.model'
 
 export function useBlogUpdate() {
   const { updateDocument } = useFirestoreUpdate()
@@ -8,18 +9,26 @@ export function useBlogUpdate() {
     postId: string,
     updates: Partial<BlogPost>
   ): Promise<boolean> {
-    if (!postId) throw new Error('No BlogPost ID provided.')
-    if (!updates || typeof updates !== 'object')
-      throw new Error('Invalid update payload. Must be an object.')
-
     try {
-      await updateDocument('blogs', postId, updates)
-      console.log(
-        `✅ BlogPost Updated Successfully: ${JSON.stringify(updates)}`
-      )
+      if (!postId) {
+        throw new Error('No BlogPost ID provided.')
+      }
+
+      if (!updates || typeof updates !== 'object') {
+        throw new Error('Invalid update payload. Must be an object.')
+      }
+
+      // Add server timestamp for updated_at
+      const updateData = {
+        ...updates,
+        updated_at: serverTimestamp(),
+      }
+
+      await updateDocument('blogs', postId, updateData)
+      console.log(`✅ BlogPost updated successfully: ${postId}`)
       return true
     } catch (error) {
-      console.error('❌ Error Updating BlogPost:', error)
+      console.error('❌ Error updating BlogPost:', error)
       throw error
     }
   }

@@ -43,9 +43,6 @@ export function useAppUser() {
     ? firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
     : ref([])
 
-  // Get ensure function directly - it's synchronous and returns a function
-  const ensureAppUser = useAppUserEnsure()
-
   return {
     // Current entity
     appUser,
@@ -53,10 +50,8 @@ export function useAppUser() {
     // Collections
     appUsers,
 
-    // Utilities
-    ensureAppUser,
-
     // Child functions
+    ...useAppUserEnsure(),
     ...useAppUserUtils(),
     ...useAppUserUpdate(),
     ...useAppUserSubscription(appUser),
