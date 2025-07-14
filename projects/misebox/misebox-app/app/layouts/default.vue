@@ -14,8 +14,8 @@ const appUserGroup = useAppUserRoutes() || []
 const adminGroup = useAdminRoutes() || []
 
 const miseboxRoutes = [
-  { label: 'Chefs', icon: 'i-heroicons-chef-hat', to: '/chefs' },
-  { label: 'Suppliers', icon: 'i-heroicons-truck', to: '/suppliers' },
+  { label: 'Chefs', icon: 'i-lucide-cooking-pot', to: '/chefs' },
+  { label: 'Suppliers', icon: 'i-lucide-truck', to: '/suppliers' },
 ]
 
 const routes = {

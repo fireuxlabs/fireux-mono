@@ -8,7 +8,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "migrate:chefs": "tsx scripts/migrate-chef-data.ts"
   },
   "dependencies": {
     "@nuxt/content": "^3.6.0",

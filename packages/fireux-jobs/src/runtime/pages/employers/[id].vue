@@ -1,37 +1,36 @@
 <template>
-  <div v-if="employer">
-    <FireOrganismsEmployerCardsProfile :employer="employer" />
-  </div>
-  <div v-else-if="loading">
-    <p>Loading employer profile...</p>
-  </div>
-  <div v-else>
-    <h1>Employer Not Found</h1>
-    <p>The employer profile you're looking for doesn't exist.</p>
+  <div>
+    <div v-if="!employer">
+      <h1>Loading employer profile...</h1>
+    </div>
+    <div v-else-if="employer">
+      <OrganismsProfilesEmployerProfile :employer="employer" />
+    </div>
+    <div v-else>
+      <h1>Employer Not Found</h1>
+      <p>The employer profile you're looking for doesn't exist.</p>
+      <NuxtLink to="/employers" class="back-link">
+        ← Back to Employers
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { useEmployers } from '../../composables/firestore/objects/Employer/useEmployers'
+import { useProfile } from '../../../../../fireux-core/src/runtime/composables/firestore/profiles/useProfile'
+import { employerConfig } from '../../../config/profiles/employer.config'
 
 // Get the employer ID from the route
 const route = useRoute()
 const employerId = route.params.id
 
-// Initialize employers composable
-const { fetchEmployer } = useEmployers()
+const { fetchEmployer } = await useProfile(employerConfig)
 
-// State
-const employer = ref(null)
-const loading = ref(true)
+// fetchEmployer returns a ref, so we can use it directly
+const employer = await fetchEmployer(String(employerId))
 
-// Fetch the employer profile
-try {
-  const employerRef = await fetchEmployer(String(employerId))
-  employer.value = employerRef.value
-} catch (error) {
-  console.error('Failed to fetch employer:', error)
-} finally {
-  loading.value = false
-}
+// Set page meta
+definePageMeta({
+  title: 'Employer Profile',
+})
 </script>

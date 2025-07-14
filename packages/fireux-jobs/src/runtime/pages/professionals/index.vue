@@ -1,21 +1,34 @@
 <template>
-  <div>
-    <h1>Browse Professionals</h1>
-    <p class="mb-6">Find skilled professionals for your next project.</p>
-
-    <!-- Future filters will go here -->
-    <!-- <div class="mb-6">
-      <FireOrganismsProfessionalFilters @update:filters="handleFilters" />
-    </div> -->
-    <FireOrganismsProfessionalList
-      :professionals="professionals"
-      :loading="false"
-    />
+  <div class="profile-page">
+    <div class="profile-page-header">
+      <h1 class="profile-page-title">Browse Professionals</h1>
+      <p class="profile-page-description">
+        Find skilled culinary professionals for your next project or position.
+      </p>
+    </div>
+    <div class="profile-page-content">
+      <FireOrganismsProfilesProfessionalList
+        :professionals="professionals"
+        :loading="loading"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { useProfessionals } from '../../composables/firestore/objects/Professional/useProfessionals'
+import { useProfile } from '../../../../../fireux-core/src/runtime/composables/firestore/profiles/useProfile'
+import { professionalConfig } from '../../models/profiles/Professional.model'
 
-const { professionals } = await useProfessionals()
+// Set page meta
+definePageMeta({
+  title: 'Browse Professionals',
+  description: 'Find skilled culinary professionals for your projects',
+})
+
+// Use the profile composable to fetch professionals
+const { all: professionals, loading } = await useProfile(professionalConfig)
 </script>
+
+<style scoped>
+/* Styles are now in shared _profiles.scss */
+</style>

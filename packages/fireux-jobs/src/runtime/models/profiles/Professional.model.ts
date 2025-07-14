@@ -1,101 +1,129 @@
-import type { Profile } from '../../../../../fireux-core/src/runtime/models/profiles/profile.model'
+import type {
+  Profile,
+  ProfileConfig,
+} from '../../../../../fireux-core/src/runtime/models/profiles/profile.model'
+
+// Kitchen Experience Entry
+export interface KitchenExperience {
+  name: string // Restaurant/venue name
+  role: string // Job title (e.g., "Chef de Partie", "Sous Chef", "Head Chef")
+  from_year: string // Start year
+  from_month: string // Start month
+  to_year?: string | null // End year (null if ongoing)
+  to_month?: string | null // End month (null if ongoing)
+  ongoing: boolean // Whether position is current
+  responsibilities: string // Detailed description of role and responsibilities
+  image_url?: string // Logo/image of the establishment
+  place_id?: string // Google Places ID
+  short_address?: string // Short address format
+  formatted_address?: string // Full formatted address
+}
+
+// Language Proficiency
+export interface Language {
+  language: string // Language name (e.g., "English", "French")
+  proficiency: string // Level (e.g., "Native", "C1", "B2", "A1")
+}
+
+// Location with Radius
+export interface ProfessionalLocation {
+  locations: Array<{
+    lat: number // Latitude
+    lng: number // Longitude
+    formatted_address: string // Full address
+  }>
+  radius: string // Search radius in km
+}
+
+// Education Entry
+export interface Education {
+  institution: string // University/school name
+  degree: string // Degree/qualification name
+  start_year: string // Start year
+  end_year: string // End year
+  ongoing: boolean // Whether currently studying
+  image_url?: string // Institution logo
+  formatted_address?: string // Institution address
+  document_url?: string // Certificate/document URL
+}
+
+// Certification Entry
+export interface Certification {
+  name: string // Certification name
+  year: string // Year obtained
+  place_name?: string // Issuing organization
+  formatted_address?: string // Organization address
+  image_url?: string // Organization logo
+  document_url?: string // Certificate document URL
+}
+
+// Project Entry
+export interface Project {
+  name: string // Project name
+  role: string // Role in project
+  from_year: string // Start year
+  to_year?: string | null // End year (null if ongoing)
+  ongoing: boolean // Whether project is current
+  responsibilities: string // Project description and responsibilities
+}
+
+// Volunteering Entry
+export interface Volunteering {
+  organization: string // Organization name
+  role: string // Volunteer role
+  from_year: string // Start year
+  to_year?: string // End year
+  ongoing: boolean // Whether currently volunteering
+  responsibilities: string // Description of volunteer work
+}
+
+// Other Employment Entry
+export interface OtherEmployment {
+  name: string // Company/organization name
+  role: string // Job title
+  from_year: string // Start year
+  from_month: string // Start month
+  to_year?: string | null // End year (null if ongoing)
+  to_month?: string | null // End month (null if ongoing)
+  ongoing: boolean // Whether position is current
+  responsibilities: string // Job description and responsibilities
+  image_url?: string // Company logo
+  place_id?: string // Google Places ID
+  formatted_address?: string // Company address
+}
 
 export interface Professional extends Profile {
-  // NOTE: uid, created_at, updated_at inherited from Profile
-  // NOTE: Name fields are fetched from AppUser - no duplication
+  // Core Identity (required fields)
+  professional_name: string // Full professional name (e.g., "Daniel Mark Watson")
 
-  // Professional-specific identity
-  avatar?: string // Professional avatar (separate from AppUser avatar)
-  title?: string // Professional title/role (e.g., "Sous Chef", "Freelancer")
+  // Basic Identity (inherited from core profile)
+  email: string // Email address
+  title?: string // Professional title/role
   bio_short?: string // Short bio description
-  bio_long?: string // Long bio description
+  bio_long?: string // Detailed biography
 
-  // Experience and background
-  kitchen_experience?: Array<{
-    name: string
-    role: string
-    from_year: string
-    from_month?: string
-    to_year?: string | null
-    to_month?: string | null
-    ongoing: boolean
-    responsibilities: string
-    image_url?: string
-    place_id?: string
-    formatted_address?: string
-    short_address?: string
-  }>
+  // Professional Experience
+  kitchen_experience?: KitchenExperience[] // Kitchen work history
+  other_employment_experience?: OtherEmployment[] // Non-kitchen employment
+  projects?: Project[] // Special projects and initiatives
+  volunteering?: Volunteering[] // Volunteer work
 
-  // Skills and qualifications
-  languages?: Array<{
-    language: string
-    proficiency: string
-  }>
+  // Education & Certifications
+  education?: Education[] // Educational background
+  certifications?: Certification[] // Professional certifications
+  languages?: Language[] // Language skills
 
-  certifications?: Array<{
-    name: string
-    year: string
-    place_name: string
-    image_url?: string
-    document_url?: string
-    formatted_address?: string
-  }>
+  // Location & Availability
+  locations?: ProfessionalLocation[] // Work locations and radius
 
-  education?: Array<{
-    institution: string
-    degree: string
-    start_year: string
-    end_year: string
-    ongoing: boolean
-    image_url?: string
-    document_url?: string
-    formatted_address?: string
-  }>
+  // System Fields
+  uid: string // Firebase UID
+  created_at: string | Date // Profile creation date
+  updated_at?: string | Date // Last update date
+  deleted?: boolean // Soft delete flag
+}
 
-  // Projects and other experience
-  projects?: Array<{
-    name: string
-    role: string
-    from_year: string
-    to_year?: string | null
-    ongoing: boolean
-    responsibilities: string
-  }>
-
-  other_employment_experience?: Array<{
-    name: string
-    role: string
-    from_year: string
-    from_month: string
-    ongoing: boolean
-    responsibilities: string
-    image_url?: string
-    place_id?: string
-    formatted_address?: string
-  }>
-
-  volunteering?: Array<{
-    organization: string
-    role: string
-    from_year: string
-    to_year: string
-    ongoing: boolean
-    responsibilities: string
-  }>
-
-  // Location
-  locations?: Array<{
-    radius: string
-    locations: Array<{
-      lat: number
-      lng: number
-      formatted_address: string
-    }>
-  }>
-
-  // Contact information
-  email?: string
-
-  // Other fields
-  avatarUrl?: string
+export const professionalConfig: ProfileConfig = {
+  collectionName: 'professionals',
+  profileType: 'Professional',
 }

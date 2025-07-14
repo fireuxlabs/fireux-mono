@@ -1,27 +1,32 @@
 <template>
-  <div>
-    <h1>Browse Chefs</h1>
-    <p class="mb-6">Discover talented chefs available for hire.</p>
+  <div class="profile-page">
+    <div class="profile-page-header">
+      <h1 class="profile-page-title">Browse Chefs</h1>
+      <p class="profile-page-description">
+        Discover talented chefs available for hire and collaboration.
+      </p>
+    </div>
 
-    <!-- Chef list component will go here -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <div class="p-6 border rounded-lg">
-        <h3 class="font-semibold mb-2">Chef profiles coming soon</h3>
-        <p class="text-gray-600">
-          Chef listings and profiles will be available here.
-        </p>
-      </div>
+    <div class="profile-page-content">
+      <OrganismsProfilesChefList :chefs="chefs" :loading="loading" />
     </div>
   </div>
 </template>
 
 <script setup>
+import { useProfile } from '../../../../../../packages/fireux-core/src/runtime/composables/firestore/profiles/useProfile'
+import { chefConfig } from '../../../config/profiles/chef.config'
+
 // Set page meta
 definePageMeta({
   title: 'Browse Chefs',
   description: 'Find talented chefs for your kitchen needs',
 })
 
-// Future: Import chef list component
-// import ChefList from '~/components/organisms/Chef/List.vue'
+// Use the profile composable to fetch chefs
+const { all: chefs, loading } = await useProfile(chefConfig)
 </script>
+
+<style scoped>
+/* Styles are now in shared _profiles.scss */
+</style>

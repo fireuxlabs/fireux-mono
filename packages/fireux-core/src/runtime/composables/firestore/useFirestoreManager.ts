@@ -1,6 +1,5 @@
 // ~/composables/useFirestoreManager.ts
 
-import { useCurrentUser } from 'vuefire'
 import { useFirestoreRead } from './useFirestoreRead'
 import { useFirestoreCreate } from './useFirestoreCreate'
 import { useFirestoreUpdate } from './useFirestoreUpdate'

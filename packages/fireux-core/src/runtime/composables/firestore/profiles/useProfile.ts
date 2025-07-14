@@ -10,16 +10,13 @@ import { useProfileDelete } from './useProfileDelete'
  * Shared composable for profile CRUD operations and state management
  * This is the unified entry point for all profile types (Professional, Employer, Chef, Supplier)
  */
-export function useProfile(profileConfig: ProfileConfig) {
+export async function useProfile(profileConfig: ProfileConfig) {
   const db = useFirestore()
   const currentUser = useCurrentUser()
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreManager()
 
-  // Set default appScoped to false for global profile ecosystem
-  const config = {
-    ...profileConfig,
-    appScoped: profileConfig.appScoped ?? false,
-  }
+  // Use the provided config directly
+  const config = profileConfig
 
   // Reactive document reference for current user's profile
   const currentProfileDocRef = computed(() =>
@@ -30,15 +27,13 @@ export function useProfile(profileConfig: ProfileConfig) {
 
   const { data: currentProfile } = useDocument(currentProfileDocRef)
 
-  // Fetch all profiles in this collection
-  const allProfiles = firestoreFetchCollection(config.collectionName, {
-    appScoped: config.appScoped,
-  })
-
-  // Fetch a specific profile by ID
+  // Fetch all profiles in this collection - await the Promise
+  const allProfiles = await firestoreFetchCollection(config.collectionName, {
+    appScoped: false, // Profiles are globally scoped
+  }) // Fetch a specific profile by ID
   async function fetchById(id: string) {
     return await firestoreFetchDoc(config.collectionName, id, {
-      appScoped: config.appScoped,
+      appScoped: false, // Profiles are globally scoped
     })
   }
 
@@ -51,12 +46,20 @@ export function useProfile(profileConfig: ProfileConfig) {
   // Expose update functionality (if provided in config)
   const profileUpdate = config.updateComposable ? config.updateComposable() : {}
 
-  return {
+  const returnObject = {
     [`current${config.profileType}`]: currentProfile,
     [`${config.collectionName}`]: allProfiles,
     [`fetch${config.profileType}`]: fetchById,
+    all: allProfiles, // Add alias for easier destructuring
     ...profileCreate,
     ...profileDelete,
     ...profileUpdate,
   }
+
+  // Debug logging
+  console.log('useProfile return keys:', Object.keys(returnObject))
+  console.log('Expected fetchChef:', `fetch${config.profileType}`)
+  console.log('fetchById function:', typeof fetchById)
+
+  return returnObject
 }
