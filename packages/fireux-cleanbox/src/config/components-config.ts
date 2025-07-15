@@ -11,11 +11,11 @@ export function configureComponents(
 ) {
   addComponentsDir({
     path: resolver.resolve('./runtime/components'),
-    prefix: options.prefix || 'Clean',
+    prefix: 'Cleanbox',
     pathPrefix: false,
   })
 
   console.log(
-    `🧽 CleanBox components registered with prefix: ${options.prefix || 'Clean'}`
+    `🧽 CleanBox components registered with prefix: Cleanbox`
   )
 }
