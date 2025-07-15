@@ -1,4 +1,4 @@
-import type { Supplier } from '../../../models/profiles/Supplier.model'
+import type { Supplier } from '../../../../../models/profiles/Supplier.model'
 
 export function useSupplierValidation() {
   /**
@@ -18,14 +18,12 @@ export function useSupplierValidation() {
 
     // Business type validation
     const validBusinessTypes = [
-      'restaurant',
-      'catering',
-      'food_truck',
-      'grocery',
-      'distributor',
       'farm',
-      'processor',
+      'distributor', 
+      'manufacturer',
       'wholesaler',
+      'producer',
+      'other'
     ]
     if (
       supplier.business_type &&
@@ -36,66 +34,50 @@ export function useSupplierValidation() {
 
     // Email validation
     if (supplier.email && !isValidEmail(supplier.email)) {
-      errors.push('Invalid email address')
+      errors.push('Invalid email format')
     }
 
     // Phone validation
     if (supplier.phone && !isValidPhone(supplier.phone)) {
-      errors.push('Invalid phone number')
+      errors.push('Invalid phone number format')
     }
 
-    // Business address validation
-    if (supplier.business_address) {
-      if (!supplier.business_address.street_address?.trim()) {
-        errors.push('Street address is required for business address')
+    // Website validation
+    if (supplier.website && !isValidUrl(supplier.website)) {
+      errors.push('Invalid website URL format')
+    }
+
+    // Years in business validation
+    if (supplier.years_in_business !== undefined) {
+      if (supplier.years_in_business < 0 || supplier.years_in_business > 200) {
+        errors.push('Years in business must be between 0 and 200')
       }
-      if (!supplier.business_address.city?.trim()) {
-        errors.push('City is required for business address')
-      }
-      if (!supplier.business_address.state?.trim()) {
-        errors.push('State is required for business address')
-      }
-      if (!supplier.business_address.zip_code?.trim()) {
-        errors.push('ZIP code is required for business address')
+    }
+
+    // Employee count validation
+    if (supplier.employee_count !== undefined) {
+      if (supplier.employee_count < 0) {
+        errors.push('Employee count cannot be negative')
       }
     }
 
     // Payment terms validation
-    const validPaymentTerms = [
-      'net_30',
-      'net_15',
-      'net_7',
-      'cash_on_delivery',
-      'prepaid',
-    ]
-    if (
-      supplier.payment_terms &&
-      !validPaymentTerms.includes(supplier.payment_terms)
-    ) {
-      errors.push('Invalid payment terms')
-    }
-
-    // Business status validation
-    const validStatuses = [
-      'active',
-      'seasonal',
-      'temporarily_closed',
-      'permanently_closed',
-    ]
-    if (
-      supplier.business_status &&
-      !validStatuses.includes(supplier.business_status)
-    ) {
-      errors.push('Invalid business status')
-    }
-
-    // Verification status validation
-    const validVerificationStatuses = ['pending', 'verified', 'rejected']
-    if (
-      supplier.verification_status &&
-      !validVerificationStatuses.includes(supplier.verification_status)
-    ) {
-      errors.push('Invalid verification status')
+    if (supplier.payment_terms && supplier.payment_terms.length > 0) {
+      const validPaymentTerms = [
+        'net-30',
+        'net-15',
+        'net-7',
+        'cod',
+        'prepaid',
+        'credit-card',
+        'other'
+      ]
+      const invalidTerms = supplier.payment_terms.filter(
+        term => !validPaymentTerms.includes(term)
+      )
+      if (invalidTerms.length > 0) {
+        errors.push(`Invalid payment terms: ${invalidTerms.join(', ')}`)
+      }
     }
 
     return {
@@ -164,6 +146,18 @@ export function useSupplierValidation() {
   }
 
   /**
+   * Helper function to validate URL format
+   */
+  function isValidUrl(url: string): boolean {
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
    * Helper function to validate time format (HH:MM)
    */
   function isValidTime(time: string): boolean {
@@ -176,6 +170,7 @@ export function useSupplierValidation() {
     validateBusinessHours,
     isValidEmail,
     isValidPhone,
+    isValidUrl,
     isValidTime,
   }
 }
