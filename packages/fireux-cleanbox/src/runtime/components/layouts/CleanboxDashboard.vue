@@ -23,9 +23,21 @@ const adminGroup = useAdminRoutes() || []
 
 // Cleanbox-specific dashboard routes
 const cleanboxDashboardRoutes = [
-  { label: 'My Bookings', icon: 'i-heroicons-calendar-days', to: '/dashboard/bookings' },
-  { label: 'Service History', icon: 'i-heroicons-clock', to: '/dashboard/history' },
-  { label: 'Payment Methods', icon: 'i-heroicons-credit-card', to: '/dashboard/payments' },
+  {
+    label: 'My Bookings',
+    icon: 'i-heroicons-calendar-days',
+    to: '/dashboard/bookings',
+  },
+  {
+    label: 'Service History',
+    icon: 'i-heroicons-clock',
+    to: '/dashboard/history',
+  },
+  {
+    label: 'Payment Methods',
+    icon: 'i-heroicons-credit-card',
+    to: '/dashboard/payments',
+  },
 ]
 
 const routes = {

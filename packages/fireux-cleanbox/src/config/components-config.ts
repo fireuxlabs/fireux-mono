@@ -15,7 +15,5 @@ export function configureComponents(
     pathPrefix: false,
   })
 
-  console.log(
-    `🧽 CleanBox components registered with prefix: Cleanbox`
-  )
+  console.log(`🧽 CleanBox components registered with prefix: Cleanbox`)
 }
