@@ -1,3 +1,17 @@
+<script setup lang="ts">
+// SEO and Meta
+useSeoMeta({
+  title: 'Misebox - Professional Kitchen Management Platform',
+  description:
+    'Master your culinary operations with digital recipe management, inventory control, and cost analysis. Built for chefs who demand precision.',
+})
+
+// Fetch the content for additional sections
+const { data: page } = await useAsyncData('index', () =>
+  queryCollection('content').path('/').first()
+)
+</script>
+
 <template>
   <!-- Main Content -->
   <div class="min-h-screen relative z-10">
@@ -44,20 +58,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-// SEO and Meta
-useSeoMeta({
-  title: 'Misebox - Professional Kitchen Management Platform',
-  description:
-    'Master your culinary operations with digital recipe management, inventory control, and cost analysis. Built for chefs who demand precision.',
-})
-
-// Fetch the content for additional sections
-const { data: page } = await useAsyncData('index', () =>
-  queryCollection('content').path('/').first()
-)
-</script>
 
 <style scoped>
 /* Landing Page Container */

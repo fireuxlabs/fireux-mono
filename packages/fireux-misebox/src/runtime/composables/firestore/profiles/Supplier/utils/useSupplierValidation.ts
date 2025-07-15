@@ -1,4 +1,4 @@
-import type { Supplier } from '../../../../../models/Supplier.model'
+import type { Supplier } from '../../../models/profiles/Supplier.model'
 
 export function useSupplierValidation() {
   /**

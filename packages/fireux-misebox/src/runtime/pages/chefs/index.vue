@@ -8,15 +8,12 @@
     </div>
 
     <div class="profile-page-content">
-      <OrganismsProfilesChefList :chefs="chefs" :loading="loading" />
+      <MiseChefList :chefs="chefs" :loading="loading" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { useProfile } from '../../../../../../packages/fireux-core/src/runtime/composables/firestore/profiles/useProfile'
-import { chefConfig } from '../../../config/profiles/chef.config'
-
 // Set page meta
 definePageMeta({
   title: 'Browse Chefs',
@@ -24,9 +21,27 @@ definePageMeta({
 })
 
 // Use the profile composable to fetch chefs
-const { all: chefs, loading } = await useProfile(chefConfig)
+const { all: chefs, loading } = await useProfile('chefs')
 </script>
 
 <style scoped>
-/* Styles are now in shared _profiles.scss */
+.profile-page {
+  @apply container mx-auto px-4 py-8;
+}
+
+.profile-page-header {
+  @apply text-center mb-8;
+}
+
+.profile-page-title {
+  @apply text-3xl font-bold text-gray-800 mb-4;
+}
+
+.profile-page-description {
+  @apply text-lg text-gray-600 max-w-2xl mx-auto;
+}
+
+.profile-page-content {
+  @apply mt-8;
+}
 </style>

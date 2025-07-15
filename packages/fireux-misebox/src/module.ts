@@ -1,7 +1,9 @@
 import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
+import { configureModels } from './config/models-config'
 import { configureLayouts } from './config/layouts-config'
+import { configurePages } from './config/pages-config'
 
 // Module options interface
 export interface ModuleOptions {
@@ -35,8 +37,14 @@ export default defineNuxtModule<ModuleOptions>({
     // Configure composables
     configureComposables(resolver)
 
+    // Configure models
+    configureModels(resolver, nuxt)
+
     // Configure layouts
     configureLayouts(resolver, nuxt)
+
+    // Configure pages
+    configurePages(resolver, nuxt)
 
     console.log(
       '🍳 FireUX Misebox module loaded - Chef & Supplier functionality ready!'

@@ -8,18 +8,12 @@
     </div>
 
     <div class="profile-page-content">
-      <OrganismsProfilesSupplierList
-        :suppliers="suppliers"
-        :loading="loading"
-      />
+      <MiseSupplierList :suppliers="suppliers" :loading="loading" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { useProfile } from '../../../../../../packages/fireux-core/src/runtime/composables/firestore/profiles/useProfile'
-import { supplierConfig } from '../../../config/profiles/supplier.config'
-
 // Set page meta
 definePageMeta({
   title: 'Browse Suppliers',
@@ -27,9 +21,27 @@ definePageMeta({
 })
 
 // Use the profile composable to fetch suppliers
-const { all: suppliers, loading } = await useProfile(supplierConfig)
+const { all: suppliers, loading } = await useProfile('suppliers')
 </script>
 
 <style scoped>
-/* Styles are now in shared _profiles.scss */
+.profile-page {
+  @apply container mx-auto px-4 py-8;
+}
+
+.profile-page-header {
+  @apply text-center mb-8;
+}
+
+.profile-page-title {
+  @apply text-3xl font-bold text-gray-800 mb-4;
+}
+
+.profile-page-description {
+  @apply text-lg text-gray-600 max-w-2xl mx-auto;
+}
+
+.profile-page-content {
+  @apply mt-8;
+}
 </style>
