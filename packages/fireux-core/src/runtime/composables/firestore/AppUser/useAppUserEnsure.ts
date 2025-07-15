@@ -1,7 +1,7 @@
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useAppUserUtils } from './useAppUserUtils'
-import type { AppUser } from '../../../models/appUser.model'
+import type { AppUser } from '../../../models/core/appUser.model'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useFirestoreCreate } from '../useFirestoreCreate'
 import { useFirestoreManager } from '../useFirestoreManager'
@@ -27,7 +27,7 @@ export function useAppUserEnsure() {
       const { waitForCurrentUser } = useFirestoreManager()
       const user = await waitForCurrentUser()
 
-      if (!user || !user.uid) {
+      if (!user?.uid) {
         console.warn('⚠️ [ensureAppUser] No current user found after waiting')
         return
       }
@@ -87,16 +87,51 @@ export function useAppUserEnsure() {
       }
 
       // Create new app user using strong CoreUser data
-      const { generateHandle } = useAppUserUtils()
+      const { generateHandle, generateSlug } = useAppUserUtils()
       const { setDocument } = useFirestoreCreate()
+      const { uploadUserAvatar } = useMediaStorage()
+
+      // Generate unique slug for the user
+      const slug = await generateSlug({
+        display_name: coreUserData.display_name || coreUserData.email,
+        handle: generateHandle(coreUserData.email),
+        email: coreUserData.email,
+        uid,
+      })
+
+      // Copy avatar from core-users storage to app-specific storage
+      let appAvatarUrl = coreUserData.avatar // Default to core user avatar
+      if (coreUserData.avatar?.includes('core-users')) {
+        try {
+          // Download the core user avatar and re-upload to app storage
+          const response = await fetch(coreUserData.avatar)
+          const blob = await response.blob()
+
+          // Convert blob to file-like object
+          const file = new File([blob], 'avatar.jpg', { type: blob.type })
+
+          // Upload to app-specific storage using our media storage
+          appAvatarUrl = await uploadUserAvatar(file, uid)
+          console.log(
+            `✅ [ensureAppUser] Copied avatar to app storage: ${appAvatarUrl}`
+          )
+        } catch (error) {
+          console.warn(
+            `⚠️ [ensureAppUser] Failed to copy avatar for ${uid}:`,
+            error
+          )
+          // Keep the original core user avatar URL as fallback
+        }
+      }
 
       const appUserData: Partial<AppUser> = {
         uid,
         email: coreUserData.email, // CoreUser always has email
         role: app.admin_ids?.includes(uid) ? 'admin' : 'user',
         display_name: coreUserData.email, // Use email as display name initially
-        avatar: coreUserData.avatar, // CoreUser always has avatar (from photoURL or uploaded default)
+        avatar: appAvatarUrl, // Use the app-specific avatar URL
         handle: generateHandle(coreUserData.email),
+        slug,
         bio: '',
       }
 

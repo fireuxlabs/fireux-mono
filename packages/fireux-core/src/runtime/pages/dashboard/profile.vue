@@ -2,16 +2,16 @@
   <client-only>
     <div v-if="appUser" class="edit-page">
       <!-- Profile Display -->
-      <FireOrganismsUserCardsProfile :user="appUser" />
+      <FireOrganismsAppUserCardsProfile :user="appUser" />
 
       <!-- Profile Edit Form -->
-      <FireOrganismsUserEdit :user="appUser" />
+      <FireOrganismsAppUserEdit :user="appUser" />
     </div>
     <div v-else class="loading-state">
       <UCard>
         <div class="loading-content">
           <UIcon name="i-heroicons-user-circle" class="loading-icon" />
-          <p>Loading profile...</p>
+          <p>Loading profile..profile.</p>
         </div>
       </UCard>
     </div>
@@ -36,7 +36,7 @@ useHead({
 })
 
 // Get current user - follows same pattern as employer/professional
-const { appUser } = useAppUser()
+const { appUser } = await useAppUser()
 </script>
 
 <style scoped>

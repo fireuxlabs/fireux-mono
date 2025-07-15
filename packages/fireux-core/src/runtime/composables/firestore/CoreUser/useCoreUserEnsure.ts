@@ -1,7 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useMediaStorage } from '../../firebase/useMediaStorage'
-import type { CoreUser } from '../../../models/coreUser.model'
+import type { CoreUser } from '../../../models/core/coreUser.model'
 import { useFirestoreManager } from '../useFirestoreManager'
 import { useFirestoreCreate } from '../useFirestoreCreate'
 import { useAppUserEnsure } from '../AppUser/useAppUserEnsure'
@@ -35,12 +35,20 @@ export function useCoreUserEnsure() {
       }
 
       // Create new core user with all required fields
-      const { uploadUserAvatar } = useMediaStorage()
+      const { uploadImage } = useMediaStorage()
       const { setDocument } = useFirestoreCreate()
       const { appId } = useFireUXConfig()
 
+      // For core users, store avatar in core-users storage path
       const avatar =
-        user.photoURL || (await uploadUserAvatar('img/default-avatar.png', uid))
+        user.photoURL ||
+        (await uploadImage(
+          'img/default-avatar.png',
+          'core-users',
+          uid,
+          'avatar',
+          400
+        ))
 
       const coreUserData: Partial<CoreUser> = {
         id: uid,
@@ -56,7 +64,7 @@ export function useCoreUserEnsure() {
       console.log(`✅ [ensureCoreUser] Created new core user ${uid}`)
 
       // Call ensureAppUser with the core user data
-      const ensureAppUser = useAppUserEnsure()
+      const { ensureAppUser } = useAppUserEnsure()
       await ensureAppUser(coreUserData)
     } catch (error) {
       console.error(`❌ [ensureCoreUser] Error: ${error}`)

@@ -1,10 +1,8 @@
 // ~/composables/useAppUserUpdate.ts
 import { doc, updateDoc } from 'firebase/firestore'
-import { useFirestore, useCurrentUser } from 'vuefire'
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useFirestoreUtils } from '../useFirestoreUtils'
-import type { AppUser } from '../../../models/appUser.model'
 import {
   validateSingleField,
   validateBio,
@@ -91,7 +89,6 @@ import {
 
 export function useAppUserUpdate() {
   const db = useFirestore()
-  const storage = getStorage()
   const { waitForCurrentUser } = useFirestoreUtils()
   const { appId } = useFireUXConfig()
 
@@ -271,23 +268,18 @@ export function useAppUserUpdate() {
     }
 
     // AVATAR UPDATE:
-    const updateAvatar = async (file: File) => {
+    const updateAvatar = async (avatarUrl: string) => {
       try {
         const user = await waitForCurrentUser()
         if (!user) throw new Error('User not authenticated')
 
-        // Upload to Firebase Storage
-        const avatarRef = ref(storage, `${appId}/avatars/${user.uid}`)
-        await uploadBytes(avatarRef, file)
-        const downloadURL = await getDownloadURL(avatarRef)
-
         // Update Firestore with new avatar URL
         const userRef = doc(db, `apps/${appId}/users`, user.uid)
         await updateDoc(userRef, {
-          avatar: downloadURL,
+          avatar: avatarUrl,
         })
 
-        return { success: true, avatar: downloadURL }
+        return { success: true, avatar: avatarUrl }
       } catch (error) {
         console.error('Error updating avatar:', error)
         throw error
@@ -394,6 +386,77 @@ export function useAppUserUpdate() {
     return {
       updateNotifications,
       updatePreferences,
+      // Helper functions for UI components
+      updateNotificationsEnabled: async (
+        currentNotifications: any,
+        enabled: boolean
+      ) => {
+        return updateNotifications({
+          ...currentNotifications,
+          enabled,
+        })
+      },
+      updateNotificationType: async (
+        currentNotifications: any,
+        type: string,
+        enabled: boolean
+      ) => {
+        const types = enabled
+          ? [...(currentNotifications.types || []), type]
+          : (currentNotifications.types || []).filter((t: string) => t !== type)
+
+        return updateNotifications({
+          ...currentNotifications,
+          types,
+        })
+      },
+      updateTheme: async (currentPreferences: any, theme: string) => {
+        return updatePreferences({
+          ...currentPreferences,
+          theme,
+        })
+      },
+      updateLanguage: async (currentPreferences: any, language: string) => {
+        return updatePreferences({
+          ...currentPreferences,
+          language,
+        })
+      },
+
+      // Specific handlers for Checkbox/Select components
+      updateNotificationsEnabledBool: async (
+        enabled: boolean,
+        currentUser?: any
+      ) => {
+        const currentNotifications = currentUser?.notifications || {
+          enabled: false,
+          types: [],
+        }
+        return updateNotifications({
+          ...currentNotifications,
+          enabled,
+        })
+      },
+      updateThemeSelect: async (theme: string, currentUser?: any) => {
+        const currentPreferences = currentUser?.preferences || {
+          theme: 'light',
+          language: 'en',
+        }
+        return updatePreferences({
+          ...currentPreferences,
+          theme,
+        })
+      },
+      updateLanguageSelect: async (language: string, currentUser?: any) => {
+        const currentPreferences = currentUser?.preferences || {
+          theme: 'light',
+          language: 'en',
+        }
+        return updatePreferences({
+          ...currentPreferences,
+          language,
+        })
+      },
     }
   }
 

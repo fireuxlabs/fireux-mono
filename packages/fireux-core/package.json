@@ -1,27 +1,31 @@
 {
   "name": "fireux-core",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "FireUX Core - A comprehensive Nuxt 3 module for Firebase integration",
-  "license": "MIT",
-  "type": "module",
-  "exports": {
-    ".": "./src/module.ts",
-    "./composables/*": "./src/runtime/composables/*"
-  },
+  "private": true,
   "main": "./src/module.ts",
   "types": "./src/module.ts",
+  "exports": {
+    ".": "./src/module.ts",
+    "./composables": "./src/runtime/composables/*"
+  },
   "files": [
-    "src"
+    "src/**/*"
   ],
-  "scripts": {},
+  "scripts": {
+    "build": "nuxt-module-build build",
+    "dev": "nuxt-module-build --stub",
+    "postbuild": "rimraf src/**/*.map",
+    "clean": "rimraf dist"
+  },
   "dependencies": {
-    "@nuxt/kit": "^3.13.0",
+    "@nuxt/kit": "^3.17.4",
     "dompurify": "^3.2.6",
     "glob": "^11.0.3"
   },
   "devDependencies": {
-    "@nuxt/module-builder": "^0.5.0",
-    "nuxt": "^3.13.0",
-    "typescript": "latest"
-  }
+    "@nuxt/module-builder": "^0.5.5",
+    "rimraf": "^6.0.1"
+  },
+  "type": "module"
 }

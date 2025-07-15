@@ -99,7 +99,7 @@
 </template>
 
 <script setup>
-const { appUser } = useAppUser()
+const { appUser } = await useAppUser()
 const { signOutUser } = useAuth()
 const router = useRouter()
 

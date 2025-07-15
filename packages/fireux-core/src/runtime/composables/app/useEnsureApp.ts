@@ -1,6 +1,6 @@
 import { doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore'
 import { useFirestore, useCurrentUser } from 'vuefire'
-import type { App } from '../../models/app.model'
+import type { App } from '../../models/core/app.model'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useFirestoreManager } from '../firestore/useFirestoreManager'
 
@@ -18,6 +18,12 @@ export function useAppEnsure() {
    */
   async function ensureApp(coreUser?: any) {
     console.log('🚀 [ensureApp] Function invoked.')
+
+    // Ensure this only runs on the client side
+    if (!import.meta.client) {
+      console.log('🚫 [ensureApp] Skipping on server side')
+      return null
+    }
 
     try {
       // Step 1: Get user data (either provided or from auth)
@@ -140,7 +146,7 @@ export function useAppEnsure() {
       const { useAppUserEnsure } = await import(
         '../firestore/AppUser/useAppUserEnsure'
       )
-      const ensureAppUser = useAppUserEnsure()
+      const { ensureAppUser } = useAppUserEnsure()
       await ensureAppUser(coreUser)
       console.log('✅ [ensureApp] Created app user for the app admin')
     } catch (appUserError) {

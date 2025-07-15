@@ -18,13 +18,17 @@
         <div class="right-section">
           <template v-if="route.path !== '/auth'">
             <template v-if="appUser">
-              <FireMoleculesProfileAvatar />
-            </template>
-            <template v-else-if="!coreUser">
-              <UButton size="sm" @click="navigateToAuth"> Sign In </UButton>
+              <UAvatar
+                :src="appUser.avatar"
+                :alt="getUserDisplayName(appUser)"
+                size="sm"
+                :text="getUserInitials(appUser)"
+                class="cursor-pointer hover:opacity-80 transition-opacity"
+                @click="navigateToDashboard"
+              />
             </template>
             <template v-else>
-              <UButton size="sm" @click="handleJoinApp"> Join App </UButton>
+              <UButton size="sm" @click="navigateToAuth"> Sign In </UButton>
             </template>
           </template>
           <UIcon
@@ -65,19 +69,45 @@ import { useWindowSize } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 import { watch } from 'vue'
 
-const { coreUser } = useCoreUser()
-const { appUser } = useAppUser()
+const { appUser } = await useAppUser()
 
 const router = useRouter()
 const route = useRoute()
-const { ensureAppUser } = useAppUserEnsure()
 
 // Navigation
 const navigateToAuth = () => router.push('/auth')
+const navigateToDashboard = () => router.push('/dashboard')
 
-// Handle Join App Logic
-const handleJoinApp = async () => {
-  await ensureAppUser()
+// Helper function to get user display name
+const getUserDisplayName = (user) => {
+  if (!user) return 'User'
+  if (user.first_name || user.last_name) {
+    return `${user.first_name || ''} ${user.last_name || ''}`.trim()
+  }
+  return user.display_name || user.email || 'User'
+}
+
+// Helper function to get user initials from first/last name
+const getUserInitials = (user) => {
+  if (!user) return 'U'
+
+  // Try to use first_name and last_name for better initials
+  if (user.first_name || user.last_name) {
+    const first = user.first_name?.charAt(0) || ''
+    const last = user.last_name?.charAt(0) || ''
+    return (first + last).toUpperCase() || 'U'
+  }
+
+  // Fallback to display_name or email
+  const name = user.display_name || user.email || 'User'
+  return (
+    name
+      .split(' ')
+      .map((word) => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2) || 'U'
+  )
 }
 
 // Mobile Navigation

@@ -1,3 +1,5 @@
+import { defineEventHandler, readBody, createError } from 'h3'
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
@@ -8,7 +10,6 @@ export default defineEventHandler(async (event) => {
       appId,
       appName,
       userId, // TODO: Should be extracted from authentication context instead
-      metadata = {},
       ping, // For testing only
     } = body
 
@@ -153,19 +154,11 @@ export default defineEventHandler(async (event) => {
       // This helps prevent race conditions with multiple API calls
       await new Promise((resolve) => setTimeout(resolve, 100))
 
+      // Only update essential app fields - keep it minimal like misebox-app
       const appMetadata = {
         app_name: appName,
-        main_image: `/logo-type-dark.png`, // Standard logo path for all apps
         creator_id: userId,
-        initialized_at: new Date().toISOString(),
-        subscriptions_setup: response.subscriptions_setup,
-        products_created: response.products_created.length,
-        ensure_app_completed: true,
-        last_ensure_app_run: new Date().toISOString(),
-        metadata: {
-          ensure_app_version: '1.0',
-          ...metadata,
-        },
+        // Operational metadata should be in logs, not in the app document
       }
 
       console.log('📝 Calling Firestore update with data:', appMetadata)

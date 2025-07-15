@@ -1,110 +1,56 @@
-import type { Professional } from '../../../../models/profiles/Professional.model'
-import { ref } from 'vue'
-import { serverTimestamp } from 'firebase/firestore'
-import { useCurrentUser } from 'vuefire'
-import { useFirestoreManager } from '../../../../../../../fireux-core/src/runtime/composables/firestore/useFirestoreManager'
-import {
-  getStorage,
-  ref as storageRef,
-  uploadBytes,
-  getDownloadURL,
-} from 'firebase/storage'
+/**
+ * Professional Update Composable
+ * 
+ * Handles updates for Professional profiles in the Jobs package.
+ * Supports all updateable fields with proper validation and formatting.
+ */
+
+import { doc, updateDoc } from 'firebase/firestore'
 
 export function useProfessionalUpdate() {
-  const { updateDocument } = useFirestoreManager()
-  const storage = getStorage()
-  const currentUser = useCurrentUser()
-  const updating = ref(false)
-  const uploadingAvatar = ref(false)
-  const updateError = ref<Error | null>(null)
+  const db = useFirestore()
+  const { waitForCurrentUser } = useFirestoreUtils()
 
-  async function updateProfessional(
-    updateData: Partial<Professional>,
-    id?: string
-  ): Promise<string> {
-    const targetId = id || currentUser.value?.uid
+  // Generic function for updating single fields
+  const updateSingleField = async (field: string, value: string | number | boolean) => {
+    const user = await waitForCurrentUser()
+    if (!user) throw new Error('User not authenticated')
 
-    if (!targetId) {
-      throw new Error('No profile ID provided and user is not authenticated')
-    }
-
-    updating.value = true
-    updateError.value = null
-
-    try {
-      // Add updated timestamp and exclude immutable fields
-      const profileData = {
-        ...updateData,
-        updated_at: serverTimestamp(),
-      }
-
-      // Remove immutable fields if they exist
-      if ('uid' in profileData) delete profileData.uid
-      if ('created_at' in profileData) delete profileData.created_at
-
-      await updateDocument('professionals', targetId, profileData, {
-        appScoped: false,
-      })
-      return 'success'
-    } catch (err: any) {
-      updateError.value =
-        err instanceof Error
-          ? err
-          : new Error(err?.message || 'Failed to update professional profile')
-      throw updateError.value
-    } finally {
-      updating.value = false
-    }
+    const docRef = doc(db, 'professionals', user.uid)
+    await updateDoc(docRef, {
+      [field]: value,
+      updated_at: new Date(),
+    })
   }
 
-  /**
-   * Upload avatar for professional
-   * Stores in professionals/{id}/avatar
-   */
-  async function updateProfessionalAvatar(id: string, file: File) {
-    uploadingAvatar.value = true
-    updateError.value = null
-    try {
-      // Create storage reference for professionals/{id}/avatar
-      const avatarPath = `professionals/${id}/avatar`
-      const avatarRef = storageRef(storage, avatarPath)
+  // Generic function for updating array fields
+  const updateArrayField = async (field: string, value: any[]) => {
+    const user = await waitForCurrentUser()
+    if (!user) throw new Error('User not authenticated')
 
-      // Upload the file
-      await uploadBytes(avatarRef, file)
-
-      // Get the download URL
-      const avatarUrl = await getDownloadURL(avatarRef)
-
-      // Update the professional document with the new avatar URL
-      await updateDocument(
-        'professionals',
-        id,
-        {
-          avatarUrl,
-          updated_at: serverTimestamp(),
-        },
-        {
-          appScoped: false,
-        }
-      )
-
-      return avatarUrl
-    } catch (err: any) {
-      updateError.value =
-        err instanceof Error
-          ? err
-          : new Error(err?.message || 'Failed to upload avatar')
-      throw updateError.value
-    } finally {
-      uploadingAvatar.value = false
-    }
+    const docRef = doc(db, 'professionals', user.uid)
+    await updateDoc(docRef, {
+      [field]: value,
+      updated_at: new Date(),
+    })
   }
 
   return {
-    updateProfessional,
-    updateProfessionalAvatar,
-    updating,
-    uploadingAvatar,
-    updateError,
+    // Single field updates
+    updateProfessionalName: (value: string) => updateSingleField('professional_name', value),
+    updateEmail: (value: string) => updateSingleField('email', value),
+    updateTitle: (value: string) => updateSingleField('title', value),
+    updateBioShort: (value: string) => updateSingleField('bio_short', value),
+    updateBioLong: (value: string) => updateSingleField('bio_long', value),
+    
+    // Complex array updates (will use custom components)
+    updateKitchenExperience: (value: any[]) => updateArrayField('kitchen_experience', value),
+    updateOtherEmployment: (value: any[]) => updateArrayField('other_employment_experience', value),
+    updateProjects: (value: any[]) => updateArrayField('projects', value),
+    updateVolunteering: (value: any[]) => updateArrayField('volunteering', value),
+    updateEducation: (value: any[]) => updateArrayField('education', value),
+    updateCertifications: (value: any[]) => updateArrayField('certifications', value),
+    updateLanguages: (value: any[]) => updateArrayField('languages', value),
+    updateLocations: (value: any[]) => updateArrayField('locations', value),
   }
 }

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useBlogPosts } from '../firestore/objects/Blog/useBlogPosts'
-import type { BlogPost } from '../../models/blogPost.model'
+import type { BlogPost } from '../../models/objects/blogPost.model'
 
 export async function useBlogMetrics() {
   const { blogPostsCollection } = await useBlogPosts()

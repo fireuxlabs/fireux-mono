@@ -2,8 +2,9 @@
   <div v-if="loading">
     <p>Loading chefs...</p>
   </div>
+
   <div v-else-if="chefs?.length" class="profile-list">
-    <OrganismsProfilesChefCardsCell
+    <FireOrganismsProfilesChefCardsCell
       v-for="chef in chefs"
       :key="chef.id"
       :chef="chef"

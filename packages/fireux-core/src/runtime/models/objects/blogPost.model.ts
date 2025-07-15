@@ -1,4 +1,4 @@
-import type { Author } from './appUser.model'
+import type { Author } from '../core/appUser.model'
 import type { Sluggable } from './protocols'
 
 // ------------------------------------------------------------------

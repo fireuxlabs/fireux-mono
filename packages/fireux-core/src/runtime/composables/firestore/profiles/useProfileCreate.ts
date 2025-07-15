@@ -9,10 +9,10 @@ import { useAppUser } from '../AppUser/useAppUser'
  * Generic profile creation composable
  * Provides standardized create functionality for all profile types
  */
-export function useProfileCreate(profileConfig: ProfileConfig) {
+export async function useProfileCreate(profileConfig: ProfileConfig) {
   const currentUser = useCurrentUser()
   const { setDocument } = useFirestoreManager()
-  const { appUser } = useAppUser()
+  const { appUser } = await useAppUser()
 
   // Set default appScoped to false for global profile ecosystem
   const config = {

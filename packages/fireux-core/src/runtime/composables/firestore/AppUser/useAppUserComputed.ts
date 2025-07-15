@@ -1,7 +1,7 @@
 // ~/composables/firestore/AppUser/useAppUserComputed.ts
 import { computed } from 'vue'
 import type { Ref } from 'vue'
-import type { AppUser } from '../../../models/appUser.model'
+import type { AppUser } from '../../../models/core/appUser.model'
 
 export function useAppUserComputed(appUser: Ref<AppUser | null | undefined>) {
   // Computed properties

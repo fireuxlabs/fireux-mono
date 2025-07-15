@@ -10,7 +10,7 @@ import { useAppComputed } from './useAppComputed'
 import { useAppOnboarding } from './useAppOnboarding'
 import { useAppEnsure } from './useEnsureApp'
 import { useAppSubscriptionSetup } from './useAppSubscriptionSetup'
-import type { App } from '../../models/app.model'
+import type { App } from '../../models/core/app.model'
 import { getApps } from 'firebase/app'
 
 export function useApp() {

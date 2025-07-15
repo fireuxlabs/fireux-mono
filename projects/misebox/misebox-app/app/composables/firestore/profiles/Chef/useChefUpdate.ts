@@ -1,67 +1,69 @@
-import { ref } from 'vue'
-import { serverTimestamp, doc, updateDoc } from 'firebase/firestore'
-import { useCurrentUser, useFirestore } from 'vuefire'
-import type { Chef } from '../../../../models/Chef.model'
+/**
+ * Chef Update Composable
+ * 
+ * Handles updates for Chef profiles in the Misebox package.
+ * Note: Chef is different from Professional - a chef interacts with kitchens and recipes.
+ */
+
+import { doc, updateDoc } from 'firebase/firestore'
 
 export function useChefUpdate() {
   const db = useFirestore()
-  const currentUser = useCurrentUser()
-  const updating = ref(false)
-  const updateError = ref<Error | null>(null)
+  const { waitForCurrentUser } = useFirestoreUtils()
 
-  /**
-   * Update an existing chef profile
-   */
-  async function updateChef(
-    updateData: Partial<Chef>,
-    id?: string
-  ): Promise<string> {
-    const targetId = id || currentUser.value?.uid
+  // Generic function for updating single fields
+  const updateSingleField = async (field: string, value: string | number | boolean) => {
+    const user = await waitForCurrentUser()
+    if (!user) throw new Error('User not authenticated')
 
-    if (!targetId) {
-      throw new Error('No profile ID provided and user is not authenticated')
-    }
-
-    updating.value = true
-    updateError.value = null
-
-    try {
-      // Exclude immutable fields and add timestamp
-      const { uid, created_at, ...safeUpdateData } = updateData
-      const profileData = {
-        ...safeUpdateData,
-        updated_at: serverTimestamp(),
-      }
-
-      const chefRef = doc(db, 'chefs', targetId)
-      await updateDoc(chefRef, profileData)
-
-      return 'success'
-    } catch (err: any) {
-      updateError.value =
-        err instanceof Error
-          ? err
-          : new Error(err?.message || 'Failed to update chef profile')
-      throw updateError.value
-    } finally {
-      updating.value = false
-    }
+    const docRef = doc(db, 'chefs', user.uid)
+    await updateDoc(docRef, {
+      [field]: value,
+      updated_at: new Date(),
+    })
   }
 
-  /**
-   * Update specific fields of a chef profile (legacy helper - use updateChef instead)
-   */
-  async function updateChefFields(
-    fields: Partial<Chef>,
-    uid?: string
-  ): Promise<string> {
-    return updateChef(fields, uid)
+  // Generic function for updating array fields
+  const updateArrayField = async (field: string, value: any[]) => {
+    const user = await waitForCurrentUser()
+    if (!user) throw new Error('User not authenticated')
+
+    const docRef = doc(db, 'chefs', user.uid)
+    await updateDoc(docRef, {
+      [field]: value,
+      updated_at: new Date(),
+    })
   }
 
   return {
-    updateChef,
-    updateChefFields,
-    updating,
-    updateError,
+    // Basic profile updates
+    updateChefName: (value: string) => updateSingleField('chef_name', value),
+    updateTitle: (value: string) => updateSingleField('title', value),
+    updateBioShort: (value: string) => updateSingleField('bio_short', value),
+    updateBioLong: (value: string) => updateSingleField('bio_long', value),
+    updateYearsExperience: (value: number) => updateSingleField('years_experience', value),
+    
+    // Service information
+    updateAvailableForHire: (value: boolean) => updateSingleField('available_for_hire', value),
+    updateHourlyRate: (value: number) => updateSingleField('hourly_rate', value),
+    
+    // Array field updates
+    updateSpecialties: (value: string[]) => updateArrayField('specialties', value),
+    updateCuisineExpertise: (value: string[]) => updateArrayField('cuisine_expertise', value),
+    updateCookingStyles: (value: string[]) => updateArrayField('cooking_styles', value),
+    updateServiceTypes: (value: string[]) => updateArrayField('service_types', value),
+    updateSignatureDishes: (value: string[]) => updateArrayField('signature_dishes', value),
+    updateAwards: (value: string[]) => updateArrayField('awards', value),
+    updateCertifications: (value: string[]) => updateArrayField('certifications', value),
+    updatePublishedWorks: (value: string[]) => updateArrayField('published_works', value),
+    
+    // Complex object updates (will need custom components)
+    updateChefExperience: (value: any[]) => updateArrayField('chef_experience', value),
+    updateCulinaryEducation: (value: any[]) => updateArrayField('culinary_education', value),
+    updateRecipes: (value: any[]) => updateArrayField('recipes', value),
+    updateGallery: (value: any[]) => updateArrayField('gallery', value),
+    updateKitchens: (value: any) => updateSingleField('kitchens', value),
+    updateSocialMedia: (value: any) => updateSingleField('social_media', value),
+    updateLocations: (value: any[]) => updateArrayField('locations', value),
   }
 }

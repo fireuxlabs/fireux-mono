@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
-import type { AppUser } from '../../../models/appUser.model'
+import type { AppUser } from '../../../models/core/appUser.model'
 
 export function useAppUserSubscription(
   appUser: Ref<AppUser | null | undefined>

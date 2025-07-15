@@ -1,7 +1,7 @@
 // filepath: /Users/danielwatson/Developer/FireUX/packages/fireux-core/composables/firestore/objects/Blog/useBlogPosts.ts
 import { computed, type Ref } from 'vue'
 import { useFirestoreManager } from '../../useFirestoreManager'
-import type { BlogPost } from '../../../../models/blogPost.model'
+import type { BlogPost } from '../../../../models/objects/blogPost.model'
 import { useBlogCreate } from './useBlogCreate'
 import { useBlogDelete } from './useBlogDelete'
 import { useBlogUpdate } from './useBlogUpdate'

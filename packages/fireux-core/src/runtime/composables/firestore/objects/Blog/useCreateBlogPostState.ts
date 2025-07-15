@@ -2,7 +2,7 @@ import { useStorage } from '@vueuse/core'
 import { onMounted } from 'vue'
 import { useFireUXConfig } from '../../../FireUXConfig'
 import { useBlogPostUtils } from './useBlogPostUtils'
-import type { BlogPostEntry } from '../../../../models/blogPost.model'
+import type { BlogPostEntry } from '../../../../models/objects/blogPost.model'
 
 export function useCreateBlogPostState() {
   const now = new Date().toISOString()

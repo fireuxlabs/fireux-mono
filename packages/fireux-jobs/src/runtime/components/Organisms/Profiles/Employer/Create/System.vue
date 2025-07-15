@@ -92,7 +92,7 @@
 
 <script setup>
 // Get current user data
-const { appUser } = useAppUser()
+const { appUser } = await useAppUser()
 
 // Initialize employer create composable
 const { createEmployer, creating, error } = useEmployerCreate()

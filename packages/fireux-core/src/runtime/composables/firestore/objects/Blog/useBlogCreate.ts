@@ -1,5 +1,5 @@
 import { useFirestoreManager } from '../../useFirestoreManager'
-import type { BlogPost } from '../../../../models/blogPost.model'
+import type { BlogPost } from '../../../../models/objects/blogPost.model'
 
 export function useBlogCreate() {
   const { setDocument } = useFirestoreManager()

@@ -16,15 +16,24 @@
 
 ## 🏗️ Architecture
 
-This monorepo contains:
+### Domain-Driven Package Structure
 
-- **packages/**: Core modules and functionality
-  - `fireux-core`: Main framework and server APIs
-  - `fireux-jobs`: Jobs marketplace functionality
-- **projects/**: Individual applications
-  - `fireux/`: Main platform application
-  - `cleanbox/`: Cleaning services marketplace
-  - `misebox/`: Culinary services marketplace
+- **packages/**: Domain-specific Nuxt modules
+  - `fireux-core`: Core framework (Firebase, auth, base components)
+  - `fireux-jobs`: Job marketplace functionality (Employer/Professional)
+  - `fireux-misebox`: Chef/Supplier marketplace functionality
+  - `fireux-places`: Location and places management
+- **projects/**: Production applications combining packages
+  - `fireux/`: Main platform application (uses core only)
+  - `cleanbox/`: Cleaning services marketplace (uses core + jobs)
+  - `misebox/`: Culinary services marketplace (uses core + jobs + misebox)
+
+### Package Auto-Import Prefixes
+
+- **fireux-core**: `<Fire...>` - Generic framework components
+- **fireux-jobs**: `<Job...>` - Job marketplace components
+- **fireux-misebox**: `<Mise...>` - Chef/Supplier marketplace components
+- **fireux-places**: `<Place...>` - Location and mapping components
 
 ## 📚 Documentation
 
@@ -41,16 +50,24 @@ This monorepo contains:
 
 ### Package & Project Documentation
 
-- [`packages/README.md`](./packages/README.md) - Core packages overview
+- [`packages/README.md`](./packages/README.md) - Package architecture overview
 - [`packages/fireux-core/core.doc.md`](./packages/fireux-core/core.doc.md) - Core framework documentation
+- [`packages/fireux-jobs/jobs.doc.md`](./packages/fireux-jobs/jobs.doc.md) - Job marketplace documentation
+- [`packages/fireux-misebox/README.md`](./packages/fireux-misebox/README.md) - Chef/Supplier marketplace documentation
 - [`projects/README.md`](./projects/README.md) - Applications overview
-- [`projects/misebox/misebox.doc.md`](./projects/misebox/misebox.doc.md) - MiseBox culinary marketplace
+- [`projects/misebox/misebox.doc.md`](./projects/misebox/misebox.doc.md) - MiseBox application guide
 
-### Current Focus: Profile System Refactor
+### Current Focus: Domain-Driven Architecture
 
-> **Status**: Phase 1 Complete - Unified architecture ready for integration
+> **Status**: Package optimization complete ✅
 >
-> **Next**: Integrate config-driven profile cards into Chef/Supplier pages
+> **Completed**:
+>
+> - Domain-specific package separation
+> - Optimized workspace configuration
+> - Consistent package structure across all modules
+>
+> **Next**: Clean up Chef/Supplier code duplication
 
 ## 🚀 Quick Start
 
@@ -59,10 +76,15 @@ This monorepo contains:
 pnpm install
 
 # Start development servers
-pnpm dev:fireux      # Main app     :3005
+pnpm dev:fireux      # Main app     :3000
 pnpm dev:cleanbox    # CleanBox app :3007
 pnpm dev:misebox     # MiseBox app  :3009
-pnpm dev:playground  # Test env     :3000
+pnpm dev:playground  # Test env     :3005
+
+# Package development
+pnpm build:packages  # Build all packages
+pnpm dev:packages    # Develop all packages
+pnpm clean:packages  # Clean all packages
 
 # Deploy all applications
 ./deploy-all.sh

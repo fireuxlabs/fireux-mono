@@ -4,7 +4,7 @@
   </div>
 
   <div v-else-if="suppliers?.length" class="profile-list">
-    <OrganismsProfilesSupplierCardsCell
+    <FireOrganismsProfilesSupplierCardsCell
       v-for="supplier in suppliers"
       :key="supplier.id"
       :supplier="supplier"

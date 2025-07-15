@@ -1,7 +1,7 @@
 // app/composables/firestore/documents/Blog/blogPostUtils.ts
 import { useAppUser } from '../../AppUser/useAppUser'
-import type { BlogPost } from '../../../../models/blogPost.model'
-import type { Author } from '../../../../models/appUser.model'
+import type { BlogPost } from '../../../../models/objects/blogPost.model'
+import type { Author } from '../../../../models/core/appUser.model'
 
 /**
  * Provides helper functions for blog post creation and editing.
@@ -23,13 +23,14 @@ export function useBlogPostUtils() {
   }
 
   // Get the current user as an Author object
-  function getAuthor(): Author {
-    const { appUser } = useAppUser()
+  async function getAuthor(): Promise<Author> {
+    const { appUser } = await useAppUser()
     return {
       display_name: appUser.value?.display_name || '',
       handle: appUser.value?.handle || '',
       avatar: appUser.value?.avatar || '',
-      id: appUser.value?.id || '',
+      slug: appUser.value?.slug || '',
+      id: appUser.value?.uid || '',
     }
   }
 

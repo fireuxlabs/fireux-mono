@@ -36,12 +36,4 @@ export function configurePlugins(resolver: any) {
       mode,
     })
   })
-
-  // Register Firebase client plugin (special case)
-  const firebaseClientPath = resolvePath('./runtime/firebase.client')
-  console.log('Registering Firebase client plugin')
-  addPlugin({
-    src: firebaseClientPath,
-    mode: 'client',
-  })
 }

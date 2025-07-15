@@ -1,87 +1,62 @@
 <template>
   <UCard>
-    <div class="appuser-profile-header">
+    <div class="flex items-center gap-4 mb-6">
       <UAvatar
-        :src="proxiedAvatarUrl"
-        :alt="appUserName"
+        :src="user?.avatar"
+        :alt="userName"
         size="xl"
-        :text="getInitials(appUserName)"
+        :text="getInitials(userName)"
       />
-      <div class="appuser-info">
-        <h2 class="appuser-name">{{ appUserName }}</h2>
-        <p v-if="appUser?.email" class="appuser-email">{{ appUser.email }}</p>
-        <p v-if="appUser?.handle" class="appuser-handle">
-          @{{ appUser.handle }}
+      <div>
+        <h2 class="text-xl font-semibold">
+          {{ userName }}
+        </h2>
+        <p v-if="user?.email" class="text-gray-600 text-sm">
+          {{ user.email }}
         </p>
       </div>
     </div>
 
-    <div v-if="appUser?.bio" class="appuser-about">
-      <h3 class="section-title">About</h3>
-      <p class="section-content">{{ appUser.bio }}</p>
-    </div>
-
-    <div v-if="appUser?.app_id" class="appuser-metadata">
-      <h3 class="section-title">App</h3>
-      <p class="section-content">{{ appUser.app_id }}</p>
-    </div>
-
-    <div v-if="appUser?.created_at" class="appuser-metadata">
-      <h3 class="section-title">Member Since</h3>
-      <p class="section-content">{{ formattedJoinDate }}</p>
-    </div>
-
     <div
-      v-if="appUser?.isAdmin || appUser?.role === 'admin'"
-      class="appuser-metadata"
+      v-if="user?.display_name && user?.display_name !== userName"
+      class="mb-4"
     >
-      <h3 class="section-title">Role</h3>
-      <UBadge variant="solid" color="primary">Admin</UBadge>
+      <h3 class="font-medium mb-2">Display Name</h3>
+      <p class="text-gray-700">{{ user.display_name }}</p>
     </div>
   </UCard>
 </template>
 
 <script setup>
-import { useAvatarProxy } from '../../../composables/utils/useAvatarProxy'
-
-const { getProxiedAvatarUrl } = useAvatarProxy()
-
 // Props from parent
 const props = defineProps({
-  appUser: {
+  user: {
     type: Object,
     default: null,
   },
 })
 
-// Computed property for proxied avatar URL
-const proxiedAvatarUrl = computed(() => {
-  if (!props.appUser?.avatar) return null
-  return getProxiedAvatarUrl(props.appUser.avatar)
-})
-
-// Computed property for app user display name
-const appUserName = computed(() => {
-  if (!props.appUser) return 'AppUser'
+// Computed property for user display name with priority logic
+const userName = computed(() => {
+  if (!props.user) return 'User'
   return (
-    props.appUser.full_name ||
-    props.appUser.display_name ||
-    props.appUser.displayName ||
-    props.appUser.email ||
-    'AppUser'
+    props.user.full_name ||
+    props.user.display_name ||
+    props.user.email ||
+    'User'
   )
 })
 
 // Computed property for formatted join date
 const formattedJoinDate = computed(() => {
-  if (!props.appUser?.created_at) return null
+  if (!props.user?.created_at) return null
 
   let date
   try {
     date =
-      typeof props.appUser.created_at === 'string'
-        ? new Date(props.appUser.created_at)
-        : props.appUser.created_at
+      typeof props.user.created_at === 'string'
+        ? new Date(props.user.created_at)
+        : props.user.created_at
 
     // Check if date is valid
     if (!date || isNaN(date.getTime())) return null
@@ -89,20 +64,18 @@ const formattedJoinDate = computed(() => {
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric',
     })
   } catch (error) {
     console.warn(
-      'Invalid date format for appUser created_at:',
-      props.appUser.created_at
+      'Invalid date format for user created_at:',
+      props.user.created_at
     )
     return null
   }
 })
 
-// Get initials for avatar fallback
 function getInitials(name) {
-  if (!name) return 'AU'
+  if (!name) return '?'
   return name
     .split(' ')
     .map((n) => n[0])
@@ -111,60 +84,3 @@ function getInitials(name) {
     .slice(0, 2)
 }
 </script>
-
-<style scoped>
-.appuser-profile-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
-}
-
-.appuser-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.appuser-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--ui-text);
-  margin: 0;
-}
-
-.appuser-email {
-  font-size: 0.875rem;
-  color: var(--ui-text-muted);
-  margin: var(--space-1) 0 0 0;
-}
-
-.appuser-handle {
-  font-size: 0.875rem;
-  color: var(--ui-text-muted);
-  font-family: monospace;
-  margin: var(--space-1) 0 0 0;
-}
-
-.appuser-about,
-.appuser-metadata {
-  margin-bottom: var(--space-4);
-}
-
-.appuser-metadata:last-child {
-  margin-bottom: 0;
-}
-
-.section-title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--ui-text);
-  margin: 0 0 var(--space-2) 0;
-}
-
-.section-content {
-  font-size: 0.875rem;
-  color: var(--ui-text-muted);
-  margin: 0;
-  line-height: 1.5;
-}
-</style>

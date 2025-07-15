@@ -1,21 +1,59 @@
 # FireUX Monorepo Architecture
 
-This document provides a high-level overview of the FireUX monorepo structure and documentation organization.
+This document provides a high-level overview of the FireUX monorepo structure and domain-driven architecture.
 
 ## 🏗️ Repository Structure
 
 ```
 fireux/
-├── packages/                 # Shared packages/libraries
-│   ├── fireux-core/         # Core FireUX framework
-│   └── fireux-jobs/         # Background job system
-├── projects/                # Individual applications
-│   ├── fireux/              # Main FireUX app
-│   ├── cleanbox/            # CleanBox app
-│   └── misebox/             # MiseBox app
+├── packages/                 # Domain-specific Nuxt modules
+│   ├── fireux-core/         # Core framework (Firebase, auth, base components)
+│   ├── fireux-jobs/         # Job marketplace functionality
+│   ├── fireux-misebox/      # Chef/Supplier marketplace functionality
+│   └── fireux-places/       # Location and places management
+├── projects/                # Production applications
+│   ├── fireux/              # Main platform (core only)
+│   ├── cleanbox/            # Cleaning services (core + jobs)
+│   └── misebox/             # Culinary services (core + jobs + misebox)
 ├── manuals/                 # User documentation
 └── docs/                    # Developer documentation
 ```
+
+## 🎯 Domain-Driven Architecture
+
+### **Package Separation by Domain**
+
+Each package contains domain-specific functionality:
+
+- **fireux-core**: Framework fundamentals (NO DOMAIN CODE)
+  - Authentication & Firebase integration
+  - Base UI components (buttons, forms, cards)
+  - Core composables and utilities
+  - Admin tools and server APIs
+
+- **fireux-jobs**: Job marketplace domain
+  - Employer/Professional profiles
+  - Job posting and application logic
+  - Job-specific routing and components
+
+- **fireux-misebox**: Chef/Supplier marketplace domain
+  - Chef/Supplier profiles and management
+  - Kitchen operations and supply chain
+  - Marketplace-specific components and logic
+
+- **fireux-places**: Location services domain
+  - Google Places API integration
+  - Geolocation and mapping utilities
+  - Address validation and management
+
+### **Auto-Import Conventions**
+
+Each package uses a unique prefix for auto-imported components:
+
+- `<Fire...>` - Core framework components
+- `<Job...>` - Job marketplace components
+- `<Mise...>` - Chef/Supplier marketplace components
+- `<Place...>` - Location and mapping components
 
 ## 📚 Documentation Hierarchy
 

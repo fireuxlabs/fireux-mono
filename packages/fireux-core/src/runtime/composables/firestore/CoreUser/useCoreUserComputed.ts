@@ -1,7 +1,7 @@
 // ~/composables/firestore/CoreUser/useCoreUserComputed.ts
 import { computed } from 'vue'
 import type { Ref } from 'vue'
-import type { CoreUser } from '../../../models/coreUser.model'
+import type { CoreUser } from '../../../models/core/coreUser.model'
 
 export function useCoreUserComputed(
   coreUser: Ref<CoreUser | null | undefined>

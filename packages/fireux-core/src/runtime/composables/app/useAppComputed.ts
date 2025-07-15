@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useCurrentUser } from 'vuefire'
 import type { Ref } from 'vue'
-import type { App } from '../../models/app.model'
+import type { App } from '../../models/core/app.model'
 
 export function useAppComputed(app: Ref<App | null | undefined>) {
   const currentUser = useCurrentUser()

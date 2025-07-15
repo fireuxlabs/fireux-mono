@@ -2,13 +2,15 @@
 
 ## 🏗️ Architecture Overview
 
-**99% Shared, 1% Unique** - Three production apps powered by shared modules:
+**Domain-Driven Package Architecture** - Production apps powered by specialized modules:
 
-- **`packages/fireux-core/`** - Shared Nuxt 3 module (200+ components, pages, composables)
-- **`packages/fireux-jobs/`** - Universal job management system for service industries
-- **`projects/fireux/`** - Main company app (yellow theme)
-- **`projects/cleanbox/`** - Cleaning industry platform (green theme)
-- **`projects/misebox/`** - Culinary industry platform (blue theme)
+- **`packages/fireux-core/`** - Core framework (Firebase, auth, base components)
+- **`packages/fireux-jobs/`** - Job marketplace functionality (Employer/Professional)
+- **`packages/fireux-misebox/`** - Chef/Supplier marketplace functionality
+- **`packages/fireux-places/`** - Location and places management
+- **`projects/fireux/`** - Main platform app (uses core only)
+- **`projects/cleanbox/`** - Cleaning services marketplace (uses core + jobs)
+- **`projects/misebox/`** - Culinary services marketplace (uses core + jobs + misebox)
 
 ## 🛠️ Technology Stack
 
@@ -36,21 +38,30 @@
 
 ```
 fireux/
-├── packages/                # Shared modules
-│   ├── fireux-core/         # Core Nuxt 3 module (99% shared functionality)
-│   │   ├── src/runtime/     # 200+ components, pages, layouts
+├── packages/                # Domain-specific Nuxt modules
+│   ├── fireux-core/         # Core framework (NO DOMAIN CODE)
+│   │   ├── src/runtime/     # Base components, auth, utilities
 │   │   ├── src/module.ts    # Module configuration
 │   │   └── src/*-config.ts  # Auto-import configurations
-│   └── fireux-jobs/         # Job management module ✨ NEW
-│       ├── src/runtime/     # Job models, pages, composables
-│       └── src/module.ts    # Jobs module configuration
+│   ├── fireux-jobs/         # Job marketplace domain
+│   │   ├── src/runtime/     # Employer/Professional models & components
+│   │   └── src/module.ts    # Jobs module configuration
+│   ├── fireux-misebox/      # Chef/Supplier marketplace domain
+│   │   ├── src/runtime/     # Chef/Supplier models & components
+│   │   └── src/module.ts    # Misebox module configuration
+│   └── fireux-places/       # Location services domain
+│       ├── src/runtime/     # Places API integration & components
+│       └── src/module.ts    # Places module configuration
 ├── projects/                # Production applications
-│   ├── fireux/fireux-app/   # Main company app (yellow)
-│   ├── cleanbox/cleanbox-app/ # Cleaning platform (green) + Jobs ✅
-│   └── misebox/misebox-app/   # Culinary platform (blue) + Jobs ✅
-├── playground/              # Development testing (red)
-└── pnpm-workspace.yaml      # Workspace configuration
+│   ├── fireux/fireux-app/   # Main platform (core only)
+│   ├── cleanbox/cleanbox-app/ # Cleaning marketplace (core + jobs)
+│   └── misebox/misebox-app/   # Culinary marketplace (core + jobs + misebox)
 ```
+
+├── playground/ # Development testing (red)
+└── pnpm-workspace.yaml # Workspace configuration
+
+````
 
 ## 🚀 Development Workflow
 
@@ -62,11 +73,53 @@ git clone https://github.com/your-org/fireux
 cd fireux
 pnpm install
 
-# Start development
-pnpm dev:fireux      # Main app    (localhost:3005)
+# Start development servers
+pnpm dev:fireux      # Main app    (localhost:3000)
 pnpm dev:cleanbox    # CleanBox    (localhost:3007)
 pnpm dev:misebox     # Misebox     (localhost:3009)
-pnpm dev:playground  # Testing     (localhost:3000)
+pnpm dev:playground  # Testing     (localhost:3005)
+
+# Package development
+pnpm build:packages  # Build all packages
+pnpm dev:packages    # Develop all packages
+pnpm clean:packages  # Clean all packages
+````
+
+### ✅ LOCKED IN: Domain-Driven Package Architecture
+
+Our **domain-driven package system** is now optimized and production-ready:
+
+```typescript
+// 🎯 Package separation by domain:
+fireux-core      // Framework fundamentals (NO domain code)
+fireux-jobs      // Job marketplace domain
+fireux-misebox   // Chef/Supplier marketplace domain
+fireux-places    // Location services domain
+
+// ✅ Auto-import prefixes:
+<Fire...>   // Core framework components
+<Job...>    // Job marketplace components
+<Mise...>   // Chef/Supplier marketplace components
+<Place...>  // Location components
+```
+
+### ✅ LOCKED IN: Workspace Configuration
+
+**All packages follow consistent structure:**
+
+```json
+{
+  "version": "0.1.0",
+  "dependencies": {
+    "@nuxt/kit": "^3.17.5",
+    "fireux-core": "workspace:*",
+    "glob": "^11.0.3"
+  },
+  "devDependencies": {
+    "@nuxt/module-builder": "^0.5.5",
+    "rimraf": "^6.0.1"
+  }
+}
 ```
 
 ### ✅ LOCKED IN: Navigation & Routing System

@@ -9,7 +9,7 @@ import { useFireUXConfig } from '../FireUXConfig'
 export function useMediaStorage() {
   const { uploadFile } = useAppFirebaseStorage()
   const storage = getStorage()
-  const { appName } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
 
   // Convert Data-URL to Blob
   const dataUrlToBlob = (dataUrl: string): Promise<Blob> =>
@@ -57,6 +57,12 @@ export function useMediaStorage() {
     type: string,
     maxWidth?: number
   ): Promise<string> => {
+    console.log('📤 uploadImage called with:')
+    console.log('  - collection:', collection)
+    console.log('  - id:', id)
+    console.log('  - type:', type)
+    console.log('  - appId:', appId)
+
     // Convert source to blob
     const blob =
       typeof source === 'string' ? await dataUrlToBlob(source) : source
@@ -80,11 +86,11 @@ export function useMediaStorage() {
     // Resize image
     const resized = await resizeImage(blob, imageMaxWidth)
 
-    // Generate path
-    const path = `${appName}/${collection}/${id}/${type}.jpg`
+    // Generate path with apps prefix to match database structure
+    const path = `apps/${appId}/${collection}/${id}/${type}.jpg`
 
     // Upload and return URL
-    return uploadToStorage(resized, path)
+    return await uploadToStorage(resized, path)
   }
 
   // Specialized avatar upload
@@ -92,7 +98,8 @@ export function useMediaStorage() {
     source: File | string,
     uid: string
   ): Promise<string> => {
-    return uploadImage(source, 'users', uid, 'avatar', 400)
+    // Use just 'users' - the uploadImage function will add apps/{appId} prefix
+    return await uploadImage(source, 'users', uid, 'avatar', 400)
   }
 
   return {

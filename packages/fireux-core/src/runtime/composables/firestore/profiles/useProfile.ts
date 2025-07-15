@@ -3,6 +3,7 @@ import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
 import type { ProfileConfig } from '../../../models/profiles/profile.model'
 import { useFirestoreManager } from '../useFirestoreManager'
+import { useFireUXConfig } from '../../FireUXConfig'
 import { useProfileCreate } from './useProfileCreate'
 import { useProfileDelete } from './useProfileDelete'
 
@@ -28,13 +29,10 @@ export async function useProfile(profileConfig: ProfileConfig) {
   const { data: currentProfile } = useDocument(currentProfileDocRef)
 
   // Fetch all profiles in this collection - await the Promise
-  const allProfiles = await firestoreFetchCollection(config.collectionName, {
-    appScoped: false, // Profiles are globally scoped
-  }) // Fetch a specific profile by ID
+  const allProfiles = await firestoreFetchCollection(config.collectionName)
+
   async function fetchById(id: string) {
-    return await firestoreFetchDoc(config.collectionName, id, {
-      appScoped: false, // Profiles are globally scoped
-    })
+    return await firestoreFetchDoc(config.collectionName, id)
   }
 
   // Expose create functionality

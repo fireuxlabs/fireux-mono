@@ -8,7 +8,7 @@ import { useCoreUserEnsure } from './useCoreUserEnsure'
 import { useCoreUserUpdate } from './useCoreUserUpdate'
 import { useCoreUserDelete } from './useCoreUserDelete'
 import { useCoreUserComputed } from './useCoreUserComputed'
-import type { CoreUser } from '../../../models/coreUser.model'
+import type { CoreUser } from '../../../models/core/coreUser.model'
 import { getApps } from 'firebase/app'
 
 export function useCoreUser() {

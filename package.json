@@ -6,9 +6,14 @@
   "main": "index.js",
   "scripts": {
     "dev:misebox": "pnpm --filter ./projects/misebox/misebox-app dev",
+    "dev:niederhorn": "pnpm --filter ./projects/misebox/niederhorn dev",
     "dev:fireux": "pnpm --filter ./projects/fireux/fireux-app dev",
     "dev:playground": "pnpm --filter playground dev",
     "dev:cleanbox": "pnpm --filter ./projects/cleanbox/cleanbox-app dev",
+    "build:packages": "pnpm --filter './packages/*' build",
+    "dev:packages": "pnpm --filter './packages/*' dev",
+    "clean:packages": "pnpm --filter './packages/*' clean",
+    "create:tenant": "node scripts/create-tenant.js",
     "init:app": "node scripts/init-app.js",
     "init:cleanbox": "node scripts/init-app.js cleanbox",
     "init:misebox": "node scripts/init-app.js misebox",
@@ -36,13 +41,7 @@
   },
   "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac",
   "dependencies": {
-    "@vite-pwa/nuxt": "^1.0.4",
-    "@vueup/vue-quill": "^1.2.0",
-    "better-sqlite3": "^12.0.0",
-    "dompurify": "^3.2.6",
-    "firebase": "^11.8.1",
-    "firebase-admin": "^13.4.0",
-    "stripe": "^18.3.0"
+    "better-sqlite3": "^11.10.0"
   },
   "workspaces": [
     "projects/*",

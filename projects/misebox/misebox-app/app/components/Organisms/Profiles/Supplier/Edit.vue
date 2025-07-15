@@ -1,139 +1,299 @@
 <template>
-  <div class="supplier-edit-form">
-    <UCard>
-      <template #header>
-        <h2 class="text-xl font-semibold">Edit Supplier Profile</h2>
-      </template>
+  <client-only>
+    <div class="edit-component">
+      <!-- Business Information -->
+      <FireMoleculesFormsFirestoreField
+        label="Business Name"
+        :firebase-value="props.supplier?.business_name || ''"
+        placeholder="Enter your business name"
+        :update-function="updateBusinessName"
+      />
 
-      <UForm :state="formData" @submit="onSubmit" class="space-y-6">
-        <!-- Basic Info -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UFormGroup label="Business Name" name="business_name">
-            <UInput
-              v-model="formData.business_name"
-              placeholder="Enter business name"
-            />
-          </UFormGroup>
+      <FireMoleculesFormsFirestoreField
+        label="Email"
+        :firebase-value="props.supplier?.email || ''"
+        placeholder="Enter business email"
+        type="email"
+        :update-function="updateEmail"
+      />
 
-          <UFormGroup label="Title" name="title">
-            <UInput
-              v-model="formData.title"
-              placeholder="e.g., Organic Food Supplier"
-            />
-          </UFormGroup>
-        </div>
+      <FireMoleculesFormsFirestoreField
+        label="Title"
+        :firebase-value="props.supplier?.title || ''"
+        placeholder="Enter your role/title"
+        :update-function="updateTitle"
+      />
 
-        <!-- Bio -->
-        <UFormGroup label="Short Bio" name="bio_short">
-          <UTextarea
-            v-model="formData.bio_short"
-            placeholder="Brief description (max 200 characters)"
-            :maxlength="200"
-            :rows="3"
+      <FireMoleculesFormsFirestoreField
+        label="Website"
+        :firebase-value="props.supplier?.website || ''"
+        placeholder="Enter business website"
+        type="url"
+        :update-function="updateWebsite"
+      />
+
+      <!-- Business Details -->
+      <FireMoleculesFormsFirestoreSelect
+        label="Business Type"
+        :firebase-value="props.supplier?.business_type || ''"
+        :options="[
+          { label: 'Farm', value: 'farm' },
+          { label: 'Distributor', value: 'distributor' },
+          { label: 'Manufacturer', value: 'manufacturer' },
+          { label: 'Wholesaler', value: 'wholesaler' },
+          { label: 'Producer', value: 'producer' },
+          { label: 'Other', value: 'other' },
+        ]"
+        placeholder="Select business type"
+        :update-function="updateBusinessType"
+      />
+
+      <FireMoleculesFormsFirestoreField
+        label="Contact Person"
+        :firebase-value="props.supplier?.contact_person || ''"
+        placeholder="Primary contact person name"
+        :update-function="updateContactPerson"
+      />
+
+      <FireMoleculesFormsFirestoreField
+        label="Phone"
+        :firebase-value="props.supplier?.phone || ''"
+        placeholder="Business phone number"
+        type="tel"
+        :update-function="updatePhone"
+      />
+
+      <!-- Business Description -->
+      <FireMoleculesFormsFirestoreField
+        label="Short Description"
+        :firebase-value="props.supplier?.bio_short || ''"
+        placeholder="Brief business description"
+        type="textarea"
+        :rows="3"
+        :update-function="updateBioShort"
+      />
+
+      <FireMoleculesFormsFirestoreField
+        label="Detailed Description"
+        :firebase-value="props.supplier?.bio_long || ''"
+        placeholder="Detailed business description and services"
+        type="textarea"
+        :rows="6"
+        :update-function="updateBioLong"
+      />
+
+      <!-- Business Operations -->
+      <FireMoleculesFormsFirestoreField
+        label="Years in Business"
+        :firebase-value="props.supplier?.years_in_business?.toString() || ''"
+        placeholder="How many years have you been in business?"
+        type="number"
+        :update-function="
+          (value) => updateYearsInBusiness(parseInt(value) || 0)
+        "
+      />
+
+      <FireMoleculesFormsFirestoreField
+        label="Employee Count"
+        :firebase-value="props.supplier?.employee_count?.toString() || ''"
+        placeholder="Number of employees"
+        type="number"
+        :update-function="(value) => updateEmployeeCount(parseInt(value) || 0)"
+      />
+
+      <FireMoleculesFormsFirestoreField
+        label="Annual Capacity"
+        :firebase-value="props.supplier?.annual_capacity || ''"
+        placeholder="Annual production/supply capacity"
+        :update-function="updateAnnualCapacity"
+      />
+
+      <!-- Specialties & Products -->
+      <FireMoleculesFormsFirestoreArrayOfStrings
+        label="Specialties"
+        :firebase-value="props.supplier?.specialties || []"
+        placeholder="Add product specialties (e.g., Organic Vegetables, Dairy Products)"
+        :update-function="updateSpecialties"
+      />
+
+      <FireMoleculesFormsFirestoreArrayOfStrings
+        label="Quality Standards"
+        :firebase-value="props.supplier?.quality_standards || []"
+        placeholder="Quality standards followed (e.g., ISO 9001, HACCP)"
+        :update-function="updateQualityStandards"
+      />
+
+      <FireMoleculesFormsFirestoreArrayOfStrings
+        label="Sustainability Practices"
+        :firebase-value="props.supplier?.sustainability_practices || []"
+        placeholder="Sustainability initiatives (e.g., Organic Farming, Carbon Neutral)"
+        :update-function="updateSustainabilityPractices"
+      />
+
+      <!-- Delivery & Services -->
+      <FireMoleculesFormsFirestoreArrayOfStrings
+        label="Delivery Methods"
+        :firebase-value="props.supplier?.delivery_methods || []"
+        placeholder="Available delivery methods (e.g., Truck Delivery, Pickup)"
+        :update-function="updateDeliveryMethods"
+      />
+
+      <FireMoleculesFormsFirestoreField
+        label="Delivery Schedule"
+        :firebase-value="props.supplier?.delivery_schedule || ''"
+        placeholder="Regular delivery schedule (e.g., Daily, Weekly, On-demand)"
+        :update-function="updateDeliverySchedule"
+      />
+
+      <FireMoleculesFormsFirestoreArrayOfStrings
+        label="Payment Terms"
+        :firebase-value="props.supplier?.payment_terms || []"
+        placeholder="Available payment terms (e.g., Net 30, COD, Credit)"
+        :update-function="updatePaymentTerms"
+      />
+
+      <!-- Pricing Options -->
+      <div class="form-field">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            :checked="props.supplier?.bulk_discounts || false"
+            @change="updateBulkDiscounts($event.target.checked)"
           />
-        </UFormGroup>
+          Bulk Discounts Available
+        </label>
+      </div>
 
-        <UFormGroup label="Full Bio" name="bio_long">
-          <UTextarea
-            v-model="formData.bio_long"
-            placeholder="Detailed description of your business and products"
-            :rows="6"
+      <div class="form-field">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            :checked="props.supplier?.seasonal_pricing || false"
+            @change="updateSeasonalPricing($event.target.checked)"
           />
-        </UFormGroup>
+          Seasonal Pricing
+        </label>
+      </div>
 
-        <!-- Specialties -->
-        <UFormGroup label="Specialties" name="specialties">
-          <UInput
-            v-model="specialtiesInput"
-            placeholder="Enter specialties separated by commas"
-            @blur="updateSpecialties"
+      <div class="form-field">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            :checked="props.supplier?.verified || false"
+            @change="updateVerified($event.target.checked)"
           />
-          <div
-            v-if="formData.specialties?.length"
-            class="flex flex-wrap gap-2 mt-2"
-          >
-            <UBadge
-              v-for="(specialty, index) in formData.specialties"
-              :key="index"
-              variant="soft"
-              class="cursor-pointer"
-              @click="removeSpecialty(index)"
-            >
-              {{ specialty }} ×
-            </UBadge>
-          </div>
-        </UFormGroup>
+          Verified Supplier
+        </label>
+      </div>
 
-        <!-- Avatar -->
-        <UFormGroup label="Avatar URL" name="avatar">
-          <UInput
-            v-model="formData.avatar"
-            placeholder="https://example.com/avatar.jpg"
+      <div class="form-field">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            :checked="props.supplier?.featured || false"
+            @change="updateFeatured($event.target.checked)"
           />
-        </UFormGroup>
+          Featured Supplier
+        </label>
+      </div>
 
-        <!-- Actions -->
-        <div class="flex justify-end gap-4">
-          <UButton variant="outline" @click="$emit('cancel')"> Cancel </UButton>
-          <UButton type="submit" :loading="loading"> Save Changes </UButton>
-        </div>
-      </UForm>
-    </UCard>
-  </div>
+      <!-- Client Types -->
+      <FireMoleculesFormsFirestoreArrayOfStrings
+        label="Client Types Served"
+        :firebase-value="props.supplier?.client_types || []"
+        placeholder="Types of clients you serve (e.g., Restaurants, Hotels, Catering)"
+        :update-function="updateClientTypes"
+      />
+
+      <!-- Additional Info -->
+      <div class="form-note">
+        <h3>Additional Information</h3>
+        <p class="text-gray-600 text-sm">
+          Products, certifications, testimonials, and location details can be
+          managed through dedicated sections once your profile is created.
+        </p>
+      </div>
+    </div>
+  </client-only>
 </template>
 
 <script setup>
 const props = defineProps({
   supplier: {
     type: Object,
-    required: true,
+    default: () => ({}),
   },
 })
 
-const emit = defineEmits(['save', 'cancel'])
-
-// Form state
-const loading = ref(false)
-const formData = ref({
-  business_name: props.supplier.business_name || '',
-  title: props.supplier.title || '',
-  bio_short: props.supplier.bio_short || '',
-  bio_long: props.supplier.bio_long || '',
-  specialties: props.supplier.specialties || [],
-  avatar: props.supplier.avatar || '',
-})
-
-const specialtiesInput = ref(formData.value.specialties?.join(', ') || '')
-
-// Methods
-function updateSpecialties() {
-  if (specialtiesInput.value) {
-    formData.value.specialties = specialtiesInput.value
-      .split(',')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0)
-  } else {
-    formData.value.specialties = []
-  }
-}
-
-function removeSpecialty(index) {
-  formData.value.specialties.splice(index, 1)
-  specialtiesInput.value = formData.value.specialties.join(', ')
-}
-
-async function onSubmit() {
-  loading.value = true
-  try {
-    await emit('save', formData.value)
-  } finally {
-    loading.value = false
-  }
-}
+// Import the supplier update composable
+const {
+  updateBusinessName,
+  updateEmail,
+  updateTitle,
+  updateWebsite,
+  updateBusinessType,
+  updateContactPerson,
+  updatePhone,
+  updateBioShort,
+  updateBioLong,
+  updateYearsInBusiness,
+  updateEmployeeCount,
+  updateAnnualCapacity,
+  updateSpecialties,
+  updateQualityStandards,
+  updateSustainabilityPractices,
+  updateDeliveryMethods,
+  updateDeliverySchedule,
+  updatePaymentTerms,
+  updateBulkDiscounts,
+  updateSeasonalPricing,
+  updateVerified,
+  updateFeatured,
+  updateClientTypes,
+} = useSupplierUpdate()
 </script>
 
 <style scoped>
-.supplier-edit-form {
-  @apply max-w-2xl mx-auto;
+.edit-component {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form-field {
+  margin-bottom: 20px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #374151;
+}
+
+.checkbox-label input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+}
+
+.form-note {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.form-note h3 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.form-note p {
+  margin: 0;
+  line-height: 1.5;
 }
 </style>

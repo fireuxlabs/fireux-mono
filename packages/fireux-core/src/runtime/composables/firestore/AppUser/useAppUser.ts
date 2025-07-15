@@ -1,9 +1,9 @@
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
 import type { DocumentReference } from 'firebase/firestore'
 import { useFirestoreManager } from '../useFirestoreManager'
-import type { AppUser } from '../../../models/appUser.model'
+import type { AppUser } from '../../../models/core/appUser.model'
 import { useAppUserUtils } from './useAppUserUtils'
 import { useAppUserEnsure } from './useAppUserEnsure'
 import { useAppUserUpdate } from './useAppUserUpdate'
@@ -12,7 +12,7 @@ import { useAppUserComputed } from './useAppUserComputed'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { getApps } from 'firebase/app'
 
-export function useAppUser() {
+export async function useAppUser() {
   const { appId } = useFireUXConfig()
 
   // Ensure Firebase is initialized
@@ -38,10 +38,10 @@ export function useAppUser() {
 
   const { data: appUser } = useDocument<AppUser>(appUserDocRef)
 
-  // Collections - only fetch on client side
-  const appUsers = import.meta.client
-    ? firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
-    : ref([])
+  // Collections - await the fetch like useProfile does
+  const appUsers = await firestoreFetchCollection<AppUser>(
+    `apps/${appId}/users`,
+  )
 
   return {
     // Current entity

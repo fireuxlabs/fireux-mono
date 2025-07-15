@@ -1,235 +1,354 @@
-<template>  <div v-if="chef" class="profile-display-card">
-    <!-- Profile Header -->
+<template>
+  <div v-if="chef" class="chef-profile">
+    <!-- Header Section -->
     <div class="profile-header">
-      <div class="profile-avatar-section">
-        <UAvatar
-          :src="chef.avatarUrl"
-          :alt="chef.displayName"
-          size="xl"
-          :text="getInitials(chef.displayName)"
-        />
-      </div>
-      <div class="profile-info-section">
-        <h1 class="profile-name">
-          {{ chef.displayName }}
-        </h1>
-        <p v-if="chef.title" class="profile-subtitle">
-          {{ chef.title }}
-        </p>
-        <p v-if="chef.email" class="profile-contact">
-          <UIcon name="i-heroicons-envelope" />
-          {{ chef.email }}
-        </p>
+      <FireAtomsImagesProfileImage
+        v-if="chef.profile_image"
+        :src="chef.profile_image.url"
+        :alt="`${chef.chef_name} profile`"
+        size="large"
+      />
+      <div class="profile-info">
+        <h1>{{ chef.chef_name }}</h1>
+        <h2 v-if="chef.title">{{ chef.title }}</h2>
+        <p v-if="chef.bio_short" class="bio-short">{{ chef.bio_short }}</p>
+        <div v-if="chef.years_experience" class="experience-badge">
+          {{ chef.years_experience }} years of experience
+        </div>
       </div>
     </div>
 
-    <!-- Bio Section -->
-    <div v-if="chef.bio_short || chef.bio_long" class="profile-content-section">
-      <h3 class="profile-content-title">About</h3>
-      <p class="profile-content-text">
-        {{ chef.bio_long || chef.bio_short }}
-      </p>
-    </div>
-
-    <!-- Specialties Section -->
-    <div
-      v-if="chef.specialties && chef.specialties.length > 0"
-      class="profile-content-section"
-    >
-      <h3 class="profile-content-title">Specialties</h3>
-      <div class="specialties-grid">
-        <UBadge
+    <!-- Specialties -->
+    <div v-if="chef.specialties?.length" class="section">
+      <h3>Specialties</h3>
+      <div class="tags">
+        <span
           v-for="specialty in chef.specialties"
           :key="specialty"
-          variant="soft"
-          size="md"
+          class="tag"
         >
           {{ specialty }}
-        </UBadge>
+        </span>
       </div>
     </div>
 
-    <!-- Stats Section -->
-    <div v-if="hasStats" class="profile-content-section">
-      <h3 class="profile-content-title">Stats</h3>
-      <div class="stats-grid">
-        <div v-if="chef.total_recipes" class="stat-item">
-          <UIcon name="i-lucide-book-open" class="stat-icon" />
-          <span class="stat-value">{{ chef.total_recipes }}</span>
-          <span class="stat-label">Recipes</span>
-        </div>
-        <div v-if="chef.total_followers" class="stat-item">
-          <UIcon name="i-lucide-users" class="stat-icon" />
-          <span class="stat-value">{{
-            formatNumber(chef.total_followers)
-          }}</span>
-          <span class="stat-label">Followers</span>
+    <!-- Cuisine Expertise -->
+    <div v-if="chef.cuisine_expertise?.length" class="section">
+      <h3>Cuisine Expertise</h3>
+      <div class="tags">
+        <span
+          v-for="cuisine in chef.cuisine_expertise"
+          :key="cuisine"
+          class="tag"
+        >
+          {{ cuisine }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Detailed Bio -->
+    <div v-if="chef.bio_long" class="section">
+      <h3>About {{ chef.chef_name }}</h3>
+      <p class="bio-long">{{ chef.bio_long }}</p>
+    </div>
+
+    <!-- Professional Experience -->
+    <div v-if="chef.chef_experience?.length" class="section">
+      <h3>Professional Experience</h3>
+      <div class="experience-list">
+        <div
+          v-for="exp in chef.chef_experience"
+          :key="exp.name"
+          class="experience-item"
+        >
+          <div class="experience-header">
+            <img
+              v-if="exp.image_url"
+              :src="exp.image_url"
+              :alt="exp.name"
+              class="venue-logo"
+            />
+            <div>
+              <h4>{{ exp.role }}</h4>
+              <p class="venue-name">{{ exp.name }}</p>
+              <p class="date-range">
+                {{ exp.from_month }} {{ exp.from_year }} -
+                {{ exp.ongoing ? 'Present' : `${exp.to_month} ${exp.to_year}` }}
+              </p>
+            </div>
+          </div>
+          <p class="description">{{ exp.description }}</p>
         </div>
       </div>
     </div>
+
+    <!-- Culinary Education -->
+    <div v-if="chef.culinary_education?.length" class="section">
+      <h3>Culinary Education</h3>
+      <div class="education-list">
+        <div
+          v-for="edu in chef.culinary_education"
+          :key="edu.institution"
+          class="education-item"
+        >
+          <div class="education-header">
+            <img
+              v-if="edu.image_url"
+              :src="edu.image_url"
+              :alt="edu.institution"
+              class="institution-logo"
+            />
+            <div>
+              <h4>{{ edu.program }}</h4>
+              <p class="institution-name">{{ edu.institution }}</p>
+              <p class="date-range">
+                {{ edu.start_year }} -
+                {{ edu.ongoing ? 'Present' : edu.end_year }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gallery -->
+    <div v-if="chef.gallery?.length" class="section">
+      <h3>Gallery</h3>
+      <div class="gallery-grid">
+        <img
+          v-for="item in chef.gallery"
+          :key="item.name"
+          :src="item.image_url"
+          :alt="item.name"
+          class="gallery-image"
+        />
+      </div>
+    </div>
+
+    <!-- Awards & Certifications -->
+    <div
+      v-if="chef.awards?.length || chef.certifications?.length"
+      class="section"
+    >
+      <h3>Recognition</h3>
+      <div v-if="chef.awards?.length" class="subsection">
+        <h4>Awards</h4>
+        <ul>
+          <li v-for="award in chef.awards" :key="award">{{ award }}</li>
+        </ul>
+      </div>
+      <div v-if="chef.certifications?.length" class="subsection">
+        <h4>Certifications</h4>
+        <ul>
+          <li v-for="cert in chef.certifications" :key="cert">{{ cert }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Social Media -->
+    <div v-if="chef.social_media" class="section">
+      <h3>Connect</h3>
+      <div class="social-links">
+        <a
+          v-if="chef.social_media.instagram"
+          :href="chef.social_media.instagram"
+          target="_blank"
+          rel="noopener"
+        >
+          Instagram
+        </a>
+        <a
+          v-if="chef.social_media.facebook"
+          :href="chef.social_media.facebook"
+          target="_blank"
+          rel="noopener"
+        >
+          Facebook
+        </a>
+        <a
+          v-if="chef.social_media.youtube"
+          :href="chef.social_media.youtube"
+          target="_blank"
+          rel="noopener"
+        >
+          YouTube
+        </a>
+        <a
+          v-if="chef.social_media.website"
+          :href="chef.social_media.website"
+          target="_blank"
+          rel="noopener"
+        >
+          Website
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div v-else>
+    <p>Chef profile not found.</p>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-
 const props = defineProps({
   chef: {
     type: Object,
-    required: true,
+    default: null,
   },
 })
-
-// Computed properties
-const hasStats = computed(() => {
-  return props.chef?.total_recipes || props.chef?.total_followers
-})
-
-// Helper functions
-function getInitials(name) {
-  if (!name) return 'C'
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-}
-
-function formatNumber(num) {
-  if (!num) return '0'
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M'
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'k'
-  }
-  return num.toString()
-}
 </script>
 
 <style scoped>
-.profile-display-card {
-  max-width: 56rem;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+.chef-profile {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .profile-header {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  gap: 20px;
+  margin-bottom: 30px;
   align-items: flex-start;
 }
 
-@media (min-width: 640px) {
-  .profile-header {
-    flex-direction: row;
-  }
+.profile-info h1 {
+  font-size: 2.5rem;
+  margin: 0 0 5px 0;
 }
 
-.profile-avatar-section {
-  flex-shrink: 0;
+.profile-info h2 {
+  font-size: 1.5rem;
+  color: #666;
+  margin: 0 0 10px 0;
 }
 
-.profile-info-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.bio-short {
+  font-size: 1.1rem;
+  margin: 10px 0;
 }
 
-.profile-name {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-  font-weight: 700;
-  color: rgb(17 24 39);
+.experience-badge {
+  background: #f0f9ff;
+  color: #0369a1;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  display: inline-block;
 }
 
-.profile-subtitle {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  color: rgb(75 85 99);
+.section {
+  margin-bottom: 30px;
 }
 
-.profile-contact {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: rgb(107 114 128);
+.section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #333;
 }
 
-.profile-content-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.profile-content-title {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  font-weight: 600;
-  color: rgb(17 24 39);
-}
-
-.profile-content-text {
-  color: rgb(55 65 81);
-  line-height: 1.625;
-}
-
-.specialties-grid {
+.tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 1rem;
+.tag {
+  background: #e5e7eb;
+  color: #374151;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.9rem;
 }
 
-@media (min-width: 640px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .stats-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-.stat-item {
+.experience-list,
+.education-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-  background-color: rgb(249 250 251);
-  border-radius: 0.5rem;
+  gap: 20px;
 }
 
-.stat-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  color: rgb(107 114 128);
-  margin-bottom: 0.5rem;
+.experience-item,
+.education-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
 }
 
-.stat-value {
-  font-size: 1.5rem;
-  line-height: 2rem;
-  font-weight: 700;
-  color: rgb(17 24 39);
+.experience-header,
+.education-header {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
 }
 
-.stat-label {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  color: rgb(107 114 128);
+.venue-logo,
+.institution-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.venue-name,
+.institution-name {
+  font-weight: 600;
+  color: #374151;
+  margin: 2px 0;
+}
+
+.date-range {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin: 2px 0;
+}
+
+.description {
+  margin-top: 10px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.gallery-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.subsection {
+  margin-bottom: 20px;
+}
+
+.subsection h4 {
+  margin-bottom: 10px;
+  color: #4b5563;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.social-links a {
+  color: #3b82f6;
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.social-links a:hover {
+  background: #3b82f6;
+  color: white;
 }
 </style>

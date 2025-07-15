@@ -6,6 +6,7 @@ export interface AppUser {
   last_name: string
   display_name: string // Preferred display name (could be nickname)
   handle: string
+  slug: string // URL-friendly identifier for user profiles
   avatar: string // Avatar URL
   bio: string
   created_at: string
@@ -48,5 +49,6 @@ export interface Author {
   display_name: string
   handle: string
   avatar: string
+  slug: string
   id: string
 }

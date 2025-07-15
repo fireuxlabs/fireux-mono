@@ -1,70 +1,98 @@
-import { ref } from 'vue'
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'
-import { useFirestore, useCurrentUser } from 'vuefire'
-import type { Supplier } from '../../../../models/Supplier.model'
+/**
+ * Supplier Update Composable
+ *
+ * Handles updates for Supplier profiles in the Misebox package.
+ */
+
+import { doc, updateDoc } from 'firebase/firestore'
 
 export function useSupplierUpdate() {
   const db = useFirestore()
-  const currentUser = useCurrentUser()
-  const updating = ref(false)
-  const updateError = ref<Error | null>(null)
+  const { waitForCurrentUser } = useFirestoreUtils()
 
-  /**
-   * Update an existing supplier profile
-   */
-  async function updateSupplier(
-    updateData: Partial<Supplier>,
-    id?: string
-  ): Promise<string> {
-    const targetId = id || currentUser.value?.uid
+  // Generic function for updating single fields
+  const updateSingleField = async (
+    field: string,
+    value: string | number | boolean
+  ) => {
+    const user = await waitForCurrentUser()
+    if (!user) throw new Error('User not authenticated')
 
-    if (!targetId) {
-      throw new Error('No profile ID provided and user is not authenticated')
-    }
-
-    updating.value = true
-    updateError.value = null
-
-    try {
-      // Create clean update data, excluding immutable fields
-      const profileData = {
-        ...updateData,
-        updated_at: serverTimestamp(),
-      }
-
-      // Remove immutable fields if they exist
-      if ('uid' in profileData) delete profileData.uid
-      if ('created_at' in profileData) delete profileData.created_at
-
-      const supplierRef = doc(db, 'suppliers', targetId)
-      await updateDoc(supplierRef, profileData)
-
-      return 'success'
-    } catch (err: any) {
-      updateError.value =
-        err instanceof Error
-          ? err
-          : new Error(err?.message || 'Failed to update supplier profile')
-      throw updateError.value
-    } finally {
-      updating.value = false
-    }
+    const docRef = doc(db, 'suppliers', user.uid)
+    await updateDoc(docRef, {
+      [field]: value,
+      updated_at: new Date(),
+    })
   }
 
-  /**
-   * Update specific fields of a supplier profile (legacy helper - use updateSupplier instead)
-   */
-  async function updateSupplierFields(
-    fields: Partial<Supplier>,
-    uid?: string
-  ): Promise<string> {
-    return updateSupplier(fields, uid)
+  // Generic function for updating array fields
+  const updateArrayField = async (field: string, value: any[]) => {
+    const user = await waitForCurrentUser()
+    if (!user) throw new Error('User not authenticated')
+
+    const docRef = doc(db, 'suppliers', user.uid)
+    await updateDoc(docRef, {
+      [field]: value,
+      updated_at: new Date(),
+    })
   }
 
   return {
-    updateSupplier,
-    updateSupplierFields,
-    updating,
-    updateError,
+    // Basic business information
+    updateBusinessName: (value: string) =>
+      updateSingleField('business_name', value),
+    updateEmail: (value: string) => updateSingleField('email', value),
+    updateTitle: (value: string) => updateSingleField('title', value),
+    updateBioShort: (value: string) => updateSingleField('bio_short', value),
+    updateBioLong: (value: string) => updateSingleField('bio_long', value),
+    updateBusinessType: (value: string) =>
+      updateSingleField('business_type', value),
+    updateContactPerson: (value: string) =>
+      updateSingleField('contact_person', value),
+    updatePhone: (value: string) => updateSingleField('phone', value),
+    updateWebsite: (value: string) => updateSingleField('website', value),
+
+    // Business stats
+    updateYearsInBusiness: (value: number) =>
+      updateSingleField('years_in_business', value),
+    updateEmployeeCount: (value: number) =>
+      updateSingleField('employee_count', value),
+    updateAnnualCapacity: (value: string) =>
+      updateSingleField('annual_capacity', value),
+
+    // Pricing and services
+    updateBulkDiscounts: (value: boolean) =>
+      updateSingleField('bulk_discounts', value),
+    updateSeasonalPricing: (value: boolean) =>
+      updateSingleField('seasonal_pricing', value),
+
+    // Status fields
+    updateVerified: (value: boolean) => updateSingleField('verified', value),
+    updateFeatured: (value: boolean) => updateSingleField('featured', value),
+
+    // Array field updates
+    updateSpecialties: (value: string[]) =>
+      updateArrayField('specialties', value),
+    updateQualityStandards: (value: string[]) =>
+      updateArrayField('quality_standards', value),
+    updateSustainabilityPractices: (value: string[]) =>
+      updateArrayField('sustainability_practices', value),
+    updateDeliveryMethods: (value: string[]) =>
+      updateArrayField('delivery_methods', value),
+    updatePaymentTerms: (value: string[]) =>
+      updateArrayField('payment_terms', value),
+    updateClientTypes: (value: string[]) =>
+      updateArrayField('client_types', value),
+
+    // Complex object updates (will need custom components)
+    updateProductsOffered: (value: any[]) =>
+      updateArrayField('products_offered', value),
+    updateCertifications: (value: any[]) =>
+      updateArrayField('certifications', value),
+    updateActiveClients: (value: any[]) =>
+      updateArrayField('active_clients', value),
+    updateTestimonials: (value: any[]) =>
+      updateArrayField('testimonials', value),
+    updateLocations: (value: any[]) => updateArrayField('locations', value),
   }
 }
