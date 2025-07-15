@@ -19,11 +19,11 @@ export function useSupplierValidation() {
     // Business type validation
     const validBusinessTypes = [
       'farm',
-      'distributor', 
+      'distributor',
       'manufacturer',
       'wholesaler',
       'producer',
-      'other'
+      'other',
     ]
     if (
       supplier.business_type &&
@@ -70,10 +70,10 @@ export function useSupplierValidation() {
         'cod',
         'prepaid',
         'credit-card',
-        'other'
+        'other',
       ]
       const invalidTerms = supplier.payment_terms.filter(
-        term => !validPaymentTerms.includes(term)
+        (term) => !validPaymentTerms.includes(term)
       )
       if (invalidTerms.length > 0) {
         errors.push(`Invalid payment terms: ${invalidTerms.join(', ')}`)
@@ -141,7 +141,7 @@ export function useSupplierValidation() {
    * Helper function to validate phone format
    */
   function isValidPhone(phone: string): boolean {
-    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/
+    const phoneRegex = /^\+?[\d\s\-()]{10,}$/
     return phoneRegex.test(phone)
   }
 
@@ -161,7 +161,7 @@ export function useSupplierValidation() {
    * Helper function to validate time format (HH:MM)
    */
   function isValidTime(time: string): boolean {
-    const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/
+    const timeRegex = /^([01]?\d|2[0-3]):[0-5]\d$/
     return timeRegex.test(time)
   }
 

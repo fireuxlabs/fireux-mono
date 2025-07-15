@@ -1,7 +1,4 @@
-import type {
-  Profile,
-  ProfileImage,
-} from 'fireux-core/src/runtime/models/profiles/profile.model'
+import type { Profile } from 'fireux-core/src/runtime/models/profiles/profile.model'
 
 // Recipe Entry
 export interface Recipe {

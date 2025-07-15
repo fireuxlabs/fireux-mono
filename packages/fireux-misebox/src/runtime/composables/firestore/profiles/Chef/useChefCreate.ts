@@ -1,11 +1,12 @@
 import { ref } from 'vue'
-import { serverTimestamp } from 'firebase/firestore'
-import { useCurrentUser } from 'vuefire'
+import { serverTimestamp, doc, setDoc } from 'firebase/firestore'
+import { useCurrentUser, useFirestore } from 'vuefire'
 import type { Chef } from '../../../../models/profiles/Chef.model'
 import { useChefValidation } from './utils/useChefValidation'
 
 export function useChefCreate() {
   const currentUser = useCurrentUser()
+  const db = useFirestore()
   const { validateChefData } = useChefValidation()
 
   const creating = ref(false)
@@ -35,12 +36,11 @@ export function useChefCreate() {
         deleted: false,
       }
 
-      // TODO: Use setDocument from useFirestoreManager once import path is fixed
-      // For now, keeping original approach but standardized to use UID as document ID
-      console.log(
-        'Chef create standardized - needs setDocument implementation',
-        formattedData
-      )
+      // Create chef document with UID as document ID
+      const docRef = doc(db, 'chefs', currentUser.value.uid)
+      await setDoc(docRef, formattedData)
+
+      console.log('Chef profile created successfully', formattedData)
 
       return 'success'
     } catch (err: any) {

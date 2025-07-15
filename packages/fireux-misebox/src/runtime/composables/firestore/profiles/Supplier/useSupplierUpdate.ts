@@ -5,37 +5,40 @@
  */
 
 import { doc, updateDoc } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
+
+// Import the useFirestoreUtils from fireux-core
+declare global {
+  function useFirestoreUtils(): {
+    waitForCurrentUser: () => Promise<any>
+  }
+}
 
 export function useSupplierUpdate() {
   const db = useFirestore()
   const { waitForCurrentUser } = useFirestoreUtils()
 
-  // Generic function for updating single fields
+  // Generic function for updating any field
+  const updateField = async (field: string, value: any) => {
+    const user = await waitForCurrentUser()
+    if (!user) throw new Error('User not authenticated')
+
+    const docRef = doc(db, 'suppliers', user.uid)
+    await updateDoc(docRef, {
+      [field]: value,
+      updated_at: new Date(),
+    })
+  }
+
+  // Wrapper for single field updates with type safety
   const updateSingleField = async (
     field: string,
     value: string | number | boolean
-  ) => {
-    const user = await waitForCurrentUser()
-    if (!user) throw new Error('User not authenticated')
+  ) => updateField(field, value)
 
-    const docRef = doc(db, 'suppliers', user.uid)
-    await updateDoc(docRef, {
-      [field]: value,
-      updated_at: new Date(),
-    })
-  }
-
-  // Generic function for updating array fields
-  const updateArrayField = async (field: string, value: any[]) => {
-    const user = await waitForCurrentUser()
-    if (!user) throw new Error('User not authenticated')
-
-    const docRef = doc(db, 'suppliers', user.uid)
-    await updateDoc(docRef, {
-      [field]: value,
-      updated_at: new Date(),
-    })
-  }
+  // Wrapper for array field updates with type safety
+  const updateArrayField = async (field: string, value: any[]) =>
+    updateField(field, value)
 
   return {
     // Basic business information

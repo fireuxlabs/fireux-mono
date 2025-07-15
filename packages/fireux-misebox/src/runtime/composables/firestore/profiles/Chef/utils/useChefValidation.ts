@@ -150,7 +150,7 @@ export function useChefValidation() {
       'saturday',
       'sunday',
     ]
-    const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/
+    const timeRegex = /^([01]?\d|2[0-3]):[0-5]\d$/
 
     for (const day in availability) {
       if (!validDays.includes(day)) {
@@ -231,9 +231,9 @@ export function useChefValidation() {
       }
     }
 
-    if (chefData.kitchen_experience) {
+    if (chefData.chef_experience) {
       const experienceValidation = validateKitchenExperience(
-        chefData.kitchen_experience
+        chefData.chef_experience
       )
       if (!experienceValidation.isValid && experienceValidation.error) {
         errors.push(experienceValidation.error)
@@ -263,19 +263,19 @@ export function useChefValidation() {
       }
     }
 
-    if (chefData.availability) {
-      const availabilityValidation = validateAvailability(chefData.availability)
-      if (!availabilityValidation.isValid && availabilityValidation.error) {
-        errors.push(availabilityValidation.error)
-      }
-    }
+    // Remove availability validation since it's not in the Chef model
+    // if (chefData.availability) {
+    //   const availabilityValidation = validateAvailability(chefData.availability)
+    //   if (!availabilityValidation.isValid && availabilityValidation.error) {
+    //     errors.push(availabilityValidation.error)
+    //   }
+    // }
 
-    const ratesValidation = validateHourlyRates(
-      chefData.hourly_rate_min,
-      chefData.hourly_rate_max
-    )
-    if (!ratesValidation.isValid && ratesValidation.error) {
-      errors.push(ratesValidation.error)
+    // Fix hourly rate validation - Chef model has hourly_rate, not min/max
+    if (chefData.hourly_rate !== undefined) {
+      if (chefData.hourly_rate < 0) {
+        errors.push('Hourly rate cannot be negative')
+      }
     }
 
     return {

@@ -27,6 +27,11 @@ Each app uses a consistent two-color system:
 | **MiseBox**  | `green` (`#22C55E`)  | `slate` (`#64748B`) | `app.config.ts` |
 | **FireUX**   | `yellow` (`#EAB308`) | `zinc` (`#71717A`)  | `app.config.ts` |
 
+### Tenant Examples
+
+- **CleanBox**: cleanbox-app, richies-reinigung
+- **MiseBox**: misebox-app, niederhorn
+
 ### Changing App Colors
 
 1. **Update** `app/app.config.ts`:
