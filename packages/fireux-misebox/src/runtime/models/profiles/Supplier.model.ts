@@ -1,4 +1,7 @@
-import type { Profile } from 'fireux-core/src/runtime/models/profiles/profile.model'
+import type {
+  Profile,
+  ProfileConfig,
+} from 'fireux-core/src/runtime/models/profiles/profile.model'
 
 // Product/Item offered by supplier
 export interface SupplierProduct {
@@ -114,7 +117,52 @@ export interface Supplier extends Profile {
   featured?: boolean // Whether supplier is featured
 }
 
-export const supplierConfig = {
+// Supplier validation functions
+export function validateSupplierProfile(supplier: Partial<Supplier>): boolean {
+  return !!(
+    supplier.business_name &&
+    supplier.specialties &&
+    supplier.specialties.length > 0
+  )
+}
+
+export function validateSupplierProduct(
+  product: Partial<SupplierProduct>
+): boolean {
+  return !!(product.name && product.category && product.unit_type)
+}
+
+// Supplier Profile Configuration with enhanced functionality
+export const supplierConfig: ProfileConfig = {
   collectionName: 'suppliers',
   profileType: 'Supplier',
+
+  // Validation function
+  validationFn: validateSupplierProfile,
+
+  // Required fields for profile creation
+  requiredFields: ['business_name', 'specialties'],
+
+  // Searchable fields for profile discovery
+  searchableFields: [
+    'business_name',
+    'specialties',
+    'business_type',
+    'location',
+  ],
+
+  // Default values for new supplier profiles
+  defaultValues: {
+    specialties: [],
+    certifications: [],
+    products_offered: [],
+    verified: false,
+    featured: false,
+    accepts_bulk_orders: false,
+    accepts_custom_orders: false,
+  },
 }
+
+// Export types for easier importing
+export type SupplierInput = Omit<Supplier, 'uid' | 'created_at' | 'updated_at'>
+export type SupplierUpdate = Partial<SupplierInput>

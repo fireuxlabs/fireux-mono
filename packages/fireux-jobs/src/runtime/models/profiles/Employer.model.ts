@@ -98,7 +98,48 @@ export interface Employer extends Profile {
   deleted?: boolean // Soft delete flag
 }
 
+// Employer validation functions
+export function validateEmployerProfile(employer: Partial<Employer>): boolean {
+  return !!(
+    employer.company_name &&
+    employer.business_type &&
+    employer.locations
+  )
+}
+
+export function validateJobOpening(job: Partial<JobOpening>): boolean {
+  return !!(job.title && job.role && job.location && job.type)
+}
+
+// Employer Profile Configuration with enhanced functionality
 export const employerConfig: ProfileConfig = {
   collectionName: 'employers',
   profileType: 'Employer',
+
+  // Validation function
+  validationFn: validateEmployerProfile,
+
+  // Required fields for profile creation
+  requiredFields: ['company_name', 'business_type', 'locations'],
+
+  // Searchable fields for profile discovery
+  searchableFields: [
+    'company_name',
+    'business_type',
+    'company_size',
+    'locations',
+  ],
+
+  // Default values for new employer profiles
+  defaultValues: {
+    job_openings: [],
+    benefits: [],
+    company_culture: [],
+    verified: false,
+    featured: false,
+  },
 }
+
+// Export types for easier importing
+export type EmployerInput = Omit<Employer, 'uid' | 'created_at' | 'updated_at'>
+export type EmployerUpdate = Partial<EmployerInput>

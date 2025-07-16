@@ -1,10 +1,16 @@
-# 🔥 FireUX Ecosystem
+# 🔥 FireUX - Multi-Domain Marketplace Platform
 
 [![Production Status](https://img.shields.io/badge/Status-Production-green.svg)](https://fireux-2005.web.app)
 [![Deployment](https://img.shields.io/badge/Deployment-Automated-blue.svg)](#)
 [![Monorepo](https://img.shields.io/badge/Structure-Monorepo-orange.svg)](#)
 
 > Modern Nuxt 3 monorepo powering the next generation of service business platforms
+
+## 📚 Complete Documentation
+
+**📖 [FIREUX.md](./FIREUX.md) - Complete Documentation**
+
+Everything you need to know about architecture, development, business domains, API usage, and troubleshooting in one comprehensive guide.
 
 ## 🚀 Live Applications
 

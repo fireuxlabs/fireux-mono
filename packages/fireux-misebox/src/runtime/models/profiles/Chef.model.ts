@@ -1,4 +1,7 @@
-import type { Profile } from 'fireux-core/src/runtime/models/profiles/profile.model'
+import type {
+  Profile,
+  ProfileConfig,
+} from 'fireux-core/src/runtime/models/profiles/profile.model'
 
 // Recipe Entry
 export interface Recipe {
@@ -131,7 +134,46 @@ export interface Chef extends Profile {
   verified?: boolean // Whether chef is verified
 }
 
-export const chefConfig = {
+// Chef validation functions
+export function validateChefProfile(chef: Partial<Chef>): boolean {
+  return !!(chef.chef_name && chef.specialties && chef.specialties.length > 0)
+}
+
+export function validateChefRecipe(recipe: Partial<Recipe>): boolean {
+  return !!(recipe.title && recipe.ingredients && recipe.instructions)
+}
+
+// Chef Profile Configuration with enhanced functionality
+export const chefConfig: ProfileConfig = {
   collectionName: 'chefs',
   profileType: 'Chef',
+
+  // Validation function
+  validationFn: validateChefProfile,
+
+  // Required fields for profile creation
+  requiredFields: ['chef_name', 'specialties'],
+
+  // Searchable fields for profile discovery
+  searchableFields: [
+    'chef_name',
+    'specialties',
+    'cuisine_expertise',
+    'location',
+  ],
+
+  // Default values for new chef profiles
+  defaultValues: {
+    specialties: [],
+    cuisine_expertise: [],
+    years_experience: 0,
+    verified: false,
+    gallery: [],
+    chef_experience: [],
+    culinary_education: [],
+  },
 }
+
+// Export types for easier importing
+export type ChefInput = Omit<Chef, 'uid' | 'created_at' | 'updated_at'>
+export type ChefUpdate = Partial<ChefInput>

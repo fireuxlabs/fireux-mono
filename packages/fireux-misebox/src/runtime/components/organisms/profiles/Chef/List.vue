@@ -4,11 +4,7 @@
   </div>
 
   <div v-else-if="chefs?.length" class="profile-list">
-    <FireOrganismsProfilesChefCardsCell
-      v-for="chef in chefs"
-      :key="chef.id"
-      :chef="chef"
-    />
+    <MiseChefCardsCell v-for="chef in chefs" :key="chef.id" :chef="chef" />
   </div>
 
   <div v-else>

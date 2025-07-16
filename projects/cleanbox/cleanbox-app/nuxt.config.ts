@@ -14,6 +14,7 @@ export default defineNuxtConfig({
   modules: [
     'fireux-core',
     'fireux-jobs',
+    'fireux-cleanbox',
     '@nuxt/content',
     [
       '@vite-pwa/nuxt',

@@ -1,11 +1,11 @@
 <template>
   <div class="supplier-profile-card">
     <div class="card-header">
-      <FireAtomsImagesProfileImage
+      <img
         v-if="supplier.profile_image"
         :src="supplier.profile_image.url"
         :alt="`${supplier.business_name} profile`"
-        size="large"
+        class="profile-image large"
       />
       <div class="supplier-details">
         <h2>{{ supplier.business_name }}</h2>

@@ -24,7 +24,7 @@ export default defineNuxtConfig({
         registerType: 'autoUpdate',
         manifest: {
           name: process.env.APP_NAME || 'Niederhorn',
-          short_name: process.env.APP_SHORT_NAME || 'Niederhorn',
+          short_name: process.env.APP_SHORT_NAME || 'Nied',
           start_url: '/',
           display: 'standalone',
           theme_color: process.env.APP_PRIMARY_COLOR
@@ -49,6 +49,15 @@ export default defineNuxtConfig({
         workbox: {
           navigateFallback: '/',
           cleanupOutdatedCaches: true,
+          clientsClaim: true,
+          skipWaiting: true,
+          globPatterns: ['**/*.{js,css,html,png,svg,ico,json,txt,woff2}'],
+        },
+        devOptions: {
+          enabled: process.env.NODE_ENV === 'development',
+          suppressWarnings: true,
+          navigateFallbackAllowlist: [/^\/$/],
+          type: 'module',
         },
       },
     ],
@@ -63,12 +72,7 @@ export default defineNuxtConfig({
           messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
           appId: process.env.FIREBASE_APP_ID,
         },
-        admin: {
-          serviceAccount: './config/firebase-service-account.json',
-        },
-        auth: {
-          enabled: true,
-        },
+        auth: { enabled: true },
       },
     ],
     '@nuxt/ui',
@@ -77,19 +81,6 @@ export default defineNuxtConfig({
     preset: 'firebase',
     firebase: {
       gen: 2,
-      nodeVersion: '22',
-    },
-  },
-  runtimeConfig: {
-    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
-    public: {
-      appName: process.env.APP_NAME || 'Niederhorn',
-      appShortName: process.env.APP_SHORT_NAME || 'Niederhorn',
-      appDescription:
-        process.env.APP_DESCRIPTION || 'Premium culinary marketplace',
-      appVersion: process.env.APP_VERSION || '1.0.0',
-      primaryColor: process.env.APP_PRIMARY_COLOR || '8B5CF6',
-      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
     },
   },
 })

@@ -14,6 +14,8 @@
 </template>
 
 <script setup>
+import { supplierConfig } from '../../models/profiles/Supplier.model'
+
 // Set page meta
 definePageMeta({
   title: 'Browse Suppliers',
@@ -21,27 +23,36 @@ definePageMeta({
 })
 
 // Use the profile composable to fetch suppliers
-const { all: suppliers, loading } = await useProfile('suppliers')
+const { all: suppliers, loading } = await useProfile(supplierConfig)
 </script>
 
 <style scoped>
 .profile-page {
-  @apply container mx-auto px-4 py-8;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .profile-page-header {
-  @apply text-center mb-8;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
 .profile-page-title {
-  @apply text-3xl font-bold text-gray-800 mb-4;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
 }
 
 .profile-page-description {
-  @apply text-lg text-gray-600 max-w-2xl mx-auto;
+  font-size: 1.125rem;
+  color: #6b7280;
+  max-width: 32rem;
+  margin: 0 auto;
 }
 
 .profile-page-content {
-  @apply mt-8;
+  margin-top: 2rem;
 }
 </style>

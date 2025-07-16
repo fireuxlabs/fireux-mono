@@ -27,6 +27,8 @@ export interface FirestoreObject {
 export interface ObjectConfig {
   /** Collection name in Firestore */
   collectionName: string
+  /** Object type name for dynamic function naming */
+  objectType?: string
   /** Optional create composable for object-specific logic */
   createComposable?: () => {
     [key: string]: any

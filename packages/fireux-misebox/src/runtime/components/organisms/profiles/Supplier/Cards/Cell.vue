@@ -1,11 +1,11 @@
 <template>
   <div class="supplier-card">
     <div class="card-header">
-      <FireAtomsImagesProfileImage
+      <img
         v-if="supplier.profile_image"
         :src="supplier.profile_image.url"
         :alt="`${supplier.business_name} profile`"
-        size="medium"
+        class="profile-image medium"
       />
       <div class="supplier-info">
         <h3>{{ supplier.business_name }}</h3>
@@ -22,9 +22,9 @@
     <p v-if="supplier.bio_short" class="bio">{{ supplier.bio_short }}</p>
 
     <div v-if="supplier.specialties?.length" class="specialties">
-      <span 
-        v-for="specialty in supplier.specialties.slice(0, 3)" 
-        :key="specialty" 
+      <span
+        v-for="specialty in supplier.specialties.slice(0, 3)"
+        :key="specialty"
         class="specialty-tag"
       >
         {{ specialty }}
@@ -37,7 +37,9 @@
     <div class="badges">
       <span v-if="supplier.verified" class="badge verified">✓ Verified</span>
       <span v-if="supplier.featured" class="badge featured">★ Featured</span>
-      <span v-if="supplier.bulk_discounts" class="badge discount">Bulk Discounts</span>
+      <span v-if="supplier.bulk_discounts" class="badge discount"
+        >Bulk Discounts</span
+      >
     </div>
 
     <div class="card-footer">
@@ -49,12 +51,15 @@
           {{ supplier.total_connections }} connections
         </span>
       </div>
-      
+
       <div class="actions">
         <button class="btn-primary" @click="$emit('view-profile', supplier)">
           View Profile
         </button>
-        <button class="btn-secondary" @click="$emit('contact-supplier', supplier)">
+        <button
+          class="btn-secondary"
+          @click="$emit('contact-supplier', supplier)"
+        >
           Contact
         </button>
       </div>
@@ -79,7 +84,7 @@ const formatBusinessType = (type) => {
     manufacturer: 'Manufacturer',
     wholesaler: 'Wholesaler',
     producer: 'Producer',
-    other: 'Other'
+    other: 'Other',
   }
   return types[type] || type
 }
@@ -221,7 +226,8 @@ const formatBusinessType = (type) => {
   gap: 8px;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 0.9rem;

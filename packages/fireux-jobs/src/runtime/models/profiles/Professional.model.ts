@@ -123,7 +123,61 @@ export interface Professional extends Profile {
   deleted?: boolean // Soft delete flag
 }
 
+// Professional validation functions
+export function validateProfessionalProfile(
+  professional: Partial<Professional>
+): boolean {
+  return !!(professional.professional_name && professional.email)
+}
+
+export function validateKitchenExperience(
+  experience: Partial<KitchenExperience>
+): boolean {
+  return !!(experience.name && experience.role && experience.from_year)
+}
+
+// Professional Profile Configuration with enhanced functionality
 export const professionalConfig: ProfileConfig = {
   collectionName: 'professionals',
   profileType: 'Professional',
+
+  // Validation function
+  validationFn: validateProfessionalProfile,
+
+  // Required fields for profile creation
+  requiredFields: ['professional_name', 'email'],
+
+  // Searchable fields for profile discovery
+  searchableFields: [
+    'professional_name',
+    'title',
+    'cuisine_types',
+    'locations',
+  ],
+
+  // Default values for new professional profiles
+  defaultValues: {
+    cuisine_types: [],
+    languages: [],
+    kitchen_experience: [],
+    certifications: [],
+    availability: {
+      monday: false,
+      tuesday: false,
+      wednesday: false,
+      thursday: false,
+      friday: false,
+      saturday: false,
+      sunday: false,
+    },
+    verified: false,
+    featured: false,
+  },
 }
+
+// Export types for easier importing
+export type ProfessionalInput = Omit<
+  Professional,
+  'uid' | 'created_at' | 'updated_at'
+>
+export type ProfessionalUpdate = Partial<ProfessionalInput>

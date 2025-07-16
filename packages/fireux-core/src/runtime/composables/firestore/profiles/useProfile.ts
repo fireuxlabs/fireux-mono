@@ -3,7 +3,6 @@ import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
 import type { ProfileConfig } from '../../../models/profiles/profile.model'
 import { useFirestoreManager } from '../useFirestoreManager'
-import { useFireUXConfig } from '../../FireUXConfig'
 import { useProfileCreate } from './useProfileCreate'
 import { useProfileDelete } from './useProfileDelete'
 
@@ -36,7 +35,7 @@ export async function useProfile(profileConfig: ProfileConfig) {
   }
 
   // Expose create functionality
-  const profileCreate = useProfileCreate(config)
+  const profileCreate = await useProfileCreate(config)
 
   // Expose delete functionality
   const profileDelete = useProfileDelete(config)

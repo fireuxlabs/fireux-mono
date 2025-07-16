@@ -34,8 +34,13 @@ export interface Profile {
 export interface ProfileConfig {
   collectionName: string // e.g., 'professionals', 'employers'
   profileType: string // e.g., 'Professional', 'Employer'
-  appScoped?: boolean // Whether the profile is app-scoped or globally accessible
   updateComposable?: () => any // Optional profile-specific update composable
+  createComposable?: () => any // Optional profile-specific create composable
+  deleteComposable?: () => any // Optional profile-specific delete composable
+  validationFn?: (profile: any) => boolean // Optional validation function
+  requiredFields?: string[] // Required fields for profile creation
+  searchableFields?: string[] // Fields that can be searched
+  defaultValues?: Record<string, any> // Default values for new profiles
 }
 
 /**

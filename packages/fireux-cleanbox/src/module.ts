@@ -1,11 +1,16 @@
-import { createResolver, defineNuxtModule, addComponentsDir } from '@nuxt/kit'
+import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
-import { configureLayouts } from './config/layouts-config'
 import { configureModels } from './config/models-config'
+import { configureLayouts } from './config/layouts-config'
 import { configurePages } from './config/pages-config'
 
+// Module options interface
 export interface ModuleOptions {
+  /**
+   * Prefix for components
+   * @defaultValue `Clean`
+   */
   prefix?: string
 }
 
@@ -20,14 +25,25 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     prefix: 'Clean',
   },
-  setup(options, nuxt) {
+  async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // Configure package components, composables, layouts, models, and pages
+    // Install fireux-core module first
+    await installModule('fireux-core')
+
+    // Configure components
     configureComponents(resolver, options)
+
+    // Configure composables
     configureComposables(resolver)
-    configureLayouts(resolver)
+
+    // Configure models
     configureModels(resolver, nuxt)
+
+    // Configure layouts
+    configureLayouts(resolver, nuxt)
+
+    // Configure pages
     configurePages(resolver, nuxt)
 
     console.log(

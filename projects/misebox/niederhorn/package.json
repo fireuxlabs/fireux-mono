@@ -1,14 +1,13 @@
 {
-  "name": "niederhorn",
+  "name": "Niederhorn",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev --port 3004",
+    "dev": "nuxt dev --port 3010",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "clean": "rimraf dist"
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@nuxt/content": "^3.6.1",

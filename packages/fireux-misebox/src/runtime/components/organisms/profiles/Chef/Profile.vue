@@ -2,11 +2,11 @@
   <div v-if="chef" class="chef-profile">
     <!-- Header Section -->
     <div class="profile-header">
-      <FireAtomsImagesProfileImage
+      <img
         v-if="chef.profile_image"
         :src="chef.profile_image.url"
         :alt="`${chef.chef_name} profile`"
-        size="large"
+        class="profile-image large"
       />
       <div class="profile-info">
         <h1>{{ chef.chef_name }}</h1>

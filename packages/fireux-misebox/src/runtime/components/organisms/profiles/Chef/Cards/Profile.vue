@@ -1,11 +1,11 @@
 <template>
   <div class="chef-profile-card">
     <div class="card-header">
-      <FireAtomsImagesProfileImage
+      <img
         v-if="chef.profile_image"
         :src="chef.profile_image.url"
         :alt="`${chef.chef_name} profile`"
-        size="large"
+        class="profile-image large"
       />
       <div class="chef-details">
         <h2>{{ chef.chef_name }}</h2>

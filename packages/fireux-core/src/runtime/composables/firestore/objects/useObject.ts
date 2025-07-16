@@ -1,50 +1,53 @@
-// ~/composables/firestore/objects/useObject.ts
-
-import { ref, type Ref } from 'vue'
 import { useFirestoreManager } from '../useFirestoreManager'
-import type {
-  FirestoreObject,
-  ObjectConfig,
-} from '../../../models/objects/object.model'
+import { useObjectCreate } from './useObjectCreate'
+import { useObjectDelete } from './useObjectDelete'
+import { useObjectUpdate } from './useObjectUpdate'
+import type { ObjectConfig } from '../../../models/objects/object.model'
 
 /**
  * Shared composable for object CRUD operations and state management
- * This is the unified entry point for all object types (Product, Blog, etc.)
+ * This is the unified entry point for all object types (Product, Blog, Job, Kitchen, etc.)
  */
-export async function useObject<T extends FirestoreObject>(
-  objectConfig: ObjectConfig
-) {
+export async function useObject(objectConfig: ObjectConfig) {
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreManager()
 
-  // Fetch collection
-  const objectsCollection =
-    (await firestoreFetchCollection<T>(objectConfig.collectionName)) || ref([])
+  // Use the provided config directly
+  const config = objectConfig
 
-  // Fetch by ID/slug
-  async function fetchObject(id: string): Promise<Ref<T | null | undefined>> {
-    return await firestoreFetchDoc(objectConfig.collectionName, id)
+  // Fetch all objects in this collection - await the Promise
+  const allObjects = await firestoreFetchCollection(config.collectionName)
+
+  async function fetchById(id: string) {
+    return await firestoreFetchDoc(config.collectionName, id)
   }
 
-  // Expose create functionality (if provided in config)
-  const objectCreate = objectConfig.createComposable
-    ? objectConfig.createComposable()
-    : {}
+  // Expose create functionality
+  const objectCreate = useObjectCreate()
 
-  // Expose update functionality (if provided in config)
-  const objectUpdate = objectConfig.updateComposable
-    ? objectConfig.updateComposable()
-    : {}
+  // Expose delete functionality
+  const objectDelete = useObjectDelete()
 
-  // Expose delete functionality (if provided in config)
-  const objectDelete = objectConfig.deleteComposable
-    ? objectConfig.deleteComposable()
-    : {}
+  // Expose update functionality
+  const objectUpdate = useObjectUpdate()
 
-  return {
-    objectsCollection,
-    fetchObject,
+  // Additional object-specific functionality (if provided in config)
+  const objectExtensions = config.createComposable
+    ? config.createComposable()
+    : {}
+  const objectUpdates = config.updateComposable ? config.updateComposable() : {}
+  const objectDeletes = config.deleteComposable ? config.deleteComposable() : {}
+
+  const returnObject = {
+    [`${config.collectionName}`]: allObjects,
+    [`fetch${config.objectType || 'Object'}`]: fetchById,
+    all: allObjects, // Add alias for easier destructuring
     ...objectCreate,
-    ...objectUpdate,
     ...objectDelete,
+    ...objectUpdate,
+    ...objectExtensions,
+    ...objectUpdates,
+    ...objectDeletes,
   }
+
+  return returnObject
 }
