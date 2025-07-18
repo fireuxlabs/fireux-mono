@@ -32,6 +32,14 @@ export interface AppUser {
     is_pro: boolean // Computed from plan/status for easy access
   } | null
 
+  // User profile associations - generic for any domain
+  profiles?: Array<{
+    type: string // Generic profile type (domain packages define the actual types)
+    collection: string // The Firestore collection name
+    created_at: string
+    is_active: boolean
+  }>
+
   // User preferences and social features
   notifications?: {
     enabled: boolean

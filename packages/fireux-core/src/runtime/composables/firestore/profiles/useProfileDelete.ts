@@ -2,19 +2,21 @@ import { ref } from 'vue'
 import { useCurrentUser } from 'vuefire'
 import type { ProfileConfig } from '../../../models/profiles/profile.model'
 import { useFirestoreManager } from '../useFirestoreManager'
+import { useAppUser } from '../AppUser/useAppUser'
+import { useAppUserUpdate } from '../AppUser/useAppUserUpdate'
 
 /**
  * Generic profile deletion composable
  * Provides standardized delete functionality for all profile types
  */
-export function useProfileDelete(profileConfig: ProfileConfig) {
+export async function useProfileDelete(profileConfig: ProfileConfig) {
   const currentUser = useCurrentUser()
   const { deleteDocument } = useFirestoreManager()
+  const { appUser } = await useAppUser()
 
   // Set default appScoped to false for global profile ecosystem
   const config = {
     ...profileConfig,
-    appScoped: profileConfig.appScoped ?? false,
   }
 
   // Shared state for delete operations
@@ -34,8 +36,25 @@ export function useProfileDelete(profileConfig: ProfileConfig) {
 
     try {
       await deleteDocument(config.collectionName, targetId, {
-        appScoped: config.appScoped,
+        appScoped: false,
       })
+
+      // Update AppUser profiles array - remove the deleted profile
+      const { useAppUserUpdateFirestore } = useAppUserUpdate()
+      const { updateProfiles } = useAppUserUpdateFirestore()
+
+      const currentProfiles = appUser.value?.profiles || []
+      const updatedProfiles = currentProfiles.filter(
+        (p) => p.type !== config.profileType.toLowerCase()
+      )
+
+      if (currentProfiles.length !== updatedProfiles.length) {
+        await updateProfiles(updatedProfiles)
+        console.log(
+          '✅ Removed profile from AppUser.profiles:',
+          config.profileType.toLowerCase()
+        )
+      }
 
       return 'success'
     } catch (err: any) {

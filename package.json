@@ -26,7 +26,11 @@
     "// === DEVELOPMENT TOOLS ===": "",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .js,.ts,.vue",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "// === STRUCTURE MANAGEMENT ===": "",
+    "structure:validate": "./scripts/validate-structure.sh",
+    "structure:fix": "./scripts/fix-structure.sh",
+    "structure:report": "./scripts/validate-structure.sh && echo 'Report generated'"
   },
   "keywords": [],
   "author": "",

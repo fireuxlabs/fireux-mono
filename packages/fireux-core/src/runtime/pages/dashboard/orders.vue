@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { getRouteMetaForPath } from '../../composables/utils/useAppUserRoutes'
+import { getRouteMetaForPath } from '../../composables/app/routes/useAppUserRoutes'
 
 const { label, icon } = getRouteMetaForPath('/dashboard/orders')
 

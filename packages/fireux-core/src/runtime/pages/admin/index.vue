@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { getRouteMetaForPath } from '../../composables/utils/useAppUserRoutes'
+import { getRouteMetaForPath } from '../../composables/app/routes/useAppUserRoutes'
 
 const { label, icon } = getRouteMetaForPath('/admin')
 

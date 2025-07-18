@@ -9,6 +9,12 @@ export function useAppUserComputed(appUser: Ref<AppUser | null | undefined>) {
   const isPro = computed(() => appUser.value?.subscription?.is_pro === true)
   const isAdmin = computed(() => appUser.value?.role === 'admin')
 
+  // Profile checking method
+  function hasProfile(profileType: string): boolean {
+    const profiles = appUser.value?.profiles || []
+    return profiles.some((p) => p.type === profileType)
+  }
+
   // Methods
   function hasSubscription(planType: 'pro' | 'enterprise' = 'pro'): boolean {
     if (planType === 'pro') {
@@ -24,6 +30,9 @@ export function useAppUserComputed(appUser: Ref<AppUser | null | undefined>) {
     isAppUser,
     isPro,
     isAdmin,
+
+    // Profile checking method
+    hasProfile,
 
     // Methods
     hasSubscription,

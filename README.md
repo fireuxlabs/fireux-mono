@@ -6,11 +6,16 @@
 
 > Modern Nuxt 3 monorepo powering the next generation of service business platforms
 
-## 📚 Complete Documentation
+## 📚 Documentation
 
-**📖 [FIREUX.md](./FIREUX.md) - Complete Documentation**
+**📖 [docs/STRUCTURE_GUIDE.md](./docs/STRUCTURE_GUIDE.md) - Structure Guide**
+Complete guide to FireUX's unified structure pattern and development practices.
 
-Everything you need to know about architecture, development, business domains, API usage, and troubleshooting in one comprehensive guide.
+**📖 [docs/FIREUX_COMPLETE.md](./docs/FIREUX_COMPLETE.md) - Complete Documentation**
+Comprehensive architecture, development, and troubleshooting guide.
+
+**📖 [docs/README.md](./docs/README.md) - All Documentation**
+Complete index of all FireUX documentation.
 
 ## 🚀 Live Applications
 

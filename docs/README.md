@@ -1,23 +1,46 @@
 # 📚 FireUX Documentation
 
-## Documentation Structure
+> **Complete documentation for the FireUX ecosystem**
 
-This repository uses a hierarchical documentation structure with `.doc.md` files for internal documentation.
+## 🏗️ Architecture & Structure
 
-### 📁 Documentation Locations
+### **[STRUCTURE_GUIDE.md](./STRUCTURE_GUIDE.md)**
 
-#### `/manuals/` - Core Documentation
+Complete guide to FireUX's unified structure pattern, enforcement tools, and development practices.
 
-- `architecture.doc.md` - System architecture overview
-- `business.doc.md` - Business logic and domain models
-- `development.doc.md` - Development setup and workflow
-- `development-copilot.doc.md` - AI-assisted development guidelines
-- `phantom-prevention.doc.md` - Guide to preventing phantom files
-- `documentation-update-summary.doc.md` - Documentation maintenance
+**Quick Commands:**
 
-#### `/packages/` - Package-Specific Docs
+```bash
+pnpm structure:validate  # Validate structure compliance
+pnpm structure:fix      # Auto-fix common issues
+```
 
-- `packages.doc.md` - Package system overview
+## � Complete Guides
+
+### **[FIREUX_COMPLETE.md](./FIREUX_COMPLETE.md)**
+
+Comprehensive architecture, development, and troubleshooting guide for the entire FireUX ecosystem.
+
+### **[MISEBOX_ROADMAP.md](./MISEBOX_ROADMAP.md)**
+
+Roadmap and feature planning for the Misebox marketplace system.
+
+## 🚀 Quick Start
+
+1. **Structure First**: Always check where something belongs with the [Structure Guide](./STRUCTURE_GUIDE.md)
+2. **Follow the Pattern**: Both package/runtime and app/ levels use the same Nuxt structure
+3. **Validate Often**: Run `pnpm structure:validate` to maintain compliance
+4. **Test Thoroughly**: Use playground environment for testing shared features
+
+## 💡 Key Principles
+
+- **Unified Structure**: Same folder conventions at package and app levels
+- **Domain Separation**: Keep domain code in packages, app-specific in apps
+- **Automated Enforcement**: Use tools to prevent structural drift
+- **Clean Inheritance**: Apps extend package functionality cleanly
+
+> **Need Help?** Start with the [Structure Guide](./STRUCTURE_GUIDE.md) for practical development guidance.
+
 - `fireux-core/core.doc.md` - Core package documentation
 - `fireux-jobs/jobs.doc.md` - Jobs domain documentation
 - `fireux-jobs/jobs-business.doc.md` - Jobs business logic

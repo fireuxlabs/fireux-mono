@@ -317,6 +317,28 @@ export function useAppUserUpdate() {
       }
     }
 
+    const updateProfiles = async (
+      profiles: Array<{
+        type: string
+        collection: string
+        created_at: string
+        is_active: boolean
+      }>
+    ) => {
+      try {
+        const user = await waitForCurrentUser()
+        if (!user) throw new Error('User not authenticated')
+
+        const userRef = doc(db, `apps/${appId}/users`, user.uid)
+        await updateDoc(userRef, { profiles })
+
+        return { success: true }
+      } catch (error) {
+        console.error('Error updating profiles:', error)
+        throw error
+      }
+    }
+
     return {
       // Single field update functions (for SingleField components)
       updateDisplayName,
@@ -337,6 +359,7 @@ export function useAppUserUpdate() {
       // Array field updates
       updateFollowers,
       updateFollowing,
+      updateProfiles,
 
       // Generic single field updater (for advanced use)
       updateSingleField,

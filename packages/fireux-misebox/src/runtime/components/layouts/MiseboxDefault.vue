@@ -5,39 +5,31 @@
 </template>
 
 <script setup>
-const systemRoutes = useSystemRoutes()
-const jobPublicRoutes = getPublicJobRoutes() || []
+const jobRoutes = getJobRoutes() || []
+const miseboxRoutes = getMiseboxRoutes() || []
 
-// Only call useAppUser on client side to avoid SSR errors
-let isAppUser = false
-let isAdmin = false
+// Get all core routes with user state handling
+const coreRoutes = await getCoreRoutes()
 
-if (process.client) {
-  const { isAppUser: clientIsAppUser, isAdmin: clientIsAdmin } =
-    await useAppUser()
-  isAppUser = clientIsAppUser
-  isAdmin = clientIsAdmin
+// Get domain-specific profile routes
+let jobProfileRoutes = []
+let miseboxProfileRoutes = []
+
+if (import.meta.client) {
+  jobProfileRoutes = (await getJobProfileRoutes()) || []
+  miseboxProfileRoutes = (await getMiseboxProfileRoutes()) || []
 }
 
-const jobPrivateRoutes = getPrivateJobRoutes() || []
-const appUserGroup = useAppUserRoutes() || []
-const adminGroup = useAdminRoutes() || []
-
-// Misebox-specific routes
-const miseboxRoutes = [
-  { label: 'Chefs', icon: 'i-lucide-cooking-pot', to: '/chefs' },
-  { label: 'Suppliers', icon: 'i-lucide-truck', to: '/suppliers' },
-]
-
 const routes = {
-  menuBarLinks: [...systemRoutes, ...jobPublicRoutes, ...miseboxRoutes],
+  menuBarLinks: [...coreRoutes.coreRoutes, ...jobRoutes, ...miseboxRoutes],
   mobileLinks: [
-    ...systemRoutes,
-    ...jobPublicRoutes,
+    ...coreRoutes.coreRoutes,
+    ...jobRoutes,
     ...miseboxRoutes,
-    ...(isAppUser ? jobPrivateRoutes : []),
-    ...(isAppUser ? appUserGroup : []),
-    ...(isAdmin ? adminGroup : []),
+    ...jobProfileRoutes, // Job profile routes (Employer/Professional)
+    ...miseboxProfileRoutes, // Misebox profile routes (Chef/Supplier)
+    ...coreRoutes.appUserRoutes, // App user routes (conditionally loaded)
+    ...coreRoutes.adminRoutes, // Admin routes (conditionally loaded)
   ],
 }
 </script>
