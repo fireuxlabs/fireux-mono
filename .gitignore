@@ -70,17 +70,3 @@ build/
 *.p12
 *.der
 *.mobileprovision
-
-# Prevent phantom/duplicate route composables
-**/useCoreRoutes.ts
-!packages/fireux-core/src/runtime/composables/app/routes/useCoreRoutes.ts
-**/useJobProfileRoutes.ts
-**/usePrivateJobRoutes.ts
-**/usePublicJobRoutes.ts
-**/useMiseboxProfileRoutes.ts
-**/useMiseboxRoutes.ts
-
-# Prevent duplicate migration scripts
-migrate-*.js
-!scripts/migrate-*.js
-!create-tenant.js
