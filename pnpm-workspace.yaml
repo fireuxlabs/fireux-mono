@@ -1,5 +1,7 @@
 packages:
-  - packages/*
+  - packages/core/*
+  - packages/extensions/*
+  - packages/tenants/*
   - playground
   - projects/*/*
 
