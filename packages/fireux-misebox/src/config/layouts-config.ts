@@ -7,7 +7,7 @@ import { addComponentsDir } from '@nuxt/kit'
  */
 export function configureLayouts(resolver: any, nuxt: any) {
   const resolvePath = (p: string) => resolver.resolve(p)
-  const layoutsDir = resolvePath('./runtime/components/layouts')
+  const layoutsDir = resolvePath('./runtime/layouts')
 
   // Register layouts as components for direct use
   addComponentsDir({
