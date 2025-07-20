@@ -133,6 +133,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-jobs:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-jobs
       glob:
         specifier: ^11.0.3
         version: 11.0.3

@@ -1,6 +1,6 @@
 // Export for misebox routes
-import type { RouteLink } from '../../../../../../../core/fireux-core/src/runtime/types/routeLink'
-import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/app/routes/useJobRoutes'
+import type { RouteLink } from 'fireux-core/types/routeLink'
+import { getJobRoutes } from 'fireux-jobs/composables/app/routes/useJobRoutes'
 
 export function getMiseboxRoutes(): RouteLink[] {
   // Get job marketplace routes from jobs package
