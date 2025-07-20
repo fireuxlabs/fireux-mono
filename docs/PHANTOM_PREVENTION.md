@@ -37,18 +37,36 @@
 If phantom files appear:
 
 ```bash
-# Quick cleanup
-rm STRUCTURE_ENFORCEMENT.md FOLDER_STRUCTURE.md UNIFIED_STRUCTURE_SUMMARY.md
+# Remove duplicate migration scripts
+rm check-app-users.js migrate-app-users.js migrate-chef-profiles.js
 
-# Verify clean state
-find . -maxdepth 1 -name "*.md" | grep -v README.md
+# Remove phantom route composables
+find packages -name "useCoreRoutes.ts" -not -path "*/fireux-core/src/runtime/composables/app/routes/*" -exec rm {} \;
+
+# Remove phantom layout directories
+rm -rf packages/*/src/runtime/layouts/
 
 # Check git status
 git status
 
 # Run structure validation
 pnpm structure:validate
+
+# Commit clean state
+git add . && git commit -m "🧹 Clean up phantom files"
 ```
+
+## ✨ Recent Success
+
+**July 20, 2025**: Successfully resolved major phantom file crisis by:
+
+1. **Identified root cause**: Auto-generation of route composables and duplicate migration scripts
+2. **Systematic cleanup**: Removed duplicates and phantom files methodically  
+3. **Prevention measures**: Added comprehensive .gitignore rules
+4. **Documentation**: Updated paths and references
+5. **Validation**: Structure validation passes with clean codebase
+
+**Result**: Clean, trustworthy codebase with proper file organization and phantom prevention.
 
 ## 📋 Pre-Push Checklist
 
