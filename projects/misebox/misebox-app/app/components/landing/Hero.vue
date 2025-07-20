@@ -3,7 +3,7 @@
     <h1><strong class="font-black">Mise</strong> en place</h1>
     <h1><span class="highlight fade-in">Culinary Excellence</span></h1>
     <p class="hero-description">
-      The complete platform for culinary professionals to manage recipes, 
+      The complete platform for culinary professionals to manage recipes,
       inventory, and kitchen operations with
       <span class="highlight">precision workflows</span> &amp;
       <span class="highlight">ingredient tracking</span>.
@@ -25,7 +25,9 @@
       </div>
     </ClientOnly>
     <div class="button-group">
-      <UButton variant="solid" to="/getting-started" size="lg">Get Started</UButton>
+      <UButton variant="solid" to="/getting-started" size="lg"
+        >Get Started</UButton
+      >
       <UButton
         variant="outline"
         to="/dashboard"
@@ -59,10 +61,6 @@
   font-size: var(--text-base);
   margin-top: var(--space-4);
   line-height: 1.6;
-}
-
-.highlight {
-  color: var(--color-primary-500);
 }
 
 .features-preview {

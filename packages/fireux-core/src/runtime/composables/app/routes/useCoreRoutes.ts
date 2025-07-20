@@ -1,40 +1,40 @@
 // Export for core routes with user state handling
-import { useAppUser } from '../../firestore/AppUser/useAppUser'
 import { useAppUserRoutes } from './useAppUserRoutes'
 import { useAdminRoutes } from './useAdminRoutes'
 import { useSystemRoutes } from './useSystemRoutes'
 
 interface CoreRoutesResult {
-  coreRoutes: any[]
-  appUserRoutes: any[]
-  adminRoutes: any[]
+  menuBarLinks: any[]
+  mobileLinks: any[]
 }
 
 export async function getCoreRoutes(): Promise<CoreRoutesResult> {
   // Default values for SSR
-  let coreRoutes: any[] = []
-  let appUserRoutes: any[] = []
-  let adminRoutes: any[] = []
+  let menuBarLinks: any[] = []
+  let mobileLinks: any[] = []
 
   // Core routes are always available
-  coreRoutes = useSystemRoutes() || []
+  const systemRoutes = useSystemRoutes() || []
+  menuBarLinks = [...systemRoutes]
+  mobileLinks = [...systemRoutes]
 
   // Only call on client side to avoid SSR errors
   if (import.meta.client) {
-    const { isAppUser, isAdmin } = await useAppUser()
-
-    // Get routes based on user state
+    const { isAppUser, isAdmin } = await import(
+      '../../firestore/AppUser/useAppUser'
+    ).then((m) => m.useAppUser())
     if (isAppUser.value) {
-      appUserRoutes = useAppUserRoutes() || []
+      const userRoutes = useAppUserRoutes() || []
+      mobileLinks.push(...userRoutes)
     }
     if (isAdmin.value) {
-      adminRoutes = useAdminRoutes() || []
+      const adminRoutes = useAdminRoutes() || []
+      mobileLinks.push(...adminRoutes)
     }
   }
 
   return {
-    coreRoutes,
-    appUserRoutes,
-    adminRoutes,
+    menuBarLinks,
+    mobileLinks,
   }
 }

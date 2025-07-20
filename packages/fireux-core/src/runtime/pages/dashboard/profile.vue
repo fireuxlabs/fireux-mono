@@ -1,17 +1,20 @@
 <template>
   <client-only>
-    <div v-if="appUser" class="edit-page">
+    <div v-if="appUser" class="page">
       <!-- Profile Display -->
       <FireOrganismsAppUserCardsProfile :user="appUser" />
 
       <!-- Profile Edit Form -->
       <FireOrganismsAppUserEdit :user="appUser" />
     </div>
-    <div v-else class="loading-state">
+    <div v-else class="page">
       <UCard>
-        <div class="loading-content">
-          <UIcon name="i-heroicons-user-circle" class="loading-icon" />
-          <p>Loading profile..profile.</p>
+        <div class="text-center py-8">
+          <UIcon
+            name="i-heroicons-user-circle"
+            class="w-12 h-12 mx-auto mb-4 text-gray-400"
+          />
+          <p>Loading profile...</p>
         </div>
       </UCard>
     </div>
@@ -40,49 +43,5 @@ const { appUser } = await useAppUser()
 </script>
 
 <style scoped>
-.edit-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  width: 100%;
-  margin: 0;
-}
-
-@media (min-width: 640px) {
-  .edit-page {
-    gap: var(--space-6);
-  }
-}
-
-.loading-state {
-  width: 100%;
-}
-
-.loading-content {
-  text-align: center;
-  padding: var(--space-8) var(--space-4);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
-}
-
-@media (min-width: 640px) {
-  .loading-content {
-    padding: var(--space-12) var(--space-4);
-  }
-}
-
-.loading-icon {
-  width: var(--space-10);
-  height: var(--space-10);
-  color: #d1d5db;
-}
-
-@media (min-width: 640px) {
-  .loading-icon {
-    width: var(--space-12);
-    height: var(--space-12);
-  }
-}
+/* Let components handle their own spacing with Tailwind/NuxtUI utilities */
 </style>

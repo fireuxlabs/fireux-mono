@@ -1,22 +1,9 @@
 <template>
   <ClientOnly>
-    <CoreDefault :routes="routes" />
+    <CoreDefault />
   </ClientOnly>
 </template>
 
 <script setup>
-const systemRoutes = useSystemRoutes()
-const { isAppUser, isAdmin } = useAppUser()
-
-const appUserGroup = useAppUserRoutes() || []
-const adminGroup = useAdminRoutes() || []
-
-const routes = {
-  menuBarLinks: [...systemRoutes],
-  mobileLinks: [
-    ...systemRoutes,
-    ...(isAppUser ? appUserGroup : []),
-    ...(isAdmin ? adminGroup : []),
-  ],
-}
+// FireUX uses pure core - no additional routes needed
 </script>

@@ -1,20 +1,18 @@
 <template>
-  <div class="auth-page">
-    <UContainer class="auth-container">
-      <div class="auth-content">
+  <div class="page">
+    <UContainer class="max-w-md mx-auto py-12">
+      <div class="space-y-8">
         <!-- App Logo and Branding -->
-        <div class="auth-header">
-          <h1 class="auth-title">Welcome to {{ appName }}</h1>
+        <div class="text-center">
+          <h1 class="text-2xl font-bold">Welcome to {{ appName }}</h1>
         </div>
 
         <!-- Auth System Component -->
-        <div class="auth-system">
-          <FireOrganismsAuthSystem />
-        </div>
+        <FireOrganismsAuthSystem />
 
         <!-- App Info Section -->
-        <div class="auth-footer">
-          <p class="auth-info">
+        <div class="text-center">
+          <p class="text-sm text-gray-600">
             By signing in, you agree to our Terms of Service and Privacy Policy
           </p>
         </div>

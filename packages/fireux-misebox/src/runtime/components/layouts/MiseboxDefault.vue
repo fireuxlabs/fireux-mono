@@ -5,11 +5,9 @@
 </template>
 
 <script setup>
+// Collect all misebox package routes
 const jobRoutes = getJobRoutes() || []
 const miseboxRoutes = getMiseboxRoutes() || []
-
-// Get all core routes with user state handling
-const coreRoutes = await getCoreRoutes()
 
 // Get domain-specific profile routes
 let jobProfileRoutes = []
@@ -20,16 +18,11 @@ if (import.meta.client) {
   miseboxProfileRoutes = (await getMiseboxProfileRoutes()) || []
 }
 
-const routes = {
-  menuBarLinks: [...coreRoutes.coreRoutes, ...jobRoutes, ...miseboxRoutes],
-  mobileLinks: [
-    ...coreRoutes.coreRoutes,
-    ...jobRoutes,
-    ...miseboxRoutes,
-    ...jobProfileRoutes, // Job profile routes (Employer/Professional)
-    ...miseboxProfileRoutes, // Misebox profile routes (Chef/Supplier)
-    ...coreRoutes.appUserRoutes, // App user routes (conditionally loaded)
-    ...coreRoutes.adminRoutes, // Admin routes (conditionally loaded)
-  ],
-}
+// Just jam everything misebox needs into routes - core handles the rest
+const routes = [
+  ...jobRoutes,
+  ...miseboxRoutes,
+  ...jobProfileRoutes,
+  ...miseboxProfileRoutes,
+]
 </script>

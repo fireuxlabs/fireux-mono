@@ -14,7 +14,7 @@
   </client-only>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { getRouteMetaForPath } from '../../composables/app/routes/useAppUserRoutes'
 
 const { label, icon } = getRouteMetaForPath('/admin')

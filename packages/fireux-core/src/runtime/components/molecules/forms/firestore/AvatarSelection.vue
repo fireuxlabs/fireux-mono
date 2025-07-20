@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { useAvatarProxy } from '../../../../composables/utils/useAvatarProxy'
+import { useAvatarProxy } from '../../../../composables/app/utils/useAvatarProxy'
 
 // Accept user as prop
 const props = defineProps({

@@ -7,9 +7,13 @@
 
 <script setup>
 const systemRoutes = useSystemRoutes()
-const jobPublicRoutes = getPublicJobRoutes() || []
+const jobPublicRoutes = getJobRoutes() || []
 const { isAppUser, isAdmin } = useAppUser()
-const jobPrivateRoutes = getPrivateJobRoutes() || []
+let jobPrivateRoutes = []
+
+if (import.meta.client) {
+  jobPrivateRoutes = (await getJobProfileRoutes()) || []
+}
 
 const appUserGroup = useAppUserRoutes()
 const adminGroup = useAdminRoutes()

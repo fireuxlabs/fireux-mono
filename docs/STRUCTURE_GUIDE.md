@@ -1,29 +1,19 @@
-# 🏗️ FireUX Structure Guide
+# 🏗️ FireUX Complete Structure Guide
 
-> **Complete guide to FireUX's unified structure pattern, enforcement tools, and development practices**
-
-## 🎯 Quick Start
-
-```bash
-# Validate structure compliance
-pnpm structure:validate
-
-# Auto-fix common issues
-pnpm structure:fix
-
-# Generate structure report
-pnpm structure:report
-```
-
-## 🏗️ Unified Structure Pattern
+> **Complete guide to FireUX's unified structure pattern, enforcement tools, and practical development practices**
 
 **Key Insight**: FireUX follows a **unified structure pattern** where both `packages/*/runtime/` and `projects/*/app/` use the same Nuxt conventional structure at different scopes.
 
-### **Package Runtime Structure** (Domain Modules)
+## 🏗️ Unified Structure Pattern
+
+### **The Pattern**
+
+Both package runtime and app levels follow identical Nuxt directory conventions:
 
 ```
+# Package Runtime Level (Domain modules)
 packages/[domain]/src/runtime/
-├── components/     # Domain components (Fire*, Job*, Mise*, etc.)
+├── components/     # Domain components
 ├── composables/    # Domain composables
 ├── pages/          # Domain pages
 ├── layouts/        # Domain layouts
@@ -31,11 +21,8 @@ packages/[domain]/src/runtime/
 ├── plugins/        # Domain plugins
 ├── types/          # Domain types
 └── models/         # Domain models
-```
 
-### **App Structure** (Applications)
-
-```
+# App Level (Final applications)
 projects/[app]/app/
 ├── components/     # App-specific components
 ├── composables/    # App-specific composables
@@ -47,9 +34,63 @@ projects/[app]/app/
 └── config/         # App-specific config
 ```
 
-**Structure Inheritance**: Apps inherit from package runtime and can override/extend functionality.
+### **Structure Scopes**
 
-## 📁 Where to Put Things
+- **Package Runtime**: Domain-specific functionality (jobs, misebox, cleanbox)
+- **App Level**: Application-specific overrides and additions
+
+## 🚀 Quick Commands
+
+```bash
+# Check structure compliance
+pnpm structure:validate
+
+# Auto-fix common issues
+pnpm structure:fix
+
+# Generate structure report
+pnpm structure:report
+```
+
+## 📁 Unified Structure Rules
+
+### 🎯 **Both Levels Follow Same Pattern**
+
+```typescript
+// ✅ Package runtime level (domain scope)
+packages/fireux-jobs/src/runtime/
+├── components/organisms/Job/    # JobCard, JobForm
+├── composables/app/routes/      # useJobRoutes
+├── pages/jobs/                  # Domain pages
+└── types/                       # Job interfaces
+
+// ✅ App level (application scope)
+projects/fireux-app/app/
+├── components/custom/           # App-specific components
+├── composables/analytics/       # App-specific composables
+├── pages/                       # App override pages
+└── config/                      # App configuration
+```
+
+### 🔗 **Structure Inheritance**
+
+- App level **inherits** from package runtime level
+- App level can **override** package runtime components/pages
+- App level can **extend** with app-specific functionality
+
+### 🛠️ **Directory Standards**
+
+Both levels must use standard Nuxt directories:
+
+- `components/` - Vue components
+- `composables/` - Composition API functions
+- `pages/` - File-based routing
+- `layouts/` - Layout components
+- `middleware/` - Route middleware
+- `plugins/` - Nuxt plugins
+- `types/` - TypeScript definitions
+
+## 📁 Where to Put Things (Unified Approach)
 
 ### 🔗 Route Functions
 
@@ -63,6 +104,10 @@ packages/[package]/src/runtime/composables/app/routes/
 projects/[app]/app/composables/app/routes/
 ├── useAppRoutes.ts               # App-specific routes
 └── useCustomRoutes.ts            # App custom routes
+
+// ❌ Wrong - breaks unified pattern
+packages/[package]/src/runtime/composables/use[Package]Routes.ts
+projects/[app]/app/routes.ts      # Should be in composables/app/routes/
 ```
 
 ### 🛠️ Utility Functions
@@ -98,40 +143,104 @@ projects/[app]/app/composables/app/utils/
 <CustomJobCard />
 <!-- App-specific override -->
 <AppSpecificWidget />
+
+<!-- ❌ Wrong - inconsistent structure -->
+<!-- packages/*/components/ -->
+<!-- Missing runtime/ level -->
+<!-- projects/*/components/ -->
+<!-- Missing app/ level -->
 ```
 
-## 🛠️ Enforcement Strategy
+### 📋 Pages
 
-### **Automated Tools**
+```vue
+<!-- ✅ Package runtime level (domain pages) -->
+<!-- packages/fireux-jobs/src/runtime/pages/ -->
+/jobs/index.vue
+<!-- Domain page -->
+/jobs/[id].vue
+<!-- Domain dynamic page -->
 
-- **Validation Script**: `pnpm structure:validate` - comprehensive structure checking
-- **Auto-Fix Script**: `pnpm structure:fix` - automatic cleanup of common issues
-- **Custom ESLint Plugin**: Rules for routes, utils, components, models, and imports
+<!-- ✅ App level (app pages) -->
+<!-- projects/fireux-app/app/pages/ -->
+/index.vue
+<!-- App landing page -->
+/about.vue
+<!-- App-specific page -->
+/jobs/custom.vue
+<!-- App extension to domain -->
+```
 
-### **Enforcement Rules**
+## 🔧 Adding New Features (Unified Approach)
 
-#### **Directory Naming Rules**
+### 📦 **Determine Correct Level**
 
-- `routes/` - Only route-related functions
-- `utils/` - Categorized by scope (app, entity, effects)
-- `profiles/` - Only profile-related code
-- `objects/` - Only object/entity-related code
+1. **Package Runtime Level** (Domain functionality):
+   - Domain-specific components, pages, composables
+   - Shared across multiple apps in that domain
+   - Example: `JobCard` component used in multiple job apps
 
-#### **File Naming Rules**
+2. **App Level** (Application-specific):
+   - App-specific overrides and customizations
+   - App-unique functionality
+   - Example: Custom landing page for specific app
 
-- `use[Feature]Routes.ts` - Must be in routes/
-- `use[Entity]Validation.ts` - Must be in entity utils/
-- `use[Entity]Formatting.ts` - Must be in entity utils/
-- `*.model.ts` - Must be in models/
+### 📦 Adding a New Component
 
-#### **Component Prefix Rules**
+1. **Choose correct level**:
 
-- **fireux-core**: `<Fire...>` (e.g., `<FireButton>`, `<FireCard>`)
-- **fireux-jobs**: `<Job...>` (e.g., `<JobCard>`, `<JobForm>`)
-- **fireux-misebox**: `<Mise...>` (e.g., `<MiseChefCard>`, `<MiseSupplierForm>`)
-- **fireux-places**: `<Place...>` (e.g., `<PlaceMap>`, `<PlaceSearch>`)
+   ```vue
+   <!-- Domain component (package runtime) -->
+   packages/fireux-jobs/src/runtime/components/molecules/JobCard.vue
 
-## 🚫 Common Mistakes
+   <!-- App-specific component (app level) -->
+   projects/fireux-app/app/components/custom/CustomJobCard.vue
+   ```
+
+2. **Follow unified structure**:
+   - Both use `components/` directory
+   - Both follow atomic design (atoms/, molecules/, organisms/)
+   - Both use proper prefixes
+
+### 🎯 Adding Pages
+
+1. **Domain pages** (package runtime):
+
+   ```vue
+   <!-- packages/fireux-jobs/src/runtime/pages/jobs/index.vue -->
+   <template>
+     <div>Generic job listing page</div>
+   </template>
+   ```
+
+2. **App-specific pages** (app level):
+   ```vue
+   <!-- projects/fireux-app/app/pages/jobs/featured.vue -->
+   <template>
+     <div>App-specific featured jobs page</div>
+   </template>
+   ```
+
+### 🛠️ Adding Composables
+
+1. **Domain composables** (package runtime):
+
+   ```typescript
+   // packages/fireux-jobs/src/runtime/composables/firestore/Job/useJobs.ts
+   export function useJobs() {
+     // Domain job logic
+   }
+   ```
+
+2. **App composables** (app level):
+   ```typescript
+   // projects/fireux-app/app/composables/analytics/useJobAnalytics.ts
+   export function useJobAnalytics() {
+     // App-specific analytics
+   }
+   ```
+
+## 🚫 Common Mistakes (Unified Structure)
 
 ### ❌ **Wrong Level Placement**
 
@@ -156,7 +265,18 @@ projects/*/app/helpers/                // Wrong! Not standard Nuxt
 projects/*/app/composables/            // Correct! Standard Nuxt
 ```
 
-## 🎯 Pre-Commit Checklist
+### ❌ **Breaking Unified Pattern**
+
+```typescript
+// Don't mix structure patterns
+packages/fireux-jobs/routes/           // Wrong! Should be composables/app/routes/
+packages/fireux-jobs/src/runtime/composables/app/routes/  // Correct!
+
+projects/fireux-app/app/routes/        // Wrong! Should be composables/app/routes/
+projects/fireux-app/app/composables/app/routes/           // Correct!
+```
+
+## 🎯 Pre-Commit Checklist (Unified Structure)
 
 Before committing structural changes:
 
@@ -171,7 +291,35 @@ Before committing structural changes:
 - [ ] 📋 Models have `.model.ts` suffix
 - [ ] 🏗️ Unified structure pattern maintained
 
-## 📊 Structure Health Dashboard
+## 🛠️ Troubleshooting (Unified Structure)
+
+### Structure Validation Fails
+
+```bash
+# See what's wrong
+pnpm structure:validate
+
+# Auto-fix common issues
+pnpm structure:fix
+
+# Re-validate
+pnpm structure:validate
+```
+
+### Wrong Level Placement
+
+1. Determine if feature is domain-specific or app-specific
+2. Move to correct level (package runtime vs app)
+3. Update imports if necessary
+4. Test in relevant apps
+
+### Inconsistent Directory Structure
+
+1. Check both package runtime and app levels use same Nuxt directories
+2. Move files to standard directories (`composables/`, `components/`, etc.)
+3. Update auto-import configurations if needed
+
+## 📊 Structure Health Dashboard (Unified Pattern)
 
 Monitor unified structure compliance:
 
@@ -187,34 +335,12 @@ find projects -path "*/app" | wc -l             # App level count
 find packages projects -name "components" -type d | wc -l   # Components
 find packages projects -name "composables" -type d | wc -l  # Composables
 find packages projects -name "pages" -type d | wc -l        # Pages
+
+# Check for non-standard directories
+find packages projects -type d -name "*" ! -name "components" ! -name "composables" ! -name "pages" ! -name "layouts" ! -name "middleware" ! -name "plugins" ! -name "types" ! -name "models" ! -name "config" | grep -E "(runtime|app)/" | head -10
 ```
 
-## 🛠️ Developer Commands
-
-### **Structure Management**
-
-```bash
-pnpm structure:validate     # Validate current structure
-pnpm structure:fix         # Auto-fix structure issues
-pnpm structure:report      # Generate structure report
-```
-
-### **Development Workflow**
-
-```bash
-# Multiple apps in parallel
-pnpm dev:fireux      # :3000 (yellow theme)
-pnpm dev:cleanbox    # :3007 (blue theme)
-pnpm dev:misebox     # :3009 (green theme)
-pnpm dev:playground  # :3005 (test environment)
-
-# Package development
-pnpm build:packages  # Build all packages
-pnpm dev:packages    # Develop all packages
-pnpm clean:packages  # Clean all packages
-```
-
-## 🎓 Best Practices
+## 🎓 Unified Structure Best Practices
 
 1. **🏗️ Think in Levels**: Package runtime (domain) vs App (application-specific)
 2. **📁 Consistent Directories**: Both levels use same Nuxt structure
@@ -223,4 +349,4 @@ pnpm clean:packages  # Clean all packages
 5. **🧹 Regular Validation**: Run structure validation to maintain compliance
 6. **📚 Document Decisions**: Update this guide when adding new patterns
 
-> **Key Insight**: By recognizing that package/runtime and app/ levels share the same structural DNA, we've created a truly unified, scalable architecture that rivals Nuxt 4's structural discipline.
+> **💡 Unified Principle**: If it follows Nuxt conventions at the package runtime level, it should follow the same conventions at the app level. This creates a predictable, scalable architecture!

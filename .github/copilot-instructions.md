@@ -1,6 +1,6 @@
 # FireUX Ecosystem - AI Coding Agent Instructions
 
-> **📚 Complete Documentation**: See [FIREUX.md](../FIREUX.md) for comprehensive architecture, development, and troubleshooting guide.
+> **📚 Complete Documentation**: See [FIREUX.md](../docs/FIREUX.md) for comprehensive architecture, development, and troubleshooting guide.
 
 ## Quick Start & Development Workflow
 

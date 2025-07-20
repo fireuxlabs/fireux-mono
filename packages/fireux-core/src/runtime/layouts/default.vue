@@ -1,9 +1,10 @@
 // fireux-core/src/runtime/layouts/Default.vue (CoreDefault)
+
 <template>
   <div class="layout-wrapper">
     <FireLayoutsHeader
-      :menu-bar-links="routes.menuBarLinks"
-      :mobile-links="routes.mobileLinks"
+      :menu-bar-links="menuBarLinks"
+      :mobile-links="mobileLinks"
     />
     <NuxtPage />
     <FireLayoutsDefaultFooter />
@@ -11,12 +12,21 @@
 </template>
 
 <script setup>
+import { getCoreRoutes } from '../composables/app/routes/useCoreRoutes'
+
 const props = defineProps({
   routes: {
-    type: Object,
-    default: () => ({}),
+    type: Array,
+    default: () => [],
   },
 })
+
+const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
+  await getCoreRoutes()
+
+// Append any extra routes passed via props
+const menuBarLinks = [...coreMenuBarLinks, ...(props.routes || [])]
+const mobileLinks = [...coreMobileLinks, ...(props.routes || [])]
 
 defineOptions({
   name: 'CoreDefault',

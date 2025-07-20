@@ -64,7 +64,7 @@
 }
 
 .highlight {
-  color: var(--color-primary-500);
+  color: var(--ui-primary);
 }
 
 .features-preview {

@@ -3,15 +3,6 @@
     <div class="dashboard-page-grid">
       <!-- Blog Create Section -->
       <FireOrganismsBlogCreateSystem class="dashboard-grid-section" />
-
-      <!-- Blog Post Count Section -->
-      <!-- <FireOrganismsAdminBlogPostCount class="dashboard-grid-section" :post-count="postCount" /> -->
-
-      <!-- Last Blog Post Section -->
-      <!-- <FireOrganismsAdminBlogLastPost class="dashboard-grid-section" :last-post="lastPost" /> -->
-
-      <!-- Blog Link Section -->
-      <!-- <FireOrganismsAdminBlogLink class="dashboard-grid-section" /> -->
     </div>
   </ClientOnly>
 </template>

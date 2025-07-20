@@ -1,8 +1,8 @@
 <template>
   <ClientOnly>
-    <div class="dashboard-page-grid">
+    <div class="page">
       <!-- Product Create Section -->
-      <FireOrganismsProductCreateSystem class="dashboard-grid-section" />
+      <FireOrganismsProductCreateSystem />
     </div>
   </ClientOnly>
 </template>
@@ -23,31 +23,5 @@ definePageMeta({
 </script>
 
 <style scoped>
-/* Override the global masonry grid for this specific page */
-.dashboard-page-grid {
-  column-count: unset !important;
-  display: block;
-}
-
-.dashboard-grid-section {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  break-inside: unset;
-}
-
-/* Tablet and up - center horizontally */
-@media (min-width: 768px) {
-  .dashboard-grid-section {
-    align-items: center;
-  }
-}
-
-/* Desktop - constrain width */
-@media (min-width: 1024px) {
-  .dashboard-grid-section {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-}
+/* Let components handle their own spacing with Tailwind/NuxtUI utilities */
 </style>

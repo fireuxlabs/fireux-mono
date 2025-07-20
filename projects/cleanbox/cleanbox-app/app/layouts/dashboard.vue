@@ -11,8 +11,12 @@ const { isAppUser, isAdmin } = useAppUser()
 const appUserGroup = useAppUserRoutes() || []
 const adminGroup = useAdminRoutes() || []
 
-const jobPublicRoutes = getPublicJobRoutes() || []
-const jobPrivateRoutes = getPrivateJobRoutes() || []
+const jobPublicRoutes = getJobRoutes() || []
+let jobPrivateRoutes = []
+
+if (import.meta.client) {
+  jobPrivateRoutes = (await getJobProfileRoutes()) || []
+}
 
 const routes = {
   menuBarLinks: [...systemRoutes, ...jobPublicRoutes],

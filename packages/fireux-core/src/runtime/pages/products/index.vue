@@ -5,7 +5,9 @@
       <FireOrganismsProductCardsList :products="productsCollection" />
     </template>
     <template v-else>
-      <div class="spinner">Loading products...</div>
+      <div class="p-8 text-center text-gray-500 text-lg">
+        Loading products...
+      </div>
     </template>
   </div>
 </template>
@@ -17,10 +19,5 @@ const { productsCollection } = await useProducts()
 </script>
 
 <style scoped>
-.spinner {
-  padding: 2rem;
-  text-align: center;
-  color: var(--ui-text-secondary);
-  font-size: 1.1rem;
-}
+/* Let components handle their own spacing with Tailwind/NuxtUI utilities */
 </style>
