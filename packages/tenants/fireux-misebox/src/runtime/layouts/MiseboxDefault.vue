@@ -1,7 +1,5 @@
 <template>
-  <CoreDefault :extras="miseboxRoutes">
-    <slot />
-  </CoreDefault>
+  <CoreDefault :routes="miseboxRoutes" />
 </template>
 
 <script setup>
