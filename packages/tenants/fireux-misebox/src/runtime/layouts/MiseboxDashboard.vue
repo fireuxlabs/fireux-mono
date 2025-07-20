@@ -18,7 +18,8 @@ import { getMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
 const { appUser } = await useAppUser()
 
 // Get routes
-const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } = await getCoreRoutes()
+const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
+  await getCoreRoutes()
 const miseboxRoutes = appUser ? getMiseboxRoutes() || [] : []
 
 // Combine routes
