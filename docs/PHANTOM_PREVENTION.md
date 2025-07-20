@@ -73,9 +73,11 @@ git add . && git commit -m "🧹 Clean up phantom files"
 **Critical Discovery (July 20, 2025)**: This is a **known Copilot bug** documented by Microsoft:
 
 ### **Root Cause Identified**
+
 > "The issue of Copilot creating duplicate entries, particularly when using the 'Keep' or 'Keep as new' options, is a known bug. This duplication can occur due to various factors, including how Copilot handles context and selections within a chat session."
 
 ### **What Actually Happens**
+
 - **Context Handling Bug**: Copilot's context building includes user selections and open editors
 - **File Resurrection**: "Keep" can resurrect previously deleted/moved files from internal cache
 - **Duplicate Creation**: Creates multiple versions of the same content/files
@@ -83,12 +85,14 @@ git add . && git commit -m "🧹 Clean up phantom files"
 ### **Confirmed Solutions**
 
 ✅ **Immediate Workarounds:**
+
 1. **Start New Chat Sessions**: Reset context to avoid duplication
 2. **Frequent Git Commits**: Lock changes before "Keep" actions can corrupt them
 3. **Manual Cleanup**: Remove duplicates immediately when they appear
 4. **Context Awareness**: Be mindful of open files and selections
 
 ✅ **Prevention Strategy:**
+
 ```bash
 # After any Copilot file operations:
 git add . && git commit -m "Lock changes before Keep corruption"
@@ -97,6 +101,7 @@ git status  # Verify clean state
 ```
 
 ### **Real-World Example**
+
 Just experienced: "Keep" action resurrected flat package structure (`packages/fireux-*`) alongside our nested structure (`packages/core/`, `packages/tenants/`) - exactly matching the documented bug behavior.
 
 **Status**: Bug acknowledged by Microsoft, workarounds established, codebase protected.
