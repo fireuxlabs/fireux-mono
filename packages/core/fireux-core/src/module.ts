@@ -64,3 +64,5 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.nitro.ignore.push('**/*.doc.*')
   },
 })
+
+export * from './runtime/types/routeLink'

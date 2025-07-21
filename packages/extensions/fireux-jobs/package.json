@@ -7,7 +7,7 @@
   "types": "./src/module.ts",
   "exports": {
     ".": "./src/module.ts",
-    "./composables/*": "./src/runtime/composables/*"
+    "./composables": "./src/runtime/composables/*"
   },
   "files": [
     "src/**/*"

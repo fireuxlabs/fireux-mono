@@ -170,6 +170,9 @@ importers:
       firebase-admin:
         specifier: ^13.4.0
         version: 13.4.0
+      fireux-cleanbox:
+        specifier: workspace:*
+        version: link:../../../packages/tenants/fireux-cleanbox
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
