@@ -18,10 +18,10 @@ export const createBaseNuxtConfig = (appConfig: {
   css: [
     // Assets are now automatically included by fireux-core module
   ],
-  
+
   // Server-side rendering configuration
   ssr: true,
-  
+
   modules: [
     'fireux-core',
     'fireux-jobs',
@@ -74,7 +74,7 @@ export const createBaseNuxtConfig = (appConfig: {
     'nuxt-vuefire',
     '@pinia/nuxt',
   ],
-  
+
   runtimeConfig: {
     // Server-side runtime config
     firebasePrivateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID || '',
@@ -83,7 +83,7 @@ export const createBaseNuxtConfig = (appConfig: {
       '\n'
     ),
     firebaseClientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
-    
+
     // Client-side runtime config (exposed to frontend)
     public: {
       firebaseProjectId: process.env.FIREBASE_PROJECT_ID || '',
@@ -98,7 +98,7 @@ export const createBaseNuxtConfig = (appConfig: {
       primaryColor: appConfig.primaryColor,
     },
   },
-  
+
   vuefire: {
     auth: {
       enabled: true,
@@ -113,13 +113,13 @@ export const createBaseNuxtConfig = (appConfig: {
       measurementId: process.env.FIREBASE_MEASUREMENT_ID || '',
     },
   },
-  
+
   googleFonts: {
     families: {
       Inter: [100, 200, 300, 400, 500, 600, 700, 800, 900],
     },
   },
-  
+
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
     configPath: 'tailwind.config',

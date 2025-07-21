@@ -10,10 +10,10 @@ export default defineNuxtConfig({
   imports: {
     dirs: ['composables/**', 'models/**', 'utils/**'],
   },
-  
+
   // Explicitly configure SSR to be consistent
   ssr: true,
-  
+
   modules: [
     'fireux-core',
     'fireux-jobs',
@@ -22,14 +22,14 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     'nuxt-vuefire',
   ],
-  
+
   nitro: {
     preset: 'firebase',
     firebase: {
       gen: 2,
     },
   },
-  
+
   vuefire: {
     auth: {
       enabled: true,

@@ -7,6 +7,9 @@ export async function getCleanboxRoutes() {
   // Return in the format expected by CoreDefault layout
   return {
     menuBarLinks: jobRoutesResult.routes || [],
-    mobileLinks: [...(jobRoutesResult.routes || []), ...(jobRoutesResult.profileRoutes || [])],
+    mobileLinks: [
+      ...(jobRoutesResult.routes || []),
+      ...(jobRoutesResult.profileRoutes || []),
+    ],
   }
 }

@@ -294,7 +294,7 @@ function createPackageJson(config) {
     scripts: {
       build: 'nuxi build',
       dev: `nuxi dev --port ${config.port}`,
-      generate: 'nuxi generate', 
+      generate: 'nuxi generate',
       preview: 'nuxi preview',
       postinstall: 'nuxi prepare',
       clean: 'rimraf dist',
@@ -305,19 +305,19 @@ function createPackageJson(config) {
       '@vite-pwa/nuxt': '^0.11.10',
       '@vueuse/core': '^11.5.3',
       '@vueuse/nuxt': '^11.5.3',
-      'firebase': '^11.2.0',
+      firebase: '^11.2.0',
       'firebase-admin': '^13.4.0',
       'fireux-core': 'workspace:*',
       'fireux-jobs': 'workspace:*',
       [`fireux-${config.system}`]: 'workspace:*',
-      'nuxt': '^3.17.5',
+      nuxt: '^3.17.5',
       'nuxt-vuefire': '^1.0.5',
-      'stripe': '^18.3.0',
+      stripe: '^18.3.0',
     },
     devDependencies: {
       '@nuxt/devtools': '^1.7.4',
       '@nuxtjs/tailwindcss': '^6.13.1',
-      'rimraf': '^6.0.1',
+      rimraf: '^6.0.1',
     },
   }
 
@@ -336,9 +336,9 @@ function createTsConfig(config) {
         '~/*': ['./app/*'],
         '@/*': ['./app/*'],
         '~~/*': ['./*'],
-        '@@/*': ['./*']
-      }
-    }
+        '@@/*': ['./*'],
+      },
+    },
   }
 
   fs.writeFileSync(
