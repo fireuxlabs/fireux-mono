@@ -277,6 +277,7 @@ function copyAssets(config) {
 
 function createConfigFiles(config) {
   createPackageJson(config)
+  createTsConfig(config)
   createAppConfig(config)
   createAppVue(config)
   createLayouts(config)
@@ -291,27 +292,58 @@ function createPackageJson(config) {
     private: true,
     type: 'module',
     scripts: {
-      build: 'nuxt build',
-      dev: `nuxt dev --port ${config.port}`,
-      generate: 'nuxt generate',
-      preview: 'nuxt preview',
-      postinstall: 'nuxt prepare',
+      build: 'nuxi build',
+      dev: `nuxi dev --port ${config.port}`,
+      generate: 'nuxi generate', 
+      preview: 'nuxi preview',
+      postinstall: 'nuxi prepare',
+      clean: 'rimraf dist',
     },
-    dependencies: {},
+    dependencies: {
+      '@nuxt/content': '^3.6.1',
+      '@nuxt/ui': '^3.4.4',
+      '@vite-pwa/nuxt': '^0.11.10',
+      '@vueuse/core': '^11.5.3',
+      '@vueuse/nuxt': '^11.5.3',
+      'firebase': '^11.2.0',
+      'firebase-admin': '^13.4.0',
+      'fireux-core': 'workspace:*',
+      'fireux-jobs': 'workspace:*',
+      [`fireux-${config.system}`]: 'workspace:*',
+      'nuxt': '^3.17.5',
+      'nuxt-vuefire': '^1.0.5',
+      'stripe': '^18.3.0',
+    },
+    devDependencies: {
+      '@nuxt/devtools': '^1.7.4',
+      '@nuxtjs/tailwindcss': '^6.13.1',
+      'rimraf': '^6.0.1',
+    },
   }
-
-  // Inherit ALL dependencies from parent
-  Object.keys(config.dependencies).forEach((dep) => {
-    if (dep.startsWith('fireux-')) {
-      packageJson.dependencies[dep] = 'workspace:*'
-    } else {
-      packageJson.dependencies[dep] = config.dependencies[dep]
-    }
-  })
 
   fs.writeFileSync(
     `${config.tenantPath}/package.json`,
     JSON.stringify(packageJson, null, 2)
+  )
+}
+
+function createTsConfig(config) {
+  const tsConfig = {
+    extends: ['../../tsconfig.json'],
+    compilerOptions: {
+      baseUrl: '.',
+      paths: {
+        '~/*': ['./app/*'],
+        '@/*': ['./app/*'],
+        '~~/*': ['./*'],
+        '@@/*': ['./*']
+      }
+    }
+  }
+
+  fs.writeFileSync(
+    `${config.tenantPath}/tsconfig.json`,
+    JSON.stringify(tsConfig, null, 2)
   )
 }
 
@@ -423,13 +455,8 @@ definePageMeta({
 }
 
 function createNuxtConfig(config) {
-  // Read the parent nuxt.config.ts
-  const parentConfigPath = `${config.parentPath}/nuxt.config.ts`
-
-  if (!fs.existsSync(parentConfigPath)) {
-    // Fallback to simple config if parent doesn't exist
-    const modules = config.modules.map((m) => `'${m}'`).join(',\n    ')
-    const nuxtConfig = `import { defineNuxtConfig } from 'nuxt/config'
+  // Use standardized configuration template
+  const standardConfig = `import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
@@ -438,43 +465,70 @@ export default defineNuxtConfig({
   dir: {
     public: '../public',
   },
+  imports: {
+    dirs: ['composables/**', 'models/**', 'utils/**'],
+  },
+  
+  // Explicitly configure SSR for consistency
+  ssr: true,
+  
   modules: [
-    ${modules},
-    '@nuxt/content'
+    'fireux-core',
+    'fireux-jobs',
+    'fireux-${config.system}',
+    '@nuxt/content',
+    '@nuxt/ui',
+    'nuxt-vuefire',
   ],
+  
+  nitro: {
+    preset: 'firebase',
+    firebase: {
+      gen: 2,
+    },
+  },
+  
+  vuefire: {
+    auth: {
+      enabled: true,
+    },
+    config: {
+      projectId: process.env.FIREBASE_PROJECT_ID || '',
+      appId: process.env.FIREBASE_APP_ID || '',
+      apiKey: process.env.FIREBASE_API_KEY || '',
+      authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
+      storageBucket: process.env.FIREBASE_STORAGE_BUCKET || '',
+      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
+      measurementId: process.env.FIREBASE_MEASUREMENT_ID || '',
+    },
+  },
+  
   runtimeConfig: {
+    // Server-side runtime config
+    firebasePrivateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID || '',
+    firebasePrivateKey: (process.env.FIREBASE_PRIVATE_KEY || '').replace(
+      /\\\\n/g,
+      '\\n'
+    ),
+    firebaseClientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
+    
+    // Client-side runtime config (exposed to frontend)  
     public: {
-      appName: process.env.APP_NAME,
-      appId: process.env.APP_ID,
+      firebaseProjectId: process.env.FIREBASE_PROJECT_ID || '',
+      firebaseAppId: process.env.FIREBASE_APP_ID || '',
+      firebaseApiKey: process.env.FIREBASE_API_KEY || '',
+      firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
+      firebaseStorageBucket: process.env.FIREBASE_STORAGE_BUCKET || '',
+      firebaseMessagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
+      firebaseMeasurementId: process.env.FIREBASE_MEASUREMENT_ID || '',
+      appName: '${capitalizeFirst(config.displayName)}',
+      appShortName: '${config.name.slice(0, 4)}',
+      primaryColor: '${getColorHex(config.primaryColor)}',
     },
   },
 })`
-    fs.writeFileSync(`${config.tenantPath}/nuxt.config.ts`, nuxtConfig)
-    return
-  }
 
-  // Copy parent config and customize for tenant
-  let parentConfig = fs.readFileSync(parentConfigPath, 'utf8')
-
-  // Replace tenant-specific values in manifest
-  parentConfig = parentConfig.replace(
-    /name: process\.env\.APP_NAME \|\| '[^']*'/g,
-    `name: process.env.APP_NAME || '${capitalizeFirst(config.displayName)}'`
-  )
-
-  parentConfig = parentConfig.replace(
-    /short_name: process\.env\.APP_SHORT_NAME \|\| '[^']*'/g,
-    `short_name: process.env.APP_SHORT_NAME || '${config.name.slice(0, 4)}'`
-  )
-
-  // Update default theme color to match tenant's primary color
-  const colorHex = getColorHex(config.primaryColor)
-  parentConfig = parentConfig.replace(
-    /: '#[0-9A-Fa-f]{6}',/g,
-    `: '${colorHex}',`
-  )
-
-  fs.writeFileSync(`${config.tenantPath}/nuxt.config.ts`, parentConfig)
+  fs.writeFileSync(`${config.tenantPath}/nuxt.config.ts`, standardConfig)
 }
 
 function createEnvFile(config) {

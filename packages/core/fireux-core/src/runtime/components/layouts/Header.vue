@@ -69,7 +69,8 @@ import { useWindowSize } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 import { watch } from 'vue'
 
-const { appUser } = await useAppUser()
+// Client-only appUser to avoid server-side authentication calls
+const { appUser } = process.client ? useAppUser() : { appUser: ref(null) }
 
 const router = useRouter()
 const route = useRoute()
