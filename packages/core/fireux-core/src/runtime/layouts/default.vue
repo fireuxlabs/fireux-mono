@@ -27,9 +27,21 @@ const props = defineProps({
 const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
   await getCoreRoutes()
 
+console.log('🔥 CoreDefault: Core routes fetched:', {
+  coreMenuBarLinks: JSON.stringify(coreMenuBarLinks, null, 2),
+  coreMobileLinks: JSON.stringify(coreMobileLinks, null, 2)
+})
+
+console.log('🔥 CoreDefault: Props routes received:', JSON.stringify(props.routes, null, 2))
+
 // Merge core routes with additional routes passed via props
 const menuBarLinks = [...coreMenuBarLinks, ...(props.routes.menuBarLinks || [])]
 const mobileLinks = [...coreMobileLinks, ...(props.routes.mobileLinks || [])]
+
+console.log('🔥 CoreDefault: Final merged routes:', {
+  menuBarLinks: JSON.stringify(menuBarLinks, null, 2),
+  mobileLinks: JSON.stringify(mobileLinks, null, 2)
+})
 
 defineOptions({
   name: 'CoreDefault',
