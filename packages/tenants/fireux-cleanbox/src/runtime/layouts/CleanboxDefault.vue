@@ -1,40 +1,14 @@
 <template>
-  <ClientOnly>
-    <CoreDefault :routes="routes" />
-  </ClientOnly>
+  <CoreDefault :routes="cleanboxRoutes" />
 </template>
 
 <script setup>
-const systemRoutes = useSystemRoutes()
+console.log('🧽 CleanboxDefault component is loading...')
 
-// Only call useAppUser on client side to avoid SSR errors
-let isAppUser = false
-let isAdmin = false
+// Get Cleanbox-specific routes when user is authenticated
+const cleanboxRoutes = await getCleanboxRoutes() || []
 
-if (process.client) {
-  const { isAppUser: clientIsAppUser, isAdmin: clientIsAdmin } =
-    await useAppUser()
-  isAppUser = clientIsAppUser
-  isAdmin = clientIsAdmin
-}
-
-const appUserGroup = useAppUserRoutes() || []
-const adminGroup = useAdminRoutes() || []
-
-// Cleanbox-specific routes for cleaning services
-const cleanboxRoutes = [
-  { label: 'Services', icon: 'i-heroicons-sparkles', to: '/services' },
-  { label: 'Book Cleaning', icon: 'i-heroicons-calendar', to: '/book' },
-  { label: 'About Us', icon: 'i-heroicons-information-circle', to: '/about' },
-]
-
-const routes = {
-  menuBarLinks: [...systemRoutes, ...cleanboxRoutes],
-  mobileLinks: [
-    ...systemRoutes,
-    ...cleanboxRoutes,
-    ...(isAppUser ? appUserGroup : []),
-    ...(isAdmin ? adminGroup : []),
-  ],
-}
+// Log the cleanboxRoutes to debug their contents
+console.log('🧽 Cleanbox Routes:', cleanboxRoutes)
+console.log('🧽 Cleanbox Routes Type:', typeof cleanboxRoutes)
 </script>
