@@ -1,7 +1,14 @@
-export function useSystemRoutes() {
+import type { RouteLink } from '../../../types/routeLink'
+
+export function useSystemRoutes(): RouteLink[] {
   return [
-    { label: 'Home', icon: 'i-lucide-home', to: '/' },
-    { label: 'Products', icon: 'i-lucide-box', to: '/products' },
-    { label: 'Blog', icon: 'i-lucide-book', to: '/blog' },
+    { id: 'home', label: 'Home', icon: 'i-lucide-home', to: '/' },
+    {
+      id: 'products',
+      label: 'Products',
+      icon: 'i-lucide-box',
+      to: '/products',
+    },
+    { id: 'blog', label: 'Blog', icon: 'i-lucide-book', to: '/blog' },
   ]
 }

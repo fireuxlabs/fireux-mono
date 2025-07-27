@@ -4,6 +4,25 @@ import type { Ref } from 'vue'
 import type { AppUser } from '../../../models/core/appUser.model'
 
 export function useAppUserComputed(appUser: Ref<AppUser | null | undefined>) {
+  // Computed initials for the app user
+  const initials = computed(() => {
+    const u = appUser.value
+    if (!u) return 'U'
+    if (u.first_name || u.last_name) {
+      const first = u.first_name?.charAt(0) || ''
+      const last = u.last_name?.charAt(0) || ''
+      return (first + last).toUpperCase() || 'U'
+    }
+    const name = u.display_name || u.email || 'User'
+    return (
+      name
+        .split(' ')
+        .map((word) => word.charAt(0))
+        .join('')
+        .toUpperCase()
+        .slice(0, 2) || 'U'
+    )
+  })
   // Computed properties
   const isAppUser = computed(() => !!appUser.value)
   const isPro = computed(() => appUser.value?.subscription?.is_pro === true)
@@ -26,15 +45,11 @@ export function useAppUserComputed(appUser: Ref<AppUser | null | undefined>) {
     )
   }
   return {
-    // Computed properties
     isAppUser,
     isPro,
     isAdmin,
-
-    // Profile checking method
+    initials,
     hasProfile,
-
-    // Methods
     hasSubscription,
   }
 }

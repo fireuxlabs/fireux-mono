@@ -22,36 +22,50 @@
         <h2>Database Structure</h2>
         <h3>App Data</h3>
         <pre>Path: apps/{{ appId }}</pre>
-        <pre>Data: {{ JSON.stringify(app, null, 2) }}</pre>
+        <pre>Data: {{ app }}</pre>
 
         <h3>Core User</h3>
-        <pre>Path: core-users/{{ currentUser?.uid }}</pre>
-        <pre>Data: {{ JSON.stringify(coreUser, null, 2) }}</pre>
+        <pre>Data: {{ coreUser }}</pre>
 
         <h3>App User</h3>
-        <pre>Path: apps/{{ appId }}/users/{{ currentUser?.uid }}</pre>
-        <pre>Data: {{ JSON.stringify(appUser, null, 2) }}</pre>
+        <pre>Data: {{ appUser }}</pre>
       </div>
 
       <div class="debug-section">
         <h2>Authentication</h2>
-        <pre>Current User: {{ JSON.stringify(currentUser, null, 2) }}</pre>
+        <pre>Current User: {{ currentUser }}</pre>
+      </div>
+
+      <div class="debug-section">
+        <h2>AppUser/Computed State</h2>
+        <pre>appUser: {{ appUser }}</pre>
+        <pre>isAppUser: {{ isAppUser }}</pre>
+        <pre>isAdmin: {{ isAdmin }}</pre>
+        <pre>initials: {{ initials }}</pre>
       </div>
 
       <div class="debug-section">
         <h2>Relationships</h2>
-        <div v-if="coreUser">
+        <div v-if="coreUserData">
           <h3>Core User Apps</h3>
-          <p>This user is member of {{ coreUser.userOf?.length || 0 }} apps:</p>
-          <ul v-if="coreUser.userOf?.length">
-            <li v-for="appId in coreUser.userOf" :key="appId">{{ appId }}</li>
+          <p>
+            This user is member of {{ coreUserData.userOf?.length || 0 }} apps:
+          </p>
+          <ul v-if="coreUserData.userOf?.length">
+            <li v-for="appId in coreUserData.userOf" :key="appId">
+              {{ appId }}
+            </li>
           </ul>
           <p v-else>No app memberships found</p>
 
           <h3>Core User Admin Access</h3>
-          <p>This user is admin of {{ coreUser.adminOf?.length || 0 }} apps:</p>
-          <ul v-if="coreUser.adminOf?.length">
-            <li v-for="appId in coreUser.adminOf" :key="appId">{{ appId }}</li>
+          <p>
+            This user is admin of {{ coreUserData.adminOf?.length || 0 }} apps:
+          </p>
+          <ul v-if="coreUserData.adminOf?.length">
+            <li v-for="appId in coreUserData.adminOf" :key="appId">
+              {{ appId }}
+            </li>
           </ul>
           <p v-else>No admin access found</p>
         </div>
@@ -64,24 +78,17 @@
         <pre>Display Name: {{ currentUser?.displayName }}</pre>
       </div>
 
-      <div class="debug-actions">
-        <UButton v-if="!appUser" @click="createAppUser" color="green"
-          >Force Create App User</UButton
-        >
-        <UButton v-if="appUser" @click="refreshData" color="blue"
-          >Refresh Data</UButton
-        >
-      </div>
+      <!-- Debug actions removed: display only -->
       add curent user debug here
     </UCard>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useCurrentUser } from 'vuefire'
+// All user state and computed props should come from useAppUser
+// If any computed values are needed, add them to useAppUserComputed
+// Remove direct useCurrentUser import
 
-// Props to allow overriding default visibility
 const props = defineProps({
   defaultVisible: {
     type: Boolean,
@@ -90,30 +97,26 @@ const props = defineProps({
 })
 
 const { devMode, appId } = useFireUXConfig()
+
+// Use all user state from useAppUser
+const {
+  appUser,
+  isAppUser, // computed, available for debug
+  isAdmin, // computed, available for debug
+  initials, // computed, available for debug
+  // Add more as needed from useAppUser/useAppUserComputed
+} = await useAppUser()
+
+// Use firebase user directly from vuefire
+import { useCurrentUser } from 'vuefire'
 const currentUser = useCurrentUser()
 
-// Initialize reactive refs for data that will be loaded client-side
-const coreUser = ref(null)
-const appUser = ref(null)
-const app = ref(null)
+// For direct core user/app debug, destructure separately
+const { coreUser } = await useCoreUser()
+const { app } = await useApp()
 
 // Debug visibility state - can be overridden by prop
 const isVisible = ref(props.defaultVisible)
-
-// Load data only on client side
-onMounted(async () => {
-  try {
-    const { coreUser: coreUserData } = await useCoreUser()
-    const { appUser: appUserData } = await useAppUser()
-    const { app: appData } = await useApp()
-
-    coreUser.value = coreUserData
-    appUser.value = appUserData
-    app.value = appData
-  } catch (error) {
-    console.error('❌ Error loading debug data:', error)
-  }
-})
 
 // Check URL for debug=true parameter to override default visibility
 if (process.client) {
@@ -125,37 +128,7 @@ if (process.client) {
 
 console.log('DevMode:', devMode) // Debugging log
 
-async function createAppUser() {
-  try {
-    // First ensure the core user has the app in its userOf array
-    if (coreUser.value && !coreUser.value.userOf?.includes(appId)) {
-      const db = useFirestore()
-      const { doc, updateDoc, arrayUnion } = await import('firebase/firestore')
-      const coreUserRef = doc(db, 'core-users', currentUser.value.uid)
-      await updateDoc(coreUserRef, {
-        userOf: arrayUnion(appId),
-      })
-      console.log(`✅ Added ${appId} to core user's userOf array`)
-    }
-
-    // Then ensure the app user exists
-    const { useAppUserEnsure } = await import(
-      '../../composables/firestore/AppUser/useAppUserEnsure'
-    )
-    const ensureAppUser = useAppUserEnsure()
-    await ensureAppUser(coreUser.value)
-    console.log('✅ Manually triggered app user creation')
-
-    // Force refresh the page to see the updated data
-    window.location.reload()
-  } catch (error) {
-    console.error('❌ Error creating app user:', error)
-  }
-}
-
-async function refreshData() {
-  window.location.reload()
-}
+// FLAG: If you need any additional computed values for debug, add them to useAppUserComputed
 </script>
 
 <style scoped>

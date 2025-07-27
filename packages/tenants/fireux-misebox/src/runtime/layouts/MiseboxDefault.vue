@@ -4,5 +4,6 @@
 
 <script setup>
 // Get Misebox-specific routes when user is authenticated
-const miseboxRoutes = getMiseboxRoutes() || []
+const miseboxRoutes = (await getMiseboxRoutes()) || []
+
 </script>

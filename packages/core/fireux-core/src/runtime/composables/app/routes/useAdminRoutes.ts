@@ -1,26 +1,53 @@
 // packages/fireux-core/src/runtime/composables/utils/adminRoutes.ts
 
-// Modular, robust admin routes composable for Nuxt 3
-// You can extend this to fetch, merge, or dynamically generate admin routes as needed
+import type { RouteLink } from '../../../types/routeLink'
 
-// Returns grouped admin routes for navigation
-export function useAdminRoutes(isAdmin = true) {
-  const adminRoutes = [
+/**
+ * Returns grouped admin routes for navigation.
+ * @returns RouteLink[]
+ */
+export function useAdminRoutes(): RouteLink[] {
+  const adminRoutes: RouteLink[] = [
     {
+      id: 'admin-overview',
       label: 'Admin Overview',
       icon: 'i-lucide-layout-dashboard',
       to: '/admin',
     },
-    { label: 'Users', icon: 'i-lucide-users', to: '/admin/users' },
-    { label: 'Products', icon: 'i-lucide-box', to: '/admin/products' },
-    { label: 'Blog', icon: 'i-lucide-book', to: '/admin/blog' },
-    { label: 'Settings', icon: 'i-lucide-sliders', to: '/admin/settings' },
+    {
+      id: 'admin-users',
+      label: 'Users',
+      icon: 'i-lucide-users',
+      to: '/admin/users',
+    },
+    {
+      id: 'admin-products',
+      label: 'Products',
+      icon: 'i-lucide-box',
+      to: '/admin/products',
+    },
+    {
+      id: 'admin-blog',
+      label: 'Blog',
+      icon: 'i-lucide-book',
+      to: '/admin/blog',
+    },
+    {
+      id: 'admin-settings',
+      label: 'Settings',
+      icon: 'i-lucide-sliders',
+      to: '/admin/settings',
+    },
   ]
 
-  const adminGroup =
-    isAdmin && adminRoutes.length
-      ? [{ label: 'Admin', icon: 'i-lucide-shield', children: adminRoutes }]
-      : []
-
-  return adminGroup
+  return adminRoutes.length
+    ? [
+        {
+          id: 'admin',
+          label: 'Admin',
+          icon: 'i-lucide-shield',
+          children: adminRoutes,
+        },
+      ]
+    : []
 }

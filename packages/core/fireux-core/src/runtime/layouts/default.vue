@@ -1,5 +1,3 @@
-// fireux-core/src/runtime/layouts/Default.vue (CoreDefault)
-
 <template>
   <div class="layout-wrapper">
     <FireLayoutsHeader
@@ -12,7 +10,7 @@
 </template>
 
 <script setup>
-import { getCoreRoutes } from '../composables/app/routes/useCoreRoutes'
+import { useCoreRoutes } from '../composables/app/routes/useCoreRoutes'
 
 const props = defineProps({
   routes: {
@@ -25,23 +23,14 @@ const props = defineProps({
 })
 
 const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
-  await getCoreRoutes()
-
-console.log('🔥 CoreDefault: Core routes fetched:', {
-  coreMenuBarLinks: JSON.stringify(coreMenuBarLinks, null, 2),
-  coreMobileLinks: JSON.stringify(coreMobileLinks, null, 2)
-})
-
-console.log('🔥 CoreDefault: Props routes received:', JSON.stringify(props.routes, null, 2))
+  await useCoreRoutes()
 
 // Merge core routes with additional routes passed via props
 const menuBarLinks = [...coreMenuBarLinks, ...(props.routes.menuBarLinks || [])]
-const mobileLinks = [...coreMobileLinks, ...(props.routes.mobileLinks || [])]
-
-console.log('🔥 CoreDefault: Final merged routes:', {
-  menuBarLinks: JSON.stringify(menuBarLinks, null, 2),
-  mobileLinks: JSON.stringify(mobileLinks, null, 2)
-})
+const mobileLinks = [
+  ...coreMobileLinks.value,
+  ...(props.routes.mobileLinks || []),
+]
 
 defineOptions({
   name: 'CoreDefault',

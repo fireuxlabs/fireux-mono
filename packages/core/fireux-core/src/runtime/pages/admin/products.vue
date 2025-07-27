@@ -8,9 +8,11 @@
 </template>
 
 <script setup>
-import { getRouteMetaForPath } from '../../composables/app/routes/useAppUserRoutes'
+import { useAdminRoutes } from '../../composables/app/routes/useAdminRoutes'
 
-const { label, icon } = getRouteMetaForPath('/admin/products')
+const adminGroup = useAdminRoutes()[0]
+const route = adminGroup.children.find((r) => r.to === '/admin/products')
+const { label, icon } = route
 
 definePageMeta({
   layout: 'dashboard',

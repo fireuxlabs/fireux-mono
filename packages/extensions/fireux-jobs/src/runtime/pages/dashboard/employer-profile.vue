@@ -30,9 +30,12 @@
 </template>
 
 <script setup>
-
-const route = useRoute()
-const { label, icon } = getRouteMetaForPath(route.path)
+import { useAppUserRoutes } from '../../../../core/fireux-core/src/runtime/composables/app/routes/useAppUserRoutes'
+const userGroup = useAppUserRoutes()[0]
+const routeObj = userGroup.children.find(
+  (r) => r.to === '/dashboard/employer-profile'
+)
+const { label, icon } = routeObj
 
 // Set static meta at build time for Nuxt
 definePageMeta({

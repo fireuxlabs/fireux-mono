@@ -51,9 +51,11 @@
 </template>
 
 <script setup>
-import { getRouteMetaForPath } from '../../composables/app/routes/useAppUserRoutes'
+import { useAppUserRoutes } from '../../composables/app/routes/useAppUserRoutes'
 
-const { label, icon } = getRouteMetaForPath('/dashboard/account')
+const userGroup = useAppUserRoutes()[0]
+const route = userGroup.children.find((r) => r.to === '/dashboard/account')
+const { label, icon } = route
 
 definePageMeta({
   layout: 'dashboard',

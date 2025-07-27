@@ -40,7 +40,7 @@ export async function useAppUser() {
 
   // Collections - await the fetch like useProfile does
   const appUsers = await firestoreFetchCollection<AppUser>(
-    `apps/${appId}/users`,
+    `apps/${appId}/users`
   )
 
   return {

@@ -4,8 +4,8 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@fireux-core/*": ["../../packages/fireux-core/*"],
-      "@fireux-jobs/*": ["../../packages/fireux-jobs/*"]
+      "@fireux-core/*": ["../../packages/core/fireux-core/src/*"],
+      "@fireux-jobs/*": ["../../packages/extensions/fireux-jobs/src/*"]
     },
     "noEmit": true
   }

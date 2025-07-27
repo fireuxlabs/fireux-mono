@@ -17,12 +17,12 @@
         <!-- Right Section: User Profile / Sign-In & Mobile Menu -->
         <div class="right-section">
           <template v-if="route.path !== '/auth'">
-            <template v-if="appUser">
+            <template v-if="isAppUser">
               <UAvatar
                 :src="appUser.avatar"
-                :alt="getUserDisplayName(appUser)"
+                :alt="appUser.display_name || appUser.email || 'User'"
                 size="sm"
-                :text="getUserInitials(appUser)"
+                :text="initials"
                 class="cursor-pointer hover:opacity-80 transition-opacity"
                 @click="navigateToDashboard"
               />
@@ -67,10 +67,8 @@
 <script setup>
 import { useWindowSize } from '@vueuse/core'
 import { useRoute } from 'vue-router'
-import { watch } from 'vue'
-
-// Client-only appUser to avoid server-side authentication calls
-const { appUser } = process.client ? useAppUser() : { appUser: ref(null) }
+import { watch, ref } from 'vue'
+const { appUser, isAppUser, initials } = await useAppUser()
 
 const router = useRouter()
 const route = useRoute()
@@ -78,38 +76,6 @@ const route = useRoute()
 // Navigation
 const navigateToAuth = () => router.push('/auth')
 const navigateToDashboard = () => router.push('/dashboard')
-
-// Helper function to get user display name
-const getUserDisplayName = (user) => {
-  if (!user) return 'User'
-  if (user.first_name || user.last_name) {
-    return `${user.first_name || ''} ${user.last_name || ''}`.trim()
-  }
-  return user.display_name || user.email || 'User'
-}
-
-// Helper function to get user initials from first/last name
-const getUserInitials = (user) => {
-  if (!user) return 'U'
-
-  // Try to use first_name and last_name for better initials
-  if (user.first_name || user.last_name) {
-    const first = user.first_name?.charAt(0) || ''
-    const last = user.last_name?.charAt(0) || ''
-    return (first + last).toUpperCase() || 'U'
-  }
-
-  // Fallback to display_name or email
-  const name = user.display_name || user.email || 'User'
-  return (
-    name
-      .split(' ')
-      .map((word) => word.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 2) || 'U'
-  )
-}
 
 // Mobile Navigation
 const { width } = useWindowSize()

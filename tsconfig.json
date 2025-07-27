@@ -12,7 +12,10 @@
       "@fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"],
       "@fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],
       "@fireux-cleanbox/*": ["packages/tenants/fireux-cleanbox/src/*"],
-      "@fireux-places/*": ["packages/extensions/fireux-places/src/*"]
+      "@fireux-places/*": ["packages/extensions/fireux-places/src/*"],
+      "@routeLink": [
+        "packages/core/fireux-core/src/runtime/composables/app/types/routeLink.ts"
+      ]
     },
     "types": ["@nuxt/schema", "nuxt"]
   },

@@ -12,14 +12,14 @@
 </template>
 
 <script setup>
-import { getCoreRoutes } from '../../../../../core/fireux-core/src/runtime/composables/app/routes/useCoreRoutes'
+import { useCoreRoutes } from '../../../../../core/fireux-core/src/runtime/composables/app/routes/useCoreRoutes'
 import { getMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
 
 const { appUser } = await useAppUser()
 
 // Get routes
 const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
-  await getCoreRoutes()
+  await useCoreRoutes()
 const miseboxRoutes = appUser ? getMiseboxRoutes() || [] : []
 
 // Combine routes
