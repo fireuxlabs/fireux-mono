@@ -1,72 +1,5 @@
 <template>
   <div class="profile-page">
-    <!-- Debug Data Section -->
-    <div
-      style="
-        margin-bottom: 2rem;
-        padding: 1rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 8px;
-      "
-    >
-      <div style="display: flex; gap: 1rem; margin-bottom: 1rem">
-        <button @click="copyData" class="btn btn-primary">
-          📋 Copy Combined Data
-        </button>
-        <button @click="toggleRaw" class="btn btn-secondary">
-          {{ showRaw ? 'Hide' : 'Show' }} Raw Data
-        </button>
-      </div>
-      <div v-if="showRaw">
-        <h3>Chefs Collection:</h3>
-        <pre style="max-height: 200px; overflow-y: auto; font-size: 12px">{{
-          chefs
-        }}</pre>
-        <h3>App Users Collection:</h3>
-        <pre style="max-height: 200px; overflow-y: auto; font-size: 12px">{{
-          appusers
-        }}</pre>
-      </div>
-    </div>
-
-    <!-- Chef Profile Status Section -->
-    <div class="profile-status-section">
-      <div
-        v-if="hasChefProfile"
-        class="profile-status-card profile-status-active"
-      >
-        <div class="profile-status-content">
-          <h2 class="profile-status-title">✅ You have a Chef profile</h2>
-          <p class="profile-status-description">
-            Your chef profile is active and visible to potential clients.
-          </p>
-          <div class="profile-status-actions">
-            <NuxtLink to="/dashboard/profile" class="btn btn-primary">
-              View Your Profile
-            </NuxtLink>
-            <NuxtLink to="/dashboard/profile" class="btn btn-secondary">
-              Edit Profile
-            </NuxtLink>
-          </div>
-        </div>
-      </div>
-
-      <div v-else class="profile-status-card profile-status-inactive">
-        <div class="profile-status-content">
-          <h2 class="profile-status-title">👨‍🍳 Create your Chef profile</h2>
-          <p class="profile-status-description">
-            Join our community of talented chefs and start connecting with
-            potential clients.
-          </p>
-          <div class="profile-status-actions">
-            <NuxtLink to="/dashboard/profile" class="btn btn-primary">
-              Create Chef Profile
-            </NuxtLink>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="profile-page-header">
       <h1 class="profile-page-title">Browse Chefs</h1>
       <p class="profile-page-description">
@@ -91,51 +24,6 @@ definePageMeta({
 
 // Use the profile composable to fetch chefs
 const { all: chefs, loading } = await useProfile(chefConfig)
-
-// Fetch app users to see what's in the collection
-const { appUsers: appusers } = await useAppUser()
-
-// Get current user and check if they have a chef profile
-const { appUser } = await useAppUser()
-const hasChefProfile = computed(() => {
-  if (!appUser.value) return false
-  return (
-    appUser.value.profiles?.some(
-      (profile) => profile.type === 'chef' && profile.is_active
-    ) || false
-  )
-})
-
-// Debug functionality
-const showRaw = ref(false)
-
-const toggleRaw = () => {
-  showRaw.value = !showRaw.value
-}
-
-const copyData = async () => {
-  const combinedData = {
-    chefs: chefs.value,
-    appUsers: appusers.value,
-    timestamp: new Date().toISOString(),
-    summary: {
-      totalChefs: chefs.value?.length || 0,
-      totalAppUsers: appusers.value?.length || 0,
-      chefsWithAppUsers:
-        chefs.value?.filter((chef) =>
-          appusers.value?.find((user) => user.uid === chef.uid)
-        ).length || 0,
-    },
-  }
-
-  try {
-    await navigator.clipboard.writeText(JSON.stringify(combinedData, null, 2))
-    alert('📋 Data copied to clipboard!')
-  } catch (err) {
-    console.error('Failed to copy:', err)
-    alert('❌ Failed to copy data')
-  }
-}
 </script>
 
 <style scoped>

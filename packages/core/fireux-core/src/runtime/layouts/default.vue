@@ -10,11 +10,9 @@
 </template>
 
 <script setup>
-import { useCoreRoutes } from '../composables/app/routes/useCoreRoutes'
-
 const props = defineProps({
   routes: {
-    type: Object, // Expecting an object-based structure
+    type: Object,
     default: () => ({
       menuBarLinks: [],
       mobileLinks: [],
@@ -22,19 +20,17 @@ const props = defineProps({
   },
 })
 
-const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
-  await useCoreRoutes()
-
-// Merge core routes with additional routes passed via props
-const menuBarLinks = [...coreMenuBarLinks, ...(props.routes.menuBarLinks || [])]
-const mobileLinks = [
-  ...coreMobileLinks.value,
-  ...(props.routes.mobileLinks || []),
+const coreRoutes = await useCoreRoutes()
+const menuBarLinks = [
+  ...(Array.isArray(coreRoutes.menuBarLinks) ? coreRoutes.menuBarLinks : []),
+  ...(Array.isArray(props.routes?.menuBarLinks)
+    ? props.routes.menuBarLinks
+    : []),
 ]
-
-defineOptions({
-  name: 'CoreDefault',
-})
+const mobileLinks = [
+  ...(Array.isArray(coreRoutes.mobileLinks) ? coreRoutes.mobileLinks : []),
+  ...(Array.isArray(props.routes?.mobileLinks) ? props.routes.mobileLinks : []),
+]
 </script>
 
 <style scoped>

@@ -4,9 +4,6 @@ import { collection, query, where, getDocs } from 'firebase/firestore'
 import { useFireUXConfig } from '../FireUXConfig'
 
 export function useFirestoreUtils() {
-  const db = useFirestore()
-  const { appName, appId } = useFireUXConfig()
-
   /**
    * Checks whether a given field/value pair is unique in a collection,
    * optionally scoped to the current app.
@@ -17,14 +14,14 @@ export function useFirestoreUtils() {
     value: string,
     appScoped = true
   ): Promise<boolean> {
+    const db = useFirestore()
+    const { appId } = useFireUXConfig()
     // Build base constraint
     const constraints = [where(field, '==', value)]
-
     // If app scoping is on, grab appId from runtime config
     if (appScoped) {
       constraints.push(where('appId', '==', appId))
     }
-
     // Query and return whether any docs matched
     const q = query(collection(db, collectionName), ...constraints)
     const snapshot = await getDocs(q)
@@ -32,6 +29,7 @@ export function useFirestoreUtils() {
   }
 
   function getCollectionPath(name: string): string {
+    const { appId } = useFireUXConfig()
     return `${appId}/${name}`
   }
 
@@ -41,6 +39,8 @@ export function useFirestoreUtils() {
     value: unknown,
     appScoped = true
   ): Promise<T[]> {
+    const db = useFirestore()
+    const { appId } = useFireUXConfig()
     const constraints = [where(field, '==', value)]
     if (appScoped) {
       constraints.push(where('appId', '==', appId))
@@ -59,6 +59,8 @@ export function useFirestoreUtils() {
     value: string,
     appScoped = true
   ): Promise<T | null> {
+    const db = useFirestore()
+    const { appId } = useFireUXConfig()
     const constraints = [where(field, '==', value)]
     if (appScoped) {
       constraints.push(where('appId', '==', appId))
@@ -76,6 +78,7 @@ export function useFirestoreUtils() {
     parentId: string,
     subcollectionName: string
   ): Promise<T[]> {
+    const db = useFirestore()
     const subcollectionRef = collection(
       db,
       `${parentCollection}/${parentId}/${subcollectionName}`
@@ -92,7 +95,8 @@ export function useFirestoreUtils() {
   ): Promise<ReturnType<typeof useCurrentUser>['value']> {
     // Check if we're on the server side
     if (typeof window === 'undefined') {
-      throw new Error('waitForCurrentUser cannot be called on server-side')
+      // On server, resolve immediately with undefined (no user)
+      return undefined
     }
 
     const currentUser = useCurrentUser()
@@ -100,7 +104,7 @@ export function useFirestoreUtils() {
 
     return new Promise((resolve, reject) => {
       const checkUser = () => {
-        if (currentUser.value && currentUser.value.uid) {
+        if (currentUser.value?.uid) {
           resolve(currentUser.value)
         } else if (Date.now() - startTime > timeout) {
           reject(new Error('Timeout waiting for current user or invalid user'))

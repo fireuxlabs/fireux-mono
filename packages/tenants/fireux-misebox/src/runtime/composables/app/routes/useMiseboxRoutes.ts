@@ -4,33 +4,40 @@ import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/ru
 import { useAppUser } from '../../../../../../../core/fireux-core/src/runtime/composables/firestore/AppUser/useAppUser'
 
 export async function getMiseboxRoutes(): Promise<{
-  profileRoutes: RouteLink[]
-  routes: RouteLink[]
+  menuBarLinks: RouteLink[]
+  mobileLinks: RouteLink[]
 }> {
-  // Get job marketplace routes from jobs package
-  const jobRoutesResult = await getJobRoutes()
-  const jobProfileRoutes = jobRoutesResult.profileRoutes || []
-  const jobRoutes = jobRoutesResult.routes || []
-
-  // Define Misebox-specific food marketplace routes
-  const miseboxRoutes: RouteLink[] = [
-    { label: 'Chefs', icon: 'i-lucide-chef-hat', to: '/chefs' },
-    { label: 'Suppliers', icon: 'i-lucide-truck', to: '/suppliers' },
-    { label: 'Kitchens', icon: 'i-lucide-cooking-pot', to: '/kitchens' },
-    { label: 'Recipes', icon: 'i-lucide-book-open', to: '/recipes' },
-  ]
-
-  // Get appUser with profile checking method
   const { hasProfile } = await useAppUser()
 
-  console.log('getMiseboxRoutes - hasChef:', hasProfile('chef'))
-  console.log('getMiseboxRoutes - hasSupplier:', hasProfile('supplier'))
+  // Misebox domain navigation links
+  const miseboxRoutes: RouteLink[] = [
+    { id: 'chefs', label: 'Chefs', icon: 'i-lucide-chef-hat', to: '/chefs' },
+    {
+      id: 'suppliers',
+      label: 'Suppliers',
+      icon: 'i-lucide-truck',
+      to: '/suppliers',
+    },
+    {
+      id: 'kitchens',
+      label: 'Kitchens',
+      icon: 'i-lucide-cooking-pot',
+      to: '/kitchens',
+    },
+    {
+      id: 'recipes',
+      label: 'Recipes',
+      icon: 'i-lucide-book-open',
+      to: '/recipes',
+    },
+  ]
 
-  const profileRoutes: RouteLink[] = []
+  const miseboxProfileRoutes: RouteLink[] = []
 
   // Only show Chef Profile if user has a chef profile
   if (hasProfile('chef')) {
-    profileRoutes.push({
+    miseboxProfileRoutes.push({
+      id: 'chef-profile',
       label: 'Chef Profile',
       icon: 'i-lucide-chef-hat',
       to: '/dashboard/chef-profile',
@@ -39,16 +46,23 @@ export async function getMiseboxRoutes(): Promise<{
 
   // Only show Supplier Profile if user has a supplier profile
   if (hasProfile('supplier')) {
-    profileRoutes.push({
+    miseboxProfileRoutes.push({
+      id: 'supplier-profile',
       label: 'Supplier Profile',
       icon: 'i-lucide-package',
       to: '/dashboard/supplier-profile',
     })
   }
 
-  // Combine all routes
+  const jobRoutes = await getJobRoutes(hasProfile)
+
   return {
-    profileRoutes: [...profileRoutes, ...jobProfileRoutes],
-    routes: [...miseboxRoutes, ...jobRoutes],
+    menuBarLinks: [...miseboxRoutes, ...(jobRoutes.routes || [])],
+    mobileLinks: [
+      ...miseboxRoutes,
+      ...miseboxProfileRoutes,
+      ...(jobRoutes.routes || []),
+      ...(jobRoutes.profileRoutes || []),
+    ],
   }
 }

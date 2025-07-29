@@ -98,14 +98,11 @@ const props = defineProps({
 
 const { devMode, appId } = useFireUXConfig()
 
-// Use all user state from useAppUser
-const {
-  appUser,
-  isAppUser, // computed, available for debug
-  isAdmin, // computed, available for debug
-  initials, // computed, available for debug
-  // Add more as needed from useAppUser/useAppUserComputed
-} = await useAppUser()
+// Use all user state from useAppUser (client-only)
+let appUser, isAppUser, isAdmin, initials
+if (process.client) {
+  ;({ appUser, isAppUser, isAdmin, initials } = await useAppUser())
+}
 
 // Use firebase user directly from vuefire
 import { useCurrentUser } from 'vuefire'

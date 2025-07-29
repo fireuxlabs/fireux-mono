@@ -6,21 +6,13 @@ import { useFirestoreManager } from '../useFirestoreManager'
 import type { AppUser } from '../../../models/core/appUser.model'
 import { useAppUserUtils } from './useAppUserUtils'
 import { useAppUserEnsure } from './useAppUserEnsure'
-import { useAppUserUpdate } from './useAppUserUpdate'
+import useAppUserUpdate from './useAppUserUpdate'
 import { useAppUserSubscription } from './useAppUserSubscription'
 import { useAppUserComputed } from './useAppUserComputed'
-import { useFireUXConfig } from '../../FireUXConfig'
-import { getApps } from 'firebase/app'
 
 export async function useAppUser() {
-  const { appId } = useFireUXConfig()
-
-  // Ensure Firebase is initialized
-  if (!getApps().length) {
-    throw new Error(
-      'Firebase is not initialized. Please initialize Firebase before using this composable.'
-    )
-  }
+  // Top-level context
+  const appId = 'misebox-app'
 
   const db = useFirestore()
   const currentUser = useCurrentUser()
@@ -38,8 +30,8 @@ export async function useAppUser() {
 
   const { data: appUser } = useDocument<AppUser>(appUserDocRef)
 
-  // Collections - await the fetch like useProfile does
-  const appUsers = await firestoreFetchCollection<AppUser>(
+  // Eagerly fetch all app users (equivalent to allProfiles in useProfile)
+  const allAppUsers = await firestoreFetchCollection<AppUser>(
     `apps/${appId}/users`
   )
 
@@ -47,13 +39,13 @@ export async function useAppUser() {
     // Current entity
     appUser,
 
-    // Collections
-    appUsers,
+    // Collections fetcher
+    allAppUsers,
 
     // Child functions
     ...useAppUserEnsure(),
     ...useAppUserUtils(),
-    ...useAppUserUpdate(),
+    useAppUserUpdate,
     ...useAppUserSubscription(appUser),
     ...useAppUserComputed(appUser),
   }

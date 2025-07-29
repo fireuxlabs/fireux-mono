@@ -97,17 +97,11 @@
 </template>
 
 <script setup>
-import { useProfile } from '../../../../../fireux-core/src/runtime/composables/firestore/profiles/useProfile'
-import { professionalConfig } from '../../models/profiles/Professional.model'
-
 // Set page meta
 definePageMeta({
   title: 'Browse Professionals',
   description: 'Find skilled culinary professionals for your projects',
 })
-
-// Use the profile composable to fetch professionals
-const { all: professionals, loading } = await useProfile(professionalConfig)
 
 // Fetch app users to see what's in the collection
 const { appUsers: appusers } = await useAppUser()

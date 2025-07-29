@@ -25,6 +25,6 @@ export async function useCoreRoutes() {
 
   return {
     menuBarLinks,
-    mobileLinks,
+    mobileLinks: mobileLinks.value,
   }
 }

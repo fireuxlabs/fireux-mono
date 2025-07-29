@@ -88,8 +88,6 @@
 </template>
 
 <script setup>
-import { useProfile } from '../../../../../fireux-core/src/runtime/composables/firestore/profiles/useProfile'
-import { employerConfig } from '../../models/profiles/Employer.model'
 
 // Set page meta
 definePageMeta({

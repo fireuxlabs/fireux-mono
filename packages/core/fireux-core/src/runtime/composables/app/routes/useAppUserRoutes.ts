@@ -1,8 +1,5 @@
+import type { RouteLink } from '../../../types/routeLink'
 
-/**
- * Returns grouped app user routes for navigation.
- * @returns RouteLink[]
- */
 export function useAppUserRoutes(): RouteLink[] {
   const appUserRoutes: RouteLink[] = [
     {

@@ -1,50 +1,17 @@
 <template>
-  <div class="misebox-dashboard">
-    <FireLayoutsHeader
-      :menu-bar-links="menuBarLinks"
-      :mobile-links="mobileLinks"
-    />
-    <main class="dashboard-content">
-      <NuxtPage />
-    </main>
-    <FireLayoutsDefaultFooter />
-  </div>
+  <CoreDashboard :routes="miseboxRoutes" />
 </template>
 
 <script setup>
-import { useCoreRoutes } from '../../../../../core/fireux-core/src/runtime/composables/app/routes/useCoreRoutes'
+import { ref, onMounted } from 'vue'
 import { getMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
 
-const { appUser } = await useAppUser()
+const miseboxRoutes = ref({ menuBarLinks: [], mobileLinks: [] })
 
-// Get routes
-const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
-  await useCoreRoutes()
-const miseboxRoutes = appUser ? getMiseboxRoutes() || [] : []
-
-// Combine routes
-const menuBarLinks = [...coreMenuBarLinks, ...miseboxRoutes]
-const mobileLinks = [...coreMobileLinks, ...miseboxRoutes]
-</script>
-
-<style scoped>
-.misebox-dashboard {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.dashboard-content {
-  flex: 1;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-@media (max-width: 768px) {
-  .dashboard-content {
-    padding: 1rem;
+onMounted(async () => {
+  miseboxRoutes.value = (await getMiseboxRoutes()()) || {
+    menuBarLinks: [],
+    mobileLinks: [],
   }
-}
-</style>
+})
+</script>

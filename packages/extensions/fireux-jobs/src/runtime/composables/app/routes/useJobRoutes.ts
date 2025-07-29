@@ -2,35 +2,50 @@
 import type { RouteLink } from '../../../../../../../core/fireux-core/src/runtime/types/routeLink'
 import { useAppUser } from '../../../../../../../core/fireux-core/src/runtime/composables/firestore/AppUser/useAppUser'
 
-export async function getJobRoutes(): Promise<{
+export async function getJobRoutes(
+  hasProfile?: (profileType: string) => boolean
+): Promise<{
   profileRoutes: RouteLink[]
   routes: RouteLink[]
 }> {
-  const { hasProfile } = await useAppUser()
+  // If hasProfile is not provided, get it from useAppUser
+  const profileChecker = hasProfile || (await useAppUser()).hasProfile
 
-  console.log('getJobRoutes - hasEmployer:', hasProfile('employer'))
-  console.log('getJobRoutes - hasProfessional:', hasProfile('professional'))
+  console.log('getJobRoutes - hasEmployer:', profileChecker('employer'))
+  console.log('getJobRoutes - hasProfessional:', profileChecker('professional'))
 
   const jobsRoutes: RouteLink[] = [
-    { label: 'Jobs', icon: 'i-lucide-briefcase', to: '/jobs' },
-    { label: 'Employers', icon: 'i-lucide-user-tie', to: '/employers' },
-    { label: 'Professionals', icon: 'i-lucide-users', to: '/professionals' },
+    { id: 'jobs', label: 'Jobs', icon: 'i-lucide-briefcase', to: '/jobs' },
+    {
+      id: 'employers',
+      label: 'Employers',
+      icon: 'i-lucide-building-2',
+      to: '/employers',
+    },
+    {
+      id: 'professionals',
+      label: 'Professionals',
+      icon: 'i-lucide-users',
+      to: '/professionals',
+    },
   ]
 
   const profileRoutes: RouteLink[] = []
 
   // Only show Employer Profile if user has an employer profile
-  if (hasProfile('employer')) {
+  if (profileChecker('employer')) {
     profileRoutes.push({
+      id: 'employer-profile',
       label: 'Employer Profile',
-      icon: 'i-lucide-user-tie',
+      icon: 'i-lucide-building-2',
       to: '/dashboard/employer-profile',
     })
   }
 
   // Only show Professional Profile if user has a professional profile
-  if (hasProfile('professional')) {
+  if (profileChecker('professional')) {
     profileRoutes.push({
+      id: 'professional-profile',
       label: 'Professional Profile',
       icon: 'i-lucide-users',
       to: '/dashboard/professional-profile',

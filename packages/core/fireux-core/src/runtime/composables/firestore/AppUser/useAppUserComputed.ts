@@ -31,7 +31,17 @@ export function useAppUserComputed(appUser: Ref<AppUser | null | undefined>) {
   // Profile checking method
   function hasProfile(profileType: string): boolean {
     const profiles = appUser.value?.profiles || []
-    return profiles.some((p) => p.type === profileType)
+    if (!Array.isArray(profiles) || profiles.length === 0) {
+      return false
+    }
+    
+    // Check if it's the new simple format (array of strings)
+    if (typeof profiles[0] === 'string') {
+      return profiles.includes(profileType as any)
+    }
+    
+    // Legacy format (array of objects)
+    return profiles.some((p: any) => p.type === profileType)
   }
 
   // Methods

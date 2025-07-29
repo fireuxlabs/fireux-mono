@@ -13,7 +13,7 @@
             v-if="!isMobile"
             class="mt-[var(--header-height)] w-fit"
             orientation="vertical"
-            :items="routes.dashboardLinks"
+            :items="[]"
           />
           <div class="main-section">
             <!-- <FireLayoutsSubHeader :icon-title="subHeader" /> -->
@@ -27,18 +27,25 @@
 </template>
 
 <script setup>
-import { useWindowSize } from '@vueuse/core'
-import { computed } from 'vue'
-
 const props = defineProps({
   routes: {
-    type: Object,
-    default: () => ({}),
+    type: Object, // Expecting an object-based structure
+    default: () => ({
+      menuBarLinks: [],
+      mobileLinks: [],
+    }),
   },
 })
 
-const { width } = useWindowSize()
-const isMobile = computed(() => width.value < 1024)
+const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
+  await useCoreRoutes()
+
+// Merge core routes with additional routes passed via props
+const menuBarLinks = [...coreMenuBarLinks, ...(props.routes.menuBarLinks || [])]
+const mobileLinks = [
+  ...coreMobileLinks.value,
+  ...(props.routes.mobileLinks || []),
+]
 
 defineOptions({
   name: 'CoreDashboard',

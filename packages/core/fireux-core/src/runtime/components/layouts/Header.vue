@@ -11,7 +11,7 @@
         <UNavigationMenu
           v-if="!isMobile"
           orientation="horizontal"
-          :items="menuBarLinks"
+          :items="filteredMenuBarLinks"
         />
 
         <!-- Right Section: User Profile / Sign-In & Mobile Menu -->
@@ -19,10 +19,10 @@
           <template v-if="route.path !== '/auth'">
             <template v-if="isAppUser">
               <UAvatar
-                :src="appUser.avatar"
-                :alt="appUser.display_name || appUser.email || 'User'"
+                :src="appUser?.avatar"
+                :alt="appUser?.display_name || appUser?.email || 'User'"
                 size="sm"
-                :text="initials"
+                :text="initials.value"
                 class="cursor-pointer hover:opacity-80 transition-opacity"
                 @click="navigateToDashboard"
               />
@@ -55,7 +55,7 @@
         <div class="mobile-menu-wrapper">
           <UNavigationMenu
             orientation="vertical"
-            :items="mobileLinks"
+            :items="filteredMobileLinks"
             class="w-full"
           />
         </div>
@@ -65,9 +65,12 @@
 </template>
 
 <script setup>
+import { ref, computed, watch } from 'vue'
 import { useWindowSize } from '@vueuse/core'
-import { useRoute } from 'vue-router'
-import { watch, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useAppUser } from '../../composables/firestore/AppUser/useAppUser'
+import { filterCurrentRoute } from '../../types/routeLink'
+
 const { appUser, isAppUser, initials } = await useAppUser()
 
 const router = useRouter()
@@ -91,10 +94,18 @@ watch(
   }
 )
 
-defineProps({
+const props = defineProps({
   menuBarLinks: { type: Array, default: () => [] },
   mobileLinks: { type: Array, default: () => [] },
 })
+
+// Filter out current route from navigation
+const filteredMenuBarLinks = computed(() =>
+  filterCurrentRoute(props.menuBarLinks, route.path)
+)
+const filteredMobileLinks = computed(() =>
+  filterCurrentRoute(props.mobileLinks, route.path)
+)
 </script>
 
 <style scoped>

@@ -1,8 +1,9 @@
-// ~/composables/useAppUserUpdate.ts
-import { doc, updateDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useFirestoreUtils } from '../useFirestoreUtils'
+// ~/composables/useAppUserUpdate.ts
+import { doc, updateDoc } from 'firebase/firestore'
+// ...existing code...
 import {
   validateSingleField,
   validateBio,
@@ -57,6 +58,9 @@ import {
  * SOCIAL FEATURES (array updates):
  * - followers?: Array<string> (optional) → Molecules/Forms/Firestore/ArrayOfStrings → updateFollowers()
  * - following?: Array<string> (optional) → Molecules/Forms/Firestore/ArrayOfStrings → updateFollowing()
+ * - profiles?: Array<string> (optional) → Molecules/Forms/Firestore/ArrayOfStrings → updateProfiles()
+ *   - Simple string array format: ['chef', 'supplier', 'professional']
+ *   - Replaces old complex object format for easier management
  *
  * NON-UPDATEABLE FIELDS (system managed):
  * - uid: string (system assigned)
@@ -87,11 +91,12 @@ import {
  * <MultiField :update-function="updateAddress" />
  */
 
-export function useAppUserUpdate() {
+function useAppUserUpdate() {
   const db = useFirestore()
   const { waitForCurrentUser } = useFirestoreUtils()
   const { appId } = useFireUXConfig()
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function useAppUserUpdateFirestore() {
     // SINGLE FIELD FIRESTORE UPDATES:
     // Generic function for updating single fields with validation and formatting
@@ -317,20 +322,28 @@ export function useAppUserUpdate() {
       }
     }
 
-    const updateProfiles = async (
-      profiles: Array<{
-        type: string
-        collection: string
-        created_at: string
-        is_active: boolean
-      }>
-    ) => {
+    const updateProfiles = async (profiles: string[]) => {
       try {
         const user = await waitForCurrentUser()
         if (!user) throw new Error('User not authenticated')
 
+        // Validate that profiles is an array of strings
+        if (!Array.isArray(profiles)) {
+          throw new Error('Profiles must be an array')
+        }
+
+        // Validate that all items are strings
+        if (!profiles.every((profile) => typeof profile === 'string')) {
+          throw new Error('All profile entries must be strings')
+        }
+
+        // Format profiles (trim whitespace, remove duplicates)
+        const formattedProfiles = [
+          ...new Set(profiles.map((p) => p.trim()).filter((p) => p.length > 0)),
+        ]
+
         const userRef = doc(db, `apps/${appId}/users`, user.uid)
-        await updateDoc(userRef, { profiles })
+        await updateDoc(userRef, { profiles: formattedProfiles })
 
         return { success: true }
       } catch (error) {
@@ -366,6 +379,7 @@ export function useAppUserUpdate() {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function useAppUserUpdateState() {
     // For state-based updates (notifications, preferences)
     // These don't update Firestore directly, just local state
@@ -493,3 +507,5 @@ export function useAppUserUpdate() {
     useAppUserUpdateState,
   }
 }
+
+export default useAppUserUpdate

@@ -7,8 +7,16 @@ export interface RouteLink {
   id: string
   label: string
   icon: string
-  to?: string
+  to: string
   children?: RouteLink[]
-  requiresAuth?: boolean
-  requiresCondition?: () => boolean
+}
+
+/**
+ * Filter routes to hide the current route from navigation
+ */
+export function filterCurrentRoute(
+  routes: RouteLink[],
+  currentPath: string
+): RouteLink[] {
+  return routes.filter((route) => route.to !== currentPath)
 }

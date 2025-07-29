@@ -3,23 +3,21 @@
   "version": "0.1.0",
   "description": "FireUX CleanBox - Cleaning Services Domain Package",
   "type": "module",
+  "main": "./src/module.ts",
+  "types": "./src/module.ts",
   "exports": {
-    ".": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
-    }
+    ".": "./src/module.ts",
+    "./composables": "./src/runtime/composables/*"
   },
-  "main": "./dist/module.cjs",
-  "types": "./dist/types.d.ts",
   "files": [
-    "dist"
+    "src/**/*"
   ],
   "scripts": {
     "build": "nuxt-module-build build",
-    "dev": "nuxt-module-build build --stub",
+    "dev": "nuxt-module-build --stub",
     "clean": "rimraf dist"
   },
+  "private": true,
   "dependencies": {
     "@nuxt/kit": "^3.17.5",
     "fireux-core": "workspace:*",
