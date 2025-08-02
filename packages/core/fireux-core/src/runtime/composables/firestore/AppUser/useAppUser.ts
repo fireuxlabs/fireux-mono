@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
 import type { DocumentReference } from 'firebase/firestore'
-import { useFirestoreManager } from '../useFirestoreManager'
+import { useFirestoreRead } from '../useFirestoreRead'
 import type { AppUser } from '../../../models/core/appUser.model'
 import { useAppUserUtils } from './useAppUserUtils'
 import { useAppUserEnsure } from './useAppUserEnsure'
@@ -16,7 +16,7 @@ export async function useAppUser() {
 
   const db = useFirestore()
   const currentUser = useCurrentUser()
-  const { firestoreFetchCollection } = useFirestoreManager()
+  const { firestoreFetchCollection } = useFirestoreRead()
 
   const appUserDocRef = computed<DocumentReference<AppUser> | null>(() =>
     currentUser.value && appId

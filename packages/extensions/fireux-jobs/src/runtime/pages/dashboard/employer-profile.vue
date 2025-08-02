@@ -30,7 +30,6 @@
 </template>
 
 <script setup>
-import { useAppUserRoutes } from '../../../../core/fireux-core/src/runtime/composables/app/routes/useAppUserRoutes'
 const userGroup = useAppUserRoutes()[0]
 const routeObj = userGroup.children.find(
   (r) => r.to === '/dashboard/employer-profile'

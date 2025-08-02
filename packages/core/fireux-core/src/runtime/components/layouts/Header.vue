@@ -11,7 +11,7 @@
         <UNavigationMenu
           v-if="!isMobile"
           orientation="horizontal"
-          :items="filteredMenuBarLinks"
+          :items="menuBarLinks"
         />
 
         <!-- Right Section: User Profile / Sign-In & Mobile Menu -->
@@ -55,7 +55,7 @@
         <div class="mobile-menu-wrapper">
           <UNavigationMenu
             orientation="vertical"
-            :items="filteredMobileLinks"
+            :items="mobileLinks"
             class="w-full"
           />
         </div>
@@ -69,7 +69,6 @@ import { ref, computed, watch } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import { useRouter, useRoute } from 'vue-router'
 import { useAppUser } from '../../composables/firestore/AppUser/useAppUser'
-import { filterCurrentRoute } from '../../types/routeLink'
 
 const { appUser, isAppUser, initials } = await useAppUser()
 
@@ -98,14 +97,6 @@ const props = defineProps({
   menuBarLinks: { type: Array, default: () => [] },
   mobileLinks: { type: Array, default: () => [] },
 })
-
-// Filter out current route from navigation
-const filteredMenuBarLinks = computed(() =>
-  filterCurrentRoute(props.menuBarLinks, route.path)
-)
-const filteredMobileLinks = computed(() =>
-  filterCurrentRoute(props.mobileLinks, route.path)
-)
 </script>
 
 <style scoped>

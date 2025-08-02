@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
 import type { ProfileConfig } from '../../../models/profiles/profile.model'
-import { useFirestoreManager } from '../useFirestoreManager'
+import { useFirestoreRead } from '../useFirestoreRead'
 import { useProfileCreate } from './useProfileCreate'
 import { useProfileDelete } from './useProfileDelete'
 
@@ -13,7 +13,7 @@ import { useProfileDelete } from './useProfileDelete'
 export async function useProfile(profileConfig: ProfileConfig) {
   const db = useFirestore()
   const currentUser = useCurrentUser()
-  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreManager()
+  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
 
   // Use the provided config directly
   const config = profileConfig

@@ -10,13 +10,3 @@ export interface RouteLink {
   to: string
   children?: RouteLink[]
 }
-
-/**
- * Filter routes to hide the current route from navigation
- */
-export function filterCurrentRoute(
-  routes: RouteLink[],
-  currentPath: string
-): RouteLink[] {
-  return routes.filter((route) => route.to !== currentPath)
-}

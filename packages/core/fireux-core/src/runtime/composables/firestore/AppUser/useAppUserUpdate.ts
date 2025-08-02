@@ -58,9 +58,6 @@ import {
  * SOCIAL FEATURES (array updates):
  * - followers?: Array<string> (optional) → Molecules/Forms/Firestore/ArrayOfStrings → updateFollowers()
  * - following?: Array<string> (optional) → Molecules/Forms/Firestore/ArrayOfStrings → updateFollowing()
- * - profiles?: Array<string> (optional) → Molecules/Forms/Firestore/ArrayOfStrings → updateProfiles()
- *   - Simple string array format: ['chef', 'supplier', 'professional']
- *   - Replaces old complex object format for easier management
  *
  * NON-UPDATEABLE FIELDS (system managed):
  * - uid: string (system assigned)
@@ -322,28 +319,20 @@ function useAppUserUpdate() {
       }
     }
 
-    const updateProfiles = async (profiles: string[]) => {
+    const updateProfiles = async (
+      profiles: Array<{
+        type: string
+        collection: string
+        created_at: string
+        is_active: boolean
+      }>
+    ) => {
       try {
         const user = await waitForCurrentUser()
         if (!user) throw new Error('User not authenticated')
 
-        // Validate that profiles is an array of strings
-        if (!Array.isArray(profiles)) {
-          throw new Error('Profiles must be an array')
-        }
-
-        // Validate that all items are strings
-        if (!profiles.every((profile) => typeof profile === 'string')) {
-          throw new Error('All profile entries must be strings')
-        }
-
-        // Format profiles (trim whitespace, remove duplicates)
-        const formattedProfiles = [
-          ...new Set(profiles.map((p) => p.trim()).filter((p) => p.length > 0)),
-        ]
-
         const userRef = doc(db, `apps/${appId}/users`, user.uid)
-        await updateDoc(userRef, { profiles: formattedProfiles })
+        await updateDoc(userRef, { profiles })
 
         return { success: true }
       } catch (error) {

@@ -28,21 +28,24 @@ export function useAppUserComputed(appUser: Ref<AppUser | null | undefined>) {
   const isPro = computed(() => appUser.value?.subscription?.is_pro === true)
   const isAdmin = computed(() => appUser.value?.role === 'admin')
 
-  // Profile checking method
-  function hasProfile(profileType: string): boolean {
-    const profiles = appUser.value?.profiles || []
-    if (!Array.isArray(profiles) || profiles.length === 0) {
-      return false
-    }
+  // Profile checking method - computed so it's reactive to appUser changes
+  const hasProfile = computed(() => {
+    return (profileType: string): boolean => {
+      console.log('[test] hasProfile called with:', profileType)
+      console.log('[test] appUser.value:', appUser.value)
 
-    // Check if it's the new simple format (array of strings)
-    if (typeof profiles[0] === 'string') {
-      return profiles.includes(profileType as any)
-    }
+      // If no user data loaded yet, return false
+      if (!appUser.value) {
+        console.log('[test] hasProfile result: false (no user data)')
+        return false
+      }
 
-    // Legacy format (array of objects)
-    return profiles.some((p: any) => p.type === profileType)
-  }
+      console.log('[test] profiles:', appUser.value?.profiles)
+      const result = (appUser.value?.profiles as any)?.includes(profileType)
+      console.log('[test] hasProfile result:', result)
+      return result || false
+    }
+  })
 
   // Methods
   function hasSubscription(planType: 'pro' | 'enterprise' = 'pro'): boolean {
@@ -59,7 +62,7 @@ export function useAppUserComputed(appUser: Ref<AppUser | null | undefined>) {
     isPro,
     isAdmin,
     initials,
-    hasProfile,
+    hasProfile: hasProfile.value,
     hasSubscription,
   }
 }
