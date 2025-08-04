@@ -43,8 +43,13 @@ const { appUsers: appusers } = await useAppUser()
 // Get current user and check if they have a chef profile
 const { appUser } = await useAppUser()
 const hasChefProfile = computed(() => {
-  if (!appUser.value) return false
-  return !!currentChef.value
+  try {
+    if (!appUser.value) return false
+    return !!currentChef.value
+  } catch (error) {
+    console.warn('Error checking chef profile:', error)
+    return false
+  }
 })
 
 // Page configuration

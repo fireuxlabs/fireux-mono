@@ -32,12 +32,3 @@ definePageMeta({
 })
 </script>
 
-<style scoped>
-.loading-state,
-.error-state {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  text-align: center;
-}
-</style>

@@ -33,7 +33,7 @@
           </template>
           <UIcon
             v-if="isMobile && !mobileMenuOpen"
-            name="lucide:menu"
+            name="i-lucide-menu"
             @click="toggleMobileNav"
           />
         </div>

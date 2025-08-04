@@ -19,18 +19,14 @@
 
     <!-- Edit Mode -->
     <div v-else class="editing">
-      <div
-        v-for="(_, index) in localValue"
-        :key="index"
-        class="input-group"
-      >
+      <div v-for="(_, index) in localValue" :key="index" class="input-group">
         <UInput
           v-model="localValue[index]"
           :placeholder="itemPlaceholder"
           class="w-full"
         />
         <UIcon
-          name="lucide:x-circle"
+          name="i-lucide-x-circle"
           class="cursor-pointer"
           @click="removeItem(index)"
         />
@@ -43,7 +39,7 @@
           @keyup.enter="addItem"
         />
         <UIcon
-          name="lucide:plus-circle"
+          name="i-lucide-plus-circle"
           class="cursor-pointer"
           @click="addItem"
         />
@@ -60,7 +56,10 @@ const props = defineProps({
   label: { type: String as PropType<string>, required: true },
   modelValue: { type: Array as PropType<string[]>, default: () => [] },
   itemPlaceholder: { type: String as PropType<string>, default: 'Item' },
-  newItemPlaceholder: { type: String as PropType<string>, default: 'Add new item' }
+  newItemPlaceholder: {
+    type: String as PropType<string>,
+    default: 'Add new item',
+  },
 })
 
 const emit = defineEmits<{ (e: 'update:modelValue', value: string[]): void }>()

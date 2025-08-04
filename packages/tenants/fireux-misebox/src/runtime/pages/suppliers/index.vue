@@ -47,8 +47,13 @@ const { appUsers: appusers } = await useAppUser()
 // Get current user and check if they have a supplier profile
 const { appUser } = await useAppUser()
 const hasSupplierProfile = computed(() => {
-  if (!appUser.value) return false
-  return !!currentSupplier.value
+  try {
+    if (!appUser.value) return false
+    return !!currentSupplier.value
+  } catch (error) {
+    console.warn('Error checking supplier profile:', error)
+    return false
+  }
 })
 
 // Page configuration

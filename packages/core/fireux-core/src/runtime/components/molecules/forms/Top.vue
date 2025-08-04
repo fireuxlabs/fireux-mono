@@ -5,24 +5,24 @@
       <div class="component-icons">
         <UIcon
           v-if="!isEditing"
-          name="lucide:pencil"
+          name="i-lucide-pencil"
           class="cursor-pointer"
           @click="$emit('start-editing')"
         />
         <template v-else>
           <UIcon
-            name="lucide:check-circle"
+            name="i-lucide-check-circle"
             class="cursor-pointer"
             @click="$emit('check')"
           />
           <UIcon
-            name="lucide:minus-circle"
+            name="i-lucide-minus-circle"
             class="cursor-pointer"
             @click="$emit('cancel')"
           />
           <UIcon
             v-if="hasData"
-            name="lucide:x-circle"
+            name="i-lucide-x-circle"
             class="cursor-pointer"
             @click="$emit('delete')"
           />
@@ -37,10 +37,10 @@
 
 <script setup>
 defineProps({
-  label: { type: String, default: "" },
+  label: { type: String, default: '' },
   isEditing: { type: Boolean, default: false },
   hasData: { type: Boolean, default: false },
-  errorMessage: { type: String, default: "" }
+  errorMessage: { type: String, default: '' },
 })
 
 defineEmits(['start-editing', 'check', 'cancel', 'delete'])

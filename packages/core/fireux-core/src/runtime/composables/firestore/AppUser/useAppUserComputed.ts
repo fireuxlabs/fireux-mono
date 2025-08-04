@@ -29,13 +29,11 @@ export function useAppUserComputed(appUser: Ref<AppUser | null>) {
   const isAdmin = computed(() => appUser.value?.role === 'admin')
 
   // Profile checking method - efficiently computed to avoid creating new functions
-  const hasProfile = computed(() => {
-    return (profileType: string): boolean => {
-      const profiles = appUser.value?.profiles || []
-      const result = (profiles as any).includes(profileType)
-      return result
-    }
-  })
+  const hasProfile = (profileType: string): boolean => {
+    const profiles = appUser.value?.profiles || []
+    const result = (profiles as any).includes(profileType)
+    return result
+  }
   function hasSubscription(planType: 'pro' | 'enterprise' = 'pro'): boolean {
     if (planType === 'pro') {
       return isPro.value
@@ -50,7 +48,7 @@ export function useAppUserComputed(appUser: Ref<AppUser | null>) {
     isPro,
     isAdmin,
     initials,
-    hasProfile: hasProfile.value,
+    hasProfile,
     hasSubscription,
   }
 }
