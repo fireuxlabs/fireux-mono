@@ -3,12 +3,8 @@
 </template>
 
 <script setup>
-const cleanboxRoutes = ref({ menuBarLinks: [], mobileLinks: [] })
+import { getCleanboxRoutes } from '../composables/app/routes/useCleanboxRoutes'
 
-onMounted(async () => {
-  cleanboxRoutes.value = (await getCleanboxRoutes()) || {
-    menuBarLinks: [],
-    mobileLinks: [],
-  }
-})
+const { hasProfile } = await useAppUser()
+const cleanboxRoutes = computed(() => getCleanboxRoutes(hasProfile))
 </script>

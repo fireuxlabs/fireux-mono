@@ -163,6 +163,26 @@ export const supplierConfig: ProfileConfig = {
   },
 }
 
+// CTA Configuration for Supplier profiles
+export const supplierCtaConfig = {
+  title: '🚛 Launch Your Supply Business',
+  description:
+    'Join Misebox as a Supplier to connect with restaurants, hotels, and food businesses seeking quality ingredients and supplies.',
+  benefits: [
+    '📦 Showcase your products and services',
+    '🤝 Connect with restaurants and food businesses',
+    '📊 Manage orders and inventory',
+    '🌱 Highlight organic and local offerings',
+  ],
+  createPath: '/suppliers/create',
+  createButtonText: 'Create Supplier Profile',
+  welcomeBackText: '🚛 Welcome back, Supplier!',
+  quickActions: [
+    { text: 'Add Products', path: '/suppliers/products/create' },
+    { text: 'View Orders', path: '/suppliers/orders' },
+  ],
+}
+
 // Export types for easier importing
 export type SupplierInput = Omit<Supplier, 'uid' | 'created_at' | 'updated_at'>
 export type SupplierUpdate = Partial<SupplierInput>

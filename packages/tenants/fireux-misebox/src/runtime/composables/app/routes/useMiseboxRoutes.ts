@@ -1,91 +1,75 @@
-import { computed } from 'vue'
-import type { RouteLink } from '../../../../../../../core/fireux-core/src/runtime/types/routeLink'
-import { useAppUser } from '../../../../../../../core/fireux-core/src/runtime/composables/firestore/AppUser/useAppUser'
 import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/app/routes/useJobRoutes'
+import type { RouteLink } from '../../../../../../../core/fireux-core/src/runtime/types/routeLink'
 
-export async function getMiseboxRoutes() {
-  const { hasProfile } = await useAppUser()
+export function getMiseboxRoutes(hasProfile: (profileType: string) => boolean) {
+  // Get package routes
+  const jobRoutes = getJobRoutes(hasProfile)
 
-  // Get job routes to combine with misebox routes
-  const jobRoutesResult = await getJobRoutes()
+  // General misebox routes
+  const miseboxRoutes: RouteLink[] = [
+    {
+      id: 'chefs',
+      label: 'Chefs',
+      icon: 'i-lucide-chef-hat',
+      to: '/chefs',
+    },
+    {
+      id: 'suppliers',
+      label: 'Suppliers',
+      icon: 'i-lucide-truck',
+      to: '/suppliers',
+    },
+    {
+      id: 'kitchens',
+      label: 'Kitchens',
+      icon: 'i-lucide-cooking-pot',
+      to: '/kitchens',
+    },
+    {
+      id: 'recipes',
+      label: 'Recipes',
+      icon: 'i-lucide-book-open',
+      to: '/recipes',
+    },
+  ]
 
-  const routes = computed(() => {
-    console.log('[test] Computing misebox routes')
+  const miseboxProfileRoutes: RouteLink[] = []
 
-    // Get job routes from the computed result
-    const jobRoutes = jobRoutesResult.value.menuBarLinks
-    const jobMobileRoutes = jobRoutesResult.value.mobileLinks
-
-    const miseboxRoutes: RouteLink[] = [
-      {
-        id: 'chefs',
-        label: 'Chefs',
-        icon: 'i-lucide-chef-hat',
-        to: '/chefs',
-      },
-      {
-        id: 'suppliers',
-        label: 'Suppliers',
-        icon: 'i-lucide-truck',
-        to: '/suppliers',
-      },
-      {
-        id: 'kitchens',
-        label: 'Kitchens',
-        icon: 'i-lucide-cooking-pot',
-        to: '/kitchens',
-      },
-      {
-        id: 'recipes',
-        label: 'Recipes',
-        icon: 'i-lucide-book-open',
-        to: '/recipes',
-      },
-    ]
-
-    const miseboxProfileRoutes: RouteLink[] = []
-
-    // Filter out "Chefs" from mobile menu if user has chef profile
-    // Filter out "Suppliers" from mobile menu if user has supplier profile
-    const mobileRoutes = miseboxRoutes.filter((route) => {
-      if (route.id === 'chefs' && hasProfile('chef')) return false
-      if (route.id === 'suppliers' && hasProfile('supplier')) return false
-      return true
-    })
-
-    if (hasProfile('chef')) {
-      console.log('[test] Adding Chef Profile route')
-      miseboxProfileRoutes.push({
-        id: 'chef-profile',
-        label: 'Chef Profile',
-        icon: 'i-lucide-chef-hat',
-        to: '/dashboard/chef-profile',
-      })
-    }
-
-    if (hasProfile('supplier')) {
-      console.log('[test] Adding Supplier Profile route')
-      miseboxProfileRoutes.push({
-        id: 'supplier-profile',
-        label: 'Supplier Profile',
-        icon: 'i-lucide-package',
-        to: '/dashboard/supplier-profile',
-      })
-    }
-
-    // Assemble combined routes - misebox first, then jobs
-    const combinedMenuBarLinks = [...miseboxRoutes, ...jobRoutes]
-    const combinedMobileLinks = [
-      ...mobileRoutes,
-      ...miseboxProfileRoutes,
-      ...jobMobileRoutes,
-    ]
-
-    return {
-      menuBarLinks: combinedMenuBarLinks,
-      mobileLinks: combinedMobileLinks,
-    }
+  // Filter out "Chefs" from mobile menu if user has chef profile
+  // Filter out "Suppliers" from mobile menu if user has supplier profile
+  const miseboxMobileRoutes = miseboxRoutes.filter((route) => {
+    if (route.id === 'chefs' && hasProfile('chef')) return false
+    if (route.id === 'suppliers' && hasProfile('supplier')) return false
+    return true
   })
 
-  return routes
+  // Add chef profile route
+  if (hasProfile('chef')) {
+    miseboxProfileRoutes.push({
+      id: 'chef-profile',
+      label: 'Chef Profile',
+      icon: 'i-lucide-chef-hat',
+      to: '/dashboard/chef-profile',
+    })
+  }
+
+  // Add supplier profile route
+  if (hasProfile('supplier')) {
+    miseboxProfileRoutes.push({
+      id: 'supplier-profile',
+      label: 'Supplier Profile',
+      icon: 'i-lucide-package',
+      to: '/dashboard/supplier-profile',
+    })
+  }
+
+  return {
+    menuBarLinks: [...miseboxRoutes, ...jobRoutes.jobRoutes],
+    mobileLinks: [
+      ...miseboxProfileRoutes,
+      ...jobRoutes.jobProfileRoutes,
+      ...miseboxMobileRoutes,
+      ...jobRoutes.jobMobileRoutes,
+    ],
+  }
 }

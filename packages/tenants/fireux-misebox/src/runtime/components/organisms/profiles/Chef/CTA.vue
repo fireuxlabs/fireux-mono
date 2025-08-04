@@ -14,9 +14,7 @@
           <li>📝 Organize recipes and ingredients</li>
           <li>🤝 Connect with suppliers and other chefs</li>
         </ul>
-        <button class="btn btn-primary" @click="redirectToCreate">
-          Create Chef Profile
-        </button>
+        <UButton to="/chefs/create" size="lg"> Create Chef Profile </UButton>
       </div>
     </div>
 
@@ -26,12 +24,10 @@
         <h2>👨‍🍳 Welcome back, Chef!</h2>
         <MiseChefCardsProfile :chef="currentChef" />
         <div class="quick-actions">
-          <NuxtLink :to="`/chefs/${currentChef.id}`" class="btn btn-outline">
+          <UButton :to="`/chefs/${currentChef.id}`" variant="outline">
             View Profile
-          </NuxtLink>
-          <NuxtLink to="/kitchens/create" class="btn btn-primary">
-            Create Kitchen
-          </NuxtLink>
+          </UButton>
+          <UButton to="/kitchens/create"> Create Kitchen </UButton>
         </div>
       </div>
     </div>
@@ -39,17 +35,10 @@
 </template>
 
 <script setup>
-import { chefConfig } from '../../../models/profiles/Chef.model'
+import { chefConfig } from '../../../../models/profiles/Chef.model'
 
 // Get current chef profile if it exists
 const { current: currentChef } = await useProfile(chefConfig)
-
-// Navigation
-const router = useRouter()
-
-const redirectToCreate = () => {
-  router.push('/chefs/create')
-}
 </script>
 
 <style scoped>
@@ -93,39 +82,6 @@ const redirectToCreate = () => {
   padding: 0.75rem 0;
   font-size: 1.1rem;
   color: #374151;
-}
-
-.btn {
-  display: inline-block;
-  padding: 0.875rem 2rem;
-  border-radius: 8px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.btn-primary {
-  background-color: #22c55e;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #16a34a;
-  transform: translateY(-1px);
-}
-
-.btn-outline {
-  background-color: transparent;
-  color: #22c55e;
-  border: 2px solid #22c55e;
-}
-
-.btn-outline:hover {
-  background-color: #22c55e;
-  color: white;
 }
 
 .call-to-action-existing {

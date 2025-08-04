@@ -1,75 +1,98 @@
-# 📚 FireUX Documentation
+# 🏗️ FireUX Monorepo Documentation
 
-> **Complete documentation for the FireUX ecosystem**
-
-## 🏗️ Architecture & Structure
-
-### **[STRUCTURE_GUIDE.md](./STRUCTURE_GUIDE.md)**
-
-Complete guide to FireUX's unified structure pattern, enforcement tools, and development practices.
-
-**Quick Commands:**
-
-```bash
-pnpm structure:validate  # Validate structure compliance
-pnpm structure:fix      # Auto-fix common issues
-```
-
-## � Complete Guides
-
-### **[FIREUX_COMPLETE.md](./FIREUX_COMPLETE.md)**
-
-Comprehensive architecture, development, and troubleshooting guide for the entire FireUX ecosystem.
-
-### **[MISEBOX_ROADMAP.md](./MISEBOX_ROADMAP.md)**
-
-Roadmap and feature planning for the Misebox marketplace system.
+> **Monorepo operations, workspace configuration, and development workflows**
 
 ## 🚀 Quick Start
 
-1. **Structure First**: Always check where something belongs with the [Structure Guide](./STRUCTURE_GUIDE.md)
-2. **Follow the Pattern**: Both package/runtime and app/ levels use the same Nuxt structure
-3. **Validate Often**: Run `pnpm structure:validate` to maintain compliance
-4. **Test Thoroughly**: Use playground environment for testing shared features
+```bash
+# Start development
+pnpm dev:fireux      # :3000 (yellow theme)
+pnpm dev:cleanbox    # :3007 (blue theme)
+pnpm dev:misebox     # :3009 (green theme)
+pnpm dev:playground  # :3005 (test environment)
 
-## 💡 Key Principles
+# Package development
+pnpm build:packages  # Build all packages
+pnpm dev:packages    # Develop all packages
+pnpm clean:packages  # Clean all packages
 
-- **Unified Structure**: Same folder conventions at package and app levels
-- **Domain Separation**: Keep domain code in packages, app-specific in apps
-- **Automated Enforcement**: Use tools to prevent structural drift
-- **Clean Inheritance**: Apps extend package functionality cleanly
+# Deployment
+./deploy-all.sh      # Deploy all apps
+```
 
-> **Need Help?** Start with the [Structure Guide](./STRUCTURE_GUIDE.md) for practical development guidance.
+## 📚 Documentation Structure
 
-- `fireux-core/core.doc.md` - Core package documentation
-- `fireux-jobs/jobs.doc.md` - Jobs domain documentation
-- `fireux-jobs/jobs-business.doc.md` - Jobs business logic
-- `fireux-jobs/jobs-copilot.doc.md` - Jobs development guidelines
+### **Root Level** (This Directory)
 
-#### `/projects/` - Project-Specific Docs
+- **Monorepo operations only**
+- Workspace configuration
+- Development workflows
+- Build and deployment pipelines
 
-- `projects.doc.md` - Projects overview
-- `misebox/misebox.doc.md` - Misebox app documentation
+### **Package Level** → [`/packages/docs/`](../packages/docs/)
 
-#### API Documentation
+- Package ecosystem overview
+- Implementation patterns and architecture
+- Core infrastructure documentation
 
-- `packages/fireux-core/src/runtime/server/api/` - API endpoint documentation
-  - `api.doc.md` - API overview
-  - `firestore/firestore.doc.md` - Firestore API docs
-  - `stripe/stripe.doc.md` - Stripe API docs
-  - `stripe/stripe-endpoints.doc.md` - Stripe endpoint details
-  - `app/app.doc.md` - App API docs
+### **App Level** → [`/projects/docs/`](../projects/docs/)
 
-### 🎯 Documentation Conventions
+- Deployment strategies
+- Individual app documentation
+- Environment-specific guides
 
-1. **Naming**: Use `.doc.md` suffix for internal documentation
-2. **README.md**: Package overviews and setup instructions only
-3. **Hierarchy**: Documentation follows the code structure
-4. **Content**: Technical details, architecture decisions, development guides
+## 🛠️ Development Workflows
 
-### 📝 Content Guidelines
+### Package Management
 
-- **Architecture**: System design, patterns, and principles
-- **Business**: Domain logic, user flows, and business rules
-- **Development**: Setup, workflow, coding standards
-- **API**: Endpoint documentation and integration guides
+- **Workspace Dependencies**: Use `workspace:*` for internal packages
+- **Auto-Import System**: Components auto-import with package prefixes
+- **Build System**: Uses `nuxt-module-build` for proper packaging
+
+### Development Best Practices
+
+- **Domain Separation**: Keep domain logic in appropriate packages
+- **Generic First**: Add shared functionality to `fireux-core`
+- **Validation**: Test in playground before deploying to apps
+
+## 🔧 Operational Guides
+
+### **[PHANTOM_PREVENTION.md](./PHANTOM_PREVENTION.md)**
+
+VS Code workflow patterns to prevent file resurrection issues.
+
+### **[CONTENT_STRATEGY_NOTES.md](./CONTENT_STRATEGY_NOTES.md)**
+
+Documentation strategy and scope separation guidelines.
+
+## 🏗️ Monorepo Architecture
+
+```
+packages/
+├── core/fireux-core/          # Framework fundamentals
+├── extensions/fireux-jobs/     # Jobs marketplace
+├── tenants/fireux-misebox/    # Chef/supplier marketplace
+└── tenants/fireux-cleanbox/   # Cleaning services
+
+projects/
+├── fireux/fireux-app/         # Main FireUX app
+├── misebox/misebox-app/       # Chef marketplace app
+└── cleanbox/cleanbox-app/     # Cleaning services app
+```
+
+## 📋 Build Scripts
+
+```bash
+# Structure validation
+pnpm structure:validate    # Check structure compliance
+pnpm structure:fix        # Auto-fix common issues
+
+# Package operations
+pnpm workspace <package> <command>  # Run command in specific package
+pnpm -r <command>                   # Run command in all packages
+```
+
+---
+
+**📖 For implementation details**: See [`/packages/docs/`](../packages/docs/)  
+**🚀 For deployment guides**: See [`/projects/docs/`](../projects/docs/)

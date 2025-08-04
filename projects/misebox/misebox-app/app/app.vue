@@ -1,6 +1,7 @@
 <template>
   <UApp>
     <FireAppDebug />
+
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

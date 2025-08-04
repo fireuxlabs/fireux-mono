@@ -13,7 +13,6 @@ import { useProfileDelete } from './useProfileDelete'
 export async function useProfile(profileConfig: ProfileConfig) {
   const db = useFirestore()
   const currentUser = useCurrentUser()
-  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
 
   // Use the provided config directly
   const config = profileConfig
@@ -28,9 +27,11 @@ export async function useProfile(profileConfig: ProfileConfig) {
   const { data: currentProfile } = useDocument(currentProfileDocRef)
 
   // Fetch all profiles in this collection - await the Promise
+  const { firestoreFetchCollection } = useFirestoreRead()
   const allProfiles = await firestoreFetchCollection(config.collectionName)
 
   async function fetchById(id: string) {
+    const { firestoreFetchDoc } = useFirestoreRead()
     return await firestoreFetchDoc(config.collectionName, id)
   }
 
@@ -38,7 +39,7 @@ export async function useProfile(profileConfig: ProfileConfig) {
   const profileCreate = await useProfileCreate(config)
 
   // Expose delete functionality
-  const profileDelete = useProfileDelete(config)
+  const profileDelete = await useProfileDelete(config)
 
   // Expose update functionality (if provided in config)
   const profileUpdate = config.updateComposable ? config.updateComposable() : {}

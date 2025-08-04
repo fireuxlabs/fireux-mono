@@ -9,10 +9,11 @@ import { useAppUserEnsure } from './useAppUserEnsure'
 import useAppUserUpdate from './useAppUserUpdate'
 import { useAppUserSubscription } from './useAppUserSubscription'
 import { useAppUserComputed } from './useAppUserComputed'
+import { useFireUXConfig } from '../../FireUXConfig'
 
 export async function useAppUser() {
-  // Top-level context
-  const appId = 'misebox-app'
+  // Get app ID dynamically from runtime config
+  const { appId } = useFireUXConfig()
 
   const db = useFirestore()
   const currentUser = useCurrentUser()
@@ -28,7 +29,10 @@ export async function useAppUser() {
       : null
   )
 
-  const { data: appUser } = useDocument<AppUser>(appUserDocRef)
+  const { data: appUserData } = useDocument<AppUser>(appUserDocRef)
+
+  // Convert undefined to null for consistency
+  const appUser = computed(() => appUserData.value ?? null)
 
   // Eagerly fetch all app users (equivalent to allProfiles in useProfile)
   const allAppUsers = await firestoreFetchCollection<AppUser>(

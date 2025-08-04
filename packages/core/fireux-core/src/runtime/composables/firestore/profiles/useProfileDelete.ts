@@ -3,7 +3,7 @@ import { useCurrentUser } from 'vuefire'
 import type { ProfileConfig } from '../../../models/profiles/profile.model'
 import { useFirestoreManager } from '../useFirestoreManager'
 import { useAppUser } from '../AppUser/useAppUser'
-import { useAppUserUpdate } from '../AppUser/useAppUserUpdate'
+import useAppUserUpdate from '../AppUser/useAppUserUpdate'
 
 /**
  * Generic profile deletion composable
@@ -12,7 +12,6 @@ import { useAppUserUpdate } from '../AppUser/useAppUserUpdate'
 export async function useProfileDelete(profileConfig: ProfileConfig) {
   const currentUser = useCurrentUser()
   const { deleteDocument } = useFirestoreManager()
-  const { appUser } = await useAppUser()
 
   // Set default appScoped to false for global profile ecosystem
   const config = {
@@ -35,6 +34,8 @@ export async function useProfileDelete(profileConfig: ProfileConfig) {
     deleteError.value = null
 
     try {
+      // Get appUser data when needed
+      const { appUser } = await useAppUser()
       await deleteDocument(config.collectionName, targetId, {
         appScoped: false,
       })

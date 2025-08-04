@@ -174,6 +174,26 @@ export const chefConfig: ProfileConfig = {
   },
 }
 
+// CTA Configuration for Chef profiles
+export const chefCtaConfig = {
+  title: '🍳 Step Into Your Chef Journey',
+  description:
+    'Join Misebox as a Chef to showcase your culinary expertise, manage your kitchens, and connect with the food service community.',
+  benefits: [
+    '✨ Create and manage your chef profile',
+    '🏠 Set up and manage kitchens',
+    '📝 Organize recipes and ingredients',
+    '🤝 Connect with suppliers and other chefs',
+  ],
+  createPath: '/chefs/create',
+  createButtonText: 'Create Chef Profile',
+  welcomeBackText: '👨‍🍳 Welcome back, Chef!',
+  quickActions: [
+    { text: 'Create Kitchen', path: '/kitchens/create' },
+    { text: 'Browse Recipes', path: '/recipes' },
+  ],
+}
+
 // Export types for easier importing
 export type ChefInput = Omit<Chef, 'uid' | 'created_at' | 'updated_at'>
 export type ChefUpdate = Partial<ChefInput>

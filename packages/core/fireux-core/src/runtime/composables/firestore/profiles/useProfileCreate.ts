@@ -4,7 +4,7 @@ import { useCurrentUser } from 'vuefire'
 import type { ProfileConfig } from '../../../models/profiles/profile.model'
 import { useFirestoreManager } from '../useFirestoreManager'
 import { useAppUser } from '../AppUser/useAppUser'
-import { useAppUserUpdate } from '../AppUser/useAppUserUpdate'
+import useAppUserUpdate from '../AppUser/useAppUserUpdate'
 
 /**
  * Generic profile creation composable
@@ -13,7 +13,6 @@ import { useAppUserUpdate } from '../AppUser/useAppUserUpdate'
 export async function useProfileCreate(profileConfig: ProfileConfig) {
   const currentUser = useCurrentUser()
   const { setDocument } = useFirestoreManager()
-  const { appUser } = await useAppUser()
 
   // Set default appScoped to false for global profile ecosystem
   const config = {
@@ -34,6 +33,8 @@ export async function useProfileCreate(profileConfig: ProfileConfig) {
     createError.value = null
 
     try {
+      // Get appUser data when needed
+      const { appUser } = await useAppUser()
       // Check if profile already exists in Firestore
       const { firestoreFetchDoc } = useFirestoreManager()
       const existingProfileDoc = await firestoreFetchDoc(

@@ -2,9 +2,13 @@
 // Scans all packages and reports what is registered and accessible (components, composables, layouts, pages)
 // Interactive UX: prompts user for what to test (matches module.ts config steps)
 
-const fs = require('fs')
-const path = require('path')
-const readline = require('readline')
+import fs from 'fs'
+import path from 'path'
+import readline from 'readline'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const MONOREPO_ROOT = path.resolve(__dirname, '..')
 const PKG_ROOT = path.join(MONOREPO_ROOT, 'packages')
