@@ -1,5 +1,5 @@
 <template>
-  <FireOrganismsProfilePage
+  <FireOrganismsProfileRoot
     :config="chefConfig"
     :filter-composable="useChefFilters"
   >
@@ -10,7 +10,7 @@
     <template #profile-item="{ profile }">
       <MiseChefCardsCell :chef="profile" />
     </template>
-  </FireOrganismsProfilePage>
+  </FireOrganismsProfileRoot>
 </template>
 <script setup>
 import { chefConfig } from '../../models/profiles/Chef.model'

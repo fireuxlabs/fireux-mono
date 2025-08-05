@@ -1,5 +1,5 @@
 <template>
-  <FireOrganismsProfilePage
+  <FireOrganismsProfileRoot
     :config="supplierConfig"
     :filter-composable="useSupplierFilters"
   >
@@ -10,7 +10,7 @@
     <template #profile-item="{ profile }">
       <MiseSupplierCardsCell :supplier="profile" />
     </template>
-  </FireOrganismsProfilePage>
+  </FireOrganismsProfileRoot>
 </template>
 
 <script setup>

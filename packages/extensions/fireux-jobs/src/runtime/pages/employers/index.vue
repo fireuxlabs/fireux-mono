@@ -1,5 +1,5 @@
 <template>
-  <FireOrganismsProfilePage
+  <FireOrganismsProfileRoot
     :config="employerConfig"
     :filter-composable="useEmployerFilters"
   >
@@ -10,7 +10,7 @@
     <template #profile-item="{ profile }">
       <JobEmployerCardsCell :employer="profile" />
     </template>
-  </FireOrganismsProfilePage>
+  </FireOrganismsProfileRoot>
 </template>
 
 <script setup>

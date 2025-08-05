@@ -24,9 +24,6 @@
         <UButton to="/auth" size="lg" class="primary-cta">
           Start Free Trial
         </UButton>
-        <UButton to="/demo" variant="outline" size="lg">
-          See Kitchen Demo
-        </UButton>
       </div>
       <p class="trial-info">
         <UIcon name="i-lucide-check-circle" class="check-icon" />

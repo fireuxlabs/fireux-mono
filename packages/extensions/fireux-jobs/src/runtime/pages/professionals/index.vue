@@ -1,5 +1,5 @@
 <template>
-  <FireOrganismsProfilePage
+  <FireOrganismsProfileRoot
     :config="professionalConfig"
     :filter-composable="useProfessionalFilters"
   >
@@ -10,7 +10,7 @@
     <template #profile-item="{ profile }">
       <JobProfessionalCardsCell :professional="profile" />
     </template>
-  </FireOrganismsProfilePage>
+  </FireOrganismsProfileRoot>
 </template>
 
 <script setup>
