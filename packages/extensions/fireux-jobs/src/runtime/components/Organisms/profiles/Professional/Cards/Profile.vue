@@ -1,174 +1,69 @@
 <template>
-  <UCard>
-    <div class="professional-profile-header">
-      <UAvatar
-        :src="professional?.avatarUrl"
-        :alt="professionalName"
-        size="xl"
-        :text="getInitials(professionalName)"
+  <div class="cell card-profile professional-theme">
+    <div class="header">
+      <img
+        :src="professional.avatarUrl || '/default-avatar.png'"
+        :alt="`${professional.displayName} avatar`"
+        class="avatar"
       />
-      <div class="professional-info">
-        <h2 class="professional-name">{{ professionalName }}</h2>
-        <p v-if="professional?.email" class="professional-email">
-          {{ professional.email }}
-        </p>
-        <p v-if="professional?.title" class="professional-title">
-          {{ professional.title }}
-        </p>
+      <div class="info">
+        <h2 class="name">{{ professional.displayName }}</h2>
+        <p v-if="professional.title" class="title">{{ professional.title }}</p>
+        <div class="meta">
+          <span
+            v-if="professional.kitchen_experience?.length"
+            class="meta-item"
+          >
+            <span>🍳</span>
+            {{ professional.kitchen_experience.length }} positions
+          </span>
+          <span v-if="professional.languages?.length" class="meta-item">
+            <span>🗣️</span>
+            {{ professional.languages.length }} languages
+          </span>
+          <span v-if="professional.education?.length" class="meta-item">
+            <span>🎓</span>
+            {{ professional.education.length }} degrees
+          </span>
+        </div>
       </div>
     </div>
 
-    <div
-      v-if="professional?.bio_short || professional?.bio_long"
-      class="professional-about"
-    >
-      <h3 class="section-title">About</h3>
-      <p class="section-content">
-        {{ professional.bio_long || professional.bio_short }}
-      </p>
+    <p v-if="professional.bio_short" class="bio">
+      {{ professional.bio_short }}
+    </p>
+
+    <div v-if="professional.languages?.length" class="tags">
+      <span
+        v-for="lang in professional.languages.slice(0, 4)"
+        :key="lang.language"
+        class="tag"
+      >
+        {{ lang.language }} {{ lang.proficiency }}
+      </span>
     </div>
 
-    <div v-if="hasSkills" class="professional-skills">
-      <h3 class="section-title">Skills</h3>
-      <div class="skills-grid">
-        <UBadge
-          v-for="skill in professional.skills"
-          :key="skill"
-          variant="soft"
-        >
-          {{ skill }}
-        </UBadge>
-      </div>
+    <div class="actions">
+      <button
+        class="btn btn-primary"
+        @click="$emit('view-profile', professional)"
+      >
+        View Profile
+      </button>
+      <button class="btn btn-secondary" @click="$emit('contact', professional)">
+        Contact
+      </button>
     </div>
-
-    <div v-if="hasExperience" class="professional-experience">
-      <h3 class="section-title">Experience</h3>
-      <p class="section-content">
-        {{ professional.kitchen_experience.length }} position(s)
-      </p>
-    </div>
-
-    <div v-if="hasCertifications" class="professional-certifications">
-      <h3 class="section-title">Certifications</h3>
-      <p class="section-content">
-        {{ professional.certifications.length }} certification(s)
-      </p>
-    </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup>
-// Props from parent
 const props = defineProps({
   professional: {
     type: Object,
-    default: null,
+    required: true,
   },
 })
 
-// Computed property for professional display name
-const professionalName = computed(() => {
-  if (!props.professional) return 'Professional'
-  return (
-    props.professional.full_name ||
-    props.professional.name ||
-    props.professional.displayName ||
-    'Professional'
-  )
-})
-
-// Computed properties for data presence
-const hasSkills = computed(() => {
-  return props.professional?.skills && props.professional.skills.length > 0
-})
-
-const hasExperience = computed(() => {
-  return (
-    props.professional?.kitchen_experience &&
-    props.professional.kitchen_experience.length > 0
-  )
-})
-
-const hasCertifications = computed(() => {
-  return (
-    props.professional?.certifications &&
-    props.professional.certifications.length > 0
-  )
-})
-
-// Get initials for avatar fallback
-function getInitials(name) {
-  if (!name) return 'P'
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-}
+const emit = defineEmits(['view-profile', 'contact'])
 </script>
-
-<style scoped>
-.professional-profile-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
-}
-
-.professional-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.professional-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--ui-text);
-  margin: 0;
-}
-
-.professional-email {
-  font-size: 0.875rem;
-  color: var(--ui-text-muted);
-  margin: var(--space-1) 0 0 0;
-}
-
-.professional-title {
-  font-size: 0.875rem;
-  color: var(--ui-text-muted);
-  font-weight: 500;
-  margin: var(--space-1) 0 0 0;
-}
-
-.professional-about,
-.professional-skills,
-.professional-experience,
-.professional-certifications {
-  margin-bottom: var(--space-4);
-}
-
-.professional-certifications {
-  margin-bottom: 0;
-}
-
-.section-title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--ui-text);
-  margin: 0 0 var(--space-2) 0;
-}
-
-.section-content {
-  font-size: 0.875rem;
-  color: var(--ui-text-muted);
-  margin: 0;
-  line-height: 1.5;
-}
-
-.skills-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-</style>

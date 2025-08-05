@@ -16,6 +16,9 @@
 @use './scss/components/fuel';
 @use './scss/components/button';
 @use './scss/components/form';
+@use './scss/components/cell';
+@use './scss/components/profiles';
+@use './scss/components/profile-edit';
 
 // Import CSS (for Tailwind/UnoCSS integration)
 @import './main.css';
@@ -24,7 +27,7 @@
 //    ===================================
 
 // atoms.scss
-// 	•	.flame-icon
+// 	•	.badge
 
 // base.scss
 // (No custom CSS classes defined in this file.)
@@ -37,19 +40,25 @@
 // 	•	.layout-container
 // 	•	.layout-content
 // 	•	.layout-main-content
-// 	•	.layout-breadcrumbs
 
 // components/page.scss
 // 	•	.page
 
+// components/cell.scss
+// 	•	.cell
+
+// components/profiles.scss
+// 	•	.profile-page
+// 	•	.profile-list
+// 	•	.profile-card
+// 	•	.profile-cell (with domain variants)
+
+// components/profile-edit.scss
+// 	•	.profile-edit-component
+// 	•	.profile-info-section
+// 	•	.profile-section-title
+
 // utilities.scss
-// 	•	.flex
-// 	•	.flex-center
-// 	•	.flex-column
-// 	•	.flex-between
-// 	•	.grid
-// 	•	.centered-section
-// 	•	.section
 // 	•	.button-group
 // 	•	.fade-in
 // 	•	.highlight

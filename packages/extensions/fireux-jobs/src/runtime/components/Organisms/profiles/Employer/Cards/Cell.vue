@@ -1,10 +1,15 @@
 <template>
-  <div class="profile-cell employer-cell" @click="navigateTo(`/employers/${employer.id}`)">
+  <div
+    class="profile-cell employer-cell"
+    @click="navigateTo(`/employers/${employer.id}`)"
+  >
     <!-- Avatar & Basic Info -->
     <div class="profile-header">
       <img
         :src="
-          employer.avatarUrl || employer.profile_image?.url || '/default-avatar.png'
+          employer.avatarUrl ||
+          employer.profile_image?.url ||
+          '/default-avatar.png'
         "
         :alt="`${employer.company_name} avatar`"
         class="profile-avatar"
@@ -16,7 +21,9 @@
     </div>
 
     <!-- Bio (Short) -->
-    <p v-if="employer.bio_short" class="profile-bio">{{ employer.bio_short }}</p>
+    <p v-if="employer.bio_short" class="profile-bio">
+      {{ employer.bio_short }}
+    </p>
 
     <!-- Specialties -->
     <div v-if="employer.specialties?.length" class="profile-specialties">

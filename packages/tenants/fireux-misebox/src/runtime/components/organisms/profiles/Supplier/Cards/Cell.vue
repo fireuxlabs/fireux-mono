@@ -1,49 +1,47 @@
 <template>
-  <div class="profile-cell supplier-cell">
-    <!-- Avatar & Basic Info -->
-    <div class="profile-header">
+  <div class="cell card-cell supplier-theme">
+    <div class="header">
       <img
         :src="
-          supplier.avatarUrl || supplier.profile_image?.url || '/default-avatar.png'
+          supplier.avatarUrl ||
+          supplier.profile_image?.url ||
+          '/default-avatar.png'
         "
         :alt="`${supplier.business_name} avatar`"
-        class="profile-avatar"
+        class="avatar"
       />
-      <div class="profile-info">
-        <h3 class="profile-name">{{ supplier.business_name }}</h3>
-        <p v-if="supplier.title" class="profile-title">{{ supplier.title }}</p>
+      <div class="info">
+        <h3 class="name">{{ supplier.business_name }}</h3>
+        <p v-if="supplier.title" class="title">{{ supplier.title }}</p>
       </div>
     </div>
 
-    <!-- Bio (Short) -->
-    <p v-if="supplier.bio_short" class="profile-bio">{{ supplier.bio_short }}</p>
+    <p v-if="supplier.bio_short" class="bio">{{ supplier.bio_short }}</p>
 
-    <!-- Specialties -->
-    <div v-if="supplier.specialties?.length" class="profile-specialties">
+    <div v-if="supplier.specialties?.length" class="tags">
       <span
         v-for="specialty in supplier.specialties.slice(0, 3)"
         :key="specialty"
-        class="specialty-tag"
+        class="tag"
       >
         {{ specialty }}
       </span>
-      <span v-if="supplier.specialties.length > 3" class="more-specialties">
+      <span v-if="supplier.specialties.length > 3" class="more-tags">
         +{{ supplier.specialties.length - 3 }} more
       </span>
     </div>
 
-    <!-- Gallery Preview -->
-    <div v-if="supplier.gallery?.length" class="profile-gallery">
+    <div v-if="supplier.gallery?.length" class="gallery">
       <img
-        v-for="(item, index) in supplier.gallery.slice(0, 3)"
+        v-for="(item, index) in supplier.gallery.slice(0, 4)"
         :key="index"
         :src="item.image_url"
         :alt="item.name"
-        class="gallery-thumb"
+        class="thumb"
       />
-      <span v-if="supplier.gallery.length > 3" class="more-images">
-        +{{ supplier.gallery.length - 3 }}
-      </span>
+      <div v-if="supplier.gallery.length > 4" class="more-images">
+        +{{ supplier.gallery.length - 4 }} more
+      </div>
     </div>
   </div>
 </template>

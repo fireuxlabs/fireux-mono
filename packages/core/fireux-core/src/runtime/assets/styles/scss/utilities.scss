@@ -4,36 +4,9 @@
 
 /* 🛠️ Utilities */
 
-/* Flexbox */
-.flex {
-  display: flex;
-}
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.flex-column {
-  display: flex;
-  flex-direction: column;
-}
-.flex-between {
-  display: flex;
-  justify-content: space-between;
-}
-
 /* -----------------------------
    Global Reusable Styles
 ------------------------------ */
-
-/* Section Structure */
-.section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  width: 100%;
-}
 
 /* Standard CTA Buttons */
 .button-group {
