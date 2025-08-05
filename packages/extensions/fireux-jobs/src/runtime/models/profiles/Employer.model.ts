@@ -140,6 +140,26 @@ export const employerConfig: ProfileConfig = {
   },
 }
 
+// CTA Configuration for Employer profiles
+export const employerCtaConfig = {
+  title: '🏢 Find Your Perfect Team',
+  description:
+    'Join our platform as an Employer to connect with skilled culinary professionals, post job openings, and build your dream kitchen team.',
+  benefits: [
+    '✨ Create and manage your company profile',
+    '📋 Post and manage job openings',
+    '👥 Connect with skilled culinary professionals',
+    '🎯 Find the perfect candidates for your team',
+  ],
+  createPath: '/employers/create',
+  createButtonText: 'Create Employer Profile',
+  welcomeBackText: '🏢 Welcome back, Employer!',
+  quickActions: [
+    { text: 'Post Job', path: '/jobs/create' },
+    { text: 'Browse Professionals', path: '/professionals' },
+  ],
+}
+
 // Export types for easier importing
 export type EmployerInput = Omit<Employer, 'uid' | 'created_at' | 'updated_at'>
 export type EmployerUpdate = Partial<EmployerInput>

@@ -1,74 +1,58 @@
 <template>
-  <UCard
-    class="cursor-pointer hover:shadow-lg transition-all duration-200"
-    @click="navigateTo(`/employers/${employer.id}`)"
-  >
-    <div class="text-center space-y-4">
-      <UAvatar
-        :src="employer.avatarUrl"
-        :alt="employer.company_name"
-        size="xl"
-        :text="getInitials(employer.company_name)"
+  <div class="profile-cell employer-cell" @click="navigateTo(`/employers/${employer.id}`)">
+    <!-- Avatar & Basic Info -->
+    <div class="profile-header">
+      <img
+        :src="
+          employer.avatarUrl || employer.profile_image?.url || '/default-avatar.png'
+        "
+        :alt="`${employer.company_name} avatar`"
+        class="profile-avatar"
       />
-
-      <div>
-        <h3 class="font-semibold text-lg">
-          {{ employer.company_name }}
-        </h3>
-        <p v-if="employer.title" class="text-gray-600 text-sm">
-          {{ employer.title }}
-        </p>
-      </div>
-
-      <p v-if="employer.bio_short" class="text-gray-700 text-sm line-clamp-2">
-        {{ employer.bio_short }}
-      </p>
-
-      <div
-        v-if="employer.specialties?.length"
-        class="flex flex-wrap gap-1 justify-center"
-      >
-        <UBadge
-          v-for="specialty in employer.specialties.slice(0, 3)"
-          :key="specialty"
-          variant="soft"
-          size="sm"
-        >
-          {{ specialty }}
-        </UBadge>
-        <UBadge
-          v-if="employer.specialties.length > 3"
-          variant="outline"
-          size="sm"
-        >
-          +{{ employer.specialties.length - 3 }} more
-        </UBadge>
+      <div class="profile-info">
+        <h3 class="profile-name">{{ employer.company_name }}</h3>
+        <p v-if="employer.title" class="profile-title">{{ employer.title }}</p>
       </div>
     </div>
-  </UCard>
+
+    <!-- Bio (Short) -->
+    <p v-if="employer.bio_short" class="profile-bio">{{ employer.bio_short }}</p>
+
+    <!-- Specialties -->
+    <div v-if="employer.specialties?.length" class="profile-specialties">
+      <span
+        v-for="specialty in employer.specialties.slice(0, 3)"
+        :key="specialty"
+        class="specialty-tag"
+      >
+        {{ specialty }}
+      </span>
+      <span v-if="employer.specialties.length > 3" class="more-specialties">
+        +{{ employer.specialties.length - 3 }} more
+      </span>
+    </div>
+
+    <!-- Gallery Preview -->
+    <div v-if="employer.gallery?.length" class="profile-gallery">
+      <img
+        v-for="(item, index) in employer.gallery.slice(0, 3)"
+        :key="index"
+        :src="item.image_url"
+        :alt="item.name"
+        class="gallery-thumb"
+      />
+      <span v-if="employer.gallery.length > 3" class="more-images">
+        +{{ employer.gallery.length - 3 }}
+      </span>
+    </div>
+  </div>
 </template>
 
 <script setup>
-// Props from parent
 const props = defineProps({
   employer: {
     type: Object,
     required: true,
   },
 })
-
-// Get initials for avatar fallback
-function getInitials(name) {
-  if (!name) return 'E'
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-}
 </script>
-
-<style scoped>
-/* Let NuxtUI handle all the styling */
-</style>

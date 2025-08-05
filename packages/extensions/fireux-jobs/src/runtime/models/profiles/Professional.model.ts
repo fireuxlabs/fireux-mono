@@ -175,6 +175,26 @@ export const professionalConfig: ProfileConfig = {
   },
 }
 
+// CTA Configuration for Professional profiles
+export const professionalCtaConfig = {
+  title: '👨‍🍳 Launch Your Culinary Career',
+  description:
+    'Join our platform as a Professional to showcase your kitchen expertise, connect with top employers, and advance your culinary career.',
+  benefits: [
+    '✨ Create and manage your professional profile',
+    '🏆 Showcase your kitchen experience and skills',
+    '📄 Display certifications and education',
+    '🤝 Connect with restaurants and employers',
+  ],
+  createPath: '/professionals/create',
+  createButtonText: 'Create Professional Profile',
+  welcomeBackText: '👨‍🍳 Welcome back, Professional!',
+  quickActions: [
+    { text: 'View Jobs', path: '/jobs' },
+    { text: 'Browse Employers', path: '/employers' },
+  ],
+}
+
 // Export types for easier importing
 export type ProfessionalInput = Omit<
   Professional,

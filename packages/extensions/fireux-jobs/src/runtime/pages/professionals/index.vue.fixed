@@ -1,0 +1,72 @@
+<template>
+  <FireOrganismsProfilePage
+    :profile-config="professionalConfig"
+    :cta-config="professionalCtaConfig"
+    :current-profile="currentProfessional"
+    :profiles="professionals"
+    :loading="loading"
+    :app-users="appusers"
+    :has-profile="hasProfessionalProfile"
+    :page-config="pageConfig"
+    :status-config="statusConfig"
+    :show-debug="true"
+  >
+    <template #profile-card="{ profile }">
+      <JobProfessionalCardsProfile :professional="profile" />
+    </template>
+
+    <template #profile-list="{ profiles, loading }">
+      <JobProfessionalList :professionals="profiles" :loading="loading" />
+    </template>
+  </FireOrganismsProfilePage>
+</template>
+
+<script setup>
+import { professionalConfig, professionalCtaConfig } from '../../models/profiles/Professional.model'
+
+// Set page meta
+definePageMeta({
+  title: 'Browse Professionals',
+  description: 'Find skilled culinary professionals for your team',
+})
+
+// Use the profile composable to fetch professionals
+const {
+  all: professionals,
+  loading,
+  current: currentProfessional,
+} = await useProfile(professionalConfig)
+
+// Fetch app users to see what's in the collection
+const { appUsers: appusers } = await useAppUser()
+
+// Get current user and check if they have a professional profile
+const { appUser } = await useAppUser()
+const hasProfessionalProfile = computed(() => {
+  try {
+    if (!appUser.value) return false
+    return !!currentProfessional.value
+  } catch (error) {
+    console.warn('Error checking professional profile:', error)
+    return false
+  }
+})
+
+// Page configuration
+const pageConfig = {
+  title: 'Browse Professionals',
+  description: 'Discover skilled culinary professionals ready to join your team.',
+}
+
+// Status configuration
+const statusConfig = {
+  activeIcon: '✅',
+  createIcon: '👤',
+  activeDescription:
+    'Your professional profile is active and visible to potential employers.',
+  createDescription:
+    'Join our community of skilled culinary professionals and start connecting with top employers.',
+  viewProfileLink: '/dashboard/professional-profile',
+  editProfileLink: '/dashboard/professional-profile',
+}
+</script>
