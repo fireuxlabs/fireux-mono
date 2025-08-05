@@ -55,6 +55,15 @@ build/
 
 .DS_Store
 
+# Backup and temporary files that can appear after crashes
+*-new.*
+*-backup.*
+*New.*
+*Backup.*
+*.tmp
+*.temp
+*~
+
 # Misc sensitive keys and certs
 *.pem
 *.key

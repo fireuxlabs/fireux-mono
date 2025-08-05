@@ -30,7 +30,9 @@
     "// === STRUCTURE MANAGEMENT ===": "",
     "structure:validate": "./scripts/validate-structure.sh",
     "structure:fix": "./scripts/fix-structure.sh",
-    "structure:report": "./scripts/validate-structure.sh && echo 'Report generated'"
+    "structure:report": "./scripts/validate-structure.sh && echo 'Report generated'",
+    "// === MAINTENANCE ===": "",
+    "cleanup:phantom": "./scripts/cleanup-phantom-files.sh"
   },
   "keywords": [],
   "author": "",
