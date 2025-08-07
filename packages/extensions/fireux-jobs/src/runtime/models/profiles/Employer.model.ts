@@ -113,6 +113,7 @@ export function validateJobOpening(job: Partial<JobOpening>): boolean {
 
 // Employer Profile Configuration with enhanced functionality
 export const employerConfig: ProfileConfig = {
+  id: 'employer',
   collectionName: 'employers',
   profileType: 'Employer',
 

@@ -3,6 +3,10 @@
     :config="employerConfig"
     :filter-composable="useEmployerFilters"
   >
+    <template #profile-pill="{ profile }">
+      <JobEmployerCardsPill :employer="profile" />
+    </template>
+
     <template #profile-card="{ profile }">
       <JobEmployerCardsProfile :employer="profile" />
     </template>

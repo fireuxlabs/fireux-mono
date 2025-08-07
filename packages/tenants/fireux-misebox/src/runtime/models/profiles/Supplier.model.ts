@@ -134,6 +134,7 @@ export function validateSupplierProduct(
 
 // Supplier Profile Configuration with enhanced functionality
 export const supplierConfig: ProfileConfig = {
+  id: 'supplier',
   collectionName: 'suppliers',
   profileType: 'Supplier',
 

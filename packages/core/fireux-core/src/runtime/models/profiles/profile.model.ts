@@ -32,6 +32,7 @@ export interface Profile {
  * Profile Configuration for generic operations
  */
 export interface ProfileConfig {
+  id: string // Lowercase singular identifier: 'chef', 'employer', 'professional', 'supplier'
   collectionName: string // e.g., 'professionals', 'employers'
   profileType: string // e.g., 'Professional', 'Employer'
   updateComposable?: () => any // Optional profile-specific update composable

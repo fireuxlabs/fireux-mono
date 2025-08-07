@@ -3,6 +3,10 @@
     :config="chefConfig"
     :filter-composable="useChefFilters"
   >
+    <template #profile-pill="{ profile }">
+      <MiseChefCardsPill :chef="currentUserProfile || profile" />
+    </template>
+
     <template #profile-card="{ profile }">
       <MiseChefCardsProfile :chef="profile" />
     </template>
@@ -12,9 +16,14 @@
     </template>
   </FireOrganismsProfileRoot>
 </template>
+
 <script setup>
 import { chefConfig } from '../../models/profiles/Chef.model'
 import { useChefFilters } from '../../composables/profiles/useChefFilters'
+
+// Get current user's chef profile
+const profileData = await useProfile(chefConfig)
+const currentUserProfile = profileData[`current${chefConfig.profileType}`]
 
 // Set page meta
 definePageMeta({

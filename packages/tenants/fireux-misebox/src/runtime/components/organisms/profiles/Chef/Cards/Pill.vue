@@ -1,14 +1,16 @@
 <template>
   <div class="cell card-pill chef-theme">
     <img
-      :src="chef.avatarUrl || chef.profile_image?.url || '/default-avatar.png'"
-      :alt="`${chef.chef_name} avatar`"
+      :src="
+        chef?.avatarUrl || chef?.profile_image?.url || '/default-avatar.png'
+      "
+      :alt="`${chef?.chef_name || 'Chef'} avatar`"
       class="avatar"
     />
     <div class="info">
-      <h4 class="name">{{ chef.chef_name }}</h4>
-      <p v-if="chef.title" class="subtitle">{{ chef.title }}</p>
-      <p v-else-if="chef.specialties?.length" class="subtitle">
+      <h4 class="name">{{ chef?.chef_name || 'Loading...' }}</h4>
+      <p v-if="chef?.title" class="subtitle">{{ chef.title }}</p>
+      <p v-else-if="chef?.specialties?.length" class="subtitle">
         {{ chef.specialties[0] }}
       </p>
     </div>
@@ -19,7 +21,12 @@
 const props = defineProps({
   chef: {
     type: Object,
-    required: true,
+    required: false,
+    default: () => ({
+      chef_name: 'Loading...',
+      specialties: [],
+      avatarUrl: '/default-avatar.png',
+    }),
   },
 })
 </script>

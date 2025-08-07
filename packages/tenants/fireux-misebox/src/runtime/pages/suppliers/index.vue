@@ -3,6 +3,10 @@
     :config="supplierConfig"
     :filter-composable="useSupplierFilters"
   >
+    <template #profile-pill="{ profile }">
+      <MiseSupplierCardsPill :supplier="profile" />
+    </template>
+
     <template #profile-card="{ profile }">
       <MiseSupplierCardsProfile :supplier="profile" />
     </template>

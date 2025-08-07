@@ -4,21 +4,12 @@
    ============================ */
 
 // Import SCSS modules using modern @use syntax (must come first)
-@use './scss/atoms/atoms';
 @use './scss/base';
 @use './scss/utilities';
 @use './scss/grids';
 
-// Import component styles
-@use './scss/components/create';
-@use './scss/components/page';
-@use './scss/components/layout';
-@use './scss/components/fuel';
-@use './scss/components/button';
-@use './scss/components/form';
-@use './scss/components/cell';
-@use './scss/components/profiles';
-@use './scss/components/profile-edit';
+// Import atomic design styles
+@use './scss/organisms/pills';
 
 // Import CSS (for Tailwind/UnoCSS integration)
 @import './main.css';

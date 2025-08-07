@@ -45,6 +45,7 @@ export function validateChefProfile(chef: Partial<Chef>): boolean {
 
 // Minimal Chef Configuration
 export const chefConfig: ProfileConfig = {
+  id: 'chef',
   collectionName: 'chefs',
   profileType: 'Chef',
   validationFn: validateChefProfile,

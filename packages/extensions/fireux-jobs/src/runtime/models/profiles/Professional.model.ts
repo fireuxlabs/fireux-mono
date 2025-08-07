@@ -138,6 +138,7 @@ export function validateKitchenExperience(
 
 // Professional Profile Configuration with enhanced functionality
 export const professionalConfig: ProfileConfig = {
+  id: 'professional',
   collectionName: 'professionals',
   profileType: 'Professional',
 
