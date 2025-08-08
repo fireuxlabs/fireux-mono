@@ -6,9 +6,10 @@ import { addImportsDir } from '@nuxt/kit'
  */
 export function configureComposables(resolver: any) {
   const resolvePath = (p: string) => resolver.resolve(p)
-  
+
   // Add all composable directories for auto-import
-  addImportsDir([
-    resolvePath('./runtime/composables/**'),
-  ])
+  addImportsDir([resolvePath('./runtime/composables/**')])
+
+  // Add models directory for auto-import
+  addImportsDir(resolver.resolve('./runtime/models'))
 }

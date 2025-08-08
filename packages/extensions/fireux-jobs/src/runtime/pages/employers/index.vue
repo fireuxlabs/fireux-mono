@@ -18,6 +18,9 @@
 </template>
 
 <script setup>
+import { employerConfig } from '../../models/profiles/Employer.model'
+import { useEmployerFilters } from '../../composables/profiles/useEmployerFilters'
+
 // Set page meta
 definePageMeta({
   title: 'Browse Employers',

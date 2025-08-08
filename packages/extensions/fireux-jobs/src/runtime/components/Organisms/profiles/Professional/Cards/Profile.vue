@@ -20,7 +20,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Professional } from '../../../models/profiles/Professional.model'
 
 defineProps<{
   professional?: Partial<Professional>
