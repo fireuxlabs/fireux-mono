@@ -1,20 +1,19 @@
 <template>
-  <UCard>
-    <UAvatar
-      :src="professional?.avatarUrl || professional?.profile_image?.url"
-      :alt="professional?.professional_name || 'Professional'"
-      size="md"
-    />
-    <div class="info">
-      <h4 v-if="professional?.professional_name" class="card-header">
-        {{ professional.professional_name }}
-      </h4>
-      <p v-if="professional?.title" class="card-subtitle">
-        {{ professional.title }}
-      </p>
-      <p v-if="professional?.cuisine_types?.length" class="tags">
-        {{ professional.cuisine_types[0] }}
-      </p>
+  <UCard class="pill-card">
+    <div class="pill-content">
+      <UAvatar
+        :src="professional?.avatarUrl || professional?.profile_image?.url"
+        :alt="professional?.professional_name || 'Professional'"
+        size="sm"
+      />
+      <div class="pill-info">
+        <h4 v-if="professional?.professional_name" class="pill-name">
+          {{ professional.professional_name }}
+        </h4>
+        <p v-if="professional?.title" class="pill-subtitle">
+          {{ professional.title }}
+        </p>
+      </div>
     </div>
   </UCard>
 </template>
