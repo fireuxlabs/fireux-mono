@@ -4,23 +4,20 @@
     :filter-composable="useEmployerFilters"
   >
     <template #profile-pill="{ profile }">
-      <JobEmployerCardsPill :employer="profile" />
+      <JobOrganismsProfilesEmployerCardsPill :employer="profile" />
     </template>
 
     <template #profile-card="{ profile }">
-      <JobEmployerCardsProfile :employer="profile" />
+      <JobOrganismsProfilesEmployerCardsProfile :employer="profile" />
     </template>
 
     <template #profile-item="{ profile }">
-      <JobEmployerCardsCell :employer="profile" />
+      <JobOrganismsProfilesEmployerCardsCell :employer="profile" />
     </template>
   </FireOrganismsProfileRoot>
 </template>
 
 <script setup>
-import { employerConfig } from '../../models/profiles/Employer.model'
-import { useEmployerFilters } from '../../composables/profiles/useEmployerFilters'
-
 // Set page meta
 definePageMeta({
   title: 'Browse Employers',

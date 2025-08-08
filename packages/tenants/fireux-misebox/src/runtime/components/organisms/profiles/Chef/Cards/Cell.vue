@@ -1,54 +1,30 @@
 <template>
-  <div class="cell card-cell chef-theme">
-    <div class="header">
-      <img
-        :src="
-          chef.avatarUrl || chef.profile_image?.url || '/default-avatar.png'
-        "
-        :alt="`${chef.chef_name} avatar`"
-        class="avatar"
-      />
-      <div class="info">
-        <h3 class="name">{{ chef.chef_name }}</h3>
-        <p v-if="chef.title" class="title">{{ chef.title }}</p>
-      </div>
+  <UCard>
+    <UAvatar
+      :src="chef?.avatarUrl || chef?.profile_image?.url"
+      :alt="chef?.chef_name || 'Chef'"
+      size="md"
+    />
+    <div class="info">
+      <h4 v-if="chef?.chef_name" class="card-header">{{ chef.chef_name }}</h4>
+      <p v-if="chef?.title" class="card-subtitle">{{ chef.title }}</p>
+      <p v-if="chef?.specialties?.length" class="tags">
+        {{ chef.specialties[0] }}
+      </p>
     </div>
-
-    <p v-if="chef.bio_short" class="bio">{{ chef.bio_short }}</p>
-
-    <div v-if="chef.specialties?.length" class="tags">
-      <span
-        v-for="specialty in chef.specialties.slice(0, 3)"
-        :key="specialty"
-        class="tag"
-      >
-        {{ specialty }}
-      </span>
-      <span v-if="chef.specialties.length > 3" class="more-tags">
-        +{{ chef.specialties.length - 3 }} more
-      </span>
-    </div>
-
-    <div v-if="chef.gallery?.length" class="gallery">
-      <img
-        v-for="(item, index) in chef.gallery.slice(0, 3)"
-        :key="index"
-        :src="item.image_url"
-        :alt="item.name"
-        class="thumb"
-      />
-      <span v-if="chef.gallery.length > 3" class="more-images">
-        +{{ chef.gallery.length - 3 }}
-      </span>
-    </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   chef: {
     type: Object,
-    required: true,
+    required: false,
+    default: () => ({
+      chef_name: 'Loading...',
+      specialties: [],
+      avatarUrl: '/default-avatar.png',
+    }),
   },
 })
 </script>

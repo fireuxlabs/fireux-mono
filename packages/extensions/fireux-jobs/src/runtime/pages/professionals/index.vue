@@ -18,9 +18,6 @@
 </template>
 
 <script setup>
-import { professionalConfig } from '../../models/profiles/Professional.model'
-import { useProfessionalFilters } from '../../composables/profiles/useProfessionalFilters'
-
 // Set page meta
 definePageMeta({
   title: 'Browse Professionals',

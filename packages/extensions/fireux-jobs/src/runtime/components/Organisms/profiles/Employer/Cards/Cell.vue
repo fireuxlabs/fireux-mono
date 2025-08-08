@@ -1,65 +1,26 @@
 <template>
-  <div
-    class="profile-cell employer-cell"
-    @click="navigateTo(`/employers/${employer.id}`)"
-  >
-    <!-- Avatar & Basic Info -->
-    <div class="profile-header">
-      <img
-        :src="
-          employer.avatarUrl ||
-          employer.profile_image?.url ||
-          '/default-avatar.png'
-        "
-        :alt="`${employer.company_name} avatar`"
-        class="profile-avatar"
-      />
-      <div class="profile-info">
-        <h3 class="profile-name">{{ employer.company_name }}</h3>
-        <p v-if="employer.title" class="profile-title">{{ employer.title }}</p>
-      </div>
+  <UCard>
+    <UAvatar
+      :src="employer?.avatarUrl || employer?.profile_image?.url"
+      :alt="employer?.company_name || 'Employer'"
+      size="md"
+    />
+    <div class="info">
+      <h4 v-if="employer?.company_name" class="card-header">
+        {{ employer.company_name }}
+      </h4>
+      <p v-if="employer?.title" class="card-subtitle">{{ employer.title }}</p>
+      <p v-if="employer?.business_type" class="tags">
+        {{ employer.business_type }}
+      </p>
     </div>
-
-    <!-- Bio (Short) -->
-    <p v-if="employer.bio_short" class="profile-bio">
-      {{ employer.bio_short }}
-    </p>
-
-    <!-- Specialties -->
-    <div v-if="employer.specialties?.length" class="profile-specialties">
-      <span
-        v-for="specialty in employer.specialties.slice(0, 3)"
-        :key="specialty"
-        class="specialty-tag"
-      >
-        {{ specialty }}
-      </span>
-      <span v-if="employer.specialties.length > 3" class="more-specialties">
-        +{{ employer.specialties.length - 3 }} more
-      </span>
-    </div>
-
-    <!-- Gallery Preview -->
-    <div v-if="employer.gallery?.length" class="profile-gallery">
-      <img
-        v-for="(item, index) in employer.gallery.slice(0, 3)"
-        :key="index"
-        :src="item.image_url"
-        :alt="item.name"
-        class="gallery-thumb"
-      />
-      <span v-if="employer.gallery.length > 3" class="more-images">
-        +{{ employer.gallery.length - 3 }}
-      </span>
-    </div>
-  </div>
+  </UCard>
 </template>
 
-<script setup>
-const props = defineProps({
-  employer: {
-    type: Object,
-    required: true,
-  },
-})
+<script setup lang="ts">
+import type { Employer } from '../../../models/profiles/Employer.model'
+
+defineProps<{
+  employer?: Partial<Employer>
+}>()
 </script>
