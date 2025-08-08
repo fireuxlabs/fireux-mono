@@ -15,23 +15,26 @@
         </p>
       </div>
     </div>
-    
+
     <div class="cell-content">
       <p v-if="supplier?.bio_short" class="cell-description">
         {{ supplier.bio_short }}
       </p>
-      
+
       <div class="cell-tags" v-if="supplier?.specialties?.length">
-        <span 
-          v-for="specialty in supplier?.specialties?.slice(0, 3)" 
+        <span
+          v-for="specialty in supplier?.specialties?.slice(0, 3)"
           :key="specialty"
           class="cell-tag"
         >
           {{ specialty }}
         </span>
       </div>
-      
-      <div class="cell-stats" v-if="supplier?.years_in_business || supplier?.products_offered?.length">
+
+      <div
+        class="cell-stats"
+        v-if="supplier?.years_in_business || supplier?.products_offered?.length"
+      >
         <span v-if="supplier?.years_in_business" class="cell-stat">
           🏢 {{ supplier.years_in_business }} years in business
         </span>
@@ -39,12 +42,24 @@
           📦 {{ supplier.products_offered.length }} products
         </span>
       </div>
-      
-      <div class="cell-badges" v-if="supplier?.certifications?.length || supplier?.quality_standards?.length">
-        <span v-if="supplier?.certifications?.length" class="cell-badge certified">
+
+      <div
+        class="cell-badges"
+        v-if="
+          supplier?.certifications?.length ||
+          supplier?.quality_standards?.length
+        "
+      >
+        <span
+          v-if="supplier?.certifications?.length"
+          class="cell-badge certified"
+        >
           🏆 {{ supplier.certifications.length }} certifications
         </span>
-        <span v-if="supplier?.quality_standards?.length" class="cell-badge quality">
+        <span
+          v-if="supplier?.quality_standards?.length"
+          class="cell-badge quality"
+        >
           ✓ Quality standards
         </span>
       </div>

@@ -15,30 +15,36 @@
         </p>
       </div>
     </div>
-    
+
     <div class="cell-content">
       <p v-if="employer?.bio_short" class="cell-description">
         {{ employer.bio_short }}
       </p>
-      
-      <div class="cell-tags" v-if="employer?.specialties?.length || employer?.cuisine_types?.length">
-        <span 
-          v-for="specialty in employer?.specialties?.slice(0, 2)" 
+
+      <div
+        class="cell-tags"
+        v-if="employer?.specialties?.length || employer?.cuisine_types?.length"
+      >
+        <span
+          v-for="specialty in employer?.specialties?.slice(0, 2)"
           :key="specialty"
           class="cell-tag"
         >
           {{ specialty }}
         </span>
-        <span 
-          v-for="cuisine in employer?.cuisine_types?.slice(0, 1)" 
+        <span
+          v-for="cuisine in employer?.cuisine_types?.slice(0, 1)"
           :key="cuisine"
           class="cell-tag cuisine"
         >
           {{ cuisine }}
         </span>
       </div>
-      
-      <div class="cell-stats" v-if="employer?.employee_count || employer?.years_established">
+
+      <div
+        class="cell-stats"
+        v-if="employer?.employee_count || employer?.years_established"
+      >
         <span v-if="employer?.employee_count" class="cell-stat">
           👥 {{ employer.employee_count }} employees
         </span>

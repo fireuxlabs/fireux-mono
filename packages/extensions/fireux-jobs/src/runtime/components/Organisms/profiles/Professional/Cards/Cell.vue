@@ -15,23 +15,29 @@
         </p>
       </div>
     </div>
-    
+
     <div class="cell-content">
       <p v-if="professional?.bio_short" class="cell-description">
         {{ professional.bio_short }}
       </p>
-      
+
       <div class="cell-tags" v-if="professional?.cuisine_types?.length">
-        <span 
-          v-for="cuisine in professional?.cuisine_types?.slice(0, 3)" 
+        <span
+          v-for="cuisine in professional?.cuisine_types?.slice(0, 3)"
           :key="cuisine"
           class="cell-tag cuisine"
         >
           {{ cuisine }}
         </span>
       </div>
-      
-      <div class="cell-stats" v-if="professional?.kitchen_experience?.length || professional?.certifications?.length">
+
+      <div
+        class="cell-stats"
+        v-if="
+          professional?.kitchen_experience?.length ||
+          professional?.certifications?.length
+        "
+      >
         <span v-if="professional?.kitchen_experience?.length" class="cell-stat">
           🍳 {{ professional.kitchen_experience.length }} kitchen roles
         </span>
@@ -39,11 +45,12 @@
           🏆 {{ professional.certifications.length }} certifications
         </span>
       </div>
-      
+
       <div v-if="professional?.kitchen_experience?.[0]" class="cell-latest">
         <span class="latest-label">Latest:</span>
         <span class="latest-role">
-          {{ professional.kitchen_experience[0].role }} at {{ professional.kitchen_experience[0].name }}
+          {{ professional.kitchen_experience[0].role }} at
+          {{ professional.kitchen_experience[0].name }}
         </span>
       </div>
     </div>
