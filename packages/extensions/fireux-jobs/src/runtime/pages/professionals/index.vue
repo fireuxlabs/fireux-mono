@@ -4,9 +4,7 @@
     :filter-composable="useProfessionalFilters"
   >
     <template #profile-pill="{ profile }">
-      <JobOrganismsProfilesProfessionalCardsPill
-        :professional="currentUserProfile || profile"
-      />
+      <JobOrganismsProfilesProfessionalCardsPill :professional="profile" />
     </template>
 
     <template #profile-card="{ profile }">
@@ -22,10 +20,6 @@
 <script setup>
 import { professionalConfig } from '../../models/profiles/Professional.model'
 import { useProfessionalFilters } from '../../composables/profiles/useProfessionalFilters'
-
-// Get current user's professional profile
-const { currentProfessional } = await useProfile(professionalConfig)
-const currentUserProfile = currentProfessional
 
 // Set page meta
 definePageMeta({

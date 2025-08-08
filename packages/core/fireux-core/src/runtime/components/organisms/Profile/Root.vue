@@ -2,8 +2,8 @@
   <div class="profile-page">
     {{ hasProfile(config.id) }}
 
-    <!-- Show pill if user has profile -->
-    <slot v-if="hasProfile(config.id)" name="profile-pill" />
+    <!-- Show pill if user has profile, pass actual profile data -->
+    <slot v-if="hasProfile(config.id)" name="profile-pill" :profile="current" />
   </div>
 </template>
 
@@ -12,7 +12,6 @@ const props = defineProps({
   config: { type: Object, required: true },
   filterComposable: { type: Function, required: true },
 })
-
-// Get the real hasProfile function from useAppUser
 const { hasProfile } = await useAppUser()
+const { current } = await useProfile(props.config)
 </script>

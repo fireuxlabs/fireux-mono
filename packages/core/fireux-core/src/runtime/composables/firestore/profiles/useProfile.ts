@@ -10,12 +10,10 @@ import { useProfileDelete } from './useProfileDelete'
  * Shared composable for profile CRUD operations and state management
  * This is the unified entry point for all profile types (Professional, Employer, Chef, Supplier)
  */
-export async function useProfile(profileConfig: ProfileConfig) {
+export async function useProfile(config: ProfileConfig) {
   const db = useFirestore()
   const currentUser = useCurrentUser()
-
-  // Use the provided config directly
-  const config = profileConfig
+  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
 
   // Reactive document reference for current user's profile
   const currentProfileDocRef = computed(() =>
@@ -24,40 +22,26 @@ export async function useProfile(profileConfig: ProfileConfig) {
       : null
   )
 
-  const { data: currentProfile } = useDocument(currentProfileDocRef)
+  const { data: current } = useDocument(currentProfileDocRef)
 
-  // Fetch all profiles in this collection - await the Promise
-  const { firestoreFetchCollection } = useFirestoreRead()
-  const allProfiles = await firestoreFetchCollection(config.collectionName)
+  // Fetch all profiles in this collection
+  const all = await firestoreFetchCollection(config.collectionName)
 
-  async function fetchById(id: string) {
-    const { firestoreFetchDoc } = useFirestoreRead()
-    return await firestoreFetchDoc(config.collectionName, id)
+  // Fetch by ID function
+  const fetchById = async (id: string) =>
+    await firestoreFetchDoc(config.collectionName, id)
+
+  // CRUD operations
+  const create = await useProfileCreate(config)
+  const remove = await useProfileDelete(config)
+  const update = config.updateComposable ? config.updateComposable() : {}
+
+  return {
+    current,
+    all,
+    fetchById,
+    ...create,
+    ...remove,
+    ...update,
   }
-
-  // Expose create functionality
-  const profileCreate = await useProfileCreate(config)
-
-  // Expose delete functionality
-  const profileDelete = await useProfileDelete(config)
-
-  // Expose update functionality (if provided in config)
-  const profileUpdate = config.updateComposable ? config.updateComposable() : {}
-
-  const returnObject = {
-    [`current${config.profileType}`]: currentProfile,
-    [`${config.collectionName}`]: allProfiles,
-    [`fetch${config.profileType}`]: fetchById,
-    all: allProfiles, // Add alias for easier destructuring
-    ...profileCreate,
-    ...profileDelete,
-    ...profileUpdate,
-  }
-
-  // Debug logging
-  console.log('useProfile return keys:', Object.keys(returnObject))
-  console.log('Expected fetchChef:', `fetch${config.profileType}`)
-  console.log('fetchById function:', typeof fetchById)
-
-  return returnObject
 }
