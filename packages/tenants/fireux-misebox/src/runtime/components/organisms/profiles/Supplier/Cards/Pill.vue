@@ -1,25 +1,34 @@
 <template>
-  <UCard class="pill-card">
-    <div class="pill-content">
-      <UAvatar
-        :src="supplier?.avatarUrl || supplier?.profile_image?.url"
-        :alt="supplier?.business_name || 'Supplier'"
-        size="sm"
-      />
-      <div class="pill-info">
-        <h4 v-if="supplier?.business_name" class="pill-name">
-          {{ supplier.business_name }}
-        </h4>
-        <p v-if="supplier?.specialties?.length" class="pill-subtitle">
-          {{ supplier.specialties[0] }}
-        </p>
-      </div>
+  <div class="profile-pill supplier-theme">
+    <img
+      :src="
+        supplier?.avatarUrl ||
+        supplier?.profile_image?.url ||
+        '/default-avatar.png'
+      "
+      :alt="`${supplier?.business_name || 'Supplier'} avatar`"
+      class="pill-avatar"
+    />
+    <div class="pill-info">
+      <h4 class="pill-name">{{ supplier?.business_name || 'Loading...' }}</h4>
+      <p v-if="supplier?.title" class="pill-subtitle">{{ supplier.title }}</p>
+      <p v-else-if="supplier?.specialties?.length" class="pill-subtitle">
+        {{ supplier.specialties[0] }}
+      </p>
     </div>
-  </UCard>
+  </div>
 </template>
 
-<script setup lang="ts">
-defineProps<{
-  supplier?: Partial<Supplier>
-}>()
+<script setup>
+defineProps({
+  supplier: {
+    type: Object,
+    required: false,
+    default: () => ({
+      business_name: 'Loading...',
+      specialties: [],
+      avatarUrl: '/default-avatar.png',
+    }),
+  },
+})
 </script>

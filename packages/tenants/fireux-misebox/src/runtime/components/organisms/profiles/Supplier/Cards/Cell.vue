@@ -1,74 +1,71 @@
 <template>
-  <UCard class="cell-card">
+  <div class="profile-cell supplier-theme">
     <div class="cell-header">
-      <UAvatar
-        :src="supplier?.avatarUrl || supplier?.profile_image?.url"
-        :alt="supplier?.business_name || 'Supplier'"
-        size="md"
+      <img
+        :src="
+          supplier?.avatarUrl ||
+          supplier?.profile_image?.url ||
+          '/default-avatar.png'
+        "
+        :alt="`${supplier?.business_name || supplier?.displayName || 'Supplier'} avatar`"
+        class="cell-avatar"
       />
       <div class="cell-info">
-        <h4 v-if="supplier?.business_name" class="cell-title">
-          {{ supplier.business_name }}
-        </h4>
-        <p v-if="supplier?.business_type" class="cell-subtitle">
-          {{ supplier.business_type }}
+        <h3 class="cell-name">
+          {{
+            supplier?.business_name ||
+            supplier?.displayName ||
+            supplier?.name ||
+            'Loading...'
+          }}
+        </h3>
+        <p class="cell-subtitle">
+          {{ supplier?.title || supplier?.business_type || 'Supplier' }}
         </p>
       </div>
     </div>
 
-    <div class="cell-content">
-      <p v-if="supplier?.bio_short" class="cell-description">
-        {{ supplier.bio_short }}
-      </p>
+    <p v-if="supplier?.bio_short" class="cell-bio">{{ supplier.bio_short }}</p>
 
-      <div class="cell-tags" v-if="supplier?.specialties?.length">
-        <span
-          v-for="specialty in supplier?.specialties?.slice(0, 3)"
-          :key="specialty"
-          class="cell-tag"
-        >
-          {{ specialty }}
-        </span>
-      </div>
-
-      <div
-        class="cell-stats"
-        v-if="supplier?.years_in_business || supplier?.products_offered?.length"
+    <div v-if="supplier?.specialties?.length" class="cell-tags">
+      <span
+        v-for="specialty in supplier.specialties.slice(0, 3)"
+        :key="specialty"
+        class="cell-tag"
       >
-        <span v-if="supplier?.years_in_business" class="cell-stat">
-          🏢 {{ supplier.years_in_business }} years in business
-        </span>
-        <span v-if="supplier?.products_offered?.length" class="cell-stat">
-          📦 {{ supplier.products_offered.length }} products
-        </span>
-      </div>
-
-      <div
-        class="cell-badges"
-        v-if="
-          supplier?.certifications?.length ||
-          supplier?.quality_standards?.length
-        "
-      >
-        <span
-          v-if="supplier?.certifications?.length"
-          class="cell-badge certified"
-        >
-          🏆 {{ supplier.certifications.length }} certifications
-        </span>
-        <span
-          v-if="supplier?.quality_standards?.length"
-          class="cell-badge quality"
-        >
-          ✓ Quality standards
-        </span>
-      </div>
+        {{ specialty }}
+      </span>
+      <span v-if="supplier.specialties.length > 3" class="cell-more-tags">
+        +{{ supplier.specialties.length - 3 }} more
+      </span>
     </div>
-  </UCard>
+
+    <div v-if="supplier?.gallery?.length" class="cell-gallery">
+      <img
+        v-for="(item, index) in supplier.gallery.slice(0, 3)"
+        :key="index"
+        :src="item.image_url"
+        :alt="item.name"
+        class="cell-thumb"
+      />
+      <span v-if="supplier.gallery.length > 3" class="cell-more-images">
+        +{{ supplier.gallery.length - 3 }} more
+      </span>
+    </div>
+  </div>
 </template>
 
-<script setup lang="ts">
-defineProps<{
-  supplier?: Partial<Supplier>
-}>()
+<script setup>
+defineProps({
+  supplier: {
+    type: Object,
+    required: false,
+    default: () => ({
+      business_name: 'Loading...',
+      displayName: 'Loading...',
+      title: 'Supplier',
+      avatarUrl: '/default-avatar.png',
+    }),
+  },
+})
 </script>

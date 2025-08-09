@@ -1,63 +1,73 @@
 <template>
-  <UCard class="cell-card">
+  <div class="profile-cell employer-theme">
     <div class="cell-header">
-      <UAvatar
-        :src="employer?.avatarUrl || employer?.profile_image?.url"
-        :alt="employer?.company_name || 'Employer'"
-        size="md"
+      <img
+        :src="
+          employer?.avatarUrl ||
+          employer?.profile_image?.url ||
+          '/default-avatar.png'
+        "
+        :alt="`${employer?.company_name || employer?.displayName || 'Employer'} avatar`"
+        class="cell-avatar"
       />
       <div class="cell-info">
-        <h4 v-if="employer?.company_name" class="cell-title">
-          {{ employer.company_name }}
-        </h4>
-        <p v-if="employer?.business_type" class="cell-subtitle">
-          {{ employer.business_type }}
+        <h3 class="cell-name">
+          {{
+            employer?.company_name ||
+            employer?.displayName ||
+            employer?.name ||
+            'Loading...'
+          }}
+        </h3>
+        <p class="cell-subtitle">
+          {{ employer?.title || employer?.business_type || 'Employer' }}
         </p>
       </div>
     </div>
 
-    <div class="cell-content">
-      <p v-if="employer?.bio_short" class="cell-description">
-        {{ employer.bio_short }}
-      </p>
+    <p v-if="employer?.bio_short" class="cell-bio">
+      {{ employer.bio_short }}
+    </p>
 
-      <div
-        class="cell-tags"
-        v-if="employer?.specialties?.length || employer?.cuisine_types?.length"
+    <div v-if="employer?.specialties?.length" class="cell-tags">
+      <span
+        v-for="specialty in employer.specialties.slice(0, 3)"
+        :key="specialty"
+        class="cell-tag"
       >
-        <span
-          v-for="specialty in employer?.specialties?.slice(0, 2)"
-          :key="specialty"
-          class="cell-tag"
-        >
-          {{ specialty }}
-        </span>
-        <span
-          v-for="cuisine in employer?.cuisine_types?.slice(0, 1)"
-          :key="cuisine"
-          class="cell-tag cuisine"
-        >
-          {{ cuisine }}
-        </span>
-      </div>
-
-      <div
-        class="cell-stats"
-        v-if="employer?.employee_count || employer?.years_established"
-      >
-        <span v-if="employer?.employee_count" class="cell-stat">
-          👥 {{ employer.employee_count }} employees
-        </span>
-        <span v-if="employer?.years_established" class="cell-stat">
-          📅 {{ employer.years_established }} years
-        </span>
-      </div>
+        {{ specialty }}
+      </span>
+      <span v-if="employer.specialties.length > 3" class="cell-more-tags">
+        +{{ employer.specialties.length - 3 }} more
+      </span>
     </div>
-  </UCard>
+
+    <div v-if="employer?.gallery?.length" class="cell-gallery">
+      <img
+        v-for="(item, index) in employer.gallery.slice(0, 3)"
+        :key="index"
+        :src="item.image_url"
+        :alt="item.name"
+        class="cell-thumb"
+      />
+      <span v-if="employer.gallery.length > 3" class="cell-more-images">
+        +{{ employer.gallery.length - 3 }}
+      </span>
+    </div>
+  </div>
 </template>
 
-<script setup lang="ts">
-defineProps<{
-  employer?: Partial<Employer>
-}>()
+<script setup>
+defineProps({
+  employer: {
+    type: Object,
+    required: false,
+    default: () => ({
+      company_name: 'Loading...',
+      displayName: 'Loading...',
+      title: 'Employer',
+      avatarUrl: '/default-avatar.png',
+    }),
+  },
+})
 </script>

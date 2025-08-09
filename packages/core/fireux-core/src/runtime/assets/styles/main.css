@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
+/* Import FireUX organism styling systems */
+@import './scss/main.scss';
+
 @theme static {
   --font-sans:
     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,

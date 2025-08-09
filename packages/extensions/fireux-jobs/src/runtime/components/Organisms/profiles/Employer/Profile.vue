@@ -1,5 +1,5 @@
 <template>
-  <div v-if="employer" class="profile-card profile-variant">
+  <div v-if="employer" class="profile-display-card">
     <!-- Company Header -->
     <div class="profile-header">
       <div class="profile-avatar-section">
@@ -8,16 +8,15 @@
           :alt="employer.company_name || employer.displayName"
           size="2xl"
           :text="getInitials(employer.company_name || employer.displayName)"
-          class="profile-avatar"
         />
-        <div v-if="employer.verified" class="profile-badge verified">
-          <UIcon name="i-heroicons-check-badge" />
-          <span>Verified Business</span>
+        <div v-if="employer.verified" class="profile-verified">
+          <UIcon name="i-heroicons-check-badge" class="text-green-500" />
+          <span class="text-sm text-green-600">Verified Business</span>
         </div>
       </div>
 
       <div class="profile-info-section">
-        <h1 class="profile-title">
+        <h1 class="profile-name">
           {{ employer.company_name || employer.displayName }}
         </h1>
         <p v-if="employer.business_type" class="profile-subtitle">
@@ -28,20 +27,20 @@
         </p>
 
         <div class="profile-contact-info">
-          <div v-if="employer.email" class="profile-contact">
+          <p v-if="employer.email" class="profile-contact">
             <UIcon name="i-heroicons-envelope" />
             {{ employer.email }}
-          </div>
-          <div v-if="employer.website" class="profile-contact">
+          </p>
+          <p v-if="employer.website" class="profile-contact">
             <UIcon name="i-heroicons-globe-alt" />
             <a
               :href="employer.website"
               target="_blank"
-              class="profile-link"
+              class="text-blue-600 hover:underline"
             >
               {{ employer.website }}
             </a>
-          </div>
+          </p>
         </div>
 
         <!-- Location Info -->

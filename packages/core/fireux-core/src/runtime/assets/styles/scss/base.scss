@@ -1,16 +1,17 @@
 /* ============================
-   app/assets/design-system/base.scss
+   FireUX Base Styles - Essential resets and foundation
    ============================ */
 
-/* 🔄 Base Styles */
-
 /* Global Box Sizing Reset */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 /* Reset Scrollbars */
-html, body {
+html,
+body {
   overflow-x: hidden;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -21,12 +22,19 @@ body::-webkit-scrollbar {
 }
 
 /* Remove default margin and padding */
-body, h1, h2, h3, h4, h5, h6, p {
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
   margin: 0;
   padding: 0;
 }
 
-/* General Resets & Base Typography */
+/* Base Typography - Let Nuxt UI and Tailwind handle most styling */
 body {
   font-family: var(--font-sans);
   line-height: 1.6;
@@ -36,7 +44,37 @@ body {
   color: var(--ui-text);
 }
 
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: bold;
+/* Essential Utilities - Supplement Tailwind for FireUX-specific needs */
+
+/* Standard Button Groups */
+.button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  width: 100%;
+}
+
+/* Fade-In Animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Highlight Text */
+.highlight {
+  color: var(--ui-primary);
 }

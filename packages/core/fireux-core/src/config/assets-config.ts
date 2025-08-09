@@ -8,13 +8,11 @@ export function configureAssets(resolver: any, nuxt: any) {
 
   // Add CSS files to Nuxt automatically - this makes the module truly sovereign
   const mainCssPath = resolvePath('./runtime/assets/styles/main.css')
-  const mainScssPath = resolvePath('./runtime/assets/styles/main.scss')
 
   // Register CSS with Nuxt automatically
   nuxt.options.css = nuxt.options.css || []
-  // Add both CSS and SCSS - the CSS for immediate use, SCSS for compilation
+  // Add main CSS (which imports our SCSS organisms)
   nuxt.options.css.push(mainCssPath)
-  nuxt.options.css.push(mainScssPath)
 
   // Configure Nitro to serve public assets from the package
   nuxt.options.nitro = nuxt.options.nitro || {}

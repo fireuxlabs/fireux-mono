@@ -1,71 +1,66 @@
 <template>
-  <UCard class="cell-card">
+  <div class="profile-cell chef-theme">
     <div class="cell-header">
-      <UAvatar
-        :src="chef?.avatarUrl || chef?.profile_image?.url"
-        :alt="chef?.chef_name || 'Chef'"
-        size="md"
+      <img
+        :src="
+          chef?.avatarUrl || chef?.profile_image?.url || '/default-avatar.png'
+        "
+        :alt="`${chef?.chef_name || chef?.displayName || 'Chef'} avatar`"
+        class="cell-avatar"
       />
       <div class="cell-info">
-        <h4 v-if="chef?.chef_name" class="cell-title">{{ chef.chef_name }}</h4>
-        <p v-if="chef?.title" class="cell-subtitle">{{ chef.title }}</p>
+        <h3 class="cell-name">
+          {{
+            chef?.chef_name || chef?.displayName || chef?.name || 'Loading...'
+          }}
+        </h3>
+        <p class="cell-subtitle">
+          {{ chef?.title || chef?.specialization || 'Chef' }}
+        </p>
       </div>
     </div>
 
-    <div class="cell-content">
-      <p v-if="chef?.bio_short" class="cell-description">
-        {{ chef.bio_short }}
-      </p>
+    <p v-if="chef?.bio_short" class="cell-bio">{{ chef.bio_short }}</p>
 
-      <div
-        class="cell-tags"
-        v-if="chef?.specialties?.length || chef?.cuisine_expertise?.length"
+    <div v-if="chef?.specialties?.length" class="cell-tags">
+      <span
+        v-for="specialty in chef.specialties.slice(0, 3)"
+        :key="specialty"
+        class="cell-tag"
       >
-        <span
-          v-for="specialty in chef?.specialties?.slice(0, 2)"
-          :key="specialty"
-          class="cell-tag"
-        >
-          {{ specialty }}
-        </span>
-        <span
-          v-for="cuisine in chef?.cuisine_expertise?.slice(0, 1)"
-          :key="cuisine"
-          class="cell-tag cuisine"
-        >
-          {{ cuisine }}
-        </span>
-      </div>
-
-      <div
-        class="cell-stats"
-        v-if="chef?.years_experience || chef?.total_recipes"
-      >
-        <span v-if="chef?.years_experience" class="cell-stat">
-          👨‍🍳 {{ chef.years_experience }} years experience
-        </span>
-        <span v-if="chef?.total_recipes" class="cell-stat">
-          📖 {{ chef.total_recipes }} recipes
-        </span>
-      </div>
-
-      <div
-        class="cell-badges"
-        v-if="chef?.verified || chef?.available_for_hire"
-      >
-        <span v-if="chef?.verified" class="cell-badge verified"
-          >✓ Verified</span
-        >
-        <span v-if="chef?.available_for_hire" class="cell-badge available"
-          >🟢 Available</span
-        >
-      </div>
+        {{ specialty }}
+      </span>
+      <span v-if="chef.specialties.length > 3" class="cell-more-tags">
+        +{{ chef.specialties.length - 3 }} more
+      </span>
     </div>
-  </UCard>
+
+    <div v-if="chef?.gallery?.length" class="cell-gallery">
+      <img
+        v-for="(item, index) in chef.gallery.slice(0, 3)"
+        :key="index"
+        :src="item.image_url"
+        :alt="item.name"
+        class="cell-thumb"
+      />
+      <span v-if="chef.gallery.length > 3" class="cell-more-images">
+        +{{ chef.gallery.length - 3 }}
+      </span>
+    </div>
+  </div>
 </template>
 
-<script setup lang="ts">
-defineProps<{
-  chef?: Partial<Chef>
-}>()
+<script setup>
+defineProps({
+  chef: {
+    type: Object,
+    required: false,
+    default: () => ({
+      chef_name: 'Loading...',
+      displayName: 'Loading...',
+      title: 'Chef',
+      avatarUrl: '/default-avatar.png',
+    }),
+  },
+})
 </script>

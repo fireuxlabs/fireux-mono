@@ -4,15 +4,15 @@
     :filter-composable="useEmployerFilters"
   >
     <template #profile-pill="{ profile }">
-      <JobOrganismsProfilesEmployerCardsPill :employer="profile" />
+      <JobEmployerCardsPill :employer="profile" />
     </template>
 
     <template #profile-card="{ profile }">
-      <JobOrganismsProfilesEmployerCardsProfile :employer="profile" />
+      <JobEmployerCardsProfile :employer="profile" />
     </template>
 
     <template #profile-item="{ profile }">
-      <JobOrganismsProfilesEmployerCardsCell :employer="profile" />
+      <JobEmployerCardsCell :employer="profile" />
     </template>
   </FireOrganismsProfileRoot>
 </template>

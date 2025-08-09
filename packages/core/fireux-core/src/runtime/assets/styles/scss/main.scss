@@ -1,23 +1,14 @@
 /* ============================
-   app/assets/design-system/main.scss
+   FireUX SCSS Organisms - Component Styling Systems
    ============================ */
 
-@use './atoms/atoms.scss';
+/* Base foundation */
 @use './base.scss';
-@use './utilities.scss';
-
 @use './grids.scss';
 
-@use './components/create.scss';
-@use './components/page.scss';
-@use './components/layout.scss';
-@use './components/fuel.scss';
-@use './components/button.scss';
-@use './components/form.scss';
-@use './components/profiles.scss';
-
-// Organisms
-@use './organisms/profile-cards.scss';
+/* Organism styling systems only */
+@use './organisms/profiles.scss';
+@use './organisms/objects.scss';
 
 //    Here’s a  list of our CSS classes grouped by the file in which they reside:
 

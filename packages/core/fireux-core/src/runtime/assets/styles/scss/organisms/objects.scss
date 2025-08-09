@@ -1,0 +1,219 @@
+/* Organism: Objects - Unified styling system for data object components */
+
+.objects {
+  /* Shared object foundation */
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+
+  /* Base hover effect */
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Shared text elements */
+  .title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--primary-900, #1a1a1a);
+  }
+
+  .subtitle {
+    opacity: 0.7;
+    color: var(--gray-600, #6b7280);
+  }
+
+  .description {
+    line-height: 1.4;
+    color: var(--gray-700, #374151);
+    margin-bottom: 0;
+  }
+
+  /* Cards namespace - matches component structure */
+  .cards {
+    /* Base card styling shared by all card types */
+
+    .cell {
+      /* Cell.vue styling - list view objects */
+      padding: 1rem;
+      border: 1px solid var(--gray-200, #e5e7eb);
+      border-radius: 0.5rem;
+      background: white;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-color: var(--gray-300, #d1d5db);
+      }
+
+      .header {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .subtitle {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .description {
+        font-size: 0.875rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .meta {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--gray-200, #e5e7eb);
+      }
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--gray-600, #6b7280);
+      }
+    }
+
+    .profile {
+      /* Cards/Profile.vue styling - richer object cards */
+      padding: 1.5rem;
+      border: 1px solid var(--gray-200, #e5e7eb);
+      border-radius: 0.75rem;
+      background: white;
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        border-color: var(--gray-300, #d1d5db);
+      }
+    }
+  }
+
+  /* Create namespace - matches Create/ folder structure */
+  .create {
+    /* Object creation forms */
+
+    .system {
+      /* Create/System.vue styling */
+      padding: 2rem;
+      background: white;
+      border-radius: 0.75rem;
+      border: 1px solid var(--gray-200, #e5e7eb);
+
+      .form-section {
+        margin-bottom: 2rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .section-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--primary-900, #1a1a1a);
+        border-bottom: 1px solid var(--gray-200, #e5e7eb);
+        padding-bottom: 0.5rem;
+      }
+    }
+
+    .preview {
+      /* Preview components */
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+  }
+
+  /* Object namespace - matches main object pages */
+  .object {
+    /* Full object display pages */
+    background: white;
+    border: 1px solid var(--gray-200, #e5e7eb);
+    border-radius: 0.75rem;
+    overflow: hidden;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--gray-200, #e5e7eb);
+      background: var(--gray-50, #f9fafb);
+    }
+
+    .content {
+      padding: 1.5rem;
+    }
+
+    .section {
+      margin-bottom: 1.5rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--primary-900, #1a1a1a);
+    }
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .objects {
+    .cards {
+      .cell {
+        .header {
+          gap: 0.5rem;
+        }
+
+        .title {
+          font-size: 0.875rem;
+        }
+
+        .meta {
+          gap: 0.5rem;
+        }
+      }
+    }
+
+    .object {
+      .header {
+        padding: 1rem;
+      }
+
+      .content {
+        padding: 1rem;
+      }
+    }
+  }
+}
