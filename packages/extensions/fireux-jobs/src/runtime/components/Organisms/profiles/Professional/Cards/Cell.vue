@@ -1,6 +1,17 @@
 <template>
   <div class="profile-cell professional-theme">
-    <div class="cell-header">
+ const props = defineProps({
+  professional: {
+    type: Object,
+    required: false, // ✅ FIXED: Change to false to handle undefined gracefully
+    default: () => ({
+      professional_name: 'Loading...',
+      displayName: 'Loading...',
+      title: 'Professional',
+      avatarUrl: '/default-avatar.png',
+    }),
+  },
+})s="cell-header">
       <img
         :src="
           professional?.avatarUrl ||
@@ -58,7 +69,7 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   professional: {
     type: Object,
     required: false,

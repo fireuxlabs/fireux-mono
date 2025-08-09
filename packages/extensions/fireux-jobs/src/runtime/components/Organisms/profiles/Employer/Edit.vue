@@ -42,7 +42,7 @@
           { label: 'Catering', value: 'catering' },
           { label: 'Food Service', value: 'food_service' },
           { label: 'Retail', value: 'retail' },
-          { label: 'Other', value: 'other' }
+          { label: 'Other', value: 'other' },
         ]"
         placeholder="Select business type"
         :update-function="updateBusinessType"
@@ -80,7 +80,9 @@
         :firebase-value="props.employer?.years_established?.toString() || ''"
         placeholder="Years in business"
         type="number"
-        :update-function="(value) => updateYearsEstablished(parseInt(value) || 0)"
+        :update-function="
+          (value) => updateYearsEstablished(parseInt(value) || 0)
+        "
       />
 
       <FireMoleculesFormsFirestoreField
@@ -88,7 +90,9 @@
         :firebase-value="props.employer?.covers_per_service?.toString() || ''"
         placeholder="Average covers per service"
         type="number"
-        :update-function="(value) => updateCoversPerService(parseInt(value) || 0)"
+        :update-function="
+          (value) => updateCoversPerService(parseInt(value) || 0)
+        "
       />
 
       <FireMoleculesFormsFirestoreSelect
@@ -100,7 +104,7 @@
           { label: 'CHF 500K - 1M', value: '500k_1m' },
           { label: 'CHF 1M - 5M', value: '1m_5m' },
           { label: 'CHF 5M+', value: '5m_plus' },
-          { label: 'Prefer not to say', value: 'private' }
+          { label: 'Prefer not to say', value: 'private' },
         ]"
         placeholder="Select revenue range"
         :update-function="updateAnnualRevenue"
@@ -162,7 +166,8 @@
 const props = defineProps({
   employer: {
     type: Object,
-    required: true,
+    required: false, // ✅ FIXED: Change to false to handle undefined gracefully
+    default: () => null,
   },
 })
 

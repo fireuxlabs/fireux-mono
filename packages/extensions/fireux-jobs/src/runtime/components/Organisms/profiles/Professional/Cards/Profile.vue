@@ -161,7 +161,8 @@
 const props = defineProps({
   professional: {
     type: Object,
-    required: true,
+    required: false, // ✅ FIXED: Change to false to handle undefined gracefully
+    default: () => null,
   },
 })
 

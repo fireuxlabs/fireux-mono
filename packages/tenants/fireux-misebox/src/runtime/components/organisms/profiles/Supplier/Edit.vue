@@ -19,7 +19,8 @@
 const props = defineProps({
   supplier: {
     type: Object,
-    required: true,
+    required: false, // ✅ FIXED: Change to false to handle undefined gracefully
+    default: () => null,
   },
 })
 </script>

@@ -1,51 +1,57 @@
 <template>
-  <div v-if="professional" class="profile-display-card">
+  <div v-if="professional" class="profiles profile">
     <!-- Profile Header -->
-    <div class="profile-header">
-      <div class="profile-avatar-section">
+    <div class="header">
+      <div class="avatar-section">
         <UAvatar
           :src="professional.avatarUrl"
-          :alt="professional.displayName"
+          :alt="professional.professional_name || professional.displayName"
           size="2xl"
-          :text="getInitials(professional.displayName)"
+          :text="getInitials(professional.professional_name || professional.displayName)"
+          class="avatar"
         />
-        <div v-if="professional.verified" class="profile-verified">
-          <UIcon name="i-heroicons-check-badge" class="text-blue-500" />
-          <span class="text-sm text-blue-600">Verified Professional</span>
+        <div v-if="professional.verified" class="profile-badge verified">
+          <UIcon name="i-heroicons-check-badge" />
+          <span>Verified Professional</span>
         </div>
       </div>
 
-      <div class="profile-info-section">
-        <h1 class="profile-name">{{ professional.displayName }}</h1>
-        <p v-if="professional.title" class="profile-subtitle">
+      <div class="info-section">
+        <h1 class="title">{{ professional.professional_name || professional.displayName }}</h1>
+        <p v-if="professional.title" class="subtitle">
           {{ professional.title }}
         </p>
-        <p v-if="professional.email" class="profile-contact">
+        <div v-if="professional.email" class="contact">
           <UIcon name="i-heroicons-envelope" />
           {{ professional.email }}
-        </p>
+        </div>
 
         <!-- Location Info -->
-        <div v-if="professional.locations?.length" class="profile-location">
+        <div v-if="professional.locations?.length" class="location">
           <UIcon name="i-heroicons-map-pin" />
           <span>{{ formatLocation(professional.locations[0]) }}</span>
-          <span v-if="professional.locations[0].radius" class="text-gray-500">
+          <span v-if="professional.locations[0].radius" class="text-muted">
             ({{ professional.locations[0].radius }}km radius)
           </span>
         </div>
       </div>
     </div>
 
-    <!-- Bio Section -->
-    <div
-      v-if="professional.bio_short || professional.bio_long"
-      class="profile-content-section"
-    >
-      <h3 class="profile-content-title">About</h3>
-      <p class="profile-content-text">
-        {{ professional.bio_long || professional.bio_short }}
-      </p>
-    </div>
+    <!-- Profile Content -->
+    <div class="content">
+      <!-- Bio Section -->
+      <div
+        v-if="professional.bio_short || professional.bio_long"
+        class="profile-section"
+      >
+        <h3 class="profile-section-title">
+          <UIcon name="i-heroicons-user" />
+          About
+        </h3>
+        <p class="profile-description">
+          {{ professional.bio_long || professional.bio_short }}
+        </p>
+      </div>
 
     <!-- Languages Section -->
     <div v-if="professional.languages?.length" class="profile-content-section">
@@ -253,7 +259,8 @@
 const props = defineProps({
   professional: {
     type: Object,
-    required: true,
+    required: false, // ✅ FIXED: Change to false to handle undefined gracefully
+    default: () => null,
   },
 })
 
