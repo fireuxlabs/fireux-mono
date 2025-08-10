@@ -1,0 +1,17 @@
+{
+  "name": "fireux-toolbar",
+  "displayName": "FireUX Toolbar",
+  "publisher": "fire-uxxx",
+  "version": "0.0.1",
+  "engines": { "vscode": "^1.80.0" },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "fireuxToolbar.startFireux", "title": "Start FireUX dev (3000)" },
+      { "command": "fireuxToolbar.startMisebox", "title": "Start MiseBox dev (3001)" },
+      { "command": "fireuxToolbar.startCleanbox", "title": "Start CleanBox dev (3002)" }
+    ]
+  }
+}

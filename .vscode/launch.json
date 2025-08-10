@@ -3,6 +3,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Run FireUX Toolbar Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/tools/vscode-fireux-toolbar"
+      ]
+    },
+    {
       "name": "🔥 FireUX dev (3000)",
       "type": "node-terminal",
       "request": "launch",
