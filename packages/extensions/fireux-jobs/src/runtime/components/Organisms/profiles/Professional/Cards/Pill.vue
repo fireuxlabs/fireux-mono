@@ -1,16 +1,16 @@
 <template>
-  <UCard class="pill-card">
-    <div class="pill-content">
+  <UCard class="profile-cell profile-pill professional-cell">
+    <div class="profile-header">
       <UAvatar
         :src="professional?.avatarUrl"
         :alt="professional?.professional_name || 'Professional'"
         size="sm"
       />
-      <div class="pill-info">
-        <h4 v-if="professional?.professional_name" class="pill-name">
+      <div class="profile-info">
+        <h4 v-if="professional?.professional_name" class="profile-name">
           {{ professional.professional_name }}
         </h4>
-        <p v-if="professional?.title" class="pill-subtitle">
+        <p v-if="professional?.title" class="profile-title">
           {{ professional.title }}
         </p>
       </div>

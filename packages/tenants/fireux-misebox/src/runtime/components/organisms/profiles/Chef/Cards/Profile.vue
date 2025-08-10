@@ -1,126 +1,68 @@
 <template>
-  <UCard class="profiles cards profile chef-theme">
-    <div class="header">
-      <div class="avatar-section">
-        <UAvatar
-          :src="chef?.avatarUrl || chef?.profile_image?.url"
-          :alt="chef?.chef_name || 'Chef'"
-          size="xl"
-        />
-        <div v-if="chef?.verified" class="verification-badge">
-          <UIcon name="i-lucide-check-circle" />
-          <span>Verified Chef</span>
-        </div>
-      </div>
-      <div class="info">
-        <h2 v-if="chef?.chef_name" class="title">
+  <UCard class="profile-cell chef-cell">
+    <div class="profile-header">
+      <UAvatar
+        :src="chef?.avatarUrl"
+        :alt="chef?.chef_name || 'Chef'"
+        size="lg"
+      />
+      <div class="profile-info">
+        <h4 v-if="chef?.chef_name" class="profile-name">
           {{ chef.chef_name }}
-        </h2>
-        <p v-if="chef?.title" class="subtitle">
-          {{ chef.title }}
-        </p>
-        <div class="meta-stats">
-          <div v-if="chef?.available_for_hire" class="stat">
-            <UIcon name="i-lucide-circle-check" />
-            <span>Available for hire</span>
-          </div>
-          <div v-if="chef?.years_experience" class="stat">
-            <UIcon name="i-lucide-briefcase" />
-            <span>{{ chef.years_experience }}+ years experience</span>
-          </div>
+        </h4>
+        <p v-if="chef?.title" class="profile-title">{{ chef.title }}</p>
+        <div v-if="chef?.years_experience" class="profile-meta">
+          {{ chef.years_experience }}+ years experience
         </div>
       </div>
-      <div class="actions">
-        <UButton size="lg" color="primary">
-          <UIcon name="i-lucide-message-circle" />
-          Contact Chef
-        </UButton>
-        <UButton variant="outline" size="lg">
-          <UIcon name="i-lucide-book-open" />
-          View Recipes
-        </UButton>
-      </div>
     </div>
 
-    <div v-if="chef?.bio_long || chef?.bio_short" class="description">
+    <p v-if="chef?.bio_long || chef?.bio_short" class="profile-bio">
       {{ chef.bio_long || chef.bio_short }}
-    </div>
+    </p>
 
-    <div
-      v-if="chef?.specialties?.length || chef?.cuisine_expertise?.length"
-      class="tags"
-    >
+    <div v-if="chef?.specialties?.length" class="profile-specialties">
       <span
-        v-for="specialty in chef.specialties || chef.cuisine_expertise || []"
+        v-for="specialty in chef.specialties.slice(0, 4)"
         :key="specialty"
-        class="tag"
+        class="specialty-tag"
       >
         {{ specialty }}
       </span>
+      <span v-if="chef.specialties.length > 4" class="more-specialties">
+        +{{ chef.specialties.length - 4 }} more
+      </span>
     </div>
 
-    <div v-if="chef?.gallery?.length" class="gallery-section">
-      <h3>Portfolio</h3>
-      <div class="gallery-grid">
-        <div
-          v-for="item in chef.gallery.slice(0, 4)"
-          :key="item.name"
-          class="gallery-item"
-        >
-          <img :src="item.image_url" :alt="item.name" class="gallery-image" />
-          <p class="gallery-title">{{ item.name }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div
-      v-if="chef?.kitchens && Object.keys(chef.kitchens).length"
-      class="kitchens-section"
-    >
-      <h3>Connected Kitchens</h3>
-      <div class="kitchen-list">
-        <div
-          v-for="kitchen in Object.values(chef.kitchens).slice(0, 3)"
-          :key="kitchen.name"
-          class="kitchen-item"
-        >
-          <img
-            v-if="kitchen.image_url"
-            :src="kitchen.image_url"
-            :alt="kitchen.name"
-            class="kitchen-logo"
-          />
-          <span class="kitchen-name">{{ kitchen.name }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="stats">
-      <div v-if="chef?.total_recipes" class="stat">
-        <UIcon name="i-lucide-book-open" />
-        <span>{{ chef.total_recipes }} recipes</span>
-      </div>
-      <div v-if="chef?.gallery?.length" class="stat">
-        <UIcon name="i-lucide-image" />
-        <span>{{ chef.gallery.length }} portfolio items</span>
-      </div>
-      <div
-        v-if="chef?.kitchens && Object.keys(chef.kitchens).length"
-        class="stat"
+    <div v-if="chef?.cuisine_expertise?.length" class="profile-specialties">
+      <strong class="section-label">Cuisine Expertise:</strong>
+      <span
+        v-for="cuisine in chef.cuisine_expertise.slice(0, 3)"
+        :key="cuisine"
+        class="specialty-tag"
       >
-        <UIcon name="i-lucide-building" />
-        <span>{{ Object.keys(chef.kitchens).length }} kitchen connections</span>
+        {{ cuisine }}
+      </span>
+      <span v-if="chef.cuisine_expertise.length > 3" class="more-specialties">
+        +{{ chef.cuisine_expertise.length - 3 }} more
+      </span>
+    </div>
+
+    <div v-if="chef?.available_for_hire || chef?.total_recipes" class="profile-stats">
+      <div v-if="chef?.available_for_hire" class="stat-item">
+        ✅ Available for hire
+      </div>
+      <div v-if="chef?.total_recipes" class="stat-item">
+        📚 {{ chef.total_recipes }} recipes
       </div>
     </div>
   </UCard>
 </template>
 
-<script setup>
-defineProps({
-  chef: {
-    type: Object,
-    required: false,
-    default: () => null,
-  },
-})
+<script setup lang="ts">
+import type { Chef } from '../../../../../models/profiles/Chef.model'
+
+defineProps<{
+  chef?: Partial<Chef>
+}>()
 </script>

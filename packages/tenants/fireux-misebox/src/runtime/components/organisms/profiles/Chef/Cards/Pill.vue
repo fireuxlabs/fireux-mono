@@ -1,14 +1,14 @@
 <template>
-  <UCard class="pill-card">
-    <div class="pill-content">
+  <UCard class="profile-cell profile-pill chef-cell">
+    <div class="profile-header">
       <UAvatar
         :src="chef?.avatarUrl"
         :alt="chef?.chef_name || 'Chef'"
         size="sm"
       />
-      <div class="pill-info">
-        <h4 v-if="chef?.chef_name" class="pill-name">{{ chef.chef_name }}</h4>
-        <p v-if="chef?.specialties?.length" class="pill-subtitle">
+      <div class="profile-info">
+        <h4 v-if="chef?.chef_name" class="profile-name">{{ chef.chef_name }}</h4>
+        <p v-if="chef?.specialties?.length" class="profile-title">
           {{ chef.specialties[0] }}
         </p>
       </div>

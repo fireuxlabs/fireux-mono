@@ -1,78 +1,42 @@
 <template>
-  <UCard class="profiles cards card chef-theme">
-    <div class="header">
+  <UCard class="profile-cell chef-cell">
+    <div class="profile-header">
       <UAvatar
-        :src="chef?.avatarUrl || chef?.profile_image?.url"
+        :src="chef?.avatarUrl"
         :alt="chef?.chef_name || 'Chef'"
-        size="lg"
+        size="md"
       />
-      <div class="info">
-        <h4 v-if="chef?.chef_name" class="title">
+      <div class="profile-info">
+        <h4 v-if="chef?.chef_name" class="profile-name">
           {{ chef.chef_name }}
         </h4>
-        <p v-if="chef?.title" class="subtitle">
-          {{ chef.title }}
-        </p>
-        <div v-if="chef?.verified" class="stat">
-          <UIcon name="i-lucide-check-circle" />
-          <span>Verified Chef</span>
-        </div>
+        <p v-if="chef?.title" class="profile-title">{{ chef.title }}</p>
       </div>
     </div>
 
-    <p v-if="chef?.bio_short" class="description">
+    <p v-if="chef?.bio_short" class="profile-bio">
       {{ chef.bio_short }}
     </p>
 
-    <div
-      v-if="chef?.specialties?.length || chef?.cuisine_expertise?.length"
-      class="tags"
-    >
+    <div v-if="chef?.specialties?.length" class="profile-specialties">
       <span
-        v-for="specialty in (
-          chef.specialties ||
-          chef.cuisine_expertise ||
-          []
-        ).slice(0, 3)"
+        v-for="specialty in chef.specialties.slice(0, 3)"
         :key="specialty"
-        class="tag"
+        class="specialty-tag"
       >
         {{ specialty }}
       </span>
-      <span
-        v-if="(chef.specialties || chef.cuisine_expertise || []).length > 3"
-        class="tag"
-      >
-        +{{
-          (chef.specialties || chef.cuisine_expertise || []).length - 3
-        }}
-        more
+      <span v-if="chef.specialties.length > 3" class="more-specialties">
+        +{{ chef.specialties.length - 3 }} more
       </span>
-    </div>
-
-    <div class="stats">
-      <div v-if="chef?.years_experience" class="stat">
-        <UIcon name="i-lucide-briefcase" />
-        <span>{{ chef.years_experience }}+ years experience</span>
-      </div>
-      <div v-if="chef?.total_recipes" class="stat">
-        <UIcon name="i-lucide-book-open" />
-        <span>{{ chef.total_recipes }} recipes</span>
-      </div>
-      <div v-if="chef?.available_for_hire" class="stat">
-        <UIcon name="i-lucide-circle-check" />
-        <span>Available for hire</span>
-      </div>
     </div>
   </UCard>
 </template>
 
-<script setup>
-defineProps({
-  chef: {
-    type: Object,
-    required: false,
-    default: () => null,
-  },
-})
+<script setup lang="ts">
+import type { Chef } from '../../../../../models/profiles/Chef.model'
+
+defineProps<{
+  chef?: Partial<Chef>
+}>()
 </script>

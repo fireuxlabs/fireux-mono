@@ -8,9 +8,6 @@
 @use './scss/utilities';
 @use './scss/grids';
 
-// Import atomic design styles
-@use './scss/organisms/pills';
-
 // Import CSS (for Tailwind/UnoCSS integration)
 @import './main.css';
 

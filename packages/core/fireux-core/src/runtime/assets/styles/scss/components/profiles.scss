@@ -60,154 +60,6 @@
   }
 }
 
-.profile-card-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.profile-card-avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  object-fit: cover;
-  background-color: #f3f4f6;
-  flex-shrink: 0;
-}
-
-.profile-card-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.profile-card-name {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 0.25rem;
-  text-decoration: none;
-
-  &:hover {
-    color: #3b82f6;
-  }
-}
-
-.profile-card-title {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 0.5rem;
-}
-
-.profile-card-bio {
-  font-size: 0.875rem;
-  color: #4b5563;
-  line-height: 1.4;
-  margin-bottom: 1rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.profile-card-specialties {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.profile-card-specialty {
-  background-color: #f3f4f6;
-  color: #374151;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.profile-card-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.75rem;
-  color: #6b7280;
-  padding-top: 1rem;
-  border-top: 1px solid #f3f4f6;
-}
-
-.profile-card-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.profile-card-stat-value {
-  font-weight: 600;
-  color: #111827;
-}
-
-.profile-card-stat-label {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-// Loading State
-.profile-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  color: #6b7280;
-}
-
-// Empty State
-.profile-empty {
-  text-align: center;
-  padding: 3rem;
-  color: #6b7280;
-}
-
-.profile-empty-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 0.5rem;
-}
-
-.profile-empty-description {
-  font-size: 0.875rem;
-}
-
-// Responsive Design
-@media (max-width: 640px) {
-  .profile-page {
-    padding: 1rem 0.5rem;
-  }
-
-  .profile-list {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .profile-card {
-    padding: 1rem;
-  }
-
-  .profile-card-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .profile-card-stats {
-    flex-direction: column;
-    gap: 1rem;
-  }
-}
-
 // =============================================================================
 // Profile Cell Components (for list items)
 // =============================================================================
@@ -224,6 +76,29 @@
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  // Pill modifier - compact layout with no bottom margin on header
+  &.profile-pill {
+    .profile-header {
+      margin-bottom: 0;
+    }
+
+    .profile-name {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .profile-title {
+      font-size: 0.875rem;
+      opacity: 0.7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
 

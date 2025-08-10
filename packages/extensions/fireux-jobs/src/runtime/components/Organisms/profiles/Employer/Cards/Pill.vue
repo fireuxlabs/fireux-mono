@@ -1,16 +1,16 @@
 <template>
-  <UCard class="pill-card">
-    <div class="pill-content">
+  <UCard class="profile-cell profile-pill employer-cell">
+    <div class="profile-header">
       <UAvatar
         :src="employer?.avatarUrl"
         :alt="employer?.company_name || 'Employer'"
         size="sm"
       />
-      <div class="pill-info">
-        <h4 v-if="employer?.company_name" class="pill-name">
+      <div class="profile-info">
+        <h4 v-if="employer?.company_name" class="profile-name">
           {{ employer.company_name }}
         </h4>
-        <p v-if="employer?.business_type" class="pill-subtitle">
+        <p v-if="employer?.business_type" class="profile-title">
           {{ employer.business_type }}
         </p>
       </div>
