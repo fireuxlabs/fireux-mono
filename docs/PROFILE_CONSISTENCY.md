@@ -10,12 +10,12 @@
       <UAvatar size="lg" />
       <div class="profile-info">
         <h4 class="profile-name">{{ name }}</h4>
-        <p class="profile-subtitle">{{ type/title }}</p>
+        <p class="profile-subtitle">{{ type / title }}</p>
         <div class="profile-location">
           <UIcon name="i-lucide-map-pin" />
           <span>{{ location }}</span>
         </div>
-        <div class="profile-meta">{{ years/established }}</div>
+        <div class="profile-meta">{{ years / established }}</div>
       </div>
     </div>
 
@@ -46,9 +46,11 @@
 ```
 
 ### **Progressive Enhancement Rules:**
+
 - **Pill**: Header only (name + 1 thing)
 - **Cell**: Header + Bio + Tags (3 sections)
 - **Profile**: Header + Bio + Tags + Section + Stats (5 sections)
 
 ### **Consistency Goal:**
+
 Same structure, same classes, same layout - just different data sources. No creative differences.

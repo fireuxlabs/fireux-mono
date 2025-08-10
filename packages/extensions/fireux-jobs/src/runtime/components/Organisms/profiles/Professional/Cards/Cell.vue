@@ -10,7 +10,10 @@
         <h4 v-if="professional?.name" class="profile-name">
           {{ professional.name }}
         </h4>
-        <p v-if="professional?.title || professional?.primary_skill" class="profile-subtitle">
+        <p
+          v-if="professional?.title || professional?.primary_skill"
+          class="profile-subtitle"
+        >
           {{ professional.title || professional.primary_skill }}
         </p>
         <div v-if="professional?.location" class="profile-location">
@@ -32,7 +35,10 @@
       >
         {{ cuisine }}
       </span>
-      <span v-if="professional.cuisine_types.length > 3" class="profile-tag-more">
+      <span
+        v-if="professional.cuisine_types.length > 3"
+        class="profile-tag-more"
+      >
         +{{ professional.cuisine_types.length - 3 }} more
       </span>
     </div>

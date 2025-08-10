@@ -11,7 +11,9 @@ export function configureComponents(resolver: any, options: ModuleOptions) {
 
   // Register Professional profile components with JobProfessional prefix
   addComponentsDir({
-    path: resolvePath('./runtime/components/Organisms/profiles/Professional/Cards'),
+    path: resolvePath(
+      './runtime/components/Organisms/profiles/Professional/Cards'
+    ),
     pathPrefix: false,
     prefix: 'JobProfessional',
     global: true,

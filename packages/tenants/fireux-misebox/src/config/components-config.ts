@@ -11,15 +11,19 @@ export function configureComponents(
 ) {
   // Add Chef profile components with MiseChef prefix
   addComponentsDir({
-    path: resolver.resolve('./runtime/components/organisms/profiles/Chef/Cards'),
+    path: resolver.resolve(
+      './runtime/components/organisms/profiles/Chef/Cards'
+    ),
     pathPrefix: false,
     prefix: 'MiseChef',
     global: true,
   })
 
-  // Add Supplier profile components with MiseSupplier prefix  
+  // Add Supplier profile components with MiseSupplier prefix
   addComponentsDir({
-    path: resolver.resolve('./runtime/components/organisms/profiles/Supplier/Cards'),
+    path: resolver.resolve(
+      './runtime/components/organisms/profiles/Supplier/Cards'
+    ),
     pathPrefix: false,
     prefix: 'MiseSupplier',
     global: true,
@@ -38,7 +42,7 @@ export function configureComponents(
   addComponentsDir({
     path: resolver.resolve('./runtime/components/organisms/profiles/Supplier'),
     pathPrefix: false,
-    prefix: 'MiseSupplier', 
+    prefix: 'MiseSupplier',
     global: true,
     pattern: '*.vue', // Only direct files, not Cards folder
   })

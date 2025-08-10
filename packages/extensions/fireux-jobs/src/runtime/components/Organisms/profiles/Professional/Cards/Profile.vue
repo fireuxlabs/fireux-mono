@@ -22,7 +22,10 @@
         </div>
       </div>
     </div>
-    <p v-if="professional?.bio_long || professional?.bio_short" class="profile-bio">
+    <p
+      v-if="professional?.bio_long || professional?.bio_short"
+      class="profile-bio"
+    >
       {{ professional.bio_long || professional.bio_short }}
     </p>
 
@@ -34,7 +37,10 @@
       >
         {{ cuisine }}
       </span>
-      <span v-if="professional.cuisine_types.length > 3" class="profile-tag-more">
+      <span
+        v-if="professional.cuisine_types.length > 3"
+        class="profile-tag-more"
+      >
         +{{ professional.cuisine_types.length - 3 }} more
       </span>
     </div>

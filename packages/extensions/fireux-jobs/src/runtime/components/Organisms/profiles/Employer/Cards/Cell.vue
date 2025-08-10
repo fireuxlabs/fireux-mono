@@ -43,9 +43,7 @@
         v-if="(employer.specialties || employer.cuisine_types || []).length > 3"
         class="profile-tag-more"
       >
-        +{{
-          (employer.specialties || employer.cuisine_types || []).length - 3
-        }}
+        +{{ (employer.specialties || employer.cuisine_types || []).length - 3 }}
         more
       </span>
     </div>

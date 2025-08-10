@@ -7,6 +7,7 @@ All profile components are automatically registered and available globally acros
 ### **MiseBox Domain (Chef/Supplier)**
 
 #### Chef Profile Components:
+
 ```vue
 <!-- Available as: -->
 <MiseChefPill :chef="chefData" />
@@ -20,6 +21,7 @@ All profile components are automatically registered and available globally acros
 ```
 
 #### Supplier Profile Components:
+
 ```vue
 <!-- Available as: -->
 <MiseSupplierPill :supplier="supplierData" />
@@ -35,6 +37,7 @@ All profile components are automatically registered and available globally acros
 ### **Jobs Domain (Professional/Employer)**
 
 #### Professional Profile Components:
+
 ```vue
 <!-- Available as: -->
 <JobProfessionalPill :professional="professionalData" />
@@ -48,6 +51,7 @@ All profile components are automatically registered and available globally acros
 ```
 
 #### Employer Profile Components:
+
 ```vue
 <!-- Available as: -->
 <JobEmployerPill :employer="employerData" />
@@ -62,40 +66,43 @@ All profile components are automatically registered and available globally acros
 
 ## Component Matrix Summary
 
-| Domain | Entity | Pill | Cell | Profile |
-|--------|--------|------|------|---------|
-| **MiseBox** | Chef | `<MiseChefPill>` | `<MiseChefCell>` | `<MiseChefProfile>` |
-| **MiseBox** | Supplier | `<MiseSupplierPill>` | `<MiseSupplierCell>` | `<MiseSupplierProfile>` |
-| **Jobs** | Professional | `<JobProfessionalPill>` | `<JobProfessionalCell>` | `<JobProfessionalProfile>` |
-| **Jobs** | Employer | `<JobEmployerPill>` | `<JobEmployerCell>` | `<JobEmployerProfile>` |
+| Domain      | Entity       | Pill                    | Cell                    | Profile                    |
+| ----------- | ------------ | ----------------------- | ----------------------- | -------------------------- |
+| **MiseBox** | Chef         | `<MiseChefPill>`        | `<MiseChefCell>`        | `<MiseChefProfile>`        |
+| **MiseBox** | Supplier     | `<MiseSupplierPill>`    | `<MiseSupplierCell>`    | `<MiseSupplierProfile>`    |
+| **Jobs**    | Professional | `<JobProfessionalPill>` | `<JobProfessionalCell>` | `<JobProfessionalProfile>` |
+| **Jobs**    | Employer     | `<JobEmployerPill>`     | `<JobEmployerCell>`     | `<JobEmployerProfile>`     |
 
 ## Usage in Apps
 
 ### In MiseBox App:
+
 ```vue
 <template>
   <!-- Chef components available -->
   <MiseChefPill :chef="chef" />
   <MiseSupplierCell :supplier="supplier" />
-  
+
   <!-- Jobs components NOT available (different domain) -->
   <!-- <JobProfessionalPill> ❌ Not imported -->
 </template>
 ```
 
 ### In FireUX Job App:
+
 ```vue
 <template>
   <!-- Jobs components available -->
   <JobProfessionalPill :professional="professional" />
   <JobEmployerCell :employer="employer" />
-  
+
   <!-- MiseBox components NOT available (different domain) -->
   <!-- <MiseChefPill> ❌ Not imported -->
 </template>
 ```
 
 ### In Combined App (using both modules):
+
 ```vue
 <template>
   <!-- All components available -->
@@ -111,7 +118,7 @@ All profile components are automatically registered and available globally acros
 All components follow the same enhancement pattern:
 
 - **Pill**: Minimal (name + 1 thing)
-- **Cell**: Enhanced (name + subtitle + bio + tags)  
+- **Cell**: Enhanced (name + subtitle + bio + tags)
 - **Profile**: Rich (above + section + stats)
 
 No matter which domain, the user experience is identical!

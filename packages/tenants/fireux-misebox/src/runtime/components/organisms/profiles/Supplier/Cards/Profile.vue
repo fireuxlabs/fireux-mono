@@ -48,7 +48,10 @@
       >
         {{ product }}
       </span>
-      <span v-if="supplier.products_offered.length > 2" class="profile-tag-more">
+      <span
+        v-if="supplier.products_offered.length > 2"
+        class="profile-tag-more"
+      >
         +{{ supplier.products_offered.length - 2 }} more
       </span>
     </div>
