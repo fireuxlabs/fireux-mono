@@ -19,7 +19,7 @@ export default defineNuxtModule<ModuleOptions>({
     name: 'fireux-cleanbox',
     configKey: 'fireuxCleanbox',
     compatibility: {
-  nuxt: '^4.0.0',
+      nuxt: '^4.0.0',
     },
   },
   defaults: {
