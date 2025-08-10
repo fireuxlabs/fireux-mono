@@ -1,9 +1,12 @@
 ## Scope & links
+
 This package provides Employer/Professional flows (jobs, applications, statuses).
+
 - See repo root CONTEXT.md for principles.
 - See docs/STRUCTURE_GUIDE.md for workspace conventions.
 
 Last updated: 2025-08-10
+
 # 🏢 FireUX Jobs Module
 
 Universal job management system for service industries, designed to work across cleaning, culinary, and other marketplace applications.

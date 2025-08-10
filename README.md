@@ -1,17 +1,22 @@
 ## What is FIReUX (quick)
+
 FIReUX is a modular SaaS framework (Nuxt 3 + Firebase + Stripe) delivered as templates, hosted subscriptions, and white‑label apps. See CONTEXT.md for principles and task routing.
 
 ## Repo map (packages → projects)
+
 - packages: fireux-core, fireux-jobs, fireux-misebox, fireux-places
 - projects: fireux (hub), cleanbox (template/app), misebox (hospitality)
 
 ## Business model (scoped)
+
 - Templates → Subscriptions (Basic/Standard/Pro/Full Integration) → White‑label
 
 ## Quick start
+
 - Install deps and run any project: pnpm install; pnpm dev:fireux | dev:cleanbox | dev:misebox
 
 Last updated: 2025-08-10
+
 # 🔥 FireUX - Multi-Domain Marketplace Platform
 
 [![Production Status](https://img.shields.io/badge/Status-Production-green.svg)](https://fireux-2005.web.app)

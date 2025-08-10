@@ -1,4 +1,5 @@
 ## Project scopes
+
 - fireux: hub site (core only)
 - cleanbox: cleaning company template/app (core + jobs)
 - misebox: hospitality app (core + jobs + misebox)
@@ -6,6 +7,7 @@
 See repo root CONTEXT.md for product strategy and docs/STRUCTURE_GUIDE.md for dev workflow.
 
 Last updated: 2025-08-10
+
 # � FireUX Projects: Ecosystem vs Tenant Architecture
 
 This directory contains two distinct types of applications with fundamentally different business models and purposes.
