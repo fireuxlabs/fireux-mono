@@ -1,52 +1,52 @@
 <template>
-  <UCard class="profiles cards card supplier-theme">
-    <div class="header">
+  <UCard class="profile-cell supplier-cell">
+    <div class="profile-header">
       <UAvatar
         :src="supplier?.avatarUrl || supplier?.profile_image?.url"
-        :alt="supplier?.business_name || 'Supplier'"
-        size="lg"
+        :alt="supplier?.company_name || 'Supplier'"
+        size="md"
       />
-      <div class="info">
-        <h4 v-if="supplier?.business_name" class="title">
-          {{ supplier.business_name }}
+      <div class="profile-info">
+        <h4 v-if="supplier?.company_name" class="profile-name">
+          {{ supplier.company_name }}
         </h4>
-        <p v-if="supplier?.business_type" class="subtitle">
-          {{ getBusinessTypeLabel(supplier.business_type) }}
+        <p v-if="supplier?.business_type" class="profile-subtitle">
+          {{ supplier.business_type }}
         </p>
-        <div v-if="supplier?.locations?.length" class="stat">
+        <div v-if="supplier?.locations?.length" class="profile-location">
           <UIcon name="i-lucide-map-pin" />
           <span>{{ getLocationText(supplier.locations[0]) }}</span>
         </div>
       </div>
     </div>
 
-    <p v-if="supplier?.bio_short" class="description">
+    <p v-if="supplier?.bio_short" class="profile-bio">
       {{ supplier.bio_short }}
     </p>
 
-    <div v-if="supplier?.specialties?.length" class="tags">
+    <div v-if="supplier?.specialties?.length" class="profile-tags">
       <span
         v-for="specialty in supplier.specialties.slice(0, 3)"
         :key="specialty"
-        class="tag"
+        class="profile-tag"
       >
         {{ specialty }}
       </span>
-      <span v-if="supplier.specialties.length > 3" class="tag">
+      <span v-if="supplier.specialties.length > 3" class="profile-tag-more">
         +{{ supplier.specialties.length - 3 }} more
       </span>
     </div>
 
-    <div class="stats">
-      <div v-if="supplier?.years_in_business" class="stat">
+    <div class="profile-stats">
+      <div v-if="supplier?.years_in_business" class="profile-stat">
         <UIcon name="i-lucide-calendar" />
         <span>{{ supplier.years_in_business }}+ years in business</span>
       </div>
-      <div v-if="supplier?.products_offered?.length" class="stat">
+      <div v-if="supplier?.products_offered?.length" class="profile-stat">
         <UIcon name="i-lucide-package" />
         <span>{{ supplier.products_offered.length }} products</span>
       </div>
-      <div v-if="supplier?.certifications?.length" class="stat">
+      <div v-if="supplier?.certifications?.length" class="profile-stat">
         <UIcon name="i-lucide-shield-check" />
         <span>{{ supplier.certifications.length }} certifications</span>
       </div>

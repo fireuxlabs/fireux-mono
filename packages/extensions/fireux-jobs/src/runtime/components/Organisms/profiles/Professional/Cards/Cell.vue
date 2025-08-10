@@ -1,48 +1,48 @@
 <template>
-  <UCard class="profiles cards card professional-theme">
-    <div class="header">
+  <UCard class="profile-cell professional-cell">
+    <div class="profile-header">
       <UAvatar
         :src="professional?.avatarUrl || professional?.profile_image?.url"
-        :alt="professional?.professional_name || 'Professional'"
-        size="lg"
+        :alt="professional?.name || 'Professional'"
+        size="md"
       />
-      <div class="info">
-        <h4 v-if="professional?.professional_name" class="title">
-          {{ professional.professional_name }}
+      <div class="profile-info">
+        <h4 v-if="professional?.name" class="profile-name">
+          {{ professional.name }}
         </h4>
-        <p v-if="professional?.title" class="subtitle">
-          {{ professional.title }}
+        <p v-if="professional?.title || professional?.primary_skill" class="profile-subtitle">
+          {{ professional.title || professional.primary_skill }}
         </p>
-        <div v-if="professional?.locations?.length" class="stat">
+        <div v-if="professional?.location" class="profile-location">
           <UIcon name="i-lucide-map-pin" />
-          <span>{{ getLocationText(professional.locations[0]) }}</span>
+          <span>{{ getLocationText(professional.location) }}</span>
         </div>
       </div>
     </div>
 
-    <p v-if="professional?.bio_short" class="description">
+    <p v-if="professional?.bio_short" class="profile-bio">
       {{ professional.bio_short }}
     </p>
 
-    <div v-if="professional?.cuisine_types?.length" class="tags">
+    <div v-if="professional?.cuisine_types?.length" class="profile-tags">
       <span
         v-for="cuisine in professional.cuisine_types.slice(0, 3)"
         :key="cuisine"
-        class="tag"
+        class="profile-tag"
       >
         {{ cuisine }}
       </span>
-      <span v-if="professional.cuisine_types.length > 3" class="tag">
+      <span v-if="professional.cuisine_types.length > 3" class="profile-tag-more">
         +{{ professional.cuisine_types.length - 3 }} more
       </span>
     </div>
 
-    <div v-if="professional?.kitchen_experience?.length" class="stats">
-      <div class="stat">
+    <div v-if="professional?.kitchen_experience?.length" class="profile-stats">
+      <div class="profile-stat">
         <UIcon name="i-lucide-briefcase" />
         <span>{{ getExperienceYears() }}+ years experience</span>
       </div>
-      <div v-if="latestExp" class="stat">
+      <div v-if="latestExp" class="profile-stat">
         <UIcon name="i-lucide-building" />
         <span>{{ latestExp.role }} at {{ latestExp.name }}</span>
       </div>
