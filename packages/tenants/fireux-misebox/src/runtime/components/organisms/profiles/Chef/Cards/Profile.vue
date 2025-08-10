@@ -21,30 +21,30 @@
       {{ chef.bio_long || chef.bio_short }}
     </p>
 
-    <div v-if="chef?.specialties?.length" class="profile-specialties">
+    <div v-if="chef?.specialties?.length" class="profile-tags">
       <span
-        v-for="specialty in chef.specialties.slice(0, 4)"
+        v-for="specialty in chef.specialties.slice(0, 3)"
         :key="specialty"
-        class="specialty-tag"
+        class="profile-tag"
       >
         {{ specialty }}
       </span>
-      <span v-if="chef.specialties.length > 4" class="more-specialties">
-        +{{ chef.specialties.length - 4 }} more
+      <span v-if="chef.specialties.length > 3" class="profile-tag-more">
+        +{{ chef.specialties.length - 3 }} more
       </span>
     </div>
 
-    <div v-if="chef?.cuisine_expertise?.length" class="profile-specialties">
+    <div v-if="chef?.cuisine_expertise?.length" class="profile-section">
       <strong class="section-label">Cuisine Expertise:</strong>
       <span
-        v-for="cuisine in chef.cuisine_expertise.slice(0, 3)"
+        v-for="cuisine in chef.cuisine_expertise.slice(0, 2)"
         :key="cuisine"
-        class="specialty-tag"
+        class="profile-tag"
       >
         {{ cuisine }}
       </span>
-      <span v-if="chef.cuisine_expertise.length > 3" class="more-specialties">
-        +{{ chef.cuisine_expertise.length - 3 }} more
+      <span v-if="chef.cuisine_expertise.length > 2" class="profile-tag-more">
+        +{{ chef.cuisine_expertise.length - 2 }} more
       </span>
     </div>
 

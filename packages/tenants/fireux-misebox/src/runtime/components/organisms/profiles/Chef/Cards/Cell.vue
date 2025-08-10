@@ -18,15 +18,15 @@
       {{ chef.bio_short }}
     </p>
 
-    <div v-if="chef?.specialties?.length" class="profile-specialties">
+    <div v-if="chef?.specialties?.length" class="profile-tags">
       <span
         v-for="specialty in chef.specialties.slice(0, 3)"
         :key="specialty"
-        class="specialty-tag"
+        class="profile-tag"
       >
         {{ specialty }}
       </span>
-      <span v-if="chef.specialties.length > 3" class="more-specialties">
+      <span v-if="chef.specialties.length > 3" class="profile-tag-more">
         +{{ chef.specialties.length - 3 }} more
       </span>
     </div>
