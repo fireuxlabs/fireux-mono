@@ -19,7 +19,7 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.17.4",
+    "@nuxt/kit": "^3.17.5",
     "fireux-core": "workspace:*",
     "glob": "^11.0.3"
   },

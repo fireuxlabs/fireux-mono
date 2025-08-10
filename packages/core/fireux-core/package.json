@@ -20,7 +20,7 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.17.4",
+    "@nuxt/kit": "^3.17.5",
     "dompurify": "^3.2.6",
     "glob": "^11.0.3"
   },
