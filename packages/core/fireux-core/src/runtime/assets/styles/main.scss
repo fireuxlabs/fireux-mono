@@ -1,0 +1,55 @@
+/* ============================
+   fireux-core/assets/styles/main.scss
+   FireUX Core Design System - SCSS Entry Point
+   ============================ */
+
+// Import SCSS modules using modern @use syntax (must come first)
+@use './scss/base';
+@use './scss/utilities';
+@use './scss/grids';
+
+// Import atomic design styles
+@use './scss/organisms/pills';
+
+// Import CSS (for Tailwind/UnoCSS integration)
+@import './main.css';
+
+//    FireUX Core CSS Classes Reference:
+//    ===================================
+
+// atoms.scss
+// 	•	.badge
+
+// base.scss
+// (No custom CSS classes defined in this file.)
+
+// components/fuel.scss
+// 	•	.fuel-logos
+// 	•	.fuel-item
+
+// components/layout.scss
+// 	•	.layout-container
+// 	•	.layout-content
+// 	•	.layout-main-content
+
+// components/page.scss
+// 	•	.page
+
+// components/cell.scss
+// 	•	.cell
+
+// components/profiles.scss
+// 	•	.profile-page
+// 	•	.profile-list
+// 	•	.profile-card
+// 	•	.profile-cell (with domain variants)
+
+// components/profile-edit.scss
+// 	•	.profile-edit-component
+// 	•	.profile-info-section
+// 	•	.profile-section-title
+
+// utilities.scss
+// 	•	.button-group
+// 	•	.fade-in
+// 	•	.highlight

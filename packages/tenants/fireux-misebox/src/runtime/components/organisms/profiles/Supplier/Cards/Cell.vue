@@ -1,71 +1,84 @@
 <template>
-  <div class="profile-cell supplier-theme">
-    <div class="cell-header">
-      <img
-        :src="
-          supplier?.avatarUrl ||
-          supplier?.profile_image?.url ||
-          '/default-avatar.png'
-        "
-        :alt="`${supplier?.business_name || supplier?.displayName || 'Supplier'} avatar`"
-        class="cell-avatar"
+  <UCard class="profiles cards card supplier-theme">
+    <div class="header">
+      <UAvatar
+        :src="supplier?.avatarUrl || supplier?.profile_image?.url"
+        :alt="supplier?.business_name || 'Supplier'"
+        size="lg"
       />
-      <div class="cell-info">
-        <h3 class="cell-name">
-          {{
-            supplier?.business_name ||
-            supplier?.displayName ||
-            supplier?.name ||
-            'Loading...'
-          }}
-        </h3>
-        <p class="cell-subtitle">
-          {{ supplier?.title || supplier?.business_type || 'Supplier' }}
+      <div class="info">
+        <h4 v-if="supplier?.business_name" class="title">
+          {{ supplier.business_name }}
+        </h4>
+        <p v-if="supplier?.business_type" class="subtitle">
+          {{ getBusinessTypeLabel(supplier.business_type) }}
         </p>
+        <div v-if="supplier?.locations?.length" class="stat">
+          <UIcon name="i-lucide-map-pin" />
+          <span>{{ getLocationText(supplier.locations[0]) }}</span>
+        </div>
       </div>
     </div>
 
-    <p v-if="supplier?.bio_short" class="cell-bio">{{ supplier.bio_short }}</p>
+    <p v-if="supplier?.bio_short" class="description">
+      {{ supplier.bio_short }}
+    </p>
 
-    <div v-if="supplier?.specialties?.length" class="cell-tags">
+    <div v-if="supplier?.specialties?.length" class="tags">
       <span
         v-for="specialty in supplier.specialties.slice(0, 3)"
         :key="specialty"
-        class="cell-tag"
+        class="tag"
       >
         {{ specialty }}
       </span>
-      <span v-if="supplier.specialties.length > 3" class="cell-more-tags">
+      <span v-if="supplier.specialties.length > 3" class="tag">
         +{{ supplier.specialties.length - 3 }} more
       </span>
     </div>
 
-    <div v-if="supplier?.gallery?.length" class="cell-gallery">
-      <img
-        v-for="(item, index) in supplier.gallery.slice(0, 3)"
-        :key="index"
-        :src="item.image_url"
-        :alt="item.name"
-        class="cell-thumb"
-      />
-      <span v-if="supplier.gallery.length > 3" class="cell-more-images">
-        +{{ supplier.gallery.length - 3 }} more
-      </span>
+    <div class="stats">
+      <div v-if="supplier?.years_in_business" class="stat">
+        <UIcon name="i-lucide-calendar" />
+        <span>{{ supplier.years_in_business }}+ years in business</span>
+      </div>
+      <div v-if="supplier?.products_offered?.length" class="stat">
+        <UIcon name="i-lucide-package" />
+        <span>{{ supplier.products_offered.length }} products</span>
+      </div>
+      <div v-if="supplier?.certifications?.length" class="stat">
+        <UIcon name="i-lucide-shield-check" />
+        <span>{{ supplier.certifications.length }} certifications</span>
+      </div>
     </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   supplier: {
     type: Object,
     required: false,
-    default: () => ({
-      business_name: 'Loading...',
-      displayName: 'Loading...',
-      title: 'Supplier',
-      avatarUrl: '/default-avatar.png',
-    }),
+    default: () => null,
   },
 })
+
+const getLocationText = (location) => {
+  if (location?.locations?.[0]?.formatted_address) {
+    return location.locations[0].formatted_address.split(',')[0]
+  }
+  return 'Location not specified'
+}
+
+const getBusinessTypeLabel = (type) => {
+  const labels = {
+    farm: 'Farm',
+    distributor: 'Distributor',
+    manufacturer: 'Manufacturer',
+    wholesaler: 'Wholesaler',
+    producer: 'Producer',
+    other: 'Supplier',
+  }
+  return labels[type] || 'Supplier'
+}
 </script>

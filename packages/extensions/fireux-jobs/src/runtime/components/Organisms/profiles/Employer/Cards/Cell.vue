@@ -1,73 +1,85 @@
 <template>
-  <div class="profile-cell employer-theme">
-    <div class="cell-header">
-      <img
-        :src="
-          employer?.avatarUrl ||
-          employer?.profile_image?.url ||
-          '/default-avatar.png'
-        "
-        :alt="`${employer?.company_name || employer?.displayName || 'Employer'} avatar`"
-        class="cell-avatar"
+  <UCard class="profiles cards card employer-theme">
+    <div class="header">
+      <UAvatar
+        :src="employer?.avatarUrl || employer?.profile_image?.url"
+        :alt="employer?.company_name || 'Employer'"
+        size="lg"
       />
-      <div class="cell-info">
-        <h3 class="cell-name">
-          {{
-            employer?.company_name ||
-            employer?.displayName ||
-            employer?.name ||
-            'Loading...'
-          }}
-        </h3>
-        <p class="cell-subtitle">
-          {{ employer?.title || employer?.business_type || 'Employer' }}
+      <div class="info">
+        <h4 v-if="employer?.company_name" class="title">
+          {{ employer.company_name }}
+        </h4>
+        <p v-if="employer?.business_type" class="subtitle">
+          {{ employer.business_type }}
         </p>
+        <div v-if="employer?.locations?.length" class="stat">
+          <UIcon name="i-lucide-map-pin" />
+          <span>{{ getLocationText(employer.locations[0]) }}</span>
+        </div>
       </div>
     </div>
 
-    <p v-if="employer?.bio_short" class="cell-bio">
+    <p v-if="employer?.bio_short" class="description">
       {{ employer.bio_short }}
     </p>
 
-    <div v-if="employer?.specialties?.length" class="cell-tags">
+    <div
+      v-if="employer?.specialties?.length || employer?.cuisine_types?.length"
+      class="tags"
+    >
       <span
-        v-for="specialty in employer.specialties.slice(0, 3)"
+        v-for="specialty in (
+          employer.specialties ||
+          employer.cuisine_types ||
+          []
+        ).slice(0, 3)"
         :key="specialty"
-        class="cell-tag"
+        class="tag"
       >
         {{ specialty }}
       </span>
-      <span v-if="employer.specialties.length > 3" class="cell-more-tags">
-        +{{ employer.specialties.length - 3 }} more
+      <span
+        v-if="(employer.specialties || employer.cuisine_types || []).length > 3"
+        class="tag"
+      >
+        +{{
+          (employer.specialties || employer.cuisine_types || []).length - 3
+        }}
+        more
       </span>
     </div>
 
-    <div v-if="employer?.gallery?.length" class="cell-gallery">
-      <img
-        v-for="(item, index) in employer.gallery.slice(0, 3)"
-        :key="index"
-        :src="item.image_url"
-        :alt="item.name"
-        class="cell-thumb"
-      />
-      <span v-if="employer.gallery.length > 3" class="cell-more-images">
-        +{{ employer.gallery.length - 3 }}
-      </span>
+    <div class="stats">
+      <div v-if="employer?.employee_count" class="stat">
+        <UIcon name="i-lucide-users" />
+        <span>{{ employer.employee_count }} employees</span>
+      </div>
+      <div v-if="employer?.years_established" class="stat">
+        <UIcon name="i-lucide-calendar" />
+        <span>Est. {{ employer.years_established }}</span>
+      </div>
+      <div v-if="employer?.active_jobs?.length" class="stat">
+        <UIcon name="i-lucide-briefcase" />
+        <span>{{ employer.active_jobs.length }} open positions</span>
+      </div>
     </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   employer: {
     type: Object,
     required: false,
-    default: () => ({
-      company_name: 'Loading...',
-      displayName: 'Loading...',
-      title: 'Employer',
-      avatarUrl: '/default-avatar.png',
-    }),
+    default: () => null,
   },
 })
+
+const getLocationText = (location) => {
+  if (location?.locations?.[0]?.formatted_address) {
+    return location.locations[0].formatted_address.split(',')[0]
+  }
+  return 'Location not specified'
+}
 </script>

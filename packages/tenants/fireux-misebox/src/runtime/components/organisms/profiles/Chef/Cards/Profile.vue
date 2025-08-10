@@ -1,83 +1,118 @@
 <template>
-  <div class="cell card-profile chef-theme">
+  <UCard class="profiles cards profile chef-theme">
     <div class="header">
-      <img
-        :src="
-          chef?.avatarUrl || chef?.profile_image?.url || '/default-avatar.png'
-        "
-        :alt="`${chef?.chef_name || 'Chef'} avatar`"
-        class="avatar"
-      />
-      <div class="info">
-        <h2 class="name">{{ chef?.chef_name || 'Loading...' }}</h2>
-        <p v-if="chef?.title" class="title">{{ chef.title }}</p>
-        <div class="meta">
-          <span v-if="chef?.specialties?.length" class="meta-item">
-            <span>🍳</span>
-            {{ chef.specialties.length }} specialties
-          </span>
-          <span v-if="chef?.gallery?.length" class="meta-item">
-            <span>📸</span>
-            {{ chef.gallery.length }} photos
-          </span>
-          <span
-            v-if="chef?.kitchens && Object.keys(chef.kitchens).length"
-            class="meta-item"
-          >
-            <span>🏢</span>
-            {{ Object.keys(chef.kitchens).length }} kitchen{{
-              Object.keys(chef.kitchens).length > 1 ? 's' : ''
-            }}
-          </span>
-          <span v-if="chef.years_experience" class="meta-item">
-            <span>⭐</span>
-            {{ chef.years_experience }} years experience
-          </span>
-          <span v-if="chef.verified" class="meta-item">
-            <span>✓</span>
-            Verified Chef
-          </span>
+      <div class="avatar-section">
+        <UAvatar
+          :src="chef?.avatarUrl || chef?.profile_image?.url"
+          :alt="chef?.chef_name || 'Chef'"
+          size="xl"
+        />
+        <div v-if="chef?.verified" class="verification-badge">
+          <UIcon name="i-lucide-check-circle" />
+          <span>Verified Chef</span>
         </div>
+      </div>
+      <div class="info">
+        <h2 v-if="chef?.chef_name" class="title">
+          {{ chef.chef_name }}
+        </h2>
+        <p v-if="chef?.title" class="subtitle">
+          {{ chef.title }}
+        </p>
+        <div class="meta-stats">
+          <div v-if="chef?.available_for_hire" class="stat">
+            <UIcon name="i-lucide-circle-check" />
+            <span>Available for hire</span>
+          </div>
+          <div v-if="chef?.years_experience" class="stat">
+            <UIcon name="i-lucide-briefcase" />
+            <span>{{ chef.years_experience }}+ years experience</span>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <UButton size="lg" color="primary">
+          <UIcon name="i-lucide-message-circle" />
+          Contact Chef
+        </UButton>
+        <UButton variant="outline" size="lg">
+          <UIcon name="i-lucide-book-open" />
+          View Recipes
+        </UButton>
       </div>
     </div>
 
-    <p v-if="chef.bio_short" class="bio">{{ chef.bio_short }}</p>
+    <div v-if="chef?.bio_long || chef?.bio_short" class="description">
+      {{ chef.bio_long || chef.bio_short }}
+    </div>
 
-    <div v-if="chef.specialties?.length" class="tags">
+    <div
+      v-if="chef?.specialties?.length || chef?.cuisine_expertise?.length"
+      class="tags"
+    >
       <span
-        v-for="specialty in chef.specialties.slice(0, 8)"
+        v-for="specialty in chef.specialties || chef.cuisine_expertise || []"
         :key="specialty"
         class="tag"
       >
         {{ specialty }}
       </span>
-      <span v-if="chef.specialties.length > 8" class="more-tags">
-        +{{ chef.specialties.length - 8 }} more
-      </span>
     </div>
 
-    <div v-if="chef.gallery?.length" class="gallery">
-      <img
-        v-for="(item, index) in chef.gallery.slice(0, 6)"
-        :key="index"
-        :src="item.image_url"
-        :alt="item.name"
-        class="thumb"
-      />
-      <div v-if="chef.gallery.length > 6" class="more-images">
-        +{{ chef.gallery.length - 6 }} more
+    <div v-if="chef?.gallery?.length" class="gallery-section">
+      <h3>Portfolio</h3>
+      <div class="gallery-grid">
+        <div
+          v-for="item in chef.gallery.slice(0, 4)"
+          :key="item.name"
+          class="gallery-item"
+        >
+          <img :src="item.image_url" :alt="item.name" class="gallery-image" />
+          <p class="gallery-title">{{ item.name }}</p>
+        </div>
       </div>
     </div>
 
-    <div class="actions">
-      <button class="btn btn-primary" @click="$emit('view-profile', chef)">
-        View Full Profile
-      </button>
-      <button class="btn btn-secondary" @click="$emit('contact-chef', chef)">
-        Contact Chef
-      </button>
+    <div
+      v-if="chef?.kitchens && Object.keys(chef.kitchens).length"
+      class="kitchens-section"
+    >
+      <h3>Connected Kitchens</h3>
+      <div class="kitchen-list">
+        <div
+          v-for="kitchen in Object.values(chef.kitchens).slice(0, 3)"
+          :key="kitchen.name"
+          class="kitchen-item"
+        >
+          <img
+            v-if="kitchen.image_url"
+            :src="kitchen.image_url"
+            :alt="kitchen.name"
+            class="kitchen-logo"
+          />
+          <span class="kitchen-name">{{ kitchen.name }}</span>
+        </div>
+      </div>
     </div>
-  </div>
+
+    <div class="stats">
+      <div v-if="chef?.total_recipes" class="stat">
+        <UIcon name="i-lucide-book-open" />
+        <span>{{ chef.total_recipes }} recipes</span>
+      </div>
+      <div v-if="chef?.gallery?.length" class="stat">
+        <UIcon name="i-lucide-image" />
+        <span>{{ chef.gallery.length }} portfolio items</span>
+      </div>
+      <div
+        v-if="chef?.kitchens && Object.keys(chef.kitchens).length"
+        class="stat"
+      >
+        <UIcon name="i-lucide-building" />
+        <span>{{ Object.keys(chef.kitchens).length }} kitchen connections</span>
+      </div>
+    </div>
+  </UCard>
 </template>
 
 <script setup>
@@ -85,13 +120,7 @@ defineProps({
   chef: {
     type: Object,
     required: false,
-    default: () => ({
-      chef_name: 'Loading...',
-      title: 'Chef',
-      avatarUrl: '/default-avatar.png',
-    }),
+    default: () => null,
   },
 })
-
-const emit = defineEmits(['view-profile', 'contact-chef'])
 </script>
