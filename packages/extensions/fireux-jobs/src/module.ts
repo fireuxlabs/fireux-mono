@@ -13,7 +13,7 @@ export default defineNuxtModule<ModuleOptions>({
     name: 'fireux-jobs',
     configKey: 'fireuxJobs',
     compatibility: {
-      nuxt: '^3.0.0',
+  nuxt: '^4.0.0',
     },
   },
   // Default configuration options of the Nuxt module
