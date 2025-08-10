@@ -1,8 +1,8 @@
 <template>
-  <UCard>
+  <UCard class="pill-card">
     <div class="pill-content">
       <UAvatar
-        :src="professional?.avatarUrl || professional?.profile_image?.url"
+        :src="professional?.avatarUrl"
         :alt="professional?.professional_name || 'Professional'"
         size="sm"
       />
@@ -19,6 +19,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Professional } from '../../../../../models/profiles/Professional.model'
+
 defineProps<{
   professional?: Partial<Professional>
 }>()

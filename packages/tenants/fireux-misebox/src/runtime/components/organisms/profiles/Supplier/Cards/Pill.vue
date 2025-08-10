@@ -1,8 +1,8 @@
 <template>
-  <UCard>
+  <UCard class="pill-card">
     <div class="pill-content">
       <UAvatar
-        :src="supplier?.avatarUrl || supplier?.profile_image?.url"
+        :src="supplier?.avatarUrl"
         :alt="supplier?.business_name || 'Supplier'"
         size="sm"
       />
@@ -19,6 +19,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Supplier } from '../../../../../models/profiles/Supplier.model'
+
 defineProps<{
   supplier?: Partial<Supplier>
 }>()

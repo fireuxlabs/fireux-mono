@@ -1,8 +1,8 @@
 <template>
-  <UCard>
+  <UCard class="pill-card">
     <div class="pill-content">
       <UAvatar
-        :src="chef?.avatarUrl || chef?.profile_image?.url"
+        :src="chef?.avatarUrl"
         :alt="chef?.chef_name || 'Chef'"
         size="sm"
       />
@@ -17,6 +17,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Chef } from '../../../../../models/profiles/Chef.model'
+
 defineProps<{
   chef?: Partial<Chef>
 }>()

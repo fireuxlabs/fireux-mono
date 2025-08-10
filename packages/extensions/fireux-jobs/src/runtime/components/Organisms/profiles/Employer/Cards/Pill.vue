@@ -1,8 +1,8 @@
 <template>
-  <UCard>
+  <UCard class="pill-card">
     <div class="pill-content">
       <UAvatar
-        :src="employer?.avatarUrl || employer?.profile_image?.url"
+        :src="employer?.avatarUrl"
         :alt="employer?.company_name || 'Employer'"
         size="sm"
         class="profile-avatar"
@@ -20,6 +20,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Employer } from '../../../../../models/profiles/Employer.model'
+
 defineProps<{
   employer?: Partial<Employer>
 }>()
