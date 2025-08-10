@@ -53,20 +53,17 @@
         {
           "command": "fireuxToolbar.startFireux",
           "group": "navigation@1",
-          "when": "true",
-          "alt": "Start FireUX dev (3000)"
+          "when": "true"
         },
         {
           "command": "fireuxToolbar.startMisebox",
           "group": "navigation@2",
-          "when": "true",
-          "alt": "Start MiseBox dev (3001)"
+          "when": "true"
         },
         {
           "command": "fireuxToolbar.startCleanbox",
           "group": "navigation@3",
-          "when": "true",
-          "alt": "Start CleanBox dev (3002)"
+          "when": "true"
         }
       ]
     },
