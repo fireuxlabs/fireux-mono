@@ -9,13 +9,45 @@ import type { ModuleOptions } from '../module'
 export function configureComponents(resolver: any, options: ModuleOptions) {
   const resolvePath = (p: string) => resolver.resolve(p)
 
-  // Register components with Job prefix to avoid conflicts with core
+  // Register Professional profile components with JobProfessional prefix
   addComponentsDir({
-    path: resolvePath('./runtime/components'),
-    pattern: '**/*.vue',
+    path: resolvePath('./runtime/components/Organisms/profiles/Professional/Cards'),
+    pathPrefix: false,
+    prefix: 'JobProfessional',
+    global: true,
+  })
+
+  // Register Employer profile components with JobEmployer prefix
+  addComponentsDir({
+    path: resolvePath('./runtime/components/Organisms/profiles/Employer/Cards'),
+    pathPrefix: false,
+    prefix: 'JobEmployer',
+    global: true,
+  })
+
+  // Register Professional management components
+  addComponentsDir({
+    path: resolvePath('./runtime/components/Organisms/profiles/Professional'),
+    pathPrefix: false,
+    prefix: 'JobProfessional',
+    global: true,
+    pattern: '*.vue', // Only direct files, not Cards folder
+  })
+
+  // Register Employer management components
+  addComponentsDir({
+    path: resolvePath('./runtime/components/Organisms/profiles/Employer'),
+    pathPrefix: false,
+    prefix: 'JobEmployer',
+    global: true,
+    pattern: '*.vue', // Only direct files, not Cards folder
+  })
+
+  // Register other job components
+  addComponentsDir({
+    path: resolvePath('./runtime/components/cards'),
+    pathPrefix: false,
     prefix: 'Job',
     global: true,
-    pathPrefix: true,
-    watch: true,
   })
 }
