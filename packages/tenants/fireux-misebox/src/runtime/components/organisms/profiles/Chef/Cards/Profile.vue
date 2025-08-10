@@ -48,7 +48,10 @@
       </span>
     </div>
 
-    <div v-if="chef?.available_for_hire || chef?.total_recipes" class="profile-stats">
+    <div
+      v-if="chef?.available_for_hire || chef?.total_recipes"
+      class="profile-stats"
+    >
       <div v-if="chef?.available_for_hire" class="stat-item">
         ✅ Available for hire
       </div>

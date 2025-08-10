@@ -7,7 +7,9 @@
         size="sm"
       />
       <div class="profile-info">
-        <h4 v-if="chef?.chef_name" class="profile-name">{{ chef.chef_name }}</h4>
+        <h4 v-if="chef?.chef_name" class="profile-name">
+          {{ chef.chef_name }}
+        </h4>
         <p v-if="chef?.specialties?.length" class="profile-title">
           {{ chef.specialties[0] }}
         </p>
