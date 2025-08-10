@@ -9,6 +9,7 @@ import { configurePlugins } from './config/plugins-config'
 import { configureComposables } from './config/composables-config'
 import { configurePages } from './config/pages-config'
 import { configureModels } from './config/models-config'
+import { configureErrors } from './config/errors-config'
 
 // Module options interface
 export interface ModuleOptions {
@@ -54,6 +55,9 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Configure plugins
     configurePlugins(resolver)
+
+    // Configure error handling
+    configureErrors(resolver, nuxt)
 
     // Configure public assets
     configureAssets(resolver, nuxt)

@@ -59,8 +59,7 @@ export default defineNuxtConfig({
           globPatterns: ['**/*.{js,css,html,png,svg,ico,json,txt,woff2}'],
         },
         devOptions: {
-          // Disable SW in dev to avoid stale module caches during HMR
-          enabled: false,
+          enabled: process.env.NODE_ENV === 'development',
           suppressWarnings: true,
           navigateFallbackAllowlist: [/^\/$/],
           type: 'module',
@@ -78,7 +77,13 @@ export default defineNuxtConfig({
           messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
           appId: process.env.FIREBASE_APP_ID,
         },
-        auth: { enabled: true },
+        auth: {
+          enabled: true,
+          ssr: true,
+        },
+        admin: {
+          serviceAccount: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        },
       },
     ],
     '@nuxt/ui',
