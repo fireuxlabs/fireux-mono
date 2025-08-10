@@ -3,15 +3,95 @@
   "displayName": "FireUX Toolbar",
   "publisher": "fire-uxxx",
   "version": "0.0.1",
-  "engines": { "vscode": "^1.80.0" },
-  "categories": ["Other"],
-  "activationEvents": ["onStartupFinished"],
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+  "onStartupFinished"
+  ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
-      { "command": "fireuxToolbar.startFireux", "title": "Start FireUX dev (3000)" },
-      { "command": "fireuxToolbar.startMisebox", "title": "Start MiseBox dev (3001)" },
-      { "command": "fireuxToolbar.startCleanbox", "title": "Start CleanBox dev (3002)" }
-    ]
+      {
+        "command": "fireuxToolbar.startFireux",
+        "title": "Start FireUX dev (3000)",
+        "icon": "$(flame)"
+      },
+      {
+        "command": "fireuxToolbar.startMisebox",
+        "title": "Start MiseBox dev (3001)",
+        "icon": "$(book)"
+      },
+      {
+        "command": "fireuxToolbar.startCleanbox",
+        "title": "Start CleanBox dev (3002)",
+        "icon": "$(beaker)"
+      }
+    ],
+    "menus": {
+      "commandCenter": [
+        {
+          "command": "fireuxToolbar.startFireux",
+          "group": "navigation@1",
+          "when": "true"
+        },
+        {
+          "command": "fireuxToolbar.startMisebox",
+          "group": "navigation@2",
+          "when": "true"
+        },
+        {
+          "command": "fireuxToolbar.startCleanbox",
+          "group": "navigation@3",
+          "when": "true"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "fireuxToolbar.startFireux",
+          "group": "navigation@1",
+          "when": "true",
+          "alt": "Start FireUX dev (3000)"
+        },
+        {
+          "command": "fireuxToolbar.startMisebox",
+          "group": "navigation@2",
+          "when": "true",
+          "alt": "Start MiseBox dev (3001)"
+        },
+        {
+          "command": "fireuxToolbar.startCleanbox",
+          "group": "navigation@3",
+          "when": "true",
+          "alt": "Start CleanBox dev (3002)"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "fireuxToolbar.startFireux",
+        "key": "ctrl+alt+f",
+        "mac": "cmd+alt+f",
+        "when": "workspaceFolderCount > 0"
+      },
+      {
+        "command": "fireuxToolbar.startMisebox",
+        "key": "ctrl+alt+m",
+        "mac": "cmd+alt+m",
+        "when": "workspaceFolderCount > 0"
+      },
+      {
+        "command": "fireuxToolbar.startCleanbox",
+        "key": "ctrl+alt+c",
+        "mac": "cmd+alt+c",
+        "when": "workspaceFolderCount > 0"
+      }
+    ],
+    "configurationDefaults": {
+      "window.commandCenter": true
+    }
   }
 }
