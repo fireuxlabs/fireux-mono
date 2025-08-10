@@ -9,10 +9,7 @@ import path from 'path'
 export function configurePlugins(resolver: any) {
   const resolvePath = (p: string) => resolver.resolve(p)
 
-  const pluginDirs = [
-    resolvePath('./runtime/plugins'),
-    resolvePath('./runtime/server/plugins'),
-  ]
+  const pluginDirs = [resolvePath('./runtime/plugins')]
 
   pluginDirs.forEach((pluginsDir: string) => {
     const pluginFiles = glob.sync('**/*.{js,ts}', { cwd: pluginsDir })
@@ -23,8 +20,7 @@ export function configurePlugins(resolver: any) {
       let mode: 'client' | 'server' | undefined
       if (file.includes('.client.')) mode = 'client'
       else if (file.includes('.server.')) mode = 'server'
-      // Files under runtime/server/plugins default to server mode
-      else if (pluginsDir.endsWith('/server/plugins')) mode = 'server'
+      // infer mode from filename suffix; universal when none
 
       console.log(
         `Auto-registering plugin: ${file} from ${pluginsDir} (mode: ${
