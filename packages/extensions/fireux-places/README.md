@@ -1,3 +1,9 @@
+## Scope & links
+Places integration: place picker and service areas (scope + planned).
+- See repo root CONTEXT.md for principles.
+- See docs/STRUCTURE_GUIDE.md for workspace conventions.
+
+Last updated: 2025-08-10
 # FireUX Places
 
 Location and places management system for FireUX applications with Google Places API integration.

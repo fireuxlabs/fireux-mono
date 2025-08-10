@@ -1,3 +1,9 @@
+## Scope & links
+Core foundation: auth, Firestore helpers, UI primitives, layout tokens.
+- See repo root CONTEXT.md for principles.
+- See docs/STRUCTURE_GUIDE.md for workspace conventions.
+
+Last updated: 2025-08-10
 # Core Packages
 
 This folder contains core, framework-level packages for FireUX. No domain-specific code should be placed here.

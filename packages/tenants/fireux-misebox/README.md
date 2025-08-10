@@ -1,3 +1,9 @@
+## Scope & links
+Hospitality domain: Professional, Chef, recipes, mise en place (plus planned references).
+- See repo root CONTEXT.md for principles.
+- See docs/STRUCTURE_GUIDE.md for workspace conventions.
+
+Last updated: 2025-08-10
 # 🍽️ FireUX Misebox
 
 Chef and Supplier marketplace module for the FireUX ecosystem.
