@@ -9,31 +9,30 @@ import path from 'path'
 export function configurePlugins(resolver: any) {
   const resolvePath = (p: string) => resolver.resolve(p)
 
-  // Get the absolute path to the runtime/plugins directory
-  const pluginsDir = resolvePath('./runtime/plugins')
+  const pluginDirs = [
+    resolvePath('./runtime/plugins'),
+    resolvePath('./runtime/server/plugins'),
+  ]
 
-  // Find all plugin files in the plugins directory
-  const pluginFiles = glob.sync('**/*.{js,ts}', { cwd: pluginsDir })
+  pluginDirs.forEach((pluginsDir: string) => {
+    const pluginFiles = glob.sync('**/*.{js,ts}', { cwd: pluginsDir })
 
-  // Register all discovered plugins
-  pluginFiles.forEach((file: string) => {
-    const pluginPath = path.join(pluginsDir, file)
+    pluginFiles.forEach((file: string) => {
+      const pluginPath = path.join(pluginsDir, file)
 
-    // Determine mode based on file extension
-    let mode: 'client' | 'server' | undefined
-    if (file.includes('.client.')) {
-      mode = 'client'
-    } else if (file.includes('.server.')) {
-      mode = 'server'
-    }
+      let mode: 'client' | 'server' | undefined
+      if (file.includes('.client.')) mode = 'client'
+      else if (file.includes('.server.')) mode = 'server'
+      // Files under runtime/server/plugins default to server mode
+      else if (pluginsDir.endsWith('/server/plugins')) mode = 'server'
 
-    console.log(
-      `Auto-registering plugin: ${file} (mode: ${mode || 'universal'})`
-    )
+      console.log(
+        `Auto-registering plugin: ${file} from ${pluginsDir} (mode: ${
+          mode || 'universal'
+        })`
+      )
 
-    addPlugin({
-      src: pluginPath,
-      mode,
+      addPlugin({ src: pluginPath, mode })
     })
   })
 }

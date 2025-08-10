@@ -59,7 +59,8 @@ export default defineNuxtConfig({
           globPatterns: ['**/*.{js,css,html,png,svg,ico,json,txt,woff2}'],
         },
         devOptions: {
-          enabled: process.env.NODE_ENV === 'development',
+          // Disable SW in dev to avoid stale module caches during HMR
+          enabled: false,
           suppressWarnings: true,
           navigateFallbackAllowlist: [/^\/$/],
           type: 'module',

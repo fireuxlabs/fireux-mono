@@ -20,6 +20,15 @@ export default defineNuxtConfig({
     'fireux-misebox',
     '@nuxt/content',
     '@nuxt/ui',
+    [
+      '@vite-pwa/nuxt',
+      {
+        registerType: 'autoUpdate',
+        devOptions: {
+          enabled: false,
+        },
+      },
+    ],
     'nuxt-vuefire',
   ],
 

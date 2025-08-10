@@ -56,4 +56,5 @@ export function configureServer(resolver: any) {
       './runtime/server/api/stripe/create-subscription.post'
     ),
   })
+
 }
