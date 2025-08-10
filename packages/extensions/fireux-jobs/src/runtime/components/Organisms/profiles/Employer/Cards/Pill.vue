@@ -5,7 +5,6 @@
         :src="employer?.avatarUrl"
         :alt="employer?.company_name || 'Employer'"
         size="sm"
-        class="profile-avatar"
       />
       <div class="pill-info">
         <h4 v-if="employer?.company_name" class="pill-name">
