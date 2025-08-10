@@ -3,34 +3,37 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "FireUX dev (3000)",
+      "name": "🔥 FireUX dev (3000)",
       "type": "node-terminal",
       "request": "launch",
       "command": "pnpm dev:fireux",
-      "cwd": "${workspaceFolder}"
+      "cwd": "${workspaceFolder}",
+      "presentation": { "group": "Dev Servers", "order": 1 }
     },
     {
-      "name": "MiseBox dev (3001)",
+      "name": "🥘 MiseBox dev (3001)",
       "type": "node-terminal",
       "request": "launch",
       "command": "pnpm dev:misebox",
-      "cwd": "${workspaceFolder}"
+      "cwd": "${workspaceFolder}",
+      "presentation": { "group": "Dev Servers", "order": 2 }
     },
     {
-      "name": "CleanBox dev (3002)",
+      "name": "🧼 CleanBox dev (3002)",
       "type": "node-terminal",
       "request": "launch",
       "command": "pnpm dev:cleanbox",
-      "cwd": "${workspaceFolder}"
+      "cwd": "${workspaceFolder}",
+      "presentation": { "group": "Dev Servers", "order": 3 }
     }
   ],
   "compounds": [
     {
       "name": "All dev servers (3000+3001+3002)",
       "configurations": [
-        "FireUX dev (3000)",
-        "MiseBox dev (3001)",
-        "CleanBox dev (3002)"
+        "🔥 FireUX dev (3000)",
+        "🥘 MiseBox dev (3001)",
+        "🧼 CleanBox dev (3002)"
       ]
     }
   ]
