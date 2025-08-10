@@ -20,31 +20,22 @@
 // base.scss
 // (No custom CSS classes defined in this file.)
 
-// components/fuel.scss
-// 	•	.fuel-logos
-// 	•	.fuel-item
+// organisms/profiles.scss - Unified Profile Component System
+// 	•	.profile-page (page layouts)
+// 	•	.profile-list (grid layouts)  
+// 	•	.profile-cell (base component - used by pills, cells, profiles)
+// 	•	.profile-pill (modifier for compact pills)
+// 	•	.profile-header (avatar + info layout)
+// 	•	.profile-info (text content wrapper)
+// 	•	.profile-name (primary heading)
+// 	•	.profile-title (secondary text)
+// 	•	.profile-bio (description text)
+// 	•	.profile-specialties (tags container)
+// 	•	.specialty-tag (individual tags)
+// 	•	Domain variants: .chef-cell, .supplier-cell, .professional-cell, .employer-cell
 
-// components/layout.scss
-// 	•	.layout-container
-// 	•	.layout-content
-// 	•	.layout-main-content
-
-// components/page.scss
-// 	•	.page
-
-// components/cell.scss
-// 	•	.cell
-
-// components/profiles.scss
-// 	•	.profile-page
-// 	•	.profile-list
-// 	•	.profile-card
-// 	•	.profile-cell (with domain variants)
-
-// components/profile-edit.scss
-// 	•	.profile-edit-component
-// 	•	.profile-info-section
-// 	•	.profile-section-title
+// organisms/objects.scss
+// 	•	Object-specific organism styles
 
 // utilities.scss
 // 	•	.button-group

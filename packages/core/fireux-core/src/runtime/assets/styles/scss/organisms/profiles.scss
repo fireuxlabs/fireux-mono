@@ -1,321 +1,236 @@
-/* Organism: Profiles - Unified styling system for all profile components */
+// =============================================================================
+// Profile Components Shared Styles
+// =============================================================================
 
-.profiles {
-  /* Shared profile foundation */
-  transition: all 0.3s ease;
+// Profile Page Layout
+.profile-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.profile-page-header {
+  margin-bottom: 2rem;
+}
+
+.profile-page-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.profile-page-description {
+  font-size: 1.125rem;
+  color: #4b5563;
+}
+
+.profile-page-content {
+  width: 100%;
+}
+
+// Profile List Container
+.profile-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.profile-list--loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+// Profile Card Base Styles
+.profile-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
   cursor: pointer;
-  position: relative;
 
-  /* Base hover effect */
+  &:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+}
+
+// =============================================================================
+// Profile Cell Components (for list items)
+// =============================================================================
+
+// Base Profile Cell Container
+.profile-cell {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
-  /* Shared avatar styling */
-  .avatar {
-    flex-shrink: 0;
-  }
-
-  /* Shared text elements */
-  .name {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-    color: var(--primary-900, #1a1a1a);
-  }
-
-  .subtitle {
-    opacity: 0.7;
-    color: var(--gray-600, #6b7280);
-    text-transform: capitalize;
-  }
-
-  .description {
-    line-height: 1.4;
-    color: var(--gray-700, #374151);
-    margin-bottom: 0;
-  }
-
-  /* Cards namespace - matches Cards/ folder structure */
-  .cards {
-    /* Base card styling shared by all card types */
-
-    .pill {
-      /* Pill.vue styling */
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      border-radius: 9999px;
-      background: white;
-      border: 1px solid var(--gray-200, #e5e7eb);
-
-      &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .content {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        flex: 1;
-        min-width: 0;
-      }
-
-      .info {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .name {
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin: 0;
-      }
-
-      .subtitle {
-        font-size: 0.75rem;
-        margin: 0;
-      }
+  // Pill modifier - compact layout with no bottom margin on header
+  &.profile-pill {
+    .profile-header {
+      margin-bottom: 0;
     }
 
-    .card {
-      /* Cell.vue styling */
-      padding: 1rem;
-      border: 1px solid var(--gray-200, #e5e7eb);
-      border-radius: 0.5rem;
-      background: white;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border-color: var(--gray-300, #d1d5db);
-      }
-
-      .header {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
-        margin-bottom: 0.75rem;
-      }
-
-      .info {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .title {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-        color: var(--primary-900, #1a1a1a);
-      }
-
-      .subtitle {
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .description {
-        font-size: 0.875rem;
-        margin-bottom: 0.75rem;
-      }
-
-      .tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.375rem;
-        margin-bottom: 0.75rem;
-      }
-
-      .tag {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        background: var(--gray-100, #f3f4f6);
-        color: var(--gray-700, #374151);
-        border-radius: 0.25rem;
-      }
-
-      .stats {
-        display: flex;
-        gap: 1rem;
-        margin-top: 0.75rem;
-        padding-top: 0.75rem;
-        border-top: 1px solid var(--gray-200, #e5e7eb);
-      }
-
-      .stat {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        font-size: 0.75rem;
-        color: var(--gray-600, #6b7280);
-      }
-    }
-
-    .profile {
-      /* Cards/Profile.vue styling - richer than card */
-      padding: 1.5rem;
-      border: 1px solid var(--gray-200, #e5e7eb);
-      border-radius: 0.75rem;
-      background: white;
-
-      &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-        border-color: var(--gray-300, #d1d5db);
-      }
-    }
-  }
-
-  /* Create namespace - matches Create/ folder structure */
-  .create {
-    /* Create forms */
-
-    .system {
-      /* Create/System.vue styling */
-      padding: 2rem;
-      background: white;
-      border-radius: 0.75rem;
-      border: 1px solid var(--gray-200, #e5e7eb);
-    }
-  }
-
-  /* CTA namespace - matches CTA.vue */
-  .cta {
-    /* CTA.vue styling */
-    padding: 1rem;
-    text-align: center;
-    background: var(--primary-50, #eff6ff);
-    border: 1px solid var(--primary-200, #bfdbfe);
-    border-radius: 0.5rem;
-  }
-
-  /* Edit namespace - matches Edit.vue */
-  .edit {
-    /* Edit.vue styling */
-    padding: 1.5rem;
-    background: white;
-    border: 1px solid var(--gray-200, #e5e7eb);
-    border-radius: 0.75rem;
-  }
-
-  /* Profile namespace - matches Profile.vue (main profile page) */
-  .profile {
-    /* Profile.vue styling - full comprehensive layout */
-    background: white;
-    border: 1px solid var(--gray-200, #e5e7eb);
-    border-radius: 0.75rem;
-    overflow: hidden;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    }
-
-    .header {
-      display: flex;
-      gap: 1.5rem;
-      padding: 1.5rem;
-      border-bottom: 1px solid var(--gray-200, #e5e7eb);
-      background: var(--gray-50, #f9fafb);
-    }
-
-    .avatar-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-      flex-shrink: 0;
-    }
-
-    .info-section {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--primary-900, #1a1a1a);
-    }
-
-    .subtitle {
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--blue-600, #2563eb);
-      margin-bottom: 0.75rem;
-    }
-
-    .contact,
-    .location {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--gray-600, #6b7280);
-      margin-bottom: 0.5rem;
-    }
-
-    .content {
-      padding: 1.5rem;
-    }
-
-    .section {
-      margin-bottom: 1.5rem;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 1.125rem;
+    .profile-name {
       font-weight: 600;
-      margin-bottom: 0.75rem;
-      color: var(--primary-900, #1a1a1a);
+      margin-bottom: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .profile-title {
+      font-size: 0.875rem;
+      opacity: 0.7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .profiles {
-    .cards {
-      .card {
-        .header {
-          gap: 0.5rem;
-        }
+// Profile Header (Avatar + Name/Title)
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
 
-        .title {
-          font-size: 0.875rem;
-        }
+.profile-info {
+  flex: 1;
+  min-width: 0;
+}
 
-        .tags {
-          gap: 0.25rem;
-        }
+.profile-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.3;
+}
 
-        .tag {
-          font-size: 0.6875rem;
-          padding: 0.1875rem 0.375rem;
-        }
-      }
-    }
+.profile-title {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.2;
+}
 
-    .profile {
-      .header {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-      }
+// Profile Bio
+.profile-bio {
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.4;
+  margin: 0 0 0.75rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
-      .title {
-        font-size: 1.25rem;
-      }
-    }
+// Specialties/Tags Section
+.profile-specialties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+
+.specialty-tag {
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.more-specialties {
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+// Gallery/Image Preview
+.profile-gallery {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.gallery-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.more-images {
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.375rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+// Domain-specific cell styles
+.chef-cell {
+  &:hover {
+    border-color: #f97316; // Orange for chefs
+  }
+
+  .specialty-tag {
+    background: #fef3c7;
+    color: #92400e;
+  }
+}
+
+.supplier-cell {
+  &:hover {
+    border-color: #10b981; // Green for suppliers
+  }
+
+  .specialty-tag {
+    background: #d1fae5;
+    color: #065f46;
+  }
+}
+
+.professional-cell {
+  &:hover {
+    border-color: #3b82f6; // Blue for professionals
+  }
+
+  .specialty-tag {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+}
+
+.employer-cell {
+  &:hover {
+    border-color: #8b5cf6; // Purple for employers
+  }
+
+  .specialty-tag {
+    background: #ede9fe;
+    color: #6d28d9;
   }
 }
