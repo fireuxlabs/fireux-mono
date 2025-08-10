@@ -1,0 +1,67 @@
+{
+	// VS Code Tasks to run each app
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "dev:fireux (3000)",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"dev:fireux"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": true
+		},
+		{
+			"label": "dev:misebox (3001)",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"dev:misebox"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": true
+		},
+		{
+			"label": "dev:cleanbox (3002)",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"dev:cleanbox"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": true
+		},
+		{
+			"label": "dev:all (3000+3001+3002)",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"dev:all"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": true
+		},
+		{
+			"label": "pnpm: build:packages",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"build:packages"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		}
+	]
+}

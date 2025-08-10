@@ -45,7 +45,13 @@ build/
 *.tsbuildinfo
 
 # Editor configs and OS files
+# Keep .vscode ignored by default
 .vscode/
+
+# Allow Run & Debug configs
+!.vscode
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea/
 *.suo
 *.ntvs*
