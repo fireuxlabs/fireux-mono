@@ -1,5 +1,5 @@
 <template>
-  <div v-if="professional" class="profiles profile">
+  <div v-if="professional" class="profile-card">
     <!-- Profile Header -->
     <div class="header">
       <div class="avatar-section">
@@ -276,172 +276,30 @@
 
 <script setup lang="ts">
 import type { Professional } from '../../../../models/profiles/Professional.model'
-type ProfessionalView = Professional & {
-  displayName?: string
-  verified?: boolean
-  profile_image?: { url?: string }
-}
-const props = defineProps<{ professional?: Partial<ProfessionalView> }>()
 
-// Helper functions
-function getInitials(name?: string | null) {
+defineProps<{
+  professional?: Partial<Professional>
+}>()
+
+// Helper functions for template use only - no complex logic
+function getInitials(name?: string) {
   if (!name) return 'P'
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-function formatLocation(location: any) {
+function formatLocation(location?: any) {
   if (!location?.locations?.length) return ''
   return location.locations[0].formatted_address
 }
 
-function formatDuration(
-  fromMonth?: string | null,
-  fromYear?: string | null,
-  toMonth?: string | null,
-  toYear?: string | null,
-  ongoing?: boolean
-) {
+function formatDuration(fromMonth?: string, fromYear?: string, toMonth?: string, toYear?: string, ongoing?: boolean) {
   const start = fromMonth && fromYear ? `${fromMonth} ${fromYear}` : fromYear
-  let end
-  if (ongoing) {
-    end = 'Present'
-  } else if (toMonth && toYear) {
-    end = `${toMonth} ${toYear}`
-  } else {
-    end = toYear
+  let end = 'Present'
+  if (!ongoing) {
+    end = toMonth && toYear ? `${toMonth} ${toYear}` : toYear
   }
   return `${start} - ${end}`
 }
 </script>
 
-<style scoped>
-.profile-display-card {
-  @apply max-w-4xl mx-auto space-y-8;
-}
 
-.profile-header {
-  @apply flex flex-col sm:flex-row gap-6 items-start;
-}
-
-.profile-avatar-section {
-  @apply flex-shrink-0 text-center;
-}
-
-.profile-verified {
-  @apply flex items-center gap-1 mt-2;
-}
-
-.profile-info-section {
-  @apply flex-1 space-y-2;
-}
-
-.profile-name {
-  @apply text-3xl font-bold text-gray-900;
-}
-
-.profile-subtitle {
-  @apply text-xl text-gray-600;
-}
-
-.profile-contact,
-.profile-location {
-  @apply flex items-center gap-2 text-gray-500;
-}
-
-.profile-content-section {
-  @apply space-y-4;
-}
-
-.profile-content-title {
-  @apply text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2;
-}
-
-.profile-content-text {
-  @apply text-gray-700 leading-relaxed;
-}
-
-.languages-grid {
-  @apply flex flex-wrap gap-2;
-}
-
-.experience-timeline {
-  @apply space-y-6;
-}
-
-.experience-item {
-  @apply border-l-4 border-blue-200 pl-4 space-y-3;
-}
-
-.experience-header {
-  @apply flex gap-3;
-}
-
-.experience-logo,
-.education-logo,
-.certification-logo,
-.employment-logo {
-  @apply w-12 h-12 rounded object-cover flex-shrink-0;
-}
-
-.experience-info {
-  @apply flex-1;
-}
-
-.experience-role,
-.education-degree,
-.certification-name,
-.employment-role,
-.project-name,
-.volunteer-role {
-  @apply font-semibold text-gray-900;
-}
-
-.experience-company,
-.education-institution,
-.certification-issuer,
-.employment-company,
-.volunteer-organization {
-  @apply text-gray-700 font-medium;
-}
-
-.experience-location,
-.experience-duration,
-.education-duration,
-.certification-year,
-.employment-duration,
-.project-duration,
-.volunteer-duration {
-  @apply text-gray-500 text-sm;
-}
-
-.experience-description,
-.employment-description,
-.project-description,
-.volunteer-description {
-  @apply text-gray-600 leading-relaxed;
-}
-
-.education-grid,
-.certifications-grid,
-.projects-grid,
-.other-employment-grid,
-.volunteering-grid {
-  @apply space-y-4;
-}
-
-.education-item,
-.certification-item,
-.employment-item {
-  @apply flex gap-3;
-}
-
-.project-item,
-.volunteer-item {
-  @apply space-y-2;
-}
-</style>

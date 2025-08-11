@@ -1,5 +1,5 @@
 <template>
-  <UCard class="profile-cell supplier-cell">
+  <UCard class="profile-card">
     <div class="profile-header">
       <UAvatar
         :src="supplier?.avatarUrl || supplier?.profile_image?.url"
@@ -30,11 +30,11 @@
       <span
         v-for="specialty in supplier.specialties.slice(0, 3)"
         :key="specialty"
-        class="profile-tag"
+        class="tag"
       >
         {{ specialty }}
       </span>
-      <span v-if="supplier.specialties.length > 3" class="profile-tag-more">
+      <span v-if="supplier.specialties.length > 3" class="tag-more">
         +{{ supplier.specialties.length - 3 }} more
       </span>
     </div>
@@ -44,13 +44,13 @@
       <span
         v-for="product in supplier.products_offered.slice(0, 2)"
         :key="product"
-        class="profile-tag"
+        class="tag"
       >
         {{ product }}
       </span>
       <span
         v-if="supplier.products_offered.length > 2"
-        class="profile-tag-more"
+        class="tag-more"
       >
         +{{ supplier.products_offered.length - 2 }} more
       </span>
@@ -78,11 +78,4 @@ import type { Supplier } from '../../../../../models/profiles/Supplier.model'
 defineProps<{
   supplier?: Partial<Supplier>
 }>()
-
-const getLocationText = (location: any) => {
-  if (location?.locations?.[0]?.formatted_address) {
-    return location.locations[0].formatted_address.split(',')[0]
-  }
-  return 'Location not specified'
-}
 </script>

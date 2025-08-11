@@ -1,5 +1,5 @@
 <template>
-  <UCard class="profile-cell profile-pill professional-cell">
+  <UCard class="profile-card profile-pill">
     <div class="profile-header">
       <UAvatar
         :src="professional?.avatarUrl"

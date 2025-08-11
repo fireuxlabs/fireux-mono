@@ -1,5 +1,5 @@
 <template>
-  <div v-if="employer" class="profile-display-card">
+  <div v-if="employer" class="profile-card">
     <!-- Company Header -->
     <div class="profile-header">
       <div class="profile-avatar-section">
@@ -252,244 +252,37 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  employer: {
-    type: Object,
-    required: false, // ✅ FIXED: Change to false to handle undefined gracefully
-    default: () => null,
-  },
-})
+<script setup lang="ts">
+import type { Employer } from '../../../../models/profiles/Employer.model'
 
-// Computed properties
-const hasBusinessStats = computed(() => {
-  return (
-    employer.value?.employee_count ||
-    employer.value?.years_established ||
-    employer.value?.covers_per_service ||
-    employer.value?.total_jobs_posted
-  )
-})
+defineProps<{
+  employer?: Partial<Employer>
+}>()
 
-const hasSocialMedia = computed(() => {
-  const social = employer.value?.social_media
-  return (
-    social?.instagram || social?.facebook || social?.linkedin || social?.twitter
-  )
-})
-
-// Helper functions
-function getInitials(name) {
+// Helper functions for template use only - no complex logic
+function getInitials(name?: string) {
   if (!name) return 'E'
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-function formatLocation(location) {
+function formatLocation(location?: any) {
   if (!location?.locations?.length) return ''
   return location.locations[0].formatted_address
 }
 
-function getJobTypeVariant(type) {
-  const variants = {
-    'full-time': 'solid',
-    'part-time': 'soft',
-    contract: 'outline',
-    temporary: 'subtle',
-  }
+function getJobTypeVariant(type?: string) {
+  const variants = { 'full-time': 'solid', 'part-time': 'soft', contract: 'outline', temporary: 'subtle' }
   return variants[type] || 'outline'
 }
 
-function formatDate(date) {
+function formatDate(date?: string) {
   if (!date) return ''
   return new Date(date).toLocaleDateString()
 }
 
-function formatDayName(day) {
-  const days = {
-    monday: 'Monday',
-    tuesday: 'Tuesday',
-    wednesday: 'Wednesday',
-    thursday: 'Thursday',
-    friday: 'Friday',
-    saturday: 'Saturday',
-    sunday: 'Sunday',
-  }
-  return days[day.toLowerCase()] || day
+function formatDayName(day?: string) {
+  const days = { monday: 'Monday', tuesday: 'Tuesday', wednesday: 'Wednesday', thursday: 'Thursday', friday: 'Friday', saturday: 'Saturday', sunday: 'Sunday' }
+  return days[day?.toLowerCase()] || day
 }
 </script>
 
-<style scoped>
-.profile-display-card {
-  @apply max-w-4xl mx-auto space-y-8;
-}
-
-.profile-header {
-  @apply flex flex-col sm:flex-row gap-6 items-start;
-}
-
-.profile-avatar-section {
-  @apply flex-shrink-0 text-center;
-}
-
-.profile-verified {
-  @apply flex items-center gap-1 mt-2;
-}
-
-.profile-info-section {
-  @apply flex-1 space-y-3;
-}
-
-.profile-name {
-  @apply text-3xl font-bold text-gray-900;
-}
-
-.profile-subtitle,
-.profile-contact-title {
-  @apply text-xl text-gray-600;
-}
-
-.profile-contact-info {
-  @apply space-y-1;
-}
-
-.profile-contact,
-.profile-location {
-  @apply flex items-center gap-2 text-gray-500;
-}
-
-.profile-content-section {
-  @apply space-y-4;
-}
-
-.profile-content-title {
-  @apply text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2;
-}
-
-.profile-content-text {
-  @apply text-gray-700 leading-relaxed;
-}
-
-.stats-grid {
-  @apply grid grid-cols-2 md:grid-cols-4 gap-4;
-}
-
-.stat-item {
-  @apply flex flex-col items-center p-4 bg-gray-50 rounded-lg;
-}
-
-.stat-icon {
-  @apply w-6 h-6 text-gray-500 mb-2;
-}
-
-.stat-value {
-  @apply text-2xl font-bold text-gray-900;
-}
-
-.stat-label {
-  @apply text-sm text-gray-500;
-}
-
-.specialties-section {
-  @apply space-y-2;
-}
-
-.specialties-subtitle {
-  @apply font-medium text-gray-700;
-}
-
-.specialties-grid {
-  @apply flex flex-wrap gap-2;
-}
-
-.jobs-grid {
-  @apply space-y-6;
-}
-
-.job-item {
-  @apply border border-gray-200 rounded-lg p-4 space-y-3;
-}
-
-.job-header {
-  @apply flex justify-between items-start;
-}
-
-.job-title {
-  @apply font-semibold text-lg text-gray-900;
-}
-
-.job-location,
-.job-salary {
-  @apply text-gray-600;
-}
-
-.job-description {
-  @apply text-gray-700;
-}
-
-.job-requirements {
-  @apply space-y-2;
-}
-
-.requirements-title {
-  @apply font-medium text-gray-700;
-}
-
-.requirements-list {
-  @apply list-disc list-inside space-y-1 text-gray-600;
-}
-
-.job-posted {
-  @apply text-sm text-gray-500;
-}
-
-.hours-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 gap-2;
-}
-
-.hours-item {
-  @apply flex justify-between py-2 border-b border-gray-100;
-}
-
-.day-name {
-  @apply font-medium text-gray-700;
-}
-
-.hours-closed {
-  @apply text-gray-500;
-}
-
-.hours-time {
-  @apply text-gray-600;
-}
-
-.contacts-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
-}
-
-.contact-item {
-  @apply space-y-1;
-}
-
-.contact-name {
-  @apply font-semibold text-gray-900;
-}
-
-.contact-title,
-.contact-email,
-.contact-phone {
-  @apply text-gray-600;
-}
-
-.social-media-grid {
-  @apply flex flex-wrap gap-4;
-}
-
-.social-link {
-  @apply flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors;
-}
-</style>

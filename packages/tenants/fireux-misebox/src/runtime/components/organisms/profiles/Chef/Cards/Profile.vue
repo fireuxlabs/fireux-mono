@@ -1,5 +1,5 @@
 <template>
-  <UCard class="profile-cell chef-cell">
+  <UCard class="profile-card">
     <div class="profile-header">
       <UAvatar
         :src="chef?.avatarUrl"
@@ -10,7 +10,7 @@
         <h4 v-if="chef?.chef_name" class="profile-name">
           {{ chef.chef_name }}
         </h4>
-        <p v-if="chef?.title" class="profile-title">{{ chef.title }}</p>
+        <p v-if="chef?.title" class="profile-subtitle">{{ chef.title }}</p>
         <div v-if="chef?.years_experience" class="profile-meta">
           {{ chef.years_experience }}+ years experience
         </div>
@@ -25,11 +25,11 @@
       <span
         v-for="specialty in chef.specialties.slice(0, 3)"
         :key="specialty"
-        class="profile-tag"
+        class="tag"
       >
         {{ specialty }}
       </span>
-      <span v-if="chef.specialties.length > 3" class="profile-tag-more">
+      <span v-if="chef.specialties.length > 3" class="tag-more">
         +{{ chef.specialties.length - 3 }} more
       </span>
     </div>
@@ -39,11 +39,11 @@
       <span
         v-for="cuisine in chef.cuisine_expertise.slice(0, 2)"
         :key="cuisine"
-        class="profile-tag"
+        class="tag"
       >
         {{ cuisine }}
       </span>
-      <span v-if="chef.cuisine_expertise.length > 2" class="profile-tag-more">
+      <span v-if="chef.cuisine_expertise.length > 2" class="tag-more">
         +{{ chef.cuisine_expertise.length - 2 }} more
       </span>
     </div>

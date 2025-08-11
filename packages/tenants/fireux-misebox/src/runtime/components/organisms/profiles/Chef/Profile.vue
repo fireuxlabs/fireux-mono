@@ -1,5 +1,5 @@
 <template>
-  <div v-if="chef" class="chef-profile">
+  <div v-if="chef" class="profile-card">
     <!-- Header Section -->
     <div class="profile-header">
       <img
@@ -190,165 +190,11 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  chef: {
-    type: Object,
-    default: null,
-  },
-})
+<script setup lang="ts">
+import type { Chef } from '../../../../models/profiles/Chef.model'
+
+defineProps<{
+  chef?: Partial<Chef>
+}>()
 </script>
 
-<style scoped>
-.chef-profile {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.profile-header {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-  align-items: flex-start;
-}
-
-.profile-info h1 {
-  font-size: 2.5rem;
-  margin: 0 0 5px 0;
-}
-
-.profile-info h2 {
-  font-size: 1.5rem;
-  color: #666;
-  margin: 0 0 10px 0;
-}
-
-.bio-short {
-  font-size: 1.1rem;
-  margin: 10px 0;
-}
-
-.experience-badge {
-  background: #f0f9ff;
-  color: #0369a1;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  display: inline-block;
-}
-
-.section {
-  margin-bottom: 30px;
-}
-
-.section h3 {
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.tag {
-  background: #e5e7eb;
-  color: #374151;
-  padding: 4px 12px;
-  border-radius: 15px;
-  font-size: 0.9rem;
-}
-
-.experience-list,
-.education-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.experience-item,
-.education-item {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 20px;
-}
-
-.experience-header,
-.education-header {
-  display: flex;
-  gap: 15px;
-  align-items: flex-start;
-}
-
-.venue-logo,
-.institution-logo {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.venue-name,
-.institution-name {
-  font-weight: 600;
-  color: #374151;
-  margin: 2px 0;
-}
-
-.date-range {
-  color: #6b7280;
-  font-size: 0.9rem;
-  margin: 2px 0;
-}
-
-.description {
-  margin-top: 10px;
-  color: #4b5563;
-  line-height: 1.6;
-}
-
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
-}
-
-.gallery-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.subsection {
-  margin-bottom: 20px;
-}
-
-.subsection h4 {
-  margin-bottom: 10px;
-  color: #4b5563;
-}
-
-.social-links {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.social-links a {
-  color: #3b82f6;
-  text-decoration: none;
-  padding: 8px 16px;
-  border: 1px solid #3b82f6;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.social-links a:hover {
-  background: #3b82f6;
-  color: white;
-}
-</style>

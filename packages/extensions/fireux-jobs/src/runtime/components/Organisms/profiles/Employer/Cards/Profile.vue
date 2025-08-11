@@ -1,5 +1,5 @@
 <template>
-  <UCard class="profile-cell employer-cell">
+  <UCard class="profile-card">
     <div class="profile-header">
       <UAvatar
         :src="employer?.avatarUrl || employer?.profile_image?.url"
@@ -15,7 +15,7 @@
         </p>
         <div v-if="employer?.locations?.length" class="profile-location">
           <UIcon name="i-lucide-map-pin" />
-          <span>{{ getLocationText(employer.locations[0]) }}</span>
+          <span>{{ employer.locations[0].formatted_address }}</span>
         </div>
         <div v-if="employer?.years_established" class="profile-meta">
           Est. {{ employer.years_established }}
@@ -37,13 +37,13 @@
           []
         ).slice(0, 3)"
         :key="specialty"
-        class="profile-tag"
+        class="tag"
       >
         {{ specialty }}
       </span>
       <span
         v-if="(employer.specialties || employer.cuisine_types || []).length > 3"
-        class="profile-tag-more"
+        class="tag-more"
       >
         +{{ (employer.specialties || employer.cuisine_types || []).length - 3 }}
         more
@@ -55,11 +55,11 @@
       <span
         v-for="benefit in employer.benefits.slice(0, 2)"
         :key="benefit"
-        class="profile-tag"
+        class="tag"
       >
         {{ benefit }}
       </span>
-      <span v-if="employer.benefits.length > 2" class="profile-tag-more">
+      <span v-if="employer.benefits.length > 2" class="tag-more">
         +{{ employer.benefits.length - 2 }} more
       </span>
     </div>
@@ -86,11 +86,4 @@ import type { Employer } from '../../../../../models/profiles/Employer.model'
 defineProps<{
   employer?: Partial<Employer>
 }>()
-
-const getLocationText = (location: any) => {
-  if (location?.locations?.[0]?.formatted_address) {
-    return location.locations[0].formatted_address.split(',')[0]
-  }
-  return 'Location not specified'
-}
 </script>

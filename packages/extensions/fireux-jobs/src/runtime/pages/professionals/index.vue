@@ -4,15 +4,15 @@
     :filter-composable="useProfessionalFilters"
   >
     <template #profile-pill="{ profile }">
-      <JobOrganismsProfilesProfessionalCardsPill :professional="profile" />
+      <JobProfessionalCardsPill :professional="profile" />
     </template>
 
     <template #profile-card="{ profile }">
-      <JobOrganismsProfilesProfessionalCardsProfile :professional="profile" />
+      <JobProfessionalCardsProfile :professional="profile" />
     </template>
 
     <template #profile-item="{ profile }">
-      <JobOrganismsProfilesProfessionalCardsCell :professional="profile" />
+      <JobProfessionalCardsCell :professional="profile" />
     </template>
   </FireOrganismsProfileRoot>
 </template>

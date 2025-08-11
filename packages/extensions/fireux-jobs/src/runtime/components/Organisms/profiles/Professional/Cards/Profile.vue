@@ -1,5 +1,5 @@
 <template>
-  <UCard class="profile-cell professional-cell">
+  <UCard class="profile-card">
     <div class="profile-header">
       <UAvatar
         :src="professional?.avatarUrl || professional?.profile_image?.url"
@@ -33,13 +33,13 @@
       <span
         v-for="cuisine in professional.cuisine_types.slice(0, 3)"
         :key="cuisine"
-        class="profile-tag"
+        class="tag"
       >
         {{ cuisine }}
       </span>
       <span
         v-if="professional.cuisine_types.length > 3"
-        class="profile-tag-more"
+        class="tag-more"
       >
         +{{ professional.cuisine_types.length - 3 }} more
       </span>
@@ -50,11 +50,11 @@
       <span
         v-for="skill in professional.skills.slice(0, 2)"
         :key="skill"
-        class="profile-tag"
+        class="tag"
       >
         {{ skill }}
       </span>
-      <span v-if="professional.skills.length > 2" class="profile-tag-more">
+      <span v-if="professional.skills.length > 2" class="tag-more">
         +{{ professional.skills.length - 2 }} more
       </span>
     </div>
@@ -81,21 +81,4 @@ import type { Professional } from '../../../../../models/profiles/Professional.m
 defineProps<{
   professional?: Partial<Professional>
 }>()
-
-const getLocationText = (location: any) => {
-  if (location?.locations?.[0]?.formatted_address) {
-    return location.locations[0].formatted_address.split(',')[0]
-  }
-  return 'Location not specified'
-}
-
-const getExperienceYears = () => {
-  // Implementation would depend on professional experience data structure
-  return 5 // Placeholder
-}
-
-const latestExp = computed(() => {
-  // Implementation would return latest experience
-  return null // Placeholder
-})
 </script>

@@ -1,201 +1,179 @@
 <template>
-  <div class="chef-edit">
-    <h2>Edit Chef Profile</h2>
+  <client-only>
+    <div class="profile-edit-container">
+      <!-- Avatar Upload -->
+      <FireMoleculesFormsFirestoreAvatarSelection 
+        :user="{ 
+          ...props.chef, 
+          avatar_url: props.chef?.avatarUrl 
+        }" 
+      />
 
-    <form @submit.prevent="handleSubmit" class="chef-form">
-      <div class="form-group">
-        <label for="chef_name">Chef Name</label>
-        <input
-          id="chef_name"
-          v-model="chef.chef_name"
-          type="text"
-          required
-          class="form-control"
-        />
-      </div>
+      <!-- Chef Name Field (Primary Identifier) -->
+      <FireMoleculesFormsFirestoreField
+        label="Chef Name"
+        :firebase-value="props.chef?.chef_name"
+        placeholder="Enter your professional chef name"
+        :update-function="updateChefName"
+      />
 
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input
-          id="title"
-          v-model="chef.title"
-          type="text"
-          class="form-control"
-        />
-      </div>
+      <!-- Title Field -->
+      <FireMoleculesFormsFirestoreField
+        label="Professional Title"
+        :firebase-value="props.chef?.title"
+        placeholder="e.g., Executive Chef, Head Chef, Sous Chef"
+        :update-function="updateTitle"
+      />
 
-      <div class="form-group">
-        <label for="bio_short">Short Bio</label>
-        <textarea
-          id="bio_short"
-          v-model="chef.bio_short"
-          class="form-control"
-          rows="3"
-        ></textarea>
-      </div>
+      <!-- Bio Short Field -->
+      <FireMoleculesFormsFirestoreField
+        label="Short Bio"
+        :firebase-value="props.chef?.bio_short"
+        placeholder="Brief description of your culinary style..."
+        type="textarea"
+        :rows="3"
+        :maxlength="200"
+        :update-function="updateBioShort"
+      />
 
-      <div class="form-group">
-        <label for="years_experience">Years of Experience</label>
-        <input
-          id="years_experience"
-          v-model.number="chef.years_experience"
-          type="number"
-          min="0"
-          class="form-control"
-        />
-      </div>
+      <!-- Bio Long Field -->
+      <FireMoleculesFormsFirestoreField
+        label="Detailed Biography"
+        :firebase-value="props.chef?.bio_long"
+        placeholder="Tell your culinary story in detail..."
+        type="textarea"
+        :rows="6"
+        :maxlength="1000"
+        :update-function="updateBioLong"
+      />
 
-      <div class="form-group">
-        <label for="availability_status">Availability Status</label>
-        <select
-          id="availability_status"
-          v-model="chef.availability_status"
-          class="form-control"
-        >
-          <option value="available">Available</option>
-          <option value="busy">Busy</option>
-          <option value="unavailable">Unavailable</option>
-        </select>
-      </div>
+      <!-- Specialties Array -->
+      <FireMoleculesFormsFirestoreArrayOfStrings
+        label="Culinary Specialties"
+        :firebase-value="props.chef?.specialties || []"
+        item-placeholder="Specialty"
+        new-item-placeholder="Add new specialty (e.g., French Cuisine, Pastry, etc.)"
+        :update-function="updateSpecialties"
+      />
 
-      <div class="form-group">
-        <label for="hourly_rate">Hourly Rate (CHF)</label>
-        <input
-          id="hourly_rate"
-          v-model.number="chef.hourly_rate"
-          type="number"
-          min="0"
-          step="5"
-          class="form-control"
-        />
-      </div>
+      <!-- Years Experience Field -->
+      <FireMoleculesFormsFirestoreField
+        label="Years of Experience"
+        :firebase-value="props.chef?.years_experience"
+        placeholder="Enter number of years"
+        type="number"
+        :update-function="updateYearsExperience"
+      />
 
-      <div class="form-actions">
-        <button type="button" @click="$emit('cancel')" class="btn-secondary">
-          Cancel
-        </button>
-        <button type="submit" class="btn-primary">Save Chef Profile</button>
-      </div>
-    </form>
-  </div>
+      <!-- Cuisine Expertise Array -->
+      <FireMoleculesFormsFirestoreArrayOfStrings
+        label="Cuisine Expertise"
+        :firebase-value="props.chef?.cuisine_expertise || []"
+        item-placeholder="Cuisine type"
+        new-item-placeholder="Add cuisine expertise (e.g., Italian, Asian, etc.)"
+        :update-function="updateCuisineExpertise"
+      />
+
+      <!-- Contact Information -->
+      <FireMoleculesFormsFirestoreField
+        label="Email"
+        :firebase-value="props.chef?.email"
+        placeholder="your.email@example.com"
+        type="email"
+        :update-function="updateEmail"
+      />
+
+      <FireMoleculesFormsFirestoreField
+        label="Phone"
+        :firebase-value="props.chef?.phone"
+        placeholder="(123) 456-7890"
+        type="phone"
+        :update-function="updatePhone"
+      />
+
+      <!-- Location Information -->
+      <FireMoleculesFormsFirestoreMultiField
+        label="Location"
+        :firebase-value="props.chef?.location || {}"
+        :placeholders="{
+          city: 'City',
+          state: 'State/Province',
+          country: 'Country',
+        }"
+        :update-function="updateLocation"
+        :commas="true"
+      />
+
+      <!-- Social Links -->
+      <FireMoleculesFormsFirestoreSocialLinks
+        label="Social Media"
+        :firebase-value="props.chef?.social_links || {}"
+        :update-function="updateSocialLinks"
+      />
+
+      <!-- Availability Select -->
+      <FireMoleculesFormsFirestoreSelect
+        label="Availability"
+        :firebase-value="props.chef?.availability || 'available'"
+        :options="[
+          { label: 'Available', value: 'available' },
+          { label: 'Busy', value: 'busy' },
+          { label: 'Unavailable', value: 'unavailable' },
+        ]"
+        placeholder="Select availability status"
+        :update-function="updateAvailability"
+      />
+
+      <!-- Verified Checkbox -->
+      <FireMoleculesFormsFirestoreCheckbox
+        label="Profile Verification"
+        :firebase-value="props.chef?.verified || false"
+        checkbox-label="Mark as verified chef profile"
+        :update-function="updateVerified"
+      />
+    </div>
+  </client-only>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { useProfileUpdate } from '../../../../core/fireux-core/src/runtime/composables/firestore/profiles/useProfileUpdate'
+import { CHEF_CONFIG } from '../../models/profiles/Chef.model'
 
+// Define props
 const props = defineProps({
-  initialChef: {
+  chef: {
     type: Object,
-    default: () => ({
-      chef_name: '',
-      title: '',
-      bio_short: '',
-      years_experience: 0,
-      availability_status: 'available',
-      hourly_rate: 0,
-      verified: false,
-      featured: false,
-    }),
+    required: true,
   },
 })
 
-const emit = defineEmits(['save', 'cancel'])
+// Get generic profile update functions
+const { updateProfile } = useProfileUpdate(CHEF_CONFIG)
 
-const chef = ref({ ...props.initialChef })
-
-const handleSubmit = () => {
-  emit('save', chef.value)
-}
+// Create field-specific update functions
+const updateChefName = (value) => updateProfile({ chef_name: value }, props.chef.uid)
+const updateTitle = (value) => updateProfile({ title: value }, props.chef.uid)
+const updateBioShort = (value) => updateProfile({ bio_short: value }, props.chef.uid)
+const updateBioLong = (value) => updateProfile({ bio_long: value }, props.chef.uid)
+const updateSpecialties = (value) => updateProfile({ specialties: value }, props.chef.uid)
+const updateYearsExperience = (value) => updateProfile({ years_experience: parseInt(value) || 0 }, props.chef.uid)
+const updateCuisineExpertise = (value) => updateProfile({ cuisine_expertise: value }, props.chef.uid)
+const updateEmail = (value) => updateProfile({ email: value }, props.chef.uid)
+const updatePhone = (value) => updateProfile({ phone: value }, props.chef.uid)
+const updateLocation = (value) => updateProfile({ location: value }, props.chef.uid)
+const updateSocialLinks = (value) => updateProfile({ social_links: value }, props.chef.uid)
+const updateAvailability = (value) => updateProfile({ availability: value }, props.chef.uid)
+const updateVerified = (value) => updateProfile({ verified: value }, props.chef.uid)
 </script>
 
 <style scoped>
-.chef-edit {
+.profile-edit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
   max-width: 600px;
   margin: 0 auto;
-  padding: 20px;
-}
-
-.chef-form {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-  color: #374151;
-}
-
-.form-control {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.2s;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
-}
-
-textarea.form-control {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.form-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.btn-primary,
-.btn-secondary {
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-primary {
-  background: #22c55e;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #16a34a;
-}
-
-.btn-secondary {
-  background: transparent;
-  color: #6b7280;
-  border: 1px solid #d1d5db;
-}
-
-.btn-secondary:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-}
-
-h2 {
-  margin-bottom: 30px;
-  color: #111827;
-  text-align: center;
+  padding: 1rem;
 }
 </style>
