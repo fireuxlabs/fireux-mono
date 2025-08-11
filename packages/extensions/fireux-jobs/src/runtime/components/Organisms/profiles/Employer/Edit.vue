@@ -2,11 +2,11 @@
   <client-only>
     <div class="profile-edit-container">
       <!-- Avatar Upload -->
-      <FireMoleculesFormsFirestoreAvatarSelection 
-        :user="{ 
-          ...props.employer, 
-          avatar_url: props.employer?.avatarUrl 
-        }" 
+      <FireMoleculesFormsFirestoreAvatarSelection
+        :user="{
+          ...props.employer,
+          avatar_url: props.employer?.avatarUrl,
+        }"
       />
 
       <!-- Company Name Field (Primary Identifier) -->
@@ -193,7 +193,9 @@
       <!-- Active Jobs Count Display (Read-only) -->
       <div class="read-only-field">
         <span class="read-only-label">Active Job Openings</span>
-        <div class="value">{{ props.employer?.active_jobs?.length || 0 }} open positions</div>
+        <div class="value">
+          {{ props.employer?.active_jobs?.length || 0 }} open positions
+        </div>
       </div>
     </div>
   </client-only>
@@ -215,25 +217,44 @@ const props = defineProps({
 const { updateProfile } = useProfileUpdate(EMPLOYER_CONFIG)
 
 // Create field-specific update functions
-const updateCompanyName = (value) => updateProfile({ company_name: value }, props.employer.uid)
-const updateBusinessType = (value) => updateProfile({ business_type: value }, props.employer.uid)
-const updateTitle = (value) => updateProfile({ title: value }, props.employer.uid)
-const updateBioShort = (value) => updateProfile({ bio_short: value }, props.employer.uid)
-const updateBioLong = (value) => updateProfile({ bio_long: value }, props.employer.uid)
-const updateCuisineTypes = (value) => updateProfile({ cuisine_types: value }, props.employer.uid)
-const updateServicesOffered = (value) => updateProfile({ services_offered: value }, props.employer.uid)
-const updateBenefits = (value) => updateProfile({ benefits: value }, props.employer.uid)
-const updateYearsEstablished = (value) => updateProfile({ years_established: parseInt(value) || 0 }, props.employer.uid)
-const updateEmployeeCount = (value) => updateProfile({ employee_count: parseInt(value) || 0 }, props.employer.uid)
-const updateEmail = (value) => updateProfile({ email: value }, props.employer.uid)
-const updatePhone = (value) => updateProfile({ phone: value }, props.employer.uid)
-const updateWebsite = (value) => updateProfile({ website: value }, props.employer.uid)
-const updateLocation = (value) => updateProfile({ location: value }, props.employer.uid)
-const updateOperatingHours = (value) => updateProfile({ operating_hours: value }, props.employer.uid)
-const updateCompanySize = (value) => updateProfile({ company_size: value }, props.employer.uid)
-const updateHiringStatus = (value) => updateProfile({ hiring_status: value }, props.employer.uid)
-const updateSocialLinks = (value) => updateProfile({ social_links: value }, props.employer.uid)
-const updateVerified = (value) => updateProfile({ verified: value }, props.employer.uid)
+const updateCompanyName = (value) =>
+  updateProfile({ company_name: value }, props.employer.uid)
+const updateBusinessType = (value) =>
+  updateProfile({ business_type: value }, props.employer.uid)
+const updateTitle = (value) =>
+  updateProfile({ title: value }, props.employer.uid)
+const updateBioShort = (value) =>
+  updateProfile({ bio_short: value }, props.employer.uid)
+const updateBioLong = (value) =>
+  updateProfile({ bio_long: value }, props.employer.uid)
+const updateCuisineTypes = (value) =>
+  updateProfile({ cuisine_types: value }, props.employer.uid)
+const updateServicesOffered = (value) =>
+  updateProfile({ services_offered: value }, props.employer.uid)
+const updateBenefits = (value) =>
+  updateProfile({ benefits: value }, props.employer.uid)
+const updateYearsEstablished = (value) =>
+  updateProfile({ years_established: parseInt(value) || 0 }, props.employer.uid)
+const updateEmployeeCount = (value) =>
+  updateProfile({ employee_count: parseInt(value) || 0 }, props.employer.uid)
+const updateEmail = (value) =>
+  updateProfile({ email: value }, props.employer.uid)
+const updatePhone = (value) =>
+  updateProfile({ phone: value }, props.employer.uid)
+const updateWebsite = (value) =>
+  updateProfile({ website: value }, props.employer.uid)
+const updateLocation = (value) =>
+  updateProfile({ location: value }, props.employer.uid)
+const updateOperatingHours = (value) =>
+  updateProfile({ operating_hours: value }, props.employer.uid)
+const updateCompanySize = (value) =>
+  updateProfile({ company_size: value }, props.employer.uid)
+const updateHiringStatus = (value) =>
+  updateProfile({ hiring_status: value }, props.employer.uid)
+const updateSocialLinks = (value) =>
+  updateProfile({ social_links: value }, props.employer.uid)
+const updateVerified = (value) =>
+  updateProfile({ verified: value }, props.employer.uid)
 </script>
 
 <style scoped>

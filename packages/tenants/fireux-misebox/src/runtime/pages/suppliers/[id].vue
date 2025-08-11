@@ -18,11 +18,14 @@
 const route = useRoute()
 const supplierId = route.params.id
 
-const { data: supplier, pending } = await useFetch(`/api/suppliers/${supplierId}`)
+const { data: supplier, pending } = await useFetch(
+  `/api/suppliers/${supplierId}`
+)
 
 definePageMeta({
   title: computed(() => supplier.value?.company_name || 'Supplier Profile'),
-  description: computed(() => supplier.value?.bio_short || 'View supplier profile')
+  description: computed(
+    () => supplier.value?.bio_short || 'View supplier profile'
+  ),
 })
 </script>
-

@@ -2,11 +2,11 @@
   <client-only>
     <div class="profile-edit-container">
       <!-- Avatar Upload -->
-      <FireMoleculesFormsFirestoreAvatarSelection 
-        :user="{ 
-          ...props.supplier, 
-          avatar_url: props.supplier?.avatarUrl 
-        }" 
+      <FireMoleculesFormsFirestoreAvatarSelection
+        :user="{
+          ...props.supplier,
+          avatar_url: props.supplier?.avatarUrl,
+        }"
       />
 
       <!-- Business Name Field (Primary Identifier) -->
@@ -194,24 +194,42 @@ const props = defineProps({
 const { updateProfile } = useProfileUpdate(SUPPLIER_CONFIG)
 
 // Create field-specific update functions
-const updateBusinessName = (value) => updateProfile({ business_name: value }, props.supplier.uid)
-const updateCompanyName = (value) => updateProfile({ company_name: value }, props.supplier.uid)
-const updateBusinessType = (value) => updateProfile({ business_type: value }, props.supplier.uid)
-const updateBioShort = (value) => updateProfile({ bio_short: value }, props.supplier.uid)
-const updateBioLong = (value) => updateProfile({ bio_long: value }, props.supplier.uid)
-const updateSpecialties = (value) => updateProfile({ specialties: value }, props.supplier.uid)
-const updateProductsOffered = (value) => updateProfile({ products_offered: value }, props.supplier.uid)
-const updateYearsInBusiness = (value) => updateProfile({ years_in_business: parseInt(value) || 0 }, props.supplier.uid)
-const updateEmployeeCount = (value) => updateProfile({ employee_count: parseInt(value) || 0 }, props.supplier.uid)
-const updateEmail = (value) => updateProfile({ email: value }, props.supplier.uid)
-const updatePhone = (value) => updateProfile({ phone: value }, props.supplier.uid)
-const updateWebsite = (value) => updateProfile({ website: value }, props.supplier.uid)
-const updateLocation = (value) => updateProfile({ location: value }, props.supplier.uid)
-const updateDeliveryRange = (value) => updateProfile({ delivery_range: value }, props.supplier.uid)
-const updateCertifications = (value) => updateProfile({ certifications: value }, props.supplier.uid)
-const updateSocialLinks = (value) => updateProfile({ social_links: value }, props.supplier.uid)
-const updateBusinessStatus = (value) => updateProfile({ business_status: value }, props.supplier.uid)
-const updateVerified = (value) => updateProfile({ verified: value }, props.supplier.uid)
+const updateBusinessName = (value) =>
+  updateProfile({ business_name: value }, props.supplier.uid)
+const updateCompanyName = (value) =>
+  updateProfile({ company_name: value }, props.supplier.uid)
+const updateBusinessType = (value) =>
+  updateProfile({ business_type: value }, props.supplier.uid)
+const updateBioShort = (value) =>
+  updateProfile({ bio_short: value }, props.supplier.uid)
+const updateBioLong = (value) =>
+  updateProfile({ bio_long: value }, props.supplier.uid)
+const updateSpecialties = (value) =>
+  updateProfile({ specialties: value }, props.supplier.uid)
+const updateProductsOffered = (value) =>
+  updateProfile({ products_offered: value }, props.supplier.uid)
+const updateYearsInBusiness = (value) =>
+  updateProfile({ years_in_business: parseInt(value) || 0 }, props.supplier.uid)
+const updateEmployeeCount = (value) =>
+  updateProfile({ employee_count: parseInt(value) || 0 }, props.supplier.uid)
+const updateEmail = (value) =>
+  updateProfile({ email: value }, props.supplier.uid)
+const updatePhone = (value) =>
+  updateProfile({ phone: value }, props.supplier.uid)
+const updateWebsite = (value) =>
+  updateProfile({ website: value }, props.supplier.uid)
+const updateLocation = (value) =>
+  updateProfile({ location: value }, props.supplier.uid)
+const updateDeliveryRange = (value) =>
+  updateProfile({ delivery_range: value }, props.supplier.uid)
+const updateCertifications = (value) =>
+  updateProfile({ certifications: value }, props.supplier.uid)
+const updateSocialLinks = (value) =>
+  updateProfile({ social_links: value }, props.supplier.uid)
+const updateBusinessStatus = (value) =>
+  updateProfile({ business_status: value }, props.supplier.uid)
+const updateVerified = (value) =>
+  updateProfile({ verified: value }, props.supplier.uid)
 </script>
 
 <style scoped>

@@ -2,11 +2,11 @@
   <client-only>
     <div class="profile-edit-container">
       <!-- Avatar Upload -->
-      <FireMoleculesFormsFirestoreAvatarSelection 
-        :user="{ 
-          ...props.chef, 
-          avatar_url: props.chef?.avatarUrl 
-        }" 
+      <FireMoleculesFormsFirestoreAvatarSelection
+        :user="{
+          ...props.chef,
+          avatar_url: props.chef?.avatarUrl,
+        }"
       />
 
       <!-- Chef Name Field (Primary Identifier) -->
@@ -151,19 +151,29 @@ const props = defineProps({
 const { updateProfile } = useProfileUpdate(CHEF_CONFIG)
 
 // Create field-specific update functions
-const updateChefName = (value) => updateProfile({ chef_name: value }, props.chef.uid)
+const updateChefName = (value) =>
+  updateProfile({ chef_name: value }, props.chef.uid)
 const updateTitle = (value) => updateProfile({ title: value }, props.chef.uid)
-const updateBioShort = (value) => updateProfile({ bio_short: value }, props.chef.uid)
-const updateBioLong = (value) => updateProfile({ bio_long: value }, props.chef.uid)
-const updateSpecialties = (value) => updateProfile({ specialties: value }, props.chef.uid)
-const updateYearsExperience = (value) => updateProfile({ years_experience: parseInt(value) || 0 }, props.chef.uid)
-const updateCuisineExpertise = (value) => updateProfile({ cuisine_expertise: value }, props.chef.uid)
+const updateBioShort = (value) =>
+  updateProfile({ bio_short: value }, props.chef.uid)
+const updateBioLong = (value) =>
+  updateProfile({ bio_long: value }, props.chef.uid)
+const updateSpecialties = (value) =>
+  updateProfile({ specialties: value }, props.chef.uid)
+const updateYearsExperience = (value) =>
+  updateProfile({ years_experience: parseInt(value) || 0 }, props.chef.uid)
+const updateCuisineExpertise = (value) =>
+  updateProfile({ cuisine_expertise: value }, props.chef.uid)
 const updateEmail = (value) => updateProfile({ email: value }, props.chef.uid)
 const updatePhone = (value) => updateProfile({ phone: value }, props.chef.uid)
-const updateLocation = (value) => updateProfile({ location: value }, props.chef.uid)
-const updateSocialLinks = (value) => updateProfile({ social_links: value }, props.chef.uid)
-const updateAvailability = (value) => updateProfile({ availability: value }, props.chef.uid)
-const updateVerified = (value) => updateProfile({ verified: value }, props.chef.uid)
+const updateLocation = (value) =>
+  updateProfile({ location: value }, props.chef.uid)
+const updateSocialLinks = (value) =>
+  updateProfile({ social_links: value }, props.chef.uid)
+const updateAvailability = (value) =>
+  updateProfile({ availability: value }, props.chef.uid)
+const updateVerified = (value) =>
+  updateProfile({ verified: value }, props.chef.uid)
 </script>
 
 <style scoped>

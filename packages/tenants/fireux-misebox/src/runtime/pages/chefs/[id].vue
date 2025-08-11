@@ -22,7 +22,6 @@ const { data: chef, pending } = await useFetch(`/api/chefs/${chefId}`)
 
 definePageMeta({
   title: computed(() => chef.value?.chef_name || 'Chef Profile'),
-  description: computed(() => chef.value?.bio_short || 'View chef profile')
+  description: computed(() => chef.value?.bio_short || 'View chef profile'),
 })
 </script>
-

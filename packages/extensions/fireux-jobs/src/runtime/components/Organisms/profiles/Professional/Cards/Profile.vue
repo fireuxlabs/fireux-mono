@@ -37,10 +37,7 @@
       >
         {{ cuisine }}
       </span>
-      <span
-        v-if="professional.cuisine_types.length > 3"
-        class="tag-more"
-      >
+      <span v-if="professional.cuisine_types.length > 3" class="tag-more">
         +{{ professional.cuisine_types.length - 3 }} more
       </span>
     </div>

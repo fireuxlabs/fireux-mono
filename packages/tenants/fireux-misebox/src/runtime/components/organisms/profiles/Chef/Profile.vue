@@ -197,4 +197,3 @@ defineProps<{
   chef?: Partial<Chef>
 }>()
 </script>
-

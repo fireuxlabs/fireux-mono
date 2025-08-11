@@ -9,7 +9,9 @@
     <div v-else class="error-state">
       <h1>Professional Not Found</h1>
       <p>The professional profile you're looking for doesn't exist.</p>
-      <NuxtLink to="/professionals" class="back-link">← Back to Professionals</NuxtLink>
+      <NuxtLink to="/professionals" class="back-link"
+        >← Back to Professionals</NuxtLink
+      >
     </div>
   </div>
 </template>
@@ -18,11 +20,16 @@
 const route = useRoute()
 const professionalId = route.params.id
 
-const { data: professional, pending } = await useFetch(`/api/professionals/${professionalId}`)
+const { data: professional, pending } = await useFetch(
+  `/api/professionals/${professionalId}`
+)
 
 definePageMeta({
-  title: computed(() => professional.value?.professional_name || 'Professional Profile'),
-  description: computed(() => professional.value?.bio_short || 'View professional profile')
+  title: computed(
+    () => professional.value?.professional_name || 'Professional Profile'
+  ),
+  description: computed(
+    () => professional.value?.bio_short || 'View professional profile'
+  ),
 })
 </script>
-

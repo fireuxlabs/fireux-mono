@@ -284,7 +284,12 @@ defineProps<{
 // Helper functions for template use only - no complex logic
 function getInitials(name?: string) {
   if (!name) return 'P'
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 }
 
 function formatLocation(location?: any) {
@@ -292,7 +297,13 @@ function formatLocation(location?: any) {
   return location.locations[0].formatted_address
 }
 
-function formatDuration(fromMonth?: string, fromYear?: string, toMonth?: string, toYear?: string, ongoing?: boolean) {
+function formatDuration(
+  fromMonth?: string,
+  fromYear?: string,
+  toMonth?: string,
+  toYear?: string,
+  ongoing?: boolean
+) {
   const start = fromMonth && fromYear ? `${fromMonth} ${fromYear}` : fromYear
   let end = 'Present'
   if (!ongoing) {
@@ -301,5 +312,3 @@ function formatDuration(fromMonth?: string, fromYear?: string, toMonth?: string,
   return `${start} - ${end}`
 }
 </script>
-
-

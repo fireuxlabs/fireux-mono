@@ -18,10 +18,14 @@
 const route = useRoute()
 const employerId = route.params.id
 
-const { data: employer, pending } = await useFetch(`/api/employers/${employerId}`)
+const { data: employer, pending } = await useFetch(
+  `/api/employers/${employerId}`
+)
 
 definePageMeta({
   title: computed(() => employer.value?.company_name || 'Employer Profile'),
-  description: computed(() => employer.value?.bio_short || 'View employer profile')
+  description: computed(
+    () => employer.value?.bio_short || 'View employer profile'
+  ),
 })
 </script>

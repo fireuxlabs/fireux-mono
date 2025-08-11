@@ -262,7 +262,12 @@ defineProps<{
 // Helper functions for template use only - no complex logic
 function getInitials(name?: string) {
   if (!name) return 'E'
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 }
 
 function formatLocation(location?: any) {
@@ -271,7 +276,12 @@ function formatLocation(location?: any) {
 }
 
 function getJobTypeVariant(type?: string) {
-  const variants = { 'full-time': 'solid', 'part-time': 'soft', contract: 'outline', temporary: 'subtle' }
+  const variants = {
+    'full-time': 'solid',
+    'part-time': 'soft',
+    contract: 'outline',
+    temporary: 'subtle',
+  }
   return variants[type] || 'outline'
 }
 
@@ -281,8 +291,15 @@ function formatDate(date?: string) {
 }
 
 function formatDayName(day?: string) {
-  const days = { monday: 'Monday', tuesday: 'Tuesday', wednesday: 'Wednesday', thursday: 'Thursday', friday: 'Friday', saturday: 'Saturday', sunday: 'Sunday' }
+  const days = {
+    monday: 'Monday',
+    tuesday: 'Tuesday',
+    wednesday: 'Wednesday',
+    thursday: 'Thursday',
+    friday: 'Friday',
+    saturday: 'Saturday',
+    sunday: 'Sunday',
+  }
   return days[day?.toLowerCase()] || day
 }
 </script>
-
