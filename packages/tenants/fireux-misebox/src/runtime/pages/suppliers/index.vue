@@ -4,19 +4,19 @@
     :filter-composable="useSupplierFilters"
   >
     <template #profile-pill="{ profile }">
-      <div @click="navigateToSupplier(profile)" style="cursor: pointer;">
+      <div @click="navigateToSupplier(profile)" style="cursor: pointer">
         <MiseProfilesSupplierCardsPill :supplier="profile" />
       </div>
     </template>
 
     <template #profile-card="{ profile }">
-      <div @click="navigateToSupplier(profile)" style="cursor: pointer;">
+      <div @click="navigateToSupplier(profile)" style="cursor: pointer">
         <MiseProfilesSupplierCardsProfile :supplier="profile" />
       </div>
     </template>
 
     <template #profile-item="{ profile }">
-      <div @click="navigateToSupplier(profile)" style="cursor: pointer;">
+      <div @click="navigateToSupplier(profile)" style="cursor: pointer">
         <MiseProfilesSupplierCardsCell :supplier="profile" />
       </div>
     </template>

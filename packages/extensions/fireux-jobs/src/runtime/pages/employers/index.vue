@@ -4,19 +4,19 @@
     :filter-composable="useEmployerFilters"
   >
     <template #profile-pill="{ profile }">
-      <div @click="navigateToEmployer(profile)" style="cursor: pointer;">
+      <div @click="navigateToEmployer(profile)" style="cursor: pointer">
         <JobProfilesEmployerCardsPill :employer="profile" />
       </div>
     </template>
 
     <template #profile-card="{ profile }">
-      <div @click="navigateToEmployer(profile)" style="cursor: pointer;">
+      <div @click="navigateToEmployer(profile)" style="cursor: pointer">
         <JobProfilesEmployerCardsProfile :employer="profile" />
       </div>
     </template>
 
     <template #profile-item="{ profile }">
-      <div @click="navigateToEmployer(profile)" style="cursor: pointer;">
+      <div @click="navigateToEmployer(profile)" style="cursor: pointer">
         <JobProfilesEmployerCardsCell :employer="profile" />
       </div>
     </template>
