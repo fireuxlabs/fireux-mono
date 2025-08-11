@@ -1,37 +1,36 @@
 <template>
-  <div>
-    <div v-if="pending" class="loading-state">
-      <h1>Loading chef profile...</h1>
-    </div>
-    <ClientOnly v-else-if="chef">
-      <MiseProfilesChefProfile :chef="chef" />
+  <ClientOnly>
+    <div>
+      <div v-if="chef">
+        <MiseProfilesChefProfile :chef="chef" />
 
-      <!-- Edit Profile Button (shown when viewing own profile) -->
-      <div v-if="appUser?.uid === chef.uid" class="edit-profile-section">
-        <UButton
-          @click="navigateToEdit"
-          icon="i-lucide-pencil"
-          size="md"
-          color="primary"
-          variant="solid"
-          class="edit-profile-button"
-        >
-          Edit Profile
-        </UButton>
-      </div>
-
-      <template #fallback>
-        <div class="loading-state">
-          <h1>Loading chef profile...</h1>
+        <!-- Edit Profile Button (shown when viewing own profile) -->
+        <div v-if="appUser?.uid === chef.uid" class="edit-profile-section">
+          <UButton
+            @click="navigateToEdit"
+            icon="i-lucide-pencil"
+            size="md"
+            color="primary"
+            variant="solid"
+            class="edit-profile-button"
+          >
+            Edit Profile
+          </UButton>
         </div>
-      </template>
-    </ClientOnly>
-    <div v-else class="error-state">
-      <h1>Chef Not Found</h1>
-      <p>The chef profile you're looking for doesn't exist.</p>
-      <NuxtLink to="/chefs" class="back-link">← Back to Chefs</NuxtLink>
+      </div>
+      <div v-else class="error-state">
+        <h1>Chef Not Found</h1>
+        <p>The chef profile you're looking for doesn't exist.</p>
+        <NuxtLink to="/chefs" class="back-link">← Back to Chefs</NuxtLink>
+      </div>
     </div>
-  </div>
+
+    <template #fallback>
+      <div class="loading-state">
+        <h1>Loading chef profile...</h1>
+      </div>
+    </template>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
@@ -52,12 +51,8 @@ const { appUser } = await useAppUser()
 // Use our unified profile composable
 const { fetchById } = await useProfile(chefConfig)
 
-// Fetch the chef data using our composable
-const {
-  data: chef,
-  pending,
-  error,
-} = await useAsyncData(`chef-${chefId}`, () => fetchById(chefId))
+// Fetch chef data
+const chef = await fetchById(chefId)
 
 // Navigation function for edit profile
 const navigateToEdit = () => {
@@ -67,14 +62,14 @@ const navigateToEdit = () => {
 // Update head dynamically when chef data loads
 useHead({
   title: computed(() =>
-    chef.value?.chef_name
-      ? `${chef.value.chef_name} - Chef Profile`
-      : 'Chef Profile'
+    chef && chef.chef_name ? `${chef.chef_name} - Chef Profile` : 'Chef Profile'
   ),
   meta: [
     {
       name: 'description',
-      content: computed(() => chef.value?.bio_short || 'View chef profile'),
+      content: computed(() =>
+        chef && chef.bio_short ? chef.bio_short : 'View chef profile'
+      ),
     },
   ],
 })

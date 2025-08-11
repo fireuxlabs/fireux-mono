@@ -1,7 +1,7 @@
 <template>
   <div class="form-field">
     <!-- Top Controls (shared component for editing actions) -->
-    <MoleculesFormsTop
+    <FireMoleculesFormsTop
       :label="label"
       :is-editing="isEditing"
       :has-data="hasData"

@@ -1,53 +1,41 @@
 <template>
-  <FireOrganismsProfileCurrentUserCTA
-    :has-profile="!!currentEmployer"
-    :current-profile="currentEmployer"
-    :config="ctaConfig"
-  >
-    <template #profile-card="{ profile }">
-      <FireOrganismsEmployerCardsProfile :employer="profile" />
-    </template>
+  <div class="profile-cta">
+    <div class="profile-cta-header">
+      <h1 class="profile-cta-title">🏢 Create Your Employer Profile</h1>
+      <p class="profile-cta-description">
+        Connect with top talent and build your team
+      </p>
+    </div>
 
-    <template #additional-actions="{ profile }">
-      <UButton to="/jobs/post" variant="outline"> Post a Job </UButton>
-    </template>
-  </FireOrganismsProfileCurrentUserCTA>
+    <div class="profile-cta-features">
+      <div class="profile-cta-feature">
+        <div class="profile-cta-feature-icon">🏢</div>
+        <h3 class="profile-cta-feature-title">Company Profile</h3>
+        <p class="profile-cta-feature-text">Showcase your company culture</p>
+      </div>
+      <div class="profile-cta-feature">
+        <div class="profile-cta-feature-icon">💼</div>
+        <h3 class="profile-cta-feature-title">Post Jobs</h3>
+        <p class="profile-cta-feature-text">Create and manage job listings</p>
+      </div>
+      <div class="profile-cta-feature">
+        <div class="profile-cta-feature-icon">👥</div>
+        <h3 class="profile-cta-feature-title">Find Talent</h3>
+        <p class="profile-cta-feature-text">Search qualified professionals</p>
+      </div>
+    </div>
+
+    <div class="profile-cta-action">
+      <UButton to="/employers/create" size="lg" color="primary">
+        Create Employer Profile
+      </UButton>
+      <p class="profile-cta-subtext">
+        Free to join • Post jobs and find talent
+      </p>
+    </div>
+  </div>
 </template>
 
 <script setup>
-// Get current employer profile if it exists
-const { isEmployer, currentEmployer } = useEmployers()
-
-// CTA Configuration
-const ctaConfig = {
-  // Icons
-  createIcon: '🏢',
-  activeIcon: '✅',
-
-  // Titles
-  createTitle: 'Create your Employer profile',
-  activeTitle: 'You have an Employer profile',
-
-  // Descriptions
-  createDescription:
-    'Set up your company profile to start posting jobs and connecting with professionals.',
-  activeDescription:
-    'Your employer profile is active and ready to connect with talented professionals.',
-
-  // Benefits for signup
-  benefits: [
-    '🏢 Showcase your company and culture',
-    '👥 Connect with skilled culinary professionals',
-    '📝 Post job opportunities and openings',
-    '🎯 Find the perfect candidates for your team',
-  ],
-
-  // Links
-  createProfileLink: '/dashboard/employer-profile',
-  viewProfileLink: '/dashboard/employer-profile',
-  editProfileLink: '/dashboard/employer-profile',
-
-  // Button text
-  createButtonText: 'Create Employer Profile',
-}
+// Clean CTA component for employer profile creation
 </script>

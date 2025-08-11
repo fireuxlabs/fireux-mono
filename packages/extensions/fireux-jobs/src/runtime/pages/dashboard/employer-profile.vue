@@ -1,55 +1,35 @@
 <template>
-  <client-only>
-    <div v-if="isEmployer">
-      <!-- Profile Display -->
-      <FireOrganismsEmployerCardsProfile :employer="currentEmployer" />
-
-      <!-- Edit Toggle Button -->
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="profile-section-title">Edit Company Information</h3>
-        <UButton
-          :icon="
-            isEditMode ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'
-          "
-          variant="ghost"
-          size="sm"
-          @click="isEditMode = !isEditMode"
-        >
-          {{ isEditMode ? 'Hide' : 'Edit' }}
-        </UButton>
+  <ClientOnly>
+    <div>
+      <div v-if="employer">
+        <h2>Edit Employer Profile</h2>
+        <JobProfilesEmployerEdit :employer="employer" />
       </div>
-
-      <!-- Edit Form (conditionally shown) -->
-      <FireOrganismsEmployerEdit
-        v-if="isEditMode"
-        :employer="currentEmployer"
-      />
+      <div v-else>
+        <JobProfilesEmployerCTA />
+      </div>
     </div>
-    <FireOrganismsEmployerCreateSystem v-else />
-  </client-only>
+
+    <template #fallback>
+      <div class="loading-state">
+        <h1>Loading employer profile editor...</h1>
+      </div>
+    </template>
+  </ClientOnly>
 </template>
 
-<script setup>
-const userGroup = useAppUserRoutes()[0]
-const routeObj = userGroup.children.find(
-  (r) => r.to === '/dashboard/employer-profile'
-)
-const { label, icon } = routeObj
+<script setup lang="ts">
+import { employerConfig } from '../../models/profiles/Employer.model'
 
-// Set static meta at build time for Nuxt
+// Define static page meta first
 definePageMeta({
-  layout: 'dashboard',
+  title: 'Edit Employer Profile',
+  description: 'Edit your employer profile',
 })
 
-// Set dynamic head meta at runtime (reactive)
-useHead({
-  title: label,
-  meta: [{ name: 'icon', content: icon }],
-})
+// Get current user
+const { appUser, hasProfile } = await useAppUser()
 
-// Initialize employers composable - now reactive and simple!
-const { isEmployer, currentEmployer } = useEmployers()
-
-// Edit mode state - controlled by this page
-const isEditMode = ref(false)
+// Use our unified profile composable
+const { current: employer } = await useProfile(employerConfig)
 </script>

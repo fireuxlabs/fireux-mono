@@ -1,53 +1,43 @@
 <template>
-  <FireOrganismsProfileCurrentUserCTA
-    :has-profile="!!currentProfessional"
-    :current-profile="currentProfessional"
-    :config="ctaConfig"
-  >
-    <template #profile-card="{ profile }">
-      <FireOrganismsProfessionalCardsProfile :professional="profile" />
-    </template>
+  <div class="profile-cta">
+    <div class="profile-cta-header">
+      <h1 class="profile-cta-title">💼 Create Your Professional Profile</h1>
+      <p class="profile-cta-description">
+        Showcase your skills and connect with top employers
+      </p>
+    </div>
 
-    <template #additional-actions="{ profile }">
-      <UButton to="/jobs" variant="outline"> Browse Jobs </UButton>
-    </template>
-  </FireOrganismsProfileCurrentUserCTA>
+    <div class="profile-cta-features">
+      <div class="profile-cta-feature">
+        <div class="profile-cta-feature-icon">�</div>
+        <h3 class="profile-cta-feature-title">Career Portfolio</h3>
+        <p class="profile-cta-feature-text">
+          Highlight your experience and skills
+        </p>
+      </div>
+      <div class="profile-cta-feature">
+        <div class="profile-cta-feature-icon">🎯</div>
+        <h3 class="profile-cta-feature-title">Job Matching</h3>
+        <p class="profile-cta-feature-text">Get matched with opportunities</p>
+      </div>
+      <div class="profile-cta-feature">
+        <div class="profile-cta-feature-icon">🤝</div>
+        <h3 class="profile-cta-feature-title">Direct Contact</h3>
+        <p class="profile-cta-feature-text">Connect with recruiters</p>
+      </div>
+    </div>
+
+    <div class="profile-cta-action">
+      <UButton to="/professionals/create" size="lg" color="primary">
+        Create Professional Profile
+      </UButton>
+      <p class="profile-cta-subtext">
+        Free to join • Get discovered by employers
+      </p>
+    </div>
+  </div>
 </template>
 
 <script setup>
-// Get current professional profile if it exists
-const { isProfessional, currentProfessional } = useProfessionals()
-
-// CTA Configuration
-const ctaConfig = {
-  // Icons
-  createIcon: '💼',
-  activeIcon: '✅',
-
-  // Titles
-  createTitle: 'Create your Professional profile',
-  activeTitle: 'You have a Professional profile',
-
-  // Descriptions
-  createDescription:
-    'Join our network of skilled professionals and connect with potential employers.',
-  activeDescription:
-    'Your professional profile is active and visible to potential employers.',
-
-  // Benefits for signup
-  benefits: [
-    '📝 Showcase your professional skills and experience',
-    '🏢 Connect with employers and job opportunities',
-    '🎯 Get matched with relevant positions',
-    '💼 Build your culinary career network',
-  ],
-
-  // Links
-  createProfileLink: '/dashboard/professional-profile',
-  viewProfileLink: '/dashboard/professional-profile',
-  editProfileLink: '/dashboard/professional-profile',
-
-  // Button text
-  createButtonText: 'Create Professional Profile',
-}
+// Clean CTA component for professional profile creation
 </script>
