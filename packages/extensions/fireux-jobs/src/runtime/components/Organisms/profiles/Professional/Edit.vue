@@ -225,8 +225,7 @@
 
 <script setup lang="ts">
 import type { Professional } from '../../../../models/profiles/Professional.model'
-import { useProfileUpdate } from '../../../../../../core/fireux-core/src/runtime/composables/firestore/profiles/useProfileUpdate'
-import { PROFESSIONAL_CONFIG } from '../../../../models/profiles/Professional.model'
+import { professionalConfig } from '../../../../models/profiles/Professional.model'
 
 // Component props
 const props = defineProps<{
@@ -234,72 +233,72 @@ const props = defineProps<{
 }>()
 
 // Use the unified profile update composable
-const profileUpdate = await useProfileUpdate(PROFESSIONAL_CONFIG)
+const { updateProfile } = useProfileUpdate(professionalConfig)
 
 // Update functions for each field
 const updateProfessionalName = (value: string) =>
-  profileUpdate('professional_name', value, props.professional.id)
+  updateProfile({ professional_name: value }, props.professional.uid)
 
 const updateTitle = (value: string) =>
-  profileUpdate('title', value, props.professional.id)
+  updateProfile({ title: value }, props.professional.uid)
 
 const updateYearsExperience = (value: number) =>
-  profileUpdate('years_experience', value, props.professional.id)
+  updateProfile({ years_experience: value }, props.professional.uid)
 
 const updateBioShort = (value: string) =>
-  profileUpdate('bio_short', value, props.professional.id)
+  updateProfile({ bio_short: value }, props.professional.uid)
 
 const updateBioLong = (value: string) =>
-  profileUpdate('bio_long', value, props.professional.id)
+  updateProfile({ bio_long: value }, props.professional.uid)
 
 const updateHourlyRate = (value: number) =>
-  profileUpdate('hourly_rate', value, props.professional.id)
+  updateProfile({ hourly_rate: value }, props.professional.uid)
 
 const updateSpecialties = (value: string[]) =>
-  profileUpdate('specialties', value, props.professional.id)
+  updateProfile({ specialties: value }, props.professional.uid)
 
 const updateCuisines = (value: string[]) =>
-  profileUpdate('cuisines', value, props.professional.id)
+  updateProfile({ cuisines: value }, props.professional.uid)
 
 const updateSkills = (value: string[]) =>
-  profileUpdate('skills', value, props.professional.id)
+  updateProfile({ skills: value }, props.professional.uid)
 
 const updateCertifications = (value: string[]) =>
-  profileUpdate('certifications', value, props.professional.id)
+  updateProfile({ certifications: value }, props.professional.uid)
 
 const updateLanguages = (value: string[]) =>
-  profileUpdate('languages', value, props.professional.id)
+  updateProfile({ languages: value }, props.professional.uid)
 
 const updateLocation = (value: string) =>
-  profileUpdate('location', value, props.professional.id)
+  updateProfile({ location: value }, props.professional.uid)
 
 const updateAvailabilityStatus = (value: string) =>
-  profileUpdate('availability_status', value, props.professional.id)
+  updateProfile({ availability_status: value }, props.professional.uid)
 
 const updateAvailableForTravel = (value: boolean) =>
-  profileUpdate('available_for_travel', value, props.professional.id)
+  updateProfile({ available_for_travel: value }, props.professional.uid)
 
 const updateRemoteWork = (value: boolean) =>
-  profileUpdate('remote_work', value, props.professional.id)
+  updateProfile({ remote_work: value }, props.professional.uid)
 
 const updateEducation = (value: string) =>
-  profileUpdate('education', value, props.professional.id)
+  updateProfile({ education: value }, props.professional.uid)
 
 const updateWorkAuthorization = (value: string) =>
-  profileUpdate('work_authorization', value, props.professional.id)
+  updateProfile({ work_authorization: value }, props.professional.uid)
 
 const updateSocialLinks = (value: Record<string, string>) =>
-  profileUpdate('social_links', value, props.professional.id)
+  updateProfile({ social_links: value }, props.professional.uid)
 
 const updateAwards = (value: string[]) =>
-  profileUpdate('awards', value, props.professional.id)
+  updateProfile({ awards: value }, props.professional.uid)
 
 const updatePreferredJobTypes = (value: string[]) =>
-  profileUpdate('preferred_job_types', value, props.professional.id)
+  updateProfile({ preferred_job_types: value }, props.professional.uid)
 
 const updateDietarySpecializations = (value: string[]) =>
-  profileUpdate('dietary_specializations', value, props.professional.id)
+  updateProfile({ dietary_specializations: value }, props.professional.uid)
 
 const updateEquipmentProficiency = (value: string[]) =>
-  profileUpdate('equipment_proficiency', value, props.professional.id)
+  updateProfile({ equipment_proficiency: value }, props.professional.uid)
 </script>

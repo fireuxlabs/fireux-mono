@@ -179,8 +179,7 @@
 </template>
 
 <script setup>
-import { useProfileUpdate } from '../../../../core/fireux-core/src/runtime/composables/firestore/profiles/useProfileUpdate'
-import { SUPPLIER_CONFIG } from '../../models/profiles/Supplier.model'
+import { supplierConfig } from '../../../../models/profiles/Supplier.model'
 
 // Define props
 const props = defineProps({
@@ -191,7 +190,7 @@ const props = defineProps({
 })
 
 // Get generic profile update functions
-const { updateProfile } = useProfileUpdate(SUPPLIER_CONFIG)
+const { updateProfile } = useProfileUpdate(supplierConfig)
 
 // Create field-specific update functions
 const updateBusinessName = (value) =>

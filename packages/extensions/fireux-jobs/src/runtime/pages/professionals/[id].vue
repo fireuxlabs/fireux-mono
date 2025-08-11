@@ -5,6 +5,18 @@
     </div>
     <ClientOnly v-else-if="professional">
       <JobProfilesProfessionalProfile :professional="professional" />
+      
+      <!-- Edit Profile Button (shown for test ID 1234) -->
+      <div v-if="professional.uid === '1234'" class="edit-profile-section">
+        <FireButton 
+          @click="navigateToEdit"
+          variant="primary"
+          class="edit-profile-button"
+        >
+          Edit Profile
+        </FireButton>
+      </div>
+      
       <template #fallback>
         <div class="loading-state">
           <h1>Loading professional profile...</h1>
@@ -44,6 +56,11 @@ const {
 } = await useAsyncData(`professional-${professionalId}`, () =>
   fetchById(professionalId)
 )
+
+// Navigation function for edit profile
+const navigateToEdit = () => {
+  navigateTo('/dashboard/professional-profile')
+}
 
 // Update head dynamically when professional data loads
 useHead({

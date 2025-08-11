@@ -136,8 +136,7 @@
 </template>
 
 <script setup>
-import { useProfileUpdate } from '../../../../core/fireux-core/src/runtime/composables/firestore/profiles/useProfileUpdate'
-import { CHEF_CONFIG } from '../../models/profiles/Chef.model'
+import { chefConfig } from '../../../../models/profiles/Chef.model'
 
 // Define props
 const props = defineProps({
@@ -148,7 +147,7 @@ const props = defineProps({
 })
 
 // Get generic profile update functions
-const { updateProfile } = useProfileUpdate(CHEF_CONFIG)
+const { updateProfile } = useProfileUpdate(chefConfig)
 
 // Create field-specific update functions
 const updateChefName = (value) =>

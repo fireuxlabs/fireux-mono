@@ -195,3 +195,17 @@
   color: #6b7280;
   font-style: italic;
 }
+
+/* Edit Profile Button Section */
+.edit-profile-section {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.edit-profile-button {
+  min-width: 150px;
+  font-weight: 600;
+}

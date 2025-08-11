@@ -5,6 +5,21 @@
     </div>
     <ClientOnly v-else-if="supplier">
       <MiseSupplierProfile :supplier="supplier" />
+
+      <!-- Edit Profile Button (shown when viewing own profile) -->
+      <div v-if="appUser?.uid === supplier.uid" class="edit-profile-section">
+        <UButton
+          @click="navigateToEdit"
+          icon="i-lucide-pencil"
+          size="md"
+          color="primary"
+          variant="solid"
+          class="edit-profile-button"
+        >
+          Edit Profile
+        </UButton>
+      </div>
+
       <template #fallback>
         <div class="loading-state">
           <h1>Loading supplier profile...</h1>
@@ -31,6 +46,9 @@ definePageMeta({
   description: 'View supplier profile',
 })
 
+// Get current user for edit permission check
+const { appUser } = await useAppUser()
+
 // Use our unified profile composable
 const { fetchById } = await useProfile(supplierConfig)
 
@@ -40,6 +58,11 @@ const {
   pending,
   error,
 } = await useAsyncData(`supplier-${supplierId}`, () => fetchById(supplierId))
+
+// Navigation function for edit profile
+const navigateToEdit = () => {
+  navigateTo('/dashboard/supplier-profile')
+}
 
 // Update head dynamically when supplier data loads
 useHead({
