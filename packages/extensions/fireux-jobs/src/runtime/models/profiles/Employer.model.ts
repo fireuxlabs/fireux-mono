@@ -116,6 +116,7 @@ export const employerConfig: ProfileConfig = {
   id: 'employer',
   collectionName: 'employers',
   profileType: 'Employer',
+  color: 'red',
 
   // Validation function
   validationFn: validateEmployerProfile,

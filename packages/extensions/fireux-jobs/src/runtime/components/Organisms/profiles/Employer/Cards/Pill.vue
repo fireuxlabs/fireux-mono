@@ -1,5 +1,5 @@
 <template>
-  <UCard class="profile-card profile-pill">
+  <UCard class="profile-card profile-pill employer-pill">
     <div class="profile-header">
       <UAvatar
         :src="employer?.avatarUrl"

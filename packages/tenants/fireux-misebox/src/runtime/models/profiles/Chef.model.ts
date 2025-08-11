@@ -48,6 +48,7 @@ export const chefConfig: ProfileConfig = {
   id: 'chef',
   collectionName: 'chefs',
   profileType: 'Chef',
+  color: 'orange',
   validationFn: validateChefProfile,
   requiredFields: ['chef_name'],
   searchableFields: ['chef_name', 'specialties', 'cuisine_expertise'],

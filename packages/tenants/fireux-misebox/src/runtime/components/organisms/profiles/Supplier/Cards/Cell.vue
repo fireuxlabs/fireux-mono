@@ -2,13 +2,13 @@
   <UCard class="profile-card">
     <div class="profile-header">
       <UAvatar
-        :src="supplier?.avatarUrl || supplier?.profile_image?.url"
-        :alt="supplier?.company_name || 'Supplier'"
+        :src="supplier?.avatarUrl"
+        :alt="supplier?.business_name || 'Supplier'"
         size="md"
       />
       <div class="profile-info">
-        <h4 v-if="supplier?.company_name" class="profile-name">
-          {{ supplier.company_name }}
+        <h4 v-if="supplier?.business_name" class="profile-name">
+          {{ supplier.business_name }}
         </h4>
         <p v-if="supplier?.business_type" class="profile-subtitle">
           {{ supplier.business_type }}

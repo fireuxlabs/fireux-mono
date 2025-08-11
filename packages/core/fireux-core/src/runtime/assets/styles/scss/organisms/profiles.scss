@@ -29,14 +29,24 @@
   width: 100%;
 }
 
-// Profile List Container
+// Profile List Container (Enhanced mobile-first)
 .profile-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  gap: 1rem;
   padding: 0;
   margin: 0;
   width: 100%;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
 }
 
 .profile-list--loading {
@@ -44,7 +54,7 @@
   pointer-events: none;
 }
 
-// Base Profile Container (Unified from both files)
+// Base Profile Container (Enhanced with mobile-first)
 .profile-card {
   background: white;
   border: 1px solid #e5e7eb;
@@ -55,7 +65,12 @@
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border-color: #d1d5db;
+  }
+
+  @media (min-width: 768px) {
+    padding: 1.25rem;
   }
 }
 
@@ -64,17 +79,65 @@
   @extend .profile-card;
 }
 
-// Pill Modifier - Minimal Layout
-.profile-pill .profile-header {
-  margin-bottom: 0;
+// Pill Modifier - Compact Layout
+.profile-pill {
+  padding: 0.75rem;
+  border-left: 3px solid var(--domain-color, #6b7280);
+
+  .profile-header {
+    margin-bottom: 0;
+  }
+
+  .profile-name {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .profile-title {
+    font-size: 0.8125rem;
+    margin-top: 0.125rem;
+  }
+
+  &:hover {
+    border-left-color: var(--domain-color-hover, #4b5563);
+  }
+
+  @media (min-width: 768px) {
+    padding: 1rem;
+  }
 }
 
-// Layout Components
+// Domain-specific border colors
+.chef-pill {
+  --domain-color: #f97316;
+  --domain-color-hover: #ea580c;
+}
+
+.supplier-pill {
+  --domain-color: #22c55e;
+  --domain-color-hover: #16a34a;
+}
+
+.professional-pill {
+  --domain-color: #3b82f6;
+  --domain-color-hover: #2563eb;
+}
+
+.employer-pill {
+  --domain-color: #ef4444;
+  --domain-color-hover: #dc2626;
+}
+
+// Layout Components (Enhanced)
 .profile-header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.875rem;
+
+  @media (min-width: 768px) {
+    gap: 1rem;
+  }
 }
 
 .profile-info {
@@ -85,59 +148,91 @@
 .profile-name {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1f2937;
+  color: #111827;
   margin: 0;
   line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (min-width: 768px) {
+    font-size: 1.25rem;
+  }
 }
 
 .profile-title {
   font-size: 0.875rem;
   color: #6b7280;
-  margin: 0;
+  margin: 0.125rem 0 0 0;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-subtitle {
   font-size: 0.875rem;
   color: #6b7280;
-  margin: 0;
+  margin: 0.125rem 0 0 0;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-bio {
   font-size: 0.875rem;
   color: #4b5563;
-  line-height: 1.4;
-  margin: 0 0 0.75rem 0;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+
+  @media (min-width: 768px) {
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
 }
 
-// Tags Section (Unified naming)
+// Tags Section (Enhanced mobile-first)
 .profile-tags,
 .profile-specialties {
   display: flex;
   flex-wrap: wrap;
   gap: 0.375rem;
+  margin-top: 0.25rem;
 }
 
 .tag,
 .specialty-tag {
-  background: #f3f4f6;
-  color: #374151;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  border-radius: 6px;
   font-weight: 500;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 0.8125rem;
+    padding: 0.3125rem 0.625rem;
+  }
 }
 
 .tag-more,
 .more-specialties {
   background: #f3f4f6;
   color: #6b7280;
+  font-style: italic;
 }
 
 // Gallery/Image Preview

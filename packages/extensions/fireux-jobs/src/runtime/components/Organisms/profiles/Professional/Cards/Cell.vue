@@ -2,19 +2,16 @@
   <UCard class="profile-card">
     <div class="profile-header">
       <UAvatar
-        :src="professional?.avatarUrl || professional?.profile_image?.url"
-        :alt="professional?.name || 'Professional'"
+        :src="professional?.avatarUrl"
+        :alt="professional?.professional_name || 'Professional'"
         size="md"
       />
       <div class="profile-info">
-        <h4 v-if="professional?.name" class="profile-name">
-          {{ professional.name }}
+        <h4 v-if="professional?.professional_name" class="profile-name">
+          {{ professional.professional_name }}
         </h4>
-        <p
-          v-if="professional?.title || professional?.primary_skill"
-          class="profile-subtitle"
-        >
-          {{ professional.title || professional.primary_skill }}
+        <p v-if="professional?.title" class="profile-subtitle">
+          {{ professional.title }}
         </p>
       </div>
     </div>
@@ -23,16 +20,16 @@
       {{ professional.bio_short }}
     </p>
 
-    <div v-if="professional?.cuisine_types?.length" class="profile-tags">
+    <div v-if="professional?.specialties?.length" class="profile-tags">
       <span
-        v-for="cuisine in professional.cuisine_types.slice(0, 3)"
-        :key="cuisine"
+        v-for="specialty in professional.specialties.slice(0, 3)"
+        :key="specialty"
         class="tag"
       >
-        {{ cuisine }}
+        {{ specialty }}
       </span>
-      <span v-if="professional.cuisine_types.length > 3" class="tag-more">
-        +{{ professional.cuisine_types.length - 3 }} more
+      <span v-if="professional.specialties.length > 3" class="tag-more">
+        +{{ professional.specialties.length - 3 }} more
       </span>
     </div>
   </UCard>

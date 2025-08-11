@@ -137,6 +137,7 @@ export const supplierConfig: ProfileConfig = {
   id: 'supplier',
   collectionName: 'suppliers',
   profileType: 'Supplier',
+  color: 'green',
 
   // Validation function
   validationFn: validateSupplierProfile,

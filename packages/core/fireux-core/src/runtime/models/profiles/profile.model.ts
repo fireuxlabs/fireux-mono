@@ -35,6 +35,7 @@ export interface ProfileConfig {
   id: string // Lowercase singular identifier: 'chef', 'employer', 'professional', 'supplier'
   collectionName: string // e.g., 'professionals', 'employers'
   profileType: string // e.g., 'Professional', 'Employer'
+  color?: string // Domain color: 'orange', 'green', 'blue', 'red'
   updateComposable?: () => any // Optional profile-specific update composable
   createComposable?: () => any // Optional profile-specific create composable
   deleteComposable?: () => any // Optional profile-specific delete composable

@@ -141,6 +141,7 @@ export const professionalConfig: ProfileConfig = {
   id: 'professional',
   collectionName: 'professionals',
   profileType: 'Professional',
+  color: 'blue',
 
   // Validation function
   validationFn: validateProfessionalProfile,

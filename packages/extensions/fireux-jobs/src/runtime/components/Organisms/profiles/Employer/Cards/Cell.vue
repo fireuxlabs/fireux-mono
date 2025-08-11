@@ -2,7 +2,7 @@
   <UCard class="profile-card">
     <div class="profile-header">
       <UAvatar
-        :src="employer?.avatarUrl || employer?.profile_image?.url"
+        :src="employer?.avatarUrl"
         :alt="employer?.company_name || 'Employer'"
         size="md"
       />
@@ -20,27 +20,16 @@
       {{ employer.bio_short }}
     </p>
 
-    <div
-      v-if="employer?.specialties?.length || employer?.cuisine_types?.length"
-      class="profile-tags"
-    >
+    <div v-if="employer?.specialties?.length" class="profile-tags">
       <span
-        v-for="specialty in (
-          employer.specialties ||
-          employer.cuisine_types ||
-          []
-        ).slice(0, 3)"
+        v-for="specialty in employer.specialties.slice(0, 3)"
         :key="specialty"
         class="tag"
       >
         {{ specialty }}
       </span>
-      <span
-        v-if="(employer.specialties || employer.cuisine_types || []).length > 3"
-        class="tag-more"
-      >
-        +{{ (employer.specialties || employer.cuisine_types || []).length - 3 }}
-        more
+      <span v-if="employer.specialties.length > 3" class="tag-more">
+        +{{ employer.specialties.length - 3 }} more
       </span>
     </div>
   </UCard>
