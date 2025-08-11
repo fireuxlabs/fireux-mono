@@ -5,18 +5,21 @@
     </div>
     <ClientOnly v-else-if="professional">
       <JobProfilesProfessionalProfile :professional="professional" />
-      
-      <!-- Edit Profile Button (shown for test ID 1234) -->
-      <div v-if="professional.uid === '1234'" class="edit-profile-section">
-        <FireButton 
+
+      <!-- Edit Profile Button (shown when viewing own profile) -->
+      <div v-if="appUser?.uid === professional.uid" class="edit-profile-section">
+        <UButton
           @click="navigateToEdit"
-          variant="primary"
+          icon="i-lucide-pencil"
+          size="md"
+          color="primary"
+          variant="solid"
           class="edit-profile-button"
         >
           Edit Profile
-        </FireButton>
+        </UButton>
       </div>
-      
+
       <template #fallback>
         <div class="loading-state">
           <h1>Loading professional profile...</h1>
@@ -44,6 +47,9 @@ definePageMeta({
   title: 'Professional Profile',
   description: 'View professional profile',
 })
+
+// Get current user for edit permission check
+const { appUser } = await useAppUser()
 
 // Use our unified profile composable
 const { fetchById } = await useProfile(professionalConfig)
