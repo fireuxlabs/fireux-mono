@@ -1,4 +1,4 @@
-import { defineEventHandler, createError } from 'h3'
+import { defineEventHandler } from 'h3'
 
 export default defineEventHandler(async (event) => {
   // Access environment variables directly in server context

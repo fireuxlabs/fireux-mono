@@ -4,7 +4,7 @@
       <h1>Loading professional profile...</h1>
     </div>
     <div v-else-if="professional">
-      <JobProfessionalProfile :professional="professional" />
+      <JobProfilesProfessionalProfile :professional="professional" />
     </div>
     <div v-else class="error-state">
       <h1>Professional Not Found</h1>
@@ -17,19 +17,44 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
-const professionalId = route.params.id
+import { useProfile } from 'fireux-core/src/runtime/composables/firestore/profiles/useProfile'
+import { PROFESSIONAL_CONFIG } from '../../models/profiles/Professional.model'
 
-const { data: professional, pending } = await useFetch(
-  `/api/professionals/${professionalId}`
+const route = useRoute()
+const professionalId = route.params.id as string
+
+// Define static page meta first (no reactive data allowed)
+definePageMeta({
+  title: 'Professional Profile',
+  description: 'View professional profile',
+})
+
+// Use our unified profile composable
+const { fetchById } = await useProfile(PROFESSIONAL_CONFIG)
+
+// Fetch the professional data using our composable
+const {
+  data: professional,
+  pending,
+  error,
+} = await useAsyncData(`professional-${professionalId}`, () =>
+  fetchById(professionalId)
 )
 
-definePageMeta({
-  title: computed(
-    () => professional.value?.professional_name || 'Professional Profile'
+// Update head dynamically when professional data loads
+useHead({
+  title: computed(() =>
+    professional.value?.professional_name
+      ? `${professional.value.professional_name} - Professional Profile`
+      : 'Professional Profile'
   ),
-  description: computed(
-    () => professional.value?.bio_short || 'View professional profile'
-  ),
+  meta: [
+    {
+      name: 'description',
+      content: computed(
+        () => professional.value?.bio_short || 'View professional profile'
+      ),
+    },
+  ],
 })
 </script>

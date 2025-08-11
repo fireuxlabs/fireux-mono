@@ -15,13 +15,40 @@
 </template>
 
 <script setup lang="ts">
+import { useProfile } from 'fireux-core/src/runtime/composables/firestore/profiles/useProfile'
+import { CHEF_CONFIG } from '../../models/profiles/Chef.model'
+
 const route = useRoute()
-const chefId = route.params.id
+const chefId = route.params.id as string
 
-const { data: chef, pending } = await useFetch(`/api/chefs/${chefId}`)
-
+// Define static page meta first (no reactive data allowed)
 definePageMeta({
-  title: computed(() => chef.value?.chef_name || 'Chef Profile'),
-  description: computed(() => chef.value?.bio_short || 'View chef profile'),
+  title: 'Chef Profile',
+  description: 'View chef profile',
+})
+
+// Use our unified profile composable
+const { fetchById } = await useProfile(CHEF_CONFIG)
+
+// Fetch the chef data using our composable
+const {
+  data: chef,
+  pending,
+  error,
+} = await useAsyncData(`chef-${chefId}`, () => fetchById(chefId))
+
+// Update head dynamically when chef data loads
+useHead({
+  title: computed(() =>
+    chef.value?.chef_name
+      ? `${chef.value.chef_name} - Chef Profile`
+      : 'Chef Profile'
+  ),
+  meta: [
+    {
+      name: 'description',
+      content: computed(() => chef.value?.bio_short || 'View chef profile'),
+    },
+  ],
 })
 </script>

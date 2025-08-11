@@ -4,15 +4,15 @@
     :filter-composable="useChefFilters"
   >
     <template #profile-pill="{ profile }">
-      <MiseChefCardsPill :chef="profile" />
+      <MiseProfilesChefCardsPill :chef="profile" />
     </template>
 
     <template #profile-card="{ profile }">
-      <MiseChefCardsProfile :chef="profile" />
+      <MiseProfilesChefCardsProfile :chef="profile" />
     </template>
 
     <template #profile-item="{ profile }">
-      <MiseChefCardsCell :chef="profile" />
+      <MiseProfilesChefCardsCell :chef="profile" />
     </template>
   </FireOrganismsProfileRoot>
 </template>

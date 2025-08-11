@@ -1,8 +1,50 @@
 // =============================================================================
-// Profile Components - Streamlined System
+// Profile Components - Complete Unified System
 // =============================================================================
 
-// Base Profile Container
+// Profile Page Layout
+.profile-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.profile-page-header {
+  margin-bottom: 2rem;
+}
+
+.profile-page-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.profile-page-description {
+  font-size: 1.125rem;
+  color: #4b5563;
+}
+
+.profile-page-content {
+  width: 100%;
+}
+
+// Profile List Container
+.profile-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.profile-list--loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+// Base Profile Container (Unified from both files)
 .profile-card {
   background: white;
   border: 1px solid #e5e7eb;
@@ -15,6 +57,11 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
+}
+
+// Profile Cell (alias for consistency)
+.profile-cell {
+  @extend .profile-card;
 }
 
 // Pill Modifier - Minimal Layout
@@ -69,13 +116,16 @@
   overflow: hidden;
 }
 
-.profile-tags {
+// Tags Section (Unified naming)
+.profile-tags,
+.profile-specialties {
   display: flex;
   flex-wrap: wrap;
   gap: 0.375rem;
 }
 
-.tag {
+.tag,
+.specialty-tag {
   background: #f3f4f6;
   color: #374151;
   font-size: 0.75rem;
@@ -84,7 +134,64 @@
   font-weight: 500;
 }
 
-.tag-more {
+.tag-more,
+.more-specialties {
   background: #f3f4f6;
   color: #6b7280;
+}
+
+// Gallery/Image Preview
+.profile-gallery {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.gallery-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.more-images {
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.375rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Profile Edit Styles */
+.profile-edit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.read-only-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.read-only-field .read-only-label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.read-only-field .value {
+  padding: 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  color: #6b7280;
+  font-style: italic;
 }

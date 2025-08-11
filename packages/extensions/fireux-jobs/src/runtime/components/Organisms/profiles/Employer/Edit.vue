@@ -256,37 +256,3 @@ const updateSocialLinks = (value) =>
 const updateVerified = (value) =>
   updateProfile({ verified: value }, props.employer.uid)
 </script>
-
-<style scoped>
-.profile-edit-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
-.read-only-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  width: 100%;
-}
-
-.read-only-field .read-only-label {
-  font-weight: 600;
-  color: #374151;
-  font-size: 0.875rem;
-}
-
-.read-only-field .value {
-  padding: 0.75rem;
-  background: #f9fafb;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  color: #6b7280;
-  font-style: italic;
-}
-</style>

@@ -4,15 +4,15 @@
     :filter-composable="useSupplierFilters"
   >
     <template #profile-pill="{ profile }">
-      <MiseSupplierCardsPill :supplier="profile" />
+      <MiseProfilesSupplierCardsPill :supplier="profile" />
     </template>
 
     <template #profile-card="{ profile }">
-      <MiseSupplierCardsProfile :supplier="profile" />
+      <MiseProfilesSupplierCardsProfile :supplier="profile" />
     </template>
 
     <template #profile-item="{ profile }">
-      <MiseSupplierCardsCell :supplier="profile" />
+      <MiseProfilesSupplierCardsCell :supplier="profile" />
     </template>
   </FireOrganismsProfileRoot>
 </template>

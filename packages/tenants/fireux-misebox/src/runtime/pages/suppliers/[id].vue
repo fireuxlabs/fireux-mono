@@ -15,17 +15,42 @@
 </template>
 
 <script setup lang="ts">
+import { useProfile } from 'fireux-core/src/runtime/composables/firestore/profiles/useProfile'
+import { SUPPLIER_CONFIG } from '../../models/profiles/Supplier.model'
+
 const route = useRoute()
-const supplierId = route.params.id
+const supplierId = route.params.id as string
 
-const { data: supplier, pending } = await useFetch(
-  `/api/suppliers/${supplierId}`
-)
-
+// Define static page meta first (no reactive data allowed)
 definePageMeta({
-  title: computed(() => supplier.value?.company_name || 'Supplier Profile'),
-  description: computed(
-    () => supplier.value?.bio_short || 'View supplier profile'
+  title: 'Supplier Profile',
+  description: 'View supplier profile',
+})
+
+// Use our unified profile composable
+const { fetchById } = await useProfile(SUPPLIER_CONFIG)
+
+// Fetch the supplier data using our composable
+const {
+  data: supplier,
+  pending,
+  error,
+} = await useAsyncData(`supplier-${supplierId}`, () => fetchById(supplierId))
+
+// Update head dynamically when supplier data loads
+useHead({
+  title: computed(() =>
+    supplier.value?.company_name
+      ? `${supplier.value.company_name} - Supplier Profile`
+      : 'Supplier Profile'
   ),
+  meta: [
+    {
+      name: 'description',
+      content: computed(
+        () => supplier.value?.bio_short || 'View supplier profile'
+      ),
+    },
+  ],
 })
 </script>

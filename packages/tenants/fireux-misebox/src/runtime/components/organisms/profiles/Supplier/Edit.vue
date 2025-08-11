@@ -231,15 +231,3 @@ const updateBusinessStatus = (value) =>
 const updateVerified = (value) =>
   updateProfile({ verified: value }, props.supplier.uid)
 </script>
-
-<style scoped>
-.profile-edit-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-</style>
