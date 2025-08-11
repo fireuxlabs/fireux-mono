@@ -1,5 +1,5 @@
 <template>
-  <UCard class="profile-card">
+  <UCard class="profile-card" @click="handleClick" style="cursor: pointer">
     <div class="profile-header">
       <UAvatar
         :src="chef?.avatarUrl"
@@ -65,7 +65,14 @@
 <script setup lang="ts">
 import type { Chef } from '../../../../../models/profiles/Chef.model'
 
-defineProps<{
+const props = defineProps<{
   chef?: Partial<Chef>
+  navigate?: (profile: any) => void
 }>()
+
+const handleClick = () => {
+  if (props.navigate && props.chef) {
+    props.navigate(props.chef)
+  }
+}
 </script>

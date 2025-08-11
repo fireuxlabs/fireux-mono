@@ -4,21 +4,34 @@
     :filter-composable="useChefFilters"
   >
     <template #profile-pill="{ profile }">
-      <MiseProfilesChefCardsPill :chef="profile" />
+      <div @click="navigateToChef(profile)" style="cursor: pointer">
+        <MiseProfilesChefCardsPill :chef="profile" />
+      </div>
     </template>
 
     <template #profile-card="{ profile }">
-      <MiseProfilesChefCardsProfile :chef="profile" />
+      <div @click="navigateToChef(profile)" style="cursor: pointer">
+        <MiseProfilesChefCardsProfile :chef="profile" />
+      </div>
     </template>
 
     <template #profile-item="{ profile }">
-      <MiseProfilesChefCardsCell :chef="profile" />
+      <div @click="navigateToChef(profile)" style="cursor: pointer">
+        <MiseProfilesChefCardsCell :chef="profile" />
+      </div>
     </template>
   </FireOrganismsProfileRoot>
 </template>
 <script setup>
 import { chefConfig } from '../../models/profiles/Chef.model'
 import { useChefFilters } from '../../composables/profiles/useChefFilters'
+
+// Navigation function
+const navigateToChef = (chef) => {
+  if (chef?.uid) {
+    navigateTo(`/chefs/${chef.uid}`)
+  }
+}
 
 // Set page meta
 definePageMeta({

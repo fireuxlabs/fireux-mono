@@ -3,9 +3,14 @@
     <div v-if="pending" class="loading-state">
       <h1>Loading supplier profile...</h1>
     </div>
-    <div v-else-if="supplier">
+    <ClientOnly v-else-if="supplier">
       <MiseSupplierProfile :supplier="supplier" />
-    </div>
+      <template #fallback>
+        <div class="loading-state">
+          <h1>Loading supplier profile...</h1>
+        </div>
+      </template>
+    </ClientOnly>
     <div v-else class="error-state">
       <h1>Supplier Not Found</h1>
       <p>The supplier profile you're looking for doesn't exist.</p>
@@ -15,8 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProfile } from 'fireux-core/src/runtime/composables/firestore/profiles/useProfile'
-import { SUPPLIER_CONFIG } from '../../models/profiles/Supplier.model'
+import { supplierConfig } from '../../models/profiles/Supplier.model'
 
 const route = useRoute()
 const supplierId = route.params.id as string
@@ -28,7 +32,7 @@ definePageMeta({
 })
 
 // Use our unified profile composable
-const { fetchById } = await useProfile(SUPPLIER_CONFIG)
+const { fetchById } = await useProfile(supplierConfig)
 
 // Fetch the supplier data using our composable
 const {

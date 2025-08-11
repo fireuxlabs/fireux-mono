@@ -3,9 +3,14 @@
     <div v-if="pending" class="loading-state">
       <h1>Loading professional profile...</h1>
     </div>
-    <div v-else-if="professional">
+    <ClientOnly v-else-if="professional">
       <JobProfilesProfessionalProfile :professional="professional" />
-    </div>
+      <template #fallback>
+        <div class="loading-state">
+          <h1>Loading professional profile...</h1>
+        </div>
+      </template>
+    </ClientOnly>
     <div v-else class="error-state">
       <h1>Professional Not Found</h1>
       <p>The professional profile you're looking for doesn't exist.</p>
@@ -17,8 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProfile } from 'fireux-core/src/runtime/composables/firestore/profiles/useProfile'
-import { PROFESSIONAL_CONFIG } from '../../models/profiles/Professional.model'
+import { professionalConfig } from '../../models/profiles/Professional.model'
 
 const route = useRoute()
 const professionalId = route.params.id as string
@@ -30,7 +34,7 @@ definePageMeta({
 })
 
 // Use our unified profile composable
-const { fetchById } = await useProfile(PROFESSIONAL_CONFIG)
+const { fetchById } = await useProfile(professionalConfig)
 
 // Fetch the professional data using our composable
 const {

@@ -3,9 +3,14 @@
     <div v-if="pending" class="loading-state">
       <h1>Loading employer profile...</h1>
     </div>
-    <div v-else-if="employer">
+    <ClientOnly v-else-if="employer">
       <JobProfilesEmployerProfile :employer="employer" />
-    </div>
+      <template #fallback>
+        <div class="loading-state">
+          <h1>Loading employer profile...</h1>
+        </div>
+      </template>
+    </ClientOnly>
     <div v-else class="error-state">
       <h1>Employer Not Found</h1>
       <p>The employer profile you're looking for doesn't exist.</p>
@@ -15,8 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProfile } from 'fireux-core/src/runtime/composables/firestore/profiles/useProfile'
-import { EMPLOYER_CONFIG } from '../../models/profiles/Employer.model'
+import { employerConfig } from '../../models/profiles/Employer.model'
 
 const route = useRoute()
 const employerId = route.params.id as string
@@ -28,7 +32,7 @@ definePageMeta({
 })
 
 // Use our unified profile composable
-const { fetchById } = await useProfile(EMPLOYER_CONFIG)
+const { fetchById } = await useProfile(employerConfig)
 
 // Fetch the employer data using our composable
 const {

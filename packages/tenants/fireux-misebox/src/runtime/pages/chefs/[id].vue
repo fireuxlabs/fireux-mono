@@ -3,9 +3,14 @@
     <div v-if="pending" class="loading-state">
       <h1>Loading chef profile...</h1>
     </div>
-    <div v-else-if="chef">
-      <MiseChefProfile :chef="chef" />
-    </div>
+    <ClientOnly v-else-if="chef">
+      <MiseProfilesChefProfile :chef="chef" />
+      <template #fallback>
+        <div class="loading-state">
+          <h1>Loading chef profile...</h1>
+        </div>
+      </template>
+    </ClientOnly>
     <div v-else class="error-state">
       <h1>Chef Not Found</h1>
       <p>The chef profile you're looking for doesn't exist.</p>
@@ -15,8 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProfile } from 'fireux-core/src/runtime/composables/firestore/profiles/useProfile'
-import { CHEF_CONFIG } from '../../models/profiles/Chef.model'
+import { chefConfig } from '../../models/profiles/Chef.model'
 
 const route = useRoute()
 const chefId = route.params.id as string
@@ -28,7 +32,7 @@ definePageMeta({
 })
 
 // Use our unified profile composable
-const { fetchById } = await useProfile(CHEF_CONFIG)
+const { fetchById } = await useProfile(chefConfig)
 
 // Fetch the chef data using our composable
 const {

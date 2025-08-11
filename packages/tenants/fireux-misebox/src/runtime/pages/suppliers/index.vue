@@ -4,15 +4,21 @@
     :filter-composable="useSupplierFilters"
   >
     <template #profile-pill="{ profile }">
-      <MiseProfilesSupplierCardsPill :supplier="profile" />
+      <div @click="navigateToSupplier(profile)" style="cursor: pointer;">
+        <MiseProfilesSupplierCardsPill :supplier="profile" />
+      </div>
     </template>
 
     <template #profile-card="{ profile }">
-      <MiseProfilesSupplierCardsProfile :supplier="profile" />
+      <div @click="navigateToSupplier(profile)" style="cursor: pointer;">
+        <MiseProfilesSupplierCardsProfile :supplier="profile" />
+      </div>
     </template>
 
     <template #profile-item="{ profile }">
-      <MiseProfilesSupplierCardsCell :supplier="profile" />
+      <div @click="navigateToSupplier(profile)" style="cursor: pointer;">
+        <MiseProfilesSupplierCardsCell :supplier="profile" />
+      </div>
     </template>
   </FireOrganismsProfileRoot>
 </template>
@@ -20,6 +26,13 @@
 <script setup>
 import { supplierConfig } from '../../models/profiles/Supplier.model'
 import { useSupplierFilters } from '../../composables/profiles/useSupplierFilters'
+
+// Navigation function
+const navigateToSupplier = (supplier) => {
+  if (supplier?.uid) {
+    navigateTo(`/suppliers/${supplier.uid}`)
+  }
+}
 
 // Set page meta
 definePageMeta({

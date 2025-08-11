@@ -3,10 +3,20 @@
     {{ hasProfile(config.id) }}
 
     <!-- Show pill if user has profile, pass actual profile data -->
-    <slot v-if="hasProfile(config.id)" name="profile-pill" :profile="current" />
+    <slot
+      v-if="hasProfile(config.id)"
+      name="profile-pill"
+      :profile="current"
+      :navigate="navigateToProfile"
+    />
 
     <!-- Show profile card if user has profile -->
-    <slot v-if="hasProfile(config.id)" name="profile-card" :profile="current" />
+    <slot
+      v-if="hasProfile(config.id)"
+      name="profile-card"
+      :profile="current"
+      :navigate="navigateToProfile"
+    />
 
     <!-- Show profile list with all profiles -->
     <slot
@@ -14,6 +24,7 @@
       v-for="profile in all"
       :key="profile.uid"
       :profile="profile"
+      :navigate="navigateToProfile"
     />
   </div>
 </template>
@@ -25,4 +36,11 @@ const props = defineProps({
 })
 const { hasProfile } = await useAppUser()
 const { current, all } = await useProfile(props.config)
+
+// Navigation function for profile clicks
+const navigateToProfile = (profile) => {
+  if (profile?.uid) {
+    navigateTo(`/${props.config.collection}/${profile.uid}`)
+  }
+}
 </script>

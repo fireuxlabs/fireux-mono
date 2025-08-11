@@ -1,5 +1,5 @@
 <template>
-  <UCard class="profile-card">
+  <UCard class="profile-card" @click="handleClick" style="cursor: pointer">
     <div class="profile-header">
       <UAvatar
         :src="professional?.avatarUrl || professional?.profile_image?.url"
@@ -75,7 +75,14 @@
 <script setup lang="ts">
 import type { Professional } from '../../../../../models/profiles/Professional.model'
 
-defineProps<{
+const props = defineProps<{
   professional?: Partial<Professional>
+  navigate?: (profile: any) => void
 }>()
+
+const handleClick = () => {
+  if (props.navigate && props.professional) {
+    props.navigate(props.professional)
+  }
+}
 </script>
