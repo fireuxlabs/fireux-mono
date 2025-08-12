@@ -3,6 +3,8 @@ import { useObjectCreate } from './useObjectCreate'
 import { useObjectDelete } from './useObjectDelete'
 import { useObjectUpdate } from './useObjectUpdate'
 import type { ObjectConfig } from '../../../models/objects/object.model'
+import { useFirestore, useCurrentUser, useDocument } from 'vuefire'
+import { doc } from 'firebase/firestore'
 
 /**
  * Shared composable for object CRUD operations and state management
@@ -10,12 +12,22 @@ import type { ObjectConfig } from '../../../models/objects/object.model'
  */
 export async function useObject(objectConfig: ObjectConfig) {
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreManager()
+  const currentUser = useCurrentUser()
+  const db = useFirestore()
 
   // Use the provided config directly
   const config = objectConfig
 
-  // Fetch all objects in this collection - await the Promise
+  // Fetch all objects in this collection (collection-level list)
   const allObjects = await firestoreFetchCollection(config.collectionName)
+
+  // If userScoped, bind a current document keyed by uid
+  const currentDocRef = computed(() =>
+    config.userScoped && currentUser.value?.uid
+      ? doc(db, config.collectionName, currentUser.value.uid)
+      : null
+  )
+  const { data: current } = useDocument(currentDocRef)
 
   async function fetchById(id: string) {
     return await firestoreFetchDoc(config.collectionName, id)
@@ -38,9 +50,10 @@ export async function useObject(objectConfig: ObjectConfig) {
   const objectDeletes = config.deleteComposable ? config.deleteComposable() : {}
 
   const returnObject = {
-    [`${config.collectionName}`]: allObjects,
+    all: allObjects, // generic collection alias (preferred)
+    collection: allObjects, // secondary alias
+    current, // only populated if userScoped
     [`fetch${config.objectType || 'Object'}`]: fetchById,
-    all: allObjects, // Add alias for easier destructuring
     ...objectCreate,
     ...objectDelete,
     ...objectUpdate,

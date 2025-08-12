@@ -29,6 +29,8 @@ export interface ObjectConfig {
   collectionName: string
   /** Object type name for dynamic function naming */
   objectType?: string
+  /** When true, treats the object as user-scoped and exposes `current` bound to currentUser.uid (parity with useProfile) */
+  userScoped?: boolean
   /** Optional create composable for object-specific logic */
   createComposable?: () => {
     [key: string]: any
