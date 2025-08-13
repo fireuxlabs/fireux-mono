@@ -25,7 +25,6 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
 // SEO and Meta
 useSeoMeta({

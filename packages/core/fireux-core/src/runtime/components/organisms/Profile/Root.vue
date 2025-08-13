@@ -1,7 +1,5 @@
 <template>
   <div class="profile-page">
-    {{ hasProfile(config.id) }}
-
     <!-- Show pill if user has profile, pass actual profile data -->
     <slot
       v-if="hasProfile(config.id)"

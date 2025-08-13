@@ -1,0 +1,154 @@
+/* Supplier-specific styling for misebox domain */
+
+.supplier {
+  /* Supplier badge styling for ingredients */
+  .supplier-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background: var(--blue-50, #eff6ff);
+    border-radius: 0.375rem;
+    border-left: 3px solid var(--blue-500, #3b82f6);
+
+    .supplier-label {
+      font-size: 0.75rem;
+      color: var(--gray-600, #6b7280);
+    }
+
+    .supplier-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--blue-700, #1d4ed8);
+    }
+
+    .verified-badge {
+      background: var(--green-500, #22c55e);
+      color: white;
+      border-radius: 50%;
+      width: 1rem;
+      height: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+  }
+
+  /* Supplier profile cards */
+  .profile-card {
+    border: 2px solid var(--blue-200, #bfdbfe);
+    background: linear-gradient(135deg, var(--blue-50, #eff6ff) 0%, white 100%);
+
+    &:hover {
+      border-color: var(--blue-300, #93c5fd);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+    }
+
+    .business-type {
+      background: var(--blue-100, #dbeafe);
+      color: var(--blue-700, #1d4ed8);
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .specialties {
+      .specialty-tag {
+        background: var(--blue-100, #dbeafe);
+        color: var(--blue-800, #1e40af);
+        border: 1px solid var(--blue-200, #bfdbfe);
+      }
+    }
+  }
+
+  /* Quick supplier creation form */
+  .quick-create {
+    background: var(--blue-50, #eff6ff);
+    border: 2px dashed var(--blue-300, #93c5fd);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    .btn-create {
+      background: var(--blue-600, #2563eb);
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: var(--blue-700, #1d4ed8);
+      }
+    }
+  }
+
+  /* Full supplier creation form */
+  .full-create {
+    .track-info {
+      background: var(--blue-50, #eff6ff);
+      border: 1px solid var(--blue-200, #bfdbfe);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+
+      .track-note {
+        font-size: 0.875rem;
+        color: var(--blue-700, #1d4ed8);
+
+        ul {
+          margin: 0.5rem 0 0 1rem;
+          color: var(--blue-600, #2563eb);
+        }
+      }
+    }
+
+    .specialties-input {
+      .tag {
+        background: var(--blue-100, #dbeafe);
+        color: var(--blue-700, #1d4ed8);
+        border: 1px solid var(--blue-200, #bfdbfe);
+      }
+    }
+  }
+}
+
+/* Ingredient cards with supplier information */
+.objects .cards .cell {
+  .supplier-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background: var(--blue-50, #eff6ff);
+    border-radius: 0.375rem;
+    border-left: 3px solid var(--blue-500, #3b82f6);
+
+    .supplier-label {
+      font-size: 0.75rem;
+      color: var(--gray-600, #6b7280);
+    }
+
+    .supplier-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--blue-700, #1d4ed8);
+    }
+
+    .verified-badge {
+      background: var(--green-500, #22c55e);
+      color: white;
+      border-radius: 50%;
+      width: 1rem;
+      height: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+  }
+}

@@ -1,5 +1,5 @@
-import { useObjectUpdate } from 'fireux-core/src/runtime/composables/firestore/objects/useObjectUpdate'
-
+// Simple stub for kitchen update functionality
 export function useKitchenUpdate() {
-  return useObjectUpdate()
+  // Implement kitchen update logic when needed
+  return {}
 }

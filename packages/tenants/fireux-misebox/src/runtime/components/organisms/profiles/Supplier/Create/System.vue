@@ -1,17 +1,33 @@
 <template>
-  <div class="supplier-create-form">
+  <div class="supplier full-create profile-create">
     <div class="form-header">
-      <h2>Create Your Supplier Profile</h2>
+      <h2>🚛 Create Your Full Supplier Profile</h2>
       <p>
-        Connect with restaurants, chefs, and businesses in need of quality
-        supplies
+        Join the marketplace as a verified supplier to manage your own profile
+        and sell excess production
       </p>
+
+      <div class="track-info">
+        <div class="track-note">
+          <strong>💡 Two ways to work with suppliers:</strong>
+          <ul>
+            <li>
+              <strong>Quick Track:</strong> Chefs can quickly create supplier
+              names when adding ingredients
+            </li>
+            <li>
+              <strong>Full Track:</strong> Suppliers create rich profiles to
+              manage their own presence and ingredients
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <form @submit.prevent="handleSubmit" class="supplier-form">
-      <!-- Basic Information -->
+    <form @submit.prevent="handleSubmit" class="profile-form">
+      <!-- Essential Information -->
       <div class="form-section">
-        <h3>Business Information</h3>
+        <h3>Essential Business Information</h3>
 
         <div class="form-field">
           <label for="business_name">Business Name *</label>
@@ -19,36 +35,15 @@
             id="business_name"
             v-model="formData.business_name"
             type="text"
-            placeholder="Enter your business name"
+            placeholder="e.g., Fresh Valley Farm"
             required
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="email">Business Email *</label>
-          <input
-            id="email"
-            v-model="formData.email"
-            type="email"
-            placeholder="Enter business email"
-            required
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="title">Your Title/Role</label>
-          <input
-            id="title"
-            v-model="formData.title"
-            type="text"
-            placeholder="e.g., Owner, Sales Manager"
           />
         </div>
 
         <div class="form-field">
           <label for="business_type">Business Type *</label>
           <select id="business_type" v-model="formData.business_type" required>
-            <option value="">Select business type</option>
+            <option value="">Select your business type</option>
             <option value="farm">Farm</option>
             <option value="distributor">Distributor</option>
             <option value="manufacturer">Manufacturer</option>
@@ -57,11 +52,47 @@
             <option value="other">Other</option>
           </select>
         </div>
+
+        <div class="form-field tags-input">
+          <label for="specialties">What do you supply? *</label>
+          <input
+            id="specialties"
+            v-model="specialtiesInput"
+            type="text"
+            placeholder="e.g., Organic Vegetables, Dairy Products, Fresh Herbs"
+            @blur="updateSpecialties"
+            @keydown.enter.prevent="updateSpecialties"
+          />
+          <small>Press Enter or click away to add each specialty</small>
+          <div v-if="formData.specialties?.length" class="tags-preview">
+            <span
+              v-for="specialty in formData.specialties"
+              :key="specialty"
+              class="tag"
+            >
+              {{ specialty }}
+              <button type="button" @click="removeSpecialty(specialty)">
+                ×
+              </button>
+            </span>
+          </div>
+        </div>
       </div>
 
       <!-- Contact Information -->
       <div class="form-section">
-        <h3>Contact Details</h3>
+        <h3>Contact Information</h3>
+
+        <div class="form-field">
+          <label for="email">Business Email *</label>
+          <input
+            id="email"
+            v-model="formData.email"
+            type="email"
+            placeholder="business@example.com"
+            required
+          />
+        </div>
 
         <div class="form-field">
           <label for="contact_person">Contact Person</label>
@@ -69,7 +100,7 @@
             id="contact_person"
             v-model="formData.contact_person"
             type="text"
-            placeholder="Primary contact person name"
+            placeholder="Primary contact name"
           />
         </div>
 
@@ -79,7 +110,33 @@
             id="phone"
             v-model="formData.phone"
             type="tel"
-            placeholder="Business phone number"
+            placeholder="Business phone"
+          />
+        </div>
+      </div>
+
+      <!-- Optional Details -->
+      <div class="form-section">
+        <h3>Additional Details (Optional)</h3>
+
+        <div class="form-field">
+          <label for="bio_short">Business Description</label>
+          <textarea
+            id="bio_short"
+            v-model="formData.bio_short"
+            rows="3"
+            placeholder="Brief description of your business and what makes you unique"
+          ></textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="years_in_business">Years in Business</label>
+          <input
+            id="years_in_business"
+            v-model.number="formData.years_in_business"
+            type="number"
+            placeholder="How long have you been operating?"
+            min="0"
           />
         </div>
 
@@ -94,145 +151,6 @@
         </div>
       </div>
 
-      <!-- Business Description -->
-      <div class="form-section">
-        <h3>About Your Business</h3>
-
-        <div class="form-field">
-          <label for="bio_short">Short Description</label>
-          <textarea
-            id="bio_short"
-            v-model="formData.bio_short"
-            rows="3"
-            placeholder="Brief business description"
-          ></textarea>
-        </div>
-
-        <div class="form-field">
-          <label for="bio_long">Detailed Description</label>
-          <textarea
-            id="bio_long"
-            v-model="formData.bio_long"
-            rows="6"
-            placeholder="Detailed business description and services offered"
-          ></textarea>
-        </div>
-      </div>
-
-      <!-- Business Details -->
-      <div class="form-section">
-        <h3>Business Details</h3>
-
-        <div class="form-field">
-          <label for="years_in_business">Years in Business</label>
-          <input
-            id="years_in_business"
-            v-model.number="formData.years_in_business"
-            type="number"
-            placeholder="How many years have you been in business?"
-            min="0"
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="employee_count">Employee Count</label>
-          <input
-            id="employee_count"
-            v-model.number="formData.employee_count"
-            type="number"
-            placeholder="Number of employees"
-            min="0"
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="annual_capacity">Annual Capacity</label>
-          <input
-            id="annual_capacity"
-            v-model="formData.annual_capacity"
-            type="text"
-            placeholder="e.g., 500 tons, 10,000 units"
-          />
-        </div>
-      </div>
-
-      <!-- Specialties & Services -->
-      <div class="form-section">
-        <h3>Specialties & Services</h3>
-
-        <div class="form-field">
-          <label for="specialties">Product Specialties</label>
-          <input
-            id="specialties"
-            v-model="specialtiesInput"
-            type="text"
-            placeholder="e.g., Organic Vegetables, Dairy Products (comma separated)"
-            @blur="updateSpecialties"
-          />
-          <div v-if="formData.specialties?.length" class="tags-preview">
-            <span
-              v-for="specialty in formData.specialties"
-              :key="specialty"
-              class="tag"
-            >
-              {{ specialty }}
-              <button type="button" @click="removeSpecialty(specialty)">
-                ×
-              </button>
-            </span>
-          </div>
-        </div>
-
-        <div class="form-field">
-          <label for="client_types">Client Types Served</label>
-          <input
-            id="client_types"
-            v-model="clientTypesInput"
-            type="text"
-            placeholder="e.g., Restaurants, Hotels, Catering (comma separated)"
-            @blur="updateClientTypes"
-          />
-          <div v-if="formData.client_types?.length" class="tags-preview">
-            <span
-              v-for="clientType in formData.client_types"
-              :key="clientType"
-              class="tag"
-            >
-              {{ clientType }}
-              <button type="button" @click="removeClientType(clientType)">
-                ×
-              </button>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Business Features -->
-      <div class="form-section">
-        <h3>Business Features</h3>
-
-        <div class="form-field checkbox-field">
-          <label>
-            <input v-model="formData.bulk_discounts" type="checkbox" />
-            Offer bulk discounts
-          </label>
-        </div>
-
-        <div class="form-field checkbox-field">
-          <label>
-            <input v-model="formData.seasonal_pricing" type="checkbox" />
-            Seasonal pricing available
-          </label>
-        </div>
-
-        <div class="form-field checkbox-field">
-          <label>
-            <input v-model="formData.verified" type="checkbox" />
-            Business is verified
-          </label>
-        </div>
-      </div>
-
       <!-- Actions -->
       <div class="form-actions">
         <button type="button" class="btn-secondary" @click="$emit('cancel')">
@@ -243,8 +161,12 @@
           class="btn-primary"
           :disabled="!canSubmit || isSubmitting"
         >
-          {{ isSubmitting ? 'Creating...' : 'Create Profile' }}
+          {{ isSubmitting ? 'Creating Profile...' : 'Create Supplier Profile' }}
         </button>
+      </div>
+
+      <div v-if="error" class="error-message">
+        {{ error }}
       </div>
     </form>
   </div>
@@ -252,41 +174,44 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useProfileCreate } from '../../../../../../../core/fireux-core/src/runtime/composables/firestore/profiles/useProfileCreate'
+import { supplierConfig } from '../../../../models/profiles/Supplier.model'
 
-const emit = defineEmits(['submit', 'cancel'])
+const emit = defineEmits(['submit', 'cancel', 'success'])
 
 const isSubmitting = ref(false)
+const error = ref('')
 const specialtiesInput = ref('')
-const clientTypesInput = ref('')
 
+// Simplified form data matching our new Supplier model
 const formData = ref({
   business_name: '',
-  email: '',
-  title: '',
   business_type: '',
+  specialties: [],
+  email: '',
   contact_person: '',
   phone: '',
-  website: '',
   bio_short: '',
-  bio_long: '',
   years_in_business: null,
-  employee_count: null,
-  annual_capacity: '',
-  specialties: [],
-  client_types: [],
-  bulk_discounts: false,
-  seasonal_pricing: false,
+  website: '',
+
+  // Default values
+  total_ingredients: 0,
+  active_ingredients: [],
   verified: false,
+  featured: false,
 })
 
 const canSubmit = computed(() => {
   return (
     formData.value.business_name.trim().length > 0 &&
-    formData.value.email.trim().length > 0 &&
-    formData.value.business_type.length > 0
+    formData.value.business_type.length > 0 &&
+    formData.value.specialties.length > 0 &&
+    formData.value.email.trim().length > 0
   )
 })
 
+// Specialties management
 const updateSpecialties = () => {
   if (specialtiesInput.value.trim()) {
     const newSpecialties = specialtiesInput.value
@@ -307,49 +232,40 @@ const removeSpecialty = (specialty) => {
   }
 }
 
-const updateClientTypes = () => {
-  if (clientTypesInput.value.trim()) {
-    const newClientTypes = clientTypesInput.value
-      .split(',')
-      .map((c) => c.trim())
-      .filter((c) => c.length > 0)
-      .filter((c) => !formData.value.client_types.includes(c))
-
-    formData.value.client_types.push(...newClientTypes)
-    clientTypesInput.value = ''
-  }
-}
-
-const removeClientType = (clientType) => {
-  const index = formData.value.client_types.indexOf(clientType)
-  if (index > -1) {
-    formData.value.client_types.splice(index, 1)
-  }
-}
-
 const handleSubmit = async () => {
   if (!canSubmit.value || isSubmitting.value) return
 
   isSubmitting.value = true
+  error.value = ''
 
   try {
-    // Clean up the data
+    // Use the unified profile creation system
+    const { createProfile } = await useProfileCreate(supplierConfig)
+
+    // Clean up the data for submission
     const submitData = {
-      ...formData.value,
       business_name: formData.value.business_name.trim(),
+      business_type: formData.value.business_type,
+      specialties: formData.value.specialties,
       email: formData.value.email.trim(),
-      title: formData.value.title?.trim() || undefined,
       contact_person: formData.value.contact_person?.trim() || undefined,
       phone: formData.value.phone?.trim() || undefined,
-      website: formData.value.website?.trim() || undefined,
       bio_short: formData.value.bio_short?.trim() || undefined,
-      bio_long: formData.value.bio_long?.trim() || undefined,
-      annual_capacity: formData.value.annual_capacity?.trim() || undefined,
-      created_at: new Date(),
-      updated_at: new Date(),
+      years_in_business: formData.value.years_in_business || undefined,
+      website: formData.value.website?.trim() || undefined,
+      total_ingredients: 0,
+      active_ingredients: [],
+      verified: false,
+      featured: false,
     }
 
+    await createProfile(submitData)
+
+    emit('success')
     emit('submit', submitData)
+  } catch (err) {
+    console.error('Error creating supplier profile:', err)
+    error.value = err.message || 'Failed to create profile. Please try again.'
   } finally {
     isSubmitting.value = false
   }
@@ -357,173 +273,38 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-.supplier-create-form {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
+/* 
+ * Supplier-specific styling only
+ * Most form styling comes from generic profile-create classes in core
+ */
+
+/* Domain-specific track info styling */
+.supplier .track-info {
+  background: var(--blue-50, #eff6ff);
+  border: 1px solid var(--blue-200, #bfdbfe);
 }
 
-.form-header {
-  text-align: center;
-  margin-bottom: 30px;
+.supplier .track-note {
+  color: var(--blue-700, #1d4ed8);
 }
 
-.form-header h2 {
-  margin: 0 0 8px 0;
-  color: #111827;
+.supplier .track-note ul {
+  color: var(--blue-600, #2563eb);
 }
 
-.form-header p {
-  color: #6b7280;
-  margin: 0;
+/* Supplier-specific tag styling */
+.supplier .tags-input .tag {
+  background: var(--blue-100, #dbeafe);
+  color: var(--blue-700, #1d4ed8);
+  border: 1px solid var(--blue-200, #bfdbfe);
 }
 
-.supplier-form {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+/* Primary button supplier branding */
+.supplier .btn-primary {
+  background: var(--blue-600, #2563eb);
 }
 
-.form-section {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 20px;
-  background: #f9fafb;
-}
-
-.form-section h3 {
-  margin: 0 0 20px 0;
-  color: #374151;
-  font-size: 1.1rem;
-}
-
-.form-field {
-  margin-bottom: 16px;
-}
-
-.form-field:last-child {
-  margin-bottom: 0;
-}
-
-.form-field label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: #374151;
-}
-
-.form-field input[type='text'],
-.form-field input[type='email'],
-.form-field input[type='tel'],
-.form-field input[type='url'],
-.form-field input[type='number'],
-.form-field select,
-.form-field textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 1rem;
-  background: white;
-}
-
-.form-field input:focus,
-.form-field select:focus,
-.form-field textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.checkbox-field label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.checkbox-field input[type='checkbox'] {
-  width: auto;
-}
-
-.tags-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.tag {
-  background: #e5e7eb;
-  color: #374151;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.tag button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #6b7280;
-  font-size: 1.2rem;
-  line-height: 1;
-  padding: 0;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-.tag button:hover {
-  background: #d1d5db;
-}
-
-.form-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.btn-primary,
-.btn-secondary {
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-}
-
-.btn-primary {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: #2563eb;
-}
-
-.btn-primary:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background: transparent;
-  color: #374151;
-  border: 1px solid #d1d5db;
-}
-
-.btn-secondary:hover {
-  background: #f3f4f6;
+.supplier .btn-primary:hover:not(:disabled) {
+  background: var(--blue-700, #1d4ed8);
 }
 </style>

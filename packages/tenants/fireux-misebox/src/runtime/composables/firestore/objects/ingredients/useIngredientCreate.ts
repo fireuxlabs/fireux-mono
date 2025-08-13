@@ -1,18 +1,17 @@
 import { ref } from 'vue'
-import { useCurrentUser } from 'vuefire'
-import { useFirestoreManager } from 'fireux-core/composables/firestore/useFirestoreManager'
+import { useCurrentUser, useFirestore } from 'vuefire'
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
 
-// Minimal, isolated ingredient create composable (tenant scoped)
-// Keeps logic simple and independent from generic object/profile systems
+// Enhanced ingredient create composable with supplier support
 export function useIngredientCreate() {
   const currentUser = useCurrentUser()
-  const { setDocument } = useFirestoreManager()
+  const db = useFirestore()
 
   const creating = ref(false)
   const createError = ref<Error | null>(null)
 
-  // Accept just a name for now; can extend later with category, unit, etc.
-  async function createIngredient(name: string): Promise<string> {
+  // Accept name and optional supplier ID
+  async function createIngredient(name: string, supplierId?: string): Promise<boolean> {
     if (!name) throw new Error('Ingredient name required')
     if (!currentUser.value) throw new Error('User not authenticated')
 
@@ -25,20 +24,42 @@ export function useIngredientCreate() {
         .toString(36)
         .slice(2, 7)}`
 
-      const data = {
+      const data: any = {
         name: name.trim(),
-        // creator_id & created_at will be added by setDocument(stampDoc)
-        // updated_at omitted for now (can add in update flow later)
+        creator_id: currentUser.value.uid,
+        created_at: serverTimestamp(),
       }
 
-      await setDocument('ingredients', id, data)
-      return id
+      // Add supplier information if provided
+      if (supplierId) {
+        try {
+          const supplierRef = doc(db, 'suppliers', supplierId)
+          const supplierDoc = await getDoc(supplierRef)
+          
+          if (supplierDoc.exists()) {
+            const supplierData = supplierDoc.data()
+            data.supplierId = supplierId
+            data.supplierInfo = {
+              business_name: supplierData.business_name,
+              verified: supplierData.verified || false
+            }
+          }
+        } catch (error) {
+          console.warn('Failed to fetch supplier info:', error)
+          // Continue creating ingredient without supplier info
+        }
+      }
+
+      const ingredientRef = doc(db, 'ingredients', id)
+      await setDoc(ingredientRef, data)
+      
+      console.log('✅ Ingredient created:', name, supplierId ? `(Supplier: ${data.supplierInfo?.business_name})` : '')
+      return true
+      
     } catch (e: any) {
-      createError.value =
-        e instanceof Error
-          ? e
-          : new Error(e?.message || 'Failed to create ingredient')
-      throw createError.value
+      createError.value = e instanceof Error ? e : new Error(e?.message || 'Failed to create ingredient')
+      console.error('❌ Failed to create ingredient:', createError.value)
+      return false
     } finally {
       creating.value = false
     }

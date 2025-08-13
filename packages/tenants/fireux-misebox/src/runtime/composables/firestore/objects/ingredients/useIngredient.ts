@@ -1,15 +1,58 @@
-// Use workspace package alias instead of brittle deep relative path
-// Import from source via workspace alias; fireux-core exports only root so use relative alias path
-import { useFirestoreRead } from 'fireux-core/composables/firestore/useFirestoreRead'
-// If running unbuilt source during dev with module-builder providing alias resolution, the above should work.
-// (If not, consider adjusting fireux-core exports map to expose composables directly.)
+import { computed, ref } from 'vue'
+import { useFirestore, useCollection, useDocument } from 'vuefire'
+import { collection, query, orderBy, doc } from 'firebase/firestore'
 import { useIngredientCreate } from './useIngredientCreate'
+import { normalizeIngredient } from '../../../../models/objects/Ingredient.model'
 
-// Fetch-all + isolated create. Keep it tiny.
-export async function useIngredient() {
-  const { firestoreFetchCollection } = useFirestoreRead()
-  const all = await firestoreFetchCollection('ingredients')
-  const create = useIngredientCreate()
+// Simple firestore collection fetch with proper data normalization
+export function useIngredient() {
+  try {
+    const db = useFirestore()
+    if (!db) {
+      // Fallback if firestore is not available (SSR)
+      return {
+        all: ref([]),
+        getById: (id: string) => ref(null),
+        ...useIngredientCreate(),
+      }
+    }
 
-  return { all, ...create }
+    const colRef = collection(db, 'ingredients')
+    const q = query(colRef, orderBy('name'))
+    const { data, pending, error } = useCollection(q, { ssrKey: 'ingredients' })
+
+    // Transform raw firestore data to normalized ingredient format
+    const all = computed(() => {
+      if (!data.value || pending.value || error.value) return []
+      return data.value.map((raw: any) =>
+        normalizeIngredient(raw.id || 'unknown', raw)
+      )
+    })
+
+    // Get single ingredient by ID
+    const getById = (id: string) => {
+      const docRef = doc(db, 'ingredients', id)
+      const { data: rawData } = useDocument(docRef, {
+        ssrKey: `ingredient-${id}`,
+      })
+
+      return computed(() => {
+        if (!rawData.value) return null
+        return normalizeIngredient(id, rawData.value)
+      })
+    }
+
+    const create = useIngredientCreate()
+
+    return { all, pending, error, getById, ...create }
+  } catch (err) {
+    console.warn('useIngredient error:', err)
+    return {
+      all: ref([]),
+      pending: ref(false),
+      error: ref(err),
+      getById: (id: string) => ref(null),
+      ...useIngredientCreate(),
+    }
+  }
 }

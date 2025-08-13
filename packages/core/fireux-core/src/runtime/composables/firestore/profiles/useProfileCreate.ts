@@ -83,8 +83,10 @@ export async function useProfileCreate(profileConfig: ProfileConfig) {
         uid: currentUser.value.uid,
         created_at: serverTimestamp(), // Use server timestamp for accuracy
         updated_at: serverTimestamp(),
+        // Required Profile fields
+        avatarUrl: currentUser.value.photoURL || '/default-avatar.png',
         // Include common user data from appUser
-        email: appUser.value?.email || '',
+        email: appUser.value?.email || currentUser.value.email || '',
         ...additionalData, // Merge any additional form data
       }
 

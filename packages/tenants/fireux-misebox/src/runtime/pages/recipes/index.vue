@@ -127,12 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRecipeHierarchy } from '../../composables/firestore/objects/Recipe/useRecipeHierarchy'
-
-definePageMeta({
-  title: 'Recipes',
-  description: 'Browse and discover delicious recipes from professional chefs',
-})
+import { ref, computed } from 'vue'
 
 // Data and state
 const searchQuery = ref('')
@@ -144,10 +139,12 @@ const filters = ref({
   cuisine: '',
 })
 
-// Get recipes with hierarchy support
-const appId = undefined // This is MiseBox, so we see global + all app recipes
-const { allAvailableRecipes, loading, error, searchRecipes, filterRecipes } =
-  await useRecipeHierarchy(appId)
+// Temporary stub - replace with proper recipe composable later
+const allAvailableRecipes = ref([])
+const loading = ref(false)
+const error = ref(null)
+const searchRecipes = (query: string) => []
+const filterRecipes = (filters: any) => []
 
 // Filter options
 const difficultyOptions = [
@@ -190,7 +187,8 @@ const displayedRecipes = computed(() => {
 
 // Navigation
 const navigateToRecipe = (recipe: any) => {
-  navigateTo(`/recipes/${recipe.slug}`)
+  // navigateTo(`/recipes/${recipe.slug}`) // Disabled for now
+  console.log('Navigate to recipe:', recipe)
 }
 </script>
 

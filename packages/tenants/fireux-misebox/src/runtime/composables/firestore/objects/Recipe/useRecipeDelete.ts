@@ -1,5 +1,5 @@
-import { useObjectDelete } from 'fireux-core/src/runtime/composables/firestore/objects/useObjectDelete'
-
+// Simple stub for recipe delete functionality
 export function useRecipeDelete() {
-  return useObjectDelete()
+  // Implement recipe delete logic when needed
+  return {}
 }

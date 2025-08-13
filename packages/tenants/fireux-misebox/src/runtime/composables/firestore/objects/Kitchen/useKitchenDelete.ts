@@ -1,5 +1,5 @@
-import { useObjectDelete } from 'fireux-core/src/runtime/composables/firestore/objects/useObjectDelete'
-
+// Simple stub for kitchen delete functionality
 export function useKitchenDelete() {
-  return useObjectDelete()
+  // Implement kitchen delete logic when needed
+  return {}
 }

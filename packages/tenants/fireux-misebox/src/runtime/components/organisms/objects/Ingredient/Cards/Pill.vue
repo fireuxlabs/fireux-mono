@@ -1,15 +1,17 @@
 <template>
-  <div
-    class="objects cards cell ingredient-cell"
-    :data-id="props.ingredient.id"
-  >
+  <UCard class="objects cards cell pill">
     <div class="header">
+      <div class="icon small">🥬</div>
       <div class="info">
-        <div class="title">{{ props.ingredient.name }}</div>
-        <div class="subtitle">Ingredient</div>
+        <h4 v-if="ingredient?.name" class="title">
+          {{ ingredient.name }}
+        </h4>
+        <p v-if="ingredient?.category" class="subtitle">
+          {{ ingredient.category }}
+        </p>
       </div>
     </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">

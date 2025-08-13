@@ -1,5 +1,5 @@
-import { useObjectCreate } from 'fireux-core/src/runtime/composables/firestore/objects/useObjectCreate'
-
+// Simple stub for kitchen create functionality
 export function useKitchenCreate() {
-  return useObjectCreate()
+  // Implement kitchen create logic when needed
+  return {}
 }
