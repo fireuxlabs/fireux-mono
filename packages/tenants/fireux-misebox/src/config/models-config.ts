@@ -1,24 +1,43 @@
 /**
  * Models Configuration for FireUX Misebox
  *
- * Auto-imports Chef and Supplier models
+ * Auto-import all model interfaces in runtime/models/{profiles,objects} using a glob.
+ * Each model file exporting an interface named after the file (PascalCase + .model.ts)
+ * will be exposed as a global constant referencing its type.
+ *
+ * Example: runtime/models/objects/Ingredient.model.ts -> global const Ingredient
  */
 import { Resolver, addTypeTemplate } from '@nuxt/kit'
+import { globSync } from 'glob'
+import { relative, sep, posix } from 'pathe'
 
-export function configureModels(resolver: Resolver, nuxt: any) {
-  // Add type imports for models
-  addTypeTemplate({
-    filename: 'types/misebox-models.d.ts',
-    getContents: () => `
-declare global {
-  // Chef model types
-  const Chef: typeof import('${resolver.resolve('./runtime/models/profiles/Chef.model')}').Chef
-  
-  // Supplier model types  
-  const Supplier: typeof import('${resolver.resolve('./runtime/models/profiles/Supplier.model')}').Supplier
+function toGlobalName(file: string) {
+  // Expect .../<Dir>/<Name>.model.ts
+  const base = file.split(/[\\/]/).pop() || ''
+  const name = base.replace(/\.model\.ts$/, '')
+  return name
 }
 
-export {}
-`,
+export function configureModels(resolver: Resolver, nuxt: any) {
+  const root = resolver.resolve('.')
+  const patterns = [
+    resolver.resolve('./runtime/models/profiles/**/*.model.ts'),
+    resolver.resolve('./runtime/models/objects/**/*.model.ts'),
+  ]
+  const files = patterns.flatMap((p) =>
+    globSync(p, { windowsPathsNoEscape: true })
+  )
+  const decls = files
+    .map((abs) => {
+      const globalName = toGlobalName(abs)
+      // Build import path relative to current config root for the template
+      const rel = relative(root, abs).split(sep).join(posix.sep)
+      return `  const ${globalName}: typeof import('${resolver.resolve('./' + rel)}').${globalName}`
+    })
+    .join('\n')
+
+  addTypeTemplate({
+    filename: 'types/misebox-models.d.ts',
+    getContents: () => `declare global {\n${decls}\n}\n\nexport {}\n`,
   })
 }

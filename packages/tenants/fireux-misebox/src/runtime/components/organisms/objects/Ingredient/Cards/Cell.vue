@@ -1,10 +1,3 @@
-<script setup lang="ts">
-interface IngredientCellProps {
-  ingredient: { id: string; name: string }
-}
-const props = defineProps<IngredientCellProps>()
-</script>
-
 <template>
   <div
     class="objects cards cell ingredient-cell"
@@ -18,3 +11,11 @@ const props = defineProps<IngredientCellProps>()
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import type { Ingredient } from '../../../../../models/objects/Ingredient.model'
+
+defineProps<{
+  ingredient?: Partial<Ingredient>
+}>()
+</script>

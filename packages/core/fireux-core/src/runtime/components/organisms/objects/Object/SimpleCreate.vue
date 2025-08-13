@@ -15,7 +15,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const createCtx = useSimpleObjectCreate({ collectionName: props.collection })
-const canSubmit = computed(() => !!createCtx.name.value.trim() && !createCtx.creating.value)
+const canSubmit = computed(
+  () => !!createCtx.name.value.trim() && !createCtx.creating.value
+)
 
 function onEnter(e: KeyboardEvent) {
   if (e.key === 'Enter' && !e.shiftKey) {
@@ -47,15 +49,31 @@ async function submit() {
         :loading="createCtx.creating.value"
         :disabled="!canSubmit"
         class="submit-btn"
-      >Add</UButton>
+        >Add</UButton
+      >
     </UForm>
     <p v-if="createCtx.error.value" class="err">{{ createCtx.error.value }}</p>
   </div>
 </template>
 
 <style scoped>
-.simple-create-form { display: flex; flex-direction: column; gap: .5rem; }
-@media (min-width:600px){ .simple-create-form { flex-direction: row; align-items: flex-end; } }
-.submit-btn { margin-top: .25rem; }
-.err { margin:.25rem 0 0; font-size:.7rem; color:#dc2626; }
+.simple-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+@media (min-width: 600px) {
+  .simple-create-form {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+}
+.submit-btn {
+  margin-top: 0.25rem;
+}
+.err {
+  margin: 0.25rem 0 0;
+  font-size: 0.7rem;
+  color: #dc2626;
+}
 </style>

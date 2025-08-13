@@ -7,8 +7,9 @@
   "types": "./src/module.ts",
   "exports": {
     ".": "./src/module.ts",
-    "./composables": "./src/runtime/composables/*",
-    "./types": "./src/runtime/types"
+    "./types": "./src/runtime/types",
+    "./composables/*": "./src/runtime/composables/*",
+    "./runtime/*": "./src/runtime/*"
   },
   "files": [
     "src/**/*"

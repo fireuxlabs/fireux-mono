@@ -34,8 +34,8 @@
       >
         {{ specialty }}
       </span>
-      <span v-if="supplier.specialties.length > 3" class="tag-more">
-        +{{ supplier.specialties.length - 3 }} more
+      <span v-if="supplier?.specialties?.length > 3" class="tag-more">
+        +{{ supplier?.specialties?.length - 3 }} more
       </span>
     </div>
 
