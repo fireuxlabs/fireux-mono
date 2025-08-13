@@ -72,28 +72,8 @@ function onEnter(e: KeyboardEvent) {
     </div>
 
     <div class="ingredients-actions">
-      <UForm class="quick-add" @submit.prevent="createIngredient" :state="{ newName }">
-        <UFormGroup label="Add Ingredient" name="newName" required>
-          <UInput
-            ref="newNameEl"
-            v-model="newName"
-            placeholder="e.g. Basil"
-            autocomplete="off"
-            @keydown="onEnter"
-          />
-          <p class="field-hint">Press Enter to add</p>
-        </UFormGroup>
-        <UButton
-          type="submit"
-          :loading="creating"
-          :disabled="!newName.trim() || creating"
-          class="quick-add-submit"
-        >Add</UButton>
-      </UForm>
-
-      <div class="search-box">
-        <UInput v-model="search" placeholder="Search ingredients..." autocomplete="off" />
-      </div>
+      <ObjectSimpleCreate collection="ingredients" label="Add Ingredient" placeholder="e.g. Basil" />
+      <div class="search-box"><UInput v-model="search" placeholder="Search ingredients..." autocomplete="off" /></div>
     </div>
     <p v-if="createError" class="form-error" role="alert">{{ createError }}</p>
 
