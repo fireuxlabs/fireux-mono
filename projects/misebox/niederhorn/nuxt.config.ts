@@ -10,6 +10,10 @@ export default defineNuxtConfig({
   imports: {
     dirs: ['composables/**', 'models/**', 'utils/**'],
   },
+
+  // Explicitly configure SSR to be consistent
+  ssr: true,
+
   css: [
     // Assets are now automatically included by fireux-core module
   ],
@@ -71,8 +75,15 @@ export default defineNuxtConfig({
           storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
           messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
           appId: process.env.FIREBASE_APP_ID,
+          measurementId: process.env.FIREBASE_MEASUREMENT_ID,
         },
-        auth: { enabled: true },
+        auth: {
+          enabled: true,
+          ssr: true,
+        },
+        admin: {
+          serviceAccount: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        },
       },
     ],
     '@nuxt/ui',
