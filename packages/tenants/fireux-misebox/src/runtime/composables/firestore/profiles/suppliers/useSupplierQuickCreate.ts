@@ -23,35 +23,37 @@ export const useSupplierQuickCreate = () => {
     createdSupplier.value = null
 
     try {
-      // Generate a simple ID based on business name
+      // Generate auto-generated ID for independent supplier entity
       const supplierId = businessName.toLowerCase()
         .replace(/[^a-z0-9]/g, '-')
         .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '')
+        .replace(/(^-)|(-$)/g, '')
         + '-' + Date.now().toString(36)
 
       // Create minimal supplier profile for quick creation
       const supplierData: Supplier = {
-        // Profile required fields
-        uid: user.value.uid,
-        avatarUrl: user.value.photoURL || '/default-supplier-avatar.png',
+        // Profile required fields (but not using user.uid as document ID)
+        uid: supplierId, // Use auto-generated ID, not user.uid
+        avatarUrl: '/default-supplier-avatar.png', // Generic supplier avatar
         
         // Core Identity
         id: supplierId,
         business_name: businessName,
-        business_type: 'other', // Use 'other' for chef-created suppliers
-        email: user.value.email || '',
-        specialties: [], // Will be populated when ingredients are added
+        
+        // Unclaimed supplier system
+        claimed: false,
+        created_by: user.value.uid, // Track who created it
+        
+        // Basic info (minimal for quick creation)
+        business_type: 'other',
+        specialties: [],
         
         // Timestamps
         created_at: new Date(),
         updated_at: new Date(),
         
-        // Ingredient tracking
+        // Tracking
         total_ingredients: 0,
-        active_ingredients: [],
-        
-        // Status
         verified: false
       }
 

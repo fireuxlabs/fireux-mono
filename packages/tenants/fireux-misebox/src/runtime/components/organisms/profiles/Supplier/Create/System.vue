@@ -174,11 +174,12 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useProfileCreate } from '../../../../../../../core/fireux-core/src/runtime/composables/firestore/profiles/useProfileCreate'
-import { supplierConfig } from '../../../../models/profiles/Supplier.model'
+import { useCurrentUser, useFirestore } from 'vuefire'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 
 const emit = defineEmits(['submit', 'cancel', 'success'])
 
+const currentUser = useCurrentUser()
 const isSubmitting = ref(false)
 const error = ref('')
 const specialtiesInput = ref('')
@@ -239,27 +240,54 @@ const handleSubmit = async () => {
   error.value = ''
 
   try {
-    // Use the unified profile creation system
-    const { createProfile } = await useProfileCreate(supplierConfig)
+    // Generate auto-generated ID for independent supplier entity
+    const supplierId = formData.value.business_name.toLowerCase()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/(^-)|(-$)/g, '')
+      + '-' + Date.now().toString(36)
 
     // Clean up the data for submission
     const submitData = {
+      // Use auto-generated ID, not user UID
+      uid: supplierId,
+      id: supplierId,
+      
+      // Core supplier data
       business_name: formData.value.business_name.trim(),
       business_type: formData.value.business_type,
       specialties: formData.value.specialties,
+      
+      // Contact info (for full profiles)
       email: formData.value.email.trim(),
       contact_person: formData.value.contact_person?.trim() || undefined,
       phone: formData.value.phone?.trim() || undefined,
       bio_short: formData.value.bio_short?.trim() || undefined,
       years_in_business: formData.value.years_in_business || undefined,
       website: formData.value.website?.trim() || undefined,
+      
+      // Claim system - full profiles start as claimed
+      claimed: true, // Full profile creation means it's claimed
+      claimed_by: currentUser.value?.uid, // User who created it claims it
+      created_by: currentUser.value?.uid, // Same user created and claimed it
+      
+      // Default values
       total_ingredients: 0,
-      active_ingredients: [],
       verified: false,
       featured: false,
+      
+      // Generic avatar for supplier
+      avatarUrl: '/default-supplier-avatar.png',
     }
 
-    await createProfile(submitData)
+    // Use Firestore directly instead of profile system (since suppliers are independent entities)
+    const db = useFirestore()
+    const supplierRef = doc(db, 'suppliers', supplierId)
+    await setDoc(supplierRef, {
+      ...submitData,
+      created_at: serverTimestamp(),
+      updated_at: serverTimestamp(),
+    })
 
     emit('success')
     emit('submit', submitData)

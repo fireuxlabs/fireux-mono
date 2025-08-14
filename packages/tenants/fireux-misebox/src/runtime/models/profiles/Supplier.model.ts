@@ -4,28 +4,28 @@ import type {
 } from 'fireux-core/src/runtime/models/profiles/profile.model'
 
 export interface Supplier extends Profile {
-  // Core Identity
-  id: string
-  business_name: string
+  // Core Identity - supplier has its own independent ID
+  id: string                         // auto-generated supplier ID (same as uid)
+  business_name: string              // only required field
   
   // Claim system - simple boolean
-  claimed: boolean                    // false = unclaimed, true = claimed
-  claimed_by?: string                // uid of user who claimed it
+  claimed: boolean                   // false = unclaimed, true = claimed
+  claimed_by?: string               // uid of user who claimed it (when claimed)
   
-  // Who created this supplier
-  created_by: string                 // uid of chef who first created it
+  // Creation tracking - who created this supplier
+  created_by: string                // uid of chef who first created it
   
-  // Basic info
-  business_type?: string             // optional for quick creation
-  specialties?: string[]             // optional for quick creation
+  // Basic info (optional for quick creation)
+  business_type?: string            // optional for quick creation
+  specialties?: string[]            // optional for quick creation
   
   // Contact (only when claimed)
   email?: string
   phone?: string
   
   // Simple tracking
-  total_ingredients?: number         // how many ingredients use this supplier
-  verified?: boolean                 // only claimed suppliers can be verified
+  total_ingredients?: number        // how many ingredients use this supplier
+  verified?: boolean               // only claimed suppliers can be verified
 }
 
 // Simple validation - just needs a name
