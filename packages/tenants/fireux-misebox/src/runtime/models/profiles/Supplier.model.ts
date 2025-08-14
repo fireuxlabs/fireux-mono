@@ -5,27 +5,27 @@ import type {
 
 export interface Supplier extends Profile {
   // Core Identity - supplier has its own independent ID
-  id: string                         // auto-generated supplier ID (same as uid)
-  business_name: string              // only required field
-  
+  id: string // auto-generated supplier ID (same as uid)
+  business_name: string // only required field
+
   // Claim system - simple boolean
-  claimed: boolean                   // false = unclaimed, true = claimed
-  claimed_by?: string               // uid of user who claimed it (when claimed)
-  
+  claimed: boolean // false = unclaimed, true = claimed
+  claimed_by?: string // uid of user who claimed it (when claimed)
+
   // Creation tracking - who created this supplier
-  created_by: string                // uid of chef who first created it
-  
+  created_by: string // uid of chef who first created it
+
   // Basic info (optional for quick creation)
-  business_type?: string            // optional for quick creation
-  specialties?: string[]            // optional for quick creation
-  
+  business_type?: string // optional for quick creation
+  specialties?: string[] // optional for quick creation
+
   // Contact (only when claimed)
   email?: string
   phone?: string
-  
+
   // Simple tracking
-  total_ingredients?: number        // how many ingredients use this supplier
-  verified?: boolean               // only claimed suppliers can be verified
+  total_ingredients?: number // how many ingredients use this supplier
+  verified?: boolean // only claimed suppliers can be verified
 }
 
 // Simple validation - just needs a name

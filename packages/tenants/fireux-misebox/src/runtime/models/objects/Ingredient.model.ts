@@ -9,12 +9,12 @@ export interface Ingredient {
   name: string
   category?: string
   tags: string[]
-  
+
   // Creator information
   createdBy: { id: string; avatar?: string }
   createdAt: string
   updatedAt?: string
-  
+
   // Supplier relationship (new)
   supplierId?: string // ID of supplier who added this ingredient
   supplierInfo?: {
@@ -30,7 +30,7 @@ export interface NewIngredientInput {
   category?: string
   tags?: string[]
   createdBy: { id: string; avatar?: string }
-  
+
   // Optional supplier information
   supplierId?: string
   supplierInfo?: {
@@ -50,7 +50,7 @@ export function normalizeIngredient(id: string, raw: any): Ingredient {
     createdBy: raw.createdBy || raw.created_by || { id: 'unknown' },
     createdAt: raw.createdAt || raw.created_at || new Date().toISOString(),
     updatedAt: raw.updatedAt || raw.updated_at,
-    
+
     // Supplier relationship
     supplierId: raw.supplierId || raw.supplier_id,
     supplierInfo: raw.supplierInfo || raw.supplier_info,

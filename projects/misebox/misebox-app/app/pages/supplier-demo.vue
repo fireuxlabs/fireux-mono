@@ -2,7 +2,10 @@
   <div class="supplier-demo">
     <div class="header">
       <h1>🚛 Dual-Track Supplier System</h1>
-      <p>Head chefs get fast supplier creation, suppliers get rich profile management</p>
+      <p>
+        Head chefs get fast supplier creation, suppliers get rich profile
+        management
+      </p>
     </div>
 
     <div class="demo-sections">
@@ -12,14 +15,19 @@
           <h2>⚡ Quick Track - For Head Chefs</h2>
           <p>Fast supplier creation when adding ingredients</p>
         </div>
-        
+
         <div class="demo-content">
           <div class="explanation">
             <h3>How it works:</h3>
             <ul>
               <li>Chef goes to ingredients page to add new ingredients</li>
-              <li>Can select existing supplier or click "New" to quickly create one</li>
-              <li>Supplier created with just a name, ready to use immediately</li>
+              <li>
+                Can select existing supplier or click "New" to quickly create
+                one
+              </li>
+              <li>
+                Supplier created with just a name, ready to use immediately
+              </li>
               <li>Perfect for busy kitchens that need speed</li>
             </ul>
             <NuxtLink to="/ingredients" class="btn-demo">
@@ -35,7 +43,7 @@
           <h2>🏢 Rich Track - For Suppliers</h2>
           <p>Full supplier profiles for marketplace presence</p>
         </div>
-        
+
         <div class="demo-content">
           <div class="explanation">
             <h3>Full Supplier Profile Features:</h3>
@@ -58,26 +66,38 @@
         <div class="section-header">
           <h2>🎯 System Benefits</h2>
         </div>
-        
+
         <div class="benefits-grid">
           <div class="benefit-card">
             <h3>⚡ Speed for Chefs</h3>
-            <p>Head chefs can quickly assign suppliers to ingredients without complex forms</p>
+            <p>
+              Head chefs can quickly assign suppliers to ingredients without
+              complex forms
+            </p>
           </div>
-          
+
           <div class="benefit-card">
             <h3>🏢 Rich Profiles for Suppliers</h3>
-            <p>Suppliers can create detailed marketplace presence and manage their own ingredients</p>
+            <p>
+              Suppliers can create detailed marketplace presence and manage
+              their own ingredients
+            </p>
           </div>
-          
+
           <div class="benefit-card">
             <h3>🔄 Upgrade Path</h3>
-            <p>Quick suppliers can later upgrade to full profiles when they want marketplace presence</p>
+            <p>
+              Quick suppliers can later upgrade to full profiles when they want
+              marketplace presence
+            </p>
           </div>
-          
+
           <div class="benefit-card">
             <h3>📊 Flexible Data</h3>
-            <p>System handles both simple name-only suppliers and complex business profiles</p>
+            <p>
+              System handles both simple name-only suppliers and complex
+              business profiles
+            </p>
           </div>
         </div>
       </div>
@@ -88,7 +108,7 @@
 <script setup lang="ts">
 definePageMeta({
   title: 'Supplier System Demo',
-  description: 'Dual-track supplier creation system demonstration'
+  description: 'Dual-track supplier creation system demonstration',
 })
 </script>
 
@@ -250,7 +270,7 @@ definePageMeta({
   .supplier-demo {
     padding: 1rem;
   }
-  
+
   .benefits-grid {
     grid-template-columns: 1fr;
   }

@@ -6,7 +6,7 @@
       @created="handleSupplierCreated"
       @cancel="showQuickSupplierCreate = false"
     />
-    
+
     <!-- Main Ingredient Creation Form -->
     <form @submit.prevent="handleSubmit" class="ingredient-form">
       <div class="form-row">
@@ -24,22 +24,22 @@
         <div class="field supplier-field">
           <label for="supplier-select">Supplier</label>
           <div class="supplier-select-container">
-            <select 
-              id="supplier-select" 
+            <select
+              id="supplier-select"
               v-model="selectedSupplierId"
               class="supplier-select"
             >
               <option value="">No supplier (generic)</option>
-              <option 
-                v-for="option in supplierOptions.slice(1)" 
-                :key="option.value" 
+              <option
+                v-for="option in supplierOptions.slice(1)"
+                :key="option.value"
                 :value="option.value"
               >
                 {{ option.label }}
               </option>
             </select>
-            <button 
-              type="button" 
+            <button
+              type="button"
               @click="showQuickSupplierCreate = true"
               class="btn-new-supplier"
               title="Create new supplier"
@@ -51,8 +51,8 @@
       </div>
 
       <div class="form-actions">
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           :disabled="creating || !ingredientName.trim()"
           class="btn-create"
         >
@@ -84,12 +84,12 @@ const showQuickSupplierCreate = ref(false)
 // Methods
 const handleSubmit = async () => {
   if (!ingredientName.value.trim()) return
-  
+
   const success = await createIngredient(
     ingredientName.value.trim(),
     selectedSupplierId.value || undefined
   )
-  
+
   if (success) {
     ingredientName.value = ''
     selectedSupplierId.value = ''

@@ -472,7 +472,9 @@
       border-radius: 6px;
       font-size: 1rem;
       background: white;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
 
       &:focus {
         outline: none;

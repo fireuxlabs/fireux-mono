@@ -47,7 +47,9 @@ export default defineNuxtModule<ModuleOptions>({
     configurePages(resolver, nuxt)
 
     // Add supplier-specific CSS
-    nuxt.options.css.push(resolver.resolve('./runtime/assets/styles/supplier.scss'))
+    nuxt.options.css.push(
+      resolver.resolve('./runtime/assets/styles/supplier.scss')
+    )
 
     console.log(
       '🍳 FireUX Misebox module loaded - Chef & Supplier functionality ready!'

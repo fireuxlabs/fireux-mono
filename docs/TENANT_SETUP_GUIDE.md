@@ -23,10 +23,10 @@ export default defineNuxtConfig({
   imports: {
     dirs: ['composables/**', 'models/**', 'utils/**'],
   },
-  
+
   // ✅ CRITICAL: SSR must be enabled
   ssr: true,
-  
+
   modules: [
     'fireux-core',
     'fireux-jobs',
@@ -35,14 +35,14 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     'nuxt-vuefire',
   ],
-  
+
   nitro: {
     preset: 'firebase',
     firebase: {
       gen: 2,
     },
   },
-  
+
   // ✅ Firebase configuration
   vuefire: {
     auth: {
@@ -145,37 +145,44 @@ Create `config/service-account.json` with your Firebase admin credentials:
 ## 🎨 **Color System**
 
 ### Available NuxtUI Colors:
+
 - `red`, `orange`, `amber`, `yellow`, `lime`, `green`, `emerald`, `teal`
 - `cyan`, `sky`, `blue`, `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose`
 - `slate`, `gray`, `zinc`, `neutral`, `stone`
 
 ### Converting to Hex (for environment variables):
-| NuxtUI Color | Hex Value | Usage |
-|--------------|-----------|-------|
-| `red` | `EF4444` | Red theme |
-| `blue` | `3B82F6` | Blue theme |
-| `green` | `22C55E` | Green theme |
-| `yellow` | `EAB308` | Yellow theme |
-| `violet` | `8B5CF6` | Purple theme |
-| `indigo` | `6366F1` | Indigo theme |
+
+| NuxtUI Color | Hex Value | Usage        |
+| ------------ | --------- | ------------ |
+| `red`        | `EF4444`  | Red theme    |
+| `blue`       | `3B82F6`  | Blue theme   |
+| `green`      | `22C55E`  | Green theme  |
+| `yellow`     | `EAB308`  | Yellow theme |
+| `violet`     | `8B5CF6`  | Purple theme |
+| `indigo`     | `6366F1`  | Indigo theme |
 
 Use the 500 shade (middle intensity) for primary colors.
 
 ## 🚨 **Common Issues & Solutions**
 
 ### Issue: "Neither apiKey nor config.authenticator provided"
+
 **Solution**: Add `NUXT_PUBLIC_` prefixed environment variables
 
 ### Issue: Firebase auth not working
+
 **Solutions**:
+
 1. Ensure `ssr: true` in vuefire config
 2. Add admin service account configuration
 3. Verify all environment variables are set
 
 ### Issue: Components not auto-importing
+
 **Solution**: Verify tenant module is listed in modules array
 
 ### Issue: Port conflicts
+
 **Solution**: Each app should use unique ports (3000, 3001, 3002, etc.)
 
 ## 📁 **Required Directory Structure**
@@ -205,12 +212,14 @@ your-tenant-app/
 ## 📖 **Reference Examples**
 
 ### Working Configurations:
+
 - **Misebox**: `projects/misebox/misebox-app/` (green theme)
 - **Cleanbox**: `projects/cleanbox/cleanbox-app/` (blue theme)
 - **Niederhorn**: `projects/misebox/niederhorn/` (violet theme)
 - **FireUX**: `projects/fireux/fireux-app/` (yellow theme)
 
 ### Package Modules:
+
 - **Core**: `fireux-core` (always required)
 - **Jobs**: `fireux-jobs` (job marketplace)
 - **Misebox**: `fireux-misebox` (chef/supplier marketplace)

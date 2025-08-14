@@ -14,18 +14,14 @@
         </div>
 
         <div class="form-actions">
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             :disabled="creating || !supplierName.trim()"
             class="btn-create"
           >
             {{ creating ? 'Creating...' : 'Create Supplier' }}
           </button>
-          <button 
-            type="button" 
-            @click="$emit('cancel')" 
-            class="btn-cancel"
-          >
+          <button type="button" @click="$emit('cancel')" class="btn-cancel">
             Cancel
           </button>
         </div>
@@ -53,7 +49,8 @@ const emit = defineEmits<{
 }>()
 
 // Composables
-const { createQuickSupplier, creating, createError, createdSupplier } = useSupplierQuickCreate()
+const { createQuickSupplier, creating, createError, createdSupplier } =
+  useSupplierQuickCreate()
 
 // Form data
 const supplierName = ref('')
@@ -61,7 +58,7 @@ const supplierName = ref('')
 // Methods
 const handleSubmit = async () => {
   if (!supplierName.value.trim()) return
-  
+
   const supplier = await createQuickSupplier(supplierName.value.trim())
   if (supplier) {
     emit('created', supplier)

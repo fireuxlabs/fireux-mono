@@ -11,23 +11,23 @@
 
 ### ⚡ **Common Mistakes to Avoid**
 
-| ❌ **Wrong** | ✅ **Correct** | **Impact** |
-|-------------|---------------|------------|
-| Only setting `FIREBASE_API_KEY` | Setting both `FIREBASE_API_KEY` and `NUXT_PUBLIC_FIREBASE_API_KEY` | Client-side auth fails |
-| `ssr: false` in vuefire config | `ssr: true` in vuefire config | Authentication timing issues |
-| Missing admin serviceAccount | Including admin serviceAccount | Server-side operations fail |
-| Inconsistent module order | `fireux-core` first, then extensions | Module resolution conflicts |
+| ❌ **Wrong**                    | ✅ **Correct**                                                     | **Impact**                   |
+| ------------------------------- | ------------------------------------------------------------------ | ---------------------------- |
+| Only setting `FIREBASE_API_KEY` | Setting both `FIREBASE_API_KEY` and `NUXT_PUBLIC_FIREBASE_API_KEY` | Client-side auth fails       |
+| `ssr: false` in vuefire config  | `ssr: true` in vuefire config                                      | Authentication timing issues |
+| Missing admin serviceAccount    | Including admin serviceAccount                                     | Server-side operations fail  |
+| Inconsistent module order       | `fireux-core` first, then extensions                               | Module resolution conflicts  |
 
 ## 📊 **Configuration Matrix**
 
 ### Working Configurations by App:
 
-| App | Port | Theme | Modules | Status |
-|-----|------|-------|---------|--------|
-| **misebox-app** | 3000 | Green (`22C55E`) | core, jobs, misebox | ✅ Working |
-| **cleanbox-app** | 3007 | Blue (`3B82F6`) | core, jobs, cleanbox | ✅ Working |
-| **niederhorn** | 3002 | Violet (`8B5CF6`) | core, jobs, misebox | ✅ Working |
-| **fireux-app** | 3000 | Yellow (`EAB308`) | core only | ✅ Working |
+| App              | Port | Theme             | Modules              | Status     |
+| ---------------- | ---- | ----------------- | -------------------- | ---------- |
+| **misebox-app**  | 3000 | Green (`22C55E`)  | core, jobs, misebox  | ✅ Working |
+| **cleanbox-app** | 3007 | Blue (`3B82F6`)   | core, jobs, cleanbox | ✅ Working |
+| **niederhorn**   | 3002 | Violet (`8B5CF6`) | core, jobs, misebox  | ✅ Working |
+| **fireux-app**   | 3000 | Yellow (`EAB308`) | core only            | ✅ Working |
 
 ### Environment Variable Patterns:
 
@@ -46,7 +46,7 @@ APP_PRIMARY_COLOR=8B5CF6  # Hex without #
 cd /path/to/fireux
 node scripts/create-tenant.js
 
-# Validate existing configuration  
+# Validate existing configuration
 curl http://localhost:3000/dev/config-helper
 
 # Fix common issues
@@ -56,18 +56,21 @@ pnpm clean:packages && pnpm build:packages
 ## 📋 **Configuration Checklist**
 
 ### Pre-Setup
+
 - [ ] Firebase project created
 - [ ] Service account key downloaded
 - [ ] Domain/port decided
 - [ ] Color theme chosen
 
 ### Core Files
+
 - [ ] `nuxt.config.ts` using standard template
 - [ ] `.env` with both standard and `NUXT_PUBLIC_` variables
 - [ ] `app/app.config.ts` with NuxtUI color
 - [ ] `config/service-account.json` added
 
 ### Validation
+
 - [ ] Server starts without errors
 - [ ] Firebase auth works
 - [ ] Auto-imports functioning
@@ -100,18 +103,31 @@ Error: Components not auto-importing
 ## 🎨 **Color System Reference**
 
 ### NuxtUI → Hex Conversion:
+
 ```javascript
 const colorMap = {
-  'red': 'EF4444',      'orange': 'F97316',   'amber': 'F59E0B',
-  'yellow': 'EAB308',   'lime': '84CC16',     'green': '22C55E',
-  'emerald': '10B981',  'teal': '14B8A6',     'cyan': '06B6D4',
-  'sky': '0EA5E9',      'blue': '3B82F6',     'indigo': '6366F1',
-  'violet': '8B5CF6',   'purple': 'A855F7',   'fuchsia': 'D946EF',
-  'pink': 'EC4899',     'rose': 'F43F5E'
+  red: 'EF4444',
+  orange: 'F97316',
+  amber: 'F59E0B',
+  yellow: 'EAB308',
+  lime: '84CC16',
+  green: '22C55E',
+  emerald: '10B981',
+  teal: '14B8A6',
+  cyan: '06B6D4',
+  sky: '0EA5E9',
+  blue: '3B82F6',
+  indigo: '6366F1',
+  violet: '8B5CF6',
+  purple: 'A855F7',
+  fuchsia: 'D946EF',
+  pink: 'EC4899',
+  rose: 'F43F5E',
 }
 ```
 
 ### Usage Pattern:
+
 ```typescript
 // app.config.ts
 export default defineAppConfig({
@@ -125,6 +141,7 @@ APP_PRIMARY_COLOR=8B5CF6  // ✅ Hex value
 ## 📖 **Template Library**
 
 ### Minimal nuxt.config.ts:
+
 ```typescript
 import { defineNuxtConfig } from 'nuxt/config'
 
@@ -137,7 +154,7 @@ export default defineNuxtConfig({
   ssr: true,
   modules: [
     'fireux-core',
-    'fireux-jobs', 
+    'fireux-jobs',
     'fireux-YOUR_TENANT',
     '@nuxt/content',
     '@nuxt/ui',
@@ -161,10 +178,11 @@ export default defineNuxtConfig({
 ```
 
 ### Environment Template:
+
 ```bash
 # Firebase (Server & Client)
 FIREBASE_API_KEY=AIzaSy...
-FIREBASE_AUTH_DOMAIN=project.firebaseapp.com  
+FIREBASE_AUTH_DOMAIN=project.firebaseapp.com
 FIREBASE_PROJECT_ID=project-id
 FIREBASE_STORAGE_BUCKET=project.appspot.com
 FIREBASE_MESSAGING_SENDER_ID=123456789
@@ -195,8 +213,8 @@ DOMAIN=http://localhost:3010
 When updating existing tenants to match this standard:
 
 1. **Backup current configs**
-2. **Update nuxt.config.ts** to match standard template  
-3. **Add missing NUXT_PUBLIC_ variables** to .env
+2. **Update nuxt.config.ts** to match standard template
+3. **Add missing NUXT*PUBLIC* variables** to .env
 4. **Add admin serviceAccount** config
 5. **Test Firebase auth** and auto-imports
 6. **Verify color theming** works

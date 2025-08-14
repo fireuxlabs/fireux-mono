@@ -11,7 +11,10 @@ export function useIngredientCreate() {
   const createError = ref<Error | null>(null)
 
   // Accept name and optional supplier ID
-  async function createIngredient(name: string, supplierId?: string): Promise<boolean> {
+  async function createIngredient(
+    name: string,
+    supplierId?: string
+  ): Promise<boolean> {
     if (!name) throw new Error('Ingredient name required')
     if (!currentUser.value) throw new Error('User not authenticated')
 
@@ -35,13 +38,13 @@ export function useIngredientCreate() {
         try {
           const supplierRef = doc(db, 'suppliers', supplierId)
           const supplierDoc = await getDoc(supplierRef)
-          
+
           if (supplierDoc.exists()) {
             const supplierData = supplierDoc.data()
             data.supplierId = supplierId
             data.supplierInfo = {
               business_name: supplierData.business_name,
-              verified: supplierData.verified || false
+              verified: supplierData.verified || false,
             }
           }
         } catch (error) {
@@ -52,12 +55,18 @@ export function useIngredientCreate() {
 
       const ingredientRef = doc(db, 'ingredients', id)
       await setDoc(ingredientRef, data)
-      
-      console.log('✅ Ingredient created:', name, supplierId ? `(Supplier: ${data.supplierInfo?.business_name})` : '')
+
+      console.log(
+        '✅ Ingredient created:',
+        name,
+        supplierId ? `(Supplier: ${data.supplierInfo?.business_name})` : ''
+      )
       return true
-      
     } catch (e: any) {
-      createError.value = e instanceof Error ? e : new Error(e?.message || 'Failed to create ingredient')
+      createError.value =
+        e instanceof Error
+          ? e
+          : new Error(e?.message || 'Failed to create ingredient')
       console.error('❌ Failed to create ingredient:', createError.value)
       return false
     } finally {

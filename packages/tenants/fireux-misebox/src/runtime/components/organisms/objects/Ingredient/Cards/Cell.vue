@@ -14,8 +14,12 @@
 
     <div v-if="ingredient?.supplierInfo" class="supplier-badge">
       <span class="supplier-label">Supplied by:</span>
-      <span class="supplier-name">{{ ingredient.supplierInfo.business_name }}</span>
-      <span v-if="ingredient.supplierInfo.verified" class="verified-badge">✓</span>
+      <span class="supplier-name">{{
+        ingredient.supplierInfo.business_name
+      }}</span>
+      <span v-if="ingredient.supplierInfo.verified" class="verified-badge"
+        >✓</span
+      >
     </div>
 
     <div v-if="ingredient?.tags?.length" class="tags">

@@ -19,23 +19,25 @@ export interface TenantConfig {
 /**
  * Validates a complete tenant configuration
  */
-export function validateTenantConfig(config: TenantConfig): ConfigValidationResult {
+export function validateTenantConfig(
+  config: TenantConfig
+): ConfigValidationResult {
   const result: ConfigValidationResult = {
     isValid: true,
     errors: [],
     warnings: [],
-    suggestions: []
+    suggestions: [],
   }
 
   // Validate app configuration
   validateAppConfig(config, result)
-  
+
   // Validate environment variables
   validateEnvironmentVariables(config.environmentVariables, result)
-  
+
   // Validate color configuration
   validateColorConfig(config.primaryColor, result)
-  
+
   // Validate module configuration
   validateModuleConfig(config.tenantModule, result)
 
@@ -46,76 +48,102 @@ export function validateTenantConfig(config: TenantConfig): ConfigValidationResu
 /**
  * Validates app-level configuration
  */
-function validateAppConfig(config: TenantConfig, result: ConfigValidationResult) {
+function validateAppConfig(
+  config: TenantConfig,
+  result: ConfigValidationResult
+) {
   if (!config.appName || config.appName.trim().length === 0) {
     result.errors.push('APP_NAME is required')
   }
-  
+
   if (!config.appShortName || config.appShortName.trim().length === 0) {
     result.errors.push('APP_SHORT_NAME is required')
   } else if (config.appShortName.length > 4) {
-    result.warnings.push('APP_SHORT_NAME should be 4 characters or less for optimal display')
+    result.warnings.push(
+      'APP_SHORT_NAME should be 4 characters or less for optimal display'
+    )
   }
-  
+
   if (config.appName && config.appName.length > 50) {
-    result.warnings.push('APP_NAME is quite long - consider shortening for better UX')
+    result.warnings.push(
+      'APP_NAME is quite long - consider shortening for better UX'
+    )
   }
 }
 
 /**
  * Validates environment variables
  */
-function validateEnvironmentVariables(envVars: Record<string, string>, result: ConfigValidationResult) {
+function validateEnvironmentVariables(
+  envVars: Record<string, string>,
+  result: ConfigValidationResult
+) {
   const requiredVars = [
     'FIREBASE_API_KEY',
-    'FIREBASE_AUTH_DOMAIN', 
+    'FIREBASE_AUTH_DOMAIN',
     'FIREBASE_PROJECT_ID',
     'FIREBASE_STORAGE_BUCKET',
     'FIREBASE_MESSAGING_SENDER_ID',
-    'FIREBASE_APP_ID'
+    'FIREBASE_APP_ID',
   ]
-  
+
   const requiredClientVars = [
     'NUXT_PUBLIC_FIREBASE_API_KEY',
     'NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
     'NUXT_PUBLIC_FIREBASE_PROJECT_ID',
     'NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
     'NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
-    'NUXT_PUBLIC_FIREBASE_APP_ID'
+    'NUXT_PUBLIC_FIREBASE_APP_ID',
   ]
 
   // Check required server-side variables
-  requiredVars.forEach(varName => {
+  requiredVars.forEach((varName) => {
     if (!envVars[varName] || envVars[varName].trim() === '') {
       result.errors.push(`Missing required environment variable: ${varName}`)
     }
   })
 
   // Check required client-side variables
-  requiredClientVars.forEach(varName => {
+  requiredClientVars.forEach((varName) => {
     if (!envVars[varName] || envVars[varName].trim() === '') {
-      result.errors.push(`Missing required client-side environment variable: ${varName}`)
-      result.suggestions.push(`Add ${varName} with the same value as ${varName.replace('NUXT_PUBLIC_', '')}`)
+      result.errors.push(
+        `Missing required client-side environment variable: ${varName}`
+      )
+      result.suggestions.push(
+        `Add ${varName} with the same value as ${varName.replace('NUXT_PUBLIC_', '')}`
+      )
     }
   })
 
   // Check for service account
   if (!envVars['GOOGLE_APPLICATION_CREDENTIALS']) {
-    result.warnings.push('GOOGLE_APPLICATION_CREDENTIALS not set - Firebase admin features may not work')
-    result.suggestions.push('Create config/service-account.json and set GOOGLE_APPLICATION_CREDENTIALS=./config/service-account.json')
+    result.warnings.push(
+      'GOOGLE_APPLICATION_CREDENTIALS not set - Firebase admin features may not work'
+    )
+    result.suggestions.push(
+      'Create config/service-account.json and set GOOGLE_APPLICATION_CREDENTIALS=./config/service-account.json'
+    )
   }
 
   // Validate Firebase project ID format
   const projectId = envVars['FIREBASE_PROJECT_ID']
   if (projectId && !/^[a-z0-9-]+$/.test(projectId)) {
-    result.warnings.push('FIREBASE_PROJECT_ID should only contain lowercase letters, numbers, and hyphens')
+    result.warnings.push(
+      'FIREBASE_PROJECT_ID should only contain lowercase letters, numbers, and hyphens'
+    )
   }
 
   // Check for matching client/server variables
-  requiredVars.forEach(serverVar => {
+  requiredVars.forEach((serverVar) => {
     const clientVar = `NUXT_PUBLIC_${serverVar}`
-    if (envVars[serverVar] && envVars[clientVar] && envVars[serverVar] !== envVars[clientVar]) {
-      result.warnings.push(`${serverVar} and ${clientVar} have different values - they should match`)
+    if (
+      envVars[serverVar] &&
+      envVars[clientVar] &&
+      envVars[serverVar] !== envVars[clientVar]
+    ) {
+      result.warnings.push(
+        `${serverVar} and ${clientVar} have different values - they should match`
+      )
     }
   })
 }
@@ -123,36 +151,68 @@ function validateEnvironmentVariables(envVars: Record<string, string>, result: C
 /**
  * Validates color configuration
  */
-function validateColorConfig(primaryColor: string, result: ConfigValidationResult) {
+function validateColorConfig(
+  primaryColor: string,
+  result: ConfigValidationResult
+) {
   const validNuxtColors = [
-    'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal',
-    'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose',
-    'slate', 'gray', 'zinc', 'neutral', 'stone'
+    'red',
+    'orange',
+    'amber',
+    'yellow',
+    'lime',
+    'green',
+    'emerald',
+    'teal',
+    'cyan',
+    'sky',
+    'blue',
+    'indigo',
+    'violet',
+    'purple',
+    'fuchsia',
+    'pink',
+    'rose',
+    'slate',
+    'gray',
+    'zinc',
+    'neutral',
+    'stone',
   ]
 
   if (!primaryColor || primaryColor.trim() === '') {
     result.errors.push('Primary color is required')
   } else if (!validNuxtColors.includes(primaryColor)) {
-    result.warnings.push(`Primary color "${primaryColor}" is not a standard NuxtUI color`)
-    result.suggestions.push(`Consider using one of: ${validNuxtColors.slice(0, 10).join(', ')}, etc.`)
+    result.warnings.push(
+      `Primary color "${primaryColor}" is not a standard NuxtUI color`
+    )
+    result.suggestions.push(
+      `Consider using one of: ${validNuxtColors.slice(0, 10).join(', ')}, etc.`
+    )
   }
 }
 
 /**
  * Validates module configuration
  */
-function validateModuleConfig(tenantModule: string, result: ConfigValidationResult) {
-  const validModules = [
-    'fireux-misebox',
-    'fireux-cleanbox', 
-    'fireux-places'
-  ]
+function validateModuleConfig(
+  tenantModule: string,
+  result: ConfigValidationResult
+) {
+  const validModules = ['fireux-misebox', 'fireux-cleanbox', 'fireux-places']
 
   if (!tenantModule || tenantModule.trim() === '') {
     result.errors.push('Tenant module is required')
-  } else if (!validModules.includes(tenantModule) && !tenantModule.startsWith('fireux-')) {
-    result.warnings.push(`Module "${tenantModule}" is not a known FireUX module`)
-    result.suggestions.push('Ensure your custom module follows the fireux-* naming convention')
+  } else if (
+    !validModules.includes(tenantModule) &&
+    !tenantModule.startsWith('fireux-')
+  ) {
+    result.warnings.push(
+      `Module "${tenantModule}" is not a known FireUX module`
+    )
+    result.suggestions.push(
+      'Ensure your custom module follows the fireux-* naming convention'
+    )
   }
 }
 
@@ -161,7 +221,7 @@ function validateModuleConfig(tenantModule: string, result: ConfigValidationResu
  */
 export const NUXT_UI_COLORS = {
   red: 'EF4444',
-  orange: 'F97316', 
+  orange: 'F97316',
   amber: 'F59E0B',
   yellow: 'EAB308',
   lime: '84CC16',
@@ -181,7 +241,7 @@ export const NUXT_UI_COLORS = {
   gray: '6B7280',
   zinc: '71717A',
   neutral: '737373',
-  stone: '78716C'
+  stone: '78716C',
 }
 
 /**
@@ -253,7 +313,7 @@ export default defineNuxtConfig({
  */
 export function generateEnvFile(config: TenantConfig): string {
   const colorHex = getColorHex(config.primaryColor)
-  
+
   return `# Firebase Configuration (Server-side)
 FIREBASE_API_KEY=your_api_key_here
 FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
@@ -317,12 +377,14 @@ export function validateRuntimeConfig(): ConfigValidationResult {
     isValid: true,
     errors: [],
     warnings: [],
-    suggestions: []
+    suggestions: [],
   }
 
   // Check if we're in a browser environment
   if (typeof window === 'undefined') {
-    result.warnings.push('Runtime validation should be performed in browser context')
+    result.warnings.push(
+      'Runtime validation should be performed in browser context'
+    )
     return result
   }
 
@@ -330,12 +392,15 @@ export function validateRuntimeConfig(): ConfigValidationResult {
   const requiredClientVars = [
     'NUXT_PUBLIC_FIREBASE_API_KEY',
     'NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
-    'NUXT_PUBLIC_FIREBASE_PROJECT_ID'
+    'NUXT_PUBLIC_FIREBASE_PROJECT_ID',
   ]
 
-  requiredClientVars.forEach(varName => {
+  requiredClientVars.forEach((varName) => {
     // @ts-ignore - accessing runtime config
-    const value = window.$nuxt?.$config?.public?.[varName.replace('NUXT_PUBLIC_', '').toLowerCase().replace(/_/g, '')]
+    const value =
+      window.$nuxt?.$config?.public?.[
+        varName.replace('NUXT_PUBLIC_', '').toLowerCase().replace(/_/g, '')
+      ]
     if (!value) {
       result.errors.push(`Missing runtime config: ${varName}`)
     }
