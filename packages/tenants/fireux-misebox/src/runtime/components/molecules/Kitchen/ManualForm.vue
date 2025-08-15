@@ -44,12 +44,7 @@
 
       <template #footer>
         <div class="flex gap-3 justify-end">
-          <UButton
-            variant="ghost"
-            @click="handleCancel"
-          >
-            Cancel
-          </UButton>
+          <UButton variant="ghost" @click="handleCancel"> Cancel </UButton>
           <UButton
             color="primary"
             :disabled="!form.place_name"
@@ -81,19 +76,20 @@ const form = ref({
 
 // Computed formatted address
 const formattedAddress = computed(() => {
-  const parts = [form.value.city, form.value.region, form.value.country]
-    .filter(Boolean)
+  const parts = [form.value.city, form.value.region, form.value.country].filter(
+    Boolean
+  )
   return parts.length > 0 ? parts.join(', ') : ''
 })
 
 // Methods
 const handleSubmit = () => {
   if (!form.value.place_name) return
-  
+
   emit('submit', {
     ...form.value,
     formatted_address: formattedAddress.value,
-    source: 'manual'
+    source: 'manual',
   })
 }
 

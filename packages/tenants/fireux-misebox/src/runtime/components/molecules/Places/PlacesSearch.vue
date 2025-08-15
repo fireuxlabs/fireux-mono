@@ -7,7 +7,7 @@
       size="lg"
       @input="performSearch"
     />
-    
+
     <!-- Search Results -->
     <div v-if="mergedResults.length > 0" class="results-list mt-4">
       <UCard
@@ -17,15 +17,15 @@
         @click="handleSelectPlace(place)"
       >
         <div class="flex items-center space-x-3">
-          <UAvatar
-            :src="place.image_url"
-            :alt="place.name"
-            size="sm"
-          />
+          <UAvatar :src="place.image_url" :alt="place.name" size="sm" />
           <div class="flex-1">
             <h3 class="font-medium">{{ place.name }}</h3>
             <p class="text-sm text-gray-600">
-              {{ place.formatted_address || place.short_address || 'Address not available' }}
+              {{
+                place.formatted_address ||
+                place.short_address ||
+                'Address not available'
+              }}
             </p>
             <UBadge
               :label="place.source === 'google' ? 'Google Places' : 'Existing'"
@@ -37,7 +37,7 @@
         </div>
       </UCard>
     </div>
-    
+
     <!-- No Results -->
     <div v-else-if="searchQuery && !isSearching" class="no-results mt-4">
       <UCard>
@@ -46,12 +46,14 @@
         </div>
       </UCard>
     </div>
-    
+
     <!-- Loading -->
     <div v-if="isSearching" class="loading mt-4">
       <UCard>
         <div class="text-center py-4">
-          <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+          <div
+            class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"
+          ></div>
           <p class="text-sm text-gray-500 mt-2">Searching...</p>
         </div>
       </UCard>
@@ -92,7 +94,7 @@ watch(searchQuery, (newQuery) => {
 // Mock search for now - in real implementation this would use Google Places API
 const mergedResults = computed(() => {
   if (!debouncedSearchQuery.value) return []
-  
+
   // Mock results for demonstration
   const mockResults = [
     {
@@ -104,16 +106,16 @@ const mergedResults = computed(() => {
       image_url: 'https://via.placeholder.com/40',
     },
     {
-      id: 'mock-2', 
+      id: 'mock-2',
       name: 'Pasta Palace',
       formatted_address: '456 Oak Ave, City, Country',
       source: 'firestore',
       image_url: 'https://via.placeholder.com/40',
-    }
-  ].filter(place => 
+    },
+  ].filter((place) =>
     place.name.toLowerCase().includes(debouncedSearchQuery.value.toLowerCase())
   )
-  
+
   return mockResults
 })
 
@@ -122,16 +124,15 @@ const performSearch = async () => {
   if (!debouncedSearchQuery.value || debouncedSearchQuery.value.length < 3) {
     return
   }
-  
+
   isSearching.value = true
-  
+
   try {
     // TODO: Implement actual Google Places API search
     // TODO: Implement Firestore kitchen search
-    
+
     // Mock delay for demo
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000))
   } catch (error) {
     console.error('Search error:', error)
   } finally {

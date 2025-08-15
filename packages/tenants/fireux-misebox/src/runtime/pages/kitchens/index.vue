@@ -5,10 +5,10 @@
         <h1 class="text-3xl font-bold">Kitchens</h1>
         <p class="text-gray-600">Manage your kitchens and their ingredients</p>
       </div>
-      
-      <UButton 
-        to="/kitchens/create" 
-        color="primary" 
+
+      <UButton
+        to="/kitchens/create"
+        color="primary"
         icon="i-heroicons-plus"
         size="lg"
       >
@@ -22,9 +22,16 @@
         <h2 class="text-2xl font-semibold">My Kitchens</h2>
         <UBadge :label="userKitchens.length.toString()" color="primary" />
       </div>
-      
-      <div v-if="userKitchens.length > 0" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <UCard v-for="kitchen in userKitchens" :key="kitchen.id" class="hover:shadow-md transition-shadow">
+
+      <div
+        v-if="userKitchens.length > 0"
+        class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+      >
+        <UCard
+          v-for="kitchen in userKitchens"
+          :key="kitchen.id"
+          class="hover:shadow-md transition-shadow"
+        >
           <template #header>
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">{{ kitchen.name }}</h3>
@@ -58,18 +65,20 @@
               >
                 Manage
               </UButton>
-              <UButton
-                icon="i-heroicons-pencil"
-                variant="outline"
-                size="sm"
-              />
+              <UButton icon="i-heroicons-pencil" variant="outline" size="sm" />
             </div>
           </template>
         </UCard>
       </div>
-      
-      <div v-else class="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
-        <UIcon name="i-heroicons-building-storefront" class="w-12 h-12 mx-auto text-gray-400 mb-3" />
+
+      <div
+        v-else
+        class="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg"
+      >
+        <UIcon
+          name="i-heroicons-building-storefront"
+          class="w-12 h-12 mx-auto text-gray-400 mb-3"
+        />
         <p class="text-gray-500 mb-3">You don't have any kitchens yet</p>
         <UButton to="/kitchens/create" color="primary" variant="outline">
           Create Your First Kitchen
@@ -83,16 +92,27 @@
         <h2 class="text-2xl font-semibold">All Kitchens</h2>
         <UBadge :label="allKitchens.length.toString()" color="gray" />
       </div>
-      
-      <div v-if="allKitchens.length > 0" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <UCard v-for="kitchen in allKitchens" :key="kitchen.id" class="hover:shadow-md transition-shadow">
+
+      <div
+        v-if="allKitchens.length > 0"
+        class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+      >
+        <UCard
+          v-for="kitchen in allKitchens"
+          :key="kitchen.id"
+          class="hover:shadow-md transition-shadow"
+        >
           <template #header>
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">{{ kitchen.name }}</h3>
-              <UBadge 
-                :label="kitchen.owner_id === currentUser?.uid ? 'Mine' : 'Other'" 
-                :color="kitchen.owner_id === currentUser?.uid ? 'green' : 'gray'" 
-                size="xs" 
+              <UBadge
+                :label="
+                  kitchen.owner_id === currentUser?.uid ? 'Mine' : 'Other'
+                "
+                :color="
+                  kitchen.owner_id === currentUser?.uid ? 'green' : 'gray'
+                "
+                size="xs"
               />
             </div>
           </template>
@@ -129,9 +149,15 @@
           </template>
         </UCard>
       </div>
-      
-      <div v-else class="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
-        <UIcon name="i-heroicons-building-storefront" class="w-12 h-12 mx-auto text-gray-400 mb-3" />
+
+      <div
+        v-else
+        class="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg"
+      >
+        <UIcon
+          name="i-heroicons-building-storefront"
+          class="w-12 h-12 mx-auto text-gray-400 mb-3"
+        />
         <p class="text-gray-500">No kitchens found</p>
       </div>
     </div>
@@ -150,7 +176,9 @@ const currentUser = useCurrentUser()
 // Computed
 const userKitchens = computed(() => {
   if (!currentUser.value?.uid) return []
-  return allKitchens.value.filter(kitchen => kitchen.owner_id === currentUser.value!.uid)
+  return allKitchens.value.filter(
+    (kitchen) => kitchen.owner_id === currentUser.value!.uid
+  )
 })
 
 // Methods
@@ -159,7 +187,7 @@ const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     })
   } catch {
     return 'Unknown date'

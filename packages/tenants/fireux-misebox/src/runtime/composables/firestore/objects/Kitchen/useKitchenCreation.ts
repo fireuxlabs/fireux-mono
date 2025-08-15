@@ -2,7 +2,10 @@ import { ref } from 'vue'
 import { useFirestore } from 'vuefire'
 import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { useCurrentUser } from 'vuefire'
-import type { Kitchen, NewKitchenInput } from '../../../../models/objects/Kitchen.model'
+import type {
+  Kitchen,
+  NewKitchenInput,
+} from '../../../../models/objects/Kitchen.model'
 import { normalizeKitchen } from '../../../../models/objects/Kitchen.model'
 
 export function useKitchenCreation() {
@@ -23,7 +26,7 @@ export function useKitchenCreation() {
       // Create new document reference
       const colRef = collection(db, 'kitchens')
       const docRef = doc(colRef)
-      
+
       // Kitchen data with required fields
       const kitchenData = {
         name: input.name,
@@ -46,7 +49,6 @@ export function useKitchenCreation() {
       })
 
       return kitchen
-
     } catch (err: any) {
       error.value = err.message || 'Failed to create kitchen'
       throw err

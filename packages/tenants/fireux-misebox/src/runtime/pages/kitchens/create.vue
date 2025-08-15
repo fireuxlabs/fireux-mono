@@ -2,16 +2,15 @@
   <div>
     <div class="mb-8">
       <h1 class="text-3xl font-bold">Create Your Kitchen</h1>
-      <p class="text-gray-600 mt-2">Set up your kitchen to start managing ingredients and recipes</p>
+      <p class="text-gray-600 mt-2">
+        Set up your kitchen to start managing ingredients and recipes
+      </p>
     </div>
 
-    <MiseKitchenWizard 
-      @success="handleSuccess" 
-      @error="handleError"
-    />
+    <MiseKitchenWizard @success="handleSuccess" @error="handleError" />
 
     <!-- Success Toast -->
-    <UNotification 
+    <UNotification
       v-if="successMessage"
       :timeout="5000"
       color="green"
@@ -21,7 +20,7 @@
     />
 
     <!-- Error Toast -->
-    <UNotification 
+    <UNotification
       v-if="errorMessage"
       :timeout="5000"
       color="red"
@@ -43,7 +42,7 @@ const errorMessage = ref('')
 // Event handlers
 const handleSuccess = async (kitchen: Kitchen) => {
   successMessage.value = `Kitchen "${kitchen.name}" created successfully!`
-  
+
   // Navigate to the new kitchen after a short delay
   setTimeout(() => {
     window.location.href = `/kitchens/${kitchen.id}`
