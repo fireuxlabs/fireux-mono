@@ -3,9 +3,9 @@ import { createFireuxConfig } from '../../../packages/core/fireux-core/src/confi
 
 export default defineNuxtConfig(
   createFireuxConfig({
-    tenantModule: 'fireux-jobs', // fireux-app uses jobs module
-    appName: 'FireUX',
-    appShortName: 'FireUX',
-    primaryColor: '#eab308',
+    appName: process.env.APP_NAME,
+    appShortName: process.env.APP_SHORT_NAME,
+    primaryColor: process.env.APP_PRIMARY_COLOR,
+    neutralColor: process.env.APP_NEUTRAL_COLOR,
   })
 )

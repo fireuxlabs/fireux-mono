@@ -1,9 +1,12 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import { createFireuxConfig } from '../../../packages/core/fireux-core/src/config/fireux-config'
 
-export default defineNuxtConfig(createFireuxConfig({
-  tenantModule: 'fireux-misebox',
-  appName: 'Niederhorn Restaurant',
-  appShortName: 'Niederhorn',
-  primaryColor: '#10b981',
-}))
+export default defineNuxtConfig(
+  createFireuxConfig({
+    tenantModule: process.env.TENANT_MODULE,
+    appName: process.env.APP_NAME,
+    appShortName: process.env.APP_SHORT_NAME,
+    primaryColor: process.env.APP_PRIMARY_COLOR,
+    neutralColor: process.env.APP_NEUTRAL_COLOR,
+  })
+)

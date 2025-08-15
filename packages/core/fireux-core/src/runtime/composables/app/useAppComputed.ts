@@ -13,14 +13,6 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
     return !!app.value.admin_ids?.length // Check if admin_ids exists and has a length
   })
 
-  const hasDescription = computed(() => !!app.value?.description)
-
-  const hasSocialLinks = computed(
-    () =>
-      !!app.value?.social_links &&
-      Object.keys(app.value.social_links).length > 0
-  )
-
   // Methods
   function hasAdmins(): boolean {
     return !!app.value?.admin_ids?.length
@@ -32,19 +24,12 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
     return app.value.admin_ids.includes(targetUserId)
   }
 
-  function hasConfiguration(): boolean {
-    return isInitialized.value && (hasDescription.value || hasSocialLinks.value)
-  }
-
   return {
     // Computed properties
     isInitialized,
-    hasDescription,
-    hasSocialLinks,
 
     // Methods
     hasAdmins,
     isUserAdmin,
-    hasConfiguration,
   }
 }

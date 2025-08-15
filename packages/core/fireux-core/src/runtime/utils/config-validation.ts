@@ -396,13 +396,25 @@ export function validateRuntimeConfig(): ConfigValidationResult {
   ]
 
   requiredClientVars.forEach((varName) => {
-    // @ts-ignore - accessing runtime config
-    const value =
-      window.$nuxt?.$config?.public?.[
-        varName.replace('NUXT_PUBLIC_', '').toLowerCase().replace(/_/g, '')
-      ]
-    if (!value) {
-      result.errors.push(`Missing runtime config: ${varName}`)
+    // Check if running in browser environment
+    if (typeof window !== 'undefined') {
+      try {
+        // Use proper type assertion for Nuxt's global object
+        const nuxtApp = (window as any).$nuxt
+        const configKey = varName
+          .replace('NUXT_PUBLIC_', '')
+          .toLowerCase()
+          .replace(/_/g, '')
+        const value = nuxtApp?.$config?.public?.[configKey]
+
+        if (!value) {
+          result.errors.push(`Missing runtime config: ${varName}`)
+        }
+      } catch (error) {
+        // Log error details for debugging
+        console.warn('Config validation error:', error)
+        result.warnings.push(`Could not validate client config for: ${varName}`)
+      }
     }
   })
 

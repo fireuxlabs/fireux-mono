@@ -1,5 +1,5 @@
 import { doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore'
-import { useFirestore, useCurrentUser } from 'vuefire'
+import { useFirestore } from 'vuefire'
 import type { App } from '../../models/core/app.model'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useFirestoreManager } from '../firestore/useFirestoreManager'
@@ -69,50 +69,15 @@ export function useAppEnsure() {
         id: appId,
         app_name: appName,
         admin_ids: [uid],
+        created_at: new Date().toISOString(),
+        created_by: uid,
       }
 
       await setDocument('apps', appId, appData)
       console.log(`🎉 [ensureApp] App '${appId}' created successfully.`)
 
-      // Step 4.5: Initialize app with subscription plans and products
-      try {
-        console.log(
-          `🏗️ [ensureApp] Initializing app with subscription plans...`
-        )
-
-        const initResponse = (await $fetch('/api/app/ensure-app', {
-          method: 'POST',
-          body: {
-            appId,
-            appName,
-            userId: uid,
-            setupSubscriptions: true,
-            createDefaultProducts: true,
-            metadata: {
-              created_by: 'ensureApp',
-              created_at: new Date().toISOString(),
-            },
-            ping: `ensure-${Date.now()}`,
-          },
-        })) as any
-
-        console.log(`✅ [ensureApp] App initialization completed:`)
-        console.log(
-          `   - Tasks completed: ${initResponse.tasks_completed?.length || 0}`
-        )
-        console.log(
-          `   - Products created: ${initResponse.products_created?.length || 0}`
-        )
-        console.log(
-          `   - Subscriptions setup: ${initResponse.subscriptions_setup}`
-        )
-      } catch (initError) {
-        console.warn(`⚠️ [ensureApp] App initialization failed:`, initError)
-        // Don't fail the entire app creation if initialization fails
-      }
-
       // Step 5: Update core user with admin role
-      if (coreUser && coreUser.adminOf && coreUser.adminOf.includes(appId)) {
+      if (coreUser?.adminOf?.includes(appId)) {
         console.log(
           `✅ [ensureApp] Core user already has admin role for app '${appId}'.`
         )

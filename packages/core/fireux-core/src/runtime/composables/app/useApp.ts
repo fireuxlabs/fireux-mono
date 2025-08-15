@@ -1,7 +1,7 @@
 // ~/composables/app/useApp.ts
 import { computed, ref } from 'vue'
-import { doc } from 'firebase/firestore'
-import { useFirestore, useDocument } from 'vuefire'
+import { doc, collection } from 'firebase/firestore'
+import { useFirestore, useDocument, useCollection } from 'vuefire'
 import type { DocumentReference } from 'firebase/firestore'
 import { useFirestoreManager } from '../firestore/useFirestoreManager'
 import { useFireUXConfig } from '../FireUXConfig'
@@ -13,7 +13,7 @@ import { useAppSubscriptionSetup } from './useAppSubscriptionSetup'
 import type { App } from '../../models/core/app.model'
 import { getApps } from 'firebase/app'
 
-export function useApp() {
+export async function useApp() {
   const { appId } = useFireUXConfig()
 
   // Ensure Firebase is initialized
@@ -34,8 +34,14 @@ export function useApp() {
 
   // Collections - only fetch on client side
   const apps = import.meta.client
-    ? firestoreFetchCollection<App>('apps')
+    ? await firestoreFetchCollection<App>('apps')
     : ref([])
+
+  // Users subcollection for any app
+  const getAppUsers = (appId: string) => {
+    const usersRef = collection(db, 'apps', appId, 'users')
+    return useCollection(usersRef)
+  }
 
   return {
     // Current entity
@@ -43,6 +49,9 @@ export function useApp() {
 
     // Collections
     apps,
+
+    // Users subcollection
+    getAppUsers,
 
     // Child functions
     ...useAppUpdate(),

@@ -21,6 +21,7 @@
   "dependencies": {
     "@nuxt/kit": "^3.17.5",
     "fireux-core": "workspace:*",
+    "fireux-places": "workspace:*",
     "glob": "^11.0.3"
   },
   "devDependencies": {

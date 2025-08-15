@@ -1,28 +1,26 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-violet-50 to-zinc-100">
-    <section class="relative overflow-hidden">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <div class="text-center">
-          <h1 class="text-5xl md:text-7xl font-bold text-slate-900 mb-6">
-            <span class="text-violet-600">Niederhorn</span>
-            <br />
-            <span class="text-3xl md:text-5xl font-medium text-slate-600">
-              Misebox Tenant
-            </span>
-          </h1>
-          
-          <p class="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
-            Powered by: fireux-core, fireux-jobs, fireux-misebox
-          </p>
-          
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <NuxtLink
-              to="/dashboard"
-              class="bg-violet-600 hover:bg-violet-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors"
-            >
-              Get Started
-            </NuxtLink>
-          </div>
+  <div class="app-dashboard">
+    <section class="welcome-section">
+      <div class="welcome-content">
+        <h1 class="app-title">
+          <span class="brand-name">Niederhorn</span>
+          <span class="app-subtitle">Kitchen Management</span>
+        </h1>
+
+        <p class="app-description">
+          Manage your ingredients, suppliers, and culinary operations with
+          precision.
+        </p>
+
+        <div class="quick-actions">
+          <UButton to="/ingredients" variant="solid" size="lg">
+            <UIcon name="i-lucide-package" />
+            Manage Ingredients
+          </UButton>
+          <UButton to="/suppliers" variant="outline" size="lg">
+            <UIcon name="i-lucide-truck" />
+            Manage Suppliers
+          </UButton>
         </div>
       </div>
     </section>
@@ -30,14 +28,67 @@
 </template>
 
 <script setup>
-useHead({
-  title: 'Niederhorn - Misebox Tenant',
-  meta: [
-    { name: 'description', content: 'Powered by: fireux-core, fireux-jobs, fireux-misebox' }
-  ]
+useSeoMeta({
+  title: 'Niederhorn - Kitchen Management',
+  description: 'Manage ingredients, suppliers, and culinary operations.',
 })
 
 definePageMeta({
-  layout: 'default'
+  layout: 'default',
 })
 </script>
+
+<style scoped>
+.app-dashboard {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+}
+
+.welcome-section {
+  text-align: center;
+  max-width: 600px;
+}
+
+.app-title {
+  margin-bottom: var(--space-6);
+}
+
+.brand-name {
+  display: block;
+  font-size: var(--text-5xl);
+  font-weight: var(--font-weight-black);
+  color: var(--color-primary-600);
+  margin-bottom: var(--space-2);
+}
+
+.app-subtitle {
+  display: block;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-600);
+}
+
+.app-description {
+  font-size: var(--text-lg);
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-8);
+  line-height: 1.6;
+}
+
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+@media (min-width: 640px) {
+  .quick-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+</style>

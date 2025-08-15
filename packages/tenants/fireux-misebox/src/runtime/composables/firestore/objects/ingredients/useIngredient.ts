@@ -4,7 +4,7 @@ import { collection, query, orderBy, doc } from 'firebase/firestore'
 import { useIngredientCreate } from './useIngredientCreate'
 import { normalizeIngredient } from '../../../../models/objects/Ingredient.model'
 
-// Simple firestore collection fetch with proper data normalization
+// Simple firestore collection fetch - just ingredients
 export function useIngredient() {
   try {
     const db = useFirestore()
@@ -19,6 +19,7 @@ export function useIngredient() {
 
     const colRef = collection(db, 'ingredients')
     const q = query(colRef, orderBy('name'))
+
     const { data, pending, error } = useCollection(q, { ssrKey: 'ingredients' })
 
     // Transform raw firestore data to normalized ingredient format
@@ -44,7 +45,13 @@ export function useIngredient() {
 
     const create = useIngredientCreate()
 
-    return { all, pending, error, getById, ...create }
+    return {
+      all,
+      pending,
+      error,
+      getById,
+      ...create,
+    }
   } catch (err) {
     console.warn('useIngredient error:', err)
     return {

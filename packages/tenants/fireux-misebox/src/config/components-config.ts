@@ -11,7 +11,7 @@ export function configureComponents(
 ) {
   // Add Chef profile components with MiseProfiles prefix to include full path
   addComponentsDir({
-    path: resolver.resolve('./runtime/components/organisms'),
+    path: resolver.resolve('./runtime/components'),
     pathPrefix: true,
     prefix: 'Mise',
     global: true,
