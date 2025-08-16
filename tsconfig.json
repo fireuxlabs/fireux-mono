@@ -2,23 +2,16 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "@fireux-core/*": ["packages/core/fireux-core/src/*"],
-      "@fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"],
-      "@fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],
-      "@fireux-cleanbox/*": ["packages/tenants/fireux-cleanbox/src/*"],
-      "@fireux-places/*": ["packages/extensions/fireux-places/src/*"],
-      "@routeLink": [
-        "packages/core/fireux-core/src/runtime/composables/app/types/routeLink.ts"
-      ]
-    },
-    "types": ["@nuxt/schema", "nuxt"]
+      "packages/*": ["packages/*"],
+      "projects/*": ["projects/*"]
+    }
   },
   "include": ["packages/**/*", "projects/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "**/.nuxt", "**/node_modules"]
 }

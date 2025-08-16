@@ -4,19 +4,19 @@
     :filter-composable="useChefFilters"
   >
     <template #profile-pill="{ profile }">
-      <div @click="navigateToChef(profile)" style="cursor: pointer">
+      <div @click="navigateToChef(profile)" class="cursor-pointer">
         <MiseProfilesChefCardsPill :chef="profile" />
       </div>
     </template>
 
     <template #profile-card="{ profile }">
-      <div @click="navigateToChef(profile)" style="cursor: pointer">
+      <div @click="navigateToChef(profile)" class="cursor-pointer">
         <MiseProfilesChefCardsProfile :chef="profile" />
       </div>
     </template>
 
     <template #profile-item="{ profile }">
-      <div @click="navigateToChef(profile)" style="cursor: pointer">
+      <div @click="navigateToChef(profile)" class="cursor-pointer">
         <MiseProfilesChefCardsCell :chef="profile" />
       </div>
     </template>

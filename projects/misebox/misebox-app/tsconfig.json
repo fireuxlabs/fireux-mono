@@ -1,14 +1,4 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
-  "extends": "./.nuxt/tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": "./",
-    "paths": {
-      "@fireux-core/*": ["../../packages/core/fireux-core/src/*"],
-      "@fireux-jobs/*": ["../../packages/extensions/fireux-jobs/src/*"],
-      "@fireux-misebox/*": ["../../packages/tenants/fireux-misebox/src/*"],
-      "@fireux-places/*": ["../../packages/extensions/fireux-places/src/*"]
-    },
-    "noEmit": true
-  }
+  "extends": "./.nuxt/tsconfig.json"
 }
