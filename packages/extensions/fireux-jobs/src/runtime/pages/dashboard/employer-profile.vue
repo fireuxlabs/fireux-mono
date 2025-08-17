@@ -28,7 +28,7 @@ definePageMeta({
 })
 
 // Get current user
-const { appUser, hasProfile } = await useAppUser()
+const { appUser } = await useAppUser()
 
 // Use our unified profile composable
 const { current: employer } = await useProfile(employerConfig)
