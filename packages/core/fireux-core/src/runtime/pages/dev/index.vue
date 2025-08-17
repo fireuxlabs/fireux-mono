@@ -54,6 +54,9 @@
       <button @click="migrateAvatars" class="migrate-button">
         🖼️ Migrate All Avatars
       </button>
+      <button @click="migrateGlobalData" class="migrate-button">
+        🔄 Migrate Global Data to CoreUser
+      </button>
     </div>
 
     <div class="data-section">
@@ -96,12 +99,8 @@
 <script setup>
 import { computed } from 'vue'
 import { useCurrentUser } from 'vuefire'
-import { useProfile } from '../composables/firestore/profiles/useProfile'
 import { useAppUser } from '../composables/firestore/AppUser/useAppUser'
-import { chefConfig } from '../../../../../projects/misebox/misebox-app/config/profiles/chef.config'
-import { supplierConfig } from '../../../../../projects/misebox/misebox-app/config/profiles/supplier.config'
-import { employerConfig } from '../../../fireux-jobs/src/config/profiles/employer.config'
-import { professionalConfig } from '../../../fireux-jobs/src/config/profiles/professional.config'
+import { useCoreUser } from '../composables/firestore/CoreUser/useCoreUser'
 
 // Set page meta
 definePageMeta({
@@ -406,6 +405,168 @@ async function migrateAvatars() {
   } catch (error) {
     console.error('Error in avatar migration:', error)
     alert(`❌ Failed to migrate avatars: ${error.message}`)
+  }
+}
+
+// Global data migration function
+async function migrateGlobalData() {
+  if (!appUsers.value || appUsers.value.length === 0) {
+    alert('❌ No app users found to migrate')
+    return
+  }
+
+  // Find users that have data to migrate
+  const usersToMigrate = appUsers.value.filter(
+    (user) =>
+      user.subscription ||
+      user.followers ||
+      user.following ||
+      user.profiles ||
+      user.first_name ||
+      user.last_name ||
+      user.full_name ||
+      user.phone ||
+      user.location ||
+      user.address ||
+      user.email // Legacy email field
+  )
+
+  if (usersToMigrate.length === 0) {
+    alert(
+      '✅ No global data needs migration (all data is already properly located)'
+    )
+    return
+  }
+
+  const confirmed = confirm(
+    `🔧 This will migrate global data for ${usersToMigrate.length} users from AppUser to CoreUser.\n\nData to migrate:\n- Subscriptions (global across apps)\n- Social graph (followers/following)\n- Profiles (chef, supplier, etc.)\n- Identity data (name, phone, location)\n\nContinue?`
+  )
+  if (!confirmed) return
+
+  try {
+    const { doc, updateDoc, getDoc } = await import('firebase/firestore')
+    const { useFirestore } = await import('vuefire')
+
+    const db = useFirestore()
+    let successCount = 0
+    let errorCount = 0
+    const errors = []
+
+    for (const user of usersToMigrate) {
+      try {
+        console.log(
+          `🔄 Migrating global data for ${user.display_name || user.email}...`
+        )
+
+        // Get current CoreUser document
+        const coreUserRef = doc(db, 'core-users', user.uid)
+        const coreUserDoc = await getDoc(coreUserRef)
+
+        if (!coreUserDoc.exists()) {
+          throw new Error(`CoreUser document not found for UID: ${user.uid}`)
+        }
+
+        const currentCoreUser = coreUserDoc.data()
+
+        // Prepare global data to migrate
+        const globalUpdates = {}
+
+        // Migrate subscription (one subscription works across all apps)
+        if (user.subscription && !currentCoreUser.subscription) {
+          globalUpdates.subscription = user.subscription
+          console.log(`  📋 Migrating subscription: ${user.subscription.plan}`)
+        }
+
+        // Migrate social graph (global followers/following)
+        if (user.followers && !currentCoreUser.followers) {
+          globalUpdates.followers = user.followers
+          console.log(`  👥 Migrating ${user.followers.length} followers`)
+        }
+        if (user.following && !currentCoreUser.following) {
+          globalUpdates.following = user.following
+          console.log(`  👤 Migrating ${user.following.length} following`)
+        }
+
+        // Migrate profiles (convert from simple array to structured format)
+        if (user.profiles && !currentCoreUser.profiles) {
+          const structuredProfiles = user.profiles.map((profileType) => ({
+            type: profileType,
+            collection: `${profileType}s`, // chef -> chefs, supplier -> suppliers
+            created_at: new Date().toISOString(),
+            is_active: true,
+          }))
+          globalUpdates.profiles = structuredProfiles
+          console.log(
+            `  🎭 Migrating ${user.profiles.length} profiles: ${user.profiles.join(', ')}`
+          )
+        }
+
+        // Migrate identity data
+        if (user.first_name && !currentCoreUser.first_name) {
+          globalUpdates.first_name = user.first_name
+        }
+        if (user.last_name && !currentCoreUser.last_name) {
+          globalUpdates.last_name = user.last_name
+        }
+        if (user.full_name && !currentCoreUser.full_name) {
+          globalUpdates.full_name = user.full_name
+        }
+        if (user.phone && !currentCoreUser.phone) {
+          globalUpdates.phone = user.phone
+        }
+
+        // Migrate location data
+        if (user.location && !currentCoreUser.location) {
+          globalUpdates.location = user.location
+          console.log(`  📍 Migrating location: ${user.location.short_address}`)
+        }
+        if (user.address && !currentCoreUser.address) {
+          globalUpdates.address = user.address
+        }
+
+        // Update CoreUser with global data
+        if (Object.keys(globalUpdates).length > 0) {
+          await updateDoc(coreUserRef, {
+            ...globalUpdates,
+            updated_at: new Date().toISOString(),
+          })
+
+          console.log(
+            `✅ Migrated ${Object.keys(globalUpdates).length} fields to CoreUser`
+          )
+          successCount++
+        } else {
+          console.log(
+            `⚪ No new data to migrate for ${user.display_name || user.email}`
+          )
+        }
+      } catch (error) {
+        console.error(
+          `❌ Error migrating user ${user.display_name || user.email}:`,
+          error
+        )
+        errors.push(`${user.display_name || user.email}: ${error.message}`)
+        errorCount++
+      }
+    }
+
+    // Show results
+    const message = `🎉 Global data migration complete!\n\n✅ Success: ${successCount} users migrated\n❌ Errors: ${errorCount} users`
+
+    if (errors.length > 0) {
+      console.error('Migration errors:', errors)
+      alert(`${message}\n\nCheck console for error details.`)
+    } else {
+      alert(message)
+    }
+
+    // Refresh to see changes
+    if (successCount > 0) {
+      window.location.reload()
+    }
+  } catch (error) {
+    console.error('Error in global data migration:', error)
+    alert(`❌ Failed to migrate global data: ${error.message}`)
   }
 }
 
