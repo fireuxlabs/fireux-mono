@@ -32,7 +32,7 @@ const props = defineProps({
   config: { type: Object, required: true },
   filterComposable: { type: Function, required: true },
 })
-const { hasProfile } = await useAppUser()
+const { hasProfile } = await useCoreUser()
 const { current, all } = await useProfile(props.config)
 
 // Navigation function for profile clicks

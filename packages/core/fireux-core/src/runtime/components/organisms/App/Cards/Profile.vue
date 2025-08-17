@@ -69,13 +69,34 @@ const formattedCreatedDate = computed(() => {
 
   let date
   try {
-    date =
-      typeof props.app.created_at === 'string'
-        ? new Date(props.app.created_at)
-        : props.app.created_at
+    if (typeof props.app.created_at === 'string') {
+      date = new Date(props.app.created_at)
+    } else if (
+      props.app.created_at &&
+      typeof props.app.created_at === 'object'
+    ) {
+      // Handle Firebase Timestamp objects
+      if (
+        'seconds' in props.app.created_at &&
+        'nanoseconds' in props.app.created_at
+      ) {
+        // Convert Firebase Timestamp to JavaScript Date
+        date = new Date(
+          props.app.created_at.seconds * 1000 +
+            props.app.created_at.nanoseconds / 1000000
+        )
+      } else if (props.app.created_at.toDate) {
+        // Handle Firestore Timestamp with toDate method
+        date = props.app.created_at.toDate()
+      } else {
+        date = props.app.created_at
+      }
+    } else {
+      date = props.app.created_at
+    }
 
     // Check if date is valid
-    if (!date || isNaN(date.getTime())) return null
+    if (!date || isNaN(date.getTime())) return 'Invalid date'
 
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -87,7 +108,7 @@ const formattedCreatedDate = computed(() => {
       'Invalid date format for app created_at:',
       props.app.created_at
     )
-    return null
+    return 'Invalid date'
   }
 })
 

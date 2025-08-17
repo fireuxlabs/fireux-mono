@@ -44,12 +44,9 @@ const handleEmailAuth = async () => {
 
   if (user?.uid) {
     console.log('[handleEmailAuth] ✅ Got UID:', user.uid)
-    try {
-      await ensureApp(user)
-      router.push('/dashboard')
-    } catch (error) {
-      console.error('[handleEmailAuth] ❌ Error ensuring app:', error)
-    }
+    // Don't automatically create app - let the onboarding flow handle it
+    // The main app.vue will show the onboarding modal if app doesn't exist
+    router.push('/')
   } else {
     console.warn('[handleEmailAuth] ❌ No UID returned from email auth')
   }

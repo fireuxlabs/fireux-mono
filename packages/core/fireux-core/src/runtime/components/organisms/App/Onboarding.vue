@@ -28,17 +28,39 @@
       <UButton v-if="envData?.isValid" block @click="createAppHandler"
         >Create App</UButton
       >
+      <UButton v-else-if="envData === null" block disabled
+        >Checking Environment...</UButton
+      >
+      <UButton v-else block disabled>Fix Environment Issues First</UButton>
     </div>
   </UContainer>
 </template>
 
 <script setup>
 const { coreUser } = await useCoreUser()
-const { data: envData } = await useFetch('/api/env-check')
+const { data: envData, error: envError } = await useFetch(
+  '/api/app/env-check',
+  {
+    server: false, // Only fetch on client side
+    default: () => null,
+  }
+)
 const { ensureApp } = await useAppEnsure()
 
 const pin = ref([])
 const isUnlocked = ref(false)
+
+// Debug logging
+console.log('🚀 Onboarding component mounted', {
+  coreUser: coreUser.value,
+  isUnlocked: isUnlocked.value,
+  envData: envData.value,
+})
+
+// Log any environment check errors
+if (envError.value) {
+  console.error('Environment check failed:', envError.value)
+}
 
 function checkPin() {
   console.log('PIN input complete:', pin.value)

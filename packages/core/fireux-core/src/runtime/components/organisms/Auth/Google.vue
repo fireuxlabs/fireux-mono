@@ -20,13 +20,9 @@ const handleGoogleSignIn = async () => {
   const user = await signInWithGoogle()
   if (user?.uid) {
     console.log('[handleGoogleSignIn] ✅ Got UID:', user.uid)
-    try {
-      const { ensureApp } = await useAppEnsure()
-      await ensureApp(user)
-      router.push('/dashboard')
-    } catch (error) {
-      console.error('[handleGoogleSignIn] ❌ Error ensuring app:', error)
-    }
+    // Don't automatically create app - let the onboarding flow handle it
+    // The main app.vue will show the onboarding modal if app doesn't exist
+    router.push('/')
   } else {
     console.warn('[handleGoogleSignIn] ❌ No UID returned from Google sign-in')
   }
