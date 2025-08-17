@@ -31,10 +31,11 @@ const { appName } = useFireUXConfig()
 const router = useRouter()
 const { currentUser } = useAuth()
 
-// Redirect logged-in users to the dashboard
-if (currentUser?.uid && !currentUser.isAnonymous) {
-  router.push('/dashboard')
-}
+// Only redirect logged-in users to dashboard if app is initialized
+// For uninitialized apps, let the main app.vue handle the onboarding modal
+// if (currentUser?.uid && !currentUser.isAnonymous) {
+//   router.push('/dashboard')
+// }
 
 // Set page metadata
 useHead({
