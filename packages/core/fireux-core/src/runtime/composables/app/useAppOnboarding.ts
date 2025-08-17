@@ -16,7 +16,7 @@ export function useAppOnboarding() {
   const isEnvValid = computed(() => envCheckResult.value?.isValid ?? false)
 
   async function checkEnv() {
-    const { data } = await useFetch<EnvCheckResult>('/api/env-check', {
+    const { data } = await useFetch<EnvCheckResult>('/api/app/env-check', {
       server: false,
     })
     envCheckResult.value = data.value ?? {

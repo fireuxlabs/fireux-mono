@@ -9,6 +9,13 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
 
   // Computed properties
   const isInitialized = computed(() => {
+    console.log('🔍 isInitialized check:', {
+      appValue: app.value,
+      appExists: !!app.value,
+      adminIds: app.value?.admin_ids,
+      hasAdminIds: !!app.value?.admin_ids?.length,
+    })
+
     if (!app.value) return false // Return false by default if app is undefined or null
     return !!app.value.admin_ids?.length // Check if admin_ids exists and has a length
   })

@@ -69,11 +69,10 @@ export function useAppEnsure() {
         id: appId,
         app_name: appName,
         admin_ids: [uid],
-        created_at: new Date().toISOString(),
-        created_by: uid,
+        // created_at and creator_id will be added by setDocument
       }
 
-      await setDocument('apps', appId, appData)
+      await setDocument('apps', appId, appData, { appScoped: false })
       console.log(`🎉 [ensureApp] App '${appId}' created successfully.`)
 
       // Step 5: Update core user with admin role
