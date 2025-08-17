@@ -2,7 +2,7 @@
   <UCard class="profile-card profile-pill chef-pill">
     <div class="profile-header">
       <UAvatar
-        :src="chef?.avatarUrl"
+        :src="chef?.profile_image?.url"
         :alt="chef?.chef_name || 'Chef'"
         size="sm"
       />
@@ -14,6 +14,23 @@
           {{ chef.specialties[0] }}
         </p>
       </div>
+    </div>
+
+    <!-- JSON Debug Display -->
+    <div class="chef-debug">
+      <details>
+        <summary>Full Chef Object (JSON)</summary>
+        <pre
+          style="
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            overflow-x: auto;
+          "
+          >{{ JSON.stringify(chef, null, 2) }}</pre
+        >
+      </details>
     </div>
   </UCard>
 </template>
