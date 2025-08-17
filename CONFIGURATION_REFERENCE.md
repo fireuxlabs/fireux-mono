@@ -36,7 +36,7 @@
 FIREBASE_PROJECT_ID=your_project
 NUXT_PUBLIC_FIREBASE_PROJECT_ID=your_project  # Same value!
 
-APP_PRIMARY_COLOR=8B5CF6  # Hex without #
+APP_PRIMARY_COLOR="#8B5CF6"  # Quoted hex with # symbol
 ```
 
 ## 🎯 **Quick Setup Commands**
@@ -131,11 +131,11 @@ const colorMap = {
 ```typescript
 // app.config.ts
 export default defineAppConfig({
-  ui: { colors: { primary: 'violet' } }  // ✅ NuxtUI name
+  ui: { colors: { primary: 'violet' } }, // ✅ NuxtUI name
 })
 
 // .env
-APP_PRIMARY_COLOR=8B5CF6  // ✅ Hex value
+APP_PRIMARY_COLOR = '#8B5CF6' // ✅ Quoted hex value (required for # symbol)
 ```
 
 ## 📖 **Template Library**
@@ -204,7 +204,7 @@ PROJECT_NAME=My App
 APP_ID=my_app
 APP_NAME=My App
 APP_SHORT_NAME=App
-APP_PRIMARY_COLOR=8B5CF6
+APP_PRIMARY_COLOR="#8B5CF6"  # Quoted hex values required for # symbol
 DOMAIN=http://localhost:3010
 ```
 

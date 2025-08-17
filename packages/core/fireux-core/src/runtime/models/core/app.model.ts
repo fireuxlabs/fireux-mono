@@ -3,5 +3,5 @@ export interface App {
   app_name: string
   admin_ids: string[]
   created_at?: string
-  created_by?: string
+  creator_id?: string // Changed from created_by to match other objects
 }
