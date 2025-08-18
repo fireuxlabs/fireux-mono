@@ -1,5 +1,63 @@
 // =============================================================================
-// Profile Components - Complete Unified System
+// Unified User & Profile Card System
+// =============================================================================
+
+// New unified card system
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border-color: #d1d5db;
+  }
+
+  @media (min-width: 768px) {
+    padding: 1.25rem;
+  }
+
+  // Pill modifier - compact layout
+  &.pill {
+    padding: 0.75rem;
+    border-left: 3px solid var(--domain-color, #6b7280);
+
+    .profile-header {
+      margin-bottom: 0;
+    }
+
+    .profile-name {
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .profile-title {
+      font-size: 0.8125rem;
+      margin-top: 0.125rem;
+    }
+
+    &:hover {
+      border-left-color: var(--domain-color-hover, #4b5563);
+    }
+
+    @media (min-width: 768px) {
+      padding: 1rem;
+    }
+  }
+
+  // Cell modifier (extends base card functionality)
+  &.cell {
+    // Future: Add cell-specific styles here
+    min-height: 80px;
+  }
+}
+
+// =============================================================================
+// Profile Components - Complete Unified System (LEGACY - keeping for transition)
 // =============================================================================
 
 // Profile Page Layout
@@ -54,57 +112,17 @@
   pointer-events: none;
 }
 
-// Base Profile Container (Enhanced with mobile-first)
+// Legacy support - extend new card system
 .profile-card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1rem;
-  transition: all 0.2s ease;
-  cursor: pointer;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-    border-color: #d1d5db;
-  }
-
-  @media (min-width: 768px) {
-    padding: 1.25rem;
-  }
+  @extend .card;
 }
 
-// Profile Cell (alias for consistency)
 .profile-cell {
-  @extend .profile-card;
+  @extend .card.cell;
 }
 
-// Pill Modifier - Compact Layout
 .profile-pill {
-  padding: 0.75rem;
-  border-left: 3px solid var(--domain-color, #6b7280);
-
-  .profile-header {
-    margin-bottom: 0;
-  }
-
-  .profile-name {
-    font-size: 1rem;
-    line-height: 1.2;
-  }
-
-  .profile-title {
-    font-size: 0.8125rem;
-    margin-top: 0.125rem;
-  }
-
-  &:hover {
-    border-left-color: var(--domain-color-hover, #4b5563);
-  }
-
-  @media (min-width: 768px) {
-    padding: 1rem;
-  }
+  @extend .card.pill;
 }
 
 // Domain-specific border colors

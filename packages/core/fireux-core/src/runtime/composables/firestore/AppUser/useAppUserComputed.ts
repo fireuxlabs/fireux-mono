@@ -25,13 +25,15 @@ export function useAppUserComputed(appUser: Ref<AppUser | null>) {
   })
   // Computed properties
   const isAppUser = computed(() => !!appUser.value)
-
-  // Legacy subscription logic - TODO: Remove after migration to CoreUser
-  // New apps should use useCoreUser().isPro instead
   const isPro = computed(() => appUser.value?.subscription?.is_pro === true)
   const isAdmin = computed(() => appUser.value?.role === 'admin')
 
-  // Legacy subscription function - TODO: Remove after migration to CoreUser
+  // Profile checking method - efficiently computed to avoid creating new functions
+  const hasProfile = (profileType: string): boolean => {
+    const profiles = appUser.value?.profiles || []
+    const result = (profiles as any).includes(profileType)
+    return result
+  }
   function hasSubscription(planType: 'pro' | 'enterprise' = 'pro'): boolean {
     if (planType === 'pro') {
       return isPro.value
@@ -46,6 +48,7 @@ export function useAppUserComputed(appUser: Ref<AppUser | null>) {
     isPro,
     isAdmin,
     initials,
+    hasProfile,
     hasSubscription,
   }
 }

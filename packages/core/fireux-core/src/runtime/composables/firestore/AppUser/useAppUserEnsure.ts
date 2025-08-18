@@ -1,7 +1,9 @@
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
+import { useAppUserUtils } from './useAppUserUtils'
 import type { AppUser } from '../../../models/core/appUser.model'
 import { useFireUXConfig } from '../../FireUXConfig'
+import { useFirestoreCreate } from '../useFirestoreCreate'
 import { useFirestoreManager } from '../useFirestoreManager'
 import { useMediaStorage } from '../../firebase/useMediaStorage'
 
@@ -85,8 +87,17 @@ export function useAppUserEnsure() {
       }
 
       // Create new app user using strong CoreUser data
+      const { generateHandle, generateSlug } = useAppUserUtils()
+      const { setDocument } = useFirestoreCreate()
       const { uploadUserAvatar } = useMediaStorage()
-      const { setDocument } = useFirestoreManager()
+
+      // Generate unique slug for the user
+      const slug = await generateSlug({
+        display_name: coreUserData.display_name || coreUserData.email,
+        handle: generateHandle(coreUserData.email),
+        email: coreUserData.email,
+        uid,
+      })
 
       // Copy avatar from core-users storage to app-specific storage
       let appAvatarUrl = coreUserData.avatar // Default to core user avatar
@@ -114,18 +125,21 @@ export function useAppUserEnsure() {
       }
 
       const appUserData: Partial<AppUser> = {
-        uid, // References CoreUser.id
-        role: app.admin_ids?.includes(uid) ? 'admin' : 'user', // User's role in this specific app
-        display_name: coreUserData.email, // Start with email, user can customize per-app
-        avatar: appAvatarUrl, // App-specific avatar
-        // All other fields (bio, handle, first_name, etc.) are optional and can be filled later
+        uid,
+        email: coreUserData.email, // CoreUser always has email
+        role: app.admin_ids?.includes(uid) ? 'admin' : 'user',
+        display_name: coreUserData.email, // Use email as display name initially
+        avatar: appAvatarUrl, // Use the app-specific avatar URL
+        handle: generateHandle(coreUserData.email),
+        slug,
+        bio: '',
       }
 
-      // Use setDocument with appScoped: false (user docs don't need appId since they're already under apps/{appId}/users)
-      await setDocument(`apps/${appId}/users`, uid, appUserData, {
-        appScoped: false,
-      })
-      console.log(`✅ [ensureAppUser] Created app user for ${appId}`) // Update core user's userOf array
+      // Use setDocument from useFirestoreCreate to automatically add timestamps
+      await setDocument(`apps/${appId}/users`, uid, appUserData)
+      console.log(`✅ [ensureAppUser] Created app user for ${appId}`)
+
+      // Update core user's userOf array
       const coreUserRef = doc(db, 'core-users', uid)
       await updateDoc(coreUserRef, {
         userOf: arrayUnion(appId),

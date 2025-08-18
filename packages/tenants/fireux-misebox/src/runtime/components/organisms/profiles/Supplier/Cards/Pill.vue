@@ -1,8 +1,8 @@
 <template>
-  <UCard class="profile-card profile-pill supplier-pill">
+  <UCard class="pill">
     <div class="profile-header">
       <UAvatar
-        :src="supplier?.avatarUrl"
+        :src="(supplier as any)?.avatarUrl"
         :alt="supplier?.business_name || 'Supplier'"
         size="sm"
       />

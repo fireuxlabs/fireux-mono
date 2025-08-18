@@ -35,7 +35,7 @@ export async function useAppUser() {
   const appUser = computed(() => appUserData.value ?? null)
 
   // Eagerly fetch all app users (equivalent to allProfiles in useProfile)
-  const allAppUsers = await firestoreFetchCollection<AppUser>(
+  const appUsers = await firestoreFetchCollection<AppUser>(
     `apps/${appId}/users`
   )
 
@@ -44,7 +44,7 @@ export async function useAppUser() {
     appUser,
 
     // Collections fetcher
-    allAppUsers,
+    appUsers,
 
     // Child functions
     ...useAppUserEnsure(),

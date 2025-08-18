@@ -1,19 +1,55 @@
-// App-specific user profile interface - super lean
+// App-specific user profile interface
 export interface AppUser {
-  uid: string // References CoreUser.id
-  role?: 'user' | 'admin' // User's role in this specific app
-  display_name: string // App-specific display name
-  created_at?: string // When the user joined this app
+  uid: string // Explicitly store the UID for convenience
+  first_name: string
+  middle_name?: string // Optional middle name
+  last_name: string
+  display_name: string // Preferred display name (could be nickname)
+  handle: string
+  slug: string // URL-friendly identifier for user profiles
+  avatar: string // Avatar URL
+  bio: string
+  created_at: string
+  email: string
+  phone?: string // Optional phone number
+  role?: 'user' | 'admin'
 
-  // App-specific customization (optional)
-  handle?: string // App-specific handle (@username)
-  bio?: string // App-specific bio
-  avatar?: string // App-specific avatar (overrides CoreUser avatar)
+  // Address information
+  address?: {
+    city?: string
+    state?: string
+    country?: string
+  }
 
-  // App-specific notifications
+  // Subscription system - managed by Stripe webhooks
+  subscription?: {
+    stripe_customer_id?: string
+    stripe_subscription_id?: string
+    plan: 'free' | 'pro' | 'enterprise'
+    status: 'active' | 'inactive' | 'cancelled' | 'past_due'
+    started_at: string
+    ends_at?: string
+    is_pro: boolean // Computed from plan/status for easy access
+  } | null
+
+  // User profile associations - generic for any domain
+  profiles?: Array<{
+    type: string // Generic profile type (domain packages define the actual types)
+    collection: string // The Firestore collection name
+    created_at: string
+    is_active: boolean
+  }>
+
+  // User preferences and social features
   notifications?: {
     enabled: boolean
-    types: Array<'email' | 'push'>
+    types: Array<'email' | 'push' | 'sms'>
+  }
+  followers?: Array<string> // List of user IDs following this user
+  following?: Array<string> // List of user IDs this user is following
+  preferences?: {
+    theme: 'light' | 'dark'
+    language: string
   }
 }
 

@@ -1,8 +1,8 @@
 <template>
-  <UCard class="profile-card profile-pill employer-pill">
+  <UCard class="pill">
     <div class="profile-header">
       <UAvatar
-        :src="employer?.avatarUrl"
+        :src="(employer as any)?.avatarUrl"
         :alt="employer?.company_name || 'Employer'"
         size="sm"
       />

@@ -1,5 +1,5 @@
 <template>
-  <UCard class="objects cards cell pill">
+  <UCard class="object card pill">
     <div class="header">
       <div class="icon small">🥬</div>
       <div class="info">
@@ -15,9 +15,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Ingredient } from '../../../../../models/objects/Ingredient.model'
-
+// Temporary relaxed typing to prevent build errors during UI wiring
 defineProps<{
-  ingredient?: Partial<Ingredient>
+  ingredient?: Record<string, any>
 }>()
 </script>

@@ -1,8 +1,8 @@
 <template>
-  <UCard class="profile-card profile-pill chef-pill">
+  <UCard class="pill">
     <div class="profile-header">
       <UAvatar
-        :src="chef?.profile_image?.url"
+        :src="(chef as any)?.avatarUrl"
         :alt="chef?.chef_name || 'Chef'"
         size="sm"
       />

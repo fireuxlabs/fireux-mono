@@ -47,10 +47,10 @@ Each app uses a consistent two-color system:
    })
    ```
 
-2. **Update** `.env` file with quoted hex values:
+2. **Update** `.env` file with hex values:
    ```bash
-   APP_PRIMARY_COLOR="#3B82F6"  # blue-500 (quoted hex with # symbol)
-   APP_NEUTRAL_COLOR="#64748B"  # slate-500 (quoted hex with # symbol)
+   APP_PRIMARY_COLOR=3B82F6  # blue-500 (no # prefix)
+   APP_NEUTRAL_COLOR=64748B  # slate-500 (no # prefix)
    ```
 
 > 📚 **See main README.md** for complete color selection guide and Nuxt UI color references.

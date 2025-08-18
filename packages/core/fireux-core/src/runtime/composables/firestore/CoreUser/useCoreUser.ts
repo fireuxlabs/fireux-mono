@@ -11,7 +11,8 @@ import { useCoreUserComputed } from './useCoreUserComputed'
 import type { CoreUser } from '../../../models/core/coreUser.model'
 import { getApps } from 'firebase/app'
 
-export function useCoreUser() {
+
+export async function useCoreUser() {
   // Ensure Firebase is initialized
   if (!getApps().length) {
     throw new Error(

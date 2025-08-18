@@ -1,8 +1,8 @@
 <template>
-  <UCard class="profile-card profile-pill professional-pill">
+  <UCard class="pill">
     <div class="profile-header">
       <UAvatar
-        :src="professional?.avatarUrl"
+        :src="(professional as any)?.avatarUrl"
         :alt="professional?.professional_name || 'Professional'"
         size="sm"
       />

@@ -82,34 +82,11 @@
 const { app, updateDescription, updateSocialLinks, updateAdmins } = useApp()
 
 // Helper function to format dates
-const formatDate = (dateValue) => {
-  if (!dateValue) return 'Unknown'
+const formatDate = (dateString) => {
+  if (!dateString) return 'Unknown'
 
   try {
-    let date
-    if (typeof dateValue === 'string') {
-      date = new Date(dateValue)
-    } else if (dateValue && typeof dateValue === 'object') {
-      // Handle Firebase Timestamp objects
-      if ('seconds' in dateValue && 'nanoseconds' in dateValue) {
-        // Convert Firebase Timestamp to JavaScript Date
-        date = new Date(
-          dateValue.seconds * 1000 + dateValue.nanoseconds / 1000000
-        )
-      } else if (dateValue.toDate) {
-        // Handle Firestore Timestamp with toDate method
-        date = dateValue.toDate()
-      } else {
-        date = dateValue
-      }
-    } else {
-      date = dateValue
-    }
-
-    // Check if date is valid
-    if (!date || isNaN(date.getTime())) return 'Invalid date'
-
-    return date.toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',

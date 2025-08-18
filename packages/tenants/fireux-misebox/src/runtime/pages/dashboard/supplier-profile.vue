@@ -28,7 +28,7 @@ definePageMeta({
 })
 
 // Get current user
-const { appUser } = await useAppUser()
+const { appUser, hasProfile } = await useAppUser()
 
 // Use our unified profile composable
 const { current: supplier } = await useProfile(supplierConfig)
