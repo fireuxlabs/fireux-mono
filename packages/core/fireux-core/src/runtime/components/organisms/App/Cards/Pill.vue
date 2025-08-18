@@ -1,28 +1,18 @@
 <template>
-  <UCard>
-    <div style="display: flex; align-items: center; gap: 12px">
+  <UCard class="pill">
+    <div class="pill-content">
       <div
-        style="
-          width: 40px;
-          height: 40px;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        "
+        class="app-icon"
         :style="{ backgroundColor: app?.theme?.primary || '#3b82f6' }"
       >
-        <UIcon
-          :name="getAppIcon(app?.id)"
-          style="color: white; font-size: 20px"
-        />
+        <UIcon :name="getAppIcon(app?.id)" />
       </div>
 
-      <div style="flex: 1">
-        <div style="font-weight: 600; margin-bottom: 4px">
+      <div class="pill-info">
+        <div class="pill-title">
           {{ appName }}
         </div>
-        <div style="font-size: 14px; color: rgb(107 114 128)">
+        <div class="pill-subtitle">
           {{ app?.id || 'Unknown ID' }}
         </div>
       </div>

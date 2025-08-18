@@ -1,37 +1,19 @@
 <template>
-  <UCard>
-    <div style="display: flex; align-items: flex-start; gap: 16px">
+  <UCard class="cell">
+    <div class="cell-header">
       <div
-        style="
-          width: 48px;
-          height: 48px;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        "
+        class="app-icon"
         :style="{ backgroundColor: app?.theme?.primary || '#3b82f6' }"
       >
-        <UIcon
-          :name="getAppIcon(app?.id)"
-          style="color: white; font-size: 24px"
-        />
+        <UIcon :name="getAppIcon(app?.id)" />
       </div>
 
-      <div style="flex: 1; min-width: 0">
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-          "
-        >
-          <h3 style="font-weight: 600; margin: 0">
+      <div class="cell-content">
+        <div class="cell-title-row">
+          <h3 class="cell-title">
             {{ appName }}
           </h3>
-          <div style="display: flex; gap: 8px">
+          <div class="cell-badges">
             <UBadge v-if="isInitialized" color="green" variant="soft">
               Active
             </UBadge>
@@ -41,22 +23,11 @@
           </div>
         </div>
 
-        <p
-          v-if="app?.description"
-          style="margin: 0 0 8px 0; color: rgb(107 114 128); font-size: 14px"
-        >
+        <p v-if="app?.description" class="cell-subtitle">
           {{ app.description }}
         </p>
 
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            font-size: 13px;
-            color: rgb(107 114 128);
-          "
-        >
+        <div class="cell-meta">
           <span>ID: {{ app?.id || 'Unknown' }}</span>
           <span v-if="app?.created_at">
             Created: {{ formatDate(app.created_at) }}

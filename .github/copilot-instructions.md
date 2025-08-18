@@ -214,6 +214,41 @@ packages/fireux-core/src/runtime/
 - **Breaking changes**: Use additive-only approach
 - **Premature abstraction**: Start simple, refactor when proven needed
 - **Missing await**: Authentication requires `await useAppUser()` in layouts
+- **❌ CRITICAL - Wrong Styling Approach**:
+  - **NO utility classes**: `class="flex items-center gap-4"` ❌
+  - **NO inline styles**: `style="display: flex; gap: 16px;"` ❌
+  - **NO arbitrary values**: `class="p-[16px]"` ❌
+
+## ✅ REQUIRED Styling System
+
+FireUX uses **semantic CSS classes only**:
+
+```vue
+<!-- ✅ Correct: Semantic classes -->
+<UCard class="cell">
+  <div class="cell-header">
+    <UAvatar />
+    <div class="cell-content">
+      <h3 class="cell-title">{{ name }}</h3>
+      <p class="cell-subtitle">{{ description }}</p>
+    </div>
+  </div>
+</UCard>
+
+<!-- ✅ Correct: Component patterns -->
+<UCard class="pill">          <!-- Pills -->
+<UCard class="cell">          <!-- Cells -->  
+<UCard class="profile">       <!-- Profiles -->
+
+<!-- ✅ Correct: Domain-specific extensions -->
+<UCard class="cell chef-cell">        <!-- Chef cell -->
+<UCard class="pill employer-pill">     <!-- Employer pill -->
+```
+
+**Structure Classes:**
+- `.pill-content`, `.pill-info`, `.pill-title`, `.pill-subtitle`
+- `.cell-header`, `.cell-content`, `.cell-title-row`, `.cell-title`, `.cell-subtitle`, `.cell-badges`, `.cell-tags`
+- `.profile-header`, `.profile-info`, `.profile-name`, `.profile-bio`, `.profile-section`
 
 ## Development Best Practices
 

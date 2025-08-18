@@ -1,5 +1,5 @@
 <template>
-  <div class="user-cell">
+  <div class="cell">
     <UAvatar :src="proxiedAvatarUrl" size="lg" />
     <div class="info">
       <strong class="name">{{ displayName }}</strong>

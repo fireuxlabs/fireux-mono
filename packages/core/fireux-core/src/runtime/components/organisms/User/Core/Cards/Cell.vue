@@ -1,45 +1,54 @@
 <template>
-  <UCard class="profile-card">
-    <div class="profile-header">
+  <UCard class="cell">
+    <div class="cell-header">
       <UAvatar
-        :src="coreUser?.avatarUrl"
+        :src="coreUser?.photoURL"
         :alt="coreUser?.displayName || 'Core User'"
-        size="md"
+        size="lg"
       />
-      <div class="profile-info">
-        <h4 v-if="coreUser?.displayName" class="profile-name">
-          {{ coreUser.displayName }}
-        </h4>
-        <p v-if="coreUser?.email" class="profile-subtitle">
+
+      <div class="cell-content">
+        <div class="cell-title-row">
+          <h3 class="cell-title">
+            {{ coreUser?.displayName || 'Unknown User' }}
+          </h3>
+          <div class="cell-badges">
+            <UBadge v-if="coreUser?.emailVerified" color="green" variant="soft">
+              Verified
+            </UBadge>
+            <UBadge v-if="hasMultipleApps" color="blue" variant="soft">
+              {{ userOfApps }} Apps
+            </UBadge>
+          </div>
+        </div>
+
+        <p v-if="coreUser?.email" class="cell-subtitle">
           {{ coreUser.email }}
         </p>
+
+        <div v-if="coreUser?.userOf?.length" class="cell-tags">
+          <UBadge
+            v-for="app in coreUser.userOf.slice(0, 3)"
+            :key="app"
+            variant="outline"
+          >
+            {{ app }}
+          </UBadge>
+          <UBadge v-if="coreUser.userOf.length > 3" variant="outline">
+            +{{ coreUser.userOf.length - 3 }} more
+          </UBadge>
+        </div>
       </div>
-    </div>
-
-    <p v-if="coreUser?.bio" class="profile-bio">
-      {{ coreUser.bio }}
-    </p>
-
-    <div v-if="coreUser?.profiles?.length" class="profile-tags">
-      <span
-        v-for="profile in coreUser.profiles.slice(0, 3)"
-        :key="profile"
-        class="tag"
-      >
-        {{ profile }}
-      </span>
-      <span v-if="coreUser.profiles.length > 3" class="tag-more">
-        +{{ coreUser.profiles.length - 3 }} more
-      </span>
     </div>
   </UCard>
 </template>
 
 <script setup>
-defineProps({
-  coreUser: {
-    type: Object,
-    default: () => ({}),
-  },
-})
+const props = defineProps(['coreUser'])
+
+// These would normally come from useCoreUserComputed, but for display purposes:
+const hasMultipleApps = computed(
+  () => (props.coreUser?.userOf?.length || 0) > 1
+)
+const userOfApps = computed(() => props.coreUser?.userOf?.length || 0)
 </script>
