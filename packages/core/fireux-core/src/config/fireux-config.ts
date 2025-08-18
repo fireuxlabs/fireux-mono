@@ -86,6 +86,12 @@ export const createFireuxConfig = (config: TenantConfig) => {
       firebase: {
         gen: 2,
       },
+      ignore: [
+        // Exclude development pages from production builds
+        ...(process.env.NODE_ENV === 'production' ? ['**/pages/dev/**'] : []),
+        // Exclude documentation files (already established pattern)
+        '**/*.doc.*'
+      ]
     },
   } as any
 }
