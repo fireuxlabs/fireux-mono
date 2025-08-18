@@ -23,26 +23,18 @@
     </UCard>
 
     <UCard>
-      <h2>JSON Snapshot</h2>
-      <pre>{{
-        JSON.stringify(
-          {
-            currentUser: appUser,
-            computedProps: {
-              isAppUser,
-              isPro,
-              isAdmin,
-              initials,
-            },
-            collection: {
-              total: appUsers?.length || 0,
-              users: appUsers,
-            },
-          },
-          null,
-          2
-        )
-      }}</pre>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="margin: 0;">JSON Snapshot</h2>
+        <UButton 
+          icon="i-heroicons-clipboard-document"
+          size="sm"
+          variant="outline"
+          @click="copyToClipboard(jsonSnapshot)"
+        >
+          Copy JSON
+        </UButton>
+      </div>
+      <pre>{{ jsonSnapshot }}</pre>
     </UCard>
 
     <UCard>
@@ -62,6 +54,32 @@
 </template>
 
 <script setup>
-const { appUser, appUsers, isAppUser, isPro, isAdmin, initials } =
-  await useAppUser()
+const { appUser, appUsers, isAppUser, isPro, isAdmin, initials } = await useAppUser()
+
+// JSON snapshot for copy functionality
+const jsonSnapshot = computed(() => {
+  return JSON.stringify({
+    currentUser: appUser.value,
+    computedProps: {
+      isAppUser: isAppUser.value,
+      isPro: isPro.value,
+      isAdmin: isAdmin.value,
+      initials: initials.value,
+    },
+    collection: {
+      total: appUsers.value?.length || 0,
+      users: appUsers.value,
+    },
+  }, null, 2)
+})
+
+// Copy to clipboard function
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text)
+    console.log('JSON copied to clipboard!')
+  } catch (err) {
+    console.error('Failed to copy JSON:', err)
+  }
+}
 </script>
