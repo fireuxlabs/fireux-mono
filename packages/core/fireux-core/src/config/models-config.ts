@@ -53,11 +53,11 @@ export function configureModels(resolver: any, nuxt: any) {
   }
 
   console.log(
-    'Configured FireUX Core models with organized directory structure:'
+    '✅ Configured FireUX Core models with organized directory structure:'
   )
-  console.log('  - #fireux-core-models (main)')
-  console.log('  - #fireux-core-models-core (app, user models)')
-  console.log('  - #fireux-core-models-objects (content, business objects)')
-  console.log('  - #fireux-core-models-profiles (profile models)')
-  console.log('  - #fireux-core-models-utils (utilities, protocols)')
+  console.log('   #fireux-core-models (main)')
+  console.log('  📁 #fireux-core-models-core (app, user models)')
+  console.log('  📁 #fireux-core-models-objects (content, business objects)')
+  console.log('  📁 #fireux-core-models-profiles (profile models)')
+  console.log('  📁 #fireux-core-models-utils (utilities, protocols)')
 }

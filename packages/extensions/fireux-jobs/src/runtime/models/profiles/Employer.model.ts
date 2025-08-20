@@ -1,8 +1,7 @@
 import type {
   Profile,
   ProfileConfig,
-  ProfileCreateData
-} from '#imports'
+} from '../../../../../../../packages/core/fireux-core/src/runtime/models/profiles/profile.model'
 
 // Company Location
 export interface CompanyLocation {

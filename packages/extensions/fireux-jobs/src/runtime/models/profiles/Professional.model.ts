@@ -1,7 +1,7 @@
 import type {
   Profile,
   ProfileConfig,
-} from 'fireux-core/runtime/models/profiles/profile.model'
+} from '../../../../../../../packages/core/fireux-core/src/runtime/models/profiles/profile.model'
 
 // Kitchen Experience Entry
 export interface KitchenExperience {

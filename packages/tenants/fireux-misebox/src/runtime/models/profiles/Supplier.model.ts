@@ -1,7 +1,7 @@
 import type {
   Profile,
   ProfileConfig,
-} from 'fireux-core/runtime/models/profiles/profile.model'
+} from '../core-types'
 
 export interface Supplier extends Profile {
   // Core Identity - supplier has its own independent ID
