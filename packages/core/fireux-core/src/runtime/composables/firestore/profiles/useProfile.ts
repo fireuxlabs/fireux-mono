@@ -25,7 +25,7 @@ export async function useProfile(config: ProfileConfig) {
   const { data: current } = useDocument(currentProfileDocRef)
 
   // Fetch all profiles in this collection
-  const all = await firestoreFetchCollection(config.collectionName)
+  const collection = await firestoreFetchCollection(config.collectionName)
 
   // Fetch by ID function
   const fetchById = async (id: string) =>
@@ -38,7 +38,7 @@ export async function useProfile(config: ProfileConfig) {
 
   return {
     current,
-    all,
+    collection,
     fetchById,
     ...create,
     ...remove,

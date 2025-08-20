@@ -97,8 +97,20 @@
 
     <!-- Debug Data -->
     <UCard class="cell">
-      <h2 class="cell-title">Raw Profile Data</h2>
-      <UBadge color="neutral" variant="outline">Debug</UBadge>
+      <div class="cell-header">
+        <h2 class="cell-title">Raw Profile Data</h2>
+        <div class="flex items-center gap-2">
+          <UBadge color="neutral" variant="outline">Debug</UBadge>
+          <UButton
+            icon="i-heroicons-clipboard-document"
+            size="sm"
+            variant="outline"
+            @click="copyToClipboard(jsonSnapshot)"
+          >
+            Copy JSON
+          </UButton>
+        </div>
+      </div>
       <div class="cell-content">
         <pre
           class="text-xs max-h-96 overflow-y-auto bg-gray-100 text-gray-700 p-4 rounded-lg whitespace-pre-wrap"
