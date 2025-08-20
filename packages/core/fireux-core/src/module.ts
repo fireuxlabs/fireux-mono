@@ -66,7 +66,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.nitro = nuxt.options.nitro || {}
     nuxt.options.nitro.ignore = nuxt.options.nitro.ignore || []
     nuxt.options.nitro.ignore.push('**/*.doc.*')
-    
+
     // Exclude dev pages from production builds only
     if (process.env.NODE_ENV === 'production') {
       nuxt.options.nitro.ignore.push('**/pages/dev/**')

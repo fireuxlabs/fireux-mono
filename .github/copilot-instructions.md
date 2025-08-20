@@ -236,16 +236,11 @@ FireUX uses **semantic CSS classes only**:
 </UCard>
 
 <!-- ✅ Correct: Component patterns -->
-<UCard class="pill">          <!-- Pills -->
-<UCard class="cell">          <!-- Cells -->  
-<UCard class="profile">       <!-- Profiles -->
-
-<!-- ✅ Correct: Domain-specific extensions -->
-<UCard class="cell chef-cell">        <!-- Chef cell -->
-<UCard class="pill employer-pill">     <!-- Employer pill -->
+<UCard class="pill"></UCard>
 ```
 
 **Structure Classes:**
+
 - `.pill-content`, `.pill-info`, `.pill-title`, `.pill-subtitle`
 - `.cell-header`, `.cell-content`, `.cell-title-row`, `.cell-title`, `.cell-subtitle`, `.cell-badges`, `.cell-tags`
 - `.profile-header`, `.profile-info`, `.profile-name`, `.profile-bio`, `.profile-section`

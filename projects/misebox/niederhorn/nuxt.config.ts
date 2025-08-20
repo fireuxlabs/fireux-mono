@@ -3,7 +3,7 @@ import { createFireuxConfig } from '../../../packages/core/fireux-core/src/confi
 
 export default defineNuxtConfig(
   createFireuxConfig({
-    tenantModule: process.env.TENANT_MODULE,
+    modules: ['fireux-misebox'],
     appName: process.env.APP_NAME,
     appShortName: process.env.APP_SHORT_NAME,
     primaryColor: process.env.APP_PRIMARY_COLOR,

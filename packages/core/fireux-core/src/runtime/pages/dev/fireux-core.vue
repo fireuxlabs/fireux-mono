@@ -23,9 +23,16 @@
     </UCard>
 
     <UCard>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h2 style="margin: 0;">JSON Snapshot</h2>
-        <UButton 
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        "
+      >
+        <h2 style="margin: 0">JSON Snapshot</h2>
+        <UButton
           icon="i-heroicons-clipboard-document"
           size="sm"
           variant="outline"
@@ -58,16 +65,20 @@ const { app, apps, isInitialized } = await useApp()
 
 // JSON snapshot for copy functionality
 const jsonSnapshot = computed(() => {
-  return JSON.stringify({
-    currentApp: app.value,
-    computedProps: {
-      isInitialized: isInitialized.value,
+  return JSON.stringify(
+    {
+      currentApp: app.value,
+      computedProps: {
+        isInitialized: isInitialized.value,
+      },
+      collection: {
+        total: apps.value?.length || 0,
+        apps: apps.value,
+      },
     },
-    collection: {
-      total: apps.value?.length || 0,
-      apps: apps.value,
-    },
-  }, null, 2)
+    null,
+    2
+  )
 })
 
 // Copy to clipboard function

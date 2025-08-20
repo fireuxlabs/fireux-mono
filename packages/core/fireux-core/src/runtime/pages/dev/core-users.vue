@@ -23,9 +23,16 @@
     </UCard>
 
     <UCard>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h2 style="margin: 0;">JSON Snapshot</h2>
-        <UButton 
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        "
+      >
+        <h2 style="margin: 0">JSON Snapshot</h2>
+        <UButton
           icon="i-heroicons-clipboard-document"
           size="sm"
           variant="outline"
@@ -54,23 +61,34 @@
 </template>
 
 <script setup>
-const { coreUser, coreUsers, isCoreUser, hasAvatar, userOfApps, hasMultipleApps } = await useCoreUser()
+const {
+  coreUser,
+  coreUsers,
+  isCoreUser,
+  hasAvatar,
+  userOfApps,
+  hasMultipleApps,
+} = await useCoreUser()
 
 // JSON snapshot for copy functionality
 const jsonSnapshot = computed(() => {
-  return JSON.stringify({
-    currentUser: coreUser.value,
-    computedProps: {
-      isCoreUser: isCoreUser.value,
-      hasAvatar: hasAvatar.value,
-      userOfApps: userOfApps.value,
-      hasMultipleApps: hasMultipleApps.value,
+  return JSON.stringify(
+    {
+      currentUser: coreUser.value,
+      computedProps: {
+        isCoreUser: isCoreUser.value,
+        hasAvatar: hasAvatar.value,
+        userOfApps: userOfApps.value,
+        hasMultipleApps: hasMultipleApps.value,
+      },
+      collection: {
+        total: coreUsers.value?.length || 0,
+        users: coreUsers.value,
+      },
     },
-    collection: {
-      total: coreUsers.value?.length || 0,
-      users: coreUsers.value,
-    },
-  }, null, 2)
+    null,
+    2
+  )
 })
 
 // Copy to clipboard function

@@ -159,7 +159,67 @@ function printAll() {
   printStub('plugin')
 }
 
-function printStub(type) {
+function scanThemeColors() {
+  console.log('\n=== 🎨 THEME COLORS SCAN ===\n')
+
+  PACKAGES.forEach((pkg) => {
+    const moduleFile = path.join(PKG_ROOT, pkg, 'src', 'module.ts')
+    if (fs.existsSync(moduleFile)) {
+      const content = fs.readFileSync(moduleFile, 'utf8')
+
+      // Look for theme color assignments
+      const colorMatches = content.match(
+        /\.colors\.[a-zA-Z]+\s*=\s*['"`][^'"`]+['"`]/g
+      )
+
+      if (colorMatches) {
+        console.log(`📦 ${pkg}/`)
+        colorMatches.forEach((match) => {
+          const [, colorName, colorValue] =
+            match.match(/\.colors\.([a-zA-Z]+)\s*=\s*['"`]([^'"`]+)['"`]/) || []
+          if (colorName && colorValue) {
+            console.log(`   🎨 ${colorName}: '${colorValue}'`)
+          }
+        })
+        console.log()
+      }
+    }
+  })
+
+  // Also check core config for default colors
+  const coreConfigFile = path.join(
+    PKG_ROOT,
+    'core',
+    'fireux-core',
+    'src',
+    'config',
+    'fireux-config.ts'
+  )
+  if (fs.existsSync(coreConfigFile)) {
+    const content = fs.readFileSync(coreConfigFile, 'utf8')
+    const appConfigMatch = content.match(
+      /appConfig:\s*{[^}]*ui:\s*{[^}]*colors:\s*{([^}]*)}/s
+    )
+
+    if (appConfigMatch) {
+      console.log('📦 fireux-core (default colors)/')
+      const colorsBlock = appConfigMatch[1]
+      const colorLines = colorsBlock.match(/\w+:\s*['"`][^'"`]+['"`]/g)
+      if (colorLines) {
+        colorLines.forEach((line) => {
+          const [, colorName, colorValue] =
+            line.match(/(\w+):\s*['"`]([^'"`]+)['"`]/) || []
+          if (colorName && colorValue) {
+            console.log(`   🎨 ${colorName}: '${colorValue}' (default)`)
+          }
+        })
+      }
+      console.log()
+    }
+  }
+}
+
+function printStub(name) {
   let label = ''
   if (type === 'server') label = 'Server-side functionality'
   if (type === 'runtime') label = 'Runtime options'
@@ -177,7 +237,7 @@ const rl = readline.createInterface({
 
 console.log('What do you want to test?')
 console.log(
-  '0 = All, 1 = Components, 2 = Layouts, 3 = Pages, 4 = Composables, 5 = Models, 6 = Server-side, 7 = Runtime options, 8 = Plugins, 9 = Public assets'
+  '0 = All, 1 = Components, 2 = Layouts, 3 = Pages, 4 = Composables, 5 = Models, 6 = Server-side, 7 = Runtime options, 8 = Plugins, 9 = Public assets, 10 = Theme colors'
 )
 rl.question('Enter a number: ', (answer) => {
   if (answer === '0') printAll()
@@ -190,6 +250,7 @@ rl.question('Enter a number: ', (answer) => {
   else if (answer === '7') printStub('runtime')
   else if (answer === '8') printStub('plugin')
   else if (answer === '9') printSection('asset')
+  else if (answer === '10') scanThemeColors()
   else console.log('Invalid input.')
   rl.close()
   console.log('\nNote:')

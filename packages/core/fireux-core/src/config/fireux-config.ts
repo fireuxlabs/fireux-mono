@@ -3,7 +3,7 @@
 // ✅ PROVEN PATTERN - Based on working misebox-app configuration
 
 export interface TenantConfig {
-  tenantModule?: string // Optional - some apps like FireUX don't need a tenant module
+  modules?: string[] // Array of modules to include, e.g., ['fireux-jobs', 'fireux-misebox']
   appName?: string // Allow environment variables which can be undefined
   appShortName?: string // Allow environment variables which can be undefined
   primaryColor?: string // Allow environment variables which can be undefined
@@ -12,15 +12,11 @@ export interface TenantConfig {
 
 // Direct configuration object for import
 export const createFireuxConfig = (config: TenantConfig) => {
-  // Build modules array conditionally
+  // Build modules array with core and optional modules
   const modules = [
     'fireux-core',
-    // Only include jobs module if explicitly specified or if tenant module needs it
-    ...(config.tenantModule === 'fireux-jobs' ? ['fireux-jobs'] : []),
-    // Include tenant module if specified
-    ...(config.tenantModule && config.tenantModule !== 'fireux-jobs'
-      ? [config.tenantModule]
-      : []),
+    // Include additional modules if specified
+    ...(config.modules || []),
     '@nuxt/content',
     '@nuxt/ui',
     [
@@ -69,16 +65,6 @@ export const createFireuxConfig = (config: TenantConfig) => {
     // Explicitly configure SSR for consistency
     ssr: true,
 
-    // App configuration for UI theming - using environment variables with defaults
-    appConfig: {
-      ui: {
-        colors: {
-          primary: 'yellow', // Will be enhanced later with color mapping
-          neutral: 'gray', // Will be enhanced later with color mapping
-        },
-      },
-    },
-
     modules,
 
     nitro: {
@@ -90,26 +76,30 @@ export const createFireuxConfig = (config: TenantConfig) => {
         // Exclude development pages from production builds
         ...(process.env.NODE_ENV === 'production' ? ['**/pages/dev/**'] : []),
         // Exclude documentation files (already established pattern)
-        '**/*.doc.*'
-      ]
+        '**/*.doc.*',
+      ],
     },
   } as any
 }
 
 // String template generator for backward compatibility
 export const createFireuxConfigString = (options: {
-  tenantModule: string
+  modules?: string[]
   appName: string
   appShortName: string
   primaryColor: string
   neutralColor?: string
   port?: number
 }) => {
+  const modulesString = options.modules
+    ? `
+  modules: [${options.modules.map((m) => "'" + m + "'").join(', ')}],`
+    : ''
+
   return `import { defineNuxtConfig } from 'nuxt/config'
 import { createFireuxConfig } from 'fireux-core/config/fireux-config'
 
-export default defineNuxtConfig(createFireuxConfig({
-  tenantModule: '${options.tenantModule}',
+export default defineNuxtConfig(createFireuxConfig({${modulesString}
   appName: '${options.appName}',
   appShortName: '${options.appShortName}',
   primaryColor: '${options.primaryColor}',${

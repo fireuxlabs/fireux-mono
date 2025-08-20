@@ -5,11 +5,13 @@
 FireUX uses **semantic CSS classes** that describe the component's purpose and structure, NOT utility classes or inline styles.
 
 ## ❌ What We DON'T Use
+
 - Utility classes: `class="flex items-center gap-4"`
 - Inline styles: `style="display: flex; gap: 16px;"`
 - Arbitrary values: `class="p-[16px]"`
 
 ## ✅ What We DO Use
+
 - Semantic classes: `class="cell"`, `class="pill"`, `class="profile"`
 - Descriptive structure: `class="cell-header"`, `class="cell-content"`
 - Domain-specific: `class="chef-cell"`, `class="employer-pill"`
@@ -17,6 +19,7 @@ FireUX uses **semantic CSS classes** that describe the component's purpose and s
 ## Component Structure Patterns
 
 ### Pills (.pill)
+
 ```vue
 <UCard class="pill">
   <div class="pill-content">
@@ -31,6 +34,7 @@ FireUX uses **semantic CSS classes** that describe the component's purpose and s
 ```
 
 ### Cells (.cell)
+
 ```vue
 <UCard class="cell">
   <div class="cell-header">
@@ -52,6 +56,7 @@ FireUX uses **semantic CSS classes** that describe the component's purpose and s
 ```
 
 ### Profiles (.profile)
+
 ```vue
 <UCard class="profile">
   <div class="profile-header">
@@ -80,16 +85,7 @@ Components can add domain-specific classes alongside base classes:
 
 ```vue
 <!-- Core User -->
-<UCard class="cell core-cell">
-
-<!-- App User -->
-<UCard class="cell app-cell">
-
-<!-- Chef Profile -->
-<UCard class="profile chef-profile">
-
-<!-- Job Employer -->
-<UCard class="cell employer-cell">
+<UCard class="cell core-cell"></UCard>
 ```
 
 ## App-Specific Icons

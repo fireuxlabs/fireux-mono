@@ -2,19 +2,23 @@
   <UCard class="cell">
     <div class="cell-header">
       <UAvatar
-        :src="coreUser?.photoURL"
-        :alt="coreUser?.displayName || 'Core User'"
+        :src="coreUser?.avatar"
+        :alt="coreUser?.display_name || coreUser?.email || 'Core User'"
         size="lg"
       />
 
       <div class="cell-content">
         <div class="cell-title-row">
           <h3 class="cell-title">
-            {{ coreUser?.displayName || 'Unknown User' }}
+            {{ coreUser?.display_name || coreUser?.email || 'Unknown User' }}
           </h3>
           <div class="cell-badges">
-            <UBadge v-if="coreUser?.emailVerified" color="green" variant="soft">
-              Verified
+            <UBadge
+              v-if="coreUser?.adminOf?.length"
+              color="orange"
+              variant="soft"
+            >
+              Admin
             </UBadge>
             <UBadge v-if="hasMultipleApps" color="blue" variant="soft">
               {{ userOfApps }} Apps
@@ -44,9 +48,10 @@
 </template>
 
 <script setup>
+// Props should match CoreUser.Card.Cell interface
 const props = defineProps(['coreUser'])
 
-// These would normally come from useCoreUserComputed, but for display purposes:
+// Computed values for display
 const hasMultipleApps = computed(
   () => (props.coreUser?.userOf?.length || 0) > 1
 )

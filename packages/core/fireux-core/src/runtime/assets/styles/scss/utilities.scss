@@ -1,42 +1,24 @@
 /* ============================
-   app/assets/design-system/utilities.scss
+   FireUX Utilities - Minimal Dev Mode Stubs
    ============================ */
 
-/* 🛠️ Utilities */
-
-/* -----------------------------
-   Global Reusable Styles
------------------------------- */
-
-/* Standard CTA Buttons */
+/* Utility stub classes */
 .button-group {
-  display: flex;
-  flex-direction: row;
-  justify-content: center; /* Centered on mobile */
-  gap: var(--space-4);
-  margin-top: var(--space-4);
-  width: 100%;
+  display: flex; /* Future: enhanced button group styling */
 }
 
-/* Fade-In Animation */
 .fade-in {
-  opacity: 0;
-  transform: translateY(10px);
-  animation: fadeInUp 0.8s ease-out forwards;
+  display: block; /* Future: fade-in animation */
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.flex {
+  display: flex; /* Future: enhanced flex utilities */
 }
 
-/* Highlight Text */
+.flex-center {
+  display: flex; /* Future: flex centering utilities */
+}
+
 .highlight {
-  color: var(--ui-primary);
+  display: inline; /* Future: text highlighting */
 }

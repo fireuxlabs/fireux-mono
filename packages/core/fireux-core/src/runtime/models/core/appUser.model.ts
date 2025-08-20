@@ -1,62 +1,73 @@
-// App-specific user profile interface
+/**
+ * App User Model - Based on Existing Data
+ *
+ * Simple model that matches your current app-specific user data.
+ * App Users are domain-specific profiles that extend Core User identity.
+ */
+
+import type { FirebaseTimestamp } from '../../types/firebase'
+
+/**
+ * App User - Current Data Structure
+ *
+ * App-specific user profiles (jobs, misebox, etc.)
+ */
 export interface AppUser {
-  uid: string // Explicitly store the UID for convenience
-  first_name: string
-  middle_name?: string // Optional middle name
-  last_name: string
-  display_name: string // Preferred display name (could be nickname)
-  handle: string
-  slug: string // URL-friendly identifier for user profiles
-  avatar: string // Avatar URL
-  bio: string
-  created_at: string
+  id: string
   email: string
-  phone?: string // Optional phone number
+  avatar: string
+  display_name: string
+  handle?: string
+  slug?: string // URL-friendly identifier
+  bio?: string
+  created_at: string | FirebaseTimestamp
+  updated_at?: string | FirebaseTimestamp
   role?: 'user' | 'admin'
 
-  // Address information
+  // Basic profile info
+  first_name?: string
+  last_name?: string
+  phone?: string
+
+  // Address (if used by app)
   address?: {
     city?: string
     state?: string
     country?: string
   }
 
-  // Subscription system - managed by Stripe webhooks
-  subscription?: {
-    stripe_customer_id?: string
-    stripe_subscription_id?: string
-    plan: 'free' | 'pro' | 'enterprise'
-    status: 'active' | 'inactive' | 'cancelled' | 'past_due'
-    started_at: string
-    ends_at?: string
-    is_pro: boolean // Computed from plan/status for easy access
-  } | null
-
-  // User profile associations - generic for any domain
-  profiles?: Array<{
-    type: string // Generic profile type (domain packages define the actual types)
-    collection: string // The Firestore collection name
-    created_at: string
-    is_active: boolean
-  }>
-
-  // User preferences and social features
-  notifications?: {
-    enabled: boolean
-    types: Array<'email' | 'push' | 'sms'>
-  }
-  followers?: Array<string> // List of user IDs following this user
-  following?: Array<string> // List of user IDs this user is following
+  // Preferences
   preferences?: {
-    theme: 'light' | 'dark'
-    language: string
+    theme?: 'light' | 'dark'
+    language?: string
   }
 }
 
+/**
+ * App User namespace for nested interfaces
+ */
+export namespace AppUser {
+  /**
+   * Card components for different display sizes
+   */
+  export namespace Card {
+    /**
+     * Pill - For small display components (just avatar and name)
+     */
+    export interface Pill {
+      display_name: string
+      avatar: string
+    }
+  }
+}
+
+/**
+ * Author - Simplified author info for content
+ */
 export interface Author {
-  display_name: string
-  handle: string
-  avatar: string
-  slug: string
   id: string
+  display_name: string
+  handle?: string
+  avatar: string
+  slug?: string
 }

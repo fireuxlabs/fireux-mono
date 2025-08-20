@@ -2,27 +2,21 @@
   <UCard class="pill">
     <div class="pill-content">
       <UAvatar
-        :src="coreUser?.photoURL"
-        :alt="coreUser?.displayName || coreUser?.email || 'Core User'"
+        :src="coreUser?.avatar"
+        :alt="coreUser?.display_name || coreUser?.email || 'Core User'"
         size="sm"
       />
 
       <div class="pill-info">
         <div class="pill-title">
-          {{ coreUser?.displayName || coreUser?.email || 'Unknown User' }}
-        </div>
-        <div class="pill-subtitle">
-          {{ coreUser?.id || 'No ID' }}
+          {{ coreUser?.display_name || coreUser?.email || 'Unknown User' }}
         </div>
       </div>
-
-      <UBadge v-if="coreUser?.emailVerified" color="green" variant="soft">
-        Verified
-      </UBadge>
     </div>
   </UCard>
 </template>
 
 <script setup>
+// Props should match CoreUser.Card.Pill interface (just avatar and display name)
 defineProps(['coreUser'])
 </script>

@@ -1,58 +1,31 @@
 /* ============================
-   FireUX SCSS Organisms - Component Styling Systems
+   FireUX SCSS - Minimal Dev Mode Stubs
    ============================ */
 
 /* Base foundation */
 @use './base.scss';
 @use './grids.scss';
+@use './utilities.scss';
+@use './atoms/atoms.scss';
+@use './atoms/tokens.scss';
 
-/* Organism styling systems only */
+/* Organism stubs */
 @use './organisms/profiles.scss';
 @use './organisms/objects.scss';
 @use './organisms/profile.scss';
+@use './organisms/cards.scss';
 
-//    Here’s a  list of our CSS classes grouped by the file in which they reside:
+/* ============================
+   Available CSS Classes (Stubs for Future Development)
+   ============================ */
 
-// ⸻
-
-// app/assets/design-system/atoms.scss
-// 	•	.flame-icon
-// (Note: UI Icons are mentioned, but no specific classes were provided.)
-
-// ⸻
-
-// app/assets/design-system/base.scss
-// (No custom CSS classes defined in this file.)
-
-// ⸻
-
-// app/assets/design-system/components/fuel.scss
-// 	•	.fuel-logos
-// 	•	.fuel-item
-
-// ⸻
-
-// app/assets/design-system/components/layout.scss
-// 	•	.layout-container
-// 	•	.layout-content
-// 	•	.layout-main-content
-// 	•	.layout-breadcrumbs
-
-// ⸻
-
-// app/assets/design-system/components/page.scss
-// 	•	.page
-
-// ⸻
-
-// app/assets/design-system/utilities.scss
-// 	•	.flex
-// 	•	.flex-center
-// 	•	.flex-column
-// 	•	.flex-between
-// 	•	.grid
-// 	•	.centered-section
-// 	•	.section
-// 	•	.button-group
-// 	•	.fade-in
-// 	•	.highlight
+/* 
+Base: .base-container, .base-content
+Grids: .grid, .grid-cols-1, .grid-cols-2, .grid-cols-3, .dashboard-grid, .profile-grid  
+Utilities: .button-group, .fade-in, .flex, .flex-center, .highlight
+Atoms: .badge, .flame-icon, .ui-icon
+Cards: .card, .card.pill, .card.cell, .card-header, .card-content, .card-footer, .profile-card, .user-card
+Objects: .objects, .objects .title, .objects .subtitle, .objects .description, .object-card, .object-list, .object-grid
+Profiles: .profile-edit-container, .read-only-field, .edit-profile-section, .edit-profile-button, .profile-create
+Profile View: .profile-view, .profile-view-header, .profile-view-avatar, .profile-view-info, .profile-view-content
+*/

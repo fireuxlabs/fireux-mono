@@ -3,36 +3,55 @@
     <UCard>
       <div class="profile-header">
         <UAvatar
-          :src="coreUser?.avatarUrl"
-          :alt="coreUser?.displayName || 'Core User'"
+          :src="coreUser?.avatar"
+          :alt="coreUser?.display_name || coreUser?.email || 'Core User'"
           size="lg"
         />
         <div class="profile-meta">
           <h3 class="profile-name">
-            {{ coreUser?.displayName || 'Core User' }}
+            {{ coreUser?.display_name || coreUser?.email || 'Core User' }}
           </h3>
           <p v-if="coreUser?.email" class="profile-email">
             {{ coreUser.email }}
           </p>
-          <div v-if="coreUser?.uid" class="profile-uid">
-            <span class="label">UID:</span>
-            <code>{{ coreUser.uid }}</code>
+          <div v-if="coreUser?.id" class="profile-uid">
+            <span class="label">ID:</span>
+            <code>{{ coreUser.id }}</code>
           </div>
         </div>
       </div>
 
-      <div v-if="coreUser?.bio" class="profile-section">
-        <h4 class="section-title">Bio</h4>
-        <p class="bio-text">{{ coreUser.bio }}</p>
+      <div v-if="coreUser?.dob" class="profile-section">
+        <h4 class="section-title">Date of Birth</h4>
+        <p>{{ coreUser.dob }}</p>
       </div>
 
-      <div v-if="coreUser?.profiles?.length" class="profile-section">
-        <h4 class="section-title">Active Profiles</h4>
+      <div v-if="coreUser?.userOf?.length" class="profile-section">
+        <h4 class="section-title">User of Apps</h4>
         <div class="profile-tags">
-          <span v-for="profile in coreUser.profiles" :key="profile" class="tag">
-            {{ profile }}
-          </span>
+          <UBadge v-for="app in coreUser.userOf" :key="app" variant="outline">
+            {{ app }}
+          </UBadge>
         </div>
+      </div>
+
+      <div v-if="coreUser?.adminOf?.length" class="profile-section">
+        <h4 class="section-title">Admin of Apps</h4>
+        <div class="profile-tags">
+          <UBadge
+            v-for="app in coreUser.adminOf"
+            :key="app"
+            color="orange"
+            variant="soft"
+          >
+            {{ app }}
+          </UBadge>
+        </div>
+      </div>
+
+      <div v-if="coreUser?.created_in" class="profile-section">
+        <h4 class="section-title">Created In</h4>
+        <p>{{ coreUser.created_in }}</p>
       </div>
 
       <!-- Profile Creation Actions -->
@@ -53,6 +72,7 @@
 </template>
 
 <script setup>
+// Props should match CoreUser.Card.Profile interface
 defineProps({
   coreUser: {
     type: Object,

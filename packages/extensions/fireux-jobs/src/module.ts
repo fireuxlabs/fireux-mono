@@ -36,6 +36,15 @@ export default defineNuxtModule<ModuleOptions>({
     // Configure models
     configureModels(resolver, nuxt)
 
+    // Add theme colors for job profiles
+    ;(nuxt.options as any).appConfig = (nuxt.options as any).appConfig || {}
+    ;(nuxt.options as any).appConfig.ui =
+      (nuxt.options as any).appConfig.ui || {}
+    ;(nuxt.options as any).appConfig.ui.colors =
+      (nuxt.options as any).appConfig.ui.colors || {}
+    ;(nuxt.options as any).appConfig.ui.colors.professional = 'indigo'
+    ;(nuxt.options as any).appConfig.ui.colors.employer = 'red'
+
     // Configure runtime options
     configureRuntime(nuxt, options)
   },

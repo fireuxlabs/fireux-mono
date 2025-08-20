@@ -7,25 +7,32 @@
 
     <UCard v-if="chef">
       <h2>Components</h2>
-      
+
       <h3>Pill</h3>
       <MiseOrganismsProfilesChefCardsPill :chef="chef" />
-      
+
       <USeparator />
-      
+
       <h3>Cell</h3>
       <MiseOrganismsProfilesChefCardsCell :chef="chef" />
-      
+
       <USeparator />
-      
+
       <h3>Profile</h3>
       <MiseOrganismsProfilesChefCardsProfile :chef="chef" />
     </UCard>
 
     <UCard>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h2 style="margin: 0;">JSON Snapshot</h2>
-        <UButton 
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        "
+      >
+        <h2 style="margin: 0">JSON Snapshot</h2>
+        <UButton
           icon="i-heroicons-clipboard-document"
           size="sm"
           variant="outline"
@@ -39,7 +46,7 @@
 
     <UCard>
       <h2>All Chefs ({{ chefs?.length || 0 }})</h2>
-      
+
       <div v-if="chefs?.length">
         <MiseOrganismsProfilesChefCardsCell
           v-for="chefItem in chefs"
@@ -47,7 +54,7 @@
           :chef="chefItem"
         />
       </div>
-      
+
       <p v-else>No chefs found</p>
     </UCard>
   </div>
@@ -68,18 +75,22 @@ const hasKitchens = computed(() => chef.value?.kitchens?.length > 0)
 
 // JSON snapshot for copy functionality
 const jsonSnapshot = computed(() => {
-  return JSON.stringify({
-    currentChef: chef.value,
-    computedProps: {
-      isActiveChef: isActiveChef.value,
-      hasGallery: hasGallery.value,
-      hasKitchens: hasKitchens.value,
+  return JSON.stringify(
+    {
+      currentChef: chef.value,
+      computedProps: {
+        isActiveChef: isActiveChef.value,
+        hasGallery: hasGallery.value,
+        hasKitchens: hasKitchens.value,
+      },
+      collection: {
+        total: chefs.value?.length || 0,
+        chefs: chefs.value,
+      },
     },
-    collection: {
-      total: chefs.value?.length || 0,
-      chefs: chefs.value,
-    },
-  }, null, 2)
+    null,
+    2
+  )
 })
 
 // Copy to clipboard function

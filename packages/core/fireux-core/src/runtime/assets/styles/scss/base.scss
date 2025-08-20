@@ -1,33 +1,27 @@
 /* ============================
-   FireUX Base Styles - Essential resets and foundation
+   FireUX Base Styles - Minimal Dev Mode
    ============================ */
 
-/* Global Box Sizing Reset */
+/* Essential resets only */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-/* Reset Scrollbars */
 html,
 body {
   overflow-x: hidden;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 
-body::-webkit-scrollbar {
-  display: none;
+/* Stub classes for future styling */
+.base-container {
+  display: block; /* Future: base container styling */
 }
 
-/* Remove default margin and padding */
-body,
-h1,
-h2,
-h3,
-h4,
-h5,
+.base-content {
+  display: block; /* Future: base content styling */
+}
 h6,
 p {
   margin: 0;

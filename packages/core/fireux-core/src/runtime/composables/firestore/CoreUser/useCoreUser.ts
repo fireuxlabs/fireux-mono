@@ -1,5 +1,5 @@
 // ~/composables/firestore/CoreUser/useCoreUser.ts
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useDocument, useCurrentUser, useFirestore } from 'vuefire'
 import type { DocumentReference } from 'firebase/firestore'
@@ -10,7 +10,6 @@ import { useCoreUserDelete } from './useCoreUserDelete'
 import { useCoreUserComputed } from './useCoreUserComputed'
 import type { CoreUser } from '../../../models/core/coreUser.model'
 import { getApps } from 'firebase/app'
-
 
 export async function useCoreUser() {
   // Ensure Firebase is initialized
@@ -36,10 +35,8 @@ export async function useCoreUser() {
 
   const { data: coreUser } = useDocument<CoreUser>(coreUserDocRef)
 
-  // Collections - only fetch on client side
-  const coreUsers = import.meta.client
-    ? firestoreFetchCollection<CoreUser>('core-users')
-    : ref([])
+  // Collections - fetch all core users (remove client-only restriction for dev purposes)
+  const coreUsers = await firestoreFetchCollection<CoreUser>('core-users')
 
   return {
     // Current entity

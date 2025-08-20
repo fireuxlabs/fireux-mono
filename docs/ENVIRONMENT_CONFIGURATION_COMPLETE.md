@@ -18,15 +18,9 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import { createFireuxConfig } from '../../../packages/core/fireux-core/src/config/fireux-config'
 
-export default defineNuxtConfig(
-  createFireuxConfig({
-    tenantModule: process.env.TENANT_MODULE,
-    appName: process.env.APP_NAME,
-    appShortName: process.env.APP_SHORT_NAME,
-    primaryColor: process.env.APP_PRIMARY_COLOR,
-    neutralColor: process.env.APP_NEUTRAL_COLOR,
-  })
-)
+export default defineNuxtConfig(createFireuxConfig({
+  modules: ['fireux-cleanbox'], // or ['fireux-misebox'], ['fireux-jobs', 'fireux-misebox'], etc.
+  appName: process.env.APP_NAME,
 ```
 
 ### ✅ **Standardized .env Pattern**
@@ -35,7 +29,6 @@ export default defineNuxtConfig(
 
 ```properties
 # App Configuration
-TENANT_MODULE=fireux-cleanbox  # or fireux-misebox, or empty for FireUX
 APP_NAME=CleanBox
 APP_SHORT_NAME=CleanBox
 APP_PRIMARY_COLOR=#3B82F6

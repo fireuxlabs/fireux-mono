@@ -1,11 +1,16 @@
 /* ============================
-   app/assets/design-system/atoms/atoms.scss
+   FireUX Atoms - Minimal Dev Mode Stubs
    ============================ */
 
-/* UI Icons */
-
+/* Atom stub classes */
 .badge {
-  display: inline-block;
-  width: fit-content;
-  align-self: start;
+  display: inline-block; /* Future: enhanced badge styling */
+}
+
+.flame-icon {
+  display: inline-block; /* Future: icon styling */
+}
+
+.ui-icon {
+  display: inline-block; /* Future: UI icon styling */
 }
