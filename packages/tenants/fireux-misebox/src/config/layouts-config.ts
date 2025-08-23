@@ -22,10 +22,12 @@ export function configureLayouts(resolver: any, nuxt: any) {
 
   // Explicitly register layouts in components directories
   nuxt.hook('components:dirs', (dirs: any) => {
-    dirs.push({
-      path: layoutsDir,
-      prefix: 'Misebox',
-      global: true,
-    })
+    if (dirs && Array.isArray(dirs)) {
+      dirs.push({
+        path: layoutsDir,
+        prefix: 'Misebox',
+        global: true,
+      })
+    }
   })
 }

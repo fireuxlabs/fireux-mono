@@ -23,6 +23,7 @@
     <LandingFireUX />
   </div>
 </template>
+
 <script setup>
 // Simple SEO
 useSeoMeta({

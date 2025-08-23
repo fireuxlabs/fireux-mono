@@ -69,7 +69,8 @@ export function useAppEnsure() {
         id: appId,
         app_name: appName,
         admin_ids: [uid],
-        // created_at and creator_id will be added by setDocument
+        is_tenant: true, // Default to tenant app - most apps will be tenant businesses
+        // TODO: Add logic to determine if app should be is_tenant: false for platform apps (FireUX, MiseBox, CleanBox)
       }
 
       await setDocument('apps', appId, appData, { appScoped: false })
