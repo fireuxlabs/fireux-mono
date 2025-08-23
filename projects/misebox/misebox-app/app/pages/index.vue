@@ -6,22 +6,22 @@
     <!-- Solutions Component -->
     <LandingSolutions />
 
-    <!-- Integrations Component -->
-    <LandingIntegrations />
-
     <!-- Features Component - First Set -->
     <LandingFeatures :first="true" />
 
     <!-- Features Component - Second Set -->
     <LandingFeatures :second="true" />
 
+    <!-- Integrations Component -->
+    <LandingIntegrations />
+
+    <!-- Call to Action -->
+    <LandingCTA />
+
     <!-- Content from CMS (if available) -->
     <div v-if="page">
       <ContentRenderer :value="page" />
     </div>
-
-    <!-- Call to Action -->
-    <LandingCTA />
   </div>
 </template>
 
@@ -40,7 +40,5 @@ const { data: page } = await useAsyncData('index', () =>
 </script>
 
 <style scoped>
-.page {
-  /* Add any page-specific styles here */
-}
+/* Let components handle their own spacing with Tailwind/NuxtUI utilities */
 </style>
