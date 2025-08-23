@@ -1,45 +1,32 @@
 <template>
   <UCard class="pill">
     <div class="pill-content">
-      <div
-        class="app-icon"
-        :style="{ backgroundColor: app?.theme?.primary || '#3b82f6' }"
-      >
-        <UIcon :name="getAppIcon(app?.id)" />
-      </div>
+      <UAvatar :src="app?.avatarUrl" :alt="app?.app_name" size="sm" />
 
       <div class="pill-info">
         <div class="pill-title">
-          {{ appName }}
+          {{ app?.app_name }}
         </div>
-        <div class="pill-subtitle">
-          {{ app?.id || 'Unknown ID' }}
-        </div>
+        <UBadge
+          v-if="app?.parent"
+          icon="i-lucide-building"
+          size="md"
+          color="primary"
+          variant="solid"
+        >
+          {{ app.parent }}
+        </UBadge>
       </div>
-
-      <UBadge v-if="isInitialized" color="green" variant="soft">
-        Active
-      </UBadge>
     </div>
   </UCard>
 </template>
 
-<script setup>
-const props = defineProps(['app'])
+<script setup lang="ts">
+import type { App } from '../../../../models/core/app.model'
 
-// Use the same computed properties that would be available from useApp
-const appName = computed(
-  () => props.app?.name || props.app?.id || 'Unknown App'
-)
-const isInitialized = computed(() => !!props.app?.admin_ids?.length)
-
-function getAppIcon(appId) {
-  const iconMap = {
-    fireux: 'i-heroicons-fire',
-    cleanbox: 'i-heroicons-sparkles',
-    misebox: 'i-heroicons-beaker',
-    default: 'i-heroicons-cube',
-  }
-  return iconMap[appId] || iconMap.default
+interface Props {
+  app: App.Card.Pill
 }
+
+defineProps<Props>()
 </script>

@@ -2,7 +2,7 @@
   <div>
     <UCard>
       <template #header>
-        <h1>🔍 App Inspector</h1>
+        <h1>🔧 App Development Tools</h1>
       </template>
       <p>App: {{ app?.app_name || 'None' }}</p>
     </UCard>
@@ -33,14 +33,14 @@
           margin-bottom: 16px;
         "
       >
-        <h2 style="margin: 0">JSON Snapshot</h2>
+        <h2 style="margin: 0">JSON</h2>
         <UButton
           icon="i-heroicons-clipboard-document"
           size="sm"
           variant="outline"
           @click="copyToClipboard(jsonSnapshot)"
         >
-          Copy JSON
+          Copy
         </UButton>
       </div>
       <pre>{{ jsonSnapshot }}</pre>

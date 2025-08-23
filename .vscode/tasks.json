@@ -51,6 +51,42 @@
 			"isBackground": true
 		},
 		{
+			"label": "dev:niederhorn (3003)",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"dev:niederhorn"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": true
+		},
+		{
+			"label": "dev:richies (3004)",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"dev:richies"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": true
+		},
+		{
+			"label": "dev:all-extended (3000-3004)",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"dev:all-extended"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": true
+		},
+		{
 			"label": "pnpm: build:packages",
 			"type": "shell",
 			"command": "pnpm",
