@@ -1,6 +1,6 @@
 <template>
   <div class="layout-wrapper">
-    <div>dev links {{ devRoutes }}</div>
+    <FireDevNav :links="devRoutes.miseboxDevRoutes || []" />
     <NuxtPage />
   </div>
 </template>

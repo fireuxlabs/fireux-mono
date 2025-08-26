@@ -5,19 +5,19 @@
   >
     <template #profile-pill="{ profile }">
       <div @click="navigateToChef(profile)" class="cursor-pointer">
-        <MiseProfilesChefCardsPill :chef="profile" />
+        <MiseOrganismsProfilesChefCardsPill :chef="profile" />
       </div>
     </template>
 
     <template #profile-card="{ profile }">
       <div @click="navigateToChef(profile)" class="cursor-pointer">
-        <MiseProfilesChefCardsProfile :chef="profile" />
+        <MiseOrganismsProfilesChefCardsProfile :chef="profile" />
       </div>
     </template>
 
     <template #profile-item="{ profile }">
       <div @click="navigateToChef(profile)" class="cursor-pointer">
-        <MiseProfilesChefCardsCell :chef="profile" />
+        <MiseOrganismsProfilesChefCardsCell :chef="profile" />
       </div>
     </template>
   </FireOrganismsProfileRoot>

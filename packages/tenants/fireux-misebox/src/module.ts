@@ -46,19 +46,9 @@ export default defineNuxtModule<ModuleOptions>({
     // Configure pages
     configurePages(resolver, nuxt)
 
-    // Add theme colors for misebox profiles
-    ;(nuxt.options as any).appConfig = (nuxt.options as any).appConfig || {}
-    ;(nuxt.options as any).appConfig.ui =
-      (nuxt.options as any).appConfig.ui || {}
-    ;(nuxt.options as any).appConfig.ui.colors =
-      (nuxt.options as any).appConfig.ui.colors || {}
-    ;(nuxt.options as any).appConfig.ui.colors.chef = 'orange'
-    ;(nuxt.options as any).appConfig.ui.colors.supplier = 'blue'
+    // Removed theme color configuration for misebox profiles
 
-    // Add supplier-specific CSS
-    nuxt.options.css.push(
-      resolver.resolve('./runtime/assets/styles/supplier.scss')
-    )
+    // Removed supplier-specific CSS (no longer needed)
 
     console.log(
       '🍳 FireUX Misebox module loaded - Chef & Supplier functionality ready!'

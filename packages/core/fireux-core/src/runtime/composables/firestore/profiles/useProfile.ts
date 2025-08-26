@@ -10,7 +10,9 @@ import { useProfileDelete } from './useProfileDelete'
  * Shared composable for profile CRUD operations and state management
  * This is the unified entry point for all profile types (Professional, Employer, Chef, Supplier)
  */
-export async function useProfile(config: ProfileConfig) {
+export async function useProfile(
+  config: ProfileConfig & { appCollectionName?: string }
+) {
   const db = useFirestore()
   const currentUser = useCurrentUser()
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
@@ -24,8 +26,13 @@ export async function useProfile(config: ProfileConfig) {
 
   const { data: current } = useDocument(currentProfileDocRef)
 
-  // Fetch all profiles in this collection
-  const collection = await firestoreFetchCollection(config.collectionName)
+  // Fetch all profiles in the global collection
+  const globalCollection = await firestoreFetchCollection(config.collectionName)
+  // Fetch all profiles in the app-specific collection, if provided
+  let appCollection
+  if (config.appCollectionName) {
+    appCollection = await firestoreFetchCollection(config.appCollectionName)
+  }
 
   // Fetch by ID function
   const fetchById = async (id: string) =>
@@ -38,7 +45,8 @@ export async function useProfile(config: ProfileConfig) {
 
   return {
     current,
-    collection,
+    globalCollection,
+    appCollection,
     fetchById,
     ...create,
     ...remove,

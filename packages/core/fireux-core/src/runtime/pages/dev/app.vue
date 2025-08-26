@@ -25,25 +25,7 @@
     </UCard>
 
     <UCard>
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 16px;
-        "
-      >
-        <h2 style="margin: 0">JSON</h2>
-        <UButton
-          icon="i-heroicons-clipboard-document"
-          size="sm"
-          variant="outline"
-          @click="copyToClipboard(jsonSnapshot)"
-        >
-          Copy
-        </UButton>
-      </div>
-      <pre>{{ jsonSnapshot }}</pre>
+      <CopyJson :data="{ app }" title="App JSON" />
     </UCard>
   </div>
 </template>
@@ -57,24 +39,5 @@ definePageMeta({
 // Get app information
 const { app } = await useApp()
 
-// JSON snapshot for copy functionality
-const jsonSnapshot = computed(() => {
-  return JSON.stringify(
-    {
-      app: app.value,
-    },
-    null,
-    2
-  )
-})
-
-// Copy to clipboard function
-async function copyToClipboard(text) {
-  try {
-    await navigator.clipboard.writeText(text)
-    console.log('JSON copied to clipboard!')
-  } catch (err) {
-    console.error('Failed to copy JSON:', err)
-  }
-}
+import CopyJson from '~/components/dev/CopyJson.vue'
 </script>
