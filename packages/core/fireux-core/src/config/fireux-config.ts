@@ -4,13 +4,13 @@
 
 export interface TenantConfig {
   modules?: string[] // Array of modules to include, e.g., ['fireux-jobs', 'fireux-misebox']
+  ecosystem?: string // Business ecosystem (e.g., 'misebox', 'cleanbox')
   appName?: string // Allow environment variables which can be undefined
   appShortName?: string // Allow environment variables which can be undefined
   primaryColor?: string // Allow environment variables which can be undefined
   neutralColor?: string // Optional neutral color for theming
 }
 
-// Direct configuration object for import
 export const createFireuxConfig = (config: TenantConfig) => {
   // Build modules array with core and optional modules
   const modules = [
@@ -66,6 +66,14 @@ export const createFireuxConfig = (config: TenantConfig) => {
     ssr: true,
 
     modules,
+
+    // Simple: just pass ecosystem in runtimeConfig
+    runtimeConfig: {
+      public: {
+        ecosystem: config.ecosystem,
+        modules: config.modules || [],
+      },
+    },
 
     nitro: {
       preset: 'firebase',

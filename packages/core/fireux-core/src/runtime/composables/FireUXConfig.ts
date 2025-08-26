@@ -17,6 +17,8 @@ export function useFireUXConfig() {
 
   const appSettings = runtimeConfig.public.appSettings as AppSettings
   const devMode = runtimeConfig.public.devMode
+  const ecosystem = runtimeConfig.public.ecosystem
+  const modules = runtimeConfig.public.modules || []
 
   const { projectName, appName, appId, appIcon } = appSettings // Added appIcon to destructuring
 
@@ -38,5 +40,7 @@ export function useFireUXConfig() {
     appName,
     appId,
     appIcon, // Added appIcon to return values
+    ecosystem,
+    modules,
   }
 }

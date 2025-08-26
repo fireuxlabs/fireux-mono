@@ -28,6 +28,15 @@ export function configureLayouts(resolver: any, nuxt: any) {
     'CoreDashboard'
   )
 
+  // Register dev layout
+  addLayout(
+    {
+      src: join(layoutsDir, 'dev.vue'),
+      filename: 'fireux-core-dev.vue',
+    },
+    'CoreDev'
+  )
+
   // Register layouts as components for direct use
   addComponentsDir({
     path: layoutsDir,

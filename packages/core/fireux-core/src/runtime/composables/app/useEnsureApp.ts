@@ -48,8 +48,13 @@ export function useAppEnsure() {
       }
 
       // Step 2: Get app configuration
-      const { appId, appName } = useFireUXConfig()
+      const { appId, appName, ecosystem, modules } = useFireUXConfig()
       const db = useFirestore()
+
+      console.log(`🔍 [ensureApp] Detected modules: ${modules.join(', ')}`)
+      console.log(
+        `🔍 [ensureApp] Detected ecosystem: ${ecosystem || 'none (platform app)'}`
+      )
 
       // Step 3: Check if app already exists
       const appDocRef = doc(db, 'apps', appId)
@@ -70,11 +75,13 @@ export function useAppEnsure() {
         app_name: appName,
         admin_ids: [uid],
         is_tenant: true, // Default to tenant app - most apps will be tenant businesses
-        // TODO: Add logic to determine if app should be is_tenant: false for platform apps (FireUX, MiseBox, CleanBox)
+        ...(ecosystem && { ecosystem }), // Add ecosystem if detected from modules
       }
 
       await setDocument('apps', appId, appData, { appScoped: false })
-      console.log(`🎉 [ensureApp] App '${appId}' created successfully.`)
+      console.log(
+        `🎉 [ensureApp] App '${appId}' created successfully with ecosystem: ${ecosystem || 'none'}`
+      )
 
       // Step 5: Update core user with admin role
       if (coreUser?.adminOf?.includes(appId)) {

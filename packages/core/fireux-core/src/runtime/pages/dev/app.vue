@@ -49,6 +49,11 @@
 </template>
 
 <script setup>
+// Use dev layout
+definePageMeta({
+  layout: 'dev',
+})
+
 // Get app information
 const { app } = await useApp()
 

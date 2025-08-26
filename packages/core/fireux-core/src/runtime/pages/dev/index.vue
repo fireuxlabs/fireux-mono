@@ -16,6 +16,7 @@
 <script setup>
 definePageMeta({
   title: 'Development Tools',
+  layout: 'dev',
 })
 </script>
 

@@ -1,11 +1,18 @@
+// Firestore timestamp type
+interface FirestoreTimestamp {
+  type: string // "firestore/timestamp/1.0"
+  seconds: number
+  nanoseconds: number
+}
+
 export interface App {
   id: string
   app_name: string
   admin_ids: string[]
-  parent?: string // Parent system (e.g., 'misebox', 'cleanbox', 'fireux')
-  is_tenant?: boolean // Flag to identify if this is a tenant app (vs platform app) - defaults to true since most apps will be tenants
-  created_at?: string
-  creator_id?: string // Changed from created_by to match other objects
+  creator_id: string // Required field for the creator
+  is_tenant: boolean // Required field - defaults to true for tenant apps
+  ecosystem?: string // Business ecosystem (e.g., 'misebox', 'cleanbox')
+  created_at?: FirestoreTimestamp | string // Can be Firestore timestamp or string
   avatarUrl?: string
 }
 
@@ -33,11 +40,11 @@ export namespace App {
     export interface Cell {
       id: string
       app_name: string
-      parent?: string
-      is_tenant?: boolean
       admin_ids: string[]
-      created_at?: string
-      creator_id?: string
+      creator_id: string
+      is_tenant: boolean
+      parent?: string
+      created_at?: FirestoreTimestamp | string
       avatarUrl?: string
     }
 
@@ -48,10 +55,10 @@ export namespace App {
       id: string
       app_name: string
       admin_ids: string[]
+      creator_id: string
+      is_tenant: boolean
       parent?: string
-      is_tenant?: boolean
-      created_at?: string
-      creator_id?: string
+      created_at?: FirestoreTimestamp | string
       avatarUrl?: string
     }
   }

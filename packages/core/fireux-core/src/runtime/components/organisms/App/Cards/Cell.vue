@@ -43,7 +43,7 @@ const props = defineProps(['app'])
 
 // Computed properties matching useApp pattern
 const appName = computed(
-  () => props.app?.name || props.app?.id || 'Unknown App'
+  () => props.app?.app_name || props.app?.id || 'Unknown App'
 )
 const isInitialized = computed(() => !!props.app?.admin_ids?.length)
 const hasAdmins = computed(() => !!props.app?.admin_ids?.length)
