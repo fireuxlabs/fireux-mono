@@ -23,7 +23,7 @@
     </UCard>
 
     <UCard>
-      <CopyJson
+      <FireCopyJson
         :data="{
           currentUser: appUser,
           computedProps: { isAppUser, isPro, isAdmin, initials },
@@ -53,5 +53,4 @@
 const { appUser, appUsers, isAppUser, isPro, isAdmin, initials } =
   await useAppUser()
 
-import CopyJson from '~/components/dev/CopyJson.vue'
 </script>

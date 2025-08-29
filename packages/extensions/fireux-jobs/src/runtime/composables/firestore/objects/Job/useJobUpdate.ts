@@ -1,4 +1,4 @@
-import { useFirestoreManager } from '../../../../../../../fireux-core/src/runtime/composables/firestore/useFirestoreManager'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager'
 import { serverTimestamp } from 'firebase/firestore'
 import type { Job } from '../../../../models/objects/Job.model'
 

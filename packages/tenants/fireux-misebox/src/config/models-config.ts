@@ -7,9 +7,10 @@
  *
  * Example: runtime/models/objects/Ingredient.model.ts -> global const Ingredient
  */
-import { Resolver, addTypeTemplate } from '@nuxt/kit'
+import type { Resolver } from '@nuxt/kit'
+import { addTypeTemplate } from '@nuxt/kit'
 import { globSync } from 'glob'
-import { relative, sep, posix } from 'pathe'
+import { relative } from 'pathe'
 
 function toGlobalName(file: string) {
   // Expect .../<Dir>/<Name>.model.ts
@@ -18,7 +19,7 @@ function toGlobalName(file: string) {
   return name
 }
 
-export function configureModels(resolver: Resolver, nuxt: any) {
+export function configureModels(resolver: Resolver) {
   const root = resolver.resolve('.')
   const patterns = [
     resolver.resolve('./runtime/models/profiles/**/*.model.ts'),
@@ -31,7 +32,7 @@ export function configureModels(resolver: Resolver, nuxt: any) {
     .map((abs) => {
       const globalName = toGlobalName(abs)
       // Build import path relative to current config root for the template
-      const rel = relative(root, abs).split(sep).join(posix.sep)
+      const rel = relative(root, abs).replace(/\\/g, '/')
       return `  const ${globalName}: typeof import('${resolver.resolve('./' + rel)}').${globalName}`
     })
     .join('\n')

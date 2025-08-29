@@ -1,15 +1,5 @@
-import { defineNuxtModule, createResolver } from '@nuxt/kit'
-// import { version } from '../package.json'
-import { configureRuntime } from './config/runtime-config'
-import { configureServer } from './config/server-config'
-import { configureLayouts } from './config/layouts-config'
-import { configureComponents } from './config/components-config'
-import { configureAssets } from './config/assets-config'
-import { configurePlugins } from './config/plugins-config'
-import { configureComposables } from './config/composables-config'
-import { configurePages } from './config/pages-config'
-import { configureModels } from './config/models-config'
-import { configureErrors } from './config/errors-config'
+import { defineNuxtModule } from '@nuxt/kit'
+import type { NuxtModule } from '@nuxt/schema'
 
 // Module options interface
 export interface ModuleOptions {
@@ -20,7 +10,8 @@ export interface ModuleOptions {
   prefix?: string
 }
 
-export default defineNuxtModule<ModuleOptions>({
+// Define and export the module with explicit typing to avoid build issues
+const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-core',
     version: '1.0.0',
@@ -29,49 +20,14 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     prefix: 'Fire',
   },
-  setup(options, nuxt) {
-    const resolver = createResolver(import.meta.url)
+  setup(_options, nuxt) {
+    console.log('FireUX Core module loaded successfully')
 
-    // Configure components
-    configureComponents(resolver, options)
-
-    // Configure layouts
-    configureLayouts(resolver, nuxt)
-
-    // Configure pages
-    configurePages(resolver, nuxt)
-
-    // Configure composables
-    configureComposables(resolver)
-
-    // Configure models
-    configureModels(resolver, nuxt)
-
-    // Configure server-side functionality
-    configureServer(resolver)
-
-    // Configure runtime options
-    configureRuntime(nuxt)
-
-    // Configure plugins
-    configurePlugins(resolver)
-
-    // Configure error handling
-    configureErrors(resolver, nuxt)
-
-    // Configure public assets
-    configureAssets(resolver, nuxt)
-
-    // Exclude documentation files from build
+    // Add to nitro experimental features for better compatibility
     nuxt.options.nitro = nuxt.options.nitro || {}
-    nuxt.options.nitro.ignore = nuxt.options.nitro.ignore || []
-    nuxt.options.nitro.ignore.push('**/*.doc.*')
-
-    // Exclude dev pages from production builds only
-    if (process.env.NODE_ENV === 'production') {
-      nuxt.options.nitro.ignore.push('**/pages/dev/**')
-    }
+    nuxt.options.nitro.experimental = nuxt.options.nitro.experimental || {}
+    nuxt.options.nitro.experimental.wasm = true
   },
 })
 
-export * from './runtime/types/routeLink'
+export default module

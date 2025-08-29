@@ -1,46 +1,70 @@
 <template>
   <div class="profile-cta">
-    <div class="profile-cta-header">
-      <h1 class="profile-cta-title">🍳 Create Your Chef Profile</h1>
-      <p class="profile-cta-description">
-        Join Misebox to showcase your culinary expertise and connect with the
-        food service community
-      </p>
-    </div>
+    <MiseOrganismsProfilesChefCardsCell :chef="current" />
 
-    <div class="profile-cta-features">
-      <div class="profile-cta-feature">
-        <div class="profile-cta-feature-icon">👨‍🍳</div>
-        <h3 class="profile-cta-feature-title">Professional Profile</h3>
-        <p class="profile-cta-feature-text">
-          Showcase your skills and experience
-        </p>
-      </div>
-      <div class="profile-cta-feature">
-        <div class="profile-cta-feature-icon">📱</div>
-        <h3 class="profile-cta-feature-title">Digital Portfolio</h3>
-        <p class="profile-cta-feature-text">Upload photos and manage recipes</p>
-      </div>
-      <div class="profile-cta-feature">
-        <div class="profile-cta-feature-icon">🤝</div>
-        <h3 class="profile-cta-feature-title">Network & Connect</h3>
-        <p class="profile-cta-feature-text">
-          Connect with suppliers and restaurants
-        </p>
-      </div>
-    </div>
+    <!-- Features removed as requested -->
 
     <div class="profile-cta-action">
-      <UButton to="/chefs/create" size="lg" color="primary">
-        Create Chef Profile
-      </UButton>
-      <p class="profile-cta-subtext">
-        Free to join • Takes less than 5 minutes
-      </p>
+      <template v-if="current && hasLocal">
+        <UButton size="lg" color="primary" disabled>
+          Chef Profile Complete
+        </UButton>
+        <p class="profile-cta-subtext">You have a chef profile for this app.</p>
+      </template>
+      <template v-else-if="current && !hasLocal">
+        <UButton size="lg" color="primary" @click="createLocalProfile">
+          Add {{ current.chef_name }} to {{ appName }} Chefs
+        </UButton>
+      </template>
+      <template v-else-if="!current && hasLocal">
+        <UButton size="lg" color="primary" disabled>Profile Error</UButton>
+        <p class="profile-cta-subtext text-warning">
+          (Fallback) Local profile exists without global. Please contact
+          support.
+        </p>
+      </template>
+      <template v-else>
+        <UButton size="lg" color="primary" @click="createGlobalProfile">
+          Create Chef Profile
+        </UButton>
+        <p class="profile-cta-subtext">
+          Free to join • Takes less than 5 minutes
+        </p>
+      </template>
     </div>
   </div>
 </template>
 
-<script setup>
-// Clean CTA component for chef profile creation
+<script lang="ts" setup>
+import type { Chef } from '../../../../models/profiles/Chef.model'
+import { chefConfig } from '../../../../models/profiles/Chef.model'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
+import { useApp } from 'fireux-core/runtime/composables/app/useApp'
+import { useAppUser } from 'fireux-core/runtime/composables/firestore/AppUser/useAppUser'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig'
+
+const { current, createProfile } = await useProfile<Chef>(chefConfig)
+const { appUser } = await useAppUser()
+
+// Get app name from runtime config or fallback
+const { appName } = useFireUXConfig()
+
+const hasLocal = computed(() => {
+  return appUser.value?.profiles?.some((p) => p.type === 'chef') ?? false
+})
+
+const { profileToAppAction } = useApp()
+
+function createGlobalProfile() {
+  const id = current.value?.uid || ''
+  const name = current.value?.chef_name || ''
+  createProfile({ id, name })
+}
+
+async function createLocalProfile() {
+  const id = current.value?.uid || ''
+  const name = current.value?.chef_name || ''
+  const avatarUrl = current.value?.avatarUrl || ''
+  await profileToAppAction('add', 'chefs', id, { id, name, avatarUrl })
+}
 </script>

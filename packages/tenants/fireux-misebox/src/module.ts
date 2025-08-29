@@ -1,4 +1,5 @@
 import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
+import type { NuxtModule } from '@nuxt/schema'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
 import { configureModels } from './config/models-config'
@@ -14,7 +15,7 @@ export interface ModuleOptions {
   prefix?: string
 }
 
-export default defineNuxtModule<ModuleOptions>({
+const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-misebox',
     configKey: 'fireuxMisebox',
@@ -38,7 +39,7 @@ export default defineNuxtModule<ModuleOptions>({
     configureComposables(resolver)
 
     // Configure models
-    configureModels(resolver, nuxt)
+    configureModels(resolver)
 
     // Configure layouts
     configureLayouts(resolver, nuxt)
@@ -55,3 +56,5 @@ export default defineNuxtModule<ModuleOptions>({
     )
   },
 })
+
+export default module

@@ -1,27 +1,16 @@
 {
-  // https://nuxt.com/docs/guide/concepts/typescript
+  "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
-    "strict": true,
-    "noEmit": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+    "composite": true,
     "baseUrl": "./",
     "paths": {
-      "@fireux-core/*": ["../../packages/core/fireux-core/src/*"],
-      "@fireux-jobs/*": ["../../packages/extensions/fireux-jobs/src/*"],
-      "@fireux-cleanbox/*": ["../../packages/tenants/fireux-cleanbox/src/*"],
-      "@fireux-places/*": ["../../packages/extensions/fireux-places/src/*"],
+      "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "@fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
+      "@fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
+      "@fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
       "@/*": ["./*"]
-    },
-    "types": ["@nuxt/devtools"]
+    }
   }
 }

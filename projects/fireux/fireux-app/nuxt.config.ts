@@ -1,12 +1,16 @@
 import { defineNuxtConfig } from 'nuxt/config'
-import { createFireuxConfig } from '../../../packages/core/fireux-core/src/config/fireux-config'
+// import { createFireuxConfig } from '../../../packages/core/fireux-core/src/config/fireux-config'
 
-export default defineNuxtConfig(
-  createFireuxConfig({
-    modules: [],
-    appName: process.env.APP_NAME,
-    appShortName: process.env.APP_SHORT_NAME,
-    primaryColor: process.env.APP_PRIMARY_COLOR,
-    neutralColor: process.env.APP_NEUTRAL_COLOR,
-  })
-)
+export default defineNuxtConfig({
+  devtools: { enabled: true },
+  compatibilityDate: '2025-06-07',
+  srcDir: 'app/',
+  dir: {
+    public: '../public',
+  },
+  ssr: true,
+  modules: ['fireux-core'],
+  components: [],
+  plugins: [],
+  css: [],
+})

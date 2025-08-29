@@ -1,17 +1,18 @@
 {
+  "files": [],
+  "references": [
+    { "path": "projects/fireux/fireux-app" },
+    { "path": "projects/misebox/misebox-app" },
+    { "path": "projects/misebox/niederhorn" },
+    { "path": "projects/cleanbox/cleanbox-app" },
+    { "path": "projects/cleanbox/richies-reinigung" },
+    { "path": "packages/core/fireux-core" },
+    { "path": "packages/extensions/fireux-jobs" },
+    { "path": "packages/extensions/fireux-places" },
+    { "path": "packages/tenants/fireux-misebox" },
+    { "path": "packages/tenants/fireux-cleanbox" }
+  ],
   "compilerOptions": {
-    "module": "esnext",
-    "target": "esnext",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "baseUrl": "./",
-    "paths": {
-      "packages/*": ["packages/*"],
-      "projects/*": ["projects/*"]
-    }
-  },
-  "include": ["packages/**/*", "projects/**/*"],
-  "exclude": ["node_modules", "dist", "**/.nuxt", "**/node_modules"]
+    "skipLibCheck": true
+  }
 }

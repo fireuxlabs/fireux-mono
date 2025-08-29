@@ -41,6 +41,16 @@ export interface AppUser {
     theme?: 'light' | 'dark'
     language?: string
   }
+
+  /**
+   * Profiles array: tracks all profile types (chef, supplier, etc) for this user in this app
+   */
+  profiles?: Array<{
+    type: string
+    collection: string
+    created_at: string
+    is_active: boolean
+  }>
 }
 
 /**

@@ -51,7 +51,8 @@ export const createFireuxConfig = (config: TenantConfig) => {
     ],
   ]
 
-  return {
+  // Ensure all required arrays are properly initialized
+  const baseConfig = {
     devtools: { enabled: true },
     compatibilityDate: '2025-06-07',
     srcDir: 'app/',
@@ -66,6 +67,15 @@ export const createFireuxConfig = (config: TenantConfig) => {
     ssr: true,
 
     modules,
+
+    // Ensure components array is initialized
+    components: [],
+
+    // Ensure plugins array is initialized
+    plugins: [],
+
+    // Ensure css array is initialized
+    css: [],
 
     // Simple: just pass ecosystem in runtimeConfig
     runtimeConfig: {
@@ -87,7 +97,18 @@ export const createFireuxConfig = (config: TenantConfig) => {
         '**/*.doc.*',
       ],
     },
-  } as any
+
+    // Ensure typescript config has properly initialized arrays
+    typescript: {
+      tsConfig: {
+        compilerOptions: {
+          paths: {},
+        },
+      },
+    },
+  }
+
+  return baseConfig as any
 }
 
 // String template generator for backward compatibility

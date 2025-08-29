@@ -18,9 +18,13 @@
     "dev:cleanbox": "pnpm --filter ./projects/cleanbox/cleanbox-app dev",
     "dev:richies": "pnpm --filter ./projects/cleanbox/richies-reinigung dev",
     "// === PACKAGE MANAGEMENT ===": "",
-    "build:packages": "pnpm -r --filter ./packages/** build",
-    "dev:packages": "pnpm -r --filter ./packages/** dev",
-    "clean:packages": "pnpm -r --filter ./packages/** clean",
+    "build:packages": "pnpm -r --filter './packages/core/*' --filter './packages/extensions/*' --filter './packages/tenants/*' build",
+    "dev:packages": "pnpm -r --filter './packages/core/*' --filter './packages/extensions/*' --filter './packages/tenants/*' dev",
+    "clean:packages": "pnpm -r --filter './packages/core/*' --filter './packages/extensions/*' --filter './packages/tenants/*' clean",
+    "// === NUXT 4 OPTIMIZATIONS ===": "",
+    "typecheck": "pnpm -r --parallel --filter './packages/*/*' run build --dry-run || true",
+    "prepare:all": "echo 'All apps prepared during postinstall' && pnpm -r --filter './projects/*/*' list --depth=0",
+    "build:all": "pnpm -r --parallel --filter './projects/*/*' build",
     "// === TENANT MANAGEMENT ===": "",
     "create:tenant": "node scripts/create-tenant.js",
     "clean:apps": "rm -rf projects/*/",
@@ -33,7 +37,14 @@
     "structure:fix": "./scripts/fix-structure.sh",
     "structure:report": "./scripts/validate-structure.sh && echo 'Report generated'",
     "// === MAINTENANCE ===": "",
-    "cleanup:phantom": "./scripts/cleanup-phantom-files.sh"
+    "cleanup:phantom": "./scripts/cleanup-phantom-files.sh",
+    "// === HEALTH MONITORING ===": "",
+    "health": "pnpm why nuxt @nuxt/kit vue vue-router @nuxt/schema && pnpm dedupe --check && pnpm exec tsc -b && pnpm exec vue-tsc --noEmit",
+    "health:quick": "pnpm exec tsc -b",
+    "health:detailed": "pnpm exec vue-tsc --noEmit",
+    "health:nuxt": "pnpm -r --filter \"./projects/**\" nuxi typecheck",
+    "health:deps": "pnpm dlx depcheck",
+    "health:security": "pnpm audit --prod"
   },
   "volta": {
     "node": "22.9.0",
@@ -47,7 +58,10 @@
     "pnpm": ">=9"
   },
   "devDependencies": {
+    "@nuxt/devtools": "^2.6.3",
+    "@tsconfig/nuxt": "^2.0.3",
     "@types/lodash": "^4.17.17",
+    "@types/node": "^20.19.11",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
     "concurrently": "^9.2.0",
@@ -58,12 +72,17 @@
     "prettier": "^3.5.3",
     "sass": "^1.89.2",
     "sass-embedded": "^1.89.1",
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.2",
+    "vue-tsc": "^3.0.6"
   },
   "pnpm": {
     "overrides": {
-      "nuxt": "^4.0.0",
-      "@nuxt/kit": "^3.17.5",
+      "nuxt": "4.0.3",
+      "@nuxt/kit": "4.0.3",
+      "@nuxt/schema": "4.0.3",
+      "vue": "3.5.20",
+      "vuefire": "3.2.2",
+      "firebase": "11.10.0",
       "@iconify-json/lucide": "^1.2.62",
       "@iconify-json/heroicons": "^1.2.2",
       "@iconify-json/logos": "^1.2.5",
@@ -76,7 +95,10 @@
     "better-sqlite3": "^11.10.0"
   },
   "workspaces": [
-    "projects/*",
-    "packages/*"
+    "packages/core/*",
+    "packages/extensions/*",
+    "packages/tenants/*",
+    "projects/*/*",
+    "playground"
   ]
 }

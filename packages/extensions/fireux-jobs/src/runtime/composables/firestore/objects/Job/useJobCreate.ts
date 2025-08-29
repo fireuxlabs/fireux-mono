@@ -1,4 +1,4 @@
-import { useFirestoreManager } from '../../../../../../../fireux-core/src/runtime/composables/firestore/useFirestoreManager'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager'
 import { useCurrentUser } from 'vuefire'
 import { serverTimestamp } from 'firebase/firestore'
 import { useNuxtApp } from 'nuxt/app'

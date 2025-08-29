@@ -1,11 +1,13 @@
 // ~/composables/app/useAppUpdate.ts
-import { doc, updateDoc } from 'firebase/firestore'
+import { doc, updateDoc, setDoc, collection } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useFirestoreUtils } from '../firestore/useFirestoreUtils'
 import { validateAppField } from './utils/useAppValidation'
 import { formatAppField } from './utils/useAppFormatting'
 import type { AppSocialLinks } from './utils/useAppValidation'
+
+import { useFirestoreManager } from '../firestore/useFirestoreManager'
 
 /*
  * APP UPDATE COMPOSABLE
@@ -26,6 +28,37 @@ export function useAppUpdate() {
   const { appId } = useFireUXConfig()
 
   function useAppUpdateFirestore() {
+    // Use local Firestore manager for all add/remove actions
+    const { setDocument, deleteDocument } = useFirestoreManager()
+    // TODO: In the future, consider using hooks from ./utils for validation/formatting instead of this direct update.
+    // For now, we use updateAppField2 for simple, direct updates.
+    // Simple version: update any field on the app doc, no validation/formatting
+    const updateAppField2 = async (field: string, value: any) => {
+      const appRef = doc(db, 'apps', appId)
+      await updateDoc(appRef, { [field]: value })
+      return { success: true }
+    }
+    // Add or remove a profile in this app's subcollection (e.g., 'chefs')
+    // Usage: profileToAppAction('add', 'chefs', { id: 1234, name: 'SpongeBob' })
+    //        profileToAppAction('remove', 'chefs', { id: 1234 })
+    const profileToAppAction = async (
+      action: 'add' | 'remove',
+      subcollection: string,
+      id: string | number,
+      data?: any
+    ) => {
+      if (action === 'add') {
+        if (!data) throw new Error('Data is required for add action')
+        // Use setDocument for subcollection doc add/update
+        await setDocument(`apps/${appId}/${subcollection}`, String(id), data)
+        return { success: true, action: 'add' }
+      } else if (action === 'remove') {
+        await deleteDocument(`apps/${appId}/${subcollection}`, String(id))
+        return { success: true, action: 'remove' }
+      } else {
+        throw new Error('Invalid action for profileToAppAction')
+      }
+    }
     // Generic update function with validation and formatting
     const updateAppField = async (field: string, value: any) => {
       try {
@@ -71,6 +104,8 @@ export function useAppUpdate() {
       updateSocialLinks,
       // Generic updater for advanced use
       updateAppField,
+      updateAppField2,
+      profileToAppAction,
     }
   }
 

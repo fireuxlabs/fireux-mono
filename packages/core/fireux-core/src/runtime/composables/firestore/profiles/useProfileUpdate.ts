@@ -12,10 +12,9 @@ export function useProfileUpdate(profileConfig: ProfileConfig) {
   const currentUser = useCurrentUser()
   const { updateDocument } = useFirestoreManager()
 
-  // Set default appScoped to false for global profile ecosystem
+  // Use profileConfig directly; appScoped is deprecated
   const config = {
     ...profileConfig,
-    appScoped: profileConfig.appScoped ?? false,
   }
 
   // Shared state for update operations
@@ -44,9 +43,7 @@ export function useProfileUpdate(profileConfig: ProfileConfig) {
       if ('uid' in profileData) delete profileData.uid
       if ('created_at' in profileData) delete profileData.created_at
 
-      await updateDocument(config.collectionName, targetId, profileData, {
-        appScoped: config.appScoped,
-      })
+      await updateDocument(config.collectionName, targetId, profileData)
 
       return 'success'
     } catch (err: any) {

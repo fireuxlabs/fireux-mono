@@ -1,7 +1,7 @@
 import type {
   Profile,
   ProfileConfig,
-} from '../core-types'
+} from '../../../../../../../packages/core/fireux-core/src/runtime/models/profiles/profile.model'
 
 // Gallery Item (from actual database)
 export interface GalleryItem {

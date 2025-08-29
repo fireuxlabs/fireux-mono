@@ -190,7 +190,7 @@ const props = defineProps({
 })
 
 // Get generic profile update functions
-const { updateProfile } = useProfileUpdate(supplierConfig)
+const { updateProfile } = useProfile(supplierConfig)
 
 // Create field-specific update functions
 const updateBusinessName = (value) =>

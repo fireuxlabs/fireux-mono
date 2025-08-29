@@ -25,7 +25,7 @@
     </UCard>
 
     <UCard>
-      <CopyJson :data="{ app }" title="App JSON" />
+      <FireCopyJson :data="{ app }" title="App JSON" />
     </UCard>
   </div>
 </template>
@@ -39,5 +39,4 @@ definePageMeta({
 // Get app information
 const { app } = await useApp()
 
-import CopyJson from '~/components/dev/CopyJson.vue'
 </script>

@@ -1,4 +1,5 @@
 import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
+import type { NuxtModule } from '@nuxt/schema'
 import { configureRuntime } from './config/runtime-config'
 import { configureComposables } from './config/composables-config'
 import { configureComponents } from './config/components-config'
@@ -24,7 +25,7 @@ export interface ModuleOptions {
   enableAutocomplete?: boolean
 }
 
-export default defineNuxtModule<ModuleOptions>({
+const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-places',
     configKey: 'fireuxPlaces',
@@ -56,3 +57,5 @@ export default defineNuxtModule<ModuleOptions>({
     configureRuntime(resolver, options)
   },
 })
+
+export default module

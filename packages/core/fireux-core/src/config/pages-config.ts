@@ -1,6 +1,4 @@
-import { extendPages } from '@nuxt/kit'
 import { globSync } from 'glob'
-import { resolve } from 'path'
 
 /**
  * Configure pages for the Nuxt application
@@ -9,37 +7,16 @@ import { resolve } from 'path'
  */
 export function configurePages(resolver: any, _nuxt: any) {
   const resolvePath = (p: string) => resolver.resolve(p)
-
-  // Get the runtime pages directory
   const pagesDir = resolvePath('./runtime/pages')
-
-  // Find all .vue files in the pages directory recursively
   const pageFiles = globSync('**/*.vue', {
     cwd: pagesDir,
     absolute: false,
   })
-
   console.log(`🔍 Found ${pageFiles.length} page files in runtime/pages/`)
-
-  // Extend pages to include all discovered pages
-  extendPages((pages) => {
-    pageFiles.forEach((pageFile) => {
-      const resolvedPath = resolve(pagesDir, pageFile)
-
-      // Convert file path to route path
-      const routePath = convertFilePathToRoute(pageFile)
-
-      // Generate page name from file path
-      const pageName = convertFilePathToPageName(pageFile)
-
-      console.log(`Registering page: ${pageName} -> ${routePath} (${pageFile})`)
-
-      pages.push({
-        name: pageName,
-        path: routePath,
-        file: resolvedPath,
-      })
-    })
+  pageFiles.forEach((pageFile) => {
+    const routePath = convertFilePathToRoute(pageFile)
+    const pageName = convertFilePathToPageName(pageFile)
+    console.log(`Discovered page: ${pageName} -> ${routePath} (${pageFile})`)
   })
 }
 

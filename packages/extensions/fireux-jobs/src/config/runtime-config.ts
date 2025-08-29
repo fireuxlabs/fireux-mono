@@ -1,5 +1,5 @@
 // Runtime configuration for fireux-jobs module
-import type { ModuleOptions } from './module'
+import type { ModuleOptions } from '../module'
 
 /**
  * Configure runtime settings for the FireUX Jobs module

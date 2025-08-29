@@ -1,0 +1,16 @@
+{
+  "name": "test-core-isolation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare": "nuxi prepare",
+    "dev": "nuxi dev"
+  },
+  "devDependencies": {
+    "@nuxt/cli": "^3.28.0",
+    "nuxt": "^4.0.3"
+  },
+  "dependencies": {
+    "fireux-core": "workspace:*"
+  }
+}

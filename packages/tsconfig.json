@@ -1,0 +1,13 @@
+{
+  "files": [],
+  "references": [
+    { "path": "core/fireux-core" },
+    { "path": "extensions/fireux-jobs" },
+    { "path": "extensions/fireux-places" },
+    { "path": "tenants/fireux-misebox" },
+    { "path": "tenants/fireux-cleanbox" }
+  ],
+  "compilerOptions": {
+    "skipLibCheck": true
+  }
+}

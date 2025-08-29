@@ -15,11 +15,13 @@
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
+    "postbuild": "rimraf src/**/*.map",
     "clean": "rimraf dist"
   },
   "private": true,
   "dependencies": {
-    "@nuxt/kit": "^3.17.5",
+    "@nuxt/kit": "^4.0.0",
+    "@nuxt/schema": "^4.0.0",
     "fireux-core": "workspace:*",
     "glob": "^11.0.3"
   },

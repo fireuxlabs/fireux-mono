@@ -6,8 +6,10 @@
 export function configureModels(resolver: any, nuxt: any) {
   const resolvePath = (p: string) => resolver.resolve(p)
 
-  // Set up model aliases for easy importing
-  nuxt.options.alias = nuxt.options.alias ?? {}
+  // Ensure alias exists and is an object
+  if (!nuxt.options.alias) {
+    nuxt.options.alias = {}
+  }
 
   // Main models directory
   nuxt.options.alias['#fireux-core-models'] = resolvePath('./runtime/models')
@@ -28,11 +30,16 @@ export function configureModels(resolver: any, nuxt: any) {
 
   // Add models directory to TypeScript paths if needed
   if (nuxt.options.typescript) {
-    nuxt.options.typescript.tsConfig = nuxt.options.typescript.tsConfig ?? {}
-    nuxt.options.typescript.tsConfig.compilerOptions =
-      nuxt.options.typescript.tsConfig.compilerOptions ?? {}
-    nuxt.options.typescript.tsConfig.compilerOptions.paths =
-      nuxt.options.typescript.tsConfig.compilerOptions.paths ?? {}
+    // Ensure all nested objects exist
+    if (!nuxt.options.typescript.tsConfig) {
+      nuxt.options.typescript.tsConfig = {}
+    }
+    if (!nuxt.options.typescript.tsConfig.compilerOptions) {
+      nuxt.options.typescript.tsConfig.compilerOptions = {}
+    }
+    if (!nuxt.options.typescript.tsConfig.compilerOptions.paths) {
+      nuxt.options.typescript.tsConfig.compilerOptions.paths = {}
+    }
 
     // TypeScript path mappings
     nuxt.options.typescript.tsConfig.compilerOptions.paths[

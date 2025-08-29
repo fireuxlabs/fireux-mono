@@ -50,9 +50,12 @@ export default defineEventHandler(async (event) => {
     // Task 1: Setup Subscription Plans (always enabled)
     try {
       console.log('📦 Creating Pro subscription plan...')
-      const proResponse = await $fetch('/api/stripe/create-product', {
+      const proResponse = await fetch('/api/stripe/create-product', {
         method: 'POST',
-        body: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           product: {
             name: `${appName} - Pro Plan`,
             description:
@@ -81,20 +84,24 @@ export default defineEventHandler(async (event) => {
               },
             ],
           },
-        },
+        }),
       })
+      await proResponse.json() // Parse response but don't store since we're not using it
 
       response.products_created.push({
         type: 'pro_plan',
-        product_id: proResponse.id,
+        product_id: (proResponse as any).id,
         name: `${appName} - Pro Plan`,
         prices: 2,
       })
 
       console.log('📦 Creating Enterprise subscription plan...')
-      const enterpriseResponse = await $fetch('/api/stripe/create-product', {
+      const enterpriseResponse = await fetch('/api/stripe/create-product', {
         method: 'POST',
-        body: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           product: {
             name: `${appName} - Enterprise Plan`,
             description:
@@ -123,12 +130,13 @@ export default defineEventHandler(async (event) => {
               },
             ],
           },
-        },
+        }),
       })
+      const enterpriseData = await enterpriseResponse.json()
 
       response.products_created.push({
         type: 'enterprise_plan',
-        product_id: enterpriseResponse.id,
+        product_id: (enterpriseData as any).id,
         name: `${appName} - Enterprise Plan`,
         prices: 2,
       })
@@ -163,18 +171,22 @@ export default defineEventHandler(async (event) => {
 
       console.log('📝 Calling Firestore update with data:', appMetadata)
 
-      const firestoreResponse = await $fetch('/api/firestore/update-document', {
+      const firestoreResponse = await fetch('/api/firestore/update-document', {
         method: 'POST',
-        body: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           collection: 'apps',
           documentId: appId,
           data: appMetadata,
           merge: true,
           ping: `ensure-app-${Date.now()}`,
-        },
+        }),
       })
+      const firestoreData = await firestoreResponse.json()
 
-      console.log('📝 Firestore response:', firestoreResponse)
+      console.log('📝 Firestore response:', firestoreData)
 
       response.tasks_completed.push('app_metadata_update')
       response.firestore_updated = true

@@ -1,4 +1,5 @@
 import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
+import type { NuxtModule } from '@nuxt/schema'
 import { configureRuntime } from './config/runtime-config'
 import { configurePages } from './config/pages-config'
 import { configureComposables } from './config/composables-config'
@@ -8,7 +9,7 @@ import { configureModels } from './config/models-config'
 // Module options interface
 export interface ModuleOptions {}
 
-export default defineNuxtModule<ModuleOptions>({
+const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-jobs',
     configKey: 'fireuxJobs',
@@ -49,3 +50,5 @@ export default defineNuxtModule<ModuleOptions>({
     configureRuntime(nuxt, options)
   },
 })
+
+export default module

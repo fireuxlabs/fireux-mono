@@ -1,24 +1,13 @@
 {
-  // https://nuxt.com/docs/guide/concepts/typescript
+  "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
-    "strict": true,
-    "noEmit": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": "./",
+    "composite": true,
+    "baseUrl": ".",
     "paths": {
-      "@fireux-core/*": ["../../packages/core/fireux-core/src/*"],
+      "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
       "@/*": ["./*"]
-    },
-    "types": ["@nuxt/devtools"]
+    }
   }
 }
