@@ -12,5 +12,9 @@
       "~/*": ["./*"],
       "@/*": ["./*"]
     }
-  }
+  },
+  "include": [
+    "./**/*",
+    "../../../packages/tenants/fireux-cleanbox/src/**/*.ts"
+  ]
 }

@@ -2,9 +2,10 @@
   <CoreDashboard :routes="miseboxRoutes" />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { getMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
 
 const { hasProfile } = await useAppUser()
-const miseboxRoutes = computed(() => getMiseboxRoutes(hasProfile))
+type LayoutRoutes = { menuBarLinks?: any[]; mobileLinks?: any[] }
+const miseboxRoutes = computed<LayoutRoutes>(() => getMiseboxRoutes(hasProfile))
 </script>

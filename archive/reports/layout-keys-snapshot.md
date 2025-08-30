@@ -1,0 +1,21 @@
+# Layout Keys Snapshot
+
+- packages/core/fireux-core
+  - files:
+    - packages/core/fireux-core/src/runtime/layouts/dashboard.vue
+    - packages/core/fireux-core/src/runtime/layouts/default.vue
+    - packages/core/fireux-core/src/runtime/layouts/design.vue
+    - packages/core/fireux-core/src/runtime/layouts/dev.vue
+    - packages/core/fireux-core/src/runtime/layouts/docs.vue
+- packages/extensions/fireux-jobs
+- packages/extensions/fireux-places
+- packages/tenants/fireux-cleanbox
+  - files:
+    - packages/tenants/fireux-cleanbox/src/runtime/layouts/CleanboxDashboard.vue
+    - packages/tenants/fireux-cleanbox/src/runtime/layouts/CleanboxDefault.vue
+    - packages/tenants/fireux-cleanbox/src/runtime/layouts/CleanboxDev.vue
+- packages/tenants/fireux-misebox
+  - files:
+    - packages/tenants/fireux-misebox/src/runtime/layouts/MiseboxDashboard.vue
+    - packages/tenants/fireux-misebox/src/runtime/layouts/MiseboxDefault.vue
+    - packages/tenants/fireux-misebox/src/runtime/layouts/MiseboxDev.vue

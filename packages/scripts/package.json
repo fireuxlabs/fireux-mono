@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "scan": "node scan-exports.mjs"
+  "scan": "node scan-exports.mjs",
+  "list:layout-keys": "node list-layout-keys.mjs"
   },
   "dependencies": {
     "glob": "^11.0.0"

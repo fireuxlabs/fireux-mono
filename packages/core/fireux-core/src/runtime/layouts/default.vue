@@ -9,16 +9,10 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  routes: {
-    type: Object,
-    default: () => ({
-      menuBarLinks: [],
-      mobileLinks: [],
-    }),
-  },
-})
+<script setup lang="ts">
+// Nuxt auto-imported composable; declare for TS when type context misses auto-imports
+declare function useCoreRoutes(): Promise<any>
+const props = defineProps<{ routes?: import('../types/layouts').LayoutRoutes }>()
 
 const coreRoutes = await useCoreRoutes()
 const menuBarLinks = [
