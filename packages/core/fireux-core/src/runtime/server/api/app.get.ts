@@ -1,6 +1,6 @@
 import { defineEventHandler } from 'h3'
 
-export default defineEventHandler(async (_event) => {
+export default defineEventHandler(async (event) => {
   // Access environment variables directly in server context
   const appName = process.env.APP_NAME || 'FireUX App'
   const projectName = process.env.PROJECT_NAME || 'FireUX'

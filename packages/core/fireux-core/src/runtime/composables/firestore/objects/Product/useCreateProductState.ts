@@ -46,7 +46,7 @@ export async function useCreateProductState() {
   const products = {
     buildSlugIfUnique: async (
       title: string,
-      _collectionName: string,
+      collectionName: string,
       tenantId?: string
     ) => {
       const slug = `${tenantId}-${title}`

@@ -1,6 +1,5 @@
 {
-  "name": "niederhorn",
-  "version": "1.0.0",
+  "name": "Niederhorn",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,8 +7,7 @@
     "dev": "nuxi dev --port 3003",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "postinstall": "nuxi prepare",
-    "clean": "rimraf dist"
+    "postinstall": "nuxi prepare"
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.2",

@@ -1,11 +1,11 @@
-export interface BaseObject { 
+export interface BaseObject {
   id: string
   createdAt?: number
-  updatedAt?: number 
+  updatedAt?: number
 }
 
-export interface WithAuthor { 
-  authorId: string 
+export interface WithAuthor {
+  authorId: string
 }
 
 export interface Sluggable {

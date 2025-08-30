@@ -1,15 +1,15 @@
 // Public model/type exports - curated types for external consumption
 export type { AppUser, SubscriptionInfo } from './core/appUser.model'
-export type { 
-  Product, 
+export type {
+  Product,
   FirebaseProduct,
-  ProductFeature, 
-  ProductImage, 
-  Price, 
+  ProductFeature,
+  ProductImage,
+  Price,
   DefaultPrice,
   StripePriceInput,
   ProductCreationInput,
-  ProductId 
+  ProductId,
 } from './objects/product.model'
 export type { BaseObject, WithAuthor, Sluggable } from './objects/protocols'
 export type { Profile, ProfileConfig } from './profiles/profile.model'

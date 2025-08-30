@@ -46,7 +46,6 @@ export function useAppUserRoutes(): RouteLink[] {
           id: 'user',
           label: 'User',
           icon: 'i-lucide-user-circle',
-          to: '/user',
           children: appUserRoutes,
         },
       ]

@@ -19,8 +19,6 @@ export interface SubscriptionInfo {
     | 'canceled'
     | 'incomplete'
     | 'unpaid'
-    | 'inactive'
-    | 'cancelled'
   tier?: string
   currentPeriodEnd?: number // epoch seconds
   features?: string[]

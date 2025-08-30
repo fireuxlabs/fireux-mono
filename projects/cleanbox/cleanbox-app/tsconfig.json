@@ -1,17 +1,16 @@
 {
   "extends": "./.nuxt/tsconfig.json",
-  "references": [
-    { "path": "../../../packages/core/fireux-core" },
-    { "path": "../../../packages/tenants/fireux-cleanbox" }
-  ],
   "compilerOptions": {
     "composite": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
+      "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "@fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
+      "@fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
+      "@fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
       "@/*": ["./*"]
     }
-  },
-  "include": ["**/*.ts", "**/*.vue"]
+  }
 }

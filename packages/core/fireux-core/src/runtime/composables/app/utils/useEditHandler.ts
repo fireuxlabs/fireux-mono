@@ -41,10 +41,10 @@ function getToast(): ToastInterface {
       add: ({ title, description, color }: any) => {
         console.log(`[${color?.toUpperCase()}] ${title}: ${description}`)
       },
-      success: (message: string, _options?: any) => {
+      success: (message: string, options?: any) => {
         console.log(`✅ ${message}`)
       },
-      error: (message: string, _options?: any) => {
+      error: (message: string, options?: any) => {
         console.error(`❌ ${message}`)
       },
     }

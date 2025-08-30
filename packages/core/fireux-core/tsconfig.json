@@ -3,8 +3,9 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "composite": true,
-    "declaration": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -18,8 +19,11 @@
     "paths": {
       "#fireux-core-models/*": ["./src/runtime/models/*"]
     },
-    "types": ["@types/node"]
+    "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
+  "include": [
+    "src/**/*.ts",
+    "src/runtime/env.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

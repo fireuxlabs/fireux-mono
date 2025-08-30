@@ -1,21 +1,18 @@
 import { addComponentsDir } from '@nuxt/kit'
-import type { ModuleOptions } from '../module'
 
-/**
- * Configure components for the Nuxt application
- * @param resolver The resolver instance to resolve file paths
- * @param options Module options containing component prefix
- */
-export function configureComponents(resolver: any, options: ModuleOptions) {
-  const resolvePath = (p: string) => resolver.resolve(p)
+export interface ComponentsOptions {
+  prefix?: string
+}
 
-  // Register components
+export function configureComponents(
+  resolver: any,
+  options: ComponentsOptions = {}
+) {
+  // Register ALL runtime components; Nuxt will respect the prefix
   addComponentsDir({
-    path: resolvePath('./runtime/components'),
-    pattern: '**/*.vue',
-    prefix: options.prefix,
-    global: true,
-    pathPrefix: true,
-    watch: true,
+    path: resolver.resolve('../runtime/components'),
+    prefix: options.prefix ?? 'Fire',
+    global: false,
+    pathPrefix: false,
   })
 }

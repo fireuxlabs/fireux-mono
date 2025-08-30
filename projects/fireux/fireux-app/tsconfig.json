@@ -1,14 +1,13 @@
 {
   "extends": "./.nuxt/tsconfig.json",
-  "references": [{ "path": "../../../packages/core/fireux-core" }],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
     "paths": {
+      "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
       "@/*": ["./*"]
     }
-  },
-  "include": ["**/*.ts", "**/*.vue"]
+  }
 }

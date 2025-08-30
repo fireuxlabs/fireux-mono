@@ -1,4 +1,11 @@
-import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
+// Local type to avoid deep import from core
+export interface RouteLink {
+  id: string
+  label: string
+  icon: string
+  to: string
+  children?: RouteLink[]
+}
 
 export function getCleanboxDevRoutes() {
   // Core dev routes (from fireux-core)

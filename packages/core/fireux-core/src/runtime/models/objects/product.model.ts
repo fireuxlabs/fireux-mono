@@ -61,7 +61,6 @@ export interface FirebaseProduct extends Product {
   creator_id?: string
   appId?: string
   metadata?: Record<string, any>
-  default_price?: DefaultPrice
 }
 
 export interface ProductCreationInput {
@@ -71,9 +70,6 @@ export interface ProductCreationInput {
   images?: ProductImage[]
   features?: ProductFeature[]
   prices?: Price[]
-  main_image?: string
-  active?: boolean
-  slug?: string
 }
 
 export type ProductId = Product['id']

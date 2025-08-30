@@ -1,9 +1,7 @@
 packages:
-  - packages/core/*
-  - packages/extensions/*
-  - packages/tenants/*
-  - playground
-  - projects/*/*
-
-onlyBuiltDependencies:
-  - better-sqlite3
+  - 'packages/core/*'
+  - 'packages/extensions/*'
+  - 'packages/tenants/*'
+  - 'projects/*/*'
+  - 'tools/*'
+  - 'test-*'

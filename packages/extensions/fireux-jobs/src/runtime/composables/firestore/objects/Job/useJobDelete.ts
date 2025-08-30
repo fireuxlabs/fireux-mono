@@ -1,4 +1,3 @@
-import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager'
 import { useCurrentUser } from 'vuefire'
 
 export function useJobDelete() {

@@ -17,13 +17,13 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "paths": {
-      "#fireux-jobs-models/*": ["./src/runtime/models/*"],
-      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
-      "fireux-core/*": ["../../core/fireux-core/src/*"],
-      "fireux-core/runtime/*": ["../../core/fireux-core/src/runtime/*"]
+      "#fireux-jobs-models/*": ["./src/runtime/models/*"]
     },
-    "types": ["@types/node"]
+    "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
-  "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/runtime/env.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

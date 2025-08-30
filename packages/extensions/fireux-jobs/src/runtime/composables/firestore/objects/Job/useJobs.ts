@@ -1,8 +1,14 @@
-import { useObject } from 'fireux-core/runtime/composables/firestore/objects/useObject'
 import { useJobCreate } from './useJobCreate'
 import { useJobUpdate } from './useJobUpdate'
 import { useJobDelete } from './useJobDelete'
-import type { ObjectConfig } from 'fireux-core/runtime/models/objects/object.model'
+// Minimal local type to avoid deep import from fireux-core
+type ObjectConfig = {
+  collectionName: string
+  objectType: string
+  createComposable?: (...args: any[]) => any
+  updateComposable?: (...args: any[]) => any
+  deleteComposable?: (...args: any[]) => any
+}
 
 export async function useJobs() {
   // Configure job-specific CRUD operations

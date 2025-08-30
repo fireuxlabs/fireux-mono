@@ -3,85 +3,44 @@
   "version": "0.1.0",
   "description": "FireUX Core - A comprehensive Nuxt 3 module for Firebase integration",
   "private": true,
-  "type": "module",
-  "sideEffects": false,
-  "main": "./src/module.ts",
-  "types": "./src/module.ts",
+  "main": "./dist/module.mjs",
+  "types": "./dist/types.d.ts",
   "exports": {
     ".": {
-      "types": "./src/module.ts",
-      "import": "./src/module.ts"
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs",
+      "types": "./dist/types.d.ts"
     },
-    "./config/*": {
-      "types": "./src/config/*.ts",
-      "import": "./src/config/*.ts"
-    },
-    "./runtime/*": {
-      "types": "./src/runtime/*.ts",
-      "import": "./src/runtime/*.ts"
-    },
-    "./runtime/composables/*": {
-      "types": "./src/runtime/composables/*.ts",
-      "import": "./src/runtime/composables/*.ts"
-    },
-    "./models/*": {
-      "types": "./src/runtime/models/*.ts",
-      "import": "./src/runtime/models/*.ts"
-    },
-    "./server/*": {
-      "types": "./src/runtime/server/*.ts",
-      "import": "./src/runtime/server/*.ts"
-    }
+    "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
-      "config/*": [
-        "src/config/*"
-      ],
-      "runtime/*": [
-        "src/runtime/*"
-      ],
-      "runtime/composables/*": [
-        "src/runtime/composables/*"
-      ],
-      "models/*": [
-        "src/runtime/models/*"
-      ],
-      "server/*": [
-        "src/runtime/server/*"
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
       ]
     }
   },
+  "sideEffects": false,
   "files": [
-    "src/**/*"
+    "dist",
+    "src/runtime"
   ],
   "scripts": {
     "build": "nuxt-module-build build",
-    "dev": "nuxt-module-build --stub",
-    "postbuild": "rimraf src/**/*.map",
+    "dev": "nuxt-module-build build --stub",
+    "postbuild": "rimraf dist/**/*.map",
     "clean": "rimraf dist"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@nuxt/kit": "^4.0.0",
     "@nuxt/schema": "^4.0.0",
-    "firebase": "^11.0.0",
-    "vuefire": "^3.2.0",
-    "vue": "^3.5.0",
-    "h3": "^1.12.0",
-    "stripe": "^18.0.0",
-    "@vueuse/core": "^11.0.0"
-  },
-  "dependencies": {
     "dompurify": "^3.2.6",
     "glob": "^11.0.3"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.9.2"
+    "rimraf": "^6.0.1"
   },
-  "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
-  }
+  "type": "module"
 }

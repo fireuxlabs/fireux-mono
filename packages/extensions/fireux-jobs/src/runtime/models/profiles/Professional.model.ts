@@ -1,7 +1,21 @@
-import type {
-  Profile,
-  ProfileConfig,
-} from 'fireux-core/models/profiles/profile.model'
+// Minimal local copies to avoid deep imports from core
+export interface Profile {
+  uid: string
+  created_at: string | Date
+  updated_at?: string | Date
+  deleted?: boolean
+}
+
+export interface ProfileConfig {
+  id: string
+  collectionName: string
+  profileType: string
+  color?: string
+  validationFn?: (profile: any) => boolean
+  requiredFields?: string[]
+  searchableFields?: string[]
+  defaultValues?: Record<string, any>
+}
 
 // Kitchen Experience Entry
 export interface KitchenExperience {

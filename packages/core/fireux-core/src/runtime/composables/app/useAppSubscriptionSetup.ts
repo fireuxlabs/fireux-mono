@@ -9,11 +9,11 @@
 export function useAppSubscriptionSetup() {
   /**
    * Creates both Pro and Enterprise subscription products for a new app
-   * @param _appId The app identifier (unused currently)
+   * @param appId The app identifier
    * @param appName The app name
    */
   async function createAppSubscriptionProducts(
-    _appId: string,
+    appId: string,
     appName: string
   ): Promise<void> {
     console.log(

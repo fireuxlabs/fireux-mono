@@ -1,4 +1,11 @@
-import type { FirestoreObject } from 'fireux-core/models/objects/object.model'
+// Minimal local copy to avoid cross-package deep type import
+export interface FirestoreObject {
+  slug: string
+  appId: string
+  created_at: string | Date
+  updated_at: string | Date
+  creator_id: string
+}
 import type { FieldValue } from 'firebase/firestore'
 
 /**

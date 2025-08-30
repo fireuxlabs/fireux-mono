@@ -3,60 +3,43 @@
   "version": "0.1.0",
   "description": "Chef and Supplier marketplace system for FireUX apps",
   "private": true,
-  "type": "module",
-  "sideEffects": false,
-  "main": "./src/module.ts",
-  "types": "./src/module.ts",
+  "main": "./dist/module.mjs",
+  "types": "./dist/types.d.ts",
   "exports": {
     ".": {
-      "types": "./src/module.ts",
-      "import": "./src/module.ts"
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs",
+      "types": "./dist/types.d.ts"
     },
-    "./runtime/*": {
-      "types": "./src/runtime/*.ts",
-      "import": "./src/runtime/*.ts"
-    },
-    "./models/*": {
-      "types": "./src/runtime/models/*.ts",
-      "import": "./src/runtime/models/*.ts"
-    }
+    "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
-      "runtime/*": [
-        "src/runtime/*"
-      ],
-      "models/*": [
-        "src/runtime/models/*"
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
       ]
     }
   },
   "files": [
-    "src/**/*"
+    "dist",
+    "src/runtime"
   ],
   "scripts": {
     "build": "nuxt-module-build build",
-    "dev": "nuxt-module-build --stub",
-    "postbuild": "rimraf src/**/*.map",
+    "dev": "nuxt-module-build build --stub",
+    "postbuild": "rimraf dist/**/*.map",
     "clean": "rimraf dist"
   },
-  "peerDependencies": {
-    "@nuxt/kit": "^4.0.0",
-    "@nuxt/schema": "^4.0.0"
-  },
   "dependencies": {
+    "@nuxt/kit": "^3.17.5",
     "fireux-core": "workspace:*",
     "fireux-places": "workspace:*",
-    "glob": "^11.0.3",
-    "pathe": "^1.1.2"
+    "glob": "^11.0.3"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.9.2"
+    "rimraf": "^6.0.1"
   },
-  "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
-  }
+  "type": "module"
 }

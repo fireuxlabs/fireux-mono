@@ -1,10 +1,11 @@
-import type { Resolver } from '@nuxt/kit'
-import type { ModuleOptions } from '../module'
-
-export async function configureRuntime(
-  resolver: Resolver,
-  options: ModuleOptions
+export function configureRuntime(
+  nuxt: any,
+  key: string,
+  defaults: Record<string, any> = { enabled: true }
 ) {
-  // Runtime configuration
-  console.log('FireUX Places: Runtime configured with options:', options)
+  const rc = (nuxt.options.runtimeConfig ||= {})
+  const pub = (rc.public ||= {})
+  if (!pub.fireux) pub.fireux = {}
+  const ns = pub.fireux as Record<string, any>
+  ns[key] ||= defaults
 }

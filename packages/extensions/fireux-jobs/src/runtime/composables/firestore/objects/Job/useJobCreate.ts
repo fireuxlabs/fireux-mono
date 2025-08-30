@@ -1,7 +1,5 @@
-import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager'
 import { useCurrentUser } from 'vuefire'
 import { serverTimestamp } from 'firebase/firestore'
-import { useNuxtApp } from 'nuxt/app'
 import type { Job } from '../../../../models/objects/Job.model'
 
 export function useJobCreate() {

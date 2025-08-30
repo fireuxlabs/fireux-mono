@@ -46,7 +46,6 @@ export function useAdminRoutes(): RouteLink[] {
           id: 'admin',
           label: 'Admin',
           icon: 'i-lucide-shield',
-          to: '/admin',
           children: adminRoutes,
         },
       ]

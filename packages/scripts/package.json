@@ -1,0 +1,12 @@
+{
+  "name": "fireux-package-scripts",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "scan": "node scan-exports.mjs"
+  },
+  "dependencies": {
+    "glob": "^11.0.0"
+  }
+}

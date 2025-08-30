@@ -38,12 +38,9 @@
 <script lang="ts" setup>
 import type { Chef } from '../../../../models/profiles/Chef.model'
 import { chefConfig } from '../../../../models/profiles/Chef.model'
-import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
-import { useApp } from 'fireux-core/runtime/composables/app/useApp'
-import { useAppUser } from 'fireux-core/runtime/composables/firestore/AppUser/useAppUser'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig'
+// Composables are auto-imported by fireux-core; no deep imports
 
-const { current, createProfile } = await useProfile<Chef>(chefConfig)
+const { current, createProfile } = await useProfile(chefConfig)
 const { appUser } = await useAppUser()
 
 // Get app name from runtime config or fallback
@@ -53,7 +50,7 @@ const hasLocal = computed(() => {
   return appUser.value?.profiles?.some((p) => p.type === 'chef') ?? false
 })
 
-const { profileToAppAction } = useApp()
+const { profileToAppAction } = await useApp()
 
 function createGlobalProfile() {
   const id = current.value?.uid || ''
