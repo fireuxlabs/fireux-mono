@@ -1,54 +1,38 @@
-import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
-import type { NuxtModule } from '@nuxt/schema'
-import { configureRuntime } from './config/runtime-config'
-import { configurePages } from './config/pages-config'
-import { configureComposables } from './config/composables-config'
+import { defineNuxtModule, createResolver } from '@nuxt/kit'
+
 import { configureComponents } from './config/components-config'
+import { configureComposables } from './config/composables-config'
 import { configureModels } from './config/models-config'
+import { configurePages } from './config/pages-config'
+import { configurePlugins } from './config/plugins-config'
+import { configureLayouts } from './config/layouts-config'
+import { configureServer } from './config/server-config'
+import { configureRuntime } from './config/runtime-config'
 
-// Module options interface
-export interface ModuleOptions {}
+export interface ModuleOptions {
+  prefix?: string
+}
 
-const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-jobs',
+    version: '1.0.0',
     configKey: 'fireuxJobs',
-    compatibility: {
-      nuxt: '^4.0.0',
-    },
   },
-  // Default configuration options of the Nuxt module
-  defaults: {},
-  async setup(options, nuxt) {
+  defaults: { prefix: 'Fire' },
+  setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-
-    // Install fireux-core module first
-    await installModule('fireux-core')
-
-    // Configure components
     configureComponents(resolver, options)
-
-    // Configure pages
-    configurePages(resolver, nuxt)
-
-    // Configure composables
     configureComposables(resolver)
-
-    // Configure models
-    configureModels(resolver, nuxt)
-
-    // Add theme colors for job profiles
-    ;(nuxt.options as any).appConfig = (nuxt.options as any).appConfig || {}
-    ;(nuxt.options as any).appConfig.ui =
-      (nuxt.options as any).appConfig.ui || {}
-    ;(nuxt.options as any).appConfig.ui.colors =
-      (nuxt.options as any).appConfig.ui.colors || {}
-    ;(nuxt.options as any).appConfig.ui.colors.professional = 'indigo'
-    ;(nuxt.options as any).appConfig.ui.colors.employer = 'red'
-
-    // Configure runtime options
-    configureRuntime(nuxt, options)
+    configureModels(resolver)
+    configurePages(resolver, nuxt)
+    configurePlugins(resolver)
+    configureLayouts(resolver, nuxt)
+    configureServer(resolver)
+    configureRuntime(nuxt, 'jobs')
+    // Safe nitro tweak
+    nuxt.options.nitro ||= {}
+    nuxt.options.nitro.experimental ||= {}
+    nuxt.options.nitro.experimental.wasm = true
   },
 })
-
-export default module

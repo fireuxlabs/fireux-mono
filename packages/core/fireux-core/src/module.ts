@@ -1,23 +1,26 @@
 import { defineNuxtModule, createResolver } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
+
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
 import { configureModels } from './config/models-config'
 import { configurePages } from './config/pages-config'
 import { configurePlugins } from './config/plugins-config'
+import { configureLayouts } from './config/layouts-config'
 import { configureServer } from './config/server-config'
 import { configureRuntime } from './config/runtime-config'
 
-// Module options interface
+/**
+ * Public options for the FireUX core module
+ */
 export interface ModuleOptions {
   /**
-   * Prefix for components
-   * @defaultValue `Fire`
+   * Prefix for auto-registered components
+   * @default 'Fire'
    */
   prefix?: string
 }
 
-// Define and export the module with explicit typing to avoid build issues
 const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-core',
@@ -30,23 +33,28 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // Configure all aspects of the module
+    // Call all config steps – these must exist in ./src/config/*
     configureComponents(resolver, options)
     configureComposables(resolver)
     configureModels(resolver, nuxt)
     configurePages(resolver, nuxt)
     configurePlugins(resolver)
+    configureLayouts(resolver, nuxt)
     configureServer(resolver)
-    configureRuntime(nuxt)
+    configureRuntime(nuxt, 'core')
 
-    // Add to nitro experimental features for better compatibility
-    nuxt.options.nitro = nuxt.options.nitro || {}
-    nuxt.options.nitro.experimental = nuxt.options.nitro.experimental || {}
+    // Nitro tweak (safe to set/merge)
+    nuxt.options.nitro ||= {}
+    nuxt.options.nitro.experimental ||= {}
     nuxt.options.nitro.experimental.wasm = true
 
-    console.log(
-      '🔥 FireUX Core module configured successfully with all features'
-    )
+    // Friendly log
+    nuxt.hook('ready', () => {
+      // eslint-disable-next-line no-console
+      console.log(
+        '🔥 fireux-core: module configured (components/composables/models/pages/plugins/server/runtime)'
+      )
+    })
   },
 })
 

@@ -3,25 +3,19 @@ import type { NuxtModule } from '@nuxt/schema'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
 import { configureModels } from './config/models-config'
-import { configureLayouts } from './config/layouts-config'
 import { configurePages } from './config/pages-config'
+import { configureLayouts } from './config/layouts-config'
+import { configureRuntime } from './config/runtime-config.ts'
 
-// Module options interface
 export interface ModuleOptions {
-  /**
-   * Prefix for components
-   * @defaultValue `Mise`
-   */
   prefix?: string
 }
 
 const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-misebox',
+    version: '0.1.0',
     configKey: 'fireuxMisebox',
-    compatibility: {
-      nuxt: '^4.0.0',
-    },
   },
   defaults: {
     prefix: 'Mise',
@@ -29,31 +23,26 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // Install fireux-core module first
+    // Install core dependency
     await installModule('fireux-core')
 
-    // Configure components
+    // Delegate to config functions
     configureComponents(resolver, options)
-
-    // Configure composables
     configureComposables(resolver)
-
-    // Configure models
     configureModels(resolver)
-
-    // Configure layouts
-    configureLayouts(resolver, nuxt)
-
-    // Configure pages
     configurePages(resolver, nuxt)
+    configureLayouts(resolver, nuxt)
+    configureRuntime(nuxt, 'misebox')
 
-    // Removed theme color configuration for misebox profiles
+    // Nitro tweak
+    nuxt.options.nitro ||= {}
+    nuxt.options.nitro.experimental ||= {}
+    nuxt.options.nitro.experimental.wasm = true
 
-    // Removed supplier-specific CSS (no longer needed)
-
-    console.log(
-      '🍳 FireUX Misebox module loaded - Chef & Supplier functionality ready!'
-    )
+    nuxt.hook('ready', () => {
+      // eslint-disable-next-line no-console
+      console.log('fireux-misebox: module configured')
+    })
   },
 })
 
