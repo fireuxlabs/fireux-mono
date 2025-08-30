@@ -28,6 +28,17 @@ module.exports = [
     },
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
+      'no-restricted-imports': [
+        'error',
+        {
+          'patterns': [
+            {
+              'group': ['**/packages/*/*/src/**'],
+              'message': 'Use package exports instead of deep imports into /src. For fireux-core, use: fireux-core/config/*, fireux-core/runtime/*, fireux-core/models/*, fireux-core/server/*'
+            }
+          ]
+        }
+      ]
     },
   },
   {
@@ -51,6 +62,17 @@ module.exports = [
     rules: {
       'vue/multi-word-component-names': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
+      'no-restricted-imports': [
+        'error',
+        {
+          'patterns': [
+            {
+              'group': ['**/packages/*/*/src/**'],
+              'message': 'Use package exports instead of deep imports into /src. For fireux-core, use: fireux-core/config/*, fireux-core/runtime/*, fireux-core/models/*, fireux-core/server/*'
+            }
+          ]
+        }
+      ]
     },
   },
 ]

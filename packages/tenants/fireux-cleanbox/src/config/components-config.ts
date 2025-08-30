@@ -7,7 +7,7 @@ export interface ModuleOptions {
 
 export function configureComponents(
   resolver: Resolver,
-  options: ModuleOptions
+  _options: ModuleOptions
 ) {
   addComponentsDir({
     path: resolver.resolve('./runtime/components'),

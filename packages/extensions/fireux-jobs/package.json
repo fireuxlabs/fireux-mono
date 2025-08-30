@@ -3,11 +3,33 @@
   "version": "0.1.0",
   "description": "Job posting and application system for FireUX apps",
   "private": true,
+  "type": "module",
+  "sideEffects": false,
   "main": "./src/module.ts",
   "types": "./src/module.ts",
   "exports": {
-    ".": "./src/module.ts",
-    "./composables": "./src/runtime/composables/*"
+    ".": {
+      "types": "./src/module.ts",
+      "import": "./src/module.ts"
+    },
+    "./runtime/*": {
+      "types": "./src/runtime/*.ts",
+      "import": "./src/runtime/*.ts"
+    },
+    "./models/*": {
+      "types": "./src/runtime/models/*.ts",
+      "import": "./src/runtime/models/*.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "runtime/*": [
+        "src/runtime/*"
+      ],
+      "models/*": [
+        "src/runtime/models/*"
+      ]
+    }
   },
   "files": [
     "src/**/*"
@@ -18,18 +40,25 @@
     "postbuild": "rimraf src/**/*.map",
     "clean": "rimraf dist"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@nuxt/kit": "^4.0.0",
     "@nuxt/schema": "^4.0.0",
-    "fireux-core": "workspace:*",
-    "glob": "^11.0.3",
     "vue": "^3.5.0",
+    "vue-router": "^4.5.0",
     "vuefire": "^3.2.0",
-    "firebase": "^11.10.0"
+    "firebase": "^11.0.0"
+  },
+  "dependencies": {
+    "fireux-core": "workspace:*",
+    "glob": "^11.0.3"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.2"
   },
-  "type": "module"
+  "engines": {
+    "node": ">=20.11 <23",
+    "pnpm": ">=10"
+  }
 }

@@ -1,10 +1,11 @@
 // ~/server/api/stripe/create-product.post.ts
 import { defineEventHandler, readBody, createError } from 'h3'
 import Stripe from 'stripe'
+import { STRIPE_API_VERSION } from '../stripe/version'
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil',
+  apiVersion: STRIPE_API_VERSION,
 })
 
 export default defineEventHandler(async (event) => {

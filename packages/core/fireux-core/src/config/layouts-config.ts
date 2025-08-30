@@ -4,9 +4,9 @@ import { join } from 'path'
 /**
  * Configure layouts for the Nuxt application
  * @param resolver The resolver instance to resolve file paths
- * @param nuxt The Nuxt instance
+ * @param _nuxt The Nuxt instance (unused)
  */
-export function configureLayouts(resolver: any, nuxt: any) {
+export function configureLayouts(resolver: any, _nuxt: any) {
   const resolvePath = (p: string) => resolver.resolve(p)
   const layoutsDir = resolvePath('./runtime/layouts')
 

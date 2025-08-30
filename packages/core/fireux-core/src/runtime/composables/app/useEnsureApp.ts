@@ -51,7 +51,7 @@ export function useAppEnsure() {
       const { appId, appName, ecosystem, modules } = useFireUXConfig()
       const db = useFirestore()
 
-      console.log(`🔍 [ensureApp] Detected modules: ${modules.join(', ')}`)
+      console.log(`🔍 [ensureApp] Detected modules: ${Array.isArray(modules) ? modules.join(', ') : 'none'}`)
       console.log(
         `🔍 [ensureApp] Detected ecosystem: ${ecosystem || 'none (platform app)'}`
       )
@@ -75,7 +75,10 @@ export function useAppEnsure() {
         app_name: appName,
         admin_ids: [uid],
         is_tenant: true, // Default to tenant app - most apps will be tenant businesses
-        ...(ecosystem && { ecosystem }), // Add ecosystem if detected from modules
+      }
+
+      if (ecosystem && typeof ecosystem === 'string') {
+        appData.ecosystem = ecosystem
       }
 
       await setDocument('apps', appId, appData, { appScoped: false })

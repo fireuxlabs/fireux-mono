@@ -2,10 +2,10 @@ import { addTemplate } from '@nuxt/kit'
 
 /**
  * Configure error handling for the Nuxt application
- * @param resolver The resolver instance to resolve file paths
- * @param nuxt The Nuxt instance
+ * @param _resolver The resolver instance to resolve file paths (unused)
+ * @param _nuxt The Nuxt instance (unused)
  */
-export function configureErrors(resolver: any, nuxt: any) {
+export function configureErrors(_resolver: any, _nuxt: any) {
   // Provide a minimal centralized error page following Nuxt 4 defaults
   // Apps can override by creating their own error.vue
   addTemplate({

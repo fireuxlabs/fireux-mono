@@ -20,7 +20,7 @@
       "#fireux-cleanbox-models/*": ["./src/runtime/models/*"],
       "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"]
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["@types/node"]
   },
   "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
   "exclude": ["node_modules", "dist"]

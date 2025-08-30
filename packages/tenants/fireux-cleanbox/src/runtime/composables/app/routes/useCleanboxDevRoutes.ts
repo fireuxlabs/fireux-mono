@@ -1,4 +1,4 @@
-import type { RouteLink } from '../../../../../../../core/fireux-core/src/runtime/types/routeLink'
+import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 
 export function getCleanboxDevRoutes() {
   // Core dev routes (from fireux-core)

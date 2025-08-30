@@ -1,4 +1,3 @@
-import { useUserMetrics } from './useUserMetrics'
 import { useBlogMetrics } from './useBlogMetrics'
 import { useProductMetrics } from './useProductMetrics'
 

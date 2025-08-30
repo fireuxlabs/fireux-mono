@@ -3,11 +3,54 @@
   "version": "0.1.0",
   "description": "FireUX Core - A comprehensive Nuxt 3 module for Firebase integration",
   "private": true,
+  "type": "module",
+  "sideEffects": false,
   "main": "./src/module.ts",
   "types": "./src/module.ts",
   "exports": {
-    ".": "./src/module.ts",
-    "./runtime/*": "./src/runtime/*"
+    ".": {
+      "types": "./src/module.ts",
+      "import": "./src/module.ts"
+    },
+    "./config/*": {
+      "types": "./src/config/*.ts",
+      "import": "./src/config/*.ts"
+    },
+    "./runtime/*": {
+      "types": "./src/runtime/*.ts",
+      "import": "./src/runtime/*.ts"
+    },
+    "./runtime/composables/*": {
+      "types": "./src/runtime/composables/*.ts",
+      "import": "./src/runtime/composables/*.ts"
+    },
+    "./models/*": {
+      "types": "./src/runtime/models/*.ts",
+      "import": "./src/runtime/models/*.ts"
+    },
+    "./server/*": {
+      "types": "./src/runtime/server/*.ts",
+      "import": "./src/runtime/server/*.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "config/*": [
+        "src/config/*"
+      ],
+      "runtime/*": [
+        "src/runtime/*"
+      ],
+      "runtime/composables/*": [
+        "src/runtime/composables/*"
+      ],
+      "models/*": [
+        "src/runtime/models/*"
+      ],
+      "server/*": [
+        "src/runtime/server/*"
+      ]
+    }
   },
   "files": [
     "src/**/*"
@@ -18,15 +61,27 @@
     "postbuild": "rimraf src/**/*.map",
     "clean": "rimraf dist"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@nuxt/kit": "^4.0.0",
     "@nuxt/schema": "^4.0.0",
+    "firebase": "^11.0.0",
+    "vuefire": "^3.2.0",
+    "vue": "^3.5.0",
+    "h3": "^1.12.0",
+    "stripe": "^18.0.0",
+    "@vueuse/core": "^11.0.0"
+  },
+  "dependencies": {
     "dompurify": "^3.2.6",
     "glob": "^11.0.3"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.2"
   },
-  "type": "module"
+  "engines": {
+    "node": ">=20.11 <23",
+    "pnpm": ">=10"
+  }
 }

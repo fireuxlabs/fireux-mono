@@ -1,8 +1,7 @@
 // ~/composables/useAppOnboarding.ts
 
 import { ref, computed } from 'vue'
-import { useRuntimeConfig, useFetch } from 'nuxt/app'
-import { useCoreUser } from '../firestore/CoreUser/useCoreUser'
+import { useFetch } from 'nuxt/app'
 import { useAppEnsure } from './useEnsureApp'
 
 export interface EnvCheckResult {

@@ -6,10 +6,8 @@ import type {
   FirebaseProduct,
   DefaultPrice,
   ProductCreationInput,
-} from '../../../../models/product.model'
+} from '../../../../models/objects/product.model'
 import { ref, watch, onMounted } from 'vue'
-import type { Ref } from 'vue'
-import { useProducts } from './useProducts' // Adjusted to use alias
 import { useFireUXConfig } from '../../../FireUXConfig'
 
 export async function useCreateProductState() {
@@ -48,7 +46,7 @@ export async function useCreateProductState() {
   const products = {
     buildSlugIfUnique: async (
       title: string,
-      collectionName: string,
+      _collectionName: string,
       tenantId?: string
     ) => {
       const slug = `${tenantId}-${title}`

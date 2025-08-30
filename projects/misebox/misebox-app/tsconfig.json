@@ -1,8 +1,17 @@
 {
   "extends": "./.nuxt/tsconfig.json",
+  "references": [
+    { "path": "../../../packages/core/fireux-core" },
+    { "path": "../../../packages/tenants/fireux-misebox" }
+  ],
   "compilerOptions": {
     "composite": true,
-    "types": ["nuxt", "nuxt/schema", "vue-router", "@types/node"],
-    "skipLibCheck": true
-  }
+    "baseUrl": ".",
+    "paths": {
+      "~~/*": ["./*"],
+      "~/*": ["./*"],
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.vue"]
 }

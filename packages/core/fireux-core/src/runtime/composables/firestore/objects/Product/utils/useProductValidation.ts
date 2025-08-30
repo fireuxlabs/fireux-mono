@@ -1,4 +1,4 @@
-import type { FirebaseProduct } from '../../../../../models/product.model'
+import type { FirebaseProduct } from '../../../../../models/objects/product.model'
 
 export function useProductValidation() {
   /**

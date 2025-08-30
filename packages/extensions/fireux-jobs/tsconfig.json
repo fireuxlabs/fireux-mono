@@ -22,11 +22,8 @@
       "fireux-core/*": ["../../core/fireux-core/src/*"],
       "fireux-core/runtime/*": ["../../core/fireux-core/src/runtime/*"]
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["@types/node"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/runtime/env.d.ts"
-  ],
+  "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,6 +1,7 @@
 // ~/server/api/stripe/create-subscription.post.ts
 import { defineEventHandler, readBody, createError } from 'h3'
 import Stripe from 'stripe'
+import { STRIPE_API_VERSION } from '../stripe/version'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -36,7 +37,7 @@ export default defineEventHandler(async (event) => {
 
     // Initialize Stripe
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: '2025-06-30.basil',
+      apiVersion: STRIPE_API_VERSION,
     })
 
     // Verify customer exists

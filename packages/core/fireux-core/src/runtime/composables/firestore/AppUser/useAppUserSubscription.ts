@@ -93,7 +93,7 @@ export function useAppUserSubscription(
     const allowedPlans = featureAccess[feature as keyof typeof featureAccess]
     if (!allowedPlans) return true // Feature available to all if not defined
 
-    return allowedPlans.includes(whichPlan.value)
+    return whichPlan.value ? allowedPlans.includes(whichPlan.value) : false
   }
 
   function hasActiveSubscription(): boolean {

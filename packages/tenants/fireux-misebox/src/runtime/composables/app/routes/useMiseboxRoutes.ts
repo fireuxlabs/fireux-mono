@@ -1,5 +1,5 @@
 import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/app/routes/useJobRoutes'
-import type { RouteLink } from '../../../../../../../core/fireux-core/src/runtime/types/routeLink'
+import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 
 export function getMiseboxRoutes(hasProfile: (profileType: string) => boolean) {
   // Get package routes

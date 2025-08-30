@@ -1,3 +1,4 @@
+import { computed } from 'vue'
 import { useFirestoreManager } from '../useFirestoreManager'
 import { useObjectCreate } from './useObjectCreate'
 import { useObjectDelete } from './useObjectDelete'

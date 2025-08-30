@@ -4,7 +4,7 @@ import type {
   Price,
   StripePriceInput,
   DefaultPrice,
-} from '../../../../../models/product.model'
+} from '../../../../../models/objects/product.model'
 import { computed } from 'vue'
 
 export function useCreatePricesState() {

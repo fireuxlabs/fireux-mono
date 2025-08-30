@@ -1,85 +1,79 @@
-// ~/models/product.model.ts
+export interface ProductFeature {
+  title: string
+  description?: string
+  available: boolean
+}
 
-import type { FirestoreObject } from './object.model'
+export interface ProductImage {
+  url: string
+  alt?: string
+  order?: number
+}
 
 export interface Price {
-  id: string
-  active: boolean
-  billing_scheme: 'per_unit' | 'tiered'
+  id?: string
   currency: string
   unit_amount: number
-  type: 'one_time' | 'recurring'
   interval?: 'day' | 'week' | 'month' | 'year'
   interval_count?: number
-  metadata?: Record<string, unknown>
+  type?: 'one_time' | 'recurring'
+  billing_scheme?: 'per_unit' | 'tiered'
+  metadata?: Record<string, any>
 }
 
-export type DefaultPrice = {
+export interface DefaultPrice {
   id: string
   unit_amount: number
   interval?: 'day' | 'week' | 'month' | 'year'
 }
 
-export type StripePriceInput = Omit<Price, 'id' | 'active'>
+export interface StripePriceInput {
+  currency: string
+  unit_amount: number
+  type?: 'one_time' | 'recurring'
+  interval?: 'day' | 'week' | 'month' | 'year'
+  interval_count?: number
+  billing_scheme?: 'per_unit' | 'tiered'
+  metadata?: Record<string, any>
+}
 
-export interface StripeProduct {
-  id: string
+export interface Product {
+  id?: string
   name: string
-  description: string
-  images: string[]
-  active: boolean
-  prices: Price[]
+  description?: string
+  images?: ProductImage[]
+  features?: ProductFeature[]
+  prices?: Price[]
+  created_at?: any
+  updated_at?: any
 }
 
-export type StripeProductInput = Omit<StripeProduct, 'id' | 'prices'> & {
-  prices: StripePriceInput[]
-}
-
-export interface FirebaseProduct extends StripeProduct, FirestoreObject {
-  product_type: 'physical' | 'digital' | 'service' | 'subscription'
-
-  // Stripe compatibility fields
-  tax_code?: string | null
-  metadata: {
-    appId: string
-    slug: string
-    product_type: string
-    [key: string]: any
-  }
-
-  // Stripe metadata as flat fields (for webhook compatibility)
-  stripe_metadata_appId: string
-  stripe_metadata_slug: string
-  stripe_metadata_product_type: string
-
-  // FireUX simplified price structure
-  stripe_prices: {
-    id: string
-    unit_amount: number
-    currency: string
-    interval?: string | null
-    interval_count?: number | null
-    type?: string
-  }[]
-
-  // FireUX tracking fields
-  fireux_created: boolean
-  sync_source: string
-
-  // Optional additional fields
+export interface FirebaseProduct extends Product {
+  id: string
+  created_at: any
+  updated_at: any
+  slug?: string
   content?: string
+  active?: boolean
   stock?: number | null
+  product_type?: 'physical' | 'digital' | 'service'
   track_stock?: boolean
-  main_image?: string
+  creator_id?: string
+  appId?: string
+  metadata?: Record<string, any>
   default_price?: DefaultPrice
-
-  // Subscription-specific fields
-  subscription_type?: 'pro' | 'premium' | 'enterprise'
-  features?: string[] // List of features included
-  is_default_plan?: boolean // Mark as default app subscription
 }
 
-export type ProductCreationInput = Omit<
-  FirebaseProduct,
-  'id' | 'created_at' | 'updated_at' | 'default_price' | 'prices'
->
+export interface ProductCreationInput {
+  name: string
+  description?: string
+  content?: string
+  images?: ProductImage[]
+  features?: ProductFeature[]
+  prices?: Price[]
+  main_image?: string
+  active?: boolean
+  slug?: string
+}
+
+export type ProductId = Product['id']

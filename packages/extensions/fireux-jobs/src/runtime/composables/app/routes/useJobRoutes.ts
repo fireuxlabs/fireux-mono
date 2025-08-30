@@ -1,5 +1,5 @@
 // Export for public job routes
-import type { RouteLink } from '../../../../../../../core/fireux-core/src/runtime/types/routeLink'
+import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 
 export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
   const jobRoutes: RouteLink[] = [

@@ -1,16 +1,17 @@
 {
   "extends": "./.nuxt/tsconfig.json",
+  "references": [
+    { "path": "../../../packages/core/fireux-core" },
+    { "path": "../../../packages/tenants/fireux-misebox" }
+  ],
   "compilerOptions": {
     "composite": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
-      "@fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
-      "@fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
       "@/*": ["./*"]
-    },
-    "types": ["@nuxt/devtools"]
-  }
+    }
+  },
+  "include": ["**/*.ts", "**/*.vue"]
 }

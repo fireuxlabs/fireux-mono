@@ -8,12 +8,35 @@
 import type { FirebaseTimestamp } from '../../types/firebase'
 
 /**
+ * Subscription Information
+ */
+export interface SubscriptionInfo {
+  plan?: string
+  status?:
+    | 'active'
+    | 'trialing'
+    | 'past_due'
+    | 'canceled'
+    | 'incomplete'
+    | 'unpaid'
+    | 'inactive'
+    | 'cancelled'
+  tier?: string
+  currentPeriodEnd?: number // epoch seconds
+  features?: string[]
+  is_pro?: boolean
+  ends_at?: string | Date
+  stripe_customer_id?: string
+}
+
+/**
  * App User - Current Data Structure
  *
  * App-specific user profiles (jobs, misebox, etc.)
  */
 export interface AppUser {
   id: string
+  uid: string
   email: string
   avatar: string
   display_name: string
@@ -23,6 +46,7 @@ export interface AppUser {
   created_at: string | FirebaseTimestamp
   updated_at?: string | FirebaseTimestamp
   role?: 'user' | 'admin'
+  subscription?: SubscriptionInfo
 
   // Basic profile info
   first_name?: string

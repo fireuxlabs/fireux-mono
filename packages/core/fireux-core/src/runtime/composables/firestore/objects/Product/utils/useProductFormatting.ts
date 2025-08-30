@@ -1,7 +1,7 @@
 import type {
   FirebaseProduct,
   Price,
-} from '../../../../../models/product.model'
+} from '../../../../../models/objects/product.model'
 import { useMediaStorage } from '../../../../firebase/useMediaStorage'
 import { useFirestoreManager } from '../../../useFirestoreManager'
 

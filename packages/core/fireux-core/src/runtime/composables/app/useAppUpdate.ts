@@ -1,5 +1,5 @@
 // ~/composables/app/useAppUpdate.ts
-import { doc, updateDoc, setDoc, collection } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useFirestoreUtils } from '../firestore/useFirestoreUtils'

@@ -1,4 +1,5 @@
 {
+  "references": [{ "path": "../../core/fireux-core" }],
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
@@ -19,10 +20,12 @@
     "paths": {
       "#fireux-misebox-models/*": ["./src/runtime/models/*"],
       "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
-      "#fireux-places-models/*": ["../../extensions/fireux-places/src/runtime/models/*"]
+      "#fireux-places-models/*": [
+        "../../extensions/fireux-places/src/runtime/models/*"
+      ]
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["@types/node"]
   },
-  "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
   "exclude": ["node_modules", "dist"]
 }
