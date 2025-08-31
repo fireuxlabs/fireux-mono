@@ -15,12 +15,24 @@ interface AppSettings {
 export function useFireUXConfig() {
   const runtimeConfig = useRuntimeConfig()
 
-  const appSettings = runtimeConfig.public.appSettings as AppSettings
-  const devMode = runtimeConfig.public.devMode
-  const ecosystem = runtimeConfig.public.ecosystem
-  const modules = runtimeConfig.public.modules || []
+  // Ensure we always have an object to read, with reasonable defaults
+  const appSettings = (runtimeConfig.public?.appSettings || {
+    projectName: runtimeConfig.public?.ecosystem || 'FireUX',
+    appName: 'FireUX',
+    appId: 'fireux-app',
+    nodeEnv: process.env.NODE_ENV || 'development',
+    appShortName: 'FireUX',
+    appPrimaryColor: '#111827',
+    appNeutralColor: '#9CA3AF',
+    appIcon: '/icon.png',
+    domain: 'localhost',
+  }) as AppSettings
 
-  const { projectName, appName, appId, appIcon } = appSettings // Added appIcon to destructuring
+  const devMode = runtimeConfig.public?.devMode ?? true
+  const ecosystem = runtimeConfig.public?.ecosystem
+  const modules = runtimeConfig.public?.modules || []
+
+  const { projectName, appName, appId, appIcon } = appSettings
 
   if (!projectName || typeof projectName !== 'string') {
     throw new Error('❌ Project Name must be a valid string.')

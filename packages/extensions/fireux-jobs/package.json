@@ -42,6 +42,7 @@
   },
   "devDependencies": {
   "@nuxt/module-builder": "^0.5.5",
+  "mkdist": "^1.5.3",
   "rimraf": "^6.0.1",
   "glob": "^11.0.3"
   },

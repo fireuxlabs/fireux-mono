@@ -22,6 +22,14 @@
       "types": "./src/config/app/*",
       "import": "./src/config/app/*"
     },
+    "./config/app/base-nuxt.config": {
+      "types": "./src/config/app/base-nuxt.config.ts",
+      "import": "./src/config/app/base-nuxt.config.ts"
+    },
+    "./config/app/fireux-config": {
+      "types": "./src/config/app/fireux-config.ts",
+      "import": "./src/config/app/fireux-config.ts"
+    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
@@ -68,8 +76,9 @@
     "@vueuse/core": "*"
   },
   "devDependencies": {
-    "@nuxt/module-builder": "^0.5.5",
-    "rimraf": "^6.0.1"
+  "@nuxt/module-builder": "^0.5.5",
+  "mkdist": "^1.5.3",
+  "rimraf": "^6.0.1"
   },
   "type": "module"
 }

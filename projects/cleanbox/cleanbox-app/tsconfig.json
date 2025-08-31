@@ -1,19 +1,18 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "composite": true,
-    "baseUrl": "./",
-    "module": "ESNext",
+    "composite": false,
+    "baseUrl": ".",
     "moduleResolution": "Bundler",
     "paths": {
-      "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
-      "@fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
-      "@fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
-      "@fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
+      "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
+      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
       "@/*": ["./*"]
-    }
+    },
+    "skipLibCheck": true
   },
-  "include": ["./**/*", "../../../packages/tenants/fireux-cleanbox/src/**/*.ts"]
+  "include": ["./**/*"]
 }

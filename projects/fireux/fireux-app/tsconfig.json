@@ -1,15 +1,18 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "composite": true,
+    "composite": false,
     "baseUrl": ".",
-    "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": {
-      "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
+      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
       "@/*": ["./*"]
-    }
-  }
+    },
+    "skipLibCheck": true
+  },
+  "include": ["./**/*"]
 }

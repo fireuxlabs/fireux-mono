@@ -9,9 +9,37 @@ export interface TenantConfig {
   appShortName?: string // Allow environment variables which can be undefined
   primaryColor?: string // Allow environment variables which can be undefined
   neutralColor?: string // Optional neutral color for theming
+  // Optional extended fields; if omitted we derive from env or sensible defaults
+  appId?: string
+  projectName?: string
+  domain?: string
+  appIcon?: string
 }
 
 export const createFireuxConfig = (config: TenantConfig) => {
+  // Resolve app settings with fallbacks from env or sensible defaults
+  const ecosystem = config.ecosystem || process.env.APP_ECOSYSTEM || 'fireux'
+  const appName = config.appName || process.env.APP_NAME || 'FireUX'
+  const appShortName =
+    config.appShortName || process.env.APP_SHORT_NAME || appName
+  const appPrimaryColor =
+    config.primaryColor || process.env.APP_PRIMARY_COLOR || '#111827'
+  const appNeutralColor =
+    config.neutralColor || process.env.APP_NEUTRAL_COLOR || '#9CA3AF'
+  const projectName =
+    config.projectName || process.env.PROJECT_NAME || appName || 'FireUX'
+  const appId =
+    config.appId ||
+    process.env.APP_ID ||
+    `${
+      String(ecosystem)
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '') || 'fireux'
+    }-app`
+  const appIcon = config.appIcon || process.env.APP_ICON || '/icon.png'
+  const domain = config.domain || process.env.APP_DOMAIN || 'localhost'
+  const nodeEnv = process.env.NODE_ENV || 'development'
+
   // Build modules array with core and optional modules
   const modules = [
     'fireux-core',
@@ -79,8 +107,31 @@ export const createFireuxConfig = (config: TenantConfig) => {
     // Simple: just pass ecosystem in runtimeConfig
     runtimeConfig: {
       public: {
-        ecosystem: config.ecosystem,
+        ecosystem,
         modules: config.modules || [],
+        devMode: nodeEnv !== 'production',
+        // Public Firebase client config (safe to expose)
+        firebaseConfig: {
+          apiKey: process.env.FIREBASE_API_KEY,
+          authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+          messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+          appId: process.env.FIREBASE_APP_ID,
+          measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+        },
+        // Provide appSettings for runtime composables like useFireUXConfig
+        appSettings: {
+          projectName,
+          appName,
+          appId,
+          nodeEnv,
+          appShortName,
+          appPrimaryColor,
+          appNeutralColor,
+          appIcon,
+          domain,
+        },
       },
     },
 
