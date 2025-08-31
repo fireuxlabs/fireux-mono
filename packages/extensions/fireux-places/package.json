@@ -36,15 +36,14 @@
     "firebase": "11.10.0",
     "firebase-admin": "*",
     "h3": "*",
-  "stripe": "*",
-    
+    "stripe": "*",
     "@vueuse/core": "*"
   },
   "devDependencies": {
-  "@nuxt/module-builder": "^0.5.5",
-  "mkdist": "^1.5.3",
-  "rimraf": "^6.0.1",
-  "glob": "^11.0.3"
+    "@nuxt/module-builder": "^0.5.5",
+    "mkdist": "^1.5.3",
+    "rimraf": "^6.0.1",
+    "glob": "^11.0.3"
   },
   "type": "module"
 }

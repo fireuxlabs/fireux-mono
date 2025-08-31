@@ -1,9 +1,11 @@
 # FireUX Monorepo Stabilization Report
 
 ## Summary
+
 Aligned Nuxt/Vue/Firebase versions across all apps, added explicit core subpath exports, normalized root/app tsconfigs, and hardened runtime config defaults. This locks editor/tooling behavior and eliminates config drift.
 
 ## Changes (delta)
+
 - Core
   - fireux-core/package.json: added subpath exports for config helpers.
   - fireux-core/src/config/app/fireux-config.ts: emit runtimeConfig.public.appSettings with safe defaults.
@@ -20,22 +22,25 @@ Aligned Nuxt/Vue/Firebase versions across all apps, added explicit core subpath 
     - projects/cleanbox/richies-reinigung/package.json
 
 ## How to verify
-1) Install
+
+1. Install
    - pnpm -w install
-2) TypeScript project build
+2. TypeScript project build
    - pnpm -w tsc:check
-3) Dev smoke test one app
+3. Dev smoke test one app
    - pnpm dev:niederhorn (http://localhost:3003)
 
 Expected: no missing-module errors; layouts load; warnings only.
 
 ## Rationale
+
 - Single source of truth for framework versions prevents subtle incompatibilities.
 - Minimal app tsconfigs avoid re-compiling packages and reduce IDE noise.
 - Core exports make config helpers importable with stable paths.
 - Runtime defaults prevent destructure crashes during early boot.
 
 ## Next steps
+
 - Resolve any duplicate auto-import warnings in layouts/models.
 - Consider consolidating @nuxt/content usage or removing if unused.
 - Add a CI task running typecheck:apps + typecheck:packages on PRs.

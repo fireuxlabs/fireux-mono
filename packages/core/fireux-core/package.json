@@ -76,9 +76,9 @@
     "@vueuse/core": "*"
   },
   "devDependencies": {
-  "@nuxt/module-builder": "^0.5.5",
-  "mkdist": "^1.5.3",
-  "rimraf": "^6.0.1"
+    "@nuxt/module-builder": "^0.5.5",
+    "mkdist": "^1.5.3",
+    "rimraf": "^6.0.1"
   },
   "type": "module"
 }

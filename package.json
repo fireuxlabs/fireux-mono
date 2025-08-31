@@ -47,7 +47,7 @@
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-vue": "^10.2.0",
     "nuxt": "4.0.3",
-    "nuxt-vuefire": "^1.1.0",
+    "nuxt-vuefire": "^1.0.5",
     "prettier": "^3.5.3",
     "tailwindcss": "^4.1.12",
     "typescript": "^5.9.2",
