@@ -6,8 +6,22 @@
   "main": "./src/module.ts",
   "types": "./src/module.ts",
   "exports": {
-    ".": "./src/module.ts",
-    "./runtime/*": "./src/runtime/*",
+    ".": {
+      "types": "./src/module.ts",
+      "import": "./src/module.ts"
+    },
+    "./runtime/*": {
+      "types": "./src/runtime/*",
+      "import": "./src/runtime/*"
+    },
+    "./config/*": {
+      "types": "./src/config/*",
+      "import": "./src/config/*"
+    },
+    "./config/app/*": {
+      "types": "./src/config/app/*",
+      "import": "./src/config/app/*"
+    },
     "./package.json": "./package.json"
   },
   "files": [
