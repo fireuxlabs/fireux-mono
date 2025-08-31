@@ -1,18 +1,16 @@
 import { addComponentsDir } from '@nuxt/kit'
 
-export interface ComponentsOptions {
-  prefix?: string
-}
-
 export function configureComponents(
   resolver: any,
-  options: ComponentsOptions = {}
+  options: { prefix?: string } = {}
 ) {
   // Register ALL runtime components; Nuxt will respect the prefix
   addComponentsDir({
-    path: resolver.resolve('../runtime/components'),
+    path: resolver.resolve('./runtime/components'),
     prefix: options.prefix ?? 'Fire',
-    global: false,
-    pathPrefix: false,
+  global: false,
+  // Use directory path segments in component names so
+  // components/layouts/default/Footer.vue => FireLayoutsDefaultFooter
+  pathPrefix: true,
   })
 }

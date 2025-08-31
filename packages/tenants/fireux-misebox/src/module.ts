@@ -5,7 +5,9 @@ import { configureComposables } from './config/composables-config'
 import { configureModels } from './config/models-config'
 import { configurePages } from './config/pages-config'
 import { configureLayouts } from './config/layouts-config'
-import { configureRuntime } from './config/runtime-config.ts'
+import { configureRuntime } from './config/runtime-config'
+import { configurePlugins } from './config/plugins-config'
+import { configureServer } from './config/server-config'
 
 export interface ModuleOptions {
   prefix?: string
@@ -32,6 +34,8 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     configureModels(resolver)
     configurePages(resolver, nuxt)
     configureLayouts(resolver, nuxt)
+    configurePlugins(resolver)
+    configureServer(resolver)
     configureRuntime(nuxt, 'misebox')
 
     // Nitro tweak

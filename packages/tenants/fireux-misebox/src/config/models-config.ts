@@ -9,8 +9,8 @@
  */
 import type { Resolver } from '@nuxt/kit'
 import { addTypeTemplate } from '@nuxt/kit'
-import { globSync } from 'glob'
-import { relative } from 'pathe'
+import { readdirSync, statSync } from 'node:fs'
+import { join, relative } from 'node:path'
 
 function toGlobalName(file: string) {
   // Expect .../<Dir>/<Name>.model.ts
@@ -21,17 +21,39 @@ function toGlobalName(file: string) {
 
 export function configureModels(resolver: Resolver) {
   const root = resolver.resolve('.')
-  const patterns = [
-    resolver.resolve('./runtime/models/profiles/**/*.model.ts'),
-    resolver.resolve('./runtime/models/objects/**/*.model.ts'),
-  ]
-  const files = patterns.flatMap((p) =>
-    globSync(p, { windowsPathsNoEscape: true })
-  )
+
+  function walk(dir: string, acc: string[] = []): string[] {
+    let entries: string[] = []
+    try {
+      entries = readdirSync(dir)
+    } catch {
+      return acc
+    }
+    for (const name of entries) {
+      const abs = join(dir, name)
+      let s
+      try {
+        s = statSync(abs)
+      } catch {
+        continue
+      }
+      if (s.isDirectory()) {
+        walk(abs, acc)
+      } else if (name.endsWith('.model.ts')) {
+        acc.push(abs)
+      }
+    }
+    return acc
+  }
+
+  const files = [
+    resolver.resolve('./runtime/models/profiles'),
+    resolver.resolve('./runtime/models/objects'),
+  ].flatMap((d) => walk(d))
+
   const decls = files
     .map((abs) => {
       const globalName = toGlobalName(abs)
-      // Build import path relative to current config root for the template
       const rel = relative(root, abs).replace(/\\/g, '/')
       return `  const ${globalName}: typeof import('${resolver.resolve('./' + rel)}').${globalName}`
     })

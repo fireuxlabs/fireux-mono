@@ -1,9 +1,12 @@
 import { addComponentsDir } from '@nuxt/kit'
-export function configureComponents(resolver: any, opts?: { prefix?: string }) {
+export function configureComponents(
+  resolver: any,
+  options: { prefix?: string } = {}
+) {
   addComponentsDir({
     path: resolver.resolve('../runtime/components'),
-    prefix: opts?.prefix ?? 'Fire',
+    prefix: options.prefix ?? 'Fire',
     global: false,
-    pathPrefix: false
+    pathPrefix: false,
   })
 }

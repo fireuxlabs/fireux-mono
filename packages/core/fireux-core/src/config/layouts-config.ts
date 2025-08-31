@@ -21,7 +21,10 @@ export function configureLayouts(resolver: any, _nuxt: any) {
   })
 
   // Register layout keys that exist on disk
-  const keys = ['default', 'dashboard', 'dev', 'design', 'docs']
+  // Note: We intentionally do NOT register 'default' here to avoid
+  // layer key collisions with app-level app/layouts/default.vue.
+  // Apps own their default.vue; core still exposes CoreDefault as a component.
+  const keys = ['dashboard', 'dev', 'design', 'docs']
   for (const key of keys) {
     const file = join(layoutsDir, `${key}.vue`)
     if (existsSync(file)) {

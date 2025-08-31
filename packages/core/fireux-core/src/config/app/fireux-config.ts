@@ -17,7 +17,6 @@ export const createFireuxConfig = (config: TenantConfig) => {
     'fireux-core',
     // Include additional modules if specified
     ...(config.modules || []),
-    '@nuxt/content',
     '@nuxt/ui',
     [
       '@vite-pwa/nuxt',

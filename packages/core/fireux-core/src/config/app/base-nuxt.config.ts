@@ -4,9 +4,9 @@ import type { TenantConfig } from './fireux-config'
 // Base Nuxt configuration shared across all FireUX apps
 // This now wraps createFireuxConfig for a single source of truth
 export const createBaseNuxtConfig = (appConfig: {
-  appName: string
-  appShortName: string
-  primaryColor: string
+  appName?: string
+  appShortName?: string
+  primaryColor?: string
   modules: string[]
   port: number
   ecosystem?: string

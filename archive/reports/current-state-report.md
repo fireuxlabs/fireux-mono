@@ -1,16 +1,18 @@
-# Current State Report — package.json, tsconfig*, env(.example), service-account
+# Current State Report — package.json, tsconfig\*, env(.example), service-account
 
 This is a read-only snapshot of selected files in the workspace. It lists absolute paths and verbatim contents for:
+
 - All package.json files
-- All tsconfig*.json files
+- All tsconfig\*.json files
 - All env and env.example files
-- Any service-account*.json files
+- Any service-account\*.json files
 
 No changes were made to any source file as part of this report.
 
 ## Index
 
 ### package.json files
+
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/package.json
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/package.json
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-jobs/package.json
@@ -25,7 +27,8 @@ No changes were made to any source file as part of this report.
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/misebox/niederhorn/package.json
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/fireux/fireux-app/package.json
 
-### tsconfig*.json files
+### tsconfig\*.json files
+
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/tsconfig.json
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/tsconfig.base.json
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/tsconfig.json
@@ -48,6 +51,7 @@ No changes were made to any source file as part of this report.
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/cleanbox/richies-reinigung/server/tsconfig.json
 
 ### env / env.example files
+
 - (No .env files found)
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/fireux/fireux-app/env.example
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/misebox/niederhorn/env.example
@@ -56,7 +60,8 @@ No changes were made to any source file as part of this report.
 - /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/cleanbox/richies-reinigung/env.example
 
 ### service-account JSON files
-- (No files matching *service-account*.json found)
+
+- (No files matching _service-account_.json found)
 
 ---
 
@@ -65,6 +70,7 @@ No changes were made to any source file as part of this report.
 ### package.json
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/package.json
+
 ```json
 {
   "name": "fireux",
@@ -131,6 +137,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/package.json
+
 ```json
 {
   "name": "fireux-core",
@@ -144,9 +151,7 @@ No changes were made to any source file as part of this report.
     "./runtime/*": "./src/runtime/*",
     "./package.json": "./package.json"
   },
-  "files": [
-    "src/**/*"
-  ],
+  "files": ["src/**/*"],
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
@@ -183,6 +188,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-jobs/package.json
+
 ```json
 {
   "name": "fireux-jobs",
@@ -196,9 +202,7 @@ No changes were made to any source file as part of this report.
     "./runtime/*": "./src/runtime/*",
     "./package.json": "./package.json"
   },
-  "files": [
-    "src/**/*"
-  ],
+  "files": ["src/**/*"],
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
@@ -235,6 +239,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-places/package.json
+
 ```json
 {
   "name": "fireux-places",
@@ -248,9 +253,7 @@ No changes were made to any source file as part of this report.
     "./runtime/*": "./src/runtime/*",
     "./package.json": "./package.json"
   },
-  "files": [
-    "src/**/*"
-  ],
+  "files": ["src/**/*"],
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
@@ -287,6 +290,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/tenants/fireux-cleanbox/package.json
+
 ```json
 {
   "name": "fireux-cleanbox",
@@ -300,9 +304,7 @@ No changes were made to any source file as part of this report.
     "./runtime/*": "./src/runtime/*",
     "./package.json": "./package.json"
   },
-  "files": [
-    "src/**/*"
-  ],
+  "files": ["src/**/*"],
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
@@ -339,6 +341,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/tenants/fireux-misebox/package.json
+
 ```json
 {
   "name": "fireux-misebox",
@@ -352,9 +355,7 @@ No changes were made to any source file as part of this report.
     "./runtime/*": "./src/runtime/*",
     "./package.json": "./package.json"
   },
-  "files": [
-    "src/**/*"
-  ],
+  "files": ["src/**/*"],
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
@@ -392,6 +393,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/scripts/package.json
+
 ```json
 {
   "name": "fireux-package-scripts",
@@ -409,6 +411,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/tools/vscode-fireux-toolbar/package.json
+
 ```json
 {
   "name": "fireux-toolbar",
@@ -418,12 +421,8 @@ No changes were made to any source file as part of this report.
   "engines": {
     "vscode": "^1.80.0"
   },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
   "main": "./extension.js",
   "contributes": {
     "commands": [
@@ -507,6 +506,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/cleanbox/cleanbox-app/package.json
+
 ```json
 {
   "name": "cleanbox-app",
@@ -545,6 +545,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/cleanbox/richies-reinigung/package.json
+
 ```json
 {
   "name": "richies-reinigung",
@@ -583,6 +584,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/misebox/misebox-app/package.json
+
 ```json
 {
   "name": "misebox-app",
@@ -622,6 +624,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/misebox/niederhorn/package.json
+
 ```json
 {
   "name": "Niederhorn",
@@ -659,6 +662,7 @@ No changes were made to any source file as part of this report.
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/fireux/fireux-app/package.json
+
 ```json
 {
   "name": "fireux-app",
@@ -699,9 +703,10 @@ No changes were made to any source file as part of this report.
 
 ---
 
-### tsconfig*.json
+### tsconfig\*.json
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/tsconfig.json
+
 ```jsonc
 {
   "extends": "./tsconfig.base.json",
@@ -716,12 +721,13 @@ No changes were made to any source file as part of this report.
     { "path": "packages/extensions/fireux-jobs" },
     { "path": "packages/extensions/fireux-places" },
     { "path": "packages/tenants/fireux-misebox" },
-    { "path": "packages/tenants/fireux-cleanbox" }
-  ]
+    { "path": "packages/tenants/fireux-cleanbox" },
+  ],
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/tsconfig.base.json
+
 ```jsonc
 {
   "compilerOptions": {
@@ -735,12 +741,13 @@ No changes were made to any source file as part of this report.
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "verbatimModuleSyntax": true
-  }
+    "verbatimModuleSyntax": true,
+  },
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/tsconfig.json
+
 ```jsonc
 {
   "files": [],
@@ -749,15 +756,16 @@ No changes were made to any source file as part of this report.
     { "path": "extensions/fireux-jobs" },
     { "path": "extensions/fireux-places" },
     { "path": "tenants/fireux-misebox" },
-    { "path": "tenants/fireux-cleanbox" }
+    { "path": "tenants/fireux-cleanbox" },
   ],
   "compilerOptions": {
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+  },
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/tsconfig.json
+
 ```jsonc
 {
   "compilerOptions": {
@@ -778,19 +786,17 @@ No changes were made to any source file as part of this report.
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "paths": {
-      "#fireux-core-models/*": ["./src/runtime/models/*"]
+      "#fireux-core-models/*": ["./src/runtime/models/*"],
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["nuxt", "nuxt/schema", "@types/node"],
   },
-  "include": [
-    "src/**/*.ts",
-    "src/runtime/env.d.ts"
-  ],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
+  "exclude": ["node_modules", "dist"],
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/src/runtime/server/tsconfig.json
+
 ```jsonc
 {
   "extends": "../../../tsconfig.json",
@@ -798,26 +804,28 @@ No changes were made to any source file as part of this report.
     "outDir": "../../../.nuxt/server",
     "target": "esnext",
     "module": "esnext",
-    "types": ["node"]
+    "types": ["node"],
   },
   "include": [
     "./**/*",
     "../../../../../projects/fireux/fireux-app/.nuxt/imports.d.ts",
-    "../../../../../projects/fireux/fireux-app/.nuxt/nuxt.d.ts"
-  ]
+    "../../../../../projects/fireux/fireux-app/.nuxt/nuxt.d.ts",
+  ],
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/tsconfig.json
+
 ```jsonc
 {
   "files": [],
   "references": [{ "path": "fireux-jobs" }, { "path": "fireux-places" }],
-  "compilerOptions": { "skipLibCheck": true }
+  "compilerOptions": { "skipLibCheck": true },
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-jobs/tsconfig.json
+
 ```jsonc
 {
   "compilerOptions": {
@@ -838,19 +846,17 @@ No changes were made to any source file as part of this report.
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "paths": {
-      "#fireux-jobs-models/*": ["./src/runtime/models/*"]
+      "#fireux-jobs-models/*": ["./src/runtime/models/*"],
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["nuxt", "nuxt/schema", "@types/node"],
   },
-  "include": [
-    "src/**/*.ts",
-    "src/runtime/env.d.ts"
-  ],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
+  "exclude": ["node_modules", "dist"],
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-places/tsconfig.json
+
 ```jsonc
 {
   "compilerOptions": {
@@ -872,25 +878,27 @@ No changes were made to any source file as part of this report.
     "verbatimModuleSyntax": true,
     "paths": {
       "#fireux-places-models/*": ["./src/runtime/models/*"],
-      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"]
+      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["nuxt", "nuxt/schema", "@types/node"],
   },
   "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/tenants/tsconfig.json
+
 ```jsonc
 {
   "files": [],
   "references": [{ "path": "fireux-misebox" }, { "path": "fireux-cleanbox" }],
-  "compilerOptions": { "skipLibCheck": true }
+  "compilerOptions": { "skipLibCheck": true },
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/tenants/fireux-misebox/tsconfig.json
+
 ```jsonc
 {
   "compilerOptions": {
@@ -913,17 +921,18 @@ No changes were made to any source file as part of this report.
     "paths": {
       "#fireux-misebox-models/*": ["./src/runtime/models/*"],
       "#fireux-places-models/*": [
-        "../../extensions/fireux-places/src/runtime/models/*"
-      ]
+        "../../extensions/fireux-places/src/runtime/models/*",
+      ],
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["nuxt", "nuxt/schema", "@types/node"],
   },
   "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/tenants/fireux-cleanbox/tsconfig.json
+
 ```jsonc
 {
   "compilerOptions": {
@@ -945,16 +954,17 @@ No changes were made to any source file as part of this report.
     "verbatimModuleSyntax": true,
     "paths": {
       "#fireux-cleanbox-models/*": ["./src/runtime/models/*"],
-      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"]
+      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["nuxt", "nuxt/schema", "@types/node"],
   },
   "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/tsconfig.json
+
 ```jsonc
 {
   "extends": "../tsconfig.json",
@@ -965,13 +975,14 @@ No changes were made to any source file as part of this report.
       "@fireux-jobs/*": ["../packages/extensions/fireux-jobs/src/*"],
       "@fireux-misebox/*": ["../packages/tenants/fireux-misebox/src/*"],
       "@fireux-cleanbox/*": ["../packages/tenants/fireux-cleanbox/src/*"],
-      "@fireux-places/*": ["../packages/extensions/fireux-places/src/*"]
-    }
-  }
+      "@fireux-places/*": ["../packages/extensions/fireux-places/src/*"],
+    },
+  },
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/fireux/fireux-app/tsconfig.json
+
 ```jsonc
 {
   "extends": "./.nuxt/tsconfig.json",
@@ -982,32 +993,35 @@ No changes were made to any source file as part of this report.
       "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
-      "@/*": ["./*"]
-    }
-  }
+      "@/*": ["./*"],
+    },
+  },
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/misebox/misebox-app/tsconfig.json
+
 ```jsonc
 {
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
     "composite": true,
     "types": ["nuxt", "nuxt/schema", "vue-router", "@types/node"],
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+  },
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/misebox/misebox-app/server/tsconfig.json
+
 ```jsonc
 {
-  "extends": "../.nuxt/tsconfig.server.json"
+  "extends": "../.nuxt/tsconfig.server.json",
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/misebox/niederhorn/tsconfig.json
+
 ```jsonc
 {
   "extends": "./.nuxt/tsconfig.json",
@@ -1020,14 +1034,15 @@ No changes were made to any source file as part of this report.
       "@fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
     },
-    "types": ["@nuxt/devtools"]
-  }
+    "types": ["@nuxt/devtools"],
+  },
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/cleanbox/cleanbox-app/tsconfig.json
+
 ```jsonc
 {
   "extends": "./.nuxt/tsconfig.json",
@@ -1041,24 +1056,26 @@ No changes were made to any source file as part of this report.
       "@fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
-      "@/*": ["./*"]
-    }
+      "@/*": ["./*"],
+    },
   },
   "include": [
     "./**/*",
-    "../../../packages/tenants/fireux-cleanbox/src/**/*.ts"
-  ]
+    "../../../packages/tenants/fireux-cleanbox/src/**/*.ts",
+  ],
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/cleanbox/cleanbox-app/server/tsconfig.json
+
 ```jsonc
 {
-  "extends": "../.nuxt/tsconfig.server.json"
+  "extends": "../.nuxt/tsconfig.server.json",
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/cleanbox/richies-reinigung/tsconfig.json
+
 ```jsonc
 {
   "extends": "./.nuxt/tsconfig.json",
@@ -1071,21 +1088,22 @@ No changes were made to any source file as part of this report.
       "@fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
     },
-    "types": ["@nuxt/devtools"]
+    "types": ["@nuxt/devtools"],
   },
   "include": [
     "./**/*",
-    "../../../packages/tenants/fireux-cleanbox/src/**/*.ts"
-  ]
+    "../../../packages/tenants/fireux-cleanbox/src/**/*.ts",
+  ],
 }
 ```
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/cleanbox/richies-reinigung/server/tsconfig.json
+
 ```jsonc
 {
-  "extends": "../.nuxt/tsconfig.server.json"
+  "extends": "../.nuxt/tsconfig.server.json",
 }
 ```
 
@@ -1094,18 +1112,23 @@ No changes were made to any source file as part of this report.
 ### env / env.example
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/fireux/fireux-app/env.example
+
 (empty file)
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/misebox/niederhorn/env.example
+
 (empty file)
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/misebox/misebox-app/env.example
+
 (empty file)
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/cleanbox/cleanbox-app/env.example
+
 (empty file)
 
 #### /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/cleanbox/richies-reinigung/env.example
+
 (empty file)
 
 ---
@@ -1117,13 +1140,15 @@ No files matching pattern were found.
 ---
 
 ## Notes
+
 - env.example files exist for all apps but are empty.
 - No .env files are present in the repo (expected; should remain local/ignored).
-- No service-account*.json files are present (expected; should remain local/ignored).
+- No service-account\*.json files are present (expected; should remain local/ignored).
 - The file `packages/core/fireux-core/src/runtime/server/tsconfig.json` currently references an app’s .nuxt outputs (coupling).
 
 ## Requirements coverage
+
 - List all package.json files with contents: Done
-- List all tsconfig*.json files with contents: Done
+- List all tsconfig\*.json files with contents: Done
 - List all env and env.example files with contents: Done
-- List all service-account*.json files with contents: Done (none found)
+- List all service-account\*.json files with contents: Done (none found)

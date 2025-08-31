@@ -1,16 +1,32 @@
 {
+  // Always extend Nuxt’s generated config for correct TS/Vite settings
   "extends": "./.nuxt/tsconfig.json",
+
   "compilerOptions": {
     "composite": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
+
+    // Optional fallback so editors can resolve the subpath export during dev.
+    // (With proper "exports" in fireux-core/package.json, this is usually not needed,
+    // but it doesn't hurt for DX.)
     "paths": {
+      "fireux-core/config/*": ["../../../packages/core/fireux-core/src/config/*"],
+
       "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
       "@fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
       "@fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
+
       "~~/*": ["./*"],
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-    "types": ["@nuxt/devtools"]
-  }
+
+    // Nuxt already injects the right types; leaving this here is fine
+    "types": ["@nuxt/devtools"],
+    "skipLibCheck": true
+  },
+
+  // IMPORTANT: only include local sources. Do NOT include package sources here,
+  // or TS will try to compile them from inside the app and you’ll get dupes.
+  "include": ["./**/*"]
 }

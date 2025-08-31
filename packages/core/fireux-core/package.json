@@ -22,15 +22,20 @@
       "types": "./src/config/app/*",
       "import": "./src/config/app/*"
     },
-    "./config/app/base-nuxt.config": {
-      "types": "./src/config/app/base-nuxt.config.ts",
-      "import": "./src/config/app/base-nuxt.config.ts"
-    },
-    "./config/app/fireux-config": {
-      "types": "./src/config/app/fireux-config.ts",
-      "import": "./src/config/app/fireux-config.ts"
-    },
     "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "config/*": [
+        "src/config/*"
+      ],
+      "config/app/*": [
+        "src/config/app/*"
+      ],
+      "runtime/*": [
+        "src/runtime/*"
+      ]
+    }
   },
   "files": [
     "src/**/*"

@@ -1,19 +1,14 @@
 import { addComponentsDir } from '@nuxt/kit'
 import type { Resolver } from '@nuxt/kit'
 
-export interface ModuleOptions {
-  prefix?: string
-}
-
 export function configureComponents(
   resolver: Resolver,
-  options: ModuleOptions
+  options: { prefix?: string } = {}
 ) {
   addComponentsDir({
-    path: resolver.resolve('./runtime/components'),
-    prefix: 'Cleanbox',
+    path: resolver.resolve('../runtime/components'),
+    prefix: options.prefix ?? 'Cleanbox',
+    global: false,
     pathPrefix: false,
   })
-
-  console.log(`🧽 CleanBox components registered with prefix: Cleanbox`)
 }

@@ -5,7 +5,7 @@ import { addTemplate } from '@nuxt/kit'
  * @param resolver The resolver instance to resolve file paths
  * @param nuxt The Nuxt instance
  */
-export function configureErrors(resolver: any, nuxt: any) {
+export function configureErrors(_resolver: any, _nuxt: any) {
   // Provide a minimal centralized error page following Nuxt 4 defaults
   // Apps can override by creating their own error.vue
   addTemplate({
@@ -21,23 +21,13 @@ const handleError = () => clearError({ redirect: '/' })
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center p-6">
-    <div class="text-center space-y-4">
-      <h1 class="text-4xl font-bold text-gray-900">{{ error?.statusCode || 500 }}</h1>
-      <p class="text-gray-600">{{ error?.statusMessage || 'Something went wrong' }}</p>
-      <div class="space-x-4">
-        <button 
-          @click="handleError" 
-          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Try again
-        </button>
-        <a 
-          href="/" 
-          class="px-4 py-2 text-gray-600 hover:text-gray-800"
-        >
-          Go home
-        </a>
+  <div class="cell error-page">
+    <div class="cell-content">
+      <h1 class="cell-title">{{ error?.statusCode || 500 }}</h1>
+      <p class="cell-subtitle">{{ error?.statusMessage || 'Something went wrong' }}</p>
+      <div class="cell-actions">
+        <button @click="handleError">Try again</button>
+        <a href="/">Go home</a>
       </div>
     </div>
   </div>

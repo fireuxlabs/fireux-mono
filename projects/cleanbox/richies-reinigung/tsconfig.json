@@ -1,8 +1,10 @@
 {
-  "extends": "./.nuxt/tsconfig.json",
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
     "baseUrl": "./",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "paths": {
       "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
       "@fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
@@ -13,8 +15,5 @@
     },
     "types": ["@nuxt/devtools"]
   },
-  "include": [
-    "./**/*",
-    "../../../packages/tenants/fireux-cleanbox/src/**/*.ts"
-  ]
+  "include": ["./**/*", "../../../packages/tenants/fireux-cleanbox/src/**/*.ts"]
 }

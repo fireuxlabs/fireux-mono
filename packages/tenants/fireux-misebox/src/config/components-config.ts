@@ -1,19 +1,14 @@
-/**
- * Components Configuration for FireUX Misebox
- *
- * Auto-imports all Chef and Supplier components with proper naming to avoid conflicts
- */
-import { Resolver, addComponentsDir } from '@nuxt/kit'
+import { addComponentsDir } from '@nuxt/kit'
 
 export function configureComponents(
-  resolver: Resolver,
-  options: { prefix?: string }
+  resolver: any,
+  options: { prefix?: string } = {}
 ) {
-  // Add Chef profile components with MiseProfiles prefix to include full path
+  // Consistent with core/jobs: domain-prefixed, non-global, no path prefix
   addComponentsDir({
-    path: resolver.resolve('./runtime/components'),
-    pathPrefix: true,
-    prefix: 'Mise',
-    global: true,
+    path: resolver.resolve('../runtime/components'),
+    prefix: options.prefix ?? 'Mise',
+    global: false,
+    pathPrefix: false,
   })
 }

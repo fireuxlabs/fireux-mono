@@ -9,6 +9,8 @@ import { configurePlugins } from './config/plugins-config'
 import { configureLayouts } from './config/layouts-config'
 import { configureServer } from './config/server-config'
 import { configureRuntime } from './config/runtime-config'
+import { configureAssets } from './config/assets-config'
+import { configureErrors } from './config/errors-config'
 
 /**
  * Public options for the FireUX core module
@@ -32,6 +34,10 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+
+    // Core assets and error template
+    configureAssets(resolver, nuxt)
+    configureErrors(resolver, nuxt)
 
     // Call all config steps – these must exist in ./src/config/*
     configureComponents(resolver, options)

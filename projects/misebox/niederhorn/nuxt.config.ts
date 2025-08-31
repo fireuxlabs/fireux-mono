@@ -1,7 +1,8 @@
 import { defineNuxtConfig } from 'nuxt/config'
+import type { NuxtConfig } from 'nuxt/schema'
 import { createBaseNuxtConfig } from 'fireux-core/config/app/base-nuxt.config'
 
-export default defineNuxtConfig(
+const config: NuxtConfig = defineNuxtConfig(
   createBaseNuxtConfig({
     modules: ['fireux-misebox'],
     ecosystem: 'misebox',
@@ -12,3 +13,5 @@ export default defineNuxtConfig(
     port: 3003,
   })
 )
+
+export default config
