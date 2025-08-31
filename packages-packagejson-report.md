@@ -35,7 +35,7 @@ All discovered package.json files with their absolute paths and verbatim content
     "test-*"
   ],
   "scripts": {
-  "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
+    "dev:all": "concurrently \\\"pnpm dev:fireux\\\" \\\"pnpm dev:misebox\\\" \\\"pnpm dev:cleanbox\\\"",
     "dev:fireux": "pnpm --filter ./projects/fireux/fireux-app dev",
     "dev:misebox": "pnpm --filter ./projects/misebox/misebox-app dev",
     "dev:niederhorn": "pnpm --filter ./projects/misebox/niederhorn dev",
@@ -109,42 +109,40 @@ All discovered package.json files with their absolute paths and verbatim content
   "version": "0.1.0",
   "description": "FireUX Core - A comprehensive Nuxt 3 module for Firebase integration",
   "private": true,
-  "main": "./src/module.ts",
-  "types": "./src/module.ts",
+  "main": "./dist/module.mjs",
+  "types": "./dist/types.d.ts",
   "exports": {
-    ".": "./src/module.ts",
-    "./runtime/*": "./src/runtime/*",
+    ".": {
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs",
+      "types": "./dist/types.d.ts"
+    },
     "./package.json": "./package.json"
   },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "sideEffects": false,
   "files": [
-    "src/**/*"
+    "dist",
+    "src/runtime"
   ],
   "scripts": {
     "build": "nuxt-module-build build",
-    "dev": "nuxt-module-build --stub",
-    "postbuild": "rimraf src/**/*.map",
+    "dev": "nuxt-module-build build --stub",
+    "postbuild": "rimraf dist/**/*.map",
     "clean": "rimraf dist"
   },
-  "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
-  },
   "dependencies": {
-    "dompurify": "^3.2.6"
-  },
-  "peerDependencies": {
-    "nuxt": "4.0.3",
-    "@nuxt/kit": "4.0.3",
-    "@nuxt/schema": "4.0.3",
-    "vue": "3.5.20",
-    "vue-router": "^4.5.0",
-    "vuefire": "3.2.2",
-    "firebase": "11.10.0",
-    "firebase-admin": "*",
-    "h3": "*",
-    "stripe": "*",
-    "glob": "^11.0.3",
-    "@vueuse/core": "*"
+    "@nuxt/kit": "^4.0.0",
+    "@nuxt/schema": "^4.0.0",
+    "dompurify": "^3.2.6",
+    "glob": "^11.0.3"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
@@ -161,46 +159,47 @@ All discovered package.json files with their absolute paths and verbatim content
   "version": "0.1.0",
   "description": "Job posting and application system for FireUX apps",
   "private": true,
-  "main": "./src/module.ts",
-  "types": "./src/module.ts",
+  "main": "./dist/module.mjs",
+  "types": "./dist/types.d.ts",
   "exports": {
-    ".": "./src/module.ts",
-    "./runtime/*": "./src/runtime/*",
+    ".": {
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs",
+      "types": "./dist/types.d.ts"
+    },
     "./package.json": "./package.json"
   },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "sideEffects": false,
   "files": [
-    "src/**/*"
+    "dist",
+    "src/runtime"
   ],
   "scripts": {
     "build": "nuxt-module-build build",
-    "dev": "nuxt-module-build --stub",
-    "postbuild": "rimraf src/**/*.map",
+    "dev": "nuxt-module-build build --stub",
+    "postbuild": "rimraf dist/**/*.map",
     "clean": "rimraf dist"
   },
-  "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
-  },
   "dependencies": {
-    "fireux-core": "workspace:*"
-  },
-  "peerDependencies": {
-    "nuxt": "4.0.3",
-    "@nuxt/kit": "4.0.3",
-    "@nuxt/schema": "4.0.3",
-    "vue": "3.5.20",
-    "vue-router": "^4.5.0",
-    "vuefire": "3.2.2",
-    "firebase": "11.10.0",
-    "firebase-admin": "*",
-    "h3": "*",
-    "stripe": "*",
-    "@vueuse/core": "*"
+    "@nuxt/kit": "^4.0.0",
+    "@nuxt/schema": "^4.0.0",
+    "fireux-core": "workspace:*",
+    "glob": "^11.0.3",
+    "vue": "^3.5.0",
+    "vuefire": "^3.2.0",
+    "firebase": "^11.10.0"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
-    "rimraf": "^6.0.1",
-    "glob": "^11.0.3"
+    "rimraf": "^6.0.1"
   },
   "type": "module"
 }
@@ -213,46 +212,42 @@ All discovered package.json files with their absolute paths and verbatim content
   "version": "0.1.0",
   "description": "Location and places management system for FireUX apps with Google Places API integration",
   "private": true,
-  "main": "./src/module.ts",
-  "types": "./src/module.ts",
+  "main": "./dist/module.mjs",
+  "types": "./dist/types.d.ts",
   "exports": {
-    ".": "./src/module.ts",
-    "./runtime/*": "./src/runtime/*",
+    ".": {
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs",
+      "types": "./dist/types.d.ts"
+    },
     "./package.json": "./package.json"
   },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
   "files": [
-    "src/**/*"
+    "dist",
+    "src/runtime"
   ],
   "scripts": {
     "build": "nuxt-module-build build",
-    "dev": "nuxt-module-build --stub",
-    "postbuild": "rimraf src/**/*.map",
+    "dev": "nuxt-module-build build --stub",
+    "postbuild": "rimraf dist/**/*.map",
     "clean": "rimraf dist"
   },
-  "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
-  },
   "dependencies": {
-    "fireux-core": "workspace:*"
-  },
-  "peerDependencies": {
-    "nuxt": "4.0.3",
-    "@nuxt/kit": "4.0.3",
-    "@nuxt/schema": "4.0.3",
-    "vue": "3.5.20",
-    "vue-router": "^4.5.0",
-    "vuefire": "3.2.2",
-    "firebase": "11.10.0",
-    "firebase-admin": "*",
-    "h3": "*",
-    "stripe": "*",
-    "@vueuse/core": "*"
+    "@nuxt/kit": "^3.17.5",
+    "fireux-core": "workspace:*",
+    "glob": "^11.0.3"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
-    "rimraf": "^6.0.1",
-    "glob": "^11.0.3"
+    "rimraf": "^6.0.1"
   },
   "type": "module"
 }
@@ -265,47 +260,43 @@ All discovered package.json files with their absolute paths and verbatim content
   "version": "0.1.0",
   "description": "FireUX CleanBox - Cleaning Services Domain Package",
   "type": "module",
-  "main": "./src/module.ts",
-  "types": "./src/module.ts",
+  "main": "./dist/module.mjs",
+  "types": "./dist/types.d.ts",
   "exports": {
-    ".": "./src/module.ts",
-    "./runtime/*": "./src/runtime/*",
+    ".": {
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs",
+      "types": "./dist/types.d.ts"
+    },
     "./package.json": "./package.json"
   },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
   "files": [
-    "src/**/*"
+    "dist",
+    "src/runtime"
   ],
   "scripts": {
     "build": "nuxt-module-build build",
-    "dev": "nuxt-module-build --stub",
-    "postbuild": "rimraf src/**/*.map",
+    "dev": "nuxt-module-build build --stub",
+    "postbuild": "rimraf dist/**/*.map",
     "clean": "rimraf dist"
   },
   "private": true,
-  "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
-  },
   "dependencies": {
-    "fireux-core": "workspace:*"
-  },
-  "peerDependencies": {
-    "nuxt": "4.0.3",
-    "@nuxt/kit": "4.0.3",
-    "@nuxt/schema": "4.0.3",
-    "vue": "3.5.20",
-    "vue-router": "^4.5.0",
-    "vuefire": "3.2.2",
-    "firebase": "11.10.0",
-    "firebase-admin": "*",
-    "h3": "*",
-    "stripe": "*",
-    "@vueuse/core": "*"
+    "@nuxt/kit": "^3.17.5",
+    "fireux-core": "workspace:*",
+    "glob": "^11.0.3"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
-    "rimraf": "^6.0.1",
-    "glob": "^11.0.3"
+    "rimraf": "^6.0.1"
   }
 }
 ```
@@ -317,47 +308,43 @@ All discovered package.json files with their absolute paths and verbatim content
   "version": "0.1.0",
   "description": "Chef and Supplier marketplace system for FireUX apps",
   "private": true,
-  "main": "./src/module.ts",
-  "types": "./src/module.ts",
+  "main": "./dist/module.mjs",
+  "types": "./dist/types.d.ts",
   "exports": {
-    ".": "./src/module.ts",
-    "./runtime/*": "./src/runtime/*",
+    ".": {
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs",
+      "types": "./dist/types.d.ts"
+    },
     "./package.json": "./package.json"
   },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
   "files": [
-    "src/**/*"
+    "dist",
+    "src/runtime"
   ],
   "scripts": {
     "build": "nuxt-module-build build",
-    "dev": "nuxt-module-build --stub",
-    "postbuild": "rimraf src/**/*.map",
+    "dev": "nuxt-module-build build --stub",
+    "postbuild": "rimraf dist/**/*.map",
     "clean": "rimraf dist"
   },
-  "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
-  },
   "dependencies": {
+    "@nuxt/kit": "^3.17.5",
     "fireux-core": "workspace:*",
-    "fireux-places": "workspace:*"
-  },
-  "peerDependencies": {
-    "nuxt": "4.0.3",
-    "@nuxt/kit": "4.0.3",
-    "@nuxt/schema": "4.0.3",
-    "vue": "3.5.20",
-    "vue-router": "^4.5.0",
-    "vuefire": "3.2.2",
-    "firebase": "11.10.0",
-    "firebase-admin": "*",
-    "h3": "*",
-    "stripe": "*",
-    "@vueuse/core": "*"
+    "fireux-places": "workspace:*",
+    "glob": "^11.0.3"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
-    "rimraf": "^6.0.1",
-    "glob": "^11.0.3"
+    "rimraf": "^6.0.1"
   },
   "type": "module"
 }
