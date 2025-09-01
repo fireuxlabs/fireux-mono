@@ -24,18 +24,18 @@ Path: `projects/fireux/fireux-app/tsconfig.json`
   "files": [],
   "references": [
     {
-      "path": "./.nuxt/tsconfig.app.json"
+      "path": "./.nuxt/tsconfig.app.json",
     },
     {
-      "path": "./.nuxt/tsconfig.server.json"
+      "path": "./.nuxt/tsconfig.server.json",
     },
     {
-      "path": "./.nuxt/tsconfig.shared.json"
+      "path": "./.nuxt/tsconfig.shared.json",
     },
     {
-      "path": "./.nuxt/tsconfig.node.json"
-    }
-  ]
+      "path": "./.nuxt/tsconfig.node.json",
+    },
+  ],
 }
 ```
 
@@ -104,4 +104,5 @@ Disallow:
 ```
 
 ---
+
 Generated to provide a simple, at-a-glance view of current app configuration.

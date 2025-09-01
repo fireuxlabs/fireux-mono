@@ -8,7 +8,7 @@ updated: 2025-09-01
 
 # ADR-0001 — Nuxt Config Simplification
 
-**Decision**: Apps use `createFireuxConfig` directly; `createBaseNuxtConfig` removed.
+**Decision**: Apps use `createFireuxConfig` directly; `createBaseNuxtConfig` has been removed from core.
 
 **Why**: One source of truth reduces drift, simplifies imports, and avoids accidental overrides.
 
