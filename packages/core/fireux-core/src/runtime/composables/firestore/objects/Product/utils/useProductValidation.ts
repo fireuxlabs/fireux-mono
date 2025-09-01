@@ -45,7 +45,8 @@ export function useProductValidation() {
     // Image validation
     if (product.images) {
       for (const image of product.images) {
-        if (!isValidUrl(image)) {
+        const url = typeof image === 'string' ? image : image.url
+        if (!isValidUrl(url)) {
           errors.push('All product images must be valid URLs')
           break
         }

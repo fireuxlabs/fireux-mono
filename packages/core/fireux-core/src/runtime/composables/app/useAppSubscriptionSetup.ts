@@ -13,7 +13,7 @@ export function useAppSubscriptionSetup() {
    * @param appName The app name
    */
   async function createAppSubscriptionProducts(
-    appId: string,
+  _appId: string,
     appName: string
   ): Promise<void> {
     console.log(

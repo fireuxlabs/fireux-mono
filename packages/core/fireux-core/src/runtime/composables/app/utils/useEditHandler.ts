@@ -1,4 +1,3 @@
-import { debounce } from 'lodash'
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 
@@ -27,27 +26,20 @@ interface ToastInterface {
 
 // Helper function to get toast instance with fallback
 function getToast(): ToastInterface {
-  try {
-    // Try to get useToast from global scope (auto-imported by Nuxt UI)
-    const useToastFn =
-      (globalThis as any).useToast ||
-      (() => {
-        throw new Error('useToast not available')
-      })
-    return useToastFn()
-  } catch (error) {
-    // Fallback implementation
-    return {
-      add: ({ title, description, color }: any) => {
-        console.log(`[${color?.toUpperCase()}] ${title}: ${description}`)
-      },
-      success: (message: string, options?: any) => {
-        console.log(`✅ ${message}`)
-      },
-      error: (message: string, options?: any) => {
-        console.error(`❌ ${message}`)
-      },
-    }
+  // Try to get useToast from global scope (auto-imported by Nuxt UI)
+  const useToastFn = (globalThis as any).useToast
+  if (typeof useToastFn === 'function') return useToastFn()
+  // Fallback implementation
+  return {
+    add: ({ title, description, color }: any) => {
+      console.log(`[${color?.toUpperCase()}] ${title}: ${description}`)
+    },
+    success: (message: string) => {
+      console.log(`✅ ${message}`)
+    },
+    error: (message: string) => {
+      console.error(`❌ ${message}`)
+    },
   }
 }
 
@@ -58,8 +50,20 @@ function useEditHandler(
   const toast = getToast()
   const saveStatus = ref<SaveStatus>('')
 
+  // Simple debounce implementation to avoid lodash dependency
+  function simpleDebounce<T extends (...args: any[]) => void>(
+    fn: T,
+    wait: number
+  ): T {
+    let timeout: ReturnType<typeof setTimeout> | null = null
+    return ((...args: any[]) => {
+      if (timeout) clearTimeout(timeout)
+      timeout = setTimeout(() => fn(...args), wait)
+    }) as T
+  }
+
   // Debounced save function for fields that require delayed updates
-  const debouncedSave = debounce(
+  const debouncedSave = simpleDebounce(
     async (label: string, field: string, value: any) => {
       try {
         saveStatus.value = 'saving'
@@ -76,7 +80,7 @@ function useEditHandler(
           if (saveStatus.value === 'saved') {
             saveStatus.value = ''
           }
-        }, options.delay || 2000)
+  }, options.delay ?? 2000)
       } catch (error) {
         console.error(`Error saving ${label}:`, error)
         saveStatus.value = 'error'
@@ -85,7 +89,7 @@ function useEditHandler(
         toast.error(`Failed to update ${label}`, { timeout: 3000 })
       }
     },
-    options.debounceTime || 800
+  options.debounceTime ?? 800
   )
 
   // Immediate save function (non-debounced)

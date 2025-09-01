@@ -15,7 +15,11 @@ export function useCreateBlogPostState() {
     content: '',
     metaDescription: '',
     slug: '',
-    author: getAuthor(),
+    author: {
+      id: '',
+      display_name: '',
+      avatar: '',
+    },
     keywords: [],
     tags: [],
     canonicalUrl: '',
@@ -39,9 +43,9 @@ export function useCreateBlogPostState() {
   const socialImageData = useStorage<string>('createBlogSocialImageData', '')
 
   // Initialize author on mount
-  onMounted(() => {
+  onMounted(async () => {
     if (!blogPost.value.author.id) {
-      blogPost.value.author = getAuthor()
+      blogPost.value.author = await getAuthor()
     }
   })
 
@@ -54,7 +58,7 @@ export function useCreateBlogPostState() {
       content: '',
       metaDescription: '',
       slug: '',
-      author: getAuthor(),
+  author: blogPost.value.author,
       keywords: [],
       tags: [],
       canonicalUrl: '',
@@ -78,7 +82,7 @@ export function useCreateBlogPostState() {
       ...blogPost.value,
       created_at: now,
       updated_at: now,
-      appId: tenantId as string,
+  appId: tenantId,
     }
   }
 

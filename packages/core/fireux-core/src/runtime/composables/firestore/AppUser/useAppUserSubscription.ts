@@ -26,15 +26,11 @@ export function useAppUserSubscription(
   )
 
   const isTrialing = computed(
-    () =>
-      appUser.value?.subscription?.status === 'inactive' &&
-      appUser.value?.subscription?.plan !== 'free'
+    () => appUser.value?.subscription?.status === 'trialing'
   )
 
   const isExpired = computed(
-    () =>
-      appUser.value?.subscription?.status === 'past_due' ||
-      appUser.value?.subscription?.status === 'cancelled'
+    () => appUser.value?.subscription?.status === 'past_due'
   )
 
   // Plan information
@@ -93,7 +89,7 @@ export function useAppUserSubscription(
     const allowedPlans = featureAccess[feature as keyof typeof featureAccess]
     if (!allowedPlans) return true // Feature available to all if not defined
 
-    return allowedPlans.includes(whichPlan.value)
+  return allowedPlans.includes(whichPlan.value as string)
   }
 
   function hasActiveSubscription(): boolean {

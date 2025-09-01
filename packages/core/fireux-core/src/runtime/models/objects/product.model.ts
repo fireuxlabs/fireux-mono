@@ -55,6 +55,8 @@ export interface FirebaseProduct extends Product {
   slug?: string
   content?: string
   active?: boolean
+  main_image?: string
+  default_price?: DefaultPrice
   stock?: number | null
   product_type?: 'physical' | 'digital' | 'service'
   track_stock?: boolean
@@ -70,6 +72,15 @@ export interface ProductCreationInput {
   images?: ProductImage[]
   features?: ProductFeature[]
   prices?: Price[]
+  // Additional fields used during creation from UI
+  active?: boolean
+  slug?: string
+  stock?: number | null
+  product_type?: 'physical' | 'digital' | 'service'
+  track_stock?: boolean
+  main_image?: string
+  appId?: string
+  creator_id?: string
 }
 
 export type ProductId = Product['id']

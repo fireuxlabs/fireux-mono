@@ -5,7 +5,8 @@
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "composite": true,
+    "composite": false,
+    "baseUrl": ".",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -22,6 +23,7 @@
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
-  "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
-  "exclude": ["node_modules", "dist"]
+      "noEmit": true,
+      "composite": false,
+      "baseUrl": ".",
 }

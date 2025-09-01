@@ -1,6 +1,6 @@
 import { defineEventHandler } from 'h3'
 
-export default defineEventHandler((event) => {
+export default defineEventHandler((_event) => {
   // Check for required environment variables
   const requiredEnvVars = [
     'FIREBASE_API_KEY',

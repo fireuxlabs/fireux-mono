@@ -1,8 +1,5 @@
 import { useFirestoreManager } from '../../useFirestoreManager'
-import type {
-  FirebaseProduct,
-  Price,
-} from '../../../../models/objects/product.model'
+import type { FirebaseProduct, Price } from '../../../../models/objects/product.model'
 import type { Ref } from 'vue'
 import { ref } from 'vue'
 import { useProductCreate } from './useProductCreate'

@@ -30,7 +30,7 @@ export function useAppEnsure() {
       const { setDocument } = useFirestoreManager()
       let uid: string
 
-      if (coreUser && coreUser.id) {
+  if (coreUser?.id) {
         // Use the provided core user
         uid = coreUser.id
         console.log(`✅ [ensureApp] Using provided core user: ${uid}`)
@@ -39,7 +39,7 @@ export function useAppEnsure() {
         const { waitForCurrentUser } = useFirestoreManager()
         const currentUser = await waitForCurrentUser()
 
-        if (!currentUser || !currentUser.uid) {
+  if (!currentUser?.uid) {
           throw new Error('No authenticated user found')
         }
 
@@ -51,10 +51,10 @@ export function useAppEnsure() {
       const { appId, appName, ecosystem, modules } = useFireUXConfig()
       const db = useFirestore()
 
-      console.log(`🔍 [ensureApp] Detected modules: ${modules.join(', ')}`)
       console.log(
-        `🔍 [ensureApp] Detected ecosystem: ${ecosystem || 'none (platform app)'}`
+        `🔍 [ensureApp] Detected modules: ${Array.isArray(modules) ? modules.join(', ') : ''}`
       )
+  console.log(`🔍 [ensureApp] Detected ecosystem: ${ecosystem ?? 'none'}`)
 
       // Step 3: Check if app already exists
       const appDocRef = doc(db, 'apps', appId)
@@ -62,7 +62,10 @@ export function useAppEnsure() {
 
       if (appSnapshot.exists()) {
         const appData = appSnapshot.data() as App
-        const createdAt = appData.created_at || 'unknown date'
+        const createdAt =
+          typeof appData.created_at === 'string'
+            ? appData.created_at
+            : 'unknown date'
         console.log(
           `✅ [ensureApp] App '${appId}' already exists. Created on ${createdAt}.`
         )
@@ -74,13 +77,15 @@ export function useAppEnsure() {
         id: appId,
         app_name: appName,
         admin_ids: [uid],
+        creator_id: uid,
         is_tenant: true, // Default to tenant app - most apps will be tenant businesses
-        ...(ecosystem && { ecosystem }), // Add ecosystem if detected from modules
+        ...(ecosystem ? { ecosystem } : {}), // Add ecosystem if detected from modules
+        created_at: new Date().toISOString(),
       }
 
       await setDocument('apps', appId, appData, { appScoped: false })
       console.log(
-        `🎉 [ensureApp] App '${appId}' created successfully with ecosystem: ${ecosystem || 'none'}`
+        `🎉 [ensureApp] App '${appId}' created successfully with ecosystem: ${ecosystem ?? 'none'}`
       )
 
       // Step 5: Update core user with admin role

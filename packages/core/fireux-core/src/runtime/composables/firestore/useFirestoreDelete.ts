@@ -6,12 +6,12 @@ import { useFireUXConfig } from '../FireUXConfig'
 export function useFirestoreDelete() {
   const db = useFirestore()
   const { waitForCurrentUser } = useFirestoreUtils()
-  const { appId } = useFireUXConfig()
+  useFireUXConfig()
 
   async function deleteDocument(
     name: string,
     id: string,
-    opts?: { appScoped?: boolean }
+    _opts?: { appScoped?: boolean }
   ): Promise<void> {
     await waitForCurrentUser()
     const ref = doc(db, name, id)

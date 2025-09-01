@@ -29,8 +29,15 @@ export function useFireUXConfig() {
   }) as AppSettings
 
   const devMode = runtimeConfig.public?.devMode ?? true
-  const ecosystem = runtimeConfig.public?.ecosystem
-  const modules = runtimeConfig.public?.modules || []
+  const ecosystem =
+    typeof runtimeConfig.public?.ecosystem === 'string'
+      ? runtimeConfig.public.ecosystem
+      : undefined
+  // Ensure modules is always a string array for safe downstream usage
+  const modulesRaw = runtimeConfig.public?.modules
+  const modules: string[] = Array.isArray(modulesRaw)
+    ? modulesRaw.map((m) => String(m))
+    : []
 
   const { projectName, appName, appId, appIcon } = appSettings
 

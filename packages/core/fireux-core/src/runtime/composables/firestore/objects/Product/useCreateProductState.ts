@@ -45,9 +45,9 @@ export async function useCreateProductState() {
   // Replace the problematic `products` assignment with a mock implementation
   const products = {
     buildSlugIfUnique: async (
-      title: string,
-      collectionName: string,
-      tenantId?: string
+  title: string,
+  _collectionName: string,
+  tenantId?: string
     ) => {
       const slug = `${tenantId}-${title}`
       const isTaken = false // Mock slug uniqueness check

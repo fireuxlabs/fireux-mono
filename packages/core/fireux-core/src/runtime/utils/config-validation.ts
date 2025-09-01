@@ -275,7 +275,7 @@ export default defineNuxtConfig({
     'fireux-core',
     'fireux-jobs',
     '${config.tenantModule}',
-    '@nuxt/content',
+    // '@nuxt/content',
     '@nuxt/ui',
     'nuxt-vuefire',
   ],

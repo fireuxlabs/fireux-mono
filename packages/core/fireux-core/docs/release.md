@@ -1,0 +1,5 @@
+# Release
+
+- Versioning
+- Changelog
+- Publishing

@@ -1,5 +1,5 @@
 // ~/composables/app/useAppUpdate.ts
-import { doc, updateDoc, setDoc, collection } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useFirestoreUtils } from '../firestore/useFirestoreUtils'
@@ -30,7 +30,7 @@ export function useAppUpdate() {
   function useAppUpdateFirestore() {
     // Use local Firestore manager for all add/remove actions
     const { setDocument, deleteDocument } = useFirestoreManager()
-    // TODO: In the future, consider using hooks from ./utils for validation/formatting instead of this direct update.
+  // NOTE: In the future, consider using hooks from ./utils for validation/formatting instead of this direct update.
     // For now, we use updateAppField2 for simple, direct updates.
     // Simple version: update any field on the app doc, no validation/formatting
     const updateAppField2 = async (field: string, value: any) => {
@@ -116,7 +116,7 @@ export function useAppUpdate() {
     const updateAppState = async (state: Record<string, any>) => {
       try {
         console.log('App state updates not yet implemented:', state)
-        // TODO: Implement state-based updates when needed
+        // NOTE: Implement state-based updates when needed
         // This could update Pinia store, local storage, or session storage
         return { success: true }
       } catch (error) {

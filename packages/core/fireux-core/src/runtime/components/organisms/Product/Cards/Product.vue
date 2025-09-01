@@ -108,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FirebaseProduct } from '../../../../models/product.model'
+import type { FirebaseProduct } from '../../../../models'
 
 const props = defineProps<{
   product?: Partial<FirebaseProduct>

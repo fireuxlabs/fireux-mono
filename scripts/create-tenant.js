@@ -300,7 +300,6 @@ function createPackageJson(config) {
       clean: 'rimraf dist',
     },
     dependencies: {
-      '@nuxt/content': '^3.6.1',
       '@nuxt/ui': '^3.4.4',
       '@vite-pwa/nuxt': '^0.11.10',
       '@vueuse/core': '^11.5.3',
@@ -476,7 +475,7 @@ export default defineNuxtConfig({
     'fireux-core',
     'fireux-jobs',
     'fireux-${config.system}',
-    '@nuxt/content',
+  // '@nuxt/content',
     '@nuxt/ui',
     'nuxt-vuefire',
   ],

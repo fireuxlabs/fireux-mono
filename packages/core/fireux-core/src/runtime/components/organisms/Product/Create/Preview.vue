@@ -37,7 +37,7 @@ import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
 import { useCreateProductState } from '../../../../composables/firestore/objects/Product/useCreateProductState'
 import { useCreatePricesState } from '../../../../composables/firestore/objects/Product/Prices/useCreatePricesState'
-import type { FirebaseProduct } from '../../../../models/product.model'
+import type { FirebaseProduct } from '../../../../models'
 
 const { product } = await useCreateProductState()
 const { prices, defaultPrice } = useCreatePricesState()

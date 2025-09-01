@@ -1,14 +1,15 @@
-import { useUserMetrics } from './useUserMetrics'
 import { useBlogMetrics } from './useBlogMetrics'
 import { useProductMetrics } from './useProductMetrics'
 
-export function useAdminMetrics() {
+export async function useAdminMetrics() {
+  const blog = await useBlogMetrics()
+  const product = await useProductMetrics()
   return {
-    ...useBlogMetrics(),
-    ...useProductMetrics(),
+    ...blog,
+    ...product,
   }
 }
 
-export function exposeAdminMetrics() {
-  return useAdminMetrics()
+export async function exposeAdminMetrics() {
+  return await useAdminMetrics()
 }

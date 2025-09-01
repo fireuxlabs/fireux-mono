@@ -1,17 +1,16 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import type { NuxtConfig } from 'nuxt/schema'
-import { createBaseNuxtConfig } from 'fireux-core/config/app/base-nuxt.config'
+import { createFireuxConfig } from 'fireux-core/config/app/fireux-config'
 
-const config: NuxtConfig = defineNuxtConfig(
-  createBaseNuxtConfig({
+const config: NuxtConfig = defineNuxtConfig({
+  ...createFireuxConfig({
     modules: ['fireux-cleanbox', 'fireux-jobs'],
     ecosystem: 'cleanbox',
     appName: process.env.APP_NAME,
     appShortName: process.env.APP_SHORT_NAME,
     primaryColor: process.env.APP_PRIMARY_COLOR,
     neutralColor: process.env.APP_NEUTRAL_COLOR,
-    port: 3004,
-  })
-)
+  }),
+})
 
 export default config

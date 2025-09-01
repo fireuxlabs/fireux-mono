@@ -7,6 +7,7 @@ export interface RouteLink {
   id: string
   label: string
   icon: string
-  to: string
+  // Leaf links have `to`; grouped links omit `to` and provide `children`
+  to?: string
   children?: RouteLink[]
 }
