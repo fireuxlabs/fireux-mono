@@ -67,3 +67,6 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
 })
 
 export default module
+
+// Re-export config factory for apps to import from package root
+export { createFireuxConfig } from './runtime/utils/fireux-config'

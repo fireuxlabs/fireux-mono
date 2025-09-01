@@ -8,7 +8,8 @@
   "exports": {
     ".": {
       "types": "./src/module.ts",
-      "import": "./src/module.ts"
+      "import": "./src/module.ts",
+      "require": "./src/module.ts"
     },
     "./runtime/*": {
       "types": "./src/runtime/*",
@@ -20,11 +21,13 @@
     },
     "./config/app/*": {
       "types": "./src/config/app/*",
-      "import": "./src/config/app/*"
+      "import": "./src/config/app/*",
+      "require": "./src/config/app/*"
     },
     "./config/app/fireux-config": {
       "types": "./src/config/app/fireux-config.ts",
-      "import": "./src/config/app/fireux-config.ts"
+      "import": "./src/config/app/fireux-config.ts",
+      "require": "./src/config/app/fireux-config.ts"
     },
     "./package.json": "./package.json"
   },

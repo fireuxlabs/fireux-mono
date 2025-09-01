@@ -5,5 +5,8 @@ export function configureComposables(resolver: any) {
   addImportsDir([
     resolver.resolve('./runtime/composables'),
     resolver.resolve('./runtime/composables/**'),
+  // Also export utility helpers for auto-import
+  resolver.resolve('./runtime/utils'),
+  resolver.resolve('./runtime/utils/**'),
   ])
 }

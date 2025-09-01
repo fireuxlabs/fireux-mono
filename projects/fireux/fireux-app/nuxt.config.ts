@@ -2,7 +2,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 import type { NuxtConfig } from 'nuxt/schema'
 // Prefer package export; JITI can sometimes fail to resolve subpath exports in monorepos during dev
 // Import from source path as a workspace fallback
-import { createFireuxConfig } from 'fireux-core/config/app/fireux-config'
+import { createFireuxConfig } from 'fireux-core'
 
 const config: NuxtConfig = defineNuxtConfig({
   ...createFireuxConfig({
