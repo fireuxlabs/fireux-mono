@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
       console.log('🏓 [create-product] Ping received:', ping)
     }
 
-  // Create product in Stripe
+    // Create product in Stripe
     const stripeProduct = await stripe.products.create({
       name: product.name,
       description: product.description || '',
@@ -97,7 +97,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-  return {
+    return {
       success: true,
       id: stripeProduct.id,
       stripe_prices: stripePrices.map((p) => p.id),

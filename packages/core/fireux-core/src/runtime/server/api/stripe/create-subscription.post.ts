@@ -54,8 +54,8 @@ export default defineEventHandler(async (event) => {
       console.log(`🏓 [create-subscription] Ping received: ${ping}`)
     }
 
-  // Initialize Stripe
-  const stripe = new Stripe(secret, { apiVersion: STRIPE_API_VERSION })
+    // Initialize Stripe
+    const stripe = new Stripe(secret, { apiVersion: STRIPE_API_VERSION })
 
     // Verify customer exists
     console.log('👤 [create-subscription] Verifying customer...')

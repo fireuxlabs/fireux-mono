@@ -27,7 +27,8 @@ function dedupeModules(mods: ModuleEntry[] = []): ModuleEntry[] {
 
 export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
   const includeCore = opts.includeCore ?? true
-  const base: ModuleEntry[] = includeCore ? ['fireux-core'] : []
+  // Ensure UI module is present so its generated CSS (.nuxt/ui.css) exists
+  const base: ModuleEntry[] = includeCore ? ['fireux-core', '@nuxt/ui'] : ['@nuxt/ui']
   const modules = dedupeModules([...base, ...(opts.modules ?? [])])
 
   return {
