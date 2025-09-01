@@ -49,6 +49,8 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     configureServer(resolver)
     configureRuntime(nuxt, 'core')
 
+    // Components are registered via configureComponents; no duplicate registration here
+
     // Nitro tweak (safe to set/merge)
     nuxt.options.nitro ||= {}
     nuxt.options.nitro.experimental ||= {}

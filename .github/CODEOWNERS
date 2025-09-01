@@ -1,0 +1,4 @@
+# Documentation and Markdown ownership
+/*.md @repo-maintainers
+/copilot-documentation/** @repo-maintainers
+/docs/** @repo-maintainers

@@ -24,6 +24,7 @@
     "tsc:check": "tsc -b --pretty",
     "typecheck:apps": "pnpm -r --filter './projects/*/*' exec nuxi typecheck",
     "typecheck:packages": "pnpm -r --filter './packages/*/*' exec tsc --noEmit",
+    "lint:docs": "node ./tools/scripts/lint-docs-paths.mjs",
     "lint": "eslint . --ext .js,.ts,.vue",
     "format": "prettier --write ."
   },
