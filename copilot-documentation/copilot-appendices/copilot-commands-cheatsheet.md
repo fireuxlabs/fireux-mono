@@ -9,6 +9,7 @@ updated: 2025-09-01
 # Commands Cheatsheet
 
 ## Global
+
 - `pnpm -w install`
 - `pnpm dev:all`
 - `pnpm -w typecheck:apps`
@@ -16,10 +17,12 @@ updated: 2025-09-01
 - `pnpm lint` / `pnpm format`
 
 ## App
+
 - `pnpm --filter ./projects/<eco>/<app> dev`
 - `pnpm --filter ./projects/<eco>/<app> build`
 
 ### Common filters
+
 - fireux-app: `pnpm --filter ./projects/fireux/fireux-app dev`
 - misebox-app: `pnpm --filter ./projects/misebox/misebox-app dev`
 - niederhorn: `pnpm --filter ./projects/misebox/niederhorn dev`
@@ -31,24 +34,27 @@ updated: 2025-09-01
 ## Git & GitHub (simple)
 
 - Status → Add → Commit → Push
-	- `git status`
-	- `git add .`
-	- `git commit -m "chore: message"`
-	- `git push`
+  - `git status`
+  - `git add .`
+  - `git commit -m "chore: message"`
+  - `git push`
 
 - Reset to origin/main (explicit, destructive)
-	- `git fetch --all --prune`
-	- `git reset --hard origin/main`
-	- `git clean -fd`
+  - `git fetch --all --prune`
+  - `git reset --hard origin/main`
+  - `git clean -fd`
 
 Tips
+
 - Keep commit messages short and clear.
 - Refresh Source Control if counts look stale after push.
 
 ### Next
+
 - Check the [Error Handbook](./copilot-error-handbook.md)
 
 ---
 
 ### Tips
+
 - Use a single root `.env` and symlink it into apps so Nuxt finds it per CWD.
