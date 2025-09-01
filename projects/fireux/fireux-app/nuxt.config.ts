@@ -12,6 +12,7 @@ const config: NuxtConfig = defineNuxtConfig({
     primaryColor: process.env.APP_PRIMARY_COLOR ?? '#EAB308',
     neutralColor: process.env.APP_NEUTRAL_COLOR,
   }),
+  compatibilityDate: '2025-09-01',
 })
 
 export default config
