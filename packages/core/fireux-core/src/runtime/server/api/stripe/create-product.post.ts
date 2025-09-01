@@ -1,15 +1,30 @@
 // ~/server/api/stripe/create-product.post.ts
 import { defineEventHandler, readBody, createError } from 'h3'
-import Stripe from 'stripe'
 import { STRIPE_API_VERSION } from '../stripe/version'
-
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: STRIPE_API_VERSION,
-})
 
 export default defineEventHandler(async (event) => {
   try {
+    // Quick guard: if no secret key, return 501 (not configured) instead of crashing
+    const secret = process.env.STRIPE_SECRET_KEY
+    if (!secret) {
+      throw createError({
+        statusCode: 501,
+        statusMessage: 'Stripe not configured (missing STRIPE_SECRET_KEY)',
+      })
+    }
+
+    // Lazy import Stripe so dev without the package/env won’t crash at load time
+    const { default: Stripe } = await import('stripe').catch(() => ({
+      default: null as any,
+    }))
+    if (!Stripe) {
+      throw createError({
+        statusCode: 501,
+        statusMessage: 'Stripe SDK not installed',
+      })
+    }
+
+    const stripe = new Stripe(secret, { apiVersion: STRIPE_API_VERSION })
     const body = await readBody(event)
     const { product, ping } = body
 
@@ -25,7 +40,7 @@ export default defineEventHandler(async (event) => {
       console.log('🏓 [create-product] Ping received:', ping)
     }
 
-    // Create product in Stripe
+  // Create product in Stripe
     const stripeProduct = await stripe.products.create({
       name: product.name,
       description: product.description || '',
@@ -63,14 +78,15 @@ export default defineEventHandler(async (event) => {
     if (stripeProduct.id) {
       try {
         console.log('📝 [create-product] Calling Firestore update endpoint...')
-        firestoreResult = await $fetch('/api/stripe/update-firestore', {
+        firestoreResult = await fetch('/api/stripe/update-firestore', {
           method: 'POST',
-          body: {
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
             stripeProductId: stripeProduct.id,
             product: product,
             stripePrices: stripePrices,
             pong: ping === 'ping' ? 'pong' : undefined,
-          },
+          }),
         })
         console.log('✅ [create-product] Firestore update completed')
       } catch (firestoreError) {
@@ -81,7 +97,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    return {
+  return {
       success: true,
       id: stripeProduct.id,
       stripe_prices: stripePrices.map((p) => p.id),

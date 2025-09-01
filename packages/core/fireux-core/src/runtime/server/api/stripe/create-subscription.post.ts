@@ -1,10 +1,29 @@
 // ~/server/api/stripe/create-subscription.post.ts
 import { defineEventHandler, readBody, createError } from 'h3'
-import Stripe from 'stripe'
 import { STRIPE_API_VERSION } from '../stripe/version'
 
 export default defineEventHandler(async (event) => {
   try {
+    // Quick guard: if no secret key, return 501 (not configured)
+    const secret = process.env.STRIPE_SECRET_KEY
+    if (!secret) {
+      throw createError({
+        statusCode: 501,
+        statusMessage: 'Stripe not configured (missing STRIPE_SECRET_KEY)',
+      })
+    }
+
+    // Lazy import Stripe SDK to avoid crashing when not installed during dev
+    const { default: Stripe } = await import('stripe').catch(() => ({
+      default: null as any,
+    }))
+    if (!Stripe) {
+      throw createError({
+        statusCode: 501,
+        statusMessage: 'Stripe SDK not installed',
+      })
+    }
+
     const body = await readBody(event)
     const {
       customerId,
@@ -35,10 +54,8 @@ export default defineEventHandler(async (event) => {
       console.log(`🏓 [create-subscription] Ping received: ${ping}`)
     }
 
-    // Initialize Stripe
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: STRIPE_API_VERSION,
-    })
+  // Initialize Stripe
+  const stripe = new Stripe(secret, { apiVersion: STRIPE_API_VERSION })
 
     // Verify customer exists
     console.log('👤 [create-subscription] Verifying customer...')
@@ -121,9 +138,10 @@ export default defineEventHandler(async (event) => {
     // Update Firestore via generic endpoint
     console.log('📝 [create-subscription] Updating Firestore...')
     try {
-      await $fetch('/api/firestore/update-document', {
+      await fetch('/api/firestore/update-document', {
         method: 'POST',
-        body: {
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
           collection: 'apps',
           documentId: appId,
           subcollections: [
@@ -133,13 +151,14 @@ export default defineEventHandler(async (event) => {
           data: subscriptionData,
           operation: 'set',
           pong: ping ? `pong-${ping}` : undefined,
-        },
+        }),
       })
 
       // Also update the user's document with current subscription info
-      await $fetch('/api/firestore/update-document', {
+      await fetch('/api/firestore/update-document', {
         method: 'POST',
-        body: {
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
           collection: 'apps',
           documentId: appId,
           subcollections: [{ collection: 'users', documentId: userId }],
@@ -156,7 +175,7 @@ export default defineEventHandler(async (event) => {
           },
           operation: 'merge',
           pong: ping ? `pong-user-${ping}` : undefined,
-        },
+        }),
       })
 
       console.log('✅ [create-subscription] Firestore update completed')
