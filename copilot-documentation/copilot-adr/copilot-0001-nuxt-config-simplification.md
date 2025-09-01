@@ -17,4 +17,5 @@ updated: 2025-09-01
 ---
 
 ### Next
+
 - Read [ADR-0002 — Src-first Packaging](./copilot-0002-src-first-no-dist.md)
