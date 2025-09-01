@@ -42,5 +42,30 @@ pnpm format
 
 ---
 
+## Git & GitHub (simple flow)
+
+Use a short, familiar sequence. No extra flags unless asked.
+
+- Status → Add → Commit → Push
+```bash
+git status
+git add .
+git commit -m "chore: brief, clear message"
+git push
+```
+
+- Reset to origin/main (when you explicitly want to discard local changes)
+```bash
+git fetch --all --prune
+git reset --hard origin/main
+git clean -fd   # removes untracked files/dirs (not ignored)
+```
+
+Notes
+- Keep messages short and specific. One change theme per commit.
+- If VS Code shows stale counts after push, Refresh Source Control (or reload window).
+- Default branch is main; avoid creating branches unless needed.
+- When in doubt, run `git status` first.
+
 ### Next
 - Set up CI/CD: [CI / CD](./copilot-06-ci-cd.md)

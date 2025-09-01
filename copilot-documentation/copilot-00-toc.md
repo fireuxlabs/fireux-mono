@@ -17,6 +17,8 @@ updated: 2025-09-01
 - [CI/CD](./copilot-06-ci-cd.md)
 - [Conventions](./copilot-07-conventions.md)
 
+> Git & GitHub: see the simple flow in [Dev Workflow](./copilot-05-dev-workflow.md#git--github-simple-flow) and quick commands in the [Cheatsheet](./copilot-appendices/copilot-commands-cheatsheet.md#git--github-simple).
+
 ## Copilot Instruction Packs
 - [How to use these files](./copilot-instructions/README.md)
 - [Core & Modules](./copilot-instructions/copilot-instructions-core.md)

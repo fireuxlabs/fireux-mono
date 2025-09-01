@@ -28,6 +28,23 @@ updated: 2025-09-01
 
 ---
 
+## Git & GitHub (simple)
+
+- Status → Add → Commit → Push
+	- `git status`
+	- `git add .`
+	- `git commit -m "chore: message"`
+	- `git push`
+
+- Reset to origin/main (explicit, destructive)
+	- `git fetch --all --prune`
+	- `git reset --hard origin/main`
+	- `git clean -fd`
+
+Tips
+- Keep commit messages short and clear.
+- Refresh Source Control if counts look stale after push.
+
 ### Next
 - Check the [Error Handbook](./copilot-error-handbook.md)
 
