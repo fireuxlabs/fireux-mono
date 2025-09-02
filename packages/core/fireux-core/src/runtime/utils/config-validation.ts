@@ -8,7 +8,8 @@ export interface ConfigValidationResult {
   suggestions: string[]
 }
 
-export interface TenantConfig {
+// Use a distinct name to avoid clashes with factory's TenantConfig
+export interface ValidationTenantConfig {
   appName: string
   appShortName: string
   primaryColor: string
@@ -20,7 +21,7 @@ export interface TenantConfig {
  * Validates a complete tenant configuration
  */
 export function validateTenantConfig(
-  config: TenantConfig
+  config: ValidationTenantConfig
 ): ConfigValidationResult {
   const result: ConfigValidationResult = {
     isValid: true,
@@ -49,7 +50,7 @@ export function validateTenantConfig(
  * Validates app-level configuration
  */
 function validateAppConfig(
-  config: TenantConfig,
+  config: ValidationTenantConfig,
   result: ConfigValidationResult
 ) {
   if (!config.appName || config.appName.trim().length === 0) {
@@ -79,21 +80,17 @@ function validateEnvironmentVariables(
   result: ConfigValidationResult
 ) {
   const requiredVars = [
-    'FIREBASE_API_KEY',
-    'FIREBASE_AUTH_DOMAIN',
-    'FIREBASE_PROJECT_ID',
-    'FIREBASE_STORAGE_BUCKET',
-    'FIREBASE_MESSAGING_SENDER_ID',
-    'FIREBASE_APP_ID',
+    'NUXT_FIREBASE_API_KEY',
+    'NUXT_FIREBASE_AUTH_DOMAIN',
+    'NUXT_FIREBASE_PROJECT_ID',
+    'NUXT_FIREBASE_STORAGE_BUCKET',
+    'NUXT_FIREBASE_MESSAGING_SENDER_ID',
+    'NUXT_FIREBASE_APP_ID',
   ]
 
-  const requiredClientVars = [
-    'NUXT_PUBLIC_FIREBASE_API_KEY',
-    'NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
-    'NUXT_PUBLIC_FIREBASE_PROJECT_ID',
-    'NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
-    'NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
-    'NUXT_PUBLIC_FIREBASE_APP_ID',
+  const optionalVars = [
+    'NUXT_FIREBASE_MEASUREMENT_ID',
+    'NUXT_FIREBASE_RECAPTCHA_V3_KEY',
   ]
 
   // Check required server-side variables
@@ -103,49 +100,30 @@ function validateEnvironmentVariables(
     }
   })
 
-  // Check required client-side variables
-  requiredClientVars.forEach((varName) => {
-    if (!envVars[varName] || envVars[varName].trim() === '') {
-      result.errors.push(
-        `Missing required client-side environment variable: ${varName}`
-      )
-      result.suggestions.push(
-        `Add ${varName} with the same value as ${varName.replace('NUXT_PUBLIC_', '')}`
-      )
+  // Optional variables for advanced features
+  optionalVars.forEach((varName) => {
+    if (!envVars[varName]) {
+      result.warnings.push(`Optional env not set: ${varName}`)
     }
   })
 
   // Check for service account
-  if (!envVars['GOOGLE_APPLICATION_CREDENTIALS']) {
+  if (!envVars['FIREBASE_SERVICE_ACCOUNT']) {
     result.warnings.push(
-      'GOOGLE_APPLICATION_CREDENTIALS not set - Firebase admin features may not work'
+      'FIREBASE_SERVICE_ACCOUNT not set - Firebase admin features may not work'
     )
     result.suggestions.push(
-      'Create config/service-account.json and set GOOGLE_APPLICATION_CREDENTIALS=./config/service-account.json'
+      'Set FIREBASE_SERVICE_ACCOUNT to the JSON content or mount config/service-account.json and read it in server code'
     )
   }
 
   // Validate Firebase project ID format
-  const projectId = envVars['FIREBASE_PROJECT_ID']
+  const projectId = envVars['NUXT_FIREBASE_PROJECT_ID']
   if (projectId && !/^[a-z0-9-]+$/.test(projectId)) {
     result.warnings.push(
       'FIREBASE_PROJECT_ID should only contain lowercase letters, numbers, and hyphens'
     )
   }
-
-  // Check for matching client/server variables
-  requiredVars.forEach((serverVar) => {
-    const clientVar = `NUXT_PUBLIC_${serverVar}`
-    if (
-      envVars[serverVar] &&
-      envVars[clientVar] &&
-      envVars[serverVar] !== envVars[clientVar]
-    ) {
-      result.warnings.push(
-        `${serverVar} and ${clientVar} have different values - they should match`
-      )
-    }
-  })
 }
 
 /**
@@ -254,16 +232,13 @@ export function getColorHex(colorName: string): string {
 /**
  * Generates standard nuxt.config.ts template
  */
-export function generateNuxtConfig(config: TenantConfig): string {
+export function generateNuxtConfig(config: ValidationTenantConfig): string {
   return `import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-06-07',
-  srcDir: 'app/',
-  dir: {
-    public: '../public',
-  },
+  srcDir: 'app',
   imports: {
     dirs: ['composables/**', 'models/**', 'utils/**'],
   },
@@ -272,37 +247,37 @@ export default defineNuxtConfig({
   ssr: true,
   
   modules: [
-    'fireux-core',
-    'fireux-jobs',
+  'fireux-core',
     '${config.tenantModule}',
-    // '@nuxt/content',
     '@nuxt/ui',
+  '@nuxt/icon',
     'nuxt-vuefire',
+  '@vite-pwa/nuxt',
   ],
   
-  nitro: {
-    preset: 'firebase',
-    firebase: {
-      gen: 2,
-    },
-  },
+  nitro: {},
   
   vuefire: {
     auth: {
       enabled: true,
-      ssr: true,
+      sessionCookie: true,
     },
     config: {
-      projectId: process.env.FIREBASE_PROJECT_ID || '',
-      appId: process.env.FIREBASE_APP_ID || '',
-      apiKey: process.env.FIREBASE_API_KEY || '',
-      authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
-      storageBucket: process.env.FIREBASE_STORAGE_BUCKET || '',
-      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
-      measurementId: process.env.FIREBASE_MEASUREMENT_ID || '',
+      apiKey: process.env.NUXT_FIREBASE_API_KEY || '',
+      authDomain: process.env.NUXT_FIREBASE_AUTH_DOMAIN || '',
+      projectId: process.env.NUXT_FIREBASE_PROJECT_ID || '',
+      storageBucket: process.env.NUXT_FIREBASE_STORAGE_BUCKET || '',
+      messagingSenderId: process.env.NUXT_FIREBASE_MESSAGING_SENDER_ID || '',
+      appId: process.env.NUXT_FIREBASE_APP_ID || '',
+      measurementId: process.env.NUXT_FIREBASE_MEASUREMENT_ID || '',
     },
+    appCheck: process.env.NUXT_FIREBASE_RECAPTCHA_V3_KEY ? {
+      provider: 'ReCaptchaV3',
+      key: process.env.NUXT_FIREBASE_RECAPTCHA_V3_KEY,
+      isTokenAutoRefreshEnabled: true,
+    } : undefined,
     admin: {
-      serviceAccount: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+      serviceAccount: process.env.FIREBASE_SERVICE_ACCOUNT,
     },
   },
 })`
@@ -311,27 +286,19 @@ export default defineNuxtConfig({
 /**
  * Generates standard .env template
  */
-export function generateEnvFile(config: TenantConfig): string {
+export function generateEnvFile(config: ValidationTenantConfig): string {
   const colorHex = getColorHex(config.primaryColor)
 
   return `# Firebase Configuration (Server-side)
-FIREBASE_API_KEY=your_api_key_here
-FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-FIREBASE_MESSAGING_SENDER_ID=123456789
-FIREBASE_APP_ID=1:123456789:web:abcdef123456
-FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
-GOOGLE_APPLICATION_CREDENTIALS=./config/service-account.json
-
-# Firebase Configuration (Client-side - CRITICAL!)
-NUXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
-NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NUXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
-NUXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abcdef123456
-NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
+NUXT_FIREBASE_API_KEY=your_api_key_here
+NUXT_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NUXT_FIREBASE_PROJECT_ID=your_project_id
+NUXT_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NUXT_FIREBASE_MESSAGING_SENDER_ID=123456789
+NUXT_FIREBASE_APP_ID=1:123456789:web:abcdef123456
+NUXT_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
+NUXT_FIREBASE_RECAPTCHA_V3_KEY=
+FIREBASE_SERVICE_ACCOUNT=
 
 # App Configuration
 PROJECT_NAME=${config.appName}
@@ -358,7 +325,7 @@ STRIPE_WEBHOOK_SECRET=`
 /**
  * Generates app.config.ts template
  */
-export function generateAppConfig(config: TenantConfig): string {
+export function generateAppConfig(config: ValidationTenantConfig): string {
   return `export default defineAppConfig({
   ui: {
     colors: {

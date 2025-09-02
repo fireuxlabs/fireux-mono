@@ -21,7 +21,10 @@ async function initializeFirebaseAdmin() {
 
   try {
     // Try environment variable first (for production deployment)
-    const envServiceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY
+    // Prefer unified FIREBASE_SERVICE_ACCOUNT (JSON string); fallback to legacy *_KEY
+    const envServiceAccount =
+      process.env.FIREBASE_SERVICE_ACCOUNT ||
+      process.env.FIREBASE_SERVICE_ACCOUNT_KEY
     if (envServiceAccount) {
       console.log(
         '🔧 [firestore] Using service account from environment variable'

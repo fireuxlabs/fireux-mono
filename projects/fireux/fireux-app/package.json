@@ -10,11 +10,15 @@
     "postinstall": "nuxi prepare"
   },
   "dependencies": {
-    "nuxt": "4.0.3",
-    "vue": "3.5.20",
-    "vue-router": "4.5.1",
+    "firebase": "11.10.0",
     "fireux-core": "workspace:*",
+    "nuxt": "4.0.3",
     "nuxt-vuefire": "^1.1.0",
-    "firebase": "11.10.0"
+    "vue": "3.5.20",
+    "vue-router": "4.5.1"
+  },
+  "devDependencies": {
+    "@vite-pwa/nuxt": "^1.0.4",
+    "tailwindcss": "^4.1.12"
   }
 }
