@@ -7,8 +7,9 @@ export function configureAssets(resolver: any, nuxt: any) {
   const resolvePath = (p: string) => resolver.resolve(p)
 
   // Add CSS files to Nuxt automatically
+  nuxt.options ||= {}
   const mainCssPath = resolvePath('./runtime/assets/styles/main.css')
-  nuxt.options.css = nuxt.options.css || []
+  nuxt.options.css ||= []
   if (
     !(nuxt.options.css as string[]).some((s) =>
       String(s).includes('runtime/assets/styles/main.css')
@@ -18,8 +19,8 @@ export function configureAssets(resolver: any, nuxt: any) {
   }
 
   // Configure Nitro to serve public assets from the package
-  nuxt.options.nitro = nuxt.options.nitro || {}
-  nuxt.options.nitro.publicAssets = nuxt.options.nitro.publicAssets || []
+  nuxt.options.nitro ||= {}
+  nuxt.options.nitro.publicAssets ||= []
   nuxt.options.nitro.publicAssets.push({
     baseURL: '/',
     dir: resolvePath('./runtime/public'),
@@ -27,7 +28,7 @@ export function configureAssets(resolver: any, nuxt: any) {
   })
 
   // Expose public directory and assets directory for advanced usage
-  nuxt.options.alias = nuxt.options.alias || {}
+  nuxt.options.alias ||= {}
   nuxt.options.alias['#fireux-core-public'] = resolvePath('./runtime/public')
   nuxt.options.alias['#fireux-core-assets'] = resolvePath('./runtime/assets')
 }

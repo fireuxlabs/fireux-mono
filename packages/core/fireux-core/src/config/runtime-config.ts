@@ -1,12 +1,23 @@
+import type { Nuxt } from '@nuxt/schema'
+
+/**
+ * Creates/merges runtimeConfig.public.fireux[key] early in module setup.
+ */
 export function configureRuntime(
-  nuxt: any,
+  nuxt: Nuxt,
   key: string,
   defaults: Record<string, any> = { enabled: true }
 ) {
-  // Augment runtime config namespaces used by this module under public.fireux[key]
-  const rc = (nuxt.options.runtimeConfig ||= {})
-  const pub = (rc.public ||= {})
+  // Write to options so it's baked into the build
+  const rc = (nuxt.options.runtimeConfig ||= {} as any)
+  if (!rc.public) rc.public = {}
+  const pub = rc.public as Record<string, any>
   if (!pub.fireux) pub.fireux = {}
-  const ns = pub.fireux as Record<string, any>
-  ns[key] ||= defaults
+  const fireux = pub.fireux as Record<string, any>
+
+  // Merge without clobbering
+  fireux[key] = { ...(fireux[key] ?? {}), ...(defaults ?? {}) }
+
+  // (optional) return reference for debugging/chaining
+  return fireux[key]
 }
