@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '@nuxt/ui';
 
 /* Import FireUX organism styling systems */
 @import './scss/main.scss';

@@ -91,6 +91,12 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     dir: { public: '../public' },
     imports: { dirs: ['composables/**', 'models/**', 'utils/**'] },
 
+    // Ensure global styles are linked for every app using the factory
+    css: [
+      'fireux-core/runtime/assets/styles/main.css',
+      'fireux-core/runtime/assets/styles/scss/main.scss',
+    ],
+
     modules,
     app: { head: { title: opts.appName } },
     runtimeConfig: {
