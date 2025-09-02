@@ -18,26 +18,24 @@ const module: NuxtModule = defineNuxtModule({
     version: '1.0.0',
     configKey: 'fireuxCore',
   },
-  setup(nuxt) {
+  setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // ✅ completed
+  // 1) runtime first (values baked for everything else)
+  configureRuntime(nuxt, 'core')
 
-    // ⏭️ next job
-    configureRuntime(nuxt, 'core')
+  // 2) plugins next (can read runtime now)
+  configurePlugins(resolver)
 
-    // ❌ not sorted yet
-        configureComposables(resolver)
-
-    configureAssets(resolver, nuxt)
-    configureErrors(resolver, nuxt)
-    configureComponents(resolver)
-    configureModels(resolver, nuxt)
-    configurePages(resolver, nuxt)
-    configurePlugins(resolver)
-    configureLayouts(resolver, nuxt)
-    configureServer(resolver)
-
+  // 3) then the rest (uses the same baked config)
+  configureComponents(resolver)
+  configureComposables(resolver)
+  configureModels(resolver, nuxt)
+  configurePages(resolver, nuxt)
+  configureLayouts(resolver, nuxt)
+  configureServer(resolver)
+  configureAssets(resolver, nuxt)
+  configureErrors(resolver, nuxt)
   },
 })
 
