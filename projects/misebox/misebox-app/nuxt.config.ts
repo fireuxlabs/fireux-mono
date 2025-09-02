@@ -1,6 +1,6 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import type { NuxtConfig } from 'nuxt/schema'
-import { createFireuxConfig } from 'fireux-core/config/app/fireux-config'
+import { createFireuxConfig } from 'fireux-core'
 
 const config: NuxtConfig = defineNuxtConfig({
   ...createFireuxConfig({

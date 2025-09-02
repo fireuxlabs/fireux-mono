@@ -19,16 +19,6 @@
       "types": "./src/config/*",
       "import": "./src/config/*"
     },
-    "./config/app/*": {
-      "types": "./src/config/app/*",
-      "import": "./src/config/app/*",
-      "require": "./src/config/app/*"
-    },
-    "./config/app/fireux-config": {
-      "types": "./src/config/app/fireux-config.ts",
-      "import": "./src/config/app/fireux-config.ts",
-      "require": "./src/config/app/fireux-config.ts"
-    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
@@ -38,9 +28,6 @@
       ],
       "config/*": [
         "src/config/*"
-      ],
-      "config/app/*": [
-        "src/config/app/*"
       ]
     }
   },

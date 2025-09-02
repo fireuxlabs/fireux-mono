@@ -13,10 +13,7 @@
     "verbatimModuleSyntax": true,
     "paths": {
       "fireux-core/*": ["packages/core/fireux-core/src/*"],
-      "fireux-core/config/*": ["packages/core/fireux-core/src/config/*"],
-      "fireux-core/config/app/*": [
-        "packages/core/fireux-core/src/config/app/*"
-      ],
+  "fireux-core/config/*": ["packages/core/fireux-core/src/config/*"],
       "fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],
       "fireux-places/*": ["packages/extensions/fireux-places/src/*"],
       "fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"]
