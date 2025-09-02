@@ -1,7 +1,32 @@
 <template>
   <UApp>
-    <div class="p-4 text-center">Hello App World</div>
-    <NuxtPage />
+    <FireAppDebug />
+
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+
+    <UModal
+      :open="!isInitialized"
+      prevent-close
+      title="🚫 Blocked"
+      description="This app needs to be initialized."
+    >
+      <template #body>
+        <FireOrganismsAppOnboarding />
+      </template>
+    </UModal>
   </UApp>
 </template>
-<script setup></script>
+
+<script setup>
+const { isInitialized } = await useApp()
+
+useHead({
+  link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
+})
+</script>
+
+<style scoped>
+/* No debug styles needed */
+</style>
