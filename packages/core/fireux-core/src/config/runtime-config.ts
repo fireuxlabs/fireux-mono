@@ -8,13 +8,20 @@ export function configureRuntime(
   key: string,
   defaults: Record<string, any> = { enabled: true }
 ) {
-  // Write to options so it's baked into the build
-  // Some Nuxt internals may normalize options lazily; ensure the container exists
+  // Prefer writing to options so it's baked into the build
   const n: any = nuxt as any
-  if (!n.options) n.options = {}
-  const rc = (n.options.runtimeConfig ||= {} as any)
-  if (!rc.public) rc.public = {}
-  const pub = rc.public as Record<string, any>
+  let pub: Record<string, any> | undefined
+  if (n.options && typeof n.options === 'object') {
+    if (!n.options.runtimeConfig) n.options.runtimeConfig = {}
+  const rc = n.options.runtimeConfig
+    if (!rc.public) rc.public = {}
+    pub = rc.public as Record<string, any>
+  } else {
+    // Fallback for early phases: use live runtimeConfig to avoid crashes in dev
+    const live = (n.runtimeConfig ||= {})
+    if (!live.public) live.public = {}
+    pub = live.public as Record<string, any>
+  }
   if (!pub.fireux) pub.fireux = {}
   const fireux = pub.fireux as Record<string, any>
 
