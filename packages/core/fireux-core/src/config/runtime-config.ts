@@ -9,7 +9,10 @@ export function configureRuntime(
   defaults: Record<string, any> = { enabled: true }
 ) {
   // Write to options so it's baked into the build
-  const rc = (nuxt.options.runtimeConfig ||= {} as any)
+  // Some Nuxt internals may normalize options lazily; ensure the container exists
+  const n: any = nuxt as any
+  if (!n.options) n.options = {}
+  const rc = (n.options.runtimeConfig ||= {} as any)
   if (!rc.public) rc.public = {}
   const pub = rc.public as Record<string, any>
   if (!pub.fireux) pub.fireux = {}
