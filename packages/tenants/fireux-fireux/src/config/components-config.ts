@@ -1,6 +1,14 @@
+import { addComponentsDir } from '@nuxt/kit'
+import type { Resolver } from '@nuxt/kit'
+
 export function configureComponents(
-  _resolver: any,
-  _options: { prefix?: string } = {}
+  resolver: Resolver,
+  options: { prefix?: string } = {}
 ) {
-  // No-op; scaffolded for alignment. Add component auto-registration when needed.
+  addComponentsDir({
+    path: resolver.resolve('../runtime/components'),
+    prefix: options.prefix ?? 'Fireux',
+    global: false,
+    pathPrefix: false,
+  })
 }

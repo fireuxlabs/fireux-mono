@@ -19,15 +19,22 @@ try {
     'APP_PRIMARY_COLOR',
   ].forEach(req)
 
-  if (!maybe('FIREBASE_SERVICE_ACCOUNT') && !maybe('GOOGLE_APPLICATION_CREDENTIALS')) {
-    console.warn('⚠️  Neither FIREBASE_SERVICE_ACCOUNT nor GOOGLE_APPLICATION_CREDENTIALS set.')
+  if (
+    !maybe('FIREBASE_SERVICE_ACCOUNT') &&
+    !maybe('GOOGLE_APPLICATION_CREDENTIALS')
+  ) {
+    console.warn(
+      '⚠️  Neither FIREBASE_SERVICE_ACCOUNT nor GOOGLE_APPLICATION_CREDENTIALS set.'
+    )
   }
 
   const hexes = ['APP_PRIMARY_COLOR', 'APP_NEUTRAL_COLOR']
   hexes.forEach((k) => {
     const v = maybe(k)
     if (v?.startsWith('"#')) {
-      console.warn(`ℹ️  ${k} appears quoted ("#..."), prefer unquoted like #EAB308`)
+      console.warn(
+        `ℹ️  ${k} appears quoted ("#..."), prefer unquoted like #EAB308`
+      )
     }
   })
 

@@ -31,7 +31,10 @@ export function useFireUXConfig() {
   }
   const runtimeAppSettings =
     (runtimeConfig.public?.appSettings as Partial<AppSettings>) || {}
-  const appSettings = { ...defaultSettings, ...runtimeAppSettings } as AppSettings
+  const appSettings = {
+    ...defaultSettings,
+    ...runtimeAppSettings,
+  } as AppSettings
 
   const devMode = runtimeConfig.public?.devMode ?? true
   const ecosystem =

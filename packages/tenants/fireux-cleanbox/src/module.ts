@@ -1,5 +1,4 @@
 import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
-import type { NuxtModule } from '@nuxt/schema'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
 import { configureModels } from './config/models-config'
@@ -13,7 +12,7 @@ export interface ModuleOptions {
   prefix?: string
 }
 
-const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-cleanbox',
     version: '0.1.0',
@@ -49,5 +48,3 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     })
   },
 })
-
-export default module

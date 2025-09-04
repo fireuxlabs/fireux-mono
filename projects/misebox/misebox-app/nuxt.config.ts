@@ -11,8 +11,8 @@ const config: NuxtConfig = defineNuxtConfig({
     appShortName: process.env.APP_SHORT_NAME ?? 'Misebox',
     primaryColor: process.env.APP_PRIMARY_COLOR ?? '#8B5CF6',
     neutralColor: process.env.APP_NEUTRAL_COLOR ?? '#64748B',
-  // Client-only auth for now
-  vuefire: { auth: { enabled: true, sessionCookie: false } },
+    // Client-only auth for now
+    vuefire: { auth: { enabled: true, sessionCookie: false } },
   }),
   // Align with other apps
   compatibilityDate: '2025-09-01',

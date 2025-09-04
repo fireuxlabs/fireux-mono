@@ -10,7 +10,7 @@ const config: NuxtConfig = defineNuxtConfig({
     appShortName: process.env.APP_SHORT_NAME ?? 'Cleanbox',
     primaryColor: process.env.APP_PRIMARY_COLOR ?? '#000000',
     neutralColor: process.env.APP_NEUTRAL_COLOR,
-  vuefire: { auth: { enabled: true, sessionCookie: false } },
+    vuefire: { auth: { enabled: true, sessionCookie: false } },
   }),
   compatibilityDate: '2025-09-01',
 })

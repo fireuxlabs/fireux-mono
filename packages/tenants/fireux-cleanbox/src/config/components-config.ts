@@ -7,7 +7,8 @@ export function configureComponents(
 ) {
   addComponentsDir({
     path: resolver.resolve('../runtime/components'),
-    prefix: options.prefix ?? 'Cleanbox',
+    // Default to short, brand-safe prefix
+    prefix: options.prefix ?? 'Clean',
     global: false,
     pathPrefix: false,
   })

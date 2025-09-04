@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "nuxi build",
-  "dev": "nuxi dev --port 3003",
-  "check:env": "node scripts/check-env.mjs",
+    "dev": "nuxi dev --port 3003",
+    "check:env": "node scripts/check-env.mjs",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
     "postinstall": "nuxi prepare"

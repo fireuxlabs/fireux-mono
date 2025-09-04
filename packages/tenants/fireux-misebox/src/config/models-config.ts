@@ -8,6 +8,7 @@
  * Example: runtime/models/objects/Ingredient.model.ts -> global const Ingredient
  */
 import type { Resolver } from '@nuxt/kit'
+import type { Nuxt } from '@nuxt/schema'
 import { addTypeTemplate } from '@nuxt/kit'
 import { readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
@@ -19,7 +20,7 @@ function toGlobalName(file: string) {
   return name
 }
 
-export function configureModels(resolver: Resolver) {
+export function configureModels(resolver: Resolver, _nuxt?: Nuxt) {
   const root = resolver.resolve('.')
 
   function walk(dir: string, acc: string[] = []): string[] {
