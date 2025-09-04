@@ -1,8 +1,7 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
-/* Import FireUX organism styling systems */
-@import './scss/main.scss';
+/* SCSS is loaded separately via nuxt.options.css to avoid circular imports */
 
 @theme static {
   --font-sans:

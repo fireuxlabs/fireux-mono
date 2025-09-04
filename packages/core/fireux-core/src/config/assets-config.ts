@@ -8,14 +8,18 @@ export function configureAssets(resolver: any, nuxt: any) {
 
   // Add CSS files to Nuxt automatically
   nuxt.options ||= {}
+  if (!nuxt.options.css) nuxt.options.css = []
+  const css = nuxt.options.css as string[]
   const mainCssPath = resolvePath('./runtime/assets/styles/main.css')
-  nuxt.options.css ||= []
-  if (
-    !(nuxt.options.css as string[]).some((s) =>
-      String(s).includes('runtime/assets/styles/main.css')
-    )
-  ) {
-    nuxt.options.css.push(mainCssPath)
+  const mainScssPath = resolvePath('./runtime/assets/styles/scss/main.scss')
+
+  // Ensure Tailwind/NUXT UI base first (main.css)
+  if (!css.some((s) => String(s).includes('runtime/assets/styles/main.css'))) {
+    css.push(mainCssPath)
+  }
+  // Then FireUX SCSS system
+  if (!css.some((s) => String(s).includes('runtime/assets/styles/scss/main.scss'))) {
+    css.push(mainScssPath)
   }
 
   // Configure Nitro to serve public assets from the package
