@@ -1,7 +1,8 @@
 import { addComponentsDir } from '@nuxt/kit'
+import type { Resolver } from '@nuxt/kit'
 
 export function configureComponents(
-  resolver: any,
+  resolver: Resolver,
   options: { prefix?: string } = {}
 ) {
   // Consistent with core/jobs: domain-prefixed, non-global, no path prefix

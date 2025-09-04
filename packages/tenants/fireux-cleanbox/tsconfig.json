@@ -23,7 +23,6 @@
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
-      "noEmit": true,
-      "composite": false,
-      "baseUrl": ".",
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -25,6 +25,6 @@
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
-  "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

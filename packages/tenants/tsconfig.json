@@ -1,5 +1,9 @@
 {
   "files": [],
-  "references": [{ "path": "fireux-misebox" }, { "path": "fireux-cleanbox" }],
+  "references": [
+    { "path": "fireux-misebox" },
+    { "path": "fireux-cleanbox" },
+    { "path": "fireux-fireux" }
+  ],
   "compilerOptions": { "skipLibCheck": true }
 }
