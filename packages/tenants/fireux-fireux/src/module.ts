@@ -1,4 +1,4 @@
-import { defineNuxtModule, installModule, createResolver } from '@nuxt/kit'
+import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
 import { configureModels } from './config/models-config'
@@ -21,7 +21,7 @@ export default defineNuxtModule<ModuleOptions>({
     // Install core dependency
     await installModule('fireux-core')
 
-    // Delegate to config functions (no-op scaffolds for now)
+  // Delegate to config functions
     configureComponents(resolver, options)
     configureComposables(resolver)
     configureModels(resolver, nuxt)
@@ -31,7 +31,7 @@ export default defineNuxtModule<ModuleOptions>({
     configureServer(resolver)
     configureRuntime(nuxt, 'fireux')
 
-    // Nitro tweak for parity
+  // Nitro tweak
     nuxt.options.nitro ||= {}
     nuxt.options.nitro.experimental ||= {}
     nuxt.options.nitro.experimental.wasm = true
