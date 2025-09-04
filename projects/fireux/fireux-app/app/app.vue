@@ -1,7 +1,11 @@
 <template>
   <UApp>
     <ClientOnly>
-      <AppDebug />
+      <Teleport to="body">
+        <div class="debug-overlay">
+          <AppDebug />
+        </div>
+      </Teleport>
     </ClientOnly>
 
     <NuxtLayout>
@@ -22,26 +26,7 @@
 </template>
 
 <script setup>
-const { isInitialized } = await useApp()
-const runtime = useRuntimeConfig()
-
-// Server log at init
-if (import.meta.server) {
-  console.log('🔥 runtimeConfig.public (server)', runtime.public)
-  console.log(
-    '🔥 runtimeConfig.public (server:json)',
-    JSON.stringify(runtime.public)
-  )
-}
-
-// Client log after hydration
-if (import.meta.client) {
-  console.log('🔥 runtimeConfig.public (client)', runtime.public)
-  console.log(
-    '🔥 runtimeConfig.public (client:json)',
-    JSON.stringify(runtime.public)
-  )
-}
+const isInitialized = true
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
@@ -49,5 +34,12 @@ useHead({
 </script>
 
 <style scoped>
-/* No debug styles needed */
+/* Debug overlay pinned above everything (even modals) */
+.debug-overlay {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2147483647; /* Max practical z-index */
+  pointer-events: auto;
+}
 </style>

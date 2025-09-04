@@ -18,10 +18,7 @@
     <!-- Call to Action -->
     <LandingCTA />
 
-    <!-- Content from CMS (if available) -->
-    <div v-if="page">
-      <ContentRenderer :value="page" />
-    </div>
+    <!-- CMS content removed for now to speed up dev and avoid Nuxt Content dependency -->
   </div>
 </template>
 
@@ -33,10 +30,7 @@ useSeoMeta({
     'Master your culinary operations with digital recipe management, inventory control, and cost analysis. Built for chefs who demand precision.',
 })
 
-// Fetch the content for additional sections
-const { data: page } = await useAsyncData('index', () =>
-  queryCollection('content').path('/').first()
-)
+// CMS content disabled during early dev
 </script>
 
 <style scoped>

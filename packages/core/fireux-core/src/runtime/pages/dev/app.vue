@@ -11,21 +11,21 @@
       <h2>Components</h2>
 
       <h3>Pill</h3>
-      <FireOrganismsAppCardsPill :app="app" />
+      <OrganismsAppCardsPill :app="app" />
 
       <USeparator />
 
       <h3>Cell</h3>
-      <FireOrganismsAppCardsCell :app="app" />
+      <OrganismsAppCardsCell :app="app" />
 
       <USeparator />
 
       <h3>Profile</h3>
-      <FireOrganismsAppCardsProfile :app="app" />
+      <OrganismsAppCardsProfile :app="app" />
     </UCard>
 
     <UCard>
-      <FireCopyJson :data="{ app }" title="App JSON" />
+      <DevJson :data="{ app }" title="App JSON" />
     </UCard>
   </div>
 </template>
@@ -38,5 +38,4 @@ definePageMeta({
 
 // Get app information
 const { app } = await useApp()
-
 </script>

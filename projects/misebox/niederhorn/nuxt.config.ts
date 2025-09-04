@@ -11,6 +11,7 @@ const config: NuxtConfig = defineNuxtConfig({
     appShortName: process.env.APP_SHORT_NAME ?? 'Niederhorn',
     primaryColor: process.env.APP_PRIMARY_COLOR ?? '#0EA5E9',
     neutralColor: process.env.APP_NEUTRAL_COLOR ?? '#64748B',
+  vuefire: { auth: { enabled: true, sessionCookie: false } },
   }),
   compatibilityDate: '2025-09-01',
 })

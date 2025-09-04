@@ -11,6 +11,7 @@ const config: NuxtConfig = defineNuxtConfig({
     appShortName: process.env.APP_SHORT_NAME ?? 'FireUX',
     primaryColor: process.env.APP_PRIMARY_COLOR ?? '#EAB308',
     neutralColor: process.env.APP_NEUTRAL_COLOR,
+    vuefire: { auth: { enabled: true, sessionCookie: false } },
   }),
   compatibilityDate: '2025-09-01',
 })

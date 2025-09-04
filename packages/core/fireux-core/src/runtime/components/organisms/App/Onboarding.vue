@@ -5,7 +5,7 @@
         <p>Loading user data...</p>
       </template>
       <template v-else-if="coreUser === null">
-        <FireOrganismsAuthSystem />
+        <OrganismsAuthSystem />
       </template>
       <template v-else>
         <div class="pin-section">

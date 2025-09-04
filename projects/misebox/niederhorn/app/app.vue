@@ -1,6 +1,12 @@
 <template>
   <UApp>
-    <FireAppDebug />
+    <ClientOnly>
+      <Teleport to="body">
+        <div class="debug-overlay">
+          <AppDebug />
+        </div>
+      </Teleport>
+    </ClientOnly>
 
     <NuxtLayout>
       <NuxtPage />
@@ -13,15 +19,14 @@
       description="This app needs to be initialized."
     >
       <template #body>
-        <FireOrganismsAppOnboarding />
+        <OrganismsAppOnboarding />
       </template>
     </UModal>
   </UApp>
 </template>
 
 <script setup>
-// Tenant: Niederhorn | Modules: fireux-core, fireux-jobs, fireux-misebox
-const { isInitialized } = await useApp()
+const isInitialized = true
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
@@ -29,5 +34,12 @@ useHead({
 </script>
 
 <style scoped>
-/* No debug styles needed */
+/* Debug overlay pinned above everything (even modals) */
+.debug-overlay {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2147483647; /* Max practical z-index */
+  pointer-events: auto;
+}
 </style>

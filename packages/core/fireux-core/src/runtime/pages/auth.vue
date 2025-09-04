@@ -8,7 +8,7 @@
         </div>
 
         <!-- Auth System Component -->
-        <FireOrganismsAuthSystem />
+        <OrganismsAuthSystem />
 
         <!-- App Info Section -->
         <div class="text-center">

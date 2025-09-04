@@ -18,10 +18,7 @@ export interface TenantConfig {
 function dedupeKeepLast(mods: ModuleEntry[] = []): ModuleEntry[] {
   // Keep last occurrence so app-provided modules/options win
   const map = new Map<string, ModuleEntry>()
-  for (const m of mods) {
-    const id = Array.isArray(m) ? m[0] : m
-    map.set(id, m)
-  }
+  for (const m of mods) map.set(Array.isArray(m) ? m[0] : m, m)
   const seen = new Set<string>()
   const ordered: ModuleEntry[] = []
   for (const m of mods) {
@@ -34,6 +31,12 @@ function dedupeKeepLast(mods: ModuleEntry[] = []): ModuleEntry[] {
   return ordered
 }
 
+// Treat empty-string envs as undefined
+const env = (k: string) => {
+  const v = process.env[k]
+  return v?.trim()?.length ? v : undefined
+}
+
 export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
   const includeCore = opts.includeCore ?? true
 
@@ -41,20 +44,20 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
   const vuefireDefaults = {
     auth: { enabled: true, sessionCookie: true },
     config: {
-      apiKey: process.env.FIREBASE_API_KEY,
-      authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-      appId: process.env.FIREBASE_APP_ID,
-      measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+      apiKey: env('FIREBASE_API_KEY'),
+      authDomain: env('FIREBASE_AUTH_DOMAIN'),
+      projectId: env('FIREBASE_PROJECT_ID'),
+      storageBucket: env('FIREBASE_STORAGE_BUCKET'),
+      messagingSenderId: env('FIREBASE_MESSAGING_SENDER_ID'),
+      appId: env('FIREBASE_APP_ID'),
+      measurementId: env('FIREBASE_MEASUREMENT_ID'),
     },
-    appCheck: process.env.FIREBASE_RECAPTCHA_V3_KEY
+    appCheck: env('FIREBASE_RECAPTCHA_V3_KEY')
       ? {
           debug: false,
           isTokenAutoRefreshEnabled: true,
           provider: 'ReCaptchaV3',
-          key: process.env.FIREBASE_RECAPTCHA_V3_KEY,
+          key: env('FIREBASE_RECAPTCHA_V3_KEY'),
         }
       : undefined,
   }
@@ -85,6 +88,14 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
 
   const modules = dedupeKeepLast([...base, ...(opts.modules ?? [])])
 
+  const appId = env('APP_ID')
+  if (process.env.NODE_ENV !== 'production' && !appId) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[fireux] APP_ID is not set. Some app-level composables may not resolve.'
+    )
+  }
+
   return {
     // Keep FireUX app structure defaults
     srcDir: 'app',
@@ -93,8 +104,8 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     modules,
     app: { head: { title: opts.appName } },
     runtimeConfig: {
-      // server-only
-      firebaseServiceAccount: process.env.FIREBASE_SERVICE_ACCOUNT || '',
+      // server-only (JSON string accepted; OR rely on GOOGLE_APPLICATION_CREDENTIALS path env)
+      firebaseServiceAccount: env('FIREBASE_SERVICE_ACCOUNT') || '',
       public: {
         ecosystem: opts.ecosystem,
         appName: opts.appName,
@@ -104,6 +115,11 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
         // Expose a plain object for the client plugin (firebase.client.ts)
         // Spread to avoid accidental mutation/metadata
         firebaseConfig: { ...(vuefireMerged.config || {}) },
+        // Expose minimal app settings for client/server composables
+        appSettings: {
+          appId, // leave undefined if missing; no fake default
+          ecosystem: opts.ecosystem,
+        },
       },
     },
   }

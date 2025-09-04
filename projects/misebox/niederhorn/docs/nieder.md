@@ -56,11 +56,11 @@ This document lists the package and tsconfig files for the Niederhorn app, its p
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
     },
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
-  "include": ["./**/*"]
+  "include": ["./**/*"],
 }
 ```
 
@@ -139,11 +139,11 @@ export default config
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
     },
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
-  "include": ["./**/*"]
+  "include": ["./**/*"],
 }
 ```
 
@@ -185,9 +185,7 @@ export default config
     "./runtime/*": "./src/runtime/*",
     "./package.json": "./package.json"
   },
-  "files": [
-    "src/**/*"
-  ],
+  "files": ["src/**/*"],
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
@@ -250,13 +248,13 @@ export default config
     "paths": {
       "#fireux-misebox-models/*": ["./src/runtime/models/*"],
       "#fireux-places-models/*": [
-        "../../extensions/fireux-places/src/runtime/models/*"
-      ]
+        "../../extensions/fireux-places/src/runtime/models/*",
+      ],
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["nuxt", "nuxt/schema", "@types/node"],
   },
   "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
 }
 ```
 
@@ -321,6 +319,7 @@ export default module
 #### Supporting config files (fireux-misebox)
 
 - src/config/components-config.ts
+
 ```ts
 import { addComponentsDir } from '@nuxt/kit'
 
@@ -339,6 +338,7 @@ export function configureComponents(
 ```
 
 - src/config/composables-config.ts
+
 ```ts
 /**
  * Composables Configuration for FireUX Misebox
@@ -351,9 +351,7 @@ export function configureComposables(resolver: Resolver) {
   const resolvePath = (p: string) => resolver.resolve(p)
 
   // Add all composable directories for auto-import
-  addImportsDir([
-    resolvePath('./runtime/composables/**'),
-  ])
+  addImportsDir([resolvePath('./runtime/composables/**')])
 
   // Add models directory for auto-import
   addImportsDir(resolver.resolve('./runtime/models'))
@@ -361,6 +359,7 @@ export function configureComposables(resolver: Resolver) {
 ```
 
 - src/config/models-config.ts
+
 ```ts
 /**
  * Models Configuration for FireUX Misebox
@@ -431,6 +430,7 @@ export function configureModels(resolver: Resolver) {
 ```
 
 - src/config/pages-config.ts
+
 ```ts
 export function configurePages(resolver: any, nuxt: any) {
   nuxt.options._layers ||= []
@@ -442,6 +442,7 @@ export function configurePages(resolver: any, nuxt: any) {
 ```
 
 - src/config/layouts-config.ts
+
 ```ts
 import { addComponentsDir, addLayout } from '@nuxt/kit'
 import { join } from 'node:path'
@@ -474,6 +475,7 @@ export function configureLayouts(resolver: any, _nuxt: any) {
 ```
 
 - src/config/plugins-config.ts
+
 ```ts
 export function configurePlugins(_resolver: any) {
   // no-op (tenant has no plugins for now)
@@ -481,6 +483,7 @@ export function configurePlugins(_resolver: any) {
 ```
 
 - src/config/server-config.ts
+
 ```ts
 export function configureServer(_resolver: any) {
   // no-op (tenant has no server handlers)
@@ -502,9 +505,7 @@ export function configureServer(_resolver: any) {
     "./runtime/*": "./src/runtime/*",
     "./package.json": "./package.json"
   },
-  "files": [
-    "src/**/*"
-  ],
+  "files": ["src/**/*"],
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
@@ -564,15 +565,12 @@ export function configureServer(_resolver: any) {
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "paths": {
-      "#fireux-jobs-models/*": ["./src/runtime/models/*"]
+      "#fireux-jobs-models/*": ["./src/runtime/models/*"],
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["nuxt", "nuxt/schema", "@types/node"],
   },
-  "include": [
-    "src/**/*.ts",
-    "src/runtime/env.d.ts"
-  ],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
+  "exclude": ["node_modules", "dist"],
 }
 ```
 
@@ -622,6 +620,7 @@ export default defineNuxtModule<ModuleOptions>({
 #### Supporting config files (fireux-jobs)
 
 - src/config/components-config.ts
+
 ```ts
 import { addComponentsDir } from '@nuxt/kit'
 export function configureComponents(
@@ -638,6 +637,7 @@ export function configureComponents(
 ```
 
 - src/config/composables-config.ts
+
 ```ts
 import { addImportsDir } from '@nuxt/kit'
 export function configureComposables(resolver: any) {
@@ -646,6 +646,7 @@ export function configureComposables(resolver: any) {
 ```
 
 - src/config/models-config.ts
+
 ```ts
 import { addImportsDir } from '@nuxt/kit'
 export function configureModels(resolver: any) {
@@ -654,6 +655,7 @@ export function configureModels(resolver: any) {
 ```
 
 - src/config/pages-config.ts
+
 ```ts
 export function configurePages(resolver: any, nuxt: any) {
   nuxt.options._layers ||= []
@@ -665,6 +667,7 @@ export function configurePages(resolver: any, nuxt: any) {
 ```
 
 - src/config/layouts-config.ts
+
 ```ts
 import { addComponentsDir } from '@nuxt/kit'
 import { existsSync } from 'node:fs'
@@ -682,6 +685,7 @@ export function configureLayouts(resolver: any, _nuxt: any) {
 ```
 
 - src/config/runtime-config.ts
+
 ```ts
 export function configureRuntime(
   nuxt: any,
@@ -697,6 +701,7 @@ export function configureRuntime(
 ```
 
 - src/config/server-config.ts
+
 ```ts
 import { addServerHandler } from '@nuxt/kit'
 import { existsSync } from 'node:fs'
@@ -737,17 +742,11 @@ export function configureServer(resolver: any) {
   },
   "typesVersions": {
     "*": {
-      "runtime/*": [
-        "src/runtime/*"
-      ],
-      "config/*": [
-        "src/config/*"
-      ]
+      "runtime/*": ["src/runtime/*"],
+      "config/*": ["src/config/*"]
     }
   },
-  "files": [
-    "src/**/*"
-  ],
+  "files": ["src/**/*"],
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
@@ -812,15 +811,12 @@ export function configureServer(resolver: any) {
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "paths": {
-      "#fireux-core-models/*": ["./src/runtime/models/*"]
+      "#fireux-core-models/*": ["./src/runtime/models/*"],
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["nuxt", "nuxt/schema", "@types/node"],
   },
-  "include": [
-    "src/**/*.ts",
-    "src/runtime/env.d.ts"
-  ],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
+  "exclude": ["node_modules", "dist"],
 }
 ```
 
@@ -885,6 +881,7 @@ export { createFireuxConfig } from './runtime/utils/fireux-config'
 #### Supporting config files (core)
 
 - src/config/assets-config.ts
+
 ```ts
 /**
  * Configure public assets for the Nuxt application
@@ -929,6 +926,7 @@ export function configureAssets(resolver: any, nuxt: any) {
 ```
 
 - src/config/components-config.ts
+
 ```ts
 import { addComponentsDir } from '@nuxt/kit'
 
@@ -944,6 +942,7 @@ export function configureComponents(resolver: any) {
 ```
 
 - src/config/composables-config.ts
+
 ```ts
 import { addImportsDir } from '@nuxt/kit'
 
@@ -960,6 +959,7 @@ export function configureComposables(resolver: any) {
 ```
 
 - src/config/models-config.ts
+
 ```ts
 import { addImportsDir } from '@nuxt/kit'
 
@@ -970,6 +970,7 @@ export function configureModels(resolver: any, _nuxt: any) {
 ```
 
 - src/runtime/utils/fireux-config.ts
+
 ```ts
 import type { NuxtConfig } from 'nuxt/schema'
 
@@ -1097,9 +1098,9 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
       "@fireux-jobs/*": ["../packages/extensions/fireux-jobs/src/*"],
       "@fireux-misebox/*": ["../packages/tenants/fireux-misebox/src/*"],
       "@fireux-cleanbox/*": ["../packages/tenants/fireux-cleanbox/src/*"],
-      "@fireux-places/*": ["../packages/extensions/fireux-places/src/*"]
-    }
-  }
+      "@fireux-places/*": ["../packages/extensions/fireux-places/src/*"],
+    },
+  },
 }
 ```
 
@@ -1124,9 +1125,9 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
       "fireux-core/config/*": ["packages/core/fireux-core/src/config/*"],
       "fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],
       "fireux-places/*": ["packages/extensions/fireux-places/src/*"],
-      "fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"]
-    }
-  }
+      "fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"],
+    },
+  },
 }
 ```
 
@@ -1146,10 +1147,10 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     { "path": "packages/extensions/fireux-jobs" },
     { "path": "packages/extensions/fireux-places" },
     { "path": "packages/tenants/fireux-misebox" },
-    { "path": "packages/tenants/fireux-cleanbox" }
+    { "path": "packages/tenants/fireux-cleanbox" },
   ],
   "compilerOptions": {
-    "baseUrl": "."
-  }
+    "baseUrl": ".",
+  },
 }
 ```

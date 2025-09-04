@@ -9,21 +9,21 @@
       <h2>Components</h2>
 
       <h3>Pill</h3>
-      <FireOrganismsUserCoreCardsPill :core-user="coreUser" />
+      <OrganismsUserCoreCardsPill :core-user="coreUser" />
 
       <USeparator />
 
       <h3>Cell</h3>
-      <FireOrganismsUserCoreCardsCell :core-user="coreUser" />
+      <OrganismsUserCoreCardsCell :core-user="coreUser" />
 
       <USeparator />
 
       <h3>Profile</h3>
-      <FireOrganismsUserCoreCardsProfile :core-user="coreUser" />
+      <OrganismsUserCoreCardsProfile :core-user="coreUser" />
     </UCard>
 
     <UCard>
-      <FireCopyJson
+      <DevJson
         :data="{
           currentUser: coreUser,
           computedProps: { isCoreUser, hasAvatar, userOfApps, hasMultipleApps },
@@ -37,7 +37,7 @@
       <h2>All Users ({{ coreUsers?.length || 0 }})</h2>
 
       <div v-if="coreUsers?.length">
-        <FireOrganismsUserCoreCardsCell
+        <OrganismsUserCoreCardsCell
           v-for="user in coreUsers"
           :key="user.id"
           :core-user="user"
@@ -58,5 +58,4 @@ const {
   userOfApps,
   hasMultipleApps,
 } = await useCoreUser()
-
 </script>

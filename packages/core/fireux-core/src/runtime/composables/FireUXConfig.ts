@@ -15,9 +15,11 @@ interface AppSettings {
 export function useFireUXConfig() {
   const runtimeConfig = useRuntimeConfig()
 
-  // Ensure we always have an object to read, with reasonable defaults
-  const appSettings = (runtimeConfig.public?.appSettings || {
-    projectName: runtimeConfig.public?.ecosystem || 'FireUX',
+  // Ensure we always have an object to read, with reasonable defaults.
+  // Deep-merge: runtime appSettings may be partial (core exposes minimal fields),
+  // so we merge it over sensible defaults to avoid validation errors.
+  const defaultSettings: AppSettings = {
+    projectName: (runtimeConfig.public?.ecosystem as string) || 'FireUX',
     appName: 'FireUX',
     appId: 'fireux-app',
     nodeEnv: process.env.NODE_ENV || 'development',
@@ -26,7 +28,10 @@ export function useFireUXConfig() {
     appNeutralColor: '#9CA3AF',
     appIcon: '/icon.png',
     domain: 'localhost',
-  }) as AppSettings
+  }
+  const runtimeAppSettings =
+    (runtimeConfig.public?.appSettings as Partial<AppSettings>) || {}
+  const appSettings = { ...defaultSettings, ...runtimeAppSettings } as AppSettings
 
   const devMode = runtimeConfig.public?.devMode ?? true
   const ecosystem =

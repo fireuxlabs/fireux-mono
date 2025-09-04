@@ -11,6 +11,10 @@ export default defineEventHandler(async (_event) => {
   const appNeutralColor = process.env.APP_NEUTRAL_COLOR || '71717A'
   const appIcon = process.env.APP_ICON || 'flame'
 
+  // Ensure a single leading '#'
+  const normalizeHex = (value: string) =>
+    `#${(value || '').replace(/^#+/, '').trim()}`
+
   // App info using environment variables
   const appInfo = {
     name: appName,
@@ -24,8 +28,8 @@ export default defineEventHandler(async (_event) => {
 
     // Theme colors from env vars
     theme: {
-      primary: `#${appPrimaryColor}`,
-      neutral: `#${appNeutralColor}`,
+      primary: normalizeHex(appPrimaryColor),
+      neutral: normalizeHex(appNeutralColor),
     },
 
     // Assets

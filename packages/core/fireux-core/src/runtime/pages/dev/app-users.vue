@@ -9,21 +9,21 @@
       <h2>Components</h2>
 
       <h3>Pill</h3>
-      <FireOrganismsUserAppCardsPill :app-user="appUser" />
+      <OrganismsUserAppCardsPill :app-user="appUser" />
 
       <USeparator />
 
       <h3>Cell</h3>
-      <FireOrganismsUserAppCardsCell :user="appUser" />
+      <OrganismsUserAppCardsCell :user="appUser" />
 
       <USeparator />
 
       <h3>Profile</h3>
-      <FireOrganismsUserAppCardsProfile :user="appUser" />
+      <OrganismsUserAppCardsProfile :user="appUser" />
     </UCard>
 
     <UCard>
-      <FireCopyJson
+      <DevJson
         :data="{
           currentUser: appUser,
           computedProps: { isAppUser, isPro, isAdmin, initials },
@@ -37,7 +37,7 @@
       <h2>All Users ({{ appUsers?.length || 0 }})</h2>
 
       <div v-if="appUsers?.length">
-        <FireOrganismsUserAppCardsCell
+        <OrganismsUserAppCardsCell
           v-for="user in appUsers"
           :key="user.uid"
           :user="user"
@@ -52,5 +52,4 @@
 <script setup>
 const { appUser, appUsers, isAppUser, isPro, isAdmin, initials } =
   await useAppUser()
-
 </script>

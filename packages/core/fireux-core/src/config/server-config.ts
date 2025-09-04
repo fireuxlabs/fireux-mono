@@ -9,5 +9,9 @@ export function configureServer(resolver: any) {
   if (existsSync(handler)) {
     addServerHandler({ route: '/api/app', handler })
   }
+  const health = `${base}/health.get.ts`
+  if (existsSync(health)) {
+    addServerHandler({ route: '/api/health', handler: health })
+  }
   // Add more handlers here as you bring routes online
 }

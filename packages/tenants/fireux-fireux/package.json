@@ -1,0 +1,49 @@
+{
+  "name": "fireux-fireux",
+  "version": "0.1.0",
+  "description": "FireUX tenant package (brand/runtime surface for FireUX apps)",
+  "private": true,
+  "type": "module",
+  "main": "./src/module.ts",
+  "types": "./src/module.ts",
+  "exports": {
+    ".": "./src/module.ts",
+    "./runtime/*": "./src/runtime/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src/**/*"
+  ],
+  "scripts": {
+    "build": "nuxt-module-build build",
+    "dev": "nuxt-module-build --stub",
+    "postbuild": "rimraf src/**/*.map",
+    "clean": "rimraf dist"
+  },
+  "engines": {
+    "node": ">=20.11 <23",
+    "pnpm": ">=10"
+  },
+  "dependencies": {
+    "fireux-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "nuxt": "4.0.3",
+    "@nuxt/kit": "4.0.3",
+    "@nuxt/schema": "4.0.3",
+    "vue": "3.5.20",
+    "vue-router": "^4.5.0",
+    "vuefire": "3.2.2",
+    "firebase": "11.10.0",
+    "firebase-admin": "*",
+    "h3": "*",
+    "stripe": "*",
+    "@vueuse/core": "*"
+  },
+  "devDependencies": {
+    "@nuxt/module-builder": "^0.5.5",
+    "mkdist": "^1.5.3",
+    "rimraf": "^6.0.1",
+    "glob": "^11.0.3"
+  }
+}

@@ -9,7 +9,7 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
 
   // Computed properties
   const isInitialized = computed(() => {
-    console.log('🔍 isInitialized check:', {
+    console.log('🔍 isInitialized check: (app)', {
       appValue: app.value,
       appExists: !!app.value,
       adminIds: app.value?.admin_ids,
