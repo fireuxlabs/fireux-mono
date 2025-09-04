@@ -22,8 +22,8 @@
     </div>
 
     <div v-else class="edit-component">
-      <FireLogoBrand size="medium" class="logo-wrapper" />
-      <FireOrganismsAppOnboardingVariables />
+      <LogoBrand size="medium" class="logo-wrapper" />
+      <OrganismsAppOnboardingVariables />
 
       <UButton v-if="envData?.isValid" block @click="createAppHandler"
         >Create App</UButton

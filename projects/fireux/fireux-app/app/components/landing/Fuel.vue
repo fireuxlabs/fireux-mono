@@ -2,6 +2,7 @@
 <template>
   <ClientOnly>
     <section class="section">
+      <LogoFlame size="small" />
       <div class="grid-layout">
         <div v-for="(logo, key) in logos" :key="key" class="fuel-item">
           <img :src="isDark ? logo.dark : logo.light" :alt="key + ' Logo'" />

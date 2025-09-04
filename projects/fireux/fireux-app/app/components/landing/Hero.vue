@@ -11,7 +11,7 @@
     <ClientOnly>
       <div class="fuel-logos">
         <div v-for="(logo, key) in logos" :key="key" class="fuel-item">
-          <img :src="isDark ? logo.dark : logo.light" :alt="`${key} Logo`" >
+          <img :src="isDark ? logo.dark : logo.light" :alt="`${key} Logo`" />
         </div>
       </div>
     </ClientOnly>
@@ -38,8 +38,8 @@ const logos = {
   nuxt: { light: '/img/nuxt-black.png', dark: '/img/nuxt-white.png' },
   firebase: {
     light: '/img/firebase-black.png',
-    dark: '/img/firebase-white.png'
-  }
+    dark: '/img/firebase-white.png',
+  },
 }
 </script>
 

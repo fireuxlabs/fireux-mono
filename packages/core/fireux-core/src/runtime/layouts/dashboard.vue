@@ -3,7 +3,10 @@
 <template>
   <ClientOnly>
     <div class="layout-wrapper">
-      <FireLayoutsHeader :menu-bar-links="menuBarLinks" :mobile-links="mobileLinks" />
+      <LayoutsHeader
+        :menu-bar-links="menuBarLinks"
+        :mobile-links="mobileLinks"
+      />
       <div class="layout-content">
         <main class="layout-main-content">
           <UNavigationMenu
@@ -17,15 +20,20 @@
           </div>
         </main>
       </div>
-      <FireLayoutsDefaultFooter />
+      <LayoutsDefaultFooter />
     </div>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
 // Nuxt auto-imported composable; declare for TS shape grace
-declare function useCoreRoutes(): Promise<{ menuBarLinks: any[]; mobileLinks: any[] }>
-const props = defineProps<{ routes?: import('../types/layouts').LayoutRoutes }>()
+declare function useCoreRoutes(): Promise<{
+  menuBarLinks: any[]
+  mobileLinks: any[]
+}>
+const props = defineProps<{
+  routes?: import('../types/layouts').LayoutRoutes
+}>()
 
 const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
   await useCoreRoutes()
@@ -33,10 +41,10 @@ const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
 // Normalize core arrays (
 const baseMenu: any[] = Array.isArray(coreMenuBarLinks)
   ? coreMenuBarLinks
-  : (coreMenuBarLinks as any)?.value ?? []
+  : ((coreMenuBarLinks as any)?.value ?? [])
 const baseMobile: any[] = Array.isArray(coreMobileLinks as any)
   ? (coreMobileLinks as any)
-  : (coreMobileLinks as any)?.value ?? []
+  : ((coreMobileLinks as any)?.value ?? [])
 
 const input = props.routes ?? {}
 const menuBarLinks = [...baseMenu, ...(input.menuBarLinks ?? [])]

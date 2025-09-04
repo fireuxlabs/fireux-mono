@@ -1,14 +1,14 @@
 <!-- COMMENT: app/components/landing/Solutions.vue -->
 <template>
-  <section class="px-4">
+  <section>
     <div class="grid">
       <UCard
         v-for="solution in solutions"
         :key="solution.title"
         :to="solution.link"
-        class="text-center"
       >
         <template #header>
+          <LogoFlame size="small" />
           <h3>{{ solution.title }}</h3>
         </template>
 
@@ -67,11 +67,5 @@ const solutions = [
 </script>
 
 <style scoped>
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+/* No styles for now — testing the grid system */
 </style>

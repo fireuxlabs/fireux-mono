@@ -3,7 +3,7 @@
     <NuxtLink to="/" class="logo-link">
       <img
         :src="isDark ? logos.dark : logos.light"
-        :alt="`${fireUXConfig.appName} Logo`"
+        alt="FIReUX Logo"
         class="logo"
         :class="logoSizeClass"
       />
@@ -12,7 +12,6 @@
 </template>
 
 <script setup>
-const fireUXConfig = useFireUXConfig()
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
@@ -73,8 +72,5 @@ const logoSizeClass = computed(() => ({
 
 /* Hero size - 80px height, constrained width */
 .logo.h-20 {
-  height: 5rem; /* 80px */
-  width: auto;
-  max-width: 12rem; /* 192px */
 }
 </style>

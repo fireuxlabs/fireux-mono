@@ -5,10 +5,10 @@
 </template>
 
 <script setup>
-const { initializeStarfield } = useStarfield()
+const { initializeStars } = useStarfield()
 
 onMounted(() => {
-  initializeStarfield()
+  initializeStars()
 })
 </script>
 

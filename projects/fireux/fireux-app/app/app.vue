@@ -1,6 +1,8 @@
 <template>
   <UApp>
-    <FireAppDebug />
+    <ClientOnly>
+      <AppDebug />
+    </ClientOnly>
 
     <NuxtLayout>
       <NuxtPage />
@@ -13,7 +15,7 @@
       description="This app needs to be initialized."
     >
       <template #body>
-        <FireOrganismsAppOnboarding />
+        <OrganismsAppOnboarding />
       </template>
     </UModal>
   </UApp>

@@ -1,5 +1,5 @@
 <template>
-  <section class="px-4">
+  <section>
     <div class="grid">
       <div
         v-for="feature in filteredFeatures"

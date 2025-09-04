@@ -4,7 +4,7 @@
       <div class="header-content">
         <!-- Left Section: Logo -->
         <div class="left-section">
-          <FireLogoBrand size="large" />
+          <LogoBrand size="large" />
         </div>
 
         <!-- Desktop Navigation Menu -->

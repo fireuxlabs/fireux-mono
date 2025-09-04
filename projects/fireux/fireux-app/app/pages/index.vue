@@ -1,16 +1,41 @@
 <template>
-  <div class="p-4 text-center">Hello Index World</div>
+  <!-- Landing Background Effect -->
+  <EffectsStarfield />
 
-  <!-- quick debug: show firebase app count if available -->
-  <div class="text-xs text-gray-500 mt-2">
-    <!-- keep this lightweight; avoid client-only code that breaks SSR -->
+  <!-- Main Content -->
+  <div class="page">
+    <!-- Hero Component -->
+    <LandingHero />
+
+    <!-- Solutions Component -->
+    <LandingSolutions />
+
+    <!-- Skills Icons Component -->
+    <LandingSkillsIcons />
+
+    <!-- Products Component -->
+    <LandingProducts />
+
+    <!-- Fuel Component -->
+    <LandingFuel />
+
+    <!-- FireUX Features Component -->
+    <LandingFireUX />
   </div>
 </template>
 
 <script setup>
-// minimal page for debugging
+// Simple SEO
+useSeoMeta({
+  title: 'FireUX - Vue.js Development Ecosystem',
+  description:
+    'Build faster with FireUX Core, manage data with Cleanbox, and deploy with Misebox.',
+})
 </script>
 
 <style scoped>
-/* minimal styles */
+/* Let components handle their own spacing with Tailwind/NuxtUI utilities */
+.page {
+  min-height: 60vh;
+}
 </style>
