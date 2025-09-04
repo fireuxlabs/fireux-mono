@@ -48,21 +48,27 @@
 
   /* Mobile: full width with comfortable padding */
   max-width: 100%;
+}
 
-  /* Tablet: constrained width with more breathing room */
-  @media (min-width: 768px) {
+/* Tablet: constrained width with more breathing room */
+@media (min-width: 768px) {
+  .page {
     padding: 2rem;
     max-width: 768px;
   }
+}
 
-  /* Desktop: generous spacing and wider content */
-  @media (min-width: 1024px) {
+/* Desktop: generous spacing and wider content */
+@media (min-width: 1024px) {
+  .page {
     padding: 3rem 2rem;
     max-width: 1200px;
   }
+}
 
-  /* Ultra-wide: prevent content from getting too stretched */
-  @media (min-width: 1440px) {
+/* Ultra-wide: prevent content from getting too stretched */
+@media (min-width: 1440px) {
+  .page {
     padding: 4rem 2rem;
     max-width: 1440px;
   }
