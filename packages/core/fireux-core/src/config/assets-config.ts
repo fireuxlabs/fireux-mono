@@ -18,7 +18,9 @@ export function configureAssets(resolver: any, nuxt: any) {
     css.push(mainCssPath)
   }
   // Then FireUX SCSS system
-  if (!css.some((s) => String(s).includes('runtime/assets/styles/scss/main.scss'))) {
+  if (
+    !css.some((s) => String(s).includes('runtime/assets/styles/scss/main.scss'))
+  ) {
     css.push(mainScssPath)
   }
 
