@@ -1,4 +1,4 @@
-import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
+import { defineNuxtModule, installModule, createResolver } from '@nuxt/kit'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
 import { configureModels } from './config/models-config'
