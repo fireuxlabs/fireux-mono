@@ -6,7 +6,7 @@ export function configureComponents(
   options: { prefix?: string } = {}
 ) {
   addComponentsDir({
-    path: resolver.resolve('../runtime/components'),
+  path: resolver.resolve('./runtime/components'),
     prefix: options.prefix ?? 'Fireux',
     global: false,
     pathPrefix: false,

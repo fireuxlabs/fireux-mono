@@ -3,16 +3,10 @@
  *
  * Auto-imports Chef and Supplier composables from specific directories
  */
-import { Resolver, addImportsDir } from '@nuxt/kit'
+import { addImportsDir } from '@nuxt/kit'
+import type { Resolver } from '@nuxt/kit'
 
 export function configureComposables(resolver: Resolver) {
-  const resolvePath = (p: string) => resolver.resolve(p)
-
-  // Add all composable directories for auto-import
-  addImportsDir([
-    resolvePath('./runtime/composables/**'),
-  ])
-
-  // Add models directory for auto-import
+  addImportsDir(resolver.resolve('./runtime/composables/**'))
   addImportsDir(resolver.resolve('./runtime/models'))
 }
