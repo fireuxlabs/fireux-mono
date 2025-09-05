@@ -10,12 +10,11 @@ export function configureErrors(_resolver: any, _nuxt: any) {
   // Apps can override by creating their own error.vue
   addTemplate({
     filename: 'error.vue',
-    getContents: () => `<script setup lang="ts">
-import type { NuxtError } from '#app'
+  getContents: () => `<script setup lang="ts">
+// Use a structural type to avoid importing from app-only aliases in server runtime
+type Err = { statusCode?: number; statusMessage?: string }
 
-const props = defineProps({
-  error: Object as () => NuxtError
-})
+const props = defineProps<{ error?: Err }>()
 
 const handleError = () => clearError({ redirect: '/' })
 </script>
@@ -23,8 +22,8 @@ const handleError = () => clearError({ redirect: '/' })
 <template>
   <div class="cell error-page">
     <div class="cell-content">
-      <h1 class="cell-title">{{ error?.statusCode || 500 }}</h1>
-      <p class="cell-subtitle">{{ error?.statusMessage || 'Something went wrong' }}</p>
+  <h1 class="cell-title">{{ error?.statusCode || 500 }}</h1>
+  <p class="cell-subtitle">{{ error?.statusMessage || 'Something went wrong' }}</p>
       <div class="cell-actions">
         <button @click="handleError">Try again</button>
         <a href="/">Go home</a>

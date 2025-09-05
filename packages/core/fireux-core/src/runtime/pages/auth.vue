@@ -24,7 +24,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/firebase/useAuth'
-import { useHead } from '#app'
+import { useHead } from '#imports'
 import { useFireUXConfig } from '../composables/FireUXConfig'
 
 const { appName } = useFireUXConfig()
