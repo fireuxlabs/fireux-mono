@@ -1,10 +1,17 @@
 import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app'
-import { initializeApp, getApps, getApp, type FirebaseOptions } from 'firebase/app'
+import {
+  initializeApp,
+  getApps,
+  getApp,
+  type FirebaseOptions,
+} from 'firebase/app'
 
 // Minimal Firebase app initializer.
 // VueFire handles auth; do not initialize or touch auth here.
 export default defineNuxtPlugin(() => {
-  const { public: { firebaseConfig } } = useRuntimeConfig()
+  const {
+    public: { firebaseConfig },
+  } = useRuntimeConfig()
 
   // HMR-safe: only initialize if no app exists; otherwise ensure default app is accessible
   if (!getApps().length) {

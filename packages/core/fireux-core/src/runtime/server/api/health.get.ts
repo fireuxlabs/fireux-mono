@@ -1,10 +1,6 @@
 import { defineEventHandler } from 'h3'
 import { resolve } from 'node:path'
 import { existsSync, statSync } from 'node:fs'
-// useRuntimeConfig is injected by Nuxt at runtime
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { useRuntimeConfig } from '#imports'
 
 export default defineEventHandler(() => {
   const envPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || ''
@@ -12,7 +8,10 @@ export default defineEventHandler(() => {
   const exists = absPath ? existsSync(absPath) : false
   const size = exists ? statSync(absPath).size : 0
 
-  const runtime = useRuntimeConfig?.() as any
+  // In Nitro server runtime, useRuntimeConfig is available without importing from app aliases
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - provided by Nitro at runtime
+  const runtime = (typeof useRuntimeConfig !== 'undefined' ? useRuntimeConfig() : undefined) as any
   const appSettings = runtime?.public?.appSettings || null
 
   return {
