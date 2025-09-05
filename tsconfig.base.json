@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "paths": {
+      "fireux-core": ["packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["packages/core/fireux-core/src/*"],
       "fireux-core/config/*": ["packages/core/fireux-core/src/config/*"],
       "fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],

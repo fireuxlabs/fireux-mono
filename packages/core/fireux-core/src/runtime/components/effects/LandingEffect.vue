@@ -15,12 +15,15 @@
 </template>
 
 <script setup>
-const appConfig = useAppConfig()
+// Use runtimeConfig so this works in server-render without importing #build/app.config
+const runtimeConfig = useRuntimeConfig()
 const { initializeEffect } = useLandingEffect()
 
 // Map effect type based on primary color
 const effectType = computed(() => {
-  const primaryColor = appConfig.ui?.colors?.primary || 'yellow'
+  const primaryColor =
+    runtimeConfig.public?.primaryColor /* from fireux createFireuxConfig */ ||
+    'yellow'
   switch (primaryColor) {
     case 'green':
       return 'bubbles'

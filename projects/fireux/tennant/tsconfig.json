@@ -1,0 +1,19 @@
+{
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "baseUrl": ".",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
+      "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
+      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
+      "~~/*": ["./*"],
+      "~/*": ["./*"],
+      "@/*": ["./*"]
+    },
+    "skipLibCheck": true,
+    "types": ["nuxt", "nuxt/schema"]
+  }
+}
