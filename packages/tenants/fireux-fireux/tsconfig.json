@@ -17,6 +17,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
+    "paths": {
+      "#fireux-fireux-models/*": ["./src/runtime/models/*"]
+    },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
   "include": ["src/**/*.ts"],
