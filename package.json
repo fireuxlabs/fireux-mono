@@ -26,7 +26,8 @@
     "typecheck:packages": "pnpm -r --filter './packages/*/*' exec tsc --noEmit",
     "lint:docs": "node ./tools/scripts/lint-docs-paths.mjs",
     "lint": "eslint . --ext .js,.ts,.vue",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "guard:tenants": "bash ./tools/scripts/guard-tenants.sh"
   },
   "engines": {
     "node": ">=20.11 <23",

@@ -77,3 +77,7 @@ build/
 *.p12
 *.der
 *.mobileprovision
+
+# Guardrails: ignore tenant-local type/placeholder files
+packages/tenants/**/src/**/*.d.ts
+packages/tenants/**/src/runtime/**/index.ts
