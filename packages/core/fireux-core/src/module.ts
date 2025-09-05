@@ -28,19 +28,19 @@ const module: NuxtModule = defineNuxtModule({
     // 4) composables
     configureComposables(resolver)
 
-  // 5) layouts
+    // 5) layouts
     configureLayouts(resolver, nuxt)
 
-  // 6) pages
+    // 6) pages
     configurePages(resolver, nuxt)
 
-  // 7) server (api/middleware)
+    // 7) server (api/middleware)
     configureServer(resolver)
 
-  // 8) assets
+    // 8) assets
     configureAssets(resolver, nuxt)
 
-  // 9) errors
+    // 9) errors
     configureErrors(resolver, nuxt)
   },
 })

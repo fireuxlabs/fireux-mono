@@ -12,7 +12,8 @@
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["nuxt", "nuxt/schema"]
   },
   "include": ["./**/*"]
 }

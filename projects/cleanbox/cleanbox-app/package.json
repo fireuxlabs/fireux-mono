@@ -18,9 +18,9 @@
     "dompurify": "^3.2.6",
     "firebase": "11.10.0",
     "firebase-admin": "^13.4.0",
+    "fireux-cleanbox": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-jobs": "workspace:*",
-    "fireux-cleanbox": "workspace:*",
     "nuxt": "4.0.3",
     "nuxt-vuefire": "^1.0.5",
     "stripe": "^18.3.0",
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.2",
-    "@iconify-json/lucide": "^1.2.62"
+    "@iconify-json/lucide": "^1.2.62",
+    "@nuxt/content": "^3.6.3"
   }
 }

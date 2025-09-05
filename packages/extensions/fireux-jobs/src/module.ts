@@ -21,8 +21,8 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: { prefix: 'Fire' },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-  configureComponents(resolver, options)
-  configureComposables(resolver)
+    configureComponents(resolver, options)
+    configureComposables(resolver)
     configurePages(resolver, nuxt)
     configurePlugins(resolver)
     configureLayouts(resolver, nuxt)

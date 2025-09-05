@@ -27,8 +27,8 @@ export default defineNuxtModule<ModuleOptions>({
     await installModule('fireux-core')
 
     // Delegate to config functions
-  configureComponents(resolver, options)
-  configureComposables(resolver)
+    configureComponents(resolver, options)
+    configureComposables(resolver)
     configurePages(resolver, nuxt)
     configureLayouts(resolver, nuxt)
     configurePlugins(resolver)

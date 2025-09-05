@@ -15,7 +15,7 @@ export function useEmployerFilters(profiles: Ref<Employer[]>) {
       // Filter by search term
       if (filters.value.search) {
         const searchTerm = filters.value.search.toLowerCase()
-  const businessName = employer.company_name?.toLowerCase() || ''
+        const businessName = employer.company_name?.toLowerCase() || ''
 
         if (!businessName.includes(searchTerm)) {
           return false

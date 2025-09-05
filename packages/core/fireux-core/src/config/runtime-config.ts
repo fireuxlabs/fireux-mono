@@ -9,10 +9,12 @@ export function configureRuntime(
   key: string,
   defaults: Record<string, any> = { enabled: true }
 ) {
-  // Always mutate nuxt.options.runtimeConfig at module setup
-  const rc = (nuxt.options.runtimeConfig ||= {} as any)
+  // Work with a lenient view of runtimeConfig to avoid strict typing pitfalls
+  const rc = nuxt.options.runtimeConfig as any
+  // Ensure public exists and satisfies modules that narrow types (e.g., @nuxtjs/mdc)
   rc.public ||= {}
-  const pub = rc.public as Record<string, any>
+  rc.public.mdc ||= {}
+  const pub: Record<string, any> = rc.public
 
   // Bucket under public.fireux
   if (!pub.fireux) pub.fireux = {}

@@ -25,8 +25,8 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
 
     // Delegate to config functions
-  configureComponents(resolver, options)
-  configureComposables(resolver, options)
+    configureComponents(resolver, options)
+    configureComposables(resolver, options)
     configurePages(resolver, nuxt)
     configurePlugins(resolver)
     configureLayouts(resolver, nuxt)

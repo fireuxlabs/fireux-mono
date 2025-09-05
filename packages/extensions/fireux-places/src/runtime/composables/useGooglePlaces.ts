@@ -46,17 +46,19 @@ export function useGooglePlaces() {
           input: query,
           types: ['address'],
         },
-  (predictions: any[] | null, status: string) => {
+        (predictions: any[] | null, status: string) => {
           if (
             status === google.maps.places.PlacesServiceStatus.OK &&
             predictions
           ) {
-            const results: PlaceAutocompleteResult[] = predictions.map((p: any) => ({
-              place_id: p.place_id,
-              description: p.description,
-              structured_formatting: p.structured_formatting,
-              types: p.types,
-            }))
+            const results: PlaceAutocompleteResult[] = predictions.map(
+              (p: any) => ({
+                place_id: p.place_id,
+                description: p.description,
+                structured_formatting: p.structured_formatting,
+                types: p.types,
+              })
+            )
             resolve(results)
           } else {
             reject(new Error(`Places search failed: ${status}`))
@@ -92,7 +94,7 @@ export function useGooglePlaces() {
             'types',
           ],
         },
-  (place: any, status: string) => {
+        (place: any, status: string) => {
           if (status === google.maps.places.PlacesServiceStatus.OK && place) {
             resolve(place as Place)
           } else {

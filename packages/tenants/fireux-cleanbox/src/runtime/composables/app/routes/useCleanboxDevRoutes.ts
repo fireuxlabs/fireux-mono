@@ -1,5 +1,5 @@
-// Local type to avoid deep import from core
-export interface RouteLink {
+// Local type to avoid deep import from core (not exported to prevent auto-import duplication)
+interface RouteLink {
   id: string
   label: string
   icon: string

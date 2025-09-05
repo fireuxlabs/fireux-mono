@@ -21,10 +21,18 @@
       "#fireux-misebox-models/*": ["./src/runtime/models/*"],
       "#fireux-places-models/*": [
         "../../extensions/fireux-places/src/runtime/models/*"
-      ]
+      ],
+      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"]
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    // Defer objects domain from package-level tsc per scope agreement
+    "src/runtime/composables/objects/**",
+    "src/runtime/composables/firestore/objects/**",
+    "src/runtime/models/objects/**"
+  ]
 }

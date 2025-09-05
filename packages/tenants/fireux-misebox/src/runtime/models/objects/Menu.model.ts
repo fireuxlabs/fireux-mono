@@ -1,4 +1,4 @@
-import type { FirestoreObject } from './object.model'
+import type { FirestoreObject } from '#fireux-core-models/objects/object.model'
 
 export interface MenuObject extends Partial<FirestoreObject> {
   name: string

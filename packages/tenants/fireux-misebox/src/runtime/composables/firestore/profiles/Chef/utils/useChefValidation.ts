@@ -231,23 +231,8 @@ export function useChefValidation() {
       }
     }
 
-    if (chefData.chef_experience) {
-      const experienceValidation = validateKitchenExperience(
-        chefData.chef_experience
-      )
-      if (!experienceValidation.isValid && experienceValidation.error) {
-        errors.push(experienceValidation.error)
-      }
-    }
-
-    if (chefData.certifications) {
-      const certificationsValidation = validateCertifications(
-        chefData.certifications
-      )
-      if (!certificationsValidation.isValid && certificationsValidation.error) {
-        errors.push(certificationsValidation.error)
-      }
-    }
+    // Note: experience/certifications aren't part of the current Chef model
+    // If added later, re-enable and adjust validation accordingly
 
     if (chefData.bio_short) {
       const bioValidation = validateBio(chefData.bio_short, 'short')
@@ -271,12 +256,7 @@ export function useChefValidation() {
     //   }
     // }
 
-    // Fix hourly rate validation - Chef model has hourly_rate, not min/max
-    if (chefData.hourly_rate !== undefined) {
-      if (chefData.hourly_rate < 0) {
-        errors.push('Hourly rate cannot be negative')
-      }
-    }
+    // Hourly rate is not part of current Chef model
 
     return {
       isValid: errors.length === 0,

@@ -42,43 +42,9 @@ export function useSupplierValidation() {
       errors.push('Invalid phone number format')
     }
 
-    // Website validation
-    if (supplier.website && !isValidUrl(supplier.website)) {
-      errors.push('Invalid website URL format')
-    }
+    // Note: website is not part of the current Supplier model
 
-    // Years in business validation
-    if (supplier.years_in_business !== undefined) {
-      if (supplier.years_in_business < 0 || supplier.years_in_business > 200) {
-        errors.push('Years in business must be between 0 and 200')
-      }
-    }
-
-    // Employee count validation
-    if (supplier.employee_count !== undefined) {
-      if (supplier.employee_count < 0) {
-        errors.push('Employee count cannot be negative')
-      }
-    }
-
-    // Payment terms validation
-    if (supplier.payment_terms && supplier.payment_terms.length > 0) {
-      const validPaymentTerms = [
-        'net-30',
-        'net-15',
-        'net-7',
-        'cod',
-        'prepaid',
-        'credit-card',
-        'other',
-      ]
-      const invalidTerms = supplier.payment_terms.filter(
-        (term) => !validPaymentTerms.includes(term)
-      )
-      if (invalidTerms.length > 0) {
-        errors.push(`Invalid payment terms: ${invalidTerms.join(', ')}`)
-      }
-    }
+    // Note: years_in_business, employee_count and payment_terms are not in the current Supplier model
 
     return {
       isValid: errors.length === 0,
