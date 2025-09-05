@@ -1,4 +1,4 @@
 import type { Resolver } from '@nuxt/kit'
 export function configureModels(_resolver: Resolver) {
-  // Models registration not required currently; keep no-op to preserve API
+  // no-op: models are explicit imports via aliases; keep only if we emit global .d.ts later
 }

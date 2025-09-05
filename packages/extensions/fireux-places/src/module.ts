@@ -2,7 +2,6 @@ import { defineNuxtModule, createResolver } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
-import { configureModels } from './config/models-config'
 import { configurePages } from './config/pages-config'
 import { configurePlugins } from './config/plugins-config'
 import { configureServer } from './config/server-config'
@@ -26,9 +25,8 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
 
     // Delegate to config functions
-    await configureComponents(resolver, options)
-    await configureComposables(resolver, options)
-    await configureModels(resolver, options)
+  configureComponents(resolver, options)
+  configureComposables(resolver, options)
     configurePages(resolver, nuxt)
     configurePlugins(resolver)
     configureLayouts(resolver, nuxt)

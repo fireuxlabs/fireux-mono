@@ -9,6 +9,21 @@ export default [
       'coverage/**',
     ],
   },
+  // Disallow auto-importing models via addImportsDir in config files
+  {
+    files: ['**/src/config/**/*.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "CallExpression[callee.name='addImportsDir'] Literal[value=/runtime\\/models|\\.\\/runtime\\/models|\\.\\.\\/runtime\\/models/]",
+          message:
+            'addImportsDir(runtime/models) is disallowed; models are explicit imports only via #*-models/*.',
+        },
+      ],
+    },
+  },
   {
     files: ['**/*.{js,ts,vue}'],
     languageOptions: {

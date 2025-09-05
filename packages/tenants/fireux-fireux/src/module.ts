@@ -1,7 +1,6 @@
 import { defineNuxtModule, installModule, createResolver } from '@nuxt/kit'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
-import { configureModels } from './config/models-config'
 import { configurePages } from './config/pages-config'
 import { configureLayouts } from './config/layouts-config'
 import { configureRuntime } from './config/runtime-config'
@@ -22,9 +21,8 @@ export default defineNuxtModule<ModuleOptions>({
     await installModule('fireux-core')
 
     // Delegate to config functions (no-op scaffolds for now)
-    configureComponents(resolver, options)
-    configureComposables(resolver)
-    configureModels(resolver, nuxt)
+  configureComponents(resolver, options)
+  configureComposables(resolver)
     configurePages(resolver, nuxt)
     configureLayouts(resolver, nuxt)
     configurePlugins(resolver)

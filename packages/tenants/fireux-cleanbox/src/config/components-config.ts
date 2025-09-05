@@ -6,7 +6,7 @@ export function configureComponents(
   options: { prefix?: string } = {}
 ) {
   addComponentsDir({
-  path: resolver.resolve('./runtime/components'),
+    path: resolver.resolve('./runtime/components'),
     // Default to short, brand-safe prefix
     prefix: options.prefix ?? 'Clean',
     global: false,

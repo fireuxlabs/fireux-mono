@@ -2,7 +2,6 @@ import { defineNuxtModule, createResolver } from '@nuxt/kit'
 
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
-import { configureModels } from './config/models-config'
 import { configurePages } from './config/pages-config'
 import { configurePlugins } from './config/plugins-config'
 import { configureLayouts } from './config/layouts-config'
@@ -22,9 +21,8 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: { prefix: 'Fire' },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    configureComponents(resolver, options)
-    configureComposables(resolver)
-    configureModels(resolver)
+  configureComponents(resolver, options)
+  configureComposables(resolver)
     configurePages(resolver, nuxt)
     configurePlugins(resolver)
     configureLayouts(resolver, nuxt)

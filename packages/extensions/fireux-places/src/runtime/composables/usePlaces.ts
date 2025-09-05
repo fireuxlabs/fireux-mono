@@ -1,9 +1,5 @@
 import { ref, computed } from 'vue'
-import type {
-  Place,
-  SimpleAddress,
-  PlaceAutocompleteResult,
-} from '../models/place.model'
+import type { Place, SimpleAddress } from '../models/place.model'
 
 export function usePlaces() {
   const selectedPlace = ref<Place | null>(null)

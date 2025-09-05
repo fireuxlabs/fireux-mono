@@ -6,6 +6,7 @@ import { createFireuxConfig } from 'fireux-core'
 
 const config: NuxtConfig = defineNuxtConfig({
   ...createFireuxConfig({
+    modules: ['fireux-fireux'],
     ecosystem: 'fireux',
     appName: process.env.APP_NAME ?? 'FireUX',
     appShortName: process.env.APP_SHORT_NAME ?? 'FireUX',

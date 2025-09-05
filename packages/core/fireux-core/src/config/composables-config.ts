@@ -1,12 +1,6 @@
-import { addImportsDir } from '@nuxt/kit'
+import { addImportsDir, type Resolver } from '@nuxt/kit'
 
-export function configureComposables(resolver: any) {
-  // Auto-import composables under runtime/composables (root and nested)
-  addImportsDir([
-    resolver.resolve('./runtime/composables'),
-    resolver.resolve('./runtime/composables/**'),
-    // Also export utility helpers for auto-import
-    resolver.resolve('./runtime/utils'),
-    resolver.resolve('./runtime/utils/**'),
-  ])
+export function configureComposables(resolver: Resolver) {
+  addImportsDir(resolver.resolve('./runtime/composables'))
+  addImportsDir(resolver.resolve('./runtime/composables/**'))
 }

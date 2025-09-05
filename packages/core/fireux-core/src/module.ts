@@ -5,7 +5,6 @@ import { configureRuntime } from './config/runtime-config'
 import { configurePlugins } from './config/plugins-config'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
-import { configureModels } from './config/models-config'
 import { configureLayouts } from './config/layouts-config'
 import { configurePages } from './config/pages-config'
 import { configureServer } from './config/server-config'
@@ -29,22 +28,19 @@ const module: NuxtModule = defineNuxtModule({
     // 4) composables
     configureComposables(resolver)
 
-    // 5) models
-    configureModels(resolver, nuxt)
-
-    // 6) layouts
+  // 5) layouts
     configureLayouts(resolver, nuxt)
 
-    // 7) pages
+  // 6) pages
     configurePages(resolver, nuxt)
 
-    // 8) server (api/middleware)
+  // 7) server (api/middleware)
     configureServer(resolver)
 
-    // 9) assets
+  // 8) assets
     configureAssets(resolver, nuxt)
 
-    // 10) errors
+  // 9) errors
     configureErrors(resolver, nuxt)
   },
 })

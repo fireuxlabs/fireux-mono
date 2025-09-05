@@ -27,7 +27,9 @@
     "lint:docs": "node ./tools/scripts/lint-docs-paths.mjs",
     "lint": "eslint . --ext .js,.ts,.vue",
     "format": "prettier --write .",
-    "guard:tenants": "bash ./tools/scripts/guard-tenants.sh"
+    "guard:tenants": "bash ./tools/scripts/guard-tenants.sh",
+    "guard:models": "bash ./tools/scripts/guard-model-autoimport.sh",
+    "lint:envs": "node ./tools/scripts/lint-envs.mjs"
   },
   "engines": {
     "node": ">=20.11 <23",
