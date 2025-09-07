@@ -13,6 +13,17 @@ const config: NuxtConfig = defineNuxtConfig({
     neutralColor: process.env.APP_NEUTRAL_COLOR ?? '#64748B',
     vuefire: { auth: { enabled: true, sessionCookie: false } },
   }),
+  // TEMP: avoid server importing app aliases while we track impound root cause
+  ssr: false,
+  nitro: {
+    preset: process.env.NITRO_PRESET as any,
+  },
+  vite: {
+    define: {
+      'process.server': false,
+      'process.client': true,
+    },
+  },
   compatibilityDate: '2025-09-01',
 })
 

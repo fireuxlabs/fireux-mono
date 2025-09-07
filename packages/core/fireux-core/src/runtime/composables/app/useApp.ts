@@ -7,7 +7,6 @@ import { useFirestoreManager } from '../firestore/useFirestoreManager'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useAppUpdate } from './useAppUpdate'
 import { useAppComputed } from './useAppComputed'
-import { useAppOnboarding } from './useAppOnboarding'
 import { useAppEnsure } from './useEnsureApp'
 import { useAppSubscriptionSetup } from './useAppSubscriptionSetup'
 import type { App } from '../../models/core/app.model'
@@ -43,6 +42,11 @@ export async function useApp() {
     return useCollection(usersRef)
   }
 
+  // Client-only extras (defer import to avoid pulling app-only APIs server-side)
+  const clientExtras = import.meta.client
+    ? (await import('./useAppOnboarding')).useAppOnboarding()
+    : {}
+
   return {
     // Current entity
     app,
@@ -58,6 +62,7 @@ export async function useApp() {
     ...useAppComputed(app),
     ...useAppSubscriptionSetup(),
     ...useAppEnsure(),
-    ...useAppOnboarding(),
+  // Onboarding helpers (client-only)
+  ...clientExtras,
   }
 }

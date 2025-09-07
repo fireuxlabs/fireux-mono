@@ -7,7 +7,6 @@ import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
 import { configureLayouts } from './config/layouts-config'
 import { configurePages } from './config/pages-config'
-import { configureServer } from './config/server-config'
 import { configureAssets } from './config/assets-config'
 import { configureErrors } from './config/errors-config'
 
@@ -16,32 +15,19 @@ const module: NuxtModule = defineNuxtModule({
   setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // 1) runtime first
     configureRuntime(nuxt, 'core')
-
-    // 2) plugins (can read runtime)
     configurePlugins(resolver)
-
-    // 3) components
     configureComponents(resolver)
+  configureComposables(resolver)
+  configureLayouts(resolver, nuxt)
+  configurePages(resolver, nuxt)
+  // configureServer(resolver) // toggle as needed
+  configureAssets(resolver, nuxt)
+  configureErrors(resolver, nuxt)
 
-    // 4) composables
-    configureComposables(resolver)
-
-    // 5) layouts
-    configureLayouts(resolver, nuxt)
-
-    // 6) pages
-    configurePages(resolver, nuxt)
-
-    // 7) server (api/middleware)
-    configureServer(resolver)
-
-    // 8) assets
-    configureAssets(resolver, nuxt)
-
-    // 9) errors
-    configureErrors(resolver, nuxt)
+    nuxt.hook('ready', () => {
+      console.log('fireux-core: module configured')
+    })
   },
 })
 

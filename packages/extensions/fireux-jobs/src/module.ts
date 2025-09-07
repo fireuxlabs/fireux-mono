@@ -1,36 +1,38 @@
-import { defineNuxtModule, createResolver } from '@nuxt/kit'
-
+import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
+import type { NuxtModule } from '@nuxt/schema'
+import { configureRuntime } from './config/runtime-config'
+import { configurePlugins } from './config/plugins-config'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
-import { configurePages } from './config/pages-config'
-import { configurePlugins } from './config/plugins-config'
 import { configureLayouts } from './config/layouts-config'
-import { configureServer } from './config/server-config'
-import { configureRuntime } from './config/runtime-config'
+import { configurePages } from './config/pages-config'
 
 export interface ModuleOptions {
   prefix?: string
 }
 
-export default defineNuxtModule<ModuleOptions>({
+const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-jobs',
     version: '1.0.0',
     configKey: 'fireuxJobs',
   },
   defaults: { prefix: 'Fire' },
-  setup(options, nuxt) {
+  async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    await installModule('fireux-core')
+    configureRuntime(nuxt, 'jobs')
+    configurePlugins(resolver)
     configureComponents(resolver, options)
     configureComposables(resolver)
-    configurePages(resolver, nuxt)
-    configurePlugins(resolver)
     configureLayouts(resolver, nuxt)
-    configureServer(resolver)
-    configureRuntime(nuxt, 'jobs')
-    // Safe nitro tweak
-    nuxt.options.nitro ||= {}
-    nuxt.options.nitro.experimental ||= {}
-    nuxt.options.nitro.experimental.wasm = true
+    configurePages(resolver, nuxt)
+    // configureServer(resolver) // toggle as needed
+
+    nuxt.hook('ready', () => {
+      console.log('fireux-jobs: module configured')
+    })
   },
 })
+
+export default module

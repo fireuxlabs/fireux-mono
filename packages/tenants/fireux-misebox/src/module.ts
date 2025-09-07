@@ -1,17 +1,17 @@
 import { defineNuxtModule, installModule, createResolver } from '@nuxt/kit'
-import { configureComponents } from './config/components-config'
-import { configureComposables } from './config/composables-config'
-import { configurePages } from './config/pages-config'
-import { configureLayouts } from './config/layouts-config'
+import type { NuxtModule } from '@nuxt/schema'
 import { configureRuntime } from './config/runtime-config'
 import { configurePlugins } from './config/plugins-config'
-import { configureServer } from './config/server-config'
+import { configureComponents } from './config/components-config'
+import { configureComposables } from './config/composables-config'
+import { configureLayouts } from './config/layouts-config'
+import { configurePages } from './config/pages-config'
 
 export interface ModuleOptions {
   prefix?: string
 }
 
-export default defineNuxtModule<ModuleOptions>({
+const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-misebox',
     version: '0.1.0',
@@ -23,26 +23,20 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // Install core dependency
     await installModule('fireux-core')
 
-    // Delegate to config functions
+    configureRuntime(nuxt, 'misebox')
+    configurePlugins(resolver)
     configureComponents(resolver, options)
     configureComposables(resolver)
-    configurePages(resolver, nuxt)
     configureLayouts(resolver, nuxt)
-    configurePlugins(resolver)
-    configureServer(resolver)
-    configureRuntime(nuxt, 'misebox')
-
-    // Nitro tweak
-    nuxt.options.nitro ||= {}
-    nuxt.options.nitro.experimental ||= {}
-    nuxt.options.nitro.experimental.wasm = true
+    configurePages(resolver, nuxt)
+    // configureServer(resolver) // toggle as needed
 
     nuxt.hook('ready', () => {
-      // eslint-disable-next-line no-console
       console.log('fireux-misebox: module configured')
     })
   },
 })
+
+export default module

@@ -19,7 +19,14 @@
 </template>
 
 <script setup>
-const { isInitialized } = await useApp()
+import { ref, onMounted } from 'vue'
+
+const isInitialized = ref(true)
+
+onMounted(async () => {
+  const { isInitialized: init } = await useApp()
+  isInitialized.value = init.value
+})
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
