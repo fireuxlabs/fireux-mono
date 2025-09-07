@@ -1,10 +1,16 @@
 {
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
+    "composite": false,
     "baseUrl": ".",
+    "moduleResolution": "Bundler",
     "paths": {
-      "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
+      "fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
+      "fireux-fireux/*": ["../../../packages/tenants/fireux-fireux/src/*"],
+      "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
+      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
       "@/*": ["./*"]

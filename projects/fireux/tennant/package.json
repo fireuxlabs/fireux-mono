@@ -7,7 +7,7 @@
     "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "check:env": "node scripts/check-env.mjs",
+  "check:env": "node ../../scripts/check-env.mjs",
     "postinstall": "nuxi prepare",
     "clean": "rimraf .nuxt dist"
   },
