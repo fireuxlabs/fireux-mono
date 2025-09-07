@@ -18,12 +18,12 @@ const module: NuxtModule = defineNuxtModule({
     configureRuntime(nuxt, 'core')
     configurePlugins(resolver)
     configureComponents(resolver)
-  configureComposables(resolver)
-  configureLayouts(resolver, nuxt)
-  configurePages(resolver, nuxt)
-  // configureServer(resolver) // toggle as needed
-  configureAssets(resolver, nuxt)
-  configureErrors(resolver, nuxt)
+    configureComposables(resolver)
+    configureLayouts(resolver, nuxt)
+    configurePages(resolver, nuxt)
+    // configureServer(resolver) // toggle as needed
+    configureAssets(resolver, nuxt)
+    configureErrors(resolver, nuxt)
 
     nuxt.hook('ready', () => {
       console.log('fireux-core: module configured')

@@ -62,7 +62,7 @@ export async function useApp() {
     ...useAppComputed(app),
     ...useAppSubscriptionSetup(),
     ...useAppEnsure(),
-  // Onboarding helpers (client-only)
-  ...clientExtras,
+    // Onboarding helpers (client-only)
+    ...clientExtras,
   }
 }

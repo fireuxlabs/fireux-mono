@@ -10,7 +10,7 @@ export function configureErrors(_resolver: any, _nuxt: any) {
   // Apps can override by creating their own error.vue
   addTemplate({
     filename: 'error.vue',
-  getContents: () => `<script setup lang="ts">
+    getContents: () => `<script setup lang="ts">
 // Use a structural type to avoid importing from app-only aliases in server runtime
 type Err = { statusCode?: number; statusMessage?: string }
 

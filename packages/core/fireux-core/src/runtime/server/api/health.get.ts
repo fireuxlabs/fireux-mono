@@ -11,7 +11,9 @@ export default defineEventHandler(() => {
   // In Nitro server runtime, useRuntimeConfig is available without importing from app aliases
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore - provided by Nitro at runtime
-  const runtime = (typeof useRuntimeConfig !== 'undefined' ? useRuntimeConfig() : undefined) as any
+  const runtime = (
+    typeof useRuntimeConfig !== 'undefined' ? useRuntimeConfig() : undefined
+  ) as any
   const appSettings = runtime?.public?.appSettings || null
 
   return {
