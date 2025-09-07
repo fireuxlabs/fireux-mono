@@ -6,13 +6,15 @@ export interface TenantConfig {
   ecosystem: string
   appName: string
   appShortName: string
-  primaryColor: string
-  neutralColor?: string
   modules?: ModuleEntry[]
   includeCore?: boolean // default true
-  // Optional per-app overrides for module options
+
+  // Optional overrides (read from env by default)
+  primaryColor?: string
+  neutralColor?: string
   vuefire?: Record<string, any>
   pwa?: Record<string, any>
+  compatibilityDate?: string
 }
 
 function dedupeKeepLast(mods: ModuleEntry[] = []): ModuleEntry[] {
@@ -40,9 +42,14 @@ const env = (k: string) => {
 export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
   const includeCore = opts.includeCore ?? true
 
+  // Colors come from env unless explicitly overridden
+  const primaryColor =
+    opts.primaryColor ?? env('APP_PRIMARY_COLOR') ?? '#000000'
+  const neutralColor = opts.neutralColor ?? env('APP_NEUTRAL_COLOR')
+
   // Defaults
   const vuefireDefaults = {
-    auth: { enabled: true, sessionCookie: true },
+    auth: { enabled: true, sessionCookie: false },
     config: {
       apiKey: env('FIREBASE_API_KEY'),
       authDomain: env('FIREBASE_AUTH_DOMAIN'),
@@ -70,7 +77,7 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
       start_url: '/',
       display: 'standalone',
       background_color: '#ffffff',
-      theme_color: opts.primaryColor,
+      theme_color: primaryColor,
     },
   }
 
@@ -96,10 +103,11 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     )
   }
 
-  return {
-    // Keep FireUX app structure defaults
+  const config: NuxtConfig = {
+    // FireUX app structure defaults
     srcDir: 'app',
-    imports: { dirs: ['composables/**', 'models/**', 'utils/**'] },
+    // composables only; models stay explicit-import-only
+    imports: { dirs: ['composables/**', 'utils/**'] },
 
     modules,
     app: { head: { title: opts.appName } },
@@ -110,17 +118,20 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
         ecosystem: opts.ecosystem,
         appName: opts.appName,
         appShortName: opts.appShortName,
-        primaryColor: opts.primaryColor,
-        neutralColor: opts.neutralColor,
-        // Expose a plain object for the client plugin (firebase.client.ts)
-        // Spread to avoid accidental mutation/metadata
+        primaryColor,
+        neutralColor,
+        // expose to client plugin
         firebaseConfig: { ...(vuefireMerged.config || {}) },
-        // Expose minimal app settings for client/server composables
+        // minimal app settings
         appSettings: {
-          appId, // leave undefined if missing; no fake default
+          appId, // may be undefined; that's okay
           ecosystem: opts.ecosystem,
         },
       },
     },
+    compatibilityDate: (opts.compatibilityDate ??
+      '2025-09-01') as unknown as NuxtConfig['compatibilityDate'],
   }
+
+  return config
 }

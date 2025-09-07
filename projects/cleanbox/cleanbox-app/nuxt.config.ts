@@ -2,17 +2,11 @@ import { defineNuxtConfig } from 'nuxt/config'
 import type { NuxtConfig } from 'nuxt/schema'
 import { createFireuxConfig } from 'fireux-core'
 
-const config: NuxtConfig = defineNuxtConfig({
+export default defineNuxtConfig(<NuxtConfig>{
   ...createFireuxConfig({
-    modules: ['fireux-cleanbox', 'fireux-jobs'],
+    appName: 'Cleanbox',
+    appShortName: 'Cleanbox',
     ecosystem: 'cleanbox',
-    appName: process.env.APP_NAME ?? 'Cleanbox',
-    appShortName: process.env.APP_SHORT_NAME ?? 'Cleanbox',
-    primaryColor: process.env.APP_PRIMARY_COLOR ?? '#000000',
-    neutralColor: process.env.APP_NEUTRAL_COLOR,
-    vuefire: { auth: { enabled: true, sessionCookie: false } },
+    modules: ['fireux-cleanbox', 'fireux-jobs'],
   }),
-  compatibilityDate: '2025-09-01',
 })
-
-export default config

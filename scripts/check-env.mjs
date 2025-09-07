@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const root = process.cwd()
-const rootExample = path.join(root, '.env.example')
+// Resolve repo root based on this script's location
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const repoRoot = path.resolve(__dirname, '..')
+const rootExample = path.join(repoRoot, '.env.example')
 
 /**
  * This script checks the current working directory for a .env file
@@ -49,12 +53,14 @@ function main() {
   const appEnv = parseEnvFile(path.join(process.cwd(), '.env'))
   const expected = listExampleKeys(rootExample)
 
-  const missing = expected.filter(k => !(k in appEnv))
+  const missing = expected.filter((k) => !(k in appEnv))
 
   if (missing.length) {
     console.error('\n[env] Missing keys in .env for', process.cwd())
     for (const k of missing) console.error('  -', k)
-    console.error('\nHint: copy keys from repo .env.example and fill in values.')
+    console.error(
+      '\nHint: copy keys from repo .env.example and fill in values.'
+    )
     process.exit(2)
   }
   console.log('[env] All required keys present for', process.cwd())

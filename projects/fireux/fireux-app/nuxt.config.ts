@@ -1,20 +1,12 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import type { NuxtConfig } from 'nuxt/schema'
-// Prefer package export; JITI can sometimes fail to resolve subpath exports in monorepos during dev
-// Import from source path as a workspace fallback
 import { createFireuxConfig } from 'fireux-core'
 
-const config: NuxtConfig = defineNuxtConfig({
+export default defineNuxtConfig(<NuxtConfig>{
   ...createFireuxConfig({
-    modules: ['fireux-fireux'],
+    appName: 'FireUX',
+    appShortName: 'FireUX',
     ecosystem: 'fireux',
-    appName: process.env.APP_NAME ?? 'FireUX',
-    appShortName: process.env.APP_SHORT_NAME ?? 'FireUX',
-    primaryColor: process.env.APP_PRIMARY_COLOR ?? '#EAB308',
-    neutralColor: process.env.APP_NEUTRAL_COLOR,
-    vuefire: { auth: { enabled: true, sessionCookie: false } },
+    modules: ['fireux-fireux'],
   }),
-  compatibilityDate: '2025-09-01',
 })
-
-export default config

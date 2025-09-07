@@ -1,19 +1,12 @@
-// projects/misebox/niederhorn/nuxt.config.ts
 import { defineNuxtConfig } from 'nuxt/config'
 import type { NuxtConfig } from 'nuxt/schema'
 import { createFireuxConfig } from 'fireux-core'
 
-const config: NuxtConfig = defineNuxtConfig({
+export default defineNuxtConfig(<NuxtConfig>{
   ...createFireuxConfig({
-    modules: ['fireux-misebox'], // tenant module(s) for this app
+    appName: 'Niederhorn',
+    appShortName: 'Niederhorn',
     ecosystem: 'misebox',
-    appName: process.env.APP_NAME ?? 'Niederhorn',
-    appShortName: process.env.APP_SHORT_NAME ?? 'Niederhorn',
-    primaryColor: process.env.APP_PRIMARY_COLOR ?? '#0EA5E9',
-    neutralColor: process.env.APP_NEUTRAL_COLOR ?? '#64748B',
-    vuefire: { auth: { enabled: true, sessionCookie: false } },
+    modules: ['fireux-misebox'],
   }),
-  compatibilityDate: '2025-09-01',
 })
-
-export default config
