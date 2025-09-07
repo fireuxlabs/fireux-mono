@@ -1,49 +1,48 @@
 # App shapes (level 1)
 
-This report lists the top-level (one-level deep) structure of each app directory.
+This report lists the top-level (one-level deep) structure of each app directory after enforcing the opinionated shape.
 
 ## FireUX — projects/fireux/fireux-app
 - .env
+- .firebase/
+- .firebaserc
 - .gitignore
 - .nuxt/
 - README.md
 - app/
 - config/
+- firebase.json
 - fireux-app-report.md
 - node_modules/
 - nuxt.config.ts
 - package.json
 - public/
-- scripts/
-- server/
 - tsconfig.json
 
 ## FireUX Tenant — projects/fireux/tennant
+- .firebase/
+- .firebaserc
 - README.md
 - app/
+- firebase.json
 - nuxt.config.ts
 - package.json
+- public/
 - tsconfig.json
 
 ## Cleanbox — projects/cleanbox/cleanbox-app
-- .data/
 - .env
 - .firebase/
 - .firebaserc
 - .gitignore
 - .nuxt/
 - app/
-- content.config.ts
-- docs/
 - firebase.json
 - node_modules/
 - nuxt.config.ts
 - package.json
 - public/
-- scripts/
-- server/
 - tsconfig.json
-- types/
 
 ## Richies — projects/cleanbox/richies-reinigung
 - .env
@@ -52,49 +51,36 @@ This report lists the top-level (one-level deep) structure of each app directory
 - .gitignore
 - .nuxt/
 - app/
-- content.config.ts
-- docs/
 - firebase.json
 - node_modules/
 - nuxt.config.ts
 - package.json
 - public/
-- scripts/
-- server/
 - tsconfig.json
-- types/
 
 ## Misebox — projects/misebox/misebox-app
-- .data/
 - .env
 - .firebase/
 - .firebaserc
 - .gitignore
-- .gitkeep
 - .nuxt/
 - app/
-- content.config.ts
-- docs/
 - firebase.json
 - node_modules/
 - nuxt.config.ts
 - package.json
 - public/
-- scripts/
-- server/
 - tsconfig.json
-- types/
 
 ## Niederhorn — projects/misebox/niederhorn
-- .data/
 - .env
+- .firebase/
+- .firebaserc
 - .nuxt/
 - app/
-- docs/
+- firebase.json
 - node_modules/
 - nuxt.config.ts
 - package.json
 - public/
-- scripts/
 - tsconfig.json
-- types/
