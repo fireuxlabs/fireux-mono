@@ -1,9 +1,14 @@
 <template>
-  <div class="layout-wrapper">
-    <LayoutsHeader :menu-bar-links="menuBarLinks" :mobile-links="mobileLinks" />
-    <NuxtPage />
-    <LayoutsDefaultFooter />
-  </div>
+  <ClientOnly>
+    <div class="layout-wrapper">
+      <LayoutsHeader
+        :menu-bar-links="menuBarLinks"
+        :mobile-links="mobileLinks"
+      />
+      <NuxtPage />
+      <LayoutsDefaultFooter />
+    </div>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">

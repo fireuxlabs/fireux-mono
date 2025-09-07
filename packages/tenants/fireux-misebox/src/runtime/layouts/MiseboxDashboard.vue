@@ -1,5 +1,7 @@
 <template>
-  <CoreDashboard :routes="miseboxRoutes" />
+  <ClientOnly>
+    <CoreDashboard :routes="miseboxRoutes" />
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">

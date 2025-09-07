@@ -1,5 +1,7 @@
 <template>
-  <CoreDev :devRoutes="miseboxDevRoutes" />
+  <ClientOnly>
+    <CoreDev :devRoutes="miseboxDevRoutes" />
+  </ClientOnly>
 </template>
 
 <script setup>

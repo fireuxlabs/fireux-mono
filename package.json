@@ -25,14 +25,14 @@
     "typecheck:apps": "pnpm -r --filter './projects/*/*' exec nuxi typecheck",
     "typecheck:packages": "pnpm -r --filter './packages/*/*' exec tsc --noEmit",
     "lint:docs": "node ./tools/scripts/lint-docs-paths.mjs",
-  "lint": "eslint . --ext .js,.ts,.vue && pnpm guard:apps:shape",
+    "lint": "eslint . --ext .js,.ts,.vue && pnpm guard:apps:shape",
     "format": "prettier --write .",
-  "guard:tenants": "bash ./tools/scripts/guard-tenants.sh",
+    "guard:tenants": "bash ./tools/scripts/guard-tenants.sh",
     "guard:models": "bash ./tools/scripts/guard-model-autoimport.sh",
-  "lint:envs": "node ./tools/scripts/lint-envs.mjs",
-  "guard:apps:shape": "node ./tools/check-app-structure.mjs",
-  "precommit": "pnpm guard:apps:shape",
-  "typecheck": "pnpm -w typecheck && pnpm guard:apps:shape"
+    "lint:envs": "node ./tools/scripts/lint-envs.mjs",
+    "guard:apps:shape": "node ./tools/check-app-structure.mjs",
+    "precommit": "pnpm guard:apps:shape",
+    "typecheck": "pnpm -w typecheck && pnpm guard:apps:shape"
   },
   "engines": {
     "node": ">=20.11 <23",

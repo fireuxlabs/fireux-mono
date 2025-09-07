@@ -30,9 +30,10 @@ const FORBIDDEN = new Set([
 ])
 
 // Options
+// README.md is allowed by default. Use --no-readme or DISALLOW_APP_README=1 to disallow.
 const allowReadme =
-  process.env.ALLOW_APP_README === '1' ||
-  process.argv.includes('--allow-readme')
+  !process.argv.includes('--no-readme') &&
+  process.env.DISALLOW_APP_README !== '1'
 
 // Consider any directory under projects/*/* that has both package.json and nuxt.config.ts an "app"
 function findApps() {

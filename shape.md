@@ -7,17 +7,18 @@ Canonical app shape for every app:
 projects/<ecosystem>/<app-folder>/
 ├─ .env
 ├─ .gitignore
-├─ .nuxt/            # generated
+├─ .nuxt/ # generated
 ├─ .firebase/
 ├─ .firebaserc
 ├─ firebase.json
-├─ app/              # source root (pages, components, layouts, composables, assets)
-├─ public/           # static files
+├─ app/ # source root (pages, components, layouts, composables, assets)
+├─ public/ # static files
 ├─ nuxt.config.ts
 ├─ package.json
 └─ tsconfig.json
 
 Removed across all apps (non-negotiable):
+
 - server/
 - types/
 - scripts/
@@ -32,11 +33,8 @@ Removed across all apps (non-negotiable):
 - .firebaserc
 - .gitignore
 - .nuxt/
-- README.md
 - app/
-- config/
 - firebase.json
-- fireux-app-report.md
 - node_modules/
 - nuxt.config.ts
 - package.json
@@ -44,6 +42,7 @@ Removed across all apps (non-negotiable):
 - tsconfig.json
 
 Removed across all apps (non-negotiable):
+
 - server/
 - types/
 - scripts/
@@ -53,8 +52,10 @@ Removed across all apps (non-negotiable):
 
 ## FireUX Tenant — projects/fireux/tennant
 
+- .env
 - .firebase/
 - .firebaserc
+- .gitignore
 - README.md
 - app/
 - firebase.json
@@ -64,6 +65,7 @@ Removed across all apps (non-negotiable):
 - tsconfig.json
 
 Removed across all apps (non-negotiable):
+
 - server/
 - types/
 - scripts/
@@ -87,6 +89,7 @@ Removed across all apps (non-negotiable):
 - tsconfig.json
 
 Removed across all apps (non-negotiable):
+
 - server/
 - types/
 - scripts/
@@ -110,6 +113,7 @@ Removed across all apps (non-negotiable):
 - tsconfig.json
 
 Removed across all apps (non-negotiable):
+
 - server/
 - types/
 - scripts/
@@ -133,6 +137,7 @@ Removed across all apps (non-negotiable):
 - tsconfig.json
 
 Removed across all apps (non-negotiable):
+
 - server/
 - types/
 - scripts/
@@ -145,6 +150,7 @@ Removed across all apps (non-negotiable):
 - .env
 - .firebase/
 - .firebaserc
+- .gitignore
 - .nuxt/
 - app/
 - firebase.json
@@ -155,6 +161,7 @@ Removed across all apps (non-negotiable):
 - tsconfig.json
 
 Removed across all apps (non-negotiable):
+
 - server/
 - types/
 - scripts/

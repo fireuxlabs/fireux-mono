@@ -1,4 +1,7 @@
 import { defineEventHandler } from 'h3'
+// Use a type-only import for Nitro runtime config and a declare for the runtime helper to avoid app alias imports in server bundle
+// Provided by Nitro at runtime; declared for TS only (any to avoid importing types)
+declare function useRuntimeConfig(): any
 import { resolve } from 'node:path'
 import { existsSync, statSync } from 'node:fs'
 
@@ -8,12 +11,10 @@ export default defineEventHandler(() => {
   const exists = absPath ? existsSync(absPath) : false
   const size = exists ? statSync(absPath).size : 0
 
-  // In Nitro server runtime, useRuntimeConfig is available without importing from app aliases
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore - provided by Nitro at runtime
-  const runtime = (
-    typeof useRuntimeConfig !== 'undefined' ? useRuntimeConfig() : undefined
-  ) as any
+  const runtime =
+    typeof useRuntimeConfig === 'function'
+      ? (useRuntimeConfig() as any)
+      : undefined
   const appSettings = runtime?.public?.appSettings || null
 
   return {

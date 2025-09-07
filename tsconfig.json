@@ -2,12 +2,6 @@
   "extends": "./tsconfig.base.json",
   "files": [],
   "references": [
-    { "path": "projects/fireux/fireux-app" },
-    { "path": "projects/fireux/tennant" },
-    { "path": "projects/misebox/misebox-app" },
-    { "path": "projects/misebox/niederhorn" },
-    { "path": "projects/cleanbox/cleanbox-app" },
-    { "path": "projects/cleanbox/richies-reinigung" },
     { "path": "packages/core/fireux-core" },
     { "path": "packages/extensions/fireux-jobs" },
     { "path": "packages/extensions/fireux-places" },

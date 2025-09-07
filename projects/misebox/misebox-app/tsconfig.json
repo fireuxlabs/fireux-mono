@@ -18,5 +18,5 @@
     "skipLibCheck": true,
     "types": ["nuxt", "nuxt/schema"]
   },
-  "include": ["./**/*"]
+  "include": ["./**/*", "./types/**/*.d.ts"]
 }

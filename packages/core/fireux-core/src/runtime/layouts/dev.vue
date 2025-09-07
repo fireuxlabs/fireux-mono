@@ -1,8 +1,10 @@
 <template>
-  <div class="layout-wrapper">
-    <DevNav :links="safeDevRoutes.miseboxDevRoutes || []" />
-    <NuxtPage />
-  </div>
+  <ClientOnly>
+    <div class="layout-wrapper">
+      <DevNav :links="safeDevRoutes.miseboxDevRoutes || []" />
+      <NuxtPage />
+    </div>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
