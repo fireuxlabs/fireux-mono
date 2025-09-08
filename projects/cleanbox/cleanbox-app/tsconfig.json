@@ -18,5 +18,10 @@
   "skipLibCheck": true,
   "types": ["nuxt", "nuxt/schema", "@vite-pwa/nuxt"]
   },
-  "include": ["./.nuxt/nuxt.d.ts", "./**/*"]
+  "include": ["./.nuxt/nuxt.d.ts", "./**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "./.nuxt/pwa-icons-plugin.ts"
+  ]
 }

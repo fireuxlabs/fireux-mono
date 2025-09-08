@@ -12,7 +12,8 @@
     "test-*"
   ],
   "scripts": {
-    "postinstall": "node ./scripts/hotfix-reka-ui.mjs || true",
+  "postinstall": "node ./scripts/hotfix-reka-ui.mjs || true",
+  "prepare:apps": "pnpm -r --filter './projects/*/*' exec nuxi prepare",
     "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
     "dev:fireux": "pnpm --filter ./projects/fireux/fireux-app dev",
     "dev:misebox": "pnpm --filter ./projects/misebox/misebox-app dev",
@@ -23,8 +24,8 @@
     "build:packages": "pnpm -r --filter './packages/*/*' build",
     "tsc:clean": "tsc -b --clean",
     "tsc:check": "tsc -b --pretty",
-    "typecheck:apps": "pnpm -r --filter './projects/*/*' exec nuxi typecheck",
-    "typecheck:packages": "pnpm -r --filter './packages/*/*' exec tsc --noEmit",
+  "typecheck:apps": "pnpm -r --filter './projects/*/*' exec nuxi typecheck",
+  "typecheck:packages": "tsc -p packages/tsconfig.packages.json --noEmit",
     "lint:docs": "node ./tools/scripts/lint-docs-paths.mjs",
     "lint": "eslint . --ext .js,.ts,.vue && pnpm guard:apps:shape",
     "format": "prettier --write .",
