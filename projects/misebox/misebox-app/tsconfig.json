@@ -26,7 +26,7 @@
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-    "types": ["nuxt", "nuxt/schema"],
+  "types": ["nuxt", "nuxt/schema", "@vite-pwa/nuxt"],
     "skipLibCheck": true
   },
   "include": ["./.nuxt/nuxt.d.ts", "./**/*"]
