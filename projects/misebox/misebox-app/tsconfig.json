@@ -21,7 +21,8 @@
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-    "skipLibCheck": true
+  "types": ["nuxt", "nuxt/schema"],
+  "skipLibCheck": true
   },
   "include": ["./**/*"],
   "exclude": ["node_modules", "dist"]

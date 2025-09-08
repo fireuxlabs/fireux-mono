@@ -1,3 +1,5 @@
+// NOTE: Renamed to tsconfig.projects.json to avoid being picked up as a TS project root
+// Move/rename via git mv if desired. Keeping content here for reference.
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {

@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@fireux-core/*": ["../packages/core/fireux-core/src/*"],
+      "@fireux-jobs/*": ["../packages/extensions/fireux-jobs/src/*"],
+      "@fireux-misebox/*": ["../packages/tenants/fireux-misebox/src/*"],
+      "@fireux-cleanbox/*": ["../packages/tenants/fireux-cleanbox/src/*"],
+      "@fireux-places/*": ["../packages/extensions/fireux-places/src/*"]
+    }
+  }
+}
