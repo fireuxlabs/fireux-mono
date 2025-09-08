@@ -2,9 +2,68 @@
 
 Generated: 2025-09-08
 
-This report lists all tsconfig\*.json files found in the repo with their full contents for auditing and comparison.
+This report lists all tsconfig*.json files found in the repo with their full contents for auditing and comparison.
 
 ---
+
+## Quick findings for support
+
+- Cross-project config under `projects/` (resolved):
+  - `projects/tsconfig.json` has been removed to avoid project-root hijacking. `projects/tsconfig.projects.json` remains (safe; not auto-picked up unless referenced).
+- Rogue server tsconfig (resolved):
+  - `packages/core/fireux-core/src/runtime/server/tsconfig.json` has been removed; it previously included another app’s `.nuxt/*.d.ts` which could poison the type graph.
+- App configs:
+  - Each app (`projects/*/*-app/tsconfig.json`) extends its own `./.nuxt/tsconfig.json` and sets `types: ["nuxt", "nuxt/schema"]`. This is correct for macros like `defineAppConfig`.
+- Minimal per-app tsconfig template (recommended):
+
+```jsonc
+{
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
+      "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-misebox": ["../../../packages/tenants/fireux-misebox/src/module.ts"],
+      "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
+      "fireux-cleanbox": ["../../../packages/tenants/fireux-cleanbox/src/module.ts"],
+      "fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
+      "fireux-fireux": ["../../../packages/tenants/fireux-fireux/src/module.ts"],
+      "fireux-fireux/*": ["../../../packages/tenants/fireux-fireux/src/*"],
+      "fireux-jobs": ["../../../packages/extensions/fireux-jobs/src/module.ts"],
+      "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
+      "fireux-places": ["../../../packages/extensions/fireux-places/src/module.ts"],
+      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
+      "~~/*": ["./*"],
+      "~/*": ["./*"],
+      "@/*": ["./*"]
+    },
+    "types": ["nuxt", "nuxt/schema"],
+    "skipLibCheck": true
+  },
+  "include": ["./**/*"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+---
+
+## Status snapshot (post-cleanup)
+
+- Removed cross-project config: projects/tsconfig.json (commit a6e4089)
+- Removed rogue server tsconfig: packages/core/fireux-core/src/runtime/server/tsconfig.json (commit a6e4089)
+- Per-app configs extend their own ./.nuxt/tsconfig.json and include Nuxt types; macro globals like defineAppConfig are provided by these generated types.
+
+### Sanity checklist
+
+- Each app extends its own ./.nuxt/tsconfig.json and keeps tsconfig minimal. ✓
+- No repo-level or folder-level tsconfig that aggregates multiple apps. ✓ (projects/tsconfig.json removed)
+- No package tsconfig references another app’s .nuxt types. ✓ (server tsconfig removed)
+
+### Current app typecheck status (misebox)
+
+- Type generation works; remaining errors are in tenant/core package sources and PWA plugin typings, not macro resolution. If needed, isolate app typecheck by pointing aliases to built d.ts or excluding package sources; otherwise, fix package types.
 
 ## tsconfig.json
 
@@ -66,11 +125,40 @@ Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/tsco
 }
 ```
 
+## packages/extensions/tsconfig.json
+
+Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/tsconfig.json
+
+```jsonc
+{
+  "files": [],
+  "references": [{ "path": "fireux-jobs" }, { "path": "fireux-places" }],
+  "compilerOptions": { "skipLibCheck": true }
+}
+```
+
+## packages/tenants/tsconfig.json
+
+Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/tenants/tsconfig.json
+
+```jsonc
+{
+  "files": [],
+  "references": [
+    { "path": "fireux-misebox" },
+    { "path": "fireux-cleanbox" },
+    { "path": "fireux-fireux" }
+  ],
+  "compilerOptions": { "skipLibCheck": true }
+}
+```
+
 ## projects/tsconfig.json
 
 Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/tsconfig.json
 
 ```jsonc
+// NOTE: This file has been removed to prevent TS from selecting it as a project root.
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
@@ -83,6 +171,26 @@ Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/tsco
       "@fireux-places/*": ["../packages/extensions/fireux-places/src/*"],
     },
   },
+}
+```
+
+## projects/tsconfig.projects.json
+
+Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/tsconfig.projects.json
+
+```jsonc
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@fireux-core/*": ["../packages/core/fireux-core/src/*"],
+      "@fireux-jobs/*": ["../packages/extensions/fireux-jobs/src/*"],
+      "@fireux-misebox/*": ["../packages/tenants/fireux-misebox/src/*"],
+      "@fireux-cleanbox/*": ["../packages/tenants/fireux-cleanbox/src/*"],
+      "@fireux-places/*": ["../packages/extensions/fireux-places/src/*"]
+    }
+  }
 }
 ```
 
@@ -184,6 +292,61 @@ Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/clea
     "types": ["nuxt", "nuxt/schema"],
   },
   "include": ["./**/*"],
+}
+```
+
+## projects/cleanbox/richies-reinigung/tsconfig.json
+
+Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/cleanbox/richies-reinigung/tsconfig.json
+
+```jsonc
+{
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "baseUrl": ".",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
+      "fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
+      "fireux-fireux/*": ["../../../packages/tenants/fireux-fireux/src/*"],
+      "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
+      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
+      "~~/*": ["./*"],
+      "~/*": ["./*"],
+      "@/*": ["./*"]
+    },
+    "skipLibCheck": true,
+    "types": ["nuxt", "nuxt/schema"]
+  },
+  "include": ["./**/*"]
+}
+```
+
+## projects/fireux/tennant/tsconfig.json
+
+Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/fireux/tennant/tsconfig.json
+
+```jsonc
+{
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "baseUrl": ".",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
+      "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
+      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
+      "~~/*": ["./*"],
+      "~/*": ["./*"],
+      "@/*": ["./*"]
+    },
+    "skipLibCheck": true,
+    "types": ["nuxt", "nuxt/schema"]
+  }
 }
 ```
 
@@ -443,6 +606,7 @@ Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/exte
 Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/src/runtime/server/tsconfig.json
 
 ```jsonc
+// NOTE: This file has been removed to avoid cross-app `.nuxt` type leakage.
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
