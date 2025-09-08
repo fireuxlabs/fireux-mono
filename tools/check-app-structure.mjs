@@ -80,6 +80,8 @@ function checkApp(appDir) {
     if (x === 'node_modules') continue
     // allow .gitkeep if someone left it
     if (x === '.gitkeep') continue
+    // allow TS incremental build artifacts
+    if (x.endsWith('.tsbuildinfo')) continue
     // optionally allow README.md per policy toggle
     if (allowReadme && x.toLowerCase() === 'readme.md') continue
     errors.push(`Unexpected top-level entry: ${x}`)
