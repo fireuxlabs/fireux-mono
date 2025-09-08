@@ -1,5 +1,4 @@
 {
-  "extends": "./tsconfig.base.json",
   "files": [],
   "references": [
     { "path": "packages/core/fireux-core" },
@@ -10,6 +9,25 @@
     { "path": "packages/tenants/fireux-fireux" }
   ],
   "compilerOptions": {
-    "baseUrl": "."
+    "baseUrl": ".",
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "fireux-core": ["packages/core/fireux-core/src/module.ts"],
+      "fireux-core/*": ["packages/core/fireux-core/src/*"],
+      "fireux-core/config/*": ["packages/core/fireux-core/src/config/*"],
+      "fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],
+      "fireux-places/*": ["packages/extensions/fireux-places/src/*"],
+      "fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"]
+    }
   }
 }
