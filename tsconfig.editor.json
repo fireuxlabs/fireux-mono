@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "projects/fireux/fireux-app" },
+    { "path": "projects/fireux/tennant" },
+    { "path": "projects/misebox/misebox-app" },
+    { "path": "projects/misebox/niederhorn" },
+    { "path": "projects/cleanbox/cleanbox-app" },
+    { "path": "projects/cleanbox/richies-reinigung" }
+  ]
+}
