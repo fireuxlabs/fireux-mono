@@ -1,5 +1,3 @@
 <template>
-  <ClientOnly>
-    <CoreDefault />
-  </ClientOnly>
+  <CoreDefault />
 </template>

@@ -1,7 +1,5 @@
 <template>
-  <ClientOnly>
-    <CoreDashboard :routes="cleanboxRoutes" />
-  </ClientOnly>
+  <CoreDashboard :routes="cleanboxRoutes" />
 </template>
 
 <script setup lang="ts">
@@ -12,7 +10,5 @@ declare const computed: <T>(getter: () => T) => import('vue').ComputedRef<T>
 
 const { hasProfile } = await useAppUser()
 type LayoutRoutes = { menuBarLinks?: any[]; mobileLinks?: any[] }
-const cleanboxRoutes = computed<LayoutRoutes>(() =>
-  getCleanboxRoutes(hasProfile)
-)
+const cleanboxRoutes = computed<LayoutRoutes>(() => getCleanboxRoutes(hasProfile))
 </script>

@@ -1,7 +1,5 @@
 <template>
-  <ClientOnly>
-    <CoreDefault :routes="cleanboxDevRoutes" />
-  </ClientOnly>
+  <CoreDefault :routes="cleanboxDevRoutes" />
 </template>
 
 <script setup>

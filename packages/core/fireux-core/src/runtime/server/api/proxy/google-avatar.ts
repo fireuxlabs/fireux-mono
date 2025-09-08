@@ -1,4 +1,3 @@
-// NOTE: This endpoint is referenced by useAvatarProxy composable. Keep unless that composable is removed.
 import {
   defineEventHandler,
   getQuery,
