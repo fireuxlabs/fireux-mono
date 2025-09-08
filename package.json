@@ -12,7 +12,7 @@
     "test-*"
   ],
   "scripts": {
-  "postinstall": "node ./scripts/hotfix-reka-ui.mjs || true",
+    "postinstall": "node ./scripts/hotfix-reka-ui.mjs || true",
     "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
     "dev:fireux": "pnpm --filter ./projects/fireux/fireux-app dev",
     "dev:misebox": "pnpm --filter ./projects/misebox/misebox-app dev",
@@ -61,6 +61,7 @@
     "nuxt-vuefire": "^1.0.5",
     "postcss": "^8.4.38",
     "prettier": "^3.5.3",
+    "sass-embedded": "^1.92.1",
     "tailwindcss": "^4.1.12",
     "typescript": "^5.9.2",
     "vite-plugin-pwa": "^1.0.3",
@@ -75,7 +76,7 @@
       "vue": "3.5.20",
       "vuefire": "3.2.2",
       "firebase": "11.10.0",
-  "@nuxt/ui": "3.3.3",
+      "@nuxt/ui": "3.3.3",
       "@nuxt/icon": "2.0.0",
       "@vite-pwa/nuxt": "1.0.4",
       "nuxt-vuefire": "^1.1.0",
