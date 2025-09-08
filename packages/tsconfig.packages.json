@@ -9,7 +9,14 @@
     { "path": "tenants/fireux-fireux" }
   ],
   "compilerOptions": {
+    "composite": true,
     "skipLibCheck": true,
-    "composite": false
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
+    "module": "ESNext",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strict": true
   }
 }
