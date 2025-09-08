@@ -6,6 +6,25 @@ This report lists all tsconfig*.json files found in the repo with their full con
 
 ---
 
+## defineAppConfig TS2304 troubleshooting (Cannot find name 'defineAppConfig')
+
+If you see TS2304 in `app.config.ts` or `app/app.config.ts`, ensure the following:
+
+- Each app tsconfig extends its own `./.nuxt/tsconfig.json` (Nuxt generates macro types during `nuxi prepare`).
+- If you declare `compilerOptions.types`, include `"nuxt"` and `"nuxt/schema"`. Otherwise, rely on the inherited types from the Nuxt tsconfig.
+- The file is included by tsconfig (`include` covers `./**/*`) and not excluded.
+- No cross-app tsconfig is leaking types (we removed `projects/tsconfig.json` and a rogue server tsconfig previously).
+- Run: `pnpm --filter <app> exec nuxi prepare` then `pnpm --filter <app> exec nuxi typecheck`.
+
+Quick diagnostics when it persists:
+
+- Check `./.nuxt/nuxt.d.ts` contains `declare function defineAppConfig`. If missing, re-run `nuxi prepare` and confirm `nuxt` is installed in that workspace project.
+- Delete the `.nuxt` folder and re-run prepare; restart VS Code TypeScript server.
+- Keep `moduleResolution: "Bundler"` and `baseUrl: "."` in app tsconfig.
+- Do not add `import { defineAppConfig }`—macros are global via Nuxt d.ts.
+
+---
+
 ## Quick findings for support
 
 - Cross-project config under `projects/` (resolved):
@@ -229,8 +248,9 @@ Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/mise
       "~~/*": ["./*"],
       "~/*": ["./*"],
       "@/*": ["./*"],
-    },
-    "skipLibCheck": true,
+  },
+  "types": ["nuxt", "nuxt/schema"],
+  "skipLibCheck": true,
   },
   "include": ["./**/*"],
   "exclude": ["node_modules", "dist"],
