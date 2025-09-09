@@ -20,7 +20,6 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
 
 const isInitialized = ref(true)
 

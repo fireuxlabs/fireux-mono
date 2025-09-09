@@ -3,15 +3,15 @@
     <ClientOnly>
       <Transition name="fade">
         <div>
-          <FireOrganismsAuthAuthenticated
+          <OrganismsAuthAuthenticated
             v-if="authState === 'AUTHENTICATED'"
           />
           <button v-if="authState === 'AUTHENTICATED' && !coreUser">
             <UButton @click="handleEnsureCoreUser">Recreate Core User</UButton>
           </button>
           <div v-else class="auth-central">
-            <FireOrganismsAuthGoogle />
-            <FireOrganismsAuthEmail />
+            <OrganismsAuthGoogle />
+            <OrganismsAuthEmail />
           </div>
         </div>
       </Transition>

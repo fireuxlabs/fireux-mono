@@ -1,9 +1,5 @@
-import { useState } from 'nuxt/app'
-import type { AppUser } from '../../models/core/appUser.model'
+// Deprecated: useAppUserState has moved to composables/app/user/useAppUserState.ts
+// This file is intentionally left without exports to avoid Nuxt auto-import duplication.
+// Please update imports to rely on auto-import from the canonical path.
 
-export function useAppUserState() {
-  return {
-    appUser: useState<AppUser | null>('appUser'),
-    appUsers: useState<AppUser[]>('appUsers'),
-  }
-}
+export {}
