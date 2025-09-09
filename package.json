@@ -12,7 +12,6 @@
     "test-*"
   ],
   "scripts": {
-    "postinstall": "node ./scripts/hotfix-reka-ui.mjs || true",
     "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
     "dev:fireux": "pnpm --filter ./projects/fireux/fireux-app dev",
     "dev:misebox": "pnpm --filter ./projects/misebox/misebox-app dev",
