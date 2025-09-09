@@ -29,6 +29,6 @@
     "types": ["nuxt", "nuxt/schema"],
     "skipLibCheck": true
   },
-  "include": ["./**/*"],
+  "include": ["./.nuxt/nuxt.d.ts", "./**/*"],
   "exclude": ["node_modules", "dist"]
 }
