@@ -1,7 +1,6 @@
-import { computed } from 'vue'
-import { doc } from 'firebase/firestore'
+import { ref, computed, type Ref } from 'vue'
+import { doc, type DocumentReference } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
-import type { DocumentReference } from 'firebase/firestore'
 import { useFirestoreRead } from '../useFirestoreRead'
 import type { AppUser } from '../../../models/core/appUser.model'
 import { useAppUserUtils } from './useAppUserUtils'
@@ -16,28 +15,33 @@ export async function useAppUser() {
   const { appId } = useFireUXConfig()
 
   const db = useFirestore()
-  const currentUser = useCurrentUser()
   const { firestoreFetchCollection } = useFirestoreRead()
 
-  const appUserDocRef = computed<DocumentReference<AppUser> | null>(() =>
-    currentUser.value && appId
-      ? (doc(
-          db,
-          `apps/${appId}/users`,
-          currentUser.value.uid
-        ) as DocumentReference<AppUser>)
-      : null
-  )
+  // Guard useCurrentUser() for SSR/hydration; only access on client
+  const currentUser: Ref<null | { uid: string }> = import.meta.client
+    ? useCurrentUser()
+    : ref(null)
+
+  const appUserDocRef = computed<DocumentReference<AppUser> | null>(() => {
+    if (!import.meta.client) return null
+    if (!currentUser.value || !appId) return null
+    return doc(
+      db,
+      `apps/${appId}/users`,
+      currentUser.value.uid
+    ) as DocumentReference<AppUser>
+  })
 
   const { data: appUserData } = useDocument<AppUser>(appUserDocRef)
 
   // Convert undefined to null for consistency
   const appUser = computed(() => appUserData.value ?? null)
 
-  // Eagerly fetch all app users (equivalent to allProfiles in useProfile)
-  const appUsers = await firestoreFetchCollection<AppUser>(
-    `apps/${appId}/users`
-  )
+  // Avoid collection fetch without appId or on server
+  const appUsers =
+    appId && import.meta.client
+      ? await firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
+      : []
 
   return {
     // Current entity
