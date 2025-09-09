@@ -1,4 +1,5 @@
 {
+  // tsconfig for Richies app — do not override Nuxt aliases (~, @, ~~)
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
     "composite": false,
@@ -10,13 +11,12 @@
       "fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
       "fireux-fireux/*": ["../../../packages/tenants/fireux-fireux/src/*"],
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
-      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
-      "~~/*": ["./*"],
-      "~/*": ["./*"],
-      "@/*": ["./*"]
+      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"]
+      // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
     "skipLibCheck": true,
-    "types": ["nuxt", "nuxt/schema"]
+    "types": ["nuxt", "@vite-pwa/nuxt", "vite/client"]
   },
-  "include": ["./.nuxt/nuxt.d.ts", "./**/*"]
+  "include": ["./.nuxt/nuxt.d.ts", "./**/*"],
+  "exclude": ["node_modules"]
 }

@@ -1,34 +1,22 @@
 {
+  // tsconfig for Misebox app — do not override Nuxt aliases (~, @, ~~)
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
+    "composite": false,
     "baseUrl": ".",
     "moduleResolution": "Bundler",
     "paths": {
-      "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
-
-      "fireux-misebox": ["../../../packages/tenants/fireux-misebox/src/module.ts"],
       "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
-
-      "fireux-cleanbox": ["../../../packages/tenants/fireux-cleanbox/src/module.ts"],
       "fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
-
-      "fireux-fireux": ["../../../packages/tenants/fireux-fireux/src/module.ts"],
       "fireux-fireux/*": ["../../../packages/tenants/fireux-fireux/src/*"],
-
-      "fireux-jobs": ["../../../packages/extensions/fireux-jobs/src/module.ts"],
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
-
-      "fireux-places": ["../../../packages/extensions/fireux-places/src/module.ts"],
-      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
-
-      "~~/*": ["./*"],
-      "~/*": ["./*"],
-      "@/*": ["./*"]
+      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"]
+      // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
-    "types": ["nuxt", "nuxt/schema"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+  "types": ["nuxt", "@vite-pwa/nuxt", "vite/client"]
   },
   "include": ["./.nuxt/nuxt.d.ts", "./**/*"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules"]
 }

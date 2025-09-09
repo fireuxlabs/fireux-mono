@@ -2,7 +2,7 @@
 
 Generated: 2025-09-08
 
-This report lists all tsconfig*.json files found in the repo with their full contents for auditing and comparison.
+This report lists all tsconfig\*.json files found in the repo with their full contents for auditing and comparison.
 
 ---
 
@@ -25,25 +25,33 @@ This report lists all tsconfig*.json files found in the repo with their full con
     "paths": {
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
-      "fireux-misebox": ["../../../packages/tenants/fireux-misebox/src/module.ts"],
+      "fireux-misebox": [
+        "../../../packages/tenants/fireux-misebox/src/module.ts",
+      ],
       "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
-      "fireux-cleanbox": ["../../../packages/tenants/fireux-cleanbox/src/module.ts"],
+      "fireux-cleanbox": [
+        "../../../packages/tenants/fireux-cleanbox/src/module.ts",
+      ],
       "fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
-      "fireux-fireux": ["../../../packages/tenants/fireux-fireux/src/module.ts"],
+      "fireux-fireux": [
+        "../../../packages/tenants/fireux-fireux/src/module.ts",
+      ],
       "fireux-fireux/*": ["../../../packages/tenants/fireux-fireux/src/*"],
       "fireux-jobs": ["../../../packages/extensions/fireux-jobs/src/module.ts"],
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
-      "fireux-places": ["../../../packages/extensions/fireux-places/src/module.ts"],
+      "fireux-places": [
+        "../../../packages/extensions/fireux-places/src/module.ts",
+      ],
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
     },
     "types": ["nuxt", "nuxt/schema"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
   "include": ["./**/*"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
 }
 ```
 
@@ -133,7 +141,7 @@ Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/exte
 {
   "files": [],
   "references": [{ "path": "fireux-jobs" }, { "path": "fireux-places" }],
-  "compilerOptions": { "skipLibCheck": true }
+  "compilerOptions": { "skipLibCheck": true },
 }
 ```
 
@@ -147,9 +155,9 @@ Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/tena
   "references": [
     { "path": "fireux-misebox" },
     { "path": "fireux-cleanbox" },
-    { "path": "fireux-fireux" }
+    { "path": "fireux-fireux" },
   ],
-  "compilerOptions": { "skipLibCheck": true }
+  "compilerOptions": { "skipLibCheck": true },
 }
 ```
 
@@ -188,9 +196,9 @@ Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/tsco
       "@fireux-jobs/*": ["../packages/extensions/fireux-jobs/src/*"],
       "@fireux-misebox/*": ["../packages/tenants/fireux-misebox/src/*"],
       "@fireux-cleanbox/*": ["../packages/tenants/fireux-cleanbox/src/*"],
-      "@fireux-places/*": ["../packages/extensions/fireux-places/src/*"]
-    }
-  }
+      "@fireux-places/*": ["../packages/extensions/fireux-places/src/*"],
+    },
+  },
 }
 ```
 
@@ -315,12 +323,12 @@ Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/clea
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
     },
     "skipLibCheck": true,
-    "types": ["nuxt", "nuxt/schema"]
+    "types": ["nuxt", "nuxt/schema"],
   },
-  "include": ["./**/*"]
+  "include": ["./**/*"],
 }
 ```
 
@@ -342,11 +350,11 @@ Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/projects/fire
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "~~/*": ["./*"],
       "~/*": ["./*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
     },
     "skipLibCheck": true,
-    "types": ["nuxt", "nuxt/schema"]
-  }
+    "types": ["nuxt", "nuxt/schema"],
+  },
 }
 ```
 
