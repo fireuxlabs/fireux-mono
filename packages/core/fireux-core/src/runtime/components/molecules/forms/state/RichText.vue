@@ -11,8 +11,13 @@
 </template>
 
 <script setup lang="ts">
-import { QuillEditor } from '@vueup/vue-quill'
-import '@vueup/vue-quill/dist/vue-quill.snow.css'
+// Import Quill only on client to avoid TS resolution issues during typecheck
+let QuillEditor: any
+if (process.client) {
+  const mod = await import('@vueup/vue-quill')
+  QuillEditor = mod.QuillEditor
+  await import('@vueup/vue-quill/dist/vue-quill.snow.css')
+}
 
 const props = defineProps<{ modelValue: string | undefined }>()
 const emit = defineEmits<{

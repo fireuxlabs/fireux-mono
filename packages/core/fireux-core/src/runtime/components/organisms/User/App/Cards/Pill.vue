@@ -12,14 +12,14 @@
       </div>
     </div>
 
-    <div v-if="appUser?.isAdmin">
-      <UBadge color="red">Admin</UBadge>
+    <div v-if="appUser?.role === 'admin'">
+      <UBadge color="error">Admin</UBadge>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import type { AppUser } from '../../../../../models/app/appUser.model'
+import type { AppUser } from '../../../../../models'
 
 defineProps<{
   appUser?: Partial<AppUser>

@@ -21,6 +21,7 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
+  "typeRoots": ["./types", "./node_modules/@types"],
     "paths": {
       "fireux-core": ["packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["packages/core/fireux-core/src/*"],

@@ -26,7 +26,7 @@
       </template>
     </UModal>
   </UApp>
-  </template>
+</template>
 <script setup>
 const isInitialized = true
 

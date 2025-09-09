@@ -7,32 +7,36 @@
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
 
-      "fireux-misebox": ["../../../packages/tenants/fireux-misebox/src/module.ts"],
+      "fireux-misebox": [
+        "../../../packages/tenants/fireux-misebox/src/module.ts"
+      ],
       "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
 
-      "fireux-cleanbox": ["../../../packages/tenants/fireux-cleanbox/src/module.ts"],
+      "fireux-cleanbox": [
+        "../../../packages/tenants/fireux-cleanbox/src/module.ts"
+      ],
       "fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
 
-      "fireux-fireux": ["../../../packages/tenants/fireux-fireux/src/module.ts"],
+      "fireux-fireux": [
+        "../../../packages/tenants/fireux-fireux/src/module.ts"
+      ],
       "fireux-fireux/*": ["../../../packages/tenants/fireux-fireux/src/*"],
 
       "fireux-jobs": ["../../../packages/extensions/fireux-jobs/src/module.ts"],
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
 
-      "fireux-places": ["../../../packages/extensions/fireux-places/src/module.ts"],
+      "fireux-places": [
+        "../../../packages/extensions/fireux-places/src/module.ts"
+      ],
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
 
       "~~/*": ["./*"],
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-  "types": ["nuxt", "nuxt/schema", "@vite-pwa/nuxt"],
+    "types": ["nuxt", "nuxt/schema", "@vite-pwa/nuxt"],
     "skipLibCheck": true
   },
   "include": ["./.nuxt/nuxt.d.ts", "./**/*"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "./.nuxt/pwa-icons-plugin.ts"
-  ]
+  "exclude": ["node_modules", "dist", "./.nuxt/pwa-icons-plugin.ts"]
 }

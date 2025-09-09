@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-const { totalUsers, activeUsers } = useAdminMetrics()
+const { totalUsers, activeUsers } = useUserMetrics()
 </script>
 
 <style scoped>

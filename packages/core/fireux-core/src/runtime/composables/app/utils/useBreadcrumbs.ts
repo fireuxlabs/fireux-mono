@@ -18,7 +18,7 @@ export function useBreadcrumbs() {
 
     const lastMatch = route.matched[route.matched.length - 1] || {}
     const currentLabel =
-      lastMatch.meta?.breadcrumb || route.name || lastMatch.name || route.path
+  (lastMatch as any)?.meta?.breadcrumb || (route as any)?.name || (lastMatch as any)?.name || route.path
 
     const currentIcon = defaultIcon // Simple default for now
 

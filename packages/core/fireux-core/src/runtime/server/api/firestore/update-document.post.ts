@@ -135,7 +135,7 @@ export default defineEventHandler(async (event) => {
     console.log('🔧 [update-document] Current Firebase apps:', getApps().length)
 
     // Initialize Firebase Admin with the correct service account and get the app instance
-    const app = await initializeFirebaseAdmin()
+  const app = await initializeFirebaseAdmin()
 
     console.log(
       '🔧 [update-document] After initialization, Firebase apps:',
@@ -163,6 +163,12 @@ export default defineEventHandler(async (event) => {
     console.log(`📝 [update-document] Updating ${collection}/${documentId}`)
 
     // Get Firestore instance from the initialized app
+    if (!app) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Firebase Admin app not initialized',
+      })
+    }
     const db = getFirestore(app)
 
     // Update the document

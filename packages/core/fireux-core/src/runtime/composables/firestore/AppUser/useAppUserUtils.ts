@@ -39,8 +39,8 @@ export function useAppUserUtils() {
       baseName = user.display_name
     } else if (user.handle && user.handle !== user.email) {
       baseName = user.handle
-    } else if (user.email) {
-      baseName = user.email.split('@')[0]
+    } else if (user.email && typeof user.email === 'string') {
+      baseName = user.email.split('@')[0] || `user-${user.uid.slice(-8)}`
     } else {
       baseName = `user-${user.uid.slice(-8)}`
     }

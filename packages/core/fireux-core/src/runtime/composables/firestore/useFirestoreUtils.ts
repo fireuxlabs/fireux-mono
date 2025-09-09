@@ -66,8 +66,10 @@ export function useFirestoreUtils() {
       constraints.push(where('appId', '==', appId))
     }
     const q = query(collection(db, collectionName), ...constraints)
-    const snapshot = await getDocs(q)
-    return snapshot.empty ? null : (snapshot.docs[0].data() as T)
+  const snapshot = await getDocs(q)
+  if (snapshot.empty) return null
+  const first = snapshot.docs[0]
+  return first ? (first.data() as T) : null
   }
 
   /**

@@ -93,7 +93,7 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     '@nuxt/ui',
     '@nuxt/icon',
     ['nuxt-vuefire', vuefireMerged],
-  ['@vite-pwa/nuxt', pwaMerged],
+    ['@vite-pwa/nuxt', pwaMerged],
     ...(includeCore ? (['fireux-core'] as ModuleEntry[]) : []),
   ]
 
@@ -122,7 +122,7 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
       },
     },
 
-  modules,
+    modules,
     app: { head: { title: opts.appName } },
     runtimeConfig: {
       // server-only (JSON string accepted; OR rely on GOOGLE_APPLICATION_CREDENTIALS path env)
