@@ -1,5 +1,5 @@
 // ~/composables/firestore/CoreUser/useCoreUser.ts
-import { computed } from 'vue'
+import { ref, computed, type Ref } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useDocument, useCurrentUser, useFirestore } from 'vuefire'
 import type { DocumentReference } from 'firebase/firestore'
@@ -9,34 +9,27 @@ import { useCoreUserUpdate } from './useCoreUserUpdate'
 import { useCoreUserDelete } from './useCoreUserDelete'
 import { useCoreUserComputed } from './useCoreUserComputed'
 import type { CoreUser } from '../../../models/core/coreUser.model'
-import { getApps } from 'firebase/app'
 
 export async function useCoreUser() {
-  // Ensure Firebase is initialized
-  if (!getApps().length) {
-    throw new Error(
-      'Firebase is not initialized. Please initialize Firebase before using this composable.'
-    )
-  }
-
   const db = useFirestore()
-  const currentUser = useCurrentUser()
+  // Guard useCurrentUser for SSR/hydration; only access on client
+  const currentUser: Ref<null | { uid: string }> = import.meta.client
+    ? useCurrentUser()
+    : ref(null)
   const { firestoreFetchCollection } = useFirestoreManager()
 
-  const coreUserDocRef = computed<DocumentReference<CoreUser> | null>(() =>
-    currentUser.value
-      ? (doc(
-          db,
-          'core-users',
-          currentUser.value.uid
-        ) as DocumentReference<CoreUser>)
-      : null
-  )
+  const coreUserDocRef = computed<DocumentReference<CoreUser> | null>(() => {
+    if (!import.meta.client) return null
+    if (!currentUser.value) return null
+    return doc(db, 'core-users', currentUser.value.uid) as DocumentReference<CoreUser>
+  })
 
   const { data: coreUser } = useDocument<CoreUser>(coreUserDocRef)
 
-  // Collections - fetch all core users (remove client-only restriction for dev purposes)
-  const coreUsers = await firestoreFetchCollection<CoreUser>('core-users')
+  // Collections - fetch all core users (client-only)
+  const coreUsers = import.meta.client
+    ? await firestoreFetchCollection<CoreUser>('core-users')
+    : []
 
   return {
     // Current entity
