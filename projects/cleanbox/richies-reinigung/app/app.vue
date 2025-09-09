@@ -1,14 +1,6 @@
 <template>
   <UApp>
-    <!-- Injects PWA icons, apple splashscreens, favicons, etc. -->
-    <NuxtPwaAssets />
-    <ClientOnly>
-      <Teleport to="body">
-        <div class="debug-overlay">
-          <AppDebug />
-        </div>
-      </Teleport>
-    </ClientOnly>
+    <AppDev />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
@@ -26,7 +18,14 @@
 </template>
 
 <script setup>
-const isInitialized = true
+import { ref, onMounted } from 'vue'
+
+const isInitialized = ref(true)
+
+onMounted(async () => {
+  const { isInitialized: init } = await useApp()
+  isInitialized.value = init.value
+})
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
@@ -34,12 +33,5 @@ useHead({
 </script>
 
 <style scoped>
-/* Debug overlay pinned above everything (even modals) */
-.debug-overlay {
-  position: fixed;
-  top: 0.75rem;
-  right: 0.75rem;
-  z-index: 2147483647; /* Max practical z-index */
-  pointer-events: auto;
-}
+/* No debug styles needed */
 </style>

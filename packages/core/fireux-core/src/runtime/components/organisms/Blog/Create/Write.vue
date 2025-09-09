@@ -20,12 +20,8 @@
 
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
-let QuillEditor: any
-if (process.client) {
-  const mod = await import('@vueup/vue-quill')
-  QuillEditor = mod.QuillEditor
-  await import('@vueup/vue-quill/dist/vue-quill.snow.css')
-}
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { useCreateBlogPostState } from '../../../../composables/firestore/objects/Blog/useCreateBlogPostState'
 import { useBlogPosts } from '../../../../composables/firestore/objects/Blog/useBlogPosts'
 

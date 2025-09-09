@@ -56,8 +56,14 @@
             :variant="
               product.product_type === option.value ? 'solid' : 'outline'
             "
-            :color="product.product_type === option.value ? 'primary' : 'neutral'"
-            @click="setProductType(option.value as AllowedType)"
+            :color="product.product_type === option.value ? 'primary' : 'gray'"
+            @click="
+              product.product_type = option.value as
+                | 'physical'
+                | 'digital'
+                | 'service'
+                | 'subscription'
+            "
             class="product-type-button"
           >
             <Icon :name="option.icon" class="w-5 h-5 mr-2" />
@@ -121,12 +127,6 @@ const productTypeOptions = [
       'Recurring access to products/services. Automatically billed monthly or yearly (SaaS, memberships, etc.).',
   },
 ]
-
-type AllowedType = 'physical' | 'digital' | 'service' | 'subscription'
-function setProductType(val: AllowedType) {
-  // product is a RemovableRef<Partial<FirebaseProduct>>; assign via .value
-  ;(product.value as any).product_type = val
-}
 </script>
 
 <style scoped>

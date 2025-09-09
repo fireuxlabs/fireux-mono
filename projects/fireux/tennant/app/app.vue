@@ -1,48 +1,8 @@
 <template>
-  <UApp>
-    <!-- Injects PWA icons, apple splashscreens, favicons, etc. -->
-    <NuxtPwaAssets />
-
-    <ClientOnly>
-      <Teleport to="body">
-        <div class="debug-overlay">
-          <AppDebug />
-        </div>
-      </Teleport>
-    </ClientOnly>
-
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-
-    <UModal
-      :open="!isInitialized"
-      prevent-close
-      title="🚫 Blocked"
-      description="This app needs to be initialized."
-    >
-      <template #body>
-        <OrganismsAppOnboarding />
-      </template>
-    </UModal>
-  </UApp>
+  <UContainer>
+    <UCard>
+      <h1 class="text-2xl font-bold">FireUX Tennant</h1>
+      <p class="text-sm opacity-80">Simple test tenant app.</p>
+    </UCard>
+  </UContainer>
 </template>
-
-<script setup>
-const isInitialized = true
-
-useHead({
-  link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
-})
-</script>
-
-<style scoped>
-/* Debug overlay pinned above everything (even modals) */
-.debug-overlay {
-  position: fixed;
-  top: 0.75rem;
-  right: 0.75rem;
-  z-index: 2147483647; /* Max practical z-index */
-  pointer-events: auto;
-}
-</style>

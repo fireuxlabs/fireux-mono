@@ -9,6 +9,5 @@
       "@fireux-cleanbox/*": ["../packages/tenants/fireux-cleanbox/src/*"],
       "@fireux-places/*": ["../packages/extensions/fireux-places/src/*"]
     }
-  },
-  "files": []
+  }
 }

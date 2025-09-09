@@ -30,7 +30,7 @@
         <UButton
           icon="i-lucide-x"
           variant="solid"
-          color="error"
+          color="red"
           size="sm"
           @click="clearImage"
         >

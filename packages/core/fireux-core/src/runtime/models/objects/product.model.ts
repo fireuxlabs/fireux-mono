@@ -58,7 +58,7 @@ export interface FirebaseProduct extends Product {
   main_image?: string
   default_price?: DefaultPrice
   stock?: number | null
-  product_type?: 'physical' | 'digital' | 'service' | 'subscription'
+  product_type?: 'physical' | 'digital' | 'service'
   track_stock?: boolean
   creator_id?: string
   appId?: string
@@ -76,7 +76,7 @@ export interface ProductCreationInput {
   active?: boolean
   slug?: string
   stock?: number | null
-  product_type?: 'physical' | 'digital' | 'service' | 'subscription'
+  product_type?: 'physical' | 'digital' | 'service'
   track_stock?: boolean
   main_image?: string
   appId?: string

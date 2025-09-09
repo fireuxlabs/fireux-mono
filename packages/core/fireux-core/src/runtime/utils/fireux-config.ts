@@ -71,10 +71,6 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
 
   const pwaDefaults = {
     registerType: 'autoUpdate',
-    // Enable PWA assets/types generation (components/composables like PwaAppleImage, #pwa)
-    pwaAssets: {
-      source: 'public/pwa.svg',
-    },
     manifest: {
       name: opts.appName,
       short_name: opts.appShortName,
@@ -112,15 +108,6 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     srcDir: 'app',
     // composables only; models stay explicit-import-only
     imports: { dirs: ['composables/**', 'utils/**'] },
-    // Ensure TS can resolve Nuxt virtual aliases like #imports and #build during typecheck
-    typescript: {
-      tsConfig: {
-        compilerOptions: {
-          // baseUrl is required for "paths" mappings in generated .nuxt/tsconfig to take effect
-          baseUrl: '.',
-        },
-      },
-    },
 
     modules,
     app: { head: { title: opts.appName } },

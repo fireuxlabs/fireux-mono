@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BlogPost } from '../../models/objects/blogPost.model'
+import type { BlogPost } from '../../../models/blogPost.model'
 
 defineProps<{ posts: BlogPost[] }>()
 </script>

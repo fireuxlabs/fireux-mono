@@ -14,7 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import type { BlogPost } from '../../../models/objects/blogPost.model'
 
 defineProps<{ post: BlogPost }>()
 

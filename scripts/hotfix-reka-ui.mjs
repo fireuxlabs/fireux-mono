@@ -13,9 +13,7 @@ try {
   const globBase = join(root, 'node_modules/.pnpm')
   const { readdirSync, statSync } = await import('node:fs')
 
-  const entries = readdirSync(globBase).filter((n) =>
-    n.startsWith('reka-ui@2.5.0')
-  )
+  const entries = readdirSync(globBase).filter(n => n.startsWith('reka-ui@2.5.0'))
   if (!entries.length) {
     process.exit(0)
   }
@@ -29,12 +27,7 @@ try {
       writeFileSync(indexJs, "export * from '../date.js'\n", 'utf8')
       // also CJS, just in case
       const indexCjs = join(dateDir, 'index.cjs')
-      if (!existsSync(indexCjs))
-        writeFileSync(
-          indexCjs,
-          "module.exports = require('../date.cjs')\n",
-          'utf8'
-        )
+      if (!existsSync(indexCjs)) writeFileSync(indexCjs, "module.exports = require('../date.cjs')\n", 'utf8')
       console.log(`[hotfix] Patched ${indexJs}`)
     }
   }

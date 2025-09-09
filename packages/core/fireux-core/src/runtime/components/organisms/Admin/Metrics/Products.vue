@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-const { totalProducts, activeProducts, outOfStockProducts } = await useProductMetrics()
+const { totalProducts, activeProducts, outOfStockProducts } = useAdminMetrics()
 </script>
 
 <style scoped>

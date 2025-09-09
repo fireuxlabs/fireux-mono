@@ -18,8 +18,10 @@
     <!-- Call to Action -->
     <LandingCTA />
 
-    <!-- Reserved block for future CMS-driven content -->
-    <!-- Temporarily removed ContentRenderer to avoid missing component warn -->
+    <!-- Content from CMS (if available) -->
+    <div v-if="page">
+      <ContentRenderer :value="page" />
+    </div>
   </div>
 </template>
 
@@ -31,10 +33,10 @@ useSeoMeta({
     'Streamline your cleaning business with automated scheduling, client management, and secure payments. Grow your cleaning company with CleanBox.',
 })
 
-// CMS content temporarily disabled; bring back when Nuxt Content is wired
-// const { data: page } = await useAsyncData('index', () =>
-//   queryCollection('content').path('/').first()
-// )
+// Fetch the content for additional sections
+const { data: page } = await useAsyncData('index', () =>
+  queryCollection('content').path('/').first()
+)
 </script>
 
 <style scoped>

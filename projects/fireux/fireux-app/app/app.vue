@@ -1,8 +1,5 @@
 <template>
   <UApp>
-    <!-- Injects PWA icons, apple splashscreens, favicons, etc. -->
-    <NuxtPwaAssets />
-
     <ClientOnly>
       <Teleport to="body">
         <div class="debug-overlay">
@@ -27,6 +24,7 @@
     </UModal>
   </UApp>
 </template>
+
 <script setup>
 const isInitialized = true
 
