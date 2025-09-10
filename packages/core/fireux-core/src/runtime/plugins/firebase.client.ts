@@ -29,6 +29,31 @@ export default defineNuxtPlugin(() => {
     })
   }
 
+  // Lightweight coherence validation to catch mixed project credentials
+  function validateConfig(cfg: any) {
+    if (!cfg) return
+  const { projectId, authDomain, storageBucket } = cfg
+    const problems: string[] = []
+    if (projectId && authDomain && !authDomain.startsWith(projectId)) {
+      problems.push(
+        `authDomain (${authDomain}) does not start with projectId (${projectId})`
+      )
+    }
+    if (projectId && storageBucket && !storageBucket.startsWith(projectId)) {
+      problems.push(
+        `storageBucket (${storageBucket}) does not start with projectId (${projectId})`
+      )
+    }
+    if (problems.length) {
+      devLog('CONFIG MISMATCH DETECTED', { problems })
+      // Provide a focused hint for common copy/paste mixups
+      devLog(
+        'Hint: Ensure ALL FIREBASE_* vars come from the SAME copied web app snippet in Firebase console.'
+      )
+    }
+  }
+  if (import.meta.dev) validateConfig(firebaseConfig)
+
   if (!getApps().length) {
     try {
       initializeApp(firebaseConfig as FirebaseOptions)
