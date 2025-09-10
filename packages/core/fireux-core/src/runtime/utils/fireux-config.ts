@@ -127,6 +127,11 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
           appId, // may be undefined; that's okay
           ecosystem: opts.ecosystem,
         },
+        // Expose the resolved module list (string form) so runtime composables
+        // like useFireUXConfig can introspect enabled tenant/feature modules.
+        // NOTE: Was previously missing; downstream code expecting modules would receive []
+        // which could cause feature detection divergence between tenants.
+        modules: modules.map((m) => (Array.isArray(m) ? m[0] : m)),
       },
     },
     compatibilityDate: (opts.compatibilityDate ??

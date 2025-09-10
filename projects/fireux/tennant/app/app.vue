@@ -1,8 +1,8 @@
 <template>
-  <UContainer>
-    <UCard>
-      <h1 class="text-2xl font-bold">FireUX Tennant</h1>
-      <p class="text-sm opacity-80">Simple test tenant app.</p>
-    </UCard>
-  </UContainer>
+  <AppFireuxAppShell />
+  <!-- Path-prefixed auto-import: components/app/FireuxAppShell.vue -->
 </template>
+
+<script setup lang="ts">
+// No local logic; all behavior lives in core shell
+</script>

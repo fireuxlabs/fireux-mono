@@ -14,25 +14,48 @@ export default defineNuxtPlugin(() => {
   } = useRuntimeConfig()
 
   // HMR-safe: only initialize if no app exists; otherwise ensure default app is accessible
+  const devLog = (...args: any[]) => {
+    if (import.meta.dev) console.log('[fireux-core/firebase]', ...args)
+  }
+
+  const start = performance.now()
+  if (import.meta.dev) {
+    const { projectId, appId } = (firebaseConfig || {}) as any
+    devLog('plugin start', {
+      existingApps: getApps().length,
+      projectId,
+      appId,
+      hasConfig: !!firebaseConfig,
+    })
+  }
+
   if (!getApps().length) {
     try {
       initializeApp(firebaseConfig as FirebaseOptions)
+      devLog('initialized new Firebase app')
     } catch (e) {
-      if (import.meta.dev) {
-        // eslint-disable-next-line no-console
-        console.error('[fireux-core/firebase] initializeApp failed', e)
-      }
+      devLog('initializeApp failed', e)
       throw e
     }
   } else {
     try {
-      getApp()
+      const app = getApp()
+      devLog('re-using existing Firebase app', { name: app.name })
     } catch (e) {
-      // Should not happen, but keep a safe guard in dev
-      if (import.meta.dev) {
-        // eslint-disable-next-line no-console
-        console.warn('[fireux-core/firebase] getApp failed unexpectedly', e)
-      }
+      devLog('getApp failed unexpectedly', e)
     }
   }
+
+  // Expose for in-browser debugging (non-production only)
+  if (import.meta.dev && typeof window !== 'undefined') {
+    try {
+      // @ts-ignore Debug handle
+      window.__fireuxFirebaseApp = getApp()
+      devLog('attached app to window.__fireuxFirebaseApp')
+    } catch (e) {
+      devLog('failed attaching app to window', e)
+    }
+  }
+
+  devLog('plugin end', { ms: Math.round(performance.now() - start) })
 })

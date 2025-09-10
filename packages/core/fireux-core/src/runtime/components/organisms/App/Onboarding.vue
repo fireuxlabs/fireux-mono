@@ -1,10 +1,8 @@
 <template>
   <UContainer>
     <div v-if="!isUnlocked">
-      <template v-if="coreUser === undefined">
-        <p>Loading user data...</p>
-      </template>
-      <template v-else-if="coreUser === null">
+      <!-- Treat undefined (loading) same as null: show auth immediately to avoid dead state -->
+      <template v-if="coreUser == null">
         <OrganismsAuthSystem />
       </template>
       <template v-else>
@@ -38,6 +36,11 @@
 
 <script setup>
 const { coreUser } = await useCoreUser()
+if (import.meta.dev) {
+  watch(coreUser, (val) => {
+    console.log('[Onboarding] coreUser changed', val)
+  })
+}
 const { data: envData, error: envError } = await useFetch(
   '/api/app/env-check',
   {

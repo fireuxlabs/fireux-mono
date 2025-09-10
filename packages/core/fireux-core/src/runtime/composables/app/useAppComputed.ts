@@ -8,16 +8,15 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
   const currentUser = useCurrentUser()
 
   // Computed properties
+  // VueFire useDocument ref states:
+  //   undefined => still loading
+  //   null      => document does not exist
+  //   object    => document data
+  const isLoading = computed(() => app.value === undefined)
   const isInitialized = computed(() => {
-    console.log('🔍 isInitialized check: (app)', {
-      appValue: app.value,
-      appExists: !!app.value,
-      adminIds: app.value?.admin_ids,
-      hasAdminIds: !!app.value?.admin_ids?.length,
-    })
-
-    if (!app.value) return false // Return false by default if app is undefined or null
-    return !!app.value.admin_ids?.length // Check if admin_ids exists and has a length
+    if (app.value === undefined) return false // loading phase – treat as not yet initialized but allow separate handling
+    if (app.value === null) return false // no doc yet
+    return !!app.value.admin_ids?.length
   })
 
   // Methods
@@ -33,6 +32,7 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
 
   return {
     // Computed properties
+    isLoading,
     isInitialized,
 
     // Methods
