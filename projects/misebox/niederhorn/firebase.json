@@ -1,6 +1,13 @@
 {
+  "functions": {
+    "source": ".output/server",
+    "runtime": "nodejs22"
+  },
   "hosting": {
-    "public": "public",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    "site": "misebox-78f9c",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{ "source": "**", "function": "server" }]
   }
 }
