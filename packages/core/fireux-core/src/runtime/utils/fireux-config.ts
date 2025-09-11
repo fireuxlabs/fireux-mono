@@ -136,8 +136,9 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
         // which could cause feature detection divergence between tenants.
         modules: modules.map((m) => (Array.isArray(m) ? m[0] : m)),
 
-        // Simple tenancy role (default 'tenant') exposed to client
-        role: opts.role ?? 'tenant',
+  // Simple tenancy role (default 'tennant') exposed to client
+  // NOTE: legacy value 'tenant' will be normalized to 'tennant' by composables
+  role: opts.role ?? 'tennant',
       },
     },
     compatibilityDate: (opts.compatibilityDate ??

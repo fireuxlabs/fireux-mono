@@ -11,16 +11,17 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
 
   // Simple tenancy detection (now canonical via runtimeConfig.public.role)
   // Backwards compatibility: fall back to legacy appRole / tenantId if present
-  const roleInput = (rc.public?.role || (rc.public as any)?.appRole) as
+  let roleInput = (rc.public?.role || (rc.public as any)?.appRole) as
     | string
     | undefined
+  if (roleInput === 'tenant') roleInput = 'tennant' // normalize legacy spelling
   const legacyTenantId = (rc.public as any)?.tenantId as string | undefined
-  const isTenant = roleInput === 'tenant' || (!!legacyTenantId && !roleInput)
+  const isTennant = roleInput === 'tennant' || (!!legacyTenantId && !roleInput)
 
   // Canonical tenancy string: prefer explicit role; fallback to inferred tenant/global
   const appTenancy = computed(() => {
     if (roleInput) return roleInput
-    return isTenant ? 'tenant' : 'global'
+    return isTennant ? 'tennant' : 'global'
   })
 
   // Existing computed: loading/initialized
