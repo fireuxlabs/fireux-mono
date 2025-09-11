@@ -5,7 +5,7 @@
         <h1>🔧 App Development Tools</h1>
       </template>
       <p>App: {{ app?.app_name || 'None' }}</p>
-      <p>Tenancy: {{ appTenancy }}</p>
+  <p>Tenancy: {{ tenancyDisplay }}</p>
     </UCard>
 
     <UCard v-if="app">
@@ -40,6 +40,16 @@ definePageMeta({
 // Get app information
 const { app } = await useApp()
 
-// Tenancy readout: "is tenant" | "is not tenant"
+import { computed } from 'vue'
+// Tenancy role string (e.g. 'King' | 'tennant' | fallback)
 const { appTenancy } = useAppComputed(app)
+const rc = useRuntimeConfig()
+const tenancyDisplay = computed(() => {
+  const eco = rc.public?.ecosystem || 'ecosystem'
+  const role = (appTenancy.value || '').toString()
+  if (!role) return `Unknown of ${eco}`
+  if (role.toLowerCase() === 'king') return `King of ${eco}`
+  if (role === 'tennant') return `Tennant of ${eco}`
+  return `${role} of ${eco}`
+})
 </script>
