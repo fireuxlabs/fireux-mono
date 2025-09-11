@@ -17,7 +17,11 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
   const legacyTenantId = (rc.public as any)?.tenantId as string | undefined
   const isTenant = roleInput === 'tenant' || (!!legacyTenantId && !roleInput)
 
-  const appTenancy = computed(() => (isTenant ? 'is tenant' : 'is not tenant'))
+  // Canonical tenancy string: prefer explicit role; fallback to inferred tenant/global
+  const appTenancy = computed(() => {
+    if (roleInput) return roleInput
+    return isTenant ? 'tenant' : 'global'
+  })
 
   // Existing computed: loading/initialized
   const isLoading = computed(() => app.value === undefined)
