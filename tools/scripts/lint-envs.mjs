@@ -24,6 +24,16 @@ const required = [
   'FIREBASE_APP_ID',
 ]
 
+const permissive = !!process.env.ALLOW_INCOMPLETE_ENVS
+// In permissive mode we only require the key to exist (allow empty) for secrets that
+// cannot be committed. Keep structural items (APP_* + project identifiers) strict.
+const allowEmptyIfPermissive = new Set([
+  'FIREBASE_API_KEY',
+  'FIREBASE_MESSAGING_SENDER_ID',
+  'FIREBASE_APP_ID',
+  'FIREBASE_MEASUREMENT_ID',
+])
+
 let failures = 0
 
 function parseEnv(str) {
@@ -44,21 +54,25 @@ for (const app of apps) {
   }
   const data = readFileSync(envPath, 'utf8')
   const env = parseEnv(data)
-  const missing = required.filter((k) => !env.has(k) || env.get(k) === '')
+  const missing = required.filter((k) => {
+    const has = env.has(k)
+    if (!has) return true
+    const val = env.get(k)
+    if (val === '' && permissive && allowEmptyIfPermissive.has(k)) return false
+    return val === ''
+  })
 
   const hasInlineSA = env.has('FIREBASE_SERVICE_ACCOUNT')
   const hasPathSA = env.has('GOOGLE_APPLICATION_CREDENTIALS')
   const saOk = hasInlineSA || hasPathSA
 
   if (missing.length || !saOk) {
-    console.error(
-      `❌ ${app}: missing ${missing.join(', ') || '—'}${
-        !saOk ? (missing.length ? ' and' : '') + ' SERVICE_ACCOUNT' : ''
-      }`
-    )
+    let msg = `❌ ${app}: missing ${missing.join(', ') || '—'}`
+    if (!saOk) msg += ' SERVICE_ACCOUNT'
+    console.error(msg)
     failures++
   } else {
-    console.log(`✅ ${app}: env looks OK`)
+    console.log(`✅ ${app}: env looks OK${permissive ? ' (permissive)' : ''}`)
   }
 }
 

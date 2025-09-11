@@ -22,7 +22,9 @@
       "#fireux-places-models/*": [
         "../../extensions/fireux-places/src/runtime/models/*"
       ],
-      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"]
+      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
+      "fireux-core": ["../../core/fireux-core/src/module.ts"],
+      "fireux-core/*": ["../../core/fireux-core/src/*"]
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },

@@ -1,5 +1,6 @@
 // Simple extension of core app functionality with kitchen support
 import { computed } from 'vue'
+import { useApp } from 'fireux-core/runtime/composables/app/useApp'
 
 export async function useMiseApp() {
   const coreApp = await useApp()

@@ -39,31 +39,31 @@ export function useGooglePlaces() {
     }
 
     return new Promise((resolve, reject) => {
-      const service = new google.maps.places.AutocompleteService()
+      if (typeof window === 'undefined' || !(window as any).google?.maps?.places) {
+        return reject(new Error('Google Places API not available on window'))
+      }
+      const service = new (window as any).google.maps.places.AutocompleteService()
 
-      service.getPlacePredictions(
-        {
-          input: query,
-          types: ['address'],
-        },
-        (predictions: any[] | null, status: string) => {
-          if (
-            status === google.maps.places.PlacesServiceStatus.OK &&
-            predictions
-          ) {
-            const results: PlaceAutocompleteResult[] = predictions.map(
-              (p: any) => ({
-                place_id: p.place_id,
-                description: p.description,
-                structured_formatting: p.structured_formatting,
-                types: p.types,
-              })
-            )
-            resolve(results)
-          } else {
-            reject(new Error(`Places search failed: ${status}`))
-          }
+      const mapPrediction = (p: any): PlaceAutocompleteResult => ({
+        place_id: p.place_id,
+        description: p.description,
+        structured_formatting: p.structured_formatting,
+        types: p.types,
+      })
+      const handlePredictions = (
+        predictions: any[] | null,
+        status: string
+      ) => {
+        const g = (window as any).google?.maps?.places
+        if (g && status === g.PlacesServiceStatus.OK && predictions) {
+          resolve(predictions.map(mapPrediction))
+        } else {
+          reject(new Error(`Places search failed: ${status}`))
         }
+      }
+      service.getPlacePredictions(
+        { input: query, types: ['address'] },
+        handlePredictions
       )
     })
   }
@@ -78,7 +78,10 @@ export function useGooglePlaces() {
     }
 
     return new Promise((resolve, reject) => {
-      const service = new google.maps.places.PlacesService(
+      if (typeof window === 'undefined' || !(window as any).google?.maps?.places) {
+        return reject(new Error('Google Places API not available on window'))
+      }
+      const service = new (window as any).google.maps.places.PlacesService(
         document.createElement('div')
       )
 
@@ -95,7 +98,11 @@ export function useGooglePlaces() {
           ],
         },
         (place: any, status: string) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+          if (
+            (window as any).google?.maps?.places &&
+            status === (window as any).google.maps.places.PlacesServiceStatus.OK &&
+            place
+          ) {
             resolve(place as Place)
           } else {
             reject(new Error(`Place details failed: ${status}`))

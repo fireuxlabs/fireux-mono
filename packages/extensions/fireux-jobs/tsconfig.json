@@ -19,7 +19,9 @@
     "verbatimModuleSyntax": true,
     "paths": {
       "#fireux-jobs-models/*": ["./src/runtime/models/*"],
-      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"]
+      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
+      "fireux-core": ["../../core/fireux-core/src/module.ts"],
+      "fireux-core/*": ["../../core/fireux-core/src/*"]
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },

@@ -29,6 +29,20 @@ export default defineNuxtPlugin(() => {
     })
   }
 
+  // Basic completeness check so developers immediately see if they forgot to paste values.
+  function ensureConfigCompleteness(cfg: any) {
+    if (!cfg) return
+    const required = ['apiKey', 'authDomain', 'projectId', 'appId']
+    const missing = required.filter(k => !cfg[k] || String(cfg[k]).trim() === '')
+    if (missing.length) {
+      devLog('CONFIG INCOMPLETE', {
+        missing,
+        message:
+          'One or more required Firebase config fields are empty. Paste the full web app snippet into your FIREBASE_* env vars.',
+      })
+    }
+  }
+
   // Lightweight coherence validation to catch mixed project credentials
   function validateConfig(cfg: any) {
     if (!cfg) return
@@ -51,8 +65,29 @@ export default defineNuxtPlugin(() => {
         'Hint: Ensure ALL FIREBASE_* vars come from the SAME copied web app snippet in Firebase console.'
       )
     }
+
+    // Extra heuristic: apiKey reuse across differing projectId patterns.
+    // If apiKey present but authDomain or storageBucket refer to a *different* prefix, warn.
+    // (Developers sometimes paste a new projectId but forget to swap apiKey/appId.)
+  const apiKey = cfg.apiKey
+    if (apiKey && projectId && authDomain && !authDomain.includes(projectId)) {
+      devLog('POSSIBLE_CREDENTIAL_DRIFT', {
+        message:
+          'authDomain does not include projectId. This often indicates a mixed credential set (apiKey/appId from another project).',
+        projectId,
+        authDomain,
+      })
+    }
+  const appId = cfg.appId
+    if (appId && projectId && /[a-z0-9-]+/.test(projectId)) {
+      // appId structure: 1:<senderId>:web:<hash>. Cannot easily encode projectId, so just surface for visual pairing.
+      devLog('firebaseAppIdInfo', { appIdFragment: appId.split(':').slice(0, 3).join(':'), fullAppId: appId })
+    }
   }
-  if (import.meta.dev) validateConfig(firebaseConfig)
+  if (import.meta.dev) {
+    ensureConfigCompleteness(firebaseConfig)
+    validateConfig(firebaseConfig)
+  }
 
   if (!getApps().length) {
     try {

@@ -1,4 +1,5 @@
 import { useCurrentUser } from 'vuefire'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager'
 
 export function useJobDelete() {
   const { deleteDocument } = useFirestoreManager()

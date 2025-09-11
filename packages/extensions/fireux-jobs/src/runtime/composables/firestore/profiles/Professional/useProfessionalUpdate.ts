@@ -6,34 +6,24 @@
  */
 
 import { doc, updateDoc } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
+import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils'
 
 export function useProfessionalUpdate() {
   const db = useFirestore()
   const { waitForCurrentUser } = useFirestoreUtils()
 
-  // Generic function for updating single fields
-  const updateSingleField = async (field: string, value: string | number | boolean) => {
+  // Internal generic updater to avoid duplicate code
+  const updateField = async (field: string, value: any) => {
     const user = await waitForCurrentUser()
     if (!user) throw new Error('User not authenticated')
-
     const docRef = doc(db, 'professionals', user.uid)
-    await updateDoc(docRef, {
-      [field]: value,
-      updated_at: new Date(),
-    })
+    await updateDoc(docRef, { [field]: value, updated_at: new Date() })
   }
 
-  // Generic function for updating array fields
-  const updateArrayField = async (field: string, value: any[]) => {
-    const user = await waitForCurrentUser()
-    if (!user) throw new Error('User not authenticated')
-
-    const docRef = doc(db, 'professionals', user.uid)
-    await updateDoc(docRef, {
-      [field]: value,
-      updated_at: new Date(),
-    })
-  }
+  const updateSingleField = (field: string, value: string | number | boolean) =>
+    updateField(field, value)
+  const updateArrayField = (field: string, value: any[]) => updateField(field, value)
 
   return {
     // Single field updates

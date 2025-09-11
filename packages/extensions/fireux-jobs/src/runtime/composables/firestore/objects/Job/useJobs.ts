@@ -1,6 +1,7 @@
 import { useJobCreate } from './useJobCreate'
 import { useJobUpdate } from './useJobUpdate'
 import { useJobDelete } from './useJobDelete'
+import { useObject } from 'fireux-core/runtime/composables/firestore/objects/useObject'
 // Minimal local type to avoid deep import from fireux-core
 type ObjectConfig = {
   collectionName: string

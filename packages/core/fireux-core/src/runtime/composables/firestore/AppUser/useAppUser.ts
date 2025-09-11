@@ -18,13 +18,14 @@ export async function useAppUser() {
   const { firestoreFetchCollection } = useFirestoreRead()
 
   // Guard useCurrentUser() for SSR/hydration; only access on client
-  const currentUser: Ref<null | { uid: string }> = import.meta.client
-    ? useCurrentUser()
-    : ref(null)
+  // useCurrentUser() returns Ref<User | null | undefined>; allow undefined in type to satisfy TS
+  const currentUser = (import.meta.client
+    ? (useCurrentUser() as Ref<{ uid: string } | null | undefined>)
+    : ref(null)) as Ref<{ uid: string } | null | undefined>
 
   const appUserDocRef = computed<DocumentReference<AppUser> | null>(() => {
     if (!import.meta.client) return null
-    if (!currentUser.value || !appId) return null
+  if (!currentUser.value || !appId) return null
     return doc(
       db,
       `apps/${appId}/users`,

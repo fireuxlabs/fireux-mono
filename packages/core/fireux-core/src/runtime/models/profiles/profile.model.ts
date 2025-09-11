@@ -6,16 +6,15 @@
  */
 
 // Standardized Image/Media Interface
+
 export interface ProfileImage {
-  url: string // Image URL (required)
-  alt?: string // Alt text for accessibility
-  title?: string // Image title
-  caption?: string // Image caption
-  size?: number // File size in bytes
-  width?: number // Image width in pixels
-  height?: number // Image height in pixels
-  format?: string // Image format (jpg, png, webp, etc.)
-  uploaded_at?: Date | string // When image was uploaded
+  url: string
+  width?: number
+  height?: number
+  alt?: string
+  mimeType?: string
+  dominantColor?: string
+  blurDataURL?: string
 }
 
 export interface Profile {

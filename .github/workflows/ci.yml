@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Env lint (permissive in CI)
+        run: pnpm lint:envs
+        env:
+          ALLOW_INCOMPLETE_ENVS: '1'
+
+      - name: TypeScript project build check
+        run: pnpm tsc:check
+
+      - name: ESLint
+        run: pnpm lint
+
+      - name: Build core packages
+        run: pnpm build:packages
+
+      - name: Summary
+        run: |
+          echo 'CI completed.'
