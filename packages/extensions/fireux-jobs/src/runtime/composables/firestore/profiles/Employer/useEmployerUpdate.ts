@@ -57,7 +57,8 @@ export function useEmployerUpdate() {
     updateField(field, value)
   const updateArrayField = (field: string, value: string[]) =>
     updateField(field, value)
-  const updateObjectField = (field: string, value: any) => updateField(field, value)
+  const updateObjectField = (field: string, value: any) =>
+    updateField(field, value)
 
   return {
     // Single field updates

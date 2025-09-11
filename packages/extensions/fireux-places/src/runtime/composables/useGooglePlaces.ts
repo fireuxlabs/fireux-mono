@@ -39,10 +39,15 @@ export function useGooglePlaces() {
     }
 
     return new Promise((resolve, reject) => {
-      if (typeof window === 'undefined' || !(window as any).google?.maps?.places) {
+      if (
+        typeof window === 'undefined' ||
+        !(window as any).google?.maps?.places
+      ) {
         return reject(new Error('Google Places API not available on window'))
       }
-      const service = new (window as any).google.maps.places.AutocompleteService()
+      const service = new (
+        window as any
+      ).google.maps.places.AutocompleteService()
 
       const mapPrediction = (p: any): PlaceAutocompleteResult => ({
         place_id: p.place_id,
@@ -50,10 +55,7 @@ export function useGooglePlaces() {
         structured_formatting: p.structured_formatting,
         types: p.types,
       })
-      const handlePredictions = (
-        predictions: any[] | null,
-        status: string
-      ) => {
+      const handlePredictions = (predictions: any[] | null, status: string) => {
         const g = (window as any).google?.maps?.places
         if (g && status === g.PlacesServiceStatus.OK && predictions) {
           resolve(predictions.map(mapPrediction))
@@ -78,7 +80,10 @@ export function useGooglePlaces() {
     }
 
     return new Promise((resolve, reject) => {
-      if (typeof window === 'undefined' || !(window as any).google?.maps?.places) {
+      if (
+        typeof window === 'undefined' ||
+        !(window as any).google?.maps?.places
+      ) {
         return reject(new Error('Google Places API not available on window'))
       }
       const service = new (window as any).google.maps.places.PlacesService(
@@ -100,7 +105,8 @@ export function useGooglePlaces() {
         (place: any, status: string) => {
           if (
             (window as any).google?.maps?.places &&
-            status === (window as any).google.maps.places.PlacesServiceStatus.OK &&
+            status ===
+              (window as any).google.maps.places.PlacesServiceStatus.OK &&
             place
           ) {
             resolve(place as Place)

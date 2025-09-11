@@ -1,6 +1,6 @@
 /**
  * Professional Update Composable
- * 
+ *
  * Handles updates for Professional profiles in the Jobs package.
  * Supports all updateable fields with proper validation and formatting.
  */
@@ -23,23 +23,29 @@ export function useProfessionalUpdate() {
 
   const updateSingleField = (field: string, value: string | number | boolean) =>
     updateField(field, value)
-  const updateArrayField = (field: string, value: any[]) => updateField(field, value)
+  const updateArrayField = (field: string, value: any[]) =>
+    updateField(field, value)
 
   return {
     // Single field updates
-    updateProfessionalName: (value: string) => updateSingleField('professional_name', value),
+    updateProfessionalName: (value: string) =>
+      updateSingleField('professional_name', value),
     updateEmail: (value: string) => updateSingleField('email', value),
     updateTitle: (value: string) => updateSingleField('title', value),
     updateBioShort: (value: string) => updateSingleField('bio_short', value),
     updateBioLong: (value: string) => updateSingleField('bio_long', value),
-    
+
     // Complex array updates (will use custom components)
-    updateKitchenExperience: (value: any[]) => updateArrayField('kitchen_experience', value),
-    updateOtherEmployment: (value: any[]) => updateArrayField('other_employment_experience', value),
+    updateKitchenExperience: (value: any[]) =>
+      updateArrayField('kitchen_experience', value),
+    updateOtherEmployment: (value: any[]) =>
+      updateArrayField('other_employment_experience', value),
     updateProjects: (value: any[]) => updateArrayField('projects', value),
-    updateVolunteering: (value: any[]) => updateArrayField('volunteering', value),
+    updateVolunteering: (value: any[]) =>
+      updateArrayField('volunteering', value),
     updateEducation: (value: any[]) => updateArrayField('education', value),
-    updateCertifications: (value: any[]) => updateArrayField('certifications', value),
+    updateCertifications: (value: any[]) =>
+      updateArrayField('certifications', value),
     updateLanguages: (value: any[]) => updateArrayField('languages', value),
     updateLocations: (value: any[]) => updateArrayField('locations', value),
   }

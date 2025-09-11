@@ -33,7 +33,9 @@ export default defineNuxtPlugin(() => {
   function ensureConfigCompleteness(cfg: any) {
     if (!cfg) return
     const required = ['apiKey', 'authDomain', 'projectId', 'appId']
-    const missing = required.filter(k => !cfg[k] || String(cfg[k]).trim() === '')
+    const missing = required.filter(
+      (k) => !cfg[k] || String(cfg[k]).trim() === ''
+    )
     if (missing.length) {
       devLog('CONFIG INCOMPLETE', {
         missing,
@@ -46,7 +48,7 @@ export default defineNuxtPlugin(() => {
   // Lightweight coherence validation to catch mixed project credentials
   function validateConfig(cfg: any) {
     if (!cfg) return
-  const { projectId, authDomain, storageBucket } = cfg
+    const { projectId, authDomain, storageBucket } = cfg
     const problems: string[] = []
     if (projectId && authDomain && !authDomain.startsWith(projectId)) {
       problems.push(
@@ -69,7 +71,7 @@ export default defineNuxtPlugin(() => {
     // Extra heuristic: apiKey reuse across differing projectId patterns.
     // If apiKey present but authDomain or storageBucket refer to a *different* prefix, warn.
     // (Developers sometimes paste a new projectId but forget to swap apiKey/appId.)
-  const apiKey = cfg.apiKey
+    const apiKey = cfg.apiKey
     if (apiKey && projectId && authDomain && !authDomain.includes(projectId)) {
       devLog('POSSIBLE_CREDENTIAL_DRIFT', {
         message:
@@ -78,10 +80,13 @@ export default defineNuxtPlugin(() => {
         authDomain,
       })
     }
-  const appId = cfg.appId
+    const appId = cfg.appId
     if (appId && projectId && /[a-z0-9-]+/.test(projectId)) {
       // appId structure: 1:<senderId>:web:<hash>. Cannot easily encode projectId, so just surface for visual pairing.
-      devLog('firebaseAppIdInfo', { appIdFragment: appId.split(':').slice(0, 3).join(':'), fullAppId: appId })
+      devLog('firebaseAppIdInfo', {
+        appIdFragment: appId.split(':').slice(0, 3).join(':'),
+        fullAppId: appId,
+      })
     }
   }
   if (import.meta.dev) {

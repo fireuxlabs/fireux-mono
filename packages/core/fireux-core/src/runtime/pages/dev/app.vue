@@ -5,6 +5,7 @@
         <h1>🔧 App Development Tools</h1>
       </template>
       <p>App: {{ app?.app_name || 'None' }}</p>
+      <p>Tenancy: {{ appTenancy }}</p>
     </UCard>
 
     <UCard v-if="app">
@@ -38,4 +39,7 @@ definePageMeta({
 
 // Get app information
 const { app } = await useApp()
+
+// Tenancy readout: "is tenant" | "is not tenant"
+const { appTenancy } = useAppComputed(app)
 </script>

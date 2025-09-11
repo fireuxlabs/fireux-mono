@@ -15,6 +15,9 @@ export interface TenantConfig {
   vuefire?: Record<string, any>
   pwa?: Record<string, any>
   compatibilityDate?: string
+
+  // Simple tenancy role (e.g. 'tenant' | 'global' | custom). Defaults to 'tenant'.
+  role?: string
 }
 
 function dedupeKeepLast(mods: ModuleEntry[] = []): ModuleEntry[] {
@@ -132,6 +135,9 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
         // NOTE: Was previously missing; downstream code expecting modules would receive []
         // which could cause feature detection divergence between tenants.
         modules: modules.map((m) => (Array.isArray(m) ? m[0] : m)),
+
+        // Simple tenancy role (default 'tenant') exposed to client
+        role: opts.role ?? 'tenant',
       },
     },
     compatibilityDate: (opts.compatibilityDate ??
