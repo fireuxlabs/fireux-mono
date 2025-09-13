@@ -1,7 +1,6 @@
 // app/composables/firestore/documents/Blog/blogPostUtils.ts
-import { useAppUser } from '../../AppUser/useAppUser'
-import type { BlogPost } from '../../../../models/objects/blogPost.model'
-import type { Author } from '../../../../models/core/appUser.model'
+import { useCoreUser } from '../../CoreUser/useCoreUser'
+import type { BlogPost, Author } from '../../../../models/objects/blogPost.model'
 
 /**
  * Provides helper functions for blog post creation and editing.
@@ -12,7 +11,7 @@ export function useBlogPostUtils() {
     return title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '')
+  .replace(/^(?:-)|(?:-)$/g, '')
   }
 
   // Compute estimated reading time (~200 words/minute)
@@ -22,15 +21,15 @@ export function useBlogPostUtils() {
     return `${minutes} min`
   }
 
-  // Get the current user as an Author object
+  // Get the current user identity from CoreUser (canonical)
   async function getAuthor(): Promise<Author> {
-    const { appUser } = await useAppUser()
+    const { coreUser } = await useCoreUser()
     return {
-      display_name: appUser.value?.display_name || '',
-      handle: appUser.value?.handle || '',
-      avatar: appUser.value?.avatar || '',
-      slug: appUser.value?.slug || '',
-      id: appUser.value?.uid || '',
+      id: coreUser.value?.id || '',
+      display_name: coreUser.value?.display_name || coreUser.value?.email || '',
+      handle: coreUser.value?.handle || '',
+      avatar: coreUser.value?.avatar || '/img/default-avatar.png',
+      email: coreUser.value?.email || '',
     }
   }
 

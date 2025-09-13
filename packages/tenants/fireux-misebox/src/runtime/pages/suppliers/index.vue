@@ -1,26 +1,26 @@
 <template>
-  <FireOrganismsProfileRoot
+  <OrganismsProfileRoot
     :config="supplierConfig"
     :filter-composable="useSupplierFilters"
   >
     <template #profile-pill="{ profile }">
       <div @click="navigateToSupplier(profile)" style="cursor: pointer">
-        <MiseOrganismsProfilesSupplierCardsPill :supplier="profile" />
+        <OrganismsProfilesSupplierCardsPill :supplier="profile" />
       </div>
     </template>
 
     <template #profile-card="{ profile }">
       <div @click="navigateToSupplier(profile)" style="cursor: pointer">
-        <MiseOrganismsProfilesSupplierCardsProfile :supplier="profile" />
+        <OrganismsProfilesSupplierCardsProfile :supplier="profile" />
       </div>
     </template>
 
     <template #profile-item="{ profile }">
       <div @click="navigateToSupplier(profile)" style="cursor: pointer">
-        <MiseOrganismsProfilesSupplierCardsCell :supplier="profile" />
+        <OrganismsProfilesSupplierCardsCell :supplier="profile" />
       </div>
     </template>
-  </FireOrganismsProfileRoot>
+  </OrganismsProfileRoot>
 </template>
 
 <script setup>

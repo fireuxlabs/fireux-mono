@@ -32,13 +32,17 @@
     "lint:envs": "node ./tools/scripts/lint-envs.mjs",
     "guard:apps:shape": "node ./tools/check-app-structure.mjs",
     "precommit": "pnpm guard:apps:shape",
-    "typecheck": "pnpm -w typecheck && pnpm guard:apps:shape"
+    "typecheck": "pnpm -w typecheck && pnpm guard:apps:shape",
+    "migrate:misebox-users": "tsx scripts/migrate-misebox-app-users.ts"
   },
   "engines": {
     "node": ">=20.11 <23",
     "pnpm": ">=10"
   },
   "devDependencies": {
+    "esbuild-register": "^3.5.0",
+    "firebase-admin": "^12.6.0",
+    "tsx": "^4.19.1",
     "@nuxt/content": "^3.6.3",
     "@nuxt/devtools": "^2.6.3",
     "@nuxt/fonts": "^0.11.4",

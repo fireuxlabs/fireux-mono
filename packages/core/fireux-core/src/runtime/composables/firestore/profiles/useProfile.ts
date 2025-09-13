@@ -1,3 +1,4 @@
+//packages/core/fireux-core/src/runtime/composables/firestore/profiles/useProfile.ts
 import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'

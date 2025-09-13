@@ -129,6 +129,9 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
         appSettings: {
           appId, // may be undefined; that's okay
           ecosystem: opts.ecosystem,
+          // Include key branding fields so runtime composables can resolve names reliably
+          appName: opts.appName,
+          appShortName: opts.appShortName,
         },
         // Expose the resolved module list (string form) so runtime composables
         // like useFireUXConfig can introspect enabled tenant/feature modules.
@@ -136,9 +139,9 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
         // which could cause feature detection divergence between tenants.
         modules: modules.map((m) => (Array.isArray(m) ? m[0] : m)),
 
-  // Simple tenancy role (default 'tennant') exposed to client
-  // NOTE: legacy value 'tenant' will be normalized to 'tennant' by composables
-  role: opts.role ?? 'tennant',
+        // Simple tenancy role (default 'tennant') exposed to client
+        // NOTE: legacy value 'tenant' will be normalized to 'tennant' by composables
+        role: opts.role ?? 'tennant',
       },
     },
     compatibilityDate: (opts.compatibilityDate ??

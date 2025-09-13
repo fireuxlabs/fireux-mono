@@ -1,26 +1,26 @@
 <template>
-  <FireOrganismsProfileRoot
+  <OrganismsProfileRoot
     :config="professionalConfig"
     :filter-composable="useProfessionalFilters"
   >
     <template #profile-pill="{ profile }">
       <div @click="navigateToProfessional(profile)" style="cursor: pointer">
-        <JobProfilesProfessionalCardsPill :professional="profile" />
+        <OrganismsProfilesProfessionalCardsPill :professional="profile" />
       </div>
     </template>
 
     <template #profile-card="{ profile }">
       <div @click="navigateToProfessional(profile)" style="cursor: pointer">
-        <JobProfilesProfessionalCardsProfile :professional="profile" />
+        <OrganismsProfilesProfessionalCardsProfile :professional="profile" />
       </div>
     </template>
 
     <template #profile-item="{ profile }">
       <div @click="navigateToProfessional(profile)" style="cursor: pointer">
-        <JobProfilesProfessionalCardsCell :professional="profile" />
+        <OrganismsProfilesProfessionalCardsCell :professional="profile" />
       </div>
     </template>
-  </FireOrganismsProfileRoot>
+  </OrganismsProfileRoot>
 </template>
 
 <script setup>

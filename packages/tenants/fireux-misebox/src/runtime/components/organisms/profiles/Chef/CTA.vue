@@ -1,6 +1,6 @@
 <template>
   <div class="profile-cta">
-    <MiseOrganismsProfilesChefCardsCell :chef="current" />
+    <OrganismsProfilesChefCardsCell :chef="current" />
 
     <!-- Features removed as requested -->
 
@@ -36,7 +36,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { Chef } from '../../../../models/profiles/Chef.model'
 import { chefConfig } from '../../../../models/profiles/Chef.model'
 // Composables are auto-imported by fireux-core; no deep imports
 

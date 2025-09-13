@@ -1,50 +1,77 @@
-import type {
-  Profile,
-  ProfileConfig,
-} from '../../../../../../../packages/core/fireux-core/src/runtime/models/profiles/profile.model'
+/**
+ * Base Profile interface — shared by all profile types
+ */
+export interface ProfileBase {
+  uid: string
+  created_at: Date | string
+  updated_at?: Date | string
 
-// Gallery Item (from actual database)
-export interface GalleryItem {
-  name: string // Image name/title
-  image_url: string // Image URL
+  // Standardized Avatar System
+  avatarUrl: string
+  avatar?: {
+    path: string
+    width?: number
+    height?: number
+    mimeType?: string
+  }
 }
 
-// Kitchen Connection (from actual database)
-export interface Kitchen {
-  name: string // Kitchen name
-  image_url: string // Kitchen image
+/**
+ * Core/global Chef profile: firestore -> chefs/{uid}
+ */
+export interface ChefCoreProfile extends ProfileBase {
+  /** Required */
+  chef_name: string
+
+  /** Optional identity fields */
+  title?: string
+  bio_short?: string
+  bio_long?: string
+
+  /** Categorisation */
+  specialties?: string[]
+  cuisine_expertise?: string[]
+
+  /** Extended content */
+  gallery?: Array<{ name: string; image_url: string }>
+  kitchens?: Record<string, { name: string; image_url: string }>
+
+  /** Properties for cards/filters */
+  years_experience?: number
+  verified?: boolean
+  available_for_hire?: boolean
+  total_recipes?: number
+
+  /** Optional governance flags */
+  visibility?: 'public' | 'private' | 'unlisted'
 }
 
-// Minimal Chef interface - matching real data
-export interface Chef extends Profile {
-  chef_name: string // Chef's professional name (required)
+/**
+ * App-scoped Chef profile: firestore -> apps/{appId}/chefs/{uid}
+ * Mirrors core but keeps app-only toggles/flags minimal.
+ */
+export interface ChefAppProfile extends ProfileBase {
+  /** Whether enabled in this app */
+  is_active: boolean
 
-  // Core fields (all chefs have these)
-  title?: string // Chef title (Executive Chef, Head Chef, etc.)
-  bio_short?: string // Short bio
-  specialties?: string[] // Cooking specialties array
+  /** App-specific tweaks */
+  featured?: boolean
+  badges?: string[]
 
-  // Extended fields (some chefs have these)
-  bio_long?: string // Detailed biography
-  gallery?: GalleryItem[] // Chef's gallery images
-  kitchens?: Record<string, Kitchen> // Connected kitchens
+  /** Pointer back to core chef doc (string form for lightweight linking) */
+  core_ref_path?: `chefs/${string}`
+}
 
-  // Properties for card component compatibility
-  profile_image?: { url: string } // Profile image
-  years_experience?: number // Years of experience
-  verified?: boolean // Verification status
-  available_for_hire?: boolean // Availability
-  cuisine_expertise?: string[] // Cuisine types
-
-  // Recipe properties for filtering
-  total_recipes?: number // Total number of recipes
-} // Minimal validation - just check required fields
-export function validateChefProfile(chef: Partial<Chef>): boolean {
+/**
+ * Validation + Config (keeps existing pattern)
+ */
+export function validateChefProfile(
+  chef: Partial<ChefCoreProfile>
+): boolean {
   return !!chef.chef_name
 }
 
-// Minimal Chef Configuration
-export const chefConfig: ProfileConfig = {
+export const chefConfig = {
   id: 'chef',
   collectionName: 'chefs',
   profileType: 'Chef',
@@ -59,8 +86,13 @@ export const chefConfig: ProfileConfig = {
     available_for_hire: false,
     years_experience: 0,
   },
-}
+} as const
 
-// Export minimal types
-export type ChefInput = Omit<Chef, 'uid' | 'created_at' | 'updated_at'>
+/**
+ * Input/update helpers
+ */
+export type ChefInput = Omit<
+  ChefCoreProfile,
+  'uid' | 'created_at' | 'updated_at'
+>
 export type ChefUpdate = Partial<ChefInput>

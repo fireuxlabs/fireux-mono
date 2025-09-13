@@ -29,8 +29,24 @@ export function useFireUXConfig() {
     appIcon: '/icon.png',
     domain: 'localhost',
   }
-  const runtimeAppSettings =
+  const runtimeAppSettingsRaw =
     (runtimeConfig.public?.appSettings as Partial<AppSettings>) || {}
+  // Backfill missing fields from top-level public keys if present
+  const runtimeAppSettings: Partial<AppSettings> = {
+    ...runtimeAppSettingsRaw,
+    appName:
+      runtimeAppSettingsRaw.appName ||
+      (runtimeConfig.public?.appName as string | undefined),
+    appShortName:
+      runtimeAppSettingsRaw.appShortName ||
+      (runtimeConfig.public?.appShortName as string | undefined),
+    appId:
+      runtimeAppSettingsRaw.appId ||
+      (runtimeConfig.public?.appId as string | undefined),
+    projectName:
+      runtimeAppSettingsRaw.projectName ||
+      (runtimeConfig.public?.ecosystem as string | undefined),
+  }
   const appSettings = {
     ...defaultSettings,
     ...runtimeAppSettings,

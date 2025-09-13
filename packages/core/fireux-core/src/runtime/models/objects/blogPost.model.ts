@@ -1,4 +1,4 @@
-import type { Author } from '../core/appUser.model'
+// Author identity comes from CoreUser (do not import from AppUser)
 import type { Sluggable } from './protocols'
 
 // ------------------------------------------------------------------
@@ -42,4 +42,11 @@ export interface SimpleBlogPost {
   author: string
   createdAt: Date
   updatedAt?: Date
+}
+export interface Author {
+  id: string
+  display_name: string
+  avatar?: string
+  handle?: string
+  email?: string
 }

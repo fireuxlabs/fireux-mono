@@ -1,26 +1,26 @@
 <template>
-  <FireOrganismsProfileRoot
+  <OrganismsProfileRoot
     :config="employerConfig"
     :filter-composable="useEmployerFilters"
   >
     <template #profile-pill="{ profile }">
       <div @click="navigateToEmployer(profile)" style="cursor: pointer">
-        <JobProfilesEmployerCardsPill :employer="profile" />
+        <OrganismsProfilesEmployerCardsPill :employer="profile" />
       </div>
     </template>
 
     <template #profile-card="{ profile }">
       <div @click="navigateToEmployer(profile)" style="cursor: pointer">
-        <JobProfilesEmployerCardsProfile :employer="profile" />
+        <OrganismsProfilesEmployerCardsProfile :employer="profile" />
       </div>
     </template>
 
     <template #profile-item="{ profile }">
       <div @click="navigateToEmployer(profile)" style="cursor: pointer">
-        <JobProfilesEmployerCardsCell :employer="profile" />
+        <OrganismsProfilesEmployerCardsCell :employer="profile" />
       </div>
     </template>
-  </FireOrganismsProfileRoot>
+  </OrganismsProfileRoot>
 </template>
 
 <script setup>

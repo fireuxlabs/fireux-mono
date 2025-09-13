@@ -22,10 +22,13 @@
       <OrganismsUserAppCardsProfile :user="appUser" />
     </UCard>
 
+    <UCard v-if="appUser">
+      <DevJson :data="appUser" title="Current App User" />
+    </UCard>
+
     <UCard>
       <DevJson
         :data="{
-          currentUser: appUser,
           computedProps: { isAppUser, isPro, isAdmin, initials },
           collection: { total: appUsers?.length || 0, users: appUsers },
         }"

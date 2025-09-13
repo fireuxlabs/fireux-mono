@@ -1,24 +1,29 @@
 <template>
   <div>
-    <div
-      style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-      "
-    >
-      <h2 style="margin: 0">{{ title }}</h2>
-      <UButton
-        icon="i-heroicons-clipboard-document"
-        size="sm"
-        variant="outline"
-        @click="copyToClipboard(jsonString)"
-      >
-        Copy JSON
-      </UButton>
+    <div class="devjson-header">
+      <h2 class="devjson-title">{{ title }}</h2>
+      <div class="devjson-actions">
+        <UButton
+          icon="i-heroicons-clipboard-document"
+          size="sm"
+          variant="outline"
+          @click="copyToClipboard(jsonString)"
+        >
+          Copy JSON
+        </UButton>
+        <UButton
+          :icon="
+            expanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'
+          "
+          size="sm"
+          variant="ghost"
+          @click="expanded = !expanded"
+        >
+          {{ expanded ? 'Hide' : 'Show' }} JSON
+        </UButton>
+      </div>
     </div>
-    <pre>{{ jsonString }}</pre>
+    <pre v-if="expanded">{{ jsonString }}</pre>
   </div>
 </template>
 
@@ -26,7 +31,10 @@
 const props = defineProps({
   data: { type: [Object, Array], required: true },
   title: { type: String, default: 'JSON' },
+  defaultOpen: { type: Boolean, default: false },
 })
+
+const expanded = ref(!!props.defaultOpen)
 
 const jsonString = computed(() => {
   return JSON.stringify(props.data, null, 2)
@@ -41,3 +49,22 @@ async function copyToClipboard(text) {
   }
 }
 </script>
+
+<style scoped>
+.devjson-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.devjson-title {
+  margin: 0;
+}
+.devjson-actions {
+  display: flex;
+  gap: 8px;
+}
+pre {
+  margin-top: 8px;
+}
+</style>

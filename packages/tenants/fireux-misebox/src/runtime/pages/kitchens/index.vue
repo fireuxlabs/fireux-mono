@@ -3,7 +3,7 @@
     <div v-if="!coreUser">Loading user...</div>
     <div v-else-if="hasProfile('chef')">
       <div v-if="chef">
-        <MiseOrganismsProfilesChefCardsPill :chef="chef" />
+        <OrganismsProfilesChefCardsPill :chef="chef" />
       </div>
       <div v-else>Loading chef profile...</div>
     </div>

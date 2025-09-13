@@ -3,10 +3,10 @@
     <div>
       <div v-if="chef">
         <h2>Edit Chef Profile</h2>
-        <MiseProfilesChefEdit :chef="chef" />
+        <ProfilesChefEdit :chef="chef" />
       </div>
       <div v-else>
-        <MiseProfilesChefCTA />
+        <ProfilesChefCTA />
       </div>
     </div>
 

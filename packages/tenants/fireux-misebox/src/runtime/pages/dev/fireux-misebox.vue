@@ -10,7 +10,6 @@
         title="Global Chefs JSON"
       />
     </UCard>
-  <!-- Removed local app collection; page now focuses only on global chefs -->
   </div>
 </template>
 

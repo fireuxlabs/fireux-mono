@@ -22,10 +22,13 @@
       <OrganismsUserCoreCardsProfile :core-user="coreUser" />
     </UCard>
 
+    <UCard v-if="coreUser">
+      <DevJson :data="coreUser" title="Current Core User" />
+    </UCard>
+
     <UCard>
       <DevJson
         :data="{
-          currentUser: coreUser,
           computedProps: { isCoreUser, hasAvatar, userOfApps, hasMultipleApps },
           collection: { total: coreUsers?.length || 0, users: coreUsers },
         }"
@@ -58,4 +61,10 @@ const {
   userOfApps,
   hasMultipleApps,
 } = await useCoreUser()
+
+// Dedicated DevJson card now handles current core user display
 </script>
+
+<style scoped>
+/* no extra styles */
+</style>

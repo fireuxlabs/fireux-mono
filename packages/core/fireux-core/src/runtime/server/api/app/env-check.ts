@@ -9,10 +9,11 @@ export default defineEventHandler((_event) => {
     'FIREBASE_STORAGE_BUCKET',
     'FIREBASE_MESSAGING_SENDER_ID',
     'FIREBASE_APP_ID',
-    'FIREBASE_MEASUREMENT_ID',
   ]
 
   const optionalEnvVars = [
+    // Analytics is optional; do not block app startup if missing
+    'FIREBASE_MEASUREMENT_ID',
     'APP_NAME',
     'APP_SHORT_NAME',
     'APP_ID',

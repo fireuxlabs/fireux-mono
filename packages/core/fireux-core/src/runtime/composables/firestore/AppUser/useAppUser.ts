@@ -57,7 +57,7 @@ export async function useAppUser() {
     ...useAppUserEnsure(),
     ...useAppUserUtils(),
     useAppUserUpdate,
-    ...useAppUserSubscription(appUser),
+  ...useAppUserSubscription(),
     ...useAppUserComputed(appUser),
   }
 }

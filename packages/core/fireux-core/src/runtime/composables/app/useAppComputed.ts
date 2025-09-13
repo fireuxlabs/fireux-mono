@@ -21,7 +21,17 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
   // Canonical tenancy string: prefer explicit role; fallback to inferred tenant/global
   const appTenancy = computed(() => {
     if (roleInput) return roleInput
-    return isTennant ? 'tennant' : 'global'
+    return isTennant ? 'tennant' : 'king'
+  })
+
+  // Human-readable tenancy display (e.g., "King of ecosystem")
+  const tenancyDisplay = computed(() => {
+    const eco = (rc.public as any)?.ecosystem || 'ecosystem'
+    const role = (appTenancy.value || '').toString()
+    if (!role) return `Unknown of ${eco}`
+    if (role.toLowerCase() === 'king') return `King of ${eco}`
+    if (role === 'tennant') return `Tennant of ${eco}`
+    return `${role} of ${eco}`
   })
 
   // Existing computed: loading/initialized
@@ -47,6 +57,7 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
   return {
     // New readout
     appTenancy,
+    tenancyDisplay,
 
     // Existing
     isLoading,

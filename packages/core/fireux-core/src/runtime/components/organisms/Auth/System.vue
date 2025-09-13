@@ -1,14 +1,19 @@
 <template>
   <UContainer class="widget center-content">
     <ClientOnly>
+      <!-- Tenancy display -->
+      <div class="tenancy-info">
+        <p>
+          This app is: <strong>{{ tenancyDisplay }}</strong>
+        </p>
+      </div>
+
       <Transition name="fade">
         <div>
-          <OrganismsAuthAuthenticated
-            v-if="authState === 'AUTHENTICATED'"
-          />
-          <button v-if="authState === 'AUTHENTICATED' && !coreUser">
-            <UButton @click="handleEnsureCoreUser">Recreate Core User</UButton>
-          </button>
+          <div v-if="authState === 'AUTHENTICATED'">
+            <OrganismsAuthAuthenticated />
+          </div>
+
           <div v-else class="auth-central">
             <OrganismsAuthGoogle />
             <OrganismsAuthEmail />
@@ -21,16 +26,7 @@
 
 <script setup>
 const { authState } = useAuth()
-const { coreUser, ensureCoreUser } = await useCoreUser()
-
-async function handleEnsureCoreUser() {
-  try {
-    await ensureCoreUser()
-    console.log('✅ Core User successfully recreated.')
-  } catch (error) {
-    console.error('❌ Failed to recreate Core User:', error)
-  }
-}
+const { tenancyDisplay } = await useApp()
 </script>
 
 <style scoped>

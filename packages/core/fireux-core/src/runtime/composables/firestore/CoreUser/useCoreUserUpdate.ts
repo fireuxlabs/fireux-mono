@@ -1,60 +1,112 @@
-import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
-import type { FieldValue } from 'firebase/firestore'
+import {
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  serverTimestamp,
+} from 'firebase/firestore'
+import { useCurrentUser, useFirestore } from 'vuefire'
+import type { CoreUser } from '#fireux-core-models/core/coreUser.model'
+
+// tiny validators/formatters
+const isUrl = (s: string) => /^https?:\/\//i.test(s) || s.startsWith('/')
+const normHandle = (s: string) => s.trim().toLowerCase().replace(/\s+/g, '-')
 
 export function useCoreUserUpdate() {
   const db = useFirestore()
+  const authUserRef = useCurrentUser()
 
-  // Add an appId to userOf array for a core user
-  async function addUserApp(uid: string, appId: string) {
-    if (!uid || !appId) {
-      return Promise.reject(
-        new Error('❌ UID and appId are required to add app to userOf.')
-      )
-    }
-    const userRef = doc(db, 'users', uid)
-    await updateDoc(userRef, { userOf: arrayUnion(appId) })
-    console.log(
-      `✅ [addUserApp] App '${appId}' added to userOf for UID: ${uid}`
-    )
+  const coreRef = (uid?: string) => {
+    const id = uid || authUserRef.value?.uid
+    if (!id) throw new Error('No UID available for CoreUser update.')
+    return doc(db, 'core-users', id)
   }
 
-  // Remove an appId from userOf array for a core user
-  async function removeUserApp(uid: string, appId: string) {
-    if (!uid || !appId) {
-      return Promise.reject(
-        new Error('❌ UID and appId are required to remove app from userOf.')
-      )
+  // Strip undefined/null (and empty strings) and always set updated_at
+  const safePayload = (
+    updates: Partial<CoreUser> | Record<string, unknown>
+  ) => {
+    const out: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(updates || {})) {
+      if (v === undefined || v === null) continue
+      if (typeof v === 'string' && v.trim() === '') continue
+      if (k === 'email') continue // immutable here; update via Auth and ensure
+      out[k] = v
     }
-    const userRef = doc(db, 'users', uid)
-    await updateDoc(userRef, { userOf: arrayRemove(appId) })
-    console.log(
-      `✅ [removeUserApp] App '${appId}' removed from userOf for UID: ${uid}`
-    )
+    out.updated_at = serverTimestamp()
+    return out
+  }
+
+  async function addUserApp(appId: string, uid?: string) {
+    if (!appId) throw new Error('appId required')
+    await updateDoc(coreRef(uid), {
+      userOf: arrayUnion(appId),
+      updated_at: serverTimestamp(),
+    })
+  }
+
+  async function removeUserApp(appId: string, uid?: string) {
+    if (!appId) throw new Error('appId required')
+    await updateDoc(coreRef(uid), {
+      userOf: arrayRemove(appId),
+      updated_at: serverTimestamp(),
+    })
+  }
+
+  async function addAdminApp(appId: string, uid?: string) {
+    if (!appId) throw new Error('appId required')
+    await updateDoc(coreRef(uid), {
+      adminOf: arrayUnion(appId),
+      updated_at: serverTimestamp(),
+    })
+  }
+
+  async function removeAdminApp(appId: string, uid?: string) {
+    if (!appId) throw new Error('appId required')
+    await updateDoc(coreRef(uid), {
+      adminOf: arrayRemove(appId),
+      updated_at: serverTimestamp(),
+    })
   }
 
   async function updateCoreUser(
-    uid: string,
-    updates: { [key: string]: FieldValue | Partial<unknown> | undefined | null }
+    updates: Partial<CoreUser> & Record<string, any>,
+    uid?: string
   ) {
-    if (!uid || !updates) {
-      return Promise.reject(
-        new Error('❌ UID and updates are required to update Core User.')
-      )
+    // light normalization/validation
+    if ('handle' in updates && typeof updates.handle === 'string') {
+      updates.handle = normHandle(updates.handle)
     }
-
-    try {
-      const userRef = doc(db, 'users', uid)
-      await updateDoc(userRef, updates)
-      console.log(`✅ [updateCoreUser] Core user with UID: ${uid} updated.`)
-    } catch (error) {
-      console.error(
-        `❌ [updateCoreUser] Error updating Core user with UID: ${uid}`,
-        error
-      )
-      throw error
+    if ('avatar' in updates && typeof updates.avatar === 'string') {
+      const url = updates.avatar
+      if (!isUrl(url)) throw new Error('Invalid avatar URL')
     }
+    await updateDoc(coreRef(uid), safePayload(updates))
   }
 
-  return { updateCoreUser, addUserApp, removeUserApp }
+  // Convenience helpers
+  const setDisplayName = (display_name: string, uid?: string) =>
+    updateCoreUser({ display_name }, uid)
+
+  const setAvatar = (avatarUrl: string, uid?: string) =>
+    updateCoreUser({ avatar: avatarUrl }, uid)
+
+  const setHandle = (handle: string, uid?: string) =>
+    updateCoreUser({ handle }, uid)
+
+  // Optional: profiles (global badges)
+  const setProfiles = (profiles: string[], uid?: string) =>
+    updateCoreUser({ profiles }, uid)
+
+  return {
+    updateCoreUser,
+    setDisplayName,
+    setAvatar,
+    setHandle,
+    setProfiles,
+    addUserApp,
+    removeUserApp,
+    addAdminApp,
+    removeAdminApp,
+  }
 }

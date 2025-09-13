@@ -1,74 +1,58 @@
-import { doc, getDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useCurrentUser, useFirestore } from 'vuefire'
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import type { CoreUser } from '#fireux-core-models/core/coreUser.model'
 import { useMediaStorage } from '../../firebase/useMediaStorage'
-import type { CoreUser } from '../../../models/core/coreUser.model'
-import { useFirestoreManager } from '../useFirestoreManager'
-import { useFirestoreCreate } from '../useFirestoreCreate'
-import { useAppUserEnsure } from '../AppUser/useAppUserEnsure'
-import { useFireUXConfig } from '../../FireUXConfig'
 
+// packages/core/fireux-core/src/runtime/composables/firestore/CoreUser/useCoreUserEnsure.ts
+// Simple, core-only ensure. No seeds, no membership, no profiles.
 export function useCoreUserEnsure() {
-  /**
-   * Ensures a core user exists for the current authenticated user
-   */
+  const db = useFirestore()
+  const authUserRef = useCurrentUser()
+
   async function ensureCoreUser() {
-    try {
-      // Wait for current user to be available
-      const { waitForCurrentUser } = useFirestoreManager()
-      const user = await waitForCurrentUser()
+    const user = authUserRef.value
+    if (!user?.uid || !user?.email) return
 
-      if (!user || !user.uid) {
-        console.warn('⚠️ [ensureCoreUser] No current user found after waiting')
-        return
+    const ref = doc(db, 'core-users', user.uid)
+    const snap = await getDoc(ref)
+
+    // Prefer existing avatar, then auth photoURL; otherwise upload a default into core namespace
+    let avatar: string | undefined =
+      (snap.exists() ? (snap.data() as any)?.avatar : undefined) ||
+      user.photoURL ||
+      undefined
+
+    if (!avatar) {
+      try {
+        const { uploadCoreAvatar } = useMediaStorage()
+        // Use a shipped default asset; can be themed per app/ecosystem
+        avatar = await uploadCoreAvatar('/img/default-avatar.png', user.uid)
+      } catch (e) {
+        console.warn(
+          '[CoreUser] Default avatar upload failed, falling back to static path:',
+          e
+        )
+        // Final fallback to a static path; never undefined
+        avatar = '/img/default-avatar.png'
       }
-
-      const uid = user.uid
-      const db = useFirestore()
-      const coreUserRef = doc(db, 'core-users', uid)
-
-      // Check if core user already exists
-      const coreUserDoc = await getDoc(coreUserRef)
-
-      if (coreUserDoc.exists()) {
-        console.log(`✅ [ensureCoreUser] Core user ${uid} exists`)
-        return
-      }
-
-      // Create new core user with all required fields
-      const { uploadImage } = useMediaStorage()
-      const { setDocument } = useFirestoreCreate()
-      const { appId } = useFireUXConfig()
-
-      // For core users, store avatar in core-users storage path
-      const avatar =
-        user.photoURL ||
-        (await uploadImage(
-          'img/default-avatar.png',
-          'core-users',
-          uid,
-          'avatar',
-          400
-        ))
-
-      const coreUserData: Partial<CoreUser> = {
-        id: uid,
-        email: user.email || '', // Should always exist from auth
-        avatar, // Always guaranteed to have a value
-        adminOf: [],
-        userOf: [],
-        created_in: appId || 'unknown', // Track which app this user was created in
-      }
-
-      // Use setDocument from useFirestoreCreate to automatically add timestamps
-      await setDocument('core-users', uid, coreUserData)
-      console.log(`✅ [ensureCoreUser] Created new core user ${uid}`)
-
-      // Call ensureAppUser with the core user data
-      const { ensureAppUser } = useAppUserEnsure()
-      await ensureAppUser(coreUserData)
-    } catch (error) {
-      console.error(`❌ [ensureCoreUser] Error: ${error}`)
     }
+
+    const basePayload: Partial<CoreUser> = {
+      id: user.uid,
+      email: user.email,
+      display_name: user.displayName ?? user.email,
+      avatar,
+      updated_at: serverTimestamp() as any,
+    }
+
+    const payload = snap.exists()
+      ? basePayload
+      : {
+          ...basePayload,
+          created_at: serverTimestamp() as any,
+        }
+
+    await setDoc(ref, payload, { merge: true })
   }
 
   return { ensureCoreUser }
