@@ -1,4 +1,3 @@
-//packages/core/fireux-core/src/runtime/composables/firestore/profiles/useProfile.ts
 import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
@@ -8,34 +7,33 @@ import { useProfileCreate } from './useProfileCreate'
 import { useProfileDelete } from './useProfileDelete'
 
 /**
- * Shared composable for profile CRUD operations and state management
- * This is the unified entry point for all profile types (Professional, Employer, Chef, Supplier)
+ * Unified entry-point for a profile type (e.g., Chef, Supplier).
+ * - current: reactive doc of the signed-in user’s profile in the *global* collection
+ * - globalCollection: list of all profiles in that collection
+ * - fetchById: helper to load any profile by id
+ * - create/remove: generic creators
+ *
+ * Note: App-scoped presence is represented via AppUser.profiles array.
  */
 export async function useProfile(config: ProfileConfig) {
   const db = useFirestore()
   const currentUser = useCurrentUser()
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
 
-  // Reactive document reference for current user's profile
+  // Reactive reference to the signed-in user's global profile doc
   const currentProfileDocRef = computed(() =>
-    currentUser.value?.uid
-      ? doc(db, config.collectionName, currentUser.value.uid)
-      : null
+    currentUser.value?.uid ? doc(db, config.collectionName, currentUser.value.uid) : null
   )
 
   const { data: current } = useDocument(currentProfileDocRef)
 
-  // Fetch all profiles in this collection
+  // Global list for browsing/discovery
   const globalCollection = await firestoreFetchCollection(config.collectionName)
 
-  // Hardcoded app-specific collection path for now
-  const appCollection = await firestoreFetchCollection('apps/niederhorn/chefs')
+  // Fetch any profile by id from the global collection
+  const fetchById = async (id: string) => await firestoreFetchDoc(config.collectionName, id)
 
-  // Fetch by ID function
-  const fetchById = async (id: string) =>
-    await firestoreFetchDoc(config.collectionName, id)
-
-  // CRUD operations
+  // CRUD hooks
   const create = await useProfileCreate(config)
   const remove = await useProfileDelete(config)
   const update = config.updateComposable ? config.updateComposable() : {}
@@ -43,7 +41,6 @@ export async function useProfile(config: ProfileConfig) {
   return {
     current,
     globalCollection,
-    appCollection,
     fetchById,
     ...create,
     ...remove,

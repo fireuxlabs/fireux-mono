@@ -39,6 +39,18 @@ export function useAppUserUpdate() {
     return { success: true, profiles: value }
   }
 
+  // Back-compat updater used by legacy callers that manage an array of
+  // profile entry objects: { type, collection, is_active, created_at }
+  // We persist the array as-is under AppUser.profiles.
+  function useAppUserUpdateFirestore() {
+    async function updateProfiles(profiles: unknown[]) {
+      const ref = await getRef()
+      await updateDoc(ref, { profiles })
+      return { success: true, profiles }
+    }
+    return { updateProfiles }
+  }
+
   // NOTE:
   // - Email is canonical on CoreUser → update via a CoreUser updater (and Auth).
   // - Role, timestamps are system-managed.
@@ -46,6 +58,7 @@ export function useAppUserUpdate() {
 
   return {
     setProfiles,
+    useAppUserUpdateFirestore,
   }
 }
 

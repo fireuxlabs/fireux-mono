@@ -1,128 +1,82 @@
 import { ref } from 'vue'
 import { serverTimestamp } from 'firebase/firestore'
 import { useCurrentUser } from 'vuefire'
-import type { ProfileConfig } from '../../../models/profiles/profile.model'
+import type {
+  ProfileConfig,
+  ProfileCreate,
+  ProfileBase,
+} from '../../../models/profiles/profile.model'
 import { useFirestoreManager } from '../useFirestoreManager'
 import { useAppUser } from '../AppUser/useAppUser'
 import useAppUserUpdate from '../AppUser/useAppUserUpdate'
+import { useMediaStorage } from '../../firebase/useMediaStorage'
 
 /**
  * Generic profile creation composable
  * Provides standardized create functionality for all profile types
  */
-export async function useProfileCreate(profileConfig: ProfileConfig) {
+export async function useProfileCreate(config: ProfileConfig) {
   const currentUser = useCurrentUser()
-  const { setDocument } = useFirestoreManager()
+  const { setDocument, firestoreFetchDoc } = useFirestoreManager()
+  const { getDefaultAvatarUrl } = useMediaStorage()
 
-  // Set default appScoped to false for global profile ecosystem
-  const config = {
-    ...profileConfig,
-  }
-
-  // Shared state for create operations
   const creating = ref(false)
   const createError = ref<Error | null>(null)
 
-  // Generic create function with standardized best practices
-  async function createProfile(additionalData?: any): Promise<string> {
-    if (!currentUser.value?.uid) {
-      throw new Error('User is not authenticated')
-    }
+  async function createProfile(
+    additionalData?: Record<string, any>
+  ): Promise<'success'> {
+    const uid = currentUser.value?.uid
+    if (!uid) throw new Error('User is not authenticated')
 
     creating.value = true
     createError.value = null
 
     try {
-      // Get appUser data when needed
+      // 1) If profile exists, just ensure it's listed in AppUser.profiles
+      const existing = await firestoreFetchDoc(config.collectionName, uid)
       const { appUser } = await useAppUser()
-      // Check if profile already exists in Firestore
-      const { firestoreFetchDoc } = useFirestoreManager()
-      const existingProfileDoc = await firestoreFetchDoc(
-        config.collectionName,
-        currentUser.value.uid
-      )
-
-      if (existingProfileDoc) {
-        // PATH 1: Profile exists - just update AppUser.profiles array and bail out
-        console.log(
-          '🔄 This profile actually exists on this user. Updating array......'
-        )
-
-        const { useAppUserUpdateFirestore } = useAppUserUpdate()
-        const { updateProfiles } = useAppUserUpdateFirestore()
-
-        const currentProfiles = appUser.value?.profiles || []
-        const profileEntry = {
-          type: config.profileType.toLowerCase(),
-          collection: config.collectionName,
-          created_at: new Date().toISOString(),
-          is_active: true,
-        }
-
-        // Check if it's already in the array
-        const existingInArray = currentProfiles.find(
-          (p) => p.type === profileEntry.type
-        )
-        if (!existingInArray) {
-          const updatedProfiles = [...currentProfiles, profileEntry]
-          await updateProfiles(updatedProfiles)
-          console.log(
-            '✅ Added existing profile to AppUser.profiles array:',
-            profileEntry.type
-          )
-        }
-
-        return 'success'
-      }
-
-      // PATH 2: Profile doesn't exist - create it and update array
-      console.log('🆕 Creating new profile and updating array......')
-
-      // Base profile data with standardized fields
-      const profileData = {
-        uid: currentUser.value.uid,
-        created_at: serverTimestamp(), // Use server timestamp for accuracy
-        updated_at: serverTimestamp(),
-        // Required Profile fields
-        avatarUrl: currentUser.value.photoURL || '/default-avatar.png',
-        // Include common user data from appUser
-        email: appUser.value?.email || currentUser.value.email || '',
-        ...additionalData, // Merge any additional form data
-      }
-
-      // Use the authenticated user's ID as the document ID
-      await setDocument(
-        config.collectionName,
-        currentUser.value.uid,
-        profileData,
-        {
-          appScoped: false,
-        }
-      )
-
-      // Update AppUser profiles array
       const { useAppUserUpdateFirestore } = useAppUserUpdate()
       const { updateProfiles } = useAppUserUpdateFirestore()
 
-      const currentProfiles = appUser.value?.profiles || []
-      const newProfileEntry = {
-        type: config.profileType.toLowerCase(),
+      const entry = {
+        type: config.id,
         collection: config.collectionName,
-        created_at: new Date().toISOString(),
         is_active: true,
+        created_at: new Date().toISOString(),
       }
 
-      // Check if profile doesn't already exist in array
-      const existingProfile = currentProfiles.find(
-        (p) => p.type === newProfileEntry.type
-      )
-      if (!existingProfile) {
-        const updatedProfiles = [...currentProfiles, newProfileEntry]
-        await updateProfiles(updatedProfiles)
-        console.log(
-          '✅ Updated AppUser.profiles with new profile:',
-          newProfileEntry.type
-        )
+      if (existing) {
+        const current = appUser.value?.profiles || []
+        if (!current.some((p: any) => p.type === entry.type)) {
+          await updateProfiles([...current, entry])
+        }
+        return 'success'
+      }
+
+      // 2) Create a new global profile document (ProfileBase shape)
+      const avatar =
+        currentUser.value.photoURL ||
+        getDefaultAvatarUrl() ||
+        '/img/default-avatar.png'
+
+      const profileData: ProfileCreate<ProfileBase> & Record<string, any> = {
+        id: uid,
+        avatar,
+        ...(config.defaultValues || {}),
+        ...(additionalData || {}),
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+      }
+
+      await setDocument(config.collectionName, uid, profileData, {
+        appScoped: false,
+      })
+
+      // 3) Reflect in AppUser.profiles
+      const current = appUser.value?.profiles || []
+      if (!current.some((p: any) => p.type === entry.type)) {
+        await updateProfiles([...current, entry])
       }
 
       return 'success'
