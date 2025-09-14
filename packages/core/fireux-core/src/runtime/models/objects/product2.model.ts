@@ -9,4 +9,4 @@ export type {
   FirebaseProduct,
   ProductCreationInput,
   ProductId,
-} from './objects/product.model'
+} from './product.model'

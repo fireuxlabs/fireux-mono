@@ -21,15 +21,11 @@
           <div class="flex-1">
             <h3 class="font-medium">{{ place.name }}</h3>
             <p class="text-sm text-gray-600">
-              {{
-                place.formatted_address ||
-                place.short_address ||
-                'Address not available'
-              }}
+              {{ place.formatted_address ?? 'Address not available' }}
             </p>
             <UBadge
               :label="place.source === 'google' ? 'Google Places' : 'Existing'"
-              :color="place.source === 'google' ? 'blue' : 'green'"
+              :color="place.source === 'google' ? 'info' : 'success'"
               size="xs"
               class="mt-1"
             />
@@ -128,8 +124,8 @@ const performSearch = async () => {
   isSearching.value = true
 
   try {
-    // TODO: Implement actual Google Places API search
-    // TODO: Implement Firestore kitchen search
+  // NOTE: Implement actual Google Places API search
+  // NOTE: Implement Firestore kitchen search
 
     // Mock delay for demo
     await new Promise((resolve) => setTimeout(resolve, 1000))

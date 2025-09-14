@@ -8,19 +8,12 @@
         </div>
       </template>
     </UCard>
-    <UCard>
-      <template #default>
-        <h3>Active Users</h3>
-        <div>
-          <p>{{ activeUsers }}</p>
-        </div>
-      </template>
-    </UCard>
+    <!-- Placeholder for future active users metric -->
   </div>
 </template>
 
 <script setup lang="ts">
-const { totalUsers, activeUsers } = useAdminMetrics()
+const { totalUsers } = await useAdminMetrics()
 </script>
 
 <style scoped>

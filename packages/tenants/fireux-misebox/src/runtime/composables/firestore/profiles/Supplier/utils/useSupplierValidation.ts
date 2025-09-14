@@ -12,9 +12,8 @@ export function useSupplierValidation() {
       errors.push('Business name is required')
     }
 
-    if (!supplier.uid?.trim()) {
-      errors.push('User ID is required')
-    }
+    // Supplier model is independent and uses `id` as its primary key.
+    // If you need to enforce creator/owner linkage, validate `created_by` at creation time instead.
 
     // Business type validation
     const validBusinessTypes = [

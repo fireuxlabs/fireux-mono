@@ -77,17 +77,20 @@ export function useProductFormatting() {
   }
 
   function formatPriceRange(product: FirebaseProduct): string {
-    if (!product.prices || product.prices.length === 0) return 'Price not available'
-    if (product.prices.length === 1) return formatPrice(product.prices[0])
+    if (!product.prices || product.prices.length === 0)
+      return 'Price not available'
+    if (product.prices.length === 1) return formatPrice(product.prices[0]!)
 
-    const prices = product.prices
-      .map((p: Price) => p.unit_amount)
+    const amounts = product.prices
+      .map((p: Price | undefined) => (p ? p.unit_amount : undefined))
+      .filter((n): n is number => typeof n === 'number')
       .sort((a: number, b: number) => a - b)
-    const minPrice = prices[0]
-    const maxPrice = prices[prices.length - 1]
+    const minPrice = amounts[0]
+    const maxPrice = amounts[amounts.length - 1]
 
-    const currency = product.prices[0].currency?.toUpperCase() || 'USD'
+    const currency = product.prices[0]?.currency?.toUpperCase() || 'USD'
     const symbol = getCurrencySymbol(currency)
+    if (minPrice === undefined || maxPrice === undefined) return 'Price not available'
     return `${symbol}${(minPrice / 100).toFixed(2)} - ${symbol}${(maxPrice / 100).toFixed(2)}`
   }
 

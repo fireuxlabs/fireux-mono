@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, type RouteLocationMatched } from 'vue-router'
 
 export function useBreadcrumbs() {
   const route = useRoute()
@@ -16,9 +16,10 @@ export function useBreadcrumbs() {
 
     const links = [{ label: 'Home', icon: homeIcon, to: '/' }]
 
-    const lastMatch = route.matched[route.matched.length - 1] || {}
+    const lastMatch: RouteLocationMatched | undefined =
+      route.matched[route.matched.length - 1]
     const currentLabel =
-      lastMatch.meta?.breadcrumb || route.name || lastMatch.name || route.path
+      (lastMatch?.meta as any)?.breadcrumb || route.name || lastMatch?.name || route.path
 
     const currentIcon = defaultIcon // Simple default for now
 

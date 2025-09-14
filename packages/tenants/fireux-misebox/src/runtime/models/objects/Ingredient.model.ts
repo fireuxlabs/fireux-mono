@@ -7,6 +7,35 @@
 export interface Ingredient {
   id: string
   name: string
+  // Optional fields used by UI components
+  description?: string
+  category?: string
+  categories?: string[]
+  tags?: string[]
+  nutrition?: {
+    calories?: number
+    protein?: number
+    carbs?: number
+    fat?: number
+  }
+  storage?: {
+    method?: string
+    temperature?: string
+    shelf_life?: string
+  }
+  allergens?: string[]
+  local?: boolean
+  organic?: boolean
+  seasonal?: boolean
+  createdAt?: string
+  updatedAt?: string
+  created_at?: string
+  // Supplier info displayed in UI when present
+  supplierId?: string
+  supplierInfo?: {
+    business_name?: string
+    verified?: boolean
+  }
 }
 
 // Simple creation input

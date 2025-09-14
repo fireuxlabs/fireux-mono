@@ -2,7 +2,7 @@
   <UCard class="profile-card" @click="handleClick" style="cursor: pointer">
     <div class="profile-header">
       <UAvatar
-        :src="chef?.avatarUrl"
+        :src="(chef as any)?.avatarUrl || (chef as any)?.avatar || (chef as any)?.profile_image?.url"
         :alt="chef?.chef_name || 'Chef'"
         size="lg"
       />
@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Chef } from '../../../../../models/profiles/Chef.model'
+import type { ChefCoreProfile as Chef } from '../../../../../models/profiles/Chef.model'
 
 const props = defineProps<{
   chef?: Partial<Chef>

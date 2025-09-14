@@ -1,11 +1,11 @@
 <template>
   <div
     class="objects cards cell ingredient-cell"
-    :data-id="props.ingredient.id"
+    :data-id="ingredient?.id"
   >
     <div class="header">
       <div class="info">
-        <div class="title">{{ props.ingredient.name }}</div>
+  <div class="title">{{ ingredient?.name }}</div>
         <div class="subtitle">Ingredient</div>
       </div>
     </div>

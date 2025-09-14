@@ -40,18 +40,16 @@ export async function useProfileDelete(profileConfig: ProfileConfig) {
         appScoped: false,
       })
 
-        // Update AppUser profiles array - remove the badge string
-    const currentProfiles = appUser.value?.profiles || []
-        const profileKey = config.profileType.toLowerCase()
-        const updatedProfiles = currentProfiles.filter((p) => p !== profileKey)
+      // Update AppUser profiles array - remove the object entry by type
+      const currentProfiles = (appUser.value?.profiles || []) as any[]
+      const typeKey = config.id
+      const updatedProfiles = currentProfiles.filter((p) => p?.type !== typeKey)
 
-        if (currentProfiles.length !== updatedProfiles.length) {
-          const { setProfiles } = useAppUserUpdate()
-          await setProfiles(updatedProfiles)
-        console.log(
-            '✅ Removed profile from AppUser.profiles:',
-            profileKey
-        )
+      if (currentProfiles.length !== updatedProfiles.length) {
+        const { useAppUserUpdateFirestore } = useAppUserUpdate()
+        const { updateProfiles } = useAppUserUpdateFirestore()
+        await updateProfiles(updatedProfiles)
+        console.log('✅ Removed profile from AppUser.profiles:', typeKey)
       }
 
       return 'success'

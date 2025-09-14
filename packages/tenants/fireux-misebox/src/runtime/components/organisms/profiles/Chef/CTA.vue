@@ -1,66 +1,34 @@
 <template>
   <div class="profile-cta">
-    <OrganismsProfilesChefCardsCell :chef="current" />
+    <p>You’re in {{ tenancyDisplay }}</p>
 
-    <!-- Features removed as requested -->
+    <!-- Ecosystem profile -->
+    <OrganismsProfilesChefCardsCell v-if="ecosystemProfile" :chef="ecosystemProfile" />
+    <p v-else>❌ You don’t have a global Chef profile yet.</p>
 
-    <div class="profile-cta-action">
-      <template v-if="current && hasLocal">
-        <UButton size="lg" color="primary" disabled>
-          Chef Profile Complete
-        </UButton>
-        <p class="profile-cta-subtext">You have a chef profile for this app.</p>
-      </template>
-      <template v-else-if="current && !hasLocal">
-        <UButton size="lg" color="primary" @click="createLocalProfile">
-          Add {{ current.chef_name }} to {{ appName }} Chefs
-        </UButton>
-      </template>
-      <template v-else-if="!current && hasLocal">
-        <UButton size="lg" color="primary" disabled>Profile Error</UButton>
-        <p class="profile-cta-subtext text-warning">
-          (Fallback) Local profile exists without global. Please contact
-          support.
-        </p>
-      </template>
-      <template v-else>
-        <UButton size="lg" color="primary" @click="createGlobalProfile">
-          Create Chef Profile
-        </UButton>
-        <p class="profile-cta-subtext">
-          Free to join • Takes less than 5 minutes
-        </p>
-      </template>
+    <!-- App profile (only if tenant) -->
+    <template v-if="appTenancy === 'tennant'">
+      <OrganismsProfilesChefCardsCell v-if="appProfile" :chef="appProfile" />
+      <p v-else>❌ You are not a Chef in this app.</p>
+    </template>
+
+    <!-- Single CTA button -->
+    <div class="cta-buttons">
+      <UButton
+        v-if="!ecosystemProfile || !appProfile"
+        size="lg"
+        color="primary"
+        @click="ensureProfile"
+      >
+        {{ !ecosystemProfile ? 'Create Chef Profile' : 'Add to ' + tenancyDisplay + ' Chefs' }}
+      </UButton>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { chefConfig } from '../../../../models/profiles/Chef.model'
-// Composables are auto-imported by fireux-core; no deep imports
 
-const { current, createProfile } = await useProfile(chefConfig)
-const { appUser } = await useAppUser()
-
-// Get app name from runtime config or fallback
-const { appName } = useFireUXConfig()
-
-const hasLocal = computed(() => {
-  return appUser.value?.profiles?.some((p) => p.type === 'chef') ?? false
-})
-
-const { profileToAppAction } = await useApp()
-
-function createGlobalProfile() {
-  const id = current.value?.uid || ''
-  const name = current.value?.chef_name || ''
-  createProfile({ id, name })
-}
-
-async function createLocalProfile() {
-  const id = current.value?.uid || ''
-  const name = current.value?.chef_name || ''
-  const avatarUrl = current.value?.avatarUrl || ''
-  await profileToAppAction('add', 'chefs', id, { id, name, avatarUrl })
-}
+const { tenancyDisplay, appTenancy } = await useApp()
+const { ecosystemProfile, appProfile, ensureProfile } = await useProfile(chefConfig)
 </script>

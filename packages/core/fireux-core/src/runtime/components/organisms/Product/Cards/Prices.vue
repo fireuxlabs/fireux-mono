@@ -11,7 +11,7 @@
         :class="{ 'default-price': index === 0 }"
       >
         <span class="price-main">{{
-          formatPrice(price.unit_amount, price.currency)
+          formatPrice({ unit_amount: price.unit_amount, currency: price.currency })
         }}</span>
         <span v-if="price.type === 'recurring'" class="recurring">
           ({{ price.interval_count || 1 }}×{{ price.interval || 'month' }})
@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Price } from '../../../../models/objects/product.model'
 const props = defineProps<{ productId: string }>()
 const prices = ref<Price[]>([])
 const { formatPrice, fetchProductPrices } = await useProducts()

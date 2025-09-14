@@ -6,13 +6,7 @@
 
 import { doc, updateDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-
-// Import the useFirestoreUtils from fireux-core
-declare global {
-  function useFirestoreUtils(): {
-    waitForCurrentUser: () => Promise<any>
-  }
-}
+import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils'
 
 export function useSupplierUpdate() {
   const db = useFirestore()

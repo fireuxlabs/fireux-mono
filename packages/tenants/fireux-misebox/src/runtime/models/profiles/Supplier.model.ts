@@ -1,9 +1,20 @@
-import type {
-  Profile,
-  ProfileConfig,
-} from '#fireux-core-models/profiles/profile.model'
+// Minimal local Profile and ProfileConfig to avoid alias issues
+export interface ProfileBase {
+  created_at?: string
+  updated_at?: string
+}
+export interface ProfileConfig {
+  id: string
+  collectionName: string
+  profileType: string
+  color: string
+  validationFn: (p: any) => boolean
+  requiredFields: string[]
+  searchableFields: string[]
+  defaultValues?: Record<string, any>
+}
 
-export interface Supplier extends Profile {
+export interface Supplier extends ProfileBase {
   // Core Identity - supplier has its own independent ID
   id: string // auto-generated supplier ID (same as uid)
   business_name: string // only required field
@@ -26,6 +37,19 @@ export interface Supplier extends Profile {
   // Simple tracking
   total_ingredients?: number // how many ingredients use this supplier
   verified?: boolean // only claimed suppliers can be verified
+
+  // Optional UI fields referenced by components
+  avatarUrl?: string
+  profile_image?: { url?: string }
+  company_name?: string
+  locations?: Array<{ city?: string; country?: string }>
+  bio_short?: string
+  bio_long?: string
+  products_offered?: string[]
+  employee_count?: number
+  years_in_business?: number
+  certifications?: string[]
+  delivery_range?: number
 }
 
 // Simple validation - just needs a name

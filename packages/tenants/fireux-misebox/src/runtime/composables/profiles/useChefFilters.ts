@@ -1,5 +1,5 @@
 import { ref, computed, type Ref } from 'vue'
-import type { Chef } from '../../models/profiles/Chef.model'
+import type { ChefCoreProfile as Chef } from '../../models/profiles/Chef.model'
 
 // Chef-specific filtering composable
 export function useChefFilters(profiles: Ref<Chef[]>) {

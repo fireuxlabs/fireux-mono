@@ -76,12 +76,7 @@ const { product } = await useCreateProductState()
 const defaultCurrency = 'EUR'
 
 const isService = computed(() => product.value.product_type === 'service')
-const isSubscription = computed(
-  () => product.value.product_type === 'subscription'
-)
-const showBillingFrequency = computed(
-  () => isService.value || isSubscription.value
-)
+const showBillingFrequency = computed(() => isService.value)
 
 const price = computed(() => {
   const base = prices.value[props.index]
@@ -96,18 +91,13 @@ const price = computed(() => {
   }
 
   // Enforce one_time for non-service and non-subscription
-  if (!isService.value && !isSubscription.value) {
+  if (!isService.value) {
     base.type = 'one_time'
     base.interval = undefined
     base.interval_count = undefined
   }
 
-  // Default subscriptions to monthly recurring
-  if (isSubscription.value && (!base.type || base.type === 'one_time')) {
-    base.type = 'recurring'
-    base.interval = 'month'
-    base.interval_count = 1
-  }
+  // Services can be recurring; leave as-is unless explicitly set elsewhere
 
   return base
 })

@@ -1,6 +1,9 @@
 // app/composables/firestore/documents/Blog/blogPostUtils.ts
 import { useCoreUser } from '../../CoreUser/useCoreUser'
-import type { BlogPost, Author } from '../../../../models/objects/blogPost.model'
+import type {
+  BlogPost,
+  Author,
+} from '../../../../models/objects/blogPost.model'
 
 /**
  * Provides helper functions for blog post creation and editing.
@@ -11,7 +14,7 @@ export function useBlogPostUtils() {
     return title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
-  .replace(/^(?:-)|(?:-)$/g, '')
+      .replace(/^(?:-)|(?:-)$/g, '')
   }
 
   // Compute estimated reading time (~200 words/minute)

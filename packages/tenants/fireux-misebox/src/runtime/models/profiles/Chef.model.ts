@@ -1,19 +1,18 @@
-/**
- * Base Profile interface — shared by all profile types
- */
+// Minimal local copies to avoid alias issues
 export interface ProfileBase {
-  uid: string
-  created_at: Date | string
-  updated_at?: Date | string
-
-  // Standardized Avatar System
-  avatarUrl: string
-  avatar?: {
-    path: string
-    width?: number
-    height?: number
-    mimeType?: string
-  }
+  id?: string
+  created_at?: string
+  updated_at?: string
+}
+export interface ProfileConfig {
+  id: string
+  collectionName: string
+  profileType: string
+  color: string
+  validationFn: (p: any) => boolean
+  requiredFields: string[]
+  searchableFields: string[]
+  defaultValues?: Record<string, any>
 }
 
 /**
@@ -36,11 +35,43 @@ export interface ChefCoreProfile extends ProfileBase {
   gallery?: Array<{ name: string; image_url: string }>
   kitchens?: Record<string, { name: string; image_url: string }>
 
+  /** Optional media */
+  profile_image?: { url?: string }
+
   /** Properties for cards/filters */
   years_experience?: number
   verified?: boolean
   available_for_hire?: boolean
   total_recipes?: number
+
+  /** Extended resume-like fields used in UI (optional) */
+  chef_experience?: Array<{
+    name: string
+    role?: string
+    from_month?: string
+    from_year?: string | number
+    to_month?: string
+    to_year?: string | number
+    ongoing?: boolean
+    description?: string
+    image_url?: string
+  }>
+  culinary_education?: Array<{
+    institution: string
+    program?: string
+    start_year?: string | number
+    end_year?: string | number
+    ongoing?: boolean
+    image_url?: string
+  }>
+  awards?: string[]
+  certifications?: string[]
+  social_media?: {
+    instagram?: string
+    facebook?: string
+    youtube?: string
+    website?: string
+  }
 
   /** Optional governance flags */
   visibility?: 'public' | 'private' | 'unlisted'
@@ -65,13 +96,11 @@ export interface ChefAppProfile extends ProfileBase {
 /**
  * Validation + Config (keeps existing pattern)
  */
-export function validateChefProfile(
-  chef: Partial<ChefCoreProfile>
-): boolean {
+export function validateChefProfile(chef: Partial<ChefCoreProfile>): boolean {
   return !!chef.chef_name
 }
 
-export const chefConfig = {
+export const chefConfig: ProfileConfig = {
   id: 'chef',
   collectionName: 'chefs',
   profileType: 'Chef',
@@ -93,6 +122,6 @@ export const chefConfig = {
  */
 export type ChefInput = Omit<
   ChefCoreProfile,
-  'uid' | 'created_at' | 'updated_at'
+  'id' | 'created_at' | 'updated_at'
 >
 export type ChefUpdate = Partial<ChefInput>

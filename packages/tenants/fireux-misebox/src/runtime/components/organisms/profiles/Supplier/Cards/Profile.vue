@@ -15,7 +15,7 @@
         </p>
         <div v-if="supplier?.locations?.length" class="profile-location">
           <UIcon name="i-lucide-map-pin" />
-          <span>{{ getLocationText(supplier.locations[0]) }}</span>
+          <span>{{ formatLocation(supplier.locations[0]) }}</span>
         </div>
         <div v-if="supplier?.years_in_business" class="profile-meta">
           {{ supplier.years_in_business }}+ years in business
@@ -81,5 +81,11 @@ const handleClick = () => {
   if (props.navigate && props.supplier) {
     props.navigate(props.supplier)
   }
+}
+
+const formatLocation = (loc: { city?: string; country?: string } | undefined) => {
+  if (!loc) return ''
+  if (loc.city && loc.country) return `${loc.city}, ${loc.country}`
+  return loc.city || loc.country || ''
 }
 </script>

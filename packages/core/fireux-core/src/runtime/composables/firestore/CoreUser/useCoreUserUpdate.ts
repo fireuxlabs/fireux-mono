@@ -6,7 +6,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 import { useCurrentUser, useFirestore } from 'vuefire'
-import type { CoreUser } from '#fireux-core-models/core/coreUser.model'
+import type { CoreUser } from '../../../models/core/coreUser.model'
 
 // tiny validators/formatters
 const isUrl = (s: string) => /^https?:\/\//i.test(s) || s.startsWith('/')

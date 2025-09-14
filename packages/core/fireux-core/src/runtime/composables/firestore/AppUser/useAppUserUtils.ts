@@ -40,7 +40,8 @@ export function useAppUserUtils() {
     } else if (user.handle && user.handle !== user.email) {
       baseName = user.handle
     } else if (user.email) {
-      baseName = user.email.split('@')[0]
+      // ensure a string even with noUncheckedIndexedAccess
+      baseName = ((user.email || '').split('@')[0]) ?? ''
     } else {
       baseName = `user-${user.uid.slice(-8)}`
     }

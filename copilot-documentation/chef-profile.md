@@ -14,10 +14,9 @@ Purpose: List all files you need and the flow to create a Chef profile using the
   - `packages/core/fireux-core/src/runtime/composables/firestore/profiles/useProfileCreate.ts`
   - `packages/core/fireux-core/src/runtime/composables/firestore/profiles/useProfile.ts`
   - `packages/core/fireux-core/src/runtime/composables/firestore/profiles/useProfileDelete.ts`
-- AppUser updater (for membership badges/entries)
+- AppUser updater (membership entries)
   - `packages/core/fireux-core/src/runtime/composables/firestore/AppUser/useAppUserUpdate.ts`
-    - `useAppUserUpdateFirestore().updateProfiles(entries)` (compat)
-    - `setProfiles(stringBadges)` (new)
+    - `useAppUserUpdateFirestore().updateProfiles(entries)` — persist object entries
 - Firestore helpers
   - `packages/core/fireux-core/src/runtime/composables/firestore/useFirestoreManager.ts`
   - `packages/core/fireux-core/src/runtime/composables/firestore/useFirestoreRead.ts`
@@ -29,17 +28,17 @@ Purpose: List all files you need and the flow to create a Chef profile using the
 
 ## How the flow works
 
-1) Build the Chef profile config from the tenant model:
+1. Build the Chef profile config from the tenant model:
    - `import { chefConfig } from '#tenant/models/profiles/Chef.model'`
-2) Use the unified profile composable:
+2. Use the unified profile composable:
    - `const { createProfile } = await useProfile(chefConfig)`
-3) Call create with domain fields (min: `chef_name`):
+3. Call create with domain fields (min: `chef_name`):
    - `await createProfile({ chef_name: 'Alice Example' })`
-4) Under the hood (global-first):
+4. Under the hood (global-first):
    - Check global doc `chefs/{uid}`
      - If exists: ensure `AppUser.profiles` contains a profile entry `{ type: 'chef', collection: 'chefs', is_active: true, created_at: ... }`
      - If missing: create a new global doc with `ProfileBase` fields (`id`, `avatar`, `created_at`, `updated_at`) plus your domain fields; then update `AppUser.profiles`.
-5) Avatar default
+5. Avatar default
    - `useMediaStorage().getDefaultAvatarUrl()` → '/img/default-avatar.png' fallback
 
 ## Data shapes
@@ -48,7 +47,8 @@ Purpose: List all files you need and the flow to create a Chef profile using the
   - id (== auth uid), avatar (URL), created_at, updated_at?
   - Domain fields from `Chef.model.ts` (e.g., `chef_name`) go into the same document.
 - AppUser doc (apps/{appId}/users/{uid})
-  - profiles: either old entry objects (compat path used by create) or new string[] badges (`['chef']`).
+  - profiles: array of entry objects, standardized as:
+    `{ type: 'chef', collection: 'chefs', is_active: true, created_at: ISO }`
 
 ## Minimal usage example
 

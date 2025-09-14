@@ -1,4 +1,4 @@
-import type { Chef } from '../../../../../models/profiles/Chef.model'
+import type { ChefCoreProfile as Chef } from '../../../../../models/profiles/Chef.model'
 
 export function useChefValidation() {
   // Validate chef name
@@ -211,10 +211,7 @@ export function useChefValidation() {
   ): { isValid: boolean; errors: string[] } => {
     const errors: string[] = []
 
-    // Required fields validation
-    if (!chefData.uid) {
-      errors.push('User ID is required')
-    }
+    // Required fields validation (ChefCoreProfile uses ProfileBase with id set from auth elsewhere)
 
     // Optional field validations
     if (chefData.chef_name) {

@@ -54,7 +54,7 @@
         <div class="profile-detail">
           <strong>Status:</strong>
           <UBadge
-            :color="app?.admin_ids?.length ? 'green' : 'orange'"
+            :color="app?.admin_ids?.length ? 'success' : 'warning'"
             variant="soft"
             size="xs"
           >
@@ -67,7 +67,7 @@
             <UBadge
               v-for="adminId in app.admin_ids"
               :key="adminId"
-              color="gray"
+              color="neutral"
               variant="soft"
               size="xs"
             >

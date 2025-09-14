@@ -1,27 +1,21 @@
 <template>
   <UCard>
     <div>
-      <UAvatar
-        :src="appUser?.avatar"
-        :alt="appUser?.display_name || 'App User'"
-        size="sm"
-      />
+      <UAvatar size="sm" />
       <div>
-        <h5>{{ appUser?.display_name || appUser?.email || 'App User' }}</h5>
+        <h5>{{ appUser?.id || 'App User' }}</h5>
         <p v-if="appUser?.role">{{ appUser.role }}</p>
+        <p v-if="appUser?.role">{{ appUser?.role }}</p>
       </div>
     </div>
 
-    <div v-if="appUser?.isAdmin">
-      <UBadge color="red">Admin</UBadge>
-    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import type { AppUser } from '../../../../../models/app/appUser.model'
+import type { AppUser } from '../../../../../models/core/appUser.model'
 
 defineProps<{
-  appUser?: Partial<AppUser>
+  appUser?: Pick<AppUser, 'id' | 'role'>
 }>()
 </script>

@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FirebaseProduct } from '../../../../models'
+import type { FirebaseProduct } from '../../../../models/objects/product.model'
 
 const props = defineProps<{ products: FirebaseProduct[] }>()
 </script>

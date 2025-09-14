@@ -1,6 +1,6 @@
 import { useCurrentUser, useFirestore } from 'vuefire'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
-import type { CoreUser } from '#fireux-core-models/core/coreUser.model'
+import type { CoreUser } from '../../../models/core/coreUser.model'
 import { useMediaStorage } from '../../firebase/useMediaStorage'
 
 // packages/core/fireux-core/src/runtime/composables/firestore/CoreUser/useCoreUserEnsure.ts

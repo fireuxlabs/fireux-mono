@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Chef } from '../../../../../models/profiles/Chef.model'
+import type { ChefCoreProfile as Chef } from '../../../../../models/profiles/Chef.model'
 
 defineProps<{
   chef?: Partial<Chef>
