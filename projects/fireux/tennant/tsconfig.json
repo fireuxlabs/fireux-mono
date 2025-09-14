@@ -1,5 +1,5 @@
 {
-  // tsconfig for FireUX tenant app — do not override Nuxt aliases (~, @, ~~)
+  // tsconfig for Tennant app — do not override Nuxt aliases (~, @, ~~)
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
     "composite": false,

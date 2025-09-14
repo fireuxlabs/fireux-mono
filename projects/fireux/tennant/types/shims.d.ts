@@ -1,11 +1,4 @@
 // Local shims included by this app's tsconfig include pattern
-declare module '#pwa' {
-  export const useApplePwaIcon: any
-  export const useAppleSplashScreenPwaIcon: any
-  export const useFaviconPwaIcon: any
-  export const useMaskablePwaIcon: any
-  export const useTransparentPwaIcon: any
-}
 declare module '#build/pwa-icons/PwaAppleImage' {
   export type PwaAppleImageProps = any
 }
