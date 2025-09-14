@@ -13,8 +13,8 @@
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"]
       // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
-  "skipLibCheck": true,
-  "typeRoots": ["./node_modules/@types", "../../../../types"]
+    "skipLibCheck": true,
+    "types": ["nuxt", "@vite-pwa/nuxt", "vite/client"]
   },
   "include": ["./.nuxt/nuxt.d.ts", "./**/*"],
   "exclude": ["node_modules"]

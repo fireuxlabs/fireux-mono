@@ -11,7 +11,10 @@
         :class="{ 'default-price': index === 0 }"
       >
         <span class="price-main">{{
-          formatPrice({ unit_amount: price.unit_amount, currency: price.currency })
+          formatPrice({
+            unit_amount: price.unit_amount,
+            currency: price.currency,
+          })
         }}</span>
         <span v-if="price.type === 'recurring'" class="recurring">
           ({{ price.interval_count || 1 }}×{{ price.interval || 'month' }})

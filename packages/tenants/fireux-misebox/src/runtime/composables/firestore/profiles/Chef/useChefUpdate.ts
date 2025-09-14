@@ -2,7 +2,10 @@
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils'
-import type { ProfileUpdate, ProfileBase as CoreProfileBase } from 'fireux-core/runtime/models/profiles/profile.model'
+import type {
+  ProfileUpdate,
+  ProfileBase as CoreProfileBase,
+} from 'fireux-core/runtime/models/profiles/profile.model'
 import type { ChefCoreProfile as Chef } from '../../../../models/profiles/Chef.model'
 
 // Fields we never allow to be updated here
@@ -13,7 +16,8 @@ export function useChefUpdate() {
   const { waitForCurrentUser } = useFirestoreUtils()
 
   // Generic, safe field updater
-  type UpdatableChef = Chef & Pick<CoreProfileBase, 'avatar' | 'id' | 'created_at' | 'updated_at'>
+  type UpdatableChef = Chef &
+    Pick<CoreProfileBase, 'avatar' | 'id' | 'created_at' | 'updated_at'>
   const updateFields = async (patch: ProfileUpdate<UpdatableChef>) => {
     const user = await waitForCurrentUser()
     if (!user?.uid) throw new Error('User not authenticated')
@@ -33,10 +37,8 @@ export function useChefUpdate() {
   }
 
   // Convenience wrappers (keep types narrow where useful)
-  const updateSingle = (
-    field: keyof Chef,
-    value: string | number | boolean
-  ) => updateFields({ [field]: value } as ProfileUpdate<UpdatableChef>)
+  const updateSingle = (field: keyof Chef, value: string | number | boolean) =>
+    updateFields({ [field]: value } as ProfileUpdate<UpdatableChef>)
 
   const updateArray = <K extends keyof Chef>(field: K, value: Chef[K]) =>
     updateFields({ [field]: value } as ProfileUpdate<UpdatableChef>)

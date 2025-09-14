@@ -56,7 +56,9 @@
                     ? 'From Search'
                     : 'Manual Entry'
                 "
-                :color="selectedKitchen.source === 'search' ? 'info' : 'success'"
+                :color="
+                  selectedKitchen.source === 'search' ? 'info' : 'success'
+                "
                 class="mt-2"
               />
             </div>

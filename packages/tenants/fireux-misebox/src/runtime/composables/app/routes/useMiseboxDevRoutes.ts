@@ -2,7 +2,8 @@
 declare function useRuntimeConfig(): { public?: { role?: string } }
 
 export function getMiseboxDevRoutes() {
-  const rc = typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : undefined
+  const rc =
+    typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : undefined
   const role = rc?.public?.role
   const routes = [
     {

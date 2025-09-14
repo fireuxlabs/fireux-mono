@@ -8,7 +8,6 @@
         <p v-if="appUser?.role">{{ appUser?.role }}</p>
       </div>
     </div>
-
   </UCard>
 </template>
 

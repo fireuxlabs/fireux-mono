@@ -83,7 +83,9 @@ const handleClick = () => {
   }
 }
 
-const formatLocation = (loc: { city?: string; country?: string } | undefined) => {
+const formatLocation = (
+  loc: { city?: string; country?: string } | undefined
+) => {
   if (!loc) return ''
   if (loc.city && loc.country) return `${loc.city}, ${loc.country}`
   return loc.city || loc.country || ''

@@ -2,7 +2,11 @@
   <UCard class="profile-card">
     <div class="profile-header">
       <UAvatar
-        :src="(chef as any)?.avatarUrl || (chef as any)?.avatar || (chef as any)?.profile_image?.url"
+        :src="
+          (chef as any)?.avatarUrl ||
+          (chef as any)?.avatar ||
+          (chef as any)?.profile_image?.url
+        "
         :alt="chef?.chef_name || 'Chef'"
         size="md"
       />

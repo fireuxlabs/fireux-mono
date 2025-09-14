@@ -4,7 +4,12 @@
     <p v-else>❌ You are not yet a member of this app.</p>
 
     <div class="cta-buttons">
-      <UButton v-if="!appUser" size="lg" color="primary" @click="() => ensureAppUser()">
+      <UButton
+        v-if="!appUser"
+        size="lg"
+        color="primary"
+        @click="() => ensureAppUser()"
+      >
         Join {{ appName }}
       </UButton>
     </div>

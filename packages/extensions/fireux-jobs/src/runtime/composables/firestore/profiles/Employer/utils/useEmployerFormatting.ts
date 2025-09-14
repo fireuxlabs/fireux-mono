@@ -57,8 +57,8 @@ export function useEmployerFormatting() {
 
   // Format specialties list for display
   const formatSpecialties = (specialties: string[]): string => {
-  if (!specialties || specialties.length === 0) return 'No specialties listed'
-  if (specialties.length === 1) return specialties[0] || ''
+    if (!specialties || specialties.length === 0) return 'No specialties listed'
+    if (specialties.length === 1) return specialties[0] || ''
     if (specialties.length === 2) return specialties.join(' & ')
     if (specialties.length <= 4) return specialties.join(', ')
     return `${specialties.slice(0, 3).join(', ')} & ${specialties.length - 3} more`
@@ -66,8 +66,8 @@ export function useEmployerFormatting() {
 
   // Format cuisine types for display
   const formatCuisineTypes = (cuisines: string[]): string => {
-  if (!cuisines || cuisines.length === 0) return 'All cuisines'
-  if (cuisines.length === 1) return cuisines[0] || ''
+    if (!cuisines || cuisines.length === 0) return 'All cuisines'
+    if (cuisines.length === 1) return cuisines[0] || ''
     if (cuisines.length === 2) return cuisines.join(' & ')
     if (cuisines.length <= 3) return cuisines.join(', ')
     return `${cuisines.slice(0, 2).join(', ')} & ${cuisines.length - 2} more`
@@ -75,8 +75,8 @@ export function useEmployerFormatting() {
 
   // Format establishment types for display
   const formatEstablishmentTypes = (types: string[]): string => {
-  if (!types || types.length === 0) return 'Multi-service establishment'
-  if (types.length === 1) return types[0] || ''
+    if (!types || types.length === 0) return 'Multi-service establishment'
+    if (types.length === 1) return types[0] || ''
     if (types.length === 2) return types.join(' & ')
     return `${types.slice(0, 2).join(' & ')} & more`
   }

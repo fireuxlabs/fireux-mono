@@ -56,9 +56,14 @@
             :variant="
               product.product_type === option.value ? 'solid' : 'outline'
             "
-            :color="product.product_type === option.value ? 'primary' : 'neutral'"
+            :color="
+              product.product_type === option.value ? 'primary' : 'neutral'
+            "
             @click="
-              product.product_type = option.value as 'physical' | 'digital' | 'service'
+              product.product_type = option.value as
+                | 'physical'
+                | 'digital'
+                | 'service'
             "
             class="product-type-button"
           >

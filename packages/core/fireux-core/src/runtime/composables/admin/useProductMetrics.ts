@@ -10,7 +10,8 @@ export async function useProductMetrics() {
       () => productsCollection.value?.filter((p: any) => p.active).length ?? 0
     ),
     outOfStockProducts: computed(
-      () => productsCollection.value?.filter((p: any) => p.stock === 0).length ?? 0
+      () =>
+        productsCollection.value?.filter((p: any) => p.stock === 0).length ?? 0
     ),
   }
 }

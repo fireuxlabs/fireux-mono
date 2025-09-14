@@ -1,4 +1,7 @@
-import type { FirebaseProduct, Price } from '../../../../../models/objects/product.model'
+import type {
+  FirebaseProduct,
+  Price,
+} from '../../../../../models/objects/product.model'
 import { useMediaStorage } from '../../../../firebase/useMediaStorage'
 import { useFirestoreManager } from '../../../useFirestoreManager'
 
@@ -20,7 +23,8 @@ export function useProductFormatting() {
     const formatted: Partial<FirebaseProduct> = { ...product }
 
     if (formatted.name) formatted.name = formatted.name.trim()
-    if (formatted.description) formatted.description = formatted.description.trim()
+    if (formatted.description)
+      formatted.description = formatted.description.trim()
     if (formatted.slug) formatted.slug = formatSlug(formatted.slug)
 
     if (formatted.features) {
@@ -90,7 +94,8 @@ export function useProductFormatting() {
 
     const currency = product.prices[0]?.currency?.toUpperCase() || 'USD'
     const symbol = getCurrencySymbol(currency)
-    if (minPrice === undefined || maxPrice === undefined) return 'Price not available'
+    if (minPrice === undefined || maxPrice === undefined)
+      return 'Price not available'
     return `${symbol}${(minPrice / 100).toFixed(2)} - ${symbol}${(maxPrice / 100).toFixed(2)}`
   }
 
@@ -141,7 +146,11 @@ export function useProductFormatting() {
     if (!Array.isArray(arr)) return []
     if (arr.length === 0) return []
     if (typeof arr[0] === 'string') {
-      return [...new Set(arr.filter((s: string) => s?.trim()).map((s: string) => s.trim()))]
+      return [
+        ...new Set(
+          arr.filter((s: string) => s?.trim()).map((s: string) => s.trim())
+        ),
+      ]
     }
     if (arr[0] && typeof arr[0].label === 'string') {
       // Normalize label trimming and de-duplicate by label

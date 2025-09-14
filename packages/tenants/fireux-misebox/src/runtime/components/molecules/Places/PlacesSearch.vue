@@ -124,8 +124,8 @@ const performSearch = async () => {
   isSearching.value = true
 
   try {
-  // NOTE: Implement actual Google Places API search
-  // NOTE: Implement Firestore kitchen search
+    // NOTE: Implement actual Google Places API search
+    // NOTE: Implement Firestore kitchen search
 
     // Mock delay for demo
     await new Promise((resolve) => setTimeout(resolve, 1000))

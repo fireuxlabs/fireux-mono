@@ -20,12 +20,8 @@
     "paths": {
       "#fireux-core-models/*": ["./src/runtime/models/*"]
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"],
-    "typeRoots": ["./node_modules/@types", "../../../types"]
+    "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/runtime/env.d.ts"
-  ],
+  "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
   "exclude": ["node_modules", "dist"]
 }
