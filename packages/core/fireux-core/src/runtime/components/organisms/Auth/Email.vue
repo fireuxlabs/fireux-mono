@@ -27,7 +27,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
-const { ensureApp } = await useAppEnsure()
+const { ensureApp } = useAppEnsure()
 
 const isSignUp = ref(true)
 const state = reactive({

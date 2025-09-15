@@ -17,5 +17,5 @@
 
 <script setup>
 definePageMeta({ layout: 'dev' })
-const { app } = await useApp()
+const { app } = useApp()
 </script>

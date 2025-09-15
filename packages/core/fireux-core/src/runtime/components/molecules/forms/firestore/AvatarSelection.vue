@@ -62,7 +62,7 @@ const getUserInitials = (user) => {
 }
 
 const currentUser = useCurrentUser()
-const { appUser, updateAvatar } = await useAppUser()
+const { appUser, updateAvatar } = useAppUser()
 const { uploadUserAvatar } = useMediaStorage()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 

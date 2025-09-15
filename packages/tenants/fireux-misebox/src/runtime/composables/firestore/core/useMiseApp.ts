@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/app/useApp'
 
-export async function useMiseApp() {
-  const coreApp = await useApp()
+export function useMiseApp() {
+  const coreApp = useApp()
   const { app } = coreApp
 
   // Kitchen extension - assuming kitchens might be added to app data later

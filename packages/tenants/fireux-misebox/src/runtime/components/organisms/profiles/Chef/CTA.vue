@@ -3,7 +3,10 @@
     <p>You’re in {{ tenancyDisplay }}</p>
 
     <!-- Ecosystem profile -->
-    <OrganismsProfilesChefCardsCell v-if="ecosystemProfile" :chef="ecosystemProfile" />
+    <OrganismsProfilesChefCardsCell
+      v-if="ecosystemProfile"
+      :chef="ecosystemProfile"
+    />
     <p v-else>❌ You don’t have a global Chef profile yet.</p>
 
     <!-- App profile (only if tenant) -->
@@ -20,7 +23,11 @@
         color="primary"
         @click="ensureProfile"
       >
-        {{ !ecosystemProfile ? 'Create Chef Profile' : 'Add to ' + tenancyDisplay + ' Chefs' }}
+        {{
+          !ecosystemProfile
+            ? 'Create Chef Profile'
+            : 'Add to ' + tenancyDisplay + ' Chefs'
+        }}
       </UButton>
     </div>
   </div>
@@ -29,6 +36,6 @@
 <script lang="ts" setup>
 import { chefConfig } from '../../../../models/profiles/Chef.model'
 
-const { tenancyDisplay, appTenancy } = await useApp()
-const { ecosystemProfile, appProfile, ensureProfile } = await useProfile(chefConfig)
+const { tenancyDisplay, appTenancy } = useApp()
+const { ecosystemProfile, appProfile, ensureProfile } = useProfile(chefConfig)
 </script>

@@ -9,7 +9,7 @@ import useAppUserUpdate from '../AppUser/useAppUserUpdate'
  * Generic profile deletion composable
  * Provides standardized delete functionality for all profile types
  */
-export async function useProfileDelete(profileConfig: ProfileConfig) {
+export function useProfileDelete(profileConfig: ProfileConfig) {
   const currentUser = useCurrentUser()
   const { deleteDocument } = useFirestoreManager()
 
@@ -35,7 +35,7 @@ export async function useProfileDelete(profileConfig: ProfileConfig) {
 
     try {
       // Get appUser data when needed
-      const { appUser } = await useAppUser()
+      const { appUser } = useAppUser()
       await deleteDocument(config.collectionName, targetId, {
         appScoped: false,
       })

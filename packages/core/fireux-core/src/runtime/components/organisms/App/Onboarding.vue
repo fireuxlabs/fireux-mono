@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-const { coreUser } = await useCoreUser()
+const { coreUser } = useCoreUser()
 if (import.meta.dev) {
   watch(coreUser, (val) => {
     console.log('[Onboarding] coreUser changed', val)
@@ -48,7 +48,7 @@ const { data: envData, error: envError } = await useFetch(
     default: () => null,
   }
 )
-const { ensureApp } = await useAppEnsure()
+const { ensureApp } = useAppEnsure()
 
 const pin = ref([])
 const isUnlocked = ref(false)

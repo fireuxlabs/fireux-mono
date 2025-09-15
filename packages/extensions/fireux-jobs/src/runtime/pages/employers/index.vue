@@ -1,8 +1,5 @@
 <template>
-  <OrganismsProfileRoot
-    :config="employerConfig"
-    :filter-composable="useEmployerFilters"
-  >
+  <OrganismsProfileRoot :config="employerConfig">
     <template #profile-pill="{ profile }">
       <div @click="navigateToEmployer(profile)" style="cursor: pointer">
         <OrganismsProfilesEmployerCardsPill :employer="profile" />
@@ -25,7 +22,6 @@
 
 <script setup>
 import { employerConfig } from '../../models/profiles/Employer.model'
-import { useEmployerFilters } from '../../composables/profiles/useEmployerFilters'
 
 // Navigation function
 const navigateToEmployer = (employer) => {

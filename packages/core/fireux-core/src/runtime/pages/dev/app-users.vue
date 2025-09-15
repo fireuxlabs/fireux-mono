@@ -53,6 +53,5 @@
 </template>
 
 <script setup>
-const { appUser, appUsers, isAppUser, isPro, isAdmin, initials } =
-  await useAppUser()
+const { appUser, appUsers, isAppUser, isPro, isAdmin, initials } = useAppUser()
 </script>

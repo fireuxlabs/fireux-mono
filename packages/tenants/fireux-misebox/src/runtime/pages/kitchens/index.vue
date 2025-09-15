@@ -16,6 +16,6 @@ import { useCoreUser } from '../../../../../../core/fireux-core/src/runtime/comp
 import { useProfile } from '../../../../../../core/fireux-core/src/runtime/composables/firestore/profiles/useProfile'
 import { chefConfig } from '../../models/profiles/Chef.model'
 
-const { coreUser, hasProfile } = await useCoreUser()
-const { current: chef } = await useProfile(chefConfig)
+const { coreUser, hasProfile } = useCoreUser()
+const { current: chef } = useProfile(chefConfig)
 </script>

@@ -17,23 +17,32 @@
     />
 
     <!-- Show profile list with all profiles -->
-    <slot
-      name="profile-item"
-      v-for="profile in all"
-      :key="profile.uid"
-      :profile="profile"
-      :navigate="navigateToProfile"
-    />
+    <template v-for="profile in list" :key="profile.id || profile.uid">
+      <slot
+        name="profile-item"
+        :profile="profile"
+        :navigate="navigateToProfile"
+      />
+    </template>
   </div>
 </template>
 
 <script setup>
 const props = defineProps({
   config: { type: Object, required: true },
-  filterComposable: { type: Function, required: true },
 })
-const { hasProfile } = await useAppUser()
-const { current, all } = await useProfile(props.config)
+const { hasProfile } = useAppUser()
+const { ecosystemProfile, appProfile, ecosystemCollection } = useProfile(
+  props.config
+)
+
+// Current user profile prefers app-scoped, falls back to ecosystem
+const current = computed(
+  () => appProfile?.value || ecosystemProfile?.value || null
+)
+
+// Simple list derived from ecosystem collection
+const list = computed(() => ecosystemCollection?.value || [])
 
 // Navigation function for profile clicks
 const navigateToProfile = (profile) => {

@@ -76,7 +76,7 @@ export function useBlogFormatting() {
   async function getAuthor(): Promise<
     Pick<CoreUser, 'id' | 'display_name' | 'handle' | 'avatar' | 'email'>
   > {
-    const { coreUser } = await useCoreUser()
+    const { coreUser } = useCoreUser()
     return {
       id: coreUser.value?.id || '',
       display_name: coreUser.value?.display_name || coreUser.value?.email || '',

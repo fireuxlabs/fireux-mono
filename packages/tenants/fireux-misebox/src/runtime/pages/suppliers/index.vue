@@ -1,8 +1,5 @@
 <template>
-  <OrganismsProfileRoot
-    :config="supplierConfig"
-    :filter-composable="useSupplierFilters"
-  >
+  <OrganismsProfileRoot :config="supplierConfig">
     <template #profile-pill="{ profile }">
       <div @click="navigateToSupplier(profile)" style="cursor: pointer">
         <OrganismsProfilesSupplierCardsPill :supplier="profile" />
@@ -25,7 +22,6 @@
 
 <script setup>
 import { supplierConfig } from '../../models/profiles/Supplier.model'
-import { useSupplierFilters } from '../../composables/profiles/useSupplierFilters'
 
 // Navigation function
 const navigateToSupplier = (supplier) => {

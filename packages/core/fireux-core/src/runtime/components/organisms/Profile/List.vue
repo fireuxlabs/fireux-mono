@@ -36,16 +36,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  filterComposable: {
-    type: Function,
-    required: true,
-  },
+  // filterComposable removed in simplified version
 })
 
-// Use the injected domain-specific filter composable
-const { filteredProfiles, filters, applyFilter } = props.filterComposable(
-  toRef(props, 'profiles')
-)
+// Simplified: no external filters, use provided list as-is
+const filteredProfiles = toRef(props, 'profiles')
+const filters = undefined
+const applyFilter = undefined
 </script>
 
 <style scoped>

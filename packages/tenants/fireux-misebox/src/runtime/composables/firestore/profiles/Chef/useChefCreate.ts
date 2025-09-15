@@ -23,7 +23,7 @@ export function useChefCreate() {
         throw new Error(validation.errors.join(', '))
       }
 
-      const { createProfile } = await useProfile(chefConfig)
+      const { createProfile } = useProfile(chefConfig)
       await createProfile(chefData) // createProfile adds id/avatar/timestamps
       return 'success'
     } catch (err: unknown) {

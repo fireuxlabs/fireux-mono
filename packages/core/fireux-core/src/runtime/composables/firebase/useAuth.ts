@@ -26,7 +26,7 @@ export function useAuth() {
   // }
 
   const postProcessAuth = async (_user: unknown) => {
-    const { ensureCoreUser } = await useCoreUser()
+    const { ensureCoreUser } = useCoreUser()
     await ensureCoreUser()
   }
   const authState = computed(() =>

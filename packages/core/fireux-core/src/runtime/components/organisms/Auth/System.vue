@@ -26,7 +26,7 @@
 
 <script setup>
 const { authState } = useAuth()
-const { tenancyDisplay } = await useApp()
+const { tenancyDisplay } = useApp()
 </script>
 
 <style scoped>

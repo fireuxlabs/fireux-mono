@@ -70,7 +70,8 @@ import { useWindowSize } from '@vueuse/core'
 import { useRouter, useRoute } from 'vue-router'
 import { useAppUser } from '../../composables/firestore/AppUser/useAppUser'
 
-const { appUser, isAppUser, initials } = await useAppUser()
+// Use real AppUser state within setup
+const { appUser, isAppUser, initials } = useAppUser()
 
 const router = useRouter()
 const route = useRoute()

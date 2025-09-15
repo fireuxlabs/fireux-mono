@@ -93,7 +93,7 @@
 </template>
 
 <script setup>
-const { appUser } = await useAppUser()
+const { appUser } = useAppUser()
 
 // Toggle state for edit mode
 const isExpanded = ref(false)

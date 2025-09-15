@@ -26,17 +26,12 @@
 </template>
 
 <script setup lang="ts">
-// Nuxt auto-imported composable; declare for TS shape grace
-declare function useCoreRoutes(): Promise<{
-  menuBarLinks: any[]
-  mobileLinks: any[]
-}>
 const props = defineProps<{
   routes?: import('../types/layouts').LayoutRoutes
 }>()
 
 const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
-  await useCoreRoutes()
+  useCoreRoutes()
 
 // Normalize core arrays (
 const baseMenu: any[] = Array.isArray(coreMenuBarLinks)

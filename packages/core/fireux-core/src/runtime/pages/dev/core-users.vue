@@ -60,7 +60,7 @@ const {
   hasAvatar,
   userOfApps,
   hasMultipleApps,
-} = await useCoreUser()
+} = useCoreUser()
 
 // Dedicated DevJson card now handles current core user display
 </script>

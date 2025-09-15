@@ -13,12 +13,12 @@
 
 <script setup lang="ts">
 // Nuxt auto-imported composable; declare for TS when type context misses auto-imports
-declare function useCoreRoutes(): Promise<any>
+declare function useCoreRoutes(): any
 const props = defineProps<{
   routes?: import('../types/layouts').LayoutRoutes
 }>()
 
-const coreRoutes = await useCoreRoutes()
+const coreRoutes = useCoreRoutes()
 const menuBarLinks = [
   ...(Array.isArray(coreRoutes.menuBarLinks) ? coreRoutes.menuBarLinks : []),
   ...(Array.isArray(props.routes?.menuBarLinks)

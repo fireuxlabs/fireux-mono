@@ -22,7 +22,7 @@ import { useAppUserEnsure } from 'fireux-core/runtime/composables/firestore/AppU
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig'
 
 const { appName } = useFireUXConfig()
-const { appUser } = await useAppUser()
+const { appUser } = useAppUser()
 const { ensureAppUser } = useAppUserEnsure()
 </script>
 

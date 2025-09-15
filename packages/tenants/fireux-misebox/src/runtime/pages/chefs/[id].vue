@@ -46,10 +46,10 @@ definePageMeta({
 })
 
 // Get current user for edit permission check
-const { appUser } = await useAppUser()
+const { appUser } = useAppUser()
 
 // Use our unified profile composable
-const { fetchById } = await useProfile(chefConfig)
+const { fetchById } = useProfile(chefConfig)
 
 // Fetch chef data
 const chef = await fetchById(chefId)

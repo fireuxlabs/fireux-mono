@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-const { isInitialized } = await useApp()
+const { isInitialized } = useApp()
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],

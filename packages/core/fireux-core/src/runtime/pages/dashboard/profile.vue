@@ -39,7 +39,7 @@ useHead({
 })
 
 // Get current user - follows same pattern as employer/professional
-const { appUser } = await useAppUser()
+const { appUser } = useAppUser()
 </script>
 
 <style scoped>

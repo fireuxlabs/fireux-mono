@@ -4,20 +4,20 @@ import { useAdminRoutes } from './useAdminRoutes'
 import { useSystemRoutes } from './useSystemRoutes'
 import { computed } from 'vue'
 
-export async function useCoreRoutes() {
+export function useCoreRoutes() {
   // Always available
   const menuBarLinks = useSystemRoutes()
 
-  // Await user state
-  const { isAppUser, isAdmin } = await useAppUser()
+  // User state (synchronous composable returns computed refs)
+  const { isAppUser, isAdmin } = useAppUser()
 
   // Computed mobile links
   const mobileLinks = computed(() => {
     let links = [...menuBarLinks]
-    if (isAppUser) {
+    if (isAppUser.value) {
       links.push(...useAppUserRoutes())
     }
-    if (isAdmin) {
+    if (isAdmin.value) {
       links.push(...useAdminRoutes())
     }
     return links

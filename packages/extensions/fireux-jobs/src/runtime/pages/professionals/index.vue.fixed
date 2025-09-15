@@ -35,13 +35,13 @@ const {
   all: professionals,
   loading,
   current: currentProfessional,
-} = await useProfile(professionalConfig)
+} = useProfile(professionalConfig)
 
 // Fetch app users to see what's in the collection
-const { appUsers: appusers } = await useAppUser()
+const { appUsers: appusers } = useAppUser()
 
 // Get current user and check if they have a professional profile
-const { appUser } = await useAppUser()
+const { appUser } = useAppUser()
 const hasProfessionalProfile = computed(() => {
   try {
     if (!appUser.value) return false

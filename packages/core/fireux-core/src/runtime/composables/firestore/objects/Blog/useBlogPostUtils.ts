@@ -26,7 +26,7 @@ export function useBlogPostUtils() {
 
   // Get the current user identity from CoreUser (canonical)
   async function getAuthor(): Promise<Author> {
-    const { coreUser } = await useCoreUser()
+    const { coreUser } = useCoreUser()
     return {
       id: coreUser.value?.id || '',
       display_name: coreUser.value?.display_name || coreUser.value?.email || '',

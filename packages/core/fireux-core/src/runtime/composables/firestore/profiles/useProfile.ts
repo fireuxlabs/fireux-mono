@@ -12,7 +12,7 @@ import { useFireUXConfig } from '../../FireUXConfig'
  * Unified entry-point for a profile type (e.g., Chef, Supplier).
  * v1.1: ecosystem+app surface.
  */
-export async function useProfile(config: ProfileConfig) {
+export function useProfile(config: ProfileConfig) {
   const db = useFirestore()
   const currentUser = useCurrentUser()
   const { appId } = useFireUXConfig()
@@ -35,17 +35,15 @@ export async function useProfile(config: ProfileConfig) {
   const { data: appProfile } = useDocument(appProfileDocRef)
 
   // Ecosystem collection (browse/discover)
-  const ecosystemCollection = await firestoreFetchCollection(
-    config.collectionName
-  )
+  const ecosystemCollection = firestoreFetchCollection(config.collectionName)
 
   // Fetch any ecosystem profile by id
   const fetchById = async (id: string) =>
-    await firestoreFetchDoc(config.collectionName, id)
+    firestoreFetchDoc(config.collectionName, id)
 
   // CRUD (ecosystem for now; app-scoped create is separate if/when needed)
-  const create = await useProfileCreate(config)
-  const remove = await useProfileDelete(config)
+  const create = useProfileCreate(config) as any
+  const remove = useProfileDelete(config) as any
   const update = config.updateComposable ? config.updateComposable() : {}
 
   return {

@@ -13,5 +13,9 @@ export function configureServer(resolver: any) {
   if (existsSync(health)) {
     addServerHandler({ route: '/api/health', handler: health })
   }
+  const injectTrace = `${base}/inject-trace.post.ts`
+  if (existsSync(injectTrace)) {
+    addServerHandler({ route: '/api/inject-trace', handler: injectTrace })
+  }
   // Add more handlers here as you bring routes online
 }

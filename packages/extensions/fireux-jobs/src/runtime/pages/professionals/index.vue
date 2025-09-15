@@ -1,8 +1,5 @@
 <template>
-  <OrganismsProfileRoot
-    :config="professionalConfig"
-    :filter-composable="useProfessionalFilters"
-  >
+  <OrganismsProfileRoot :config="professionalConfig">
     <template #profile-pill="{ profile }">
       <div @click="navigateToProfessional(profile)" style="cursor: pointer">
         <OrganismsProfilesProfessionalCardsPill :professional="profile" />
@@ -25,7 +22,6 @@
 
 <script setup>
 import { professionalConfig } from '../../models/profiles/Professional.model'
-import { useProfessionalFilters } from '../../composables/profiles/useProfessionalFilters'
 
 // Navigation function
 const navigateToProfessional = (professional) => {

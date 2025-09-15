@@ -154,7 +154,7 @@
 
 <script setup>
 // Get current user
-const { appUser } = await useAppUser()
+const { appUser } = useAppUser()
 
 // Initialize professional create composable
 const { createProfessional, creating, error } = useProfessionalCreate()

@@ -34,8 +34,8 @@
 </template>
 
 <script setup>
-const { appTenancy } = await useApp()
-const { coreUser } = await useCoreUser()
+const { appTenancy } = useApp()
+const { coreUser } = useCoreUser()
 
 // Simple role flag
 const isTenant = computed(() => {
@@ -46,7 +46,7 @@ const isTenant = computed(() => {
 // Only load app user if tenant
 let appUser = null
 if (isTenant.value) {
-  const au = await useAppUser()
+  const au = useAppUser()
   appUser = au.appUser
 }
 </script>

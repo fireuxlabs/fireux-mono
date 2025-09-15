@@ -22,5 +22,5 @@ definePageMeta({
 
 // Use the useProfile composable to fetch both global and local (app) chefs
 
-const { globalCollection: globalChefs } = await useProfile(chefConfig)
+const { globalCollection: globalChefs } = useProfile(chefConfig)
 </script>

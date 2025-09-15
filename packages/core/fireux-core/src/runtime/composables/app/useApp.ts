@@ -1,5 +1,5 @@
 // ~/composables/app/useApp.ts
-import { computed, ref } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { doc, collection } from 'firebase/firestore'
 import { useFirestore, useDocument, useCollection } from 'vuefire'
 import type { DocumentReference } from 'firebase/firestore'
@@ -12,7 +12,7 @@ import { useAppSubscriptionSetup } from './useAppSubscriptionSetup'
 import type { App } from '../../models/core/app.model'
 import { getApps } from 'firebase/app'
 
-export async function useApp() {
+export function useApp() {
   const { appId } = useFireUXConfig()
 
   // Ensure Firebase is initialized
@@ -31,10 +31,8 @@ export async function useApp() {
 
   const { data: app } = useDocument<App>(appDocRef)
 
-  // Collections - only fetch on client side
-  const apps = import.meta.client
-    ? await firestoreFetchCollection<App>('apps')
-    : ref([])
+  // Collections as Ref (sync wrapper returns Ref via VueFire stream)
+  const apps = firestoreFetchCollection<App>('apps')
 
   // Users subcollection for any app
   const getAppUsers = (appId: string) => {
@@ -42,10 +40,15 @@ export async function useApp() {
     return useCollection(usersRef)
   }
 
-  // Client-only extras (defer import to avoid pulling app-only APIs server-side)
-  const clientExtras = import.meta.client
-    ? (await import('./useAppOnboarding')).useAppOnboarding()
-    : {}
+  // Client-only extras: expose a loader to avoid awaiting inside composable
+  const extras = shallowRef<any>(null)
+  async function loadClientExtras() {
+    if (!import.meta.client) return null
+    if (extras.value) return extras.value
+    const mod = await import('./useAppOnboarding')
+    extras.value = mod.useAppOnboarding()
+    return extras.value
+  }
 
   return {
     // Current entity
@@ -62,7 +65,7 @@ export async function useApp() {
     ...useAppComputed(app),
     ...useAppSubscriptionSetup(),
     ...useAppEnsure(),
-    // Onboarding helpers (client-only)
-    ...clientExtras,
+    // Onboarding helpers (client-only loader)
+    loadClientExtras,
   }
 }

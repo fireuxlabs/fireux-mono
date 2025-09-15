@@ -50,5 +50,5 @@
 </template>
 
 <script setup>
-const { app, apps, isInitialized } = await useApp()
+const { app, apps, isInitialized } = useApp()
 </script>

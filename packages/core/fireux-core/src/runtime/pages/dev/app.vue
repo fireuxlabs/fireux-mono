@@ -38,5 +38,5 @@ definePageMeta({
 })
 
 // Get app information
-const { app, appTenancy, tenancyDisplay } = await useApp()
+const { app, appTenancy, tenancyDisplay } = useApp()
 </script>

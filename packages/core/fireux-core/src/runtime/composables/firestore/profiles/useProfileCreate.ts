@@ -21,25 +21,29 @@ import { useFireUXConfig } from '../../FireUXConfig'
  * - If tenancy === 'tennant': also ensures AppUser + app membership + app mirror doc
  * - If tenancy === 'king': stops after global doc (no app writes)
  */
-export async function useProfileCreate(config: ProfileConfig) {
-  const db = useFirestore()
-  const rc = useRuntimeConfig()
+export function useProfileCreate(config: ProfileConfig) {
+  // NOTE: Defer Nuxt/VueFire composables until ensureProfile() is invoked
+  // to avoid calling useRuntimeConfig()/inject() outside a setup context.
   const currentUser = useCurrentUser()
-  const { setDocument, firestoreFetchDoc } = useFirestoreManager()
-  const { getDefaultAvatarUrl } = useMediaStorage()
-  const { appId } = useFireUXConfig()
-
-  // Normalize tenancy: 'king' | 'tennant'
-  let role = (rc.public?.role || (rc.public as any)?.appRole) as
-    | string
-    | undefined
-  if (role === 'tenant') role = 'tennant'
-  const tenancy = role || 'king' // default to king if unspecified
 
   const creating = ref(false)
   const createError = ref<Error | null>(null)
 
   async function ensureProfile(additionalData?: Record<string, any>) {
+    // Acquire dependencies within call-time to ensure valid setup context
+    const db = useFirestore()
+    const rc = useRuntimeConfig()
+    const { setDocument, firestoreFetchDoc } = useFirestoreManager()
+    const { getDefaultAvatarUrl } = useMediaStorage()
+    const { appId } = useFireUXConfig()
+
+    // Normalize tenancy: 'king' | 'tennant'
+    let role = (rc.public?.role || (rc.public as any)?.appRole) as
+      | string
+      | undefined
+    if (role === 'tenant') role = 'tennant'
+    const tenancy = role || 'king' // default to king if unspecified
+
     const uid = currentUser.value?.uid
     if (!uid) throw new Error('User is not authenticated')
 
@@ -48,8 +52,16 @@ export async function useProfileCreate(config: ProfileConfig) {
 
     try {
       // --- 1) Ensure ecosystem/global profile doc ---
-      const exists = await firestoreFetchDoc(config.collectionName, uid)
-      if (!exists) {
+      // eslint-disable-next-line no-console
+      console.log('[ensureProfile] tenancy=%s appId=%s', tenancy, appId)
+      // eslint-disable-next-line no-console
+      console.log(
+        '[ensureProfile] ensuring ecosystem doc for uid=%s in %s',
+        uid,
+        config.collectionName
+      )
+      const existsRef = firestoreFetchDoc(config.collectionName, uid)
+      if (!existsRef?.value) {
         const avatar =
           (additionalData?.avatar as string | undefined) ??
           currentUser.value?.photoURL ??
@@ -79,7 +91,7 @@ export async function useProfileCreate(config: ProfileConfig) {
       await ensureAppUser()
 
       // --- 4) Ensure AppUser.profiles contains this profile type ---
-      const { appUser } = await useAppUser()
+      const { appUser } = useAppUser()
       const { useAppUserUpdateFirestore } = useAppUserUpdate()
       const { updateProfiles } = useAppUserUpdateFirestore()
 

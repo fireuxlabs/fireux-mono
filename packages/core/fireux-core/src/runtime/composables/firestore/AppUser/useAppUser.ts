@@ -10,7 +10,7 @@ import { useAppUserSubscription } from './useAppUserSubscription'
 import { useAppUserComputed } from './useAppUserComputed'
 import { useFireUXConfig } from '../../FireUXConfig'
 
-export async function useAppUser() {
+export function useAppUser() {
   // Get app ID dynamically from runtime config
   const { appId } = useFireUXConfig()
 
@@ -43,7 +43,7 @@ export async function useAppUser() {
   // Avoid collection fetch without appId or on server
   const appUsers =
     appId && import.meta.client
-      ? await firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
+      ? firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
       : []
 
   return {

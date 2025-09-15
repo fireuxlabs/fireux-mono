@@ -11,7 +11,7 @@ import { useCoreUserComputed } from './useCoreUserComputed'
 import type { CoreUser } from '../../../models/core/coreUser.model'
 import { getApps } from 'firebase/app'
 
-export async function useCoreUser() {
+export function useCoreUser() {
   // Ensure Firebase is initialized
   if (!getApps().length) {
     throw new Error(
@@ -35,8 +35,8 @@ export async function useCoreUser() {
 
   const { data: coreUser } = useDocument<CoreUser>(coreUserDocRef)
 
-  // Collections - fetch all core users (remove client-only restriction for dev purposes)
-  const coreUsers = await firestoreFetchCollection<CoreUser>('core-users')
+  // Collections - fetch all core users (sync via Ref)
+  const coreUsers = firestoreFetchCollection<CoreUser>('core-users')
 
   return {
     // Current entity

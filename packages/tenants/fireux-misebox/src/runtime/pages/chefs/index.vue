@@ -7,13 +7,12 @@
     <OrganismsUserAppCTA v-if="appTenancy === 'tennant' && !appUser" />
 
     <!-- Chef CTA (only if signed in and member of app) -->
-    <OrganismsProfilesChefCTA v-if="coreUser && (appTenancy !== 'tennant' || appUser)" />
+    <OrganismsProfilesChefCTA
+      v-if="coreUser && (appTenancy !== 'tennant' || appUser)"
+    />
 
     <!-- Profiles list -->
-    <OrganismsProfileRoot
-      :config="chefConfig"
-      :filter-composable="useChefFilters"
-    >
+    <OrganismsProfileRoot :config="chefConfig">
       <template #profile-pill="{ profile }">
         <div @click="navigateToChef(profile)" class="cursor-pointer">
           <OrganismsProfilesChefCardsPill :chef="profile" />
@@ -37,12 +36,11 @@
 
 <script setup lang="ts">
 import { chefConfig } from '../../models/profiles/Chef.model'
-import { useChefFilters } from '../../composables/profiles/useChefFilters'
 
 // ✅ core composables are auto-imported by fireux-core
-const { appTenancy } = await useApp()
-const { coreUser } = await useCoreUser()
-const { appUser } = await useAppUser()
+const { appTenancy } = useApp()
+const { coreUser } = useCoreUser()
+const { appUser } = useAppUser()
 
 const navigateToChef = (chef: any) => {
   // New model uses `id` (== uid)

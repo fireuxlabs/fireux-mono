@@ -11,11 +11,7 @@
     <slot v-if="currentProfile" name="profile-card" :profile="currentProfile" />
 
     <!-- Profile List (handled internally with generic list) -->
-    <FireOrganismsProfileList
-      :profiles="profiles"
-      :loading="loading"
-      :filter-composable="filterComposable"
-    >
+    <FireOrganismsProfileList :profiles="profiles" :loading="loading">
       <template #profile-item="{ profile }">
         <slot name="profile-item" :profile="profile" />
       </template>
@@ -114,10 +110,7 @@ const props = defineProps({
       return config.profileType && config.collectionName
     },
   },
-  filterComposable: {
-    type: Function,
-    required: true,
-  },
+  // filterComposable removed in simplified pass
 })
 
 // Component handles its own data fetching
@@ -125,7 +118,7 @@ const {
   all: profiles,
   loading,
   current: currentProfile,
-} = await useProfile(props.config)
+} = useProfile(props.config)
 
 // Copy functionality
 const copied = ref(false)

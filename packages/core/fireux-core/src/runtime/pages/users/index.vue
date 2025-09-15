@@ -7,5 +7,5 @@ allAppUsers
   </div>
 </template>
 <script setup>
-const { allAppUsers } = await useAppUser()
+const { allAppUsers } = useAppUser()
 </script>
