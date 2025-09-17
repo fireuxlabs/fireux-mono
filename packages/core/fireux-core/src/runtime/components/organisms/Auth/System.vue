@@ -15,8 +15,25 @@
           </div>
 
           <div v-else class="auth-central">
-            <OrganismsAuthGoogle />
-            <OrganismsAuthEmail />
+            <!-- Tenant onboarding: sign-in with Misebox account only -->
+            <div v-if="role === 'tenant'" class="tenant-onboarding">
+              <p class="headline">
+                <span class="emoji">👉</span>
+                Sign in with your Misebox account to join <strong>{{ appName }}</strong>.
+              </p>
+              <OrganismsAuthGoogle />
+              <OrganismsAuthEmail mode="sign-in" />
+              <p v-if="centralSignupUrl" class="subtle">
+                Don’t have a Misebox account?
+                <NuxtLink :to="centralSignupUrl">Create one here</NuxtLink>.
+              </p>
+            </div>
+
+            <!-- Ecosystem (Misebox root) shows both sign-in and sign-up affordances -->
+            <div v-else>
+              <OrganismsAuthGoogle />
+              <OrganismsAuthEmail mode="auto" />
+            </div>
           </div>
         </div>
       </Transition>
@@ -27,6 +44,7 @@
 <script setup>
 const { authState } = useAuth()
 const { tenancyDisplay } = useApp()
+const { role, appName, centralSignupUrl } = useFireUXConfig()
 </script>
 
 <style scoped>
@@ -50,6 +68,17 @@ const { tenancyDisplay } = useApp()
   justify-content: center;
   width: 100%;
 }
+.tenant-onboarding {
+  display: grid;
+  gap: var(--space-4);
+  text-align: center;
+}
+.headline {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-2);
+}
+.headline .emoji { margin-right: 0.25rem; }
+.subtle { color: var(--ui-text-muted); font-size: 0.9rem; }
 
 /* Fade transition styles */
 .fade-enter-active,

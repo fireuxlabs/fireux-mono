@@ -9,17 +9,32 @@
         placeholder="Password"
         block
       />
-      <div class="switch-container">
+      <div v-if="mode === 'auto'" class="switch-container">
         <USwitch
           v-model="isSignUp"
           :label="isSignUp ? 'Signing Up' : 'Signing In'"
         />
       </div>
       <UButton type="submit" block>
-        {{ isSignUp ? 'Create Account' : 'Continue' }}
+        {{ submitLabel }}
       </UButton>
+      <UAlert
+        v-if="errorMessage"
+        class="mt-2"
+        color="amber"
+        variant="subtle"
+        :title="errorTitle"
+        :description="errorMessage"
+      />
+      <p v-if="errorHint" class="hint">
+        {{ errorHint }}
+        <template v-if="signupLink">
+          <NuxtLink :to="signupLink">Create one here</NuxtLink>.
+        </template>
+      </p>
     </UForm>
   </div>
+  
 </template>
 
 <script setup>
@@ -27,28 +42,54 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
-const { ensureApp } = useAppEnsure()
+const { centralSignupUrl } = useFireUXConfig()
 
-const isSignUp = ref(true)
+const props = defineProps({
+  // 'auto' shows a switch; 'sign-in' enforces sign-in only; 'sign-up' enforces sign-up
+  mode: { type: String, default: 'auto' },
+})
+
+const isSignUp = ref(props.mode === 'sign-up')
 const state = reactive({
   email: '',
   password: '',
 })
 
+const errorTitle = ref('')
+const errorMessage = ref('')
+const errorHint = ref('')
+const signupLink = computed(() => centralSignupUrl || '')
+
+const submitLabel = computed(() =>
+  (props.mode === 'sign-in' || (props.mode === 'auto' && !isSignUp.value))
+    ? 'Continue'
+    : 'Create Account'
+)
+
 const handleEmailAuth = async () => {
-  const authMethod = isSignUp.value
-    ? signUpWithEmailPassword
-    : signInWithEmailPassword
+  errorTitle.value = ''
+  errorMessage.value = ''
+  errorHint.value = ''
+
+  const doSignUp = props.mode === 'sign-up' || (props.mode === 'auto' && isSignUp.value)
+  const authMethod = doSignUp ? signUpWithEmailPassword : signInWithEmailPassword
 
   const user = await authMethod(state.email, state.password)
 
   if (user?.uid) {
     console.log('[handleEmailAuth] ✅ Got UID:', user.uid)
-    // Don't automatically create app - let the onboarding flow handle it
-    // The main app.vue will show the onboarding modal if app doesn't exist
     router.push('/')
   } else {
-    console.warn('[handleEmailAuth] ❌ No UID returned from email auth')
+    // Friendly guidance for common cases
+    errorTitle.value = doSignUp
+      ? 'Account may already exist'
+      : 'No account found'
+    errorMessage.value = doSignUp
+      ? 'Looks like you might already have a Misebox account with this email.'
+      : 'We couldn’t find a Misebox account with that email.'
+    errorHint.value = doSignUp
+      ? 'Try signing in instead.'
+      : 'Would you like to create a new Misebox account?'
   }
 }
 </script>
@@ -59,4 +100,5 @@ const handleEmailAuth = async () => {
 .input-spacing {
   margin-bottom: var(--space-3);
 }
+.hint { color: var(--ui-text-muted); font-size: 0.9rem; margin-top: var(--space-2); }
 </style>

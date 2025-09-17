@@ -1,7 +1,6 @@
 // ~/composables/useAuth.ts
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useFirebaseAuth, useCurrentUser } from 'vuefire'
-import { useCoreUser } from '../firestore/CoreUser/useCoreUser'
 import {
   signInWithPopup,
   signInWithEmailAndPassword,
@@ -10,25 +9,46 @@ import {
   GoogleAuthProvider,
 } from 'firebase/auth'
 
+// Pull the explicit "ensure" composables so we don't spin up reactive docs here
+import { useCoreUserEnsure } from '../firestore/CoreUser/useCoreUserEnsure'
+import { useAppUserEnsure } from '../firestore/AppUser/useAppUserEnsure'
+import { useFireUXConfig } from '../FireUXConfig'
+
 export function useAuth() {
-  const auth = useFirebaseAuth()! // assert non-null
+  const auth = useFirebaseAuth()! // assert non-null (Nuxt plugin initializes Firebase)
   const currentUser = useCurrentUser()
+  const { role } = useFireUXConfig()
 
-  // const setUserTenantIdClaim = async user => {
-  //   try {
-  //     const functions = getFunctions()
-  //     const setCustomClaims = httpsCallable(functions, 'setTenantIdClaim')
-  //     await setCustomClaims({ uid: user.uid, appId })
-  //     await user.getIdToken(true)
-  //   } catch (error) {
-  //     console.error('❌ Failed to set custom claims:', error.message)
-  //   }
-  // }
+  // simple per-session guard so postProcessAuth runs once per UID
+  const lastEnsuredUid = ref<string | null>(null)
+  const ensuring = ref(false)
 
-  const postProcessAuth = async (_user: unknown) => {
-    const { ensureCoreUser } = useCoreUser()
-    await ensureCoreUser()
+  const postProcessAuth = async (user: { uid: string } | null | undefined) => {
+    if (!user?.uid) return null
+    if (ensuring.value || lastEnsuredUid.value === user.uid) return user
+
+    try {
+      ensuring.value = true
+
+      // 1) Ensure CoreUser (global identity)
+      const { ensureCoreUser } = useCoreUserEnsure()
+      await ensureCoreUser()
+
+      // 2) In tenant apps, ensure AppUser membership in apps/{appId}/users/{uid}
+      if (role === 'tenant') {
+        const { ensureAppUser } = useAppUserEnsure()
+        await ensureAppUser()
+      }
+
+      lastEnsuredUid.value = user.uid
+    } catch (e) {
+      console.warn('[useAuth] postProcessAuth failed:', e)
+    } finally {
+      ensuring.value = false
+    }
+    return user
   }
+
   const authState = computed(() =>
     currentUser.value && !currentUser.value.isAnonymous
       ? 'AUTHENTICATED'
@@ -48,6 +68,7 @@ export function useAuth() {
       } else {
         console.error('❌ Google Sign-In Failed:', error)
       }
+      return null
     }
   }
 
@@ -86,6 +107,8 @@ export function useAuth() {
   const signOutUser = async () => {
     try {
       await signOut(auth)
+      // reset guard on sign-out so next sign-in will re-run ensure
+      lastEnsuredUid.value = null
       console.log('✅ Signed out successfully')
     } catch (error: unknown) {
       if (error instanceof Error) {

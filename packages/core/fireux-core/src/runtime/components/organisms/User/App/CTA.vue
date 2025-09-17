@@ -1,7 +1,7 @@
 <template>
   <div class="appuser-cta">
-    <p v-if="appUser">✅ You are a member of this app.</p>
-    <p v-else>❌ You are not yet a member of this app.</p>
+    <p v-if="appUser">✅ You’re a member of {{ appName }}.</p>
+    <p v-else>❌ Not yet a member of {{ appName }}.</p>
 
     <div class="cta-buttons">
       <UButton

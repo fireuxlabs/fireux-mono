@@ -123,6 +123,9 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
         appShortName: opts.appShortName,
         primaryColor,
         neutralColor,
+        // Optional: link users in tenant apps to the central Misebox sign-up page
+        // Provide via env CENTRAL_SIGNUP_URL (e.g. https://misebox.app/auth?mode=signup)
+        centralSignupUrl: env('CENTRAL_SIGNUP_URL'),
         // expose to client plugin
         firebaseConfig: { ...(vuefireMerged.config || {}) },
         // minimal app settings
