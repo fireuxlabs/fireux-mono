@@ -1,6 +1,11 @@
 <template>
   <UCard>
-    <ProfileHeader :avatar="chef.avatar" :name="chef.name" :title="chef.title" size="md" />
+    <ProfileHeader
+      :avatar="chef.avatar"
+      :name="chef.name"
+      :title="chef.title"
+      size="md"
+    />
 
     <p v-if="chef.bioShort" class="profile-bio">{{ chef.bioShort }}</p>
 

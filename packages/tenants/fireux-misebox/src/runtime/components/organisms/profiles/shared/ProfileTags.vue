@@ -39,10 +39,14 @@ const props = withDefaults(
 
 const safeTags = computed(() => (Array.isArray(props.tags) ? props.tags : []))
 const displayTags = computed(() =>
-  props.limit && props.limit > 0 ? safeTags.value.slice(0, props.limit) : safeTags.value
+  props.limit && props.limit > 0
+    ? safeTags.value.slice(0, props.limit)
+    : safeTags.value
 )
 const moreCount = computed(() =>
-  props.limit && props.limit > 0 ? Math.max(0, safeTags.value.length - props.limit) : 0
+  props.limit && props.limit > 0
+    ? Math.max(0, safeTags.value.length - props.limit)
+    : 0
 )
 </script>
 

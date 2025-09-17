@@ -34,7 +34,6 @@
       </p>
     </UForm>
   </div>
-  
 </template>
 
 <script setup>
@@ -61,7 +60,7 @@ const errorHint = ref('')
 const signupLink = computed(() => centralSignupUrl || '')
 
 const submitLabel = computed(() =>
-  (props.mode === 'sign-in' || (props.mode === 'auto' && !isSignUp.value))
+  props.mode === 'sign-in' || (props.mode === 'auto' && !isSignUp.value)
     ? 'Continue'
     : 'Create Account'
 )
@@ -71,8 +70,11 @@ const handleEmailAuth = async () => {
   errorMessage.value = ''
   errorHint.value = ''
 
-  const doSignUp = props.mode === 'sign-up' || (props.mode === 'auto' && isSignUp.value)
-  const authMethod = doSignUp ? signUpWithEmailPassword : signInWithEmailPassword
+  const doSignUp =
+    props.mode === 'sign-up' || (props.mode === 'auto' && isSignUp.value)
+  const authMethod = doSignUp
+    ? signUpWithEmailPassword
+    : signInWithEmailPassword
 
   const user = await authMethod(state.email, state.password)
 
@@ -100,5 +102,9 @@ const handleEmailAuth = async () => {
 .input-spacing {
   margin-bottom: var(--space-3);
 }
-.hint { color: var(--ui-text-muted); font-size: 0.9rem; margin-top: var(--space-2); }
+.hint {
+  color: var(--ui-text-muted);
+  font-size: 0.9rem;
+  margin-top: var(--space-2);
+}
 </style>

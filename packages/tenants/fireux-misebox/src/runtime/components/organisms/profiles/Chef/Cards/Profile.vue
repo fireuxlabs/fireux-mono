@@ -1,7 +1,12 @@
 <template>
   <UCard class="profile-card">
     <template #header>
-      <ProfileHeader :avatar="chef.avatar" :name="chef.name" :title="chef.title" size="lg" />
+      <ProfileHeader
+        :avatar="chef.avatar"
+        :name="chef.name"
+        :title="chef.title"
+        size="lg"
+      />
     </template>
 
     <div class="profile-content">

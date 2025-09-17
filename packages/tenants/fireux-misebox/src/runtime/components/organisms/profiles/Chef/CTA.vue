@@ -44,13 +44,16 @@
     <template #footer>
       <div class="cta-footer">
         <UButton
-          v-if="(!ecosystemProfile) || (appTenancy === 'tenant' && !appProfile)"
+          v-if="!ecosystemProfile || (appTenancy === 'tenant' && !appProfile)"
           size="lg"
           color="primary"
           @click="onEnsure"
         >
-          {{ !ecosystemProfile ? 'Create Chef Profile'
-                               : 'Add to ' + tenancyDisplay + ' Chefs' }}
+          {{
+            !ecosystemProfile
+              ? 'Create Chef Profile'
+              : 'Add to ' + tenancyDisplay + ' Chefs'
+          }}
         </UButton>
       </div>
     </template>
@@ -68,8 +71,8 @@ const { tenancyDisplay, appTenancy } = useApp()
 
 // correct shape from useProfile()
 const { current } = useProfile(chefConfig)
-const ecosystemProfile = current.global      // ref to global (ecosystem) doc
-const appProfile = current.appMirror         // ref to app mirror (or null)
+const ecosystemProfile = current.global // ref to global (ecosystem) doc
+const appProfile = current.appMirror // ref to app mirror (or null)
 
 // tiny wrapper around profile create
 const { createChef } = useChefCreate()

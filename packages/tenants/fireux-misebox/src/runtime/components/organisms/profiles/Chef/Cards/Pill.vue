@@ -1,8 +1,12 @@
 <template>
   <UCard>
-    <ProfileHeader :avatar="chef.avatar" :name="chef.name" :title="chef.title" size="sm" />
+    <ProfileHeader
+      :avatar="chef.avatar"
+      :name="chef.name"
+      :title="chef.title"
+      size="sm"
+    />
   </UCard>
-  
 </template>
 
 <script setup lang="ts">

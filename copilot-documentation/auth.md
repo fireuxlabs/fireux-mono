@@ -1,6 +1,7 @@
 # Auth System Reference
 
 This document catalogs the authentication and user-membership system in the FireUX mono-repo. It includes:
+
 - Firebase client initialization (VueFire owns Auth)
 - CoreUser (global identity) composables
 - AppUser (per-app membership) composables
@@ -8,6 +9,7 @@ This document catalogs the authentication and user-membership system in the Fire
 - UI helpers (CTAs)
 
 Notes:
+
 - Per ADR-0003, VueFire initializes Auth. Do not initialize Auth in custom plugins.
 - Use VueFire composables synchronously in setup; avoid `await` before calling them (see `copilot-documentation/sysncronisty.md`).
 
@@ -151,6 +153,7 @@ export default defineNuxtPlugin(() => {
 ## CoreUser (global identity)
 
 ### useCoreUser()
+
 File: `packages/core/fireux-core/src/runtime/composables/firestore/CoreUser/useCoreUser.ts`
 
 ```ts
@@ -211,6 +214,7 @@ export function useCoreUser() {
 ```
 
 ### useCoreUserEnsure()
+
 File: `packages/core/fireux-core/src/runtime/composables/firestore/CoreUser/useCoreUserEnsure.ts`
 
 ```ts
@@ -276,6 +280,7 @@ export function useCoreUserEnsure() {
 ```
 
 ### useCoreUserUpdate()
+
 File: `packages/core/fireux-core/src/runtime/composables/firestore/CoreUser/useCoreUserUpdate.ts`
 
 ```ts
@@ -394,6 +399,7 @@ export function useCoreUserUpdate() {
 ```
 
 ### useCoreUserDelete()
+
 File: `packages/core/fireux-core/src/runtime/composables/firestore/CoreUser/useCoreUserDelete.ts`
 
 ```ts
@@ -433,6 +439,7 @@ export function useCoreUserDelete() {
 ## AppUser (tenant membership)
 
 ### useAppUser()
+
 File: `packages/core/fireux-core/src/runtime/composables/firestore/AppUser/useAppUser.ts`
 
 ```ts
@@ -502,6 +509,7 @@ export function useAppUser() {
 ```
 
 ### useAppUserEnsure()
+
 File: `packages/core/fireux-core/src/runtime/composables/firestore/AppUser/useAppUserEnsure.ts`
 
 ```ts
@@ -594,6 +602,7 @@ export function useAppUserEnsure() {
 ```
 
 ### useAppUserUpdate()
+
 File: `packages/core/fireux-core/src/runtime/composables/firestore/AppUser/useAppUserUpdate.ts`
 
 ```ts
@@ -669,6 +678,7 @@ export default useAppUserUpdate
 ## Profiles creation baseline
 
 ### useProfileCreate()
+
 File: `packages/core/fireux-core/src/runtime/composables/firestore/profiles/useProfileCreate.ts`
 
 ```ts
@@ -728,6 +738,7 @@ export function useProfileCreate(config: ProfileConfig) {
 ## UI helpers
 
 ### AppUser CTA
+
 File: `packages/core/fireux-core/src/runtime/components/organisms/User/App/CTA.vue`
 
 ```vue
@@ -771,6 +782,7 @@ const { ensureAppUser } = useAppUserEnsure()
 ```
 
 ### Chef CTA (tenant example)
+
 File: `packages/tenants/fireux-misebox/src/runtime/components/organisms/profiles/Chef/CTA.vue`
 
 ```vue
@@ -820,13 +832,16 @@ File: `packages/tenants/fireux-misebox/src/runtime/components/organisms/profiles
     <template #footer>
       <div class="cta-footer">
         <UButton
-          v-if="(!ecosystemProfile) || (appTenancy === 'tenant' && !appProfile)"
+          v-if="!ecosystemProfile || (appTenancy === 'tenant' && !appProfile)"
           size="lg"
           color="primary"
           @click="onEnsure"
         >
-          {{ !ecosystemProfile ? 'Create Chef Profile'
-                               : 'Add to ' + tenancyDisplay + ' Chefs' }}
+          {{
+            !ecosystemProfile
+              ? 'Create Chef Profile'
+              : 'Add to ' + tenancyDisplay + ' Chefs'
+          }}
         </UButton>
       </div>
     </template>
@@ -844,8 +859,8 @@ const { tenancyDisplay, appTenancy } = useApp()
 
 // correct shape from useProfile()
 const { current } = useProfile(chefConfig)
-const ecosystemProfile = current.global      // ref to global (ecosystem) doc
-const appProfile = current.appMirror         // ref to app mirror (or null)
+const ecosystemProfile = current.global // ref to global (ecosystem) doc
+const appProfile = current.appMirror // ref to app mirror (or null)
 
 // tiny wrapper around profile create
 const { createChef } = useChefCreate()

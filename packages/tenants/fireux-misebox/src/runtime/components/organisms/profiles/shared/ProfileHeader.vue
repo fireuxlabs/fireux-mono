@@ -6,7 +6,6 @@
       <p v-if="title" class="profile-subtitle">{{ title }}</p>
     </div>
   </div>
-  
 </template>
 
 <script setup lang="ts">

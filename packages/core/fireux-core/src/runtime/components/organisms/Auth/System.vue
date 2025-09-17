@@ -1,13 +1,6 @@
 <template>
   <UContainer class="widget center-content">
     <ClientOnly>
-      <!-- Tenancy display -->
-      <div class="tenancy-info">
-        <p>
-          This app is: <strong>{{ tenancyDisplay }}</strong>
-        </p>
-      </div>
-
       <Transition name="fade">
         <div>
           <div v-if="authState === 'AUTHENTICATED'">
@@ -19,7 +12,9 @@
             <div v-if="role === 'tenant'" class="tenant-onboarding">
               <p class="headline">
                 <span class="emoji">👉</span>
-                Sign in with your Misebox account to join <strong>{{ appName }}</strong>.
+                Sign in with your Misebox account to join
+                <strong>{{ appName }}</strong
+                >.
               </p>
               <OrganismsAuthGoogle />
               <OrganismsAuthEmail mode="sign-in" />
@@ -40,7 +35,6 @@
 
 <script setup>
 const { authState } = useAuth()
-const { tenancyDisplay } = useApp()
 const { role, appName } = useFireUXConfig()
 </script>
 
@@ -74,8 +68,13 @@ const { role, appName } = useFireUXConfig()
   font-size: 1.1rem;
   margin-bottom: var(--space-2);
 }
-.headline .emoji { margin-right: 0.25rem; }
-.subtle { color: var(--ui-text-muted); font-size: 0.9rem; }
+.headline .emoji {
+  margin-right: 0.25rem;
+}
+.subtle {
+  color: var(--ui-text-muted);
+  font-size: 0.9rem;
+}
 
 /* Fade transition styles */
 .fade-enter-active,
