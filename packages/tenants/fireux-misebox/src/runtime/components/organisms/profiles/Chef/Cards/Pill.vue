@@ -1,17 +1,13 @@
 <template>
-  <UCard class="pill">
-    <div class="profile-header">
-      <UAvatar :src="chef.avatar" :alt="chef.name" size="sm" />
-      <div class="profile-info">
-        <h4 class="profile-name">{{ chef.name }}</h4>
-        <p v-if="chef.title" class="profile-title">{{ chef.title }}</p>
-      </div>
-    </div>
+  <UCard>
+    <ProfileHeader :avatar="chef.avatar" :name="chef.name" :title="chef.title" size="sm" />
   </UCard>
+  
 </template>
 
 <script setup lang="ts">
 import type { ChefPillProps } from '../../../../../models/profiles/Chef.model'
+import ProfileHeader from '../../shared/ProfileHeader.vue'
 
 defineProps<{ chef: ChefPillProps }>()
 </script>

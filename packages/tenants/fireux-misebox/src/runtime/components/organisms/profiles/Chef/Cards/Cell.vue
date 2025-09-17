@@ -1,32 +1,19 @@
 <template>
-  <UCard class="profile-card">
-    <div class="profile-header">
-      <UAvatar :src="chef.avatar" :alt="chef.name" size="md" />
-      <div class="profile-info">
-        <h4 class="profile-name">{{ chef.name }}</h4>
-        <p v-if="chef.title" class="profile-subtitle">{{ chef.title }}</p>
-      </div>
-    </div>
+  <UCard>
+    <ProfileHeader :avatar="chef.avatar" :name="chef.name" :title="chef.title" size="md" />
 
-    <p v-if="chef.bioShort" class="profile-bio">
-      {{ chef.bioShort }}
-    </p>
+    <p v-if="chef.bioShort" class="profile-bio">{{ chef.bioShort }}</p>
 
-    <div v-if="chef.specialties?.length" class="profile-tags">
-      <span
-        v-for="(tag, i) in chef.specialties.slice(0, 3)"
-        :key="tag + i"
-        class="tag"
-        >{{ tag }}</span
-      >
-      <span v-if="chef.specialties.length > 3" class="tag-more">
-        +{{ chef.specialties.length - 3 }} more
-      </span>
+    <UDivider v-if="chef.bioShort && chef.specialties?.length" />
+    <div v-if="chef.specialties?.length">
+      <ProfileTags :tags="chef.specialties" :limit="3" />
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import type { ChefCellProps } from '../../../../../models/profiles/Chef.model'
+import ProfileHeader from '../../shared/ProfileHeader.vue'
+import ProfileTags from '../../shared/ProfileTags.vue'
 defineProps<{ chef: ChefCellProps }>()
 </script>

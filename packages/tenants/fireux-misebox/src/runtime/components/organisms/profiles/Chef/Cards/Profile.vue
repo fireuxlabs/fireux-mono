@@ -1,13 +1,7 @@
 <template>
   <UCard class="profile-card">
     <template #header>
-      <div class="profile-header">
-        <UAvatar :src="chef.avatar" :alt="chef.name" size="lg" />
-        <div class="profile-info">
-          <h3 class="profile-name">{{ chef.name }}</h3>
-          <p v-if="chef.title" class="profile-subtitle">{{ chef.title }}</p>
-        </div>
-      </div>
+      <ProfileHeader :avatar="chef.avatar" :name="chef.name" :title="chef.title" size="lg" />
     </template>
 
     <div class="profile-content">
@@ -15,16 +9,16 @@
       <p v-if="bioText" class="profile-bio">{{ bioText }}</p>
 
       <!-- Specialties -->
+      <UDivider v-if="bioText && chef.specialties?.length" />
       <div v-if="chef.specialties?.length" class="section">
         <h4 class="section-title">Specialties</h4>
-        <div class="profile-tags">
-          <span v-for="s in chef.specialties" :key="s" class="tag">{{
-            s
-          }}</span>
-        </div>
+        <ProfileTags :tags="chef.specialties" />
       </div>
 
       <!-- Kitchens -->
+      <UDivider
+        v-if="(bioText || chef.specialties?.length) && kitchenList.length"
+      />
       <div v-if="kitchenList.length" class="section">
         <h4 class="section-title">Kitchens</h4>
         <div class="kitchens">
@@ -41,6 +35,12 @@
       </div>
 
       <!-- Gallery -->
+      <UDivider
+        v-if="
+          (bioText || chef.specialties?.length || kitchenList.length) &&
+          galleryList.length
+        "
+      />
       <div v-if="galleryList.length" class="section">
         <h4 class="section-title">Gallery</h4>
         <div class="gallery">
@@ -56,6 +56,15 @@
       </div>
 
       <!-- Meta -->
+      <UDivider
+        v-if="
+          (bioText ||
+            chef.specialties?.length ||
+            kitchenList.length ||
+            galleryList.length) &&
+          (createdAtText || updatedAtText)
+        "
+      />
       <div v-if="createdAtText || updatedAtText" class="profile-meta">
         <span v-if="createdAtText">Created: {{ createdAtText }}</span>
         <span v-if="updatedAtText">Updated: {{ updatedAtText }}</span>
@@ -67,6 +76,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ChefProfileProps } from '../../../../../models/profiles/Chef.model'
+import ProfileHeader from '../../shared/ProfileHeader.vue'
+import ProfileTags from '../../shared/ProfileTags.vue'
 
 const props = defineProps<{ chef: ChefProfileProps & Record<string, any> }>()
 
@@ -118,18 +129,6 @@ const updatedAtText = computed(() => {
 .profile-card {
   display: block;
 }
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-.profile-name {
-  font-weight: 600;
-}
-.profile-subtitle {
-  color: var(--ui-text-muted);
-  font-size: 0.9rem;
-}
 .profile-content {
   display: grid;
   gap: 1rem;
@@ -145,17 +144,6 @@ const updatedAtText = computed(() => {
 .section-title {
   font-size: 0.9rem;
   color: var(--ui-text-muted);
-}
-.profile-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-.tag {
-  background: var(--ui-muted);
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.5rem;
-  font-size: 0.85rem;
 }
 .kitchens {
   display: flex;
