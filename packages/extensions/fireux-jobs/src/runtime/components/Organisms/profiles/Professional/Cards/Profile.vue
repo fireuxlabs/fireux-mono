@@ -2,68 +2,110 @@
   <UCard class="profile-card" @click="handleClick" style="cursor: pointer">
     <div class="profile-header">
       <UAvatar
-        :src="professional?.avatarUrl || professional?.profile_image?.url"
-        :alt="professional?.professional_name || 'Professional'"
+        :src="
+          (professional as any)?.avatar ||
+          (professional as any)?.avatarUrl ||
+          (professional as any)?.profile_image?.url
+        "
+        :alt="
+          (professional as any)?.name ||
+          (professional as any)?.professional_name ||
+          'Professional'
+        "
         size="lg"
       />
       <div class="profile-info">
-        <h4 v-if="professional?.professional_name" class="profile-name">
-          {{ professional.professional_name }}
+        <h4
+          v-if="
+            (professional as any)?.name ||
+            (professional as any)?.professional_name
+          "
+          class="profile-name"
+        >
+          {{
+            (professional as any)?.name ||
+            (professional as any)?.professional_name
+          }}
         </h4>
         <p v-if="professional?.title" class="profile-subtitle">
           {{ professional.title }}
         </p>
-        <div v-if="professional?.locations?.length" class="profile-location">
+        <div
+          v-if="(professional as any)?.locations?.length"
+          class="profile-location"
+        >
           <UIcon name="i-lucide-map-pin" />
-          <span>{{ getLocationText(professional.locations[0]) }}</span>
+          <span>{{ getLocationText((professional as any).locations[0]) }}</span>
         </div>
-        <div v-if="getExperienceYears() > 0" class="profile-meta">
-          {{ getExperienceYears() }}+ years experience
+        <div
+          v-if="
+            getExperienceYears((professional as any)?.kitchen_experience) > 0
+          "
+          class="profile-meta"
+        >
+          {{ getExperienceYears((professional as any)?.kitchen_experience) }}+
+          years experience
         </div>
       </div>
     </div>
     <p
-      v-if="professional?.bio_long || professional?.bio_short"
+      v-if="
+        (professional as any)?.bioLong ||
+        (professional as any)?.bio_long ||
+        (professional as any)?.bioShort ||
+        (professional as any)?.bio_short
+      "
       class="profile-bio"
     >
-      {{ professional.bio_long || professional.bio_short }}
+      {{
+        (professional as any)?.bioLong ||
+        (professional as any)?.bio_long ||
+        (professional as any)?.bioShort ||
+        (professional as any)?.bio_short
+      }}
     </p>
 
-    <div v-if="professional?.cuisine_types?.length" class="profile-tags">
+    <div
+      v-if="(professional as any)?.cuisine_types?.length"
+      class="profile-tags"
+    >
       <span
-        v-for="cuisine in professional.cuisine_types.slice(0, 3)"
+        v-for="cuisine in (professional as any).cuisine_types.slice(0, 3)"
         :key="cuisine"
         class="tag"
       >
         {{ cuisine }}
       </span>
-      <span v-if="professional.cuisine_types.length > 3" class="tag-more">
-        +{{ professional.cuisine_types.length - 3 }} more
+      <span
+        v-if="(professional as any).cuisine_types.length > 3"
+        class="tag-more"
+      >
+        +{{ (professional as any).cuisine_types.length - 3 }} more
       </span>
     </div>
 
-    <div v-if="professional?.skills?.length" class="profile-section">
+    <div v-if="(professional as any)?.skills?.length" class="profile-section">
       <strong class="section-label">Skills:</strong>
       <span
-        v-for="skill in professional.skills.slice(0, 2)"
+        v-for="skill in (professional as any).skills.slice(0, 2)"
         :key="skill"
         class="tag"
       >
         {{ skill }}
       </span>
-      <span v-if="professional.skills.length > 2" class="tag-more">
-        +{{ professional.skills.length - 2 }} more
+      <span v-if="(professional as any).skills.length > 2" class="tag-more">
+        +{{ (professional as any).skills.length - 2 }} more
       </span>
     </div>
 
     <div class="profile-stats">
-      <div v-if="professional?.hourly_rate" class="profile-stat">
+      <div v-if="(professional as any)?.hourly_rate" class="profile-stat">
         <UIcon name="i-lucide-dollar-sign" />
-        <span>${{ professional.hourly_rate }}/hour</span>
+        <span>${{ (professional as any).hourly_rate }}/hour</span>
       </div>
-      <div v-if="professional?.availability" class="profile-stat">
+      <div v-if="(professional as any)?.availability" class="profile-stat">
         <UIcon name="i-lucide-clock" />
-        <span>{{ professional.availability }}</span>
+        <span>{{ (professional as any).availability }}</span>
       </div>
       <div v-if="latestExp" class="profile-stat">
         <UIcon name="i-lucide-building" />
@@ -73,6 +115,7 @@
   </UCard>
 </template>
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Professional } from '../../../../../models/profiles/Professional.model'
 
 const props = defineProps<{
@@ -85,4 +128,46 @@ const handleClick = () => {
     props.navigate(props.professional)
   }
 }
+
+// Helper utilities for legacy/extended fields
+function getLocationText(location: any): string {
+  if (!location) return ''
+  if (location?.formatted_address) {
+    return String(location.formatted_address)
+  }
+  // Fallbacks used elsewhere in app
+  if (location?.city || location?.country) {
+    return [location.city, location.country].filter(Boolean).join(', ')
+  }
+  return 'Location not specified'
+}
+
+function getExperienceYears(experiences: any[] | undefined): number {
+  if (!Array.isArray(experiences) || experiences.length === 0) return 0
+  // Simple heuristic: count unique years across ranges
+  let years = 0
+  for (const exp of experiences) {
+    const from = parseInt(exp?.from_year) || 0
+    const to = exp?.ongoing
+      ? new Date().getFullYear()
+      : parseInt(exp?.to_year) || from
+    years += Math.max(0, to - from)
+  }
+  return years
+}
+
+const latestExp = computed(() => {
+  const list = (props.professional as any)?.kitchen_experience as
+    | any[]
+    | undefined
+  if (!Array.isArray(list) || list.length === 0) return null as any
+  const ongoing = list.find((e) => e?.ongoing)
+  if (ongoing) return ongoing
+  const sorted = [...list].sort((a, b) => {
+    const aYear = parseInt(a?.to_year || new Date().getFullYear())
+    const bYear = parseInt(b?.to_year || new Date().getFullYear())
+    return bYear - aYear
+  })
+  return sorted[0] || null
+})
 </script>

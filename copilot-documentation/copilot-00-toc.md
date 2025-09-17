@@ -34,6 +34,7 @@ updated: 2025-09-01
 - [Commands Cheatsheet](./copilot-appendices/copilot-commands-cheatsheet.md)
 - [Error Handbook](./copilot-appendices/copilot-error-handbook.md)
 - [Troubleshooting](./copilot-appendices/copilot-troubleshooting.md)
+- [Minimal Profile Creation Flow](./flow.md)
 
 ## Architecture Decision Records (ADR)
 

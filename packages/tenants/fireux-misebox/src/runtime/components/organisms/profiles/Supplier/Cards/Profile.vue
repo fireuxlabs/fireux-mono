@@ -2,69 +2,108 @@
   <UCard class="profile-card" @click="handleClick" style="cursor: pointer">
     <div class="profile-header">
       <UAvatar
-        :src="supplier?.avatarUrl || supplier?.profile_image?.url"
-        :alt="supplier?.company_name || 'Supplier'"
+        :src="
+          (supplier as any)?.avatar ||
+          (supplier as any)?.avatarUrl ||
+          (supplier as any)?.profile_image?.url
+        "
+        :alt="
+          (supplier as any)?.name ||
+          (supplier as any)?.company_name ||
+          (supplier as any)?.business_name ||
+          'Supplier'
+        "
         size="lg"
       />
       <div class="profile-info">
-        <h4 v-if="supplier?.company_name" class="profile-name">
-          {{ supplier.company_name }}
+        <h4
+          v-if="(supplier as any)?.name || (supplier as any)?.company_name"
+          class="profile-name"
+        >
+          {{ (supplier as any)?.name || (supplier as any)?.company_name }}
         </h4>
         <p v-if="supplier?.business_type" class="profile-subtitle">
           {{ supplier.business_type }}
         </p>
-        <div v-if="supplier?.locations?.length" class="profile-location">
+        <div
+          v-if="(supplier as any)?.locations?.length"
+          class="profile-location"
+        >
           <UIcon name="i-lucide-map-pin" />
-          <span>{{ formatLocation(supplier.locations[0]) }}</span>
+          <span>{{ formatLocation((supplier as any).locations[0]) }}</span>
         </div>
-        <div v-if="supplier?.years_in_business" class="profile-meta">
-          {{ supplier.years_in_business }}+ years in business
+        <div v-if="(supplier as any)?.years_in_business" class="profile-meta">
+          {{ (supplier as any).years_in_business }}+ years in business
         </div>
       </div>
     </div>
-    <p v-if="supplier?.bio_long || supplier?.bio_short" class="profile-bio">
-      {{ supplier.bio_long || supplier.bio_short }}
+    <p
+      v-if="
+        (supplier as any)?.bioLong ||
+        (supplier as any)?.bio_long ||
+        (supplier as any)?.bioShort ||
+        (supplier as any)?.bio_short
+      "
+      class="profile-bio"
+    >
+      {{
+        (supplier as any)?.bioLong ||
+        (supplier as any)?.bio_long ||
+        (supplier as any)?.bioShort ||
+        (supplier as any)?.bio_short
+      }}
     </p>
 
-    <div v-if="supplier?.specialties?.length" class="profile-tags">
+    <div v-if="(supplier as any)?.specialties?.length" class="profile-tags">
       <span
-        v-for="specialty in supplier.specialties.slice(0, 3)"
+        v-for="specialty in (supplier as any).specialties.slice(0, 3)"
         :key="specialty"
         class="tag"
       >
         {{ specialty }}
       </span>
-      <span v-if="supplier?.specialties?.length > 3" class="tag-more">
-        +{{ supplier?.specialties?.length - 3 }} more
+      <span v-if="(supplier as any)?.specialties?.length > 3" class="tag-more">
+        +{{ (supplier as any)?.specialties?.length - 3 }} more
       </span>
     </div>
 
-    <div v-if="supplier?.products_offered?.length" class="profile-section">
+    <div
+      v-if="(supplier as any)?.products_offered?.length"
+      class="profile-section"
+    >
       <strong class="section-label">Products:</strong>
       <span
-        v-for="product in supplier.products_offered.slice(0, 2)"
+        v-for="product in (supplier as any).products_offered.slice(0, 2)"
         :key="product"
         class="tag"
       >
         {{ product }}
       </span>
-      <span v-if="supplier.products_offered.length > 2" class="tag-more">
-        +{{ supplier.products_offered.length - 2 }} more
+      <span
+        v-if="(supplier as any).products_offered.length > 2"
+        class="tag-more"
+      >
+        +{{ (supplier as any).products_offered.length - 2 }} more
       </span>
     </div>
 
     <div class="profile-stats">
-      <div v-if="supplier?.employee_count" class="profile-stat">
+      <div v-if="(supplier as any)?.employee_count" class="profile-stat">
         <UIcon name="i-lucide-users" />
-        <span>{{ supplier.employee_count }} employees</span>
+        <span>{{ (supplier as any).employee_count }} employees</span>
       </div>
-      <div v-if="supplier?.certifications?.length" class="profile-stat">
+      <div
+        v-if="(supplier as any)?.certifications?.length"
+        class="profile-stat"
+      >
         <UIcon name="i-lucide-shield-check" />
-        <span>{{ supplier.certifications.length }} certifications</span>
+        <span
+          >{{ (supplier as any).certifications.length }} certifications</span
+        >
       </div>
-      <div v-if="supplier?.delivery_range" class="profile-stat">
+      <div v-if="(supplier as any)?.delivery_range" class="profile-stat">
         <UIcon name="i-lucide-truck" />
-        <span>{{ supplier.delivery_range }}km delivery</span>
+        <span>{{ (supplier as any).delivery_range }}km delivery</span>
       </div>
     </div>
   </UCard>

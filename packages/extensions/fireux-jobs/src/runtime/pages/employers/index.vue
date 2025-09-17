@@ -1,38 +1,48 @@
 <template>
-  <OrganismsProfileRoot :config="employerConfig">
-    <template #profile-pill="{ profile }">
-      <div @click="navigateToEmployer(profile)" style="cursor: pointer">
-        <OrganismsProfilesEmployerCardsPill :employer="profile" />
-      </div>
+  <div class="page space-y-4">
+    <!-- CTAs -->
+    <OrganismsUserCoreCTA v-if="!coreUser" />
+    <template v-else>
+      <OrganismsUserAppCTA v-if="role === 'tenant' && !appUser" />
+      <OrganismsProfilesEmployerCTA />
     </template>
 
-    <template #profile-card="{ profile }">
-      <div @click="navigateToEmployer(profile)" style="cursor: pointer">
-        <OrganismsProfilesEmployerCardsProfile :employer="profile" />
-      </div>
-    </template>
+    <!-- Profiles via reusable Root -->
+    <OrganismsProfileRoot :config="employerConfig">
+      <template #profile-pill="{ profile, navigate }">
+        <OrganismsProfilesEmployerCardsPill
+          class="cursor-pointer"
+          :employer="profile"
+          @click="navigate(profile)"
+        />
+      </template>
 
-    <template #profile-item="{ profile }">
-      <div @click="navigateToEmployer(profile)" style="cursor: pointer">
-        <OrganismsProfilesEmployerCardsCell :employer="profile" />
-      </div>
-    </template>
-  </OrganismsProfileRoot>
+      <template #profile-card="{ profile, navigate }">
+        <OrganismsProfilesEmployerCardsProfile
+          class="cursor-pointer"
+          :employer="profile"
+          @click="navigate(profile)"
+        />
+      </template>
+
+      <template #profile-item="{ profile, navigate }">
+        <OrganismsProfilesEmployerCardsCell
+          class="cursor-pointer"
+          :employer="profile"
+          @click="navigate(profile)"
+        />
+      </template>
+    </OrganismsProfileRoot>
+  </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { employerConfig } from '../../models/profiles/Employer.model'
+import { useApp } from 'fireux-core/runtime/composables/app/useApp'
+import { useCoreUser } from 'fireux-core/runtime/composables/firestore/CoreUser/useCoreUser'
+import { useAppUser } from 'fireux-core/runtime/composables/firestore/AppUser/useAppUser'
 
-// Navigation function
-const navigateToEmployer = (employer) => {
-  if (employer?.uid) {
-    navigateTo(`/employers/${employer.uid}`)
-  }
-}
-
-// Set page meta
-definePageMeta({
-  title: 'Browse Employers',
-  description: 'Find top restaurants and culinary establishments',
-})
+const { role } = useApp()
+const { coreUser } = useCoreUser()
+const { appUser } = useAppUser()
 </script>

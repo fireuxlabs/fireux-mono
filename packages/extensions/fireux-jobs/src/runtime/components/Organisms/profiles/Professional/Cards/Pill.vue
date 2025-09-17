@@ -1,16 +1,10 @@
 <template>
   <UCard class="pill">
     <div class="profile-header">
-      <UAvatar
-        :src="(professional as any)?.avatarUrl"
-        :alt="professional?.professional_name || 'Professional'"
-        size="sm"
-      />
+      <UAvatar :src="professional.avatar" :alt="professional.name" size="sm" />
       <div class="profile-info">
-        <h4 v-if="professional?.professional_name" class="profile-name">
-          {{ professional.professional_name }}
-        </h4>
-        <p v-if="professional?.title" class="profile-title">
+        <h4 class="profile-name">{{ professional.name }}</h4>
+        <p v-if="professional.title" class="profile-title">
           {{ professional.title }}
         </p>
       </div>
@@ -19,9 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Professional } from '../../../../../models/profiles/Professional.model'
+import type { ProfessionalPillProps } from '../../../../../models/profiles/Professional.model'
 
-defineProps<{
-  professional?: Partial<Professional>
-}>()
+defineProps<{ professional: ProfessionalPillProps }>()
 </script>

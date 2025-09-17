@@ -1,33 +1,26 @@
 <template>
   <UCard class="profile-card">
     <div class="profile-header">
-      <UAvatar
-        :src="employer?.avatarUrl"
-        :alt="employer?.company_name || 'Employer'"
-        size="md"
-      />
+      <UAvatar :src="employer.avatar" :alt="employer.name" size="md" />
       <div class="profile-info">
-        <h4 v-if="employer?.company_name" class="profile-name">
-          {{ employer.company_name }}
-        </h4>
-        <p v-if="employer?.business_type" class="profile-subtitle">
-          {{ employer.business_type }}
+        <h4 class="profile-name">{{ employer.name }}</h4>
+        <p v-if="employer.title" class="profile-subtitle">
+          {{ employer.title }}
         </p>
       </div>
     </div>
 
-    <p v-if="employer?.bio_short" class="profile-bio">
-      {{ employer.bio_short }}
+    <p v-if="employer.bioShort" class="profile-bio">
+      {{ employer.bioShort }}
     </p>
 
-    <div v-if="employer?.specialties?.length" class="profile-tags">
+    <div v-if="employer.specialties?.length" class="profile-tags">
       <span
-        v-for="specialty in employer.specialties.slice(0, 3)"
-        :key="specialty"
+        v-for="(tag, i) in employer.specialties.slice(0, 3)"
+        :key="tag + i"
         class="tag"
+        >{{ tag }}</span
       >
-        {{ specialty }}
-      </span>
       <span v-if="employer.specialties.length > 3" class="tag-more">
         +{{ employer.specialties.length - 3 }} more
       </span>
@@ -36,9 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Employer } from '../../../../../models/profiles/Employer.model'
-
-defineProps<{
-  employer?: Partial<Employer>
-}>()
+import type { EmployerCellProps } from '../../../../../models/profiles/Employer.model'
+defineProps<{ employer: EmployerCellProps }>()
 </script>

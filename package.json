@@ -33,7 +33,8 @@
     "guard:apps:shape": "node ./tools/check-app-structure.mjs",
     "precommit": "pnpm guard:apps:shape",
     "typecheck": "pnpm -w typecheck && pnpm guard:apps:shape",
-    "migrate:misebox-users": "tsx scripts/migrate-misebox-app-users.ts"
+    "migrate:misebox-users": "tsx scripts/migrate-misebox-app-users.ts",
+    "migrate:chefs-created-at": "pnpm tsx scripts/migrate-chefs-created-at.ts"
   },
   "engines": {
     "node": ">=20.11 <23",

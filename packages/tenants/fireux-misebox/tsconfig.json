@@ -1,3 +1,4 @@
+//packages/tenants/fireux-misebox/tsconfig.json
 {
   "compilerOptions": {
     "target": "ES2022",
@@ -28,7 +29,7 @@
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
   "exclude": [
     "node_modules",
     "dist",

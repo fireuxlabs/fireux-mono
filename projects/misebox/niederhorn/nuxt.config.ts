@@ -8,5 +8,6 @@ export default defineNuxtConfig(<NuxtConfig>{
     appShortName: 'Niederhorn',
     ecosystem: 'misebox',
     modules: ['fireux-misebox'],
+    role: 'tenant',
   }),
 })

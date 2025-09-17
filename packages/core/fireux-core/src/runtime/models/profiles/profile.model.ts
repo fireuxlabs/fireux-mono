@@ -1,3 +1,4 @@
+//packages/core/fireux-core/src/runtime/models/profiles/profile.model.ts
 import type { FirebaseTimestamp } from '../../types/firebase'
 
 /**
@@ -9,14 +10,6 @@ export interface ProfileBase {
 
   /** Primary avatar URL to display everywhere */
   avatar: string
-
-  /** Optional metadata if/when you need it */
-  avatar_meta?: {
-    width?: number
-    height?: number
-    mime?: string
-    source?: 'upload' | 'provider' | 'default'
-  }
 
   /** Timestamps */
   created_at: string | Date | FirebaseTimestamp
@@ -39,8 +32,7 @@ export type ProfileUpdate<T extends ProfileBase> = Partial<
 >
 
 /**
- * Optional config definition to describe a profile type.
- * Useful for generic handling in UI/composables.
+ * Config definition to describe a profile type.
  */
 export interface ProfileConfig {
   /** Lowercase singular identifier: 'chef', 'employer', 'professional', 'supplier' */
@@ -52,32 +44,21 @@ export interface ProfileConfig {
   /** Human-readable type label, e.g. 'Chef', 'Employer' */
   profileType: string
 
-  /** Domain color (UI) */
-  color?: string
-
-  /** Optional composables for lifecycle operations */
-  updateComposable?: () => any
-  createComposable?: () => any
-  deleteComposable?: () => any
-
   /** Validation & schema hints */
   validationFn?: (profile: any) => boolean
   requiredFields?: string[]
   searchableFields?: string[]
   defaultValues?: Record<string, any>
+
+  /**
+   * Optional hook to attach role-specific update composables.
+   * Should return an object with update methods to be spread onto useProfile() return value.
+   */
+  updateComposable?: () => Record<string, any>
 }
 
 // ---------------------------------------------------------------------------
 // Back-compat aliases (safe to remove after refactor completes)
 // ---------------------------------------------------------------------------
 export type Profile = ProfileBase
-export interface ProfileImage {
-  url: string
-  width?: number
-  height?: number
-  alt?: string
-  mimeType?: string
-  dominantColor?: string
-  blurDataURL?: string
-}
 export type ProfileInput<T extends ProfileBase> = ProfileCreate<T>

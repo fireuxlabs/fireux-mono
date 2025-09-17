@@ -1,34 +1,36 @@
 <template>
-  <div class="page">
-    <!-- Core identity CTA (only if no core user) -->
+  <div class="page space-y-4">
+    <!-- CTAs -->
     <OrganismsUserCoreCTA v-if="!coreUser" />
+    <template v-else>
+      <OrganismsUserAppCTA v-if="role === 'tenant' && !appUser" />
+      <OrganismsProfilesChefCTA />
+    </template>
 
-    <!-- App membership CTA (only if tenant and no appUser yet) -->
-    <OrganismsUserAppCTA v-if="appTenancy === 'tennant' && !appUser" />
-
-    <!-- Chef CTA (only if signed in and member of app) -->
-    <OrganismsProfilesChefCTA
-      v-if="coreUser && (appTenancy !== 'tennant' || appUser)"
-    />
-
-    <!-- Profiles list -->
+    <!-- Profiles via reusable Root -->
     <OrganismsProfileRoot :config="chefConfig">
-      <template #profile-pill="{ profile }">
-        <div @click="navigateToChef(profile)" class="cursor-pointer">
-          <OrganismsProfilesChefCardsPill :chef="profile" />
-        </div>
+      <template #profile-pill="{ profile, navigate }">
+        <OrganismsProfilesChefCardsPill
+          class="cursor-pointer"
+          :chef="profile"
+          @click="navigate(profile)"
+        />
       </template>
 
-      <template #profile-card="{ profile }">
-        <div @click="navigateToChef(profile)" class="cursor-pointer">
-          <OrganismsProfilesChefCardsProfile :chef="profile" />
-        </div>
+      <template #profile-card="{ profile, navigate }">
+        <OrganismsProfilesChefCardsProfile
+          class="cursor-pointer"
+          :chef="profile"
+          @click="navigate(profile)"
+        />
       </template>
 
-      <template #profile-item="{ profile }">
-        <div @click="navigateToChef(profile)" class="cursor-pointer">
-          <OrganismsProfilesChefCardsCell :chef="profile" />
-        </div>
+      <template #profile-item="{ profile, navigate }">
+        <OrganismsProfilesChefCardsCell
+          class="cursor-pointer"
+          :chef="profile"
+          @click="navigate(profile)"
+        />
       </template>
     </OrganismsProfileRoot>
   </div>
@@ -36,19 +38,11 @@
 
 <script setup lang="ts">
 import { chefConfig } from '../../models/profiles/Chef.model'
+import { useApp } from 'fireux-core/runtime/composables/app/useApp'
+import { useCoreUser } from 'fireux-core/runtime/composables/firestore/CoreUser/useCoreUser'
+import { useAppUser } from 'fireux-core/runtime/composables/firestore/AppUser/useAppUser'
 
-// ✅ core composables are auto-imported by fireux-core
-const { appTenancy } = useApp()
+const { role } = useApp() // 'global' | 'tenant'
 const { coreUser } = useCoreUser()
 const { appUser } = useAppUser()
-
-const navigateToChef = (chef: any) => {
-  // New model uses `id` (== uid)
-  if (chef?.id) navigateTo(`/chefs/${chef.id}`)
-}
-
-definePageMeta({
-  title: 'Browse Chefs',
-  description: 'Find talented chefs for your kitchen needs',
-})
 </script>

@@ -1,38 +1,48 @@
 <template>
-  <OrganismsProfileRoot :config="professionalConfig">
-    <template #profile-pill="{ profile }">
-      <div @click="navigateToProfessional(profile)" style="cursor: pointer">
-        <OrganismsProfilesProfessionalCardsPill :professional="profile" />
-      </div>
+  <div class="page space-y-4">
+    <!-- CTAs -->
+    <OrganismsUserCoreCTA v-if="!coreUser" />
+    <template v-else>
+      <OrganismsUserAppCTA v-if="role === 'tenant' && !appUser" />
+      <OrganismsProfilesProfessionalCTA />
     </template>
 
-    <template #profile-card="{ profile }">
-      <div @click="navigateToProfessional(profile)" style="cursor: pointer">
-        <OrganismsProfilesProfessionalCardsProfile :professional="profile" />
-      </div>
-    </template>
+    <!-- Profiles via reusable Root -->
+    <OrganismsProfileRoot :config="professionalConfig">
+      <template #profile-pill="{ profile, navigate }">
+        <OrganismsProfilesProfessionalCardsPill
+          class="cursor-pointer"
+          :professional="profile"
+          @click="navigate(profile)"
+        />
+      </template>
 
-    <template #profile-item="{ profile }">
-      <div @click="navigateToProfessional(profile)" style="cursor: pointer">
-        <OrganismsProfilesProfessionalCardsCell :professional="profile" />
-      </div>
-    </template>
-  </OrganismsProfileRoot>
+      <template #profile-card="{ profile, navigate }">
+        <OrganismsProfilesProfessionalCardsProfile
+          class="cursor-pointer"
+          :professional="profile"
+          @click="navigate(profile)"
+        />
+      </template>
+
+      <template #profile-item="{ profile, navigate }">
+        <OrganismsProfilesProfessionalCardsCell
+          class="cursor-pointer"
+          :professional="profile"
+          @click="navigate(profile)"
+        />
+      </template>
+    </OrganismsProfileRoot>
+  </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { professionalConfig } from '../../models/profiles/Professional.model'
+import { useApp } from 'fireux-core/runtime/composables/app/useApp'
+import { useCoreUser } from 'fireux-core/runtime/composables/firestore/CoreUser/useCoreUser'
+import { useAppUser } from 'fireux-core/runtime/composables/firestore/AppUser/useAppUser'
 
-// Navigation function
-const navigateToProfessional = (professional) => {
-  if (professional?.uid) {
-    navigateTo(`/professionals/${professional.uid}`)
-  }
-}
-
-// Set page meta
-definePageMeta({
-  title: 'Browse Professionals',
-  description: 'Find skilled culinary professionals for your team',
-})
+const { role } = useApp()
+const { coreUser } = useCoreUser()
+const { appUser } = useAppUser()
 </script>

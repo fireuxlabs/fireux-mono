@@ -9,28 +9,18 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
   const currentUser = useCurrentUser()
   const rc = useRuntimeConfig()
 
-  // Simple tenancy detection (now canonical via runtimeConfig.public.role)
-  // Backwards compatibility: fall back to legacy appRole / tenantId if present
-  let roleInput = (rc.public?.role || (rc.public as any)?.appRole) as
-    | string
-    | undefined
-  if (roleInput === 'tenant') roleInput = 'tennant' // normalize legacy spelling
-  const legacyTenantId = (rc.public as any)?.tenantId as string | undefined
-  const isTennant = roleInput === 'tennant' || (!!legacyTenantId && !roleInput)
+  // Role is canonical: 'global' | 'tenant'
+  const role =
+    (rc.public?.role as string | undefined)?.toLowerCase() || 'tenant'
 
-  // Canonical tenancy string: prefer explicit role; fallback to inferred tenant/global
-  const appTenancy = computed(() => {
-    if (roleInput) return roleInput
-    return isTennant ? 'tennant' : 'king'
-  })
+  // Back-compat: expose appTenancy string mirroring role
+  const appTenancy = computed(() => role)
 
-  // Human-readable tenancy display (e.g., "King of ecosystem")
+  // Human-readable tenancy display
   const tenancyDisplay = computed(() => {
     const eco = (rc.public as any)?.ecosystem || 'ecosystem'
-    const role = (appTenancy.value || '').toString()
-    if (!role) return `Unknown of ${eco}`
-    if (role.toLowerCase() === 'king') return `King of ${eco}`
-    if (role === 'tennant') return `Tennant of ${eco}`
+    if (role === 'global') return `Global of ${eco}`
+    if (role === 'tenant') return `Tenant of ${eco}`
     return `${role} of ${eco}`
   })
 

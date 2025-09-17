@@ -27,6 +27,7 @@
     </UCard>
 
     <UCard>
+      <p>Total App Users: {{ appUsers?.length || 0 }}</p>
       <DevJson
         :data="{
           computedProps: { isAppUser, isPro, isAdmin, initials },

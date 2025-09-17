@@ -30,7 +30,7 @@ export function useAppEnsure() {
       const { setDocument } = useFirestoreManager()
       let uid: string
 
-  if (coreUser?.id) {
+      if (coreUser?.id) {
         // Use the provided core user
         uid = coreUser.id
         console.log(`✅ [ensureApp] Using provided core user: ${uid}`)
@@ -39,7 +39,7 @@ export function useAppEnsure() {
         const { waitForCurrentUser } = useFirestoreManager()
         const currentUser = await waitForCurrentUser()
 
-  if (!currentUser?.uid) {
+        if (!currentUser?.uid) {
           throw new Error('No authenticated user found')
         }
 
@@ -54,7 +54,7 @@ export function useAppEnsure() {
       console.log(
         `🔍 [ensureApp] Detected modules: ${Array.isArray(modules) ? modules.join(', ') : ''}`
       )
-  console.log(`🔍 [ensureApp] Detected ecosystem: ${ecosystem ?? 'none'}`)
+      console.log(`🔍 [ensureApp] Detected ecosystem: ${ecosystem ?? 'none'}`)
 
       // Step 3: Check if app already exists
       const appDocRef = doc(db, 'apps', appId)
@@ -83,7 +83,8 @@ export function useAppEnsure() {
         created_at: new Date().toISOString(),
       }
 
-      await setDocument('apps', appId, appData, { appScoped: false })
+      // Write the app document without automatic stamping (explicit system fields already set)
+      await setDocument('apps', appId, appData, { raw: true })
       console.log(
         `🎉 [ensureApp] App '${appId}' created successfully with ecosystem: ${ecosystem ?? 'none'}`
       )

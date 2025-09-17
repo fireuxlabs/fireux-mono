@@ -63,6 +63,9 @@ export function useFireUXConfig() {
     ? modulesRaw.map((m) => String(m))
     : []
 
+  // Role (global | tenant)
+  const role = (runtimeConfig.public?.role as string | undefined) ?? 'tenant'
+
   const { projectName, appName, appId, appIcon } = appSettings
 
   if (!projectName || typeof projectName !== 'string') {
@@ -85,5 +88,6 @@ export function useFireUXConfig() {
     appIcon, // Added appIcon to return values
     ecosystem,
     modules,
+    role,
   }
 }

@@ -8,5 +8,6 @@ export default defineNuxtConfig(<NuxtConfig>{
     appShortName: 'Richies',
     ecosystem: 'cleanbox',
     modules: ['fireux-cleanbox', 'fireux-jobs'],
+    role: 'tenant',
   }),
 })

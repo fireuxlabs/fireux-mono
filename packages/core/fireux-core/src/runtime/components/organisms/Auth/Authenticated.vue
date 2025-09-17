@@ -15,11 +15,8 @@
 <script setup>
 const router = useRouter()
 const { coreUser, ensureCoreUser } = useCoreUser()
-const { appTenancy } = useApp()
-const isTenant = computed(() => {
-  const role = (appTenancy.value || '').toLowerCase()
-  return role === 'tennant' || role === 'tenant'
-})
+const { role } = useApp()
+const isTenant = computed(() => (role?.value || '').toLowerCase() === 'tenant')
 // Only use app user flows for tenant apps
 let appUser, ensureAppUser
 if (isTenant.value) {

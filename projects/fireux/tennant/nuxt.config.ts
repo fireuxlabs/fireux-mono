@@ -8,5 +8,6 @@ export default defineNuxtConfig(<NuxtConfig>{
     appShortName: 'Tenant',
     ecosystem: 'fireux',
     modules: ['fireux-fireux'],
+    role: 'tenant',
   }),
 })

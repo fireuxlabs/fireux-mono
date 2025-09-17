@@ -1,27 +1,17 @@
 <template>
   <UCard class="pill">
     <div class="profile-header">
-      <UAvatar
-        :src="(supplier as any)?.avatarUrl"
-        :alt="supplier?.business_name || 'Supplier'"
-        size="sm"
-      />
+      <UAvatar :src="supplier.avatar" :alt="supplier.name" size="sm" />
       <div class="profile-info">
-        <h4 v-if="supplier?.business_name" class="profile-name">
-          {{ supplier.business_name }}
-        </h4>
-        <p v-if="supplier?.specialties?.length" class="profile-title">
-          {{ supplier.specialties[0] }}
-        </p>
+        <h4 class="profile-name">{{ supplier.name }}</h4>
+        <p v-if="supplier.title" class="profile-title">{{ supplier.title }}</p>
       </div>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import type { Supplier } from '../../../../../models/profiles/Supplier.model'
+import type { SupplierPillProps } from '../../../../../models/profiles/Supplier.model'
 
-defineProps<{
-  supplier?: Partial<Supplier>
-}>()
+defineProps<{ supplier: SupplierPillProps }>()
 </script>

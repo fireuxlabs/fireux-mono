@@ -1,43 +1,44 @@
 <template>
   <ClientOnly>
-    <div>
-      <div v-if="chef">
-        <MiseProfilesChefProfile :chef="chef" />
+    <div v-if="chef">
+      <OrganismsProfilesChefCardsProfile :chef="chef" />
 
-        <!-- Edit Profile Button (shown when viewing own profile) -->
-        <div v-if="appUser?.uid === chef.uid" class="edit-profile-section">
-          <UButton
-            @click="navigateToEdit"
-            icon="i-lucide-pencil"
-            size="md"
-            color="primary"
-            variant="solid"
-            class="edit-profile-button"
-          >
-            Edit Profile
-          </UButton>
-        </div>
-      </div>
-      <div v-else class="error-state">
-        <h1>Chef Not Found</h1>
-        <p>The chef profile you're looking for doesn't exist.</p>
-        <NuxtLink to="/chefs" class="back-link">← Back to Chefs</NuxtLink>
+      <!-- Edit button when viewing your own profile -->
+      <div v-if="appUser?.id === chef.id" class="mt-4">
+        <UButton
+          icon="i-lucide-pencil"
+          size="md"
+          color="primary"
+          @click="navigateTo('/dashboard/chef-profile')"
+        >
+          Edit Profile
+        </UButton>
       </div>
     </div>
 
+    <div v-else class="space-y-2">
+      <h1>Chef Not Found</h1>
+      <p>The chef profile you're looking for doesn't exist.</p>
+      <NuxtLink to="/chefs" class="text-primary hover:underline">
+        ← Back to Chefs
+      </NuxtLink>
+    </div>
+
     <template #fallback>
-      <div class="loading-state">
-        <h1>Loading chef profile...</h1>
-      </div>
+      <div>Loading chef profile…</div>
     </template>
   </ClientOnly>
 </template>
 
-<script setup lang="ts">
+<script setup>
+import { computed } from 'vue'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
+import { useAppUser } from 'fireux-core/runtime/composables/firestore/AppUser/useAppUser'
 import { chefConfig } from '../../models/profiles/Chef.model'
 
 const route = useRoute()
-const chefId = route.params.id as string
+const idParam = route.params.id
+const chefId = Array.isArray(idParam) ? idParam[0] : String(idParam || '')
 
 // Define static page meta first (no reactive data allowed)
 definePageMeta({
@@ -45,32 +46,31 @@ definePageMeta({
   description: 'View chef profile',
 })
 
-// Get current user for edit permission check
+// Current app user (for edit-visibility)
 const { appUser } = useAppUser()
 
 // Use our unified profile composable
 const { fetchById } = useProfile(chefConfig)
 
-// Fetch chef data
-const chef = await fetchById(chefId)
-
-// Navigation function for edit profile
-const navigateToEdit = () => {
-  navigateTo('/dashboard/chef-profile')
-}
+// Load chef
+const chef = chefId ? await fetchById(chefId) : null
 
 // Update head dynamically when chef data loads
 useHead({
   title: computed(() =>
-    chef && chef.chef_name ? `${chef.chef_name} - Chef Profile` : 'Chef Profile'
+    chef?.name ? `${chef.name} - Chef Profile` : 'Chef Profile'
   ),
   meta: [
     {
       name: 'description',
-      content: computed(() =>
-        chef && chef.bio_short ? chef.bio_short : 'View chef profile'
+      content: computed(
+        () => chef?.bio_short || chef?.bio_long || 'View chef profile'
       ),
     },
   ],
 })
+
+function navigateTo(path) {
+  return useRouter().push(path)
+}
 </script>

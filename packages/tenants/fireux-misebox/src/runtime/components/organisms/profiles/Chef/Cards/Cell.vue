@@ -1,35 +1,24 @@
 <template>
   <UCard class="profile-card">
     <div class="profile-header">
-      <UAvatar
-        :src="
-          (chef as any)?.avatarUrl ||
-          (chef as any)?.avatar ||
-          (chef as any)?.profile_image?.url
-        "
-        :alt="chef?.chef_name || 'Chef'"
-        size="md"
-      />
+      <UAvatar :src="chef.avatar" :alt="chef.name" size="md" />
       <div class="profile-info">
-        <h4 v-if="chef?.chef_name" class="profile-name">
-          {{ chef.chef_name }}
-        </h4>
-        <p v-if="chef?.title" class="profile-subtitle">{{ chef.title }}</p>
+        <h4 class="profile-name">{{ chef.name }}</h4>
+        <p v-if="chef.title" class="profile-subtitle">{{ chef.title }}</p>
       </div>
     </div>
 
-    <p v-if="chef?.bio_short" class="profile-bio">
-      {{ chef.bio_short }}
+    <p v-if="chef.bioShort" class="profile-bio">
+      {{ chef.bioShort }}
     </p>
 
-    <div v-if="chef?.specialties?.length" class="profile-tags">
+    <div v-if="chef.specialties?.length" class="profile-tags">
       <span
-        v-for="specialty in chef.specialties.slice(0, 3)"
-        :key="specialty"
+        v-for="(tag, i) in chef.specialties.slice(0, 3)"
+        :key="tag + i"
         class="tag"
+        >{{ tag }}</span
       >
-        {{ specialty }}
-      </span>
       <span v-if="chef.specialties.length > 3" class="tag-more">
         +{{ chef.specialties.length - 3 }} more
       </span>
@@ -38,9 +27,6 @@
 </template>
 
 <script setup lang="ts">
-import type { ChefCoreProfile as Chef } from '../../../../../models/profiles/Chef.model'
-
-defineProps<{
-  chef?: Partial<Chef>
-}>()
+import type { ChefCellProps } from '../../../../../models/profiles/Chef.model'
+defineProps<{ chef: ChefCellProps }>()
 </script>

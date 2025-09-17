@@ -10,7 +10,7 @@
     <p v-else>❌ You don’t have a global Chef profile yet.</p>
 
     <!-- App profile (only if tenant) -->
-    <template v-if="appTenancy === 'tennant'">
+    <template v-if="appTenancy === 'tenant'">
       <OrganismsProfilesChefCardsCell v-if="appProfile" :chef="appProfile" />
       <p v-else>❌ You are not a Chef in this app.</p>
     </template>
@@ -21,7 +21,7 @@
         v-if="!ecosystemProfile || !appProfile"
         size="lg"
         color="primary"
-        @click="ensureProfile"
+        @click="onEnsure"
       >
         {{
           !ecosystemProfile
@@ -35,7 +35,22 @@
 
 <script lang="ts" setup>
 import { chefConfig } from '../../../../models/profiles/Chef.model'
+import { useApp } from 'fireux-core/runtime/composables/app/useApp'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
+import { useChefCreate } from '../../../../composables/firestore/profiles/Chef/useChefCreate'
 
 const { tenancyDisplay, appTenancy } = useApp()
-const { ecosystemProfile, appProfile, ensureProfile } = useProfile(chefConfig)
+// Read current profiles via unified profile composable
+const { ecosystemProfile, appProfile } = useProfile(chefConfig) as any
+// Use minimal creation flow for consistent logging and behavior
+const { createChef } = useChefCreate()
+
+async function onEnsure() {
+  try {
+    console.log('[CTA/Chef] Click createChef')
+    await createChef()
+  } catch (e) {
+    console.error('[CTA] ensureProfile failed', e)
+  }
+}
 </script>

@@ -13,7 +13,7 @@ import type { App } from '../../models/core/app.model'
 import { getApps } from 'firebase/app'
 
 export function useApp() {
-  const { appId } = useFireUXConfig()
+  const { role, appId } = useFireUXConfig()
 
   // Ensure Firebase is initialized
   if (!getApps().length) {
@@ -51,6 +51,9 @@ export function useApp() {
   }
 
   return {
+    // Role & App identity
+    role,
+    appId,
     // Current entity
     app,
 

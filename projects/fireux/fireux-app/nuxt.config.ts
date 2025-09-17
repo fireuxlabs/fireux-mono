@@ -8,5 +8,6 @@ export default defineNuxtConfig(<NuxtConfig>{
     appShortName: 'FireUX',
     ecosystem: 'fireux',
     modules: ['fireux-fireux'],
+    role: 'global',
   }),
 })

@@ -67,15 +67,18 @@ const navigateToEdit = () => {
 // Update head dynamically when professional data loads
 useHead({
   title: computed(() =>
-    professional?.professional_name
-      ? `${professional.professional_name} - Professional Profile`
+    (professional as any)?.name || (professional as any)?.professional_name
+      ? `${(professional as any)?.name || (professional as any)?.professional_name} - Professional Profile`
       : 'Professional Profile'
   ),
   meta: [
     {
       name: 'description',
       content: computed(
-        () => professional?.bio_short || 'View professional profile'
+        () =>
+          (professional as any)?.bioShort ||
+          (professional as any)?.bio_short ||
+          'View professional profile'
       ),
     },
   ],

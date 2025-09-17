@@ -36,6 +36,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useHead } from '#imports'
+import { useRoute, navigateTo } from '#app'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
+import { useAppUser } from 'fireux-core/runtime/composables/user/useAppUser'
 import { employerConfig } from '../../models/profiles/Employer.model'
 
 const route = useRoute()
@@ -64,14 +69,19 @@ const navigateToEdit = () => {
 // Update head dynamically when employer data loads
 useHead({
   title: computed(() =>
-    employer?.company_name
-      ? `${employer.company_name} - Employer Profile`
+    (employer as any)?.name || (employer as any)?.company_name
+      ? `${(employer as any)?.name || (employer as any)?.company_name} - Employer Profile`
       : 'Employer Profile'
   ),
   meta: [
     {
       name: 'description',
-      content: computed(() => employer?.bio_short || 'View employer profile'),
+      content: computed(
+        () =>
+          (employer as any)?.bioShort ||
+          (employer as any)?.bio_short ||
+          'View employer profile'
+      ),
     },
   ],
 })

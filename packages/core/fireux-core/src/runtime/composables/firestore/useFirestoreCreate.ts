@@ -6,37 +6,26 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 import { useFirestore, useCurrentUser } from 'vuefire'
-import { useFireUXConfig } from '../FireUXConfig'
+
+type Stamped<T> = T & {
+  created_at: ReturnType<typeof serverTimestamp>
+  updated_at: ReturnType<typeof serverTimestamp>
+  creator_id: string
+}
 
 export async function stampDoc<T>(
   data: T,
-  opts?: { appScoped?: boolean }
-): Promise<
-  T & {
-    appId?: string
-    created_at: ReturnType<typeof serverTimestamp>
-    creator_id: string
-  }
-> {
-  const { appId } = useFireUXConfig()
-  function getCurrentUserId(): string {
-    const currentUser = useCurrentUser().value
-    if (!currentUser?.uid) {
-      throw new Error('User is not authenticated.')
-    }
-    return currentUser.uid
-  }
-  const base = {
-    ...data,
-    created_at: serverTimestamp(),
-    creator_id: getCurrentUserId(),
-  }
-  if (opts?.appScoped === false) {
-    return base
-  }
+  opts?: { raw?: boolean }
+): Promise<T | Stamped<T>> {
+  if (opts?.raw) return data
+  const user = useCurrentUser().value
+  if (!user?.uid) throw new Error('User is not authenticated.')
+
   return {
-    ...base,
-    appId: appId,
+    ...(data as any),
+    created_at: serverTimestamp(),
+    updated_at: serverTimestamp(),
+    creator_id: user.uid,
   }
 }
 
@@ -44,24 +33,24 @@ export function useFirestoreCreate() {
   const db = useFirestore()
 
   async function createDocument<T>(
-    name: string,
+    path: string,
     data: T,
-    opts?: { appScoped?: boolean }
+    opts?: { raw?: boolean }
   ): Promise<void> {
-    const ref = collection(db, name)
-    const stampedData = await stampDoc(data, opts)
-    await addDoc(ref, stampedData)
+    const ref = collection(db, path)
+    const stamped = await stampDoc(data, opts)
+    await addDoc(ref, stamped as any)
   }
 
   async function setDocument<T>(
-    name: string,
+    path: string,
     id: string,
     data: T,
-    opts?: { appScoped?: boolean }
+    opts?: { raw?: boolean }
   ): Promise<void> {
-    const ref = doc(db, name, id)
-    const stampedData = await stampDoc(data, opts)
-    await setDoc(ref, stampedData)
+    const ref = doc(db, path, id)
+    const stamped = await stampDoc(data, opts)
+    await setDoc(ref, stamped as any)
   }
 
   return { createDocument, setDocument }
