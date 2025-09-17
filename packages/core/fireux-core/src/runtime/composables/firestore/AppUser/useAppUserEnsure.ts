@@ -60,20 +60,32 @@ export function useAppUserEnsure() {
       return
     }
 
-    // 4) Build minimal tenant payload
+    // 4) Build tenant payload (minimal + compatibility mirrors)
     const role: AppUser['role'] = app?.admin_ids?.includes(uid)
       ? 'admin'
       : 'user'
-    const minimal: Partial<AppUser> = {
+
+    // Load core user to mirror select fields for compatibility
+    const coreUserRef = doc(db, 'core-users', uid)
+    const coreSnap = await getDoc(coreUserRef)
+    const coreData = (coreSnap.exists() ? (coreSnap.data() as any) : null) || {}
+
+    const payload: Partial<AppUser> & Record<string, any> = {
       id: uid,
       role,
       // Optional: seed tenant profiles from core (safe to omit)
       // profiles: coreUser?.profiles ?? [],
+      // Compatibility mirrors for existing consumers
+      uid, // duplicate id for older UIs expecting `uid`
+      appId, // some UIs query/render this field
+      email: coreData.email,
+      display_name: coreData.display_name,
+      avatar: coreData.avatar,
     }
 
     // 5) Create app user (adds created_at/updated_at)
     const { setDocument } = useFirestoreCreate()
-    await setDocument(`apps/${appId}/users`, uid, minimal)
+    await setDocument(`apps/${appId}/users`, uid, payload)
     console.log(`✅ [ensureAppUser] Created AppUser in ${appId}`)
 
     // 6) Update CoreUser.userOf

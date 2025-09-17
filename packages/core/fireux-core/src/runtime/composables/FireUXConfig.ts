@@ -57,10 +57,6 @@ export function useFireUXConfig() {
     typeof runtimeConfig.public?.ecosystem === 'string'
       ? runtimeConfig.public.ecosystem
       : undefined
-  // Optional central sign-up URL for ecosystem account creation (used by tenant onboarding)
-  const centralSignupUrl = runtimeConfig.public?.centralSignupUrl as
-    | string
-    | undefined
   // Ensure modules is always a string array for safe downstream usage
   const modulesRaw = runtimeConfig.public?.modules
   const modules: string[] = Array.isArray(modulesRaw)
@@ -93,6 +89,5 @@ export function useFireUXConfig() {
     ecosystem,
     modules,
     role,
-    centralSignupUrl,
   }
 }

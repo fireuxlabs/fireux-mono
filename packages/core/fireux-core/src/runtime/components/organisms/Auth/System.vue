@@ -23,10 +23,7 @@
               </p>
               <OrganismsAuthGoogle />
               <OrganismsAuthEmail mode="sign-in" />
-              <p v-if="centralSignupUrl" class="subtle">
-                Don’t have a Misebox account?
-                <NuxtLink :to="centralSignupUrl">Create one here</NuxtLink>.
-              </p>
+              <!-- Optional: We can add a static link later if needed -->
             </div>
 
             <!-- Ecosystem (Misebox root) shows both sign-in and sign-up affordances -->
@@ -44,7 +41,7 @@
 <script setup>
 const { authState } = useAuth()
 const { tenancyDisplay } = useApp()
-const { role, appName, centralSignupUrl } = useFireUXConfig()
+const { role, appName } = useFireUXConfig()
 </script>
 
 <style scoped>
