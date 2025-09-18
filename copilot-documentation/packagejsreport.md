@@ -27,7 +27,7 @@ Summary
     "test-*"
   ],
   "scripts": {
-    "dev:all": "concurrently \\\"pnpm dev:fireux\\\" \\\"pnpm dev:misebox\\\" \\\"pnpm dev:cleanbox\\\"",
+    "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
     "dev:fireux": "pnpm --filter ./projects/fireux/fireux-app dev",
     "dev:misebox": "pnpm --filter ./projects/misebox/misebox-app dev",
     "dev:niederhorn": "pnpm --filter ./projects/misebox/niederhorn dev",
@@ -59,9 +59,10 @@ Summary
   "devDependencies": {
     "esbuild-register": "^3.5.0",
     "firebase-admin": "^12.6.0",
-    "tsx": "^4.19.1",
-    "@nuxt/content": "^3.6.3",
-    "@nuxt/devtools": "^2.6.3",
+     "@nuxt/module-builder": "^0.5.5",
+     "mkdist": "^1.5.3",
+     "rimraf": "^6.0.1",
+     "glob": "^11.0.3"
     "@nuxt/fonts": "^0.11.4",
     "@nuxt/icon": "^2.0.0",
     "@nuxt/kit": "4.0.3",
@@ -161,22 +162,26 @@ Summary
     "postbuild": "rimraf src/**/*.map",
     "clean": "rimraf dist"
   },
-  "engines": {
-    "node": ">=20.11 <23",
-    "pnpm": ">=10"
-  },
-  "dependencies": {
-    "dompurify": "^3.2.6"
-  },
-  "peerDependencies": {
-    "nuxt": "4.0.3",
-    "@nuxt/kit": "4.0.3",
-    "@nuxt/schema": "4.0.3",
-    "vue": "3.5.20",
-    "vue-router": "^4.5.0",
-    "vuefire": "3.2.2",
-    "firebase": "11.10.0",
-    "firebase-admin": "*",
+      "nuxt": "^4.0.3",
+      "@nuxt/kit": "^4.0.3",
+      "@nuxt/schema": "^4.0.3",
+      "vue": "^3.5.20",
+      "vue-router": "^4.5.0",
+      "vuefire": "^3.2.2",
+      "firebase": "^11.10.0",
+      "firebase-admin": "*",
+      "stripe": "*",
+      "@vueuse/core": "*",
+      "@nuxt/ui": ">=3 <5",
+      "@nuxt/icon": "2.x",
+      "tailwindcss": "^4",
+      "postcss": "^8.4",
+      "autoprefixer": "^10.4"
+    },
+    "peerDependenciesMeta": {
+      "firebase-admin": { "optional": true },
+      "stripe": { "optional": true }
+    },
     "h3": "*",
     "stripe": "*",
     "glob": "^11.0.3",
@@ -508,7 +513,6 @@ Summary
   "dependencies": {
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
-    "@vueup/vue-quill": "^1.2.0",
     "dompurify": "^3.2.6",
     "firebase": "11.10.0",
     "fireux-cleanbox": "workspace:*",
@@ -548,7 +552,6 @@ Summary
   "dependencies": {
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
-    "@vueup/vue-quill": "^1.2.0",
     "dompurify": "^3.2.6",
     "firebase": "11.10.0",
     "fireux-cleanbox": "workspace:*",
@@ -588,7 +591,6 @@ Summary
   "dependencies": {
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
-    "@vueup/vue-quill": "^1.2.0",
     "firebase": "11.10.0",
     "fireux-core": "workspace:*",
     "nuxt": "4.0.3",
@@ -623,7 +625,6 @@ Summary
   "dependencies": {
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
-    "@vueup/vue-quill": "^1.2.0",
     "firebase": "11.10.0",
     "fireux-core": "workspace:*",
     "nuxt": "4.0.3",
@@ -658,7 +659,6 @@ Summary
   "dependencies": {
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
-    "@vueup/vue-quill": "^1.2.0",
     "dompurify": "^3.2.6",
     "firebase": "11.10.0",
     "fireux-core": "workspace:*",
@@ -699,7 +699,6 @@ Summary
   "dependencies": {
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
-    "@vueup/vue-quill": "^1.2.0",
     "dompurify": "^3.2.6",
     "firebase": "11.10.0",
     "fireux-core": "workspace:*",
@@ -759,7 +758,7 @@ Summary
         "icon": "$(beaker)"
       }
     ],
-        "menus": {
+    "menus": {
       "commandCenter": [
         {
           "command": "fireuxToolbar.startFireux",
