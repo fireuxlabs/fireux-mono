@@ -5,7 +5,10 @@
         <JobProfilesEmployerProfile :employer="employer" />
 
         <!-- Edit Profile Button (shown when viewing own profile) -->
-        <div v-if="appUser?.uid === employer.uid" class="edit-profile-section">
+        <div
+          v-if="appUser?.id === (employer as any)?.id"
+          class="edit-profile-section"
+        >
           <UButton
             @click="navigateToEdit"
             icon="i-lucide-pencil"
@@ -37,23 +40,23 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useHead } from '#imports'
-import { useRoute, navigateTo } from '#app'
+import { useHead, useRoute, navigateTo, useSeoMeta } from 'nuxt/app'
 import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
-import { useAppUser } from 'fireux-core/runtime/composables/user/useAppUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 import { employerConfig } from '../../models/profiles/Employer.model'
 
 const route = useRoute()
 const employerId = route.params.id as string
 
-// Define static page meta first (no reactive data allowed)
-definePageMeta({
+// Static SEO meta
+useSeoMeta({
   title: 'Employer Profile',
   description: 'View employer profile',
 })
 
 // Get current user for edit permission check
-const { appUser } = useAppUser()
+const { user } = useUser()
+const appUser = computed(() => user.value?.app)
 
 // Use our unified profile composable
 const { fetchById } = useProfile(employerConfig)

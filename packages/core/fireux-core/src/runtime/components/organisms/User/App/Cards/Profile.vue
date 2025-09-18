@@ -1,86 +1,111 @@
 <template>
-  <UCard>
-    <div class="flex items-center gap-4 mb-6">
-      <UAvatar
-        :src="user?.avatar"
-        :alt="userName"
-        size="xl"
-        :text="getInitials(userName)"
-      />
-      <div>
-        <h2 class="text-xl font-semibold">
-          {{ userName }}
-        </h2>
-        <p v-if="user?.email" class="text-gray-600 text-sm">
-          {{ user.email }}
-        </p>
+  <UCard class="profile">
+    <!-- Header -->
+    <div class="profile-header">
+      <UAvatar :src="appUser?.avatar || ''" :alt="displayName" size="xl" />
+      <div class="meta">
+        <div class="name">{{ displayName }}</div>
+        <div class="tags">
+          <UBadge
+            v-if="appUser?.role"
+            variant="soft"
+            size="xs"
+            :color="appUser.role === 'admin' ? 'primary' : 'neutral'"
+          >
+            {{ appUser.role }}
+          </UBadge>
+          <UBadge v-if="appUser?.profiles?.length" variant="soft" size="xs">
+            {{ appUser.profiles.length }} profile{{
+              appUser.profiles.length !== 1 ? 's' : ''
+            }}
+          </UBadge>
+        </div>
       </div>
     </div>
 
-    <div
-      v-if="user?.display_name && user?.display_name !== userName"
-      class="mb-4"
-    >
-      <h3 class="font-medium mb-2">Display Name</h3>
-      <p class="text-gray-700">{{ user.display_name }}</p>
+    <!-- Enabled profiles -->
+    <div v-if="appUser?.profiles?.length" class="section">
+      <div class="section-title">Enabled Profiles</div>
+      <div class="tags">
+        <UBadge v-for="p in appUser.profiles" :key="p" variant="soft" size="xs">
+          {{ p }}
+        </UBadge>
+      </div>
+    </div>
+
+    <!-- Timestamps (Joined only) -->
+    <div v-if="createdText" class="section">
+      <div class="section-title">Timestamps</div>
+      <div class="meta-row">
+        <span>Joined: {{ createdText }}</span>
+      </div>
     </div>
   </UCard>
 </template>
 
-<script setup>
-// Props from parent
-const props = defineProps({
-  user: {
-    type: Object,
-    default: null,
-  },
-})
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { AppUser } from '../../../../../models/core/appUser.model'
 
-// Computed property for user display name with priority logic
-const userName = computed(() => {
-  if (!props.user) return 'User'
-  return (
-    props.user.full_name ||
-    props.user.display_name ||
-    props.user.email ||
+const props = defineProps<{ appUser: AppUser.Card.Profile }>()
+
+function looksLikeEmail(v?: string) {
+  return !!v && v.includes('@')
+}
+function safeDisplay(vs: Array<string | undefined>, fallback: string) {
+  for (const v of vs) {
+    if (!v) continue
+    if (looksLikeEmail(v)) continue
+    return v
+  }
+  return fallback
+}
+
+const displayName = computed(() =>
+  safeDisplay(
+    [props.appUser?.display_name, props.appUser?.handle, props.appUser?.id],
     'User'
   )
-})
+)
 
-// Computed property for formatted join date
-const formattedJoinDate = computed(() => {
-  if (!props.user?.created_at) return null
-
-  let date
+function fmtTs(v: any): string {
   try {
-    date =
-      typeof props.user.created_at === 'string'
-        ? new Date(props.user.created_at)
-        : props.user.created_at
-
-    // Check if date is valid
-    if (!date || isNaN(date.getTime())) return null
-
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-    })
-  } catch (error) {
-    console.warn(
-      'Invalid date format for user created_at:',
-      props.user.created_at
-    )
-    return null
+    const d = v?.toDate?.() ?? (typeof v === 'string' ? new Date(v) : v)
+    return d instanceof Date && !isNaN(d.getTime())
+      ? d.toLocaleDateString()
+      : ''
+  } catch {
+    return ''
   }
-})
-
-function getInitials(name) {
-  if (!name) return '?'
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
 }
+
+const createdText = computed(() => fmtTs(props.appUser?.created_at))
 </script>
+
+<style scoped>
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.name {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.tags {
+  display: flex;
+  gap: 0.5rem;
+}
+.section {
+  margin-top: 1rem;
+}
+.section-title {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+}
+</style>

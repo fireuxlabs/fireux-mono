@@ -1,4 +1,4 @@
-import { useProfileCreate } from 'fireux-core/runtime/composables/firestore/profiles/useProfileCreate'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
 import {
   employerConfig,
   EmployerMapper,
@@ -6,7 +6,7 @@ import {
 import type { EmployerCoreProfile } from '../../../../models/profiles/Employer.model'
 
 export function useEmployerCreate() {
-  const { ensure } = useProfileCreate(employerConfig)
+  const { ensure } = useProfile(employerConfig) as any
 
   async function createEmployer(profile?: Partial<EmployerCoreProfile>) {
     const fsPayload = EmployerMapper.toFs(profile ?? {}, { dropNullish: true })

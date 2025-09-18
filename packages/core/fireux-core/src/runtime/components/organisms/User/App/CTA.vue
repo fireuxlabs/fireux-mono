@@ -1,29 +1,24 @@
 <template>
   <div class="appuser-cta">
-    <p v-if="appUser">✅ You’re a member of {{ appName }}.</p>
+    <p v-if="hasApp">✅ You’re a member of {{ appName }}.</p>
     <p v-else>❌ Not yet a member of {{ appName }}.</p>
 
     <div class="cta-buttons">
-      <UButton
-        v-if="!appUser"
-        size="lg"
-        color="primary"
-        @click="() => ensureAppUser()"
-      >
-        Join {{ appName }}
+      <UButton v-if="!hasApp" size="lg" color="primary" to="/auth">
+        Sign in to Join {{ appName }}
       </UButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useAppUser } from 'fireux-core/runtime/composables/firestore/AppUser/useAppUser'
-import { useAppUserEnsure } from 'fireux-core/runtime/composables/firestore/AppUser/useAppUserEnsure'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig'
+import { computed } from 'vue'
+import { useUser } from '../../../../composables/firestore/user/useUser'
+import { useFireUXConfig } from '../../../../composables/FireUXConfig'
 
 const { appName } = useFireUXConfig()
-const { appUser } = useAppUser()
-const { ensureAppUser } = useAppUserEnsure()
+const { user } = useUser()
+const hasApp = computed(() => !!user.value?.app)
 </script>
 
 <style scoped>

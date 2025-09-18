@@ -6,7 +6,7 @@
 
         <!-- Edit Profile Button (shown when viewing own profile) -->
         <div
-          v-if="appUser?.uid === professional.uid"
+          v-if="appUser?.id === (professional as any)?.id"
           class="edit-profile-section"
         >
           <UButton
@@ -39,19 +39,24 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useHead, useRoute, navigateTo, useSeoMeta } from 'nuxt/app'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
 import { professionalConfig } from '../../models/profiles/Professional.model'
 
 const route = useRoute()
 const professionalId = route.params.id as string
 
-// Define static page meta first (no reactive data allowed)
-definePageMeta({
+// Static SEO meta
+useSeoMeta({
   title: 'Professional Profile',
   description: 'View professional profile',
 })
 
 // Get current user for edit permission check
-const { appUser } = useAppUser()
+const { user } = useUser()
+const appUser = computed(() => user.value?.app)
 
 // Use our unified profile composable
 const { fetchById } = useProfile(professionalConfig)

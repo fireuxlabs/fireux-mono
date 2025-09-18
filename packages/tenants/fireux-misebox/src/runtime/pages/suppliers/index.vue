@@ -37,12 +37,15 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { supplierConfig } from '../../models/profiles/Supplier.model'
 import { useApp } from 'fireux-core/runtime/composables/app/useApp'
-import { useCoreUser } from 'fireux-core/runtime/composables/firestore/CoreUser/useCoreUser'
-import { useAppUser } from 'fireux-core/runtime/composables/firestore/AppUser/useAppUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 
 const { role } = useApp()
-const { coreUser } = useCoreUser()
-const { appUser } = useAppUser()
+const { user } = useUser()
+
+// Bridge legacy template variables
+const coreUser = computed(() => user.value?.core)
+const appUser = computed(() => user.value?.app)
 </script>

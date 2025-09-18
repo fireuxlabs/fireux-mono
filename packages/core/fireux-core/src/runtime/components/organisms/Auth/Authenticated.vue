@@ -1,7 +1,7 @@
 <template>
   <div class="auth-authenticated">
-    <!-- App-level CTA: renders Core/App user cards appropriately -->
-    <OrganismsAppCTA />
+    <!-- Unified CTA: renders role-aware actions -->
+    <OrganismsUserCTA />
 
     <div class="button-group">
       <UButton block @click="handleClick">
@@ -14,36 +14,22 @@
 
 <script setup>
 const router = useRouter()
-const { coreUser, ensureCoreUser } = useCoreUser()
-const { role } = useApp()
-const isTenant = computed(() => (role?.value || '').toLowerCase() === 'tenant')
-// Only use app user flows for tenant apps
-let appUser, ensureAppUser
-if (isTenant.value) {
-  const au = useAppUser()
-  appUser = au.appUser
-  ensureAppUser = au.ensureAppUser
-} else {
-  appUser = null
-}
 const { signOutUser } = useAuth()
+const { role } = useFireUXConfig()
+const isTenant = computed(() => role === 'tenant')
+const { user } = useUser()
 
 const buttonLabel = computed(() => {
-  if (!coreUser.value) return 'Create Core User'
-  if (isTenant.value && !appUser?.value) {
-    return 'Create App User'
-  }
+  const hasCore = !!user.value?.core
+  const hasApp = !!user.value?.app
+  if (!hasCore) return 'Create Core User'
+  if (isTenant.value && !hasApp) return 'Join App'
   return 'Go to Dashboard'
 })
 
 const handleClick = async () => {
-  if (!coreUser.value) {
-    await ensureCoreUser()
-  } else if (isTenant.value && !appUser?.value) {
-    await ensureAppUser?.()
-  } else {
-    router.push('/dashboard')
-  }
+  // Minimal flow: just navigate; unified ensure handled elsewhere or via CTA
+  router.push('/dashboard')
 }
 
 const handleSignOut = async () => {

@@ -12,10 +12,18 @@
 </template>
 
 <script setup lang="ts">
-import { useCoreUser } from '../../../../../../core/fireux-core/src/runtime/composables/firestore/CoreUser/useCoreUser'
-import { useProfile } from '../../../../../../core/fireux-core/src/runtime/composables/firestore/profiles/useProfile'
+import { computed } from 'vue'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
 import { chefConfig } from '../../models/profiles/Chef.model'
 
-const { coreUser, hasProfile } = useCoreUser()
+const { user } = useUser()
+const coreUser = computed(() => user.value?.core)
+const hasProfile = (profileType: string) => {
+  const app = user.value?.app
+  if (!app) return false
+  const list = Array.isArray(app.app_profiles) ? app.app_profiles : []
+  return profileType ? list.includes(profileType) : !!app
+}
 const { current: chef } = useProfile(chefConfig)
 </script>

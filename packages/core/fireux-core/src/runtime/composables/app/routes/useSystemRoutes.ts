@@ -10,5 +10,6 @@ export function useSystemRoutes(): RouteLink[] {
       to: '/products',
     },
     { id: 'blog', label: 'Blog', icon: 'i-lucide-book', to: '/blog' },
+    { id: 'users', label: 'Users', icon: 'i-lucide-users', to: '/users' },
   ]
 }

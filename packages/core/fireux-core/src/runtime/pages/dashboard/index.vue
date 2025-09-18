@@ -63,8 +63,8 @@
             </div>
           </template>
           <div>
-            <p>{{ appUser?.display_name || appUser?.email }}</p>
-            <p class="text-sm text-gray-500 mb-3">ID: {{ appUser?.uid }}</p>
+            <p>{{ user?.app?.display_name || user?.core?.display_name }}</p>
+            <p class="text-sm text-gray-500 mb-3">ID: {{ user?.id }}</p>
             <UButton
               @click="handleSignOut"
               color="red"
@@ -83,7 +83,7 @@
 </template>
 
 <script setup>
-const { appUser } = useAppUser()
+const { user } = useUser()
 const { signOutUser } = useAuth()
 const router = useRouter()
 

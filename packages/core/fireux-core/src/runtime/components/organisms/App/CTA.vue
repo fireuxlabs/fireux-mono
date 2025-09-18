@@ -34,21 +34,11 @@
 </template>
 
 <script setup>
-const { appTenancy } = useApp()
-const { coreUser } = useCoreUser()
-
-// Simple role flag
-const isTenant = computed(() => {
-  const role = (appTenancy.value || '').toLowerCase()
-  return role === 'tenant' || role === 'tennant'
-})
-
-// Only load app user if tenant
-let appUser = null
-if (isTenant.value) {
-  const au = useAppUser()
-  appUser = au.appUser
-}
+const { role } = useFireUXConfig()
+const isTenant = computed(() => role === 'tenant')
+const { user } = useUser()
+const coreUser = computed(() => user.value?.core)
+const appUser = computed(() => user.value?.app)
 </script>
 
 <style scoped>

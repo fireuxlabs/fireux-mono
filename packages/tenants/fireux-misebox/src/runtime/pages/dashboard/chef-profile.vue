@@ -19,16 +19,19 @@
 </template>
 
 <script setup lang="ts">
+import { useSeoMeta } from 'nuxt/app'
 import { chefConfig } from '../../models/profiles/Chef.model'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
 
 // Define static page meta first
-definePageMeta({
+useSeoMeta({
   title: 'Edit Chef Profile',
   description: 'Edit your chef profile',
 })
 
-// Get current user
-const { appUser, hasProfile } = useAppUser()
+// Get current user (available for future checks if needed)
+useUser()
 
 // Use our unified profile composable
 const { current: chef } = useProfile(chefConfig)

@@ -32,22 +32,24 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useRoute, useHead, navigateTo, useSeoMeta } from 'nuxt/app'
 import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
-import { useAppUser } from 'fireux-core/runtime/composables/firestore/AppUser/useAppUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 import { chefConfig } from '../../models/profiles/Chef.model'
 
 const route = useRoute()
 const idParam = route.params.id
 const chefId = Array.isArray(idParam) ? idParam[0] : String(idParam || '')
 
-// Define static page meta first (no reactive data allowed)
-definePageMeta({
+// Static SEO meta
+useSeoMeta({
   title: 'Chef Profile',
   description: 'View chef profile',
 })
 
 // Current app user (for edit-visibility)
-const { appUser } = useAppUser()
+const { user } = useUser()
+const appUser = computed(() => user.value?.app)
 
 // Use our unified profile composable
 const { fetchById } = useProfile(chefConfig)
@@ -70,7 +72,5 @@ useHead({
   ],
 })
 
-function navigateTo(path) {
-  return useRouter().push(path)
-}
+// use navigateTo from Nuxt app import
 </script>

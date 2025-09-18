@@ -22,8 +22,8 @@
         >
           {{ (supplier as any)?.name || (supplier as any)?.company_name }}
         </h4>
-        <p v-if="supplier?.business_type" class="profile-subtitle">
-          {{ supplier.business_type }}
+        <p v-if="(supplier as any)?.business_type" class="profile-subtitle">
+          {{ (supplier as any).business_type }}
         </p>
         <div
           v-if="(supplier as any)?.locations?.length"

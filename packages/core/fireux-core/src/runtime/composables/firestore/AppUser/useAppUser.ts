@@ -8,6 +8,7 @@ import { useAppUserEnsure } from './useAppUserEnsure'
 import useAppUserUpdate from './useAppUserUpdate'
 import { useAppUserSubscription } from './useAppUserSubscription'
 import { useAppUserComputed } from './useAppUserComputed'
+import { useCoreUser } from '../CoreUser/useCoreUser'
 import { useFireUXConfig } from '../../FireUXConfig'
 
 export function useAppUser() {
@@ -46,6 +47,9 @@ export function useAppUser() {
       ? firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
       : []
 
+  // Include coreUser ref for computed identity fallbacks
+  const { coreUser } = useCoreUser()
+
   return {
     // Current entity
     appUser,
@@ -58,6 +62,6 @@ export function useAppUser() {
     ...useAppUserUtils(),
     useAppUserUpdate,
     ...useAppUserSubscription(),
-    ...useAppUserComputed(appUser),
+    ...useAppUserComputed(appUser, coreUser),
   }
 }

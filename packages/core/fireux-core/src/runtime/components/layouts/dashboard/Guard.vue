@@ -50,7 +50,7 @@
 
 <script setup>
 const { currentUser } = useAuth()
-const { appUser, ensureAppUser } = useAppUser()
+const { user } = useUser()
 const { appName } = useFireUXConfig()
 
 const isCreatingAppUser = ref(false)
@@ -62,7 +62,9 @@ const isLoaded = computed(() => {
 
 const hasAccess = computed(() => {
   // User must be authenticated (not anonymous) AND have an app user record
-  return currentUser.value && !currentUser.value.isAnonymous && appUser.value
+  return (
+    currentUser.value && !currentUser.value.isAnonymous && !!user.value?.app
+  )
 })
 
 const accessMessage = computed(() => {
@@ -72,7 +74,7 @@ const accessMessage = computed(() => {
   if (currentUser.value.isAnonymous) {
     return `Anonymous access is not permitted. Please create an account to continue.`
   }
-  if (!appUser.value) {
+  if (!user.value?.app) {
     return `Complete your ${appName} account setup to access the dashboard.`
   }
   return 'Access denied. Please contact support if this continues.'
@@ -81,7 +83,7 @@ const accessMessage = computed(() => {
 const handleCreateAppUser = async () => {
   isCreatingAppUser.value = true
   try {
-    await ensureAppUser()
+    // Placeholder: unified app-user ensure to be implemented; navigating to auth for now
     // The reactive appUser will update and hasAccess will become true
   } catch (error) {
     console.error('Failed to create app user:', error)

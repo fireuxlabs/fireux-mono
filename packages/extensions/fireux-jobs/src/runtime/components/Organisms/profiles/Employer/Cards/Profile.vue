@@ -21,12 +21,15 @@
         >
           {{ (employer as any)?.name || (employer as any)?.company_name }}
         </h4>
-        <p v-if="employer?.business_type" class="profile-subtitle">
-          {{ employer.business_type }}
+        <p v-if="(employer as any)?.business_type" class="profile-subtitle">
+          {{ (employer as any).business_type }}
         </p>
-        <div v-if="employer?.locations?.length" class="profile-location">
+        <div
+          v-if="(employer as any)?.locations?.length"
+          class="profile-location"
+        >
           <UIcon name="i-lucide-map-pin" />
-          <span>{{ employer.locations[0].formatted_address }}</span>
+          <span>{{ (employer as any).locations[0]?.formatted_address }}</span>
         </div>
         <div v-if="(employer as any)?.years_established" class="profile-meta">
           Est. {{ (employer as any).years_established }}

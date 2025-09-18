@@ -7,8 +7,8 @@
       </div>
     </div>
     <div class="user-info">
-      <h3 class="user-name">{{ user.display_name || user.email }}</h3>
-      <p class="user-email">{{ user.email }}</p>
+      <h3 class="user-name">{{ user.display_name }}</h3>
+
       <span v-if="user.role" class="user-role">{{ user.role }}</span>
     </div>
   </div>

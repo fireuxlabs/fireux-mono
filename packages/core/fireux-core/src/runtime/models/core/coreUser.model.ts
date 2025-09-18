@@ -25,16 +25,12 @@ export interface CoreUser {
 export namespace CoreUser {
   export namespace Card {
     // Minimal identity chip/pill
-    export type Pill = Pick<
-      CoreUser,
-      'display_name' | 'email' | 'avatar' | 'handle'
-    >
+    export type Pill = Pick<CoreUser, 'display_name' | 'avatar' | 'handle'>
 
     // Compact list/cell representation
     export type Cell = Pick<
       CoreUser,
       | 'id'
-      | 'email'
       | 'display_name'
       | 'avatar'
       | 'adminOf'
@@ -47,7 +43,6 @@ export namespace CoreUser {
     export type Profile = Pick<
       CoreUser,
       | 'id'
-      | 'email'
       | 'display_name'
       | 'avatar'
       | 'userOf'

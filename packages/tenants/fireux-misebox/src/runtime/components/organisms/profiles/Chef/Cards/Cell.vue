@@ -1,24 +1,28 @@
 <template>
-  <UCard>
-    <ProfileHeader
-      :avatar="chef.avatar"
-      :name="chef.name"
-      :title="chef.title"
-      size="md"
-    />
-
-    <p v-if="chef.bioShort" class="profile-bio">{{ chef.bioShort }}</p>
-
-    <UDivider v-if="chef.bioShort && chef.specialties?.length" />
-    <div v-if="chef.specialties?.length">
-      <ProfileTags :tags="chef.specialties" :limit="3" />
+  <UCard class="cell">
+    <div class="cell-inner">
+      <UAvatar :src="chef.avatar" :alt="chef.name" size="md" />
+      <div class="meta">
+        <div class="name">{{ chef.name }}</div>
+        <div v-if="chef.title" class="title">{{ chef.title }}</div>
+        <div v-if="chef.bioShort" class="subtitle">{{ chef.bioShort }}</div>
+        <div v-if="chef.specialties?.length" class="cell-badges">
+          <UBadge
+            v-for="s in chef.specialties"
+            :key="s"
+            size="xs"
+            variant="soft"
+          >
+            {{ s }}
+          </UBadge>
+        </div>
+      </div>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import type { ChefCellProps } from '../../../../../models/profiles/Chef.model'
-import ProfileHeader from '../../shared/ProfileHeader.vue'
-import ProfileTags from '../../shared/ProfileTags.vue'
+
 defineProps<{ chef: ChefCellProps }>()
 </script>

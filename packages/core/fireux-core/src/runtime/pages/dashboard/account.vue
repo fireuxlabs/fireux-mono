@@ -51,18 +51,12 @@
 </template>
 
 <script setup>
-import { useAppUserRoutes } from '../../composables/app/routes/useAppUserRoutes'
-
-const userGroup = useAppUserRoutes()[0]
-const route = userGroup.children.find((r) => r.to === '/dashboard/account')
-const { label, icon } = route
-
 definePageMeta({
   layout: 'dashboard',
   layoutProps: {
     dashboardType: 'user-dashboard',
   },
-  title: label,
-  icon: icon,
+  title: 'Account',
+  icon: 'i-lucide-settings',
 })
 </script>

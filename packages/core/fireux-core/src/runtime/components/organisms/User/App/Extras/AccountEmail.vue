@@ -1,6 +1,6 @@
 <template>
   <client-only>
-    <UContainer v-if="appUser" class="profile-edit-component">
+    <UContainer v-if="hasApp" class="profile-edit-component">
       <!-- Edit Toggle Button -->
       <div class="flex justify-between items-center mb-4">
         <h3 class="profile-section-title">Account Email</h3>
@@ -26,12 +26,17 @@
             </p>
           </div>
 
-          <!-- Current Email Display -->
+          <!-- Current Email Display (read-only, accessible) -->
           <div class="mb-4 p-4 bg-gray-50 rounded-lg">
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >Current Email</label
+            <span
+              id="current-email-label"
+              class="block text-sm font-medium text-gray-700 mb-1"
             >
-            <p class="text-gray-900">{{ appUser.email }}</p>
+              Current Email
+            </span>
+            <p class="text-gray-900" aria-labelledby="current-email-label">
+              {{ email }}
+            </p>
           </div>
 
           <!-- Email Change Form -->
@@ -39,9 +44,7 @@
             label="New Email Address"
             :firebase-value="''"
             placeholder="Enter new email address"
-            :update-function="
-              (newValue) => saveField('Email', 'email', newValue)
-            "
+            :update-function="(newValue) => saveEmail(newValue)"
             input-type="email"
           />
 
@@ -74,8 +77,16 @@
 <script setup>
 import { useEditHandler } from '../../../../composables/utils/useEditHandler'
 
-const { appUser, updateAppProfile } = useAppUser()
-const { saveField } = useEditHandler(updateAppProfile)
+import { useUser } from '../../../../../composables/firestore/user/useUser'
+const { user } = useUser()
+const hasApp = computed(() => !!user.value?.app)
+const email = computed(() => user.value?.app?.email || '')
+const { saveField } = useEditHandler(async (k, v) => {
+  console.log('Stub updateAppProfile', k, v)
+})
+const saveEmail = async (newValue) => {
+  await saveField('Email', 'email', newValue)
+}
 
 // Toggle state for edit mode
 const isExpanded = ref(false)

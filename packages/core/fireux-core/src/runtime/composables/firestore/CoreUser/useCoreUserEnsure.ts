@@ -37,18 +37,20 @@ export function useCoreUserEnsure() {
       }
     }
 
+    // Always update minimal immutable/derived fields; avoid overwriting display_name.
     const basePayload: Partial<CoreUser> = {
       id: user.uid,
       email: user.email,
-      display_name: user.displayName ?? user.email,
       avatar,
       updated_at: serverTimestamp() as any,
     }
 
-    const payload = snap.exists()
+    // Only set display_name on first creation and only when an auth displayName exists.
+    const payload: Partial<CoreUser> = snap.exists()
       ? basePayload
       : {
           ...basePayload,
+          ...(user.displayName ? { display_name: user.displayName } : {}),
           created_at: serverTimestamp() as any,
         }
 

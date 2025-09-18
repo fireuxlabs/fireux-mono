@@ -1,6 +1,6 @@
 <template>
   <client-only>
-    <UContainer v-if="appUser" class="profile-edit-component">
+    <UContainer v-if="hasApp" class="profile-edit-component">
       <!-- Edit Toggle Button -->
       <div class="flex justify-between items-center mb-4">
         <h3 class="profile-section-title">Account Password</h3>
@@ -93,7 +93,9 @@
 </template>
 
 <script setup>
-const { appUser } = useAppUser()
+import { useUser } from '../../../../../composables/firestore/user/useUser'
+const { user } = useUser()
+const hasApp = computed(() => !!user.value?.app)
 
 // Toggle state for edit mode
 const isExpanded = ref(false)
@@ -121,7 +123,7 @@ async function updatePassword() {
 
   updating.value = true
   try {
-    // TODO: Implement password update logic with Firebase Auth
+    // Password update with Firebase Auth to be implemented in a follow-up
     console.log('Password update requested')
 
     // Reset form on success

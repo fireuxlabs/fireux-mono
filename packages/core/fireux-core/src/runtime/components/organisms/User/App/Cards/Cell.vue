@@ -1,73 +1,43 @@
 <template>
-  <div class="cell">
-    <UAvatar :src="avatarUrl" size="lg" />
-    <div class="info">
-      <strong class="name">{{ displayName }}</strong>
-      <span class="handle">@{{ props.user.handle }}</span>
+  <UCard class="cell">
+    <div class="cell-inner">
+      <UAvatar :src="appUser.avatar" :alt="appUser.display_name" size="md" />
+      <div class="meta">
+        <div class="name">{{ appUser.display_name }}</div>
+
+        <div v-if="appUser.profiles?.length" class="cell-badges">
+          <UBadge
+            v-for="p in appUser.profiles"
+            :key="p"
+            size="xs"
+            variant="soft"
+          >
+            {{ p }}
+          </UBadge>
+        </div>
+      </div>
       <UBadge
-        v-if="props.user?.isAdmin || props.user?.role === 'admin'"
-        variant="subtle"
-        class="badge"
-        >Admin</UBadge
+        v-if="appUser.role"
+        size="xs"
+        class="cell-role"
+        variant="soft"
+        :color="appUser.role === 'admin' ? 'primary' : 'neutral'"
       >
+        {{ appUser.role }}
+      </UBadge>
     </div>
-  </div>
+  </UCard>
 </template>
 
-<script setup>
-const props = defineProps({
-  user: {
-    type: Object,
-    default: () => ({}),
-  },
-})
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { AppUserCellProps } from '../../../../../models/core/appUser.model'
 
-// Computed property for display name with full_name priority logic
-const displayName = computed(() => {
-  if (!props.user) return 'Unknown User'
-
-  // Priority: full_name -> display_name -> displayName -> email (without @domain)
-  if (props.user.full_name) {
-    return props.user.full_name
-  }
-  if (
-    props.user.display_name &&
-    props.user.display_name !== props.user?.email
-  ) {
-    return props.user.display_name
-  }
-  if (props.user.displayName && props.user.displayName !== props.user?.email) {
-    return props.user.displayName
-  }
-  if (props.user.email) {
-    return props.user.email.split('@')[0] // Just username part
-  }
-  return 'Unknown User'
-})
-
-// Use avatar URL directly (simplified for now)
-const avatarUrl = computed(() => props.user?.avatar || '')
+const props = defineProps<{
+  appUser?: AppUserCellProps
+  user?: AppUserCellProps
+}>()
+const appUser = computed(
+  () => (props.appUser ?? props.user) as AppUserCellProps
+)
 </script>
-
-<style scoped>
-.user-cell {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.info {
-  display: flex;
-  flex-direction: column;
-}
-
-.name {
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.handle {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-</style>

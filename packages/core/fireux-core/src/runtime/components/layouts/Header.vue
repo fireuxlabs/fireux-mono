@@ -17,12 +17,12 @@
         <!-- Right Section: User Profile / Sign-In & Mobile Menu -->
         <div class="right-section">
           <template v-if="route.path !== '/auth'">
-            <template v-if="isAppUser">
+            <template v-if="isSignedIn">
               <UAvatar
-                :src="appUser?.avatar"
-                :alt="appUser?.display_name || appUser?.email || 'User'"
+                :src="avatarSrc"
+                :alt="displayName"
                 size="sm"
-                :text="initials.value"
+                :text="initials"
                 class="cursor-pointer hover:opacity-80 transition-opacity"
                 @click="navigateToDashboard"
               />
@@ -64,21 +64,27 @@
   </ClientOnly>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import { useRouter, useRoute } from 'vue-router'
-import { useAppUser } from '../../composables/firestore/AppUser/useAppUser'
+import { useUser } from '../../composables/firestore/user/useUser'
 
-// Use real AppUser state within setup
-const { appUser, isAppUser, initials } = useAppUser()
+// Unified user
+const { user, initials, displayName, avatarSrc, isSignedIn } = useUser()
 
 const router = useRouter()
 const route = useRoute()
 
 // Navigation
-const navigateToAuth = () => router.push('/auth')
-const navigateToDashboard = () => router.push('/dashboard')
+const navigateToAuth = () => {
+  router.push('/auth')
+  return void 0
+}
+const navigateToDashboard = () => {
+  router.push('/dashboard')
+  return void 0
+}
 
 // Mobile Navigation
 const { width } = useWindowSize()
@@ -94,10 +100,9 @@ watch(
   }
 )
 
-const props = defineProps({
-  menuBarLinks: { type: Array, default: () => [] },
-  mobileLinks: { type: Array, default: () => [] },
-})
+const props = defineProps<{ menuBarLinks?: any[]; mobileLinks?: any[] }>()
+const menuBarLinks = computed(() => props.menuBarLinks ?? [])
+const mobileLinks = computed(() => props.mobileLinks ?? [])
 </script>
 
 <style scoped>

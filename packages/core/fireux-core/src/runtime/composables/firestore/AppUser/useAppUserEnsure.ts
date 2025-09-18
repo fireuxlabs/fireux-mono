@@ -75,12 +75,12 @@ export function useAppUserEnsure() {
       role,
       // Optional: seed tenant profiles from core (safe to omit)
       // profiles: coreUser?.profiles ?? [],
-      // Compatibility mirrors for existing consumers
+      // Compatibility mirrors for existing consumers (keep non-sensitive)
       uid, // duplicate id for older UIs expecting `uid`
       appId, // some UIs query/render this field
-      email: coreData.email,
-      display_name: coreData.display_name,
       avatar: coreData.avatar,
+      // Do NOT mirror email into tenant scope. Avoid setting display_name unless present; never fallback to email.
+      ...(coreData.display_name ? { display_name: coreData.display_name } : {}),
     }
 
     // 5) Create app user (adds created_at/updated_at)

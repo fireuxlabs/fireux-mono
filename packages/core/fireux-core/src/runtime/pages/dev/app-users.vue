@@ -9,7 +9,7 @@
       <h2>Components</h2>
 
       <h3>Pill</h3>
-      <OrganismsUserAppCardsPill :app-user="appUser" />
+      <OrganismsUserAppCardsPill :appUser="appUser" />
 
       <USeparator />
 
@@ -43,7 +43,7 @@
       <div v-if="appUsers?.length">
         <OrganismsUserAppCardsCell
           v-for="user in appUsers"
-          :key="user.uid"
+          :key="user.id"
           :user="user"
         />
       </div>

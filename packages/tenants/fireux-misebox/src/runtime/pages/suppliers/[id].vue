@@ -5,7 +5,7 @@
         <MiseSupplierProfile :supplier="supplier" />
 
         <!-- Edit Profile Button (shown when viewing own profile) -->
-        <div v-if="appUser?.uid === supplier.uid" class="edit-profile-section">
+        <div v-if="appUser?.id === supplier.id" class="edit-profile-section">
           <UButton
             @click="navigateToEdit"
             icon="i-lucide-pencil"
@@ -36,19 +36,24 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute, useHead, navigateTo, useSeoMeta } from 'nuxt/app'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 import { supplierConfig } from '../../models/profiles/Supplier.model'
 
 const route = useRoute()
 const supplierId = route.params.id as string
 
-// Define static page meta first (no reactive data allowed)
-definePageMeta({
+// Static SEO meta
+useSeoMeta({
   title: 'Supplier Profile',
   description: 'View supplier profile',
 })
 
 // Get current user for edit permission check
-const { appUser } = useAppUser()
+const { user } = useUser()
+const appUser = computed(() => user.value?.app)
 
 // Use our unified profile composable
 const { fetchById } = useProfile(supplierConfig)

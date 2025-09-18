@@ -1,6 +1,6 @@
 <template>
   <div class="profile-card">
-    <p>Supplier Profile Component - Coming Soon</p>
+    <p>Supplier Profile Page - Coming Soon</p>
   </div>
 </template>
 

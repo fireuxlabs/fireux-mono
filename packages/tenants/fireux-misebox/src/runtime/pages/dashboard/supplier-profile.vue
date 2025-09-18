@@ -19,16 +19,19 @@
 </template>
 
 <script setup lang="ts">
+import { useSeoMeta } from 'nuxt/app'
 import { supplierConfig } from '../../models/profiles/Supplier.model'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
 
 // Define static page meta first
-definePageMeta({
+useSeoMeta({
   title: 'Edit Supplier Profile',
   description: 'Edit your supplier profile',
 })
 
-// Get current user
-const { appUser, hasProfile } = useAppUser()
+// Touch user to ensure auth-derived state is reactive if needed later
+useUser()
 
 // Use our unified profile composable
 const { current: supplier } = useProfile(supplierConfig)

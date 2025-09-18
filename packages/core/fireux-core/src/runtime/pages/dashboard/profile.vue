@@ -1,11 +1,11 @@
 <template>
   <client-only>
-    <div v-if="appUser" class="page">
+    <div v-if="user?.app" class="page">
       <!-- Profile Display -->
-      <FireOrganismsAppUserCardsProfile :user="appUser" />
+      <FireOrganismsAppUserCardsProfile :user="user.app" />
 
       <!-- Profile Edit Form -->
-      <FireOrganismsAppUserEdit :user="appUser" />
+      <FireOrganismsAppUserEdit :user="user.app" />
     </div>
     <div v-else class="page">
       <UCard>
@@ -39,7 +39,7 @@ useHead({
 })
 
 // Get current user - follows same pattern as employer/professional
-const { appUser } = useAppUser()
+const { user } = useUser()
 </script>
 
 <style scoped>
