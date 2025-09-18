@@ -1,5 +1,5 @@
 {
-  "files": [],
+  "files": ["types/fireux.d.ts"],
   "references": [
     { "path": "packages/core/fireux-core" },
     { "path": "packages/extensions/fireux-jobs" },

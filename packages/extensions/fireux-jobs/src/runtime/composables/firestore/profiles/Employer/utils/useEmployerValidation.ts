@@ -1,4 +1,5 @@
 import type { Employer } from '../../../../../models/profiles/Employer.model'
+import type { EmployerJobsProfileExtension } from '../../../../../models/profileExtensions'
 
 export function useEmployerValidation() {
   // Validate company name
@@ -152,7 +153,7 @@ export function useEmployerValidation() {
 
   // Validate complete employer data
   const validateEmployerData = (
-    data: Partial<Employer>
+    data: Partial<Employer & EmployerJobsProfileExtension>
   ): { isValid: boolean; errors: string[] } => {
     const errors: string[] = []
 

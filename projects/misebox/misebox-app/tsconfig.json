@@ -1,6 +1,7 @@
 {
   // tsconfig for Misebox app — do not override Nuxt aliases (~, @, ~~)
   "extends": "./.nuxt/tsconfig.json",
+  "files": ["../../../types/fireux.d.ts"],
   "compilerOptions": {
     "composite": false,
     "baseUrl": ".",
@@ -13,11 +14,12 @@
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index.d.ts"],
+  "#imports": [".nuxt/imports.d.ts"],
       "#build/*": [".nuxt/*"]
       // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
     "skipLibCheck": true,
-    "types": ["nuxt", "vite/client"]
+    "types": ["nuxt", "vite/client", "@vite-pwa/nuxt"]
   },
   "include": ["./.nuxt/nuxt.d.ts", "./**/*"],
   "exclude": [

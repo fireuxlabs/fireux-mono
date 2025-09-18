@@ -13,8 +13,7 @@
   },
   "dependencies": {
     "@nuxt/icon": "2.x",
-    "@nuxt/ui": "3.3.3",
-    "@vueup/vue-quill": "^1.2.0",
+    "@nuxt/ui": "^4.0.0-alpha.2",
     "dompurify": "^3.2.6",
     "firebase": "11.10.0",
     "fireux-core": "workspace:*",

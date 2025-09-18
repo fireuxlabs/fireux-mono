@@ -1,9 +1,12 @@
+import { defineNuxtConfig } from 'nuxt/config'
 export default defineNuxtConfig({
-  extends: ['@nuxt/ui-pro'],
-  modules: ['@nuxt/ui', 'fireux-core', 'fireux-places'],
-  fireuxPlaces: {
-    googlePlacesApiKey: process.env.GOOGLE_PLACES_API_KEY,
-    defaultCountry: 'US',
-    enableAutocomplete: true,
-  },
+  modules: [
+    '@nuxt/ui',
+    'fireux-core',
+    ['fireux-places', {
+      googlePlacesApiKey: process.env.GOOGLE_PLACES_API_KEY,
+      defaultCountry: 'US',
+      enableAutocomplete: true,
+    }],
+  ],
 })

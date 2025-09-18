@@ -1,4 +1,5 @@
 import type { Professional } from '../../../../../models/profiles/Professional.model'
+import type { ProfessionalJobsProfileExtension } from '../../../../../models/profileExtensions'
 
 export function useProfessionalValidation() {
   // Validate professional name
@@ -190,7 +191,7 @@ export function useProfessionalValidation() {
 
   // Validate complete professional data
   const validateProfessionalData = (
-    data: Partial<Professional>
+    data: Partial<Professional & ProfessionalJobsProfileExtension>
   ): { isValid: boolean; errors: string[] } => {
     const errors: string[] = []
 

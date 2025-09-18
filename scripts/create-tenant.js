@@ -300,7 +300,7 @@ function createPackageJson(config) {
       clean: 'rimraf dist',
     },
     dependencies: {
-      '@nuxt/ui': '^3.4.4',
+      '@nuxt/ui': '^4.0.0-alpha.2',
       '@vite-pwa/nuxt': '^0.11.10',
       '@vueuse/core': '^11.5.3',
       '@vueuse/nuxt': '^11.5.3',
@@ -309,13 +309,12 @@ function createPackageJson(config) {
       'fireux-core': 'workspace:*',
       'fireux-jobs': 'workspace:*',
       [`fireux-${config.system}`]: 'workspace:*',
-      nuxt: '^3.17.5',
+  nuxt: '^4.0.0',
       'nuxt-vuefire': '^1.0.5',
       stripe: '^18.3.0',
     },
     devDependencies: {
-      '@nuxt/devtools': '^1.7.4',
-      '@nuxtjs/tailwindcss': '^6.13.1',
+      '@nuxt/devtools': '^2.0.0',
       rimraf: '^6.0.1',
     },
   }

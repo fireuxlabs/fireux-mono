@@ -45,7 +45,8 @@
     "pnpm": ">=10"
   },
   "dependencies": {
-    "dompurify": "^3.2.6"
+    "dompurify": "^3.2.6",
+    "@vueup/vue-quill": "^1.2.0"
   },
   "peerDependencies": {
     "nuxt": "4.0.3",
@@ -60,7 +61,7 @@
     "stripe": "*",
     "glob": "^11.0.3",
     "@vueuse/core": "*",
-    "@nuxt/ui": "3.x",
+  "@nuxt/ui": ">=3 <5",
     "@nuxt/icon": "2.x",
     "tailwindcss": "^4",
     "postcss": "^8.4",

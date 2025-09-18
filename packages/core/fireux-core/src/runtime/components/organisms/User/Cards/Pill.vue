@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UnifiedUser } from '../../../../../models/core/user.model'
+import type { UnifiedUser } from '../../../../models/core/user.model'
 
 const props = defineProps<{ user: UnifiedUser.Card.Pill }>()
 

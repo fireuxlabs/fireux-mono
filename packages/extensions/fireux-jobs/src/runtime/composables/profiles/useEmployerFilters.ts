@@ -1,8 +1,9 @@
 import { ref, computed, type Ref } from 'vue'
 import type { Employer } from '../../models/profiles/Employer.model'
+import type { EmployerJobsProfileExtension } from '../../models/profileExtensions'
 
 // Employer-specific filtering composable (boilerplate for now)
-export function useEmployerFilters(profiles: Ref<Employer[]>) {
+export function useEmployerFilters(profiles: Ref<(Employer & EmployerJobsProfileExtension)[]>) {
   const filters = ref({
     search: '',
     // Add employer-specific filters later
@@ -11,11 +12,11 @@ export function useEmployerFilters(profiles: Ref<Employer[]>) {
   const filteredProfiles = computed(() => {
     if (!profiles.value) return []
 
-    return profiles.value.filter((employer: Employer) => {
+  return profiles.value.filter((employer: Employer & EmployerJobsProfileExtension) => {
       // Filter by search term
       if (filters.value.search) {
         const searchTerm = filters.value.search.toLowerCase()
-        const businessName = employer.company_name?.toLowerCase() || ''
+  const businessName = employer.company_name?.toLowerCase() || ''
 
         if (!businessName.includes(searchTerm)) {
           return false

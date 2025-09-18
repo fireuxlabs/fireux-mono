@@ -6,7 +6,7 @@ import type { CoreUser } from '../../../models/core/coreUser.model'
 
 export function useAppUserComputed(
   appUser: Ref<AppUser | null>,
-  coreUser: Ref<CoreUser | null>
+  coreUser: Ref<CoreUser | null | undefined>
 ) {
   // Never expose email; also never derive display names from email
   function looksLikeEmail(v?: string) {

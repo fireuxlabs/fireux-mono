@@ -3,7 +3,7 @@
     <div class="input-row">
       <UInput v-model="price.currency" readonly class="currency-display w-20" />
       <UInputNumber
-        v-model.number="price.unit_amount"
+        v-model="price.unit_amount"
         :format-options="{
           style: 'decimal',
           minimumFractionDigits: 2,
