@@ -6,18 +6,18 @@ export function useSupplierQuickCreate() {
   const createError = ref<Error | null>(null)
   const createdSupplier = ref<Supplier | null>(null)
 
-  const createQuickSupplier = async (business_name: string) => {
-    if (!business_name) throw new Error('business_name required')
+  const createQuickSupplier = async (name: string) => {
+    if (!name) throw new Error('name required')
     creating.value = true
     createError.value = null
     try {
       // Simulate create and return minimal supplier object
       const supplier: Supplier = {
         id: 'supplier-mock-id',
-        business_name,
-        claimed: false,
-        created_by: 'me',
-      }
+        name,
+        avatar: '',
+        created_at: new Date().toISOString(),
+      } as any
       createdSupplier.value = supplier
       return supplier
     } catch (e: any) {

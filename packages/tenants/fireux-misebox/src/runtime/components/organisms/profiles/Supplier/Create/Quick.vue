@@ -33,7 +33,7 @@
     </div>
 
     <div v-if="createdSupplier" class="success-message">
-      ✅ Created supplier: {{ createdSupplier.business_name }}
+      ✅ Created supplier: {{ createdSupplier.name }}
     </div>
   </div>
 </template>

@@ -11,11 +11,11 @@ export function useSupplierFilters(profiles: Ref<Supplier[]>) {
   const filteredProfiles = computed(() => {
     if (!profiles.value) return []
 
-    return profiles.value.filter((supplier: Supplier) => {
+  return profiles.value.filter((supplier: Supplier) => {
       // Filter by search term
       if (filters.value.search) {
         const searchTerm = filters.value.search.toLowerCase()
-        const businessName = supplier.business_name?.toLowerCase() || ''
+  const businessName = (supplier.name || '').toLowerCase()
 
         if (!businessName.includes(searchTerm)) {
           return false

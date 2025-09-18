@@ -18,7 +18,7 @@
         />
         <UAlert
           v-else
-          color="amber"
+          color="warning"
           variant="soft"
           title="No global profile"
           description="Create your Chef profile for the whole ecosystem."
@@ -33,7 +33,7 @@
         <OrganismsProfilesChefCardsCell v-if="appProfile" :chef="appProfile" />
         <UAlert
           v-else
-          color="blue"
+          color="info"
           variant="soft"
           title="Not a Chef in this app"
           description="Add your profile to this app to appear in Chef lists."

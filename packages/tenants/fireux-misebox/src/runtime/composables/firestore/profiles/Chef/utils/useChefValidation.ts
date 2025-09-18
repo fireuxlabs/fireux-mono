@@ -214,8 +214,8 @@ export function useChefValidation() {
     // Required fields validation (ChefCoreProfile uses ProfileBase with id set from auth elsewhere)
 
     // Optional field validations
-    if (chefData.chef_name) {
-      const nameValidation = validateChefName(chefData.chef_name)
+    if (chefData.name) {
+      const nameValidation = validateChefName(chefData.name)
       if (!nameValidation.isValid && nameValidation.error) {
         errors.push(nameValidation.error)
       }
@@ -231,15 +231,15 @@ export function useChefValidation() {
     // Note: experience/certifications aren't part of the current Chef model
     // If added later, re-enable and adjust validation accordingly
 
-    if (chefData.bio_short) {
-      const bioValidation = validateBio(chefData.bio_short, 'short')
+    if (chefData.bioShort) {
+      const bioValidation = validateBio(chefData.bioShort, 'short')
       if (!bioValidation.isValid && bioValidation.error) {
         errors.push(bioValidation.error)
       }
     }
 
-    if (chefData.bio_long) {
-      const bioValidation = validateBio(chefData.bio_long, 'long')
+    if (chefData.bioLong) {
+      const bioValidation = validateBio(chefData.bioLong, 'long')
       if (!bioValidation.isValid && bioValidation.error) {
         errors.push(bioValidation.error)
       }

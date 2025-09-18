@@ -44,45 +44,16 @@ export function useChefUpdate() {
     updateFields({ [field]: value } as ProfileUpdate<UpdatableChef>)
 
   return {
-    // Basic profile updates
-    updateChefName: (v: string) => updateSingle('chef_name', v),
+    // Basic profile updates (aligned to slim model)
+    updateChefName: (v: string) => updateSingle('name', v),
     updateTitle: (v: string) => updateSingle('title', v),
-    updateBioShort: (v: string) => updateSingle('bio_short', v),
-    updateBioLong: (v: string) => updateSingle('bio_long', v),
-    updateYearsExperience: (v: number) => updateSingle('years_experience', v),
-
-    // Service info
-    updateAvailableForHire: (v: boolean) =>
-      updateSingle('available_for_hire', v),
-    updateHourlyRate: (v: number) => updateSingle('hourly_rate' as any, v),
+    updateBioShort: (v: string) => updateSingle('bioShort', v),
+    updateBioLong: (v: string) => updateSingle('bioLong', v),
 
     // Arrays
     updateSpecialties: (v: string[]) => updateArray('specialties', v),
-    updateCuisineExpertise: (v: string[]) =>
-      updateArray('cuisine_expertise', v),
-    updateCookingStyles: (v: string[]) =>
-      updateArray('cooking_styles' as any, v),
-    updateServiceTypes: (v: string[]) => updateArray('service_types' as any, v),
-    updateSignatureDishes: (v: string[]) =>
-      updateArray('signature_dishes' as any, v),
-    updateAwards: (v: string[]) => updateArray('awards' as any, v),
-    updateCertifications: (v: string[]) =>
-      updateArray('certifications' as any, v),
-    updatePublishedWorks: (v: string[]) =>
-      updateArray('published_works' as any, v),
-
-    // Complex objects / collections
-    updateChefExperience: (v: any[]) =>
-      updateArray('chef_experience' as any, v),
-    updateCulinaryEducation: (v: any[]) =>
-      updateArray('culinary_education' as any, v),
-    updateRecipes: (v: any[]) => updateArray('recipes' as any, v),
-    updateGallery: (v: any[]) => updateArray('gallery' as any, v),
-    updateKitchens: (v: Record<string, any>) =>
-      updateFields({ kitchens: v } as any),
-    updateSocialMedia: (v: Record<string, any>) =>
-      updateFields({ social_media: v } as any),
-    updateLocations: (v: any[]) => updateArray('locations' as any, v),
+    // Removed legacy/non-model fields (years_experience, available_for_hire, etc.)
+    // Re-introduce via extension types and proper mappers if needed in the future.
 
     // Escape hatch for batching arbitrary changes (already safe)
     updateFields,
