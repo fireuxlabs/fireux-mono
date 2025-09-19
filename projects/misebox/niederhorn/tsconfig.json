@@ -1,20 +1,20 @@
 {
   // tsconfig for Niederhorn app — do not override Nuxt aliases (~, @, ~~)
-  "extends": "./.nuxt/tsconfig.json",
+  "extends": "../tsconfig.app.base.json",
   "files": ["../../../types/fireux.d.ts"],
   "compilerOptions": {
     "composite": false,
     "baseUrl": ".",
     "moduleResolution": "Bundler",
-  "paths": {
+    "paths": {
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
       "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
       "fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
       "fireux-fireux/*": ["../../../packages/tenants/fireux-fireux/src/*"],
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
-  "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index.d.ts"],
-  "#imports": [".nuxt/imports.d.ts"],
+      "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index.d.ts"],
+      "#imports": [".nuxt/imports.d.ts"],
       "#build/*": [".nuxt/*"]
       // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },

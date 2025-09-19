@@ -50,6 +50,10 @@ export interface ProfileConfig {
   searchableFields?: string[]
   defaultValues?: Record<string, any>
 
+  /** Optional CTA copy for list pages using UI4 UPageCTA */
+  ctaTitle?: string
+  ctaDescription?: string
+
   /**
    * Optional hook to attach role-specific update composables.
    * Should return an object with update methods to be spread onto useProfile() return value.

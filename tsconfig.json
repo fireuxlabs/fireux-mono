@@ -1,13 +1,4 @@
 {
-  "files": ["types/fireux.d.ts"],
-  "references": [
-    { "path": "packages/core/fireux-core" },
-    { "path": "packages/extensions/fireux-jobs" },
-    { "path": "packages/extensions/fireux-places" },
-    { "path": "packages/tenants/fireux-misebox" },
-    { "path": "packages/tenants/fireux-cleanbox" },
-    { "path": "packages/tenants/fireux-fireux" }
-  ],
   "compilerOptions": {
     "baseUrl": ".",
     "target": "ES2022",

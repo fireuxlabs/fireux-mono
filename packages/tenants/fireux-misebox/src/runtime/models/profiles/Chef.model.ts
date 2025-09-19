@@ -50,6 +50,9 @@ export const chefConfig: ProfileConfig = {
   profileType: 'Chef',
   requiredFields: ['name'],
   searchableFields: ['name', 'specialties'],
+  ctaTitle: "Showcase your culinary expertise",
+  ctaDescription:
+    "Create your Chef profile to highlight your skills, share your specialties, and connect with opportunities in the Misebox community.",
 } as const
 
 /** Input / Update */

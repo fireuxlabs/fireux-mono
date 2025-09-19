@@ -309,7 +309,7 @@ function createPackageJson(config) {
       'fireux-core': 'workspace:*',
       'fireux-jobs': 'workspace:*',
       [`fireux-${config.system}`]: 'workspace:*',
-  nuxt: '^4.0.0',
+      nuxt: '^4.0.0',
       'nuxt-vuefire': '^1.0.5',
       stripe: '^18.3.0',
     },

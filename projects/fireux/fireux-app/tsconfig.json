@@ -1,6 +1,6 @@
 {
   // tsconfig for FireUX app — do not override Nuxt aliases (~, @, ~~)
-  "extends": "./.nuxt/tsconfig.json",
+  "extends": "../tsconfig.app.base.json",
   "files": ["../../../types/fireux.d.ts"],
   "compilerOptions": {
     "composite": false,
@@ -14,7 +14,7 @@
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index.d.ts"],
-  "#imports": [".nuxt/imports.d.ts"],
+      "#imports": [".nuxt/imports.d.ts"],
       "#build/*": [".nuxt/*"]
       // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
