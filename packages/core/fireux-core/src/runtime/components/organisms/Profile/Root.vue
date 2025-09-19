@@ -56,8 +56,8 @@ const showCurrent = computed(() => props.showCurrent ?? true)
 /** Keep as an object (don’t destructure) so optional chaining stays safe */
 const profile = useProfile(props.config)
 
-/** Canonical current (global) */
-const currentProfile = computed(() => profile.current?.global?.value || null)
+/** Canonical current (global value from composable's profile) */
+const currentProfile = computed(() => profile.profile?.value?.core || null)
 
 /** Signals */
 const hasLocal = computed(() => Boolean(profile.collection?.local))

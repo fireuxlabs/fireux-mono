@@ -1,4 +1,4 @@
-import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
+import { useProfile } from '#fireux-core-runtime/composables/firestore/profiles/useProfile'
 import {
   employerConfig,
   EmployerMapper,

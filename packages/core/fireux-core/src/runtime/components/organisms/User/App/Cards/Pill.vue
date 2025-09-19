@@ -19,7 +19,13 @@
 </template>
 
 <script setup lang="ts">
-import type { AppUserPillProps } from '../../../../../models/core/appUser.model'
+type AppUserLike = {
+  id?: string
+  display_name?: string
+  avatar?: string
+  handle?: string
+  role?: 'user' | 'admin'
+}
 
-defineProps<{ appUser: AppUserPillProps }>()
+defineProps<{ appUser: AppUserLike }>()
 </script>

@@ -1,4 +1,5 @@
 {
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
@@ -21,7 +22,8 @@
       "#fireux-jobs-models/*": ["./src/runtime/models/*"],
       "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
       "fireux-core": ["../../core/fireux-core/src/module.ts"],
-      "fireux-core/*": ["../../core/fireux-core/src/*"]
+      "fireux-core/*": ["../../core/fireux-core/src/*"],
+      "#fireux-core-runtime/*": ["../../core/fireux-core/src/runtime/*"]
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },

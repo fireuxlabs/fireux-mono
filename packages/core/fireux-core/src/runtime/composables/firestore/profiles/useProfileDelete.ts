@@ -2,8 +2,8 @@ import { ref } from 'vue'
 import { useCurrentUser } from 'vuefire'
 import type { ProfileConfig } from '../../../models/profiles/profile.model'
 import { useFirestoreManager } from '../useFirestoreManager'
-import { useAppUser } from '../AppUser/useAppUser'
-import useAppUserUpdate from '../AppUser/useAppUserUpdate'
+import { useUser } from '../user/useUser'
+import { useFirestoreUpdate } from '../useFirestoreUpdate'
 
 /**
  * Generic profile deletion composable
@@ -35,21 +35,26 @@ export function useProfileDelete(profileConfig: ProfileConfig) {
 
     try {
       // Get appUser data when needed
-      const { appUser } = useAppUser()
+      const { user } = useUser()
       await deleteDocument(config.collectionName, targetId, {
         appScoped: false,
       })
 
-      // Update AppUser profiles array - remove the object entry by type
-      const currentProfiles = (appUser.value?.profiles || []) as any[]
+      // Update AppUser profiles array - remove the entry by type
+      const currentProfiles = (user.value?.app?.app_profiles ?? []) as any[]
       const typeKey = config.id
       const updatedProfiles = currentProfiles.filter((p) => p?.type !== typeKey)
 
       if (currentProfiles.length !== updatedProfiles.length) {
-        const { useAppUserUpdateFirestore } = useAppUserUpdate()
-        const { updateProfiles } = useAppUserUpdateFirestore()
-        await updateProfiles(updatedProfiles)
-        console.log('✅ Removed profile from AppUser.profiles:', typeKey)
+        if (user.value?.app && user.value?.id) {
+          const { updateDocument } = useFirestoreUpdate()
+          await updateDocument(
+            'apps/' + (user.value.app as any).appId + '/users',
+            user.value.id,
+            { app_profiles: updatedProfiles } as any
+          )
+        }
+        console.log('✅ Removed profile from AppUser.app_profiles:', typeKey)
       }
 
       return 'success'

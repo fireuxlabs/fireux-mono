@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import type { UnifiedUser } from '../../../models/core/user.model'
+import type { UserCard } from '../../../models/core/user.model'
 
-const props = defineProps<{ user: UnifiedUser.Card.Profile }>()
+const props = defineProps<{ user: UserCard.Profile }>()
 </script>

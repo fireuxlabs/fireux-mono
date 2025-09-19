@@ -214,8 +214,8 @@ export function useChefValidation() {
     // Required fields validation (ChefCoreProfile uses ProfileBase with id set from auth elsewhere)
 
     // Optional field validations
-    if (chefData.name) {
-      const nameValidation = validateChefName(chefData.name)
+    if (chefData.display_name) {
+      const nameValidation = validateChefName(chefData.display_name)
       if (!nameValidation.isValid && nameValidation.error) {
         errors.push(nameValidation.error)
       }

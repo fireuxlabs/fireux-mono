@@ -7,7 +7,7 @@
 
 import { doc, updateDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils'
+import { useFirestoreUtils } from '#fireux-core-runtime/composables/firestore/useFirestoreUtils'
 
 export function useProfessionalUpdate() {
   const db = useFirestore()

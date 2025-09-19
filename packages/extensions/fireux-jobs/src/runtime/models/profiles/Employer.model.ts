@@ -51,9 +51,7 @@ export const employerConfig: ProfileConfig = {
   id: 'employer',
   collectionName: 'employers',
   profileType: 'Employer',
-  validationFn: validateEmployerProfile,
-  requiredFields: ['name'],
-  searchableFields: ['name', 'specialties'],
+  // validationFn, requiredFields, searchableFields removed in slim ProfileConfig
 } as const
 
 // CTA Configuration (kept for compatibility with existing UI)

@@ -1,5 +1,5 @@
 // app/composables/firestore/documents/Blog/blogPostUtils.ts
-import { useCoreUser } from '../../CoreUser/useCoreUser'
+import { useUser } from '../../user/useUser'
 import type {
   BlogPost,
   Author,
@@ -26,13 +26,13 @@ export function useBlogPostUtils() {
 
   // Get the current user identity from CoreUser (canonical)
   async function getAuthor(): Promise<Author> {
-    const { coreUser } = useCoreUser()
+    const { user } = useUser()
     return {
-      id: coreUser.value?.id || '',
-      display_name: coreUser.value?.display_name || coreUser.value?.email || '',
-      handle: coreUser.value?.handle || '',
-      avatar: coreUser.value?.avatar || '/img/default-avatar.png',
-      email: coreUser.value?.email || '',
+      id: user.value?.id || '',
+      display_name: user.value?.core?.display_name || user.value?.core?.email || '',
+      handle: user.value?.core?.handle || '',
+      avatar: user.value?.core?.avatar || '/img/default-avatar.png',
+      email: user.value?.core?.email || '',
     }
   }
 

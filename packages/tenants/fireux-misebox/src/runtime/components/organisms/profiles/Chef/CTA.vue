@@ -70,9 +70,9 @@ import { useChefCreate } from '../../../../composables/firestore/profiles/Chef/u
 const { tenancyDisplay, appTenancy } = useApp()
 
 // correct shape from useProfile()
-const { current } = useProfile(chefConfig)
-const ecosystemProfile = current.global // ref to global (ecosystem) doc
-const appProfile = current.appMirror // ref to app mirror (or null)
+const { profile } = useProfile(chefConfig)
+const ecosystemProfile = computed(() => profile.value?.core ?? null)
+const appProfile = computed(() => profile.value?.app ?? null)
 
 // tiny wrapper around profile create
 const { createChef } = useChefCreate()

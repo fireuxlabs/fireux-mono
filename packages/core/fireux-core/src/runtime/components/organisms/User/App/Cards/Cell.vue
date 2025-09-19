@@ -31,13 +31,19 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppUserCellProps } from '../../../../../models/core/appUser.model'
+
+type AppUserLike = {
+  id?: string
+  display_name?: string
+  avatar?: string
+  handle?: string
+  role?: 'user' | 'admin'
+  profiles?: string[]
+}
 
 const props = defineProps<{
-  appUser?: AppUserCellProps
-  user?: AppUserCellProps
+  appUser?: AppUserLike
+  user?: AppUserLike
 }>()
-const appUser = computed(
-  () => (props.appUser ?? props.user) as AppUserCellProps
-)
+const appUser = computed(() => (props.appUser ?? props.user) as AppUserLike)
 </script>

@@ -1,12 +1,16 @@
-//packages/core/fireux-core/src/runtime/models/profiles/profile.model.ts
+// packages/core/fireux-core/src/runtime/models/profiles/profile.model.ts
 import type { FirebaseTimestamp } from '../../types/firebase'
 
 /**
  * Minimal, shared base for any profile (chef, supplier, professional, employer, etc.)
+ * This is the Firestore document shape (strict).
  */
 export interface ProfileBase {
   /** Canonical id (== Firebase Auth UID & Firestore doc id) */
   id: string
+
+  /** Display name for the profile */
+  display_name: string
 
   /** Primary avatar URL to display everywhere */
   avatar: string
@@ -15,21 +19,6 @@ export interface ProfileBase {
   created_at: string | Date | FirebaseTimestamp
   updated_at?: string | Date | FirebaseTimestamp
 }
-
-/**
- * Input when creating a new profile doc (timestamps are auto-generated)
- */
-export type ProfileCreate<T extends ProfileBase> = Omit<
-  T,
-  'created_at' | 'updated_at'
->
-
-/**
- * Input when updating a profile doc (id and created_at are immutable)
- */
-export type ProfileUpdate<T extends ProfileBase> = Partial<
-  Omit<T, 'id' | 'created_at'>
->
 
 /**
  * Config definition to describe a profile type.
@@ -44,25 +33,9 @@ export interface ProfileConfig {
   /** Human-readable type label, e.g. 'Chef', 'Employer' */
   profileType: string
 
-  /** Validation & schema hints */
-  validationFn?: (profile: any) => boolean
-  requiredFields?: string[]
-  searchableFields?: string[]
-  defaultValues?: Record<string, any>
-
-  /** Optional CTA copy for list pages using UI4 UPageCTA */
-  ctaTitle?: string
-  ctaDescription?: string
-
   /**
    * Optional hook to attach role-specific update composables.
    * Should return an object with update methods to be spread onto useProfile() return value.
    */
   updateComposable?: () => Record<string, any>
 }
-
-// ---------------------------------------------------------------------------
-// Back-compat aliases (safe to remove after refactor completes)
-// ---------------------------------------------------------------------------
-export type Profile = ProfileBase
-export type ProfileInput<T extends ProfileBase> = ProfileCreate<T>

@@ -48,8 +48,7 @@ export const professionalConfig: ProfileConfig = {
   id: 'professional',
   collectionName: 'professionals',
   profileType: 'Professional',
-  requiredFields: ['name'],
-  searchableFields: ['name', 'specialties'],
+  // requiredFields/searchableFields removed in slim ProfileConfig
 } as const
 
 /** Input / Update */

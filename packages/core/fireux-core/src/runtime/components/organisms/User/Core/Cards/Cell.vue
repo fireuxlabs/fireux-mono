@@ -26,9 +26,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CoreUser } from '../../../../../models/core/coreUser.model'
+import type { CoreUserDoc } from '../../../../../models/core/user.model'
 
-const props = defineProps<{ coreUser: CoreUser.Card.Cell }>()
+const props = defineProps<{ coreUser: CoreUserDoc & { id?: string } }>()
 
 function looksLikeEmail(v?: string) {
   return !!v && v.includes('@')

@@ -1,11 +1,12 @@
-// packages/core/fireux-core/src/runtime/composables/users/useUser.ts
-import { computed, type Ref } from 'vue'
+import { computed, watchEffect, type Ref } from 'vue'
 import { doc, type DocumentReference } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useUserComputed } from './useUserComputed'
+import { useUserEnsure } from './useUserEnsure'
+import { useUserState } from '../../state/useUserState'
 import type {
-  UserUnified,
+  User,
   CoreUserDoc,
   AppUserDoc,
 } from '../../../models/core/user.model'
@@ -17,7 +18,7 @@ export function useUser() {
 
   const authUser = useCurrentUser() as Ref<{ uid: string } | null | undefined>
 
-  // Core user doc (always attempt when signed-in)
+  // Core user doc
   const coreUserRef = computed<DocumentReference<CoreUserDoc> | null>(() => {
     const uid = authUser.value?.uid
     return uid
@@ -26,7 +27,7 @@ export function useUser() {
   })
   const { data: coreUserDoc } = useDocument<CoreUserDoc>(coreUserRef)
 
-  // App user doc (only if tenant)
+  // App user doc
   const appUserRef = computed<DocumentReference<AppUserDoc> | null>(() => {
     const uid = authUser.value?.uid
     if (!uid || !isTenant || !appId) return null
@@ -34,8 +35,8 @@ export function useUser() {
   })
   const { data: appUserDoc } = useDocument<AppUserDoc>(appUserRef)
 
-  // Unified view: core + (optional) app
-  const user = computed<UserUnified | null>(() => {
+  // Unified user
+  const user = computed<User | null>(() => {
     const uid = authUser.value?.uid
     if (!uid) return null
     return {
@@ -45,8 +46,15 @@ export function useUser() {
     }
   })
 
+  // Mirror into global state
+  const { user: userState } = useUserState()
+  watchEffect(() => {
+    userState.value = user.value
+  })
+
   return {
     user,
     ...useUserComputed(user),
+    ...useUserEnsure(user), // pass user ref down
   }
 }

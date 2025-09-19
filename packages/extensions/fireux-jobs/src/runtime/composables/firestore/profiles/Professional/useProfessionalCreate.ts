@@ -1,4 +1,4 @@
-import { useProfileCreate } from 'fireux-core/runtime/composables/firestore/profiles/useProfileCreate'
+import { useProfile } from '#fireux-core-runtime/composables/firestore/profiles/useProfile'
 import {
   professionalConfig,
   ProfessionalMapper,
@@ -6,7 +6,7 @@ import {
 import type { ProfessionalCoreProfile } from '../../../../models/profiles/Professional.model'
 
 export function useProfessionalCreate() {
-  const { ensure } = useProfileCreate(professionalConfig)
+  const { ensure } = useProfile(professionalConfig) as any
 
   async function createProfessional(
     profile?: Partial<ProfessionalCoreProfile>

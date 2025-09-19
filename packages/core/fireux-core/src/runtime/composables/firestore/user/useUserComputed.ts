@@ -1,9 +1,9 @@
 // packages/core/fireux-core/src/runtime/composables/users/useUserComputed.ts
 import { computed, type Ref } from 'vue'
 import { useFireUXConfig } from '../../FireUXConfig'
-import type { UserUnified } from '../../../models/core/user.model'
+import type { User } from '../../../models/core/user.model'
 
-export function useUserComputed(user: Ref<UserUnified | null | undefined>) {
+export function useUserComputed(user: Ref<User | null | undefined>) {
   const { role } = useFireUXConfig()
   const isTenant = role === 'tenant'
 

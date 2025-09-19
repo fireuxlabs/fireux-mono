@@ -51,9 +51,6 @@ export const supplierConfig: ProfileConfig = {
   id: 'supplier',
   collectionName: 'suppliers',
   profileType: 'Supplier',
-  validationFn: validateSupplierProfile,
-  requiredFields: ['name'],
-  searchableFields: ['name', 'specialties'],
 } as const
 
 // CTA Configuration (kept for compatibility with existing UI)

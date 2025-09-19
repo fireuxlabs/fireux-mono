@@ -37,16 +37,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefProfileProps } from '../../../../../models/profiles/Chef.model'
+import type { ChefCard } from '../../../../../models/profiles/Chef.model'
 
-const props = defineProps<{ chef: ChefProfileProps }>()
+const props = defineProps<{ chef: ChefCard.Profile }>()
 
-const displayName = computed(() => props.chef?.name || 'Chef')
+const displayName = computed(() => props.chef?.display_name || 'Chef')
 
 const bioText = computed(
   () => props.chef?.bioLong ?? props.chef?.bioShort ?? ''
 )
 
-// ChefProfileProps does not include timestamps; leave empty string unless extended elsewhere
+// ChefCard.Profile does not include timestamps; leave empty string unless extended elsewhere
 const createdText = computed(() => '')
 </script>

@@ -1,94 +1,90 @@
-// packages/core/fireux-core/src/runtime/composables/firestore/profiles/useProfile.ts
-import { computed } from 'vue'
-import { doc } from 'firebase/firestore'
+import { computed, watchEffect } from 'vue'
+import { doc, type DocumentReference } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
-import type { ProfileConfig } from '../../../models/profiles/profile.model'
+import type {
+  ProfileConfig,
+  ProfileBase,
+} from '../../../models/profiles/profile.model'
+import { useFireUXConfig } from '../../FireUXConfig'
 import { useFirestoreRead } from '../useFirestoreRead'
-import { useProfileCreate } from './useProfileCreate'
 import { useProfileDelete } from './useProfileDelete'
-import { useApp } from '../../app/useApp'
+import { useProfileEnsure } from './useProfileEnsure'
+import { useProfileState } from '../../state/useProfileState'
 
-/**
- * Unified entry-point for profiles.
- *
- * Exposes:
- * - current.global       → ALWAYS the ecosystem doc
- * - current.appMirror    → app doc iff role === 'tenant', else null
- * - collection.local     → app list iff role === 'tenant', else null
- * - collection.global    → ecosystem list iff role === 'global'; in tenant null until fetchGlobal()
- * - collection.fetchGlobal() → lazy loader for collection.global (tenant only; no-op in global)
- * - fetchById(id)        → get a single GLOBAL doc (simple version)
- * - ...create, ...remove, ...update → CRUD spreads
- */
-export function useProfile(config: ProfileConfig) {
+export function useProfile<
+  TCore extends ProfileBase,
+  TApp extends ProfileBase = TCore,
+>(config: ProfileConfig) {
   const db = useFirestore()
   const currentUser = useCurrentUser()
-
-  // Tenancy from useApp()
-  const { role, appId } = useApp()
-  const isGlobal = computed(() => role === 'global')
-
-  // Firestore helpers
-  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
-  type ColRef = ReturnType<typeof firestoreFetchCollection> // Ref<any[] | undefined>
+  const { role, appId } = useFireUXConfig()
+  const isTenant = role === 'tenant'
+  const isGlobal = role === 'global'
 
   const uid = computed(() => currentUser.value?.uid || null)
 
-  // ---------- CURRENT ----------
-  const currentGlobalRef = computed(() =>
-    uid.value ? doc(db, config.collectionName, uid.value) : null
-  )
-  const { data: currentGlobal } = useDocument(currentGlobalRef)
-
-  const currentAppRef = computed(() =>
-    uid.value && role === 'tenant' && appId
-      ? doc(db, 'apps', appId, config.collectionName, uid.value)
+  const coreRef = computed<DocumentReference<TCore> | null>(() =>
+    uid.value
+      ? (doc(db, config.collectionName, uid.value) as DocumentReference<TCore>)
       : null
   )
-  const { data: currentAppMirror } = useDocument(currentAppRef)
+  const { data: coreDoc } = useDocument<TCore>(coreRef)
 
-  // ---------- COLLECTION ----------
-  const GLOBAL_PATH = config.collectionName
+  const appRef = computed<DocumentReference<TApp> | null>(() =>
+    uid.value && isTenant && appId
+      ? (doc(
+          db,
+          `apps/${appId}/${config.collectionName}`,
+          uid.value
+        ) as DocumentReference<TApp>)
+      : null
+  )
+  const { data: appDoc } = useDocument<TApp>(appRef)
 
-  // Local: auto in tenant, else null
+  const profile = computed(() => {
+    if (!uid.value) return null
+    return {
+      id: uid.value,
+      core: coreDoc.value ?? null,
+      app: isTenant ? (appDoc.value ?? null) : undefined,
+    }
+  })
+
+  const { profile: profileState } = useProfileState(config.id)
+  watchEffect(() => {
+    profileState.value = profile.value
+  })
+
+  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
+  type ColRef = ReturnType<typeof firestoreFetchCollection>
+
   const collectionLocal: ColRef | null =
-    role === 'tenant' && appId
+    isTenant && appId
       ? firestoreFetchCollection(`apps/${appId}/${config.collectionName}`)
       : null
 
-  // Global: auto in global app; tenant starts null (lazy)
-  let collectionGlobal: ColRef | null = isGlobal.value
-    ? firestoreFetchCollection(GLOBAL_PATH)
+  let collectionGlobal: ColRef | null = isGlobal
+    ? firestoreFetchCollection(config.collectionName)
     : null
 
   function fetchGlobal(): ColRef | null {
-    if (isGlobal.value) return collectionGlobal
-    // Tenant: lazy-load once (nullish coalescing assignment for clarity)
-    collectionGlobal ??= firestoreFetchCollection(GLOBAL_PATH)
+    if (isGlobal) return collectionGlobal
+    collectionGlobal ??= firestoreFetchCollection(config.collectionName)
     return collectionGlobal
   }
 
-  // ---------- Helpers ----------
-  const fetchById = (id: string) => firestoreFetchDoc(config.collectionName, id)
-
-  // ---------- CRUD ----------
-  const create = useProfileCreate(config) as any
-  const remove = useProfileDelete(config) as any
-  const update = config.updateComposable ? config.updateComposable() : {}
+  const { ensure } = useProfileEnsure(config)
+  const remove = useProfileDelete(config)
 
   return {
-    current: {
-      global: currentGlobal,
-      appMirror: currentAppMirror ?? null,
-    },
+    profile,
     collection: {
-      local: collectionLocal, // Ref<any[] | undefined> | null
-      global: collectionGlobal, // Ref<any[] | undefined> | null
-      fetchGlobal, // () => Ref<any[] | undefined> | null
+      local: collectionLocal,
+      global: collectionGlobal,
+      fetchGlobal,
     },
-    fetchById,
-    ...create,
+    fetchById: (id: string) => firestoreFetchDoc(config.collectionName, id),
+    ensure,
     ...remove,
-    ...update,
   }
 }

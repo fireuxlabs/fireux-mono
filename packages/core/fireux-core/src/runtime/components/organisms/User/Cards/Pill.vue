@@ -13,9 +13,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UnifiedUser } from '../../../../models/core/user.model'
-
-const props = defineProps<{ user: UnifiedUser.Card.Pill }>()
+import type { UserCard } from '../../../../models/core/user.model'
+const props = defineProps<{ user: UserCard.Pill }>()
 
 function looksLikeEmail(v?: string) {
   return !!v && v.includes('@')

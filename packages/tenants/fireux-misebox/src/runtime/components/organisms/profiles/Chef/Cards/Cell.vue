@@ -1,9 +1,9 @@
 <template>
   <UCard class="cell">
     <div class="cell-inner">
-      <UAvatar :src="chef.avatar" :alt="chef.name" size="md" />
+      <UAvatar :src="chef.avatar" :alt="chef.display_name" size="md" />
       <div class="meta">
-        <div class="name">{{ chef.name }}</div>
+        <div class="name">{{ chef.display_name }}</div>
         <div v-if="chef.title" class="title">{{ chef.title }}</div>
         <div v-if="chef.bioShort" class="subtitle">{{ chef.bioShort }}</div>
         <div v-if="chef.specialties?.length" class="cell-badges">
@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ChefCellProps } from '../../../../../models/profiles/Chef.model'
+import type { ChefCard } from '../../../../../models/profiles/Chef.model'
 
-defineProps<{ chef: ChefCellProps }>()
+defineProps<{ chef: ChefCard.Cell }>()
 </script>

@@ -13,6 +13,9 @@
       "fireux-fireux/*": ["../../../packages/tenants/fireux-fireux/src/*"],
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
+      "#fireux-core-runtime/*": [
+        "../../../packages/core/fireux-core/src/runtime/*"
+      ],
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index.d.ts"],
       "#imports": [".nuxt/imports.d.ts"],
       "#build/*": [".nuxt/*"]

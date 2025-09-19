@@ -76,9 +76,7 @@ defineExpose({
         try {
           results.featuredImage = await uploadImage(
             featuredFile,
-            'blogs',
-            blogId,
-            'featured'
+            `blogs/${blogId}/featured.jpg`
           )
         } catch (error) {
           uploadErrors.value.featured =
@@ -92,9 +90,7 @@ defineExpose({
         try {
           results.socialImage = await uploadImage(
             socialFile,
-            'blogs',
-            blogId,
-            'social'
+            `blogs/${blogId}/social.jpg`
           )
         } catch (error) {
           uploadErrors.value.social =

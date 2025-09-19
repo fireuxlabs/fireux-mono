@@ -2,10 +2,7 @@
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils'
-import type {
-  ProfileUpdate,
-  ProfileBase as CoreProfileBase,
-} from 'fireux-core/runtime/models/profiles/profile.model'
+import type { ProfileBase as CoreProfileBase } from 'fireux-core/runtime/models/profiles/profile.model'
 import type { ChefCoreProfile as Chef } from '../../../../models/profiles/Chef.model'
 
 // Fields we never allow to be updated here
@@ -18,7 +15,7 @@ export function useChefUpdate() {
   // Generic, safe field updater
   type UpdatableChef = Chef &
     Pick<CoreProfileBase, 'avatar' | 'id' | 'created_at' | 'updated_at'>
-  const updateFields = async (patch: ProfileUpdate<UpdatableChef>) => {
+  const updateFields = async (patch: Partial<UpdatableChef>) => {
     const user = await waitForCurrentUser()
     if (!user?.uid) throw new Error('User not authenticated')
 
@@ -38,14 +35,14 @@ export function useChefUpdate() {
 
   // Convenience wrappers (keep types narrow where useful)
   const updateSingle = (field: keyof Chef, value: string | number | boolean) =>
-    updateFields({ [field]: value } as ProfileUpdate<UpdatableChef>)
+    updateFields({ [field]: value } as Partial<UpdatableChef>)
 
   const updateArray = <K extends keyof Chef>(field: K, value: Chef[K]) =>
-    updateFields({ [field]: value } as ProfileUpdate<UpdatableChef>)
+    updateFields({ [field]: value } as Partial<UpdatableChef>)
 
   return {
     // Basic profile updates (aligned to slim model)
-    updateChefName: (v: string) => updateSingle('name', v),
+  updateDisplayName: (v: string) => updateSingle('display_name', v),
     updateTitle: (v: string) => updateSingle('title', v),
     updateBioShort: (v: string) => updateSingle('bioShort', v),
     updateBioLong: (v: string) => updateSingle('bioLong', v),

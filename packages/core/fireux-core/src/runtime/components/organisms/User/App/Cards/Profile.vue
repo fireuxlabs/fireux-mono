@@ -45,9 +45,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppUser } from '../../../../../models/core/appUser.model'
 
-const props = defineProps<{ appUser: AppUser.Card.Profile }>()
+type AppUserLike = {
+  id?: string
+  display_name?: string
+  avatar?: string
+  handle?: string
+  role?: 'user' | 'admin'
+  profiles?: string[]
+  created_at?: any
+}
+
+const props = defineProps<{ appUser: AppUserLike }>()
 
 function looksLikeEmail(v?: string) {
   return !!v && v.includes('@')

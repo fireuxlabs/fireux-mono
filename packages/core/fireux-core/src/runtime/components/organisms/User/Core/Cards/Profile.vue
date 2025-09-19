@@ -41,20 +41,7 @@
       </div>
     </div>
 
-    <!-- Global profile badges -->
-    <div v-if="coreUser?.profiles?.length" class="section">
-      <div class="section-title">Profiles</div>
-      <div class="tags">
-        <UBadge
-          v-for="p in coreUser.profiles"
-          :key="p"
-          variant="soft"
-          size="xs"
-        >
-          {{ p }}
-        </UBadge>
-      </div>
-    </div>
+    <!-- Profiles section removed: not part of slim CoreUserDoc -->
 
     <!-- Timestamps (Created only) -->
     <div v-if="createdText" class="section">
@@ -68,9 +55,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CoreUser } from '../../../../../models/core/coreUser.model'
-
-const props = defineProps<{ coreUser: CoreUser.Card.Profile }>()
+import type { CoreUserDoc } from '../../../../../models/core/user.model'
+const props = defineProps<{ coreUser: CoreUserDoc & { id?: string } }>()
 
 function looksLikeEmail(v?: string) {
   return !!v && v.includes('@')
