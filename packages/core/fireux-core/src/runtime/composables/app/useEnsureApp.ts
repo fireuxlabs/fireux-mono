@@ -104,8 +104,8 @@ export function useAppEnsure() {
         )
       }
 
-  // Step 6: Create an app user for this admin
-  await createAppUserForAdmin()
+      // Step 6: Create an app user for this admin
+      await createAppUserForAdmin()
 
       return appId
     } catch (error) {
@@ -121,9 +121,7 @@ export function useAppEnsure() {
    */
   async function createAppUserForAdmin(): Promise<void> {
     try {
-      const { useUserEnsure } = await import(
-        '../firestore/user/useUserEnsure'
-      )
+      const { useUserEnsure } = await import('../firestore/user/useUserEnsure')
       const { ensureUser } = useUserEnsure()
       await ensureUser()
       console.log('✅ [ensureApp] Created app user for the app admin')

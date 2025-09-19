@@ -14,7 +14,7 @@ export function useChefFilters(profiles: Ref<Chef[]>) {
       // Filter by search term
       if (filters.value.search) {
         const searchTerm = filters.value.search.toLowerCase()
-  const chefName = chef.display_name?.toLowerCase() || ''
+        const chefName = chef.display_name?.toLowerCase() || ''
         const specialties = chef.specialties?.join(' ').toLowerCase() || ''
 
         if (

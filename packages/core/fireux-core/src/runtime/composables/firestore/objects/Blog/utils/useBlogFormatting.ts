@@ -79,7 +79,8 @@ export function useBlogFormatting() {
     const { user } = useUser()
     return {
       id: user.value?.id || '',
-      display_name: user.value?.core?.display_name || user.value?.core?.email || '',
+      display_name:
+        user.value?.core?.display_name || user.value?.core?.email || '',
       handle: user.value?.core?.handle || '',
       avatar: user.value?.core?.avatar || '/img/default-avatar.png',
       email: user.value?.core?.email || '',

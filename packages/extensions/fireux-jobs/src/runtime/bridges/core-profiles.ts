@@ -5,6 +5,6 @@ import type { ProfileConfig } from '#fireux-core-runtime/models/profiles/profile
 
 // Back-compat wrapper that emulates the old useProfileCreate API
 export function useProfileCreate(config: ProfileConfig) {
-	const { ensure } = useProfile(config) as any
-	return { ensure }
+  const { ensure } = useProfile(config) as any
+  return { ensure }
 }
