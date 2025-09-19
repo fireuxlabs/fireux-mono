@@ -9,8 +9,19 @@
       title="Start your FireUX journey"
       description="Try the new Nuxt UI 4 components across the suite."
       :links="[
-        { label: 'Get started', color: 'primary', to: '/', icon: 'i-heroicons-rocket-launch-20-solid' },
-        { label: 'Docs', variant: 'ghost', color: 'neutral', to: 'https://ui4.nuxt.com', target: '_blank' }
+        {
+          label: 'Get started',
+          color: 'primary',
+          to: '/',
+          icon: 'i-heroicons-rocket-launch-20-solid',
+        },
+        {
+          label: 'Docs',
+          variant: 'ghost',
+          color: 'neutral',
+          to: 'https://ui4.nuxt.com',
+          target: '_blank',
+        },
       ]"
     />
 
@@ -24,7 +35,6 @@
       </div>
     </UCard>
   </div>
-  
 </template>
 
 <script setup lang="ts">
