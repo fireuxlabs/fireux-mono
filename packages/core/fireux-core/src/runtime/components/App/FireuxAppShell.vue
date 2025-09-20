@@ -12,9 +12,8 @@
       icon="i-heroicons-wrench-screwdriver"
       color="warning"
       variant="subtle"
-    >
-      Welcome to {{ appDisplayName }} — you are in dev mode
-    </UBanner>
+      :title="`Welcome to ${appDisplayName} — you are in dev mode`"
+    />
     <!-- Dev/Debug overlay (always pinned above modal) -->
     <ClientOnly>
       <Teleport to="body">
