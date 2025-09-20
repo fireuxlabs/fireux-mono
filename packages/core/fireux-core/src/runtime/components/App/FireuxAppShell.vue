@@ -13,7 +13,7 @@
       color="warning"
       variant="subtle"
     >
-      Development mode
+      Welcome to {{ appDisplayName }}
     </UBanner>
     <!-- Dev/Debug overlay (always pinned above modal) -->
     <ClientOnly>
@@ -46,11 +46,20 @@
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
+import { useHead, useRuntimeConfig, computed } from '#imports'
 import { useApp } from '../../composables/app/useApp'
 
 const { isInitialized } = useApp()
 const isDev = process.dev
+
+// Resolve app name from runtimeConfig (prefer short name if present)
+const runtimeConfig = useRuntimeConfig()
+const appDisplayName = computed(
+  () =>
+    runtimeConfig.public?.appShortName ||
+    runtimeConfig.public?.appName ||
+    'FireUX'
+)
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],

@@ -15,6 +15,7 @@ Scan the FireUX monorepo. For each canonical doc in `copilot-documentation/`
 current code under `packages/**`.
 
 Report a table with:
+
 - File
 - Status: accurate | stale | broken
 - Notes: list specific mismatches (e.g. missing composables, renamed props, API drift)
@@ -25,6 +26,7 @@ Keep it concise but specific. Don’t restate the doc; only compare and flag.
 ## 2) One-doc deep check (surgical)
 
 Compare `copilot-documentation/copilot-02-structure.md` to the actual repo:
+
 - Do all paths and package names exist?
 - Do referenced components/composables still exist (exact file names)?
 - Do code snippets compile against current types?
@@ -38,6 +40,7 @@ From `copilot-documentation/copilot-04-firebase.md`, extract every function or
 type name mentioned (e.g., useUser, useCoreUser, useAppUser, useUserComputed,
 UserUnified). For each, find its real definition in `packages/**`, verify its
 export, and note any signature/prop differences. Return a checklist:
+
 - symbol → OK / missing / changed (explain change briefly)
 
 ## 4) Nuxt UI version sanity (UI drift)
