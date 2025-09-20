@@ -82,3 +82,5 @@ packages/tenants/**/src/runtime/**/index.ts
 
 # Migration backups (may contain PII and be very large)
 migrations/backups/*.json
+# Documentation artifacts
+artifacts/

@@ -1,15 +1,20 @@
 <template>
   <div class="user-cell">
     <div class="user-avatar">
-      <img v-if="user.avatar" :src="user.avatar" :alt="user.display_name" />
-      <div v-else class="avatar-placeholder">
-        {{ user.display_name?.charAt(0) || user.email?.charAt(0) }}
-      </div>
+      <UAvatar
+        :src="user.avatar"
+        :alt="user.display_name"
+        :text="initials"
+        size="md"
+      />
     </div>
     <div class="user-info">
-      <h3 class="user-name">{{ user.display_name }}</h3>
-
-      <span v-if="user.role" class="user-role">{{ user.role }}</span>
+      <h3 class="user-name">
+        {{ user.display_name || user.email }}
+        <UBadge v-if="user.role" size="xs" variant="subtle" class="ml-2">{{
+          user.role
+        }}</UBadge>
+      </h3>
     </div>
   </div>
 </template>
@@ -20,6 +25,15 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+})
+
+const initials = computed(() => {
+  const name =
+    props.user?.display_name || props.user?.full_name || props.user?.email || ''
+  const parts = String(name).trim().split(/\s+/)
+  if (parts.length === 0) return ''
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
+  return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
 })
 </script>
 
@@ -34,22 +48,12 @@ const props = defineProps({
   background: var(--ui-bg);
 }
 
-.user-avatar img,
-.avatar-placeholder {
+.user-avatar :deep(img),
+.user-avatar :deep(.avatar-fallback) {
   width: 48px;
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
-}
-
-.avatar-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--ui-primary);
-  color: white;
-  font-weight: bold;
-  font-size: 1.25rem;
 }
 
 .user-info {
@@ -66,15 +70,5 @@ const props = defineProps({
   margin: 0 0 0.25rem 0;
   font-size: 0.875rem;
   color: var(--ui-text-muted);
-}
-
-.user-role {
-  display: inline-block;
-  padding: 0.125rem 0.5rem;
-  background: var(--ui-primary);
-  color: white;
-  border-radius: 1rem;
-  font-size: 0.75rem;
-  text-transform: capitalize;
 }
 </style>

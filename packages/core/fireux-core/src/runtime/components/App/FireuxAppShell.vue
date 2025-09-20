@@ -1,5 +1,20 @@
 <template>
   <UApp>
+    <!-- Global notifications (Nuxt UI toast target) -->
+    <ClientOnly>
+      <UToaster />
+    </ClientOnly>
+
+    <!-- Dev banner -->
+    <UBanner
+      v-if="isDev"
+      class="mb-2"
+      icon="i-heroicons-wrench-screwdriver"
+      color="warning"
+      variant="subtle"
+    >
+      Development mode
+    </UBanner>
     <!-- Dev/Debug overlay (always pinned above modal) -->
     <ClientOnly>
       <Teleport to="body">
@@ -10,9 +25,11 @@
     </ClientOnly>
 
     <!-- App content -->
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
+    <UMain>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </UMain>
 
     <!-- Blocker until app is initialized -->
     <UModal
@@ -29,7 +46,11 @@
 </template>
 
 <script setup lang="ts">
+import { useHead } from '#imports'
+import { useApp } from '../../composables/app/useApp'
+
 const { isInitialized } = useApp()
+const isDev = process.dev
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],

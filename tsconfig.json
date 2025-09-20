@@ -21,5 +21,14 @@
       "fireux-places/*": ["packages/extensions/fireux-places/src/*"],
       "fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"]
     }
-  }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "**/*.d.ts"],
+  "exclude": [
+    "node_modules",
+    "**/dist/**",
+    "**/.nuxt/**",
+    "**/.output/**",
+    "**/.turbo/**",
+    "**/.next/**"
+  ]
 }

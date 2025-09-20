@@ -35,8 +35,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useUser } from '../../composables/firestore/user/useUser'
+import { ref, computed, watch } from 'vue'
+import { useUser } from '../../../composables/firestore/user/useUser'
+import { useAppEnsure } from '../../../composables/app/useEnsureApp'
 const { user } = useUser()
 const coreUser = computed(() => user.value?.core ?? null)
 if (import.meta.dev) {

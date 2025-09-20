@@ -65,6 +65,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+// Try to use Nuxt UI toast if available in app context
+const useToastFn = (globalThis as any).useToast as undefined | (() => any)
+const toast = useToastFn ? useToastFn() : undefined
 import { useStorage } from '@vueuse/core'
 
 const props = defineProps<{
@@ -135,7 +138,13 @@ function onSelect(e: Event) {
   // Check if it's an image file
   if (!file.type.startsWith('image/')) {
     console.error('❌ File is not an image')
-    alert('Please select an image file')
+    if (toast)
+      toast.add({
+        title: 'Invalid file',
+        description: 'Please select an image file',
+        icon: 'i-heroicons-exclamation-triangle',
+        color: 'amber',
+      })
     input.value = ''
     return
   }
@@ -164,7 +173,13 @@ function onSelect(e: Event) {
     })
     .catch((error) => {
       console.error('❌ Error processing image:', error)
-      alert('Failed to process image. Please try a different file.')
+      if (toast)
+        toast.add({
+          title: 'Processing failed',
+          description: 'Please try a different image file',
+          icon: 'i-heroicons-x-circle',
+          color: 'red',
+        })
     })
 
   // Clear the input so re-selecting the same file triggers change

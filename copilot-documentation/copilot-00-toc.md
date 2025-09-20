@@ -8,6 +8,12 @@ updated: 2025-09-01
 
 # Copilot Table of Contents
 
+## Meta
+
+- Reports
+  - [Documentation Inventory and Halving Plan](./documentation-report.md)
+  - [Post-cleanup Report](./report.md)
+
 ## Core Handbook
 
 - [Overview](./copilot-01-overview.md)
@@ -20,21 +26,13 @@ updated: 2025-09-01
 
 > Git & GitHub: see the simple flow in [Dev Workflow](./copilot-05-dev-workflow.md#git--github-simple-flow) and quick commands in the [Cheatsheet](./copilot-appendices/copilot-commands-cheatsheet.md#git--github-simple).
 
-## Copilot Instruction Packs
-
-- [How to use these files](./copilot-instructions/README.md)
-- [Core & Modules](./copilot-instructions/copilot-instructions-core.md)
-- [Apps & Projects](./copilot-instructions/copilot-instructions-projects.md)
-- [Firebase](./copilot-instructions/copilot-instructions-firebase.md)
-- [Maintenance](./copilot-instructions/copilot-instructions-maintenance.md)
-
 ## Appendices
 
 - [Environment Variables Reference](./copilot-appendices/copilot-env-reference.md)
 - [Commands Cheatsheet](./copilot-appendices/copilot-commands-cheatsheet.md)
 - [Error Handbook](./copilot-appendices/copilot-error-handbook.md)
 - [Troubleshooting](./copilot-appendices/copilot-troubleshooting.md)
-- [Minimal Profile Creation Flow](./flow.md)
+- [Doc vs Code Audit Prompts](./copilot-appendices/doc-audit-prompts.md)
 
 ## Architecture Decision Records (ADR)
 

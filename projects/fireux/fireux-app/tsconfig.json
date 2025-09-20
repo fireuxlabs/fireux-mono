@@ -24,7 +24,7 @@
     "skipLibCheck": true,
     "types": ["nuxt", "vite/client", "@vite-pwa/nuxt"]
   },
-  "include": ["./.nuxt/nuxt.d.ts", "./**/*"],
+  "include": ["./.nuxt/nuxt.d.ts", "./**/*.ts", "./**/*.d.ts"],
   "exclude": [
     "node_modules",
     "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"

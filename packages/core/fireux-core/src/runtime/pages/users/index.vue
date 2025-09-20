@@ -44,7 +44,7 @@ import { useSeoMeta } from 'nuxt/app'
 import { useUser } from '../../composables/firestore/user/useUser'
 import { useFireUXConfig } from '../../composables/FireUXConfig'
 import { useFirestoreRead } from '../../composables/firestore/useFirestoreRead'
-import type { UnifiedUser } from '../../models/core/user.model'
+import type { User } from '../../models/core/user.model'
 
 const { role, appId } = useFireUXConfig()
 const isTenantApp = computed(() => role === 'tenant')
@@ -61,7 +61,7 @@ const safeDisplay = (vs: Array<string | undefined>, fallback: string) => {
   }
   return fallback
 }
-const me = computed<UnifiedUser.Card.Profile | null>(() => {
+const me = computed<User.Card.Profile | null>(() => {
   const u: any = user.value
   if (!u) return null
   return {
@@ -93,7 +93,7 @@ const appUsersRef = appId
   ? firestoreFetchCollection<any>(`apps/${appId}/users`)
   : ref<any[] | undefined>(undefined)
 
-const usersList = computed<UnifiedUser.Card.Cell[]>(() => {
+const usersList = computed<User.Card.Cell[]>(() => {
   const src = isTenantApp.value ? appUsersRef.value : coreUsers.value
   const arr: any[] = Array.isArray(src) ? src : []
   return arr.map((u: any) => ({
