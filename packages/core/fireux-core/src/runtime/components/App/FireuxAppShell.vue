@@ -13,7 +13,7 @@
       color="warning"
       variant="subtle"
     >
-      Welcome to {{ appDisplayName }}
+      Welcome to {{ appDisplayName }} — you are in dev mode
     </UBanner>
     <!-- Dev/Debug overlay (always pinned above modal) -->
     <ClientOnly>
