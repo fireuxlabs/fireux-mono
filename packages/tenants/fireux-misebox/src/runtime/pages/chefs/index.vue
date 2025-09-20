@@ -34,7 +34,9 @@
       :filter-fn="filterFn"
       :sort-fn="sortFn"
     >
-  <template #toolbar="{ showLocal, showGlobal, showing, hasLocal, hasGlobal }">
+      <template
+        #toolbar="{ showLocal, showGlobal, showing, hasLocal, hasGlobal }"
+      >
         <div class="flex flex-wrap items-center gap-2">
           <UInput
             v-model="q"
@@ -47,10 +49,17 @@
             :options="sortOptions"
             class="min-w-[180px]"
           />
-          <div v-if="hasLocal || hasGlobal" class="ml-auto flex items-center gap-1">
+          <div
+            v-if="hasLocal || hasGlobal"
+            class="ml-auto flex items-center gap-1"
+          >
             <UBadge :label="`Showing: ${showing}`" variant="soft" />
-            <UButton size="sm" variant="ghost" @click="showLocal">Local</UButton>
-            <UButton size="sm" variant="ghost" @click="showGlobal">Global</UButton>
+            <UButton size="sm" variant="ghost" @click="showLocal"
+              >Local</UButton
+            >
+            <UButton size="sm" variant="ghost" @click="showGlobal"
+              >Global</UButton
+            >
           </div>
         </div>
       </template>
@@ -96,12 +105,14 @@ const { profile, ensure } = useProfile(chefConfig)
 // CTA logic
 const showCreate = computed(() => !profile.value)
 
-const ctaTitle = computed(() => (showCreate.value ? (chefConfig as any)?.ctaTitle || 'Create your profile' : `You're all set`))
+const ctaTitle = computed(() =>
+  showCreate.value
+    ? (chefConfig as any)?.ctaTitle || 'Create your profile'
+    : `You're all set`
+)
 
 const primaryLabel = computed(() =>
-  showCreate.value
-    ? 'Create Chef Profile'
-    : `Add to ${tenancyDisplay} Chefs`
+  showCreate.value ? 'Create Chef Profile' : `Add to ${tenancyDisplay} Chefs`
 )
 
 // action

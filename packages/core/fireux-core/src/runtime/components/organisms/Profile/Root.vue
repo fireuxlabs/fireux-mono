@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProfile } from '../../../composables/firestore/profiles/useProfile'
 import type { ProfileConfig } from '../../../models/profiles/profile.model'
@@ -119,4 +119,15 @@ function navigate(profileDoc: any) {
   const base = props.basePath ?? `/${props.config.collectionName}`
   router.push(base.endsWith('/') ? `${base}${id}` : `${base}/${id}`)
 }
+
+/**
+ * Auto-behavior: if there is no local collection (global app),
+ * fetch global on mount so the list isn't empty by default.
+ */
+onMounted(() => {
+  if (!hasLocal.value) {
+    fetchGlobal()
+    useGlobal.value = true
+  }
+})
 </script>
