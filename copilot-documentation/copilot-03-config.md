@@ -27,32 +27,45 @@ export default defineNuxtConfig(
 ```
 
 ## TypeScript
-- Root tsconfig.base.json uses:
+- Root `tsconfig.json` uses:
   - "module": "ESNext", "moduleResolution": "Bundler"
   - central "paths" to packages/**/src/*
 - App tsconfig.json:
 
 ```json
 {
-  "extends": "./.nuxt/tsconfig.json",
+  "extends": "../tsconfig.app.base.json",
+  "files": ["../../../types/fireux.d.ts"],
   "compilerOptions": {
     "baseUrl": ".",
+    "moduleResolution": "Bundler",
     "paths": {
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
       "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"],
+      "fireux-cleanbox/*": ["../../../packages/tenants/fireux-cleanbox/src/*"],
+      "fireux-fireux/*": ["../../../packages/tenants/fireux-fireux/src/*"],
+      "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
-      "~~/*": ["./*"], "~/*": ["./*"], "@/*": ["./*"]
+      "#fireux-core-runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"],
+      "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index.d.ts"],
+      "#imports": [".nuxt/imports.d.ts"],
+      "#build/*": [".nuxt/*"]
     },
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["nuxt", "vite/client", "@vite-pwa/nuxt"]
   },
-  "include": ["./**/*"]
+  "include": ["./.nuxt/nuxt.d.ts", "./**/*.ts", "./**/*.d.ts"],
+  "exclude": [
+    "node_modules",
+    "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"
+  ]
 }
 ```
 
 ## Environment loading
-- .env next to the app (e.g. projects/misebox/niederhorn/.env)
-- VueFire reads Firebase keys from createFireuxConfig → modules: ['nuxt-vuefire', {...}]
-- Public mirroring is set under runtimeConfig.public.firebaseConfig if/when needed.
+- .env next to the app (e.g. `projects/misebox/niederhorn/.env`)
+- VueFire reads Firebase keys from `createFireuxConfig` via the `nuxt-vuefire` module options
+- Public mirroring is exposed at `runtimeConfig.public.firebaseConfig`
 
 ## fireux-core exports → import paths
 Common subpath exports and how to import them from apps:

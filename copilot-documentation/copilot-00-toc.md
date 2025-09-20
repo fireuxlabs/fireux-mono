@@ -20,11 +20,11 @@ updated: 2025-09-01
 - [Monorepo Structure](./copilot-02-structure.md)
 - [Config (Nuxt / TS / Env)](./copilot-03-config.md)
 - [Firebase (VueFire + Admin)](./copilot-04-firebase.md)
-- [Dev Workflow](./copilot-05-dev-workflow.md)
+- [Projects](./copilot-05-projects.md)
 - [CI/CD](./copilot-06-ci-cd.md)
 - [Conventions](./copilot-07-conventions.md)
 
-> Git & GitHub: see the simple flow in [Dev Workflow](./copilot-05-dev-workflow.md#git--github-simple-flow) and quick commands in the [Cheatsheet](./copilot-appendices/copilot-commands-cheatsheet.md#git--github-simple).
+> Git & GitHub: quick commands in the [Cheatsheet](./copilot-appendices/copilot-commands-cheatsheet.md#git--github-simple).
 
 ## Appendices
 

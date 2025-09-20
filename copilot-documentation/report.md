@@ -89,3 +89,20 @@ Follow-up
 - Start with `copilot-02-structure.md`
 - If a doc is stale/broken: patch or archive
 - Iterate until the handbook is trustworthy
+
+---
+
+## Audit pass #1 — results
+
+| File | Status | Notes | Suggested fix |
+| --- | --- | --- | --- |
+| copilot-00-toc.md | accurate | Links align with current set; Dev Workflow replaced by Projects; Reports/Appendices present. | keep |
+| copilot-01-overview.md | accurate | “src-first/no-dist” holds; `createFireuxConfig` import path valid. | keep |
+| copilot-02-structure.md | stale | App tsconfig nuance and aliases (#imports/#build/#fireux-core-runtime) clarified. | patch (done) |
+| copilot-03-config.md | stale | Root file is `tsconfig.json`; app tsconfig example updated to real pattern. | patch (done) |
+| copilot-04-firebase.md | stale | Auth options updated to `sessionCookie: false`; admin note added. | patch (done) |
+| copilot-05-projects.md | broken | Removed dead link to deleted instructions; deprecation kept. | patch (done) |
+| copilot-06-ci-cd.md | accurate | Scripts exist and match package.json. | keep |
+| copilot-07-conventions.md | accurate | General guidance; no API drift. | keep |
+| Appendices (all) | accurate | Cheatsheet/env/troubleshooting/prompts align; no drift. | keep |
+| ADRs | accurate | Match current practices (src-first, VueFire auth init). | keep |

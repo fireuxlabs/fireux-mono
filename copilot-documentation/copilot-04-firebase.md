@@ -10,7 +10,7 @@ updated: 2025-09-01
 
 ## Client
 - Single init path: via `nuxt-vuefire` module in `createFireuxConfig`.
-- `auth: { enabled: true, ssr: true }`
+- `auth: { enabled: true, sessionCookie: false }`
 - Do not call `initializeApp()` or `getAuth()` in custom plugins.
 - Access with VueFire composables:
 
@@ -25,6 +25,8 @@ import { useFirebaseApp, useFirebaseAuth, useCurrentUser } from 'vuefire'
 - Use firebase-admin in Nitro routes only.
 - Initialize once, reuse global admin app (guard with a singleton).
 
+Note: When Firebase admin envs are fully present (either `FIREBASE_SERVICE_ACCOUNT` JSON or split fields), `createFireuxConfig` auto-wires a minimal `admin` block for `nuxt-vuefire`.
+
 ## Common error fixes
 - auth/already-initialized: remove custom firebase client plugin; keep vuefire.
 - app/no-options: missing env vars in app .env; restart dev server.
@@ -37,4 +39,4 @@ import { useFirebaseApp, useFirebaseAuth, useCurrentUser } from 'vuefire'
 ---
 
 ### Next
-- Continue to [Dev Workflow](./copilot-05-dev-workflow.md)
+- Continue to [CI / CD](./copilot-06-ci-cd.md)
