@@ -4,13 +4,13 @@
     <div v-if="$slots.toolbar">
       <slot
         name="toolbar"
-        :is-tenant="Boolean(profile.collection?.local)"
-        :has-local="Boolean(profile.collection?.local)"
-        :has-global="Boolean(profile.collection?.global?.value)"
+        :isTenant="Boolean(profile.collection?.local)"
+        :hasLocal="Boolean(profile.collection?.local)"
+        :hasGlobal="Boolean(profile.collection?.global?.value)"
         :showing="showing"
-        :show-local="showLocal"
-        :show-global="showGlobal"
-        :fetch-global="fetchGlobal"
+        :showLocal="showLocal"
+        :showGlobal="showGlobal"
+        :fetchGlobal="fetchGlobal"
       />
     </div>
 
@@ -49,6 +49,10 @@ const props = defineProps<{
   showCurrent?: boolean
   /** Optional override for navigation base (defaults to '/<collectionName>') */
   basePath?: string
+  /** Optional client-side filter for items */
+  filterFn?: (item: any) => boolean
+  /** Optional client-side sorter for items */
+  sortFn?: (a: any, b: any) => number
 }>()
 
 const showCurrent = computed(() => props.showCurrent ?? true)
@@ -88,11 +92,23 @@ function showLocal() {
   useGlobal.value = false
 }
 
-/** Final list selection with safe fallbacks */
-const list = computed<any[]>(() => {
+/** Base list selection with safe fallbacks */
+const baseList = computed<any[]>(() => {
   if (showing.value === 'global')
     return (profile.collection?.global?.value as any[]) ?? []
   return (profile.collection?.local?.value as any[]) ?? []
+})
+
+/** Apply optional filter then sort */
+const list = computed<any[]>(() => {
+  const filtered = props.filterFn
+    ? baseList.value.filter(props.filterFn)
+    : baseList.value
+  if (props.sortFn) {
+    // Copy before sorting to avoid mutating reactive arrays
+    return [...filtered].sort(props.sortFn)
+  }
+  return filtered
 })
 
 /** Navigation helper */
