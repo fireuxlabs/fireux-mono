@@ -26,7 +26,8 @@
   },
   "dependencies": {
     "fireux-core": "workspace:*",
-    "fireux-places": "workspace:*"
+    "fireux-places": "workspace:*",
+    "fireux-jobs": "workspace:*"
   },
   "peerDependencies": {
     "nuxt": "^4.0.3",

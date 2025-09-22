@@ -2,10 +2,9 @@
   <UPage>
     <UPageBody>
       <UPageSection>
-        <!-- Profiles via reusable Root (aligned with Chef pattern) -->
         <OrganismsProfileRoot
           :config="supplierConfig"
-          :onEnsure="createSupplier"
+          :onEnsure="onEnsureSupplier"
         >
           <!-- Current profile (optional) -->
           <template #current-assets="{ profile }">
@@ -33,4 +32,7 @@ import { supplierConfig } from '../../models/profiles/Supplier.model'
 import { useSupplierCreate } from '../../composables/firestore/profiles/Supplier/useSupplierCreate'
 
 const { createSupplier } = useSupplierCreate()
+async function onEnsureSupplier() {
+  await createSupplier()
+}
 </script>

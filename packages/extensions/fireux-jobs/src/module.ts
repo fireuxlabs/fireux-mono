@@ -1,4 +1,4 @@
-import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
+import { defineNuxtModule, createResolver } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
 import { configureRuntime } from './config/runtime-config'
 import { configurePlugins } from './config/plugins-config'
@@ -20,7 +20,6 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   defaults: { prefix: 'Fire' },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    await installModule('fireux-core')
     configureRuntime(nuxt, 'jobs')
     configurePlugins(resolver)
     configureComponents(resolver, options)

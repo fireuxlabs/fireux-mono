@@ -12,6 +12,7 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
+    "types": ["nuxt", "nuxt/schema", "@nuxt/ui"],
     "paths": {
       "fireux-core": ["packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["packages/core/fireux-core/src/*"],

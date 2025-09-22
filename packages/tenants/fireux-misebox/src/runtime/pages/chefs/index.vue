@@ -3,7 +3,7 @@
   <UPage>
     <UPageBody>
       <UPageSection>
-        <OrganismsProfileRoot :config="chefConfig" :onEnsure="createChef">
+        <OrganismsProfileRoot :config="chefConfig" :onEnsure="onEnsureChef">
           <!-- Current profile (optional) -->
           <template #current-assets="{ profile }">
             <template v-if="profile">
@@ -27,4 +27,9 @@ import { chefConfig } from '../../models/profiles/Chef.model'
 import { useChefCreate } from '../../composables/firestore/profiles/Chef/useChefCreate'
 
 const { createChef } = useChefCreate()
+
+async function onEnsureChef() {
+  // minimal: delegate creation; no UI side-effects here
+  await createChef()
+}
 </script>

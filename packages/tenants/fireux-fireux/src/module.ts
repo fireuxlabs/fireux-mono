@@ -1,4 +1,4 @@
-import { defineNuxtModule, installModule, createResolver } from '@nuxt/kit'
+import { defineNuxtModule, createResolver } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
 import { configureRuntime } from './config/runtime-config'
 import { configurePlugins } from './config/plugins-config'
@@ -17,8 +17,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // Install core dependency
-    await installModule('fireux-core')
+  // Core is provided by the app via createFireuxConfig; do not install here
 
     configureRuntime(nuxt, 'fireux')
     configurePlugins(resolver)

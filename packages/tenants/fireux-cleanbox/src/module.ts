@@ -23,7 +23,8 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    await installModule('fireux-core')
+    // Core is provided by the app via createFireuxConfig; do not install here
+    await installModule('fireux-jobs')
 
     configureRuntime(nuxt, 'cleanbox')
     configurePlugins(resolver)

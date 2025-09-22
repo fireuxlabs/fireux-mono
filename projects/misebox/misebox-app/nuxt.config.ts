@@ -8,6 +8,6 @@ export default defineNuxtConfig(<NuxtConfig>{
     appShortName: 'Misebox',
     ecosystem: 'misebox',
     modules: ['fireux-misebox'],
-    role: 'global', 
+    role: 'global',
   }),
 })

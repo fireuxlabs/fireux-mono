@@ -27,7 +27,7 @@
       "fireux-core": ["../../core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../core/fireux-core/src/*"]
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["nuxt", "nuxt/schema", "@nuxt/ui", "@types/node"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
   "exclude": [

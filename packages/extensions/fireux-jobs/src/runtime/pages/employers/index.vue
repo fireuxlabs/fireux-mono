@@ -2,10 +2,9 @@
   <UPage>
     <UPageBody>
       <UPageSection>
-        <!-- Profiles via reusable Root (aligned with Chef pattern) -->
         <OrganismsProfileRoot
           :config="employerConfig"
-          :onEnsure="createEmployer"
+          :onEnsure="onEnsureEmployer"
         >
           <!-- Current profile (optional) -->
           <template #current-assets="{ profile }">
@@ -33,4 +32,7 @@ import { employerConfig } from '../../models/profiles/Employer.model'
 import { useEmployerCreate } from '../../composables/firestore/profiles/Employer/useEmployerCreate'
 
 const { createEmployer } = useEmployerCreate()
+async function onEnsureEmployer() {
+  await createEmployer()
+}
 </script>

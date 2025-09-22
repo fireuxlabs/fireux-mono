@@ -2,10 +2,9 @@
   <UPage>
     <UPageBody>
       <UPageSection>
-        <!-- Profiles via reusable Root (aligned with Chef pattern) -->
         <OrganismsProfileRoot
           :config="professionalConfig"
-          :onEnsure="createProfessional"
+          :onEnsure="onEnsureProfessional"
         >
           <!-- Current profile (optional) -->
           <template #current-assets="{ profile }">
@@ -33,4 +32,7 @@ import { professionalConfig } from '../../models/profiles/Professional.model'
 import { useProfessionalCreate } from '../../composables/firestore/profiles/Professional/useProfessionalCreate'
 
 const { createProfessional } = useProfessionalCreate()
+async function onEnsureProfessional() {
+  await createProfessional()
+}
 </script>
