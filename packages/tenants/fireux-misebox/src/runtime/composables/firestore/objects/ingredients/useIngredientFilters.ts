@@ -1,5 +1,5 @@
 import { ref, computed, type Ref } from 'vue'
-import type { Ingredient } from '../../models/objects/Ingredient.model'
+import type { Ingredient } from '../../../../models/objects/Ingredient.model'
 
 // Ingredient-specific filtering composable
 export function useIngredientFilters(ingredients: Ref<Ingredient[]>) {
@@ -23,10 +23,10 @@ export function useIngredientFilters(ingredients: Ref<Ingredient[]>) {
         const matchesDescription = ingredient.description
           ?.toLowerCase()
           .includes(searchTerm)
-        const matchesTags = ingredient.tags?.some((tag) =>
+        const matchesTags = ingredient.tags?.some((tag: string) =>
           tag.toLowerCase().includes(searchTerm)
         )
-        const matchesCategories = ingredient.categories?.some((cat) =>
+        const matchesCategories = ingredient.categories?.some((cat: string) =>
           cat.toLowerCase().includes(searchTerm)
         )
 
@@ -50,7 +50,7 @@ export function useIngredientFilters(ingredients: Ref<Ingredient[]>) {
 
       // Filter by allergens (exclude ingredients with selected allergens)
       if (filters.value.allergens.length > 0) {
-        const hasAllergen = ingredient.allergens?.some((allergen) =>
+        const hasAllergen = ingredient.allergens?.some((allergen: string) =>
           filters.value.allergens.includes(allergen)
         )
         if (hasAllergen) return false
@@ -80,7 +80,7 @@ export function useIngredientFilters(ingredients: Ref<Ingredient[]>) {
     const categories = new Set<string>()
     ingredients.value?.forEach((ingredient) => {
       if (ingredient.category) categories.add(ingredient.category)
-      ingredient.categories?.forEach((cat) => categories.add(cat))
+      ingredient.categories?.forEach((cat: string) => categories.add(cat))
     })
     return Array.from(categories).sort()
   })
@@ -88,7 +88,9 @@ export function useIngredientFilters(ingredients: Ref<Ingredient[]>) {
   const availableAllergens = computed(() => {
     const allergens = new Set<string>()
     ingredients.value?.forEach((ingredient) => {
-      ingredient.allergens?.forEach((allergen) => allergens.add(allergen))
+      ingredient.allergens?.forEach((allergen: string) =>
+        allergens.add(allergen)
+      )
     })
     return Array.from(allergens).sort()
   })

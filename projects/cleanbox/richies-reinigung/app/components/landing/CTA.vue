@@ -34,8 +34,8 @@
   </section>
 </template>
 
-<script setup>
-// No additional script needed
+<script setup lang="ts">
+// Deprecated Landing CTA stub. Use <PageCta />.
 </script>
 
 <style scoped>

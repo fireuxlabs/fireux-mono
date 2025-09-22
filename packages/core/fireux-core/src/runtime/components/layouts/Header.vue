@@ -68,7 +68,7 @@
 import { ref, computed, watch } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import { useRouter, useRoute } from 'vue-router'
-import { useUser } from '../../composables/firestore/user/useUser'
+import { useUser } from '../../composables/firestore/users/useUser'
 
 // Unified user
 const { user, initials, displayName, avatarSrc, isSignedIn } = useUser()

@@ -14,9 +14,10 @@ export function useSupplierQuickCreate() {
       // Simulate create and return minimal supplier object
       const supplier: Supplier = {
         id: 'supplier-mock-id',
-        name,
+        display_name: name,
         avatar: '',
-        created_at: new Date().toISOString(),
+        core: null,
+        app: null,
       } as any
       createdSupplier.value = supplier
       return supplier

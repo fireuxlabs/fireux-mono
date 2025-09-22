@@ -1,51 +1,36 @@
 <template>
-  <div class="page space-y-4">
-    <!-- CTAs -->
-    <OrganismsUserCoreCTA v-if="!coreUser" />
-    <template v-else>
-      <OrganismsUserAppCTA v-if="role === 'tenant' && !appUser" />
-      <OrganismsProfilesSupplierCTA />
-    </template>
+  <UPage>
+    <UPageBody>
+      <UPageSection>
+        <!-- Profiles via reusable Root (aligned with Chef pattern) -->
+        <OrganismsProfileRoot
+          :config="supplierConfig"
+          :onEnsure="createSupplier"
+        >
+          <!-- Current profile (optional) -->
+          <template #current-assets="{ profile }">
+            <template v-if="profile">
+              <OrganismsProfilesSupplierCardsPill
+                :supplier="profile"
+                class="mb-3"
+              />
+              <OrganismsProfilesSupplierCardsCell :supplier="profile" />
+            </template>
+          </template>
 
-    <!-- Profiles via reusable Root -->
-    <OrganismsProfileRoot :config="supplierConfig">
-      <template #profile-pill="{ profile, navigate }">
-        <OrganismsProfilesSupplierCardsPill
-          class="cursor-pointer"
-          :supplier="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-
-      <template #profile-card="{ profile, navigate }">
-        <OrganismsProfilesSupplierCardsProfile
-          class="cursor-pointer"
-          :supplier="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-
-      <template #profile-item="{ profile, navigate }">
-        <OrganismsProfilesSupplierCardsCell
-          class="cursor-pointer"
-          :supplier="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-    </OrganismsProfileRoot>
-  </div>
+          <!-- List items -->
+          <template #item="{ profile }">
+            <OrganismsProfilesSupplierCardsCell :supplier="profile" />
+          </template>
+        </OrganismsProfileRoot>
+      </UPageSection>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { supplierConfig } from '../../models/profiles/Supplier.model'
-import { useApp } from 'fireux-core/runtime/composables/app/useApp'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useSupplierCreate } from '../../composables/firestore/profiles/Supplier/useSupplierCreate'
 
-const { role } = useApp()
-const { user } = useUser()
-
-// Bridge legacy template variables
-const coreUser = computed(() => user.value?.core)
-const appUser = computed(() => user.value?.app)
+const { createSupplier } = useSupplierCreate()
 </script>

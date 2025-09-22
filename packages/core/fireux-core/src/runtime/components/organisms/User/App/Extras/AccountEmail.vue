@@ -77,7 +77,7 @@
 <script setup>
 import { useEditHandler } from '../../../../composables/utils/useEditHandler'
 
-import { useUser } from '../../../../../composables/firestore/user/useUser'
+import { useUser } from '../../../../../composables/firestore/users/useUser'
 const { user } = useUser()
 const hasApp = computed(() => !!user.value?.app)
 const email = computed(() => user.value?.app?.email || '')

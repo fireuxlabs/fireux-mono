@@ -15,8 +15,26 @@
     <!-- Integrations Component -->
     <LandingIntegrations />
 
-    <!-- Call to Action -->
-    <LandingCTA />
+    <!-- Call to Action (Nuxt UI PageCta) -->
+    <PageCta
+      title="Run a smarter cleaning business"
+      description="Sign in to set up your account and start scheduling jobs."
+      :links="[
+        {
+          label: 'Get started',
+          to: '/auth',
+          color: 'primary',
+          icon: 'i-heroicons-rocket-launch-20-solid',
+        },
+        {
+          label: 'Docs',
+          to: 'https://ui4.nuxt.com',
+          target: '_blank',
+          variant: 'ghost',
+          color: 'neutral',
+        },
+      ]"
+    />
 
     <!-- Content from CMS (if available) -->
     <div v-if="page">

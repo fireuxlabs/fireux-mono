@@ -33,8 +33,8 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useHead, navigateTo, useSeoMeta } from 'nuxt/app'
-import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/useFirestoreRead'
+import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
 import { chefConfig } from '../../models/profiles/Chef.model'
 
 const route = useRoute()
@@ -51,11 +51,11 @@ useSeoMeta({
 const { user } = useUser()
 const appUser = computed(() => user.value?.app)
 
-// Use our unified profile composable
-const { fetchById } = useProfile(chefConfig)
-
-// Load chef
-const chef = chefId ? await fetchById(chefId) : null
+// Load chef via shared read composable
+const { firestoreFetchDoc } = useFirestoreRead()
+const chef = chefId
+  ? await firestoreFetchDoc(chefConfig.collectionName, chefId)
+  : null
 
 // Update head dynamically when chef data loads
 useHead({

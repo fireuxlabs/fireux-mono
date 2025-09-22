@@ -6,7 +6,18 @@
         <ProfilesChefEdit :chef="chef" />
       </div>
       <div v-else>
-        <ProfilesChefCTA />
+        <div class="space-y-3">
+          <p>Create your chef profile to get started.</p>
+          <button
+            class="btn"
+            type="button"
+            @click="onCreateChef"
+            :disabled="creating"
+          >
+            {{ creating ? 'Creating…' : 'Create Chef Profile' }}
+          </button>
+          <p v-if="error" class="text-red-600 text-sm">{{ error }}</p>
+        </div>
       </div>
     </div>
 
@@ -20,9 +31,11 @@
 
 <script setup lang="ts">
 import { useSeoMeta } from 'nuxt/app'
+import { ref, computed } from 'vue'
 import { chefConfig } from '../../models/profiles/Chef.model'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
 import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
+import { useChefCreate } from '../../composables/firestore/profiles/Chef/useChefCreate'
 
 // Define static page meta first
 useSeoMeta({
@@ -34,5 +47,22 @@ useSeoMeta({
 useUser()
 
 // Use our unified profile composable
-const { current: chef } = useProfile(chefConfig)
+const { profile } = useProfile(chefConfig)
+const chef = computed(() => profile.value)
+
+// Inline create flow (replaces deleted CTA component)
+const { createChef } = useChefCreate()
+const creating = ref(false)
+const error = ref<string | null>(null)
+async function onCreateChef() {
+  try {
+    creating.value = true
+    error.value = null
+    await createChef()
+  } catch (e: any) {
+    error.value = e?.message || String(e)
+  } finally {
+    creating.value = false
+  }
+}
 </script>

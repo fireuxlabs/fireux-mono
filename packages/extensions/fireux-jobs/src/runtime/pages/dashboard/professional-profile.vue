@@ -6,7 +6,18 @@
         <JobProfilesProfessionalEdit :professional="professional" />
       </div>
       <div v-else>
-        <JobProfilesProfessionalCTA />
+        <div class="space-y-3">
+          <p>Create your professional profile to get started.</p>
+          <button
+            class="btn"
+            type="button"
+            @click="onCreateProfessional"
+            :disabled="creating"
+          >
+            {{ creating ? 'Creating…' : 'Create Professional Profile' }}
+          </button>
+          <p v-if="error" class="text-red-600 text-sm">{{ error }}</p>
+        </div>
       </div>
     </div>
 
@@ -19,7 +30,12 @@
 </template>
 
 <script setup lang="ts">
+// Nuxt macro declaration for TS in package context
+declare const definePageMeta: (meta: any) => void
+import { ref, computed } from 'vue'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
 import { professionalConfig } from '../../models/profiles/Professional.model'
+import { useProfessionalCreate } from '../../composables/firestore/profiles/Professional/useProfessionalCreate'
 
 // Define static page meta first
 definePageMeta({
@@ -27,9 +43,23 @@ definePageMeta({
   description: 'Edit your professional profile',
 })
 
-// Get current user
-const { appUser, hasProfile } = useAppUser()
-
 // Use our unified profile composable
-const { current: professional } = useProfile(professionalConfig)
+const { profile } = useProfile(professionalConfig)
+const professional = computed(() => profile.value)
+
+// Inline create flow
+const { createProfessional } = useProfessionalCreate()
+const creating = ref(false)
+const error = ref<string | null>(null)
+async function onCreateProfessional() {
+  try {
+    creating.value = true
+    error.value = null
+    await createProfessional()
+  } catch (e: any) {
+    error.value = e?.message || String(e)
+  } finally {
+    creating.value = false
+  }
+}
 </script>

@@ -1,26 +1,23 @@
 import { ref, computed, type Ref } from 'vue'
-import type { ChefCoreProfile as Chef } from '../../models/profiles/Chef.model'
+import type { Supplier } from '../../../../models/profiles/Supplier.model'
 
-// Chef-specific filtering composable
-export function useChefFilters(profiles: Ref<Chef[]>) {
+// Supplier-specific filtering composable (boilerplate for now)
+export function useSupplierFilters(profiles: Ref<Supplier[]>) {
   const filters = ref({
     search: '',
+    // Add supplier-specific filters later
   })
 
   const filteredProfiles = computed(() => {
     if (!profiles.value) return []
 
-    return profiles.value.filter((chef: Chef) => {
+    return profiles.value.filter((supplier: Supplier) => {
       // Filter by search term
       if (filters.value.search) {
         const searchTerm = filters.value.search.toLowerCase()
-        const chefName = chef.display_name?.toLowerCase() || ''
-        const specialties = chef.specialties?.join(' ').toLowerCase() || ''
+        const businessName = (supplier.display_name || '').toLowerCase()
 
-        if (
-          !chefName.includes(searchTerm) &&
-          !specialties.includes(searchTerm)
-        ) {
+        if (!businessName.includes(searchTerm)) {
           return false
         }
       }

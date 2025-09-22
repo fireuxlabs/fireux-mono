@@ -1,9 +1,9 @@
 <template>
   <UCard class="profile-card">
     <div class="profile-header">
-      <UAvatar :src="supplier.avatar" :alt="supplier.name" size="md" />
+      <UAvatar :src="supplier.avatar" :alt="supplier.display_name" size="md" />
       <div class="profile-info">
-        <h4 class="profile-name">{{ supplier.name }}</h4>
+        <h4 class="profile-name">{{ supplier.display_name }}</h4>
         <p v-if="supplier.title" class="profile-subtitle">
           {{ supplier.title }}
         </p>
@@ -29,6 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCellProps } from '../../../../../models/profiles/Supplier.model'
-defineProps<{ supplier: SupplierCellProps }>()
+import type { SupplierCard } from '../../../../../models/profiles/Supplier.model'
+defineProps<{ supplier: SupplierCard.Cell }>()
 </script>

@@ -15,6 +15,10 @@
     "paths": {
       "fireux-core": ["packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["packages/core/fireux-core/src/*"],
+      "fireux-core/runtime/*": ["packages/core/fireux-core/src/runtime/*"],
+      "fireux-core/runtime/composables/*": [
+        "packages/core/fireux-core/src/runtime/composables/*"
+      ],
       "fireux-core/config/*": ["packages/core/fireux-core/src/config/*"],
       "#fireux-core-runtime/*": ["packages/core/fireux-core/src/runtime/*"],
       "fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],

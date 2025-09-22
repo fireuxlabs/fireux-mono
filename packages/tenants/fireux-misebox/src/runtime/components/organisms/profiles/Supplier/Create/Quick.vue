@@ -33,14 +33,14 @@
     </div>
 
     <div v-if="createdSupplier" class="success-message">
-      ✅ Created supplier: {{ createdSupplier.name }}
+      ✅ Created supplier: {{ createdSupplier.display_name }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useSupplierQuickCreate } from '../../../../../composables/firestore/profiles/suppliers/useSupplierQuickCreate'
+import { useSupplierQuickCreate } from '../../../../../composables/firestore/profiles/Supplier/useSupplierQuickCreate'
 
 // Emits
 const emit = defineEmits<{

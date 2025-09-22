@@ -10,7 +10,7 @@ import {
 } from 'firebase/auth'
 
 // Unified ensure to avoid spinning up reactive docs here
-import { useUserEnsure } from '../firestore/user/useUserEnsure'
+import { useUserEnsure } from '../firestore/users/useUserEnsure'
 import { useFireUXConfig } from '../FireUXConfig'
 
 export function useAuth() {

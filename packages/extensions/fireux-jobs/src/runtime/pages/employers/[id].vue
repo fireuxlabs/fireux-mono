@@ -41,12 +41,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useHead, useRoute, navigateTo, useSeoMeta } from 'nuxt/app'
-import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/useFirestoreRead'
 import { employerConfig } from '../../models/profiles/Employer.model'
 
 const route = useRoute()
-const employerId = route.params.id as string
+const idParam = route.params.id
+const employerId = Array.isArray(idParam) ? idParam[0] : String(idParam || '')
 
 // Static SEO meta
 useSeoMeta({
@@ -58,11 +59,11 @@ useSeoMeta({
 const { user } = useUser()
 const appUser = computed(() => user.value?.app)
 
-// Use our unified profile composable
-const { fetchById } = useProfile(employerConfig)
-
-// Fetch employer data
-const employer = await fetchById(employerId)
+// Fetch employer data via shared read composable
+const { firestoreFetchDoc } = useFirestoreRead()
+const employer = employerId
+  ? await firestoreFetchDoc(employerConfig.collectionName, employerId)
+  : null
 
 // Navigation function for edit profile
 const navigateToEdit = () => {
@@ -72,8 +73,8 @@ const navigateToEdit = () => {
 // Update head dynamically when employer data loads
 useHead({
   title: computed(() =>
-    (employer as any)?.name || (employer as any)?.company_name
-      ? `${(employer as any)?.name || (employer as any)?.company_name} - Employer Profile`
+    (employer as any)?.value?.name || (employer as any)?.value?.company_name
+      ? `${(employer as any)?.value?.name || (employer as any)?.value?.company_name} - Employer Profile`
       : 'Employer Profile'
   ),
   meta: [
@@ -81,8 +82,8 @@ useHead({
       name: 'description',
       content: computed(
         () =>
-          (employer as any)?.bioShort ||
-          (employer as any)?.bio_short ||
+          (employer as any)?.value?.bioShort ||
+          (employer as any)?.value?.bio_short ||
           'View employer profile'
       ),
     },

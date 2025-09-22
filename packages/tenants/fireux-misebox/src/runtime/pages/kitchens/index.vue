@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
 import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
 import { chefConfig } from '../../models/profiles/Chef.model'
 
@@ -25,5 +25,6 @@ const hasProfile = (profileType: string) => {
   const list = Array.isArray(app.app_profiles) ? app.app_profiles : []
   return profileType ? list.includes(profileType) : !!app
 }
-const { current: chef } = useProfile(chefConfig)
+const { profile } = useProfile(chefConfig)
+const chef = computed(() => profile.value)
 </script>

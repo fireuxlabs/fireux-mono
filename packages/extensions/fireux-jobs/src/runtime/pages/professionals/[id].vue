@@ -41,12 +41,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useHead, useRoute, navigateTo, useSeoMeta } from 'nuxt/app'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
-import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
+import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/useFirestoreRead'
 import { professionalConfig } from '../../models/profiles/Professional.model'
 
 const route = useRoute()
-const professionalId = route.params.id as string
+const idParam = route.params.id
+const professionalId = Array.isArray(idParam)
+  ? idParam[0]
+  : String(idParam || '')
 
 // Static SEO meta
 useSeoMeta({
@@ -58,11 +61,11 @@ useSeoMeta({
 const { user } = useUser()
 const appUser = computed(() => user.value?.app)
 
-// Use our unified profile composable
-const { fetchById } = useProfile(professionalConfig)
-
-// Fetch professional data
-const professional = await fetchById(professionalId)
+// Fetch professional data via shared read composable
+const { firestoreFetchDoc } = useFirestoreRead()
+const professional = professionalId
+  ? await firestoreFetchDoc(professionalConfig.collectionName, professionalId)
+  : null
 
 // Navigation function for edit profile
 const navigateToEdit = () => {
@@ -72,8 +75,9 @@ const navigateToEdit = () => {
 // Update head dynamically when professional data loads
 useHead({
   title: computed(() =>
-    (professional as any)?.name || (professional as any)?.professional_name
-      ? `${(professional as any)?.name || (professional as any)?.professional_name} - Professional Profile`
+    (professional as any)?.value?.name ||
+    (professional as any)?.value?.professional_name
+      ? `${(professional as any)?.value?.name || (professional as any)?.value?.professional_name} - Professional Profile`
       : 'Professional Profile'
   ),
   meta: [
@@ -81,8 +85,8 @@ useHead({
       name: 'description',
       content: computed(
         () =>
-          (professional as any)?.bioShort ||
-          (professional as any)?.bio_short ||
+          (professional as any)?.value?.bioShort ||
+          (professional as any)?.value?.bio_short ||
           'View professional profile'
       ),
     },

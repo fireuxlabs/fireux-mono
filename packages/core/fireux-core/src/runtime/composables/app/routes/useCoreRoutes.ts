@@ -2,7 +2,7 @@ import { useAppUserRoutes } from './useAppUserRoutes'
 import { useAdminRoutes } from './useAdminRoutes'
 import { useSystemRoutes } from './useSystemRoutes'
 import { computed } from 'vue'
-import { useUser } from '../../firestore/user/useUser'
+import { useUser } from '../../firestore/users/useUser'
 
 export function useCoreRoutes() {
   // Always available

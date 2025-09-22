@@ -1,8 +1,5 @@
 <template>
   <div class="auth-authenticated">
-    <!-- Unified CTA: renders role-aware actions -->
-    <OrganismsUserCTA />
-
     <div class="button-group">
       <UButton block @click="handleClick">
         {{ buttonLabel }}

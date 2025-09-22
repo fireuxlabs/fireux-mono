@@ -1,9 +1,8 @@
 import { ref, computed, type Ref } from 'vue'
 import type { Professional } from '../../models/profiles/Professional.model'
-import type { ProfessionalJobsProfileExtension } from '../../models/profileExtensions'
 
 // Professional-specific filtering composable (boilerplate for now)
-export function useProfessionalFilters(profiles: Ref<(Professional & ProfessionalJobsProfileExtension)[]>) {
+export function useProfessionalFilters(profiles: Ref<Professional[]>) {
   const filters = ref({
     search: '',
     // Add professional-specific filters later (salary, completed jobs, etc.)
@@ -12,11 +11,11 @@ export function useProfessionalFilters(profiles: Ref<(Professional & Professiona
   const filteredProfiles = computed(() => {
     if (!profiles.value) return []
 
-  return profiles.value.filter((professional: Professional & ProfessionalJobsProfileExtension) => {
+    return profiles.value.filter((professional: Professional) => {
       // Filter by search term
       if (filters.value.search) {
         const searchTerm = filters.value.search.toLowerCase()
-        const professionalName = professional.professional_name?.toLowerCase() || ''
+        const professionalName = professional.display_name?.toLowerCase() || ''
 
         if (!professionalName.includes(searchTerm)) {
           return false

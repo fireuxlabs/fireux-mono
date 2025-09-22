@@ -1,11 +1,11 @@
 <template>
   <ClientOnly>
     <div>
-      <div v-if="supplier">
-        <MiseSupplierProfile :supplier="supplier" />
+      <div v-if="supplierData">
+        <MiseSupplierProfile :supplier="supplierData" />
 
         <!-- Edit Profile Button (shown when viewing own profile) -->
-        <div v-if="appUser?.id === supplier.id" class="edit-profile-section">
+  <div v-if="appUser?.id === supplierData.id" class="edit-profile-section">
           <UButton
             @click="navigateToEdit"
             icon="i-lucide-pencil"
@@ -38,8 +38,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useHead, navigateTo, useSeoMeta } from 'nuxt/app'
-import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/useFirestoreRead'
+import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
 import { supplierConfig } from '../../models/profiles/Supplier.model'
 
 const route = useRoute()
@@ -55,11 +55,12 @@ useSeoMeta({
 const { user } = useUser()
 const appUser = computed(() => user.value?.app)
 
-// Use our unified profile composable
-const { fetchById } = useProfile(supplierConfig)
-
-// Fetch supplier data
-const supplier = await fetchById(supplierId)
+// Fetch supplier data via shared read composable
+const { firestoreFetchDoc } = useFirestoreRead()
+const supplier = supplierId
+  ? await firestoreFetchDoc(supplierConfig.collectionName, supplierId)
+  : null
+const supplierData = computed(() => (supplier as any)?.value ?? null)
 
 // Navigation function for edit profile
 const navigateToEdit = () => {
@@ -69,14 +70,16 @@ const navigateToEdit = () => {
 // Update head dynamically when supplier data loads
 useHead({
   title: computed(() =>
-    supplier?.company_name
-      ? `${supplier.company_name} - Supplier Profile`
+    (supplier as any)?.value?.company_name
+      ? `${(supplier as any)?.value?.company_name} - Supplier Profile`
       : 'Supplier Profile'
   ),
   meta: [
     {
       name: 'description',
-      content: computed(() => supplier?.bio_short || 'View supplier profile'),
+      content: computed(
+        () => (supplier as any)?.value?.bio_short || 'View supplier profile'
+      ),
     },
   ],
 })

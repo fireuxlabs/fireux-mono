@@ -1,120 +1,132 @@
+<!-- packages/tenants/fireux-misebox/src/runtime/pages/users/index.vue -->
 <template>
-  <div class="page space-y-6">
-    <!-- CTA (simple, unified) -->
-    <OrganismsUserCTA />
+  <UPage>
+    <UPageBody class="space-y-6">
+      <!-- Current (whatever exists: core/app) -->
+      <UCard v-if="currentUser">
+        <h3 class="mb-3">Your Profile</h3>
+        <div class="grid gap-4 md:grid-cols-2">
+          <OrganismsUserCardsPill :user="currentUser" />
+          <OrganismsUserCardsProfile :user="currentUser" />
+        </div>
+      </UCard>
 
-    <!-- Your User -->
-    <UCard v-if="me">
-      <h3 class="mb-3">Your User</h3>
-      <div class="grid gap-4 md:grid-cols-2">
-        <OrganismsUserCardsPill :user="me" />
-        <OrganismsUserCardsProfile :user="me" />
+      <!-- CTA when missing (global OR app overlay) -->
+      <div v-if="showCreate">
+        <UPageSection>
+          <UPageCTA
+            :title="ctaMessage || 'Complete your user profile to continue.'"
+            variant="soft"
+          >
+            <template #links>
+              <UButton
+                size="lg"
+                color="primary"
+                :label="primaryLabel"
+                :loading="ensuring"
+                :disabled="ensuring"
+                @click="onEnsure"
+              />
+            </template>
+          </UPageCTA>
+        </UPageSection>
       </div>
-    </UCard>
 
-    <!-- All Users (Core vs App) -->
-    <UCard>
-      <div class="flex items-center justify-between mb-3">
-        <h3>
-          All Users
-          <span v-if="isTenantApp">(App)</span>
-          <span v-else>(Core)</span>
-          ({{ usersList.length }})
-        </h3>
-      </div>
-      <div
-        v-if="usersList.length"
-        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        <OrganismsUserCardsCell
-          v-for="u in usersList"
-          :key="u.id"
-          :user="u"
-          class="cursor-default"
-        />
-      </div>
-      <p v-else class="opacity-70">No users found.</p>
-    </UCard>
-  </div>
+      <!-- All Users (role-aware: app in tenant, core otherwise) -->
+      <UCard>
+        <div class="flex items-center justify-between mb-3">
+          <h3>
+            All Users
+            <span v-if="hasLocal">(App)</span>
+            <span v-else>(Core)</span>
+            ({{ usersList.length }})
+          </h3>
+          <div class="flex items-center gap-2">
+            <span class="opacity-70 text-sm">Showing: {{ showing }}</span>
+            <UButton
+              v-if="hasLocal && !hasGlobalLoaded"
+              size="xs"
+              variant="ghost"
+              @click="fetchGlobal"
+            >
+              Load global
+            </UButton>
+          </div>
+        </div>
+
+        <div
+          v-if="usersList.length"
+          class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          <OrganismsUserCardsCell
+            v-for="u in usersList"
+            :key="u.id"
+            :user="u"
+            class="cursor-default"
+          />
+        </div>
+        <p v-else class="opacity-70">No users found.</p>
+      </UCard>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useSeoMeta } from 'nuxt/app'
-import { useUser } from '../../composables/firestore/user/useUser'
-import { useFireUXConfig } from '../../composables/FireUXConfig'
-import { useFirestoreRead } from '../../composables/firestore/useFirestoreRead'
-import type { User } from '../../models/core/user.model'
+import { computed, ref } from 'vue'
+import { useUser } from '../../composables/firestore/users/useUser'
 
-const { role, appId } = useFireUXConfig()
-const isTenantApp = computed(() => role === 'tenant')
+// Unified user + collections + ensure/delete helpers
+const {
+  user,
+  collection,
+  ensureUser,
+  ctaMessage,
+  hasCoreProfile: hasCoreUserProfile,
+  hasAppProfile: hasAppUserProfile,
+} = useUser()
 
-// current unified user mapped to card profile shape
-const { user } = useUser()
-const looksLikeEmail = (v?: string) => !!v && v.includes('@')
-const safeDisplay = (vs: Array<string | undefined>, fallback: string) => {
-  for (const v of vs) {
-    if (!v) continue
-    if (looksLikeEmail(v)) continue
-    const t = v.trim()
-    if (t) return t
+/** CTA visibility: show when missing global OR (tenant) app overlay.
+ *  In global env hasAppUserProfile is undefined → treat as satisfied.
+ */
+const showCreate = computed(() => {
+  const hasCore = hasCoreUserProfile.value
+  const hasApp = hasAppUserProfile?.value ?? true
+  return !(hasCore && hasApp)
+})
+const primaryLabel = computed(() =>
+  hasCoreUserProfile.value ? 'Add to this app' : 'Create User'
+)
+
+// CTA action (guarded)
+const ensuring = ref(false)
+async function onEnsure() {
+  if (ensuring.value) return
+  ensuring.value = true
+  try {
+    await ensureUser()
+  } finally {
+    ensuring.value = false
   }
-  return fallback
 }
-const me = computed<User.Card.Profile | null>(() => {
-  const u: any = user.value
-  if (!u) return null
-  return {
-    id: u.id,
-    display_name: safeDisplay(
-      [
-        u.display_name,
-        u.app?.display_name,
-        u.core?.display_name,
-        u.handle,
-        u.id,
-      ],
-      'User'
-    ),
-    avatar: u.app?.avatar || u.core?.avatar,
-    role: u.app?.role,
-    handle: u.handle,
-    app_profiles: u.app?.app_profiles || [],
-    global_profiles: u.core?.global_profiles || [],
-    created_at: u.core?.created_at || u.app?.created_at,
-    updated_at: u.core?.updated_at || u.app?.updated_at,
-  }
-})
 
-// list: fetch directly from Firestore based on role (no deprecated composables)
-const { firestoreFetchCollection } = useFirestoreRead()
-const coreUsers = firestoreFetchCollection<any>('core-users')
-const appUsersRef = appId
-  ? firestoreFetchCollection<any>(`apps/${appId}/users`)
-  : ref<any[] | undefined>(undefined)
+/** Current (already flattened by useUser) */
+const currentUser = computed(() => user.value)
 
-const usersList = computed<User.Card.Cell[]>(() => {
-  const src = isTenantApp.value ? appUsersRef.value : coreUsers.value
-  const arr: any[] = Array.isArray(src) ? src : []
-  return arr.map((u: any) => ({
-    id: u.id,
-    display_name: safeDisplay([u.display_name, u.handle, u.id], 'User'),
-    avatar: u.avatar,
-    role: u.role,
-    handle: u.handle,
-    app_profiles: u.app_profiles || [],
-    global_profiles: u.global_profiles || [],
-  }))
-})
+/** List plumbing (aligns with ProfileRoot behavior) */
+const hasLocal = computed(() => Boolean(collection.local))
+const hasGlobalLoaded = computed(() => Boolean(collection.global?.value))
+const showing = computed<'local' | 'global'>(() =>
+  hasLocal.value ? 'local' : 'global'
+)
 
-useSeoMeta({
-  title: 'Users',
-  description: 'Unified users overview (role-aware)',
-})
+const usersList = computed<any[]>(
+  () =>
+    (collection.local?.value as any[]) ??
+    (collection.global?.value as any[]) ??
+    []
+)
+
+function fetchGlobal() {
+  collection.fetchGlobal?.()
+}
 </script>
-
-<style scoped>
-.page {
-  /* container spacing handled via space-y-6 */
-}
-</style>

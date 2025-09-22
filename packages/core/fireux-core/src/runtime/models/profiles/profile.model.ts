@@ -1,41 +1,38 @@
-// packages/core/fireux-core/src/runtime/models/profiles/profile.model.ts
-import type { FirebaseTimestamp } from '../../types/firebase'
+import type { FirebaseTimestamp } from '../types/firebase'
 
 /**
- * Minimal, shared base for any profile (chef, supplier, professional, employer, etc.)
- * This is the Firestore document shape (strict).
+ * Minimal, shared base for any profile document (core or app).
+ * Enforces display_name + avatar + timestamps.
  */
 export interface ProfileBase {
   /** Canonical id (== Firebase Auth UID & Firestore doc id) */
   id: string
 
-  /** Display name for the profile */
+  /** Display name to show in UI (never fallback to email in storage) */
   display_name: string
 
   /** Primary avatar URL to display everywhere */
   avatar: string
 
   /** Timestamps */
-  created_at: string | Date | FirebaseTimestamp
-  updated_at?: string | Date | FirebaseTimestamp
+  created_at: FirebaseTimestamp
+  updated_at?: FirebaseTimestamp
 }
 
 /**
- * Config definition to describe a profile type.
+ * Slim config to describe a profile type.
+ * Kept tiny so components/composables don’t drift.
  */
 export interface ProfileConfig {
-  /** Lowercase singular identifier: 'chef', 'employer', 'professional', 'supplier' */
+  /** Lowercase singular identifier: 'chef', 'supplier', 'professional', 'employer' */
   id: string
 
   /** Firestore collection name, e.g. 'chefs', 'professionals' */
   collectionName: string
 
-  /** Human-readable type label, e.g. 'Chef', 'Employer' */
+  /** Human-readable type label, e.g. 'Chef', 'Supplier' */
   profileType: string
 
-  /**
-   * Optional hook to attach role-specific update composables.
-   * Should return an object with update methods to be spread onto useProfile() return value.
-   */
-  updateComposable?: () => Record<string, any>
+  /** Optional CTA text when profile is missing (used by ProfileRoot/UI) */
+  cta?: string
 }

@@ -1,8 +1,5 @@
 import { useProfile } from '#fireux-core-runtime/composables/firestore/profiles/useProfile'
-import {
-  professionalConfig,
-  ProfessionalMapper,
-} from '../../../../models/profiles/Professional.model'
+import { professionalConfig } from '../../../../models/profiles/Professional.model'
 import type { ProfessionalCoreProfile } from '../../../../models/profiles/Professional.model'
 
 export function useProfessionalCreate() {
@@ -11,10 +8,8 @@ export function useProfessionalCreate() {
   async function createProfessional(
     profile?: Partial<ProfessionalCoreProfile>
   ) {
-    const fsPayload = ProfessionalMapper.toFs(profile ?? {}, {
-      dropNullish: true,
-    })
-    return ensure(fsPayload)
+    // Unified model: pass partial profile; mapper removed.
+    return ensure(profile ?? {})
   }
 
   return { createProfessional }

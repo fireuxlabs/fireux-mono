@@ -121,7 +121,7 @@ export function useAppEnsure() {
    */
   async function createAppUserForAdmin(): Promise<void> {
     try {
-      const { useUserEnsure } = await import('../firestore/user/useUserEnsure')
+      const { useUserEnsure } = await import('../firestore/users/useUserEnsure')
       const { ensureUser } = useUserEnsure()
       await ensureUser()
       console.log('✅ [ensureApp] Created app user for the app admin')

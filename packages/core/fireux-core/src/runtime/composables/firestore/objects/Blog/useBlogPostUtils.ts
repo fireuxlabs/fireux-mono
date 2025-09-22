@@ -1,5 +1,5 @@
 // app/composables/firestore/documents/Blog/blogPostUtils.ts
-import { useUser } from '../../user/useUser'
+import { useUser } from '../../users/useUser'
 import type {
   BlogPost,
   Author,
@@ -29,7 +29,8 @@ export function useBlogPostUtils() {
     const { user } = useUser()
     return {
       id: user.value?.id || '',
-      display_name: user.value?.core?.display_name || user.value?.core?.email || '',
+      display_name:
+        user.value?.core?.display_name || user.value?.core?.email || '',
       handle: user.value?.core?.handle || '',
       avatar: user.value?.core?.avatar || '/img/default-avatar.png',
       email: user.value?.core?.email || '',

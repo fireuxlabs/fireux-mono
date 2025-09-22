@@ -1,15 +1,16 @@
 import { computed, watchEffect } from 'vue'
 import { doc, type DocumentReference } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
-import type {
-  ProfileConfig,
-  ProfileBase,
-} from '../../../models/profiles/profile.model'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useFirestoreRead } from '../useFirestoreRead'
 import { useProfileDelete } from './useProfileDelete'
 import { useProfileEnsure } from './useProfileEnsure'
+import { useProfileComputed } from './useProfileComputed'
 import { useProfileState } from '../../state/useProfileState'
+import type {
+  ProfileConfig,
+  ProfileBase,
+} from '../../../models/profiles/profile.model'
 
 export function useProfile<
   TCore extends ProfileBase,
@@ -19,10 +20,10 @@ export function useProfile<
   const currentUser = useCurrentUser()
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant'
-  const isGlobal = role === 'global'
 
   const uid = computed(() => currentUser.value?.uid || null)
 
+  // Core profile doc (always attempt when signed-in)
   const coreRef = computed<DocumentReference<TCore> | null>(() =>
     uid.value
       ? (doc(db, config.collectionName, uid.value) as DocumentReference<TCore>)
@@ -30,6 +31,7 @@ export function useProfile<
   )
   const { data: coreDoc } = useDocument<TCore>(coreRef)
 
+  // App profile doc (only when tenant + appId)
   const appRef = computed<DocumentReference<TApp> | null>(() =>
     uid.value && isTenant && appId
       ? (doc(
@@ -41,40 +43,52 @@ export function useProfile<
   )
   const { data: appDoc } = useDocument<TApp>(appRef)
 
+  // Unified profile object (flattened with precedence: app > core > base)
   const profile = computed(() => {
     if (!uid.value) return null
+
+    const base = { id: uid.value }
+    const core = coreDoc.value ?? null
+    const app = isTenant ? (appDoc.value ?? null) : undefined
+
+    const flat = {
+      ...base,
+      ...(core ?? {}),
+      ...(app ?? {}),
+    }
+
     return {
-      id: uid.value,
-      core: coreDoc.value ?? null,
-      app: isTenant ? (appDoc.value ?? null) : undefined,
+      ...flat,
+      core,
+      app,
     }
   })
 
-  const { profile: profileState } = useProfileState(config.id)
+  // Mirror into Nuxt state (per-profile-type)
+  const { profile: profileState } = useProfileState<typeof profile.value>(
+    config.id
+  )
   watchEffect(() => {
     profileState.value = profile.value
   })
 
-  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
-  type ColRef = ReturnType<typeof firestoreFetchCollection>
+  // Collections
+  const { firestoreFetchCollection } = useFirestoreRead()
 
-  const collectionLocal: ColRef | null =
+  const collectionLocal =
     isTenant && appId
       ? firestoreFetchCollection(`apps/${appId}/${config.collectionName}`)
       : null
 
-  let collectionGlobal: ColRef | null = isGlobal
+  let collectionGlobal = !isTenant
     ? firestoreFetchCollection(config.collectionName)
     : null
 
-  function fetchGlobal(): ColRef | null {
-    if (isGlobal) return collectionGlobal
+  function fetchGlobal() {
+    if (!isTenant) return collectionGlobal
     collectionGlobal ??= firestoreFetchCollection(config.collectionName)
     return collectionGlobal
   }
-
-  const { ensure } = useProfileEnsure(config)
-  const remove = useProfileDelete(config)
 
   return {
     profile,
@@ -83,8 +97,8 @@ export function useProfile<
       global: collectionGlobal,
       fetchGlobal,
     },
-    fetchById: (id: string) => firestoreFetchDoc(config.collectionName, id),
-    ensure,
-    ...remove,
+    ...useProfileComputed(profile, config),
+    ...useProfileDelete(profile, config),
+    ...useProfileEnsure(profile, config),
   }
 }

@@ -37,7 +37,9 @@
     "typecheck": "pnpm -w typecheck && pnpm guard:apps:shape",
     "migrate:misebox-users": "tsx scripts/migrate-misebox-app-users.ts",
     "migrate:fix-display-names": "tsx scripts/fix-display-names.ts",
-    "migrate:chefs-created-at": "pnpm tsx scripts/migrate-chefs-created-at.ts"
+    "migrate:chefs-created-at": "pnpm tsx scripts/migrate-chefs-created-at.ts",
+    "migrate:chefs": "tsx scripts/migrate-chefs.ts",
+    "migrate:chefs:dry": "tsx scripts/migrate-chefs.ts --dry"
   },
   "engines": {
     "node": ">=20.11 <23",

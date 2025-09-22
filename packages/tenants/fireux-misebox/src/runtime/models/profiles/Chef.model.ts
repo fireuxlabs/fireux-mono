@@ -1,10 +1,9 @@
-// packages/tenants/fireux-misebox/src/runtime/models/profiles/Chef.model.ts
 import type {
   ProfileBase,
   ProfileConfig,
 } from 'fireux-core/runtime/models/profiles/profile.model'
 
-/** 🔹 Unified Chef (mirrors unified User shape) */
+/** Unified Chef view (flattened convenience + partitions) */
 export interface Chef {
   id: string
   display_name?: string
@@ -13,24 +12,22 @@ export interface Chef {
   app?: ChefAppProfile | null
 }
 
-/** Global doc: chefs/{uid} */
+/** Global: chefs/{uid} */
 export interface ChefCoreProfile extends ProfileBase {
-  display_name: string
   title?: string | null
   bioShort?: string | null
   bioLong?: string | null
   specialties?: string[]
 }
 
-/** App mirror: apps/{appId}/chefs/{uid} */
+/** App overlay: apps/{appId}/chefs/{uid} */
 export interface ChefAppProfile extends ProfileBase {
-  display_name: string
   title?: string | null
   bioShort?: string | null
   specialties?: string[]
 }
 
-/** 🔹 Shapes for rendering cards (parity with UserCard) */
+/** Card shapes */
 export namespace ChefCard {
   export interface Pill {
     id: string
@@ -38,20 +35,19 @@ export namespace ChefCard {
     avatar?: string
     title?: string | null
   }
-
   export interface Cell extends Pill {
     bioShort?: string | null
     specialties?: string[]
   }
-
   export interface Profile extends Cell {
     bioLong?: string | null
   }
 }
 
-/** 🔹 Config (slim, matches ProfileConfig) */
+/** Config */
 export const chefConfig: ProfileConfig = {
   id: 'chef',
   collectionName: 'chefs',
   profileType: 'Chef',
+  cta: 'Create your Chef profile to appear in listings.',
 } as const

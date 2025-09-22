@@ -8,8 +8,8 @@ export function useSupplierValidation() {
     const errors: string[] = []
 
     // Required fields
-    if (!supplier.name?.trim()) {
-      errors.push('Name is required')
+    if (!supplier.display_name?.trim()) {
+      errors.push('Display name is required')
     }
 
     // Supplier model is independent and uses `id` as its primary key.
