@@ -103,11 +103,19 @@ function migrateOne(id: string, data: AnyDoc): MigrationResult {
     }
   }
 
-  // 2) Ensure required base fields
-  if (!out.id) {
+  // 2) Ensure required base fields and identifiers
+  // Force canonical id in the document body to match the Firestore doc id
+  if (out.id !== id) {
     out.id = id
     changed = true
-    notes.push('set base.id from doc id')
+    notes.push('set base.id from doc id (canonical)')
+  }
+
+  // Drop legacy uid; if id was missing previously, we've just set it from doc id above
+  if (out.uid !== undefined) {
+    delete out.uid
+    changed = true
+    notes.push('dropped legacy uid')
   }
 
   if (!out.display_name || typeof out.display_name !== 'string' || !out.display_name.trim()) {
