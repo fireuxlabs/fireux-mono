@@ -39,7 +39,9 @@
     "migrate:fix-display-names": "tsx scripts/fix-display-names.ts",
     "migrate:chefs-created-at": "pnpm tsx scripts/migrate-chefs-created-at.ts",
     "migrate:chefs": "tsx scripts/migrate-chefs.ts",
-    "migrate:chefs:dry": "tsx scripts/migrate-chefs.ts --dry"
+    "migrate:chefs:dry": "tsx scripts/migrate-chefs.ts --dry",
+    "migrate:profiles": "node scripts/migrateProfiles.cjs --collection=professionals",
+    "migrate:profiles:apply": "node scripts/migrateProfiles.cjs --collection=professionals --apply"
   },
   "engines": {
     "node": ">=20.11 <23",

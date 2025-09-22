@@ -135,8 +135,7 @@ async function migrateQuery(db, query, apply, limit) {
   const bw = db.bulkWriter()
   bw.onWriteError((err) => {
     console.error('Write error:', err.documentRef.path, err.message)
-    if (err.failedAttempts < 5) return true
-    return false
+    return err.failedAttempts < 5
   })
 
   const snap = await query.get()
