@@ -1,3 +1,12 @@
+// packages / extensions / fireux -
+//   jobs /
+//     src /
+//     runtime /
+//     composables /
+//     firestore /
+//     profiles /
+//     Employer /
+//     useEmployerCreate.ts
 import { useProfile } from '#fireux-core-runtime/composables/firestore/profiles/useProfile'
 import { employerConfig } from '../../../../models/profiles/Employer.model'
 import type { EmployerCoreProfile } from '../../../../models/profiles/Employer.model'
