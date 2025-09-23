@@ -10,10 +10,15 @@
       <div class="meta">
         <div class="name">{{ chef.display_name || 'Chef' }}</div>
         <div v-if="chef.title" class="title">{{ chef.title }}</div>
-        <div v-if="chef.bioShort" class="subtitle">{{ chef.bioShort }}</div>
+        <div v-if="chef.bio_short" class="subtitle">{{ chef.bio_short }}</div>
 
         <div v-if="chef.specialties?.length" class="cell-badges">
-          <UBadge v-for="s in chef.specialties" :key="s" size="xs" variant="soft">
+          <UBadge
+            v-for="s in chef.specialties"
+            :key="s"
+            size="xs"
+            variant="soft"
+          >
             {{ s }}
           </UBadge>
         </div>
@@ -32,7 +37,12 @@ const props = defineProps<{ chef: ChefCard.Cell }>()
 const avatarInitials = computed(() => {
   const name = (props.chef.display_name || '').trim()
   if (!name) return 'C'
-  return name.split(/\s+/).map(w => w[0] || '').join('').toUpperCase().slice(0, 2)
+  return name
+    .split(/\s+/)
+    .map((w) => w[0] || '')
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 })
 </script>
 

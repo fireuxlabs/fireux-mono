@@ -1,184 +1,170 @@
 <template>
-  <div class="profile-page">
-    <!-- CTA Section (handled internally) -->
-    <div v-if="!currentProfile" class="cta-section">
-      <h2>Create Your {{ config.profileType }} Profile</h2>
-      <p>Join our community of {{ config.profileType.toLowerCase() }}s</p>
-      <button class="cta-button">Create Profile</button>
-    </div>
+  <ClientOnly>
+    <div class="profile-page">
+      <!-- Loading -->
+      <slot name="loading" v-if="loading">
+        <div class="py-10 text-sm opacity-70">Loading profile…</div>
+      </slot>
 
-    <!-- Profile Card (current user's profile) -->
-    <slot v-if="currentProfile" name="profile-card" :profile="currentProfile" />
+      <!-- Not found -->
+      <slot name="not-found" v-else-if="!profile">
+        <div class="space-y-2">
+          <h1 class="text-lg font-semibold">Profile Not Found</h1>
+          <p>The profile you're looking for doesn't exist.</p>
+          <NuxtLink :to="fallbackHref" class="text-primary hover:underline">
+            ← Back
+          </NuxtLink>
+        </div>
+      </slot>
 
-    <!-- Profile List (handled internally with generic list) -->
-    <FireOrganismsProfileList :profiles="profiles" :loading="loading">
-      <template #profile-item="{ profile }">
-        <slot name="profile-item" :profile="profile" />
-      </template>
-    </FireOrganismsProfileList>
+      <!-- Profile -->
+      <div v-else class="space-y-4">
+        <!-- Optional edit button -->
+        <div v-if="canEdit && editPath">
+          <UButton
+            icon="i-lucide-pencil"
+            size="md"
+            color="primary"
+            variant="solid"
+            @click="navigateTo(editPath)"
+          >
+            Edit Profile
+          </UButton>
+        </div>
 
-    <!-- DEBUG: Raw Data Display (moved to bottom) -->
-    <div
-      class="debug-raw-data"
-      style="
-        background: #f3f4f6;
-        padding: 1rem;
-        margin: 2rem 0;
-        border-radius: 8px;
-      "
-    >
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1rem;
-        "
-      >
-        <h3>🔍 Debug: Raw Data</h3>
-        <button
-          @click="copyDebugData"
-          style="
-            padding: 0.5rem 1rem;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-          "
-        >
-          {{ copied ? '✓ Copied!' : 'Copy Data' }}
-        </button>
-      </div>
+        <!-- Custom renderer (slot) or default -->
+        <slot name="profile" :profile="profile">
+          <UCard class="profile-card max-w-3xl">
+            <div class="profile-header flex gap-4 items-center">
+              <UAvatar
+                :src="resolveAvatar(profile)"
+                :alt="resolveName(profile)"
+                size="lg"
+              />
+              <div class="profile-info">
+                <h1 class="profile-name text-xl font-semibold">
+                  {{ resolveName(profile) }}
+                </h1>
+                <p v-if="profile?.title" class="profile-title opacity-80">
+                  {{ profile.title }}
+                </p>
+              </div>
+            </div>
 
-      <div style="margin: 1rem 0">
-        <strong>Config:</strong>
-        <pre
-          style="
-            background: white;
-            padding: 0.5rem;
-            border-radius: 4px;
-            overflow: auto;
-          "
-          >{{ JSON.stringify(config, null, 2) }}</pre
-        >
-      </div>
-
-      <div style="margin: 1rem 0">
-        <strong>Current Profile:</strong>
-        <pre
-          style="
-            background: white;
-            padding: 0.5rem;
-            border-radius: 4px;
-            overflow: auto;
-          "
-          >{{ JSON.stringify(currentProfile?.value || null, null, 2) }}</pre
-        >
-      </div>
-
-      <div style="margin: 1rem 0">
-        <strong
-          >All Profiles ({{ profiles?.value?.length || 0 }} items):</strong
-        >
-        <pre
-          style="
-            background: white;
-            padding: 0.5rem;
-            border-radius: 4px;
-            overflow: auto;
-            max-height: 300px;
-          "
-          >{{ JSON.stringify(profiles?.value || [], null, 2) }}</pre
-        >
-      </div>
-
-      <div style="margin: 1rem 0">
-        <strong>Loading:</strong> {{ loading?.value || false }}
+            <p v-if="bioText" class="profile-bio mt-4">
+              {{ bioText }}
+            </p>
+          </UCard>
+        </slot>
       </div>
     </div>
-  </div>
+
+    <template #fallback>
+      <div class="py-10 text-sm opacity-70">Loading profile…</div>
+    </template>
+  </ClientOnly>
 </template>
 
-<script setup>
-// Single config prop - component handles everything internally
-const props = defineProps({
-  config: {
-    type: Object,
-    required: true,
-    validator: (config) => {
-      return config.profileType && config.collectionName
-    },
-  },
-  // filterComposable removed in simplified pass
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute, navigateTo, useHead, useSeoMeta } from 'nuxt/app'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/useFirestoreRead'
+import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
+import type { ProfileConfig } from 'fireux-core/runtime/models/profiles/profile.model'
+
+/** Props */
+const props = defineProps<{
+  /** ProfileConfig for this domain (chef, professional, employer, supplier) */
+  config: ProfileConfig
+  /** Route param name for id; default 'id' */
+  idParamName?: string
+  /** Edit page path; when set and viewer owns the profile, an Edit button shows */
+  editPath?: string
+  /** Fallback link (Back) */
+  fallbackHref?: string
+  /** Optional title used for static SEO; dynamic title comes from profile */
+  pageTitle?: string
+  /** Optional description for static SEO */
+  pageDescription?: string
+}>()
+
+/** Defaults */
+const idParamName = props.idParamName ?? 'id'
+const fallbackHref = computed(
+  () => props.fallbackHref ?? `/${props.config.collectionName}`
+)
+
+/** SEO (static baseline) */
+useSeoMeta({
+  title: props.pageTitle ?? 'Profile',
+  description: props.pageDescription ?? 'View profile',
 })
 
-// Component handles its own data fetching
-const {
-  all: profiles,
-  loading,
-  current: currentProfile,
-} = useProfile(props.config)
+/** Route + id */
+const route = useRoute()
+const raw = route.params[idParamName]
+const docId = Array.isArray(raw) ? raw[0] : String(raw || '')
 
-// Copy functionality
-const copied = ref(false)
+/** Current app user (for edit visibility) */
+const { user } = useUser()
+const appUser = computed(() => user.value?.app)
 
-const copyDebugData = async () => {
-  try {
-    // Create a copy of config without functions to avoid JSON.stringify issues
-    const configCopy = { ...props.config }
-    if (configCopy.validationFn) {
-      configCopy.validationFn =
-        '[Function: ' + configCopy.validationFn.name + ']'
-    }
+/** Fetch profile doc */
+const { firestoreFetchDoc } = useFirestoreRead()
+const rawDoc = docId
+  ? await firestoreFetchDoc(props.config.collectionName, docId)
+  : null
 
-    const debugData = {
-      config: configCopy,
-      currentProfile: currentProfile?.value || null,
-      profiles: profiles?.value || [],
-      loading: loading?.value || false,
-      timestamp: new Date().toISOString(),
-    }
+/** Normalized reactive value (supports composable’s ref or plain object) */
+const profile = computed<any>(() => (rawDoc as any)?.value ?? rawDoc ?? null)
+const loading = computed(() => !rawDoc && !!docId)
 
-    await navigator.clipboard.writeText(JSON.stringify(debugData, null, 2))
-    copied.value = true
-    setTimeout(() => {
-      copied.value = false
-    }, 2000)
-  } catch (err) {
-    console.error('Failed to copy debug data:', err)
-    // Try to copy just the essential data if full copy fails
-    try {
-      const fallbackData = {
-        profiles: profiles?.value || [],
-        currentProfile: currentProfile?.value || null,
-        profileCount: (profiles?.value || []).length,
-        timestamp: new Date().toISOString(),
-        error: 'Primary copy failed, using fallback',
-      }
-      await navigator.clipboard.writeText(JSON.stringify(fallbackData, null, 2))
-      copied.value = true
-      setTimeout(() => {
-        copied.value = false
-      }, 2000)
-    } catch (fallbackErr) {
-      console.error('Fallback copy also failed:', fallbackErr)
-      // Last resort - copy a simple message
-      try {
-        const errorData = {
-          error: 'Could not access profile data',
-          timestamp: new Date().toISOString(),
-          config: configCopy,
-        }
-        await navigator.clipboard.writeText(JSON.stringify(errorData, null, 2))
-        copied.value = true
-        setTimeout(() => {
-          copied.value = false
-        }, 2000)
-      } catch (finalErr) {
-        console.error('All copy attempts failed:', finalErr)
-      }
-    }
-  }
-}
+/** Can edit? */
+const canEdit = computed(
+  () =>
+    !!(
+      appUser.value?.id &&
+      profile.value?.id &&
+      appUser.value.id === profile.value.id
+    )
+)
+
+/** Helpers */
+const resolveName = (p: any) =>
+  p?.display_name ||
+  p?.name ||
+  p?.company_name ||
+  p?.business_name ||
+  p?.professional_name ||
+  'Profile'
+
+const resolveAvatar = (p: any) =>
+  p?.avatar || p?.avatarUrl || p?.profile_image?.url || undefined
+
+const bioText = computed(
+  () => profile.value?.bio_long ?? profile.value?.bio_short ?? ''
+)
+
+/** Dynamic head from loaded data */
+useHead({
+  title: computed(() =>
+    profile.value
+      ? `${resolveName(profile.value)} - Profile`
+      : props.pageTitle ?? 'Profile'
+  ),
+  meta: [
+    {
+      name: 'description',
+      content: computed(
+        () => bioText.value || props.pageDescription || 'View profile'
+      ),
+    },
+  ],
+})
 </script>
+
+<style scoped>
+.profile-card {
+  /* container style hook */
+}
+</style>

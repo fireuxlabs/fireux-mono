@@ -2,25 +2,13 @@
   <UCard class="profile-card" @click="handleClick" style="cursor: pointer">
     <div class="profile-header">
       <UAvatar
-        :src="
-          (supplier as any)?.avatar ||
-          (supplier as any)?.avatarUrl ||
-          (supplier as any)?.profile_image?.url
-        "
-        :alt="
-          (supplier as any)?.name ||
-          (supplier as any)?.company_name ||
-          (supplier as any)?.business_name ||
-          'Supplier'
-        "
+        :src="(supplier as any)?.avatar"
+        :alt="(supplier as any)?.display_name || 'Supplier'"
         size="lg"
       />
       <div class="profile-info">
-        <h4
-          v-if="(supplier as any)?.name || (supplier as any)?.company_name"
-          class="profile-name"
-        >
-          {{ (supplier as any)?.name || (supplier as any)?.company_name }}
+        <h4 v-if="(supplier as any)?.display_name" class="profile-name">
+          {{ (supplier as any)?.display_name }}
         </h4>
         <p v-if="(supplier as any)?.business_type" class="profile-subtitle">
           {{ (supplier as any).business_type }}
@@ -38,20 +26,10 @@
       </div>
     </div>
     <p
-      v-if="
-        (supplier as any)?.bioLong ||
-        (supplier as any)?.bio_long ||
-        (supplier as any)?.bioShort ||
-        (supplier as any)?.bio_short
-      "
+      v-if="(supplier as any)?.bio_long || (supplier as any)?.bio_short"
       class="profile-bio"
     >
-      {{
-        (supplier as any)?.bioLong ||
-        (supplier as any)?.bio_long ||
-        (supplier as any)?.bioShort ||
-        (supplier as any)?.bio_short
-      }}
+      {{ (supplier as any)?.bio_long || (supplier as any)?.bio_short }}
     </p>
 
     <div v-if="(supplier as any)?.specialties?.length" class="profile-tags">

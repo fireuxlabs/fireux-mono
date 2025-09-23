@@ -5,6 +5,7 @@ This note explains where layouts come from, how extension pages (like Profession
 ## Sources of layouts
 
 - fireux-core
+
   - Exposes layout components in `fireux-core/runtime/layouts` (CoreDefault, CoreDashboard, CoreDev, CoreDocs, CoreDesign).
   - config: `packages/core/fireux-core/src/config/layouts-config.ts`
     - Registers the directory as global components (`Core*`).
@@ -13,6 +14,7 @@ This note explains where layouts come from, how extension pages (like Profession
   - default.vue component: `fireux-core/runtime/layouts/default.vue` can be used by apps or tenants as a component; it pulls `useCoreRoutes()` and merges incoming `routes` props with its own menu link sets.
 
 - Tenants (Misebox, Cleanbox)
+
   - Each tenant exposes its own layout components under `packages/tenants/<tenant>/src/runtime/layouts`.
   - config: `<tenant>/src/config/layouts-config.ts`
     - Registers the layouts dir as global components, and (optionally) registers Nuxt layout keys (e.g., `MiseboxDefault`, `MiseboxDashboard`, `MiseboxDev`, etc.) if present.

@@ -16,15 +16,15 @@ export interface Employer {
 /** Global: employers/{uid} */
 export interface EmployerCoreProfile extends ProfileBase {
   title?: string | null
-  bioShort?: string | null
-  bioLong?: string | null
+  bio_short?: string | null
+  bio_long?: string | null
   specialties?: string[]
 }
 
 /** App overlay: apps/{appId}/employers/{uid} */
 export interface EmployerAppProfile extends ProfileBase {
   title?: string | null
-  bioShort?: string | null
+  bio_short?: string | null
   specialties?: string[]
 }
 
@@ -37,11 +37,11 @@ export namespace EmployerCard {
     title?: string | null
   }
   export interface Cell extends Pill {
-    bioShort?: string | null
+    bio_short?: string | null
     specialties?: string[]
   }
   export interface Profile extends Cell {
-    bioLong?: string | null
+    bio_long?: string | null
   }
 }
 

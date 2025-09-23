@@ -16,15 +16,15 @@ export interface Supplier {
 /** Global: suppliers/{uid} */
 export interface SupplierCoreProfile extends ProfileBase {
   title?: string | null
-  bioShort?: string | null
-  bioLong?: string | null
+  bio_short?: string | null
+  bio_long?: string | null
   specialties?: string[]
 }
 
 /** App overlay: apps/{appId}/suppliers/{uid} */
 export interface SupplierAppProfile extends ProfileBase {
   title?: string | null
-  bioShort?: string | null
+  bio_short?: string | null
   specialties?: string[]
 }
 
@@ -37,11 +37,11 @@ export namespace SupplierCard {
     title?: string | null
   }
   export interface Cell extends Pill {
-    bioShort?: string | null
+    bio_short?: string | null
     specialties?: string[]
   }
   export interface Profile extends Cell {
-    bioLong?: string | null
+    bio_long?: string | null
   }
 }
 

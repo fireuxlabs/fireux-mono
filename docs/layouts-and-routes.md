@@ -7,6 +7,7 @@ This document aggregates all layout components, their registration config, and t
 ## Core layouts (components under `packages/core/fireux-core/src/runtime/layouts`)
 
 ### default.vue
+
 ```vue
 <template>
   <ClientOnly>
@@ -56,6 +57,7 @@ const mobileLinks = [
 ```
 
 ### dev.vue
+
 ```vue
 <template>
   <ClientOnly>
@@ -92,6 +94,7 @@ const safeDevRoutes = computed(
 ```
 
 ### design.vue
+
 ```vue
 <template>
   <CoreDefault />
@@ -99,6 +102,7 @@ const safeDevRoutes = computed(
 ```
 
 ### docs.vue
+
 ```vue
 <script setup lang="ts">
 import { inject, type Ref } from 'vue'
@@ -148,6 +152,7 @@ const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
 ```
 
 ### dashboard.vue
+
 ```vue
 // fireux-core/src/runtime/layouts/Default.vue (CoreDashboard)
 
@@ -187,10 +192,10 @@ const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
 // Normalize core arrays (
 const baseMenu: any[] = Array.isArray(coreMenuBarLinks)
   ? coreMenuBarLinks
-  : ((coreMenuBarLinks as any)?.value ?? [])
+  : (coreMenuBarLinks as any)?.value ?? []
 const baseMobile: any[] = Array.isArray(coreMobileLinks as any)
   ? (coreMobileLinks as any)
-  : ((coreMobileLinks as any)?.value ?? [])
+  : (coreMobileLinks as any)?.value ?? []
 
 const input = props.routes ?? {}
 const menuBarLinks = [...baseMenu, ...(input.menuBarLinks ?? [])]
@@ -234,6 +239,7 @@ defineOptions({
 ## Misebox layouts (`packages/tenants/fireux-misebox/src/runtime/layouts`)
 
 ### MiseboxDefault.vue
+
 ```vue
 <template>
   <CoreDefault :routes="miseboxRoutes" />
@@ -257,6 +263,7 @@ const miseboxRoutes = computed<LayoutRoutes>(() => getMiseboxRoutes(hasProfile))
 ```
 
 ### MiseboxDev.vue
+
 ```vue
 <template>
   <CoreDev :devRoutes="miseboxDevRoutes" />
@@ -270,6 +277,7 @@ const miseboxDevRoutes = computed(() => getMiseboxDevRoutes())
 ```
 
 ### MiseboxDashboard.vue
+
 ```vue
 <template>
   <CoreDashboard :routes="miseboxRoutes" />
@@ -297,6 +305,7 @@ const miseboxRoutes = computed<LayoutRoutes>(() => getMiseboxRoutes(hasProfile))
 ## Cleanbox layouts (`packages/tenants/fireux-cleanbox/src/runtime/layouts`)
 
 ### CleanboxDefault.vue
+
 ```vue
 <template>
   <CoreDefault :routes="cleanboxRoutes" />
@@ -323,6 +332,7 @@ const cleanboxRoutes = computed<LayoutRoutes>(() =>
 ```
 
 ### CleanboxDev.vue
+
 ```vue
 <template>
   <CoreDefault :routes="cleanboxDevRoutes" />
@@ -339,6 +349,7 @@ const cleanboxDevRoutes = computed(() => ({
 ```
 
 ### CleanboxDashboard.vue
+
 ```vue
 <template>
   <CoreDashboard :routes="cleanboxRoutes" />
@@ -369,6 +380,7 @@ const cleanboxRoutes = computed<LayoutRoutes>(() =>
 ## Layout registration configs
 
 ### Core `layouts-config.ts`
+
 ```ts
 import { addComponentsDir, addLayout } from '@nuxt/kit'
 import { join } from 'node:path'
@@ -407,6 +419,7 @@ export function configureLayouts(resolver: any, _nuxt: any) {
 ```
 
 ### Misebox `layouts-config.ts`
+
 ```ts
 import { addComponentsDir, addLayout } from '@nuxt/kit'
 import { join } from 'node:path'
@@ -443,6 +456,7 @@ export function configureLayouts(resolver: any, _nuxt: any) {
 ## Route composables feeding layouts
 
 ### Core `useCoreRoutes.ts`
+
 ```ts
 import { useAppUserRoutes } from './useAppUserRoutes'
 import { useAdminRoutes } from './useAdminRoutes'
@@ -479,6 +493,7 @@ export function useCoreRoutes() {
 ```
 
 ### Misebox `useMiseboxRoutes.ts`
+
 ```ts
 import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/app/routes/useJobRoutes'
 // Local type to avoid deep import from core
@@ -565,6 +580,7 @@ export function getMiseboxRoutes(hasProfile: (profileType: string) => boolean) {
 ```
 
 ### Misebox `useMiseboxDevRoutes.ts`
+
 ```ts
 // Declare minimal type for Nuxt runtime config to satisfy package-level tsc without Nuxt context
 declare function useRuntimeConfig(): { public?: { role?: string } }
@@ -602,7 +618,7 @@ export function getMiseboxDevRoutes() {
         label: 'Jobs Tenant',
         icon: 'i-lucide-building-2',
         to: '/dev/fireux-jobs-tenant',
-      },
+      }
     )
   }
 
@@ -615,6 +631,7 @@ export function getMiseboxDevRoutes() {
 ## Pages registration configs
 
 ### Core `pages-config.ts`
+
 ```ts
 export function configurePages(resolver: any, nuxt: any) {
   // Expose module pages under a subdir (Nuxt v4: extends-like registration)
@@ -629,6 +646,7 @@ export function configurePages(resolver: any, nuxt: any) {
 ```
 
 ### Misebox `pages-config.ts`
+
 ```ts
 export function configurePages(resolver: any, nuxt: any) {
   nuxt.options._layers ||= []
@@ -645,6 +663,7 @@ End of document.
 \n+---
 \n+## Additional route composables
 \n+### Cleanbox `useCleanboxRoutes.ts`
+
 ```ts
 import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/app/routes/useJobRoutes'
 // Local type to avoid deep import from core (not exported to prevent auto-import duplication)
@@ -694,6 +713,7 @@ export function getCleanboxRoutes(
 ```
 
 ### Cleanbox `useCleanboxDevRoutes.ts`
+
 ```ts
 // Local type to avoid deep import from core (not exported to prevent auto-import duplication)
 interface RouteLink {
@@ -734,6 +754,7 @@ export function getCleanboxDevRoutes() {
 ```
 
 ### Jobs `useJobRoutes.ts`
+
 ```ts
 // Export for public job routes
 // Local type to avoid cross-package deep imports
@@ -804,6 +825,7 @@ export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
 ```
 
 ### Core `useAppUserRoutes.ts`
+
 ```ts
 import type { RouteLink } from '../../../types/routeLink'
 
@@ -861,6 +883,7 @@ export function useAppUserRoutes(): RouteLink[] {
 ```
 
 ### Core `useAdminRoutes.ts`
+
 ```ts
 // packages/fireux-core/src/runtime/composables/utils/adminRoutes.ts
 
@@ -916,4 +939,3 @@ export function useAdminRoutes(): RouteLink[] {
     : []
 }
 ```
-

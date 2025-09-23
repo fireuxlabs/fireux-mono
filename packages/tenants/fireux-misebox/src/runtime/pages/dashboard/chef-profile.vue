@@ -3,7 +3,7 @@
     <div>
       <div v-if="chef">
         <h2>Edit Chef Profile</h2>
-        <ProfilesChefEdit :chef="chef" />
+        <OrganismsProfilesChefEdit :chef="chef" />
       </div>
       <div v-else>
         <div class="space-y-3">

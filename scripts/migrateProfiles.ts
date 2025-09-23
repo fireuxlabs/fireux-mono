@@ -21,7 +21,10 @@ function parseArgs(): Cli {
     console.error('Missing --collection=<name>')
     process.exit(1)
   }
-  const appId = typeof args.get('appId') === 'string' ? String(args.get('appId')) : undefined
+  const appId =
+    typeof args.get('appId') === 'string'
+      ? String(args.get('appId'))
+      : undefined
   const allApps = args.get('allApps') === true
   const apply = args.get('apply') === true
   const limit = args.get('limit') ? Number(args.get('limit')) : undefined
@@ -118,7 +121,11 @@ function migrateOne(id: string, data: AnyDoc): MigrationResult {
     notes.push('dropped legacy uid')
   }
 
-  if (!out.display_name || typeof out.display_name !== 'string' || !out.display_name.trim()) {
+  if (
+    !out.display_name ||
+    typeof out.display_name !== 'string' ||
+    !out.display_name.trim()
+  ) {
     const fallback = (data.displayName ?? data.name ?? id) as string
     out.display_name = String(fallback)
     changed = true
@@ -133,7 +140,10 @@ function migrateOne(id: string, data: AnyDoc): MigrationResult {
 
   // 3) Timestamps
   const created = toTimestamp(out.created_at)
-  if (!out.created_at || !(out.created_at instanceof admin.firestore.Timestamp)) {
+  if (
+    !out.created_at ||
+    !(out.created_at instanceof admin.firestore.Timestamp)
+  ) {
     out.created_at = created
     changed = true
     notes.push('normalized created_at → Timestamp')
@@ -179,12 +189,18 @@ async function migrateQuery(
       if (apply) {
         bw.set(d.ref, res.after, { merge: false })
       }
-      console.log(`[${apply ? 'APPLY' : 'DRY'}] ${d.ref.path} → ${res.notes.join(', ')}`)
+      console.log(
+        `[${apply ? 'APPLY' : 'DRY'}] ${d.ref.path} → ${res.notes.join(', ')}`
+      )
     }
   }
 
   if (apply) await bw.close()
-  console.log(`Done: changed ${changedCount}/${docs.length} ${apply ? '(writes committed)' : '(dry-run)'}`)
+  console.log(
+    `Done: changed ${changedCount}/${docs.length} ${
+      apply ? '(writes committed)' : '(dry-run)'
+    }`
+  )
 }
 
 // ---------- Main ----------
@@ -193,7 +209,11 @@ async function main() {
   const db = initAdmin()
 
   console.log(
-    `\n=== FireUX Profile Migration ===\nCollection: ${collection}\nOverlay appId: ${appId ?? '(none)'}\nAll apps (collectionGroup): ${allApps ? 'YES' : 'NO'}\nMode: ${apply ? 'APPLY' : 'DRY-RUN'}\nLimit: ${limit ?? '(none)'}\n================================\n`
+    `\n=== FireUX Profile Migration ===\nCollection: ${collection}\nOverlay appId: ${
+      appId ?? '(none)'
+    }\nAll apps (collectionGroup): ${allApps ? 'YES' : 'NO'}\nMode: ${
+      apply ? 'APPLY' : 'DRY-RUN'
+    }\nLimit: ${limit ?? '(none)'}\n================================\n`
   )
 
   // 1) Core collection: {collection}/*
@@ -201,12 +221,7 @@ async function main() {
 
   // 2) App overlays
   if (allApps) {
-    await migrateQuery(
-      db,
-      db.collectionGroup(collection),
-      apply,
-      limit
-    )
+    await migrateQuery(db, db.collectionGroup(collection), apply, limit)
   } else if (appId) {
     await migrateQuery(
       db,

@@ -2,30 +2,13 @@
   <UCard class="profile-card" @click="handleClick" style="cursor: pointer">
     <div class="profile-header">
       <UAvatar
-        :src="
-          (professional as any)?.avatar ||
-          (professional as any)?.avatarUrl ||
-          (professional as any)?.profile_image?.url
-        "
-        :alt="
-          (professional as any)?.name ||
-          (professional as any)?.professional_name ||
-          'Professional'
-        "
+        :src="(professional as any)?.avatar"
+        :alt="(professional as any)?.display_name || 'Professional'"
         size="lg"
       />
       <div class="profile-info">
-        <h4
-          v-if="
-            (professional as any)?.name ||
-            (professional as any)?.professional_name
-          "
-          class="profile-name"
-        >
-          {{
-            (professional as any)?.name ||
-            (professional as any)?.professional_name
-          }}
+        <h4 v-if="(professional as any)?.display_name" class="profile-name">
+          {{ (professional as any)?.display_name }}
         </h4>
         <p v-if="professional?.title" class="profile-subtitle">
           {{ professional.title }}
@@ -49,20 +32,10 @@
       </div>
     </div>
     <p
-      v-if="
-        (professional as any)?.bioLong ||
-        (professional as any)?.bio_long ||
-        (professional as any)?.bioShort ||
-        (professional as any)?.bio_short
-      "
+      v-if="(professional as any)?.bio_long || (professional as any)?.bio_short"
       class="profile-bio"
     >
-      {{
-        (professional as any)?.bioLong ||
-        (professional as any)?.bio_long ||
-        (professional as any)?.bioShort ||
-        (professional as any)?.bio_short
-      }}
+      {{ (professional as any)?.bio_long || (professional as any)?.bio_short }}
     </p>
 
     <div

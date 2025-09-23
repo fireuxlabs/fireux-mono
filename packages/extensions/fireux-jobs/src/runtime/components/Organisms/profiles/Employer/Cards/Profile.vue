@@ -2,24 +2,13 @@
   <UCard class="profile-card" @click="handleClick" style="cursor: pointer">
     <div class="profile-header">
       <UAvatar
-        :src="
-          (employer as any)?.avatar ||
-          (employer as any)?.avatarUrl ||
-          (employer as any)?.profile_image?.url
-        "
-        :alt="
-          (employer as any)?.name ||
-          (employer as any)?.company_name ||
-          'Employer'
-        "
+        :src="(employer as any)?.avatar"
+        :alt="(employer as any)?.display_name || 'Employer'"
         size="lg"
       />
       <div class="profile-info">
-        <h4
-          v-if="(employer as any)?.name || (employer as any)?.company_name"
-          class="profile-name"
-        >
-          {{ (employer as any)?.name || (employer as any)?.company_name }}
+        <h4 v-if="(employer as any)?.display_name" class="profile-name">
+          {{ (employer as any)?.display_name }}
         </h4>
         <p v-if="(employer as any)?.business_type" class="profile-subtitle">
           {{ (employer as any).business_type }}
@@ -37,20 +26,10 @@
       </div>
     </div>
     <p
-      v-if="
-        (employer as any)?.bioLong ||
-        (employer as any)?.bio_long ||
-        (employer as any)?.bioShort ||
-        (employer as any)?.bio_short
-      "
+      v-if="(employer as any)?.bio_long || (employer as any)?.bio_short"
       class="profile-bio"
     >
-      {{
-        (employer as any)?.bioLong ||
-        (employer as any)?.bio_long ||
-        (employer as any)?.bioShort ||
-        (employer as any)?.bio_short
-      }}
+      {{ (employer as any)?.bio_long || (employer as any)?.bio_short }}
     </p>
 
     <div

@@ -44,7 +44,7 @@ const props = defineProps<{ chef: ChefCard.Profile }>()
 const displayName = computed(() => props.chef?.display_name || 'Chef')
 
 const bioText = computed(
-  () => props.chef?.bioLong ?? props.chef?.bioShort ?? ''
+  () => props.chef?.bio_long ?? props.chef?.bio_short ?? ''
 )
 
 // ChefCard.Profile does not include timestamps; leave empty string unless extended elsewhere

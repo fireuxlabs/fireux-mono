@@ -1,95 +1,18 @@
 <template>
-  <ClientOnly>
-    <div>
-      <div v-if="professional">
-        <JobProfilesProfessionalProfile :professional="professional" />
-
-        <!-- Edit Profile Button (shown when viewing own profile) -->
-        <div
-          v-if="appUser?.id === (professional as any)?.id"
-          class="edit-profile-section"
-        >
-          <UButton
-            @click="navigateToEdit"
-            icon="i-lucide-pencil"
-            size="md"
-            color="primary"
-            variant="solid"
-            class="edit-profile-button"
-          >
-            Edit Profile
-          </UButton>
-        </div>
-      </div>
-      <div v-else class="error-state">
-        <h1>Professional Not Found</h1>
-        <p>The professional profile you're looking for doesn't exist.</p>
-        <NuxtLink to="/professionals" class="back-link"
-          >← Back to Professionals</NuxtLink
-        >
-      </div>
-    </div>
-
-    <template #fallback>
-      <div class="loading-state">
-        <h1>Loading professional profile...</h1>
-      </div>
+  <OrganismsProfilePage
+    :config="professionalConfig"
+    edit-path="/dashboard/professional-profile"
+    page-title="Professional Profile"
+    page-description="View professional profile"
+    :fallback-href="'/professionals'"
+  >
+    <template #profile="{ profile }">
+      <JobProfilesProfessionalProfile :professional="profile" />
     </template>
-  </ClientOnly>
+  </OrganismsProfilePage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useHead, useRoute, navigateTo, useSeoMeta } from 'nuxt/app'
-import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/useFirestoreRead'
+import OrganismsProfilePage from 'fireux-core/src/runtime/components/organisms/Profile/Page.vue'
 import { professionalConfig } from '../../models/profiles/Professional.model'
-
-const route = useRoute()
-const idParam = route.params.id
-const professionalId = Array.isArray(idParam)
-  ? idParam[0]
-  : String(idParam || '')
-
-// Static SEO meta
-useSeoMeta({
-  title: 'Professional Profile',
-  description: 'View professional profile',
-})
-
-// Get current user for edit permission check
-const { user } = useUser()
-const appUser = computed(() => user.value?.app)
-
-// Fetch professional data via shared read composable
-const { firestoreFetchDoc } = useFirestoreRead()
-const professional = professionalId
-  ? await firestoreFetchDoc(professionalConfig.collectionName, professionalId)
-  : null
-
-// Navigation function for edit profile
-const navigateToEdit = () => {
-  navigateTo('/dashboard/professional-profile')
-}
-
-// Update head dynamically when professional data loads
-useHead({
-  title: computed(() =>
-    (professional as any)?.value?.name ||
-    (professional as any)?.value?.professional_name
-      ? `${(professional as any)?.value?.name || (professional as any)?.value?.professional_name} - Professional Profile`
-      : 'Professional Profile'
-  ),
-  meta: [
-    {
-      name: 'description',
-      content: computed(
-        () =>
-          (professional as any)?.value?.bioShort ||
-          (professional as any)?.value?.bio_short ||
-          'View professional profile'
-      ),
-    },
-  ],
-})
 </script>

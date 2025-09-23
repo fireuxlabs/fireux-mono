@@ -10,8 +10,8 @@
       </div>
     </div>
 
-    <p v-if="supplier.bioShort" class="profile-bio">
-      {{ supplier.bioShort }}
+    <p v-if="supplier.bio_short" class="profile-bio">
+      {{ supplier.bio_short }}
     </p>
 
     <div v-if="supplier.specialties?.length" class="profile-tags">

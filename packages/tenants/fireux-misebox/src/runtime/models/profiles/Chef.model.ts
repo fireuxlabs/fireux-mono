@@ -15,15 +15,15 @@ export interface Chef {
 /** Global: chefs/{uid} */
 export interface ChefCoreProfile extends ProfileBase {
   title?: string | null
-  bioShort?: string | null
-  bioLong?: string | null
+  bio_short?: string | null
+  bio_long?: string | null
   specialties?: string[]
 }
 
 /** App overlay: apps/{appId}/chefs/{uid} */
 export interface ChefAppProfile extends ProfileBase {
   title?: string | null
-  bioShort?: string | null
+  bio_short?: string | null
   specialties?: string[]
 }
 
@@ -36,11 +36,11 @@ export namespace ChefCard {
     title?: string | null
   }
   export interface Cell extends Pill {
-    bioShort?: string | null
+    bio_short?: string | null
     specialties?: string[]
   }
   export interface Profile extends Cell {
-    bioLong?: string | null
+    bio_long?: string | null
   }
 }
 

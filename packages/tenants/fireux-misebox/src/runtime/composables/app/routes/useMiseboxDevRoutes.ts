@@ -34,7 +34,7 @@ export function getMiseboxDevRoutes() {
         label: 'Jobs Tenant',
         icon: 'i-lucide-building-2',
         to: '/dev/fireux-jobs-tenant',
-      },
+      }
     )
   }
 
