@@ -12,25 +12,16 @@
 </template>
 
 <script setup lang="ts">
-declare function useCoreRoutes(): any
-const coreRoutes = useCoreRoutes()
+import { computed } from 'vue'
+import { useCoreRoutes } from '#imports'
 
-// --- Menu bar: always the four system links ---
-const menuBarLinks = coreRoutes.links.filter((r: any) =>
-  ['home', 'products', 'blog', 'users'].includes(r.id)
-)
+const { links } = useCoreRoutes()
 
-// --- Mobile: system + groups (user + admin) ---
-const mobileLinks = coreRoutes.links.filter((r: any) =>
-  [
-    'home',
-    'products',
-    'blog',
-    'users',
-    'user', // user group (children inside)
-    'admin', // admin group (children inside)
-  ].includes(r.id)
-)
+const KEEP_MENU = new Set(['home', 'products', 'blog', 'users'])
+const KEEP_MOBILE = new Set([...KEEP_MENU, 'user', 'admin'])
+
+const menuBarLinks = computed(() => links.value.filter(r => KEEP_MENU.has(r.id)))
+const mobileLinks = computed(() => links.value.filter(r => KEEP_MOBILE.has(r.id)))
 </script>
 
 <style scoped>
