@@ -22,8 +22,8 @@
 </template>
 
 <script setup>
-import { useAppUserRoutes } from '../../composables/app/routes/useAppUserRoutes'
-const userGroup = useAppUserRoutes()[0]
+import { useUserRoutes } from '../../composables/app/routes/useUserRoutes'
+const userGroup = useUserRoutes()[0]
 const routeObj = userGroup.children.find((r) => r.to === '/dashboard/profile')
 const { label, icon } = routeObj
 

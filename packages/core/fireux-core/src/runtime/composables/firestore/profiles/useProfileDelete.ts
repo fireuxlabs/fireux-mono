@@ -12,9 +12,9 @@ import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { ProfileConfig } from '../../../models/profiles/profile.model'
 
-type DeleteScope = 'core' | 'app' | 'both' | 'auto'
+export type DeleteScope = 'core' | 'app' | 'both' | 'auto'
 
-interface DeleteOptions {
+export interface DeleteOptions {
   /** Override target user id; defaults to current profile.id (flattened) */
   id?: string
   /** 'core' | 'app' | 'both' | 'auto' (default: 'auto') */

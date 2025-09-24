@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
+import { getMiseboxDefaultRoutes } from '../composables/app/routes/useMiseboxDefaultRoutes'
 import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
 
 const { user } = useUser()
@@ -15,5 +15,7 @@ const hasProfile = (profileType: string) => {
   return profileType ? list.includes(profileType) : !!app
 }
 type LayoutRoutes = { menuBarLinks?: any[]; mobileLinks?: any[] }
-const miseboxRoutes = computed<LayoutRoutes>(() => getMiseboxRoutes(hasProfile))
+const miseboxRoutes = computed<LayoutRoutes>(() =>
+  getMiseboxDefaultRoutes(hasProfile)
+)
 </script>

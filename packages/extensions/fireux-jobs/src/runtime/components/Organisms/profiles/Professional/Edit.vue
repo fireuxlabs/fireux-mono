@@ -1,7 +1,48 @@
 <template>
+  <ClientOnly>
+    <UCard class="space-y-6">
+      <MoleculesFormsFirestoreAvatarSelection
+        :user="{ ...professional, avatar_url: professional?.avatar }"
+        @upload="onUploadAvatar"
+      />
+
+      <MoleculesFormsFirestoreField
+        label="Display Name"
+        :firebase-value="professional?.display_name"
+        placeholder="Enter your display name"
+        :update-function="onSaveDisplayName"
+      />
+    </UCard>
+  </ClientOnly>
+</template>
+
+<script setup lang="ts">
+import type { Professional } from '../../../../models/profiles/Professional.model'
+import { useProfessionalUpdate } from '../../../../composables/firestore/profiles/Professional/useProfessionalUpdate'
+import { useMediaStorage } from 'fireux-core/runtime/composables/firebase/useMediaStorage'
+
+const props = defineProps<{ professional: Professional }>()
+
+const { updateDisplayName, updateAvatar } = useProfessionalUpdate()
+const { uploadCoreAvatar } = useMediaStorage()
+
+const onSaveDisplayName = (v: string) => updateDisplayName(v)
+
+const onUploadAvatar = async (file: File) => {
+  if (!props.professional?.id) return
+  const url = await uploadCoreAvatar(file, props.professional.id)
+  if (url) await updateAvatar(url)
+}
+</script>
+
+<!-- TODO: Legacy professional editor preserved below for reference. Do not remove until replacement is fully validated.
+
+LEGACY EDITOR (preserved as comment)
+
+<template>
   <client-only>
     <div class="profile-edit-container">
-      <!-- Avatar Upload -->
+      [Avatar Upload]
       <FireMoleculesFormsFirestoreAvatarSelection
         :user="{
           ...props.professional,
@@ -9,7 +50,7 @@
         }"
       />
 
-      <!-- Professional Name Field (Primary Identifier) -->
+      [Professional Name Field (Primary Identifier)]
       <FireMoleculesFormsFirestoreField
         label="Professional Name"
         :firebase-value="props.professional?.professional_name"
@@ -17,7 +58,7 @@
         :update-function="updateProfessionalName"
       />
 
-      <!-- Title Field -->
+      [Professional Title]
       <FireMoleculesFormsFirestoreField
         label="Professional Title"
         :firebase-value="props.professional?.title"
@@ -25,7 +66,7 @@
         :update-function="updateTitle"
       />
 
-      <!-- Years of Experience Field -->
+      [Years of Experience]
       <FireMoleculesFormsFirestoreField
         label="Years of Experience"
         :firebase-value="props.professional?.years_experience"
@@ -36,7 +77,7 @@
         :update-function="updateYearsExperience"
       />
 
-      <!-- Bio Short Field -->
+      [Professional Summary]
       <FireMoleculesFormsFirestoreField
         label="Professional Summary"
         :firebase-value="props.professional?.bio_short"
@@ -47,7 +88,7 @@
         :update-function="updateBioShort"
       />
 
-      <!-- Bio Long Field -->
+      [Detailed Professional Biography]
       <FireMoleculesFormsFirestoreField
         label="Detailed Professional Biography"
         :firebase-value="props.professional?.bio_long"
@@ -58,7 +99,7 @@
         :update-function="updateBioLong"
       />
 
-      <!-- Hourly Rate Field -->
+      [Hourly Rate (CHF)]
       <FireMoleculesFormsFirestoreField
         label="Hourly Rate (CHF)"
         :firebase-value="props.professional?.hourly_rate"
@@ -70,7 +111,7 @@
         :update-function="updateHourlyRate"
       />
 
-      <!-- Specialties Field -->
+      [Culinary Specialties]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Culinary Specialties"
         :firebase-value="props.professional?.specialties"
@@ -78,7 +119,7 @@
         :update-function="updateSpecialties"
       />
 
-      <!-- Cuisines Field -->
+      [Cuisine Types]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Cuisine Types"
         :firebase-value="props.professional?.cuisines"
@@ -86,7 +127,7 @@
         :update-function="updateCuisines"
       />
 
-      <!-- Skills Field -->
+      [Professional Skills]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Professional Skills"
         :firebase-value="props.professional?.skills"
@@ -94,7 +135,7 @@
         :update-function="updateSkills"
       />
 
-      <!-- Certifications Field -->
+      [Certifications]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Certifications"
         :firebase-value="props.professional?.certifications"
@@ -102,7 +143,7 @@
         :update-function="updateCertifications"
       />
 
-      <!-- Languages Field -->
+      [Languages]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Languages"
         :firebase-value="props.professional?.languages"
@@ -110,7 +151,7 @@
         :update-function="updateLanguages"
       />
 
-      <!-- Location Field -->
+      [Location]
       <FireMoleculesFormsFirestoreField
         label="Location"
         :firebase-value="props.professional?.location"
@@ -118,7 +159,7 @@
         :update-function="updateLocation"
       />
 
-      <!-- Availability Status -->
+      [Availability Status]
       <FireMoleculesFormsFirestoreSelect
         label="Availability Status"
         :firebase-value="props.professional?.availability_status"
@@ -130,21 +171,21 @@
         :update-function="updateAvailabilityStatus"
       />
 
-      <!-- Available for Travel -->
+      [Available for Travel]
       <FireMoleculesFormsFirestoreCheckbox
         label="Available for Travel"
         :firebase-value="props.professional?.available_for_travel"
         :update-function="updateAvailableForTravel"
       />
 
-      <!-- Remote Work -->
+      [Available for Remote Work]
       <FireMoleculesFormsFirestoreCheckbox
         label="Available for Remote Work"
         :firebase-value="props.professional?.remote_work"
         :update-function="updateRemoteWork"
       />
 
-      <!-- Education Field -->
+      [Education]
       <FireMoleculesFormsFirestoreField
         label="Education"
         :firebase-value="props.professional?.education"
@@ -152,7 +193,7 @@
         :update-function="updateEducation"
       />
 
-      <!-- Work Authorization -->
+      [Work Authorization]
       <FireMoleculesFormsFirestoreSelect
         label="Work Authorization"
         :firebase-value="props.professional?.work_authorization"
@@ -166,13 +207,13 @@
         :update-function="updateWorkAuthorization"
       />
 
-      <!-- Social Links -->
+      [Social Links]
       <FireMoleculesFormsFirestoreSocialLinks
         :firebase-value="props.professional?.social_links"
         :update-function="updateSocialLinks"
       />
 
-      <!-- Awards and Recognition -->
+      [Awards & Recognition]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Awards & Recognition"
         :firebase-value="props.professional?.awards"
@@ -180,7 +221,7 @@
         :update-function="updateAwards"
       />
 
-      <!-- Preferred Job Types -->
+      [Preferred Job Types]
       <FireMoleculesFormsFirestoreMultiField
         label="Preferred Job Types"
         :firebase-value="props.professional?.preferred_job_types"
@@ -195,7 +236,7 @@
         :update-function="updatePreferredJobTypes"
       />
 
-      <!-- Dietary Specializations -->
+      [Dietary Specializations]
       <FireMoleculesFormsFirestoreMultiField
         label="Dietary Specializations"
         :firebase-value="props.professional?.dietary_specializations"
@@ -212,7 +253,7 @@
         :update-function="updateDietarySpecializations"
       />
 
-      <!-- Equipment Proficiency -->
+      [Equipment Proficiency]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Equipment Proficiency"
         :firebase-value="props.professional?.equipment_proficiency"
@@ -302,3 +343,4 @@ const updateDietarySpecializations = (value: string[]) =>
 const updateEquipmentProficiency = (value: string[]) =>
   updateProfile({ equipment_proficiency: value }, props.professional.uid)
 </script>
+-->

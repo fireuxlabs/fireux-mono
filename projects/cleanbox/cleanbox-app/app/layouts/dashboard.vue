@@ -8,7 +8,7 @@
 <script setup>
 const systemRoutes = useSystemRoutes()
 const { isAppUser, isAdmin } = useAppUser()
-const appUserGroup = useAppUserRoutes() || []
+const appUserGroup = useUserRoutes() || []
 const adminGroup = useAdminRoutes() || []
 
 const jobPublicRoutes = getJobRoutes() || []

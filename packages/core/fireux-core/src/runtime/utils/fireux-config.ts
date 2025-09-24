@@ -1,4 +1,5 @@
 import type { NuxtConfig } from 'nuxt/schema'
+import { resolve as pathResolve } from 'node:path'
 
 type ModuleEntry = string | [string, Record<string, any>]
 
@@ -163,6 +164,9 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     imports: { dirs: ['composables/**', 'utils/**'] },
 
     modules,
+    // Provide top-level vuefire config for module compatibility (in addition to module options)
+    // This ensures the Auth module is enabled even if module options aren’t read in some setups
+    vuefire: vuefireMerged as any,
     app: { head: { title: opts.appName } },
     runtimeConfig: {
       // server-only (JSON string accepted; OR rely on GOOGLE_APPLICATION_CREDENTIALS path env)
@@ -190,6 +194,28 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     },
     compatibilityDate: (opts.compatibilityDate ??
       '2025-09-01') as unknown as NuxtConfig['compatibilityDate'],
+
+    // Vite dev server: allow monorepo package paths so layered module pages load via @fs
+    vite: {
+      server: {
+        fs: {
+          allow: [
+            // Project/app root
+            pathResolve('.'),
+            // Monorepo root candidates (depending on where dev is launched)
+            pathResolve(process.cwd()),
+            pathResolve(process.cwd(), '..'),
+            pathResolve(process.cwd(), '../..'),
+            pathResolve(process.cwd(), '../../..'),
+            // Packages workspace (source of layered module pages)
+            pathResolve(process.cwd(), 'packages'),
+            pathResolve(process.cwd(), '../packages'),
+            pathResolve(process.cwd(), '../../packages'),
+            pathResolve(process.cwd(), '../../../packages'),
+          ],
+        },
+      },
+    },
   }
 
   return config

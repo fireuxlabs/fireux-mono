@@ -7,6 +7,7 @@
       <UButton to="/dev/app">App Config</UButton>
       <UButton to="/dev/fireux-core">FireUX Core</UButton>
       <UButton to="/dev/design">Design System</UButton>
+      <UButton to="/dev/users">Users</UButton>
 
       <!-- Tenant/Extension dev links -->
       <UButton to="/dev/fireux-misebox" color="primary">Misebox Global</UButton>

@@ -8,11 +8,13 @@ export interface RouteLink {
   children?: RouteLink[]
 }
 
-export function getMiseboxRoutes(hasProfile: (profileType: string) => boolean) {
+export function getMiseboxDefaultRoutes(
+  hasProfile: (profileType: string) => boolean
+) {
   // Get package routes
   const jobRoutes = getJobRoutes(hasProfile)
 
-  // General misebox routes
+  // Public Misebox routes (default layout header)
   const miseboxRoutes: RouteLink[] = [
     {
       id: 'chefs',
@@ -42,15 +44,14 @@ export function getMiseboxRoutes(hasProfile: (profileType: string) => boolean) {
 
   const miseboxProfileRoutes: RouteLink[] = []
 
-  // Filter out "Chefs" from mobile menu if user has chef profile
-  // Filter out "Suppliers" from mobile menu if user has supplier profile
+  // Hide public links that have a direct dashboard shortcut for the user (mobile menu only)
   const miseboxMobileRoutes = miseboxRoutes.filter((route) => {
     if (route.id === 'chefs' && hasProfile('chef')) return false
     if (route.id === 'suppliers' && hasProfile('supplier')) return false
     return true
   })
 
-  // Add chef profile route
+  // Dashboard shortcuts (only if user has those profiles)
   if (hasProfile('chef')) {
     miseboxProfileRoutes.push({
       id: 'chef-profile',
@@ -60,7 +61,6 @@ export function getMiseboxRoutes(hasProfile: (profileType: string) => boolean) {
     })
   }
 
-  // Add supplier profile route
   if (hasProfile('supplier')) {
     miseboxProfileRoutes.push({
       id: 'supplier-profile',
@@ -71,7 +71,9 @@ export function getMiseboxRoutes(hasProfile: (profileType: string) => boolean) {
   }
 
   return {
+    // Desktop header: public discovery + jobs public
     menuBarLinks: [...miseboxRoutes, ...jobRoutes.jobRoutes],
+    // Mobile menu: dashboard shortcuts (if any) + filtered public + jobs mobile
     mobileLinks: [
       ...miseboxProfileRoutes,
       ...jobRoutes.jobProfileRoutes,

@@ -52,7 +52,9 @@ export function useAppEnsure() {
       const db = useFirestore()
 
       console.log(
-        `🔍 [ensureApp] Detected modules: ${Array.isArray(modules) ? modules.join(', ') : ''}`
+        `🔍 [ensureApp] Detected modules: ${
+          Array.isArray(modules) ? modules.join(', ') : ''
+        }`
       )
       console.log(`🔍 [ensureApp] Detected ecosystem: ${ecosystem ?? 'none'}`)
 
@@ -86,7 +88,9 @@ export function useAppEnsure() {
       // Write the app document without automatic stamping (explicit system fields already set)
       await setDocument('apps', appId, appData, { raw: true })
       console.log(
-        `🎉 [ensureApp] App '${appId}' created successfully with ecosystem: ${ecosystem ?? 'none'}`
+        `🎉 [ensureApp] App '${appId}' created successfully with ecosystem: ${
+          ecosystem ?? 'none'
+        }`
       )
 
       // Step 5: Update core user with admin role
@@ -121,7 +125,7 @@ export function useAppEnsure() {
    */
   async function createAppUserForAdmin(): Promise<void> {
     try {
-      const { useUserEnsure } = await import('../firestore/users/useUserEnsure')
+      const { useUserEnsure } = await import('../firestore/user/useUserEnsure')
       const { ensureUser } = useUserEnsure()
       await ensureUser()
       console.log('✅ [ensureApp] Created app user for the app admin')

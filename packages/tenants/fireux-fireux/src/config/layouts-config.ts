@@ -10,6 +10,7 @@ export function configureLayouts(resolver: any, _nuxt?: any) {
   addComponentsDir({
     path: layoutsDir,
     pattern: '*.vue',
+    prefix: 'Fireux',
     global: true,
     pathPrefix: false,
   })

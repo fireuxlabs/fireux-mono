@@ -12,23 +12,25 @@
 </template>
 
 <script setup lang="ts">
-// Nuxt auto-imported composable; declare for TS when type context misses auto-imports
 declare function useCoreRoutes(): any
-const props = defineProps<{
-  routes?: import('../types/layouts').LayoutRoutes
-}>()
-
 const coreRoutes = useCoreRoutes()
-const menuBarLinks = [
-  ...(Array.isArray(coreRoutes.menuBarLinks) ? coreRoutes.menuBarLinks : []),
-  ...(Array.isArray(props.routes?.menuBarLinks)
-    ? props.routes.menuBarLinks
-    : []),
-]
-const mobileLinks = [
-  ...(Array.isArray(coreRoutes.mobileLinks) ? coreRoutes.mobileLinks : []),
-  ...(Array.isArray(props.routes?.mobileLinks) ? props.routes.mobileLinks : []),
-]
+
+// --- Menu bar: always the four system links ---
+const menuBarLinks = coreRoutes.links.filter((r: any) =>
+  ['home', 'products', 'blog', 'users'].includes(r.id)
+)
+
+// --- Mobile: system + groups (user + admin) ---
+const mobileLinks = coreRoutes.links.filter((r: any) =>
+  [
+    'home',
+    'products',
+    'blog',
+    'users',
+    'user', // user group (children inside)
+    'admin', // admin group (children inside)
+  ].includes(r.id)
+)
 </script>
 
 <style scoped>
@@ -38,7 +40,6 @@ const mobileLinks = [
   align-items: center;
   min-height: 100vh;
 }
-
 .layout-wrapper > * {
   align-self: stretch;
 }

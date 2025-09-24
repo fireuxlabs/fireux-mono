@@ -1,6 +1,7 @@
+<!-- packages/core/fireux-core/src/runtime/components/App/FireuxAppShell.vue -->
 <template>
   <UApp>
-    <!-- Global notifications (Nuxt UI toast target) -->
+    <!-- Toast target -->
     <ClientOnly>
       <UToaster />
     </ClientOnly>
@@ -14,7 +15,8 @@
       variant="subtle"
       :title="`Welcome to ${appDisplayName} — you are in dev mode`"
     />
-    <!-- Dev/Debug overlay (always pinned above modal) -->
+
+    <!-- Debug overlay -->
     <ClientOnly>
       <Teleport to="body">
         <div class="debug-overlay">
@@ -45,20 +47,19 @@
 </template>
 
 <script setup lang="ts">
-import { useHead, useRuntimeConfig, computed } from '#imports'
+import { computed } from 'vue'
+import { useHead } from 'nuxt/app'
+import { useFireUXConfig } from '../../composables/FireUXConfig'
 import { useApp } from '../../composables/app/useApp'
 
-const { isInitialized } = useApp()
-const isDev = process.dev
+// Names from our FireUX config
+const { appName, appShortName } = useFireUXConfig()
+const appDisplayName = computed(() => appShortName || appName || 'FireUX')
 
-// Resolve app name from runtimeConfig (prefer short name if present)
-const runtimeConfig = useRuntimeConfig()
-const appDisplayName = computed(
-  () =>
-    runtimeConfig.public?.appShortName ||
-    runtimeConfig.public?.appName ||
-    'FireUX'
-)
+// Single source of truth: useApp() already exposes isInitialized via useAppComputed(app)
+const { isInitialized } = useApp()
+
+const isDev = process.dev
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],

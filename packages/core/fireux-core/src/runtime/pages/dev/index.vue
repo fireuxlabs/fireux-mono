@@ -6,6 +6,7 @@
       <UButton to="/dev/app">App Config</UButton>
       <UButton to="/dev/fireux-core">FireUX Core</UButton>
       <UButton to="/dev/design">Design System</UButton>
+      <UButton to="/dev/users">Users</UButton>
     </div>
   </div>
 </template>
@@ -18,7 +19,6 @@ definePageMeta({
 </script>
 
 <style scoped>
-
 .dev-links {
   display: flex;
   flex-wrap: wrap;

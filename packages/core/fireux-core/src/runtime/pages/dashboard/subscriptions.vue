@@ -33,9 +33,9 @@
 </template>
 
 <script setup>
-import { useAppUserRoutes } from '../../composables/app/routes/useAppUserRoutes'
+import { useUserRoutes } from '../../composables/app/routes/useUserRoutes'
 
-const userGroup = useAppUserRoutes()[0]
+const userGroup = useUserRoutes()[0]
 const route = userGroup.children.find(
   (r) => r.to === '/dashboard/subscriptions'
 )

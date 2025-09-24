@@ -1,7 +1,8 @@
+// packages/core/fireux-core/src/runtime/composables/app/routes/useUserRoutes.ts
 import type { RouteLink } from '../../../types/routeLink'
 
-export function useAppUserRoutes(): RouteLink[] {
-  const appUserRoutes: RouteLink[] = [
+export function useUserRoutes(): RouteLink[] {
+  const userRoutes: RouteLink[] = [
     {
       id: 'dashboard',
       label: 'Overview',
@@ -40,13 +41,13 @@ export function useAppUserRoutes(): RouteLink[] {
     },
   ]
 
-  return appUserRoutes.length
+  return userRoutes.length
     ? [
         {
           id: 'user',
           label: 'User',
           icon: 'i-lucide-user-circle',
-          children: appUserRoutes,
+          children: userRoutes,
         },
       ]
     : []

@@ -1,32 +1,19 @@
-import { useAppUserRoutes } from './useAppUserRoutes'
-import { useAdminRoutes } from './useAdminRoutes'
-import { useSystemRoutes } from './useSystemRoutes'
+// packages/core/fireux-core/src/runtime/composables/app/routes/useCoreRoutes.ts
 import { computed } from 'vue'
+import { useSystemRoutes } from './useSystemRoutes'
+import { useUserRoutes } from './useUserRoutes'
+import { useAdminRoutes } from './useAdminRoutes'
 import { useUser } from '../../firestore/users/useUser'
 
 export function useCoreRoutes() {
-  // Always available
-  const menuBarLinks = useSystemRoutes()
+  const systemRoutes = useSystemRoutes()
+  const { hasCoreProfile, isAdmin } = useUser()
 
-  // User state (synchronous composable returns computed refs)
-  const { user } = useUser()
-  const isAppUser = computed(() => !!user.value?.app)
-  const isAdmin = computed(() => user.value?.app?.role === 'admin')
+  const links = computed(() => [
+    ...systemRoutes,
+    ...(hasCoreProfile.value ? useUserRoutes() : []),
+    ...(isAdmin.value ? useAdminRoutes() : []),
+  ])
 
-  // Computed mobile links
-  const mobileLinks = computed(() => {
-    let links = [...menuBarLinks]
-    if (isAppUser.value) {
-      links.push(...useAppUserRoutes())
-    }
-    if (isAdmin.value) {
-      links.push(...useAdminRoutes())
-    }
-    return links
-  })
-
-  return {
-    menuBarLinks,
-    mobileLinks: mobileLinks.value,
-  }
+  return { links }
 }

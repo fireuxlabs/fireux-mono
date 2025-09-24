@@ -1,78 +1,97 @@
-// fireux-core/src/runtime/layouts/Default.vue (CoreDashboard)
+// CoreDashboard: Nuxt UI 4 dashboard shell
 
 <template>
   <ClientOnly>
-    <div class="layout-wrapper">
+    <div class="dashboard-wrapper">
+      <!-- Global header with top navigation and mobile menu -->
       <LayoutsHeader
         :menu-bar-links="menuBarLinks"
         :mobile-links="mobileLinks"
       />
-      <div class="layout-content">
-        <main class="layout-main-content">
-          <UNavigationMenu
-            v-if="!isMobile"
-            class="mt-[var(--header-height)] w-fit"
-            orientation="vertical"
-            :items="[]"
-          />
-          <div class="main-section">
-            <NuxtPage />
+
+      <!-- Page body uses Nuxt UI page container -->
+      <UPage>
+        <UPageBody>
+          <div class="dashboard-content">
+            <!-- Left: Sidebar (desktop only) -->
+            <aside class="dashboard-sidebar" v-if="!isMobile">
+              <UNavigationMenu orientation="vertical" :items="menuBarLinks" />
+            </aside>
+
+            <!-- Right: Main content -->
+            <section class="dashboard-main">
+              <NuxtPage />
+            </section>
           </div>
-        </main>
-      </div>
+        </UPageBody>
+      </UPage>
+
+      <!-- Footer -->
       <LayoutsDefaultFooter />
     </div>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useWindowSize } from '@vueuse/core'
+
 const props = defineProps<{
   routes?: import('../types/layouts').LayoutRoutes
 }>()
 
+// Core base routes (top-level menu + conditional mobile items)
 const { menuBarLinks: coreMenuBarLinks, mobileLinks: coreMobileLinks } =
   useCoreRoutes()
 
-// Normalize core arrays (
+// Normalize both to arrays
 const baseMenu: any[] = Array.isArray(coreMenuBarLinks)
   ? coreMenuBarLinks
-  : ((coreMenuBarLinks as any)?.value ?? [])
+  : (coreMenuBarLinks as any)?.value ?? []
 const baseMobile: any[] = Array.isArray(coreMobileLinks as any)
   ? (coreMobileLinks as any)
-  : ((coreMobileLinks as any)?.value ?? [])
+  : (coreMobileLinks as any)?.value ?? []
 
+// Merge with tenant-provided additions
 const input = props.routes ?? {}
-const menuBarLinks = [...baseMenu, ...(input.menuBarLinks ?? [])]
-const mobileLinks = [...baseMobile, ...(input.mobileLinks ?? [])]
+const menuBarLinks = computed(() => [
+  ...baseMenu,
+  ...(input.menuBarLinks ?? []),
+])
+const mobileLinks = computed(() => [
+  ...baseMobile,
+  ...(input.mobileLinks ?? []),
+])
 
-// Conservative placeholder; replace with real device check if available
-const isMobile: boolean = false
+// Mobile detection (Header also manages a mobile slideover)
+const { width } = useWindowSize()
+const isMobile = computed(() => width.value < 1024)
 
-defineOptions({
-  name: 'CoreDashboard',
-})
+defineOptions({ name: 'CoreDashboard' })
 </script>
 
 <style scoped>
-.layout-wrapper {
+.dashboard-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  min-height: 100vh;
 }
-.layout-content {
-  display: flex;
-  flex-direction: column;
-  max-width: 1800px;
-  width: 100%;
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: var(--space-6);
 }
-.layout-main-content {
-  padding: var(--space-4);
-  display: flex;
-  flex-direction: row;
-  align-items: start;
+.dashboard-sidebar {
+  position: sticky;
+  top: calc(var(--header-height, 56px) + var(--space-4));
+  align-self: start;
 }
-.main-section {
-  flex: 1;
-  width: 100%;
+.dashboard-main {
+  min-width: 0; /* fix overflow in grid child */
+}
+@media (max-width: 1023px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
