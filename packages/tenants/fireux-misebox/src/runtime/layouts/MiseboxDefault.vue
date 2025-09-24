@@ -4,18 +4,31 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getMiseboxDefaultRoutes } from '../composables/app/routes/useMiseboxDefaultRoutes'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import type { RouteLink } from '../composables/app/routes/useMiseboxRoutes'
+import { useMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
 
-const { user } = useUser()
-const hasProfile = (profileType: string) => {
-  const app = user.value?.app
-  if (!app) return false
-  const list = Array.isArray(app.app_profiles) ? app.app_profiles : []
-  return profileType ? list.includes(profileType) : !!app
-}
-type LayoutRoutes = { menuBarLinks?: any[]; mobileLinks?: any[] }
-const miseboxRoutes = computed<LayoutRoutes>(() =>
-  getMiseboxDefaultRoutes(hasProfile)
-)
+const { links } = useMiseboxRoutes()
+
+const KEEP_MENU = new Set<RouteLink['id']>([
+  'chefs',
+  'suppliers',
+  'kitchens',
+  'recipes',
+  'jobs',
+  'employers',
+  'professionals',
+])
+
+const KEEP_MOBILE = new Set<RouteLink['id']>([
+  ...KEEP_MENU,
+  'chef-profile',
+  'supplier-profile',
+  'employer-profile',
+  'professional-profile',
+])
+
+const miseboxRoutes = computed(() => ({
+  menuBarLinks: links.filter(r => KEEP_MENU.has(r.id)),
+  mobileLinks: links.filter(r => KEEP_MOBILE.has(r.id)),
+}))
 </script>
