@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { getCleanboxRoutes } from '../composables/app/routes/useCleanboxRoutes'
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 
 const { user } = useUser()
 // Adapter: expected signature (profileType: string) => boolean

@@ -93,7 +93,6 @@
 </template>
 
 <script setup>
-import { useUser } from '../../../../../composables/firestore/users/useUser'
 const { user } = useUser()
 const hasApp = computed(() => !!user.value?.app)
 

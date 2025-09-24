@@ -69,7 +69,6 @@
 import { computed } from 'vue'
 import { useRoute, navigateTo, useHead, useSeoMeta } from 'nuxt/app'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/useFirestoreRead'
-import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
 import type { ProfileConfig } from 'fireux-core/runtime/models/profiles/profile.model'
 
 /** Props */

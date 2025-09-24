@@ -1,9 +1,4 @@
 // packages/core/fireux-core/src/runtime/composables/app/routes/useCoreRoutes.ts
-import { computed } from 'vue'
-import { useSystemRoutes } from './useSystemRoutes'
-import { useUserRoutes } from './useUserRoutes'
-import { useAdminRoutes } from './useAdminRoutes'
-import { useUser } from '../../firestore/users/useUser'
 
 export function useCoreRoutes() {
   const systemRoutes = useSystemRoutes()

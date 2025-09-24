@@ -161,10 +161,10 @@ composables/firestore/useFirestoreManager.ts
 composables/firestore/useFirestoreRead.ts
 composables/firestore/useFirestoreUpdate.ts
 composables/firestore/useFirestoreUtils.ts
-composables/firestore/users/useUser.ts
-composables/firestore/users/useUserComputed.ts
-composables/firestore/users/useUserDelete.ts
-composables/firestore/users/useUserEnsure.ts
+composables/firestore/user/useUser.ts
+composables/firestore/user/useUserComputed.ts
+composables/firestore/user/useUserDelete.ts
+composables/firestore/user/useUserEnsure.ts
 composables/FireUXConfig.ts
 composables/state/useProfileState.ts
 composables/state/useUserState.ts

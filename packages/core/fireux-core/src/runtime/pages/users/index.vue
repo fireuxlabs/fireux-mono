@@ -73,7 +73,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useUser } from '../../composables/firestore/users/useUser'
+import { useUser } from '../../composables/firestore/user/useUser'
 
 // Unified user + collections + ensure/delete helpers
 const {

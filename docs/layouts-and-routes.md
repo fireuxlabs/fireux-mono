@@ -248,7 +248,7 @@ defineOptions({
 <script setup lang="ts">
 import { computed } from 'vue'
 import { getMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
-import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 
 const { user } = useUser()
 const hasProfile = (profileType: string) => {
@@ -286,7 +286,7 @@ const miseboxDevRoutes = computed(() => getMiseboxDevRoutes())
 <script setup lang="ts">
 import { getMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 
 const { user } = useUser()
 const hasProfile = (profileType: string) => {
@@ -314,7 +314,7 @@ const miseboxRoutes = computed<LayoutRoutes>(() => getMiseboxRoutes(hasProfile))
 <script setup lang="ts">
 import { getCleanboxRoutes } from '../composables/app/routes/useCleanboxRoutes'
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 
 const { user } = useUser()
 // Adapter: expected signature (profileType: string) => boolean
@@ -358,7 +358,7 @@ const cleanboxDevRoutes = computed(() => ({
 <script setup lang="ts">
 import { getCleanboxRoutes } from '../composables/app/routes/useCleanboxRoutes'
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 
 const { user } = useUser()
 // Adapter: expected signature (profileType: string) => boolean
@@ -462,7 +462,7 @@ import { useAppUserRoutes } from './useAppUserRoutes'
 import { useAdminRoutes } from './useAdminRoutes'
 import { useSystemRoutes } from './useSystemRoutes'
 import { computed } from 'vue'
-import { useUser } from '../../firestore/users/useUser'
+import { useUser } from '../../firestore/user/useUser'
 
 export function useCoreRoutes() {
   // Always available

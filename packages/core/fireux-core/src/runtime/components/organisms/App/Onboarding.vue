@@ -36,7 +36,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useUser } from '../../../composables/firestore/users/useUser'
+import { useUser } from '../../../composables/firestore/user/useUser'
 import { useAppEnsure } from '../../../composables/app/useEnsureApp'
 const { user } = useUser()
 const coreUser = computed(() => user.value?.core ?? null)

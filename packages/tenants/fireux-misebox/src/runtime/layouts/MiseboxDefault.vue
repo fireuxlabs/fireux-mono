@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { getMiseboxDefaultRoutes } from '../composables/app/routes/useMiseboxDefaultRoutes'
-import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 
 const { user } = useUser()
 const hasProfile = (profileType: string) => {

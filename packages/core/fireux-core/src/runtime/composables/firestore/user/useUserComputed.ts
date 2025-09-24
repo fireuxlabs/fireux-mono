@@ -1,4 +1,4 @@
-// packages/core/fireux-core/src/runtime/composables/firestore/users/useUserComputed.ts
+// packages/core/fireux-core/src/runtime/composables/firestore/user/useUserComputed.ts
 import { computed, type Ref } from 'vue'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { User } from '../../../models/core/user.model'

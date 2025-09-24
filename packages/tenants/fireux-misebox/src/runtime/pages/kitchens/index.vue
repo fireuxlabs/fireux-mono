@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/users/useUser'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
 import { chefConfig } from '../../models/profiles/Chef.model'
 

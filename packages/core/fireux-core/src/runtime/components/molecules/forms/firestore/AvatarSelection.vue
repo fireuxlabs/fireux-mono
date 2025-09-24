@@ -20,7 +20,7 @@
 
 <script setup>
 import { useAvatarProxy } from '../../../../composables/app/utils/useAvatarProxy'
-import { useUser } from '../../../../composables/firestore/users/useUser'
+import { useUser } from '../../../../composables/firestore/user/useUser'
 import { useCurrentUser } from 'vuefire'
 
 // Accept user as prop
