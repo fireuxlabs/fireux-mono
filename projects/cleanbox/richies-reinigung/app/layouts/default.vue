@@ -1,4 +1,4 @@
-//richies-reinigung layout/default
+<!-- projects/cleanbox/richies-reinigung/app/layouts/default.vue -->
 <template>
   <CleanboxDefault />
 </template>

@@ -25,9 +25,24 @@ export function useMiseboxRoutes() {
   // Public Misebox discovery routes
   const miseboxPublic: RouteLink[] = [
     { id: 'chefs', label: 'Chefs', icon: 'i-lucide-chef-hat', to: '/chefs' },
-    { id: 'suppliers', label: 'Suppliers', icon: 'i-lucide-truck', to: '/suppliers' },
-    { id: 'kitchens', label: 'Kitchens', icon: 'i-lucide-cooking-pot', to: '/kitchens' },
-    { id: 'recipes', label: 'Recipes', icon: 'i-lucide-book-open', to: '/recipes' },
+    {
+      id: 'suppliers',
+      label: 'Suppliers',
+      icon: 'i-lucide-truck',
+      to: '/suppliers',
+    },
+    {
+      id: 'kitchens',
+      label: 'Kitchens',
+      icon: 'i-lucide-cooking-pot',
+      to: '/kitchens',
+    },
+    {
+      id: 'recipes',
+      label: 'Recipes',
+      icon: 'i-lucide-book-open',
+      to: '/recipes',
+    },
   ]
 
   // Profile shortcuts (dashboard) conditional

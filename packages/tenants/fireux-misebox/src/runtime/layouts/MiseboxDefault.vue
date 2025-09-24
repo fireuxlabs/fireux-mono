@@ -28,7 +28,7 @@ const KEEP_MOBILE = new Set<RouteLink['id']>([
 ])
 
 const miseboxRoutes = computed(() => ({
-  menuBarLinks: links.filter(r => KEEP_MENU.has(r.id)),
-  mobileLinks: links.filter(r => KEEP_MOBILE.has(r.id)),
+  menuBarLinks: links.filter((r) => KEEP_MENU.has(r.id)),
+  mobileLinks: links.filter((r) => KEEP_MOBILE.has(r.id)),
 }))
 </script>

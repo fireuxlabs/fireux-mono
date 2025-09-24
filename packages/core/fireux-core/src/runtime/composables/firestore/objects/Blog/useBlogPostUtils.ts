@@ -1,5 +1,4 @@
 // app/composables/firestore/documents/Blog/blogPostUtils.ts
-import { useUser } from '../../users/useUser'
 import type {
   BlogPost,
   Author,

@@ -1,44 +1,40 @@
 <template>
-  <div class="page">
-    <div class="header">
-      <h1 class="title">Users (Core)</h1>
-      <div class="meta" v-if="users">
-        <UBadge variant="soft" color="primary">{{ users.length }} total</UBadge>
-      </div>
-    </div>
+  <div class="p-4 space-y-4">
+    <h1>Users (dev)</h1>
 
-    <UAlert
-      v-if="pending"
-      title="Loading users"
-      color="primary"
-      :ui="{ base: 'mt-4' }"
-      icon="i-lucide-loader"
-    />
+    <section>
+      <h2>Status</h2>
+      <ul>
+        <li>hasCoreProfile: {{ hasCoreProfile }}</li>
+        <li v-if="hasAppProfile !== undefined">hasAppProfile: {{ hasAppProfile }}</li>
+        <li>isAdmin: {{ isAdmin }}</li>
+        <li>displayName: {{ displayName || '—' }}</li>
+        <li>initials: {{ initials || '—' }}</li>
+      </ul>
+    </section>
 
-    <UAlert
-      v-else-if="error"
-      title="Failed to load users"
-      color="red"
-      :description="String(error)"
-      icon="i-lucide-alert-triangle"
-      :ui="{ base: 'mt-4' }"
-    />
+    <section>
+      <h2>Current user (flattened)</h2>
+      <pre>{{ userJson }}</pre>
+    </section>
 
-    <div v-else class="content">
-      <div class="table-wrapper" v-if="users?.length">
-        <UTable :rows="tableRows" :columns="columns" />
-      </div>
-      <div v-else class="empty">
-        <p>No users found.</p>
-      </div>
+    <section>
+      <h2>Collections</h2>
+      <ul>
+        <li>local (apps/{appId}/users): {{ localCount }}</li>
+        <li>global (core-users): {{ globalCount }}</li>
+      </ul>
 
-      <details class="raw">
-        <summary class="cursor-pointer select-none text-sm text-gray-500 mt-6">
-          Raw JSON
-        </summary>
-        <pre class="code-block">{{ users }}</pre>
+      <details v-if="localCount">
+        <summary>First local users (up to 5)</summary>
+        <pre>{{ localPreview }}</pre>
       </details>
-    </div>
+
+      <details v-if="globalCount">
+        <summary>First global users (up to 5)</summary>
+        <pre>{{ globalPreview }}</pre>
+      </details>
+    </section>
   </div>
 </template>
 
@@ -48,61 +44,38 @@ definePageMeta({
   layout: 'dev',
 })
 
-// Simple core-users collection stream
 import { computed } from 'vue'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager'
-import type { CoreUserDoc } from 'fireux-core/runtime/models/core/user.model'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 
-const { firestoreFetchCollection } = useFirestoreManager()
-
-// Returns a Ref<Array<CoreUserDoc> | null>
+// Pull everything we need from the unified user composable
 const {
-  data: users,
-  pending,
-  error,
-} = firestoreFetchCollection<CoreUserDoc>('core-users') as any
+  user,                    // Ref<User | null>
+  collection,              // { local?: Ref<any[]>|null, global?: Ref<any[]>|null }
+  hasCoreProfile,          // Computed<boolean>
+  hasAppProfile,           // Computed<boolean> | undefined (only in tenant apps)
+  isAdmin,                 // Computed<boolean>
+  displayName,             // Computed<string>
+  initials,                // Computed<string>
+} = useUser()
 
-const columns = [
-  { key: 'avatar', label: 'Avatar' },
-  { key: 'display_name', label: 'Name' },
-  { key: 'email', label: 'Email' },
-  { key: 'adminOf', label: 'Admin Of' },
-  { key: 'userOf', label: 'User Of' },
-]
+// Pretty JSON helpers
+const userJson = computed(() =>
+  JSON.stringify(user.value, null, 2)
+)
 
-const tableRows = computed(() =>
-  (users?.value || []).map((u) => ({
-    ...u,
-    adminOf: u.adminOf?.length ? u.adminOf.join(', ') : '',
-    userOf: u.userOf?.length ? u.userOf.join(', ') : '',
-  }))
+// Collection counts
+const localCount = computed(() => collection.local?.value?.length ?? 0)
+const globalCount = computed(() => collection.global?.value?.length ?? 0)
+
+// Small previews
+const localPreview = computed(() =>
+  JSON.stringify((collection.local?.value ?? []).slice(0, 5), null, 2)
+)
+const globalPreview = computed(() =>
+  JSON.stringify((collection.global?.value ?? []).slice(0, 5), null, 2)
 )
 </script>
 
 <style scoped>
-.header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.title {
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-.table-wrapper {
-  margin-top: 20px;
-}
-.code-block {
-  margin-top: 12px;
-  background: var(--ui-bg-muted, #f5f5f5);
-  padding: 12px;
-  border-radius: 8px;
-  max-height: 320px;
-  overflow: auto;
-  font-size: 12px;
-}
-.empty {
-  margin-top: 24px;
-  opacity: 0.7;
-}
+/* intentionally minimal */
 </style>
