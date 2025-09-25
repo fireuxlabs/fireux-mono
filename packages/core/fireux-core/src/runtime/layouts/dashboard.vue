@@ -50,11 +50,26 @@ const props = defineProps<{
 const { links } = useCoreRoutes()
 
 // Header allow-lists (unchanged)
-const KEEP_HEADER_MENU = new Set<RouteLink['id']>(['home', 'products', 'blog', 'users'])
-const KEEP_HEADER_MOBILE = new Set<RouteLink['id']>(['products', 'blog', 'users', 'user', 'admin'])
+const KEEP_HEADER_MENU = new Set<RouteLink['id']>([
+  'home',
+  'products',
+  'blog',
+  'users',
+])
+const KEEP_HEADER_MOBILE = new Set<RouteLink['id']>([
+  'products',
+  'blog',
+  'users',
+  'user',
+  'admin',
+])
 
-const coreMenu = computed(() => links.value.filter((r: RouteLink) => KEEP_HEADER_MENU.has(r.id)))
-const coreMobile = computed(() => links.value.filter((r: RouteLink) => KEEP_HEADER_MOBILE.has(r.id)))
+const coreMenu = computed(() =>
+  links.value.filter((r: RouteLink) => KEEP_HEADER_MENU.has(r.id))
+)
+const coreMobile = computed(() =>
+  links.value.filter((r: RouteLink) => KEEP_HEADER_MOBILE.has(r.id))
+)
 
 // Merge tenant additions
 const navMenu = computed(() => [
@@ -67,7 +82,9 @@ const navMobile = computed(() => [
 ])
 
 // Sidebar is tenant dashboard links only
-const sidebarLinks = computed(() => (props.routes?.menuBarLinks as RouteLink[] | undefined) ?? [])
+const sidebarLinks = computed(
+  () => (props.routes?.menuBarLinks as RouteLink[] | undefined) ?? []
+)
 
 // Mobile detection for hiding the sidebar
 const { width } = useWindowSize()
