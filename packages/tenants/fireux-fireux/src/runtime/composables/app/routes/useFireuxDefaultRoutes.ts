@@ -1,11 +1,5 @@
-// Local type to avoid deep imports
-export interface RouteLink {
-  id: string
-  label: string
-  icon: string
-  to: string
-  children?: RouteLink[]
-}
+// Use universal RouteLink type
+import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 
 /**
  * Public header routes the tenant wants to add on top of core system routes.

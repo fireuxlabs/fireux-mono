@@ -3,7 +3,6 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { ProfileConfig } from '../../../models/profiles/profile.model'
-import { useUser } from '../users/useUser'
 
 /**
  * Create the profile if it doesn't exist (core + optional app).

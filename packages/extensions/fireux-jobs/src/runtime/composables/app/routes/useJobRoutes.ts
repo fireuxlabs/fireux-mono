@@ -1,12 +1,6 @@
 // Export for public job routes
 // Local type to avoid cross-package deep imports
-export interface RouteLink {
-  id: string
-  label: string
-  icon: string
-  to: string
-  children?: RouteLink[]
-}
+import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 
 export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
   const jobRoutes: RouteLink[] = [
@@ -32,13 +26,8 @@ export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
 
   const jobProfileRoutes: RouteLink[] = []
 
-  // Filter out "Employers" from mobile menu if user has employer profile
-  // Filter out "Professionals" from mobile menu if user has professional profile
-  const jobMobileRoutes = jobRoutes.filter((route) => {
-    if (route.id === 'employers' && hasProfile('employer')) return false
-    if (route.id === 'professionals' && hasProfile('professional')) return false
-    return true
-  })
+  // Do not conditionally hide public routes; UI handles active state/UX.
+  const jobMobileRoutes = jobRoutes
 
   if (hasProfile('employer')) {
     jobProfileRoutes.push({

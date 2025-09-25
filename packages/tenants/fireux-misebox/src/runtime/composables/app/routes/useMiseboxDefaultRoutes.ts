@@ -1,12 +1,5 @@
 import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/app/routes/useJobRoutes'
-// Local type to avoid deep import from core
-export interface RouteLink {
-  id: string
-  label: string
-  icon: string
-  to: string
-  children?: RouteLink[]
-}
+import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 
 export function getMiseboxDefaultRoutes(
   hasProfile: (profileType: string) => boolean
@@ -44,13 +37,6 @@ export function getMiseboxDefaultRoutes(
 
   const miseboxProfileRoutes: RouteLink[] = []
 
-  // Hide public links that have a direct dashboard shortcut for the user (mobile menu only)
-  const miseboxMobileRoutes = miseboxRoutes.filter((route) => {
-    if (route.id === 'chefs' && hasProfile('chef')) return false
-    if (route.id === 'suppliers' && hasProfile('supplier')) return false
-    return true
-  })
-
   // Dashboard shortcuts (only if user has those profiles)
   if (hasProfile('chef')) {
     miseboxProfileRoutes.push({
@@ -77,7 +63,7 @@ export function getMiseboxDefaultRoutes(
     mobileLinks: [
       ...miseboxProfileRoutes,
       ...jobRoutes.jobProfileRoutes,
-      ...miseboxMobileRoutes,
+      ...miseboxRoutes,
       ...jobRoutes.jobMobileRoutes,
     ],
   }

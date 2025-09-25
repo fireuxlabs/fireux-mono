@@ -1,3 +1,4 @@
+//packages/tenants/fireux-misebox/src/runtime/layouts/MiseboxDashboard.vue
 <template>
   <CoreDashboard :routes="miseboxRoutes" />
 </template>

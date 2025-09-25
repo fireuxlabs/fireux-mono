@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { RouteLink } from '../composables/app/routes/useMiseboxRoutes'
+import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 import { useMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
 
 const { links } = useMiseboxRoutes()
@@ -28,7 +28,7 @@ const KEEP_MOBILE = new Set<RouteLink['id']>([
 ])
 
 const miseboxRoutes = computed(() => ({
-  menuBarLinks: links.filter((r) => KEEP_MENU.has(r.id)),
-  mobileLinks: links.filter((r) => KEEP_MOBILE.has(r.id)),
+  menuBarLinks: links.value.filter((r) => KEEP_MENU.has(r.id)),
+  mobileLinks: links.value.filter((r) => KEEP_MOBILE.has(r.id)),
 }))
 </script>

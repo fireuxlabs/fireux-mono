@@ -1,11 +1,5 @@
 // Dashboard-only job profile routes (no public discovery links)
-export interface RouteLink {
-  id: string
-  label: string
-  icon: string
-  to: string
-  children?: RouteLink[]
-}
+import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 
 export function getJobDashboardRoutes(
   hasProfile: (profileType: string) => boolean

@@ -11,9 +11,9 @@ import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { User } from '../../../models/core/user.model'
 
-type DeleteScope = 'core' | 'app' | 'both' | 'auto'
+export type DeleteScope = 'core' | 'app' | 'both' | 'auto'
 
-interface DeleteOptions {
+export interface DeleteOptions {
   /** If omitted, we'll fall back to userRef.value?.id */
   id?: string
   scope?: DeleteScope

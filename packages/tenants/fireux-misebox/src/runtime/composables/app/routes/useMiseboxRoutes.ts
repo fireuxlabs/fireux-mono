@@ -1,14 +1,8 @@
 // packages/tenants/fireux-misebox/src/runtime/composables/app/routes/useMiseboxRoutes.ts
 // Tenant-only navigation builder (no core links). Provides flat array which the layout filters.
+import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 
-export interface RouteLink {
-  id: string
-  label: string
-  icon: string
-  to: string
-  children?: RouteLink[]
-}
-
+import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/app/routes/useJobRoutes'
 
@@ -45,34 +39,36 @@ export function useMiseboxRoutes() {
     },
   ]
 
-  // Profile shortcuts (dashboard) conditional
-  const profileShortcuts: RouteLink[] = []
-  if (hasProfile('chef')) {
-    profileShortcuts.push({
-      id: 'chef-profile',
-      label: 'Chef Profile',
-      icon: 'i-lucide-chef-hat',
-      to: '/dashboard/chef-profile',
-    })
-  }
-  if (hasProfile('supplier')) {
-    profileShortcuts.push({
-      id: 'supplier-profile',
-      label: 'Supplier Profile',
-      icon: 'i-lucide-package',
-      to: '/dashboard/supplier-profile',
-    })
-  }
+  const links = computed<RouteLink[]>(() => {
+    // Profile shortcuts (dashboard) conditional
+    const profileShortcuts: RouteLink[] = []
+    if (hasProfile('chef')) {
+      profileShortcuts.push({
+        id: 'chef-profile',
+        label: 'Chef Profile',
+        icon: 'i-lucide-chef-hat',
+        to: '/dashboard/chef-profile',
+      })
+    }
+    if (hasProfile('supplier')) {
+      profileShortcuts.push({
+        id: 'supplier-profile',
+        label: 'Supplier Profile',
+        icon: 'i-lucide-package',
+        to: '/dashboard/supplier-profile',
+      })
+    }
 
-  // Jobs extension routes (public + profile/dashboard flavor)
-  const jobs = getJobRoutes(hasProfile)
+    // Jobs extension routes (public + profile/dashboard flavor)
+    const jobs = getJobRoutes(hasProfile)
 
-  const links: RouteLink[] = [
-    ...miseboxPublic,
-    ...jobs.jobRoutes,
-    ...profileShortcuts,
-    ...jobs.jobProfileRoutes,
-  ]
+    return [
+      ...miseboxPublic,
+      ...jobs.jobRoutes,
+      ...profileShortcuts,
+      ...jobs.jobProfileRoutes,
+    ]
+  })
 
   return { links }
 }
