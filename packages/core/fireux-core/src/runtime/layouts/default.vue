@@ -1,7 +1,7 @@
 <template>
   <ClientOnly>
     <div class="layout-wrapper">
-      <LayoutsHeader
+      <LayoutsDefaultHeader
         :menu-bar-links="menuBarLinks"
         :mobile-links="mobileLinks"
       />

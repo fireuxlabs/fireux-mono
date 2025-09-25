@@ -59,10 +59,12 @@ Source of truth for registration: `packages/core/fireux-core/src/config/layouts-
 ## Dashboard — phased approach
 
 Baseline (Phase 1)
+
 - Global header + desktop-only primary sidebar (tenant links) + content via `NuxtPage`
 - No search overlay or secondary stacks by default
 
 Planned (opt-in via props/composables)
+
 - Search overlay and search button
 - Secondary stacks (teams, projects, etc.)
 - User menu enhancements

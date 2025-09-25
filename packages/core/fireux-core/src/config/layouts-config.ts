@@ -24,7 +24,18 @@ export function configureLayouts(resolver: any, _nuxt: any) {
   // Note: We intentionally do NOT register 'default' here to avoid
   // layer key collisions with app-level app/layouts/default.vue.
   // Apps own their default.vue; core still exposes CoreDefault as a component.
-  const keys = ['dashboard', 'dev', 'design', 'docs']
+  const keys = [
+    'dashboard',
+    'dev',
+    'design',
+    'docs',
+    'landing',
+    'portfolio',
+    'auth',
+    'chat',
+    'changelog',
+    'starter',
+  ]
   for (const key of keys) {
     const file = join(layoutsDir, `${key}.vue`)
     if (existsSync(file)) {

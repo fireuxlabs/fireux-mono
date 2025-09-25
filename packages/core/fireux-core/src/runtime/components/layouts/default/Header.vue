@@ -1,3 +1,4 @@
+<!-- COMMENT: app/components/layouts/default/Header.vue -->
 <template>
   <ClientOnly>
     <header class="header">
@@ -104,8 +105,8 @@
 import { ref, computed, watch } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import { useRouter, useRoute } from 'vue-router'
-import { useUser } from '../../composables/firestore/user/useUser'
-import { useAuth } from '../../composables/firebase/useAuth'
+import { useUser } from '../../../composables/firestore/user/useUser'
+import { useAuth } from '../../../composables/firebase/useAuth'
 
 // Unified user
 const { user, initials, displayName, avatarSrc, isSignedIn } = useUser()

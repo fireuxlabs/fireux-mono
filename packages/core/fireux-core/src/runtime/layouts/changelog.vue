@@ -3,7 +3,9 @@ import { inject, type Ref } from 'vue'
 import type { ContentNavigationItem } from '@nuxt/content'
 
 // Optional content navigation for changelog pages
-const navigation = inject<Ref<ContentNavigationItem[]> | undefined>('navigation')
+const navigation = inject<Ref<ContentNavigationItem[]> | undefined>(
+  'navigation'
+)
 defineOptions({ name: 'CoreChangelog' })
 </script>
 
@@ -17,7 +19,7 @@ defineOptions({ name: 'CoreChangelog' })
           </UPageAside>
         </template>
 
-        <slot />
+        <NuxtPage />
       </UPage>
     </UContainer>
   </UMain>

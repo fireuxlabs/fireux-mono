@@ -1,5 +1,3 @@
 <template>
-  <CoreLanding>
-    <slot />
-  </CoreLanding>
+  <CoreLanding />
 </template>
