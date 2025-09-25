@@ -1,123 +1,81 @@
-<!-- CoreDashboard: Nuxt UI v4 Dashboard primitives -->
+<!-- CoreDashboard: Focused shell using Nuxt UI group + our global header -->
 <template>
   <ClientOnly>
-    <UDashboardGroup storage="local" storage-key="core-dashboard">
-      <!-- Sidebar: tenant-provided navigation (collapsible/resizable) -->
+    <UDashboardGroup unit="rem">
+      <!-- Our global header for top navigation and mobile menu -->
+      <LayoutsHeader :menu-bar-links="navMenu" :mobile-links="navMobile" />
+
+      <!-- Sidebar (desktop only) with tenant-provided dashboard links -->
       <UDashboardSidebar
-        v-if="sidebarLinks.length"
+        v-if="!isMobile && sidebarLinks.length"
         collapsible
         resizable
-        :min-size="22"
-        :default-size="30"
-        :max-size="44"
+        class="bg-elevated/25"
+        :ui="{ footer: 'lg:border-t lg:border-default' }"
       >
-        <template #left>
-          <slot name="sidebar-left" />
-        </template>
-        <template #header="{ collapsed }">
-          <slot name="sidebar-header" :collapsed="collapsed">
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-flame" class="size-5 text-primary" />
-              <span v-if="!collapsed" class="font-semibold">Dashboard</span>
-            </div>
-          </slot>
-        </template>
-
         <template #default="{ collapsed }">
-          <slot name="sidebar-top" :collapsed="collapsed" />
           <UNavigationMenu
+            orientation="vertical"
             :collapsed="collapsed"
             :items="sidebarLinks"
-            orientation="vertical"
+            tooltip
+            popover
           />
-          <UNavigationMenu
-            v-if="mobileSidebarLinks.length"
-            :collapsed="collapsed"
-            :items="mobileSidebarLinks"
-            orientation="vertical"
-            class="mt-2 lg:hidden"
-          />
-          <slot name="sidebar-bottom" :collapsed="collapsed" />
-        </template>
-
-        <template #footer="{ collapsed }">
-          <slot name="sidebar-footer" :collapsed="collapsed">
-            <UButton
-              :label="collapsed ? undefined : 'Account'"
-              color="neutral"
-              variant="ghost"
-              block
-              icon="i-lucide-user"
-              :square="collapsed"
-            />
-          </slot>
         </template>
       </UDashboardSidebar>
 
-      <!-- Main panel with Navbar and page content -->
-      <UDashboardPanel>
-        <template #header>
-          <slot name="navbar">
-            <UDashboardNavbar title="Dashboard">
-              <template #leading>
-                <slot name="navbar-leading">
-                  <UDashboardSidebarCollapse />
-                </slot>
-              </template>
-              <template #trailing>
-                <slot name="navbar-trailing">
-                  <UButton
-                    icon="i-lucide-search"
-                    variant="ghost"
-                    color="neutral"
-                  />
-                  <UButton
-                    icon="i-lucide-bell"
-                    variant="ghost"
-                    color="neutral"
-                  />
-                </slot>
-              </template>
-            </UDashboardNavbar>
-          </slot>
-        </template>
-
-        <template #body>
+      <!-- Main content area -->
+      <UPage>
+        <UPageBody>
           <NuxtPage />
-        </template>
+        </UPageBody>
+      </UPage>
 
-        <template #footer>
-          <LayoutsDefaultFooter />
-        </template>
-      </UDashboardPanel>
+      <LayoutsDefaultFooter />
     </UDashboardGroup>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useWindowSize } from '@vueuse/core'
 import { useCoreRoutes } from 'fireux-core/runtime/composables/app/routes/useCoreRoutes'
 import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 
 const props = defineProps<{
-  routes?: import('../types/layouts').LayoutRoutes
+  routes?: { menuBarLinks?: RouteLink[]; mobileLinks?: RouteLink[] }
 }>()
 
 // Core-composed links (system + conditional groups)
 const { links } = useCoreRoutes()
 
-// Sidebar = tenant-provided dashboard links only
-const sidebarLinks = computed(
-  () => (props.routes?.menuBarLinks as RouteLink[] | undefined) ?? []
-)
-// Mobile-only additions are rendered inside the sidebar on small screens
-const mobileSidebarLinks = computed(
-  () => (props.routes?.mobileLinks as RouteLink[] | undefined) ?? []
-)
+// Header allow-lists (unchanged)
+const KEEP_HEADER_MENU = new Set<RouteLink['id']>(['home', 'products', 'blog', 'users'])
+const KEEP_HEADER_MOBILE = new Set<RouteLink['id']>(['products', 'blog', 'users', 'user', 'admin'])
+
+const coreMenu = computed(() => links.value.filter((r: RouteLink) => KEEP_HEADER_MENU.has(r.id)))
+const coreMobile = computed(() => links.value.filter((r: RouteLink) => KEEP_HEADER_MOBILE.has(r.id)))
+
+// Merge tenant additions
+const navMenu = computed(() => [
+  ...coreMenu.value,
+  ...((props.routes?.menuBarLinks as RouteLink[] | undefined) ?? []),
+])
+const navMobile = computed(() => [
+  ...coreMobile.value,
+  ...((props.routes?.mobileLinks as RouteLink[] | undefined) ?? []),
+])
+
+// Sidebar is tenant dashboard links only
+const sidebarLinks = computed(() => (props.routes?.menuBarLinks as RouteLink[] | undefined) ?? [])
+
+// Mobile detection for hiding the sidebar
+const { width } = useWindowSize()
+const isMobile = computed(() => width.value < 1024)
 
 defineOptions({ name: 'CoreDashboard' })
 </script>
 
 <style scoped>
-/* Nuxt UI dashboard components handle layout; keep CSS minimal here */
+/* Nuxt UI components handle most layout; minimal extras here. */
 </style>
