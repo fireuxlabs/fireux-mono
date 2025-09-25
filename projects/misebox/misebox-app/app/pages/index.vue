@@ -41,6 +41,7 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'landing' })
 // SEO and Meta
 useSeoMeta({
   title: 'Misebox - Professional Kitchen Management Platform',

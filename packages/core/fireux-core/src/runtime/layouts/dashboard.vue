@@ -51,17 +51,10 @@ const { links } = useCoreRoutes()
 
 // Header allow-lists (unchanged)
 const KEEP_HEADER_MENU = new Set<RouteLink['id']>([
-  'home',
-  'products',
-  'blog',
-  'users',
+ 
 ])
 const KEEP_HEADER_MOBILE = new Set<RouteLink['id']>([
-  'products',
-  'blog',
-  'users',
-  'user',
-  'admin',
+ 
 ])
 
 const coreMenu = computed(() =>

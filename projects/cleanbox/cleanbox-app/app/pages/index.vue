@@ -44,6 +44,7 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'landing' })
 // SEO and Meta
 useSeoMeta({
   title: 'CleanBox - Professional Cleaning Business Management Platform',

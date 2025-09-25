@@ -28,6 +28,7 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'landing' })
 useSeoMeta({
   title: 'Richies Reinigung - Professional Cleaning Services',
   description:
