@@ -7,6 +7,20 @@
       />
       <UMain>
         <UContainer>
+          <UBanner
+            v-if="isDev"
+            class="mb-2"
+            icon="i-heroicons-wrench-screwdriver"
+            color="warning"
+            variant="subtle"
+            :title="`Welcome to ${appDisplayName} — you are in dev mode`"
+          />
+          <!-- Dev tools: scoped to landing only -->
+          <ClientOnly>
+            <div class="dev-tools-corner">
+              <AppDebug />
+            </div>
+          </ClientOnly>
           <NuxtPage />
         </UContainer>
       </UMain>
@@ -18,6 +32,11 @@
 <script setup lang="ts">
 // Nuxt auto-imports composables like computed
 const { links } = useCoreRoutes()
+import { useFireUXConfig } from '../composables/FireUXConfig'
+
+const { appName } = useFireUXConfig()
+const appDisplayName = computed(() => appName || 'FireUX')
+const isDev = process.dev
 
 const KEEP_MENU = new Set(['home', 'products', 'blog', 'users'])
 const KEEP_MOBILE = new Set([...KEEP_MENU, 'user', 'admin'])
@@ -41,5 +60,9 @@ defineOptions({ name: 'CoreLanding' })
 }
 .layout-wrapper > * {
   align-self: stretch;
+}
+/* Non-blocking position for dev tools button */
+.dev-tools-corner {
+  position: relative;
 }
 </style>

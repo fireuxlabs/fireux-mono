@@ -18,6 +18,8 @@
     "dev:niederhorn": "pnpm --filter ./projects/misebox/niederhorn dev",
     "dev:cleanbox": "pnpm --filter ./projects/cleanbox/cleanbox-app dev",
     "dev:richies": "pnpm --filter ./projects/cleanbox/richies-reinigung dev",
+    "dev:tennant": "pnpm --filter ./projects/fireux/tennant dev",
+    "dev:all-extended": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\" \"pnpm dev:niederhorn\" \"pnpm dev:richies\" \"pnpm dev:tennant\"",
     "build:all": "pnpm -r --parallel --filter './projects/*/*' build",
     "build:packages": "pnpm -r --filter './packages/*/*' build",
     "tsc:clean": "tsc -b --clean",
@@ -32,7 +34,9 @@
     "lint:envs": "node ./tools/scripts/lint-envs.mjs",
     "guard:shape": "node ./tools/guard-shape.mjs",
     "guard:ts": "node ./tools/guard-tsconfigs.mjs",
-    "guard:apps:shape": "node ./tools/check-app-structure.mjs && pnpm guard:shape && pnpm guard:ts",
+    "guard:assets": "node ./tools/scripts/guard-assets-structure.mjs",
+    "guard:assets:fix": "node ./tools/scripts/guard-assets-structure.mjs --fix",
+    "guard:apps:shape": "node ./tools/check-app-structure.mjs && pnpm guard:assets && pnpm guard:shape && pnpm guard:ts",
     "precommit": "pnpm guard:apps:shape",
     "typecheck": "pnpm -w typecheck && pnpm guard:apps:shape",
     "migrate:misebox-users": "tsx scripts/migrate-misebox-app-users.ts",
@@ -41,7 +45,8 @@
     "migrate:chefs": "tsx scripts/migrate-chefs.ts",
     "migrate:chefs:dry": "tsx scripts/migrate-chefs.ts --dry",
     "migrate:profiles": "node scripts/migrateProfiles.cjs --collection=professionals",
-    "migrate:profiles:apply": "node scripts/migrateProfiles.cjs --collection=professionals --apply"
+    "migrate:profiles:apply": "node scripts/migrateProfiles.cjs --collection=professionals --apply",
+    "docs:images:shapes": "node scripts/update-images-md.mjs"
   },
   "engines": {
     "node": ">=20.11 <23",
@@ -81,7 +86,8 @@
     "vite": "7.1.5",
     "vite-plugin-pwa": "^1.0.3",
     "vue-eslint-parser": "^10.2.0",
-    "vue-tsc": "^3.0.6"
+    "vue-tsc": "^3.0.6",
+    "image-size": "^1.1.1"
   },
   "pnpm": {
     "overrides": {

@@ -1,98 +1,175 @@
-Understood — you want the marker texts just as standalone text nodes in the layout (not wrapped in any element). Here’s that version:
-
 <!-- packages/core/fireux-core/src/runtime/layouts/dashboard.vue -->
 <template>
-  <ClientOnly>
-    group start
-    <UDashboardGroup unit="rem">
-      sidebar
-      <UDashboardSidebar
-        id="core-dashboard"
-        v-model:open="open"
-        collapsible
-        resizable
-        class="bg-elevated/25"
-        :ui="{ footer: 'lg:border-t lg:border-default' }"
-      >
-        profilesmenu
-        <template #header="{ collapsed }">
-          <LayoutsDashboardProfilesMenu :collapsed="collapsed" />
-        </template>
+  <UDashboardGroup unit="rem">
+    <UDashboardSidebar
+      id="default"
+      v-model:open="open"
+      collapsible
+      resizable
+      class="bg-elevated/25"
+      :ui="{ footer: 'lg:border-t lg:border-default' }"
+    >
+      <template #header="{ collapsed }">
+        <LayoutsDashboardProfilesMenu
+          :collapsed="collapsed"
+          :profiles="profiles"
+          v-model:active-id="activeProfileId"
+          :show-add="true"
+        />
+      </template>
 
-        <template #default="{ collapsed }">
-          searchbutton
-          <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" />
+      <template #default="{ collapsed }">
+        <UDashboardSearchButton
+          :collapsed="collapsed"
+          class="bg-transparent ring-default"
+        />
 
-          primary nav
-          <UNavigationMenu
-            :collapsed="collapsed"
-            :items="sidebarPrimary"
-            orientation="vertical"
-            tooltip
-            popover
-          />
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="links[0]"
+          orientation="vertical"
+          tooltip
+          popover
+        />
 
-          secondary nav
-          <UNavigationMenu
-            v-if="sidebarSecondary.length"
-            :collapsed="collapsed"
-            :items="sidebarSecondary"
-            orientation="vertical"
-            tooltip
-            class="mt-auto"
-          />
-        </template>
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="links[1]"
+          orientation="vertical"
+          tooltip
+          class="mt-auto"
+        />
+      </template>
 
-        <template #footer="{ collapsed }">
-          usermenu footer
-          <LayoutsDashboardUserMenu :collapsed="collapsed" />
-        </template>
-      </UDashboardSidebar>
+      <template #footer="{ collapsed }">
+        <LayoutsDashboardUserMenu :collapsed="collapsed" />
+      </template>
+    </UDashboardSidebar>
 
-      dashboard search
-      <UDashboardSearch :groups="searchGroups" />
+    <UDashboardSearch :groups="groups" />
 
-      main content
-      <UPage>
-        <UPageBody>
-          NuxtPage
-          <NuxtPage />
-        </UPageBody>
-      </UPage>
+    <!-- Dashboard page content -->
+    <NuxtPage />
 
-      footer start
-      <LayoutsDefaultFooter />
-    </UDashboardGroup>
-    group end
-  </ClientOnly>
+    <LayoutsDashboardNotificationsSlideover />
+  </UDashboardGroup>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useCoreRoutes } from '../composables/app/routes/useCoreRoutes'
-import type { RouteLink } from '../types/routeLink'
+import { ref, computed } from 'vue'
+import type { NavigationMenuItem } from '@nuxt/ui'
 
-const props = defineProps<{ routes?: { menuBarLinks?: RouteLink[]; mobileLinks?: RouteLink[] } }>()
+const route = useRoute()
 
 const open = ref(false)
-const { links } = useCoreRoutes()
 
-const CORE_GROUP_IDS = new Set<RouteLink['id']>(['user', 'admin'])
-const coreGroups = computed(() => links.value.filter(l => CORE_GROUP_IDS.has(l.id)))
+// Minimal dummy data for ProfilesMenu (replace from tenant/app later)
+type ProfileItem = {
+  id: string
+  label: string
+  icon?: string
+  avatar?: string
+  description?: string
+}
 
-const sidebarPrimary = computed<RouteLink[]>(() => props.routes?.menuBarLinks ?? [])
-const sidebarSecondary = computed<RouteLink[]>(() => coreGroups.value)
-
-const searchGroups = computed(() => [
-  {
-    id: 'core',
-    label: 'Navigate',
-    items: [...sidebarPrimary.value, ...sidebarSecondary.value]
-  }
+const profiles = ref<ProfileItem[]>([
+  { id: 'p-1', label: 'Acme Inc.', icon: 'i-lucide-building-2' },
+  { id: 'p-2', label: 'Globex', icon: 'i-lucide-briefcase' },
+  { id: 'p-3', label: 'Initech', icon: 'i-lucide-badge-cent' },
 ])
+const activeProfileId = ref<string | null>(profiles.value[0]?.id ?? null)
+
+const links = [
+  [
+    {
+      label: 'Dashboard',
+      icon: 'i-lucide-layout-dashboard',
+      to: '/dashboard',
+      onSelect: () => {
+        open.value = false
+      },
+    },
+    {
+      label: 'Profile',
+      icon: 'i-lucide-user',
+      to: '/dashboard/user-profile',
+      onSelect: () => {
+        open.value = false
+      },
+    },
+    {
+      label: 'Purchases',
+      icon: 'i-lucide-shopping-cart',
+      to: '/dashboard/purchases',
+      onSelect: () => {
+        open.value = false
+      },
+    },
+    {
+      label: 'Favorites',
+      icon: 'i-lucide-heart',
+      to: '/dashboard/favorites',
+      onSelect: () => {
+        open.value = false
+      },
+    },
+    {
+      label: 'Settings',
+      icon: 'i-lucide-settings',
+      defaultOpen: true,
+      type: 'trigger',
+      children: [
+        {
+          label: 'General',
+          to: '/dashboard/settings',
+          exact: true,
+          onSelect: () => {
+            open.value = false
+          },
+        },
+        // Followers page lives at /dashboard/followers per IA (not a settings child)
+        {
+          label: 'Notifications',
+          to: '/dashboard/settings/notifications',
+          onSelect: () => {
+            open.value = false
+          },
+        },
+        {
+          label: 'Authentication',
+          to: '/dashboard/settings/authentication',
+          onSelect: () => {
+            open.value = false
+          },
+        },
+      ],
+    },
+  ],
+  [],
+] satisfies NavigationMenuItem[][]
+
+const groups = computed(() => [
+  {
+    id: 'links',
+    label: 'Go to',
+    items: links.flat(),
+  },
+  {
+    id: 'code',
+    label: 'Code',
+    items: [
+      {
+        id: 'source',
+        label: 'View page source',
+        icon: 'i-simple-icons-github',
+        to: `https://github.com/nuxt-ui-templates/dashboard/blob/main/app/pages${
+          route.path === '/' ? '/index' : route.path
+        }.vue`,
+        target: '_blank',
+      },
+    ],
+  },
+])
+
+defineOptions({ name: 'CoreDashboard' })
 </script>
-
-<style scoped>
-/* No styling for these markers — they are raw text nodes */
-</style>
-

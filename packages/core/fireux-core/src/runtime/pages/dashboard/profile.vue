@@ -1,47 +1,10 @@
-<template>
-  <client-only>
-    <div v-if="user?.app" class="page">
-      <!-- Profile Display -->
-      <FireOrganismsAppUserCardsProfile :user="user.app" />
-
-      <!-- Profile Edit Form -->
-      <FireOrganismsAppUserEdit :user="user.app" />
-    </div>
-    <div v-else class="page">
-      <UCard>
-        <div class="text-center py-8">
-          <UIcon
-            name="i-heroicons-user-circle"
-            class="w-12 h-12 mx-auto mb-4 text-gray-400"
-          />
-          <p>Loading profile...</p>
-        </div>
-      </UCard>
-    </div>
-  </client-only>
-</template>
-
-<script setup>
-import { useUserRoutes } from '../../composables/app/routes/useUserRoutes'
-const userGroup = useUserRoutes()[0]
-const routeObj = userGroup.children.find((r) => r.to === '/dashboard/profile')
-const { label, icon } = routeObj
-
-// Set static meta at build time for Nuxt
-definePageMeta({
-  layout: 'dashboard',
-})
-
-// Set dynamic head meta at runtime (reactive)
-useHead({
-  title: label,
-  meta: [{ name: 'icon', content: icon }],
-})
-
-// Get current user - follows same pattern as employer/professional
-const { user } = useUser()
+<script setup lang="ts">
+// Redirect legacy /dashboard/profile to the canonical /dashboard/user-profile
+definePageMeta({ layout: 'dashboard' })
+const router = useRouter()
+if (process.client) router.replace('/dashboard/user-profile')
 </script>
 
-<style scoped>
-/* Let components handle their own spacing with Tailwind/NuxtUI utilities */
-</style>
+<template>
+  <div class="p-4 text-sm text-dimmed">Redirecting to your profile…</div>
+</template>

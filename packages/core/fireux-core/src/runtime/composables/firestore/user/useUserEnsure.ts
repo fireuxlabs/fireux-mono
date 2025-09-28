@@ -3,6 +3,7 @@ import { useCurrentUser, useFirestore } from 'vuefire'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useMediaStorage } from '../../firebase/useMediaStorage'
+import { useAvatarProxy } from '../../app/utils/useAvatarProxy'
 import { useUserState } from '../../state/useUserState'
 import type {
   User,
@@ -21,6 +22,11 @@ export function useUserEnsure(userArg?: Ref<User | null>) {
   const { appId, role } = useFireUXConfig()
   const isTenant = role === 'tenant'
   const { uploadCoreAvatar, getDefaultAvatarUrl } = useMediaStorage()
+  const { getProxiedAvatarUrl } = useAvatarProxy()
+  const isDev = typeof process !== 'undefined' && (process as any).dev === true
+  const dlog = (...args: any[]) => {
+    if (isDev) console.log('[avatar-trace][useUserEnsure]', ...args)
+  }
 
   // fallback to global state if a ref isn't provided
   const { user: userState } = useUserState()
@@ -36,19 +42,29 @@ export function useUserEnsure(userArg?: Ref<User | null>) {
     const coreRef = doc(db, 'core-users', auth.uid)
     const snap = await getDoc(coreRef)
     if (snap.exists()) {
+      dlog('core:exists', { uid: auth.uid })
       return { created: false, avatarUrl: (snap.data() as CoreUserDoc)?.avatar }
     }
 
     // pick a safe source for avatar
     const source =
       user.value?.core?.avatar || auth.photoURL || getDefaultAvatarUrl()
+    const uploadSource =
+      typeof source === 'string' ? getProxiedAvatarUrl(source) : source
+    dlog('core:create:source', {
+      uid: auth.uid,
+      hasPhotoURL: !!auth.photoURL,
+      source: typeof source === 'string' ? source : 'file',
+    })
+    if (typeof uploadSource === 'string' && uploadSource !== source) {
+      dlog('core:create:source:proxied', { uid: auth.uid, uploadSource })
+    }
 
-    let avatarUrl: string | undefined
-    try {
-      avatarUrl = await uploadCoreAvatar(source, auth.uid)
-    } catch (e) {
-      console.warn('[useUserEnsure] Avatar upload failed, using default:', e)
-      avatarUrl = getDefaultAvatarUrl()
+    const avatarUrl = await uploadCoreAvatar(uploadSource, auth.uid)
+    if (!avatarUrl || avatarUrl.startsWith('data:')) {
+      throw new Error(
+        '[useUserEnsure] Avatar upload did not return a Storage URL'
+      )
     }
 
     const payload: Partial<CoreUserDoc> = {
@@ -59,6 +75,7 @@ export function useUserEnsure(userArg?: Ref<User | null>) {
     }
 
     await setDoc(coreRef, payload, { merge: false })
+    dlog('core:create:done', { uid: auth.uid })
     return { created: true, avatarUrl }
   }
 
@@ -71,7 +88,10 @@ export function useUserEnsure(userArg?: Ref<User | null>) {
 
     const appRef = doc(db, `apps/${appId}/users`, auth.uid)
     const snap = await getDoc(appRef)
-    if (snap.exists()) return { created: false }
+    if (snap.exists()) {
+      dlog('app:exists', { uid: auth.uid, appId })
+      return { created: false }
+    }
 
     const payload: Partial<AppUserDoc> = {
       id: auth.uid,
@@ -81,6 +101,7 @@ export function useUserEnsure(userArg?: Ref<User | null>) {
     }
 
     await setDoc(appRef, payload, { merge: false })
+    dlog('app:create:done', { uid: auth.uid, appId })
     return { created: true }
   }
 

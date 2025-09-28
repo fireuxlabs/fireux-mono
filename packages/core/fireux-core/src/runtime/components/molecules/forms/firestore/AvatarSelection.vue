@@ -22,6 +22,8 @@
 import { useAvatarProxy } from '../../../../composables/app/utils/useAvatarProxy'
 import { useUser } from '../../../../composables/firestore/user/useUser'
 import { useCurrentUser } from 'vuefire'
+import { useMediaStorage } from '../../../../composables/firebase/useMediaStorage'
+import { useUserUpdate } from '../../../../composables/firestore/user/useUserUpdate'
 
 // Accept user as prop
 const props = defineProps({
@@ -64,9 +66,9 @@ const getUserInitials = (user) => {
 }
 
 const currentUser = useCurrentUser()
-// Placeholder: unified avatar update service will be wired later
 const { user } = useUser()
-const { uploadUserAvatar } = useMediaStorage()
+const { uploadCoreAvatar } = useMediaStorage()
+const { updateAvatar } = useUserUpdate()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 
 // Use prop user if provided, otherwise fall back to appUser
@@ -90,12 +92,11 @@ async function handleFileChange(e) {
 
   try {
     // Upload to storage
-    const url = await uploadUserAvatar(file, uid)
+    const url = await uploadCoreAvatar(file, uid)
 
     if (url) {
-      // Update database with new URL
-      // Placeholder: implement unified avatar update (core/app) in follow-up
-      console.log('New avatar URL ready to persist:', url)
+      // Persist to core and app docs
+      await updateAvatar(url)
       console.log('Avatar updated successfully')
     }
   } catch (error) {

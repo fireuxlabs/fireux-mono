@@ -12,7 +12,6 @@
 </template>
 
 <script setup lang="ts">
-
 const { links } = useCoreRoutes()
 
 const KEEP_MENU = new Set(['home', 'products', 'blog', 'users'])

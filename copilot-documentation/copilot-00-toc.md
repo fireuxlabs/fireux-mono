@@ -34,6 +34,8 @@ updated: 2025-09-01
 - [Troubleshooting](./copilot-appendices/copilot-troubleshooting.md)
 - [Doc vs Code Audit Prompts](./copilot-appendices/doc-audit-prompts.md)
 - [Layouts — taxonomy, rules, and usage](./copilot-appendices/layouts.md)
+- [User updater (useUserUpdate)](./copilot-appendices/user-update.md)
+- [Avatar system](./copilot-appendices/avatar.md)
 
 ## Architecture Decision Records (ADR)
 

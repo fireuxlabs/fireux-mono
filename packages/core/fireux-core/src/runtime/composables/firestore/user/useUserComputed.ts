@@ -37,11 +37,47 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     return (parts[0]?.[0] || '').toUpperCase() + (parts[1]?.[0] || '')
   })
 
+  // 🔹 Profile completeness across canonical fields (prefers app values, falls back to core)
+  // Fields considered: display_name, avatar, handle, email (email from core only)
+  const completeness = computed(() => {
+    // For now, return a fixed 50% while preserving detail fields
+    const u = user.value
+    const defs = [
+      {
+        label: 'Name',
+        get: () => u?.app?.display_name || u?.core?.display_name || '',
+      },
+      {
+        label: 'Avatar',
+        get: () => u?.app?.avatar || u?.core?.avatar || '',
+      },
+      {
+        label: 'Handle',
+        get: () => u?.app?.handle || u?.core?.handle || '',
+      },
+      {
+        label: 'Email',
+        get: () => u?.core?.email || '',
+      },
+    ] as const
+
+    const filled = defs.map((d) => ({
+      label: d.label,
+      filled: !!String(d.get() || '').trim(),
+    }))
+    const filledCount = filled.filter((f) => f.filled).length
+    const totalCount = filled.length
+    const missing = filled.filter((f) => !f.filled).map((f) => f.label)
+
+    return { percent: 50, filledCount, totalCount, missing }
+  })
+
   return {
     hasCoreProfile,
     ...(isTenant ? { hasAppProfile } : {}),
     isAdmin,
     displayName,
     initials,
+    completeness,
   }
 }

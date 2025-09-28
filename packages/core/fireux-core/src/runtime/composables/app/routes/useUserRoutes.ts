@@ -10,28 +10,16 @@ export function useUserRoutes(): RouteLink[] {
       to: '/dashboard',
     },
     {
-      id: 'profile',
+      id: 'user-profile',
       label: 'Profile',
       icon: 'i-lucide-user',
-      to: '/dashboard/profile',
+      to: '/dashboard/user-profile',
     },
     {
-      id: 'account',
-      label: 'Account',
-      icon: 'i-lucide-settings',
-      to: '/dashboard/account',
-    },
-    {
-      id: 'orders',
-      label: 'Orders',
+      id: 'purchases',
+      label: 'Purchases',
       icon: 'i-lucide-shopping-cart',
-      to: '/dashboard/orders',
-    },
-    {
-      id: 'subscriptions',
-      label: 'Subscriptions',
-      icon: 'i-lucide-credit-card',
-      to: '/dashboard/subscriptions',
+      to: '/dashboard/purchases',
     },
     {
       id: 'favorites',
@@ -39,6 +27,13 @@ export function useUserRoutes(): RouteLink[] {
       icon: 'i-lucide-heart',
       to: '/dashboard/favorites',
     },
+    {
+      id: 'followers',
+      label: 'Followers',
+      icon: 'i-lucide-users',
+      to: '/dashboard/followers',
+    },
+    // Settings subtree is intentionally not listed here; handled by dashboard layout group
   ]
 
   return userRoutes.length

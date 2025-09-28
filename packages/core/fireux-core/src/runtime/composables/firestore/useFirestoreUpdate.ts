@@ -8,6 +8,10 @@ export function useFirestoreUpdate() {
   const db = useFirestore()
   const { appName, appId } = useFireUXConfig()
   const { waitForCurrentUser } = useFirestoreUtils()
+  const isDev = typeof process !== 'undefined' && (process as any).dev === true
+  const dlog = (...args: any[]) => {
+    if (isDev) console.log('[avatar-trace][FirestoreUpdate]', ...args)
+  }
 
   async function updateDocument<T extends { updated_at?: unknown }>(
     name: string,
@@ -17,7 +21,7 @@ export function useFirestoreUpdate() {
   ): Promise<void> {
     if (!name || !id || !data) {
       return Promise.reject(
-        '❌ Collection name, document ID, and data are required.'
+        new Error('Collection name, document ID, and data are required.')
       )
     }
 
@@ -28,14 +32,21 @@ export function useFirestoreUpdate() {
       // Prepare update data with required fields
       const updateData: any = { ...data }
       updateData.updated_at = serverTimestamp()
-      updateData.app_name = appName
-      updateData.app_id = appId
 
-      // Optionally add appId if appScoped (for extra safety)
+      // Only tag app metadata when appScoped !== false
       if (opts?.appScoped !== false) {
+        updateData.app_name = appName
+        updateData.app_id = appId
         updateData.appId = appId
       }
 
+      dlog('updateDocument', {
+        name,
+        id,
+        keys: Object.keys(updateData),
+        appScoped: opts?.appScoped !== false,
+        appId,
+      })
       await updateDoc(ref, updateData)
       console.log(`✅ Document updated in '${name}' with ID: ${id}`)
     } catch (error) {

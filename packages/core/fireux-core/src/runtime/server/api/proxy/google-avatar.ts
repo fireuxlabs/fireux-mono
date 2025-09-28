@@ -3,6 +3,7 @@ import {
   getQuery,
   setResponseHeaders,
   createError,
+  send,
 } from 'h3'
 
 export default defineEventHandler(async (event) => {
@@ -45,11 +46,12 @@ export default defineEventHandler(async (event) => {
       'Access-Control-Allow-Origin': '*',
     })
 
-    return imageBuffer
-  } catch (error) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Failed to proxy image',
-    })
+    // Important: send raw binary back. Returning ArrayBuffer directly can be serialized incorrectly.
+    return send(event, Buffer.from(imageBuffer))
+  } catch (error: any) {
+    // Log and rethrow to let h3/Nitro handle
+    // eslint-disable-next-line no-console
+    console.error('[proxy/google-avatar] error:', error?.message || error)
+    throw error
   }
 })

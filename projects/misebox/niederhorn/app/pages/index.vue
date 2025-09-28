@@ -28,7 +28,6 @@
 </template>
 
 <script setup>
-definePageMeta({ layout: 'landing' })
 useSeoMeta({
   title: 'Niederhorn - Kitchen Management',
   description: 'Manage ingredients, suppliers, and culinary operations.',

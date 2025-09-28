@@ -5,7 +5,7 @@
  *
  * For Core Users missing an avatar, attempts to:
  *  1) Copy an existing AppUser avatar (URL) into Storage at core-users/{uid}/avatar.{ext}
- *  2) Otherwise sets a static default path '/img/default-avatar.png'
+ *  2) Otherwise sets a static default path '/img/default-image.png'
  *
  * Usage:
  *   pnpm dlx tsx scripts/backfill-core-avatars.ts <project> [--dry-run] [--force]
@@ -52,7 +52,7 @@ const PROJECTS = {
 
 type ProjectKey = keyof typeof PROJECTS
 
-const DEFAULT_AVATAR_STATIC = '/img/default-avatar.png'
+const DEFAULT_AVATAR_STATIC = '/img/default-image.png'
 
 const stats = {
   processed: 0,

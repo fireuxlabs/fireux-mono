@@ -1,27 +1,20 @@
 // packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefUpdate.ts
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate'
-import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils'
+import { useScopedUpdater } from 'fireux-core/runtime/composables/firestore/useScopedUpdater'
 
+// Tenant-scoped profile collection; updates should affect only this doc.
 const COLLECTION = 'chefs'
 
 export function useChefUpdate() {
-  const { updateDocument } = useFirestoreUpdate()
-  const { waitForCurrentUser } = useFirestoreUtils()
-
-  async function getUid() {
-    const u = await waitForCurrentUser()
-    if (!u?.uid) throw new Error('User not authenticated')
-    return u.uid
-  }
+  const { updateTenantCollection } = useScopedUpdater()
 
   const updateDisplayName = async (display_name: string) => {
-    const uid = await getUid()
-    await updateDocument(COLLECTION, uid, { display_name })
+    await updateTenantCollection(COLLECTION, { display_name })
   }
 
-  const updateAvatar = async (avatar: string) => {
-    const uid = await getUid()
-    await updateDocument(COLLECTION, uid, { avatar })
+  const updateAvatar = async (avatarUrl: string) => {
+    const sep = avatarUrl.includes('?') ? '&' : '?'
+    const versioned = `${avatarUrl}${sep}v=${Date.now()}`
+    await updateTenantCollection(COLLECTION, { avatar: versioned })
   }
 
   return { updateDisplayName, updateAvatar }

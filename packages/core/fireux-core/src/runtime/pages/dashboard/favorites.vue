@@ -16,9 +16,11 @@
 <script setup>
 import { useUserRoutes } from '../../composables/app/routes/useUserRoutes'
 
-const userGroup = useUserRoutes()[0]
-const route = userGroup.children.find((r) => r.to === '/dashboard/favorites')
-const { label, icon } = route
+const groups = useUserRoutes()
+const userGroup = Array.isArray(groups) ? groups[0] : undefined
+const entry = userGroup?.children?.find((r) => r.to === '/dashboard/favorites')
+const label = entry?.label ?? 'Favorites'
+const icon = entry?.icon ?? 'i-lucide-heart'
 
 definePageMeta({
   layout: 'dashboard',

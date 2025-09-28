@@ -17,5 +17,19 @@ export function configureServer(resolver: any) {
   if (existsSync(injectTrace)) {
     addServerHandler({ route: '/api/inject-trace', handler: injectTrace })
   }
+  const googleAvatar = `${base}/proxy/google-avatar.ts`
+  if (existsSync(googleAvatar)) {
+    addServerHandler({
+      route: '/api/proxy/google-avatar',
+      handler: googleAvatar,
+    })
+  }
+  const uploadAvatar = `${base}/storage/upload-avatar.post.ts`
+  if (existsSync(uploadAvatar)) {
+    addServerHandler({
+      route: '/api/storage/upload-avatar',
+      handler: uploadAvatar,
+    })
+  }
   // Add more handlers here as you bring routes online
 }
