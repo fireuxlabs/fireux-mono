@@ -1,5 +1,5 @@
 // packages/core/fireux-core/src/runtime/composables/firestore/user/useUserUpdate.ts
-import { useScopedUpdater } from '../useScopedUpdater'
+import { useScopedUpdater } from '../scopedUpdater'
 
 /**
  * Minimal updater for the signed-in user's core/app docs.
@@ -8,7 +8,7 @@ import { useScopedUpdater } from '../useScopedUpdater'
  * - Auto-stamps updated_at and app metadata
  */
 export function useUserUpdate() {
-  const { updateUsers } = useScopedUpdater()
+  const { update } = useScopedUpdater('users')
   const isDev = typeof process !== 'undefined' && (process as any).dev === true
   const dlog = (...args: any[]) => {
     if (isDev) console.log('[avatar-trace][useUserUpdate]', ...args)
@@ -16,7 +16,7 @@ export function useUserUpdate() {
 
   const updateDisplayName = async (display_name: string) => {
     dlog('updateDisplayName', { display_name })
-    await updateUsers({ display_name })
+    await update({ display_name })
   }
 
   // Expect a download URL; add ?v to bust caches
@@ -24,7 +24,7 @@ export function useUserUpdate() {
     const sep = avatarUrl.includes('?') ? '&' : '?'
     const versioned = `${avatarUrl}${sep}v=${Date.now()}`
     dlog('updateAvatar', { avatarUrl, versioned })
-    await updateUsers({ avatar: versioned })
+    await update({ avatar: versioned })
   }
 
   return { updateDisplayName, updateAvatar }

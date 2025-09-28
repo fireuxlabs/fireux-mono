@@ -20,9 +20,7 @@ export function useFirestoreUpdate() {
     opts?: { appScoped?: boolean }
   ): Promise<void> {
     if (!name || !id || !data) {
-      return Promise.reject(
-        new Error('Collection name, document ID, and data are required.')
-      )
+      throw new Error('Collection name, document ID, and data are required.')
     }
 
     try {
@@ -33,11 +31,12 @@ export function useFirestoreUpdate() {
       const updateData: any = { ...data }
       updateData.updated_at = serverTimestamp()
 
-      // Only tag app metadata when appScoped !== false
+      // Only tag app metadata when appScoped !== false; do not overwrite if provided explicitly
       if (opts?.appScoped !== false) {
-        updateData.app_name = appName
-        updateData.app_id = appId
-        updateData.appId = appId
+        updateData.app_name ??= appName
+        updateData.app_id ??= appId
+        // appId legacy alias (kept for back-compat where readers expect camelCase)
+        ;(updateData as Record<string, unknown>).appId ??= appId
       }
 
       dlog('updateDocument', {

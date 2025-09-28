@@ -1,13 +1,13 @@
 // packages/core/fireux-core/src/runtime/composables/firestore/scopedUpdater.ts
-import { useFireUXConfig } from '../../FireUXConfig'
+import { useFireUXConfig } from '../FireUXConfig'
 import { useFirestoreUtils } from './useFirestoreUtils'
 import { useFirestoreUpdate } from './useFirestoreUpdate'
 
 /**
- * Shared helper to update a profile document in the correct scope.
- * - users: global writes go to core-users/{uid}; tenant writes go to apps/{appId}/users/{uid}
- * - other collections (e.g., chefs): tenant-only under apps/{appId}/{collection}/{uid}
- * Non-tenant writes to tenant-only collections are blocked with a clear error.
+ * Scoped updater — writes to the correct collection based on role/appId.
+ * - 'users': global → core-users/{uid}; tenant → apps/{appId}/users/{uid}
+ * - tenant-only collections (e.g., 'chefs'): apps/{appId}/{collection}/{uid}
+ *   (throws if called outside tenant context)
  */
 export function useScopedUpdater(collectionKey: 'users' | 'chefs') {
   const { role, appId } = useFireUXConfig()
@@ -43,5 +43,13 @@ export function useScopedUpdater(collectionKey: 'users' | 'chefs') {
     await updateDocument(path, id, { ...data }, { appScoped })
   }
 
-  return { update }
+  // Optional alias to address an explicit collection key
+  async function updateIn(
+    collection: 'users' | 'chefs',
+    data: Record<string, unknown>
+  ) {
+    return update(data, collection)
+  }
+
+  return { update, updateIn }
 }
