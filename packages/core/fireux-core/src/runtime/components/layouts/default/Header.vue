@@ -66,7 +66,7 @@
           </template>
           <UTooltip v-if="isMobile" text="Menu">
             <UButton
-              color="gray"
+              color="neutral"
               variant="ghost"
               icon="i-lucide-menu"
               aria-label="Open Menu"
@@ -109,21 +109,14 @@ import { useUser } from '../../../composables/firestore/user/useUser'
 import { useAuth } from '../../../composables/firebase/useAuth'
 
 // Unified user
-const { user, initials, displayName, avatarSrc, isSignedIn } = useUser()
+const { /* user, */ initials, displayName, avatarSrc, isSignedIn } = useUser()
 
 const router = useRouter()
 const route = useRoute()
 const { signInWithGoogle, signOutUser, currentUser } = useAuth()
 
 // Navigation
-const navigateToAuth = () => {
-  router.push('/auth')
-  return void 0
-}
-const navigateToDashboard = () => {
-  router.push('/dashboard')
-  return void 0
-}
+// Navigation helpers (inline where used)
 
 // Auth action
 const isSigningIn = ref(false)
@@ -171,7 +164,9 @@ const profileMenuItems = computed(() => [
 const { width } = useWindowSize()
 const isMobile = computed(() => width.value < 1024)
 const mobileMenuOpen = ref(false)
-const toggleMobileNav = () => (mobileMenuOpen.value = !mobileMenuOpen.value)
+const toggleMobileNav = () => {
+  mobileMenuOpen.value = !mobileMenuOpen.value
+}
 
 // Auth resolved gate (VueFire currentUser is tri-state: undefined ⇒ resolving)
 const isAuthResolved = computed(() => currentUser.value !== undefined)

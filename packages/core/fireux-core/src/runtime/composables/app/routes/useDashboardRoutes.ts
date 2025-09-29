@@ -5,9 +5,16 @@ let useRoute: (() => import('vue-router').RouteLocationNormalizedLoaded) | undef
 let useRouter: (() => import('vue-router').Router) | undefined
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const mod = require('vue-router') as any
-  useRoute = mod.useRoute
-  useRouter = mod.useRouter
+  const mod = require('vue-router')
+  const anyMod: unknown = mod
+  if (
+    anyMod &&
+    typeof (anyMod as Record<string, unknown>).useRoute === 'function' &&
+    typeof (anyMod as Record<string, unknown>).useRouter === 'function'
+  ) {
+    useRoute = (anyMod as any).useRoute
+    useRouter = (anyMod as any).useRouter
+  }
 } catch {
   // No-op: in pure typecheck without runtime, these may be undefined; guarded below
 }

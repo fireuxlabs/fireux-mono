@@ -104,7 +104,8 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ user: UserCard.Profile }>()
+// Accept any user-like shape for now; template is resilient to partials
+defineProps<{ user: any }>()
 </script>
 
 <style scoped>

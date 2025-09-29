@@ -231,15 +231,18 @@ export function useChefValidation() {
     // Note: experience/certifications aren't part of the current Chef model
     // If added later, re-enable and adjust validation accordingly
 
-    if (chefData.bioShort) {
-      const bioValidation = validateBio(chefData.bioShort, 'short')
+    // Support both snake_case (canonical) and camelCase inputs
+    const bioShort = (chefData as any).bio_short ?? (chefData as any).bioShort
+    if (bioShort) {
+      const bioValidation = validateBio(bioShort, 'short')
       if (!bioValidation.isValid && bioValidation.error) {
         errors.push(bioValidation.error)
       }
     }
 
-    if (chefData.bioLong) {
-      const bioValidation = validateBio(chefData.bioLong, 'long')
+    const bioLong = (chefData as any).bio_long ?? (chefData as any).bioLong
+    if (bioLong) {
+      const bioValidation = validateBio(bioLong, 'long')
       if (!bioValidation.isValid && bioValidation.error) {
         errors.push(bioValidation.error)
       }

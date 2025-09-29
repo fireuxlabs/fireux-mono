@@ -8,7 +8,7 @@
   </ClientOnly>
 </template>
 
-<script setup lang="ts">import { computed } from 'vue'
+<script setup lang="ts">
 
 // Vue's computed is auto-imported by Nuxt; declare for TS
 declare const computed: <T>(getter: () => T) => import('vue').ComputedRef<T>

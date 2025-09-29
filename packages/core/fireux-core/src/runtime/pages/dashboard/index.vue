@@ -132,7 +132,13 @@
 
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { computed, reactive } from 'vue'
+import { computed, reactive, shallowRef, ref } from 'vue'
+
+// Nuxt app auto-imports are not visible to package TS, declare lightweight types
+declare const definePageMeta: (meta: any) => void
+declare function useRuntimeConfig(): any
+declare function useUser(): { user: any }
+declare function useDashboard(): { isNotificationsSlideoverOpen: any }
 
 // Local lightweight types to avoid external deps
 type Period = 'daily' | 'weekly' | 'monthly'

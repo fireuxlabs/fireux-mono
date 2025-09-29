@@ -57,6 +57,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+// Nuxt auto-imports used in templates / setup
+declare function useRoute(): { path: string }
 import type { NavigationMenuItem } from '@nuxt/ui'
 
 const route = useRoute()
@@ -68,7 +70,7 @@ type ProfileItem = {
   id: string
   label: string
   icon?: string
-  avatar?: string
+  avatar?: { src: string; alt?: string }
   description?: string
 }
 

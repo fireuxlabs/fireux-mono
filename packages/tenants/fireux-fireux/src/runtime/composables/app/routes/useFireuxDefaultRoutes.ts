@@ -1,5 +1,6 @@
 // Use universal RouteLink type
-import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
+import type { RouteLink } from '#fireux-core-runtime/types/routeLink'
+export type { RouteLink }
 
 /**
  * Public header routes the tenant wants to add on top of core system routes.

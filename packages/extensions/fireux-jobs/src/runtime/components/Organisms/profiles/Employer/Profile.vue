@@ -253,13 +253,23 @@
 </template>
 
 <script setup lang="ts">
-import type { Employer } from '../../../../models/profiles/Employer.model'
-
-defineProps<{
-  employer?: Partial<Employer>
+import { computed } from 'vue'
+// Loosen typing to accommodate varied data shapes during migration
+const props = defineProps<{
+  employer?: any
 }>()
 
 // Helper functions for template use only - no complex logic
+const hasBusinessStats = computed(() => {
+  const e: any = props.employer
+  return !!(e?.employee_count || e?.years_established || e?.covers_per_service || e?.total_jobs_posted)
+})
+
+const hasSocialMedia = computed(() => {
+  const e: any = props.employer
+  const sm = e?.social_media || {}
+  return !!(sm.instagram || sm.facebook || sm.linkedin || sm.twitter)
+})
 function getInitials(name?: string) {
   if (!name) return 'E'
   return name
@@ -275,14 +285,14 @@ function formatLocation(location?: any) {
   return location.locations[0].formatted_address
 }
 
-function getJobTypeVariant(type?: string) {
-  const variants = {
+function getJobTypeVariant(type?: string): 'solid' | 'outline' | 'soft' | 'subtle' {
+  const variants: Record<string, 'solid' | 'outline' | 'soft' | 'subtle'> = {
     'full-time': 'solid',
     'part-time': 'soft',
     contract: 'outline',
     temporary: 'subtle',
   }
-  return variants[type] || 'outline'
+  return variants[type || ''] || 'outline'
 }
 
 function formatDate(date?: string) {
@@ -290,7 +300,7 @@ function formatDate(date?: string) {
   return new Date(date).toLocaleDateString()
 }
 
-function formatDayName(day?: string) {
+function formatDayName(day?: string | number) {
   const days = {
     monday: 'Monday',
     tuesday: 'Tuesday',
@@ -300,6 +310,7 @@ function formatDayName(day?: string) {
     saturday: 'Saturday',
     sunday: 'Sunday',
   }
-  return days[day?.toLowerCase()] || day
+  const key = String(day || '').toLowerCase() as keyof typeof days
+  return days[key] || String(day || '')
 }
 </script>

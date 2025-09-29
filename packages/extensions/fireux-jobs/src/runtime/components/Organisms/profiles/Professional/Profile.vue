@@ -275,10 +275,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Professional } from '../../../../models/profiles/Professional.model'
-
+// Accept any professional-like shape during migration
 defineProps<{
-  professional?: Partial<Professional>
+  professional?: any
 }>()
 
 // Helper functions for template use only - no complex logic
@@ -307,7 +306,7 @@ function formatDuration(
   const start = fromMonth && fromYear ? `${fromMonth} ${fromYear}` : fromYear
   let end = 'Present'
   if (!ongoing) {
-    end = toMonth && toYear ? `${toMonth} ${toYear}` : toYear
+    end = toMonth && toYear ? `${toMonth} ${toYear}` : (toYear || '')
   }
   return `${start} - ${end}`
 }

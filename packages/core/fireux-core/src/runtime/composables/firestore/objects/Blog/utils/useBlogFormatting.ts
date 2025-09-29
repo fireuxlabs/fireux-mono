@@ -44,21 +44,21 @@ export function useBlogFormatting() {
    * Generate an SEO‑friendly slug from the title
    */
   function generateSlug(title: string): string {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '')
+    let out = title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    out = out.replace(/^-+/, '')
+    out = out.replace(/-+$/, '')
+    return out
   }
 
   /**
    * Format slug to ensure it's URL-friendly
    */
   function formatSlug(slug: string): string {
-    return slug
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/g, '')
-      .replace(/--+/g, '-')
-      .replace(/^-|-$/g, '')
+    let out = slug.toLowerCase().replace(/[^a-z0-9-]/g, '')
+    out = out.replace(/--+/g, '-')
+    out = out.replace(/^-+/, '')
+    out = out.replace(/-+$/, '')
+    return out
   }
 
   /**

@@ -83,7 +83,11 @@ export function useProductFormatting() {
   function formatPriceRange(product: FirebaseProduct): string {
     if (!product.prices || product.prices.length === 0)
       return 'Price not available'
-    if (product.prices.length === 1) return formatPrice(product.prices[0]!)
+    if (product.prices.length === 1) {
+      const only = product.prices[0]
+      if (only) return formatPrice(only)
+      return 'Price not available'
+    }
 
     const amounts = product.prices
       .map((p: Price | undefined) => (p ? p.unit_amount : undefined))

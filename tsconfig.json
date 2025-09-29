@@ -26,8 +26,7 @@
       "fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"]
     }
   },
-  "files": [],
-  "include": [],
+  
   "exclude": [
     "node_modules",
     "**/dist/**",

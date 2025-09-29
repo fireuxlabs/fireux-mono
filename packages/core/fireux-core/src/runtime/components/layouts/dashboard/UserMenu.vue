@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+
+// Nuxt auto-imports (declare locally for package TS)
+declare function useColorMode(): { value: string; preference: string }
+declare function useAppConfig<T = any>(): T
 
 defineProps<{
   collapsed?: boolean
 }>()
 
 const colorMode = useColorMode()
-const appConfig = useAppConfig()
+// useAppConfig types are app-augmented; locally cast for package TS safety
+const appConfig = useAppConfig() as any
 
 const colors = [
   'red',

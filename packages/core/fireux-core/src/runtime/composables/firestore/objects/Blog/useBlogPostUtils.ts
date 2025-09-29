@@ -10,10 +10,10 @@ import type {
 export function useBlogPostUtils() {
   // Generate an SEO‑friendly slug from the title
   function generateSlug(title: string): string {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^(?:-)|(?:-)$/g, '')
+    let out = title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    out = out.replace(/^-+/, '')
+    out = out.replace(/-+$/, '')
+    return out
   }
 
   // Compute estimated reading time (~200 words/minute)

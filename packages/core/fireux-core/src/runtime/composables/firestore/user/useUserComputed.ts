@@ -33,6 +33,10 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     return (parts[0]?.[0] || '').toUpperCase() + (parts[1]?.[0] || '')
   })
 
+  // 🔹 Avatar source and signed-in state helpers
+  const avatarSrc = computed(() => user.value?.app?.avatar || user.value?.core?.avatar || '')
+  const isSignedIn = computed(() => !!user.value?.id)
+
   // 🔹 Profile completeness across canonical fields (prefers app values, falls back to core)
   // Fields considered: display_name, avatar, handle, email (email from core only)
   const completeness = computed(() => {
@@ -74,6 +78,8 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     isAdmin,
     displayName,
     initials,
+    avatarSrc,
+    isSignedIn,
     completeness,
   }
 }

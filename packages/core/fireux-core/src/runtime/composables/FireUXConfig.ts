@@ -87,6 +87,7 @@ export function useFireUXConfig() {
     devMode,
     projectName, // Reordered return values to match `.env` order
     appName,
+    appShortName: appSettings.appShortName,
     appId,
     appIcon, // Added appIcon to return values
     ecosystem,

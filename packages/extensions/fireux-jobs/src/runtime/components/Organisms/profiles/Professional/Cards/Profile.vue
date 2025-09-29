@@ -89,10 +89,9 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Professional } from '../../../../../models/profiles/Professional.model'
 
 const props = defineProps<{
-  professional?: Partial<Professional>
+  professional?: any
   navigate?: (profile: any) => void
 }>()
 

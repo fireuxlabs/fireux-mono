@@ -102,10 +102,9 @@
   </UCard>
 </template>
 <script setup lang="ts">
-import type { Employer } from '../../../../../models/profiles/Employer.model'
 
 const props = defineProps<{
-  employer?: Partial<Employer>
+  employer?: any
   navigate?: (profile: any) => void
 }>()
 
