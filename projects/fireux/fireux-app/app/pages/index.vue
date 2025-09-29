@@ -25,6 +25,7 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'landing' })
 // Simple SEO
 useSeoMeta({
   title: 'FireUX - Vue.js Development Ecosystem',

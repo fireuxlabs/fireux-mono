@@ -40,6 +40,9 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
+// Use Nuxt UI toast if available (auto-imported in app)
+const useToastFn = (globalThis as any).useToast as undefined | (() => any)
+const toast = useToastFn ? useToastFn() : undefined
 import { useCreatePricesState } from '../../../../composables/firestore/objects/Product/Prices/useCreatePricesState'
 import { useCreateProductState } from '../../../../composables/firestore/objects/Product/useCreateProductState'
 import { useProductCreate } from '../../../../composables/firestore/objects/Product/useProductCreate'
@@ -64,7 +67,13 @@ async function handleCreate() {
   // Validate required fields
   if (!product.value?.name?.trim()) {
     console.warn('⚠️ Product name is required')
-    alert('❌ Product name is required')
+    if (toast)
+      toast.add({
+        title: 'Missing name',
+        description: 'Product name is required',
+        icon: 'i-heroicons-exclamation-circle',
+        color: 'amber',
+      })
     return
   }
 
@@ -75,14 +84,26 @@ async function handleCreate() {
 
   if (!response.success) {
     console.error('❌ Product creation failed:', response.error)
-    alert(`❌ Failed to create product: ${response.error}`)
+    if (toast)
+      toast.add({
+        title: 'Create failed',
+        description: String(response.error || 'Unknown error'),
+        icon: 'i-heroicons-x-circle',
+        color: 'red',
+      })
     isCreating.value = false
     return
   }
 
   // Success! Clear the form and show success message
   console.log('🎉 Product created successfully!')
-  alert(`✅ Product created successfully!`)
+  if (toast)
+    toast.add({
+      title: 'Created',
+      description: 'Product created successfully',
+      icon: 'i-heroicons-check-circle',
+      color: 'green',
+    })
   resetCreateProductState()
   resetCreatePricesState()
   selectedTab.value = 'write'

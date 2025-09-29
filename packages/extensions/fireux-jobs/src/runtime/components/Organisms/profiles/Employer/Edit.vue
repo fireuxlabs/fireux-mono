@@ -1,7 +1,48 @@
 <template>
+  <ClientOnly>
+    <UCard class="space-y-6">
+      <MoleculesFormsFirestoreAvatarSelection
+        :user="{ ...employer, avatar_url: employer?.avatar }"
+        @upload="onUploadAvatar"
+      />
+
+      <MoleculesFormsFirestoreField
+        label="Display Name"
+        :firebase-value="employer?.display_name"
+        placeholder="Enter your display name"
+        :update-function="onSaveDisplayName"
+      />
+    </UCard>
+  </ClientOnly>
+</template>
+
+<script setup lang="ts">
+import type { Employer } from '../../../../models/profiles/Employer.model'
+import { useEmployerUpdate } from '../../../../composables/firestore/profiles/Employer/useEmployerUpdate'
+import { useMediaStorage } from 'fireux-core/runtime/composables/firebase/useMediaStorage'
+
+const props = defineProps<{ employer: Employer }>()
+
+const { updateDisplayName, updateAvatar } = useEmployerUpdate()
+const { uploadCoreAvatar } = useMediaStorage()
+
+const onSaveDisplayName = (v: string) => updateDisplayName(v)
+
+const onUploadAvatar = async (file: File) => {
+  if (!props.employer?.id) return
+  const url = await uploadCoreAvatar(file, props.employer.id)
+  if (url) await updateAvatar(url)
+}
+</script>
+
+<!-- TODO: Legacy employer editor preserved below for reference. Do not remove until replacement is fully validated.
+
+LEGACY EDITOR (preserved as comment)
+
+<template>
   <client-only>
     <div class="profile-edit-container">
-      <!-- Avatar Upload -->
+      [Avatar Upload]
       <FireMoleculesFormsFirestoreAvatarSelection
         :user="{
           ...props.employer,
@@ -9,7 +50,7 @@
         }"
       />
 
-      <!-- Company Name Field (Primary Identifier) -->
+      [Company Name Field (Primary Identifier)]
       <FireMoleculesFormsFirestoreField
         label="Company Name"
         :firebase-value="props.employer?.company_name"
@@ -17,7 +58,7 @@
         :update-function="updateCompanyName"
       />
 
-      <!-- Business Type Field -->
+      [Business Type Field]
       <FireMoleculesFormsFirestoreField
         label="Business Type"
         :firebase-value="props.employer?.business_type"
@@ -25,7 +66,7 @@
         :update-function="updateBusinessType"
       />
 
-      <!-- Title Field -->
+      [Your Title]
       <FireMoleculesFormsFirestoreField
         label="Your Title"
         :firebase-value="props.employer?.title"
@@ -33,7 +74,7 @@
         :update-function="updateTitle"
       />
 
-      <!-- Bio Short Field -->
+      [Company Overview]
       <FireMoleculesFormsFirestoreField
         label="Company Overview"
         :firebase-value="props.employer?.bio_short"
@@ -44,7 +85,7 @@
         :update-function="updateBioShort"
       />
 
-      <!-- Bio Long Field -->
+      [Detailed Company Description]
       <FireMoleculesFormsFirestoreField
         label="Detailed Company Description"
         :firebase-value="props.employer?.bio_long"
@@ -55,7 +96,7 @@
         :update-function="updateBioLong"
       />
 
-      <!-- Cuisine Types Array -->
+      [Cuisine Types Array]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Cuisine Types"
         :firebase-value="props.employer?.cuisine_types || []"
@@ -64,7 +105,7 @@
         :update-function="updateCuisineTypes"
       />
 
-      <!-- Services Offered Array -->
+      [Services Offered Array]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Services Offered"
         :firebase-value="props.employer?.services_offered || []"
@@ -73,7 +114,7 @@
         :update-function="updateServicesOffered"
       />
 
-      <!-- Benefits Array -->
+      [Employee Benefits]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Employee Benefits"
         :firebase-value="props.employer?.benefits || []"
@@ -82,7 +123,7 @@
         :update-function="updateBenefits"
       />
 
-      <!-- Years Established Field -->
+      [Years Established]
       <FireMoleculesFormsFirestoreField
         label="Years Established"
         :firebase-value="props.employer?.years_established"
@@ -91,7 +132,7 @@
         :update-function="updateYearsEstablished"
       />
 
-      <!-- Employee Count Field -->
+      [Employee Count]
       <FireMoleculesFormsFirestoreField
         label="Employee Count"
         :firebase-value="props.employer?.employee_count"
@@ -100,7 +141,7 @@
         :update-function="updateEmployeeCount"
       />
 
-      <!-- Contact Information -->
+      [Business Email]
       <FireMoleculesFormsFirestoreField
         label="Business Email"
         :firebase-value="props.employer?.email"
@@ -109,6 +150,7 @@
         :update-function="updateEmail"
       />
 
+      [Business Phone]
       <FireMoleculesFormsFirestoreField
         label="Business Phone"
         :firebase-value="props.employer?.phone"
@@ -117,6 +159,7 @@
         :update-function="updatePhone"
       />
 
+      [Company Website]
       <FireMoleculesFormsFirestoreField
         label="Company Website"
         :firebase-value="props.employer?.website"
@@ -125,7 +168,7 @@
         :update-function="updateWebsite"
       />
 
-      <!-- Location Information -->
+      [Primary Location]
       <FireMoleculesFormsFirestoreMultiField
         label="Primary Location"
         :firebase-value="props.employer?.location || {}"
@@ -138,7 +181,7 @@
         :commas="true"
       />
 
-      <!-- Operating Hours Field -->
+      [Operating Hours]
       <FireMoleculesFormsFirestoreField
         label="Operating Hours"
         :firebase-value="props.employer?.operating_hours"
@@ -146,7 +189,7 @@
         :update-function="updateOperatingHours"
       />
 
-      <!-- Company Size Select -->
+      [Company Size]
       <FireMoleculesFormsFirestoreSelect
         label="Company Size"
         :firebase-value="props.employer?.company_size || 'small'"
@@ -161,7 +204,7 @@
         :update-function="updateCompanySize"
       />
 
-      <!-- Hiring Status Select -->
+      [Hiring Status]
       <FireMoleculesFormsFirestoreSelect
         label="Hiring Status"
         :firebase-value="props.employer?.hiring_status || 'hiring'"
@@ -175,14 +218,14 @@
         :update-function="updateHiringStatus"
       />
 
-      <!-- Social Links -->
+      [Social Media]
       <FireMoleculesFormsFirestoreSocialLinks
         label="Social Media"
         :firebase-value="props.employer?.social_links || {}"
         :update-function="updateSocialLinks"
       />
 
-      <!-- Verified Checkbox -->
+      [Profile Verification]
       <FireMoleculesFormsFirestoreCheckbox
         label="Profile Verification"
         :firebase-value="props.employer?.verified || false"
@@ -190,7 +233,7 @@
         :update-function="updateVerified"
       />
 
-      <!-- Active Jobs Count Display (Read-only) -->
+      [Read-only: Active Jobs Count]
       <div class="read-only-field">
         <span class="read-only-label">Active Job Openings</span>
         <div class="value">
@@ -255,3 +298,4 @@ const updateSocialLinks = (value) =>
 const updateVerified = (value) =>
   updateProfile({ verified: value }, props.employer.uid)
 </script>
+-->

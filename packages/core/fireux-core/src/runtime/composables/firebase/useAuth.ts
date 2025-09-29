@@ -9,15 +9,14 @@ import {
   GoogleAuthProvider,
 } from 'firebase/auth'
 
-// Pull the explicit "ensure" composables so we don't spin up reactive docs here
-import { useCoreUserEnsure } from '../firestore/CoreUser/useCoreUserEnsure'
-import { useAppUserEnsure } from '../firestore/AppUser/useAppUserEnsure'
+// Unified ensure to avoid spinning up reactive docs here
+import { useUserEnsure } from '../firestore/user/useUserEnsure'
 import { useFireUXConfig } from '../FireUXConfig'
 
 export function useAuth() {
   const auth = useFirebaseAuth()! // assert non-null (Nuxt plugin initializes Firebase)
   const currentUser = useCurrentUser()
-  const { role } = useFireUXConfig()
+  useFireUXConfig() // ensure config initialized (role used inside ensure)
 
   // simple per-session guard so postProcessAuth runs once per UID
   const lastEnsuredUid = ref<string | null>(null)
@@ -30,15 +29,9 @@ export function useAuth() {
     try {
       ensuring.value = true
 
-      // 1) Ensure CoreUser (global identity)
-      const { ensureCoreUser } = useCoreUserEnsure()
-      await ensureCoreUser()
-
-      // 2) In tenant apps, ensure AppUser membership in apps/{appId}/users/{uid}
-      if (role === 'tenant') {
-        const { ensureAppUser } = useAppUserEnsure()
-        await ensureAppUser()
-      }
+      // Ensure global identity and, if tenant app, app membership
+      const { ensureUser } = useUserEnsure()
+      await ensureUser()
 
       lastEnsuredUid.value = user.uid
     } catch (e) {

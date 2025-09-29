@@ -1,4 +1,5 @@
 import type { NuxtConfig } from 'nuxt/schema'
+import { resolve as pathResolve } from 'node:path'
 
 type ModuleEntry = string | [string, Record<string, any>]
 
@@ -42,6 +43,45 @@ const env = (k: string) => {
   return v?.trim()?.length ? v : undefined
 }
 
+// Try to read a Firebase admin service account from either:
+// - FIREBASE_SERVICE_ACCOUNT (JSON string), or
+// - individual fields (PROJECT_ID / CLIENT_EMAIL / PRIVATE_KEY)
+function readServiceAccount():
+  | { projectId: string; clientEmail: string; privateKey: string }
+  | undefined {
+  // 1) JSON blob path
+  const json = env('FIREBASE_SERVICE_ACCOUNT')
+  if (json) {
+    try {
+      const parsed = JSON.parse(json)
+      // Normalize common field names
+      const projectId = parsed.project_id ?? parsed.projectId
+      const clientEmail = parsed.client_email ?? parsed.clientEmail
+      // Private key often needs \n unescape
+      const rawKey = parsed.private_key ?? parsed.privateKey
+      const privateKey =
+        typeof rawKey === 'string' ? rawKey.replace(/\\n/g, '\n') : undefined
+      if (projectId && clientEmail && privateKey) {
+        return { projectId, clientEmail, privateKey }
+      }
+    } catch {
+      // fall through to split envs
+    }
+  }
+
+  // 2) Split envs
+  const projectId = env('FIREBASE_PROJECT_ID')
+  const clientEmail = env('FIREBASE_CLIENT_EMAIL')
+  const rawKey = env('FIREBASE_PRIVATE_KEY')
+  const privateKey =
+    typeof rawKey === 'string' ? rawKey.replace(/\\n/g, '\n') : undefined
+
+  if (projectId && clientEmail && privateKey) {
+    return { projectId, clientEmail, privateKey }
+  }
+  return undefined
+}
+
 export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
   const includeCore = opts.includeCore ?? true
 
@@ -50,8 +90,11 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     opts.primaryColor ?? env('APP_PRIMARY_COLOR') ?? '#000000'
   const neutralColor = opts.neutralColor ?? env('APP_NEUTRAL_COLOR')
 
+  // Admin creds (optional, only set if fully present)
+  const sa = readServiceAccount()
+
   // Defaults
-  const vuefireDefaults = {
+  const vuefireDefaults: Record<string, any> = {
     auth: { enabled: true, sessionCookie: false },
     config: {
       apiKey: env('FIREBASE_API_KEY'),
@@ -70,6 +113,14 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
           key: env('FIREBASE_RECAPTCHA_V3_KEY'),
         }
       : undefined,
+    // 👉 Add admin only when properly configured to avoid noisy warnings
+    ...(sa
+      ? {
+          admin: {
+            serviceAccount: sa,
+          },
+        }
+      : {}),
   }
 
   const pwaDefaults = {
@@ -113,6 +164,9 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     imports: { dirs: ['composables/**', 'utils/**'] },
 
     modules,
+    // Provide top-level vuefire config for module compatibility (in addition to module options)
+    // This ensures the Auth module is enabled even if module options aren’t read in some setups
+    vuefire: vuefireMerged as any,
     app: { head: { title: opts.appName } },
     runtimeConfig: {
       // server-only (JSON string accepted; OR rely on GOOGLE_APPLICATION_CREDENTIALS path env)
@@ -129,22 +183,39 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
         appSettings: {
           appId, // may be undefined; that's okay
           ecosystem: opts.ecosystem,
-          // Include key branding fields so runtime composables can resolve names reliably
           appName: opts.appName,
           appShortName: opts.appShortName,
         },
-        // Expose the resolved module list (string form) so runtime composables
-        // like useFireUXConfig can introspect enabled tenant/feature modules.
-        // NOTE: Was previously missing; downstream code expecting modules would receive []
-        // which could cause feature detection divergence between tenants.
+        // Expose resolved modules list for runtime inspection
         modules: modules.map((m) => (Array.isArray(m) ? m[0] : m)),
-
         // Simple tenancy role (default 'tenant') exposed to client
         role: opts.role ?? 'tenant',
       },
     },
     compatibilityDate: (opts.compatibilityDate ??
       '2025-09-01') as unknown as NuxtConfig['compatibilityDate'],
+
+    // Vite dev server: allow monorepo package paths so layered module pages load via @fs
+    vite: {
+      server: {
+        fs: {
+          allow: [
+            // Project/app root
+            pathResolve('.'),
+            // Monorepo root candidates (depending on where dev is launched)
+            pathResolve(process.cwd()),
+            pathResolve(process.cwd(), '..'),
+            pathResolve(process.cwd(), '../..'),
+            pathResolve(process.cwd(), '../../..'),
+            // Packages workspace (source of layered module pages)
+            pathResolve(process.cwd(), 'packages'),
+            pathResolve(process.cwd(), '../packages'),
+            pathResolve(process.cwd(), '../../packages'),
+            pathResolve(process.cwd(), '../../../packages'),
+          ],
+        },
+      },
+    },
   }
 
   return config

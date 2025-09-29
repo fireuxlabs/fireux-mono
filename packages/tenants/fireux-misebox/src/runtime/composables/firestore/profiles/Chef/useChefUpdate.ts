@@ -1,90 +1,63 @@
-// packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefUpdate.ts
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
-import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils'
-import type {
-  ProfileUpdate,
-  ProfileBase as CoreProfileBase,
-} from 'fireux-core/runtime/models/profiles/profile.model'
-import type { ChefCoreProfile as Chef } from '../../../../models/profiles/Chef.model'
+// packages/core/fireux-core/src/runtime/composables/firestore/profiles/chef/useChefUpdate.ts
+import type { Ref } from 'vue'
+import { useCurrentUser } from 'vuefire'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate'
+import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage'
 
-// Fields we never allow to be updated here
-const IMMUTABLE_KEYS = new Set(['id', 'created_at'])
+/**
+ * Environment-aware updater for a Chef profile.
+ *
+ * Behavior mirrors `useUserUpdate`:
+ * - If `chefRef` provided → writes to that chef's doc (by `id`).
+ * - Else → writes to the signed-in user's chef doc.
+ *
+ * Scopes:
+ *   - Global  → chefs/{uid}
+ *   - Tenant  → apps/{appId}/chefs/{uid}
+ *
+ * NOTE:
+ * - This composable only WRITES finalized data (e.g. an avatar DOWNLOAD URL).
+ * - Uploading is done elsewhere (e.g. your AvatarPicker / storage utilities).
+ */
+type WithId = { id: string }
 
-export function useChefUpdate() {
-  const db = useFirestore()
-  const { waitForCurrentUser } = useFirestoreUtils()
+export function useChefUpdate(chefRef?: Ref<WithId | null>) {
+  const authRef = useCurrentUser()
+  const { role, appId } = useFireUXConfig()
+  const isTenant = role === 'tenant'
+  const { updateDocument } = useFirestoreUpdate()
+  const { uploadImage } = useImageStorage()
 
-  // Generic, safe field updater
-  type UpdatableChef = Chef &
-    Pick<CoreProfileBase, 'avatar' | 'id' | 'created_at' | 'updated_at'>
-  const updateFields = async (patch: ProfileUpdate<UpdatableChef>) => {
-    const user = await waitForCurrentUser()
-    if (!user?.uid) throw new Error('User not authenticated')
-
-    // Strip undefined/null and immutable keys
-    const payload: Record<string, unknown> = {}
-    for (const [k, v] of Object.entries(patch ?? {})) {
-      if (v === undefined || v === null) continue
-      if (IMMUTABLE_KEYS.has(k)) continue
-      payload[k] = v
+  const resolveTarget = () => {
+    const id = chefRef?.value?.id ?? authRef.value?.uid
+    if (!id) throw new Error('Not signed in and no chefRef.id provided')
+    if (isTenant) {
+      if (!appId) throw new Error('Missing appId for tenant-scoped chef update')
+      return { collection: `apps/${appId}/chefs`, id }
     }
-    // Always bump updated_at on server
-    payload.updated_at = serverTimestamp()
-
-    const ref = doc(db, 'chefs', user.uid)
-    await updateDoc(ref, payload)
+    return { collection: 'chefs', id }
   }
 
-  // Convenience wrappers (keep types narrow where useful)
-  const updateSingle = (field: keyof Chef, value: string | number | boolean) =>
-    updateFields({ [field]: value } as ProfileUpdate<UpdatableChef>)
-
-  const updateArray = <K extends keyof Chef>(field: K, value: Chef[K]) =>
-    updateFields({ [field]: value } as ProfileUpdate<UpdatableChef>)
-
-  return {
-    // Basic profile updates
-    updateChefName: (v: string) => updateSingle('chef_name', v),
-    updateTitle: (v: string) => updateSingle('title', v),
-    updateBioShort: (v: string) => updateSingle('bio_short', v),
-    updateBioLong: (v: string) => updateSingle('bio_long', v),
-    updateYearsExperience: (v: number) => updateSingle('years_experience', v),
-
-    // Service info
-    updateAvailableForHire: (v: boolean) =>
-      updateSingle('available_for_hire', v),
-    updateHourlyRate: (v: number) => updateSingle('hourly_rate' as any, v),
-
-    // Arrays
-    updateSpecialties: (v: string[]) => updateArray('specialties', v),
-    updateCuisineExpertise: (v: string[]) =>
-      updateArray('cuisine_expertise', v),
-    updateCookingStyles: (v: string[]) =>
-      updateArray('cooking_styles' as any, v),
-    updateServiceTypes: (v: string[]) => updateArray('service_types' as any, v),
-    updateSignatureDishes: (v: string[]) =>
-      updateArray('signature_dishes' as any, v),
-    updateAwards: (v: string[]) => updateArray('awards' as any, v),
-    updateCertifications: (v: string[]) =>
-      updateArray('certifications' as any, v),
-    updatePublishedWorks: (v: string[]) =>
-      updateArray('published_works' as any, v),
-
-    // Complex objects / collections
-    updateChefExperience: (v: any[]) =>
-      updateArray('chef_experience' as any, v),
-    updateCulinaryEducation: (v: any[]) =>
-      updateArray('culinary_education' as any, v),
-    updateRecipes: (v: any[]) => updateArray('recipes' as any, v),
-    updateGallery: (v: any[]) => updateArray('gallery' as any, v),
-    updateKitchens: (v: Record<string, any>) =>
-      updateFields({ kitchens: v } as any),
-    updateSocialMedia: (v: Record<string, any>) =>
-      updateFields({ social_media: v } as any),
-    updateLocations: (v: any[]) => updateArray('locations' as any, v),
-
-    // Escape hatch for batching arbitrary changes (already safe)
-    updateFields,
+  /** Generic partial update for arbitrary chef fields */
+  const updateFields = async (partial: Record<string, unknown>) => {
+    const { collection, id } = resolveTarget()
+    await updateDocument(collection, id, partial)
   }
+
+  /** Update display name */
+  const updateDisplayName = async (display_name: string) => {
+    await updateFields({ display_name })
+  }
+
+  /** Avatar: build `${collection}/${id}/avatar` and upload via useImageStorage */
+  const updateAvatar = async (source: Blob | string) => {
+    const { collection, id } = resolveTarget()
+    const path = `${collection}/${id}/avatar`
+    const url = await uploadImage(path, source)
+    await updateFields({ avatar: url })
+    return url
+  }
+
+  return { updateFields, updateDisplayName, updateAvatar }
 }

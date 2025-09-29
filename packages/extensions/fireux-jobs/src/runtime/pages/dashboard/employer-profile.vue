@@ -1,35 +1,23 @@
 <template>
-  <ClientOnly>
-    <div>
-      <div v-if="employer">
-        <h2>Edit Employer Profile</h2>
-        <JobProfilesEmployerEdit :employer="employer" />
-      </div>
-      <div v-else>
-        <JobProfilesEmployerCTA />
-      </div>
-    </div>
+  <UPage>
+    <UPageBody>
+      <OrganismsProfileRoot :config="employerConfig">
+        <!-- When a profile exists, render the editor -->
+        <template #current-assets="{ profile }">
+          <div v-if="profile">
+            <h2 class="mb-4">Edit Employer Profile</h2>
+            <JobProfilesEmployerEdit :employer="profile" />
+          </div>
+        </template>
 
-    <template #fallback>
-      <div class="loading-state">
-        <h1>Loading employer profile editor...</h1>
-      </div>
-    </template>
-  </ClientOnly>
+        <!-- Optional: omit list rendering by leaving #item empty -->
+        <template #item="{ profile }"></template>
+      </OrganismsProfileRoot>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 import { employerConfig } from '../../models/profiles/Employer.model'
-
-// Define static page meta first
-definePageMeta({
-  title: 'Edit Employer Profile',
-  description: 'Edit your employer profile',
-})
-
-// Get current user
-const { appUser, hasProfile } = useAppUser()
-
-// Use our unified profile composable
-const { current: employer } = useProfile(employerConfig)
+definePageMeta({ layout: 'dashboard' })
 </script>

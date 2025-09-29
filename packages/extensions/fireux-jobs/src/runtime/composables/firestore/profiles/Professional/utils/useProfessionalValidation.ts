@@ -1,5 +1,3 @@
-import type { Professional } from '../../../../../models/profiles/Professional.model'
-
 export function useProfessionalValidation() {
   // Validate professional name
   const validateProfessionalName = (
@@ -190,7 +188,7 @@ export function useProfessionalValidation() {
 
   // Validate complete professional data
   const validateProfessionalData = (
-    data: Partial<Professional>
+    data: Record<string, any>
   ): { isValid: boolean; errors: string[] } => {
     const errors: string[] = []
 
@@ -207,12 +205,7 @@ export function useProfessionalValidation() {
     })
 
     // Validate optional fields
-    if (data.title) {
-      const titleResult = validateTitle(data.title)
-      if (!titleResult.isValid && titleResult.error) {
-        errors.push(titleResult.error)
-      }
-    }
+    // title handling removed from jobs extension: use profile overlay if needed
 
     if (data.languages) {
       const languagesResult = validateLanguages(data.languages)

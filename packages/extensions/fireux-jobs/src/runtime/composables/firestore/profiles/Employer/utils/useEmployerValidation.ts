@@ -1,5 +1,3 @@
-import type { Employer } from '../../../../../models/profiles/Employer.model'
-
 export function useEmployerValidation() {
   // Validate company name
   const validateCompanyName = (
@@ -150,9 +148,9 @@ export function useEmployerValidation() {
     return { isValid: true }
   }
 
-  // Validate complete employer data
+  // Minimal combined validator stub (extension fields optional for now)
   const validateEmployerData = (
-    data: Partial<Employer>
+    data: Record<string, any>
   ): { isValid: boolean; errors: string[] } => {
     const errors: string[] = []
 
@@ -169,15 +167,17 @@ export function useEmployerValidation() {
     })
 
     // Validate optional fields
-    const optionalValidations = [
+    const optionalValidations: Array<{
+      field: unknown
+      validator: (v: any) => { isValid: boolean; error?: string }
+    }> = [
       { field: data.business_type, validator: validateBusinessType },
       { field: data.website, validator: validateWebsite },
-      { field: data.specialties, validator: validateSpecialties },
     ]
 
     optionalValidations.forEach(({ field, validator }) => {
       if (field !== undefined) {
-        const result = validator(field as any)
+        const result = validator(field)
         if (!result.isValid && result.error) {
           errors.push(result.error)
         }

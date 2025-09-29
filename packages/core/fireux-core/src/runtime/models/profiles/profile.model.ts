@@ -1,64 +1,38 @@
-//packages/core/fireux-core/src/runtime/models/profiles/profile.model.ts
-import type { FirebaseTimestamp } from '../../types/firebase'
+import type { FirebaseTimestamp } from '../types/firebase'
 
 /**
- * Minimal, shared base for any profile (chef, supplier, professional, employer, etc.)
+ * Minimal, shared base for any profile document (core or app).
+ * Enforces display_name + avatar + timestamps.
  */
 export interface ProfileBase {
   /** Canonical id (== Firebase Auth UID & Firestore doc id) */
   id: string
 
+  /** Display name to show in UI (never fallback to email in storage) */
+  display_name: string
+
   /** Primary avatar URL to display everywhere */
   avatar: string
 
   /** Timestamps */
-  created_at: string | Date | FirebaseTimestamp
-  updated_at?: string | Date | FirebaseTimestamp
+  created_at: FirebaseTimestamp
+  updated_at?: FirebaseTimestamp
 }
 
 /**
- * Input when creating a new profile doc (timestamps are auto-generated)
- */
-export type ProfileCreate<T extends ProfileBase> = Omit<
-  T,
-  'created_at' | 'updated_at'
->
-
-/**
- * Input when updating a profile doc (id and created_at are immutable)
- */
-export type ProfileUpdate<T extends ProfileBase> = Partial<
-  Omit<T, 'id' | 'created_at'>
->
-
-/**
- * Config definition to describe a profile type.
+ * Slim config to describe a profile type.
+ * Kept tiny so components/composables don’t drift.
  */
 export interface ProfileConfig {
-  /** Lowercase singular identifier: 'chef', 'employer', 'professional', 'supplier' */
+  /** Lowercase singular identifier: 'chef', 'supplier', 'professional', 'employer' */
   id: string
 
   /** Firestore collection name, e.g. 'chefs', 'professionals' */
   collectionName: string
 
-  /** Human-readable type label, e.g. 'Chef', 'Employer' */
+  /** Human-readable type label, e.g. 'Chef', 'Supplier' */
   profileType: string
 
-  /** Validation & schema hints */
-  validationFn?: (profile: any) => boolean
-  requiredFields?: string[]
-  searchableFields?: string[]
-  defaultValues?: Record<string, any>
-
-  /**
-   * Optional hook to attach role-specific update composables.
-   * Should return an object with update methods to be spread onto useProfile() return value.
-   */
-  updateComposable?: () => Record<string, any>
+  /** Optional CTA text when profile is missing (used by ProfileRoot/UI) */
+  cta?: string
 }
-
-// ---------------------------------------------------------------------------
-// Back-compat aliases (safe to remove after refactor completes)
-// ---------------------------------------------------------------------------
-export type Profile = ProfileBase
-export type ProfileInput<T extends ProfileBase> = ProfileCreate<T>

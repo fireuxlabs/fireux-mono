@@ -1,18 +1,19 @@
+<!-- packages/core/fireux-core/src/runtime/components/App/FireuxAppShell.vue -->
 <template>
   <UApp>
-    <!-- Dev/Debug overlay (always pinned above modal) -->
+    <!-- Toast target -->
     <ClientOnly>
-      <Teleport to="body">
-        <div class="debug-overlay">
-          <AppDebug />
-        </div>
-      </Teleport>
+      <UToaster />
     </ClientOnly>
 
+    <!-- Debug banner and tools are now scoped to the landing layout only -->
+
     <!-- App content -->
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
+    <UMain>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </UMain>
 
     <!-- Blocker until app is initialized -->
     <UModal
@@ -29,19 +30,19 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useHead } from 'nuxt/app'
+import { useFireUXConfig } from '../../composables/FireUXConfig'
+import { useApp } from '../../composables/app/useApp'
+
+// Names from our FireUX config
+const { appName, appShortName } = useFireUXConfig()
+const appDisplayName = computed(() => appShortName || appName || 'FireUX')
+
+// Single source of truth: useApp() already exposes isInitialized via useAppComputed(app)
 const { isInitialized } = useApp()
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
 })
 </script>
-
-<style scoped>
-.debug-overlay {
-  position: fixed;
-  top: 0.75rem;
-  right: 0.75rem;
-  z-index: 2147483647; /* Above modal */
-  pointer-events: auto;
-}
-</style>

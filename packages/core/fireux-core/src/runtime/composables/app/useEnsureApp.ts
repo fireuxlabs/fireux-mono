@@ -52,7 +52,9 @@ export function useAppEnsure() {
       const db = useFirestore()
 
       console.log(
-        `🔍 [ensureApp] Detected modules: ${Array.isArray(modules) ? modules.join(', ') : ''}`
+        `🔍 [ensureApp] Detected modules: ${
+          Array.isArray(modules) ? modules.join(', ') : ''
+        }`
       )
       console.log(`🔍 [ensureApp] Detected ecosystem: ${ecosystem ?? 'none'}`)
 
@@ -86,7 +88,9 @@ export function useAppEnsure() {
       // Write the app document without automatic stamping (explicit system fields already set)
       await setDocument('apps', appId, appData, { raw: true })
       console.log(
-        `🎉 [ensureApp] App '${appId}' created successfully with ecosystem: ${ecosystem ?? 'none'}`
+        `🎉 [ensureApp] App '${appId}' created successfully with ecosystem: ${
+          ecosystem ?? 'none'
+        }`
       )
 
       // Step 5: Update core user with admin role
@@ -105,7 +109,7 @@ export function useAppEnsure() {
       }
 
       // Step 6: Create an app user for this admin
-      await createAppUserForAdmin(coreUser)
+      await createAppUserForAdmin()
 
       return appId
     } catch (error) {
@@ -119,13 +123,11 @@ export function useAppEnsure() {
    * Dynamically imports useAppUserEnsure to avoid circular dependencies
    * @param coreUser Optional core user object to pass to ensureAppUser
    */
-  async function createAppUserForAdmin(coreUser?: any): Promise<void> {
+  async function createAppUserForAdmin(): Promise<void> {
     try {
-      const { useAppUserEnsure } = await import(
-        '../firestore/AppUser/useAppUserEnsure'
-      )
-      const { ensureAppUser } = useAppUserEnsure()
-      await ensureAppUser(coreUser)
+      const { useUserEnsure } = await import('../firestore/user/useUserEnsure')
+      const { ensureUser } = useUserEnsure()
+      await ensureUser()
       console.log('✅ [ensureApp] Created app user for the app admin')
     } catch (appUserError) {
       console.error('❌ [ensureApp] Error creating app user:', appUserError)

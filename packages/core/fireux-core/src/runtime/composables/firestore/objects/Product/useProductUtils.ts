@@ -45,7 +45,7 @@ export function useProductUtils() {
     id: string
   ): Promise<string> {
     // Call uploadImageUtility(fileOrUrl, collection, id, type)
-    const url = await uploadImage(data, collection, id, 'main')
+  const url = await uploadImage(data, `${collection}/${id}/main.jpg`)
     return url || ''
   }
   function formatPrice(
@@ -122,7 +122,7 @@ export function useProductUtils() {
   async function getAppSubscriptionProducts(appId: string) {
     const { firestoreFetchCollection } = useFirestoreManager()
     try {
-      const products = await firestoreFetchCollection('products')
+  const products = firestoreFetchCollection('products')
       return (
         products.value?.filter(
           (product: any) =>

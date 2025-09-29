@@ -9,6 +9,7 @@
     { "path": "tenants/fireux-cleanbox" }
   ],
   "compilerOptions": {
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["nuxt"]
   }
 }

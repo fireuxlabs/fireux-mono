@@ -15,8 +15,7 @@ export function useProfessionalFilters(profiles: Ref<Professional[]>) {
       // Filter by search term
       if (filters.value.search) {
         const searchTerm = filters.value.search.toLowerCase()
-        const professionalName =
-          professional.professional_name?.toLowerCase() || ''
+        const professionalName = professional.display_name?.toLowerCase() || ''
 
         if (!professionalName.includes(searchTerm)) {
           return false

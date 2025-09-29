@@ -4,12 +4,12 @@
       <div class="welcome-content">
         <h1 class="app-title">
           <span class="brand-name">Richies Reinigung</span>
-          <span class="app-subtitle">Professional Cleaning Services</span>
+          <span class="app-subtitle">Trusted Cleaning for Homes & Offices</span>
         </h1>
 
         <p class="app-description">
-          Manage your cleaning operations, schedule services, and track client
-          relationships.
+          Book one‑off or recurring cleans, coordinate your team, and keep
+          client relationships on track — all in one place.
         </p>
 
         <div class="quick-actions">
@@ -29,9 +29,9 @@
 
 <script setup>
 useSeoMeta({
-  title: 'Richies Reinigung - Professional Cleaning Services',
+  title: 'Richies Reinigung – Professional Cleaning Services',
   description:
-    'Professional cleaning services with German precision and reliability.',
+    'Trusted home and office cleaning. Schedule services, manage staff, and keep clients happy in one place.',
 })
 
 definePageMeta({

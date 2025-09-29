@@ -1,3 +1,4 @@
+///Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/src/runtime/composables/app/routes/useSystemRoutes.ts
 import type { RouteLink } from '../../../types/routeLink'
 
 export function useSystemRoutes(): RouteLink[] {

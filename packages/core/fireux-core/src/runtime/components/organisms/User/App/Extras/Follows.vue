@@ -18,22 +18,29 @@
           <span class="follow-count">{{ followerCount }}</span>
         </div>
         <div v-if="followers?.length" class="follow-list">
-          <div
-            v-for="follower in followers.slice(0, 5)"
-            :key="follower.id"
-            class="follow-item"
-          >
+          <UAvatarGroup size="sm" :max="6">
             <UAvatar
-              :src="follower.avatar"
-              :alt="follower.full_name || follower.display_name"
-              size="sm"
+              v-for="f in followersCapped"
+              :key="f.id"
+              :src="f.avatar"
+              :alt="f.full_name || f.display_name"
+              :text="
+                (f.full_name || f.display_name || f.email || '?')
+                  .charAt(0)
+                  .toUpperCase()
+              "
             />
-            <span class="follow-name">{{
-              follower.full_name || follower.display_name
-            }}</span>
-          </div>
-          <div v-if="followers.length > 5" class="follow-more">
-            +{{ followers.length - 5 }} more
+          </UAvatarGroup>
+          <div class="follow-names">
+            <span
+              v-for="f in followersCapped"
+              :key="`name-${f.id}`"
+              class="follow-name"
+              >{{ f.full_name || f.display_name }}</span
+            >
+            <span v-if="followers.length > maxDisplay" class="follow-more"
+              >+{{ followers.length - maxDisplay }} more</span
+            >
           </div>
         </div>
         <div v-else class="follow-empty">
@@ -51,22 +58,29 @@
           <span class="follow-count">{{ followingCount }}</span>
         </div>
         <div v-if="following?.length" class="follow-list">
-          <div
-            v-for="followedUser in following.slice(0, 5)"
-            :key="followedUser.id"
-            class="follow-item"
-          >
+          <UAvatarGroup size="sm" :max="6">
             <UAvatar
-              :src="followedUser.avatar"
-              :alt="followedUser.full_name || followedUser.display_name"
-              size="sm"
+              v-for="f in followingCapped"
+              :key="f.id"
+              :src="f.avatar"
+              :alt="f.full_name || f.display_name"
+              :text="
+                (f.full_name || f.display_name || f.email || '?')
+                  .charAt(0)
+                  .toUpperCase()
+              "
             />
-            <span class="follow-name">{{
-              followedUser.full_name || followedUser.display_name
-            }}</span>
-          </div>
-          <div v-if="following.length > 5" class="follow-more">
-            +{{ following.length - 5 }} more
+          </UAvatarGroup>
+          <div class="follow-names">
+            <span
+              v-for="f in followingCapped"
+              :key="`name-${f.id}`"
+              class="follow-name"
+              >{{ f.full_name || f.display_name }}</span
+            >
+            <span v-if="following.length > maxDisplay" class="follow-more"
+              >+{{ following.length - maxDisplay }} more</span
+            >
           </div>
         </div>
         <div v-else class="follow-empty">
@@ -93,7 +107,9 @@ const props = defineProps({
 // Mock data - replace with actual follows data
 const followers = computed(() => props.user.followers || [])
 const following = computed(() => props.user.following || [])
-
+const maxDisplay = 6
+const followersCapped = computed(() => followers.value.slice(0, maxDisplay))
+const followingCapped = computed(() => following.value.slice(0, maxDisplay))
 const followerCount = computed(() => followers.value.length)
 const followingCount = computed(() => following.value.length)
 </script>

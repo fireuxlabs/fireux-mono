@@ -1,6 +1,6 @@
 import type { BlogPost } from '../../../../../models/objects/blogPost.model'
-import type { CoreUser } from '../../../../../models/core/coreUser.model'
-import { useCoreUser } from '../../../CoreUser/useCoreUser'
+import type { CoreUserDoc as CoreUser } from '../../../../../models/core/user.model'
+import { useUser } from '../../../users/useUser'
 
 export function useBlogFormatting() {
   /**
@@ -76,13 +76,14 @@ export function useBlogFormatting() {
   async function getAuthor(): Promise<
     Pick<CoreUser, 'id' | 'display_name' | 'handle' | 'avatar' | 'email'>
   > {
-    const { coreUser } = useCoreUser()
+    const { user } = useUser()
     return {
-      id: coreUser.value?.id || '',
-      display_name: coreUser.value?.display_name || coreUser.value?.email || '',
-      handle: coreUser.value?.handle || '',
-      avatar: coreUser.value?.avatar || '/img/default-avatar.png',
-      email: coreUser.value?.email || '',
+      id: user.value?.id || '',
+      display_name:
+        user.value?.core?.display_name || user.value?.core?.email || '',
+      handle: user.value?.core?.handle || '',
+  avatar: user.value?.core?.avatar || '/img/default-image.png',
+      email: user.value?.core?.email || '',
     }
   }
 

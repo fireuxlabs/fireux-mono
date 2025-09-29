@@ -35,8 +35,8 @@ export default defineEventHandler(async (_event) => {
     // Assets
     assets: {
       icon: appIcon,
-      logo: '/img/logo-type-light.svg',
-      logoDark: '/img/logo-type-dark.svg',
+      logo: '/img/wordmark-light.svg',
+      logoDark: '/img/wordmark-dark.svg',
       favicon: '/favicon.ico',
       ogImage: '/img/og-image.png',
     },

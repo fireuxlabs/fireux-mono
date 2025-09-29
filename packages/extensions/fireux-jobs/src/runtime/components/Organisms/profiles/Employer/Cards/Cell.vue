@@ -1,17 +1,17 @@
 <template>
   <UCard class="profile-card">
     <div class="profile-header">
-      <UAvatar :src="employer.avatar" :alt="employer.name" size="md" />
+      <UAvatar :src="employer.avatar" :alt="employer.display_name" size="md" />
       <div class="profile-info">
-        <h4 class="profile-name">{{ employer.name }}</h4>
+        <h4 class="profile-name">{{ employer.display_name }}</h4>
         <p v-if="employer.title" class="profile-subtitle">
           {{ employer.title }}
         </p>
       </div>
     </div>
 
-    <p v-if="employer.bioShort" class="profile-bio">
-      {{ employer.bioShort }}
+    <p v-if="employer.bio_short" class="profile-bio">
+      {{ employer.bio_short }}
     </p>
 
     <div v-if="employer.specialties?.length" class="profile-tags">
@@ -29,6 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import type { EmployerCellProps } from '../../../../../models/profiles/Employer.model'
-defineProps<{ employer: EmployerCellProps }>()
+import type { EmployerCard } from '../../../../../models/profiles/Employer.model'
+defineProps<{ employer: EmployerCard.Cell }>()
 </script>

@@ -15,14 +15,33 @@
     <!-- Integrations Component -->
     <LandingIntegrations />
 
-    <!-- Call to Action -->
-    <LandingCTA />
+    <!-- Call to Action (Nuxt UI PageCta) -->
+    <PageCta
+      title="Ready to try Misebox?"
+      description="Sign in to create your first profile and explore the kitchen tools."
+      :links="[
+        {
+          label: 'Get started',
+          to: '/auth',
+          color: 'primary',
+          icon: 'i-heroicons-rocket-launch-20-solid',
+        },
+        {
+          label: 'Learn more',
+          to: 'https://ui4.nuxt.com',
+          target: '_blank',
+          variant: 'ghost',
+          color: 'neutral',
+        },
+      ]"
+    />
 
     <!-- CMS content removed for now to speed up dev and avoid Nuxt Content dependency -->
   </div>
 </template>
 
 <script setup>
+definePageMeta({ layout: 'landing' })
 // SEO and Meta
 useSeoMeta({
   title: 'Misebox - Professional Kitchen Management Platform',

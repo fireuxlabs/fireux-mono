@@ -1,7 +1,51 @@
+<!-- packages/tenants/fireux-misebox/src/runtime/components/organisms/profiles/Chef/Edit.vue -->
+<template>
+  <ClientOnly>
+    <UCard class="space-y-6">
+      <MoleculesFormsFirestoreAvatarPicker
+        :src="props.chef?.avatar"
+        :alt="props.chef?.display_name || 'Chef'"
+        :initials="initials"
+        :update-function="onSaveAvatar"
+      />
+      <MoleculesFormsFirestoreField
+        label="Display Name"
+        :firebase-value="props.chef?.display_name"
+        placeholder="Enter your display name"
+        :update-function="onSaveDisplayName"
+      />
+    </UCard>
+  </ClientOnly>
+</template>
+
+<script setup lang="ts">
+import type { Chef } from '../../../../models/profiles/Chef.model'
+import { useChefUpdate } from '../../../../composables/firestore/profiles/Chef/useChefUpdate'
+import { computed } from 'vue'
+
+const props = defineProps<{ chef: Chef }>()
+const { updateDisplayName, updateAvatar } = useChefUpdate()
+
+const initials = computed(() => {
+  const name = props.chef?.display_name || 'C'
+  return name
+    .split(' ')
+    .map((s) => s[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+})
+
+const onSaveDisplayName = (v: string) => updateDisplayName(v)
+const onSaveAvatar = (file: File) => updateAvatar(file)
+</script>
+<!--
+LEGACY EDITOR (preserved as comment)
+
 <template>
   <client-only>
     <div class="profile-edit-container">
-      <!-- Avatar Upload -->
+      [Avatar Upload]
       <FireMoleculesFormsFirestoreAvatarSelection
         :user="{
           ...props.chef,
@@ -9,7 +53,7 @@
         }"
       />
 
-      <!-- Chef Name Field (Primary Identifier) -->
+      [Chef Name Field (Primary Identifier)]
       <FireMoleculesFormsFirestoreField
         label="Chef Name"
         :firebase-value="props.chef?.chef_name"
@@ -17,7 +61,7 @@
         :update-function="updateChefName"
       />
 
-      <!-- Title Field -->
+      [Title Field]
       <FireMoleculesFormsFirestoreField
         label="Professional Title"
         :firebase-value="props.chef?.title"
@@ -25,7 +69,7 @@
         :update-function="updateTitle"
       />
 
-      <!-- Bio Short Field -->
+      [Short Bio Field]
       <FireMoleculesFormsFirestoreField
         label="Short Bio"
         :firebase-value="props.chef?.bio_short"
@@ -36,7 +80,7 @@
         :update-function="updateBioShort"
       />
 
-      <!-- Bio Long Field -->
+      [Detailed Biography Field]
       <FireMoleculesFormsFirestoreField
         label="Detailed Biography"
         :firebase-value="props.chef?.bio_long"
@@ -47,7 +91,7 @@
         :update-function="updateBioLong"
       />
 
-      <!-- Specialties Array -->
+      [Specialties Array]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Culinary Specialties"
         :firebase-value="props.chef?.specialties || []"
@@ -56,7 +100,7 @@
         :update-function="updateSpecialties"
       />
 
-      <!-- Years Experience Field -->
+      [Years Experience Field]
       <FireMoleculesFormsFirestoreField
         label="Years of Experience"
         :firebase-value="props.chef?.years_experience"
@@ -65,7 +109,7 @@
         :update-function="updateYearsExperience"
       />
 
-      <!-- Cuisine Expertise Array -->
+      [Cuisine Expertise Array]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Cuisine Expertise"
         :firebase-value="props.chef?.cuisine_expertise || []"
@@ -74,7 +118,7 @@
         :update-function="updateCuisineExpertise"
       />
 
-      <!-- Contact Information -->
+      [Contact Information]
       <FireMoleculesFormsFirestoreField
         label="Email"
         :firebase-value="props.chef?.email"
@@ -91,7 +135,7 @@
         :update-function="updatePhone"
       />
 
-      <!-- Location Information -->
+      [Location Information]
       <FireMoleculesFormsFirestoreMultiField
         label="Location"
         :firebase-value="props.chef?.location || {}"
@@ -104,14 +148,14 @@
         :commas="true"
       />
 
-      <!-- Social Links -->
+      [Social Links]
       <FireMoleculesFormsFirestoreSocialLinks
         label="Social Media"
         :firebase-value="props.chef?.social_links || {}"
         :update-function="updateSocialLinks"
       />
 
-      <!-- Availability Select -->
+      [Availability Select]
       <FireMoleculesFormsFirestoreSelect
         label="Availability"
         :firebase-value="props.chef?.availability || 'available'"
@@ -124,7 +168,7 @@
         :update-function="updateAvailability"
       />
 
-      <!-- Verified Checkbox -->
+      [Verified Checkbox]
       <FireMoleculesFormsFirestoreCheckbox
         label="Profile Verification"
         :firebase-value="props.chef?.verified || false"
@@ -174,3 +218,4 @@ const updateAvailability = (value) =>
 const updateVerified = (value) =>
   updateProfile({ verified: value }, props.chef.uid)
 </script>
+-->

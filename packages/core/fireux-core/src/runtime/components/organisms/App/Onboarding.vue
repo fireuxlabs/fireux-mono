@@ -35,7 +35,11 @@
 </template>
 
 <script setup>
-const { coreUser } = useCoreUser()
+import { ref, computed, watch } from 'vue'
+import { useUser } from '../../../composables/firestore/user/useUser'
+import { useAppEnsure } from '../../../composables/app/useEnsureApp'
+const { user } = useUser()
+const coreUser = computed(() => user.value?.core ?? null)
 if (import.meta.dev) {
   watch(coreUser, (val) => {
     console.log('[Onboarding] coreUser changed', val)

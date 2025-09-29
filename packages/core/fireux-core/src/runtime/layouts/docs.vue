@@ -38,7 +38,7 @@ const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
           </UPageAside>
         </template>
 
-        <slot />
+        <NuxtPage />
       </UPage>
     </UContainer>
   </UMain>

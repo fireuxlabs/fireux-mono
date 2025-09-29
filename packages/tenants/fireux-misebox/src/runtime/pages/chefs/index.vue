@@ -1,51 +1,35 @@
+<!-- packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue -->
 <template>
-  <div class="page space-y-4">
-    <!-- CTAs -->
-    <OrganismsUserCoreCTA v-if="!coreUser" />
-    <template v-else>
-      <OrganismsUserAppCTA v-if="role === 'tenant' && !appUser" />
-      <OrganismsProfilesChefCTA />
-    </template>
+  <UPage>
+    <UPageBody>
+      <UPageSection>
+        <OrganismsProfileRoot :config="chefConfig" :onEnsure="onEnsureChef">
+          <!-- Current profile (optional) -->
+          <template #current-assets="{ profile }">
+            <template v-if="profile">
+              <OrganismsProfilesChefCardsPill :chef="profile" class="mb-3" />
+              <OrganismsProfilesChefCardsCell :chef="profile" />
+            </template>
+          </template>
 
-    <!-- Profiles via reusable Root -->
-    <OrganismsProfileRoot :config="chefConfig">
-      <template #profile-pill="{ profile, navigate }">
-        <OrganismsProfilesChefCardsPill
-          class="cursor-pointer"
-          :chef="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-
-      <template #profile-card="{ profile, navigate }">
-        <OrganismsProfilesChefCardsProfile
-          class="cursor-pointer"
-          :chef="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-
-      <template #profile-item="{ profile, navigate }">
-        <OrganismsProfilesChefCardsCell
-          class="cursor-pointer"
-          :chef="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-    </OrganismsProfileRoot>
-  </div>
+          <!-- List items -->
+          <template #item="{ profile }">
+            <OrganismsProfilesChefCardsCell :chef="profile" />
+          </template>
+        </OrganismsProfileRoot>
+      </UPageSection>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { chefConfig } from '../../models/profiles/Chef.model'
-import { useApp } from 'fireux-core/runtime/composables/app/useApp'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useChefCreate } from '../../composables/firestore/profiles/Chef/useChefCreate'
 
-const { role } = useApp() // 'global' | 'tenant'
-const { user } = useUser()
+const { createChef } = useChefCreate()
 
-// Bridge legacy template variables
-const coreUser = computed(() => user.value?.core)
-const appUser = computed(() => user.value?.app)
+async function onEnsureChef() {
+  // minimal: delegate creation; no UI side-effects here
+  await createChef()
+}
 </script>

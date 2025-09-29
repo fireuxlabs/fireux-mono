@@ -1,0 +1,3 @@
+<template>
+  <CoreLanding />
+</template>

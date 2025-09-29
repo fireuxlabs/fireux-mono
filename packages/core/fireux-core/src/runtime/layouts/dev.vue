@@ -2,6 +2,7 @@
   <ClientOnly>
     <div class="layout-wrapper">
       <DevNav :links="safeDevRoutes.miseboxDevRoutes || []" />
+      <!-- Debug component removed -->
       <NuxtPage />
     </div>
   </ClientOnly>

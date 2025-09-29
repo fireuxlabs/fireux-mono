@@ -1,13 +1,4 @@
 {
-  "files": [],
-  "references": [
-    { "path": "packages/core/fireux-core" },
-    { "path": "packages/extensions/fireux-jobs" },
-    { "path": "packages/extensions/fireux-places" },
-    { "path": "packages/tenants/fireux-misebox" },
-    { "path": "packages/tenants/fireux-cleanbox" },
-    { "path": "packages/tenants/fireux-fireux" }
-  ],
   "compilerOptions": {
     "baseUrl": ".",
     "target": "ES2022",
@@ -21,13 +12,28 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
+    "types": ["nuxt", "nuxt/schema", "@nuxt/ui"],
     "paths": {
       "fireux-core": ["packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["packages/core/fireux-core/src/*"],
+      "fireux-core/runtime/*": ["packages/core/fireux-core/src/runtime/*"],
+      "fireux-core/runtime/composables/*": [
+        "packages/core/fireux-core/src/runtime/composables/*"
+      ],
       "fireux-core/config/*": ["packages/core/fireux-core/src/config/*"],
+      "#fireux-core-runtime/*": ["packages/core/fireux-core/src/runtime/*"],
       "fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],
       "fireux-places/*": ["packages/extensions/fireux-places/src/*"],
       "fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"]
     }
-  }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "**/*.d.ts"],
+  "exclude": [
+    "node_modules",
+    "**/dist/**",
+    "**/.nuxt/**",
+    "**/.output/**",
+    "**/.turbo/**",
+    "**/.next/**"
+  ]
 }

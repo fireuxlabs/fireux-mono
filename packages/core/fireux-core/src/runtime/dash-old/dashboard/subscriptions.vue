@@ -1,0 +1,53 @@
+<!-- Archived from pages/dashboard/subscriptions.vue on 2025-09-26 -->
+<template>
+  <client-only>
+    <div class="dashboard-page-grid">
+      <div class="dashboard-grid-section">
+        <UCard>
+          <template #default>
+            <h2>Subscription Plan</h2>
+            <p>
+              You're currently on the Basic Plan. Upgrade anytime for more
+              features.
+            </p>
+          </template>
+        </UCard>
+      </div>
+      <div class="dashboard-grid-section">
+        <UCard>
+          <template #default>
+            <h2>Billing History</h2>
+            <p>Review your past invoices and download receipts.</p>
+          </template>
+        </UCard>
+      </div>
+      <div class="dashboard-grid-section">
+        <UCard>
+          <template #default>
+            <h2>Payment Methods</h2>
+            <p>Manage your saved cards and payment options.</p>
+          </template>
+        </UCard>
+      </div>
+    </div>
+  </client-only>
+</template>
+
+<script setup>
+import { useUserRoutes } from '../../composables/app/routes/useUserRoutes'
+
+const userGroup = useUserRoutes()[0]
+const route = userGroup.children.find(
+  (r) => r.to === '/dashboard/subscriptions'
+)
+const { label, icon } = route
+
+definePageMeta({
+  layout: 'dashboard',
+  layoutProps: {
+    dashboardType: 'user-dashboard',
+  },
+  title: label,
+  icon: icon,
+})
+</script>

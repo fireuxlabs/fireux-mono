@@ -1,7 +1,48 @@
 <template>
+  <ClientOnly>
+    <UCard class="space-y-6">
+      <MoleculesFormsFirestoreAvatarSelection
+        :user="{ ...supplier, avatar_url: supplier?.avatar }"
+        @upload="onUploadAvatar"
+      />
+
+      <MoleculesFormsFirestoreField
+        label="Display Name"
+        :firebase-value="supplier?.display_name"
+        placeholder="Enter your display name"
+        :update-function="onSaveDisplayName"
+      />
+    </UCard>
+  </ClientOnly>
+</template>
+
+<script setup lang="ts">
+import type { Supplier } from '../../../../models/profiles/Supplier.model'
+import { useSupplierUpdate } from '../../../../composables/firestore/profiles/Supplier/useSupplierUpdate'
+import { useMediaStorage } from 'fireux-core/runtime/composables/firebase/useMediaStorage'
+
+const props = defineProps<{ supplier: Supplier }>()
+
+const { updateDisplayName, updateAvatar } = useSupplierUpdate()
+const { uploadCoreAvatar } = useMediaStorage()
+
+const onSaveDisplayName = (v: string) => updateDisplayName(v)
+
+const onUploadAvatar = async (file: File) => {
+  if (!props.supplier?.id) return
+  const url = await uploadCoreAvatar(file, props.supplier.id)
+  if (url) await updateAvatar(url)
+}
+</script>
+
+<!-- TODO: Legacy supplier editor preserved below for reference. Do not remove until replacement is fully validated.
+
+LEGACY EDITOR (preserved as comment)
+
+<template>
   <client-only>
     <div class="profile-edit-container">
-      <!-- Avatar Upload -->
+      [Avatar Upload]
       <FireMoleculesFormsFirestoreAvatarSelection
         :user="{
           ...props.supplier,
@@ -9,7 +50,7 @@
         }"
       />
 
-      <!-- Business Name Field (Primary Identifier) -->
+      [Business Name Field (Primary Identifier)]
       <FireMoleculesFormsFirestoreField
         label="Business Name"
         :firebase-value="props.supplier?.business_name"
@@ -17,7 +58,7 @@
         :update-function="updateBusinessName"
       />
 
-      <!-- Company Name Field -->
+      [Company Name Field]
       <FireMoleculesFormsFirestoreField
         label="Company Name"
         :firebase-value="props.supplier?.company_name"
@@ -25,7 +66,7 @@
         :update-function="updateCompanyName"
       />
 
-      <!-- Business Type Field -->
+      [Business Type Field]
       <FireMoleculesFormsFirestoreField
         label="Business Type"
         :firebase-value="props.supplier?.business_type"
@@ -33,7 +74,7 @@
         :update-function="updateBusinessType"
       />
 
-      <!-- Bio Short Field -->
+      [Short Description]
       <FireMoleculesFormsFirestoreField
         label="Short Description"
         :firebase-value="props.supplier?.bio_short"
@@ -44,7 +85,7 @@
         :update-function="updateBioShort"
       />
 
-      <!-- Bio Long Field -->
+      [Detailed Description]
       <FireMoleculesFormsFirestoreField
         label="Detailed Description"
         :firebase-value="props.supplier?.bio_long"
@@ -55,7 +96,7 @@
         :update-function="updateBioLong"
       />
 
-      <!-- Specialties Array -->
+      [Specialties Array]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Specialties"
         :firebase-value="props.supplier?.specialties || []"
@@ -64,7 +105,7 @@
         :update-function="updateSpecialties"
       />
 
-      <!-- Products Offered Array -->
+      [Products Offered Array]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Products Offered"
         :firebase-value="props.supplier?.products_offered || []"
@@ -73,7 +114,7 @@
         :update-function="updateProductsOffered"
       />
 
-      <!-- Years in Business Field -->
+      [Years in Business Field]
       <FireMoleculesFormsFirestoreField
         label="Years in Business"
         :firebase-value="props.supplier?.years_in_business"
@@ -82,7 +123,7 @@
         :update-function="updateYearsInBusiness"
       />
 
-      <!-- Employee Count Field -->
+      [Employee Count Field]
       <FireMoleculesFormsFirestoreField
         label="Employee Count"
         :firebase-value="props.supplier?.employee_count"
@@ -91,7 +132,7 @@
         :update-function="updateEmployeeCount"
       />
 
-      <!-- Contact Information -->
+      [Contact Information]
       <FireMoleculesFormsFirestoreField
         label="Email"
         :firebase-value="props.supplier?.email"
@@ -116,7 +157,7 @@
         :update-function="updateWebsite"
       />
 
-      <!-- Location Information -->
+      [Primary Location]
       <FireMoleculesFormsFirestoreMultiField
         label="Primary Location"
         :firebase-value="props.supplier?.location || {}"
@@ -129,7 +170,7 @@
         :commas="true"
       />
 
-      <!-- Delivery Range -->
+      [Delivery Range]
       <FireMoleculesFormsFirestoreField
         label="Delivery Range"
         :firebase-value="props.supplier?.delivery_range"
@@ -137,7 +178,7 @@
         :update-function="updateDeliveryRange"
       />
 
-      <!-- Certifications Array -->
+      [Certifications Array]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Certifications"
         :firebase-value="props.supplier?.certifications || []"
@@ -146,14 +187,14 @@
         :update-function="updateCertifications"
       />
 
-      <!-- Social Links -->
+      [Social Links]
       <FireMoleculesFormsFirestoreSocialLinks
         label="Social Media"
         :firebase-value="props.supplier?.social_links || {}"
         :update-function="updateSocialLinks"
       />
 
-      <!-- Business Status Select -->
+      [Business Status Select]
       <FireMoleculesFormsFirestoreSelect
         label="Business Status"
         :firebase-value="props.supplier?.business_status || 'active'"
@@ -167,7 +208,7 @@
         :update-function="updateBusinessStatus"
       />
 
-      <!-- Verified Checkbox -->
+      [Verified Checkbox]
       <FireMoleculesFormsFirestoreCheckbox
         label="Profile Verification"
         :firebase-value="props.supplier?.verified || false"
@@ -230,3 +271,4 @@ const updateBusinessStatus = (value) =>
 const updateVerified = (value) =>
   updateProfile({ verified: value }, props.supplier.uid)
 </script>
+-->

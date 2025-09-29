@@ -1,83 +1,18 @@
 <template>
-  <ClientOnly>
-    <div>
-      <div v-if="supplier">
-        <MiseSupplierProfile :supplier="supplier" />
-
-        <!-- Edit Profile Button (shown when viewing own profile) -->
-        <div v-if="appUser?.id === supplier.id" class="edit-profile-section">
-          <UButton
-            @click="navigateToEdit"
-            icon="i-lucide-pencil"
-            size="md"
-            color="primary"
-            variant="solid"
-            class="edit-profile-button"
-          >
-            Edit Profile
-          </UButton>
-        </div>
-      </div>
-      <div v-else class="error-state">
-        <h1>Supplier Not Found</h1>
-        <p>The supplier profile you're looking for doesn't exist.</p>
-        <NuxtLink to="/suppliers" class="back-link"
-          >← Back to Suppliers</NuxtLink
-        >
-      </div>
-    </div>
-
-    <template #fallback>
-      <div class="loading-state">
-        <h1>Loading supplier profile...</h1>
-      </div>
+  <OrganismsProfilePage
+    :config="supplierConfig"
+    edit-path="/dashboard/supplier-profile"
+    page-title="Supplier Profile"
+    page-description="View supplier profile"
+    :fallback-href="'/suppliers'"
+  >
+    <template #profile="{ profile }">
+      <OrganismsProfilesSupplierCardsProfile :supplier="profile" />
     </template>
-  </ClientOnly>
+  </OrganismsProfilePage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute, useHead, navigateTo, useSeoMeta } from 'nuxt/app'
-import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import OrganismsProfilePage from 'fireux-core/src/runtime/components/organisms/Profile/Page.vue'
 import { supplierConfig } from '../../models/profiles/Supplier.model'
-
-const route = useRoute()
-const supplierId = route.params.id as string
-
-// Static SEO meta
-useSeoMeta({
-  title: 'Supplier Profile',
-  description: 'View supplier profile',
-})
-
-// Get current user for edit permission check
-const { user } = useUser()
-const appUser = computed(() => user.value?.app)
-
-// Use our unified profile composable
-const { fetchById } = useProfile(supplierConfig)
-
-// Fetch supplier data
-const supplier = await fetchById(supplierId)
-
-// Navigation function for edit profile
-const navigateToEdit = () => {
-  navigateTo('/dashboard/supplier-profile')
-}
-
-// Update head dynamically when supplier data loads
-useHead({
-  title: computed(() =>
-    supplier?.company_name
-      ? `${supplier.company_name} - Supplier Profile`
-      : 'Supplier Profile'
-  ),
-  meta: [
-    {
-      name: 'description',
-      content: computed(() => supplier?.bio_short || 'View supplier profile'),
-    },
-  ],
-})
 </script>

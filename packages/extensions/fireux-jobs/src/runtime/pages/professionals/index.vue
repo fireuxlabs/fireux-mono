@@ -1,49 +1,38 @@
 <template>
-  <div class="page space-y-4">
-    <!-- CTAs -->
-    <OrganismsUserCoreCTA v-if="!coreUser" />
-    <template v-else>
-      <OrganismsUserAppCTA v-if="role === 'tenant' && !appUser" />
-      <OrganismsProfilesProfessionalCTA />
-    </template>
+  <UPage>
+    <UPageBody>
+      <UPageSection>
+        <OrganismsProfileRoot
+          :config="professionalConfig"
+          :onEnsure="onEnsureProfessional"
+        >
+          <!-- Current profile (optional) -->
+          <template #current-assets="{ profile }">
+            <template v-if="profile">
+              <OrganismsProfilesProfessionalCardsPill
+                :professional="profile"
+                class="mb-3"
+              />
+              <OrganismsProfilesProfessionalCardsCell :professional="profile" />
+            </template>
+          </template>
 
-    <!-- Profiles via reusable Root -->
-    <OrganismsProfileRoot :config="professionalConfig">
-      <template #profile-pill="{ profile, navigate }">
-        <OrganismsProfilesProfessionalCardsPill
-          class="cursor-pointer"
-          :professional="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-
-      <template #profile-card="{ profile, navigate }">
-        <OrganismsProfilesProfessionalCardsProfile
-          class="cursor-pointer"
-          :professional="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-
-      <template #profile-item="{ profile, navigate }">
-        <OrganismsProfilesProfessionalCardsCell
-          class="cursor-pointer"
-          :professional="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-    </OrganismsProfileRoot>
-  </div>
+          <!-- List items -->
+          <template #item="{ profile }">
+            <OrganismsProfilesProfessionalCardsCell :professional="profile" />
+          </template>
+        </OrganismsProfileRoot>
+      </UPageSection>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { professionalConfig } from '../../models/profiles/Professional.model'
-import { useApp } from 'fireux-core/runtime/composables/app/useApp'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useProfessionalCreate } from '../../composables/firestore/profiles/Professional/useProfessionalCreate'
 
-const { role } = useApp()
-const { user } = useUser()
-const coreUser = computed(() => user.value?.core)
-const appUser = computed(() => user.value?.app)
+const { createProfessional } = useProfessionalCreate()
+async function onEnsureProfessional() {
+  await createProfessional()
+}
 </script>

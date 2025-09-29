@@ -1,35 +1,23 @@
 <template>
-  <ClientOnly>
-    <div>
-      <div v-if="professional">
-        <h2>Edit Professional Profile</h2>
-        <JobProfilesProfessionalEdit :professional="professional" />
-      </div>
-      <div v-else>
-        <JobProfilesProfessionalCTA />
-      </div>
-    </div>
+  <UPage>
+    <UPageBody>
+      <OrganismsProfileRoot :config="professionalConfig">
+        <!-- When a profile exists, render the editor -->
+        <template #current-assets="{ profile }">
+          <div v-if="profile">
+            <h2 class="mb-4">Edit Professional Profile</h2>
+            <JobProfilesProfessionalEdit :professional="profile" />
+          </div>
+        </template>
 
-    <template #fallback>
-      <div class="loading-state">
-        <h1>Loading professional profile editor...</h1>
-      </div>
-    </template>
-  </ClientOnly>
+        <!-- Optional: omit list rendering by leaving #item empty -->
+        <template #item="{ profile }"></template>
+      </OrganismsProfileRoot>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 import { professionalConfig } from '../../models/profiles/Professional.model'
-
-// Define static page meta first
-definePageMeta({
-  title: 'Edit Professional Profile',
-  description: 'Edit your professional profile',
-})
-
-// Get current user
-const { appUser, hasProfile } = useAppUser()
-
-// Use our unified profile composable
-const { current: professional } = useProfile(professionalConfig)
+definePageMeta({ layout: 'dashboard' })
 </script>

@@ -63,8 +63,11 @@ export function useFireUXConfig() {
     ? modulesRaw.map((m) => String(m))
     : []
 
-  // Role (global | tenant)
-  const role = (runtimeConfig.public?.role as string | undefined) ?? 'tenant'
+  // Role (global | tenant) — normalize for consistent comparisons
+  const role = ((runtimeConfig.public?.role as string | undefined) ?? 'tenant')
+    .toString()
+    .trim()
+    .toLowerCase()
 
   const { projectName, appName, appId, appIcon } = appSettings
 

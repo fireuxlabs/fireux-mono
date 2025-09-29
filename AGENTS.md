@@ -50,15 +50,9 @@ Index and shortcuts
   - `copilot-documentation/copilot-02-structure.md`
   - `copilot-documentation/copilot-03-config.md`
   - `copilot-documentation/copilot-04-firebase.md`
-  - `copilot-documentation/copilot-04-packages.md`
   - `copilot-documentation/copilot-05-dev-workflow.md`
-  - `copilot-documentation/copilot-05-projects.md`
-  - `copilot-documentation/copilot-06-firebase.md` (additional)
   - `copilot-documentation/copilot-06-ci-cd.md`
   - `copilot-documentation/copilot-07-conventions.md`
-  - `copilot-documentation/copilot-07-dev-workflow.md`
-  - `copilot-documentation/copilot-08-ci-cd.md`
-  - `copilot-documentation/copilot-09-conventions.md`
 
 - ADRs
   - `copilot-documentation/copilot-adr/`

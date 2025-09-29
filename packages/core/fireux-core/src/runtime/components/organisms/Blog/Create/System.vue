@@ -41,6 +41,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+// Nuxt UI provides useToast via auto-import in app context; fall back if unavailable
+const useToastFn = (globalThis as any).useToast as undefined | (() => any)
+const toast = useToastFn ? useToastFn() : undefined
 import { useCreateBlogPostState } from '../../../../composables/firestore/objects/Blog/useCreateBlogPostState'
 
 const selectedTab = ref<'write' | 'preview'>('write')
@@ -63,12 +66,26 @@ async function handleCreate() {
     await new Promise((resolve) => setTimeout(resolve, 2000)) // Simulate API call
 
     console.log('🎉 Blog post created successfully!')
-    alert('✅ Blog post published successfully!')
+    if (toast) {
+      toast.add({
+        title: 'Published',
+        description: 'Blog post published successfully',
+        icon: 'i-heroicons-check-circle',
+        color: 'green',
+      })
+    }
 
     handleClear()
   } catch (error: any) {
     console.error('❌ Blog post creation failed:', error)
-    alert(`❌ Failed to create blog post: ${error.message}`)
+    if (toast) {
+      toast.add({
+        title: 'Publish failed',
+        description: error?.message || 'Unknown error',
+        icon: 'i-heroicons-x-circle',
+        color: 'red',
+      })
+    }
   } finally {
     isCreating.value = false
   }

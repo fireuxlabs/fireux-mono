@@ -16,8 +16,8 @@ const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
 const logos = {
-  light: '/img/logo-type-light.svg',
-  dark: '/img/logo-type-dark.svg',
+  light: '/img/wordmark-light.svg',
+  dark: '/img/wordmark-dark.svg',
 }
 
 const props = defineProps({

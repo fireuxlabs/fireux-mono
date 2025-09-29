@@ -1,8 +1,5 @@
 <template>
   <div class="auth-authenticated">
-    <!-- Unified CTA: renders role-aware actions -->
-    <OrganismsUserCTA />
-
     <div class="button-group">
       <UButton block @click="handleClick">
         {{ buttonLabel }}
@@ -15,6 +12,7 @@
 <script setup>
 const router = useRouter()
 const { signOutUser } = useAuth()
+const { ensureUser } = useUserEnsure()
 const { role } = useFireUXConfig()
 const isTenant = computed(() => role === 'tenant')
 const { user } = useUser()
@@ -28,8 +26,8 @@ const buttonLabel = computed(() => {
 })
 
 const handleClick = async () => {
-  // Minimal flow: just navigate; unified ensure handled elsewhere or via CTA
-  router.push('/dashboard')
+  // Ensure user first; redirect happens inside ensureUser when requested
+  await ensureUser()
 }
 
 const handleSignOut = async () => {

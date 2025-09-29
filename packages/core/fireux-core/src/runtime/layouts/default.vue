@@ -1,7 +1,7 @@
 <template>
   <ClientOnly>
     <div class="layout-wrapper">
-      <LayoutsHeader
+      <LayoutsDefaultHeader
         :menu-bar-links="menuBarLinks"
         :mobile-links="mobileLinks"
       />
@@ -12,23 +12,17 @@
 </template>
 
 <script setup lang="ts">
-// Nuxt auto-imported composable; declare for TS when type context misses auto-imports
-declare function useCoreRoutes(): any
-const props = defineProps<{
-  routes?: import('../types/layouts').LayoutRoutes
-}>()
+const { links } = useCoreRoutes()
 
-const coreRoutes = useCoreRoutes()
-const menuBarLinks = [
-  ...(Array.isArray(coreRoutes.menuBarLinks) ? coreRoutes.menuBarLinks : []),
-  ...(Array.isArray(props.routes?.menuBarLinks)
-    ? props.routes.menuBarLinks
-    : []),
-]
-const mobileLinks = [
-  ...(Array.isArray(coreRoutes.mobileLinks) ? coreRoutes.mobileLinks : []),
-  ...(Array.isArray(props.routes?.mobileLinks) ? props.routes.mobileLinks : []),
-]
+const KEEP_MENU = new Set(['home', 'products', 'blog', 'users'])
+const KEEP_MOBILE = new Set([...KEEP_MENU, 'user', 'admin'])
+
+const menuBarLinks = computed(() =>
+  links.value.filter((r) => KEEP_MENU.has(r.id))
+)
+const mobileLinks = computed(() =>
+  links.value.filter((r) => KEEP_MOBILE.has(r.id))
+)
 </script>
 
 <style scoped>
@@ -38,7 +32,6 @@ const mobileLinks = [
   align-items: center;
   min-height: 100vh;
 }
-
 .layout-wrapper > * {
   align-self: stretch;
 }

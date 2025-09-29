@@ -1,25 +1,24 @@
+// packages/tenants/fireux-misebox/src/runtime/composables/app/routes/useMiseboxRoutes.ts
+// Tenant-only navigation builder (no core links). Provides flat array which the layout filters.
+import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
+
+import { computed } from 'vue'
+import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/app/routes/useJobRoutes'
-// Local type to avoid deep import from core
-export interface RouteLink {
-  id: string
-  label: string
-  icon: string
-  to: string
-  children?: RouteLink[]
-}
 
-export function getMiseboxRoutes(hasProfile: (profileType: string) => boolean) {
-  // Get package routes
-  const jobRoutes = getJobRoutes(hasProfile)
+export function useMiseboxRoutes() {
+  const { user } = useUser()
 
-  // General misebox routes
-  const miseboxRoutes: RouteLink[] = [
-    {
-      id: 'chefs',
-      label: 'Chefs',
-      icon: 'i-lucide-chef-hat',
-      to: '/chefs',
-    },
+  const hasProfile = (profileType: string) => {
+    const app = user.value?.app
+    if (!app) return false
+    const list = Array.isArray(app?.app_profiles) ? app.app_profiles : []
+    return list.includes(profileType)
+  }
+
+  // Public Misebox discovery routes
+  const miseboxPublic: RouteLink[] = [
+    { id: 'chefs', label: 'Chefs', icon: 'i-lucide-chef-hat', to: '/chefs' },
     {
       id: 'suppliers',
       label: 'Suppliers',
@@ -40,43 +39,36 @@ export function getMiseboxRoutes(hasProfile: (profileType: string) => boolean) {
     },
   ]
 
-  const miseboxProfileRoutes: RouteLink[] = []
+  const links = computed<RouteLink[]>(() => {
+    // Profile shortcuts (dashboard) conditional
+    const profileShortcuts: RouteLink[] = []
+    if (hasProfile('chef')) {
+      profileShortcuts.push({
+        id: 'chef-profile',
+        label: 'Chef Profile',
+        icon: 'i-lucide-chef-hat',
+        to: '/dashboard/chef-profile',
+      })
+    }
+    if (hasProfile('supplier')) {
+      profileShortcuts.push({
+        id: 'supplier-profile',
+        label: 'Supplier Profile',
+        icon: 'i-lucide-package',
+        to: '/dashboard/supplier-profile',
+      })
+    }
 
-  // Filter out "Chefs" from mobile menu if user has chef profile
-  // Filter out "Suppliers" from mobile menu if user has supplier profile
-  const miseboxMobileRoutes = miseboxRoutes.filter((route) => {
-    if (route.id === 'chefs' && hasProfile('chef')) return false
-    if (route.id === 'suppliers' && hasProfile('supplier')) return false
-    return true
+    // Jobs extension routes (public + profile/dashboard flavor)
+    const jobs = getJobRoutes(hasProfile)
+
+    return [
+      ...miseboxPublic,
+      ...jobs.jobRoutes,
+      ...profileShortcuts,
+      ...jobs.jobProfileRoutes,
+    ]
   })
 
-  // Add chef profile route
-  if (hasProfile('chef')) {
-    miseboxProfileRoutes.push({
-      id: 'chef-profile',
-      label: 'Chef Profile',
-      icon: 'i-lucide-chef-hat',
-      to: '/dashboard/chef-profile',
-    })
-  }
-
-  // Add supplier profile route
-  if (hasProfile('supplier')) {
-    miseboxProfileRoutes.push({
-      id: 'supplier-profile',
-      label: 'Supplier Profile',
-      icon: 'i-lucide-package',
-      to: '/dashboard/supplier-profile',
-    })
-  }
-
-  return {
-    menuBarLinks: [...miseboxRoutes, ...jobRoutes.jobRoutes],
-    mobileLinks: [
-      ...miseboxProfileRoutes,
-      ...jobRoutes.jobProfileRoutes,
-      ...miseboxMobileRoutes,
-      ...jobRoutes.jobMobileRoutes,
-    ],
-  }
+  return { links }
 }

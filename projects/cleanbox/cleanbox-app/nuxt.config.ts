@@ -7,7 +7,7 @@ export default defineNuxtConfig(<NuxtConfig>{
     appName: 'Cleanbox',
     appShortName: 'Cleanbox',
     ecosystem: 'cleanbox',
-    modules: ['fireux-cleanbox', 'fireux-jobs'],
+    modules: ['fireux-cleanbox'],
     role: 'global',
   }),
 })

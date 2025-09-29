@@ -8,25 +8,23 @@ updated: 2025-09-01
 
 # Copilot Table of Contents
 
+## Meta
+
+- Reports
+  - [Documentation Inventory and Halving Plan](./documentation-report.md)
+  - [Post-cleanup Report](./report.md)
+
 ## Core Handbook
 
 - [Overview](./copilot-01-overview.md)
 - [Monorepo Structure](./copilot-02-structure.md)
 - [Config (Nuxt / TS / Env)](./copilot-03-config.md)
 - [Firebase (VueFire + Admin)](./copilot-04-firebase.md)
-- [Dev Workflow](./copilot-05-dev-workflow.md)
+- [Projects](./copilot-05-projects.md)
 - [CI/CD](./copilot-06-ci-cd.md)
 - [Conventions](./copilot-07-conventions.md)
 
-> Git & GitHub: see the simple flow in [Dev Workflow](./copilot-05-dev-workflow.md#git--github-simple-flow) and quick commands in the [Cheatsheet](./copilot-appendices/copilot-commands-cheatsheet.md#git--github-simple).
-
-## Copilot Instruction Packs
-
-- [How to use these files](./copilot-instructions/README.md)
-- [Core & Modules](./copilot-instructions/copilot-instructions-core.md)
-- [Apps & Projects](./copilot-instructions/copilot-instructions-projects.md)
-- [Firebase](./copilot-instructions/copilot-instructions-firebase.md)
-- [Maintenance](./copilot-instructions/copilot-instructions-maintenance.md)
+> Git & GitHub: quick commands in the [Cheatsheet](./copilot-appendices/copilot-commands-cheatsheet.md#git--github-simple).
 
 ## Appendices
 
@@ -34,7 +32,10 @@ updated: 2025-09-01
 - [Commands Cheatsheet](./copilot-appendices/copilot-commands-cheatsheet.md)
 - [Error Handbook](./copilot-appendices/copilot-error-handbook.md)
 - [Troubleshooting](./copilot-appendices/copilot-troubleshooting.md)
-- [Minimal Profile Creation Flow](./flow.md)
+- [Doc vs Code Audit Prompts](./copilot-appendices/doc-audit-prompts.md)
+- [Layouts — taxonomy, rules, and usage](./copilot-appendices/layouts.md)
+- [User updater (useUserUpdate)](./copilot-appendices/user-update.md)
+- [Avatar system](./copilot-appendices/avatar.md)
 
 ## Architecture Decision Records (ADR)
 

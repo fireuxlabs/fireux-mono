@@ -1,49 +1,38 @@
 <template>
-  <div class="page space-y-4">
-    <!-- CTAs -->
-    <OrganismsUserCoreCTA v-if="!coreUser" />
-    <template v-else>
-      <OrganismsUserAppCTA v-if="role === 'tenant' && !appUser" />
-      <OrganismsProfilesEmployerCTA />
-    </template>
+  <UPage>
+    <UPageBody>
+      <UPageSection>
+        <OrganismsProfileRoot
+          :config="employerConfig"
+          :onEnsure="onEnsureEmployer"
+        >
+          <!-- Current profile (optional) -->
+          <template #current-assets="{ profile }">
+            <template v-if="profile">
+              <OrganismsProfilesEmployerCardsPill
+                :employer="profile"
+                class="mb-3"
+              />
+              <OrganismsProfilesEmployerCardsCell :employer="profile" />
+            </template>
+          </template>
 
-    <!-- Profiles via reusable Root -->
-    <OrganismsProfileRoot :config="employerConfig">
-      <template #profile-pill="{ profile, navigate }">
-        <OrganismsProfilesEmployerCardsPill
-          class="cursor-pointer"
-          :employer="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-
-      <template #profile-card="{ profile, navigate }">
-        <OrganismsProfilesEmployerCardsProfile
-          class="cursor-pointer"
-          :employer="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-
-      <template #profile-item="{ profile, navigate }">
-        <OrganismsProfilesEmployerCardsCell
-          class="cursor-pointer"
-          :employer="profile"
-          @click="navigate(profile)"
-        />
-      </template>
-    </OrganismsProfileRoot>
-  </div>
+          <!-- List items -->
+          <template #item="{ profile }">
+            <OrganismsProfilesEmployerCardsCell :employer="profile" />
+          </template>
+        </OrganismsProfileRoot>
+      </UPageSection>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { employerConfig } from '../../models/profiles/Employer.model'
-import { useApp } from 'fireux-core/runtime/composables/app/useApp'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+import { useEmployerCreate } from '../../composables/firestore/profiles/Employer/useEmployerCreate'
 
-const { role } = useApp()
-const { user } = useUser()
-const coreUser = computed(() => user.value?.core)
-const appUser = computed(() => user.value?.app)
+const { createEmployer } = useEmployerCreate()
+async function onEnsureEmployer() {
+  await createEmployer()
+}
 </script>

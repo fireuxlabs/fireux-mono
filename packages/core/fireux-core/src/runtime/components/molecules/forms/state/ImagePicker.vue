@@ -65,6 +65,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+// Try to use Nuxt UI toast if available in app context
+const useToastFn = (globalThis as any).useToast as undefined | (() => any)
+const toast = useToastFn ? useToastFn() : undefined
 import { useStorage } from '@vueuse/core'
 
 const props = defineProps<{
@@ -135,7 +138,13 @@ function onSelect(e: Event) {
   // Check if it's an image file
   if (!file.type.startsWith('image/')) {
     console.error('❌ File is not an image')
-    alert('Please select an image file')
+    if (toast)
+      toast.add({
+        title: 'Invalid file',
+        description: 'Please select an image file',
+        icon: 'i-heroicons-exclamation-triangle',
+        color: 'amber',
+      })
     input.value = ''
     return
   }
@@ -164,11 +173,30 @@ function onSelect(e: Event) {
     })
     .catch((error) => {
       console.error('❌ Error processing image:', error)
-      alert('Failed to process image. Please try a different file.')
+      if (toast)
+        toast.add({
+          title: 'Processing failed',
+          description: 'Please try a different image file',
+          icon: 'i-heroicons-x-circle',
+          color: 'red',
+        })
     })
 
   // Clear the input so re-selecting the same file triggers change
   input.value = ''
+}
+
+// Helper: read a Blob as data URL (flattens nesting)
+function readBlobAsDataURL(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result === 'string') resolve(reader.result)
+      else reject(new Error('Failed to create data URL'))
+    }
+    reader.onerror = () => reject(new Error('Failed to read processed file'))
+    reader.readAsDataURL(blob)
+  })
 }
 
 // Image processing function
@@ -194,16 +222,14 @@ async function processImage(
         const maxHeight = 800
         let { width, height } = img
 
-        if (width > height) {
-          if (width > maxWidth) {
-            height = (height * maxWidth) / width
-            width = maxWidth
-          }
-        } else {
-          if (height > maxHeight) {
-            width = (width * maxHeight) / height
-            height = maxHeight
-          }
+        const widthDominant = width > height
+        if (widthDominant && width > maxWidth) {
+          height = (height * maxWidth) / width
+          width = maxWidth
+        }
+        if (!widthDominant && height > maxHeight) {
+          width = (width * maxHeight) / height
+          height = maxHeight
         }
 
         // Set canvas size
@@ -215,7 +241,7 @@ async function processImage(
 
         // Convert to blob with compression (0.8 quality JPEG)
         canvas.toBlob(
-          (blob) => {
+          async (blob) => {
             if (!blob) {
               reject(new Error('Failed to create blob'))
               return
@@ -227,25 +253,16 @@ async function processImage(
               lastModified: Date.now(),
             })
 
-            // Create data URL for preview
-            const reader = new FileReader()
-            reader.onload = () => {
-              if (typeof reader.result === 'string') {
-                resolve({
-                  dataUrl: reader.result,
-                  file: processedFile,
-                })
-              } else {
-                reject(new Error('Failed to create data URL'))
-              }
+            try {
+              const dataUrl = await readBlobAsDataURL(blob)
+              resolve({ dataUrl, file: processedFile })
+            } catch (err) {
+              reject(err)
             }
-            reader.onerror = () =>
-              reject(new Error('Failed to read processed file'))
-            reader.readAsDataURL(processedFile)
           },
           'image/jpeg',
-          0.8 // 80% quality
-        )
+          0.8
+        ) // 80% quality
       } catch (error) {
         reject(error)
       }
@@ -325,7 +342,7 @@ async function processImage(
 .file-name {
   font-weight: 500;
   font-size: 0.875rem;
-  truncate: ellipsis;
+  text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }

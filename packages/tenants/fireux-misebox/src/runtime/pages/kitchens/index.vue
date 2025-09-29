@@ -25,5 +25,6 @@ const hasProfile = (profileType: string) => {
   const list = Array.isArray(app.app_profiles) ? app.app_profiles : []
   return profileType ? list.includes(profileType) : !!app
 }
-const { current: chef } = useProfile(chefConfig)
+const { profile } = useProfile(chefConfig)
+const chef = computed(() => profile.value)
 </script>

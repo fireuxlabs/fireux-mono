@@ -1,17 +1,21 @@
 <template>
   <UCard class="profile-card">
     <div class="profile-header">
-      <UAvatar :src="professional.avatar" :alt="professional.name" size="md" />
+      <UAvatar
+        :src="professional.avatar"
+        :alt="professional.display_name"
+        size="md"
+      />
       <div class="profile-info">
-        <h4 class="profile-name">{{ professional.name }}</h4>
+        <h4 class="profile-name">{{ professional.display_name }}</h4>
         <p v-if="professional.title" class="profile-subtitle">
           {{ professional.title }}
         </p>
       </div>
     </div>
 
-    <p v-if="professional.bioShort" class="profile-bio">
-      {{ professional.bioShort }}
+    <p v-if="professional.bio_short" class="profile-bio">
+      {{ professional.bio_short }}
     </p>
 
     <div v-if="professional.specialties?.length" class="profile-tags">
@@ -29,6 +33,6 @@
 </template>
 
 <script setup lang="ts">
-import type { ProfessionalCellProps } from '../../../../../models/profiles/Professional.model'
-defineProps<{ professional: ProfessionalCellProps }>()
+import type { ProfessionalCard } from '../../../../../models/profiles/Professional.model'
+defineProps<{ professional: ProfessionalCard.Cell }>()
 </script>

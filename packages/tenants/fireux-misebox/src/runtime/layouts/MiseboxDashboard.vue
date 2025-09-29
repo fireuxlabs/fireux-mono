@@ -1,9 +1,10 @@
+//packages/tenants/fireux-misebox/src/runtime/layouts/MiseboxDashboard.vue
 <template>
   <CoreDashboard :routes="miseboxRoutes" />
 </template>
 
 <script setup lang="ts">
-import { getMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
+import { getMiseboxDashboardRoutes } from '../composables/app/routes/useMiseboxDashboardRoutes'
 import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 
@@ -15,5 +16,7 @@ const hasProfile = (profileType: string) => {
   return profileType ? list.includes(profileType) : !!app
 }
 type LayoutRoutes = { menuBarLinks?: any[]; mobileLinks?: any[] }
-const miseboxRoutes = computed<LayoutRoutes>(() => getMiseboxRoutes(hasProfile))
+const miseboxRoutes = computed<LayoutRoutes>(() =>
+  getMiseboxDashboardRoutes(hasProfile)
+)
 </script>

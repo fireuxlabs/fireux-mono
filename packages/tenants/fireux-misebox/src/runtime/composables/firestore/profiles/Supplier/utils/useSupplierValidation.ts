@@ -8,38 +8,21 @@ export function useSupplierValidation() {
     const errors: string[] = []
 
     // Required fields
-    if (!supplier.business_name?.trim()) {
-      errors.push('Business name is required')
+    if (!supplier.display_name?.trim()) {
+      errors.push('Display name is required')
     }
 
     // Supplier model is independent and uses `id` as its primary key.
     // If you need to enforce creator/owner linkage, validate `created_by` at creation time instead.
 
     // Business type validation
-    const validBusinessTypes = [
-      'farm',
-      'distributor',
-      'manufacturer',
-      'wholesaler',
-      'producer',
-      'other',
-    ]
-    if (
-      supplier.business_type &&
-      !validBusinessTypes.includes(supplier.business_type)
-    ) {
-      errors.push('Invalid business type')
-    }
+    // Business type is not part of the slim Supplier model
 
     // Email validation
-    if (supplier.email && !isValidEmail(supplier.email)) {
-      errors.push('Invalid email format')
-    }
+    // Email, phone, website, etc. are not part of the slim Supplier model
 
     // Phone validation
-    if (supplier.phone && !isValidPhone(supplier.phone)) {
-      errors.push('Invalid phone number format')
-    }
+    // Keep helper utilities for future extension types
 
     // Note: website is not part of the current Supplier model
 
