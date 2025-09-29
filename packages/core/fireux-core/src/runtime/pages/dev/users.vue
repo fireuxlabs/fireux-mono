@@ -32,7 +32,7 @@
     <!-- Current user JSON -->
     <UCard style="margin-top: 16px">
       <DevJson
-        :data="user?.value ?? null"
+        :data="user ?? null"
         title="Current User"
         :defaultOpen="true"
       />
@@ -67,6 +67,10 @@
 </template>
 
 <script setup lang="ts">
+// Nuxt macro shim for TS in package context
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const definePageMeta: (meta: any) => void
+
 definePageMeta({
   title: 'Users',
   layout: 'dev',
@@ -74,6 +78,7 @@ definePageMeta({
 
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/FireUXConfig'
+import { useUser } from '../../composables/firestore/user/useUser'
 
 // Unified user API
 const {
