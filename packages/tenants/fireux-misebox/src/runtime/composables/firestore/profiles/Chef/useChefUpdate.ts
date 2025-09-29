@@ -1,20 +1,22 @@
 // packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefUpdate.ts
 import { useScopedUpdater } from 'fireux-core/runtime/composables/firestore/scopedUpdater'
 
-// Tenant-scoped profile collection; updates should affect only this doc.
 const COLLECTION = 'chefs'
 
+/**
+ * Tenant-scoped updater for the signed-in user's chef profile.
+ * Always writes under apps/{appId}/chefs/{uid}.
+ */
 export function useChefUpdate() {
-  const { update: updateChef } = useScopedUpdater(COLLECTION as 'chefs')
+  const { update } = useScopedUpdater()
 
   const updateDisplayName = async (display_name: string) => {
-    await updateChef({ display_name })
+    await update(COLLECTION, { display_name })
   }
 
+  // Accepts a final URL; uploading is handled by AvatarPicker
   const updateAvatar = async (avatarUrl: string) => {
-    const sep = avatarUrl.includes('?') ? '&' : '?'
-    const versioned = `${avatarUrl}${sep}v=${Date.now()}`
-    await updateChef({ avatar: versioned })
+    await update(COLLECTION, { avatar: avatarUrl })
   }
 
   return { updateDisplayName, updateAvatar }

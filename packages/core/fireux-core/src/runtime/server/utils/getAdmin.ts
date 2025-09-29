@@ -5,6 +5,18 @@ function readEnv(k: string) {
   return v?.trim()?.length ? v : undefined
 }
 
+function normalizeStorageBucket(bucket?: string) {
+  if (!bucket) return undefined
+  // Firebase Web config may provide the new host-style bucket
+  // e.g. "fireux-2005.firebasestorage.app". Admin SDK expects
+  // the canonical bucket name "fireux-2005.appspot.com".
+  if (bucket.endsWith('.firebasestorage.app')) {
+    const projectId = bucket.replace(/\.firebasestorage\.app$/, '')
+    return `${projectId}.appspot.com`
+  }
+  return bucket
+}
+
 function getServiceAccountFromEnv():
   | { projectId: string; clientEmail: string; privateKey: string }
   | undefined {
@@ -38,7 +50,9 @@ export function getAdmin() {
   if (!admin.apps.length) {
     try {
       const sa = getServiceAccountFromEnv()
-      const storageBucket = readEnv('FIREBASE_STORAGE_BUCKET')
+      const storageBucket = normalizeStorageBucket(
+        readEnv('FIREBASE_STORAGE_BUCKET')
+      )
       if (sa) {
         admin.initializeApp({
           credential: admin.credential.cert({

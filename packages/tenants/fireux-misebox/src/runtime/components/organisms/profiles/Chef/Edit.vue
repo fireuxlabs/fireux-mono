@@ -1,14 +1,17 @@
+<!-- packages/tenants/fireux-misebox/src/runtime/components/organisms/profiles/Chef/Edit.vue -->
 <template>
   <ClientOnly>
     <UCard class="space-y-6">
-      <MoleculesFormsFirestoreAvatarSelection
-        :user="{ ...chef, avatar_url: chef?.avatar }"
-        @upload="onUploadAvatar"
+      <MoleculesFormsAvatarPicker
+        :src="props.chef?.avatar"
+        :storage-path="`apps/${appId}/chefs/${props.chef?.id}/avatar`"
+        :alt="props.chef?.display_name || 'Chef'"
+        :initials="initials"
+        @uploaded="onAvatarUploaded"
       />
-
       <MoleculesFormsFirestoreField
         label="Display Name"
-        :firebase-value="chef?.display_name"
+        :firebase-value="props.chef?.display_name"
         placeholder="Enter your display name"
         :update-function="onSaveDisplayName"
       />
@@ -19,19 +22,21 @@
 <script setup lang="ts">
 import type { Chef } from '../../../../models/profiles/Chef.model'
 import { useChefUpdate } from '../../../../composables/firestore/profiles/Chef/useChefUpdate'
-import { useMediaStorage } from 'fireux-core/runtime/composables/firebase/useMediaStorage'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig'
+import { computed } from 'vue'
 
 const props = defineProps<{ chef: Chef }>()
-
 const { updateDisplayName, updateAvatar } = useChefUpdate()
-const { uploadCoreAvatar } = useMediaStorage()
+const { appId } = useFireUXConfig()
+
+const initials = computed(() => {
+  const name = props.chef?.display_name || 'C'
+  return name.split(' ').map(s => s[0]).join('').toUpperCase().slice(0, 2)
+})
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v)
-
-const onUploadAvatar = async (file: File) => {
-  if (!props.chef?.id) return
-  const url = await uploadCoreAvatar(file, props.chef.id)
-  if (url) await updateAvatar(url)
+const onAvatarUploaded = async (url: string) => {
+  await updateAvatar(url)
 }
 </script>
 <!--

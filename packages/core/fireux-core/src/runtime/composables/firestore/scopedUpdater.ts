@@ -5,11 +5,11 @@ import { useFirestoreUpdate } from './useFirestoreUpdate'
 
 /**
  * Scoped updater — writes to the correct collection based on role/appId.
- * - 'users': global → core-users/{uid}; tenant → apps/{appId}/users/{uid}
- * - tenant-only collections (e.g., 'chefs'): apps/{appId}/{collection}/{uid}
- *   (throws if called outside tenant context)
+ * - For tenants: writes under apps/{appId}/{collection}/{uid}
+ * - For global: only 'users' is allowed → core-users/{uid}
+ * - Any other collection without tenant context will throw
  */
-export function useScopedUpdater(collectionKey: 'users' | 'chefs') {
+export function useScopedUpdater() {
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant'
   const { waitForCurrentUser } = useFirestoreUtils()
@@ -21,35 +21,17 @@ export function useScopedUpdater(collectionKey: 'users' | 'chefs') {
     return u.uid
   }
 
-  // Choose collection path based on tenancy
-  function pathFor(collection = collectionKey): {
-    path: string
-    appScoped: boolean
-  } {
-    if (isTenant && appId)
-      return { path: `apps/${appId}/${collection}`, appScoped: true }
-    // Global writes only allowed for the signed-in "user" profile
-    if (collection === 'users') return { path: 'core-users', appScoped: false }
+  function pathFor(collection: string): string {
+    if (isTenant && appId) return `apps/${appId}/${collection}`
+    if (collection === 'users') return 'core-users'
     throw new Error(`Collection "${collection}" requires tenant context`)
   }
 
-  async function update(
-    data: Record<string, unknown>,
-    collection = collectionKey
-  ) {
+  async function update(collection: string, data: Record<string, unknown>) {
     const id = await uid()
-    const { path, appScoped } = pathFor(collection)
-    // Avoid tagging core-users with appId when global
-    await updateDocument(path, id, { ...data }, { appScoped })
+    const path = pathFor(collection)
+    await updateDocument(path, id, data)
   }
 
-  // Optional alias to address an explicit collection key
-  async function updateIn(
-    collection: 'users' | 'chefs',
-    data: Record<string, unknown>
-  ) {
-    return update(data, collection)
-  }
-
-  return { update, updateIn }
+  return { update }
 }

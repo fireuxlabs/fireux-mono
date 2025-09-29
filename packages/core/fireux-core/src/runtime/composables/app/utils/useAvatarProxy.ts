@@ -20,7 +20,7 @@ export function useAvatarProxy() {
       avatarUrl.includes('googleusercontent.com') ||
       avatarUrl.includes('google.com/')
     ) {
-      return `/api/proxy/google-avatar?url=${encodeURIComponent(avatarUrl)}`
+      return `/api/proxy/image?url=${encodeURIComponent(avatarUrl)}`
     }
 
     // Return original URL for non-Google images

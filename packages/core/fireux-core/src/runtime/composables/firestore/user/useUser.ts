@@ -13,6 +13,8 @@ import type {
   AppUserDoc,
 } from '../../../models/core/user.model'
 
+import { useUserUpdate } from './useUserUpdate'
+
 export function useUser() {
   const db = useFirestore()
   const { role, appId } = useFireUXConfig()
@@ -94,5 +96,6 @@ export function useUser() {
     ...useUserComputed(user),
     ...useUserEnsure(user),
     ...useUserDelete(user),
+    ...useUserUpdate(user)
   }
 }

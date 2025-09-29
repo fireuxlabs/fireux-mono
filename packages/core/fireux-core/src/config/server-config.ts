@@ -2,34 +2,33 @@ import { addServerHandler } from '@nuxt/kit'
 import { existsSync } from 'node:fs'
 
 export function configureServer(resolver: any) {
-  // Wire up a few server routes (adjust to your actual file names)
+  // Register only actively used server routes to keep the surface minimal
   const base = resolver.resolve('./runtime/server/api')
 
-  const handler = `${base}/app.get.ts`
-  if (existsSync(handler)) {
-    addServerHandler({ route: '/api/app', handler })
+  // App env-check used by onboarding screens
+  const envCheck = `${base}/app/env-check.ts`
+  if (existsSync(envCheck)) {
+    addServerHandler({ route: '/api/app/env-check', handler: envCheck })
   }
-  const health = `${base}/health.get.ts`
-  if (existsSync(health)) {
-    addServerHandler({ route: '/api/health', handler: health })
-  }
+
+  // Dev-only tracing sink used by inject-trace.client plugin
   const injectTrace = `${base}/inject-trace.post.ts`
   if (existsSync(injectTrace)) {
     addServerHandler({ route: '/api/inject-trace', handler: injectTrace })
   }
-  const googleAvatar = `${base}/proxy/google-avatar.ts`
-  if (existsSync(googleAvatar)) {
+
+  // Generic image proxy used by image storage and avatar displays
+  const imageProxy = `${base}/proxy/image.get.ts`
+  if (existsSync(imageProxy)) {
+    addServerHandler({ route: '/api/proxy/image', handler: imageProxy })
+  }
+
+  // Stripe product creation used by Product Create flow
+  const stripeCreateProduct = `${base}/stripe/create-product.post.ts`
+  if (existsSync(stripeCreateProduct)) {
     addServerHandler({
-      route: '/api/proxy/google-avatar',
-      handler: googleAvatar,
+      route: '/api/stripe/create-product',
+      handler: stripeCreateProduct,
     })
   }
-  const uploadAvatar = `${base}/storage/upload-avatar.post.ts`
-  if (existsSync(uploadAvatar)) {
-    addServerHandler({
-      route: '/api/storage/upload-avatar',
-      handler: uploadAvatar,
-    })
-  }
-  // Add more handlers here as you bring routes online
 }
