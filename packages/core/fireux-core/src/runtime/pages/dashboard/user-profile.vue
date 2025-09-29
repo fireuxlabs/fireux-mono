@@ -13,7 +13,7 @@
         <div v-if="user">
           <div class="grid gap-4 md:grid-cols-2">
             <OrganismsUserCardsProfile :user="user" />
-            <OrganismsUserEdit />
+            <OrganismsUserEdit :user="user" />
           </div>
         </div>
         <div v-else>

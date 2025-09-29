@@ -6,9 +6,7 @@
         :src="props.chef?.avatar"
         :alt="props.chef?.display_name || 'Chef'"
         :initials="initials"
-        :collection="'chefs'"
-        :id="props.chef?.id"
-        :auto-update="true"
+        :update-function="onSaveAvatar"
       />
       <MoleculesFormsFirestoreField
         label="Display Name"
@@ -26,7 +24,7 @@ import { useChefUpdate } from '../../../../composables/firestore/profiles/Chef/u
 import { computed } from 'vue'
 
 const props = defineProps<{ chef: Chef }>()
-const { updateDisplayName } = useChefUpdate()
+const { updateDisplayName, updateAvatar } = useChefUpdate()
 
 const initials = computed(() => {
   const name = props.chef?.display_name || 'C'
@@ -39,6 +37,7 @@ const initials = computed(() => {
 })
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v)
+const onSaveAvatar = (file: File) => updateAvatar(file)
 </script>
 <!--
 LEGACY EDITOR (preserved as comment)

@@ -5,9 +5,7 @@
       <MoleculesFormsFirestoreAvatarPicker
         :src="user?.avatar"
         :alt="user?.display_name || 'User'"
-        :collection="'users'"
-        :id="user?.id"
-        :auto-update="true"
+        :update-function="onSaveAvatar"
       />
       <MoleculesFormsFirestoreField
         label="Display Name"
@@ -23,10 +21,10 @@
 import type { User } from '../../../models/core/user.model'
 import { useUserUpdate } from '../../../composables/firestore/user/useUserUpdate'
 
-const props = defineProps<{ user: User }>()
-const { user } = props
+defineProps<{ user: User }>()
 
-const { updateDisplayName } = useUserUpdate()
+const { updateDisplayName, updateAvatar } = useUserUpdate()
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v)
+const onSaveAvatar = (file: File) => updateAvatar(file)
 </script>

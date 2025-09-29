@@ -1,9 +1,10 @@
 // packages/core/fireux-core/src/runtime/composables/firestore/user/useUserUpdate.ts
 import type { Ref } from 'vue'
-import { useFirestore, useCurrentUser } from 'vuefire'
-import { doc, setDoc } from 'firebase/firestore'
+import { useCurrentUser } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { User } from '../../../models/core/user.model'
+import { useFirestoreUpdate } from '../useFirestoreUpdate'
+import { useImageStorage } from '../../firebase/useImageStorage'
 
 /**
  * Environment-aware updater for a user's docs.
@@ -12,44 +13,44 @@ import type { User } from '../../../models/core/user.model'
  * Scopes:
  *   - Global → core-users/{uid}
  *   - Tenant → apps/{appId}/users/{uid}
- * NOTE: This composable only WRITES; uploading is done elsewhere.
+ * NOTE: This composable only WRITES finalized data; uploading is done elsewhere.
  */
 export function useUserUpdate(userRef?: Ref<User | null>) {
-  const db = useFirestore()
   const authRef = useCurrentUser()
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant'
+  const { updateDocument } = useFirestoreUpdate()
+  const { uploadImage } = useImageStorage()
 
-  const resolveTargetUid = (): string => {
-    const explicit = userRef?.value?.id
-    if (explicit) return explicit
-    const current = authRef.value?.uid
-    if (!current) throw new Error('Not signed in and no userRef.id provided')
-    return current
-  }
-
-  const getDocRef = () => {
-    const uid = resolveTargetUid()
+  const resolveTarget = () => {
+    const id = userRef?.value?.id ?? authRef.value?.uid
+    if (!id) throw new Error('Not signed in and no userRef.id provided')
     if (isTenant) {
       if (!appId) throw new Error('Missing appId for tenant-scoped update')
-      return doc(db, `apps/${appId}/users`, uid)
+      return { collection: `apps/${appId}/users`, id }
     }
-    return doc(db, 'core-users', uid)
+    return { collection: 'core-users', id }
+  }
+
+  /** Generic partial update for arbitrary user fields */
+  const updateFields = async (partial: Partial<User>) => {
+    const { collection, id } = resolveTarget()
+    await updateDocument<User>(collection, id, partial)
   }
 
   /** Update display_name in the correct scope */
   const updateDisplayName = async (display_name: string) => {
-    await setDoc(getDocRef(), { display_name }, { merge: true })
+    await updateFields({ display_name } as Partial<User>)
   }
 
-  /**
-   * Update avatar URL in the correct scope.
-   * Pass a finalized DOWNLOAD URL here (upload happens elsewhere).
-   */
-  const updateAvatar = async (avatar: string) => {
-    await setDoc(getDocRef(), { avatar }, { merge: true })
-    return avatar
+  /** Avatar: build `${collection}/${id}/avatar` and upload via useImageStorage */
+  const updateAvatar = async (source: Blob | string) => {
+    const { collection, id } = resolveTarget()
+    const path = `${collection}/${id}/avatar`
+    const url = await uploadImage(path, source)
+    await updateFields({ avatar: url })
+    return url
   }
 
-  return { updateDisplayName, updateAvatar }
+  return { updateFields, updateDisplayName, updateAvatar }
 }
