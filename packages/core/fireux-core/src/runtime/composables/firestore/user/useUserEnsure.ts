@@ -4,7 +4,6 @@ import { useCurrentUser, useFirestore } from 'vuefire'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useImageStorage } from '../../firebase/useImageStorage'
-import { useMediaStorage } from '../../firebase/useMediaStorage'
 import type {
   CoreUserDoc,
   AppUserDoc,
@@ -23,8 +22,7 @@ export function useUserEnsure(_user?: Ref<User | null>) {
   const authRef = useCurrentUser()
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant'
-  const { uploadImage } = useImageStorage()
-  const { getDefaultAvatarUrl } = useMediaStorage()
+  const { uploadImage, getDefaultImageUrl } = useImageStorage()
   const router = useRouter()
 
   async function ensureCoreUser(): Promise<{
@@ -41,11 +39,8 @@ export function useUserEnsure(_user?: Ref<User | null>) {
     }
 
     // Upload avatar → Storage; if no auth photo, use default image
-    const source = (auth.photoURL as string) || getDefaultAvatarUrl()
-    const avatarUrl = await uploadImage(
-      `core-users/${auth.uid}/avatar`,
-      source
-    )
+    const source = (auth.photoURL as string) || getDefaultImageUrl()
+    const avatarUrl = await uploadImage(`core-users/${auth.uid}/avatar`, source)
 
     const payload: Partial<CoreUserDoc> = {
       id: auth.uid,

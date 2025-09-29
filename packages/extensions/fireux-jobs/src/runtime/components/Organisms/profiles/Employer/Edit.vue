@@ -19,12 +19,14 @@
 <script setup lang="ts">
 import type { Employer } from '../../../../models/profiles/Employer.model'
 import { useEmployerUpdate } from '../../../../composables/firestore/profiles/Employer/useEmployerUpdate'
-import { useMediaStorage } from 'fireux-core/runtime/composables/firebase/useMediaStorage'
+import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage'
 
 const props = defineProps<{ employer: Employer }>()
 
 const { updateDisplayName, updateAvatar } = useEmployerUpdate()
-const { uploadCoreAvatar } = useMediaStorage()
+const { uploadImage } = useImageStorage()
+const uploadCoreAvatar = (source: File | string, uid: string) =>
+  uploadImage(`core-users/${uid}/avatar.jpg`, source)
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v)
 

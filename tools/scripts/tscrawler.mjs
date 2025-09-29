@@ -12,9 +12,22 @@ const repoRoot = path.resolve(__dirname, '../..')
 const TARGET_GLOBS = ['packages/**/src/**/*.vue']
 
 const VUE_APIS = [
-  'ref', 'computed', 'reactive', 'watch', 'watchEffect',
-  'onMounted', 'onBeforeMount', 'onUnmounted', 'onBeforeUnmount',
-  'nextTick', 'provide', 'inject', 'shallowRef', 'toRef', 'toRefs', 'unref',
+  'ref',
+  'computed',
+  'reactive',
+  'watch',
+  'watchEffect',
+  'onMounted',
+  'onBeforeMount',
+  'onUnmounted',
+  'onBeforeUnmount',
+  'nextTick',
+  'provide',
+  'inject',
+  'shallowRef',
+  'toRef',
+  'toRefs',
+  'unref',
 ]
 
 function extractScriptSetup(code) {
@@ -35,7 +48,12 @@ function parseVueImportNames(importLine) {
   if (!m) return []
   return m[1]
     .split(',')
-    .map(s => s.trim().split(/\s+as\s+/)[0].trim())
+    .map((s) =>
+      s
+        .trim()
+        .split(/\s+as\s+/)[0]
+        .trim()
+    )
     .filter(Boolean)
 }
 
@@ -48,7 +66,10 @@ function ensureVueImports(script) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
     if (/^\s*import\b/.test(line)) importIdxs.push(i)
-    if (/from\s*['"]vue['"]\s*;?\s*$/.test(line) || /from\s*['"]vue['"]\s*/.test(line)) {
+    if (
+      /from\s*['"]vue['"]\s*;?\s*$/.test(line) ||
+      /from\s*['"]vue['"]\s*/.test(line)
+    ) {
       vueImportIdx = i
       existingVueNames = parseVueImportNames(line)
     }
@@ -65,7 +86,7 @@ function ensureVueImports(script) {
   if (used.size === 0) return script // nothing to add
 
   // Determine missing
-  const missing = [...used].filter(name => !existingVueNames.includes(name))
+  const missing = [...used].filter((name) => !existingVueNames.includes(name))
   if (missing.length === 0) return script
 
   if (vueImportIdx >= 0) {
@@ -74,7 +95,7 @@ function ensureVueImports(script) {
     const updated = line.replace(/import\s*\{([^}]*)\}/, (_m, group) => {
       const parts = group
         .split(',')
-        .map(s => s.trim())
+        .map((s) => s.trim())
         .filter(Boolean)
       for (const m of missing) if (!parts.includes(m)) parts.push(m)
       return `import { ${parts.join(', ')} }`
@@ -105,7 +126,11 @@ function main() {
   let changedCount = 0
   let scanned = 0
   for (const pattern of TARGET_GLOBS) {
-    const files = globSync(pattern, { cwd: repoRoot, absolute: true, dot: false })
+    const files = globSync(pattern, {
+      cwd: repoRoot,
+      absolute: true,
+      dot: false,
+    })
     for (const file of files) {
       scanned++
       const res = processFile(file)

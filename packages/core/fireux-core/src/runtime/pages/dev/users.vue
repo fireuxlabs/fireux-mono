@@ -74,7 +74,6 @@ import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/FireUXConfig'
 import { useUser } from '../../composables/firestore/user/useUser'
 
-
 // Unified user API
 const {
   user,

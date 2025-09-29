@@ -1,7 +1,9 @@
 import { createSharedComposable } from '@vueuse/core'
 import { ref, watch } from 'vue'
 // Avoid #app in packages; try to use vue-router composables if available
-let useRoute: (() => import('vue-router').RouteLocationNormalizedLoaded) | undefined
+let useRoute:
+  | (() => import('vue-router').RouteLocationNormalizedLoaded)
+  | undefined
 let useRouter: (() => import('vue-router').Router) | undefined
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires

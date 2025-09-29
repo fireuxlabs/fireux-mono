@@ -102,7 +102,6 @@
   </UCard>
 </template>
 <script setup lang="ts">
-
 const props = defineProps<{
   employer?: any
   navigate?: (profile: any) => void

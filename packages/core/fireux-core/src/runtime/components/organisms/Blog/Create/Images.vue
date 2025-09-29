@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useMediaStorage } from '../../../../composables/firebase/useMediaStorage'
+import { useImageStorage } from '../../../../composables/firebase/useImageStorage'
 
 // Base keys for image slots
 const FEATURED_IMAGE_KEY = 'createBlogFeaturedImage'
@@ -56,7 +56,7 @@ const uploadErrors = ref<Record<string, string>>({})
 const showProgress = computed(() => uploading.value)
 
 // Get upload service
-const { uploadImage } = useMediaStorage()
+const { uploadImage } = useImageStorage()
 
 // Expose methods for parent component
 defineExpose({

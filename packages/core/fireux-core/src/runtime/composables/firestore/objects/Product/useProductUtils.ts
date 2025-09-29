@@ -1,11 +1,11 @@
-import { useMediaStorage } from '../../../firebase/useMediaStorage'
+import { useImageStorage } from '../../../firebase/useImageStorage'
 import { useFirestoreManager } from '../../useFirestoreManager'
 
 // ~/composables/admin/useProductUtils.ts
 
 export function useProductUtils() {
   // Automatically available globally
-  const { uploadImage } = useMediaStorage()
+  const { uploadImage } = useImageStorage()
   const { checkUnique } = useFirestoreManager()
 
   /**
@@ -122,7 +122,7 @@ export function useProductUtils() {
   async function getAppSubscriptionProducts(appId: string) {
     const { firestoreFetchCollection } = useFirestoreManager()
     try {
-  const products = firestoreFetchCollection('products')
+      const products = firestoreFetchCollection('products')
       return (
         products.value?.filter(
           (product: any) =>

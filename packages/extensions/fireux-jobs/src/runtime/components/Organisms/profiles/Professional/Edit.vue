@@ -19,12 +19,14 @@
 <script setup lang="ts">
 import type { Professional } from '../../../../models/profiles/Professional.model'
 import { useProfessionalUpdate } from '../../../../composables/firestore/profiles/Professional/useProfessionalUpdate'
-import { useMediaStorage } from 'fireux-core/runtime/composables/firebase/useMediaStorage'
+import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage'
 
 const props = defineProps<{ professional: Professional }>()
 
 const { updateDisplayName, updateAvatar } = useProfessionalUpdate()
-const { uploadCoreAvatar } = useMediaStorage()
+const { uploadImage } = useImageStorage()
+const uploadCoreAvatar = (source: File | string, uid: string) =>
+  uploadImage(`core-users/${uid}/avatar.jpg`, source)
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v)
 

@@ -32,7 +32,7 @@ export function useBlogPostUtils() {
       display_name:
         user.value?.core?.display_name || user.value?.core?.email || '',
       handle: user.value?.core?.handle || '',
-  avatar: user.value?.core?.avatar || '/img/default-image.png',
+      avatar: user.value?.core?.avatar || '/img/default-image.png',
       email: user.value?.core?.email || '',
     }
   }

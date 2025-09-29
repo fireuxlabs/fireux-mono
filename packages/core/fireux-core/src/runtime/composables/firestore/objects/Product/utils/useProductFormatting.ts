@@ -2,11 +2,11 @@ import type {
   FirebaseProduct,
   Price,
 } from '../../../../../models/objects/product.model'
-import { useMediaStorage } from '../../../../firebase/useMediaStorage'
+import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useFirestoreManager } from '../../../useFirestoreManager'
 
 export function useProductFormatting() {
-  const { uploadImage } = useMediaStorage()
+  const { uploadImage } = useImageStorage()
   const { checkUnique } = useFirestoreManager()
 
   function formatSlug(slug: string): string {
@@ -100,7 +100,9 @@ export function useProductFormatting() {
     const symbol = getCurrencySymbol(currency)
     if (minPrice === undefined || maxPrice === undefined)
       return 'Price not available'
-    return `${symbol}${(minPrice / 100).toFixed(2)} - ${symbol}${(maxPrice / 100).toFixed(2)}`
+    return `${symbol}${(minPrice / 100).toFixed(2)} - ${symbol}${(
+      maxPrice / 100
+    ).toFixed(2)}`
   }
 
   function formatAvailabilityStatus(product: FirebaseProduct): string {

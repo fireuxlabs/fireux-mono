@@ -87,6 +87,7 @@ Updated: 2025-09-29
 ---
 
 Notes:
+
 - Packages rely on explicit Vue imports inside .vue/.ts files; app-level auto-imports (e.g., `#imports`) aren’t used in package scope.
 - Packages include Nuxt ambient types via `types` but do not reference any app’s `.nuxt` output.
 - Root paths expose package source for cross-package development.

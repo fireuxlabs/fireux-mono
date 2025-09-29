@@ -19,12 +19,14 @@
 <script setup lang="ts">
 import type { Supplier } from '../../../../models/profiles/Supplier.model'
 import { useSupplierUpdate } from '../../../../composables/firestore/profiles/Supplier/useSupplierUpdate'
-import { useMediaStorage } from 'fireux-core/runtime/composables/firebase/useMediaStorage'
+import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage'
 
 const props = defineProps<{ supplier: Supplier }>()
 
 const { updateDisplayName, updateAvatar } = useSupplierUpdate()
-const { uploadCoreAvatar } = useMediaStorage()
+const { uploadImage } = useImageStorage()
+const uploadCoreAvatar = (source: File | string, uid: string) =>
+  uploadImage(`core-users/${uid}/avatar.jpg`, source)
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v)
 

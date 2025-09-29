@@ -9,7 +9,6 @@
 </template>
 
 <script setup lang="ts">
-
 // Vue's computed is auto-imported by Nuxt; declare for TS
 declare const computed: <T>(getter: () => T) => import('vue').ComputedRef<T>
 const props = defineProps<{

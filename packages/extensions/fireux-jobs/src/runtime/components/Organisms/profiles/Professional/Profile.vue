@@ -306,7 +306,7 @@ function formatDuration(
   const start = fromMonth && fromYear ? `${fromMonth} ${fromYear}` : fromYear
   let end = 'Present'
   if (!ongoing) {
-    end = toMonth && toYear ? `${toMonth} ${toYear}` : (toYear || '')
+    end = toMonth && toYear ? `${toMonth} ${toYear}` : toYear || ''
   }
   return `${start} - ${end}`
 }

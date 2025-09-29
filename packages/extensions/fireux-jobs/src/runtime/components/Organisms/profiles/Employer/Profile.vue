@@ -262,7 +262,12 @@ const props = defineProps<{
 // Helper functions for template use only - no complex logic
 const hasBusinessStats = computed(() => {
   const e: any = props.employer
-  return !!(e?.employee_count || e?.years_established || e?.covers_per_service || e?.total_jobs_posted)
+  return !!(
+    e?.employee_count ||
+    e?.years_established ||
+    e?.covers_per_service ||
+    e?.total_jobs_posted
+  )
 })
 
 const hasSocialMedia = computed(() => {
@@ -285,7 +290,9 @@ function formatLocation(location?: any) {
   return location.locations[0].formatted_address
 }
 
-function getJobTypeVariant(type?: string): 'solid' | 'outline' | 'soft' | 'subtle' {
+function getJobTypeVariant(
+  type?: string
+): 'solid' | 'outline' | 'soft' | 'subtle' {
   const variants: Record<string, 'solid' | 'outline' | 'soft' | 'subtle'> = {
     'full-time': 'solid',
     'part-time': 'soft',

@@ -34,7 +34,9 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
   })
 
   // 🔹 Avatar source and signed-in state helpers
-  const avatarSrc = computed(() => user.value?.app?.avatar || user.value?.core?.avatar || '')
+  const avatarSrc = computed(
+    () => user.value?.app?.avatar || user.value?.core?.avatar || ''
+  )
   const isSignedIn = computed(() => !!user.value?.id)
 
   // 🔹 Profile completeness across canonical fields (prefers app values, falls back to core)
