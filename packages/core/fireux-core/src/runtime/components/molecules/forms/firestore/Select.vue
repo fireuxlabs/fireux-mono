@@ -30,7 +30,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { ref, computed, watch } from 'vue'
+
 // Props
 const props = defineProps({
   label: {

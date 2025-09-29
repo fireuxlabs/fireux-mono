@@ -55,7 +55,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { ref, computed, watch } from 'vue'
+
 const props = defineProps({
   firebaseValue: { type: Object, default: () => ({}) },
   updateFunction: { type: Function, required: true },

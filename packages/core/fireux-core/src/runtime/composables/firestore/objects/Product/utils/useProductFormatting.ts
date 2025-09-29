@@ -122,8 +122,8 @@ export function useProductFormatting() {
   ): Promise<string | null> {
     try {
       const timestamp = Date.now()
-  const path = `products/${productSlug}/${timestamp}-${file.name}`
-  return await uploadImage(file, path)
+      const path = `products/${productSlug}/${timestamp}-${file.name}`
+      return await uploadImage(path, file)
     } catch (error) {
       console.error('Error uploading product image:', error)
       return null

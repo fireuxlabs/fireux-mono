@@ -163,10 +163,7 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     // composables only; models stay explicit-import-only
     imports: { dirs: ['composables/**', 'utils/**'] },
 
-    modules,
-    // Provide top-level vuefire config for module compatibility (in addition to module options)
-    // This ensures the Auth module is enabled even if module options aren’t read in some setups
-    vuefire: vuefireMerged as any,
+  modules,
     app: { head: { title: opts.appName } },
     runtimeConfig: {
       // server-only (JSON string accepted; OR rely on GOOGLE_APPLICATION_CREDENTIALS path env)

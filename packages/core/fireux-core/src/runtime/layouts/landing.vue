@@ -33,6 +33,7 @@
 // Nuxt auto-imports composables like computed
 const { links } = useCoreRoutes()
 import { useFireUXConfig } from '../composables/FireUXConfig'
+import { computed } from 'vue'
 
 const { appName } = useFireUXConfig()
 const appDisplayName = computed(() => appName || 'FireUX')

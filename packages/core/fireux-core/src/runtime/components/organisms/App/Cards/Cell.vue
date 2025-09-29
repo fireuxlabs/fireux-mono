@@ -38,7 +38,8 @@
   </UCard>
 </template>
 
-<script setup>
+<script setup>import { computed } from 'vue'
+
 const props = defineProps(['app'])
 
 // Computed properties matching useApp pattern

@@ -9,7 +9,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { computed } from 'vue'
+
 const router = useRouter()
 const { signOutUser } = useAuth()
 const { ensureUser } = useUserEnsure()

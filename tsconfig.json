@@ -12,7 +12,6 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    "types": ["nuxt", "nuxt/schema", "@nuxt/ui"],
     "paths": {
       "fireux-core": ["packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["packages/core/fireux-core/src/*"],
@@ -27,7 +26,8 @@
       "fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "**/*.d.ts"],
+  "files": [],
+  "include": [],
   "exclude": [
     "node_modules",
     "**/dist/**",

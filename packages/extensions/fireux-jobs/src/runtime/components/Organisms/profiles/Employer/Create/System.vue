@@ -90,7 +90,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { ref, computed, onMounted } from 'vue'
+
 // Get current user data
 const { appUser } = useAppUser()
 

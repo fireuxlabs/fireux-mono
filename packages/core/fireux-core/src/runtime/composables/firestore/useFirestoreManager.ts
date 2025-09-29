@@ -33,11 +33,10 @@ export function useFirestoreManager() {
   function updateDocument<T extends { updated_at?: unknown }>(
     collectionName: string,
     docId: string,
-    data: Partial<T>,
-    options?: any
+    data: Partial<T>
   ) {
     const { updateDocument } = useFirestoreUpdate()
-    return updateDocument<T>(collectionName, docId, data, options)
+    return updateDocument<T>(collectionName, docId, data)
   }
 
   function deleteDocument(

@@ -49,7 +49,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { ref, watch } from 'vue'
+
 const props = defineProps({
   label: { type: String, default: '' },
   firebaseValue: { type: Object, default: () => ({}) },

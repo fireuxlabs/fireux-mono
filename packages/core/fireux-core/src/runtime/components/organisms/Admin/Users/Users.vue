@@ -23,6 +23,7 @@
 
 <script setup>
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore'
+import { ref, onMounted } from 'vue'
 
 const db = useFirestore()
 const users = ref([])

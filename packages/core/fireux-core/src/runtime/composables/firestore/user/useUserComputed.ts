@@ -17,7 +17,7 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
 
     if (u.app?.role === 'admin') return true
 
-    const adminOf = u.adminOf || u.core?.adminOf || u.app?.adminOf || []
+    const adminOf = u.core?.adminOf || []
     return isTenant && appId ? adminOf.includes(appId) : adminOf.length > 0
   })
 
@@ -25,11 +25,7 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
   const displayName = computed(() => {
     const u = user.value
     if (!u) return ''
-    return (
-      u.app?.display_name ||
-      u.core?.display_name ||
-      (u.email ? u.email.split('@')[0] : '')
-    )
+    return u.app?.display_name || u.core?.display_name || ''
   })
 
   const initials = computed(() => {

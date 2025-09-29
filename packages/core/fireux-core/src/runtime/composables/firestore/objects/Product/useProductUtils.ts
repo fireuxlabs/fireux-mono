@@ -45,7 +45,7 @@ export function useProductUtils() {
     id: string
   ): Promise<string> {
     // Call uploadImageUtility(fileOrUrl, collection, id, type)
-  const url = await uploadImage(data, `${collection}/${id}/main.jpg`)
+    const url = await uploadImage(`${collection}/${id}/main.jpg`, data)
     return url || ''
   }
   function formatPrice(

@@ -23,7 +23,6 @@ Updated: 2025-09-29
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    "types": ["nuxt", "nuxt/schema", "@nuxt/ui"],
     "paths": {
       "fireux-core": ["packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["packages/core/fireux-core/src/*"],
@@ -38,7 +37,8 @@ Updated: 2025-09-29
       "fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "**/*.d.ts"],
+  "files": [],
+  "include": [],
   "exclude": [
     "node_modules",
     "**/dist/**",
@@ -77,10 +77,10 @@ Updated: 2025-09-29
     "paths": {
       "#fireux-core-models/*": ["./src/runtime/models/*"]
     },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "types": ["nuxt", "nuxt/schema", "vite/client", "node"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts", "src/**/*.vue"],
+  "exclude": ["node_modules", "dist", ".nuxt", ".output"]
 }
 ```
 

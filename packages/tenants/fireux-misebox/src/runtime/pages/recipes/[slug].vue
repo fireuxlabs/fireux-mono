@@ -181,6 +181,7 @@
 
 <script setup lang="ts">
 import { useRecipes } from '../../../composables/firestore/objects/Recipe/useRecipes'
+import { computed, watchEffect } from 'vue'
 
 definePageMeta({
   title: 'Recipe Details',

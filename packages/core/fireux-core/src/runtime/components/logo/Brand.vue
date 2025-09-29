@@ -11,7 +11,8 @@
   </ClientOnly>
 </template>
 
-<script setup>
+<script setup>import { computed } from 'vue'
+
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 

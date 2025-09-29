@@ -11,7 +11,8 @@
   </ClientOnly>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts">import { computed } from 'vue'
+
 const { links } = useCoreRoutes()
 
 const KEEP_MENU = new Set(['home', 'products', 'blog', 'users'])

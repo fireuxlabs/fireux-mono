@@ -1,6 +1,6 @@
 import type { BlogPost } from '../../../../../models/objects/blogPost.model'
 import type { CoreUserDoc as CoreUser } from '../../../../../models/core/user.model'
-import { useUser } from '../../../users/useUser'
+import { useUser } from '../../../user/useUser'
 
 export function useBlogFormatting() {
   /**

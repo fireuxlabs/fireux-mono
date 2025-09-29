@@ -7,6 +7,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useAuth } from '../../../composables/firebase/useAuth'
+import { computed } from 'vue'
 
 const router = useRouter()
 const { signInWithGoogle } = useAuth()

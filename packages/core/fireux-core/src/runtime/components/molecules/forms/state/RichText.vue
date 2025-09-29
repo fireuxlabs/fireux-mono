@@ -13,6 +13,7 @@
 <script setup lang="ts">
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { ref, watch } from 'vue'
 
 const props = defineProps<{ modelValue: string | undefined }>()
 const emit = defineEmits<{

@@ -132,6 +132,7 @@
 
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
+import { computed, reactive } from 'vue'
 
 // Local lightweight types to avoid external deps
 type Period = 'daily' | 'weekly' | 'monthly'

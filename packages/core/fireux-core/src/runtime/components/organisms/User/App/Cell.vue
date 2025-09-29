@@ -19,7 +19,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { computed } from 'vue'
+
 const props = defineProps({
   user: {
     type: Object,

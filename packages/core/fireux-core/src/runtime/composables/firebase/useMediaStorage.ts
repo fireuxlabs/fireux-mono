@@ -9,11 +9,7 @@ export function useMediaStorage() {
   const getDefaultAvatarUrl = () => getDefaultImageUrl('/img/default-image.png')
 
   const uploadCoreAvatar = async (source: File | string, uid: string) =>
-    uploadImage(
-      source,
-      `core-users/${uid}/avatar.jpg`,
-      '/img/default-image.png'
-    )
+    uploadImage(`core-users/${uid}/avatar.jpg`, source)
 
   return {
     uploadCoreAvatar,

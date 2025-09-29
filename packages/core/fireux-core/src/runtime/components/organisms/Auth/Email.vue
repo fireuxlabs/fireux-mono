@@ -38,6 +38,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { ref, computed, reactive } from 'vue'
 
 const router = useRouter()
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()

@@ -22,7 +22,8 @@
   </UApp>
 </template>
 
-<script setup>
+<script setup>import { computed } from 'vue'
+
 const error = useError()
 const title = computed(() => error?.value?.statusMessage || 'Unexpected error')
 const message = computed(() => error?.value?.message || 'An unexpected error occurred.')

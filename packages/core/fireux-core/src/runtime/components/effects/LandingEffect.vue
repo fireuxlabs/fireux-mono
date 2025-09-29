@@ -14,7 +14,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { computed, onMounted } from 'vue'
+
 // Use runtimeConfig so this works in server-render without importing #build/app.config
 const runtimeConfig = useRuntimeConfig()
 const { initializeEffect } = useLandingEffect()

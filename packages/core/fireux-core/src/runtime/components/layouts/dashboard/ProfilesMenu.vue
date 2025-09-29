@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
+import { computed } from 'vue'
 
 const props = defineProps<{
   collapsed?: boolean

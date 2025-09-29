@@ -27,7 +27,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { ref, computed } from 'vue'
+
 const props = defineProps({
   data: { type: [Object, Array], required: true },
   title: { type: String, default: 'JSON' },

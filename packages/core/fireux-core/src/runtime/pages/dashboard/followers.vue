@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<script setup lang="ts">import { ref, computed } from 'vue'
+
 // Note: This page can expand with invite/manage actions; see archived members mechanics for list + search patterns.
 definePageMeta({ layout: 'dashboard' })
 

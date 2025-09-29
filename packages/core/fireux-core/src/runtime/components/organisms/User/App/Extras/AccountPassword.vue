@@ -92,7 +92,8 @@
   </client-only>
 </template>
 
-<script setup>
+<script setup>import { ref, computed } from 'vue'
+
 const { user } = useUser()
 const hasApp = computed(() => !!user.value?.app)
 
