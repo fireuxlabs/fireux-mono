@@ -1,17 +1,22 @@
 <template>
   <div>
-  <!-- Summary (read-only) -->
-  <UCard>
+    <!-- Summary (read-only) -->
+    <UCard>
       <template #header>
         <h1>👥 Users (Dev)</h1>
       </template>
 
-      <div class="grid" style="display: grid; gap: 12px; grid-template-columns: 1fr;">
+      <div
+        class="grid"
+        style="display: grid; gap: 12px; grid-template-columns: 1fr"
+      >
         <div>
           <h2>Status</h2>
           <ul>
             <li>hasCoreProfile: {{ hasCoreProfile }}</li>
-            <li v-if="hasAppProfile !== undefined">hasAppProfile: {{ hasAppProfile }}</li>
+            <li v-if="hasAppProfile !== undefined">
+              hasAppProfile: {{ hasAppProfile }}
+            </li>
             <li>isAdmin: {{ isAdmin }}</li>
             <li>displayName: {{ displayName || '—' }}</li>
             <li>initials: {{ initials || '—' }}</li>
@@ -26,11 +31,22 @@
 
     <!-- Current user JSON -->
     <UCard style="margin-top: 16px">
-      <DevJson :data="user?.value ?? null" title="Current User" :defaultOpen="true" />
+      <DevJson
+        :data="user?.value ?? null"
+        title="Current User"
+        :defaultOpen="true"
+      />
     </UCard>
 
-  <!-- Collections overview (read-only) -->
-    <div style="margin-top: 16px; display: grid; gap: 16px; grid-template-columns: 1fr;">
+    <!-- Collections overview (read-only) -->
+    <div
+      style="
+        margin-top: 16px;
+        display: grid;
+        gap: 16px;
+        grid-template-columns: 1fr;
+      "
+    >
       <UCard v-if="isTenant">
         <template #header>
           <h2>Local Collection (apps/{{ appId }}/users)</h2>
@@ -57,7 +73,6 @@ definePageMeta({
 })
 
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
 import { useFireUXConfig } from '../../composables/FireUXConfig'
 
 // Unified user API
