@@ -32,6 +32,7 @@ export interface AppUserDoc {
   display_name: string
   avatar: string
   handle?: string
+  email?: string
   role?: 'user' | 'admin'
   app_profiles?: string[]
   created_at: FirebaseTimestamp

@@ -4,92 +4,90 @@ import { useCurrentUser, useFirestore } from 'vuefire'
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useImageStorage } from '../../firebase/useImageStorage'
-import { useFirestoreCreate } from '../../firestore/useFirestoreCreate'
+import { useFirestoreCreate } from '../useFirestoreCreate'
 import type {
-  User,
   CoreUserDoc,
   AppUserDoc,
+  User,
 } from '../../../models/core/user.model'
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 
-export function useUserEnsure(userRef: Ref<User | null>) {
+/**
+ * Dev-simple ensure:
+ * - Always ensure core user (creates if missing, uploads auth.photoURL)
+ * - If tenant, ensure app user (creates if missing) reusing the core avatar URL
+ * - No fallbacks/guards beyond existence checks for the docs
+ */
+export function useUserEnsure(_user?: Ref<User | null>) {
   const db = useFirestore()
   const authRef = useCurrentUser()
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant'
   const { uploadImage } = useImageStorage()
+  // const router = useRouter()
   const { setDocument } = useFirestoreCreate()
-  const router = useRouter()
 
   async function ensureCoreUser(): Promise<{
     created: boolean
     avatarUrl?: string
   }> {
-    const auth = authRef.value
-    if (!auth?.uid || !auth?.email) return { created: false }
+    const auth = authRef.value! // assume solid auth object during dev
 
-    // Fast-path: already loaded in userRef
-    if (userRef.value?.core?.id === auth.uid) {
-      return { created: false, avatarUrl: userRef.value.core?.avatar }
+    // Fast path: if the core user is already present in the passed-in ref, skip reads/creates
+    if (_user?.value?.core) {
+      return { created: false, avatarUrl: _user.value.core.avatar }
     }
 
-    // Guard against hydration delay
     const coreRef = doc(db, 'core-users', auth.uid)
-    const coreSnap = await getDoc(coreRef)
-    if (coreSnap.exists()) {
-      const existing = coreSnap.data() as Partial<CoreUserDoc>
-      return { created: false, avatarUrl: existing?.avatar }
+    const snap = await getDoc(coreRef)
+    if (snap.exists()) {
+      const data = snap.data() as Partial<CoreUserDoc>
+      return { created: false, avatarUrl: data?.avatar }
     }
 
-    if (!auth.photoURL)
-      throw new Error('[ensureCoreUser] no photoURL on auth user')
-
-    // Upload Google photo → Storage
+    // Upload avatar → Storage
     const avatarUrl = await uploadImage(
-      `core-users/${auth.uid}/avatar`,
-      auth.photoURL
+      `core-users/${auth.uid}/avatar.jpg`,
+      auth.photoURL as string
     )
 
-    const payload: CoreUserDoc = {
+    const payload: Partial<CoreUserDoc> = {
       id: auth.uid,
-      email: auth.email,
+      email: auth.email!,
       display_name: auth.displayName || 'New User',
       avatar: avatarUrl,
-      created_at: undefined as any, // stamped in setDocument
     }
 
-    await setDocument('core-users', auth.uid, payload)
-    console.log('[ensure core] created')
+    await setDocument('core-users', auth.uid, payload as CoreUserDoc)
     return { created: true, avatarUrl }
   }
 
+  // No tenant/appId check here — ensureUser controls when this runs.
   async function ensureAppUser(
     coreAvatarUrl?: string
   ): Promise<{ created: boolean }> {
-    if (!isTenant || !appId) return { created: false }
-    const auth = authRef.value
-    if (!auth?.uid) return { created: false }
+    const auth = authRef.value! // assume solid auth object during dev
+    if (!appId)
+      throw new Error('[ensureAppUser] missing appId in tenant context')
 
-    // Fast-path: already loaded
-    if (userRef.value?.app?.id === auth.uid) return { created: false }
+    // Fast path: if the app user is already present in the passed-in ref, skip reads/creates
+    if (_user?.value?.app) {
+      return { created: false }
+    }
 
-    // Check Firestore
     const appRef = doc(db, `apps/${appId}/users`, auth.uid)
-    const appSnap = await getDoc(appRef)
-    if (appSnap.exists()) return { created: false }
+    const snap = await getDoc(appRef)
+    if (snap.exists()) return { created: false }
 
-    const avatar = coreAvatarUrl || userRef.value?.core?.avatar || '' // reuse core avatar; no re-upload
-
-    const payload: AppUserDoc = {
+    const payload: Partial<AppUserDoc> = {
       id: auth.uid,
       role: 'user',
       display_name: auth.displayName || 'New User',
-      avatar,
-      created_at: undefined as any, // stamped in setDocument
+      email: auth.email!,
+      avatar: coreAvatarUrl || '',
     }
 
-    await setDocument(`apps/${appId}/users`, auth.uid, payload)
-    console.log('[ensure app] created')
+    await setDocument(`apps/${appId}/users`, auth.uid, payload as AppUserDoc)
     return { created: true }
   }
 
@@ -99,9 +97,7 @@ export function useUserEnsure(userRef: Ref<User | null>) {
       ? await ensureAppUser(core.avatarUrl)
       : { created: false }
 
-    if (core.created || app.created) {
-      router.push('/dashboard')
-    }
+    // No navigation side-effects during dev
 
     return { createdCore: core.created, createdApp: app.created } as const
   }

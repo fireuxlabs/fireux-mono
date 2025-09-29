@@ -4,13 +4,14 @@
     <UCard class="space-y-6">
       <MoleculesFormsFirestoreAvatarPicker
         :src="user?.avatar"
-        :storage-path="`core-users/${props.user?.id}/avatar`"
-        :alt="props.user?.display_name || 'User'"
-        @uploaded="onAvatarUploaded"
+        :alt="user?.display_name || 'User'"
+        :collection="'users'"
+        :id="user?.id"
+        :auto-update="true"
       />
       <MoleculesFormsFirestoreField
         label="Display Name"
-        :firebase-value="props.user?.display_name"
+        :firebase-value="user?.display_name"
         placeholder="Enter your display name"
         :update-function="onSaveDisplayName"
       />
@@ -23,12 +24,9 @@ import type { User } from '../../../models/core/user.model'
 import { useUserUpdate } from '../../../composables/firestore/user/useUserUpdate'
 
 const props = defineProps<{ user: User }>()
+const { user } = props
 
-const { updateDisplayName, updateAvatar } = useUserUpdate()
+const { updateDisplayName } = useUserUpdate()
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v)
-
-const onAvatarUploaded = async (url: string) => {
-  await updateAvatar(url)
-}
 </script>

@@ -4,7 +4,7 @@
     <UAvatar
       :src="proxiedSrc"
       :alt="alt || 'Avatar'"
-      :text="initials"
+      :text="computedInitials"
       class="avatar"
     />
     <label class="upload-label">
@@ -21,18 +21,38 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useCurrentUser } from 'vuefire'
 import { useImageStorage } from '../../../../composables/firebase/useImageStorage'
+import { useScopedUpdater } from '../../../../composables/firestore/scopedUpdater'
+import { useFireUXConfig } from '../../../../composables/FireUXConfig'
 
-const emit = defineEmits<(e: 'uploaded', url: string) => void>()
+// Events: keep 'selected' for backwards compat; add 'uploaded', 'updated', 'error'
+interface AvatarPickerEmits {
+  (e: 'selected', file: File): void
+  (e: 'uploaded', url: string): void
+  (e: 'updated', url: string): void
+  (e: 'error', error: unknown): void
+}
+const emit = defineEmits<AvatarPickerEmits>()
 
 const props = defineProps<{
+  // Display
   src?: string
-  storagePath: string   // e.g. "core-users/{id}/avatar" or "apps/{appId}/chefs/{id}/avatar"
   alt?: string
   initials?: string
+  // Destination: either provide storagePath OR (collection,id)
+  storagePath?: string
+  collection?: string // e.g., 'users', 'chefs'
+  id?: string // defaults to signed-in user's uid when collection === 'users'
+  field?: string // field name to update (default 'avatar')
+  autoUpdate?: boolean // when true, updates Firestore doc with the new URL
 }>()
 
+const auth = useCurrentUser()
+const { role, appId } = useFireUXConfig()
+const isTenant = role === 'tenant'
 const { uploadImage } = useImageStorage()
+const { update } = useScopedUpdater()
 
 const proxiedSrc = computed(() => {
   const url = props.src || ''
@@ -42,18 +62,60 @@ const proxiedSrc = computed(() => {
     : url
 })
 
-const initials = computed(() => props.initials || 'U')
+const computedInitials = computed(() => props.initials || 'U')
+
+function resolveUid(): string | null {
+  if (props.id) return props.id
+  return auth.value?.uid || null
+}
+
+function computeStoragePath(): string {
+  if (props.storagePath) return props.storagePath
+  const id = resolveUid()
+  const field = (props.field || 'avatar').replace(/\/+$/, '')
+  if (!props.collection || !id)
+    throw new Error(
+      '[AvatarPicker] collection and id (or signed-in user) are required to compute storagePath'
+    )
+
+  if (props.collection === 'users') {
+    if (isTenant) {
+      if (!appId)
+        throw new Error('[AvatarPicker] missing appId for tenant users')
+      return `apps/${appId}/users/${id}/${field}`
+    }
+    return `core-users/${id}/${field}`
+  }
+  // Generic tenant collection path
+  if (!isTenant || !appId) {
+    throw new Error(
+      '[AvatarPicker] non-user collections require tenant context'
+    )
+  }
+  return `apps/${appId}/${props.collection}/${id}/${field}`
+}
 
 async function onFileChange(e: Event) {
   const file = (e.target as HTMLInputElement)?.files?.[0]
-  if (!file) return
   try {
-    const url = await uploadImage(props.storagePath, file)
+    if (!file) return
+    emit('selected', file)
+    const path = computeStoragePath()
+    const url = await uploadImage(path, file)
     emit('uploaded', url)
-  } catch (err) {
-    console.error('[AvatarPicker] upload failed:', err)
+    if (props.autoUpdate && (props.collection || props.storagePath)) {
+      const field = props.field || 'avatar'
+      // When collection is provided, use scoped updater. Otherwise just emit uploaded.
+      if (props.collection) {
+        await update(props.collection, { [field]: url })
+        emit('updated', url)
+      }
+    }
+  } catch (error) {
+    console.error('[AvatarPicker] upload failed:', error)
+    emit('error', error)
   } finally {
-    ;(e.target as HTMLInputElement).value = ''
+    ;(e.target as HTMLInputElement).value = '' // reset input
   }
 }
 </script>
@@ -66,15 +128,22 @@ async function onFileChange(e: Event) {
   justify-content: center;
   margin-bottom: var(--space-2);
 }
-.avatar { width: 96px; height: 96px; }
+.avatar {
+  width: 96px;
+  height: 96px;
+}
 .upload-label {
   position: absolute;
-  bottom: -6px; right: -6px;
-  display: grid; place-items: center;
+  bottom: -6px;
+  right: -6px;
+  display: grid;
+  place-items: center;
   cursor: pointer;
   background-color: var(--ui-bg-muted);
   padding: 8px;
   border-radius: 9999px;
 }
-.file-input { display: none; }
+.file-input {
+  display: none;
+}
 </style>

@@ -49,7 +49,7 @@ export function useUser() {
 
     const base = { id: uid.value }
     const core = coreDoc.value ?? null
-    const app = isTenant ? (appDoc.value ?? null) : undefined
+    const app = isTenant ? appDoc.value ?? null : undefined
 
     const flat = {
       ...base,
@@ -96,6 +96,6 @@ export function useUser() {
     ...useUserComputed(user),
     ...useUserEnsure(user),
     ...useUserDelete(user),
-    ...useUserUpdate(user)
+    ...useUserUpdate(user),
   }
 }

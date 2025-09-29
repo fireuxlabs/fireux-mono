@@ -2,12 +2,13 @@
 <template>
   <ClientOnly>
     <UCard class="space-y-6">
-      <MoleculesFormsAvatarPicker
+      <MoleculesFormsFirestoreAvatarPicker
         :src="props.chef?.avatar"
-        :storage-path="`apps/${appId}/chefs/${props.chef?.id}/avatar`"
         :alt="props.chef?.display_name || 'Chef'"
         :initials="initials"
-        @uploaded="onAvatarUploaded"
+        :collection="'chefs'"
+        :id="props.chef?.id"
+        :auto-update="true"
       />
       <MoleculesFormsFirestoreField
         label="Display Name"
@@ -22,22 +23,22 @@
 <script setup lang="ts">
 import type { Chef } from '../../../../models/profiles/Chef.model'
 import { useChefUpdate } from '../../../../composables/firestore/profiles/Chef/useChefUpdate'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig'
 import { computed } from 'vue'
 
 const props = defineProps<{ chef: Chef }>()
-const { updateDisplayName, updateAvatar } = useChefUpdate()
-const { appId } = useFireUXConfig()
+const { updateDisplayName } = useChefUpdate()
 
 const initials = computed(() => {
   const name = props.chef?.display_name || 'C'
-  return name.split(' ').map(s => s[0]).join('').toUpperCase().slice(0, 2)
+  return name
+    .split(' ')
+    .map((s) => s[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 })
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v)
-const onAvatarUploaded = async (url: string) => {
-  await updateAvatar(url)
-}
 </script>
 <!--
 LEGACY EDITOR (preserved as comment)
