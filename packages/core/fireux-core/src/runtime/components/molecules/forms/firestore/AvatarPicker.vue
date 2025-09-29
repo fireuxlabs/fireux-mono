@@ -110,7 +110,9 @@ async function onFileChange(e: Event) {
     else fromMime = (mime.split('/')[1] || '').toLowerCase()
     const fromName = (file.name?.split('.')?.pop() || '').toLowerCase()
     const ext = (fromMime || fromName || 'jpg').replace(/[^a-z0-9]/gi, '')
-    const path = /\.[a-z0-9]+$/i.test(basePath) ? basePath : `${basePath}.${ext}`
+    const path = /\.[a-z0-9]+$/i.test(basePath)
+      ? basePath
+      : `${basePath}.${ext}`
     const url = await uploadImage(path, file)
     emit('uploaded', url)
     if (props.autoUpdate && (props.collection || props.storagePath)) {
