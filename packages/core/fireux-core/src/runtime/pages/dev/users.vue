@@ -31,11 +31,7 @@
 
     <!-- Current user JSON -->
     <UCard style="margin-top: 16px">
-      <DevJson
-        :data="user?.value ?? null"
-        title="Current User"
-        :defaultOpen="true"
-      />
+      <DevJson :data="user ?? null" title="Current User" :defaultOpen="true" />
     </UCard>
 
     <!-- Collections overview (read-only) -->
@@ -67,6 +63,8 @@
 </template>
 
 <script setup lang="ts">
+// Nuxt auto-imports declaration for TS in package
+declare const definePageMeta: (meta: any) => void
 definePageMeta({
   title: 'Users',
   layout: 'dev',
