@@ -1,7 +1,7 @@
 <template>
   <div class="form-field">
     <!-- Use the existing Top component with proper namespace -->
-    <FireMoleculesFormsTop
+    <MoleculesFormsTop
       :label="label"
       :is-editing="isEditing"
       :has-data="!!props.firebaseValue"
@@ -57,6 +57,8 @@ const props = defineProps({
   type: { type: String, default: 'text' }, // 'text', 'textarea', 'phone', 'email', etc.
   rows: { type: Number, default: 4 },
   maxlength: { type: Number, default: 500 },
+  validationFunction: { type: Function, default: null },
+  formattingFunction: { type: Function, default: null },
 })
 
 // Local reactive state
@@ -89,7 +91,7 @@ const displayValue = computed(() => {
 })
 
 // Handle input with phone formatting if needed
-const handleInput = (event) => {
+const handleInput = () => {
   if (props.type === 'phone') {
     formatPhone()
   }
@@ -99,8 +101,8 @@ const handleInput = (event) => {
 const formatPhone = () => {
   if (props.type !== 'phone') return
 
-  // Remove all non-digits
-  let cleaned = localValue.value.replace(/\D/g, '')
+  // Remove all non-digits and clamp to 10 digits
+  let cleaned = localValue.value.replace(/\D/g, '').slice(0, 10)
 
   // Format as (XXX) XXX-XXXX
   if (cleaned.length >= 6) {
@@ -136,8 +138,24 @@ const deleteValue = async () => {
 
 const saveChanges = async () => {
   try {
-    const trimmedValue = localValue.value.trim()
-    await props.updateFunction(trimmedValue)
+    errorMessage.value = ''
+    const trimmedValue = (localValue.value || '').trim()
+
+    // Validate if validation function provided
+    if (props.validationFunction) {
+      const result = props.validationFunction(trimmedValue)
+      if (!result?.isValid) {
+        errorMessage.value = result?.message || 'Invalid value'
+        return
+      }
+    }
+
+    // Apply formatting if provided
+    const valueToSave = props.formattingFunction
+      ? props.formattingFunction(trimmedValue)
+      : trimmedValue
+
+    await props.updateFunction(valueToSave)
     isEditing.value = false
     errorMessage.value = ''
   } catch (error) {

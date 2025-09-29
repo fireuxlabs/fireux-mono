@@ -1,7 +1,7 @@
 <template>
   <div class="form-field">
     <!-- Use the existing Top component with proper namespace -->
-    <FireMoleculesFormsTop
+    <MoleculesFormsTop
       :label="label"
       :is-editing="isEditing"
       :has-data="firebaseValue !== null && firebaseValue !== undefined"

@@ -11,19 +11,7 @@ import {
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { ProfileConfig } from '../../../models/profiles/profile.model'
-
-export type DeleteScope = 'core' | 'app' | 'both' | 'auto'
-
-export interface DeleteOptions {
-  /** Override target user id; defaults to current profile.id (flattened) */
-  id?: string
-  /** 'core' | 'app' | 'both' | 'auto' (default: 'auto') */
-  scope?: DeleteScope
-  /** Delete overlays in ALL apps (collectionGroup search) */
-  allApps?: boolean
-  /** Force a specific appId (when scope includes 'app' and not allApps) */
-  appId?: string
-}
+import type { DeleteOptions } from '../delete.types'
 
 /**
  * Delete profile docs:

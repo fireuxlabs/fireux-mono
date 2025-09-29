@@ -10,18 +10,7 @@ import {
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { User } from '../../../models/core/user.model'
-
-export type DeleteScope = 'core' | 'app' | 'both' | 'auto'
-
-export interface DeleteOptions {
-  /** If omitted, we'll fall back to userRef.value?.id */
-  id?: string
-  scope?: DeleteScope
-  /** Delete overlays in ALL apps (uses collection group) */
-  allApps?: boolean
-  /** Target a specific app (defaults to env appId) */
-  appId?: string
-}
+import type { DeleteOptions, DeleteScope } from '../delete.types'
 
 /**
  * Delete user docs (core/app) with flexible scope.

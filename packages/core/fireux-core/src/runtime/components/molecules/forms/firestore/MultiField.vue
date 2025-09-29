@@ -1,7 +1,7 @@
 <template>
   <div class="form-field">
     <!-- Top Section: Label, Icons, and Error Handling -->
-    <FireMoleculesFormsTop
+    <MoleculesFormsTop
       :label="label"
       :is-editing="isEditing"
       :has-data="!!Object.keys(localValue).length"
@@ -71,7 +71,7 @@ watch(
   () => props.firebaseValue,
   (newValue) => {
     if (!isEditing.value) {
-      localValue.value = { ...newValue } || {}
+      localValue.value = newValue ? { ...newValue } : {}
     }
   },
   { immediate: true, deep: true }
@@ -79,13 +79,13 @@ watch(
 
 // Editing handlers
 function startEditing() {
-  localValue.value = { ...props.firebaseValue } || {}
+  localValue.value = props.firebaseValue ? { ...props.firebaseValue } : {}
   errorMessage.value = ''
   isEditing.value = true
 }
 
 function cancelEditing() {
-  localValue.value = { ...props.firebaseValue } || {}
+  localValue.value = props.firebaseValue ? { ...props.firebaseValue } : {}
   errorMessage.value = ''
   isEditing.value = false
 }
