@@ -100,7 +100,17 @@ async function onFileChange(e: Event) {
   try {
     if (!file) return
     emit('selected', file)
-    const path = computeStoragePath()
+    const basePath = computeStoragePath()
+    // Compute extension from MIME type or filename (fallback to jpg)
+    const mime = file.type || ''
+    let fromMime = ''
+    if (mime === 'image/jpeg') fromMime = 'jpg'
+    else if (mime === 'image/png') fromMime = 'png'
+    else if (mime === 'image/webp') fromMime = 'webp'
+    else fromMime = (mime.split('/')[1] || '').toLowerCase()
+    const fromName = (file.name?.split('.')?.pop() || '').toLowerCase()
+    const ext = (fromMime || fromName || 'jpg').replace(/[^a-z0-9]/gi, '')
+    const path = /\.[a-z0-9]+$/i.test(basePath) ? basePath : `${basePath}.${ext}`
     const url = await uploadImage(path, file)
     emit('uploaded', url)
     if (props.autoUpdate && (props.collection || props.storagePath)) {
