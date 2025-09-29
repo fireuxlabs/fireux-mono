@@ -21,15 +21,15 @@ Purpose: Document how avatars work end-to-end: storage layout, URL semantics, cr
 
 ## Upload pipeline
 
-- Upload API: useMediaStorage.uploadCoreAvatar(source: File | string, uid): Promise<string>
-  - Resizes client-side to JPEG (max width ~400), uploads to core-users/{uid}/avatar.jpg, returns download URL.
+- Upload API: useImageStorage.uploadImage(path: string, source: File | string): Promise<string>
+  - Resizes client-side to JPEG (max width ~400), uploads to the provided path (e.g., core-users/{uid}/avatar.jpg), returns a download URL.
   - On failures (e.g., remote CORS while fetching source), falls back to DEFAULT_AVATAR_URL.
-- Storage SDK wrapper: useAppFirebaseStorage.uploadFile(path, blob)
+- Storage SDK wrapper: useFirebaseStorage.uploadFile(path, blob)
   - Thin wrapper for uploadBytes + getDownloadURL.
 
 Key files
 
-- packages/core/fireux-core/src/runtime/composables/firebase/useMediaStorage.ts
+- packages/core/fireux-core/src/runtime/composables/firebase/useImageStorage.ts
 - packages/core/fireux-core/src/runtime/composables/firebase/useFirebaseStorage.ts
 
 ## Creation/ensure flows
@@ -39,7 +39,7 @@ Key files
     1. user.core.avatar
     2. auth.photoURL
     3. default avatar
-  - Uploads to core path via uploadCoreAvatar and writes resulting URL to core-users/{uid}. If CORS/resize fail, uses default URL.
+  - Uploads to core path via uploadImage(`core-users/${uid}/avatar.jpg`, source) and writes resulting URL to core-users/{uid}. If CORS/resize fail, uses default URL.
   - In tenant context, also ensures app user doc with avatar defaulting to core avatar URL.
 
 Key file
@@ -66,7 +66,7 @@ Key files
 ## Display and proxy
 
 - AvatarSelection.vue displays the avatar and handles file input; uses:
-  - useMediaStorage.uploadCoreAvatar(file, uid) → upload
+  - useImageStorage.uploadImage(`core-users/${uid}/avatar.jpg`, file) → upload
   - useUserUpdate.updateAvatar(url) → persist
   - useAvatarProxy.getProxiedAvatarUrl(url) → proxy Google profile images via /api to avoid GET CORS
 
@@ -99,5 +99,5 @@ Key file
 ## Open items / future
 
 - Add app-scoped avatar uploader: uploadAppUserAvatar(file, appId, uid) → apps/{appId}/users/{uid}/avatar.jpg for explicit app-specific avatars.
-- Consider centralizing the versioning step in useMediaStorage (e.g., a helper to append ?v=timestamp) to DRY.
+- Consider centralizing the versioning step in useImageStorage (e.g., a helper to append ?v=timestamp) to DRY.
 - Optionally propagate core avatar changes to app user docs when appropriate (policy decision).

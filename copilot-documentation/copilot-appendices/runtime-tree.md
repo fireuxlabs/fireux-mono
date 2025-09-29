@@ -126,7 +126,7 @@ composables/app/utils/useEditHandler.ts
 composables/effects/useLandingEffect.ts
 composables/firebase/useAuth.ts
 composables/firebase/useFirebaseStorage.ts
-composables/firebase/useMediaStorage.ts
+composables/firebase/useImageStorage.ts
 composables/firestore/objects/Blog/useBlogCreate.ts
 composables/firestore/objects/Blog/useBlogDelete.ts
 composables/firestore/objects/Blog/useBlogPosts.ts

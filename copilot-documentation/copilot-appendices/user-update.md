@@ -11,7 +11,7 @@ Location: packages/core/fireux-core/src/runtime/composables/firestore/user/useUs
 Key ideas
 
 - Read-only user state comes from VueFire (useCurrentUser + useDocument). This composable only performs writes.
-- Uploads are NOT handled here. Upload files first with useMediaStorage (e.g., uploadCoreAvatar) then pass the resulting URL to updateAvatar.
+- Uploads are NOT handled here. Upload files first with useImageStorage (e.g., uploadImage to core path) then pass the resulting URL to updateAvatar.
 - Target selection:
   - If running inside an app/tenant with appId available: write to apps/{appId}/users/{uid}
   - Otherwise (global role): write to core-users/{uid}
@@ -31,10 +31,10 @@ Example usage (component)
 
 <script setup lang="ts">
 import { useUserUpdate } from '#imports'
-import { useMediaStorage } from '#imports'
+import { useImageStorage } from '#imports'
 
 const { updateDisplayName, updateAvatar } = useUserUpdate()
-const { uploadCoreAvatar } = useMediaStorage()
+const { uploadImage } = useImageStorage()
 
 async function onSaveName(name: string) {
   await updateDisplayName(name)
@@ -42,7 +42,8 @@ async function onSaveName(name: string) {
 
 async function onUpload(file: File, uid: string) {
   // 1) Upload to Storage
-  const url = await uploadCoreAvatar(file, uid)
+  const path = `core-users/${uid}/avatar.jpg`
+  const url = await uploadImage(path, file)
   // 2) Persist URL to Firestore user doc
   await updateAvatar(url)
 }
