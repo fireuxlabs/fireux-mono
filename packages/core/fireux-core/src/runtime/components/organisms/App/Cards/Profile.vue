@@ -1,7 +1,7 @@
 <template>
   <UCard class="profile">
     <div class="profile-header">
-      <UAvatar :src="app?.avatarUrl" :alt="app?.app_name" size="xl" />
+  <UAvatar :src="app?.avatarUrl || '/img/default-image.png'" :alt="app?.app_name" size="xl" />
 
       <div class="profile-info">
         <div class="profile-name">

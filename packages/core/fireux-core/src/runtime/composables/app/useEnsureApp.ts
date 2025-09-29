@@ -3,12 +3,12 @@ import { useFirestore } from 'vuefire'
 import type { App } from '../../models/core/app.model'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useFirestoreManager } from '../firestore/useFirestoreManager'
+import { useImageStorage } from '../firebase/useImageStorage'
 
 /**
  * Composable to ensure an app exists in Firestore
  * - Creates the app if it doesn't exist
  * - Updates the core user as an admin
- * - Creates an app user profile for the admin
  */
 export function useAppEnsure() {
   /**
@@ -48,7 +48,7 @@ export function useAppEnsure() {
       }
 
       // Step 2: Get app configuration
-      const { appId, appName, ecosystem, modules } = useFireUXConfig()
+      const { appId, appName, ecosystem, modules, role } = useFireUXConfig()
       const db = useFirestore()
 
       console.log(
@@ -74,14 +74,19 @@ export function useAppEnsure() {
         return appId
       }
 
-      // Step 4: Create the app if it doesn't exist
+      // Step 4: Prepare default avatar in Storage (best-effort)
+      const avatarUrl = await prepareDefaultAppAvatar(appId)
+
+      // Step 5: Create the app if it doesn't exist
       const appData: Partial<App> = {
         id: appId,
         app_name: appName,
         admin_ids: [uid],
         creator_id: uid,
-        is_tenant: true, // Default to tenant app - most apps will be tenant businesses
+        // Reflect current role: tenant apps mark is_tenant=true; global/platform mark false
+        is_tenant: String(role || '').toLowerCase() === 'tenant',
         ...(ecosystem ? { ecosystem } : {}), // Add ecosystem if detected from modules
+        ...(avatarUrl ? { avatarUrl } : {}),
         created_at: new Date().toISOString(),
       }
 
@@ -93,7 +98,7 @@ export function useAppEnsure() {
         }`
       )
 
-      // Step 5: Update core user with admin role
+      // Step 6: Update core user with admin role
       if (coreUser?.adminOf?.includes(appId)) {
         console.log(
           `✅ [ensureApp] Core user already has admin role for app '${appId}'.`
@@ -108,9 +113,6 @@ export function useAppEnsure() {
         )
       }
 
-      // Step 6: Create an app user for this admin
-      await createAppUserForAdmin()
-
       return appId
     } catch (error) {
       console.error('❌ [ensureApp] Error occurred:', error)
@@ -118,20 +120,21 @@ export function useAppEnsure() {
     }
   }
 
-  /**
-   * Helper function to create an app user for the admin
-   * Dynamically imports useAppUserEnsure to avoid circular dependencies
-   * @param coreUser Optional core user object to pass to ensureAppUser
-   */
-  async function createAppUserForAdmin(): Promise<void> {
+  /** Best-effort default app avatar upload. Returns a URL or undefined on failure. */
+  async function prepareDefaultAppAvatar(
+    appId: string
+  ): Promise<string | undefined> {
     try {
-      const { useUserEnsure } = await import('../firestore/user/useUserEnsure')
-      const { ensureUser } = useUserEnsure()
-      await ensureUser()
-      console.log('✅ [ensureApp] Created app user for the app admin')
-    } catch (appUserError) {
-      console.error('❌ [ensureApp] Error creating app user:', appUserError)
-      // Don't throw here, as the app has been created successfully
+      const { uploadImage, getDefaultImageUrl } = useImageStorage()
+      const url = await uploadImage(
+        `apps/${appId}/avatar.jpg`,
+        getDefaultImageUrl()
+      )
+      if (url) console.log('🖼️ [ensureApp] App avatar uploaded to Storage')
+      return url || undefined
+    } catch (e) {
+      console.warn('⚠️ [ensureApp] Failed to upload default app avatar:', e)
+      return undefined
     }
   }
 

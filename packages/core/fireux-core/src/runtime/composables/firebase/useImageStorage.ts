@@ -77,5 +77,10 @@ export function useImageStorage() {
     return uploadBlobToStorage(blob, path)
   }
 
-  return { uploadImage, uploadFromUrl }
+  // Default image helper (centralized default location)
+  function getDefaultImageUrl(path: string = '/img/default-image.png'): string {
+    return path
+  }
+
+  return { uploadImage, uploadFromUrl, getDefaultImageUrl }
 }
