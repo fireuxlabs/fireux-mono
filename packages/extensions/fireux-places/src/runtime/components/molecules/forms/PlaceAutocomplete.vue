@@ -1,7 +1,7 @@
 <template>
   <div class="form-field">
     <!-- Top Section: Label, Icons, and Error Handling -->
-    <FireMoleculesFormsTop
+    <MoleculesFormsTop
       :label="label"
       :is-editing="isEditing"
       :has-data="!!firebaseValue?.formatted_address"
