@@ -11,7 +11,9 @@
   </ClientOnly>
 </template>
 
-<script setup lang="ts">import { computed } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useCoreRoutes } from '../composables/app/routes/useCoreRoutes'
 
 const { links } = useCoreRoutes()
 

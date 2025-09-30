@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 // Nuxt auto-imports composables like computed
+import { useCoreRoutes } from '../composables/app/routes/useCoreRoutes'
 const { links } = useCoreRoutes()
 import { useFireUXConfig } from '../composables/FireUXConfig'
 import { computed } from 'vue'

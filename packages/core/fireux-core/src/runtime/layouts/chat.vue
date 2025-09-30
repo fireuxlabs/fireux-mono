@@ -13,6 +13,7 @@
 </template>
 
 <script setup lang="ts">import { computed } from 'vue'
+import { useCoreRoutes } from '../composables/app/routes/useCoreRoutes'
 
 const { links } = useCoreRoutes()
 const KEEP_MENU = new Set(['home', 'products', 'blog', 'users'])
