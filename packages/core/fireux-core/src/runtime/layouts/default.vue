@@ -80,7 +80,9 @@ function mergeById(core: RouteLink[], tenant: RouteLink[]): RouteLink[] {
 
 // Resolve tenant-provided links
 // Optional app config fallback: apps can define app.config.ts { coreLayout: { menuIds, mobileIds } }
-const appConfig = (typeof useAppConfig === 'function' ? useAppConfig() : {}) as any
+const appConfig = (
+  typeof useAppConfig === 'function' ? useAppConfig() : {}
+) as any
 const configMenuIds: string[] | undefined = appConfig?.coreLayout?.menuIds
 const configMobileIds: string[] | undefined = appConfig?.coreLayout?.mobileIds
 
@@ -89,7 +91,9 @@ const tenantMenuBarLinks = computed<RouteLink[]>(() => {
   if (props.links) {
     // If menuIds provided (props or app config), filter by ids; else include all tenant links
     const ids = props.menuIds?.length ? props.menuIds : configMenuIds
-    return ids?.length ? props.links.filter((r) => ids.includes(r.id)) : props.links
+    return ids?.length
+      ? props.links.filter((r) => ids.includes(r.id))
+      : props.links
   }
   return []
 })
@@ -98,7 +102,9 @@ const tenantMobileLinks = computed<RouteLink[]>(() => {
   if (props.routes?.mobileLinks) return props.routes.mobileLinks
   if (props.links) {
     const ids = props.mobileIds?.length ? props.mobileIds : configMobileIds
-    return ids?.length ? props.links.filter((r) => ids.includes(r.id)) : props.links
+    return ids?.length
+      ? props.links.filter((r) => ids.includes(r.id))
+      : props.links
   }
   return []
 })
