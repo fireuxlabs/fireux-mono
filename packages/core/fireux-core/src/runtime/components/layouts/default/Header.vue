@@ -9,11 +9,27 @@
         </div>
 
         <!-- Desktop Navigation Menu -->
-        <UNavigationMenu
-          v-if="!isMobile"
-          orientation="horizontal"
-          :items="menuBarLinks"
-        />
+        <div v-if="!isMobile" class="flex items-center gap-2">
+          <!-- Basics (meta-derived) or fallback to props -->
+          <UNavigationMenu
+            v-if="basicItems.length"
+            orientation="horizontal"
+            :items="basicItems"
+            class="mr-1"
+          />
+          <UNavigationMenu
+            v-else
+            orientation="horizontal"
+            :items="menuBarLinks"
+          />
+
+          <!-- 'More' dropdown groups when condensed navigation is enabled -->
+          <UNavigationMenu
+            v-if="moreItems.length"
+            orientation="horizontal"
+            :items="moreItems"
+          />
+        </div>
 
         <!-- Right Section: User Profile / Sign-In & Mobile Menu -->
         <div class="right-section">
@@ -92,7 +108,7 @@
         <div class="mobile-menu-wrapper">
           <UNavigationMenu
             orientation="vertical"
-            :items="mobileLinks"
+            :items="mobileItems.length ? mobileItems : mobileLinks"
             class="w-full"
           />
         </div>
@@ -107,6 +123,7 @@ import { useWindowSize } from '@vueuse/core'
 import { useRouter, useRoute } from 'vue-router'
 import { useUser } from '../../../composables/firestore/user/useUser'
 import { useAuth } from '../../../composables/firebase/useAuth'
+import { useNav } from '../../../composables/app/nav/useNav'
 
 // Unified user
 const { /* user, */ initials, displayName, avatarSrc, isSignedIn } = useUser()
@@ -182,6 +199,28 @@ watch(
 const props = defineProps<{ menuBarLinks?: any[]; mobileLinks?: any[] }>()
 const menuBarLinks = computed(() => props.menuBarLinks ?? [])
 const mobileLinks = computed(() => props.mobileLinks ?? [])
+
+// Meta-driven navigation
+const nav = useNav()
+const asMenuItem = (i: any) => ({ label: i.label, icon: i.icon, to: i.to })
+const basicItems = computed(() => nav.desktop.value.pinned.map(asMenuItem))
+const moreItems = computed(() => {
+  const groups = nav.desktop.value.groups
+  if (!groups.length) return []
+  return [
+    {
+      label: 'More',
+      icon: 'i-lucide-more-horizontal',
+      type: 'trigger',
+      children: groups.map((g: any) => ({
+        label: g.label,
+        type: 'trigger',
+        children: g.items.map(asMenuItem),
+      })),
+    },
+  ]
+})
+const mobileItems = computed(() => nav.mobile.value.map(asMenuItem))
 </script>
 
 <style scoped>
