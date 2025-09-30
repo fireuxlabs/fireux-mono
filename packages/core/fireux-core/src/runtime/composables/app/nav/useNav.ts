@@ -3,12 +3,15 @@ import { computed } from 'vue'
 
 // Nuxt auto-imports; declare for type-safety in packages
 declare function useRouter(): { getRoutes: () => any[] }
+declare function useUser(): { isAdmin?: any }
 
 type Item = { label: string; icon?: string; to: string }
 
 export function useNav() {
   const router = useRouter()
   const routes = computed(() => router.getRoutes())
+  const user = (typeof useUser === 'function' ? useUser() : {}) as any
+  const isAdmin = computed<boolean>(() => !!(user?.isAdmin?.value ?? user?.isAdmin))
 
   const byKey = computed(() => {
     const map = new Map<string, any>()
@@ -38,6 +41,13 @@ export function useNav() {
     const extras = routes.value
       .filter((r) => r.meta?.nav?.mobile === true)
       .filter((r) => !BASICS.includes(r.meta.nav.key))
+      .filter((r) => {
+        const roles = r.meta?.roles as string[] | undefined
+        if (!roles || roles.length === 0) return true
+        // Minimal gate: only support 'admin' for now
+        if (roles.includes('admin')) return isAdmin.value
+        return true
+      })
       .map(toItem)
     return [...desktop.value, ...extras]
   })
