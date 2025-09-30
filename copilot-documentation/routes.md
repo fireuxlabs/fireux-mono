@@ -264,16 +264,46 @@ import type { RouteLink } from '../../../types/routeLink'
 
 export function useAdminRoutes(): RouteLink[] {
   const adminRoutes: RouteLink[] = [
-    { id: 'admin-overview', label: 'Admin Overview', icon: 'i-lucide-layout-dashboard', to: '/admin' },
-    { id: 'admin-users', label: 'Users', icon: 'i-lucide-users', to: '/admin/users' },
-    { id: 'admin-products', label: 'Products', icon: 'i-lucide-box', to: '/admin/products' },
-    { id: 'admin-blog', label: 'Blog', icon: 'i-lucide-book', to: '/admin/blog' },
-    { id: 'admin-settings', label: 'Settings', icon: 'i-lucide-sliders', to: '/admin/settings' },
+    {
+      id: 'admin-overview',
+      label: 'Admin Overview',
+      icon: 'i-lucide-layout-dashboard',
+      to: '/admin',
+    },
+    {
+      id: 'admin-users',
+      label: 'Users',
+      icon: 'i-lucide-users',
+      to: '/admin/users',
+    },
+    {
+      id: 'admin-products',
+      label: 'Products',
+      icon: 'i-lucide-box',
+      to: '/admin/products',
+    },
+    {
+      id: 'admin-blog',
+      label: 'Blog',
+      icon: 'i-lucide-book',
+      to: '/admin/blog',
+    },
+    {
+      id: 'admin-settings',
+      label: 'Settings',
+      icon: 'i-lucide-sliders',
+      to: '/admin/settings',
+    },
   ]
 
   return adminRoutes.length
     ? [
-        { id: 'admin', label: 'Admin', icon: 'i-lucide-shield', children: adminRoutes },
+        {
+          id: 'admin',
+          label: 'Admin',
+          icon: 'i-lucide-shield',
+          children: adminRoutes,
+        },
       ]
     : []
 }
@@ -288,7 +318,7 @@ export function useAdminRoutes(): RouteLink[] {
 ```vue
 <template>
   <CoreDefault :routes="routes" />
- </template>
+</template>
 
 <script setup lang="ts">
 import { useMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
@@ -420,7 +450,11 @@ export function useMiseboxRoutes() {
 `packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue`
 
 ```vue
-<UNavigationMenu v-if="!isMobile" orientation="horizontal" :items="menuBarLinks" />
+<UNavigationMenu
+  v-if="!isMobile"
+  orientation="horizontal"
+  :items="menuBarLinks"
+/>
 ...
 <UNavigationMenu orientation="vertical" :items="mobileLinks" class="w-full" />
 ```
@@ -456,16 +490,36 @@ import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
   const jobRoutes: RouteLink[] = [
     { id: 'jobs', label: 'Jobs', icon: 'i-lucide-briefcase', to: '/jobs' },
-    { id: 'employers', label: 'Employers', icon: 'i-lucide-building-2', to: '/employers' },
-    { id: 'professionals', label: 'Professionals', icon: 'i-lucide-users', to: '/professionals' },
+    {
+      id: 'employers',
+      label: 'Employers',
+      icon: 'i-lucide-building-2',
+      to: '/employers',
+    },
+    {
+      id: 'professionals',
+      label: 'Professionals',
+      icon: 'i-lucide-users',
+      to: '/professionals',
+    },
   ]
 
   const jobProfileRoutes: RouteLink[] = []
   if (hasProfile('employer')) {
-    jobProfileRoutes.push({ id: 'employer-profile', label: 'Employer Profile', icon: 'i-lucide-briefcase', to: '/dashboard/employer-profile' })
+    jobProfileRoutes.push({
+      id: 'employer-profile',
+      label: 'Employer Profile',
+      icon: 'i-lucide-briefcase',
+      to: '/dashboard/employer-profile',
+    })
   }
   if (hasProfile('professional')) {
-    jobProfileRoutes.push({ id: 'professional-profile', label: 'Professional Profile', icon: 'i-lucide-user', to: '/dashboard/professional-profile' })
+    jobProfileRoutes.push({
+      id: 'professional-profile',
+      label: 'Professional Profile',
+      icon: 'i-lucide-user',
+      to: '/dashboard/professional-profile',
+    })
   }
 
   return { jobRoutes, jobProfileRoutes }
@@ -555,7 +609,6 @@ defineOptions({ name: 'CoreLanding' })
   position: relative;
 }
 </style>
-
 ```
 
 `packages/core/fireux-core/src/runtime/layouts/portfolio.vue`
@@ -593,7 +646,6 @@ const mobileLinks = computed(() =>
 
 defineOptions({ name: 'CorePortfolio' })
 </script>
-
 ```
 
 `packages/core/fireux-core/src/runtime/layouts/chat.vue`
@@ -630,7 +682,6 @@ const mobileLinks = computed(() =>
 
 defineOptions({ name: 'CoreChat' })
 </script>
-
 ```
 
 `packages/core/fireux-core/src/runtime/layouts/docs.vue`
@@ -681,7 +732,6 @@ const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
     </UContainer>
   </UMain>
 </template>
-
 ```
 
 `packages/core/fireux-core/src/runtime/layouts/dev.vue`
@@ -720,7 +770,6 @@ const safeDevRoutes = computed(
   align-self: stretch;
 }
 </style>
-
 ```
 
 `packages/core/fireux-core/src/runtime/layouts/dashboard.vue`
@@ -903,7 +952,6 @@ const groups = computed(() => [
 
 defineOptions({ name: 'CoreDashboard' })
 </script>
-
 ```
 
 `packages/core/fireux-core/src/runtime/layouts/changelog.vue`
@@ -935,7 +983,6 @@ defineOptions({ name: 'CoreChangelog' })
     </UContainer>
   </UMain>
 </template>
-
 ```
 
 `packages/core/fireux-core/src/runtime/layouts/starter.vue`
@@ -983,7 +1030,6 @@ defineOptions({ name: 'CoreStarter' })
   align-self: stretch;
 }
 </style>
-
 ```
 
 `packages/core/fireux-core/src/runtime/layouts/auth.vue`
@@ -1002,7 +1048,6 @@ defineOptions({ name: 'CoreStarter' })
 <script setup lang="ts">
 defineOptions({ name: 'CoreAuth' })
 </script>
-
 ```
 
 ### Core route composables
@@ -1026,7 +1071,6 @@ export function useSystemRoutes(): RouteLink[] {
     { id: 'users', label: 'Users', icon: 'i-lucide-users', to: '/users' },
   ]
 }
-
 ```
 
 `packages/core/fireux-core/src/runtime/composables/app/routes/useUserRoutes.ts`
@@ -1081,7 +1125,6 @@ export function useUserRoutes(): RouteLink[] {
       ]
     : []
 }
-
 ```
 
 `packages/core/fireux-core/src/runtime/composables/app/routes/useAdminRoutes.ts`
@@ -1140,7 +1183,6 @@ export function useAdminRoutes(): RouteLink[] {
       ]
     : []
 }
-
 ```
 
 `packages/core/fireux-core/src/runtime/composables/app/routes/useCoreRoutes.ts`
@@ -1165,7 +1207,6 @@ export function useCoreRoutes() {
 
   return { links }
 }
-
 ```
 
 `packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue`
@@ -1394,7 +1435,6 @@ const mobileLinks = computed(() => props.mobileLinks ?? [])
   padding-top: var(--space-8);
 }
 </style>
-
 ```
 
 ### Misebox tenant
@@ -1403,7 +1443,11 @@ const mobileLinks = computed(() => props.mobileLinks ?? [])
 
 ```vue
 <template>
-  <CoreDefault :links="links" :menu-ids="TENANT_MENU_IDS" :mobile-ids="TENANT_MOBILE_IDS" />
+  <CoreDefault
+    :links="links"
+    :menu-ids="TENANT_MENU_IDS"
+    :mobile-ids="TENANT_MOBILE_IDS"
+  />
 </template>
 
 <script setup lang="ts">
@@ -1444,7 +1488,6 @@ import { computed } from 'vue'
 
 const miseboxDevRoutes = computed(() => getMiseboxDevRoutes())
 </script>
-
 ```
 
 `packages/tenants/fireux-misebox/src/runtime/layouts/MiseboxDashboard.vue`
@@ -1472,7 +1515,6 @@ const miseboxRoutes = computed<LayoutRoutes>(() =>
   getMiseboxDashboardRoutes(hasProfile)
 )
 </script>
-
 ```
 
 `packages/tenants/fireux-misebox/src/runtime/composables/app/routes/useMiseboxDashboardRoutes.ts`
@@ -1514,7 +1556,6 @@ export function getMiseboxDashboardRoutes(
     mobileLinks: [...miseboxProfileRoutes, ...jobRoutes.jobProfileRoutes],
   }
 }
-
 ```
 
 `packages/tenants/fireux-misebox/src/runtime/composables/app/routes/useMiseboxDevRoutes.ts`
@@ -1562,7 +1603,6 @@ export function getMiseboxDevRoutes() {
 
   return { miseboxDevRoutes: routes }
 }
-
 ```
 
 `packages/tenants/fireux-misebox/src/runtime/composables/app/routes/useMiseboxDefaultRoutes.ts`
@@ -1638,7 +1678,6 @@ export function getMiseboxDefaultRoutes(
     ],
   }
 }
-
 ```
 
 ### Cleanbox tenant
@@ -1673,7 +1712,6 @@ const cleanboxRoutes = computed(() => ({
   mobileLinks: links.value.filter((r) => CLEANBOX_MOBILE.has(r.id)),
 }))
 </script>
-
 ```
 
 `packages/tenants/fireux-cleanbox/src/runtime/layouts/CleanboxDev.vue`
@@ -1692,7 +1730,6 @@ const cleanboxDevRoutes = computed(() => ({
   mobileLinks: getCleanboxDevRoutes(),
 }))
 </script>
-
 ```
 
 `packages/tenants/fireux-cleanbox/src/runtime/layouts/CleanboxDashboard.vue`
@@ -1728,7 +1765,6 @@ const cleanboxRoutes = computed(() => ({
   mobileLinks: links.value.filter((r: RouteLink) => KEEP_MOBILE.has(r.id)),
 }))
 </script>
-
 ```
 
 `packages/tenants/fireux-cleanbox/src/runtime/composables/app/routes/useCleanboxRoutes.ts`
@@ -1743,7 +1779,6 @@ export function useCleanboxRoutes() {
   const links = computed<RouteLink[]>(() => [])
   return { links }
 }
-
 ```
 
 `packages/tenants/fireux-cleanbox/src/runtime/composables/app/routes/useCleanboxDevRoutes.ts`
@@ -1779,7 +1814,6 @@ export function getCleanboxDevRoutes() {
     mobileLinks: [...coreDevRoutes, ...cleanboxDevRoutes],
   }
 }
-
 ```
 
 ### Fireux tenant
@@ -1814,7 +1848,6 @@ const fireuxRoutes = computed(() => ({
   mobileLinks: links.value.filter((r) => MOBILE_KEEP.has(r.id)),
 }))
 </script>
-
 ```
 
 `packages/tenants/fireux-fireux/src/runtime/composables/app/routes/useFireuxRoutes.ts`
@@ -1829,7 +1862,6 @@ export function useFireuxRoutes() {
   const links = computed<RouteLink[]>(() => [])
   return { links }
 }
-
 ```
 
 ### Jobs extension
@@ -1892,7 +1924,6 @@ export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
     jobMobileRoutes: jobMobileRoutes,
   }
 }
-
 ```
 
 `packages/extensions/fireux-jobs/src/runtime/composables/app/routes/useJobDashboardRoutes.ts`
@@ -1930,5 +1961,4 @@ export function getJobDashboardRoutes(
     jobMobileRoutes: jobProfileRoutes,
   }
 }
-
 ```

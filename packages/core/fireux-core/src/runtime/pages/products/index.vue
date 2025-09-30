@@ -14,6 +14,12 @@
 
 <script setup lang="ts">
 import { useProducts } from '../../composables/firestore/objects/Product/useProducts'
+// Nuxt macro: declare for TS in package runtime
+declare function definePageMeta(meta: any): void
+
+definePageMeta({
+  nav: { key: 'products', label: 'Products', icon: 'i-lucide-box' },
+})
 
 const { productsCollection } = await useProducts()
 </script>

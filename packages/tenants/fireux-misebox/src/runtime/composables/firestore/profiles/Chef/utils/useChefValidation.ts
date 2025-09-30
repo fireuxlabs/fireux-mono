@@ -211,41 +211,38 @@ export function useChefValidation() {
   ): { isValid: boolean; errors: string[] } => {
     const errors: string[] = []
 
+    // Helper to push error messages from validation results
+    const addErrorIfInvalid = (res: { isValid: boolean; error?: string }) => {
+      if (!res.isValid && res.error) errors.push(res.error)
+    }
+
     // Required fields validation (ChefCoreProfile uses ProfileBase with id set from auth elsewhere)
 
     // Optional field validations
     if (chefData.display_name) {
-      const nameValidation = validateChefName(chefData.display_name)
-      if (!nameValidation.isValid && nameValidation.error) {
-        errors.push(nameValidation.error)
-      }
+      addErrorIfInvalid(validateChefName(chefData.display_name))
     }
 
     if (chefData.specialties) {
-      const specialtiesValidation = validateSpecialties(chefData.specialties)
-      if (!specialtiesValidation.isValid && specialtiesValidation.error) {
-        errors.push(specialtiesValidation.error)
-      }
+      addErrorIfInvalid(validateSpecialties(chefData.specialties))
     }
 
     // Note: experience/certifications aren't part of the current Chef model
     // If added later, re-enable and adjust validation accordingly
 
     // Support both snake_case (canonical) and camelCase inputs
-    const bioShort = (chefData as any).bio_short ?? (chefData as any).bioShort
-    if (bioShort) {
-      const bioValidation = validateBio(bioShort, 'short')
-      if (!bioValidation.isValid && bioValidation.error) {
-        errors.push(bioValidation.error)
-      }
-    }
-
-    const bioLong = (chefData as any).bio_long ?? (chefData as any).bioLong
-    if (bioLong) {
-      const bioValidation = validateBio(bioLong, 'long')
-      if (!bioValidation.isValid && bioValidation.error) {
-        errors.push(bioValidation.error)
-      }
+    const bios = [
+      {
+        val: (chefData as any).bio_short ?? (chefData as any).bioShort,
+        kind: 'short' as const,
+      },
+      {
+        val: (chefData as any).bio_long ?? (chefData as any).bioLong,
+        kind: 'long' as const,
+      },
+    ]
+    for (const b of bios) {
+      if (b.val) addErrorIfInvalid(validateBio(b.val, b.kind))
     }
 
     // Remove availability validation since it's not in the Chef model

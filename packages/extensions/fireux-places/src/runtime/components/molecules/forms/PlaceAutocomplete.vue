@@ -169,7 +169,10 @@ async function onSearchInput() {
         showSuggestions.value = true
         highlightedIndex.value = -1
       } catch (error) {
-        console.error('Search error:', error)
+        if (process.dev) {
+          // eslint-disable-next-line no-console
+          console.error('Search error:', error)
+        }
         suggestions.value = []
       }
     } else {
@@ -189,7 +192,10 @@ async function selectSuggestion(suggestion) {
       await savePlace(placeDetails)
     }
   } catch (error) {
-    console.error('Error selecting place:', error)
+    if (process.dev) {
+      // eslint-disable-next-line no-console
+      console.error('Error selecting place:', error)
+    }
     errorMessage.value = 'Failed to select location'
   }
 }
@@ -252,20 +258,22 @@ async function saveChanges() {
       return
     }
   } catch (error) {
-    console.error('Error saving address:', error)
-    errorMessage.value = error.message || 'Failed to save address'
+    // Provide feedback to the user; log only in dev
+    if (process.dev) {
+      // eslint-disable-next-line no-console
+      console.error('Error saving address:', error)
+    }
+    errorMessage.value = (error && error.message) || 'Failed to save address'
+    isEditing.value = false
+    showSuggestions.value = false
   }
 }
 
 async function savePlace(place) {
-  try {
-    await props.updateFunction(place)
-    errorMessage.value = ''
-    isEditing.value = false
-    showSuggestions.value = false
-  } catch (error) {
-    throw error
-  }
+  await props.updateFunction(place)
+  errorMessage.value = ''
+  isEditing.value = false
+  showSuggestions.value = false
 }
 
 async function deleteValue() {
@@ -276,8 +284,13 @@ async function deleteValue() {
     isEditing.value = false
     showSuggestions.value = false
   } catch (error) {
-    console.error('Error deleting address:', error)
+    if (process.dev) {
+      // eslint-disable-next-line no-console
+      console.error('Error deleting address:', error)
+    }
     errorMessage.value = 'Failed to delete address'
+    isEditing.value = false
+    showSuggestions.value = false
   }
 }
 

@@ -4,6 +4,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "types": ["nuxt"],
     "strict": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,

@@ -11,13 +11,30 @@
         </template>
 
         <!-- Optional: omit list rendering by leaving #item empty -->
-        <template #item="{ profile }"></template>
+        <template #item></template>
       </OrganismsProfileRoot>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+declare function definePageMeta(meta: any): void
 import { supplierConfig } from '../../models/profiles/Supplier.model'
-definePageMeta({ layout: 'dashboard' })
+definePageMeta({
+  layout: 'dashboard',
+  nav: {
+    key: 'supplier-profile',
+    label: 'Supplier Profile',
+    icon: 'i-lucide-package',
+    desktop: false,
+    mobile: true,
+    order: 20,
+    group: 'Profiles',
+  },
+  ProfileMenu: true,
+  PofileMenu: true,
+  tenant: 'misebox',
+  requiresAuth: true,
+  roles: [],
+})
 </script>

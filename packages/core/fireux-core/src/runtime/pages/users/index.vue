@@ -14,10 +14,7 @@
       <!-- CTA when missing (global OR app overlay) -->
       <div v-if="showCreate">
         <UPageSection>
-          <UPageCTA
-            :title="ctaMessage || 'Complete your user profile to continue.'"
-            variant="soft"
-          >
+          <UPageCTA :title="ctaTitle" variant="soft">
             <template #links>
               <UButton
                 size="lg"
@@ -75,12 +72,18 @@
 import { computed, ref } from 'vue'
 import { useUser } from '../../composables/firestore/user/useUser'
 
+// Nuxt macro: declare for TS in package runtime
+declare function definePageMeta(meta: any): void
+
+definePageMeta({
+  nav: { key: 'users', label: 'Users', icon: 'i-lucide-users' },
+})
+
 // Unified user + collections + ensure/delete helpers
 const {
   user,
   collection,
   ensureUser,
-  ctaMessage,
   hasCoreProfile: hasCoreUserProfile,
   hasAppProfile: hasAppUserProfile,
 } = useUser()
@@ -96,6 +99,8 @@ const showCreate = computed(() => {
 const primaryLabel = computed(() =>
   hasCoreUserProfile.value ? 'Add to this app' : 'Create User'
 )
+
+const ctaTitle = computed(() => 'Complete your user profile to continue.')
 
 // CTA action (guarded)
 const ensuring = ref(false)

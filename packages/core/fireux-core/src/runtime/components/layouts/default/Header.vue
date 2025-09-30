@@ -150,8 +150,11 @@ const handleSignInClick = async () => {
       router.push('/auth')
     }
   } catch (error) {
-    // On error, route to full auth page and log for diagnostics
-    console.warn('[Header] Google sign-in failed:', error)
+    // On error, route to full auth page and log for diagnostics (dev only)
+    if (process.dev) {
+      // eslint-disable-next-line no-console
+      console.warn('[Header] Google sign-in failed:', error)
+    }
     router.push('/auth')
   } finally {
     isSigningIn.value = false
@@ -200,26 +203,11 @@ const props = defineProps<{ menuBarLinks?: any[]; mobileLinks?: any[] }>()
 const menuBarLinks = computed(() => props.menuBarLinks ?? [])
 const mobileLinks = computed(() => props.mobileLinks ?? [])
 
-// Meta-driven navigation
+// Meta-driven navigation (simplified)
 const nav = useNav()
 const asMenuItem = (i: any) => ({ label: i.label, icon: i.icon, to: i.to })
-const basicItems = computed(() => nav.desktop.value.pinned.map(asMenuItem))
-const moreItems = computed(() => {
-  const groups = nav.desktop.value.groups
-  if (!groups.length) return []
-  return [
-    {
-      label: 'More',
-      icon: 'i-lucide-more-horizontal',
-      type: 'trigger',
-      children: groups.map((g: any) => ({
-        label: g.label,
-        type: 'trigger',
-        children: g.items.map(asMenuItem),
-      })),
-    },
-  ]
-})
+const basicItems = computed(() => nav.desktop.value.map(asMenuItem))
+const moreItems = computed(() => [])
 const mobileItems = computed(() => nav.mobile.value.map(asMenuItem))
 </script>
 
