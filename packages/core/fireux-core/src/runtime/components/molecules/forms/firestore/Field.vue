@@ -46,7 +46,8 @@
   </div>
 </template>
 
-<script setup>import { ref, computed, watchEffect } from 'vue'
+<script setup>
+import { ref, computed, watchEffect } from 'vue'
 
 const props = defineProps({
   label: { type: String, default: '' },

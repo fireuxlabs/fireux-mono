@@ -31,7 +31,7 @@ Contract for updateFunction
 
 Components
 
-1) Field.vue — single line/textarea with optional phone/email
+1. Field.vue — single line/textarea with optional phone/email
 
 - Props
   - `label?: string` — display label
@@ -51,7 +51,7 @@ Components
   - Save: trims and calls `updateFunction(trimmed)`
   - Delete: calls `updateFunction('')`
 
-2) Select.vue — single-select with label mapping
+2. Select.vue — single-select with label mapping
 
 - Props
   - `label: string`
@@ -66,7 +66,7 @@ Components
   - Save: optional validate → optional format → `updateFunction(value)`
   - Delete: `updateFunction('')`
 
-3) Checkbox.vue — boolean toggle
+3. Checkbox.vue — boolean toggle
 
 - Props
   - `label: string`
@@ -79,7 +79,7 @@ Components
   - Save: optional validate → optional format → `updateFunction(value)`
   - Delete: `updateFunction(null)`
 
-4) ArrayOfStrings.vue — editable list of strings
+4. ArrayOfStrings.vue — editable list of strings
 
 - Props
   - `label?: string`
@@ -93,7 +93,7 @@ Components
   - Save: `updateFunction([...localValue])`
   - Delete: `updateFunction([])`
 
-5) MultiField.vue — group of text inputs keyed by schema
+5. MultiField.vue — group of text inputs keyed by schema
 
 - Props
   - `label?: string`
@@ -108,7 +108,7 @@ Components
   - Save: `updateFunction(localValue)`
   - Delete: `updateFunction({})`
 
-6) SocialLinks.vue — structured social link inputs with URL validation
+6. SocialLinks.vue — structured social link inputs with URL validation
 
 - Props
   - `firebaseValue?: Record<string, string>`
@@ -119,7 +119,7 @@ Components
   - Save: builds `validatedLinks` by trimming, requiring `http(s)://`, and validating with `new URL(...)`; then `updateFunction(validatedLinks)`
   - Delete: `updateFunction({})`
 
-7) AvatarPicker.vue — avatar preview + file input
+7. AvatarPicker.vue — avatar preview + file input
 
 - Props (TypeScript)
   - `src?: string` — avatar URL

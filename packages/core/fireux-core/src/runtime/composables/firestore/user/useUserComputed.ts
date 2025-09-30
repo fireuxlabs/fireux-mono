@@ -28,6 +28,13 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     return u.app?.display_name || u.core?.display_name || ''
   })
 
+  // 🔹 Handle fallback: app > core
+  const handle = computed(() => {
+    const u = user.value
+    if (!u) return ''
+    return u.app?.handle || u.core?.handle || ''
+  })
+
   const initials = computed(() => {
     const parts = (displayName.value || '').trim().split(/\s+/)
     return (parts[0]?.[0] || '').toUpperCase() + (parts[1]?.[0] || '')
@@ -79,6 +86,7 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     ...(isTenant ? { hasAppProfile } : {}),
     isAdmin,
     displayName,
+    handle,
     initials,
     avatarSrc,
     isSignedIn,

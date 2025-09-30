@@ -65,7 +65,8 @@
   </div>
 </template>
 
-<script setup>import { ref, computed, watch } from 'vue'
+<script setup>
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps({
   label: { type: String, default: 'Address' },

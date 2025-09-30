@@ -15,6 +15,14 @@
         :validation-function="validateDisplayName"
         :formatting-function="formatDisplayName"
       />
+      <MoleculesFormsFirestoreField
+        label="Handle"
+        :firebase-value="handle"
+        placeholder="your-handle"
+        :update-function="onSaveHandle"
+        :validation-function="validateHandle"
+        :formatting-function="formatHandle"
+      />
     </UCard>
   </ClientOnly>
 </template>
@@ -26,12 +34,13 @@ import { useUserComputed } from '../../../composables/firestore/user/useUserComp
 import { toRef } from 'vue'
 const props = defineProps<{ user: User }>()
 const userRef = toRef(props, 'user')
-const { displayName, avatarSrc } = useUserComputed(userRef)
+const { displayName, avatarSrc, handle } = useUserComputed(userRef)
 
-const { updateDisplayName, updateAvatar } = useUserUpdate()
+const { updateDisplayName, updateAvatar, updateHandle } = useUserUpdate()
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v)
 const onSaveAvatar = (file: File) => updateAvatar(file)
+const onSaveHandle = (v: string) => updateHandle(v)
 
 function validateDisplayName(name: string) {
   const value = (name || '').trim()
@@ -49,4 +58,38 @@ function formatDisplayName(name: string) {
     .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
     .join(' ')
 }
+
+function validateHandle(raw: string) {
+  const value = String(raw || '').trim()
+  if (!value) return { isValid: true } // allow clearing
+  const normalized = value.toLowerCase()
+  if (normalized.length < 3)
+    return { isValid: false, message: 'Handle too short.' }
+  if (normalized.length > 30)
+    return { isValid: false, message: 'Handle too long.' }
+  if (!/^[a-z0-9-]+$/.test(normalized)) {
+    return {
+      isValid: false,
+      message: 'Use lowercase letters, numbers, and dashes only.',
+    }
+  }
+  return { isValid: true }
+}
+
+function formatHandle(raw: string) {
+  // normalize: lowercase, spaces to dashes, strip invalid chars, collapse dashes
+  let s = String(raw || '')
+    .trim()
+    .toLowerCase()
+  s = s.replace(/^@+/, '') // drop leading @ if user typed it
+  s = s.replace(/\s+/g, '-')
+  s = s.replace(/[^a-z0-9-]/g, '')
+  s = s.replace(/-+/g, '-')
+  s = s.replace(/^-|-$|_/g, '')
+  return s.slice(0, 30)
+}
+
+/* minimal: parent panel provides layout and account preview */
 </script>
+
+<!-- no extra local styles; parent panel manages layout/visual context -->

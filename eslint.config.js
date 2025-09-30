@@ -1,3 +1,6 @@
+import tsParser from '@typescript-eslint/parser'
+import vueParser from 'vue-eslint-parser'
+
 export default [
   {
     ignores: [
@@ -24,17 +27,46 @@ export default [
       ],
     },
   },
+  // Vue SFCs
   {
-    files: ['**/*.{js,ts,vue}'],
+    files: ['**/*.vue'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
-      parser: (fileName) =>
-        fileName.endsWith('.vue')
-          ? require('vue-eslint-parser')
-          : require('@typescript-eslint/parser'),
+      parser: vueParser,
       parserOptions: {
+        parser: tsParser,
         extraFileExtensions: ['.vue'],
+        ecmaVersion: 2022,
+        sourceType: 'module',
+        project: false,
+      },
+    },
+    rules: {
+      'no-console': 'warn',
+      'no-debugger': 'warn',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['fireux-core/*', 'fireux-core/**'],
+              message:
+                'Do not import subpaths from fireux-core. Use module auto-imports or public API only.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // TS/JS files
+  {
+    files: ['**/*.{js,ts}'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      parser: tsParser,
+      parserOptions: {
         ecmaVersion: 2022,
         sourceType: 'module',
         project: false,
@@ -60,7 +92,7 @@ export default [
   {
     files: ['**/*.d.ts'],
     languageOptions: {
-      parser: require('@typescript-eslint/parser'),
+      parser: tsParser,
       parserOptions: {
         project: false,
       },

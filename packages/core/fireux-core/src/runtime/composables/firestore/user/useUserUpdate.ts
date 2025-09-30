@@ -43,6 +43,11 @@ export function useUserUpdate(userRef?: Ref<User | null>) {
     await updateFields({ display_name } as Partial<User>)
   }
 
+  /** Update handle in the correct scope */
+  const updateHandle = async (handle: string) => {
+    await updateFields({ handle } as Partial<User>)
+  }
+
   /** Avatar: build `${collection}/${id}/avatar` and upload via useImageStorage */
   const updateAvatar = async (source: Blob | string) => {
     const { collection, id } = resolveTarget()
@@ -52,5 +57,5 @@ export function useUserUpdate(userRef?: Ref<User | null>) {
     return url
   }
 
-  return { updateFields, updateDisplayName, updateAvatar }
+  return { updateFields, updateDisplayName, updateAvatar, updateHandle }
 }
