@@ -6,7 +6,7 @@ definePageMeta({
     label: 'Purchases',
     icon: 'i-lucide-shopping-cart',
     group: 'User',
-    order: 4,
+  order: 3,
     desktop: false,
     mobile: true,
   },
