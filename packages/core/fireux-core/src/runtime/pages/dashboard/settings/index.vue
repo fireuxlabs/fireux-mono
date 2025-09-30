@@ -1,9 +1,24 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+// @ts-ignore - zod types are not required at build-time for this demo
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+// Nuxt macro declaration for TS
+declare function useToast(): { add: (opts: any) => void }
 
-definePageMeta({ layout: 'dashboard' })
+definePageMeta({
+  layout: 'dashboard',
+  nav: {
+    key: 'settings',
+    label: 'Settings',
+    icon: 'i-lucide-settings',
+    group: 'User',
+    order: 8,
+    desktop: false,
+    mobile: true,
+  },
+  requiresAuth: true,
+})
 
 const fileRef = ref<HTMLInputElement>()
 
@@ -26,14 +41,14 @@ const profile = reactive<Partial<ProfileSchema>>({
 })
 
 const toast = useToast()
-async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
+async function onSubmit(_event: FormSubmitEvent<ProfileSchema>) {
   toast.add({
     title: 'Saved',
     description: 'Your settings have been updated.',
     icon: 'i-lucide-check',
     color: 'success',
   })
-  console.log('Profile saved', event.data)
+  // no-op
 }
 
 function onFileChange(e: Event) {

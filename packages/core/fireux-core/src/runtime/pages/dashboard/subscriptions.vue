@@ -33,22 +33,17 @@
 </template>
 
 <script setup>
-import { useUserRoutes } from '../../composables/app/routes/useUserRoutes'
-
-const groups = useUserRoutes()
-const userGroup = Array.isArray(groups) ? groups[0] : undefined
-const entry = userGroup?.children?.find(
-  (r) => r.to === '/dashboard/subscriptions'
-)
-const label = entry?.label ?? 'Subscriptions'
-const icon = entry?.icon ?? 'i-lucide-credit-card'
-
 definePageMeta({
   layout: 'dashboard',
-  layoutProps: {
-    dashboardType: 'user-dashboard',
+  nav: {
+    key: 'subscriptions',
+    label: 'Subscriptions',
+    icon: 'i-lucide-credit-card',
+    group: 'User',
+    order: 7,
+    desktop: false,
+    mobile: true,
   },
-  title: label,
-  icon: icon,
+  requiresAuth: true,
 })
 </script>

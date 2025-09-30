@@ -1,7 +1,19 @@
 <script setup lang="ts">import { ref, computed } from 'vue'
 
 // Note: This page can expand with invite/manage actions; see archived members mechanics for list + search patterns.
-definePageMeta({ layout: 'dashboard' })
+definePageMeta({
+  layout: 'dashboard',
+  nav: {
+    key: 'followers',
+    label: 'Followers',
+    icon: 'i-lucide-users',
+    group: 'User',
+    order: 6,
+    desktop: false,
+    mobile: true,
+  },
+  requiresAuth: true,
+})
 
 const q = ref('')
 const members = ref([

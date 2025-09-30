@@ -57,15 +57,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-// Nuxt auto-imports used in templates / setup
-declare function useRoute(): { path: string }
 import type { NavigationMenuItem } from '@nuxt/ui'
-
-const route = useRoute()
+import { useDashboardNav } from '../composables/app/nav/useDashboardNav'
+import type { DashboardItem } from '../composables/app/nav/useDashboardNav'
 
 const open = ref(false)
 
-// Minimal dummy data for ProfilesMenu (replace from tenant/app later)
+// Minimal placeholders for Profiles menu until wired from tenant/app
 type ProfileItem = {
   id: string
   label: string
@@ -73,103 +71,36 @@ type ProfileItem = {
   avatar?: { src: string; alt?: string }
   description?: string
 }
+const profiles = ref<ProfileItem[]>([])
+const activeProfileId = ref<string | null>(null)
 
-const profiles = ref<ProfileItem[]>([
-  { id: 'p-1', label: 'Acme Inc.', icon: 'i-lucide-building-2' },
-  { id: 'p-2', label: 'Globex', icon: 'i-lucide-briefcase' },
-  { id: 'p-3', label: 'Initech', icon: 'i-lucide-badge-cent' },
+// Dashboard links from route meta
+const { primary, secondary } = useDashboardNav()
+
+const links = computed<NavigationMenuItem[][]>(() => [
+  primary.value.map((i: DashboardItem) => ({
+    label: i.label,
+    icon: i.icon,
+    to: i.to,
+    onSelect: () => {
+      open.value = false
+    },
+  })),
+  secondary.value.map((i: DashboardItem) => ({
+    label: i.label,
+    icon: i.icon,
+    to: i.to,
+    onSelect: () => {
+      open.value = false
+    },
+  })),
 ])
-const activeProfileId = ref<string | null>(profiles.value[0]?.id ?? null)
-
-const links = [
-  [
-    {
-      label: 'Dashboard',
-      icon: 'i-lucide-layout-dashboard',
-      to: '/dashboard',
-      onSelect: () => {
-        open.value = false
-      },
-    },
-    {
-      label: 'Profile',
-      icon: 'i-lucide-user',
-      to: '/dashboard/user-profile',
-      onSelect: () => {
-        open.value = false
-      },
-    },
-    {
-      label: 'Purchases',
-      icon: 'i-lucide-shopping-cart',
-      to: '/dashboard/purchases',
-      onSelect: () => {
-        open.value = false
-      },
-    },
-    {
-      label: 'Favorites',
-      icon: 'i-lucide-heart',
-      to: '/dashboard/favorites',
-      onSelect: () => {
-        open.value = false
-      },
-    },
-    {
-      label: 'Settings',
-      icon: 'i-lucide-settings',
-      defaultOpen: true,
-      type: 'trigger',
-      children: [
-        {
-          label: 'General',
-          to: '/dashboard/settings',
-          exact: true,
-          onSelect: () => {
-            open.value = false
-          },
-        },
-        // Followers page lives at /dashboard/followers per IA (not a settings child)
-        {
-          label: 'Notifications',
-          to: '/dashboard/settings/notifications',
-          onSelect: () => {
-            open.value = false
-          },
-        },
-        {
-          label: 'Authentication',
-          to: '/dashboard/settings/authentication',
-          onSelect: () => {
-            open.value = false
-          },
-        },
-      ],
-    },
-  ],
-  [],
-] satisfies NavigationMenuItem[][]
 
 const groups = computed(() => [
   {
     id: 'links',
     label: 'Go to',
-    items: links.flat(),
-  },
-  {
-    id: 'code',
-    label: 'Code',
-    items: [
-      {
-        id: 'source',
-        label: 'View page source',
-        icon: 'i-simple-icons-github',
-        to: `https://github.com/nuxt-ui-templates/dashboard/blob/main/app/pages${
-          route.path === '/' ? '/index' : route.path
-        }.vue`,
-        target: '_blank',
-      },
-    ],
+    items: links.value.flat(),
   },
 ])
 

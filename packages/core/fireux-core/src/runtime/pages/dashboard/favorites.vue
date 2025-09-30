@@ -14,20 +14,17 @@
 </template>
 
 <script setup>
-import { useUserRoutes } from '../../composables/app/routes/useUserRoutes'
-
-const groups = useUserRoutes()
-const userGroup = Array.isArray(groups) ? groups[0] : undefined
-const entry = userGroup?.children?.find((r) => r.to === '/dashboard/favorites')
-const label = entry?.label ?? 'Favorites'
-const icon = entry?.icon ?? 'i-lucide-heart'
-
 definePageMeta({
   layout: 'dashboard',
-  layoutProps: {
-    dashboardType: 'user-dashboard',
+  nav: {
+    key: 'favorites',
+    label: 'Favorites',
+    icon: 'i-lucide-heart',
+    group: 'User',
+    order: 5,
+    desktop: false,
+    mobile: true,
   },
-  title: label,
-  icon: icon,
+  requiresAuth: true,
 })
 </script>

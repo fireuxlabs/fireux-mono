@@ -33,7 +33,19 @@
 </template>
 
 <script setup>
-definePageMeta({ layout: 'dashboard' })
+definePageMeta({
+  layout: 'dashboard',
+  nav: {
+    key: 'user-profile',
+    label: 'Profile',
+    icon: 'i-lucide-user',
+    group: 'User',
+    order: 2,
+    desktop: false,
+    mobile: true,
+  },
+  requiresAuth: true,
+})
 
 useHead({ title: 'Your Profile' })
 

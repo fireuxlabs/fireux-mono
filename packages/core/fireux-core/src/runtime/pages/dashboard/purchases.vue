@@ -1,5 +1,17 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'dashboard' })
+definePageMeta({
+  layout: 'dashboard',
+  nav: {
+    key: 'purchases',
+    label: 'Purchases',
+    icon: 'i-lucide-shopping-cart',
+    group: 'User',
+    order: 4,
+    desktop: false,
+    mobile: true,
+  },
+  requiresAuth: true,
+})
 </script>
 
 <template>

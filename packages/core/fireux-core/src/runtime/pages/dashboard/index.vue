@@ -131,11 +131,25 @@
 </template>
 
 <script setup lang="ts">
+// Nav meta: exclude from desktop header, optional mobile shortcut
+declare const definePageMeta: (meta: any) => void
+definePageMeta({
+  nav: {
+    key: 'dashboard',
+    label: 'Overview',
+    icon: 'i-lucide-layout-dashboard',
+    group: 'User',
+    order: 1,
+    desktop: false,
+    mobile: true,
+  },
+  requiresAuth: true,
+})
+// Removed duplicate definePageMeta declaration
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed, reactive, shallowRef, ref } from 'vue'
 
 // Nuxt app auto-imports are not visible to package TS, declare lightweight types
-declare const definePageMeta: (meta: any) => void
 declare function useRuntimeConfig(): any
 declare function useUser(): { user: any }
 declare function useDashboard(): { isNotificationsSlideoverOpen: any }
