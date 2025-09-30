@@ -4,12 +4,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
 import { useMiseboxRoutes } from '../composables/app/routes/useMiseboxRoutes'
 
 const { links } = useMiseboxRoutes()
 
-const KEEP_MENU = new Set<RouteLink['id']>([
+const KEEP_MENU = new Set<string>([
   'chefs',
   'suppliers',
   'kitchens',
@@ -19,7 +18,7 @@ const KEEP_MENU = new Set<RouteLink['id']>([
   'professionals',
 ])
 
-const KEEP_MOBILE = new Set<RouteLink['id']>([
+const KEEP_MOBILE = new Set<string>([
   ...KEEP_MENU,
   'chef-profile',
   'supplier-profile',

@@ -13,18 +13,34 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { RouteLink } from '../types/routeLink'
 import { useCoreRoutes } from '../composables/app/routes/useCoreRoutes'
+
+// Accept external routes (from tenants/apps) but fall back to core-computed links
+const props = defineProps<{
+  routes?: {
+    menuBarLinks: RouteLink[]
+    mobileLinks: RouteLink[]
+  }
+}>()
 
 const { links } = useCoreRoutes()
 
 const KEEP_MENU = new Set(['home', 'products', 'blog', 'users'])
 const KEEP_MOBILE = new Set([...KEEP_MENU, 'user', 'admin'])
 
-const menuBarLinks = computed(() =>
+const defaultMenuBarLinks = computed(() =>
   links.value.filter((r) => KEEP_MENU.has(r.id))
 )
-const mobileLinks = computed(() =>
+const defaultMobileLinks = computed(() =>
   links.value.filter((r) => KEEP_MOBILE.has(r.id))
+)
+
+const menuBarLinks = computed<RouteLink[]>(() =>
+  props.routes?.menuBarLinks ?? defaultMenuBarLinks.value
+)
+const mobileLinks = computed<RouteLink[]>(() =>
+  props.routes?.mobileLinks ?? defaultMobileLinks.value
 )
 </script>
 
