@@ -1,9 +1,16 @@
 // packages/tenants/fireux-misebox/src/runtime/composables/app/routes/useMiseboxRoutes.ts
-// Tenant-only navigation builder (no core links). Provides flat array which the layout filters.
-import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
-
+// Tenant-only navigation builder (no core links). Provides flat array and pre-filtered subsets.
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/user/useUser'
+// Avoid restricted deep imports: rely on Nuxt auto-import for useUser
+// and define a minimal local RouteLink type compatible with core.
+declare function useUser(): any
+interface RouteLink {
+  id: string
+  label: string
+  icon?: string
+  to?: string
+  children?: RouteLink[]
+}
 import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/app/routes/useJobRoutes'
 
 export function useMiseboxRoutes() {
@@ -70,5 +77,36 @@ export function useMiseboxRoutes() {
     ]
   })
 
-  return { links }
+  // Pre-filtered subsets for layout consumption
+  const MENU_IDS = new Set<string>([
+    'chefs',
+    'suppliers',
+    'kitchens',
+    'recipes',
+    'jobs',
+    'employers',
+    'professionals',
+  ])
+  const MOBILE_IDS = new Set<string>([
+    ...Array.from(MENU_IDS),
+    'chef-profile',
+    'supplier-profile',
+    'employer-profile',
+    'professional-profile',
+  ])
+
+  const menuLinks = computed<RouteLink[]>(() =>
+    links.value.filter((r) => MENU_IDS.has(r.id))
+  )
+  const mobileLinks = computed<RouteLink[]>(() =>
+    links.value.filter((r) => MOBILE_IDS.has(r.id))
+  )
+
+  // Ready-to-pass shape for CoreDefault
+  const routes = computed(() => ({
+    menuBarLinks: menuLinks.value,
+    mobileLinks: mobileLinks.value,
+  }))
+
+  return { links, menuLinks, mobileLinks, routes }
 }
