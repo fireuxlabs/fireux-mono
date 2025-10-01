@@ -15,10 +15,11 @@
         color="warning"
         variant="subtle"
         :title="`Welcome to ${appDisplayName} — you are in dev mode`"
-      />
-      <div v-if="isDev" class="dev-tools-corner">
-        <AppDebug />
-      </div>
+      >
+        <div class="ml-auto">
+          <AppDebug />
+        </div>
+      </UBanner>
     </ClientOnly>
 
     <!-- App content -->
@@ -61,11 +62,4 @@ useHead({
 })
 </script>
 
-<style scoped>
-.dev-tools-corner {
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 60;
-}
-</style>
+

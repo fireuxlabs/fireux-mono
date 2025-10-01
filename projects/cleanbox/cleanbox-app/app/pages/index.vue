@@ -45,15 +45,14 @@
 
 <script setup>
 definePageMeta({
-  layout: 'landing',
+  layout: 'default',
   nav: {
     key: 'home',
     label: 'Home',
     icon: 'i-lucide-home',
-    group: 'Core',
-    order: 1,
     desktop: true,
     mobile: true,
+    layouts: ['default'],
   },
 })
 // SEO and Meta
