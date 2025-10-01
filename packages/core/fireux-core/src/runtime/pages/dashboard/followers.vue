@@ -1,4 +1,5 @@
-<script setup lang="ts">import { ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 
 // Note: This page can expand with invite/manage actions; see archived members mechanics for list + search patterns.
 definePageMeta({
@@ -8,7 +9,7 @@ definePageMeta({
     label: 'Followers',
     icon: 'i-lucide-users',
     group: 'User',
-  order: 5,
+    order: 5,
     desktop: false,
     mobile: true,
   },

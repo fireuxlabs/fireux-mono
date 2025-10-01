@@ -1,10 +1,7 @@
 <template>
-  <CoreDev :devRoutes="miseboxDevRoutes" />
+  <CoreDefault />
 </template>
 
 <script setup>
-import { getMiseboxDevRoutes } from '../composables/app/routes/useMiseboxDevRoutes'
-import { computed } from 'vue'
-
-const miseboxDevRoutes = computed(() => getMiseboxDevRoutes())
+// Dev layout simplified to CoreDefault; if a special CoreDev exists later, we can rewire.
 </script>

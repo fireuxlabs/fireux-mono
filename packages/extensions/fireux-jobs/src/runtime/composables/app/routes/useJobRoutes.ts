@@ -1,6 +1,12 @@
 // Export for public job routes
-// Local type to avoid cross-package deep imports
-import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
+// Local RouteLink type to avoid cross-package deep imports
+export interface RouteLink {
+  id: string
+  label: string
+  icon?: string
+  to?: string
+  children?: RouteLink[]
+}
 
 export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
   const jobRoutes: RouteLink[] = [

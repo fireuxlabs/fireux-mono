@@ -30,34 +30,39 @@
     </div>
     <details class="raw">
       <summary>Raw Route Objects</summary>
-      <pre>{{ JSON.stringify(coreRoutes.links.value, null, 2) }}</pre>
+      <pre>{{ JSON.stringify(metaLinks, null, 2) }}</pre>
     </details>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-// useCoreRoutes provided globally
-declare function useCoreRoutes(): any
-const coreRoutes = useCoreRoutes()
+declare function useRouter(): { getRoutes: () => any[] }
+declare function useUser(): { isAdmin?: any }
+const router = useRouter()
+const routes = computed(() => router.getRoutes())
+const isAdmin = (useUser()?.isAdmin?.value ?? false) as boolean
 
-const allIds = computed(() => coreRoutes.links.value.map((l: any) => l.id))
-const isAppUser = coreRoutes.isAppUser?.value
-const isAdmin = coreRoutes.isAdmin?.value
+const metaLinks = computed(() =>
+  routes.value
+    .filter((r: any) => r?.meta?.nav?.key)
+    .map((r: any) => ({
+      id: r.meta.nav.key,
+      label: r.meta.nav.label ?? r.path,
+    }))
+)
 
-// Reconstruct same filters as default layout for parity
-const menuIds = computed(() =>
-  coreRoutes.links.value
-    .filter((r: any) => ['home', 'products', 'blog', 'users'].includes(r.id))
-    .map((r: any) => r.id)
-)
-const mobileIds = computed(() =>
-  coreRoutes.links.value
-    .filter((r: any) =>
-      ['home', 'products', 'blog', 'users', 'user', 'admin'].includes(r.id)
-    )
-    .map((r: any) => r.id)
-)
+const allIds = computed(() => metaLinks.value.map((l: any) => l.id))
+const isAppUser = undefined
+
+const menuIds = computed(() => ['home', 'products', 'blog'])
+const mobileIds = computed(() => {
+  const basics = ['home', 'products', 'blog']
+  const extras = metaLinks.value
+    .map((l: any) => l.id)
+    .filter((id: string) => !basics.includes(id))
+  return [...basics, ...extras]
+})
 </script>
 
 <style scoped>

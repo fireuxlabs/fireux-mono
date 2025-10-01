@@ -36,6 +36,15 @@ useSeoMeta({
 
 definePageMeta({
   layout: 'default',
+  nav: {
+    key: 'home',
+    label: 'Home',
+    icon: 'i-lucide-home',
+    group: 'Core',
+    order: 1,
+    desktop: true,
+    mobile: true,
+  },
 })
 </script>
 

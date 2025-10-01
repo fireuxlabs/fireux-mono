@@ -1,3 +1,16 @@
+# DEPRECATED — Legacy routes helpers (migrated)
+
+Status: deprecated (2025-09-30)
+
+This document described tenant/core “routes helpers,” which have been removed.
+
+See instead:
+
+- Meta-driven navigation overview: `copilot-documentation/nav.md`
+- Migration guide: `copilot-documentation/rout-to-nav.md`
+
+---
+
 # Routes wiring report
 
 Purpose: single place showing the exact source of truth for default layout routes.

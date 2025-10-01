@@ -21,7 +21,7 @@ definePageMeta({
     label: 'Favorites',
     icon: 'i-lucide-heart',
     group: 'User',
-  order: 4,
+    order: 4,
     desktop: false,
     mobile: true,
   },

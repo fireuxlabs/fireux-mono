@@ -132,7 +132,6 @@
 
 <script setup lang="ts">
 // Nav meta: exclude from desktop header, optional mobile shortcut
-declare const definePageMeta: (meta: any) => void
 definePageMeta({
   nav: {
     key: 'dashboard',
@@ -144,6 +143,7 @@ definePageMeta({
     mobile: true,
   },
   requiresAuth: true,
+  layout: 'dashboard',
 })
 // Removed duplicate definePageMeta declaration
 import type { DropdownMenuItem } from '@nuxt/ui'
@@ -158,7 +158,6 @@ declare function useDashboard(): { isNotificationsSlideoverOpen: any }
 type Period = 'daily' | 'weekly' | 'monthly'
 type Range = { start: Date; end: Date }
 
-definePageMeta({ layout: 'dashboard' })
 const { isNotificationsSlideoverOpen } = useDashboard()
 const { user } = useUser()
 const config = useRuntimeConfig()

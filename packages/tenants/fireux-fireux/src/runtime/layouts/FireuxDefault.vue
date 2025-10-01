@@ -1,27 +1,7 @@
 <template>
-  <CoreDefault :routes="fireuxRoutes" />
+  <CoreDefault />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useFireuxRoutes } from '../composables/app/routes/useFireuxRoutes'
-
-// Flat tenant-only links (currently none; ready for future)
-const { links } = useFireuxRoutes()
-
-// Desktop header: (none for now — CoreDefault already renders core system links)
-const DESKTOP_KEEP = new Set<string>([
-  // e.g., 'docs', 'changelog' — add when FireUX tenant has public sections
-])
-
-// Mobile menu: (none for now — we’re not adding tenant-specific items yet)
-const MOBILE_KEEP = new Set<string>([
-  ...DESKTOP_KEEP,
-  // e.g., 'labs'
-])
-
-const fireuxRoutes = computed(() => ({
-  menuBarLinks: links.value.filter((r) => DESKTOP_KEEP.has(r.id)),
-  mobileLinks: links.value.filter((r) => MOBILE_KEEP.has(r.id)),
-}))
+// No tenant-specific route helpers needed; header uses useNavDefault.
 </script>

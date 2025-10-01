@@ -15,18 +15,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useCoreRoutes } from '../composables/app/routes/useCoreRoutes'
-
-const { links } = useCoreRoutes()
-const KEEP_MENU = new Set(['home', 'products', 'blog', 'users'])
-const KEEP_MOBILE = new Set([...KEEP_MENU, 'user', 'admin'])
-
-const menuBarLinks = computed(() =>
-  links.value.filter((r) => KEEP_MENU.has(r.id))
-)
-const mobileLinks = computed(() =>
-  links.value.filter((r) => KEEP_MOBILE.has(r.id))
-)
+import { useNavDefault } from '../composables/app/nav/useNavDefault'
+const nav = useNavDefault()
+const menuBarLinks = computed(() => nav.desktop.value)
+const mobileLinks = computed(() => nav.mobile.value)
 
 defineOptions({ name: 'CorePortfolio' })
 </script>

@@ -1,10 +1,7 @@
 <!-- packages/core/fireux-core/src/runtime/layouts/CoreDefault.vue -->
 <template>
   <div class="layout-wrapper">
-    <LayoutsDefaultHeader
-      :menu-bar-links="menuBarLinks"
-      :mobile-links="mobileLinks"
-    />
+    <LayoutsDefaultHeader />
 
     <main class="layout-main">
       <UContainer>
@@ -17,15 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useNav } from '../composables/app/nav/useNav'
-
-defineOptions({ name: 'CoreDefault' })
-
-// Meta-driven nav (Header also derives its own; these are fallbacks for props-only mode)
-const nav = useNav()
-const menuBarLinks = computed(() => nav.desktop.value)
-const mobileLinks = computed(() => nav.mobile.value)
 </script>
 
 <style scoped>

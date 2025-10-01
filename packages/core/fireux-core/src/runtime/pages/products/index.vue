@@ -18,7 +18,14 @@ import { useProducts } from '../../composables/firestore/objects/Product/useProd
 declare function definePageMeta(meta: any): void
 
 definePageMeta({
-  nav: { key: 'products', label: 'Products', icon: 'i-lucide-box' },
+  nav: {
+    key: 'products',
+    label: 'Products',
+    icon: 'i-lucide-box',
+    desktop: true,
+    mobile: true,
+    layouts: ['default'],
+  },
 })
 
 const { productsCollection } = await useProducts()

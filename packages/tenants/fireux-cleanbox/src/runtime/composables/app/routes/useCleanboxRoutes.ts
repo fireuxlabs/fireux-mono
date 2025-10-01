@@ -1,5 +1,11 @@
 import { computed } from 'vue'
-import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
+interface RouteLink {
+  id: string
+  label: string
+  icon?: string
+  to?: string
+  children?: RouteLink[]
+}
 
 // Flat tenant-only links (currently none)
 export function useCleanboxRoutes() {

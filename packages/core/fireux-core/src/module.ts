@@ -46,4 +46,4 @@ const module: NuxtModule = defineNuxtModule({
 })
 
 export default module
-export { createFireuxConfig } from './runtime/utils/fireux-config'
+export { createFireuxConfig } from './config/fireux/fireux-config'

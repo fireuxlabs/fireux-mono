@@ -1,6 +1,11 @@
-// Use universal RouteLink type
-import type { RouteLink } from '#fireux-core-runtime/types/routeLink'
-export type { RouteLink }
+// Local RouteLink interface for tenant-defined links
+export interface RouteLink {
+  id: string
+  label: string
+  icon?: string
+  to?: string
+  children?: RouteLink[]
+}
 
 /**
  * Public header routes the tenant wants to add on top of core system routes.

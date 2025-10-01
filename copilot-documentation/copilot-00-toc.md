@@ -1,7 +1,7 @@
 ---
 title: Copilot Table of Contents
 status: draft
-updated: 2025-09-01
+updated: 2025-09-30
 ---
 
 [← Back to ToC](./copilot-00-toc.md)
@@ -23,6 +23,8 @@ updated: 2025-09-01
 - [Projects](./copilot-05-projects.md)
 - [CI/CD](./copilot-06-ci-cd.md)
 - [Conventions](./copilot-07-conventions.md)
+- [Navigation (meta-driven)](./nav.md)
+- [Route → Nav migration](./rout-to-nav.md)
 
 > Git & GitHub: quick commands in the [Cheatsheet](./copilot-appendices/copilot-commands-cheatsheet.md#git--github-simple).
 

@@ -12,10 +12,10 @@
 // Vue's computed is auto-imported by Nuxt; declare for TS
 declare const computed: <T>(getter: () => T) => import('vue').ComputedRef<T>
 const props = defineProps<{
-  devRoutes?: import('../types/layouts').DevRoutes
+  devRoutes?: Record<string, any>
 }>()
 const safeDevRoutes = computed(
-  () => props.devRoutes ?? ({} as import('../types/layouts').DevRoutes)
+  () => props.devRoutes ?? ({} as Record<string, any>)
 )
 </script>
 

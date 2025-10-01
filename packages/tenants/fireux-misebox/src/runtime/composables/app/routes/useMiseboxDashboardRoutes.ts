@@ -1,5 +1,11 @@
 import { getJobDashboardRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/app/routes/useJobDashboardRoutes'
-import type { RouteLink } from 'fireux-core/runtime/types/routeLink'
+interface RouteLink {
+  id: string
+  label: string
+  icon?: string
+  to?: string
+  children?: RouteLink[]
+}
 
 export function getMiseboxDashboardRoutes(
   hasProfile: (profileType: string) => boolean

@@ -25,7 +25,18 @@
 </template>
 
 <script setup>
-definePageMeta({ layout: 'landing' })
+definePageMeta({
+  layout: 'landing',
+  nav: {
+    key: 'home',
+    label: 'Home',
+    icon: 'i-lucide-home',
+    group: 'Core',
+    order: 1,
+    desktop: true,
+    mobile: true,
+  },
+})
 // Simple SEO
 useSeoMeta({
   title: 'FireUX - Vue.js Development Ecosystem',
