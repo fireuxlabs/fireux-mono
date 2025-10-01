@@ -23,18 +23,14 @@ import { professionalConfig } from '../../models/profiles/Professional.model'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'professional-profile',
+    key: 'dashboard-professional-profile',
     label: 'Professional Profile',
     icon: 'i-lucide-user-round-cog',
-    desktop: false,
-    mobile: true,
-    order: 40,
-    group: 'Profiles',
+    desktop: true,
+    layouts: ['dashboard'],
+    group: 'profiles',
+    profileId: 'professional',
   },
-  ProfileMenu: true,
-  PofileMenu: true,
-  tenant: 'misebox',
   requiresAuth: true,
-  roles: [],
 })
 </script>

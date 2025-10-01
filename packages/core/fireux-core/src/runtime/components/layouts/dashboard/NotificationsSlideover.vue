@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { formatTimeAgo } from '@vueuse/core'
 
-const { isNotificationsSlideoverOpen } = useDashboard()
+// Use v-model:open from parent instead of a global dashboard store
+const open = defineModel<boolean>('open', { default: false })
 
 // Using any for now since Notification type isn't present in repo context
 const { data: notifications } = await useFetch<any[]>('/api/notifications')
 </script>
 
 <template>
-  <USlideover v-model:open="isNotificationsSlideoverOpen" title="Notifications">
+  <USlideover v-model:open="open" title="Notifications">
     <template #body>
       <NuxtLink
         v-for="notification in notifications"

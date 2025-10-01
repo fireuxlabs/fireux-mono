@@ -23,18 +23,14 @@ import { employerConfig } from '../../models/profiles/Employer.model'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'employer-profile',
+    key: 'dashboard-employer-profile',
     label: 'Employer Profile',
     icon: 'i-lucide-briefcase-business',
-    desktop: false,
-    mobile: true,
-    order: 30,
-    group: 'Profiles',
+    desktop: true,
+    layouts: ['dashboard'],
+    group: 'profiles',
+    profileId: 'employer',
   },
-  ProfileMenu: true,
-  PofileMenu: true,
-  tenant: 'misebox',
   requiresAuth: true,
-  roles: [],
 })
 </script>

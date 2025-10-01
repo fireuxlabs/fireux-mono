@@ -21,24 +21,18 @@
 // Nuxt macro type hint for package-level typecheck
 declare function definePageMeta(meta: any): void
 import { chefConfig } from '../../models/profiles/Chef.model'
+// pages/dashboard/chef-profile.vue (same pattern for others)
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'chef-profile',
+    key: 'dashboard-chef-profile',
     label: 'Chef Profile',
     icon: 'i-lucide-chef-hat',
-    desktop: false,
-    mobile: true,
-    order: 10,
-    group: 'Profiles',
+    desktop: true,
+    layouts: ['dashboard'],
+    group: 'profiles',
+    profileId: 'chef', // expose to useNav
   },
-  // Custom marker for inclusion in Profiles menu
-  ProfileMenu: true,
-  // tolerate common misspelling
-  PofileMenu: true,
-  // Gates
-  tenant: 'misebox',
   requiresAuth: true,
-  roles: [],
 })
 </script>

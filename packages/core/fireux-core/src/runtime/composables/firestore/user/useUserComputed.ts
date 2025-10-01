@@ -1,4 +1,3 @@
-// packages/core/fireux-core/src/runtime/composables/firestore/user/useUserComputed.ts
 import { computed, type Ref } from 'vue'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { User } from '../../../models/core/user.model'
@@ -97,6 +96,12 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     }
   })
 
+  /** Quick membership test */
+  function hasProfile(id: string) {
+    const active = user.value?.profiles || user.value?.core?.profiles || []
+    return Array.isArray(active) ? active.includes(id) : false
+  }
+
   return {
     // gates
     isSignedIn,
@@ -116,5 +121,8 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     // header UX
     headerState,
     nextCta,
+
+    // profiles
+    hasProfile,
   }
 }

@@ -5,13 +5,11 @@ import { ref, computed } from 'vue'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'followers',
+    key: 'dashboard-followers',
     label: 'Followers',
     icon: 'i-lucide-users',
-    group: 'User',
-    order: 5,
-    desktop: false,
-    mobile: true,
+    desktop: true,
+    layouts: ['dashboard'],
   },
   requiresAuth: true,
 })

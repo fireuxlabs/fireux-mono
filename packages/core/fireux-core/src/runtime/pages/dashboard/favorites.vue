@@ -17,13 +17,11 @@
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'favorites',
+    key: 'dashboard-favorites',
     label: 'Favorites',
     icon: 'i-lucide-heart',
-    group: 'User',
-    order: 4,
-    desktop: false,
-    mobile: true,
+    desktop: true,
+    layouts: ['dashboard'],
   },
   requiresAuth: true,
 })

@@ -1,14 +1,16 @@
 <!-- packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfilesMenu.vue -->
 <template>
   <UDropdownMenu
-    :items="items"
+    v-if="menu.length"
+    :items="dropdownItems"
     :content="{ align: 'center', collisionPadding: 12 }"
-    :ui="{ content: collapsed ? 'w-40' : 'w-(--reka-dropdown-menu-trigger-width)' }"
+    :ui="{
+      content: collapsed ? 'w-40' : 'w-(--reka-dropdown-menu-trigger-width)',
+    }"
   >
     <UButton
       :label="collapsed ? undefined : selected?.label"
-      :avatar="selected?.avatar"
-      :icon="selected?.icon"
+      :icon="selected?.icon || 'i-lucide-users'"
       :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
       color="neutral"
       variant="ghost"
@@ -17,46 +19,55 @@
       class="data-[state=open]:bg-elevated"
       :class="[!collapsed && 'py-2']"
       :ui="{ trailingIcon: 'text-dimmed' }"
+      :disabled="!menu.length"
     />
   </UDropdownMenu>
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { computed } from 'vue'
+import { useNav } from '../../../composables/app/nav'
+import { useUser } from '../../../composables/firestore/user/useUser'
 
-const props = defineProps<{
-  collapsed?: boolean
-  profiles: Array<{
-    id: string
-    label: string
-    avatar?: { src: string; alt?: string }
-    icon?: string
-  }>
-  modelValue?: string | null
-}>()
+defineOptions({ name: 'LayoutsDashboardProfilesMenu' })
+defineProps<{ collapsed?: boolean }>()
 
-const emit = defineEmits<{
-  'update:modelValue': [string | null]
-  select: [string]
-}>()
+const { desktop } = useNav(['dashboard'])
+const { user } = useUser()
+const router = useRouter()
 
-const selected = computed(() => {
-  if (!props.profiles?.length) return null
-  if (props.modelValue) return props.profiles.find(p => p.id === props.modelValue) ?? props.profiles[0]
-  return props.profiles[0]
+const profiles = computed(() =>
+  desktop.value.filter((i) => i.group === 'profiles')
+)
+
+const menu = computed(() => {
+  const active = user.value?.profiles ?? []
+  return profiles.value.filter(
+    (i) => !i.profileId || active.includes(i.profileId)
+  )
 })
 
-const items = computed<DropdownMenuItem[][]>(() => [[
-  ...props.profiles.map(p => ({
-    id: p.id,
+type MenuItem = { label: string; icon?: string; to: string; profileId?: string }
+const selected = ref<MenuItem | null>(null)
+
+watch(
+  menu,
+  (list) => {
+    selected.value = list[0] ?? null
+  },
+  { immediate: true }
+)
+
+const dropdownItems = computed<DropdownMenuItem[][]>(() => [
+  menu.value.map((p) => ({
     label: p.label,
     icon: p.icon,
-    avatar: p.avatar,
     onSelect: () => {
-      emit('update:modelValue', p.id)
-      emit('select', p.id)
-    }
-  }))
-]])
+      selected.value = p
+      router.push(p.to)
+    },
+  })),
+])
 </script>

@@ -36,13 +36,11 @@
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'subscriptions',
+    key: 'dashboard-subscriptions',
     label: 'Subscriptions',
     icon: 'i-lucide-credit-card',
-    group: 'User',
-    order: 7,
-    desktop: false,
-    mobile: true,
+    desktop: true,
+    layouts: ['dashboard'],
   },
   requiresAuth: true,
 })

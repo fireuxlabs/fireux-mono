@@ -23,18 +23,14 @@ import { supplierConfig } from '../../models/profiles/Supplier.model'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'supplier-profile',
+    key: 'dashboard-supplier-profile',
     label: 'Supplier Profile',
     icon: 'i-lucide-package',
-    desktop: false,
-    mobile: true,
-    order: 20,
-    group: 'Profiles',
+    desktop: true,
+    layouts: ['dashboard'],
+    group: 'profiles',
+    profileId: 'supplier',
   },
-  ProfileMenu: true,
-  PofileMenu: true,
-  tenant: 'misebox',
   requiresAuth: true,
-  roles: [],
 })
 </script>

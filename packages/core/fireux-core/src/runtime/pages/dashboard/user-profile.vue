@@ -36,13 +36,11 @@
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'user-profile',
-    label: 'Profile',
+    key: 'dashboard-user-profile',
+    label: 'User Profile',
     icon: 'i-lucide-user',
-    group: 'User',
-    order: 2,
-    desktop: false,
-    mobile: true,
+    desktop: true,
+    layouts: ['dashboard'],
   },
   requiresAuth: true,
 })

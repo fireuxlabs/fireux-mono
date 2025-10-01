@@ -128,19 +128,23 @@
       <LayoutsDashboardHomeSales :period="period" :range="range" />
     </template>
   </UDashboardPanel>
+
+  <!-- Notifications slideover controlled by local ref -->
+  <LayoutsDashboardNotificationsSlideover
+    v-model:open="isNotificationsSlideoverOpen"
+  />
 </template>
 
 <script setup lang="ts">
-// Nav meta: exclude from desktop header, optional mobile shortcut
+// Nav meta unified
 definePageMeta({
   nav: {
-    key: 'dashboard',
+    key: 'dashboard-home',
     label: 'Overview',
     icon: 'i-lucide-layout-dashboard',
-    group: 'User',
-    order: 1,
-    desktop: false,
+    desktop: true,
     mobile: true,
+    layouts: ['dashboard'],
   },
   requiresAuth: true,
   layout: 'dashboard',
@@ -152,13 +156,13 @@ import { computed, reactive, shallowRef, ref } from 'vue'
 // Nuxt app auto-imports are not visible to package TS, declare lightweight types
 declare function useRuntimeConfig(): any
 declare function useUser(): { user: any }
-declare function useDashboard(): { isNotificationsSlideoverOpen: any }
 
 // Local lightweight types to avoid external deps
 type Period = 'daily' | 'weekly' | 'monthly'
 type Range = { start: Date; end: Date }
 
-const { isNotificationsSlideoverOpen } = useDashboard()
+// Local notifications slideover state (was useDashboard)
+const isNotificationsSlideoverOpen = ref(false)
 const { user } = useUser()
 const config = useRuntimeConfig()
 

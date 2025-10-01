@@ -1,4 +1,3 @@
-// packages/core/fireux-core/src/runtime/models/core/user.model.ts
 import type { FirebaseTimestamp } from '../types/firebase'
 
 /** 🔹 Unified User (flattened app-over-core view + partitioned refs) */
@@ -7,6 +6,7 @@ export interface User {
   // flattened convenience (computed at runtime from core/app)
   display_name?: string
   avatar?: string
+  profiles?: string[] // e.g. ['chef', 'professional']
 
   core: CoreUserDoc | null
   app?: AppUserDoc | null
@@ -21,7 +21,7 @@ export interface CoreUserDoc {
   email?: string
   userOf?: string[]
   adminOf?: string[]
-  global_profiles?: string[]
+  profiles?: string[] // ← only this, not "global_profiles"
   created_at: FirebaseTimestamp
   updated_at?: FirebaseTimestamp
 }
@@ -34,7 +34,7 @@ export interface AppUserDoc {
   handle?: string
   email?: string
   role?: 'user' | 'admin'
-  app_profiles?: string[]
+  profiles?: string[] // ← only this, not "app_profiles"
   created_at: FirebaseTimestamp
   updated_at?: FirebaseTimestamp
 }
@@ -49,8 +49,7 @@ export namespace UserCard {
     handle?: string
   }
   export interface Cell extends Pill {
-    app_profiles?: string[]
-    global_profiles?: string[]
+    profiles?: string[]
   }
   export interface Profile extends Cell {
     created_at?: FirebaseTimestamp

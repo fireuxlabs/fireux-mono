@@ -9,13 +9,11 @@ declare function useToast(): { add: (opts: any) => void }
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'settings',
+    key: 'dashboard-settings',
     label: 'Settings',
     icon: 'i-lucide-settings',
-    group: 'User',
-    order: 8,
-    desktop: false,
-    mobile: true,
+    desktop: true,
+    layouts: ['dashboard'],
   },
   requiresAuth: true,
 })

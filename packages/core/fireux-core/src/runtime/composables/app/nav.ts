@@ -7,6 +7,9 @@ export interface NavMeta {
   icon?: string
   desktop?: boolean
   mobile?: boolean
+  group?: string
+  /** Optional profile type identifier for profile routes, e.g. 'chef' */
+  profileId?: string
   layouts: string[] // explicit; no implicit fallback
 }
 
@@ -18,7 +21,14 @@ declare module 'vue-router' {
 
 declare function useRouter(): { getRoutes: () => any[] }
 
-export type NavItem = { label: string; icon?: string; to: string }
+export type NavItem = {
+  key: string
+  label: string
+  icon?: string
+  to: string
+  group?: string
+  profileId?: string
+}
 
 export function useNav(targetLayouts: string | string[]) {
   const router = useRouter()
@@ -34,9 +44,12 @@ export function useNav(targetLayouts: string | string[]) {
   }
 
   const toItem = (r: any): NavItem => ({
+    key: r.meta.nav.key,
     label: r.meta.nav.label ?? r.path,
     icon: r.meta.nav.icon,
     to: r.path as string,
+    group: r.meta.nav.group,
+    profileId: r.meta.nav.profileId,
   })
 
   const scoped = computed(() => routes.value.filter(matches))

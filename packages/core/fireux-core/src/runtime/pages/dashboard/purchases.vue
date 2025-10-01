@@ -2,13 +2,11 @@
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'purchases',
+    key: 'dashboard-purchases',
     label: 'Purchases',
     icon: 'i-lucide-shopping-cart',
-    group: 'User',
-    order: 3,
-    desktop: false,
-    mobile: true,
+    desktop: true,
+    layouts: ['dashboard'],
   },
   requiresAuth: true,
 })

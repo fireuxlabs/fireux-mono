@@ -17,6 +17,16 @@ export function useProfileComputed(
     ? computed(() => !!profile.value?.app)
     : undefined
 
+  // Unified: treat profile as present if either core or app exists (tenants prefer app but include core)
+  const hasProfile = computed(() => {
+    if (isTenant) {
+      // When tenant, count either app overlay or core baseline
+      return !!(hasAppProfile?.value || hasCoreProfile.value)
+    }
+    // Non-tenant only has core
+    return hasCoreProfile.value
+  })
+
   const ctaMessage = computed(() =>
     hasCoreProfile.value
       ? null
@@ -26,6 +36,7 @@ export function useProfileComputed(
   return {
     hasCoreProfile,
     ...(isTenant ? { hasAppProfile } : {}),
+    hasProfile,
     ctaMessage,
   }
 }
