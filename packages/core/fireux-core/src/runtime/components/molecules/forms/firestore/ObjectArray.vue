@@ -1,6 +1,7 @@
 <template>
   <div>
-  <h3 v-if="label">{{ label }}</h3>
+    <h3 v-if="label">{{ label }}</h3>
+    <div v-if="debugWhere === 'label'">{{ debugText }}</div>
 
     <!-- Controls -->
     <div>
@@ -36,12 +37,18 @@
           {{ i18n.clear || 'Clear' }}
         </button>
       </template>
-      <div v-if="errorMessage" role="alert" aria-live="polite">{{ errorMessage }}</div>
+      <div v-if="errorMessage" role="alert" aria-live="polite">
+        {{ errorMessage }}
+      </div>
+      <div v-if="debugWhere === 'controls'">{{ debugText }}</div>
     </div>
 
     <!-- Display mode -->
     <div v-if="!isEditing">
-      <div v-if="!items || items.length === 0" aria-live="polite">{{ i18n.empty }}</div>
+      <div v-if="debugWhere === 'display'">{{ debugText }}</div>
+      <div v-if="!items || items.length === 0" aria-live="polite">
+        {{ i18n.empty }}
+      </div>
       <div v-else>
         <div v-for="(item, index) in items" :key="getKey(item, index)">
           <slot name="display" :item="item" :index="index">
@@ -53,7 +60,10 @@
 
     <!-- Edit mode -->
     <div v-else>
-      <div v-if="localItems.length === 0" aria-live="polite">{{ i18n.empty }}</div>
+      <div v-if="debugWhere === 'edit'">{{ debugText }}</div>
+      <div v-if="localItems.length === 0" aria-live="polite">
+        {{ i18n.empty }}
+      </div>
       <div v-else>
         <div v-for="(item, index) in localItems" :key="getKey(item, index)">
           <slot
@@ -79,10 +89,16 @@
 
       <!-- Create new item -->
       <div>
-        <slot name="create" :push="push" :can-add="canAdd" :max-items="maxItems"></slot>
+        <slot
+          name="create"
+          :push="push"
+          :can-add="canAdd"
+          :max-items="maxItems"
+        ></slot>
         <div v-if="!canAdd" aria-live="polite">
           {{ i18n.maxReached || 'Maximum items reached' }}
         </div>
+        <div v-if="debugWhere === 'create'">{{ debugText }}</div>
       </div>
     </div>
   </div>
@@ -104,12 +120,23 @@ const props = defineProps({
     required: true,
   },
   i18n: {
-    type: Object as () => { empty?: string; edit?: string; save?: string; cancel?: string; clear?: string; remove?: string; maxReached?: string },
+    type: Object as () => {
+      empty?: string
+      edit?: string
+      save?: string
+      cancel?: string
+      clear?: string
+      remove?: string
+      maxReached?: string
+    },
     default: () => ({ empty: 'No items yet.' }),
   },
   minItems: { type: Number, default: 0 },
   maxItems: { type: Number, default: Infinity },
   confirmClear: { type: Boolean, default: true },
+  // Optional debug helpers to show a simple marker in a specific area
+  debugWhere: { type: String, default: '' }, // 'label' | 'controls' | 'display' | 'edit' | 'create'
+  debugText: { type: String, default: 'hello' },
 })
 
 const emit = defineEmits<{
@@ -126,10 +153,14 @@ const errorMessage = ref('')
 const localItems = ref<any[]>([])
 
 const items = computed(() => props.firebaseValue || [])
-const isDirty = computed(() => JSON.stringify(localItems.value) !== JSON.stringify(items.value))
+const isDirty = computed(
+  () => JSON.stringify(localItems.value) !== JSON.stringify(items.value)
+)
 const canAdd = computed(() => localItems.value.length < props.maxItems)
 const canRemoveMore = computed(() => localItems.value.length > props.minItems)
-const canClearAll = computed(() => localItems.value.length > 0 && props.minItems === 0)
+const canClearAll = computed(
+  () => localItems.value.length > 0 && props.minItems === 0
+)
 
 function deepClone<T>(val: T): T {
   try {
@@ -187,7 +218,10 @@ async function clearAll() {
       return
     }
     if (props.confirmClear) {
-      const ok = typeof window !== 'undefined' ? window.confirm('Clear all items?') : true
+      const ok =
+        typeof window !== 'undefined'
+          ? window.confirm('Clear all items?')
+          : true
       if (!ok) return
     }
     localItems.value = []
@@ -228,5 +262,12 @@ watch(
 )
 
 // Expose imperative handlers for parents when needed
-defineExpose({ startEditing, saveChanges, cancelEditing, push, remove, clearAll })
+defineExpose({
+  startEditing,
+  saveChanges,
+  cancelEditing,
+  push,
+  remove,
+  clearAll,
+})
 </script>
