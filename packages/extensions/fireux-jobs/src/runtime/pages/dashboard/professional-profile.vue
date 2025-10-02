@@ -20,6 +20,7 @@
 <script setup lang="ts">
 declare function definePageMeta(meta: any): void
 import { professionalConfig } from '../../models/profiles/Professional.model'
+import JobProfilesProfessionalEdit from '../../components/Organisms/profiles/Professional/Edit.vue'
 definePageMeta({
   layout: 'dashboard',
   nav: {

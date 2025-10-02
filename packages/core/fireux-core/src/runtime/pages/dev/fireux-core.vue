@@ -9,7 +9,10 @@
         <li><strong>role:</strong> {{ config.role }}</li>
         <li><strong>appId:</strong> {{ config.appId }}</li>
         <li><strong>appName:</strong> {{ config.appName }}</li>
-        <li><strong>modules:</strong> {{ (config.modules || []).join(', ') || 'none' }}</li>
+        <li>
+          <strong>modules:</strong>
+          {{ (config.modules || []).join(', ') || 'none' }}
+        </li>
         <li><strong>devMode:</strong> {{ String(config.devMode) }}</li>
       </ul>
     </UCard>

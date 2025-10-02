@@ -1,19 +1,130 @@
 <!-- professional edit -->
 <template>
   <ClientOnly>
-    <UCard class="space-y-6">
-      <MoleculesFormsFirestoreAvatarSelection
-        :user="{ ...professional, avatar_url: professional?.avatar }"
-        @upload="onUploadAvatar"
-      />
+    <div class="space-y-8">
+      <!-- Section: Both (shared fields) -->
+      <UCard class="space-y-6">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold">Professional — Both</h3>
+            <UBadge variant="soft">Shared fields</UBadge>
+          </div>
+        </template>
 
-      <MoleculesFormsFirestoreField
-        label="Display Name"
-        :firebase-value="professional?.display_name"
-        placeholder="Enter your display name"
-        :update-function="onSaveDisplayName"
-      />
-    </UCard>
+        <MoleculesFormsFirestoreAvatarPicker
+          :src="professional?.avatar || ''"
+          :alt="professional?.display_name || 'Professional'"
+          :update-function="onSaveAvatarBoth"
+        />
+
+        <MoleculesFormsFirestoreSimpleField
+          label="Display Name"
+          :firebase-value="professional?.display_name || ''"
+          placeholder="Enter your display name"
+          :update-function="onSaveDisplayNameBoth"
+        />
+      </UCard>
+
+      <!-- Certifications (pilot: ObjectArray with Nuxt UI 4) -->
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold">Certifications</h3>
+            <UBadge variant="soft">Array</UBadge>
+          </div>
+        </template>
+
+        <MoleculesFormsFirestoreObjectArray
+          label="Certifications"
+          :firebase-value="
+            professional?.core?.certifications ||
+            professional?.app?.certifications ||
+            []
+          "
+          :get-key="(item, i) => item?.name || i"
+          :update-function="onSaveCertificationsScoped"
+          :i18n="{ empty: 'No certifications yet.' }"
+        >
+          <template #display="{ item }">
+            <div class="flex items-center justify-between">
+              <div class="text-sm">
+                <div class="font-medium">{{ item?.name || 'Untitled' }}</div>
+                <div class="text-gray-500">
+                  {{ item?.issuing_organization }} • {{ item?.year }}
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <template #edit="{ item, remove }">
+            <div class="grid gap-2 sm:grid-cols-3">
+              <UInput v-model="item.name" placeholder="Name" />
+              <UInput
+                v-model="item.issuing_organization"
+                placeholder="Organization"
+              />
+              <UInput v-model="item.year" placeholder="Year" type="number" />
+            </div>
+            <div class="flex justify-end mt-2">
+              <UButton
+                size="xs"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-trash-2"
+                @click="remove()"
+                >Remove</UButton
+              >
+            </div>
+          </template>
+
+          <template #create="{ push }">
+            <div class="grid gap-2 sm:grid-cols-3">
+              <UInput v-model="newCert.name" placeholder="Name" />
+              <UInput
+                v-model="newCert.issuing_organization"
+                placeholder="Organization"
+              />
+              <UInput v-model="newCert.year" placeholder="Year" type="number" />
+            </div>
+            <div class="flex justify-end mt-2">
+              <UButton
+                size="xs"
+                icon="i-lucide-plus"
+                @click="
+                  () => {
+                    push({ ...newCert })
+                    newCert = { name: '', issuing_organization: '', year: '' }
+                  }
+                "
+                >Add</UButton
+              >
+            </div>
+          </template>
+        </MoleculesFormsFirestoreObjectArray>
+      </UCard>
+
+      <!-- Section: Local (app only) -->
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold">Local (App)</h3>
+            <UBadge variant="soft">Coming soon</UBadge>
+          </div>
+        </template>
+        <p class="text-sm text-gray-500">No local-only fields yet.</p>
+      </UCard>
+
+      <!-- Section: Global (core only) -->
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold">Global (Core)</h3>
+            <UBadge variant="soft">Coming soon</UBadge>
+          </div>
+        </template>
+        <p class="text-sm text-gray-500">No global-only fields yet.</p>
+      </UCard>
+    </div>
   </ClientOnly>
 </template>
 
@@ -24,17 +135,135 @@ import { useProfessionalUpdate } from '../../../../composables/firestore/profile
 const props = defineProps<{ professional: Professional }>()
 
 const { updateDisplayName, updateAvatar } = useProfessionalUpdate()
-// useImageStorage is auto-imported by fireux-core module
-const { uploadImage } = useImageStorage()
-const uploadCoreAvatar = (source: File | string, uid: string) =>
-  uploadImage(`core-users/${uid}/avatar.jpg`, source)
+const { role, appId } = useFireUXConfig()
+const isTenant = role === 'tenant' && !!appId
+const toast = useToast()
+let newCert = reactive<{
+  name: string
+  issuing_organization: string
+  year: string
+}>({ name: '', issuing_organization: '', year: '' })
 
-const onSaveDisplayName = (v: string) => updateDisplayName(v)
+const onSaveDisplayNameBoth = async (v: string) => {
+  try {
+    await updateDisplayName(v, 'auto')
+    if (isTenant) {
+      toast.add({
+        title: 'Display name updated in this app',
+        description: 'Do you also want to update it globally?',
+        actions: [
+          {
+            label: 'Update global',
+            click: async () => {
+              await updateDisplayName(v, 'core')
+              toast.add({
+                title: 'Global updated',
+                description: 'Display name mirrored to global',
+              })
+            },
+          },
+        ],
+      })
+    } else {
+      toast.add({ title: 'Display name updated' })
+    }
+  } catch (err) {
+    toast.add({
+      title: 'Error',
+      description: 'Failed to update display name',
+      color: 'red',
+    })
+    throw err
+  }
+}
 
-const onUploadAvatar = async (file: File) => {
-  if (!props.professional?.id) return
-  const url = await uploadCoreAvatar(file, props.professional.id)
-  if (url) await updateAvatar(url)
+const onSaveAvatarBoth = async (file: File | Blob | string) => {
+  try {
+    await updateAvatar(file, 'auto')
+    if (isTenant) {
+      toast.add({
+        title: 'Avatar updated in this app',
+        description: 'Also update it globally?',
+        actions: [
+          {
+            label: 'Update global',
+            click: async () => {
+              await updateAvatar(file, 'core')
+              toast.add({
+                title: 'Global updated',
+                description: 'Avatar mirrored to global',
+              })
+            },
+          },
+        ],
+      })
+    } else {
+      toast.add({ title: 'Avatar updated' })
+    }
+  } catch (err) {
+    toast.add({
+      title: 'Error',
+      description: 'Failed to update avatar',
+      color: 'red',
+    })
+    throw err
+  }
+}
+
+// Certifications: scoped save mirroring pattern
+const onSaveCertificationsScoped = async (next: any[]) => {
+  // First write to auto (app in tenant, core otherwise)
+  try {
+    // Decide where to store arrays: prefer app overlay for tenant users
+    const scope: 'auto' | 'core' | 'app' = 'auto'
+    // Generic writer for arrays via updateDocument is not exposed here;
+    // useProfessionalUpdate currently provides field-specific helpers.
+    // For now, use a public generic profile updater if available; otherwise, fallback to a simple bridge.
+    const { updateDocument } = useFirestoreUpdate()
+    const { waitForCurrentUser } = useFirestoreUtils()
+    const uid = (await waitForCurrentUser())?.uid
+    if (!uid) throw new Error('Not authenticated')
+
+    let target: { collection: string; id: string }
+    if (scope === 'core') {
+      target = { collection: 'professionals', id: uid }
+    } else if (isTenant && appId) {
+      target = { collection: `apps/${appId}/professionals`, id: uid }
+    } else {
+      target = { collection: 'professionals', id: uid }
+    }
+    await updateDocument(target.collection, target.id, { certifications: next })
+
+    if (isTenant) {
+      toast.add({
+        title: 'Updated in this app',
+        description: 'Mirror certifications to global?',
+        actions: [
+          {
+            label: 'Update global',
+            click: async () => {
+              await updateDocument('professionals', target.id, {
+                certifications: next,
+              })
+              toast.add({
+                title: 'Global updated',
+                description: 'Certifications mirrored to global',
+              })
+            },
+          },
+        ],
+      })
+    } else {
+      toast.add({ title: 'Certifications updated' })
+    }
+  } catch (e) {
+    toast.add({
+      title: 'Error',
+      description: 'Failed to update certifications',
+      color: 'red',
+    })
+    throw e
+  }
 }
 </script>
 

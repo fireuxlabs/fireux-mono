@@ -6,15 +6,8 @@ import type { User } from '../../../models/core/user.model'
 import { useFirestoreUpdate } from '../useFirestoreUpdate'
 import { useImageStorage } from '../../firebase/useImageStorage'
 
-/**
- * Environment-aware updater for a user's docs.
- * - If `userRef` provided → writes to that user's doc.
- * - Else → writes to the signed-in user's doc.
- * Scopes:
- *   - Global → core-users/{uid}
- *   - Tenant → apps/{appId}/users/{uid}
- * NOTE: This composable only WRITES finalized data; uploading is done elsewhere.
- */
+type TargetScope = 'auto' | 'core' | 'app'
+
 export function useUserUpdate(userRef?: Ref<User | null>) {
   const authRef = useCurrentUser()
   const { role, appId } = useFireUXConfig()
@@ -22,9 +15,19 @@ export function useUserUpdate(userRef?: Ref<User | null>) {
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
 
-  const resolveTarget = () => {
-    const id = userRef?.value?.id ?? authRef.value?.uid
+  const getUid = () => userRef?.value?.id ?? authRef.value?.uid
+
+  const targetFromScope = (scope: TargetScope) => {
+    const id = getUid()
     if (!id) throw new Error('Not signed in and no userRef.id provided')
+
+    if (scope === 'core') return { collection: 'core-users', id }
+    if (scope === 'app') {
+      if (!appId) throw new Error('Missing appId for tenant-scoped update')
+      return { collection: `apps/${appId}/users`, id }
+    }
+
+    // auto
     if (isTenant) {
       if (!appId) throw new Error('Missing appId for tenant-scoped update')
       return { collection: `apps/${appId}/users`, id }
@@ -32,30 +35,42 @@ export function useUserUpdate(userRef?: Ref<User | null>) {
     return { collection: 'core-users', id }
   }
 
-  /** Generic partial update for arbitrary user fields */
-  const updateFields = async (partial: Partial<User>) => {
-    const { collection, id } = resolveTarget()
+  /** low-level writer */
+  const updateFieldsScoped = async (
+    partial: Partial<User>,
+    scope: TargetScope = 'auto'
+  ) => {
+    const { collection, id } = targetFromScope(scope)
     await updateDocument<User>(collection, id, partial)
   }
 
-  /** Update display_name in the correct scope */
-  const updateDisplayName = async (display_name: string) => {
-    await updateFields({ display_name } as Partial<User>)
-  }
+  /** Field updaters (scoped) */
+  const updateDisplayName = async (
+    display_name: string,
+    scope: TargetScope = 'auto'
+  ) => updateFieldsScoped({ display_name } as Partial<User>, scope)
 
-  /** Update handle in the correct scope */
-  const updateHandle = async (handle: string) => {
-    await updateFields({ handle } as Partial<User>)
-  }
+  const updateHandle = async (handle: string, scope: TargetScope = 'auto') =>
+    updateFieldsScoped({ handle } as Partial<User>, scope)
 
-  /** Avatar: build `${collection}/${id}/avatar` and upload via useImageStorage */
-  const updateAvatar = async (source: Blob | string) => {
-    const { collection, id } = resolveTarget()
+  const updateAvatar = async (
+    source: Blob | string,
+    scope: TargetScope = 'auto'
+  ) => {
+    const { collection, id } = targetFromScope(scope)
     const path = `${collection}/${id}/avatar`
     const url = await uploadImage(path, source)
-    await updateFields({ avatar: url })
+    await updateFieldsScoped({ avatar: url } as Partial<User>, scope)
     return url
   }
 
-  return { updateFields, updateDisplayName, updateAvatar, updateHandle }
+  return {
+    // generic
+    updateFields: updateFieldsScoped,
+
+    // scoped helpers
+    updateDisplayName,
+    updateHandle,
+    updateAvatar,
+  }
 }
