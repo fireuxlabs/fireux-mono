@@ -33,8 +33,8 @@
           </template>
           <MoleculesFormsObjectArray
             label="Relevant Experience"
-            :firebaseValue="relevantExperience"
-            :updateFunction="onSaveRelevantExperience"
+            :firebase-value="relevantExperience"
+            :update-function="onSaveRelevantExperience"
           >
             <template #display="{ item, index }">
               <OrganismsProfessionalFieldsExperience
@@ -63,8 +63,8 @@
           </template>
           <MoleculesFormsObjectArray
             label="Other Experience"
-            :firebaseValue="otherExperience"
-            :updateFunction="onSaveOtherExperience"
+            :firebase-value="otherExperience"
+            :update-function="onSaveOtherExperience"
           >
             <template #display="{ item, index }">
               <OrganismsProfessionalFieldsExperience
@@ -103,13 +103,15 @@ import { useProfessionalFormattingAndValidation } from '../../../../composables/
 
 // Explicit component imports for consistent tags regardless of auto-import naming
 import OrganismsProfessionalFieldsExperience from './Fields/Experience.vue'
-import OrganismsExperienceQuickAdd from './Fields/KitchenSearchWizard.vue'
+import OrganismsExperienceQuickAdd from './Fields/ExperienceQuickAdd.vue'
 
 const props = defineProps<{ professional: Professional | null | undefined }>()
 
 /** READ: unified profile from core */
 const { profile, avatar, displayName } = useProfile(professionalConfig)
-const relevantExperience = computed(() => profile.value?.relevant_experience ?? [])
+const relevantExperience = computed(
+  () => profile.value?.relevant_experience ?? []
+)
 const otherExperience = computed(() => profile.value?.other_experience ?? [])
 
 /** VALIDATE / FORMAT */
@@ -117,8 +119,12 @@ const { validateDisplayName, formatDisplayName } =
   useProfessionalFormattingAndValidation()
 
 /** UPDATE: entity-specific updates only */
-const { setRelevantExperience, setOtherExperience, updateDisplayName, updateAvatar } =
-  useProfessionalUpdate()
+const {
+  setRelevantExperience,
+  setOtherExperience,
+  updateDisplayName,
+  updateAvatar,
+} = useProfessionalUpdate()
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v, 'auto')
 const onSaveAvatar = (file: File | Blob) => updateAvatar(file, 'auto')
