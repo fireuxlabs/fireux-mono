@@ -82,6 +82,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { toRaw } from 'vue'
 
 const props = defineProps({
   label: { type: String, default: '' },
@@ -107,11 +108,24 @@ const localItems = ref<any[]>([])
 
 const items = computed(() => props.firebaseValue || [])
 
+function deepClone<T>(val: T): T {
+  // De-proxy top-level value; JSON clone to strip reactivity/functions
+  try {
+    const raw = toRaw(val as any)
+    return JSON.parse(JSON.stringify(raw))
+  } catch {
+    // Fallback: shallow copy
+    if (Array.isArray(val)) return [...val] as unknown as T
+    if (val && typeof val === 'object') return { ...(val as any) } as T
+    return val
+  }
+}
+
 watch(
   () => props.firebaseValue,
   (val) => {
     if (!isEditing.value)
-      localItems.value = Array.isArray(val) ? structuredClone(val) : []
+      localItems.value = Array.isArray(val) ? deepClone(val) : []
   },
   { immediate: true }
 )
@@ -119,12 +133,12 @@ watch(
 function startEditing() {
   if (!props.canEdit) return
   errorMessage.value = ''
-  localItems.value = structuredClone(items.value)
+  localItems.value = deepClone(items.value)
   isEditing.value = true
 }
 
 function cancelEditing() {
-  localItems.value = structuredClone(items.value)
+  localItems.value = deepClone(items.value)
   isEditing.value = false
   errorMessage.value = ''
 }
@@ -132,7 +146,7 @@ function cancelEditing() {
 async function saveChanges() {
   try {
     errorMessage.value = ''
-    await props.updateFunction(structuredClone(localItems.value))
+    await props.updateFunction(deepClone(localItems.value))
     isEditing.value = false
   } catch (e: any) {
     errorMessage.value = e?.message || 'Failed to save changes'

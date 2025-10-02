@@ -20,21 +20,34 @@
 <script setup lang="ts">
 import type { Employer } from '../../../../models/profiles/Employer.model'
 import { useEmployerUpdate } from '../../../../composables/firestore/profiles/Employer/useEmployerUpdate'
+import { useEmployerFormattingAndValidation } from '../../../../composables/firestore/profiles/Employer/useEmployerFormattingAndValidation'
 
 const props = defineProps<{ employer: Employer }>()
 
 const { updateDisplayName, updateAvatar } = useEmployerUpdate()
+const { formatDisplayName, validateDisplayName } =
+  useEmployerFormattingAndValidation()
 // useImageStorage is auto-imported by fireux-core module
 const { uploadImage } = useImageStorage()
 const uploadCoreAvatar = (source: File | string, uid: string) =>
   uploadImage(`core-users/${uid}/avatar.jpg`, source)
 
-const onSaveDisplayName = (v: string) => updateDisplayName(v)
+const onSaveDisplayName = (v: string) => {
+  const formatted = formatDisplayName(v)
+  const valid = validateDisplayName(formatted)
+  if (valid === true) return updateDisplayName(formatted)
+  // Optionally surface error via a toast/notification in future
+}
 
 const onUploadAvatar = async (file: File) => {
   if (!props.employer?.id) return
-  const url = await uploadCoreAvatar(file, props.employer.id)
-  if (url) await updateAvatar(url)
+  // Prefer updater for consistent storage pathing across scopes
+  const url = await updateAvatar(file)
+  if (!url) {
+    // Fallback to legacy upload path if needed
+    const fallback = await uploadCoreAvatar(file, props.employer.id)
+    if (fallback) await updateAvatar(fallback, 'core')
+  }
 }
 </script>
 

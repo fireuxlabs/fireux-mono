@@ -3,6 +3,7 @@
     <UPageBody>
       <OrganismsProfileRoot :config="professionalConfig">
         <!-- When a profile exists, render the editor -->
+         
         <template #current-assets="{ profile }">
           <div v-if="profile">
             <h2 class="mb-4">Edit Professional Profile</h2>
