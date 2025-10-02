@@ -54,7 +54,8 @@
           <slot name="display" :item="item" :index="index">
             <pre>{{ item }}</pre>
           </slot>
-          <span>hello</span>
+          <span>hello ({{ updateLabel }})</span>
+          <pre>{{ item }}</pre>
         </div>
       </div>
     </div>
@@ -85,7 +86,8 @@
               </button>
             </div>
           </slot>
-          <span>hello</span>
+          <span>hello ({{ updateLabel }})</span>
+          <pre>{{ item }}</pre>
         </div>
       </div>
 
@@ -163,6 +165,19 @@ const canRemoveMore = computed(() => localItems.value.length > props.minItems)
 const canClearAll = computed(
   () => localItems.value.length > 0 && props.minItems === 0
 )
+// Derive a friendly label for the update function to surface where changes flow
+const updateLabel = computed(() => {
+  const fn: any = props.updateFunction
+  if (!fn) return 'updateFunction'
+  const from = fn.__source ? ` [${fn.__source}]` : ''
+  // Try function.name; if minified/anonymous, fall back to string sniff
+  const byName = fn.name && fn.name !== 'anonymous' ? fn.name : ''
+  if (byName) return byName + from
+  const str = String(fn)
+  const m = str.match(/function\s+(\w+)/)
+  if (m && m[1]) return m[1] + from
+  return 'updateFunction' + from
+})
 
 function deepClone<T>(val: T): T {
   try {
