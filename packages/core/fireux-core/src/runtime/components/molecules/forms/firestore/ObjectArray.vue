@@ -1,88 +1,56 @@
 <template>
-  <div class="form-field">
-    <UFormField
-      :label="label"
-      class="flex max-sm:flex-col justify-between items-start gap-4 w-full"
-    >
-      <div class="w-full flex flex-col gap-3">
-        <MoleculesFormsTop
-          :label="''"
-          :is-editing="isEditing"
-          :has-data="(items?.length || 0) > 0"
-          :error-message="errorMessage"
-          @start-editing="startEditing"
-          @check="saveChanges"
-          @cancel="cancelEditing"
-          @delete="clearAll"
-        />
+  <div>
+    <div v-if="label">{{ label }}</div>
 
-        <!-- Display mode -->
-        <div v-if="!isEditing" class="space-y-3">
-          <div
-            v-if="!items || items.length === 0"
-            class="text-sm text-gray-500"
-          >
-            {{ i18n.empty }}
-          </div>
-          <div v-else class="space-y-2">
-            <div
-              v-for="(item, index) in items"
-              :key="getKey(item, index)"
-              class="py-2"
-            >
-              <slot name="display" :item="item" :index="index">
-                <pre class="text-xs text-gray-500">{{ item }}</pre>
-              </slot>
-            </div>
-          </div>
-        </div>
+    <!-- Controls -->
+    <div>
+      <template v-if="!isEditing">
+        <button type="button" @click="startEditing">Edit</button>
+      </template>
+      <template v-else>
+        <button type="button" @click="saveChanges">Save</button>
+        <button type="button" @click="cancelEditing">Cancel</button>
+        <button type="button" @click="clearAll">Clear</button>
+      </template>
+      <div v-if="errorMessage">{{ errorMessage }}</div>
+    </div>
 
-        <!-- Edit mode -->
-        <div v-else class="space-y-3">
-          <div v-if="localItems.length === 0" class="text-sm text-gray-500">
-            {{ i18n.empty }}
-          </div>
-          <div v-else class="space-y-3">
-            <div
-              v-for="(item, index) in localItems"
-              :key="getKey(item, index)"
-              class="border rounded-md p-3"
-            >
-              <slot
-                name="edit"
-                :item="item"
-                :index="index"
-                :remove="() => remove(index)"
-              >
-                <pre class="text-xs text-gray-500">{{ item }}</pre>
-                <div class="flex justify-end">
-                  <UButton
-                    size="xs"
-                    color="neutral"
-                    variant="soft"
-                    icon="i-lucide-trash-2"
-                    @click="remove(index)"
-                  >
-                    Remove
-                  </UButton>
-                </div>
-              </slot>
-            </div>
-          </div>
-
-          <!-- Create new item -->
-          <div class="border rounded-md p-3">
-            <slot name="create" :push="push"></slot>
-          </div>
+    <!-- Display mode -->
+    <div v-if="!isEditing">
+      <div v-if="!items || items.length === 0">{{ i18n.empty }}</div>
+      <div v-else>
+        <div v-for="(item, index) in items" :key="getKey(item, index)">
+          <slot name="display" :item="item" :index="index">
+            <pre>{{ item }}</pre>
+          </slot>
         </div>
       </div>
-    </UFormField>
+    </div>
+
+    <!-- Edit mode -->
+    <div v-else>
+      <div v-if="localItems.length === 0">{{ i18n.empty }}</div>
+      <div v-else>
+        <div v-for="(item, index) in localItems" :key="getKey(item, index)">
+          <slot name="edit" :item="item" :index="index" :remove="() => remove(index)">
+            <pre>{{ item }}</pre>
+            <div>
+              <button type="button" @click="remove(index)">Remove</button>
+            </div>
+          </slot>
+        </div>
+      </div>
+
+      <!-- Create new item -->
+      <div>
+        <slot name="create" :push="push"></slot>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
-import { toRaw } from 'vue'
+import { ref, watch, computed, toRaw } from 'vue'
 
 const props = defineProps({
   label: { type: String, default: '' },
@@ -109,23 +77,20 @@ const localItems = ref<any[]>([])
 const items = computed(() => props.firebaseValue || [])
 
 function deepClone<T>(val: T): T {
-  // De-proxy top-level value; JSON clone to strip reactivity/functions
   try {
     const raw = toRaw(val as any)
     return JSON.parse(JSON.stringify(raw))
   } catch {
-    // Fallback: shallow copy
-    if (Array.isArray(val)) return [...val] as unknown as T
+    if (Array.isArray(val)) return [...(val as any[])] as unknown as T
     if (val && typeof val === 'object') return { ...(val as any) } as T
-    return val
+    return val as T
   }
 }
 
 watch(
   () => props.firebaseValue,
   (val) => {
-    if (!isEditing.value)
-      localItems.value = Array.isArray(val) ? deepClone(val) : []
+    if (!isEditing.value) localItems.value = Array.isArray(val) ? deepClone(val) : []
   },
   { immediate: true }
 )
