@@ -20,13 +20,15 @@ export function useProfessional(professional?: Professional | null) {
   }
 
   // Update delegates
-  const { updateDisplayName, updateAvatar } = useProfessionalUpdate()
+  const { updateDisplayName, updateAvatar, updateKitchenExperience } =
+    useProfessionalUpdate()
 
   return {
     avatar,
     displayName,
     updateDisplayName,
     updateAvatar,
+    updateKitchenExperience,
     validateDisplayName,
     formatDisplayName,
   }

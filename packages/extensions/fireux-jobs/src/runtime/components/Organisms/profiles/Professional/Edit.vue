@@ -31,6 +31,7 @@
         <MoleculesFormsObjectArray
           label="Kitchen Experience"
           :firebaseValue="kitchenExperience"
+          :updateFunction="onSaveKitchenExperience"
         >
           <template #display="{ item, index }">
             <OrganismsProfessionalFieldsKitchenExperience
@@ -40,7 +41,7 @@
             />
           </template>
 
-        <template #edit="{ item, index }">
+          <template #edit="{ item, index }">
             <OrganismsProfessionalFieldsKitchenExperience
               :kitchenExperience="item"
               :index="index"
@@ -48,14 +49,14 @@
             />
           </template>
 
-          <template #create>
-            <OrganismsKitchenSearchWizard />
+          <template #create="{ push }">
+            <OrganismsKitchenSearchWizard @create="push" />
           </template>
         </MoleculesFormsObjectArray>
       </section>
     </div>
   </ClientOnly>
-  </template>
+</template>
 
 <script setup lang="ts">
 import type { Professional } from '../../../../models/profiles/Professional.model'
@@ -86,10 +87,11 @@ const { validateDisplayName, formatDisplayName } =
   useProfessionalFormattingAndValidation()
 
 /** UPDATE: delta-first via facade helpers */
-const { updateDisplayName, updateAvatar } = useProfessional(
-  props.professional
-)
+const { updateDisplayName, updateAvatar, updateKitchenExperience } =
+  useProfessional(props.professional)
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v, 'auto')
 const onSaveAvatar = (file: File | Blob) => updateAvatar(file, 'auto')
+const onSaveKitchenExperience = (items: any[]) =>
+  updateKitchenExperience(items, 'auto')
 </script>

@@ -52,5 +52,15 @@ export function useProfessionalUpdate() {
     return url
   }
 
-  return { updateDisplayName, updateAvatar }
+  // Full array replace for legacy ObjectArray component
+  const updateKitchenExperience = async (
+    items: any[],
+    scope: TargetScope = 'auto'
+  ) => {
+    const uid = await getUid()
+    const { collection, id } = targetFromScope(uid, scope)
+    await updateDocument(collection, id, { kitchen_experience: items || [] })
+  }
+
+  return { updateDisplayName, updateAvatar, updateKitchenExperience }
 }

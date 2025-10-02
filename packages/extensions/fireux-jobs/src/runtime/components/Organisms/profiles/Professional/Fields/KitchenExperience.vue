@@ -11,12 +11,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 // Lightweight placeholder matching the slot contract used in Edit.vue
 // Props reflect the legacy object-array item shape; adjust fields as your data requires
 const props = defineProps<{
   kitchenExperience: any
   index?: number
   mode: 'display' | 'edit'
+  remove?: () => void
 }>()
 
 const item = props.kitchenExperience || {}
