@@ -54,7 +54,7 @@
           <slot name="display" :item="item" :index="index">
             <pre>{{ item }}</pre>
           </slot>
-          <span v-if="debugEachChild">{{ debugText }}</span>
+          <span>hello</span>
         </div>
       </div>
     </div>
@@ -85,7 +85,7 @@
               </button>
             </div>
           </slot>
-          <span v-if="debugEachChild">{{ debugText }}</span>
+          <span>hello</span>
         </div>
       </div>
 
@@ -139,7 +139,6 @@ const props = defineProps({
   // Optional debug helpers to show a simple marker in a specific area
   debugWhere: { type: String, default: '' }, // 'label' | 'controls' | 'display' | 'edit' | 'create'
   debugText: { type: String, default: 'hello' },
-  debugEachChild: { type: Boolean, default: false },
 })
 
 const emit = defineEmits<{
