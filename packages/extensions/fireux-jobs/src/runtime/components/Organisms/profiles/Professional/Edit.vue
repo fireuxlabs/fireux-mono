@@ -23,36 +23,69 @@
         </div>
       </section>
 
-      <!-- Section 2 — Kitchen Experience -->
-      <section class="space-y-4">
-        <h3 class="text-base font-semibold">Section 2 — Kitchen Experience</h3>
+      <!-- Section 2 — Experience (neutral) -->
+      <section class="space-y-6">
+        <h3 class="text-base font-semibold">Section 2 — Experience</h3>
 
-        <!-- Legacy ObjectArray -->
-        <MoleculesFormsObjectArray
-          label="Kitchen Experience"
-          :firebaseValue="kitchenExperience"
-          :updateFunction="onSaveKitchenExperience"
-        >
-          <template #display="{ item, index }">
-            <OrganismsProfessionalFieldsKitchenExperience
-              :kitchenExperience="item"
-              :index="index"
-              mode="display"
-            />
+        <UCard>
+          <template #header>
+            <div class="font-medium">Relevant Experience</div>
           </template>
+          <MoleculesFormsObjectArray
+            label="Relevant Experience"
+            :firebaseValue="relevantExperience"
+            :updateFunction="onSaveRelevantExperience"
+          >
+            <template #display="{ item, index }">
+              <OrganismsProfessionalFieldsExperience
+                :item="item"
+                :index="index"
+                mode="display"
+              />
+            </template>
+            <template #edit="{ item, index, remove }">
+              <OrganismsProfessionalFieldsExperience
+                :item="item"
+                :index="index"
+                mode="edit"
+                :remove="remove"
+              />
+            </template>
+            <template #create="{ push }">
+              <OrganismsExperienceQuickAdd @create="push" />
+            </template>
+          </MoleculesFormsObjectArray>
+        </UCard>
 
-          <template #edit="{ item, index }">
-            <OrganismsProfessionalFieldsKitchenExperience
-              :kitchenExperience="item"
-              :index="index"
-              mode="edit"
-            />
+        <UCard>
+          <template #header>
+            <div class="font-medium">Other Experience</div>
           </template>
-
-          <template #create="{ push }">
-            <OrganismsKitchenSearchWizard @create="push" />
-          </template>
-        </MoleculesFormsObjectArray>
+          <MoleculesFormsObjectArray
+            label="Other Experience"
+            :firebaseValue="otherExperience"
+            :updateFunction="onSaveOtherExperience"
+          >
+            <template #display="{ item, index }">
+              <OrganismsProfessionalFieldsExperience
+                :item="item"
+                :index="index"
+                mode="display"
+              />
+            </template>
+            <template #edit="{ item, index, remove }">
+              <OrganismsProfessionalFieldsExperience
+                :item="item"
+                :index="index"
+                mode="edit"
+                :remove="remove"
+              />
+            </template>
+            <template #create="{ push }">
+              <OrganismsExperienceQuickAdd @create="push" />
+            </template>
+          </MoleculesFormsObjectArray>
+        </UCard>
       </section>
     </div>
   </ClientOnly>
@@ -62,36 +95,35 @@
 import type { Professional } from '../../../../models/profiles/Professional.model'
 import { computed } from 'vue'
 
-// Facade (updates, entity extras)
-import { useProfessional } from '../../../../composables/firestore/profiles/Professional/useProfessional'
-// Read-only computed (avatar/displayName, etc.)
-import { useProfessionalComputed } from '../../../../composables/firestore/profiles/Professional/useProfessionalComputed'
+// Generic read
+// useProfile is auto-imported by the core module; avoid restricted subpath imports
+import { professionalConfig } from '../../../../models/profiles/Professional.model'
 // Pure helpers
 import { useProfessionalFormattingAndValidation } from '../../../../composables/firestore/profiles/Professional/useProfessionalFormattingAndValidation'
 
 // Explicit component imports for consistent tags regardless of auto-import naming
-import OrganismsProfessionalFieldsKitchenExperience from './Fields/KitchenExperience.vue'
-import OrganismsKitchenSearchWizard from './Fields/KitchenSearchWizard.vue'
+import OrganismsProfessionalFieldsExperience from './Fields/Experience.vue'
+import OrganismsExperienceQuickAdd from './Fields/KitchenSearchWizard.vue'
 
 const props = defineProps<{ professional: Professional | null | undefined }>()
 
-/** READ: keep read concerns separate */
-const { avatar, displayName } = useProfessionalComputed(props.professional)
-// expose array via computed so template isn't reaching into props directly
-const kitchenExperience = computed(
-  () => props.professional?.kitchen_experience ?? []
-)
+/** READ: unified profile from core */
+const { profile, avatar, displayName } = useProfile(professionalConfig)
+const relevantExperience = computed(() => profile.value?.relevant_experience ?? [])
+const otherExperience = computed(() => profile.value?.other_experience ?? [])
 
 /** VALIDATE / FORMAT */
 const { validateDisplayName, formatDisplayName } =
   useProfessionalFormattingAndValidation()
 
-/** UPDATE: delta-first via facade helpers */
-const { updateDisplayName, updateAvatar, updateKitchenExperience } =
-  useProfessional(props.professional)
+/** UPDATE: entity-specific updates only */
+const { setRelevantExperience, setOtherExperience, updateDisplayName, updateAvatar } =
+  useProfessionalUpdate()
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v, 'auto')
 const onSaveAvatar = (file: File | Blob) => updateAvatar(file, 'auto')
-const onSaveKitchenExperience = (items: any[]) =>
-  updateKitchenExperience(items, 'auto')
+const onSaveRelevantExperience = (items: any[]) =>
+  setRelevantExperience(items, 'auto')
+const onSaveOtherExperience = (items: any[]) =>
+  setOtherExperience(items, 'auto')
 </script>

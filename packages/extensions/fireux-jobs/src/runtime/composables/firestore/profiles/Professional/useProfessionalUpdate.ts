@@ -52,15 +52,29 @@ export function useProfessionalUpdate() {
     return url
   }
 
-  // Full array replace for legacy ObjectArray component
-  const updateKitchenExperience = async (
+  // Neutral experience arrays
+  const setRelevantExperience = async (
     items: any[],
     scope: TargetScope = 'auto'
   ) => {
     const uid = await getUid()
     const { collection, id } = targetFromScope(uid, scope)
-    await updateDocument(collection, id, { kitchen_experience: items || [] })
+    await updateDocument(collection, id, { relevant_experience: items || [] })
   }
 
-  return { updateDisplayName, updateAvatar, updateKitchenExperience }
+  const setOtherExperience = async (
+    items: any[],
+    scope: TargetScope = 'auto'
+  ) => {
+    const uid = await getUid()
+    const { collection, id } = targetFromScope(uid, scope)
+    await updateDocument(collection, id, { other_experience: items || [] })
+  }
+
+  return {
+    updateDisplayName,
+    updateAvatar,
+    setRelevantExperience,
+    setOtherExperience,
+  }
 }

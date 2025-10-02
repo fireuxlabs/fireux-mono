@@ -1,9 +1,7 @@
 // packages/core/fireux-core/src/runtime/composables/firestore/profiles/chef/useChefUpdate.ts
 import type { Ref } from 'vue'
 import { useCurrentUser } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate'
-import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage'
+// Composables are auto-imported from core; avoid restricted subpath imports
 
 /**
  * Environment-aware updater for a Chef profile.
@@ -22,6 +20,8 @@ import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useIma
  */
 type WithId = { id: string }
 
+type TargetScope = 'auto' | 'core' | 'app'
+
 export function useChefUpdate(chefRef?: Ref<WithId | null>) {
   const authRef = useCurrentUser()
   const { role, appId } = useFireUXConfig()
@@ -29,10 +29,10 @@ export function useChefUpdate(chefRef?: Ref<WithId | null>) {
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
 
-  const resolveTarget = () => {
+  const resolveTarget = (scope: TargetScope = 'auto') => {
     const id = chefRef?.value?.id ?? authRef.value?.uid
     if (!id) throw new Error('Not signed in and no chefRef.id provided')
-    if (isTenant) {
+    if (scope === 'app' || (scope === 'auto' && isTenant)) {
       if (!appId) throw new Error('Missing appId for tenant-scoped chef update')
       return { collection: `apps/${appId}/chefs`, id }
     }
@@ -40,22 +40,31 @@ export function useChefUpdate(chefRef?: Ref<WithId | null>) {
   }
 
   /** Generic partial update for arbitrary chef fields */
-  const updateFields = async (partial: Record<string, unknown>) => {
-    const { collection, id } = resolveTarget()
+  const updateFields = async (
+    partial: Record<string, unknown>,
+    scope: TargetScope = 'auto'
+  ) => {
+    const { collection, id } = resolveTarget(scope)
     await updateDocument(collection, id, partial)
   }
 
   /** Update display name */
-  const updateDisplayName = async (display_name: string) => {
-    await updateFields({ display_name })
+  const updateDisplayName = async (
+    display_name: string,
+    scope: TargetScope = 'auto'
+  ) => {
+    await updateFields({ display_name }, scope)
   }
 
   /** Avatar: build `${collection}/${id}/avatar` and upload via useImageStorage */
-  const updateAvatar = async (source: Blob | string) => {
-    const { collection, id } = resolveTarget()
+  const updateAvatar = async (
+    source: Blob | string,
+    scope: TargetScope = 'auto'
+  ) => {
+    const { collection, id } = resolveTarget(scope)
     const path = `${collection}/${id}/avatar`
     const url = await uploadImage(path, source)
-    await updateFields({ avatar: url })
+    await updateFields({ avatar: url }, scope)
     return url
   }
 

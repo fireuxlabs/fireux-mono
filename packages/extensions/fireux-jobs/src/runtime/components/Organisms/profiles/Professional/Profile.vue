@@ -76,15 +76,15 @@
             </UBadge>
           </div>
         </div>
-        <!-- Kitchen Experience Section -->
+        <!-- Relevant Experience Section (neutral) -->
         <div
-          v-if="professional.kitchen_experience?.length"
+          v-if="professional.relevant_experience?.length"
           class="profile-content-section"
         >
-          <h3 class="profile-content-title">Kitchen Experience</h3>
+          <h3 class="profile-content-title">Relevant Experience</h3>
           <div class="experience-timeline">
             <div
-              v-for="experience in professional.kitchen_experience"
+              v-for="experience in professional.relevant_experience"
               :key="experience.name"
               class="experience-item"
             >

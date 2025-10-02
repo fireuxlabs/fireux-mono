@@ -20,14 +20,8 @@
           <UIcon name="i-lucide-map-pin" />
           <span>{{ getLocationText((professional as any).locations[0]) }}</span>
         </div>
-        <div
-          v-if="
-            getExperienceYears((professional as any)?.kitchen_experience) > 0
-          "
-          class="profile-meta"
-        >
-          {{ getExperienceYears((professional as any)?.kitchen_experience) }}+
-          years experience
+        <div v-if="experienceYears > 0" class="profile-meta">
+          {{ experienceYears }}+ years experience
         </div>
       </div>
     </div>
@@ -128,10 +122,17 @@ function getExperienceYears(experiences: any[] | undefined): number {
   return years
 }
 
+const allExperience = computed<any[]>(() => {
+  const p: any = props.professional || {}
+  const rel = Array.isArray(p?.relevant_experience) ? p.relevant_experience : []
+  const oth = Array.isArray(p?.other_experience) ? p.other_experience : []
+  return [...rel, ...oth]
+})
+
+const experienceYears = computed(() => getExperienceYears(allExperience.value))
+
 const latestExp = computed(() => {
-  const list = (props.professional as any)?.kitchen_experience as
-    | any[]
-    | undefined
+  const list = allExperience.value
   if (!Array.isArray(list) || list.length === 0) return null as any
   const ongoing = list.find((e) => e?.ongoing)
   if (ongoing) return ongoing
