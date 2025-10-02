@@ -30,7 +30,7 @@
         <!-- Legacy ObjectArray -->
         <MoleculesFormsObjectArray
           label="Kitchen Experience"
-          :firebaseValue="props.professional?.kitchen_experience"
+          :firebaseValue="kitchenExperience"
         >
           <template #display="{ item, index }">
             <OrganismsProfessionalFieldsKitchenExperience
@@ -40,7 +40,7 @@
             />
           </template>
 
-          <template #edit="{ item, index }">
+        <template #edit="{ item, index }">
             <OrganismsProfessionalFieldsKitchenExperience
               :kitchenExperience="item"
               :index="index"
@@ -48,7 +48,6 @@
             />
           </template>
 
-          <!-- Create doesn't need index -->
           <template #create>
             <OrganismsKitchenSearchWizard />
           </template>
@@ -56,21 +55,41 @@
       </section>
     </div>
   </ClientOnly>
-</template>
+  </template>
 
 <script setup lang="ts">
 import type { Professional } from '../../../../models/profiles/Professional.model'
+import { computed } from 'vue'
+
+// Facade (updates, entity extras)
 import { useProfessional } from '../../../../composables/firestore/profiles/Professional/useProfessional'
+// Read-only computed (avatar/displayName, etc.)
 import { useProfessionalComputed } from '../../../../composables/firestore/profiles/Professional/useProfessionalComputed'
+// Pure helpers
 import { useProfessionalFormattingAndValidation } from '../../../../composables/firestore/profiles/Professional/useProfessionalFormattingAndValidation'
+
+// Explicit component imports for consistent tags regardless of auto-import naming
+import OrganismsProfessionalFieldsKitchenExperience from './Fields/KitchenExperience.vue'
+import OrganismsKitchenSearchWizard from './Fields/KitchenSearchWizard.vue'
 
 const props = defineProps<{ professional: Professional | null | undefined }>()
 
+/** READ: keep read concerns separate */
 const { avatar, displayName } = useProfessionalComputed(props.professional)
+// expose array via computed so template isn't reaching into props directly
+const kitchenExperience = computed(
+  () => props.professional?.kitchen_experience ?? []
+)
+
+/** VALIDATE / FORMAT */
 const { validateDisplayName, formatDisplayName } =
   useProfessionalFormattingAndValidation()
-const { updateDisplayName, updateAvatar } = useProfessional(props.professional)
+
+/** UPDATE: delta-first via facade helpers */
+const { updateDisplayName, updateAvatar } = useProfessional(
+  props.professional
+)
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v, 'auto')
-const onSaveAvatar = (file: File) => updateAvatar(file, 'auto')
+const onSaveAvatar = (file: File | Blob) => updateAvatar(file, 'auto')
 </script>
