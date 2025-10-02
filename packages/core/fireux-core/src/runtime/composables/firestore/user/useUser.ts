@@ -14,6 +14,7 @@ import type {
 } from '../../../models/core/user.model'
 
 import { useUserUpdate } from './useUserUpdate'
+import { useUserFormattingAndValidation } from './useUserFormattingAndValidation'
 
 export function useUser() {
   const db = useFirestore()
@@ -86,6 +87,10 @@ export function useUser() {
     return collectionGlobal
   }
 
+  const computedBits = useUserComputed(user)
+  // Provide a simple alias for avatar to reduce prop churn in components
+  const avatar = computed(() => computedBits.avatarSrc)
+
   return {
     user,
     collection: {
@@ -93,9 +98,12 @@ export function useUser() {
       global: collectionGlobal,
       fetchGlobal,
     },
-    ...useUserComputed(user),
+    ...computedBits,
+    avatar,
     ...useUserEnsure(user),
     ...useUserDelete(user),
     ...useUserUpdate(user),
+    // Validation + formatting helpers
+    ...useUserFormattingAndValidation(),
   }
 }
