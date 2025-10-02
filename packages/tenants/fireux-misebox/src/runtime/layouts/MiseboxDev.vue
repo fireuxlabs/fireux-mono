@@ -1,7 +1,7 @@
 <template>
-  <CoreDefault />
+  <CoreDev />
 </template>
 
 <script setup>
-// Dev layout simplified to CoreDefault; if a special CoreDev exists later, we can rewire.
+// Tenant dev layout delegates to CoreDev to render the shared dev nav + content.
 </script>

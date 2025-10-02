@@ -56,9 +56,17 @@
 import { ref, onMounted } from 'vue'
 import { chefConfig } from '../../models/profiles/Chef.model'
 import { supplierConfig } from '../../models/profiles/Supplier.model'
-import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
 definePageMeta({
   layout: 'dev',
+  alias: ['/dev/fireux-misebox-tennant'],
+  nav: {
+    key: 'dev-tenant-misebox-global',
+    label: 'Misebox Global',
+    icon: 'i-lucide-globe-2',
+    desktop: true,
+    group: 'misebox',
+    layouts: ['dev'],
+  },
 })
 
 // Use the useProfile composable to fetch global chefs

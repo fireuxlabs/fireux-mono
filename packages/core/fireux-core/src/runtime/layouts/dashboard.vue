@@ -8,17 +8,23 @@
       resizable
       class="bg-elevated/25"
     >
+      <!-- Top: profiles (self-hides internally) -->
       <template #header>
-        <!-- Only render if we have any 'profiles' nav items -->
-        <LayoutsDashboardProfilesMenu v-if="profiles.length" />
+        <LayoutsDashboardProfilesMenu />
       </template>
 
+      <!-- Main nav -->
       <template #default="{ collapsed }">
         <UNavigationMenu
           :collapsed="collapsed"
           :items="primary"
           orientation="vertical"
         />
+      </template>
+
+      <!-- Bottom: user menu -->
+      <template #footer="{ collapsed }">
+        <LayoutsDashboardUserMenu :collapsed="collapsed" />
       </template>
     </UDashboardSidebar>
 
@@ -38,10 +44,7 @@ defineOptions({ name: 'CoreDashboard' })
 const open = ref(false)
 const { desktop } = useNav(['dashboard'])
 
-// Separate primary vs. profiles (profiles header shown only when any exist)
-const profiles = computed(() =>
-  desktop.value.filter((i) => i.group === 'profiles')
-)
+// Show only non-profile items in the main nav; child manages profiles.
 const primary = computed(() =>
   desktop.value.filter((i) => i.group !== 'profiles')
 )

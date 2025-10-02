@@ -1,4 +1,5 @@
 <!-- packages/tenants/fireux-misebox/src/runtime/components/organisms/profiles/Chef/Edit.vue -->
+<!-- chef edit -->
 <template>
   <ClientOnly>
     <UCard class="space-y-6">

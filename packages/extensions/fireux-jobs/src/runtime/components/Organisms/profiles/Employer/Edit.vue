@@ -1,3 +1,4 @@
+<!-- employer edit -->
 <template>
   <ClientOnly>
     <UCard class="space-y-6">
@@ -19,11 +20,11 @@
 <script setup lang="ts">
 import type { Employer } from '../../../../models/profiles/Employer.model'
 import { useEmployerUpdate } from '../../../../composables/firestore/profiles/Employer/useEmployerUpdate'
-import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage'
 
 const props = defineProps<{ employer: Employer }>()
 
 const { updateDisplayName, updateAvatar } = useEmployerUpdate()
+// useImageStorage is auto-imported by fireux-core module
 const { uploadImage } = useImageStorage()
 const uploadCoreAvatar = (source: File | string, uid: string) =>
   uploadImage(`core-users/${uid}/avatar.jpg`, source)

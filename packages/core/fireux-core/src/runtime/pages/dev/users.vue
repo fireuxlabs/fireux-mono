@@ -68,6 +68,14 @@ declare const definePageMeta: (meta: any) => void
 definePageMeta({
   title: 'Users',
   layout: 'dev',
+  nav: {
+    key: 'dev-users',
+    label: 'Users',
+    icon: 'i-lucide-users',
+    desktop: true,
+    group: 'core',
+    layouts: ['dev'],
+  },
 })
 
 import { computed } from 'vue'

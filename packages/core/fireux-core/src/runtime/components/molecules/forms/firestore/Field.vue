@@ -1,49 +1,56 @@
 <template>
-  <div class="form-field">
-    <!-- Use the existing Top component with proper namespace -->
-    <MoleculesFormsTop
-      :label="label"
-      :is-editing="isEditing"
-      :has-data="!!props.firebaseValue"
-      :error-message="errorMessage"
-      @start-editing="startEditing"
-      @check="saveChanges"
-      @cancel="cancelEditing"
-      @delete="deleteValue"
-    />
-
-    <!-- Display mode -->
-    <div v-if="!isEditing" class="display">
-      <span class="text-gray-700">{{ displayValue }}</span>
-    </div>
-
-    <!-- Edit mode -->
-    <div v-else class="editing">
-      <!-- Text Area -->
-      <UTextarea
-        v-if="type === 'textarea'"
-        v-model="localValue"
-        :placeholder="placeholder"
-        class="w-full"
-        :rows="rows || 4"
-        :maxlength="maxlength || 500"
-        @keyup.ctrl.enter="saveChanges"
-        @keyup.esc="cancelEditing"
+  <!-- Settings-style row: label on the left, content on the right -->
+  <UFormField
+    :label="label"
+    :error="errorMessage || undefined"
+    class="flex max-sm:flex-col justify-between items-start gap-4"
+  >
+    <div class="w-full flex flex-col gap-3">
+      <!-- Keep the existing Top actions but hide duplicated label -->
+      <MoleculesFormsTop
+        :label="''"
+        :is-editing="isEditing"
+        :has-data="!!props.firebaseValue"
+        :error-message="errorMessage"
+        @start-editing="startEditing"
+        @check="saveChanges"
+        @cancel="cancelEditing"
+        @delete="deleteValue"
       />
 
-      <!-- Regular Input -->
-      <UInput
-        v-else
-        v-model="localValue"
-        :placeholder="placeholder"
-        class="w-full"
-        :type="inputType"
-        @input="handleInput"
-        @keyup.enter="saveChanges"
-        @keyup.esc="cancelEditing"
-      />
+      <!-- Display mode -->
+      <div v-if="!isEditing" class="display">
+        <span class="text-gray-700">{{ displayValue }}</span>
+      </div>
+
+      <!-- Edit mode -->
+      <div v-else class="editing">
+        <!-- Text Area -->
+        <UTextarea
+          v-if="type === 'textarea'"
+          v-model="localValue"
+          :placeholder="placeholder"
+          class="w-full"
+          :rows="rows || 4"
+          :maxlength="maxlength || 500"
+          @keyup.ctrl.enter="saveChanges"
+          @keyup.esc="cancelEditing"
+        />
+
+        <!-- Regular Input -->
+        <UInput
+          v-else
+          v-model="localValue"
+          :placeholder="placeholder"
+          class="w-full"
+          :type="inputType"
+          @input="handleInput"
+          @keyup.enter="saveChanges"
+          @keyup.esc="cancelEditing"
+        />
+      </div>
     </div>
-  </div>
+  </UFormField>
 </template>
 
 <script setup>
@@ -166,12 +173,6 @@ const saveChanges = async () => {
 </script>
 
 <style scoped>
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
 .display {
   padding: var(--space-3) 0;
   min-height: var(--space-10);

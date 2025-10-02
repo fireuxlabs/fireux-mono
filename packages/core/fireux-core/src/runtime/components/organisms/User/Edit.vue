@@ -1,13 +1,13 @@
 <!-- packages/core/fireux-core/src/runtime/components/organisms/user/Edit.vue -->
 <template>
   <ClientOnly>
-    <UCard class="space-y-6">
+    <div class="space-y-6">
       <MoleculesFormsFirestoreAvatarPicker
         :src="avatarSrc"
         :alt="displayName || 'User'"
         :update-function="onSaveAvatar"
       />
-      <MoleculesFormsFirestoreField
+      <MoleculesFormsFirestoreSimpleField
         label="Display Name"
         :firebase-value="displayName"
         placeholder="Enter your display name"
@@ -15,7 +15,7 @@
         :validation-function="validateDisplayName"
         :formatting-function="formatDisplayName"
       />
-      <MoleculesFormsFirestoreField
+      <MoleculesFormsFirestoreSimpleField
         label="Handle"
         :firebase-value="handle"
         placeholder="your-handle"
@@ -23,7 +23,7 @@
         :validation-function="validateHandle"
         :formatting-function="formatHandle"
       />
-    </UCard>
+    </div>
   </ClientOnly>
 </template>
 

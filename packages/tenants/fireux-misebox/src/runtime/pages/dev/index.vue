@@ -1,18 +1,14 @@
 <template>
   <div class="page">
-    <h1>Development Tools</h1>
-
-    <div class="dev-links">
-      <!-- Core dev links -->
-      <UButton to="/dev/app">App Config</UButton>
-      <UButton to="/dev/fireux-core">FireUX Core</UButton>
-      <UButton to="/dev/design">Design System</UButton>
-      <UButton to="/dev/users">Users</UButton>
-
-      <!-- Tenant/Extension dev links -->
-      <UButton to="/dev/fireux-misebox" color="primary">Misebox Global</UButton>
-      <UButton to="/dev/fireux-jobs" color="primary">Jobs Global</UButton>
-    </div>
+    <UCard>
+      <template #header>
+        <h1>Development Tools</h1>
+      </template>
+      <p>
+        The Dev menu shows all tools for this tenant and extensions. Pick from
+        the navigation.
+      </p>
+    </UCard>
   </div>
 </template>
 
@@ -20,14 +16,13 @@
 definePageMeta({
   title: 'Development Tools',
   layout: 'dev',
+  nav: {
+    key: 'dev-tenant-index',
+    label: 'Tenant Overview',
+    icon: 'i-lucide-wrench',
+    desktop: true,
+    group: 'misebox',
+    layouts: ['dev'],
+  },
 })
 </script>
-
-<style scoped>
-.dev-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 24px;
-}
-</style>

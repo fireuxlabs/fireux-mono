@@ -26,15 +26,31 @@
     </UCard>
 
     <UCard>
-      <DevJson :data="{ app }" title="App JSON" />
+      <template #header>
+        <h2>Computed</h2>
+      </template>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>tenancyDisplay:</strong> {{ tenancyDisplay }}</li>
+        <li><strong>appTenancy:</strong> {{ appTenancy || 'n/a' }}</li>
+      </ul>
+      <USeparator class="my-3" />
+      <DevJson :data="{ app, appTenancy, tenancyDisplay }" title="App JSON" />
     </UCard>
   </div>
 </template>
 
 <script setup>
-// Use dev layout
+// Use dev layout + nav meta
 definePageMeta({
   layout: 'dev',
+  nav: {
+    key: 'dev-app',
+    label: 'App Config',
+    icon: 'i-lucide-settings',
+    desktop: true,
+    group: 'core',
+    layouts: ['dev'],
+  },
 })
 
 // Get app information

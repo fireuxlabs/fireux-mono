@@ -56,11 +56,20 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
 import { employerConfig } from '../../models/profiles/Employer.model'
 import { professionalConfig } from '../../models/profiles/Professional.model'
 
-definePageMeta({ layout: 'dev' })
+definePageMeta({
+  layout: 'dev',
+  nav: {
+    key: 'dev-ext-jobs',
+    label: 'Jobs (Ext)',
+    icon: 'i-lucide-briefcase',
+    desktop: true,
+    group: 'ext',
+    layouts: ['dev'],
+  },
+})
 
 // Employers
 const employerProfile = useProfile(employerConfig)

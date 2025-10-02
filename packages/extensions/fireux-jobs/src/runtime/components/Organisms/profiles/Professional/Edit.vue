@@ -1,3 +1,4 @@
+<!-- professional edit -->
 <template>
   <ClientOnly>
     <UCard class="space-y-6">
@@ -19,11 +20,11 @@
 <script setup lang="ts">
 import type { Professional } from '../../../../models/profiles/Professional.model'
 import { useProfessionalUpdate } from '../../../../composables/firestore/profiles/Professional/useProfessionalUpdate'
-import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage'
 
 const props = defineProps<{ professional: Professional }>()
 
 const { updateDisplayName, updateAvatar } = useProfessionalUpdate()
+// useImageStorage is auto-imported by fireux-core module
 const { uploadImage } = useImageStorage()
 const uploadCoreAvatar = (source: File | string, uid: string) =>
   uploadImage(`core-users/${uid}/avatar.jpg`, source)

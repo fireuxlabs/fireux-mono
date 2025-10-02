@@ -1,3 +1,4 @@
+<!-- supplier edit -->
 <template>
   <ClientOnly>
     <UCard class="space-y-6">
@@ -19,11 +20,11 @@
 <script setup lang="ts">
 import type { Supplier } from '../../../../models/profiles/Supplier.model'
 import { useSupplierUpdate } from '../../../../composables/firestore/profiles/Supplier/useSupplierUpdate'
-import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage'
 
 const props = defineProps<{ supplier: Supplier }>()
 
 const { updateDisplayName, updateAvatar } = useSupplierUpdate()
+// useImageStorage is auto-imported by fireux-core module
 const { uploadImage } = useImageStorage()
 const uploadCoreAvatar = (source: File | string, uid: string) =>
   uploadImage(`core-users/${uid}/avatar.jpg`, source)

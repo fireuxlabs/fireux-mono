@@ -1,13 +1,13 @@
 <template>
   <div class="page">
-    <h1>Development Tools</h1>
-
-    <div class="dev-links">
-      <UButton to="/dev/app">App Config</UButton>
-      <UButton to="/dev/fireux-core">FireUX Core</UButton>
-      <UButton to="/dev/design">Design System</UButton>
-      <UButton to="/dev/users">Users</UButton>
-    </div>
+    <UCard>
+      <template #header>
+        <h1>Development Tools</h1>
+      </template>
+      <p>
+        The Dev layout renders the full navigation. Use the menu to pick a tool.
+      </p>
+    </UCard>
   </div>
 </template>
 
@@ -15,14 +15,13 @@
 definePageMeta({
   title: 'Development Tools',
   layout: 'dev',
+  nav: {
+    key: 'dev-index',
+    label: 'Overview',
+    icon: 'i-lucide-wrench',
+    desktop: true,
+    group: 'core',
+    layouts: ['dev'],
+  },
 })
 </script>
-
-<style scoped>
-.dev-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 24px;
-}
-</style>

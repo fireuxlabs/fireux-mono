@@ -1,33 +1,19 @@
 <template>
   <ClientOnly>
-    <div class="layout-wrapper">
-      <DevNav :links="safeDevRoutes.miseboxDevRoutes || []" />
-      <!-- Debug component removed -->
-      <NuxtPage />
-    </div>
+    <UPage>
+      <UPageBody class="flex gap-4 items-start">
+        <UPageSidebar class="w-64 shrink-0">
+          <LayoutsDevNav />
+        </UPageSidebar>
+        <UPageMain class="flex-1 min-w-0">
+          <NuxtPage />
+        </UPageMain>
+      </UPageBody>
+    </UPage>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
-// Vue's computed is auto-imported by Nuxt; declare for TS
-declare const computed: <T>(getter: () => T) => import('vue').ComputedRef<T>
-const props = defineProps<{
-  devRoutes?: Record<string, any>
-}>()
-const safeDevRoutes = computed(
-  () => props.devRoutes ?? ({} as Record<string, any>)
-)
+// Dev layout renders the DevNav and the current page; links are read inside DevNav
+defineOptions({ name: 'CoreDev' })
 </script>
-
-<style scoped>
-.layout-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-}
-
-.layout-wrapper > * {
-  align-self: stretch;
-}
-</style>

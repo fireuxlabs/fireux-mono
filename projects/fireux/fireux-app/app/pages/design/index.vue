@@ -1,5 +1,6 @@
-<!-- moved from core: packages/core/fireux-core/src/runtime/pages/dev/design/index.vue -->
+<!-- Public design showcase (moved from /dev/design) -->
 <script setup>
+useHead({ title: 'Design System' })
 const sections = [
   {
     name: 'Atoms',
@@ -79,40 +80,3 @@ li a:hover {
   overflow-y: auto;
 }
 </style>
-<!-- COMMENT:     App
-    Container
-    Error
-    Footer
-    Header
-    Main
-
-    Alert
-    Avatar
-    AvatarGroup
-    Badge
-    Banner
-    Button
-    Calendar
-    Card
-    Chip
-    Collapsible
-    FieldGroup
-    Icon
-    Kbd
-    Progress
-    Separator
-    Skeleton
-
-    Checkbox
-    CheckboxGroup
-    ColorPicker
-    FileUpload
-    Form
-    FormField
-    Input
-    InputMenu
-    InputNumber
-    InputTags
-    PinInput
-    RadioGroup
-    Select-->
