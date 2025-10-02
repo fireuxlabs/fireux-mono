@@ -1,4 +1,4 @@
-<!-- Professional Edit — basics + legacy kitchen experience -->
+<!-- Professional Edit -->
 <template>
   <ClientOnly>
     <div class="space-y-8">
@@ -31,7 +31,7 @@
           <template #header>
             <div class="font-medium">Relevant Experience</div>
           </template>
-          <MoleculesFormsObjectArray
+          <MoleculesFormsFirestoreObjectArray
             label="Relevant Experience"
             :firebase-value="relevantExperience"
             :update-function="onSaveRelevantExperience"
@@ -54,14 +54,14 @@
             <template #create="{ push }">
               <OrganismsExperienceQuickAdd @create="push" />
             </template>
-          </MoleculesFormsObjectArray>
+          </MoleculesFormsFirestoreObjectArray>
         </UCard>
 
         <UCard>
           <template #header>
             <div class="font-medium">Other Experience</div>
           </template>
-          <MoleculesFormsObjectArray
+          <MoleculesFormsFirestoreObjectArray
             label="Other Experience"
             :firebase-value="otherExperience"
             :update-function="onSaveOtherExperience"
@@ -84,11 +84,12 @@
             <template #create="{ push }">
               <OrganismsExperienceQuickAdd @create="push" />
             </template>
-          </MoleculesFormsObjectArray>
+          </MoleculesFormsFirestoreObjectArray>
         </UCard>
       </section>
     </div>
   </ClientOnly>
+  
 </template>
 
 <script setup lang="ts">
