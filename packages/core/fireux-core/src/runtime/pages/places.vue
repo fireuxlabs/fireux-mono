@@ -20,11 +20,11 @@
       <div v-if="suggestions.length" class="space-y-2">
         <h3 class="text-sm font-medium text-gray-500">Suggestions</h3>
         <UCard>
-          <ul class="divide-y divide-gray-200">
+          <ul>
             <li
               v-for="s in suggestions"
               :key="s.place_id"
-              class="p-2 flex justify-between items-start cursor-pointer hover:bg-gray-50"
+              class="p-2 flex justify-between items-start cursor-pointer hover:underline"
               @click="selectSuggestion(s)"
             >
               <div class="flex-1">
@@ -80,9 +80,7 @@
                   :key="c.long_name + c.types[0]"
                   class="flex items-center gap-2"
                 >
-                  <code
-                    class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-600"
-                    >{{ c.types[0] }}</code
+                  <code class="px-1 py-0.5 rounded border text-xs">{{ c.types[0] }}</code>
                   >
                   <span>{{ c.long_name }}</span>
                 </li>
@@ -182,6 +180,6 @@ function formatLatLng(v: number) {
 
 <style scoped>
 .suggestion-item:hover {
-  @apply bg-gray-50;
+  @apply bg-slate-50; /* Using slate instead of gray to match configured Tailwind palette (neutral=slate) */
 }
 </style>
