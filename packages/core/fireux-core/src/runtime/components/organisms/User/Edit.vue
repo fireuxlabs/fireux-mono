@@ -3,7 +3,7 @@
   <ClientOnly>
     <div class="space-y-6">
       <MoleculesFormsFirestoreAvatarPicker
-        :src="avatar"
+        :src="avatar?.value || ''"
         :alt="displayName || 'User'"
         :update-function="onSaveAvatar"
       />

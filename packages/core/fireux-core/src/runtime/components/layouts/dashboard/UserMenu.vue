@@ -15,13 +15,13 @@
       class="shrink-0"
       :src="safeAvatarSrc"
       :alt="safeAlt"
-      :text="uc.initials"
+      :text="uc.initials.value"
     />
   </UButton>
 
   <!-- Expanded: reuse Pill component for consistent look -->
   <div v-else class="w-full cursor-pointer" @click="goProfile">
-    <OrganismsUserCardsPill :user="user" class="w-full" />
+    <OrganismsUserCardsPill :user="pillUser" class="w-full" />
   </div>
 </template>
 
@@ -30,6 +30,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUser } from '../../../composables/firestore/user/useUser'
+import type { UserCard } from '../../../models/core/user.model'
 import { useUserComputed } from '../../../composables/firestore/user/useUserComputed'
 
 defineOptions({ name: 'LayoutsDashboardUserMenu' })
@@ -46,6 +47,17 @@ const safeAvatarSrc = computed(() => {
   return trimmed.length ? trimmed : undefined
 })
 const safeAlt = computed(() => uc.displayName?.value?.trim() || 'User')
+const pillUser = computed<UserCard.Pill | undefined>(() => {
+  const u = user.value
+  if (!u) return undefined
+  return {
+    id: u.id,
+    display_name: uc.displayName.value,
+    avatar: uc.avatarSrc.value || undefined,
+    role: (u as any).role, // if present in app doc
+    handle: u.app?.handle || u.core?.handle,
+  }
+})
 
 // No local mapping; pass the raw user into the Pill component
 

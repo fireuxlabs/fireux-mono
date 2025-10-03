@@ -14,19 +14,26 @@
           @input="handleSearch"
         />
 
-        <!-- Mock results for demo -->
-        <div v-if="mockResults.length > 0" class="results mt-4 space-y-2">
+        <!-- Autocomplete results -->
+        <div v-if="predictions.length > 0" class="results mt-4 space-y-2">
           <UCard
-            v-for="result in mockResults"
-            :key="result.id"
+            v-for="p in predictions"
+            :key="p.place_id"
             class="cursor-pointer hover:bg-gray-50"
-            @click="handleSelectPlace(result)"
+            @click="selectPrediction(p)"
           >
             <div class="flex items-center space-x-3">
-              <UAvatar :alt="result.name" size="sm" />
+              <UAvatar
+                :alt="p.structured_formatting?.main_text || p.description"
+                size="sm"
+              />
               <div>
-                <h3 class="font-medium">{{ result.name }}</h3>
-                <p class="text-sm text-gray-600">{{ result.address }}</p>
+                <h3 class="font-medium">
+                  {{ p.structured_formatting?.main_text || p.description }}
+                </h3>
+                <p class="text-sm text-gray-600">
+                  {{ p.structured_formatting?.secondary_text }}
+                </p>
               </div>
             </div>
           </UCard>
@@ -87,8 +94,8 @@
             selectedKitchen.source === 'search'
               ? 'Save Selected Kitchen'
               : selectedKitchen.source === 'manual'
-                ? 'Create Kitchen'
-                : 'Join Kitchen'
+              ? 'Create Kitchen'
+              : 'Join Kitchen'
           }}
         </UButton>
       </div>
@@ -136,7 +143,8 @@ const selectedKitchen = ref<any>({})
 const manualKitchen = ref<NewKitchenInput>({ name: '' })
 const isCreating = ref(false)
 const searchQuery = ref('')
-const mockResults = ref<any[]>([])
+const predictions = ref<any[]>([])
+let debounce: any
 
 // Composables
 const { create } = useKitchenCreation()
@@ -144,33 +152,35 @@ const { create } = useKitchenCreation()
 // Methods
 // Methods
 const handleSearch = () => {
-  // Filter mock results based on search query
+  clearTimeout(debounce)
   if (!searchQuery.value) {
-    mockResults.value = []
+    predictions.value = []
     return
   }
-
-  const allResults = [
-    { id: 1, name: 'The French Kitchen', address: '123 Main St, London, UK' },
-    { id: 2, name: 'Pasta Palace', address: '456 Oak Ave, Paris, France' },
-    { id: 3, name: 'Sushi Central', address: '789 Pine Rd, Tokyo, Japan' },
-    { id: 4, name: 'Pizza Corner', address: '321 Elm St, New York, USA' },
-    { id: 5, name: 'Thai Garden', address: '654 Maple Dr, Bangkok, Thailand' },
-  ]
-
-  mockResults.value = allResults.filter((result) =>
-    result.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
+  debounce = setTimeout(async () => {
+    const { data } = await useFetch<{ predictions?: any[] }>('/api/places/autocomplete', {
+      query: { q: searchQuery.value },
+    })
+    predictions.value = (data.value && 'predictions' in data.value ? data.value.predictions : []) || []
+  }, 250)
 }
 
-const handleSelectPlace = (place: any) => {
-  selectedKitchen.value = {
-    name: place.name,
-    address: place.address,
-    source: 'search',
+const selectPrediction = async (p: any) => {
+  const { data } = await useFetch<{ result?: any }>('/api/places/details', {
+    query: { id: p.place_id },
+  })
+  const result = data.value && 'result' in data.value ? data.value.result : undefined
+  if (result) {
+    selectedKitchen.value = {
+      name: result.name,
+      address: result.formatted_address,
+      place_id: result.place_id,
+      location: result.geometry?.location,
+      source: 'search',
+    }
   }
   searchQuery.value = ''
-  mockResults.value = []
+  predictions.value = []
 }
 
 const handleManualSubmit = (kitchenData: any) => {
@@ -218,7 +228,6 @@ const handleCreateKitchen = async () => {
 
     emit('success', newKitchen)
   } catch (error: any) {
-    console.error('Error creating kitchen:', error)
     emit('error', error.message || 'Failed to create kitchen')
   } finally {
     isCreating.value = false

@@ -17,11 +17,8 @@
         </div>
 
         <div class="subrow">
-          <span v-if="user.global_profiles?.length">
-            Global: {{ user.global_profiles.length }}
-          </span>
-          <span v-if="user.app_profiles?.length">
-            App: {{ user.app_profiles.length }}
+          <span v-if="Array.isArray(user.profiles) && user.profiles.length">
+            Profiles: {{ user.profiles.length }}
           </span>
         </div>
       </div>
