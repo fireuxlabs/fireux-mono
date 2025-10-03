@@ -1,44 +1,60 @@
 <template>
   <div>
-    <h3 v-if="label">{{ label }}</h3>
-
-    <!-- Controls -->
-    <div>
-      <template v-if="!isEditing">
-        <button
-          type="button"
-          @click="startEditing"
-          :disabled="!canEdit"
-          :aria-disabled="!canEdit"
-        >
-          {{ i18n.edit || 'Edit' }}
-        </button>
-      </template>
-      <template v-else>
-        <button
-          type="button"
-          @click="saveChanges"
-          :disabled="!isDirty"
-          :aria-disabled="!isDirty"
-        >
-          {{ i18n.save || 'Save' }}
-        </button>
-        <button type="button" @click="cancelEditing">
-          {{ i18n.cancel || 'Cancel' }}
-        </button>
-        <button
-          type="button"
-          @click="clearAll"
-          :disabled="!canClearAll"
-          :title="!canClearAll && minItems > 0 ? 'Minimum items required' : ''"
-          :aria-disabled="!canClearAll"
-        >
-          {{ i18n.clear || 'Clear' }}
-        </button>
-      </template>
-      <div v-if="errorMessage" role="alert" aria-live="polite">
-        {{ errorMessage }}
+    <!-- Header + Controls -->
+    <div class="flex items-center justify-between mb-3 gap-3">
+      <h3 v-if="label" class="text-base font-semibold">{{ label }}</h3>
+      <div class="flex items-center gap-2 ml-auto">
+        <template v-if="!isEditing">
+          <UButton
+            :disabled="!canEdit"
+            :aria-disabled="!canEdit"
+            icon="i-lucide-pencil"
+            color="primary"
+            variant="soft"
+            size="xs"
+            @click="startEditing"
+          >
+            {{ i18n.edit || 'Edit' }}
+          </UButton>
+        </template>
+        <template v-else>
+          <UButton
+            :disabled="!isDirty"
+            :aria-disabled="!isDirty"
+            icon="i-lucide-check"
+            color="primary"
+            variant="solid"
+            size="xs"
+            @click="saveChanges"
+          >
+            {{ i18n.save || 'Save' }}
+          </UButton>
+          <UButton
+            icon="i-lucide-x"
+            color="neutral"
+            variant="soft"
+            size="xs"
+            @click="cancelEditing"
+          >
+            {{ i18n.cancel || 'Cancel' }}
+          </UButton>
+          <UButton
+            :disabled="!canClearAll"
+            :aria-disabled="!canClearAll"
+            :title="!canClearAll && minItems > 0 ? 'Minimum items required' : ''"
+            icon="i-lucide-trash-2"
+            color="error"
+            variant="soft"
+            size="xs"
+            @click="clearAll"
+          >
+            {{ i18n.clear || 'Clear' }}
+          </UButton>
+        </template>
       </div>
+    </div>
+    <div v-if="errorMessage" role="alert" aria-live="polite" class="text-sm text-red-600 mb-2">
+      {{ errorMessage }}
     </div>
 
     <!-- Display mode -->
@@ -69,15 +85,18 @@
             :remove="() => remove(index)"
           >
             <pre>{{ item }}</pre>
-            <div>
-              <button
-                type="button"
-                @click="remove(index)"
+            <div class="mt-2">
+              <UButton
                 :disabled="!canRemoveMore"
                 :aria-disabled="!canRemoveMore"
+                icon="i-lucide-trash-2"
+                color="neutral"
+                variant="soft"
+                size="xs"
+                @click="remove(index)"
               >
                 {{ i18n.remove || 'Remove' }}
-              </button>
+              </UButton>
             </div>
           </slot>
         </div>
