@@ -15,17 +15,18 @@
       <UCheckbox v-model="form.ongoing" label="Ongoing" />
     </div>
 
-    <UTextarea v-model="form.responsibilities" placeholder="What did you do? (optional)" />
+    <UTextarea
+      v-model="form.responsibilities"
+      placeholder="What did you do? (optional)"
+    />
 
     <div class="flex items-center gap-2">
-      <UButton
-        color="primary"
-        :disabled="!canCreate"
-        @click="create"
-      >
+      <UButton color="primary" :disabled="!canCreate" @click="create">
         Add experience
       </UButton>
-      <span class="text-xs text-gray-500">Quick add creates a single entry; edit later for details.</span>
+      <span class="text-xs text-gray-500"
+        >Quick add creates a single entry; edit later for details.</span
+      >
     </div>
   </div>
 </template>
@@ -69,7 +70,7 @@ function create() {
     name: form.name.trim(),
     role: form.role.trim() || undefined,
     from_year: form.from_year.trim(),
-    to_year: form.ongoing ? null : (form.to_year.trim() || null),
+    to_year: form.ongoing ? null : form.to_year.trim() || null,
     ongoing: form.ongoing,
     responsibilities: form.responsibilities.trim() || undefined,
   }

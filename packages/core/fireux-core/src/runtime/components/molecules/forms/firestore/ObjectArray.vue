@@ -1,7 +1,6 @@
 <template>
   <div>
     <h3 v-if="label">{{ label }}</h3>
-    <div v-if="debugWhere === 'label'">{{ debugText }}</div>
 
     <!-- Controls -->
     <div>
@@ -40,12 +39,10 @@
       <div v-if="errorMessage" role="alert" aria-live="polite">
         {{ errorMessage }}
       </div>
-      <div v-if="debugWhere === 'controls'">{{ debugText }}</div>
     </div>
 
     <!-- Display mode -->
     <div v-if="!isEditing">
-      <div v-if="debugWhere === 'display'">{{ debugText }}</div>
       <div v-if="!items || items.length === 0" aria-live="polite">
         {{ i18n.empty }}
       </div>
@@ -54,15 +51,12 @@
           <slot name="display" :item="item" :index="index">
             <pre>{{ item }}</pre>
           </slot>
-          <span>hello ({{ updateLabel }})</span>
-          <pre>{{ item }}</pre>
         </div>
       </div>
     </div>
 
     <!-- Edit mode -->
     <div v-else>
-      <div v-if="debugWhere === 'edit'">{{ debugText }}</div>
       <div v-if="localItems.length === 0" aria-live="polite">
         {{ i18n.empty }}
       </div>
@@ -86,8 +80,6 @@
               </button>
             </div>
           </slot>
-          <span>hello ({{ updateLabel }})</span>
-          <pre>{{ item }}</pre>
         </div>
       </div>
 
@@ -102,7 +94,6 @@
         <div v-if="!canAdd" aria-live="polite">
           {{ i18n.maxReached || 'Maximum items reached' }}
         </div>
-        <div v-if="debugWhere === 'create'">{{ debugText }}</div>
       </div>
     </div>
   </div>
@@ -138,9 +129,6 @@ const props = defineProps({
   minItems: { type: Number, default: 0 },
   maxItems: { type: Number, default: Infinity },
   confirmClear: { type: Boolean, default: true },
-  // Optional debug helpers to show a simple marker in a specific area
-  debugWhere: { type: String, default: '' }, // 'label' | 'controls' | 'display' | 'edit' | 'create'
-  debugText: { type: String, default: 'hello' },
 })
 
 const emit = defineEmits<{
@@ -165,19 +153,6 @@ const canRemoveMore = computed(() => localItems.value.length > props.minItems)
 const canClearAll = computed(
   () => localItems.value.length > 0 && props.minItems === 0
 )
-// Derive a friendly label for the update function to surface where changes flow
-const updateLabel = computed(() => {
-  const fn: any = props.updateFunction
-  if (!fn) return 'updateFunction'
-  const from = fn.__source ? ` [${fn.__source}]` : ''
-  // Try function.name; if minified/anonymous, fall back to string sniff
-  const byName = fn.name && fn.name !== 'anonymous' ? fn.name : ''
-  if (byName) return byName + from
-  const str = String(fn)
-  const m = str.match(/function\s+(\w+)/)
-  if (m && m[1]) return m[1] + from
-  return 'updateFunction' + from
-})
 
 function deepClone<T>(val: T): T {
   try {
