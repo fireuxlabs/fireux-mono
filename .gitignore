@@ -41,6 +41,7 @@ dist/
 build/
 .nuxt/
 .output/
+**/*.js.map
 
 # TypeScript build info
 *.tsbuildinfo

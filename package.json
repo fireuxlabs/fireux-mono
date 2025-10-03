@@ -46,7 +46,14 @@
     "migrate:chefs:dry": "tsx scripts/migrate-chefs.ts --dry",
     "migrate:profiles": "node scripts/migrateProfiles.cjs --collection=professionals",
     "migrate:profiles:apply": "node scripts/migrateProfiles.cjs --collection=professionals --apply",
-    "docs:images:shapes": "node scripts/update-images-md.mjs"
+    "docs:images:shapes": "node scripts/update-images-md.mjs",
+    "migrate:professionals:experience": "tsx scripts/migrate-professionals-experience.ts --collection=professionals",
+    "migrate:professionals:experience:apply": "tsx scripts/migrate-professionals-experience.ts --collection=professionals --apply",
+    "migrate:professionals:experience:drop-legacy": "tsx scripts/migrate-professionals-experience.ts --collection=professionals --apply --dropLegacy",
+    "lint:deprecated": "node tools/scripts/scan-deprecated-files.mjs",
+    "lint:deprecated:delete": "node tools/scripts/scan-deprecated-files.mjs --delete",
+    "cleanup:emitted": "node tools/scripts/cleanup-emitted.mjs",
+    "cleanup:emitted:dry": "node tools/scripts/cleanup-emitted.mjs --dry"
   },
   "engines": {
     "node": ">=20.11 <23",

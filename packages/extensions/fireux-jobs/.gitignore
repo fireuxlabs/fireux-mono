@@ -1,0 +1,7 @@
+dist/
+node_modules/
+
+# Prevent accidental JS artifacts in TS sources
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
