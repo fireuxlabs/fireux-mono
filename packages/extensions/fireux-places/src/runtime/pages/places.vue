@@ -178,8 +178,4 @@ function formatLatLng(v: number) {
 }
 </script>
 
-<style scoped>
-.suggestion-item:hover {
-  @apply bg-slate-50; /* Using slate instead of gray to match configured Tailwind palette (neutral=slate) */
-}
-</style>
+

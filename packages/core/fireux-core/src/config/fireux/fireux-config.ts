@@ -151,6 +151,7 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     app: { head: { title: opts.appName } },
 
     runtimeConfig: {
+      googlePlacesApiKey: env('GOOGLE_PLACES_API_KEY') || '',
       firebaseServiceAccount: env('FIREBASE_SERVICE_ACCOUNT') || '',
       public: {
         ecosystem: opts.ecosystem,

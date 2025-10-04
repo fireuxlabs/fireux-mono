@@ -26,6 +26,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     // Core is provided by the app via createFireuxConfig; do not install here
     // Include jobs extension across all Misebox apps (professionals/employers routes, components, composables)
     await installModule('fireux-jobs')
+    await installModule('fireux-places')
 
     configureRuntime(nuxt, 'misebox')
     configurePlugins(resolver)
@@ -36,7 +37,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     // configureServer(resolver) // toggle as needed
 
     nuxt.hook('ready', () => {
-      console.log('fireux-misebox: module configured')
+      // fireux-misebox: module configured
     })
   },
 })
