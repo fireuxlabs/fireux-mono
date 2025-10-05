@@ -15,8 +15,8 @@
     <!-- Integrations Component -->
     <LandingIntegrations />
 
-    <!-- Call to Action (Nuxt UI PageCta) -->
-    <PageCta
+    <!-- Call to Action (Nuxt UI UPageCTA) -->
+    <UPageCTA
       title="Run a smarter cleaning business"
       description="Sign in to set up your account and start scheduling jobs."
       :links="[

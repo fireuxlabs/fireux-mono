@@ -15,8 +15,8 @@
     <!-- Integrations Component -->
     <LandingIntegrations />
 
-    <!-- Call to Action (Nuxt UI PageCta) -->
-    <PageCta
+    <!-- Call to Action (Nuxt UI UPageCTA) -->
+    <UPageCTA
       title="Ready to try Misebox?"
       description="Sign in to create your first profile and explore the kitchen tools."
       :links="[

@@ -16,7 +16,7 @@
     "@nuxt/ui": "^4.0.0-alpha.2",
     "firebase": "11.10.0",
     "fireux-core": "workspace:*",
-    "nuxt": "4.0.3",
+    "nuxt": "4.1.2",
     "nuxt-vuefire": "^1.1.0",
     "vue": "3.5.20",
     "vue-router": "4.5.1"

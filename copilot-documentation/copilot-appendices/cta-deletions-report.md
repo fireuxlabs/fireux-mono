@@ -2,7 +2,7 @@
 
 Date: 2025-09-22
 
-Scope: Remove all bespoke CTA components (excluding Nuxt UI PageCta) and refactor pages to rely on OrganismsProfileRoot with onEnsure or inline create flows.
+Scope: Remove all bespoke CTA components (excluding Nuxt UI UPageCTA) and refactor pages to rely on OrganismsProfileRoot with onEnsure or inline create flows.
 
 ## Deleted files
 
@@ -17,17 +17,19 @@ Scope: Remove all bespoke CTA components (excluding Nuxt UI PageCta) and refacto
 - projects/cleanbox/cleanbox-app/app/components/landing/CTA.vue
 - projects/cleanbox/richies-reinigung/app/components/landing/CTA.vue
 
-Note: “PageCta” (Nuxt UI 4) is retained and used in app landings where a CTA section is desired.
+Note: “UPageCTA” (Nuxt UI 4) is retained and used in app landings where a CTA section is desired.
 
 Important: To prevent any accidental lingering imports from breaking builds, the above files have been removed from usage across pages and replaced, and any remaining component files were converted to no-op stubs during the transition. These stubs render nothing and will be fully removed in a subsequent sweep once dist outputs and any cached references are purged.
 
 ## Page/template updates
 
 - Jobs dashboards and indexes (done earlier):
+
   - Employ index, Professional index → use OrganismsProfileRoot with :onEnsure and standardized slots.
   - Employer/Professional dashboards → inline create buttons instead of bespoke CTA components.
 
 - Misebox
+
   - pages/chefs/index.vue → already aligned with OrganismsProfileRoot + :onEnsure.
   - pages/dashboard/chef-profile.vue → replaced <ProfilesChefCTA /> with inline create flow (useChefCreate).
   - pages/suppliers/index.vue → removed User/App/Supplier CTA components; aligned with OrganismsProfileRoot + :onEnsure (useSupplierCreate) and standardized slots (#current-assets, #item).
@@ -35,8 +37,8 @@ Important: To prevent any accidental lingering imports from breaking builds, the
   - pages/chefs/[id].vue, employers/[id].vue, professionals/[id].vue, suppliers/[id].vue → previously migrated to useFirestoreRead; no CTA dependencies.
 
 - App landing pages
-  - projects/misebox/misebox-app/app/pages/index.vue → replaced <LandingCTA /> with <PageCta />.
-  - projects/cleanbox/cleanbox-app/app/pages/index.vue → replaced <LandingCTA /> with <PageCta />.
+  - projects/misebox/misebox-app/app/pages/index.vue → replaced <LandingCTA /> with <UPageCTA />.
+  - projects/cleanbox/cleanbox-app/app/pages/index.vue → replaced <LandingCTA /> with <UPageCTA />.
   - projects/cleanbox/richies-reinigung/app/pages/index.vue → no page change required (component removed from usage if present).
 
 ## Follow-up references removed
@@ -48,11 +50,11 @@ Important: To prevent any accidental lingering imports from breaking builds, the
 
 - Chef/Supplier dashboards referenced CTA components: updated to inline create flows and added missing ref import for reactive state.
 - Suppliers index referenced User/App/Supplier CTA components: refactored to OrganismsProfileRoot pattern with :onEnsure.
-- Landing pages used LandingCTA: replaced with PageCta.
+- Landing pages used LandingCTA: replaced with UPageCTA.
 
 ## Notes
 
-- Core ProfileRoot now exposes ctaMessage from useProfileComputed. Pages can optionally surface a PageCta using this computed message if needed.
+- Core ProfileRoot now exposes ctaMessage from useProfileComputed. Pages can optionally surface a UPageCTA using this computed message if needed.
 - All profile pages now prefer a flat profile via useProfile(config) and slots on OrganismsProfileRoot for rendering.
 
 ## Final verification

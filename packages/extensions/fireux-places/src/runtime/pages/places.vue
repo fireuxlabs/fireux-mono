@@ -205,11 +205,13 @@ const savedPlaces = computed<Place[]>(() => {
   const raw = firestorePlaces.value
   if (!raw) return []
   return raw
-    .map((doc): Place => ({
-      ...doc,
-      source: 'firestore' as const,
-      avatar: doc.avatar || PLACE_ICON_FALLBACK,
-    }))
+    .map(
+      (doc): Place => ({
+        ...doc,
+        source: 'firestore' as const,
+        avatar: doc.avatar || PLACE_ICON_FALLBACK,
+      })
+    )
     .filter((item): item is Place & { id: string } => Boolean(item.id))
     .sort((a, b) => a.name.localeCompare(b.name))
 })

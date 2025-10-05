@@ -1,10 +1,23 @@
 export function configurePages(resolver: any, nuxt: any) {
-  // Expose module pages under a subdir (Nuxt v4: extends-like registration)
-  // Add as layered app dir so pages/layouts/middleware are discovered
-  nuxt.options._layers = nuxt.options._layers || []
-  nuxt.options._layers.push({
-    cwd: resolver.resolve('./runtime'),
-    // Nuxt expects a config with srcDir for layer prioritization
-    config: { srcDir: resolver.resolve('./runtime') },
+  // Expose module pages as a Nuxt layer using the public `extends` API
+  const layerSrc = resolver.resolve('./runtime')
+  if (!layerSrc) return
+
+  type LayerEntry = string | [string, Record<string, unknown>?]
+  const entry: LayerEntry = [layerSrc, { config: { srcDir: layerSrc } }]
+  const extendsValue = nuxt.options.extends
+  const extendsArr: LayerEntry[] = []
+  if (Array.isArray(extendsValue)) {
+    extendsArr.push(...(extendsValue as LayerEntry[]))
+  } else if (extendsValue) {
+    extendsArr.push(extendsValue as LayerEntry)
+  }
+
+  nuxt.options.extends = extendsArr
+  const alreadyIncluded = extendsArr.some((layer) => {
+    const src = Array.isArray(layer) ? layer[0] : layer
+    return src === layerSrc
   })
+
+  if (!alreadyIncluded) extendsArr.push(entry)
 }

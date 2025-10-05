@@ -5,6 +5,46 @@ date: 2025-09-20
 
 This snapshot summarizes the documentation state after pruning imported/archives and non-canonical files, aligned to the lean TOC.
 
+---
+
+## 2025-10-05 — Nuxt 4.1 upgrade impact on `pages-config.ts`
+
+### Trigger
+
+- Nuxt upgraded from 4.0.3 to 4.1.2 across core, extensions, and tenant apps, with Nitro pinned to 2.12.6 via workspace overrides.
+- `pnpm install` started failing during `nuxi prepare` because our helper mutated the private `nuxt.options._layers`, a property Nuxt 4.1 removed while tightening its layer registry.
+
+### Previous implementation (pre-upgrade)
+
+- Each `configurePages` helper pushed `{ config: { srcDir: layerSrc } }` directly into `nuxt.options._layers`.
+- Deduplication relied on comparing `layerSrc` inside `_layers`, but the array shape differed between Nuxt releases and was never part of the public API.
+
+### New implementation (post-upgrade)
+
+- Normalize `nuxt.options.extends` into an array, since Nuxt 4.1 promotes `extends` as the supported hook for runtime layers.
+- Add the layer as a tuple `[layerSrc, { config: { srcDir: layerSrc } }]`, preserving the previous `srcDir` override while staying on the public surface.
+- Guard against duplicates by checking existing `extends` entries before pushing.
+
+### Files updated
+
+- `packages/core/fireux-core/src/config/pages-config.ts`
+- `packages/extensions/fireux-places/src/config/pages-config.ts`
+- `packages/extensions/fireux-jobs/src/config/pages-config.ts`
+- `packages/tenants/fireux-cleanbox/src/config/pages-config.ts`
+- `packages/tenants/fireux-fireux/src/config/pages-config.ts`
+- `packages/tenants/fireux-misebox/src/config/pages-config.ts`
+
+### Outcomes
+
+- `pnpm install` now completes; each app regenerates types via `nuxi prepare` without fatal errors.
+- `pnpm build:packages` succeeds, confirming the modules compile with the new layer wiring.
+- Runtime behavior remains idempotent because the helper still no-ops when the layer is already present.
+
+### Follow-up considerations
+
+- The duplication warnings emitted during `nuxi prepare` predate this change; evaluate consolidating layout/component exports separately.
+- Explore extracting a shared utility to reduce repetition across tenant `configurePages` helpers should further Nuxt changes occur.
+
 ## Summary
 
 - Repo-wide Markdown files: 19

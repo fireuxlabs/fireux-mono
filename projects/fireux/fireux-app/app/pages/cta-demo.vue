@@ -2,10 +2,10 @@
   <div class="p-6 space-y-8">
     <div>
       <h1 class="text-2xl font-semibold">Call to Action demo</h1>
-      <p class="text-sm opacity-70">Using Nuxt UI 4 PageCta</p>
+      <p class="text-sm opacity-70">Using Nuxt UI 4 UPageCTA</p>
     </div>
 
-    <PageCta
+    <UPageCTA
       title="Start your FireUX journey"
       description="Try the new Nuxt UI 4 components across the suite."
       :links="[
@@ -38,5 +38,5 @@
 </template>
 
 <script setup lang="ts">
-// PageCta and other components are auto-imported by @nuxt/ui v4
+// UPageCTA and other components are auto-imported by @nuxt/ui v4
 </script>
