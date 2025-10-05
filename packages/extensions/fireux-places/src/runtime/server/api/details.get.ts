@@ -1,11 +1,13 @@
+import { defineEventHandler, getQuery, setResponseStatus } from 'h3'
+import { resolvePlacesApiKey } from '../utils/places-api-key'
+
 // Example implementation for details.get.ts
 export default defineEventHandler(async (event: any) => {
   const queryParams = getQuery(event)
   const placeId = queryParams.place_id as string | undefined
   if (!placeId) return { result: null }
 
-  const config = useRuntimeConfig()
-  const key = config.googlePlacesApiKey as string | undefined
+  const key = resolvePlacesApiKey(event)
   if (!key) {
     setResponseStatus(event, 500)
     return { result: null }

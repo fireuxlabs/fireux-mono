@@ -22,6 +22,9 @@
       ],
       "fireux-core/config/*": ["packages/core/fireux-core/src/config/*"],
       "#fireux-core-runtime/*": ["packages/core/fireux-core/src/runtime/*"],
+      "#fireux-core-composables/*": [
+        "packages/core/fireux-core/src/runtime/composables/*"
+      ],
       "fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],
       "fireux-places/*": ["packages/extensions/fireux-places/src/*"],
       "fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"]

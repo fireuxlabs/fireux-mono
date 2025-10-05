@@ -1,3 +1,12 @@
+import {
+  defineEventHandler,
+  getQuery,
+  getRequestHeader,
+  getRequestIP,
+  setResponseStatus,
+} from 'h3'
+import { resolvePlacesApiKey } from '../utils/places-api-key'
+
 // Lightweight in-memory rate limiter (per IP). Not production-grade; replace with durable store if needed.
 const rlWindowMs = 60_000 // 1 minute window
 const rlMax = 120 // max requests per window per IP
@@ -90,8 +99,7 @@ export default defineEventHandler(async (event: any) => {
     return { predictions: [] }
   }
 
-  const config = useRuntimeConfig()
-  const key = config.googlePlacesApiKey as string | undefined
+  const key = resolvePlacesApiKey(event)
   if (!key) {
     setResponseStatus(event, 500)
     return { predictions: [] }

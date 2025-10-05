@@ -40,17 +40,21 @@
         >
           <div
             v-for="(suggestion, index) in suggestions"
-            :key="suggestion.place_id"
+            :key="suggestion.id || suggestion.place_id"
             class="suggestion-item"
             :class="{ highlighted: index === highlightedIndex }"
             @click="selectSuggestion(suggestion)"
             @mouseenter="highlightedIndex = index"
           >
             <div class="suggestion-main">
-              {{ suggestion.structured_formatting.main_text }}
+              {{
+                suggestion.name ||
+                suggestion.formatted_address ||
+                'Unknown place'
+              }}
             </div>
             <div class="suggestion-secondary">
-              {{ suggestion.structured_formatting.secondary_text }}
+              {{ suggestion.formatted_address || '—' }}
             </div>
           </div>
         </div>
@@ -110,6 +114,9 @@
 <script setup>
 import { usePlaces } from '../../composables/usePlaces'
 import { ref, watch, onMounted } from 'vue'
+
+const PLACE_ICON_FALLBACK =
+  'https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png'
 
 const props = defineProps({
   label: { type: String, default: 'Address' },
@@ -185,7 +192,9 @@ async function onSearchInput() {
 // Select suggestion
 async function selectSuggestion(suggestion) {
   try {
-    const placeDetails = await getPlaceDetails(suggestion.place_id)
+    const placeDetails = await getPlaceDetails(
+      suggestion.id || suggestion.place_id
+    )
     if (placeDetails) {
       searchQuery.value = placeDetails.formatted_address
       showSuggestions.value = false
@@ -237,11 +246,19 @@ async function saveChanges() {
     if (showManualEntry.value) {
       // Save manual entry as a simple address
       const manualPlace = {
-        place_id: `manual_${Date.now()}`,
+        id: `manual_${Date.now()}`,
+        name: formatManualAddress() || 'Manual entry',
         formatted_address: formatManualAddress(),
-        geometry: { location: { lat: 0, lng: 0 } },
-        address_components: [],
-        types: ['manual_entry'],
+        lat: 0,
+        lng: 0,
+        avatar: PLACE_ICON_FALLBACK,
+        source: 'firestore',
+        website: null,
+        phone: null,
+        rating: null,
+        user_ratings_total: null,
+        created_at: Date.now(),
+        updated_at: Date.now(),
         manual_address: { ...manualAddress.value },
       }
       await savePlace(manualPlace)

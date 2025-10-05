@@ -1,10 +1,10 @@
 import { ref } from 'vue'
-import type { PlaceAutocompleteResult, Place } from '../models/place.model'
+import type { Place, PlaceCard } from '../models/place.model'
 
 // Structured result wrapper (new enhanced method)
 export interface PlacesAutocompleteSuccess {
   success: true
-  data: PlaceAutocompleteResult[]
+  data: PlaceCard.Cell[]
   strategy: string
   diagnostics?: Record<string, any>
 }
@@ -42,12 +42,36 @@ function resetSessionToken() {
 }
 
 // Caches
-const predictionCache = new Map<string, PlaceAutocompleteResult[]>()
+const predictionCache = new Map<string, PlaceCard.Cell[]>()
 const detailsCache = new Map<string, Place>()
+const PLACE_ICON_FALLBACK =
+  'https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png'
 
-function markLoaded() {
-  isScriptLoaded.value = true
-  isLoading.value = false
+function generateTempId() {
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    return crypto.randomUUID()
+  }
+  return `temp_${Math.random().toString(36).slice(2)}`
+}
+
+function mapPredictionToCell(prediction: any): PlaceCard.Cell {
+  return {
+    id: prediction?.place_id ?? generateTempId(),
+    name:
+      prediction?.structured_formatting?.main_text ||
+      prediction?.description ||
+      'Unknown place',
+    avatar: PLACE_ICON_FALLBACK,
+    formatted_address:
+      prediction?.structured_formatting?.secondary_text ||
+      prediction?.description ||
+      undefined,
+    rating: null,
+    meta_right: 'Google',
+  }
 }
 
 // loadGoogleScript removed – server proxy handles autocomplete. NOTE: getPlaceDetails now falls back to server endpoint; legacy inline JS path retained only when script already present.
@@ -92,7 +116,7 @@ async function serverAutocomplete(
   query: string,
   _apiKey: string, // kept for signature compatibility; server holds the key
   types: string = 'address'
-): Promise<PlaceAutocompleteResult[]> {
+): Promise<PlaceCard.Cell[]> {
   const params = new URLSearchParams({
     q: query,
     sessiontoken: getSessionToken(),
@@ -107,13 +131,8 @@ async function serverAutocomplete(
     if (data.error === 'REQUEST_DENIED') apiTargetBlocked = true
     throw new Error(`Server autocomplete error: ${data.error}`)
   }
-  const preds = data.predictions || []
-  const mapped: PlaceAutocompleteResult[] = preds.map((p: any) => ({
-    place_id: p.place_id,
-    description: p.description,
-    structured_formatting: p.structured_formatting,
-    types: p.types,
-  }))
+  const preds = Array.isArray(data.predictions) ? data.predictions : []
+  const mapped = preds.map(mapPredictionToCell)
   predictionCache.set(query, mapped)
   lastStrategy.value = 'server-rest'
   return mapped
@@ -124,7 +143,7 @@ async function searchPlacesArray(
   query: string,
   apiKey: string,
   types: string = 'address'
-): Promise<PlaceAutocompleteResult[]> {
+): Promise<PlaceCard.Cell[]> {
   const result = await searchPlacesWithMeta(query, apiKey, types)
   if (result.success) return result.data
   if (import.meta.dev) {
@@ -138,51 +157,143 @@ async function searchPlacesArray(
   return []
 }
 
+function buildWebsiteFavicon(url?: string | null) {
+  if (!url) return null
+  try {
+    const normalized = new URL(url.startsWith('http') ? url : `https://${url}`)
+    return `https://www.google.com/s2/favicons?sz=128&domain_url=${encodeURIComponent(
+      normalized.origin
+    )}`
+  } catch {
+    return null
+  }
+}
+
+function resolvePhotoUrl(place: any) {
+  const photos = place?.photos
+  if (Array.isArray(photos) && photos.length > 0) {
+    const photo = photos[0]
+    if (typeof photo?.getUrl === 'function') {
+      return photo.getUrl({ maxWidth: 400 })
+    }
+    if (photo?.photo_reference) {
+      const params = new URLSearchParams({
+        ref: photo.photo_reference,
+        maxwidth: String(Math.min(photo.width ?? 400, 400)),
+      })
+      return `/api/places/photo?${params.toString()}`
+    }
+    if (typeof photo?.url === 'string') return photo.url
+  }
+  if (typeof place?.icon === 'string') return place.icon
+  if (typeof place?.icon_mask_base_uri === 'string')
+    return place.icon_mask_base_uri
+  return null
+}
+
+function mapGooglePlace(place: any, fallbackId?: string): Place {
+  const location = place?.geometry?.location
+  const latCandidate =
+    typeof location?.lat === 'function' ? location.lat() : location?.lat
+  const lngCandidate =
+    typeof location?.lng === 'function' ? location.lng() : location?.lng
+
+  const lat =
+    typeof latCandidate === 'number' ? latCandidate : Number(latCandidate) || 0
+  const lng =
+    typeof lngCandidate === 'number' ? lngCandidate : Number(lngCandidate) || 0
+  const id = place?.place_id ?? fallbackId ?? generateTempId()
+
+  const avatar =
+    resolvePhotoUrl(place) ??
+    buildWebsiteFavicon(place?.website) ??
+    PLACE_ICON_FALLBACK
+
+  return {
+    id,
+    name: place?.name ?? place?.formatted_address ?? 'Unknown place',
+    formatted_address: place?.formatted_address ?? '',
+    lat,
+    lng,
+    avatar,
+    source: 'google',
+    website: place?.website ?? null,
+    phone:
+      place?.international_phone_number ??
+      place?.formatted_phone_number ??
+      null,
+    rating: typeof place?.rating === 'number' ? place.rating : null,
+    user_ratings_total:
+      typeof place?.user_ratings_total === 'number'
+        ? place.user_ratings_total
+        : null,
+    created_at: place?.created_at ?? null,
+    updated_at: place?.updated_at ?? null,
+  }
+}
+
 export async function getPlaceDetails(
   placeId: string,
-  apiKey: string
+  _apiKey: string
 ): Promise<Place> {
   if (detailsCache.has(placeId)) return detailsCache.get(placeId) as Place
-  // Temporary: still using client JS API if available; otherwise fetch via server details endpoint
-  if (detailsCache.has(placeId)) return detailsCache.get(placeId) as Place
-  if (typeof window !== 'undefined' && (window as any).google?.maps?.places) {
-    return new Promise((resolve, reject) => {
-      const g = (window as any).google.maps.places
-      const service = new g.PlacesService(document.createElement('div'))
-      service.getDetails(
-        {
-          placeId,
-          fields: [
-            'place_id',
-            'formatted_address',
-            'name',
-            'geometry',
-            'address_components',
-            'types',
-          ],
-        },
-        (place: any, status: string) => {
-          if (status === g.PlacesServiceStatus.OK && place) {
-            detailsCache.set(placeId, place as Place)
-            resolve(place as Place)
-          } else {
-            reject(new Error(`Place details failed: ${status}`))
+
+  isLoading.value = true
+  error.value = null
+
+  const handleSuccess = (raw: any) => {
+    const mapped = mapGooglePlace(raw, placeId)
+    detailsCache.set(placeId, mapped)
+    return mapped
+  }
+
+  try {
+    if (typeof window !== 'undefined' && (window as any).google?.maps?.places) {
+      return await new Promise<Place>((resolve, reject) => {
+        const g = (window as any).google.maps.places
+        const service = new g.PlacesService(document.createElement('div'))
+        service.getDetails(
+          {
+            placeId,
+            fields: [
+              'place_id',
+              'formatted_address',
+              'name',
+              'geometry',
+              'website',
+              'international_phone_number',
+              'formatted_phone_number',
+              'rating',
+              'user_ratings_total',
+              'icon',
+              'icon_mask_base_uri',
+              'photos',
+            ],
+          },
+          (place: any, status: string) => {
+            if (status === g.PlacesServiceStatus.OK && place) {
+              resolve(handleSuccess(place))
+            } else {
+              reject(new Error(`Place details failed: ${status}`))
+            }
           }
-        }
-      )
-    })
+        )
+      })
+    }
+
+    const params = new URLSearchParams({ place_id: placeId })
+    const res = await fetch(`/api/places/details?${params.toString()}`)
+    if (!res.ok) throw new Error(`Server details HTTP ${res.status}`)
+    const data = await res.json()
+    if (data.error) throw new Error(`Server details error: ${data.error}`)
+    if (data.result) return handleSuccess(data.result)
+    throw new Error('Place details not found')
+  } catch (e: any) {
+    error.value = e?.message ?? String(e)
+    throw e
+  } finally {
+    isLoading.value = false
   }
-  // Fallback to server details API
-  const params = new URLSearchParams({ id: placeId })
-  const res = await fetch(`/api/places/details?${params.toString()}`)
-  if (!res.ok) throw new Error(`Server details HTTP ${res.status}`)
-  const data = await res.json()
-  if (data.error) throw new Error(`Server details error: ${data.error}`)
-  if (data.result) {
-    detailsCache.set(placeId, data.result as Place)
-    return data.result as Place
-  }
-  throw new Error('Place details not found')
 }
 
 export async function searchPlacesWithMeta(
@@ -193,10 +304,15 @@ export async function searchPlacesWithMeta(
   if (!query.trim())
     return { success: false, error: 'Empty query', strategy: null }
   const cached = predictionCache.get(query)
-  if (cached) return { success: true, data: cached, strategy: 'cache' }
-  // Server proxy (modern single path)
+  if (cached) {
+    lastStrategy.value = 'cache'
+    return { success: true, data: cached, strategy: 'cache' }
+  }
+  isLoading.value = true
+  error.value = null
   try {
     const mapped = await serverAutocomplete(query, apiKey, types)
+    lastStrategy.value = 'server-rest'
     return {
       success: true,
       data: mapped,
@@ -205,12 +321,15 @@ export async function searchPlacesWithMeta(
     }
   } catch (e: any) {
     lastStrategy.value = 'unavailable'
+    error.value = e?.message ?? String(e)
     return {
       success: false,
-      error: e.message,
+      error: e?.message ?? String(e),
       strategy: lastStrategy.value,
       diagnostics: buildDiagnostics({ phase: 'server-rest-failed' }),
     }
+  } finally {
+    isLoading.value = false
   }
 }
 

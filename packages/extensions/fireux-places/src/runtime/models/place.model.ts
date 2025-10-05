@@ -1,37 +1,43 @@
+// Global single-layer Place model with unified card variants
+
+/** ───────────────────────────────
+ * Base
+ * ─────────────────────────────── */
 export interface Place {
-  place_id: string
+  id: string // Firestore doc id = Google place_id
+  name: string
   formatted_address: string
-  name?: string
-  geometry: {
-    location: {
-      lat: number
-      lng: number
-    }
+  lat: number
+  lng: number
+  avatar: string // main image (logo, storefront, etc.)
+  source: 'firestore' | 'google'
+  website?: string | null
+  phone?: string | null
+  rating?: number | null
+  user_ratings_total?: number | null
+  created_at: any
+  updated_at?: any
+}
+
+/** ───────────────────────────────
+ * Cards
+ * ─────────────────────────────── */
+export namespace PlaceCard {
+  export interface Pill {
+    id: string
+    name: string
+    avatar?: string | null
   }
-  address_components: AddressComponent[]
-  types: string[]
-}
 
-export interface AddressComponent {
-  long_name: string
-  short_name: string
-  types: string[]
-}
-
-export interface SimpleAddress {
-  street?: string
-  city?: string
-  state?: string
-  country?: string
-  postal_code?: string
-}
-
-export interface PlaceAutocompleteResult {
-  place_id: string
-  description: string
-  structured_formatting: {
-    main_text: string
-    secondary_text: string
+  export interface Cell extends Pill {
+    formatted_address?: string
+    rating?: number | null
+    meta_right?: string | null // e.g. “Updated 2h ago”
   }
-  types: string[]
+
+  export interface Profile extends Cell {
+    website?: string | null
+    phone?: string | null
+    user_ratings_total?: number | null
+  }
 }

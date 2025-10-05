@@ -48,6 +48,9 @@
 </template>
 
 <script setup lang="ts">
+import { useProfessionalFormattingAndValidation } from '../../../../composables/firestore/profiles/Professional/useProfessionalFormattingAndValidation'
+import { useProfessionalUpdate } from '../../../../composables/firestore/profiles/Professional/useProfessionalUpdate'
+
 defineProps<{ professional: any }>()
 /** VALIDATE / FORMAT */
 const { validateDisplayName, formatDisplayName } =

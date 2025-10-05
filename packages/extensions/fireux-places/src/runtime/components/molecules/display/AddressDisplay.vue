@@ -3,12 +3,15 @@
     <div v-if="place?.formatted_address" class="formatted-address">
       <div class="main-address">{{ place.formatted_address }}</div>
       <div
-        v-if="showCoordinates && place.geometry?.location"
+        v-if="
+          showCoordinates &&
+          typeof place?.lat === 'number' &&
+          typeof place?.lng === 'number'
+        "
         class="coordinates"
       >
         <span class="text-sm text-gray-500">
-          {{ place.geometry.location.lat.toFixed(6) }},
-          {{ place.geometry.location.lng.toFixed(6) }}
+          {{ formatLatLng(place.lat) }}, {{ formatLatLng(place.lng) }}
         </span>
       </div>
     </div>
@@ -30,6 +33,11 @@ const props = defineProps({
   showCoordinates: { type: Boolean, default: false },
   placeholder: { type: String, default: 'No address set' },
 })
+
+function formatLatLng(value) {
+  if (typeof value !== 'number') return '—'
+  return Number(value).toFixed(6)
+}
 
 function formatSimpleAddress() {
   if (!props.simpleAddress) return ''

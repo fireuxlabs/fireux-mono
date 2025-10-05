@@ -1,6 +1,5 @@
 # sporadic-places-files.md
 
-
 Current, relevant places files in the extension package (as of 2025-10-04):
 
 - src/runtime/pages/places.vue

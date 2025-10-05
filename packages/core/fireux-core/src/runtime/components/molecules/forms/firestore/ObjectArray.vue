@@ -10,53 +10,79 @@
         <li v-for="(item, index) in items" :key="index">
           <UCard>
             <div class="relative group">
-              <div v-if="editingIndex !== index">
-                <slot name="display" :item="item" :index="index">{{
-                  item
-                }}</slot>
-              </div>
-              <div v-else>
-                <slot
-                  name="edit"
-                  :item="draftItem"
-                  :index="index"
-                  :remove="() => remove(index)"
-                  >{{ draftItem }}</slot
-                >
-              </div>
-
-              <div
-                class="absolute top-2 left-2 z-10 flex gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition"
-              >
-                <UButton
-                  v-if="editingIndex !== index"
-                  size="xs"
-                  variant="soft"
-                  icon="i-lucide-pencil"
-                  aria-label="Edit item"
-                  @click="startItemEditing(index)"
-                />
-
-                <template v-else>
-                  <UButton
-                    size="xs"
-                    variant="solid"
-                    icon="i-lucide-check"
-                    aria-label="Save item"
-                    @click="saveItemEditing"
+              <div class="space-y-2">
+                <div v-if="editingIndex !== index">
+                  <slot
+                    name="display"
+                    :item="item"
+                    :index="index"
+                    :mode="'display'"
+                    :is-editing="false"
+                    :start-editing="() => startItemEditing(index)"
+                    :remove="() => remove(index)"
                   >
-                    Save
-                  </UButton>
-                  <UButton
-                    size="xs"
-                    variant="soft"
-                    icon="i-lucide-x"
-                    aria-label="Cancel editing"
-                    @click="cancelItemEditing"
+                    <div
+                      class="p-4 border border-dashed border-gray-300 rounded"
+                    >
+                      Default display rendering for index {{ index }}
+                      <div class="mt-3 flex gap-2">
+                        <UButton
+                          size="xs"
+                          variant="soft"
+                          icon="i-lucide-pencil"
+                          @click="startItemEditing(index)"
+                        >
+                          Edit
+                        </UButton>
+                        <UButton
+                          size="xs"
+                          variant="ghost"
+                          color="error"
+                          icon="i-lucide-trash-2"
+                          @click="remove(index)"
+                        >
+                          Remove
+                        </UButton>
+                      </div>
+                    </div>
+                  </slot>
+                </div>
+                <div v-else>
+                  <slot
+                    name="edit"
+                    :item="draftItem"
+                    :index="index"
+                    :remove="() => remove(index)"
+                    :mode="'edit'"
+                    :is-editing="true"
+                    :save="saveItemEditing"
+                    :cancel="cancelItemEditing"
                   >
-                    Cancel
-                  </UButton>
-                </template>
+                    <div
+                      class="p-4 border border-dashed border-primary-300 rounded bg-primary-50"
+                    >
+                      Default edit rendering for index {{ index }}
+                      <div class="mt-3 flex gap-2">
+                        <UButton
+                          size="xs"
+                          variant="solid"
+                          icon="i-lucide-check"
+                          @click="saveItemEditing"
+                        >
+                          Save
+                        </UButton>
+                        <UButton
+                          size="xs"
+                          variant="soft"
+                          icon="i-lucide-x"
+                          @click="cancelItemEditing"
+                        >
+                          Cancel
+                        </UButton>
+                      </div>
+                    </div>
+                  </slot>
+                </div>
               </div>
             </div>
           </UCard>
@@ -66,18 +92,44 @@
 
     <div v-if="editingIndex === null">
       <slot name="create" :push="push" />
+      :save="saveItemEditing" :cancel="cancelItemEditing"
     </div>
 
     <div v-else-if="editingIndex === items.length">
       <UCard>
         <div class="relative group">
+          <div class="mt-3 flex gap-2">
+            <UButton
+              size="xs"
+              variant="solid"
+              icon="i-lucide-check"
+              @click="saveItemEditing"
+            >
+              Save
+            </UButton>
+            <UButton
+              size="xs"
+              variant="soft"
+              icon="i-lucide-x"
+              @click="cancelItemEditing"
+            >
+              Cancel
+            </UButton>
+          </div>
           <slot
             name="edit"
             :item="draftItem"
             :index="editingIndex"
             :remove="cancelItemEditing"
-            >{{ draftItem }}</slot
+            :mode="'edit'"
+            :is-editing="true"
           >
+            <div
+              class="p-4 border border-dashed border-primary-300 rounded bg-primary-50 mt-2"
+            >
+              Default create/edit rendering for index {{ editingIndex }}
+            </div>
+          </slot>
 
           <div
             class="absolute top-2 left-2 z-10 flex gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition"
@@ -173,5 +225,6 @@ defineExpose({
   saveItemEditing,
   push,
   remove,
+  editingIndex,
 })
 </script>
