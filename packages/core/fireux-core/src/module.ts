@@ -1,5 +1,4 @@
 import { defineNuxtModule, createResolver } from '@nuxt/kit'
-import type { NuxtModule } from '@nuxt/schema'
 
 import { configureRuntime } from './config/runtime-config'
 import { configurePlugins } from './config/plugins-config'
@@ -11,7 +10,7 @@ import { configureServer } from './config/server-config'
 import { configureAssets } from './config/assets-config'
 import { configureErrors } from './config/errors-config'
 
-const module: NuxtModule = defineNuxtModule({
+export default defineNuxtModule({
   meta: { name: 'fireux-core', version: '1.0.0', configKey: 'fireuxCore' },
   setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
@@ -44,6 +43,4 @@ const module: NuxtModule = defineNuxtModule({
     configureErrors(resolver, nuxt)
   },
 })
-
-export default module
 export { createFireuxConfig } from './config/fireux/fireux-config'

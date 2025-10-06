@@ -1,5 +1,5 @@
 // packages/core/fireux-core/src/runtime/composables/firestore/user/useUserEnsure.ts
-import type { Ref } from 'vue'
+import { shallowRef, type Ref } from 'vue'
 import { useCurrentUser, useFirestore } from 'vuefire'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useFireUXConfig } from '../../FireUXConfig'
@@ -10,6 +10,7 @@ import type {
   User,
 } from '../../../models/core/user.model'
 import { useRouter } from 'vue-router'
+import type { User as FirebaseUser } from 'firebase/auth'
 
 /**
  * Dev-simple ensure:
@@ -19,7 +20,11 @@ import { useRouter } from 'vue-router'
  */
 export function useUserEnsure(_user?: Ref<User | null>) {
   const db = useFirestore()
-  const authRef = useCurrentUser()
+  const authRef = import.meta.client
+    ? (useCurrentUser() as Ref<FirebaseUser | null>)
+    : (shallowRef<FirebaseUser | null>(null) as ReturnType<
+        typeof useCurrentUser
+      >)
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant'
   const { uploadImage, getDefaultImageUrl } = useImageStorage()
@@ -29,7 +34,10 @@ export function useUserEnsure(_user?: Ref<User | null>) {
     created: boolean
     avatarUrl?: string
   }> {
-    const auth = authRef.value! // assume solid auth object during dev
+    const auth = authRef.value
+    if (!auth?.uid) {
+      throw new Error('[ensureCoreUser] Missing authenticated user')
+    }
 
     const coreRef = doc(db, 'core-users', auth.uid)
     const snap = await getDoc(coreRef)
@@ -57,7 +65,10 @@ export function useUserEnsure(_user?: Ref<User | null>) {
   async function ensureAppUser(
     coreAvatarUrl?: string
   ): Promise<{ created: boolean }> {
-    const auth = authRef.value! // assume solid auth object during dev
+    const auth = authRef.value
+    if (!auth?.uid) {
+      throw new Error('[ensureAppUser] Missing authenticated user')
+    }
     if (!appId)
       throw new Error('[ensureAppUser] missing appId in tenant context')
     const appRef = doc(db, `apps/${appId}/users`, auth.uid)
@@ -81,7 +92,7 @@ export function useUserEnsure(_user?: Ref<User | null>) {
       ? await ensureAppUser(core.avatarUrl)
       : { created: false }
 
-    if (core.created || app.created) {
+    if ((core.created || app.created) && import.meta.client) {
       router.push('/dashboard')
     }
 

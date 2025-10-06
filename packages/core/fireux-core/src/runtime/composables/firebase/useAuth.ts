@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 // ~/composables/useAuth.ts
-import { computed, ref } from 'vue'
+import { computed, ref, shallowRef, type Ref } from 'vue'
 import { useFirebaseAuth, useCurrentUser } from 'vuefire'
 import {
   signInWithPopup,
@@ -14,8 +15,18 @@ import { useUserEnsure } from '../firestore/user/useUserEnsure'
 import { useFireUXConfig } from '../FireUXConfig'
 
 export function useAuth() {
-  const auth = useFirebaseAuth()! // assert non-null (Nuxt plugin initializes Firebase)
-  const currentUser = useCurrentUser()
+  const auth = import.meta.client ? useFirebaseAuth() : null
+  type AuthUser = {
+    uid?: string | null
+    isAnonymous?: boolean
+    email?: string | null
+    displayName?: string | null
+    photoURL?: string | null
+  }
+
+  const currentUser: Ref<AuthUser | null | undefined> = import.meta.client
+    ? (useCurrentUser() as Ref<AuthUser | null | undefined>)
+    : shallowRef<AuthUser | null | undefined>(undefined)
   useFireUXConfig() // ensure config initialized (role used inside ensure)
 
   // simple per-session guard so postProcessAuth runs once per UID
@@ -25,6 +36,13 @@ export function useAuth() {
   const postProcessAuth = async (user: { uid: string } | null | undefined) => {
     if (!user?.uid) return null
     if (ensuring.value || lastEnsuredUid.value === user.uid) return user
+
+    if (!auth) {
+      if (import.meta.dev) {
+        console.warn('[useAuth] postProcessAuth called without auth instance')
+      }
+      return user
+    }
 
     try {
       ensuring.value = true
@@ -49,6 +67,8 @@ export function useAuth() {
   )
 
   const signInWithGoogle = async () => {
+    if (!auth) return null
+
     try {
       const provider = new GoogleAuthProvider()
       const result = await signInWithPopup(auth, provider)
@@ -66,6 +86,8 @@ export function useAuth() {
   }
 
   const signInWithEmailPassword = async (email: string, password: string) => {
+    if (!auth) return null
+
     try {
       const result = await signInWithEmailAndPassword(auth, email, password)
       await postProcessAuth(result.user)
@@ -82,6 +104,8 @@ export function useAuth() {
   }
 
   const signUpWithEmailPassword = async (email: string, password: string) => {
+    if (!auth) return null
+
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password)
       await postProcessAuth(result.user)
@@ -98,6 +122,8 @@ export function useAuth() {
   }
 
   const signOutUser = async () => {
+    if (!auth) return null
+
     try {
       await signOut(auth)
       // reset guard on sign-out so next sign-in will re-run ensure

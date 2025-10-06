@@ -1,12 +1,14 @@
 // ~/composables/app/useAppComputed.ts
-import { computed } from 'vue'
-import { useCurrentUser } from 'vuefire'
+import { computed, shallowRef, type Ref } from 'vue'
 import { useRuntimeConfig } from 'nuxt/app'
-import type { Ref } from 'vue'
+import { useCurrentUser } from 'vuefire'
+import type { User } from 'firebase/auth'
 import type { App } from '../../models/core/app.model'
 
 export function useAppComputed(app: Ref<App | null | undefined>) {
-  const currentUser = useCurrentUser()
+  const currentUser = import.meta.client
+    ? useCurrentUser()
+    : (shallowRef<User | null>(null) as ReturnType<typeof useCurrentUser>)
   const rc = useRuntimeConfig()
 
   // Role is canonical: 'global' | 'tenant'

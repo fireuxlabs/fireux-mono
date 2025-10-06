@@ -43,10 +43,12 @@
 <script setup>
 definePageMeta({
   layout: 'default',
+  title: 'Home',
   nav: {
     key: 'home',
     label: 'Home',
     icon: 'i-lucide-home',
+    order: 10,
     desktop: true,
     mobile: true,
     layouts: ['default'],

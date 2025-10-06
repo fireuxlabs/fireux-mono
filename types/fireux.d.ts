@@ -29,3 +29,9 @@ declare module '#fireux-core-runtime/*' {
   const component: any
   export default component
 }
+
+declare const useProfile: typeof import('#fireux-core-runtime/composables/firestore/profiles/useProfile').useProfile
+declare const useFireUXConfig: typeof import('#fireux-core-runtime/composables/FireUXConfig').useFireUXConfig
+declare const useFirestoreUtils: typeof import('#fireux-core-runtime/composables/firestore/useFirestoreUtils').useFirestoreUtils
+declare const useFirestoreUpdate: typeof import('#fireux-core-runtime/composables/firestore/useFirestoreUpdate').useFirestoreUpdate
+declare const useImageStorage: typeof import('#fireux-core-runtime/composables/firebase/useImageStorage').useImageStorage

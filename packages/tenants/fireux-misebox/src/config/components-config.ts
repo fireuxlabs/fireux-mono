@@ -10,6 +10,6 @@ export function configureComponents(
     path: resolver.resolve('./runtime/components'),
     prefix: options.prefix ?? 'Mise',
     global: false,
-    pathPrefix: false,
+    pathPrefix: true,
   })
 }

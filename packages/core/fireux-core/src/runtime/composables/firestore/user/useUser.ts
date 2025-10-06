@@ -1,4 +1,4 @@
-import { computed, watchEffect, type Ref } from 'vue'
+import { computed, shallowRef, watchEffect, type Ref } from 'vue'
 import { doc, type DocumentReference } from 'firebase/firestore'
 import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig'
@@ -12,6 +12,7 @@ import type {
   CoreUserDoc,
   AppUserDoc,
 } from '../../../models/core/user.model'
+import type { User as FirebaseUser } from 'firebase/auth'
 
 import { useUserUpdate } from './useUserUpdate'
 import { useUserFormattingAndValidation } from './useUserFormattingAndValidation'
@@ -21,7 +22,11 @@ export function useUser() {
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant'
 
-  const authUser = useCurrentUser() as Ref<{ uid: string } | null | undefined>
+  const authUser = import.meta.client
+    ? (useCurrentUser() as Ref<FirebaseUser | null>)
+    : (shallowRef<FirebaseUser | null>(null) as ReturnType<
+        typeof useCurrentUser
+      >)
   const uid = computed(() => authUser.value?.uid || null)
 
   // Core user doc

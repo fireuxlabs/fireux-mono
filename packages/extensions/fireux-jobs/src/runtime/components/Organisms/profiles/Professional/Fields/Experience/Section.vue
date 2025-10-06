@@ -37,14 +37,14 @@
             />
           </template>
 
-          <template #edit="{ item, index, remove, save, cancel }">
+          <template #edit="{ item, index, remove }">
             <OrganismsProfilesProfessionalFieldsExperienceField
               :item="item"
               :index="index"
               mode="edit"
               :remove="remove"
-              @save="save?.()"
-              @cancel="cancel?.()"
+              @save="listRef?.saveItemEditing?.()"
+              @cancel="listRef?.cancelItemEditing?.()"
               @remove="remove?.()"
             />
           </template>

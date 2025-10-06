@@ -1,8 +1,9 @@
 // packages/core/fireux-core/src/runtime/composables/app/nav.ts
 import { computed } from 'vue'
 // Note: App-level nav composable. There may be other feature-specific nav helpers in the codebase.
+
 export interface NavMeta {
-  key: string
+  key?: string
   label?: string
   icon?: string
   desktop?: boolean
@@ -11,8 +12,9 @@ export interface NavMeta {
   /** Optional profile type identifier for profile routes, e.g. 'chef' */
   profileId?: string
   /** Optional ordering hint for nav within a group */
-  order?: number
-  layouts: string[] // explicit; no implicit fallback
+  order?: number | string
+  /** Layouts where this nav item should appear */
+  layouts?: string[]
 }
 
 declare module 'vue-router' {
@@ -24,61 +26,122 @@ declare module 'vue-router' {
 declare function useRouter(): { getRoutes: () => any[] }
 
 export type NavItem = {
-  key: string
+  key?: string
   label: string
   icon?: string
   to: string
   group?: string
   profileId?: string
-  order?: number
+  order: number
+  desktop: boolean
+  mobile: boolean
+  layouts: string[]
 }
 
-export function useNav(targetLayouts: string | string[]) {
-  const router = useRouter()
-  const wanted = Array.isArray(targetLayouts) ? targetLayouts : [targetLayouts]
+function toArray<T>(value: T | T[] | undefined, fallback: T[] = []): T[] {
+  if (value === undefined) return fallback
+  return Array.isArray(value) ? value : [value]
+}
 
-  // Prefer canonical routes: drop alias records that mirror the same page
-  const routes = computed(() =>
-    router.getRoutes().filter((r: any) => !r.aliasOf)
-  )
+function isNavMeta(value: unknown): value is NavMeta {
+  return typeof value === 'object' && value !== null
+}
 
-  const matches = (r: any) => {
-    const nav = r.meta?.nav as NavMeta | undefined
-    return (
-      Array.isArray(nav?.layouts) && nav.layouts.some((l) => wanted.includes(l))
-    )
+const DEFAULT_LAYOUT = 'default'
+const DEFAULT_ORDER = 999
+
+function normaliseOrder(input: unknown): number {
+  if (typeof input === 'number' && Number.isFinite(input)) return input
+  if (typeof input === 'string') {
+    const parsed = Number.parseInt(input, 10)
+    if (Number.isFinite(parsed)) return parsed
+  }
+  return DEFAULT_ORDER
+}
+
+function normaliseRoutePath(route: any): string {
+  const path = route?.path
+  if (typeof path === 'string') return path
+  return String(path ?? '')
+}
+
+function normaliseLabel(
+  route: any,
+  nav: NavMeta,
+  fallbackPath: string
+): string {
+  if (typeof nav.label === 'string' && nav.label.trim().length > 0) {
+    return nav.label
+  }
+  const fallback = route?.meta?.title ?? route?.name ?? fallbackPath
+  return String(fallback)
+}
+
+function buildNavItem(
+  route: any,
+  nav: NavMeta,
+  targetLayouts: string[]
+): NavItem | null {
+  const layouts = toArray(nav.layouts)
+  if (
+    layouts.length > 0 &&
+    !layouts.some((layout) => targetLayouts.includes(layout))
+  ) {
+    return null
   }
 
-  const toItem = (r: any): NavItem => ({
-    key: r.meta.nav.key,
-    label: r.meta.nav.label ?? r.path,
-    icon: r.meta.nav.icon,
-    to: r.path as string,
-    group: r.meta.nav.group,
-    profileId: r.meta.nav.profileId,
-    order: r.meta.nav.order,
+  const to = normaliseRoutePath(route)
+  const label = normaliseLabel(route, nav, to)
+
+  return {
+    key: typeof nav.key === 'string' ? nav.key : undefined,
+    label,
+    icon: nav.icon,
+    to,
+    group: nav.group,
+    profileId: nav.profileId,
+    order: normaliseOrder(nav.order),
+    desktop: nav.desktop !== false,
+    mobile: nav.mobile !== false,
+    layouts,
+  }
+}
+
+export function useNav(targetLayouts: string | string[] = [DEFAULT_LAYOUT]) {
+  const router = useRouter()
+  const wanted = toArray(targetLayouts, [DEFAULT_LAYOUT])
+
+  const items = computed<NavItem[]>(() => {
+    const seen = new Set<string>()
+
+    const deduped: NavItem[] = []
+
+    for (const route of router.getRoutes()) {
+      if (route?.aliasOf) continue
+
+      const rawNav = route?.meta?.nav
+      if (!isNavMeta(rawNav)) continue
+
+      const item = buildNavItem(route, rawNav, wanted)
+      if (!item) continue
+
+      const dedupeKey = item.key ?? item.to ?? item.label
+      if (seen.has(dedupeKey)) continue
+      seen.add(dedupeKey)
+
+      deduped.push(item)
+    }
+
+    return deduped.sort((a, b) => {
+      if (a.order !== b.order) return a.order - b.order
+      return a.label.localeCompare(b.label)
+    })
   })
 
-  const scoped = computed(() => routes.value.filter(matches))
-
-  // Dedupe by nav.key to avoid duplicates when multiple records point to same page
-  const uniqueByKey = (records: any[]) => {
-    const seen = new Set<string>()
-    return records.filter((r: any) => {
-      const key = r.meta.nav?.key as string | undefined
-      if (!key) return true
-      if (seen.has(key)) return false
-      seen.add(key)
-      return true
-    })
-  }
-
   const desktop = computed<NavItem[]>(() =>
-    uniqueByKey(scoped.value.filter((r) => r.meta.nav.desktop)).map(toItem)
+    items.value.filter((i) => i.desktop)
   )
-  const mobile = computed<NavItem[]>(() =>
-    uniqueByKey(scoped.value.filter((r) => r.meta.nav.mobile)).map(toItem)
-  )
+  const mobile = computed<NavItem[]>(() => items.value.filter((i) => i.mobile))
 
-  return { desktop, mobile }
+  return { items, desktop, mobile }
 }

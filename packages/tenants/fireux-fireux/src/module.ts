@@ -12,12 +12,16 @@ export interface ModuleOptions {
 }
 
 const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
-  meta: { name: 'fireux-fireux', version: '0.1.0', configKey: 'fireuxFireux' },
+  meta: {
+    name: 'fireux-fireux',
+    version: '0.1.0',
+    configKey: 'fireuxFireux',
+  },
   defaults: { prefix: 'Fireux' },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-  // Core is provided by the app via createFireuxConfig; do not install here
+    // Core is provided by the app via createFireuxConfig; do not install here
 
     configureRuntime(nuxt, 'fireux')
     configurePlugins(resolver)
@@ -28,7 +32,10 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     // configureServer(resolver) // toggle as needed
 
     nuxt.hook('ready', () => {
-      console.log('fireux-fireux: module configured')
+      if (process.env.FIREUX_DEBUG_LAYERS) {
+        // eslint-disable-next-line no-console
+        console.log('fireux-fireux: module configured')
+      }
     })
   },
 })

@@ -2,12 +2,15 @@
   <UCard class="place-cell">
     <div class="flex flex-col gap-3">
       <div class="flex items-start gap-3">
-        <UAvatar
-          :src="avatarSrc || undefined"
-          :alt="place.name"
-          size="md"
-          icon="i-lucide-map-pin"
-        />
+        <div class="relative h-16 w-16 flex-shrink-0">
+          <img
+            v-if="previewSrc"
+            :src="previewSrc"
+            :alt="place.name"
+            class="h-full w-full rounded-lg object-cover"
+          />
+          <UAvatar v-else :alt="place.name" size="md" icon="i-lucide-map-pin" />
+        </div>
         <div class="flex-1 min-w-0 space-y-1">
           <div class="flex items-center gap-2">
             <h4 class="text-sm font-medium text-gray-900 truncate">
@@ -48,14 +51,20 @@ const props = defineProps<CellProps>()
 
 const badgeLabel = computed(() => props.place.meta_right ?? null)
 
-const badgeColor = computed(() => {
+const badgeColor = computed<'success' | 'info' | 'neutral'>(() => {
   const label = badgeLabel.value?.toLowerCase()
-  if (label === 'saved') return 'green'
-  if (label === 'google') return 'blue'
-  return 'gray'
+  if (label === 'saved') return 'success'
+  if (label === 'google') return 'info'
+  return 'neutral'
 })
 
-const avatarSrc = computed(() => props.place.avatar ?? null)
+const previewSrc = computed(() => {
+  const src = props.place.avatar
+  if (!src) return null
+  const lower = src.toLowerCase()
+  if (lower.includes('mapfiles/place_api/icons')) return null
+  return src
+})
 
 const ratingValue = computed(() =>
   typeof props.place.rating === 'number' ? props.place.rating : null

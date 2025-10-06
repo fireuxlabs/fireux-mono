@@ -1,6 +1,9 @@
 import { ref } from 'vue'
 import type { Place, PlaceCard } from '../models/place.model'
 
+const PLACE_ICON_FALLBACK =
+  'https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png'
+
 // Structured result wrapper (new enhanced method)
 export interface PlacesAutocompleteSuccess {
   success: true
@@ -44,8 +47,7 @@ function resetSessionToken() {
 // Caches
 const predictionCache = new Map<string, PlaceCard.Cell[]>()
 const detailsCache = new Map<string, Place>()
-const PLACE_ICON_FALLBACK =
-  'https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png'
+const WEBSITE_LOGO_ENDPOINT = '/api/places/logo'
 
 function generateTempId() {
   if (
@@ -169,6 +171,57 @@ function buildWebsiteFavicon(url?: string | null) {
   }
 }
 
+function isGoogleFallbackAvatar(avatar?: string | null) {
+  if (!avatar) return true
+  const lower = avatar.toLowerCase()
+  return lower.includes('maps.gstatic.com/mapfiles/place_api/icons')
+}
+
+async function fetchWebsiteLogo(website?: string | null) {
+  if (!website) return null
+  try {
+    const endpoint = `${WEBSITE_LOGO_ENDPOINT}?website=${encodeURIComponent(
+      website
+    )}`
+    const res = await fetch(endpoint)
+    if (!res.ok) return null
+    const data = await res.json()
+    return typeof data?.url === 'string' ? data.url : null
+  } catch {
+    return null
+  }
+}
+
+async function enhancePlaceAvatar(place: Place, raw: any) {
+  if (place.avatar && !isGoogleFallbackAvatar(place.avatar)) return place
+
+  const candidates: Array<string | null | undefined> = [
+    raw?.website,
+    place.website,
+    raw?.url,
+  ]
+
+  for (const candidate of candidates) {
+    const logo = await fetchWebsiteLogo(candidate ?? undefined)
+    if (logo) {
+      return {
+        ...place,
+        avatar: logo,
+      }
+    }
+  }
+
+  const favicon = buildWebsiteFavicon(place.website || raw?.website)
+  if (favicon) {
+    return {
+      ...place,
+      avatar: favicon,
+    }
+  }
+
+  return place
+}
+
 function resolvePhotoUrl(place: any) {
   const photos = place?.photos
   if (Array.isArray(photos) && photos.length > 0) {
@@ -241,8 +294,14 @@ export async function getPlaceDetails(
   isLoading.value = true
   error.value = null
 
-  const handleSuccess = (raw: any) => {
-    const mapped = mapGooglePlace(raw, placeId)
+  const handleSuccess = async (raw: any) => {
+    let mapped = mapGooglePlace(raw, placeId)
+    mapped = await enhancePlaceAvatar(mapped, raw)
+    if (!mapped.avatar) {
+      mapped.avatar =
+        buildWebsiteFavicon(raw?.website ?? mapped.website ?? undefined) ||
+        PLACE_ICON_FALLBACK
+    }
     detailsCache.set(placeId, mapped)
     return mapped
   }
@@ -270,9 +329,14 @@ export async function getPlaceDetails(
               'photos',
             ],
           },
-          (place: any, status: string) => {
+          async (place: any, status: string) => {
             if (status === g.PlacesServiceStatus.OK && place) {
-              resolve(handleSuccess(place))
+              try {
+                const enhanced = await handleSuccess(place)
+                resolve(enhanced)
+              } catch (err) {
+                reject(err instanceof Error ? err : new Error(String(err)))
+              }
             } else {
               reject(new Error(`Place details failed: ${status}`))
             }
@@ -286,7 +350,7 @@ export async function getPlaceDetails(
     if (!res.ok) throw new Error(`Server details HTTP ${res.status}`)
     const data = await res.json()
     if (data.error) throw new Error(`Server details error: ${data.error}`)
-    if (data.result) return handleSuccess(data.result)
+    if (data.result) return await handleSuccess(data.result)
     throw new Error('Place details not found')
   } catch (e: any) {
     error.value = e?.message ?? String(e)
