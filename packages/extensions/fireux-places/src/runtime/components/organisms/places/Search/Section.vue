@@ -1,5 +1,4 @@
 <template>
-  <div class="space-y-4">
     <UInput
       v-model="model"
       icon="i-lucide-search"
@@ -17,7 +16,6 @@
       :place-cell="selectedPlaceCell"
       @clear="handleClear"
     />
-  </div>
 </template>
 
 <script setup lang="ts">

@@ -1,29 +1,27 @@
 <template>
   <UPage>
-    <UPageBody>
-      <UPageSection>
-        <OrganismsProfileRoot
-          :config="employerConfig"
-          :onEnsure="onEnsureEmployer"
-        >
-          <!-- Current profile (optional) -->
-          <template #current-assets="{ profile }">
-            <template v-if="profile">
-              <OrganismsProfilesEmployerCardsPill
-                :employer="profile"
-                class="mb-3"
-              />
-              <OrganismsProfilesEmployerCardsCell :employer="profile" />
-            </template>
-          </template>
-
-          <!-- List items -->
-          <template #item="{ profile }">
+    <UContainer class="py-8">
+      <OrganismsProfileRoot
+        :config="employerConfig"
+        :onEnsure="onEnsureEmployer"
+      >
+        <!-- Current profile (optional) -->
+        <template #current-assets="{ profile }">
+          <template v-if="profile">
+            <OrganismsProfilesEmployerCardsPill
+              :employer="profile"
+              class="mb-3"
+            />
             <OrganismsProfilesEmployerCardsCell :employer="profile" />
           </template>
-        </OrganismsProfileRoot>
-      </UPageSection>
-    </UPageBody>
+        </template>
+
+        <!-- List items -->
+        <template #item="{ profile }">
+          <OrganismsProfilesEmployerCardsCell :employer="profile" />
+        </template>
+      </OrganismsProfileRoot>
+    </UContainer>
   </UPage>
 </template>
 

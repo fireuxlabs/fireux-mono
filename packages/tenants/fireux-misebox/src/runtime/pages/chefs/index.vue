@@ -1,24 +1,22 @@
 <!-- packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue -->
 <template>
   <UPage>
-    <UPageBody>
-      <UPageSection>
-        <OrganismsProfileRoot :config="chefConfig" :onEnsure="onEnsureChef">
-          <!-- Current profile (optional) -->
-          <template #current-assets="{ profile }">
-            <template v-if="profile">
-              <OrganismsProfilesChefCardsPill :chef="profile" class="mb-3" />
-              <OrganismsProfilesChefCardsCell :chef="profile" />
-            </template>
-          </template>
-
-          <!-- List items -->
-          <template #item="{ profile }">
+    <UContainer class="py-8">
+      <OrganismsProfileRoot :config="chefConfig" :onEnsure="onEnsureChef">
+        <!-- Current profile (optional) -->
+        <template #current-assets="{ profile }">
+          <template v-if="profile">
+            <OrganismsProfilesChefCardsPill :chef="profile" class="mb-3" />
             <OrganismsProfilesChefCardsCell :chef="profile" />
           </template>
-        </OrganismsProfileRoot>
-      </UPageSection>
-    </UPageBody>
+        </template>
+
+        <!-- List items -->
+        <template #item="{ profile }">
+          <OrganismsProfilesChefCardsCell :chef="profile" />
+        </template>
+      </OrganismsProfileRoot>
+    </UContainer>
   </UPage>
 </template>
 

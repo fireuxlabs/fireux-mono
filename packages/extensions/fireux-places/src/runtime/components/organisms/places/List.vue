@@ -23,17 +23,17 @@
         </template>
       </div>
 
-      <ul v-else class="space-y-2">
-        <li v-for="cell in cells" :key="cell.id">
+      <UPageList v-else :ui="pageListUi">
+        <UPageListItem v-for="cell in cells" :key="cell.id" class="p-0">
           <button
             type="button"
-            class="w-full text-left"
+            class="block w-full text-left"
             @click="onSelect(cell)"
           >
             <OrganismsPlacesCell :place="cell" />
           </button>
-        </li>
-      </ul>
+        </UPageListItem>
+      </UPageList>
     </UCard>
   </section>
 </template>
@@ -56,6 +56,13 @@ const props = defineProps<PlacesListProps>()
 const { label, badgeCount, loading, cells, query, queryHasMinLength } =
   toRefs(props)
 const emit = defineEmits<(event: 'select', cell: PlaceCard.Cell) => void>()
+
+const pageListUi = {
+  base: 'divide-y divide-gray-100 dark:divide-gray-800',
+  item: {
+    base: 'py-0',
+  },
+}
 
 const showEmpty = computed(() => !loading.value && cells.value.length === 0)
 

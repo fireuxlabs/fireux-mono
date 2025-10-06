@@ -1,29 +1,27 @@
 <template>
   <UPage>
-    <UPageBody>
-      <UPageSection>
-        <OrganismsProfileRoot
-          :config="supplierConfig"
-          :onEnsure="onEnsureSupplier"
-        >
-          <!-- Current profile (optional) -->
-          <template #current-assets="{ profile }">
-            <template v-if="profile">
-              <OrganismsProfilesSupplierCardsPill
-                :supplier="profile"
-                class="mb-3"
-              />
-              <OrganismsProfilesSupplierCardsCell :supplier="profile" />
-            </template>
-          </template>
-
-          <!-- List items -->
-          <template #item="{ profile }">
+    <UContainer class="py-8">
+      <OrganismsProfileRoot
+        :config="supplierConfig"
+        :onEnsure="onEnsureSupplier"
+      >
+        <!-- Current profile (optional) -->
+        <template #current-assets="{ profile }">
+          <template v-if="profile">
+            <OrganismsProfilesSupplierCardsPill
+              :supplier="profile"
+              class="mb-3"
+            />
             <OrganismsProfilesSupplierCardsCell :supplier="profile" />
           </template>
-        </OrganismsProfileRoot>
-      </UPageSection>
-    </UPageBody>
+        </template>
+
+        <!-- List items -->
+        <template #item="{ profile }">
+          <OrganismsProfilesSupplierCardsCell :supplier="profile" />
+        </template>
+      </OrganismsProfileRoot>
+    </UContainer>
   </UPage>
 </template>
 
