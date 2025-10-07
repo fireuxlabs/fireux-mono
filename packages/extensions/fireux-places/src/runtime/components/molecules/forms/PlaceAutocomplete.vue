@@ -40,7 +40,7 @@
         >
           <div
             v-for="(suggestion, index) in suggestions"
-            :key="suggestion.id || suggestion.place_id"
+            :key="suggestion.place_id || suggestion.id"
             class="suggestion-item"
             :class="{ highlighted: index === highlightedIndex }"
             @click="selectSuggestion(suggestion)"
@@ -193,7 +193,7 @@ async function onSearchInput() {
 async function selectSuggestion(suggestion) {
   try {
     const placeDetails = await getPlaceDetails(
-      suggestion.id || suggestion.place_id
+      suggestion.place_id || suggestion.id
     )
     if (placeDetails) {
       searchQuery.value = placeDetails.formatted_address
@@ -245,14 +245,16 @@ async function saveChanges() {
   try {
     if (showManualEntry.value) {
       // Save manual entry as a simple address
+      const placeId = `manual_${Date.now()}`
       const manualPlace = {
-        id: `manual_${Date.now()}`,
+        place_id: placeId,
         name: formatManualAddress() || 'Manual entry',
         formatted_address: formatManualAddress(),
         lat: 0,
         lng: 0,
         avatar: PLACE_ICON_FALLBACK,
         source: 'firestore',
+        id: placeId,
         website: null,
         phone: null,
         rating: null,

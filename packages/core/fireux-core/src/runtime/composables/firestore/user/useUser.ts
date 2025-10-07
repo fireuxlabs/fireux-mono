@@ -92,9 +92,7 @@ export function useUser() {
     return collectionGlobal
   }
 
-  const computedBits = useUserComputed(user)
   // Provide a simple alias for avatar to reduce prop churn in components
-  const avatar = computed(() => computedBits.avatarSrc)
 
   return {
     user,
@@ -103,12 +101,10 @@ export function useUser() {
       global: collectionGlobal,
       fetchGlobal,
     },
-    ...computedBits,
-    avatar,
+    ...useUserComputed(user),
     ...useUserEnsure(user),
     ...useUserDelete(user),
     ...useUserUpdate(user),
-    // Validation + formatting helpers
     ...useUserFormattingAndValidation(),
   }
 }
