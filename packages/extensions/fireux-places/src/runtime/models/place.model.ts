@@ -1,17 +1,15 @@
 /** ───────────────────────────────
  * Base (shared by both Google & Firestore)
  * ─────────────────────────────── */
+export type PlaceSource = 'google' | 'firestore'
+
 export interface BasePlace {
   place_id: string
   name: string
   formatted_address: string
   lat: number
   lng: number
-  source: 'google' | 'firestore'
-  website?: string | null
-  phone?: string | null
-  rating?: number | null
-  user_ratings_total?: number | null
+  source: PlaceSource
 }
 
 /** ───────────────────────────────
@@ -21,6 +19,10 @@ export interface GooglePlace extends BasePlace {
   source: 'google'
   photo_reference?: string | null
   photo_url?: string | null
+  website?: string | null
+  phone?: string | null
+  rating?: number | null
+  user_ratings_total?: number | null
 }
 
 /** ───────────────────────────────
@@ -43,10 +45,10 @@ export namespace PlaceCard {
     name: string
     avatar?: string | null
   }
+
   export interface Cell extends Pill {
+    source: PlaceSource
     formatted_address?: string
-    rating?: number | null
-    meta_right?: string | null // “Saved” | “Google” | etc.
   }
 }
 
@@ -58,7 +60,11 @@ export namespace PlaceCard {
 export function toStoredPlace(g: GooglePlace): Place {
   const search_term = `${g.name} ${g.formatted_address}`.toLowerCase()
   return {
-    ...g,
+    place_id: g.place_id,
+    name: g.name,
+    formatted_address: g.formatted_address,
+    lat: g.lat,
+    lng: g.lng,
     source: 'firestore',
     avatar: g.photo_url ?? null,
     search_term,
@@ -66,7 +72,7 @@ export function toStoredPlace(g: GooglePlace): Place {
   }
 }
 
-// Any place-like → Cell (UI helper)
+// Any place-like → Cell (UI)
 export function toCell(
   p: BasePlace & { avatar?: string | null }
 ): PlaceCard.Cell {
@@ -74,8 +80,7 @@ export function toCell(
     place_id: p.place_id,
     name: p.name,
     avatar: p.avatar ?? null,
+    source: p.source,
     formatted_address: p.formatted_address,
-    rating: p.rating ?? null,
-    meta_right: p.source === 'firestore' ? 'Saved' : 'Google',
   }
 }

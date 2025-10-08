@@ -2,16 +2,22 @@
 
 _Last updated: 2025-10-07_
 
-This report captures the current state of the FireUX Places search stack, including composables, UI components, and supporting models. Each section lists the absolute repo path and the complete file contents as of this snapshot.
+### Latest changes (2025-10-07)
+
+- Split the search workflow into an orchestrator plus Firestore and Google helpers for clearer ownership.
+- Firestore prefix searching now flows through the shared core composable `useFirestoreSearch`, enabling reusable global collection lookups without tenant branching.
+- Added the runtime alias `#fireux-core-composables` and renamed the helper to `useFirestoreSearch` so imports stay consistent across packages.
+- Converted the Firestore prefix helper to use direct `getDocs` lookups, eliminating the Vue `inject()` warnings that surfaced when the “places” collection was empty.
+- Removed the deprecated `usePlacesSearchFirestore.ts` helper from the extension now that consumers rely on the core composable.
 
 ## `packages/extensions/fireux-places/src/runtime/composables/usePlacesSearch.ts`
 
-_Composable that performs Firestore-first search with Google supplementation when fewer than four local matches are found._
+_Composer that orchestrates Firestore-first, Google-second._
 
 ```typescript
-/* eslint-disable no-console */
-import type { Ref } from 'vue'
 import type { Place, PlaceCard } from '../models/place.model'
+import { useFirestoreSearch } from '#fireux-core-composables/firestore/useFirestoreSearch'
+import { fetchGoogle } from './usePlacesGoogle'
 
 export interface UsePlacesSearchResult {
   searchPlaces: (query: string) => Promise<PlaceCard.Cell[]>
@@ -19,245 +25,168 @@ export interface UsePlacesSearchResult {
 
 const MIN_FIRESTORE_RESULTS_BEFORE_SUPPLEMENT = 4
 const MAX_RESULTS = 10
-const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
 
-const canonicalPlaceId = (id: string | null | undefined) =>
+const canonicalPlaceId = (id?: string | null) =>
   (id ?? '').trim().replace(/^"+/, '').replace(/"+$/, '')
 
-export function usePlacesSearch(
-  collection?: Ref<Place[] | undefined>
-): UsePlacesSearchResult {
-  const norm = (value: string) =>
-    value
-      .toLowerCase()
-      .normalize('NFKD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^\p{L}\p{N}\s]/gu, '')
-      .replace(/\s+/g, ' ')
-      .trim()
+const toFirestoreCell = (p: Place): PlaceCard.Cell => ({
+  place_id: canonicalPlaceId(p.place_id),
+  name: p.name,
+  avatar: p.avatar ?? null,
+  formatted_address: p.formatted_address,
+  source: 'firestore',
+})
 
-  const tokens = (value: string) =>
-    norm(value)
-      .split(' ')
-      .filter((token) => token.length >= 3)
+const norm = (v: string) =>
+  v
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
 
-  const scoreTokenMatch = (token: string, candidate: string): number => {
-    if (candidate === token) return 3
-    if (candidate.startsWith(token) || token.startsWith(candidate)) return 2
-    if (candidate.includes(token)) return 1
-    return 0
-  }
-
-  const shouldIncludeMatch = (
-    queryTokens: string[],
-    strongMatches: number,
-    normalizedHaystack: string,
-    normalizedQuery: string
-  ): boolean => {
-    if (queryTokens.length === 0) {
-      return (
-        normalizedQuery.length >= 2 &&
-        normalizedHaystack.includes(normalizedQuery)
-      )
-    }
-
-    const requiredStrongMatches =
-      queryTokens.length >= 2 ? Math.min(queryTokens.length, 2) : 1
-    if (strongMatches >= requiredStrongMatches) {
-      return true
-    }
-
-    return normalizedHaystack.includes(normalizedQuery)
-  }
-
-  const toFirestoreCell = (place: Place): PlaceCard.Cell => ({
-    place_id: canonicalPlaceId(place.place_id),
-    name: place.name,
-    avatar: place.avatar ?? null,
-    formatted_address: place.formatted_address,
-    rating: place.rating ?? null,
-    meta_right: 'Firestore',
-  })
-
-  const missingSearchTermWarnings = new Set<string>()
-
-  async function fetchGoogleSupplement(
-    query: string,
-    excludeIds: Set<string>,
-    limit: number
-  ): Promise<PlaceCard.Cell[]> {
-    if (limit <= 0) return []
-    if (typeof window === 'undefined') return []
-
-    try {
-      const url = new URL(GOOGLE_AUTOCOMPLETE_ENDPOINT, window.location.origin)
-      url.searchParams.set('q', query)
-
-      const response = await fetch(url.toString(), {
-        headers: {
-          accept: 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        return []
-      }
-
-      const payload = await response.json()
-      const predictions = Array.isArray(payload?.predictions)
-        ? payload.predictions
-        : []
-
-      const filteredPredictions = predictions.filter((prediction: any) => {
-        const id = canonicalPlaceId(prediction?.place_id)
-        if (!id) return false
-        return !excludeIds.has(id)
-      })
-
-      const trimmedPredictions = filteredPredictions.slice(0, limit)
-
-      return trimmedPredictions.map((prediction: any): PlaceCard.Cell => {
-        const mainText = prediction?.structured_formatting?.main_text
-        const secondaryText = prediction?.structured_formatting?.secondary_text
-        const description = prediction?.description ?? ''
-
-        return {
-          place_id: prediction.place_id,
-          name: mainText || description || 'Unknown place',
-          avatar: null,
-          formatted_address: secondaryText || description || undefined,
-          rating: null,
-          meta_right: 'Google',
-        }
-      })
-    } catch (error) {
-      if (import.meta.dev) {
-        console.error('[places] Google supplement failed', error)
-      }
-      return []
-    }
-  }
+export function usePlacesSearch(): UsePlacesSearchResult {
+  const { prefixSearch } = useFirestoreSearch()
 
   async function searchPlaces(query: string): Promise<PlaceCard.Cell[]> {
-    const normalizedQuery = norm(query)
-    if (!normalizedQuery) return []
+    const q = norm(query)
+    if (!q) return []
 
-    const queryTokens = tokens(normalizedQuery)
-    const list = collection?.value ?? []
-
-    const localMatches = list
-      .map((place) => {
-        const canonicalId = canonicalPlaceId(place.place_id)
-        if (import.meta.dev && !place.search_term) {
-          if (!missingSearchTermWarnings.has(canonicalId)) {
-            missingSearchTermWarnings.add(canonicalId)
-            console.warn(
-              `[places] Missing search_term for place ${canonicalId}. Consider running the data hygiene script to backfill.`
-            )
-          }
-        }
-
-        const haystack = [
-          place.name,
-          place.formatted_address,
-          place.search_term,
-        ]
-          .filter(Boolean)
-          .join(' ')
-
-        const normalizedHaystack = norm(haystack)
-        if (!normalizedHaystack) return null
-
-        const haystackTokens = normalizedHaystack
-          .split(' ')
-          .filter((token) => token.length >= 3)
-
-        const tokenScores = queryTokens.map((token) => {
-          let bestScore = 0
-          for (const candidate of haystackTokens) {
-            const score = scoreTokenMatch(token, candidate)
-            if (score === 3) {
-              bestScore = 3
-              break
-            }
-            if (score > bestScore) {
-              bestScore = score
-            }
-          }
-          return bestScore
-        })
-
-        const strongMatches = tokenScores.filter((score) => score >= 2).length
-        const include = shouldIncludeMatch(
-          queryTokens,
-          strongMatches,
-          normalizedHaystack,
-          normalizedQuery
-        )
-
-        if (!include) return null
-
-        const tokenScore = tokenScores.reduce((sum, score) => sum + score, 0)
-        const substringBonus = normalizedHaystack.includes(normalizedQuery)
-          ? Math.max(2, queryTokens.length)
-          : 0
-
-        return {
-          place,
-          score: tokenScore + substringBonus,
-        }
-      })
-      .filter(Boolean)
-      .sort((a, b) => b!.score - a!.score) as Array<{
-      place: Place
-      score: number
-    }>
-
-    const firestoreCells = localMatches.map(({ place }) =>
-      toFirestoreCell(place)
-    )
-
-    if (firestoreCells.length >= MIN_FIRESTORE_RESULTS_BEFORE_SUPPLEMENT) {
-      return firestoreCells
+    // 1) Firestore “starts with” search on `search_term`
+    const fxDocs = await prefixSearch<Place>({
+      collection: 'places',
+      field: 'search_term',
+      query: q,
+      limit: MAX_RESULTS,
+    })
+    const fxCells = fxDocs.map(toFirestoreCell)
+    if (fxCells.length >= MIN_FIRESTORE_RESULTS_BEFORE_SUPPLEMENT) {
+      return fxCells.slice(0, MAX_RESULTS)
     }
 
-    const excludeIds = new Set(
-      firestoreCells.map((cell) => canonicalPlaceId(cell.place_id))
-    )
-    const supplementLimit = Math.max(
+    // 2) Google supplement to reach minimum
+    const exclude = new Set(fxCells.map((c) => canonicalPlaceId(c.place_id)))
+    const need = Math.max(
       0,
-      MIN_FIRESTORE_RESULTS_BEFORE_SUPPLEMENT - firestoreCells.length
+      MIN_FIRESTORE_RESULTS_BEFORE_SUPPLEMENT - fxCells.length
     )
-    const googleCells = await fetchGoogleSupplement(
-      query,
-      excludeIds,
-      supplementLimit
-    )
+    const googleCells = await fetchGoogle(query, exclude, need)
 
-    const combined = [...firestoreCells, ...googleCells].filter(
-      (cell, index, array) =>
-        array.findIndex(
-          (candidate) =>
-            canonicalPlaceId(candidate.place_id) ===
-            canonicalPlaceId(cell.place_id)
-        ) === index
+    // 3) Combine + dedupe + cap
+    const combined = [...fxCells, ...googleCells].filter(
+      (c, i, arr) =>
+        arr.findIndex(
+          (x) => canonicalPlaceId(x.place_id) === canonicalPlaceId(c.place_id)
+        ) === i
     )
 
-    if (combined.length > 0) {
-      const limited = combined.slice(0, MAX_RESULTS)
-      if (firestoreCells.length === 0) {
-        console.log(
-          `[places] No local match for "${query}", returning Google suggestions.`
-        )
-      }
-      return limited
-    }
-
-    console.log(`[places] No local or Google match for "${query}".`)
-    return []
+    return combined.slice(0, MAX_RESULTS)
   }
 
   return { searchPlaces }
+}
+```
+
+## `packages/core/fireux-core/src/runtime/composables/firestore/useFirestoreSearch.ts`
+
+_Reusable Firestore prefix search where callers supply the fully-resolved collection path._
+
+```typescript
+import { useFirestoreRead } from './useFirestoreRead'
+
+export interface FirestorePrefixSearchOptions<T> {
+  collection: string
+  field: keyof T & string
+  query: string
+  limit?: number
+  ssrKey?: string
+}
+
+export function useFirestoreSearch() {
+  const { firestorePrefixSearch } = useFirestoreRead()
+
+  async function prefixSearch<T>(
+    options: FirestorePrefixSearchOptions<T>
+  ): Promise<T[]> {
+    const { collection, field, query, limit = 10 } = options
+
+    return firestorePrefixSearch<T>(collection, field, query, limit)
+  }
+
+  return { prefixSearch }
+}
+```
+
+## `packages/extensions/fireux-places/src/runtime/composables/usePlacesGoogle.ts`
+
+_Google Autocomplete supplement → `PlaceCard.Cell`._
+
+```typescript
+/* eslint-disable no-console */
+import type { PlaceCard } from '../models/place.model'
+
+const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
+
+const canonicalPlaceId = (id?: string | null) =>
+  (id ?? '').trim().replace(/^"+/, '').replace(/"+$/, '')
+
+/**
+ * Calls `/api/places/autocomplete?q=...` and returns normalized cells.
+ * `excludeIds` should contain canonicalized place_ids to filter dupes.
+ */
+
+export async function fetchGoogle(
+  query: string,
+  excludeIds: Set<string>,
+  limit: number
+): Promise<PlaceCard.Cell[]> {
+  if (limit <= 0 || typeof window === 'undefined') return []
+
+  try {
+    const url = new URL(GOOGLE_AUTOCOMPLETE_ENDPOINT, window.location.origin)
+    url.searchParams.set('q', query)
+
+    const res = await fetch(url.toString(), {
+      headers: { accept: 'application/json' },
+    })
+    if (!res.ok) return []
+
+    const json = await res.json()
+    const preds = Array.isArray(json?.predictions) ? json.predictions : []
+
+    const cells = preds
+      .filter((p: any) => {
+        const id = canonicalPlaceId(p?.place_id)
+        return id && !excludeIds.has(id)
+      })
+      .slice(0, limit)
+      .map((p: any): PlaceCard.Cell => {
+        const main = p?.structured_formatting?.main_text
+        const secondary = p?.structured_formatting?.secondary_text
+        const desc = p?.description
+        return {
+          place_id: canonicalPlaceId(p.place_id),
+          name: main || desc || 'Unknown place',
+          avatar: null,
+          formatted_address: secondary || desc || undefined,
+          source: 'google',
+        }
+      })
+
+    if (import.meta.dev) {
+      console.log('[places] google supplement results', {
+        query,
+        requested: limit,
+        count: cells.length,
+        ids: cells.map((c) => c.place_id),
+      })
+    }
+
+    return cells
+  } catch (err) {
+    if (import.meta.dev) console.error('[places] google supplement failed', err)
+    return []
+  }
 }
 ```
 
@@ -286,7 +215,7 @@ export function usePlaces(): UsePlacesResult {
   return {
     collection,
     place,
-    ...usePlacesSearch(collection),
+    ...usePlacesSearch(),
   }
 }
 ```
@@ -397,10 +326,10 @@ const debounceDelay = 250
 const minLength = 3
 
 const firestoreResults = computed(() =>
-  results.value.filter((place) => place.meta_right === 'Firestore')
+  results.value.filter((place) => place.source === 'firestore')
 )
 const googleResults = computed(() =>
-  results.value.filter((place) => place.meta_right === 'Google')
+  results.value.filter((place) => place.source === 'google')
 )
 
 function formatResultsMessage(
@@ -620,9 +549,8 @@ export namespace PlaceCard {
     avatar?: string | null
   }
   export interface Cell extends Pill {
+    source: PlaceSource
     formatted_address?: string
-    rating?: number | null
-    meta_right?: string | null // “Saved” | “Google” | etc.
   }
 }
 
@@ -650,9 +578,8 @@ export function toCell(
     place_id: p.place_id,
     name: p.name,
     avatar: p.avatar ?? null,
+    source: p.source,
     formatted_address: p.formatted_address,
-    rating: p.rating ?? null,
-    meta_right: p.source === 'firestore' ? 'Saved' : 'Google',
   }
 }
 ```

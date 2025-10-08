@@ -1,10 +1,8 @@
 import { defineNuxtModule, createResolver } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
 import { configureRuntime } from './config/runtime-config'
-import { configurePlugins } from './config/plugins-config'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
-import { configureLayouts } from './config/layouts-config'
 import { configurePages } from './config/pages-config'
 import { configureServer } from './config/server-config'
 
@@ -25,16 +23,10 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
 
     configureRuntime(nuxt, 'places')
-    configurePlugins(resolver)
     configureComponents(resolver, options)
     configureComposables(resolver, options)
-    configureLayouts(resolver, nuxt)
     configurePages(resolver, nuxt)
     configureServer(resolver)
-
-    nuxt.hook('ready', () => {
-      console.log('fireux-places: module configured')
-    })
   },
 })
 

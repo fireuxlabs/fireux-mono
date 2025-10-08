@@ -12,14 +12,9 @@
           <UAvatar v-else :alt="place.name" size="md" icon="i-lucide-map-pin" />
         </div>
         <div class="flex-1 min-w-0 space-y-1">
-          <div class="flex items-center gap-2">
-            <h4 class="text-sm font-medium text-gray-900 truncate">
-              {{ place.name }}
-            </h4>
-            <UBadge v-if="badgeLabel" :color="badgeColor" size="xs">
-              {{ badgeLabel }}
-            </UBadge>
-          </div>
+          <h4 class="text-sm font-medium text-gray-900 truncate">
+            {{ place.name }}
+          </h4>
           <p
             v-if="place.formatted_address"
             class="text-xs text-gray-500 truncate"
@@ -48,15 +43,6 @@ interface CellProps {
 }
 
 const props = defineProps<CellProps>()
-
-const badgeLabel = computed(() => props.place.meta_right ?? null)
-
-const badgeColor = computed<'success' | 'info' | 'neutral'>(() => {
-  const label = badgeLabel.value?.toLowerCase()
-  if (label === 'saved') return 'success'
-  if (label === 'google') return 'info'
-  return 'neutral'
-})
 
 const previewSrc = computed(() => {
   const src = props.place.avatar

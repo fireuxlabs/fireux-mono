@@ -186,6 +186,8 @@ pages/products/index.vue
 pages/users/index.vue
 ```
 
+> 2025-10-07 update — `composables/firestore/useFirestoreRead.ts` now exports `firestoreQuery` (reactive wrapper for arbitrary `Query`s) and `firestorePrefixSearch` (one-shot "starts with" helper for ad-hoc lookups).
+
 ## extensions/fireux-jobs
 
 ```

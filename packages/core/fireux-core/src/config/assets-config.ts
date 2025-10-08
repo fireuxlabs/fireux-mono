@@ -37,4 +37,7 @@ export function configureAssets(resolver: any, nuxt: any) {
   nuxt.options.alias ||= {}
   nuxt.options.alias['#fireux-core-public'] = resolvePath('./runtime/public')
   nuxt.options.alias['#fireux-core-assets'] = resolvePath('./runtime/assets')
+  nuxt.options.alias['#fireux-core-composables'] = resolvePath(
+    './runtime/composables'
+  )
 }

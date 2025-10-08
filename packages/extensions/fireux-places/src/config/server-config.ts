@@ -18,7 +18,7 @@ export function configureServer(resolver: any) {
     }
   }
 
-  register('/api/places/autocomplete', 'autocomplete.get')
-  register('/api/places/details', 'details.get')
-  register('/api/places/photo', 'photo.get')
+  register('/api/places/autocomplete', 'places/autocomplete.get')
+  register('/api/places/details', 'places/details.get')
+  register('/api/places/logo', 'places/logo.get')
 }
