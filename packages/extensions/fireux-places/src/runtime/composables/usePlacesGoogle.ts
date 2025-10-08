@@ -2,29 +2,15 @@
 import type { PlaceCard } from '../models/place.model'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
-const LOGO_ENDPOINT = '/api/places/logo'
+
+const log = (...args: unknown[]) => {
+  if (import.meta.dev) {
+    console.info('[places][logos]', ...args)
+  }
+}
 
 const canonicalPlaceId = (id?: string | null) =>
   (id ?? '').trim().replace(/^"+/, '').replace(/"+$/, '')
-
-async function fetchLogoFor(name: string): Promise<string | null> {
-  if (typeof window === 'undefined') return null
-
-  try {
-    const url = new URL(LOGO_ENDPOINT, window.location.origin)
-    url.searchParams.set('q', name)
-
-    const res = await fetch(url.toString(), {
-      headers: { accept: 'application/json' },
-    })
-    if (!res.ok) return null
-
-    const json = await res.json()
-    return typeof json?.url === 'string' ? json.url : null
-  } catch {
-    return null
-  }
-}
 
 /**
  * Calls `/api/places/autocomplete?q=...` and returns normalized cells.
@@ -49,7 +35,7 @@ export async function fetchGoogle(
     const json = await res.json()
     const preds = Array.isArray(json?.predictions) ? json.predictions : []
 
-    const baseCells = preds
+    const cells = preds
       .filter((p: any) => {
         const id = canonicalPlaceId(p?.place_id)
         return id && !excludeIds.has(id)
@@ -62,18 +48,20 @@ export async function fetchGoogle(
         return {
           place_id: canonicalPlaceId(p.place_id),
           name: main || desc || 'Unknown place',
-          avatar: null,
           formatted_address: secondary || desc || undefined,
           source: 'google',
+          avatar: null,
         }
       })
 
-    const cells = await Promise.all(
-      baseCells.map(async (cell) => {
-        const logo = await fetchLogoFor(cell.name)
-        return { ...cell, avatar: logo ?? cell.avatar }
-      })
-    )
+    log('autocomplete cells resolved', {
+      query,
+      total: cells.length,
+      immediateLogoIds: cells
+        .filter((cell) => Boolean(cell.avatar))
+        .map((cell) => cell.place_id),
+      pendingCount: cells.filter((cell) => !cell.avatar).length,
+    })
 
     if (import.meta.dev) {
       console.log('[places] google supplement results', {
@@ -90,3 +78,4 @@ export async function fetchGoogle(
     return []
   }
 }
+

@@ -117,14 +117,15 @@ export default defineEventHandler(async (event: any) => {
     const res = await fetch(url.toString())
     const data = await res.json()
     if (data.status !== 'OK') return { predictions: [] }
-    return {
-      predictions: (data.predictions || []).slice(0, 4).map((p: any) => ({
-        place_id: p.place_id,
-        description: p.description,
-        structured_formatting: p.structured_formatting,
-        types: p.types,
-      })),
-    }
+    const predictions = (data.predictions || []).slice(0, 4).map((p: any) => ({
+      place_id: p.place_id,
+      description: p.description,
+      structured_formatting: p.structured_formatting,
+      types: p.types,
+      terms: p.terms,
+    }))
+
+    return { predictions }
   } catch {
     setResponseStatus(event, 502)
     return { predictions: [] }

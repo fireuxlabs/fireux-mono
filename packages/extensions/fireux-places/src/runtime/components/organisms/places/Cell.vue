@@ -1,42 +1,47 @@
 <template>
-  <UCard class="place-cell">
-    <div class="flex flex-col gap-3">
-      <div class="flex items-start gap-3">
-        <div class="relative h-16 w-16 flex-shrink-0">
-          <img
-            v-if="previewSrc"
-            :src="previewSrc"
-            :alt="place.name"
-            class="h-full w-full rounded-lg object-cover"
-          />
-          <UAvatar v-else :alt="place.name" size="md" icon="i-lucide-map-pin" />
-        </div>
-        <div class="flex-1 min-w-0 space-y-1">
-          <h4 class="text-sm font-medium text-gray-900 truncate">
-            {{ place.name }}
-          </h4>
-          <p
-            v-if="place.formatted_address"
-            class="text-xs text-gray-500 truncate"
-          >
-            {{ place.formatted_address }}
-          </p>
-          <div
-            v-if="hasRating"
-            class="flex items-center gap-1 text-xs text-gray-500"
-          >
-            <UIcon name="i-lucide-star" class="text-amber-500" />
-            <span>{{ ratingValue?.toFixed(1) }}</span>
-          </div>
-        </div>
+  <div class="flex w-full items-center gap-3">
+    <div class="relative flex-shrink-0">
+      <UAvatar
+        :src="previewSrc || undefined"
+        :alt="place.name"
+        size="md"
+        icon="i-lucide-map-pin"
+      />
+      <div
+        v-if="showSpinner"
+        class="absolute inset-0 flex items-center justify-center rounded-full bg-white/70 backdrop-blur-sm dark:bg-gray-950/60"
+      >
+        <UIcon
+          name="i-lucide-loader-2"
+          class="h-4 w-4 animate-spin text-gray-400"
+        />
       </div>
     </div>
-  </UCard>
+
+    <div class="min-w-0 flex-1">
+      <p class="truncate text-sm font-medium text-gray-900">
+        {{ place.name }}
+      </p>
+      <p v-if="place.formatted_address" class="truncate text-xs text-gray-500">
+        {{ place.formatted_address }}
+      </p>
+    </div>
+
+    <UBadge
+      :color="sourceBadge.color"
+      variant="soft"
+      size="xs"
+      class="flex-shrink-0 uppercase tracking-wide"
+    >
+      {{ sourceBadge.label }}
+    </UBadge>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { PlaceCard } from 'fireux-places/runtime/models/place.model'
+import { loadLogoForPlace } from '../../../composables/usePlaceLogos'
 
 interface CellProps {
   place: PlaceCard.Cell
@@ -44,23 +49,72 @@ interface CellProps {
 
 const props = defineProps<CellProps>()
 
+const avatarSrc = ref<string | null>(sanitizeAvatar(props.place.avatar))
+const isLoading = ref(false)
+let requestToken = 0
+
+watch(
+  () => ({
+    id: props.place.place_id,
+    avatar: props.place.avatar,
+    source: props.place.source,
+  }),
+  async ({ id, avatar, source }) => {
+    requestToken += 1
+    const token = requestToken
+
+    const initial = sanitizeAvatar(avatar)
+    avatarSrc.value = initial
+
+    if (initial || source !== 'google') {
+      isLoading.value = false
+      return
+    }
+
+    if (!id) {
+      isLoading.value = false
+      return
+    }
+
+    isLoading.value = true
+    try {
+      const logo = await loadLogoForPlace({ ...props.place })
+      if (token !== requestToken) return
+      avatarSrc.value = sanitizeAvatar(logo)
+    } finally {
+      if (token === requestToken) {
+        isLoading.value = false
+      }
+    }
+  },
+  { immediate: true }
+)
+
+onBeforeUnmount(() => {
+  requestToken += 1
+})
+
 const previewSrc = computed(() => {
-  const src = props.place.avatar
+  const src = avatarSrc.value
   if (!src) return null
   const lower = src.toLowerCase()
   if (lower.includes('mapfiles/place_api/icons')) return null
   return src
 })
 
-const ratingValue = computed(() =>
-  typeof props.place.rating === 'number' ? props.place.rating : null
-)
+const showSpinner = computed(() => isLoading.value)
 
-const hasRating = computed(() => ratingValue.value !== null)
-</script>
+const sourceBadge = computed(() => {
+  if (props.place.source === 'google') {
+    return { label: 'Google', color: 'primary' as const }
+  }
+  return { label: 'Saved', color: 'neutral' as const }
+})
 
-<style scoped>
-.place-cell {
-  @apply h-full;
+function sanitizeAvatar(value?: string | null): string | null {
+  if (!value) return null
+  const lower = value.toLowerCase()
+  if (lower.includes('mapfiles/place_api/icons')) return null
+  return value
 }
-</style>
+</script>

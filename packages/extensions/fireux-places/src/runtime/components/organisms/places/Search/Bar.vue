@@ -3,6 +3,8 @@
     v-model="internalValue"
     icon="i-lucide-search"
     placeholder="Type a place name…"
+    size="lg"
+    autofocus
   />
 </template>
 

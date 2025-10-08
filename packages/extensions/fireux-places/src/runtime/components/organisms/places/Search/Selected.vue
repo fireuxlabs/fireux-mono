@@ -1,29 +1,43 @@
 <template>
-  <UCard>
+  <UCard class="shadow-sm" :ui="{ body: 'space-y-4' }">
+    <template #header>
+      <div class="flex items-center justify-between">
+        <span class="text-sm font-medium text-gray-700">Selected place</span>
+        <UBadge color="primary" variant="soft" size="xs">Ready to save</UBadge>
+      </div>
+    </template>
+
     <div class="flex items-start gap-3">
-      <img
-        v-if="place.avatar"
-        :src="place.avatar"
-        :alt="`${place.name} avatar`"
-        class="h-12 w-12 flex-shrink-0 rounded object-cover"
+      <UAvatar
+        :src="place.avatar || undefined"
+        :alt="place.name"
+        size="lg"
+        icon="i-lucide-map-pin"
       />
 
       <div class="flex-1 space-y-1">
-        <div class="font-medium text-gray-900">{{ place.name }}</div>
-        <div class="text-xs text-gray-500">
+        <p class="text-sm font-semibold text-gray-900">{{ place.name }}</p>
+        <p class="text-sm text-gray-500">
           {{ place.formatted_address || '—' }}
-        </div>
+        </p>
       </div>
     </div>
 
-    <div class="mt-3 flex gap-2">
-      <UButton size="xs" color="neutral" variant="ghost" @click="handleClear">
-        <UIcon name="i-lucide-x" class="mr-1" /> Clear
-      </UButton>
-      <UButton size="xs" color="primary" @click="handleConfirm">
-        <UIcon name="i-lucide-check" class="mr-1" /> Confirm
-      </UButton>
-    </div>
+    <template #footer>
+      <div class="flex flex-wrap items-center justify-end gap-2">
+        <UButton size="sm" color="neutral" variant="ghost" @click="handleClear">
+          <UIcon name="i-lucide-x" class="mr-1" /> Clear
+        </UButton>
+        <UButton
+          size="sm"
+          color="primary"
+          icon="i-lucide-check"
+          @click="handleConfirm"
+        >
+          Confirm
+        </UButton>
+      </div>
+    </template>
   </UCard>
 </template>
 

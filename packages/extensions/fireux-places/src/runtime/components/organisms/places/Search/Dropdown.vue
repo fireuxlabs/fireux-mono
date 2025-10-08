@@ -1,10 +1,27 @@
 <template>
-  <UCard v-if="visibleCells.length">
-    <ul class="space-y-2">
+  <UCard v-if="visibleCells.length" class="shadow-sm" :ui="{ body: 'p-0' }">
+    <template #header>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <UIcon name="i-lucide-list-tree" />
+          Suggestions
+        </div>
+        <UBadge color="primary" variant="soft" size="xs">
+          {{ visibleCells.length }}
+        </UBadge>
+      </div>
+    </template>
+
+    <ul class="divide-y divide-gray-100 dark:divide-gray-800">
       <li v-for="cell in visibleCells" :key="cell.place_id">
-        <button type="button" class="w-full text-left" @click="onSelect(cell)">
+        <UButton
+          color="neutral"
+          variant="ghost"
+          class="w-full justify-start px-4 py-3"
+          @click="onSelect(cell)"
+        >
           <OrganismsPlacesCell :place="cell" />
-        </button>
+        </UButton>
       </li>
     </ul>
   </UCard>

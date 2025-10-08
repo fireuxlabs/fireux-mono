@@ -1,6 +1,15 @@
 # Places Search Report
 
-_Last updated: 2025-10-07_
+_Last updated: 2025-10-08_
+
+### Latest changes (2025-10-08)
+
+- Reimagined the places stack UI with Nuxt UI 4 cards, alerts, and grouped actions for a clearer search flow.
+- Simplified result cells into badge-driven rows and refreshed the saved places panel to mirror the live suggestions.
+- Reflowed the `/places` page into a responsive grid with a quick tips sidebar to surface avatar storage behaviour.
+- Replaced the search form wrapper with inline label/help markup to avoid missing component warnings while keeping accessibility in place.
+- Autocomplete responses now skip eager logo fetching; each list item lazily pulls its image the moment it renders, keeping API usage low even for large result sets.
+- Places logo resolution now happens on-demand per cell using a shared browser cache, falling back to Maps Details only when a rendered item actually needs a website hint.
 
 ### Latest changes (2025-10-07)
 
@@ -89,6 +98,78 @@ export function usePlacesSearch(): UsePlacesSearchResult {
 
 ## `packages/core/fireux-core/src/runtime/composables/firestore/useFirestoreSearch.ts`
 
+## `packages/extensions/fireux-places/src/runtime/composables/usePlaceLogos.ts`
+
+_Browser-side cache that fetches logos only when a rendered cell needs one._
+
+```typescript
+/* eslint-disable no-console */
+import type { PlaceCard } from '../models/place.model'
+
+const LOGO_ENDPOINT = '/api/places/logo'
+const DETAILS_ENDPOINT = '/api/places/details'
+
+const logoResultCache = new Map<string, string | null>()
+const logoPromiseCache = new Map<string, Promise<string | null>>()
+const detailsResultCache = new Map<string, PlaceDetailsResult | null>()
+const detailsPromiseCache = new Map<string, Promise<PlaceDetailsResult | null>>()
+
+export async function loadLogoForPlace(
+  place: PlaceCard.Cell
+): Promise<string | null> {
+  if (typeof window === 'undefined') return place.avatar ?? null
+  const placeId = canonicalPlaceId(place.place_id)
+  if (!placeId) return place.avatar ?? null
+
+  if (logoResultCache.has(placeId)) {
+    return logoResultCache.get(placeId) ?? null
+  }
+
+  if (logoPromiseCache.has(placeId)) {
+    return logoPromiseCache.get(placeId) ?? null
+  }
+
+  const promise = fetchLogo(place, placeId)
+    .then((url) => {
+      logoResultCache.set(placeId, url)
+      return url
+    })
+    .finally(() => {
+      logoPromiseCache.delete(placeId)
+    })
+
+  logoPromiseCache.set(placeId, promise)
+  return promise
+}
+
+async function fetchLogo(
+  place: PlaceCard.Cell,
+  placeId: string
+): Promise<string | null> {
+  const hint = await resolveWebsite(placeId)
+  const logoUrl = new URL(LOGO_ENDPOINT, window.location.origin)
+
+  if (hint?.website) {
+    logoUrl.searchParams.set('website', hint.website)
+  } else if (hint?.url) {
+    const domain = extractDomain(hint.url)
+    if (domain) logoUrl.searchParams.set('domain', domain)
+  }
+
+  if (!logoUrl.searchParams.has('website') && !logoUrl.searchParams.has('domain')) {
+    logoUrl.searchParams.set('q', place.name)
+  }
+
+  const res = await fetch(logoUrl.toString(), {
+    headers: { accept: 'application/json' },
+  })
+  if (!res.ok) return null
+
+  const json = await res.json()
+  return typeof json?.url === 'string' ? json.url : null
+}
+```
+
 _Reusable Firestore prefix search where callers supply the fully-resolved collection path._
 
 ```typescript
@@ -126,6 +207,12 @@ _Google Autocomplete supplement → `PlaceCard.Cell`._
 import type { PlaceCard } from '../models/place.model'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
+
+const log = (...args: unknown[]) => {
+  if (import.meta.dev) {
+    console.info('[places][logos]', ...args)
+  }
+}
 
 const canonicalPlaceId = (id?: string | null) =>
   (id ?? '').trim().replace(/^"+/, '').replace(/"+$/, '')
@@ -172,6 +259,12 @@ export async function fetchGoogle(
           source: 'google',
         }
       })
+
+    log('autocomplete cells resolved', {
+      query,
+      total: cells.length,
+      pendingCount: cells.filter((cell) => !cell.avatar).length,
+    })
 
     if (import.meta.dev) {
       console.log('[places] google supplement results', {
@@ -222,141 +315,133 @@ export function usePlaces(): UsePlacesResult {
 
 ## `packages/extensions/fireux-places/src/runtime/components/organisms/places/Search/Section.vue`
 
-_UI section that wires the search composable to live Firestore/Google results with categorized output._
+_Nuxt UI 4 card that orchestrates search state, contextual alerts, and confirmation actions._
 
 ```vue
 <template>
-  <UCard>
-    <div class="space-y-4">
-      <p class="text-sm text-gray-500">
-        Firestore-first search runs automatically while you type. Results are
-        logged and rendered below.
-      </p>
+  <section class="space-y-6">
+    <UCard class="shadow-sm" :ui="{ body: 'space-y-5' }">
+      <template #header>
+        <div class="space-y-1">
+          <h2 class="text-base font-semibold text-gray-900">
+            Search Google Places
+          </h2>
+          <p class="text-sm text-gray-500">
+            Type to discover locations, review the details, and save the perfect
+            match.
+          </p>
+        </div>
+      </template>
 
-      <UInput
-        v-model="query"
-        icon="i-lucide-search"
-        placeholder="Type a place name…"
+      <div class="space-y-2">
+        <label :for="searchInputId" class="text-sm font-medium text-gray-700">
+          Search
+        </label>
+        <OrganismsPlacesSearchBar
+          v-model="query"
+          :id="searchInputId"
+          :aria-describedby="searchHelpId"
+          aria-label="Search Google Places"
+        />
+        <p :id="searchHelpId" class="text-xs text-gray-500">
+          Powered by Google Places autocomplete
+        </p>
+      </div>
+
+      <UAlert
+        v-if="!hasQuery"
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-compass"
+        title="Start typing to see suggestions"
       />
 
-      <p v-if="message" class="text-xs text-gray-500">
-        {{ message }}
-      </p>
+      <OrganismsPlacesSearchSelected
+        v-else-if="status === 'selected' && selected"
+        :place="selected"
+        @clear="onClear"
+        @confirm="onConfirm"
+      />
 
-      <div
-        v-if="firestoreResults.length || googleResults.length"
-        class="space-y-5"
-      >
-        <div v-if="firestoreResults.length" class="space-y-3">
-          <div class="flex items-center justify-between text-xs text-gray-500">
-            <span>Firestore matches</span>
-            <UBadge color="neutral" size="2xs">{{
-              firestoreResults.length
-            }}</UBadge>
-          </div>
+      <OrganismsPlacesSearchDropdown
+        v-else-if="status === 'results' && results.length"
+        :cells="results"
+        @select="onSelect"
+      />
 
-          <ul class="space-y-2">
-            <li
-              v-for="place in firestoreResults"
-              :key="place.place_id"
-              class="rounded border border-gray-100 px-3 py-2"
-            >
-              <div class="flex items-start justify-between gap-3">
-                <div>
-                  <div class="font-medium">{{ place.name }}</div>
-                  <div class="text-xs text-gray-500">
-                    {{ place.formatted_address || '—' }}
-                  </div>
-                  <div class="text-[11px] text-gray-400">
-                    ID: {{ place.place_id }}
-                  </div>
-                </div>
-                <UBadge color="green" size="2xs">Saved</UBadge>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <div v-if="googleResults.length" class="space-y-3">
-          <div class="flex items-center justify-between text-xs text-gray-500">
-            <span>Google suggestions</span>
-            <UBadge color="primary" size="2xs">{{
-              googleResults.length
-            }}</UBadge>
-          </div>
-
-          <ul class="space-y-2">
-            <li
-              v-for="place in googleResults"
-              :key="place.place_id"
-              class="rounded border border-blue-50 bg-blue-50/30 px-3 py-2"
-            >
-              <div class="flex items-start justify-between gap-3">
-                <div>
-                  <div class="font-medium">{{ place.name }}</div>
-                  <div class="text-xs text-gray-500">
-                    {{ place.formatted_address || '—' }}
-                  </div>
-                  <div class="text-[11px] text-gray-400">
-                    ID: {{ place.place_id }}
-                  </div>
-                </div>
-                <UBadge color="primary" size="2xs">Google</UBadge>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </UCard>
+      <UAlert
+        v-else
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-search-x"
+        :title="emptyTitle"
+        :description="emptyDescription"
+      />
+    </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
 /* eslint-disable no-console */
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import type { PlaceCard } from '../../../../models/place.model'
+import { computed, onBeforeUnmount, ref, watch, useId } from 'vue'
+import type { Place, PlaceCard } from '../../../../models/place.model'
 import { usePlaces } from '../../../../composables/usePlaces'
 
-const { searchPlaces } = usePlaces()
+const { searchPlaces, getPlaceDetails, savePlace } = usePlaces()
+const { uploadFromUrl } = useImageStorage()
+
+type SearchStatus = 'idle' | 'results' | 'selected'
 
 const query = ref('')
-const message = ref('')
+const status = ref<SearchStatus>('idle')
 const results = ref<PlaceCard.Cell[]>([])
+const selected = ref<Place | null>(null)
+const selectedCell = ref<PlaceCard.Cell | null>(null)
+
+const searchInputId = useId()
+const searchHelpId = `${searchInputId}-help`
+
+const hasQuery = computed(() => query.value.trim().length > 0)
+const emptyTitle = computed(() =>
+  hasQuery.value ? 'No matching places yet' : 'Waiting for a search term'
+)
+const emptyDescription = computed(() =>
+  hasQuery.value
+    ? 'Try a different name or include the city to refine the results.'
+    : 'Enter a business or venue name to pull live suggestions from Google.'
+)
+
 const debounceDelay = 250
-const minLength = 3
-
-const firestoreResults = computed(() =>
-  results.value.filter((place) => place.source === 'firestore')
-)
-const googleResults = computed(() =>
-  results.value.filter((place) => place.source === 'google')
-)
-
-function formatResultsMessage(
-  value: string,
-  firestoreCount: number,
-  googleCount: number
-): string {
-  if (firestoreCount === 0 && googleCount === 0) {
-    return `No matches for “${value}”.`
-  }
-
-  if (firestoreCount > 0 && googleCount === 0) {
-    const suffix = firestoreCount === 1 ? '' : 'es'
-    return `${firestoreCount} Firestore match${suffix} found for “${value}”.`
-  }
-
-  if (firestoreCount === 0 && googleCount > 0) {
-    const suffix = googleCount === 1 ? '' : 's'
-    return `No Firestore matches; showing ${googleCount} Google suggestion${suffix} for “${value}”.`
-  }
-
-  const firestoreSuffix = firestoreCount === 1 ? '' : 'es'
-  const googleSuffix = googleCount === 1 ? '' : 's'
-  return `${firestoreCount} Firestore match${firestoreSuffix} plus ${googleCount} Google suggestion${googleSuffix} for “${value}”.`
-}
-
 let debounceId: ReturnType<typeof setTimeout> | null = null
+
+watch(
+  () => query.value,
+  (value) => {
+    const trimmed = value.trim()
+    clearDebounce()
+
+    if (!trimmed) {
+      results.value = []
+      selected.value = null
+      status.value = 'idle'
+      return
+    }
+
+    debounceId = setTimeout(async () => {
+      try {
+        const cells = await searchPlaces(trimmed)
+        results.value = cells
+        selected.value = null
+        status.value = 'results'
+      } catch (error) {
+        console.error('[places] search failed', error)
+        results.value = []
+        status.value = 'idle'
+      }
+    }, debounceDelay)
+  },
+  { immediate: true }
+)
 
 function clearDebounce() {
   if (debounceId) {
@@ -365,40 +450,140 @@ function clearDebounce() {
   }
 }
 
-watch(
-  () => query.value,
-  (raw) => {
-    clearDebounce()
+function onSelect(cell: PlaceCard.Cell) {
+  const place = toPreviewPlace(cell)
+  selected.value = place
+  selectedCell.value = cell
+  status.value = 'selected'
+}
 
-    const value = raw.trim()
+function onClear() {
+  selected.value = null
+  selectedCell.value = null
+  status.value = 'results'
+}
 
-    if (!value) {
-      results.value = []
-      message.value =
-        'Type a place name to search your saved Firestore entries.'
-      return
-    }
+async function onConfirm(place: Place) {
+  const cell = selectedCell.value
+  const placeId = canonicalPlaceId(place.place_id)
 
-    if (value.length < minLength) {
-      results.value = []
-      message.value = `Keep typing… minimum ${minLength} characters for Firestore search.`
-      return
-    }
+  if (!cell || !placeId) {
+    console.warn('[places] confirm skipped: missing context', { cell, place })
+    selected.value = null
+    selectedCell.value = null
+    status.value = results.value.length ? 'results' : 'idle'
+    return
+  }
 
-    message.value = `Searching for “${value}”…`
+  if (cell.source !== 'google') {
+    console.info('[places] confirm skipped for stored place', {
+      placeId,
+      source: cell.source,
+    })
+    selected.value = null
+    selectedCell.value = null
+    status.value = results.value.length ? 'results' : 'idle'
+    return
+  }
 
-    debounceId = setTimeout(async () => {
+  try {
+    let draft = await resolvePlaceForConfirmation(placeId, place, cell)
+
+    if (cell.source === 'google' && draft.avatar) {
       try {
-        const matches = await searchPlaces(value)
-
-        if (import.meta.dev) {
-          console.log('[places] Firestore search results', {
-            query: value,
-            matches,
-          })
+        const avatarPath = `places/${placeId}/avatar`
+        console.log('processing place image', { placeId })
+        draft = {
+          ...draft,
+          avatar: await uploadFromUrl(avatarPath, draft.avatar),
         }
+      } catch (error) {
+        console.error('[places] avatar upload failed', error)
+      }
+    }
 
-        if (query.value.trim() !== value) {
+    await savePlace(draft)
+  } catch (error) {
+    console.error('[places] confirm failed', error)
+  } finally {
+    selected.value = null
+    selectedCell.value = null
+    status.value = results.value.length ? 'results' : 'idle'
+  }
+}
+
+function toPreviewPlace(cell: PlaceCard.Cell): Place {
+  const formattedAddress = cell.formatted_address ?? ''
+  const searchTerm = `${cell.name} ${formattedAddress}`.toLowerCase().trim()
+
+  return {
+    place_id: cell.place_id,
+    name: cell.name,
+    formatted_address: formattedAddress,
+    lat: 0,
+    lng: 0,
+    source: 'firestore',
+    avatar: cell.avatar ?? null,
+    search_term: searchTerm,
+    created_at: new Date(),
+  }
+}
+
+function canonicalPlaceId(id?: string | null) {
+  return (id ?? '').trim().replace(/^"+/, '').replace(/"+$/, '')
+}
+
+function buildFallbackPlace(
+  place: Place,
+  cell: PlaceCard.Cell,
+  placeId: string
+) {
+  const formattedAddress = cell.formatted_address ?? place.formatted_address
+  const searchTerm = `${place.name} ${formattedAddress}`.toLowerCase().trim()
+
+  return {
+    ...place,
+    place_id: placeId,
+    formatted_address: formattedAddress ?? '',
+    search_term: searchTerm,
+    created_at: place.created_at ?? new Date(),
+  }
+}
+
+async function resolvePlaceForConfirmation(
+  placeId: string,
+  place: Place,
+  cell: PlaceCard.Cell
+): Promise<Place> {
+  try {
+    const details = await getPlaceDetails(placeId)
+    if (details?.place) {
+      return {
+        ...details.place,
+        place_id: placeId,
+        created_at: details.place.created_at ?? new Date(),
+      }
+    }
+  } catch (error) {
+    console.error('[places] details fetch failed', error)
+  }
+
+  return buildFallbackPlace(place, cell, placeId)
+}
+
+onBeforeUnmount(() => {
+  clearDebounce()
+})
+
+defineExpose({
+  query,
+  status,
+  results,
+  selected,
+})
+</script>
+```
+
           return
         }
 
@@ -418,15 +603,17 @@ watch(
         }
       }
     }, debounceDelay)
-  },
-  { immediate: true }
+
+},
+{ immediate: true }
 )
 
 onBeforeUnmount(() => {
-  clearDebounce()
+clearDebounce()
 })
 </script>
-```
+
+````
 
 ## `packages/extensions/fireux-places/src/runtime/components/organisms/places/List.vue`
 
@@ -471,7 +658,7 @@ const { collection } = usePlaces()
 
 const items = computed(() => collection.value ?? [])
 </script>
-```
+````
 
 ## `packages/extensions/fireux-places/src/runtime/pages/places.vue`
 

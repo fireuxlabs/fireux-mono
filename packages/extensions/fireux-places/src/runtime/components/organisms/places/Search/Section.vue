@@ -1,25 +1,69 @@
 <template>
-  <section class="space-y-3">
-    <OrganismsPlacesSearchBar v-model="query" />
+  <section class="space-y-6">
+    <UCard class="shadow-sm" :ui="{ body: 'space-y-5' }">
+      <template #header>
+        <div class="space-y-1">
+          <h2 class="text-base font-semibold text-gray-900">
+            Search Google Places
+          </h2>
+          <p class="text-sm text-gray-500">
+            Type to discover locations, review the details, and save the perfect
+            match.
+          </p>
+        </div>
+      </template>
 
-    <OrganismsPlacesSearchSelected
-      v-if="status === 'selected' && selected"
-      :place="selected"
-      @clear="onClear"
-      @confirm="onConfirm"
-    />
+      <div class="space-y-2">
+        <label :for="searchInputId" class="text-sm font-medium text-gray-700">
+          Search
+        </label>
+        <OrganismsPlacesSearchBar
+          v-model="query"
+          :id="searchInputId"
+          :aria-describedby="searchHelpId"
+          aria-label="Search Google Places"
+        />
+        <p :id="searchHelpId" class="text-xs text-gray-500">
+          Powered by Google Places autocomplete
+        </p>
+      </div>
 
-    <OrganismsPlacesSearchDropdown
-      v-else-if="status === 'results' && results.length"
-      :cells="results"
-      @select="onSelect"
-    />
+      <UAlert
+        v-if="!hasQuery"
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-compass"
+        title="Start typing to see suggestions"
+      />
+
+      <OrganismsPlacesSearchSelected
+        v-else-if="status === 'selected' && selected"
+        :place="selected"
+        @clear="onClear"
+        @confirm="onConfirm"
+      />
+
+      <OrganismsPlacesSearchDropdown
+        v-else-if="status === 'results' && results.length"
+        :cells="results"
+        @select="onSelect"
+      />
+
+      <UAlert
+        v-else
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-search-x"
+        :title="emptyTitle"
+        :description="emptyDescription"
+      />
+    </UCard>
   </section>
 </template>
 
 <script setup lang="ts">
 /* eslint-disable no-console */
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch, useId } from 'vue'
 import type { Place, PlaceCard } from '../../../../models/place.model'
 import { usePlaces } from '../../../../composables/usePlaces'
 
@@ -33,6 +77,19 @@ const status = ref<SearchStatus>('idle')
 const results = ref<PlaceCard.Cell[]>([])
 const selected = ref<Place | null>(null)
 const selectedCell = ref<PlaceCard.Cell | null>(null)
+
+const searchInputId = useId()
+const searchHelpId = `${searchInputId}-help`
+
+const hasQuery = computed(() => query.value.trim().length > 0)
+const emptyTitle = computed(() =>
+  hasQuery.value ? 'No matching places yet' : 'Waiting for a search term'
+)
+const emptyDescription = computed(() =>
+  hasQuery.value
+    ? 'Try a different name or include the city to refine the results.'
+    : 'Enter a business or venue name to pull live suggestions from Google.'
+)
 
 const debounceDelay = 250
 let debounceId: ReturnType<typeof setTimeout> | null = null
