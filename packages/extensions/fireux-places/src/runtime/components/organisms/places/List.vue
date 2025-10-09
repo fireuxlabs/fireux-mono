@@ -17,6 +17,7 @@
       <UButton
         v-for="cell in cells"
         :key="cell.place_id"
+        :to="`/places/${cell.place_id}`"
         color="neutral"
         variant="ghost"
         class="w-full justify-start px-3 py-3"

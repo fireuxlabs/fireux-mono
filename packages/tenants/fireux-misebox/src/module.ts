@@ -1,4 +1,4 @@
-import { defineNuxtModule, createResolver } from '@nuxt/kit'
+import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
 import { configureRuntime } from './config/runtime-config'
 import { configurePlugins } from './config/plugins-config'
@@ -25,6 +25,9 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
 
     // Core is provided by the app via createFireuxConfig; dependencies install extensions
+
+    await installModule('fireux-jobs')
+    await installModule('fireux-places')
 
     configureRuntime(nuxt, 'misebox')
     configurePlugins(resolver)

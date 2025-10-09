@@ -1,4 +1,4 @@
-<!-- `packages/extensions/fireux-places/src/runtime/pages/places.vue` -->
+<!-- `packages/extensions/fireux-places/src/runtime/pages/places/index.vue` -->
 
 <template>
   <UPage>
@@ -7,11 +7,13 @@
       description="Search for locations, inspect Google details, and review saved entries."
     />
 
-    <UContainer class="py-10">
-      <div class="grid gap-8 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
-        <OrganismsPlacesSearchSection />
+    <UContainer class="max-w-5xl py-8">
+      <div class="flex flex-col gap-8 lg:flex-row lg:items-start">
+        <div class="w-full max-w-xl space-y-8">
+          <OrganismsPlacesSearchSection />
+        </div>
 
-        <div class="space-y-6">
+        <div class="w-full max-w-sm space-y-6">
           <OrganismsPlacesList />
 
           <UCard class="shadow-sm" :ui="{ body: 'space-y-3' }">

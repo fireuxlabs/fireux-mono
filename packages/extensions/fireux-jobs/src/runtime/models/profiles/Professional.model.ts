@@ -25,10 +25,8 @@ export type ExperienceItem = {
   to_year?: string | null
   ongoing?: boolean
   responsibilities?: string
+  /** Link to canonical place */
   place_id?: string
-  formatted_address?: string
-  short_address?: string
-  image_url?: string
 }
 
 /** Unified Professional */

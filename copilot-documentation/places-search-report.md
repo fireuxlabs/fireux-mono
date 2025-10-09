@@ -7,9 +7,12 @@ _Last updated: 2025-10-08_
 - Reimagined the places stack UI with Nuxt UI 4 cards, alerts, and grouped actions for a clearer search flow.
 - Simplified result cells into badge-driven rows and refreshed the saved places panel to mirror the live suggestions.
 - Reflowed the `/places` page into a responsive grid with a quick tips sidebar to surface avatar storage behaviour.
+- Tightened the `/places` layout to a left-aligned, max-width column pair so the search stack stays compact on large screens.
 - Replaced the search form wrapper with inline label/help markup to avoid missing component warnings while keeping accessibility in place.
+- Introduced abortable logo fetches with shared caches plus `cancelLogoRequests`, ensuring shortlist churn cancels stale network calls while keeping the selected place alive.
 - Autocomplete responses now skip eager logo fetching; each list item lazily pulls its image the moment it renders, keeping API usage low even for large result sets.
 - Places logo resolution now happens on-demand per cell using a shared browser cache, falling back to Maps Details only when a rendered item actually needs a website hint.
+- Confirming a result now routes to a new `/places/[id]` detail view that reads the Firestore document and surfaces saved metadata right away.
 
 ### Latest changes (2025-10-07)
 
@@ -111,11 +114,26 @@ const DETAILS_ENDPOINT = '/api/places/details'
 
 const logoResultCache = new Map<string, string | null>()
 const logoPromiseCache = new Map<string, Promise<string | null>>()
+const logoAbortControllers = new Map<string, AbortController>()
 const detailsResultCache = new Map<string, PlaceDetailsResult | null>()
-const detailsPromiseCache = new Map<string, Promise<PlaceDetailsResult | null>>()
+const detailsPromiseCache = new Map<
+  string,
+  Promise<PlaceDetailsResult | null>
+>()
+const detailsAbortControllers = new Map<string, AbortController>()
+
+interface PlaceDetailsResult {
+  website?: string | null
+  url?: string | null
+}
+
+interface LoadLogoOptions {
+  priority?: boolean
+}
 
 export async function loadLogoForPlace(
-  place: PlaceCard.Cell
+  place: PlaceCard.Cell,
+  options: LoadLogoOptions = {}
 ): Promise<string | null> {
   if (typeof window === 'undefined') return place.avatar ?? null
   const placeId = canonicalPlaceId(place.place_id)
@@ -125,16 +143,32 @@ export async function loadLogoForPlace(
     return logoResultCache.get(placeId) ?? null
   }
 
+  if (!options.priority) {
+    cancelLogoRequest(placeId)
+  }
+
   if (logoPromiseCache.has(placeId)) {
     return logoPromiseCache.get(placeId) ?? null
   }
 
-  const promise = fetchLogo(place, placeId)
+  const controller = new AbortController()
+  logoAbortControllers.set(placeId, controller)
+
+  const promise = fetchLogo(place, placeId, controller.signal)
     .then((url) => {
       logoResultCache.set(placeId, url)
       return url
     })
+    .catch((error) => {
+      if (isAbortError(error)) {
+        return null
+      }
+      throw error
+    })
     .finally(() => {
+      if (logoAbortControllers.get(placeId) === controller) {
+        logoAbortControllers.delete(placeId)
+      }
       logoPromiseCache.delete(placeId)
     })
 
@@ -142,31 +176,205 @@ export async function loadLogoForPlace(
   return promise
 }
 
+export function cancelLogoRequests(except?: Set<string>) {
+  if (typeof window === 'undefined') return
+  for (const [placeId, controller] of logoAbortControllers.entries()) {
+    if (except?.has(placeId)) continue
+    controller.abort()
+    logoAbortControllers.delete(placeId)
+    logoPromiseCache.delete(placeId)
+  }
+}
+
 async function fetchLogo(
   place: PlaceCard.Cell,
-  placeId: string
+  placeId: string,
+  signal?: AbortSignal
 ): Promise<string | null> {
-  const hint = await resolveWebsite(placeId)
-  const logoUrl = new URL(LOGO_ENDPOINT, window.location.origin)
+  try {
+    const hint = await resolveWebsite(placeId, signal)
+    const logoUrl = new URL(LOGO_ENDPOINT, window.location.origin)
 
-  if (hint?.website) {
-    logoUrl.searchParams.set('website', hint.website)
-  } else if (hint?.url) {
-    const domain = extractDomain(hint.url)
-    if (domain) logoUrl.searchParams.set('domain', domain)
-  }
+    if (hint?.website) {
+      logoUrl.searchParams.set('website', hint.website)
+    } else if (hint?.url) {
+      const domain = extractDomain(hint.url)
+      if (domain) logoUrl.searchParams.set('domain', domain)
+    }
 
-  if (!logoUrl.searchParams.has('website') && !logoUrl.searchParams.has('domain')) {
+    if (
+      !logoUrl.searchParams.has('website') &&
+      !logoUrl.searchParams.has('domain')
+    ) {
+      const domainFromName = extractDomain(place.formatted_address)
+      if (domainFromName) {
+        logoUrl.searchParams.set('domain', domainFromName)
+      }
+    }
+
     logoUrl.searchParams.set('q', place.name)
+
+    const res = await fetch(logoUrl.toString(), {
+      headers: { accept: 'application/json' },
+      signal,
+    })
+    if (!res.ok) {
+      console.warn('[places][logos] logo fetch failed', {
+        placeId,
+        status: res.status,
+      })
+      return null
+    }
+
+    const json = await res.json()
+    const url = typeof json?.url === 'string' ? json.url : null
+    return url
+  } catch (error) {
+    if (isAbortError(error)) {
+      return null
+    }
+    console.warn('[places][logos] logo fetch error', { placeId, error })
+    return null
+  }
+}
+
+async function resolveWebsite(
+  placeId: string,
+  signal?: AbortSignal
+): Promise<PlaceDetailsResult | null> {
+  if (detailsResultCache.has(placeId)) {
+    return detailsResultCache.get(placeId) ?? null
   }
 
-  const res = await fetch(logoUrl.toString(), {
-    headers: { accept: 'application/json' },
-  })
-  if (!res.ok) return null
+  if (detailsPromiseCache.has(placeId)) {
+    return detailsPromiseCache.get(placeId) ?? null
+  }
 
-  const json = await res.json()
-  return typeof json?.url === 'string' ? json.url : null
+  cancelDetailsRequest(placeId)
+  const controller = new AbortController()
+  const mergedSignal = mergeSignals(signal, controller.signal)
+
+  const promise = (async () => {
+    try {
+      const url = new URL(DETAILS_ENDPOINT, window.location.origin)
+      url.searchParams.set('place_id', placeId)
+      url.searchParams.set('fields', 'website,url')
+
+      const res = await fetch(url.toString(), {
+        headers: { accept: 'application/json' },
+        cache: 'no-store',
+        signal: mergedSignal,
+      })
+      if (!res.ok) {
+        return null
+      }
+
+      const json = await res.json()
+      const result = (json?.result ?? null) as Record<string, any> | null
+      if (!result) return null
+
+      const website = normalizeUrl(result.website)
+      const mapsUrl = normalizeUrl(result.url)
+
+      const payload = { website, url: mapsUrl }
+      detailsResultCache.set(placeId, payload)
+      return payload
+    } catch (error) {
+      if (isAbortError(error)) {
+        return null
+      }
+      console.warn('[places][logos] details fetch failed', { placeId, error })
+      return null
+    }
+  })().finally(() => {
+    detailsPromiseCache.delete(placeId)
+    if (detailsAbortControllers.get(placeId) === controller) {
+      detailsAbortControllers.delete(placeId)
+    }
+  })
+
+  detailsAbortControllers.set(placeId, controller)
+  detailsPromiseCache.set(placeId, promise)
+  return promise
+}
+
+function cancelLogoRequest(placeId: string) {
+  const controller = logoAbortControllers.get(placeId)
+  if (controller) {
+    controller.abort()
+    logoAbortControllers.delete(placeId)
+    logoPromiseCache.delete(placeId)
+  }
+}
+
+function cancelDetailsRequest(placeId: string) {
+  const controller = detailsAbortControllers.get(placeId)
+  if (controller) {
+    controller.abort()
+    detailsAbortControllers.delete(placeId)
+    detailsPromiseCache.delete(placeId)
+  }
+}
+
+function mergeSignals(
+  ...signals: (AbortSignal | undefined)[]
+): AbortSignal | undefined {
+  const valid = signals.filter(Boolean) as AbortSignal[]
+  if (!valid.length) return undefined
+  if (valid.length === 1) return valid[0]
+
+  const controller = new AbortController()
+  const onAbort = () => controller.abort()
+  for (const signal of valid) {
+    if (signal.aborted) {
+      controller.abort()
+      break
+    }
+    signal.addEventListener('abort', onAbort, { once: true })
+  }
+  return controller.signal
+}
+
+function extractDomain(input?: string | null): string | null {
+  if (!input) return null
+  const normalized = normalizeUrl(input)
+  if (normalized) {
+    try {
+      const url = new URL(normalized)
+      if (url.hostname) return url.hostname
+    } catch {
+      // ignore
+    }
+  }
+  const match = /\b([a-z0-9-]+(?:\.[a-z0-9-]+)+)\b/i.exec(input)
+  return match ? match[1] : null
+}
+
+function normalizeUrl(value?: string | null): string | null {
+  if (!value || typeof value !== 'string') return null
+  try {
+    const url = new URL(value)
+    if (!url.protocol) {
+      url.protocol = 'https:'
+    }
+    return url.toString()
+  } catch {
+    if (/^https?:\/\//i.test(value)) return value
+    return `https://${value}`
+  }
+}
+
+function canonicalPlaceId(id?: string | null) {
+  return (id ?? '').trim().replace(/^"+/, '').replace(/"+$/, '')
+}
+
+function isAbortError(error: unknown): error is DOMException {
+  return (
+    !!error &&
+    typeof error === 'object' &&
+    'name' in error &&
+    (error as { name: string }).name === 'AbortError'
+  )
 }
 ```
 

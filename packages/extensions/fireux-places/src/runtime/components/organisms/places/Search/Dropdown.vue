@@ -1,11 +1,13 @@
 <template>
-  <UCard v-if="visibleCells.length" class="shadow-sm" :ui="{ body: 'p-0' }">
+  <UCard
+    v-if="visibleCells.length"
+    class="shadow-sm w-full max-w-md"
+    :ui="{ body: 'p-0' }"
+  >
     <template #header>
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2 text-sm font-medium text-gray-700">
-          <UIcon name="i-lucide-list-tree" />
-          Suggestions
-        </div>
+      <div class="flex items-center gap-2 text-sm font-medium text-gray-700">
+        <UIcon name="i-lucide-list-tree" />
+        <span>Suggestions</span>
         <UBadge color="primary" variant="soft" size="xs">
           {{ visibleCells.length }}
         </UBadge>
