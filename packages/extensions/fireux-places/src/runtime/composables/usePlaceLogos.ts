@@ -13,7 +13,10 @@ const logoResultCache = new Map<string, string | null>()
 const logoPromiseCache = new Map<string, Promise<string | null>>()
 const logoAbortControllers = new Map<string, AbortController>()
 const detailsResultCache = new Map<string, PlaceDetailsResult | null>()
-const detailsPromiseCache = new Map<string, Promise<PlaceDetailsResult | null>>()
+const detailsPromiseCache = new Map<
+  string,
+  Promise<PlaceDetailsResult | null>
+>()
 const detailsAbortControllers = new Map<string, AbortController>()
 let logoRequestSeq = 0
 let detailsRequestSeq = 0
@@ -107,12 +110,13 @@ export async function loadLogoForPlace(
     })
 
   const timeoutMs = options.timeoutMs ?? null
-  const fallbackAvatar =
-    options.fallbackAvatar ?? (timeoutMs ? '' : null)
+  const fallbackAvatar = options.fallbackAvatar ?? (timeoutMs ? '' : null)
   let timeoutId: ReturnType<typeof setTimeout> | null = null
 
   const shouldApplyTimeout =
-    typeof window !== 'undefined' && typeof timeoutMs === 'number' && timeoutMs > 0
+    typeof window !== 'undefined' &&
+    typeof timeoutMs === 'number' &&
+    timeoutMs > 0
 
   const timedPromise = shouldApplyTimeout
     ? Promise.race([

@@ -51,10 +51,7 @@
               Fetch logo
             </UButton>
 
-            <p
-              v-if="logoError"
-              class="text-xs font-medium text-amber-700"
-            >
+            <p v-if="logoError" class="text-xs font-medium text-amber-700">
               {{ logoError }}
             </p>
           </div>

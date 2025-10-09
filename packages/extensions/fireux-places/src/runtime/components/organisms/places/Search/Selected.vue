@@ -20,8 +20,13 @@
       </div>
     </div>
 
-    <div v-if="logoErrorMessage" class="rounded-md border border-orange-200 bg-orange-50 p-3">
-      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div
+      v-if="logoErrorMessage"
+      class="rounded-md border border-orange-200 bg-orange-50 p-3"
+    >
+      <div
+        class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+      >
         <p class="text-sm font-medium text-orange-800">
           {{ logoErrorMessage }}
         </p>
@@ -51,7 +56,12 @@
         </p>
 
         <div class="ml-auto flex flex-wrap items-center justify-end gap-2">
-          <UButton size="sm" color="neutral" variant="soft" @click="handleClear">
+          <UButton
+            size="sm"
+            color="neutral"
+            variant="soft"
+            @click="handleClear"
+          >
             <UIcon name="i-lucide-x" class="mr-1" /> Clear
           </UButton>
           <UButton

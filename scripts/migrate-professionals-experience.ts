@@ -37,7 +37,9 @@ function parseArgs(): Cli {
   const apply = applyRaw === true || applyRaw === 'true'
   const dropLegacyRaw = args.get('dropLegacy')
   const dropLegacy =
-    dropLegacyRaw === undefined ? true : dropLegacyRaw === true || dropLegacyRaw === 'true'
+    dropLegacyRaw === undefined
+      ? true
+      : dropLegacyRaw === true || dropLegacyRaw === 'true'
   const mergeKitchenRaw = args.get('mergeKitchen')
   const mergeKitchen =
     mergeKitchenRaw === undefined
@@ -88,7 +90,6 @@ function initAdmin() {
   return getFirestore()
 }
 
-
 // ---------- Helpers ----------
 const tsNow = () => Timestamp.now()
 
@@ -110,34 +111,45 @@ type SanitizedExperience = {
 const sanitizeExperience = (
   entry: ExperienceEntry
 ): SanitizedExperience | null => {
-  const placeId = typeof entry.place_id === 'string' ? entry.place_id.trim() : ''
+  const placeId =
+    typeof entry.place_id === 'string' ? entry.place_id.trim() : ''
   if (!placeId) return null
 
   const base: SanitizedExperience = {
     place_id: placeId,
     role:
-      (typeof entry.role === 'string' || typeof entry.role === 'number') && String(entry.role).trim() !== ''
+      (typeof entry.role === 'string' || typeof entry.role === 'number') &&
+      String(entry.role).trim() !== ''
         ? String(entry.role).trim()
         : null,
     from_month:
-      (typeof entry.from_month === 'string' || typeof entry.from_month === 'number') && String(entry.from_month).trim() !== ''
+      (typeof entry.from_month === 'string' ||
+        typeof entry.from_month === 'number') &&
+      String(entry.from_month).trim() !== ''
         ? String(entry.from_month).trim()
         : null,
     from_year:
-      (typeof entry.from_year === 'string' || typeof entry.from_year === 'number') && String(entry.from_year).trim() !== ''
+      (typeof entry.from_year === 'string' ||
+        typeof entry.from_year === 'number') &&
+      String(entry.from_year).trim() !== ''
         ? String(entry.from_year).trim()
         : null,
     to_month:
-      (typeof entry.to_month === 'string' || typeof entry.to_month === 'number') && String(entry.to_month).trim() !== ''
+      (typeof entry.to_month === 'string' ||
+        typeof entry.to_month === 'number') &&
+      String(entry.to_month).trim() !== ''
         ? String(entry.to_month).trim()
         : null,
     to_year:
-      (typeof entry.to_year === 'string' || typeof entry.to_year === 'number') && String(entry.to_year).trim() !== ''
+      (typeof entry.to_year === 'string' ||
+        typeof entry.to_year === 'number') &&
+      String(entry.to_year).trim() !== ''
         ? String(entry.to_year).trim()
         : null,
     ongoing: Boolean(entry.ongoing),
     responsibilities:
-      typeof entry.responsibilities === 'string' && entry.responsibilities.trim() !== ''
+      typeof entry.responsibilities === 'string' &&
+      entry.responsibilities.trim() !== ''
         ? entry.responsibilities.trim()
         : null,
   }
@@ -234,7 +246,9 @@ function mapExperienceArrays(
   const kitchenAdditions = Array.isArray(data.kitchen_experience)
     ? (data.kitchen_experience as ExperienceEntry[])
     : undefined
-  const otherEmploymentAdditions = Array.isArray(data.other_employment_experience)
+  const otherEmploymentAdditions = Array.isArray(
+    data.other_employment_experience
+  )
     ? (data.other_employment_experience as ExperienceEntry[])
     : undefined
 
@@ -350,15 +364,8 @@ async function migrateQuery(
 
 // ---------- Main ----------
 async function main() {
-  const {
-    collection,
-    appId,
-    allApps,
-    apply,
-    limit,
-    dropLegacy,
-    mergeKitchen,
-  } = parseArgs()
+  const { collection, appId, allApps, apply, limit, dropLegacy, mergeKitchen } =
+    parseArgs()
   const db = initAdmin()
 
   console.log(
@@ -366,7 +373,9 @@ async function main() {
       appId ?? '(none)'
     }\nAll apps (collectionGroup): ${allApps ? 'YES' : 'NO'}\nMode: ${
       apply ? 'APPLY' : 'DRY-RUN'
-    }\nMerge kitchen experience: ${mergeKitchen ? 'YES' : 'NO'}\nDrop legacy fields: ${dropLegacy ? 'YES' : 'NO'}\nLimit: ${
+    }\nMerge kitchen experience: ${
+      mergeKitchen ? 'YES' : 'NO'
+    }\nDrop legacy fields: ${dropLegacy ? 'YES' : 'NO'}\nLimit: ${
       limit ?? '(none)'
     }\n================================\n`
   )

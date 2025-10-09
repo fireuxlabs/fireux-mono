@@ -33,7 +33,6 @@
         fetching logo
       </p>
     </div>
-
   </div>
 </template>
 

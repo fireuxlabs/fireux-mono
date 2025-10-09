@@ -294,7 +294,9 @@ const manualName = computed(() => {
   return raw.length ? raw : null
 })
 
-const placeTitle = computed(() => activePlace.value?.name ?? manualName.value ?? 'Linked place')
+const placeTitle = computed(
+  () => activePlace.value?.name ?? manualName.value ?? 'Linked place'
+)
 const placeAvatar = computed(() => activePlace.value?.avatar ?? undefined)
 
 const placeAddress = computed(() => {
@@ -370,7 +372,9 @@ const initialPlaceQuery = computed(() => {
 
 const hasLinkedPlace = computed(() => !!props.item?.place_id)
 const hasLinkedPlaceDetails = computed(
-  () => hasLinkedPlace.value && !!(placeTitle.value && placeTitle.value !== 'Linked place')
+  () =>
+    hasLinkedPlace.value &&
+    !!(placeTitle.value && placeTitle.value !== 'Linked place')
 )
 
 function openPlacePicker() {
