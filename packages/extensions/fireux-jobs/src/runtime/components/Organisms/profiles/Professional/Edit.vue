@@ -9,67 +9,69 @@
             <summary class="cursor-pointer select-none text-base font-semibold">
               Section 1 — Basics
             </summary>
-            <div class="mt-4 space-y-6">
-              <MoleculesFormsFirestoreAvatarPicker
-                :src="professional?.avatar"
-                :alt="professional?.display_name || 'Professional'"
-                :update-function="onSaveAvatar"
-              />
-
-              <MoleculesFormsFirestoreSimpleField
-                label="Display Name"
-                :firebase-value="professional?.display_name"
-                placeholder="Enter your display name"
-                :update-function="onSaveDisplayName"
-                :validation-function="validateDisplayName"
-                :formatting-function="formatDisplayName"
-              />
+            <div class="mt-4">
+              <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <UCard>
+                  <div class="text-base font-medium">hello left</div>
+                </UCard>
+                <UCard>
+                  <div class="text-base font-medium text-right lg:text-left">
+                    hello right
+                  </div>
+                </UCard>
+              </div>
             </div>
           </details>
         </section>
 
-        <!-- Section 2 — Experience (two subsections, reusable) -->
-        <section class="space-y-6">
-          <OrganismsProfilesProfessionalFieldsExperienceSection
-            title="Relevant Experience"
-            :items="professional?.relevant_experience || []"
-            :onSave="onSaveRelevantExperience"
-          />
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <!-- Section 2 — Relevant Experience -->
+          <section>
+            <details open>
+              <summary
+                class="cursor-pointer select-none text-base font-semibold"
+              >
+                Section 2 — Relevant Experience
+              </summary>
 
-          <OrganismsProfilesProfessionalFieldsExperienceSection
-            title="Other Experience"
-            :items="professional?.other_experience || []"
-            :onSave="onSaveOtherExperience"
-          />
-        </section>
+              <div class="mt-4">
+                <OrganismsProfilesProfessionalFieldsExperienceSection
+                  title="hello left"
+                >
+                  <UCard>
+                    <div class="text-base font-medium">hello left</div>
+                  </UCard>
+                </OrganismsProfilesProfessionalFieldsExperienceSection>
+              </div>
+            </details>
+          </section>
+
+          <!-- Section 3 — Other Experience -->
+          <section>
+            <details>
+              <summary
+                class="cursor-pointer select-none text-base font-semibold"
+              >
+                Section 3 — Other Experience
+              </summary>
+
+              <div class="mt-4">
+                <OrganismsProfilesProfessionalFieldsExperienceSection
+                  title="hello right"
+                >
+                  <UCard>
+                    <div class="text-base font-medium">hello right</div>
+                  </UCard>
+                </OrganismsProfilesProfessionalFieldsExperienceSection>
+              </div>
+            </details>
+          </section>
+        </div>
       </div>
     </template>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
-import { useProfessionalFormattingAndValidation } from '../../../../composables/firestore/profiles/Professional/useProfessionalFormattingAndValidation'
-import { useProfessionalUpdate } from '../../../../composables/firestore/profiles/Professional/useProfessionalUpdate'
-
 defineProps<{ professional: any }>()
-/** VALIDATE / FORMAT */
-const { validateDisplayName, formatDisplayName } =
-  useProfessionalFormattingAndValidation()
-
-/** UPDATE */
-const {
-  updateDisplayName,
-  updateAvatar,
-  setRelevantExperience,
-  setOtherExperience,
-} = useProfessionalUpdate()
-
-const onSaveDisplayName = (v: string) => updateDisplayName(v, 'auto')
-const onSaveAvatar = (file: File | Blob) => updateAvatar(file, 'auto')
-const onSaveRelevantExperience = (items: any[]) =>
-  setRelevantExperience(items, 'auto')
-const onSaveOtherExperience = (items: any[]) =>
-  setOtherExperience(items, 'auto')
-
-// Items now referenced directly in template
 </script>
