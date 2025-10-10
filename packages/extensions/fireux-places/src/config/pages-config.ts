@@ -63,7 +63,7 @@ export function configurePages(resolver: Resolver, nuxt: Nuxt) {
     {
       name: 'places',
       path: '/places',
-      file: resolver.resolve('./runtime/pages/places.vue'),
+      file: resolver.resolve('./runtime/pages/places/index.vue'),
     },
   ]
 

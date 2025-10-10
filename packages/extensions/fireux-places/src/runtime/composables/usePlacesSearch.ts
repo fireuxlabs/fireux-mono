@@ -1,5 +1,5 @@
 import type { Place, PlaceCard } from '../models/place.model'
-import { useFirestoreSearch } from '#fireux-core-composables/firestore/useFirestoreSearch'
+import { useFirestoreSearch } from '#imports'
 import { fetchGoogle } from './usePlacesGoogle'
 
 export interface UsePlacesSearchResult {
