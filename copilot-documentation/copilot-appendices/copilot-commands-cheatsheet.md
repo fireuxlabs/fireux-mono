@@ -38,7 +38,10 @@ updated: 2025-09-01
   - `git add .`
   - `git commit -m "chore: message"`
   - `git push`
-
+- Quick save helper (repo script)
+  - `scripts/gitsave.sh "feat: describe change"`
+  - Runs `git add -A`, commits, and pushes to the current branch (warns if not on `main`).
+  - Omit the message to auto-generate one from the staged files.
 - Reset to origin/main (explicit, destructive)
   - `git fetch --all --prune`
   - `git reset --hard origin/main`

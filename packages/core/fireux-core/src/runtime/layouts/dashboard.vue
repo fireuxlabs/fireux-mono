@@ -29,7 +29,7 @@
     </UDashboardSidebar>
 
     <!-- Page content -->
-    <div class="p-4 w-full">
+    <div class="p-4 w-full h-screen overflow-y-auto">
       <NuxtPage />
     </div>
   </UDashboardGroup>

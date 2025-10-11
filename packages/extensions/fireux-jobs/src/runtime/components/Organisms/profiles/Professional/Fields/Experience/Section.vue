@@ -51,7 +51,10 @@
 
           <template #create="{ push }">
             <OrganismsProfilesProfessionalFieldsExperienceQuickAdd
-              @create="push"
+              :prefill-place="prefillPlace"
+              :prefill-key="prefillKey"
+              @create="(item: any) => handleInlineCreate(item, push)"
+              @clear-prefill="emit('prefill:consumed')"
             />
           </template>
         </MoleculesFormsFirestoreObjectArray>
@@ -64,7 +67,10 @@
             <div class="font-medium">Add {{ title }}</div>
           </template>
           <OrganismsProfilesProfessionalFieldsExperienceQuickAdd
-            @create="(item: any) => { listRef?.startEditing?.(); listRef?.push?.(item) }"
+            :prefill-place="prefillPlace"
+            :prefill-key="prefillKey"
+            @create="handlePanelCreate"
+            @clear-prefill="emit('prefill:consumed')"
           />
         </UCard>
       </div>
@@ -74,14 +80,24 @@
 
 <script setup lang="ts">
 import { ref, computed, toRefs } from 'vue'
+import type { ExperienceItem } from '../../../../../../models/profiles/Professional.model'
 
 const props = defineProps<{
   title: string
   items: any[]
   onSave: (items: any[]) => Promise<void> | void
+  prefillPlace?: {
+    name: string
+    place_id?: string | null
+    formatted_address?: string | null
+    short_address?: string | null
+  } | null
+  prefillKey?: number
 }>()
 
-const { title, items, onSave } = toRefs(props)
+const emit = defineEmits<(e: 'prefill:consumed') => void>()
+
+const { title, items, onSave, prefillPlace, prefillKey } = toRefs(props)
 
 const listRef = ref<any | null>(null)
 
@@ -112,5 +128,22 @@ const editingLabel = computed(() => {
 
 const cancelEditing = () => {
   listRef.value?.cancelItemEditing?.()
+}
+
+function consumePrefillIfNeeded() {
+  if (prefillPlace.value) {
+    emit('prefill:consumed')
+  }
+}
+
+function handleInlineCreate(item: ExperienceItem, push: (item: ExperienceItem) => void) {
+  push(item)
+  consumePrefillIfNeeded()
+}
+
+function handlePanelCreate(item: ExperienceItem) {
+  listRef.value?.startEditing?.()
+  listRef.value?.push?.(item)
+  consumePrefillIfNeeded()
 }
 </script>
