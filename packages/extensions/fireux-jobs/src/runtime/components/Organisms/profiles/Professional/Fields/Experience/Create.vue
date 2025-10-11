@@ -7,34 +7,14 @@
       @place:selected="handlePlaceSelected"
     />
 
-    <UAlert v-if="loading" color="neutral" variant="soft">
-      <div class="flex items-center gap-2 text-sm text-neutral-600">
-        <UIcon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
-        Saving experience…
-      </div>
-    </UAlert>
-
-    <UAlert
-      v-else-if="lastSelection"
-      color="primary"
-      variant="soft"
-      icon="i-lucide-check-circle"
-    >
-      <span class="text-sm">
-        Linked <strong>{{ lastSelection.name }}</strong>. Add another place or
-        continue editing the new experience below.
-      </span>
-    </UAlert>
+  
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { ExperienceItem } from '../../../../../../models/profiles/Professional.model'
-import type {
-  Place,
-  PlaceCard,
-} from 'fireux-places/runtime/models/place.model'
+import type { Place, PlaceCard } from 'fireux-places/runtime/models/place.model'
 
 const props = defineProps<{
   loading?: boolean
@@ -52,10 +32,7 @@ const searchDescription =
 
 const loading = computed(() => props.loading === true)
 
-function handlePlaceSelected(payload: {
-  place: Place
-  cell: PlaceCard.Cell
-}) {
+function handlePlaceSelected(payload: { place: Place; cell: PlaceCard.Cell }) {
   if (loading.value) return
 
   lastSelection.value = payload.place
@@ -102,7 +79,10 @@ function sanitizeAvatar(value: string | null | undefined) {
 
 function toShortAddress(formatted: string | undefined) {
   if (!formatted) return undefined
-  const parts = formatted.split(',').map((part) => part.trim()).filter(Boolean)
+  const parts = formatted
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean)
   if (parts.length === 0) return undefined
   return parts.slice(0, 2).join(', ')
 }
