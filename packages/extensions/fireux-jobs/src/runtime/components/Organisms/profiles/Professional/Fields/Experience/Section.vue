@@ -52,10 +52,8 @@
 
     <OrganismsProfilesProfessionalFieldsExperienceCreate
       v-if="currentEditingIndex === null"
-      v-model:place-id="createPlaceId"
       :loading="isSavingNew"
       @save="handleCreateSave"
-      @clear="resetCreate"
     />
   </section>
 </template>
@@ -74,7 +72,6 @@ const { title, items, onSave } = toRefs(props)
 
 const listRef = ref<any | null>(null)
 const isSavingNew = ref(false)
-const createPlaceId = ref('')
 
 const currentEditingIndex = computed(
   () => listRef.value?.editingIndex?.value ?? null
@@ -107,10 +104,6 @@ const cancelEditing = () => {
   listRef.value?.cancelItemEditing?.()
 }
 
-const resetCreate = () => {
-  createPlaceId.value = ''
-}
-
 function handleRemove(index: number, remove?: () => void) {
   if (typeof remove !== 'function') return
 
@@ -138,9 +131,14 @@ async function handleCreateSave(payload: ExperienceItem) {
 
   isSavingNew.value = true
   try {
-    const next = [...items.value, { place_id: placeId }]
+    const next = [
+      ...items.value,
+      {
+        ...payload,
+        place_id: placeId,
+      },
+    ]
     await onSave.value(next)
-    resetCreate()
   } finally {
     isSavingNew.value = false
   }

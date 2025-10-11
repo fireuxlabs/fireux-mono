@@ -1,75 +1,40 @@
 <template>
-  <div
-    class="space-y-5 rounded-xl border border-dashed border-primary-200 bg-white/95 p-5 shadow-sm"
-  >
-    <header class="flex items-start justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div
-          class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600"
-        >
-          <UIcon name="i-lucide-map-pin" class="h-5 w-5" />
-        </div>
-        <div>
-          <p class="text-sm font-medium text-primary-900">Add experience</p>
-          <p class="text-xs text-neutral-500">
-            Start by linking a Google Place. We’ll capture more details next.
-          </p>
-        </div>
+  <div class="space-y-4">
+    <OrganismsPlacesSearchSection
+      mode="select"
+      :title="searchTitle"
+      :description="searchDescription"
+      @place:selected="handlePlaceSelected"
+    />
+
+    <UAlert v-if="loading" color="neutral" variant="soft">
+      <div class="flex items-center gap-2 text-sm text-neutral-600">
+        <UIcon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
+        Saving experience…
       </div>
-      <UBadge color="primary" variant="soft" size="xs">Creating</UBadge>
-    </header>
+    </UAlert>
 
-    <UForm class="space-y-4" @submit.prevent="onSubmit">
-      <UFormGroup label="Place ID" name="place_id">
-        <UInput
-          v-model="placeId.value"
-          placeholder="e.g., ChIJWS2cLEkKkEcRPkeZB6EcnLk"
-          autocomplete="off"
-          spellcheck="false"
-        />
-      </UFormGroup>
-
-      <UAlert icon="i-lucide-info" color="primary" variant="soft">
-        <span class="text-sm"
-          >Only the canonical Google Place ID is required right now.</span
-        >
-      </UAlert>
-
-      <div class="text-xs text-neutral-500">
-        Saved as:
-        <span class="font-mono">{{ normalizedPlaceId || '—' }}</span>
-      </div>
-    </UForm>
-
-    <footer class="flex justify-end gap-2">
-      <UButton
-        size="sm"
-        variant="soft"
-        color="neutral"
-        :disabled="loading || !placeId.value"
-        @click="handleClear"
-      >
-        Clear
-      </UButton>
-      <UButton
-        size="sm"
-        color="primary"
-        icon="i-lucide-check"
-        :loading="loading"
-        :disabled="!normalizedPlaceId || loading"
-        @click="onSubmit"
-      >
-        Save experience
-      </UButton>
-    </footer>
+    <UAlert
+      v-else-if="lastSelection"
+      color="primary"
+      variant="soft"
+      icon="i-lucide-check-circle"
+    >
+      <span class="text-sm">
+        Linked <strong>{{ lastSelection.name }}</strong>. Add another place or
+        continue editing the new experience below.
+      </span>
+    </UAlert>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { ExperienceItem } from '../../../../../../models/profiles/Professional.model'
-
-const placeId = defineModel<string>('placeId', { default: '' })
+import type {
+  Place,
+  PlaceCard,
+} from 'fireux-places/runtime/models/place.model'
 
 const props = defineProps<{
   loading?: boolean
@@ -77,27 +42,68 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'save', payload: ExperienceItem): void
-  (e: 'clear'): void
 }>()
 
-const normalizedPlaceId = computed(() => canonicalPlaceId(placeId.value))
+const lastSelection = ref<Place | null>(null)
 
-function onSubmit() {
-  if (!normalizedPlaceId.value || props.loading) return
+const searchTitle = 'Link an experience place'
+const searchDescription =
+  'Search Google Places and confirm the venue to pre-fill experience details.'
 
-  emit('save', {
-    place_id: normalizedPlaceId.value,
-  })
+const loading = computed(() => props.loading === true)
+
+function handlePlaceSelected(payload: {
+  place: Place
+  cell: PlaceCard.Cell
+}) {
+  if (loading.value) return
+
+  lastSelection.value = payload.place
+  emit('save', mapPlaceToExperience(payload.place, payload.cell))
 }
 
-function handleClear() {
-  placeId.value = ''
-  emit('clear')
+function mapPlaceToExperience(
+  place: Place,
+  cell: PlaceCard.Cell
+): ExperienceItem {
+  const canonicalId = canonicalPlaceId(place.place_id || cell.place_id)
+  const formattedAddress =
+    toCleanString(place.formatted_address) ||
+    toCleanString(cell.formatted_address) ||
+    undefined
+  const avatar = sanitizeAvatar(place.avatar ?? cell.avatar ?? null)
+  const displayName =
+    toCleanString(place.name) || toCleanString(cell.name) || undefined
+
+  return {
+    place_id: canonicalId,
+    name: displayName,
+    formatted_address: formattedAddress,
+    short_address: toShortAddress(formattedAddress),
+    image_url: avatar,
+  }
 }
 
 function canonicalPlaceId(id: string | null | undefined) {
   const normalized = (id ?? '').toString().trim()
   if (!normalized) return ''
   return normalized.replace(/^places\//, '')
+}
+
+function toCleanString(value: string | null | undefined) {
+  const normalized = (value ?? '').toString().trim()
+  return normalized.length ? normalized : undefined
+}
+
+function sanitizeAvatar(value: string | null | undefined) {
+  const normalized = (value ?? '').toString().trim()
+  return normalized.length ? normalized : undefined
+}
+
+function toShortAddress(formatted: string | undefined) {
+  if (!formatted) return undefined
+  const parts = formatted.split(',').map((part) => part.trim()).filter(Boolean)
+  if (parts.length === 0) return undefined
+  return parts.slice(0, 2).join(', ')
 }
 </script>

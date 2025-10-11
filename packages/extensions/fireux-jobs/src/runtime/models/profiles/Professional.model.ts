@@ -27,6 +27,10 @@ export type ExperienceItem = {
   responsibilities?: string
   /** Link to canonical place */
   place_id?: string
+  /** Optional place metadata */
+  formatted_address?: string
+  short_address?: string
+  image_url?: string | null
 }
 
 /** Unified Professional */
