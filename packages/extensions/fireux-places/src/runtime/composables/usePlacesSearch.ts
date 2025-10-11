@@ -1,16 +1,27 @@
-import type { Place, PlaceCard } from '../models/place.model'
 import { useFirestoreSearch } from '#imports'
-import { fetchGoogle } from './usePlacesGoogle'
+import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
+import type { BasePlace, Place, PlaceCard } from '../models/place.model'
+import { canonicalPlaceId, fetchGoogle } from './usePlacesGoogle'
 
 export interface UsePlacesSearchResult {
   searchPlaces: (query: string) => Promise<PlaceCard.Cell[]>
 }
 
+export interface PlacesSearchViewModel {
+  query: Ref<string>
+  results: Ref<PlaceCard.Cell[]>
+  selected: Ref<BasePlace | null>
+  isSearching: Ref<boolean>
+  showEmpty: ComputedRef<boolean>
+  select: (cell: PlaceCard.Cell) => void
+  clear: () => void
+}
+
+export const PLACES_SEARCH_SHORTLIST_LIMIT = 4
+
 const MIN_FIRESTORE_RESULTS_BEFORE_SUPPLEMENT = 4
 const MAX_RESULTS = 10
-
-const canonicalPlaceId = (id?: string | null) =>
-  (id ?? '').trim().replace(/^"+/, '').replace(/"+$/, '')
+const MIN_QUERY_LENGTH = 3
 
 const toFirestoreCell = (p: Place): PlaceCard.Cell => ({
   place_id: canonicalPlaceId(p.place_id),
@@ -33,9 +44,8 @@ export function usePlacesSearch(): UsePlacesSearchResult {
 
   async function searchPlaces(query: string): Promise<PlaceCard.Cell[]> {
     const q = norm(query)
-    if (!q) return []
+    if (q.length < MIN_QUERY_LENGTH) return []
 
-    // 1) Firestore “starts with” search on `search_term`
     const fxDocs = await prefixSearch<Place>({
       collection: 'places',
       field: 'search_term',
@@ -47,7 +57,6 @@ export function usePlacesSearch(): UsePlacesSearchResult {
       return fxCells.slice(0, MAX_RESULTS)
     }
 
-    // 2) Google supplement to reach minimum
     const exclude = new Set(fxCells.map((c) => canonicalPlaceId(c.place_id)))
     const need = Math.max(
       0,
@@ -55,16 +64,92 @@ export function usePlacesSearch(): UsePlacesSearchResult {
     )
     const googleCells = await fetchGoogle(query, exclude, need)
 
-    // 3) Combine + dedupe + cap
     const combined = [...fxCells, ...googleCells].filter(
-      (c, i, arr) =>
+      (cell, idx, arr) =>
         arr.findIndex(
-          (x) => canonicalPlaceId(x.place_id) === canonicalPlaceId(c.place_id)
-        ) === i
+          (candidate) =>
+            canonicalPlaceId(candidate.place_id) ===
+            canonicalPlaceId(cell.place_id)
+        ) === idx
     )
 
     return combined.slice(0, MAX_RESULTS)
   }
 
   return { searchPlaces }
+}
+
+export function usePlacesSearchVm(): PlacesSearchViewModel {
+  const { searchPlaces } = usePlacesSearch()
+
+  const queryRef = ref('')
+  const resultsRef = ref<PlaceCard.Cell[]>([])
+  const selectedRef = ref<BasePlace | null>(null)
+  const isSearchingRef = ref(false)
+
+  const trimmedQuery = computed(() => queryRef.value.trim())
+  const showEmpty = computed(
+    () =>
+      !isSearchingRef.value &&
+      !selectedRef.value &&
+      trimmedQuery.value.length >= MIN_QUERY_LENGTH &&
+      resultsRef.value.length === 0
+  )
+
+  let searchToken = 0
+
+  watch(
+    queryRef,
+    async (value) => {
+      const term = value.trim()
+      selectedRef.value = null
+
+      if (term.length < MIN_QUERY_LENGTH) {
+        resultsRef.value = []
+        isSearchingRef.value = false
+        return
+      }
+
+      const token = ++searchToken
+      isSearchingRef.value = true
+
+      try {
+        const next = await searchPlaces(term)
+        if (token === searchToken) {
+          resultsRef.value = next
+        }
+      } finally {
+        if (token === searchToken) {
+          isSearchingRef.value = false
+        }
+      }
+    },
+    { immediate: true }
+  )
+
+  function clear() {
+    selectedRef.value = null
+  }
+
+  function select(cell: PlaceCard.Cell) {
+    selectedRef.value = {
+      place_id: canonicalPlaceId(cell.place_id),
+      formatted_address: cell.formatted_address ?? '',
+      lat: 0,
+      lng: 0,
+      source: cell.source,
+      avatar: cell.avatar ?? null,
+      name: cell.name,
+    }
+  }
+
+  return {
+    query: queryRef,
+    results: resultsRef,
+    selected: selectedRef,
+    isSearching: isSearchingRef,
+    showEmpty,
+    select,
+    clear,
+  }
 }

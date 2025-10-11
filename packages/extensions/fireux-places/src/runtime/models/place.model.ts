@@ -10,6 +10,7 @@ export interface BasePlace {
   lat: number
   lng: number
   source: PlaceSource
+  avatar?: string | null
 }
 
 /** ───────────────────────────────
@@ -17,8 +18,6 @@ export interface BasePlace {
  * ─────────────────────────────── */
 export interface GooglePlace extends BasePlace {
   source: 'google'
-  photo_reference?: string | null
-  photo_url?: string | null
   website?: string | null
   phone?: string | null
   rating?: number | null
@@ -30,7 +29,6 @@ export interface GooglePlace extends BasePlace {
  * ─────────────────────────────── */
 export interface Place extends BasePlace {
   source: 'firestore'
-  avatar?: string | null
   search_term: string
   created_at: any
   updated_at?: any
@@ -66,16 +64,14 @@ export function toStoredPlace(g: GooglePlace): Place {
     lat: g.lat,
     lng: g.lng,
     source: 'firestore',
-    avatar: g.photo_url ?? null,
+    avatar: g.avatar ?? null,
     search_term,
     created_at: new Date(),
   }
 }
 
 // Any place-like → Cell (UI)
-export function toCell(
-  p: BasePlace & { avatar?: string | null }
-): PlaceCard.Cell {
+export function toCell(p: BasePlace): PlaceCard.Cell {
   return {
     place_id: p.place_id,
     name: p.name,

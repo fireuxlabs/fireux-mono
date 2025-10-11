@@ -1,56 +1,103 @@
 <template>
-  <div class="space-y-4">
-    <OrganismsPlacesSearchSection
-      mode="select"
-      :title="searchTitle"
-      :description="searchDescription"
-      @place:selected="handlePlaceSelected"
+  <div class="space-y-3">
+    <div class="rounded-lg border border-neutral-200">
+      <OrganismsPlacesSearchBar v-model="query" placeholder="Search places" />
+    </div>
+
+    <div v-if="!hasQuery" class="text-xs text-neutral-500">
+      Start typing to find the venue you worked at.
+    </div>
+
+    <OrganismsPlacesSearchDropdown
+      v-else-if="results.length"
+      :cells="results"
+      @select="handleSelect"
     />
 
-  
+    <div v-else-if="isSearching" class="text-xs text-neutral-500">
+      Searching…
+    </div>
+
+    <div v-else class="text-xs text-neutral-500">No matches yet.</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { ExperienceItem } from '../../../../../../models/profiles/Professional.model'
 import type { Place, PlaceCard } from 'fireux-places/runtime/models/place.model'
+import { usePlaces } from 'fireux-places/runtime/composables/usePlaces'
 
 const props = defineProps<{
   loading?: boolean
 }>()
 
-const emit = defineEmits<{
-  (e: 'save', payload: ExperienceItem): void
-}>()
+const emit = defineEmits<(event: 'save', payload: ExperienceItem) => void>()
 
-const lastSelection = ref<Place | null>(null)
+const { searchPlaces } = usePlaces()
 
-const searchTitle = 'Link an experience place'
-const searchDescription =
-  'Search Google Places and confirm the venue to pre-fill experience details.'
+const query = ref('')
+const results = ref<PlaceCard.Cell[]>([])
+const isSearching = ref(false)
 
 const loading = computed(() => props.loading === true)
+const hasQuery = computed(() => query.value.trim().length > 0)
 
-function handlePlaceSelected(payload: { place: Place; cell: PlaceCard.Cell }) {
+let debounceId: ReturnType<typeof setTimeout> | null = null
+
+watch(
+  () => query.value,
+  (value) => {
+    clearDebounce()
+    const trimmed = value.trim()
+
+    if (!trimmed) {
+      results.value = []
+      isSearching.value = false
+      return
+    }
+
+    debounceId = setTimeout(async () => {
+      isSearching.value = true
+      try {
+        results.value = await searchPlaces(trimmed)
+      } finally {
+        isSearching.value = false
+      }
+    }, 250)
+  }
+)
+
+onBeforeUnmount(() => {
+  clearDebounce()
+})
+
+function handleSelect(cell: PlaceCard.Cell) {
   if (loading.value) return
+  emit('save', mapPlaceToExperience(null, cell))
+}
 
-  lastSelection.value = payload.place
-  emit('save', mapPlaceToExperience(payload.place, payload.cell))
+function clearDebounce() {
+  if (debounceId) {
+    clearTimeout(debounceId)
+    debounceId = null
+  }
 }
 
 function mapPlaceToExperience(
-  place: Place,
+  place: Place | null,
   cell: PlaceCard.Cell
 ): ExperienceItem {
-  const canonicalId = canonicalPlaceId(place.place_id || cell.place_id)
+  const canonicalId = canonicalPlaceId(place?.place_id ?? cell.place_id)
   const formattedAddress =
-    toCleanString(place.formatted_address) ||
+    toCleanString(place?.formatted_address) ||
     toCleanString(cell.formatted_address) ||
     undefined
-  const avatar = sanitizeAvatar(place.avatar ?? cell.avatar ?? null)
+  const avatar = sanitizeAvatar(
+    (place?.avatar as string | null | undefined) ?? cell.avatar ?? null
+  )
   const displayName =
-    toCleanString(place.name) || toCleanString(cell.name) || undefined
+    toCleanString(place?.name) || toCleanString(cell.name) || undefined
 
   return {
     place_id: canonicalId,

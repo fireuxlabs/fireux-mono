@@ -5,6 +5,10 @@ const log = (...args: unknown[]) => console.info('[places-logo]', ...args)
 const logWarn = (...args: unknown[]) => console.warn('[places-logo]', ...args)
 const logError = (...args: unknown[]) => console.error('[places-logo]', ...args)
 
+const HOMEPAGE_TIMEOUT_MS = 4500
+const PROBE_CONCURRENCY = 4
+const CLEARBIT_SIZE = 256
+
 /**
  * Best-effort logo resolver.
  * Priority:
@@ -45,9 +49,39 @@ export default defineEventHandler(async (event) => {
 
   try {
     // 1) Fetch homepage HTML (GET, follow redirects).
-    const htmlRes = await fetch(baseUrl, { redirect: 'follow' })
-    if (!htmlRes.ok) {
-      logWarn('homepage fetch failed', { baseUrl, status: htmlRes.status })
+    const homepageController = new AbortController()
+    const homepageTimeout = setTimeout(() => {
+      if (!homepageController.signal.aborted) {
+        homepageController.abort()
+      }
+    }, HOMEPAGE_TIMEOUT_MS)
+
+    let htmlRes: Response | null = null
+    let homepageError: unknown = null
+    try {
+      htmlRes = await fetch(baseUrl, {
+        redirect: 'follow',
+        signal: homepageController.signal,
+        headers: {
+          'user-agent': 'FireUX-LogoFetcher/1.0',
+          accept:
+            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        },
+      })
+    } catch (error) {
+      homepageError = error
+    } finally {
+      clearTimeout(homepageTimeout)
+    }
+    if (!htmlRes?.ok) {
+      const status = htmlRes?.status ?? null
+      const aborted = homepageError && isAbortError(homepageError)
+      logWarn('homepage fetch failed', {
+        baseUrl,
+        status,
+        aborted,
+        error: aborted ? undefined : homepageError,
+      })
       const url = await fallbackChain(baseUrl, nameParam)
       log('fallback result (fetch not ok)', { url })
       return { url }
@@ -65,7 +99,10 @@ export default defineEventHandler(async (event) => {
     // 3) Collect social meta images.
     const socialImgs = extractSocialImages(html).map(makeAbs)
 
-    // 4) Common logo paths (HEAD probe first).
+    // 4) Collect inline <img> logos (class/id/alt contains logo/brand/mark).
+    const inlineImgs = extractInlineLogoImages(html).map(makeAbs)
+
+    // 5) Common logo paths (HEAD probe first).
     const commonPaths = [
       '/logo.svg',
       '/logo.png',
@@ -80,24 +117,23 @@ export default defineEventHandler(async (event) => {
       '/static/logo.png',
     ].map((p) => new URL(p, finalHome).toString())
 
-    // 5) Validate candidates with lightweight HEAD/GET and score.
-    const allCandidates = dedupe([...iconLinks, ...commonPaths, ...socialImgs])
+    // 6) Validate candidates with lightweight HEAD/GET and score.
+    const allCandidates = dedupe([
+      ...iconLinks,
+      ...inlineImgs,
+      ...commonPaths,
+      ...socialImgs,
+    ])
 
     log('candidate counts', {
       iconLinks: iconLinks.length,
+      inlineImgs: inlineImgs.length,
       commonPaths: commonPaths.length,
       socialImgs: socialImgs.length,
       total: allCandidates.length,
     })
 
-    const scored: Array<{ url: string; score: number }> = []
-    for (const candidate of allCandidates) {
-      const ok = await looksLikeImage(candidate)
-      if (!ok) continue
-      const score = scoreCandidate(candidate)
-      log('candidate ok', { candidate, score })
-      scored.push({ url: candidate, score })
-    }
+    const scored = await probeCandidates(allCandidates)
 
     // 6) Pick best or fallback chain.
     if (scored.length) {
@@ -190,6 +226,28 @@ function extractSocialImages(html: string): string[] {
   return out
 }
 
+function extractInlineLogoImages(html: string): string[] {
+  const imgs = html.match(/<img\b[^>]*>/gi) || []
+  const out: string[] = []
+  for (const img of imgs) {
+    const src = getAttr(img, 'src')
+    if (!src) continue
+    const signature = [
+      getAttr(img, 'alt'),
+      getAttr(img, 'class'),
+      getAttr(img, 'id'),
+      src,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+    if (/logo|brand|mark/.test(signature)) {
+      out.push(src)
+    }
+  }
+  return out
+}
+
 function dedupe(list: string[]): string[] {
   const set = new Set<string>()
   const out: string[] = []
@@ -208,7 +266,11 @@ function dedupe(list: string[]): string[] {
  */
 async function looksLikeImage(url: string): Promise<boolean> {
   try {
-    const head = await fetch(url, { method: 'HEAD', redirect: 'follow' })
+    const head = await fetch(url, {
+      method: 'HEAD',
+      redirect: 'follow',
+      headers: { accept: 'image/*' },
+    })
     if (head.ok) {
       const ct = (head.headers.get('content-type') || '').toLowerCase()
       return isImageContentType(ct)
@@ -217,7 +279,11 @@ async function looksLikeImage(url: string): Promise<boolean> {
     /* ignore and try GET */
   }
   try {
-    const res = await fetch(url, { method: 'GET', redirect: 'follow' })
+    const res = await fetch(url, {
+      method: 'GET',
+      redirect: 'follow',
+      headers: { accept: 'image/*' },
+    })
     if (!res.ok) return false
     const ct = (res.headers.get('content-type') || '').toLowerCase()
     return isImageContentType(ct)
@@ -261,6 +327,11 @@ async function fallbackChain(
   const domain = safeDomain(homeOrDomain)
   if (domain) {
     log('fallback chain: resolved domain', { domain })
+    const clearbit = `https://logo.clearbit.com/${domain}?size=${CLEARBIT_SIZE}`
+    if (await looksLikeImage(clearbit)) {
+      log('fallback chain: using clearbit', { url: clearbit })
+      return clearbit
+    }
     const unavatar = `https://unavatar.io/${domain}?fallback=false`
     if (await looksLikeImage(unavatar)) {
       log('fallback chain: using unavatar', { url: unavatar })
@@ -284,6 +355,33 @@ async function fallbackChain(
   return placeholder
 }
 
+async function probeCandidates(
+  urls: string[]
+): Promise<Array<{ url: string; score: number }>> {
+  const results: Array<{ url: string; score: number }> = []
+  const queue = [...urls]
+  const workers = Array.from(
+    {
+      length: Math.min(PROBE_CONCURRENCY, queue.length || 1),
+    },
+    () => worker()
+  )
+  await Promise.all(workers)
+  return results
+
+  async function worker() {
+    while (queue.length) {
+      const candidate = queue.shift()
+      if (!candidate) return
+      const ok = await looksLikeImage(candidate)
+      if (!ok) continue
+      const score = scoreCandidate(candidate)
+      log('candidate ok', { candidate, score })
+      results.push({ url: candidate, score })
+    }
+  }
+}
+
 function safeDomain(input: string): string | null {
   try {
     const u = new URL(input)
@@ -293,4 +391,13 @@ function safeDomain(input: string): string | null {
     if (/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(input)) return input
     return null
   }
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    !!error &&
+    typeof error === 'object' &&
+    'name' in error &&
+    String((error as { name?: unknown }).name) === 'AbortError'
+  )
 }

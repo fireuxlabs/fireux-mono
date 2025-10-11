@@ -30,8 +30,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
+import { computed, toRefs, watch } from 'vue'
 import type { PlaceCard } from '../../../../models/place.model'
+import { cancelLogoRequests } from '../../../../composables/usePlaceLogos'
+import { canonicalPlaceId } from '../../../../composables/usePlacesGoogle'
+import { PLACES_SEARCH_SHORTLIST_LIMIT } from '../../../../composables/usePlacesSearch'
 
 interface SearchDropdownProps {
   cells?: PlaceCard.Cell[] | null
@@ -43,7 +46,18 @@ const props = withDefaults(defineProps<SearchDropdownProps>(), {
 const { cells } = toRefs(props)
 const emit = defineEmits<(event: 'select', cell: PlaceCard.Cell) => void>()
 
-const visibleCells = computed(() => cells.value ?? [])
+const visibleCells = computed(() =>
+  (cells.value ?? []).slice(0, PLACES_SEARCH_SHORTLIST_LIMIT)
+)
+
+watch(
+  visibleCells,
+  (next) => {
+    const keep = new Set(next.map((cell) => canonicalPlaceId(cell.place_id)))
+    cancelLogoRequests(keep)
+  },
+  { immediate: true }
+)
 
 function onSelect(cell: PlaceCard.Cell) {
   emit('select', cell)

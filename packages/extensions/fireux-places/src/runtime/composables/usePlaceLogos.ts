@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import type { PlaceCard } from '../models/place.model'
+import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
+import type { BasePlace, PlaceCard } from '../models/place.model'
 
 const LOGO_ENDPOINT = '/api/places/logo'
 const DETAILS_ENDPOINT = '/api/places/details'
@@ -20,6 +21,252 @@ const detailsPromiseCache = new Map<
 const detailsAbortControllers = new Map<string, AbortController>()
 let logoRequestSeq = 0
 let detailsRequestSeq = 0
+
+export const DEFAULT_LOGO_TIMEOUT_MS = 9000
+
+export function sanitizeLogoAvatar(value?: string | null): string | null {
+  if (!value) return null
+  const lower = value.toLowerCase()
+  if (lower.includes('mapfiles/place_api/icons')) return null
+  return value
+}
+
+type PlaceLogoTarget = PlaceCard.Cell | BasePlace
+type SanitizedAvatar = string | null
+
+export interface UsePlaceLogoStateOptions {
+  timeoutMs?: number
+  autoHydrate?: boolean
+  priority?: boolean
+  retryOnEmpty?: boolean
+  shouldHydrate?: (
+    place: PlaceLogoTarget,
+    currentAvatar: SanitizedAvatar
+  ) => boolean
+  emptyMessage?: string | null
+}
+
+export interface HydrateLogoOptions {
+  timeoutMs?: number
+  priority?: boolean
+  forceReload?: boolean
+  emptyMessage?: string | null
+}
+
+export interface PlaceLogoState {
+  avatar: Ref<string | null>
+  isLoading: Ref<boolean>
+  error: Ref<string | null>
+  hasAttempted: Ref<boolean>
+  canHydrate: ComputedRef<boolean>
+  hydrate: (overrides?: HydrateLogoOptions) => Promise<string | null>
+  retry: (overrides?: HydrateLogoOptions) => Promise<string | null>
+  cancel: () => void
+}
+
+export function usePlaceLogoState(
+  place: Ref<PlaceLogoTarget | null>,
+  options: UsePlaceLogoStateOptions = {}
+): PlaceLogoState {
+  const timeoutMs = options.timeoutMs ?? DEFAULT_LOGO_TIMEOUT_MS
+  const retryOnEmpty = options.retryOnEmpty ?? true
+  const autoHydrate = options.autoHydrate ?? true
+  const basePriority = options.priority ?? false
+  const emptyMessage = options.emptyMessage ?? null
+  const shouldHydrate = options.shouldHydrate ?? defaultShouldHydrate
+
+  const avatar = ref<string | null>(null)
+  const isLoading = ref(false)
+  const error = ref<string | null>(null)
+  const hasAttempted = ref(false)
+  let requestToken = 0
+
+  const canHydrate = computed(() => {
+    const target = place.value
+    if (!target) return false
+    return shouldHydrate(target, avatar.value)
+  })
+
+  watch(
+    place,
+    (next) => {
+      requestToken += 1
+      isLoading.value = false
+      error.value = null
+      const sanitized = sanitizeLogoAvatar(next?.avatar)
+      avatar.value = sanitized
+      hasAttempted.value = !!sanitized
+      if (!next) return
+      if (
+        autoHydrate &&
+        typeof window !== 'undefined' &&
+        shouldHydrate(next, sanitized)
+      ) {
+        Promise.resolve().then(() => {
+          const current = place.value
+          if (!current) return
+          if (shouldHydrate(current, avatar.value)) {
+            void hydrate()
+          }
+        })
+      }
+    },
+    { immediate: true, deep: true }
+  )
+
+  async function hydrate(
+    overrides: HydrateLogoOptions = {}
+  ): Promise<string | null> {
+    const target = place.value
+    if (!target) return avatar.value
+
+    if (!overrides.forceReload && !shouldHydrate(target, avatar.value)) {
+      hasAttempted.value = !!avatar.value
+      return avatar.value
+    }
+
+    const token = ++requestToken
+    isLoading.value = true
+    error.value = null
+
+    const baseOptions: LoadLogoOptions = {
+      timeoutMs: overrides.timeoutMs ?? timeoutMs,
+      priority: overrides.priority ?? basePriority,
+    }
+    if (overrides.forceReload) {
+      baseOptions.forceReload = true
+    }
+
+    try {
+      const attemptOptions = buildAttemptOptions(
+        baseOptions,
+        overrides.forceReload ?? false,
+        retryOnEmpty
+      )
+
+      const { sanitized, aborted } = await executeLogoAttempts(
+        target,
+        attemptOptions,
+        token,
+        () => requestToken
+      )
+      if (aborted) return avatar.value
+
+      avatar.value = sanitized
+      hasAttempted.value = true
+      error.value = sanitized
+        ? null
+        : overrides.emptyMessage ?? emptyMessage ?? null
+
+      return avatar.value
+    } catch (err) {
+      if (token === requestToken) {
+        hasAttempted.value = true
+        error.value = formatLogoError(err)
+      }
+      return avatar.value
+    } finally {
+      if (token === requestToken) {
+        isLoading.value = false
+      }
+    }
+  }
+
+  async function retry(
+    overrides: HydrateLogoOptions = {}
+  ): Promise<string | null> {
+    return hydrate({
+      ...overrides,
+      forceReload: true,
+      priority: overrides.priority ?? true,
+    })
+  }
+
+  function cancel() {
+    requestToken += 1
+    isLoading.value = false
+  }
+
+  return {
+    avatar,
+    isLoading,
+    error,
+    hasAttempted,
+    canHydrate,
+    hydrate,
+    retry,
+    cancel,
+  }
+}
+
+function defaultShouldHydrate(
+  place: PlaceLogoTarget,
+  currentAvatar: SanitizedAvatar
+) {
+  return place.source === 'google' && !currentAvatar
+}
+
+function toLogoCell(place: PlaceLogoTarget): PlaceCard.Cell {
+  return {
+    place_id: place.place_id,
+    name: place.name,
+    formatted_address: (place as PlaceCard.Cell).formatted_address ?? '',
+    avatar: place.avatar ?? null,
+    source: place.source,
+  }
+}
+
+function formatLogoError(error: unknown): string {
+  if (!error) return 'Logo fetch failed.'
+  if (error instanceof Error && error.message) return error.message
+  if (typeof error === 'string') return error
+  try {
+    return JSON.stringify(error)
+  } catch {
+    return 'Logo fetch failed.'
+  }
+}
+
+function buildAttemptOptions(
+  base: LoadLogoOptions,
+  forceFirst: boolean,
+  retryOnEmpty: boolean
+) {
+  const attempts = retryOnEmpty ? 2 : 1
+  return Array.from({ length: attempts }, (_, index) => {
+    const options: LoadLogoOptions = {
+      ...base,
+    }
+    if (forceFirst || index > 0) {
+      options.forceReload = true
+    }
+    return options
+  })
+}
+
+async function executeLogoAttempts(
+  place: PlaceLogoTarget,
+  optionsList: LoadLogoOptions[],
+  expectedToken: number,
+  getToken: () => number
+): Promise<{ sanitized: string | null; aborted: boolean }> {
+  for (const options of optionsList) {
+    const logo = await loadLogoForPlace(toLogoCell(place), options)
+    if (expectedToken !== getToken()) {
+      return { sanitized: null, aborted: true }
+    }
+    const sanitized = sanitizeLogoAvatar(logo)
+    if (sanitized) {
+      return { sanitized, aborted: false }
+    }
+  }
+
+  if (expectedToken !== getToken()) {
+    return { sanitized: null, aborted: true }
+  }
+
+  return { sanitized: null, aborted: false }
+}
 
 interface PlaceDetailsResult {
   website?: string | null
