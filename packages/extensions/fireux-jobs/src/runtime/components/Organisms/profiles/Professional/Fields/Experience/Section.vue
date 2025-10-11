@@ -1,105 +1,80 @@
 <template>
-  <section class="space-y-4">
+  <section class="space-y-6">
     <h3 class="text-base font-semibold">{{ title }}</h3>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Left: list/editor using ObjectArray directly -->
-      <div class="space-y-6 max-h-[70vh] overflow-y-auto pr-1">
-        <div
-          v-if="currentEditingIndex !== null"
-          class="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-50/70 px-3 py-2 text-sm text-primary-700"
-        >
-          <div class="flex items-center gap-2">
-            <UIcon name="i-lucide-pencil" class="h-4 w-4" />
-            <span>{{ editingLabel }}</span>
-          </div>
-          <UButton
-            size="xs"
-            variant="ghost"
-            color="primary"
-            @click="cancelEditing"
-          >
-            Cancel
-          </UButton>
+
+    <div class="space-y-6">
+      <div
+        v-if="currentEditingIndex !== null"
+        class="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-50/70 px-3 py-2 text-sm text-primary-700"
+      >
+        <div class="flex items-center gap-2">
+          <UIcon name="i-lucide-pencil" class="h-4 w-4" />
+          <span>{{ editingLabel }}</span>
         </div>
-
-        <MoleculesFormsFirestoreObjectArray
-          ref="listRef"
-          :label="title"
-          :firebase-value="items"
-          :update-function="onSave"
+        <UButton
+          size="xs"
+          variant="ghost"
+          color="primary"
+          @click="cancelEditing"
         >
-          <template #display="{ item, index, startEditing }">
-            <OrganismsProfilesProfessionalFieldsExperienceField
-              :item="item"
-              :index="index"
-              mode="display"
-              @edit="startEditing?.()"
-            />
-          </template>
-
-          <template #edit="{ item, index, remove }">
-            <OrganismsProfilesProfessionalFieldsExperienceField
-              :item="item"
-              :index="index"
-              mode="edit"
-              :remove="remove"
-              @save="listRef?.saveItemEditing?.()"
-              @cancel="listRef?.cancelItemEditing?.()"
-              @remove="remove?.()"
-            />
-          </template>
-
-          <template #create="{ push }">
-            <OrganismsProfilesProfessionalFieldsExperienceQuickAdd
-              :prefill-place="prefillPlace"
-              :prefill-key="prefillKey"
-              @create="(item: any) => handleInlineCreate(item, push)"
-              @clear-prefill="emit('prefill:consumed')"
-            />
-          </template>
-        </MoleculesFormsFirestoreObjectArray>
+          Cancel
+        </UButton>
       </div>
 
-      <!-- Right: create-only panel that pushes into left list -->
-      <div class="lg:sticky lg:top-4 self-start">
-        <UCard>
-          <template #header>
-            <div class="font-medium">Add {{ title }}</div>
-          </template>
-          <OrganismsProfilesProfessionalFieldsExperienceQuickAdd
-            :prefill-place="prefillPlace"
-            :prefill-key="prefillKey"
-            @create="handlePanelCreate"
-            @clear-prefill="emit('prefill:consumed')"
+      <MoleculesFormsFirestoreObjectArray
+        ref="listRef"
+        :label="title"
+        :firebase-value="items"
+        :update-function="onSave"
+      >
+        <template #display="{ item, index, startEditing }">
+          <OrganismsProfilesProfessionalFieldsExperienceField
+            :item="item"
+            :index="index"
+            mode="display"
+            @edit="startEditing?.()"
           />
-        </UCard>
-      </div>
+        </template>
+
+        <template #edit="{ item, index, remove }">
+          <OrganismsProfilesProfessionalFieldsExperienceField
+            :item="item"
+            :index="index"
+            mode="edit"
+            :remove="remove"
+            @save="listRef?.saveItemEditing?.()"
+            @cancel="listRef?.cancelItemEditing?.()"
+            @remove="() => handleRemove(index, remove)"
+          />
+        </template>
+      </MoleculesFormsFirestoreObjectArray>
     </div>
+
+    <OrganismsProfilesProfessionalFieldsExperienceCreate
+      v-if="currentEditingIndex === null"
+      v-model:place-id="createPlaceId"
+      :loading="isSavingNew"
+      @save="handleCreateSave"
+      @clear="resetCreate"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, toRefs } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import type { ExperienceItem } from '../../../../../../models/profiles/Professional.model'
 
 const props = defineProps<{
   title: string
-  items: any[]
-  onSave: (items: any[]) => Promise<void> | void
-  prefillPlace?: {
-    name: string
-    place_id?: string | null
-    formatted_address?: string | null
-    short_address?: string | null
-  } | null
-  prefillKey?: number
+  items: ExperienceItem[]
+  onSave: (items: ExperienceItem[]) => Promise<void> | void
 }>()
 
-const emit = defineEmits<(e: 'prefill:consumed') => void>()
-
-const { title, items, onSave, prefillPlace, prefillKey } = toRefs(props)
+const { title, items, onSave } = toRefs(props)
 
 const listRef = ref<any | null>(null)
+const isSavingNew = ref(false)
+const createPlaceId = ref('')
 
 const currentEditingIndex = computed(
   () => listRef.value?.editingIndex?.value ?? null
@@ -118,7 +93,7 @@ const currentEditingItem = computed(() => {
 const editingLabel = computed(() => {
   if (currentEditingIndex.value === null) return ''
   if (isCreatingNew.value) {
-    return `Adding new ${title.value?.toLowerCase?.() || 'item'}`
+    return `Creating ${createLabel.value.toLowerCase()}`
   }
   const item = currentEditingItem.value
   const label = item?.name || item?.title || item?.role || ''
@@ -126,24 +101,48 @@ const editingLabel = computed(() => {
   return label ? `Editing ${label}` : `Editing item #${indexLabel}`
 })
 
+const createLabel = computed(() => title.value || 'experience')
+
 const cancelEditing = () => {
   listRef.value?.cancelItemEditing?.()
 }
 
-function consumePrefillIfNeeded() {
-  if (prefillPlace.value) {
-    emit('prefill:consumed')
+const resetCreate = () => {
+  createPlaceId.value = ''
+}
+
+function handleRemove(index: number, remove?: () => void) {
+  if (typeof remove !== 'function') return
+
+  const item = items.value?.[index]
+  const primaryLabel =
+    (item?.name as string | undefined)?.trim() ||
+    (item?.role as string | undefined)?.trim() ||
+    null
+  const label = primaryLabel ? `“${primaryLabel}”` : `item #${index + 1}`
+
+  if (typeof window !== 'undefined') {
+    const confirmed = window.confirm(
+      `Remove ${label}? This action can’t be undone.`
+    )
+    if (!confirmed) return
   }
+
+  remove()
 }
 
-function handleInlineCreate(item: ExperienceItem, push: (item: ExperienceItem) => void) {
-  push(item)
-  consumePrefillIfNeeded()
-}
+async function handleCreateSave(payload: ExperienceItem) {
+  if (isSavingNew.value) return
+  const placeId = (payload?.place_id || '').trim()
+  if (!placeId) return
 
-function handlePanelCreate(item: ExperienceItem) {
-  listRef.value?.startEditing?.()
-  listRef.value?.push?.(item)
-  consumePrefillIfNeeded()
+  isSavingNew.value = true
+  try {
+    const next = [...items.value, { place_id: placeId }]
+    await onSave.value(next)
+    resetCreate()
+  } finally {
+    isSavingNew.value = false
+  }
 }
 </script>
