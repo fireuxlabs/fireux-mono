@@ -7,10 +7,14 @@
         size="md"
         icon="i-lucide-map-pin"
       />
-      <div v-if="showSpinner" class="absolute -bottom-1 -right-1">
-        <UBadge color="success" variant="soft" size="xs" class="shadow-sm">
-          <UIcon name="i-lucide-loader-2" class="h-3 w-3 animate-spin" />
-        </UBadge>
+      <div
+        v-if="showSpinner"
+        class="absolute inset-0 flex items-center justify-center rounded-full bg-white/70"
+      >
+        <UIcon
+          name="i-lucide-loader-2"
+          class="h-4 w-4 animate-spin text-primary-500"
+        />
       </div>
       <div v-else-if="canRetry" class="absolute -bottom-1 -right-1">
         <UTooltip text="Retry logo">

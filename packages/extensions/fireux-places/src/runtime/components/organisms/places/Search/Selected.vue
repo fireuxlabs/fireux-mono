@@ -1,12 +1,23 @@
 <template>
   <UCard class="shadow-sm" :ui="{ body: 'space-y-3' }">
     <div class="flex items-start gap-3">
-      <UAvatar
-        :src="place.avatar || undefined"
-        :alt="place.name"
-        size="lg"
-        icon="i-lucide-map-pin"
-      />
+      <div class="relative">
+        <UAvatar
+          :src="place.avatar || undefined"
+          :alt="place.name"
+          size="lg"
+          icon="i-lucide-map-pin"
+        />
+        <div
+          v-if="confirming"
+          class="absolute inset-0 flex items-center justify-center rounded-full bg-white/70"
+        >
+          <UIcon
+            name="i-lucide-loader-2"
+            class="h-4 w-4 animate-spin text-primary-500"
+          />
+        </div>
+      </div>
       <div class="flex-1 min-w-0">
         <p class="truncate text-sm font-semibold text-gray-900">
           {{ place.name }}
@@ -32,12 +43,15 @@
           size="sm"
           color="primary"
           variant="soft"
-          icon="i-lucide-check"
-          :loading="!!confirming"
           :disabled="isBusy"
           @click="emit('confirm', place)"
         >
-          {{ confirming ? 'Saving…' : 'Confirm' }}
+          <UIcon
+            v-if="!confirming"
+            name="i-lucide-check"
+            class="mr-2 h-4 w-4"
+          />
+          <span>{{ confirming ? 'Saving…' : 'Confirm' }}</span>
         </UButton>
       </div>
     </template>
