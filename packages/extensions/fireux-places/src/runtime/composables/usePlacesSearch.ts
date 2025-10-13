@@ -1,155 +1,127 @@
-import { useFirestoreSearch } from '#imports'
-import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
-import type { BasePlace, Place, PlaceCard } from '../models/place.model'
-import { canonicalPlaceId, fetchGoogle } from './usePlacesGoogle'
+/* eslint-disable no-console */
+import { ref, watch } from 'vue'
+import type { Ref } from 'vue'
+import type { BasePlace, PlaceCard } from '../models/place.model'
+import { useFirestoreSearch } from '#fireux-core-composables/firestore/useFirestoreSearch'
+import {
+  canonicalPlaceId,
+  fetchGoogle,
+  fetchPlaceDetails,
+  type PlaceDetailsResult,
+} from './usePlacesGoogle'
 
-export interface UsePlacesSearchResult {
-  searchPlaces: (query: string) => Promise<PlaceCard.Cell[]>
-}
-
-export interface PlacesSearchViewModel {
-  query: Ref<string>
-  results: Ref<PlaceCard.Cell[]>
-  selected: Ref<BasePlace | null>
-  isSearching: Ref<boolean>
-  showEmpty: ComputedRef<boolean>
-  select: (cell: PlaceCard.Cell) => void
-  clear: () => void
-}
-
-export const PLACES_SEARCH_SHORTLIST_LIMIT = 4
-
-const MIN_FIRESTORE_RESULTS_BEFORE_SUPPLEMENT = 4
-const MAX_RESULTS = 10
-const MIN_QUERY_LENGTH = 3
-
-const toFirestoreCell = (p: Place): PlaceCard.Cell => ({
-  place_id: canonicalPlaceId(p.place_id),
-  name: p.name,
-  avatar: p.avatar ?? null,
-  formatted_address: p.formatted_address,
-  source: 'firestore',
-})
-
-const norm = (v: string) =>
-  v
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-
-export function usePlacesSearch(): UsePlacesSearchResult {
+/**
+ * usePlacesSearch()
+ * Unified composable:
+ * - Firestore prefix search first
+ * - Falls back to Google Autocomplete
+ * - Hydrates selected Google result via Details API
+ */
+export function usePlacesSearch() {
   const { prefixSearch } = useFirestoreSearch()
 
-  async function searchPlaces(query: string): Promise<PlaceCard.Cell[]> {
-    const q = norm(query)
-    if (q.length < MIN_QUERY_LENGTH) return []
+  // ── State
+  const query = ref('')
+  const results = ref<PlaceCard.Cell[]>([])
+  const selected = ref<BasePlace | null>(null)
+  const isSearching = ref(false)
 
-    const fxDocs = await prefixSearch<Place>({
-      collection: 'places',
-      field: 'search_term',
-      query: q,
-      limit: MAX_RESULTS,
-    })
-    const fxCells = fxDocs.map(toFirestoreCell)
-    if (fxCells.length >= MIN_FIRESTORE_RESULTS_BEFORE_SUPPLEMENT) {
-      return fxCells.slice(0, MAX_RESULTS)
+  // ── Core search
+  async function searchPlaces(q: string) {
+    const term = q.trim().toLowerCase()
+    if (!term) {
+      results.value = []
+      return
     }
 
-    const exclude = new Set(fxCells.map((c) => canonicalPlaceId(c.place_id)))
-    const need = Math.max(
-      0,
-      MIN_FIRESTORE_RESULTS_BEFORE_SUPPLEMENT - fxCells.length
-    )
-    const googleCells = await fetchGoogle(query, exclude, need)
+    isSearching.value = true
+    try {
+      // Firestore first
+      const hits = await prefixSearch<{
+        place_id: string
+        name: string
+        formatted_address?: string
+        avatar?: string | null
+        search_term: string
+      }>({
+        collection: 'places',
+        field: 'search_term',
+        query: term,
+        limit: 5,
+      })
 
-    const combined = [...fxCells, ...googleCells].filter(
-      (cell, idx, arr) =>
-        arr.findIndex(
-          (candidate) =>
-            canonicalPlaceId(candidate.place_id) ===
-            canonicalPlaceId(cell.place_id)
-        ) === idx
-    )
-
-    return combined.slice(0, MAX_RESULTS)
-  }
-
-  return { searchPlaces }
-}
-
-export function usePlacesSearchVm(): PlacesSearchViewModel {
-  const { searchPlaces } = usePlacesSearch()
-
-  const queryRef = ref('')
-  const resultsRef = ref<PlaceCard.Cell[]>([])
-  const selectedRef = ref<BasePlace | null>(null)
-  const isSearchingRef = ref(false)
-
-  const trimmedQuery = computed(() => queryRef.value.trim())
-  const showEmpty = computed(
-    () =>
-      !isSearchingRef.value &&
-      !selectedRef.value &&
-      trimmedQuery.value.length >= MIN_QUERY_LENGTH &&
-      resultsRef.value.length === 0
-  )
-
-  let searchToken = 0
-
-  watch(
-    queryRef,
-    async (value) => {
-      const term = value.trim()
-      selectedRef.value = null
-
-      if (term.length < MIN_QUERY_LENGTH) {
-        resultsRef.value = []
-        isSearchingRef.value = false
+      if (hits.length > 0) {
+        results.value = hits.map((p) => ({
+          place_id: p.place_id,
+          name: p.name,
+          formatted_address: p.formatted_address ?? undefined,
+          source: 'firestore',
+          avatar: p.avatar ?? null,
+        }))
         return
       }
 
-      const token = ++searchToken
-      isSearchingRef.value = true
-
-      try {
-        const next = await searchPlaces(term)
-        if (token === searchToken) {
-          resultsRef.value = next
-        }
-      } finally {
-        if (token === searchToken) {
-          isSearchingRef.value = false
-        }
-      }
-    },
-    { immediate: true }
-  )
-
-  function clear() {
-    selectedRef.value = null
+      // Google fallback
+      console.log('[places][search] 🔄 No Firestore hits, using Google…')
+      const googleCells = await fetchGoogle(term, new Set(), 4)
+      results.value = googleCells
+    } catch (err) {
+      console.warn('[places][search] ❌ failed:', err)
+      results.value = []
+    } finally {
+      isSearching.value = false
+    }
   }
 
-  function select(cell: PlaceCard.Cell) {
-    selectedRef.value = {
-      place_id: canonicalPlaceId(cell.place_id),
+  watch(query, (q) => void searchPlaces(q))
+
+  // ── Select & hydrate
+  async function select(cell: PlaceCard.Cell) {
+    console.log('[places][select]', cell)
+
+    // Immediate visual feedback
+    selected.value = {
+      place_id: cell.place_id,
+      name: cell.name,
       formatted_address: cell.formatted_address ?? '',
       lat: 0,
       lng: 0,
       source: cell.source,
       avatar: cell.avatar ?? null,
-      name: cell.name,
+    }
+
+    // Hydrate Google result
+    if (cell.source === 'google' && typeof window !== 'undefined') {
+      try {
+        const details: PlaceDetailsResult | null = await fetchPlaceDetails(
+          cell.place_id
+        )
+        if (!details) return
+
+        const g = details.google
+        selected.value = {
+          place_id: g.place_id,
+          name: g.name,
+          formatted_address: g.formatted_address,
+          lat: g.lat,
+          lng: g.lng,
+          source: 'google',
+          avatar: g.avatar,
+        }
+
+        console.log('[places][details] hydrated:', selected.value)
+      } catch (err) {
+        console.warn('[places][details] hydration failed:', err)
+      }
     }
   }
 
-  return {
-    query: queryRef,
-    results: resultsRef,
-    selected: selectedRef,
-    isSearching: isSearchingRef,
-    showEmpty,
-    select,
-    clear,
+  // ── Reset
+  function clear() {
+    query.value = ''
+    results.value = []
+    selected.value = null
   }
+
+  return { query, results, selected, isSearching, select, clear }
 }

@@ -112,8 +112,8 @@
 
 <script setup lang="ts">
 import { computed, shallowRef, watch, type Ref } from 'vue'
-import type { Place } from 'fireux-places/runtime/models/place.model'
-import { usePlaces } from 'fireux-places/runtime/composables/usePlaces'
+import type { Place } from 'fireux-places/runtime/models/place.model.ts'
+import { usePlaces } from 'fireux-places/runtime/composables/usePlaces.ts'
 
 const emit = defineEmits<{
   (e: 'edit'): void

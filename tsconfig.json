@@ -27,6 +27,12 @@
       ],
       "fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],
       "fireux-places/*": ["packages/extensions/fireux-places/src/*"],
+      "fireux-places/runtime/*": [
+        "packages/extensions/fireux-places/src/runtime/*"
+      ],
+      "fireux-places/runtime/composables/*": [
+        "packages/extensions/fireux-places/src/runtime/composables/*"
+      ],
       "fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"]
     }
   },

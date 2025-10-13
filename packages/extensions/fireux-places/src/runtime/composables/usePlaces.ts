@@ -1,4 +1,4 @@
-import { useFirestoreManager } from '#imports'
+import { useFirestoreManager } from '#fireux-core-composables/firestore/useFirestoreManager'
 import type { Place } from '../models/place.model'
 import { usePlacesSearch } from './usePlacesSearch'
 

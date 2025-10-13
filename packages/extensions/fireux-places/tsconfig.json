@@ -22,6 +22,9 @@
       "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
       "#fireux-core-composables/firestore/*": [
         "../../core/fireux-core/src/runtime/composables/firestore/*"
+      ],
+      "#fireux-core-composables/firebase/*": [
+        "../../core/fireux-core/src/runtime/composables/firebase/*"
       ]
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]

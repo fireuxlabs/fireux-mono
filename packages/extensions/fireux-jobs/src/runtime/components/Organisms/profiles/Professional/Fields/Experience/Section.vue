@@ -33,7 +33,7 @@
         <template #create="{ push }">
           <OrganismsProfilesProfessionalFieldsExperienceCreate
             :loading="isSavingNew"
-            @save="(payload) => handleCreateSave(payload, push)"
+            @save="(payload: ExperienceItem) => handleCreateSave(payload, push as (i: ExperienceItem) => void)"
           />
         </template>
       </MoleculesFormsFirestoreObjectArray>
@@ -53,12 +53,15 @@ const props = defineProps<{
 
 const { title, items, onSave } = toRefs(props)
 
-const listRef = ref<any | null>(null)
+type ListRef = {
+  saveItemEditing?: () => Promise<void> | void
+  cancelItemEditing?: () => void
+}
+const listRef = ref<ListRef | null>(null)
 const isSavingNew = ref(false)
 
 function handleRemove(index: number, remove?: () => void) {
   if (typeof remove !== 'function') return
-
   const item = items.value?.[index]
   const primaryLabel =
     (item?.name as string | undefined)?.trim() ||
@@ -87,10 +90,7 @@ async function handleCreateSave(
 
   isSavingNew.value = true
   try {
-    push({
-      ...payload,
-      place_id: placeId,
-    })
+    push({ ...payload, place_id: placeId })
     await listRef.value.saveItemEditing?.()
   } finally {
     isSavingNew.value = false

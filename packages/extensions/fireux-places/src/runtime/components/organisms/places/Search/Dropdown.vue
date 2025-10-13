@@ -8,9 +8,9 @@
       <div class="flex items-center gap-2 text-sm font-medium text-gray-700">
         <UIcon name="i-lucide-list-tree" />
         <span>Suggestions</span>
-        <UBadge color="primary" variant="soft" size="xs">
-          {{ visibleCells.length }}
-        </UBadge>
+        <UBadge color="primary" variant="soft" size="xs">{{
+          visibleCells.length
+        }}</UBadge>
       </div>
     </template>
 
@@ -20,7 +20,7 @@
           color="neutral"
           variant="ghost"
           class="w-full justify-start px-4 py-3"
-          @click="onSelect(cell)"
+          @click="emit('select', cell)"
         >
           <OrganismsPlacesCell :place="cell" />
         </UButton>
@@ -30,36 +30,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRefs, watch } from 'vue'
+import { computed, toRefs } from 'vue'
 import type { PlaceCard } from '../../../../models/place.model'
-import { cancelLogoRequests } from '../../../../composables/usePlaceLogos'
-import { canonicalPlaceId } from '../../../../composables/usePlacesGoogle'
-import { PLACES_SEARCH_SHORTLIST_LIMIT } from '../../../../composables/usePlacesSearch'
 
-interface SearchDropdownProps {
+const SHORTLIST_LIMIT = 4
+
+interface Props {
   cells?: PlaceCard.Cell[] | null
 }
-
-const props = withDefaults(defineProps<SearchDropdownProps>(), {
-  cells: () => [],
-})
+const props = withDefaults(defineProps<Props>(), { cells: () => [] })
 const { cells } = toRefs(props)
-const emit = defineEmits<(event: 'select', cell: PlaceCard.Cell) => void>()
 
+const emit = defineEmits<(e: 'select', cell: PlaceCard.Cell) => void>()
 const visibleCells = computed(() =>
-  (cells.value ?? []).slice(0, PLACES_SEARCH_SHORTLIST_LIMIT)
+  (cells.value ?? []).slice(0, SHORTLIST_LIMIT)
 )
-
-watch(
-  visibleCells,
-  (next) => {
-    const keep = new Set(next.map((cell) => canonicalPlaceId(cell.place_id)))
-    cancelLogoRequests(keep)
-  },
-  { immediate: true }
-)
-
-function onSelect(cell: PlaceCard.Cell) {
-  emit('select', cell)
-}
 </script>

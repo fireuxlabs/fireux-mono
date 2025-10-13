@@ -10,8 +10,30 @@ const log = (...args: unknown[]) => {
   }
 }
 
-export const canonicalPlaceId = (id?: string | null) =>
-  (id ?? '').trim().replace(/^"+/, '').replace(/"+$/, '')
+/** Normalize any incoming place_id:
+ *  - trim
+ *  - remove surrounding quotes
+ *  - remove accidental `places/` prefix
+ *  - return null if empty after normalization
+ */
+export const canonicalPlaceId = (id?: string | null): string | null =>
+  (id ?? '')
+    .trim()
+    .replace(/^"+/, '')
+    .replace(/"+$/, '')
+    .replace(/^places\//, '') || null
+
+/** Type for Google Autocomplete prediction */
+interface GooglePrediction {
+  place_id: string
+  description?: string
+  structured_formatting?: {
+    main_text?: string
+    secondary_text?: string
+  }
+  types?: string[]
+  terms?: { value: string }[]
+}
 
 /**
  * Calls `/api/places/autocomplete?q=...` and returns normalized cells.
@@ -34,20 +56,22 @@ export async function fetchGoogle(
     if (!res.ok) return []
 
     const json = await res.json()
-    const preds = Array.isArray(json?.predictions) ? json.predictions : []
+    const preds: GooglePrediction[] = Array.isArray(json?.predictions)
+      ? json.predictions
+      : []
 
-    const cells = preds
-      .filter((p: any) => {
+    const cells: PlaceCard.Cell[] = preds
+      .filter((p) => {
         const id = canonicalPlaceId(p?.place_id)
         return id && !excludeIds.has(id)
       })
       .slice(0, limit)
-      .map((p: any): PlaceCard.Cell => {
-        const main = p?.structured_formatting?.main_text
-        const secondary = p?.structured_formatting?.secondary_text
-        const desc = p?.description
+      .map((p): PlaceCard.Cell => {
+        const main = p.structured_formatting?.main_text
+        const secondary = p.structured_formatting?.secondary_text
+        const desc = p.description
         return {
-          place_id: canonicalPlaceId(p.place_id),
+          place_id: canonicalPlaceId(p.place_id) as string,
           name: main || desc || 'Unknown place',
           formatted_address: secondary || desc || undefined,
           source: 'google',
@@ -123,10 +147,7 @@ export async function fetchPlaceDetails(
 ): Promise<PlaceDetailsResult | null> {
   const id = canonicalPlaceId(placeId)
   if (!id) return null
-
-  if (typeof window === 'undefined') {
-    return null
-  }
+  if (typeof window === 'undefined') return null
 
   const url = new URL('/api/places/details', window.location.origin)
   url.searchParams.set('place_id', id)
@@ -135,15 +156,11 @@ export async function fetchPlaceDetails(
     headers: { accept: 'application/json' },
     cache: 'no-store',
   })
-
-  if (!res.ok) {
-    return null
-  }
+  if (!res.ok) return null
 
   const { result } = (await res.json()) as {
     result: Record<string, any> | null
   }
-
   if (!result) return null
 
   const google = mapDetailsToGooglePlace(id, result)

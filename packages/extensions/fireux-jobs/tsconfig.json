@@ -23,7 +23,13 @@
       "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
       "fireux-core": ["../../core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../core/fireux-core/src/*"],
-      "#fireux-core-runtime/*": ["../../core/fireux-core/src/runtime/*"]
+      "#fireux-core-runtime/*": ["../../core/fireux-core/src/runtime/*"],
+      "fireux-places": ["../fireux-places/src/module.ts"],
+      "fireux-places/*": ["../fireux-places/src/*"],
+      "fireux-places/runtime/*": ["../fireux-places/src/runtime/*"],
+      "fireux-places/runtime/composables/*": [
+        "../fireux-places/src/runtime/composables/*"
+      ]
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
