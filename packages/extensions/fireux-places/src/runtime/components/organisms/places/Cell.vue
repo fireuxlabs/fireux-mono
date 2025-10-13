@@ -16,30 +16,6 @@
           class="h-4 w-4 animate-spin text-primary-500"
         />
       </div>
-      <div v-else-if="canRetry" class="absolute -bottom-1 -right-1">
-        <UTooltip text="Retry logo">
-          <UButton
-            size="2xs"
-            color="primary"
-            variant="ghost"
-            class="shadow-sm"
-            :disabled="isFetchingLogo"
-            aria-label="Retry logo"
-            @click.stop.prevent="handleRetry"
-          >
-            <UIcon
-              v-if="!isFetchingLogo"
-              name="i-lucide-refresh-ccw"
-              class="h-3.5 w-3.5"
-            />
-            <UIcon
-              v-else
-              name="i-lucide-loader-2"
-              class="h-3.5 w-3.5 animate-spin"
-            />
-          </UButton>
-        </UTooltip>
-      </div>
     </div>
 
     <div class="min-w-0 flex-1 text-left">
@@ -79,20 +55,6 @@ const logoState = usePlaceLogoState(place, {
 const previewSrc = computed(() => logoState.avatar.value)
 const isFetchingLogo = computed(() => logoState.isLoading.value)
 const showSpinner = computed(() => isFetchingLogo.value && !previewSrc.value)
-const canRetry = computed(
-  () =>
-    logoState.canHydrate.value &&
-    logoState.hasAttempted.value &&
-    !isFetchingLogo.value &&
-    !previewSrc.value
-)
-
-async function handleRetry(event?: MouseEvent) {
-  event?.stopPropagation()
-  if (isFetchingLogo.value) return
-  await logoState.retry()
-}
-
 onBeforeUnmount(() => {
   logoState.cancel()
 })
