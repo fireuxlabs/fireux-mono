@@ -92,7 +92,6 @@
 
     <div v-if="editingIndex === null">
       <slot name="create" :push="push" />
-      :save="saveItemEditing" :cancel="cancelItemEditing"
     </div>
 
     <div v-else-if="editingIndex === items.length">

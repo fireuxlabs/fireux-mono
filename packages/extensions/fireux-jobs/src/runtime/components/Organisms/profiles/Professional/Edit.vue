@@ -28,38 +28,24 @@
           </details>
         </section>
 
-        <!-- Section 2 — Relevant Experience -->
-        <section>
-          <details open>
-            <summary class="cursor-pointer select-none text-base font-semibold">
-              Section 2 — Relevant Experience
-            </summary>
-
-            <div class="mt-4">
-              <OrganismsProfilesProfessionalFieldsExperienceSection
-                title="Relevant Experience"
-                :items="professional?.relevant_experience || []"
-                :onSave="onSaveRelevantExperience"
-              />
-            </div>
-          </details>
+        <!-- Relevant Experience -->
+        <section class="space-y-4">
+          <h3 class="text-base font-semibold">Relevant Experience</h3>
+          <OrganismsProfilesProfessionalFieldsExperienceSection
+            title="Relevant Experience"
+            :items="professional?.relevant_experience || []"
+            :onSave="onSaveRelevantExperience"
+          />
         </section>
 
-        <!-- Section 3 — Other Experience -->
-        <section>
-          <details>
-            <summary class="cursor-pointer select-none text-base font-semibold">
-              Section 3 — Other Experience
-            </summary>
-
-            <div class="mt-4">
-              <OrganismsProfilesProfessionalFieldsExperienceSection
-                title="Other Experience"
-                :items="professional?.other_experience || []"
-                :onSave="onSaveOtherExperience"
-              />
-            </div>
-          </details>
+        <!-- Other Experience -->
+        <section class="space-y-4">
+          <h3 class="text-base font-semibold">Other Experience</h3>
+          <OrganismsProfilesProfessionalFieldsExperienceSection
+            title="Other Experience"
+            :items="professional?.other_experience || []"
+            :onSave="onSaveOtherExperience"
+          />
         </section>
       </div>
     </template>

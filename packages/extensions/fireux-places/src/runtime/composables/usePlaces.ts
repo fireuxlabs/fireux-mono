@@ -3,11 +3,13 @@ import type { Place } from '../models/place.model'
 import { usePlacesSearch } from './usePlacesSearch'
 
 export function usePlaces() {
-  const { firestoreFetchCollection } = useFirestoreManager()
+  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreManager()
   const collection = firestoreFetchCollection<Place>('places')
+  const place = (id: string) => firestoreFetchDoc<Place>('places', id)
 
   return {
     collection,
+    place,
     ...usePlacesSearch(),
   }
 }

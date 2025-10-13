@@ -3,24 +3,6 @@
     <h3 class="text-base font-semibold">{{ title }}</h3>
 
     <div class="space-y-6">
-      <div
-        v-if="currentEditingIndex !== null"
-        class="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-50/70 px-3 py-2 text-sm text-primary-700"
-      >
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-pencil" class="h-4 w-4" />
-          <span>{{ editingLabel }}</span>
-        </div>
-        <UButton
-          size="xs"
-          variant="ghost"
-          color="primary"
-          @click="cancelEditing"
-        >
-          Cancel
-        </UButton>
-      </div>
-
       <MoleculesFormsFirestoreObjectArray
         ref="listRef"
         :label="title"
@@ -47,19 +29,20 @@
             @remove="() => handleRemove(index, remove)"
           />
         </template>
+
+        <template #create="{ push }">
+          <OrganismsProfilesProfessionalFieldsExperienceCreate
+            :loading="isSavingNew"
+            @save="(payload) => handleCreateSave(payload, push)"
+          />
+        </template>
       </MoleculesFormsFirestoreObjectArray>
     </div>
-
-    <OrganismsProfilesProfessionalFieldsExperienceCreate
-      v-if="currentEditingIndex === null"
-      :loading="isSavingNew"
-      @save="handleCreateSave"
-    />
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRefs } from 'vue'
+import { ref, toRefs } from 'vue'
 import type { ExperienceItem } from '../../../../../../models/profiles/Professional.model'
 
 const props = defineProps<{
@@ -72,37 +55,6 @@ const { title, items, onSave } = toRefs(props)
 
 const listRef = ref<any | null>(null)
 const isSavingNew = ref(false)
-
-const currentEditingIndex = computed(
-  () => listRef.value?.editingIndex?.value ?? null
-)
-
-const isCreatingNew = computed(() => {
-  if (currentEditingIndex.value === null) return false
-  return currentEditingIndex.value >= (items.value?.length ?? 0)
-})
-
-const currentEditingItem = computed(() => {
-  if (currentEditingIndex.value === null) return null
-  return items.value?.[currentEditingIndex.value] ?? null
-})
-
-const editingLabel = computed(() => {
-  if (currentEditingIndex.value === null) return ''
-  if (isCreatingNew.value) {
-    return `Creating ${createLabel.value.toLowerCase()}`
-  }
-  const item = currentEditingItem.value
-  const label = item?.name || item?.title || item?.role || ''
-  const indexLabel = currentEditingIndex.value + 1
-  return label ? `Editing ${label}` : `Editing item #${indexLabel}`
-})
-
-const createLabel = computed(() => title.value || 'experience')
-
-const cancelEditing = () => {
-  listRef.value?.cancelItemEditing?.()
-}
 
 function handleRemove(index: number, remove?: () => void) {
   if (typeof remove !== 'function') return
@@ -124,21 +76,22 @@ function handleRemove(index: number, remove?: () => void) {
   remove()
 }
 
-async function handleCreateSave(payload: ExperienceItem) {
+async function handleCreateSave(
+  payload: ExperienceItem,
+  push: (item: ExperienceItem) => void
+) {
   if (isSavingNew.value) return
   const placeId = (payload?.place_id || '').trim()
   if (!placeId) return
+  if (!listRef.value) return
 
   isSavingNew.value = true
   try {
-    const next = [
-      ...items.value,
-      {
-        ...payload,
-        place_id: placeId,
-      },
-    ]
-    await onSave.value(next)
+    push({
+      ...payload,
+      place_id: placeId,
+    })
+    await listRef.value.saveItemEditing?.()
   } finally {
     isSavingNew.value = false
   }

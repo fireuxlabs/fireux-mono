@@ -7,18 +7,29 @@
         <OrganismsPlacesSearchSelected
           :place="selected"
           :saving="isSaving"
-          :disabled="!isAuthenticated"
+          :disabled="isSelectionDisabled"
+          :show-confirm="shouldShowConfirm"
+          :confirm-label="confirmButtonText"
           @clear="handleClear"
           @confirm="handleConfirm"
         />
 
-        <p v-if="!isAuthenticated" class="text-xs text-rose-600">
+        <p
+          v-if="shouldAutoSave && !isAuthenticated"
+          class="text-xs text-rose-600"
+        >
           You need to sign in before saving places.
         </p>
-        <p v-else-if="saveError" class="text-xs text-rose-600">
+        <p
+          v-else-if="shouldAutoSave && saveError"
+          class="text-xs text-rose-600"
+        >
           {{ saveError }}
         </p>
-        <p v-else-if="saveSuccess" class="text-xs text-emerald-600">
+        <p
+          v-else-if="shouldAutoSave && saveSuccess"
+          class="text-xs text-emerald-600"
+        >
           Place saved to Firestore.
         </p>
       </template>
@@ -39,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch, withDefaults } from 'vue'
 import type { BasePlace, Place } from '../../../../models/place.model'
 import { usePlacesSearchVm } from '../../../../composables/usePlacesSearch'
 import { usePlaceSave } from '../../../../composables/usePlaceSave'
@@ -48,6 +59,32 @@ import {
   fetchPlaceDetails,
 } from '../../../../composables/usePlacesGoogle'
 import { useAuth } from '#imports'
+
+interface PlacesSearchConfirmEvent {
+  place: BasePlace
+  canonicalId: string
+  source: BasePlace['source']
+  saved: boolean
+  storedPlace?: Place
+}
+
+const props = withDefaults(
+  defineProps<{
+    autoSave?: boolean
+    autoClear?: boolean
+    showConfirmButton?: boolean
+    confirmLabel?: string
+  }>(),
+  {
+    autoSave: true,
+    autoClear: true,
+  }
+)
+
+const emit = defineEmits<{
+  (event: 'select', payload: BasePlace | null): void
+  (event: 'confirm', payload: PlacesSearchConfirmEvent): void
+}>()
 
 const {
   query,
@@ -68,6 +105,17 @@ const saveSuccess = ref(false)
 let successResetTimer: ReturnType<typeof setTimeout> | null = null
 
 const isAuthenticated = computed(() => !!currentUser.value)
+const shouldAutoSave = computed(() => props.autoSave !== false)
+const shouldAutoClear = computed(() => props.autoClear !== false)
+const shouldShowConfirm = computed(() =>
+  props.showConfirmButton === undefined
+    ? true
+    : props.showConfirmButton !== false
+)
+const confirmButtonText = computed(() => props.confirmLabel || undefined)
+const isSelectionDisabled = computed(
+  () => shouldAutoSave.value && !isAuthenticated.value
+)
 
 watch(selected, (next) => {
   saveError.value = null
@@ -75,6 +123,7 @@ watch(selected, (next) => {
     saveSuccess.value = false
     clearSuccessTimer()
   }
+  emit('select', next)
 })
 
 function clearSuccessTimer() {
@@ -90,6 +139,11 @@ function scheduleSuccessReset() {
     saveSuccess.value = false
     successResetTimer = null
   }, 3000)
+}
+
+function clearSearchInputs() {
+  clearSelected()
+  query.value = ''
 }
 
 function buildFallbackPlace(place: BasePlace, canonicalId: string): Place {
@@ -114,14 +168,32 @@ function buildFallbackPlace(place: BasePlace, canonicalId: string): Place {
 async function handleConfirm(place: BasePlace) {
   if (isSaving.value) return
 
-  if (!isAuthenticated.value) {
-    saveError.value = 'Sign in to save places.'
-    return
-  }
-
   const canonicalId = canonicalPlaceId(place.place_id)
   if (!canonicalId) {
     saveError.value = 'Cannot save place without a valid identifier.'
+    return
+  }
+
+  const basePayload: PlacesSearchConfirmEvent = {
+    place: {
+      ...place,
+      place_id: canonicalId,
+    },
+    canonicalId,
+    source: place.source,
+    saved: false,
+  }
+
+  if (!shouldAutoSave.value) {
+    emit('confirm', basePayload)
+    if (shouldAutoClear.value) {
+      clearSearchInputs()
+    }
+    return
+  }
+
+  if (!isAuthenticated.value) {
+    saveError.value = 'Sign in to save places.'
     return
   }
 
@@ -141,7 +213,14 @@ async function handleConfirm(place: BasePlace) {
     await savePlace(payload)
     saveSuccess.value = true
     scheduleSuccessReset()
-    clearSelected()
+    emit('confirm', {
+      ...basePayload,
+      saved: true,
+      storedPlace: payload,
+    })
+    if (shouldAutoClear.value) {
+      clearSearchInputs()
+    }
   } catch (error) {
     saveError.value =
       error instanceof Error
@@ -153,7 +232,7 @@ async function handleConfirm(place: BasePlace) {
 }
 
 function handleClear() {
-  clearSelected()
+  clearSearchInputs()
   saveError.value = null
   saveSuccess.value = false
   clearSuccessTimer()
@@ -161,5 +240,17 @@ function handleClear() {
 
 onBeforeUnmount(() => {
   clearSuccessTimer()
+})
+
+async function confirmSelection() {
+  const current = selected.value
+  if (!current) return
+  await handleConfirm(current)
+}
+
+defineExpose({
+  clearSelection: clearSelected,
+  confirmSelection,
+  selected,
 })
 </script>
