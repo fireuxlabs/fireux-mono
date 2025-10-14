@@ -1,79 +1,53 @@
-// Note: All helpers are auto-imported from fireux-core public API by the Nuxt module.
+/* eslint-disable no-console */
+import { useFirestoreUtils } from '#fireux-core-runtime/composables/firestore/useFirestoreUtils'
+import { useFirestoreUpdate } from '#fireux-core-runtime/composables/firestore/useFirestoreUpdate'
+import { canonicalPlaceId } from 'fireux-places/runtime/composables/usePlacesGoogle.ts'
+import type {
+  RelevantExperienceItem,
+  OtherExperienceItem,
+} from '../../../../models/profiles/Professional.model'
 
 const COLLECTION = 'professionals'
-
-type TargetScope = 'auto' | 'core' | 'app'
 
 export function useProfessionalUpdate() {
   const { updateDocument } = useFirestoreUpdate()
   const { waitForCurrentUser } = useFirestoreUtils()
-  const { role, appId } = useFireUXConfig()
-  const isTenant = role === 'tenant' && !!appId
-  const { uploadImage } = useImageStorage()
 
-  async function getUid() {
+  async function getUid(): Promise<string> {
     const u = await waitForCurrentUser()
     if (!u?.uid) throw new Error('User not authenticated')
     return u.uid
   }
 
-  const targetFromScope = (uid: string, scope: TargetScope) => {
-    if (scope === 'core') return { collection: COLLECTION, id: uid }
-    if (scope === 'app') {
-      if (!appId) throw new Error('Missing appId for tenant-scoped update')
-      return { collection: `apps/${appId}/${COLLECTION}`, id: uid }
-    }
-    // auto → prefer app when tenant
-    if (isTenant) {
-      if (!appId) throw new Error('Missing appId for tenant-scoped update')
-      return { collection: `apps/${appId}/${COLLECTION}`, id: uid }
-    }
-    return { collection: COLLECTION, id: uid }
+  // TODO: implement ensurePlaceExists + alumni/ongoing flags, then update profile.
+  async function setRelevantExperience(
+    _items: RelevantExperienceItem[] = []
+  ): Promise<void> {
+    console.warn(
+      '[jobs][useProfessionalUpdate] setRelevantExperience not implemented yet'
+    )
   }
 
-  const updateDisplayName = async (
-    display_name: string,
-    scope: TargetScope = 'auto'
-  ) => {
+  // Overwrite the whole array. Minimal transform: canonicalize optional place_id.
+  async function setOtherExperience(
+    items: OtherExperienceItem[] = []
+  ): Promise<void> {
     const uid = await getUid()
-    const { collection, id } = targetFromScope(uid, scope)
-    await updateDocument(collection, id, { display_name })
-  }
 
-  const updateAvatar = async (
-    source: Blob | string,
-    scope: TargetScope = 'auto'
-  ) => {
-    const uid = await getUid()
-    const { collection, id } = targetFromScope(uid, scope)
-    const path = `${collection}/${id}/avatar`
-    const url = await uploadImage(path, source)
-    await updateDocument(collection, id, { avatar: url })
-    return url
-  }
+    const normalized = items.map((item) => ({
+      ...item,
+      // keep it optional, but if present make sure it’s canonical
+      place_id: item.place_id
+        ? canonicalPlaceId(item.place_id) ?? null
+        : undefined,
+    }))
 
-  // Neutral experience arrays
-  const setRelevantExperience = async (
-    items: any[],
-    scope: TargetScope = 'auto'
-  ) => {
-    const uid = await getUid()
-    const { collection, id } = targetFromScope(uid, scope)
-    await updateDocument(collection, id, { relevant_experience: items || [] })
-  }
-
-  const setOtherExperience = async (
-    items: any[],
-    scope: TargetScope = 'auto'
-  ) => {
-    const uid = await getUid()
-    const { collection, id } = targetFromScope(uid, scope)
-    await updateDocument(collection, id, { other_experience: items || [] })
+    await updateDocument(COLLECTION, uid, {
+      other_experience: normalized,
+    })
   }
 
   return {
-    updateDisplayName,
-    updateAvatar,
     setRelevantExperience,
     setOtherExperience,
   }

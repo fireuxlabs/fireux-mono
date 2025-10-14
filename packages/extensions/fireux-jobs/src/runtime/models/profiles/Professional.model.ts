@@ -15,9 +15,8 @@ export interface ProfileConfig {
   cta?: string
 }
 
-/** Neutral, platform-agnostic experience item */
-export type ExperienceItem = {
-  name?: string
+/** Minimal shared structure for any experience entry */
+export interface ExperienceBase {
   role?: string
   from_month?: string
   from_year?: string
@@ -25,13 +24,27 @@ export type ExperienceItem = {
   to_year?: string | null
   ongoing?: boolean
   responsibilities?: string
-  /** Link to canonical place */
+}
+
+/** Experience tied to a canonical Place document in Firestore */
+export interface RelevantExperienceItem extends ExperienceBase {
+  /** Canonical ID for join (places/{place_id}) */
+  place_id: string
+}
+
+/** Experience referencing an external place snapshot (prefer Firestore data when available, but stay self-contained) */
+export interface OtherExperienceItem extends ExperienceBase {
+  /** Optional non-authoritative place reference for future backfill */
   place_id?: string
-  /** Optional place metadata */
+  /** Snapshot data captured at creation time */
+  name: string
   formatted_address?: string
   short_address?: string
   image_url?: string | null
 }
+
+/** Unified Professional experience item */
+export type ExperienceItem = RelevantExperienceItem | OtherExperienceItem
 
 /** Unified Professional */
 export interface Professional {
@@ -49,8 +62,8 @@ export interface ProfessionalCoreProfile extends ProfileBase {
   bio_long?: string | null
   specialties?: string[]
   /** neutralized experience fields */
-  relevant_experience?: ExperienceItem[]
-  other_experience?: ExperienceItem[]
+  relevant_experience?: RelevantExperienceItem[]
+  other_experience?: OtherExperienceItem[]
 }
 
 /** App overlay: apps/{appId}/professionals/{uid} */
@@ -59,8 +72,8 @@ export interface ProfessionalAppProfile extends ProfileBase {
   bio_short?: string | null
   specialties?: string[]
   /** allow app-level overlays too */
-  relevant_experience?: ExperienceItem[]
-  other_experience?: ExperienceItem[]
+  relevant_experience?: RelevantExperienceItem[]
+  other_experience?: OtherExperienceItem[]
 }
 
 /** Cards */

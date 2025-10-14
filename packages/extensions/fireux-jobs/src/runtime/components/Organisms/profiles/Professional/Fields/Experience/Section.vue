@@ -33,7 +33,8 @@
         <template #create="{ push }">
           <OrganismsProfilesProfessionalFieldsExperienceCreate
             :loading="isSavingNew"
-            @save="(payload: ExperienceItem) => handleCreateSave(payload, push as (i: ExperienceItem) => void)"
+            @confirm="(payload: ExperienceItem) => handleCreateSave(payload, push as (i: ExperienceItem) => void)"
+            @clear="onCreateClear"
           />
         </template>
       </MoleculesFormsFirestoreObjectArray>
@@ -63,10 +64,10 @@ const isSavingNew = ref(false)
 function handleRemove(index: number, remove?: () => void) {
   if (typeof remove !== 'function') return
   const item = items.value?.[index]
+  const rawName =
+    item && 'name' in item ? (item.name as string | undefined) : undefined
   const primaryLabel =
-    (item?.name as string | undefined)?.trim() ||
-    (item?.role as string | undefined)?.trim() ||
-    null
+    rawName?.trim() || (item?.role as string | undefined)?.trim() || null
   const label = primaryLabel ? `“${primaryLabel}”` : `item #${index + 1}`
 
   if (typeof window !== 'undefined') {
@@ -77,6 +78,10 @@ function handleRemove(index: number, remove?: () => void) {
   }
 
   remove()
+}
+
+function onCreateClear() {
+  listRef.value?.cancelItemEditing?.()
 }
 
 async function handleCreateSave(

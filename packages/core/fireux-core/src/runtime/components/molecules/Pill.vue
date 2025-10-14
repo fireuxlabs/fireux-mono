@@ -1,4 +1,4 @@
-<template>
+w<template>
   <div class="pill flex items-center gap-3">
     <UAvatar :src="avatar" :alt="title" size="sm" />
     <div class="flex flex-col">

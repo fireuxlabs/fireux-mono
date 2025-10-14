@@ -35,3 +35,7 @@ declare const useFireUXConfig: typeof import('#fireux-core-runtime/composables/F
 declare const useFirestoreUtils: typeof import('#fireux-core-runtime/composables/firestore/useFirestoreUtils').useFirestoreUtils
 declare const useFirestoreUpdate: typeof import('#fireux-core-runtime/composables/firestore/useFirestoreUpdate').useFirestoreUpdate
 declare const useImageStorage: typeof import('#fireux-core-runtime/composables/firebase/useImageStorage').useImageStorage
+
+declare module 'fireux-places/runtime/composables/usePlacesSearch' {
+  export * from '../packages/extensions/fireux-places/src/runtime/composables/usePlacesSearch'
+}

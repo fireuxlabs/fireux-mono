@@ -1,6 +1,7 @@
 import { useFirestoreManager } from '#fireux-core-composables/firestore/useFirestoreManager'
 import type { Place } from '../models/place.model'
 import { usePlacesSearch } from './usePlacesSearch'
+import { usePlaceSave } from './usePlaceSave'
 
 export function usePlaces() {
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreManager()
@@ -11,13 +12,14 @@ export function usePlaces() {
     collection,
     place,
     ...usePlacesSearch(),
+    ...usePlaceSave(),
   }
 }
 
 // Preserved for reference while we decide what to keep:
 // const { firestoreFetchDoc } = useFirestoreManager()
 // const place = (id: string) => firestoreFetchDoc<Place>('places', id)
-// const { savePlace } = usePlaceSave()
+// const { ensurePlaceExists } = usePlaceSave()
 // async function getPlaceDetails(placeId: string) {
 //   const details = await fetchPlaceDetails(placeId)
 //   if (!details) return null

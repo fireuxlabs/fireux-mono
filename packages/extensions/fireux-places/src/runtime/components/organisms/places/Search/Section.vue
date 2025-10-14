@@ -43,7 +43,7 @@ import type { BasePlace, Place } from '../../../../models/place.model'
 const { query, results, selected, isSearching, select, clear } =
   usePlacesSearch()
 
-const { savePlace } = usePlaceSave()
+const { ensurePlaceExists } = usePlaceSave()
 // useImageStorage is auto-imported by fireux-core module
 const { uploadFromUrl } = useImageStorage()
 
@@ -151,7 +151,7 @@ async function onConfirm(place: BasePlace) {
   try {
     const draft = await loadDraftPlace(placeId, place)
     await maybeUploadAvatar(placeId, draft, place)
-    await savePlace(draft)
+    await ensurePlaceExists(draft)
   } catch (error) {
     if (import.meta.dev) {
       console.error('[places][confirm] failed to save', error)

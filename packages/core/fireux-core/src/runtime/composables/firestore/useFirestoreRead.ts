@@ -25,7 +25,7 @@ export function useFirestoreRead() {
   function firestoreFetchCollection<T>(
     collectionPath: string
   ): Ref<T[] | undefined> {
-    const q = fsq(collection(db, collectionPath))
+    const q = fsq(collection(db, collectionPath)) as Query<T>
     return firestoreQuery<T>(q, collectionPath)
   }
 
@@ -37,7 +37,7 @@ export function useFirestoreRead() {
     docId: string
   ): Ref<T | undefined> {
     const ref = doc(db, collectionPath, docId)
-    const { data } = useDocument<T>(ref, {
+    const { data } = useDocument(ref, {
       ssrKey: `${collectionPath}-${docId}`,
     })
     return data as Ref<T | undefined>
