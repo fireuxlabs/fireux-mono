@@ -1,7 +1,6 @@
 {
   // tsconfig for Niederhorn app — do not override Nuxt aliases (~, @, ~~)
   "extends": "../tsconfig.app.base.json",
-  "files": ["../../../types/fireux.d.ts"],
   "compilerOptions": {
     "composite": false,
     "baseUrl": ".",

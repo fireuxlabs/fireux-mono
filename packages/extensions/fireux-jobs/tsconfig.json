@@ -24,6 +24,9 @@
       "fireux-core": ["../../core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../core/fireux-core/src/*"],
       "#fireux-core-runtime/*": ["../../core/fireux-core/src/runtime/*"],
+      "#fireux-core-composables/*": [
+        "../../core/fireux-core/src/runtime/composables/*"
+      ],
       "fireux-places": ["../fireux-places/src/module.ts"],
       "fireux-places/*": ["../fireux-places/src/*"],
       "fireux-places/runtime/*": ["../fireux-places/src/runtime/*"],
@@ -33,6 +36,9 @@
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.vue"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.vue"
+  ],
   "exclude": ["node_modules", "dist"]
 }

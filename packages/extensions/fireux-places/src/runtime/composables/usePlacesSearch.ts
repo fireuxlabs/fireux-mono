@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { ref, watch } from 'vue'
 import type { BasePlace, PlaceCard } from '../models/place.model'
-import { useFirestoreSearch } from '#fireux-core-composables/firestore/useFirestoreSearch'
+import { useFirestoreSearch } from 'fireux-core/runtime/composables/firestore/useFirestoreSearch.ts'
 import {
   canonicalPlaceId,
   fetchGoogle,

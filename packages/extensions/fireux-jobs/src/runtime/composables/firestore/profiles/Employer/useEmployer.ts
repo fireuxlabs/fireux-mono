@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { employerConfig } from '../../../../models/profiles/Employer.model'
 import { useEmployerUpdate } from './useEmployerUpdate'
 import { useEmployerFormattingAndValidation } from './useEmployerFormattingAndValidation'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile.ts'
 
 /**
  * Facade: compose generic profile primitives + employer-specific helpers
@@ -10,7 +11,6 @@ import { useEmployerFormattingAndValidation } from './useEmployerFormattingAndVa
  */
 export function useEmployer() {
   // Generic primitives (state, computed flags, ensure/delete, collections)
-  // NOTE: useProfile is auto-imported by the core module; avoid restricted subpath imports
   const base = useProfile(employerConfig)
 
   // Simple read-side computed from flattened profile

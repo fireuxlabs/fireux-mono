@@ -1,5 +1,7 @@
 import { useFirestore } from 'vuefire'
 import { deleteDoc, doc } from 'firebase/firestore'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils.ts'
 
 /**
  * Delete Employer document in current context (core vs tenant overlay).

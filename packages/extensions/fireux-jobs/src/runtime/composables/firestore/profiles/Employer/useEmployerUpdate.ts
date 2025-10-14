@@ -1,4 +1,9 @@
-// Note: All helpers are auto-imported from fireux-core public API by the Nuxt module.
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate.ts'
+import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
+
+// Note: All helpers are auto-imported at runtime by the Nuxt module, but we import explicitly for type safety.
 
 const COLLECTION = 'employers'
 

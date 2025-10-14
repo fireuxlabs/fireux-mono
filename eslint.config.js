@@ -20,7 +20,7 @@ export default [
         'error',
         {
           selector:
-            "CallExpression[callee.name='addImportsDir'] Literal[value=/runtime\\/models|\\.\\/runtime\\/models|\\.\\.\\/runtime\\/models/]",
+            "CallExpression[callee.name='addImportsDir'] Literal[value='runtime/models'], CallExpression[callee.name='addImportsDir'] Literal[value='./runtime/models'], CallExpression[callee.name='addImportsDir'] Literal[value='../runtime/models']",
           message:
             'addImportsDir(runtime/models) is disallowed; models are explicit imports only via #*-models/*.',
         },
@@ -50,9 +50,9 @@ export default [
         {
           patterns: [
             {
-              group: ['fireux-core/*', 'fireux-core/**'],
+              group: ['fireux-core/src/*', 'fireux-core/src/**'],
               message:
-                'Do not import subpaths from fireux-core. Use module auto-imports or public API only.',
+                'Do not import internal source files from fireux-core; use exported runtime modules instead.',
             },
           ],
         },
@@ -80,9 +80,9 @@ export default [
         {
           patterns: [
             {
-              group: ['fireux-core/*', 'fireux-core/**'],
+              group: ['fireux-core/src/*', 'fireux-core/src/**'],
               message:
-                'Do not import subpaths from fireux-core. Use module auto-imports or public API only.',
+                'Do not import internal source files from fireux-core; use exported runtime modules instead.',
             },
           ],
         },

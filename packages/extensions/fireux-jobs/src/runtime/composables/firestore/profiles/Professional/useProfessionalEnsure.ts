@@ -1,5 +1,7 @@
 import { useFirestore } from 'vuefire'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils.ts'
 
 /**
  * Ensure/create-if-missing for Professional (core or app overlay based on context).
