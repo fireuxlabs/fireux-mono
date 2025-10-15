@@ -11,8 +11,7 @@ updated: 2025-09-30
 ## Meta
 
 - Reports
-  - [Documentation Inventory and Halving Plan](./documentation-report.md)
-  - [Post-cleanup Report](./report.md)
+  - [Documentation Status — 2025-10-15](./documentation-report.md)
 
 ## Core Handbook
 

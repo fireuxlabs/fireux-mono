@@ -1,43 +1,49 @@
----
 title: Config (Nuxt / TypeScript / Env)
-status: draft
-updated: 2025-09-01
+status: active
+updated: 2025-10-15
+
 ---
 
 [← Back to ToC](./copilot-00-toc.md)
 
 # Config (Nuxt / TypeScript / Env)
 
-## Nuxt (apps)
+## Nuxt apps (example: Misebox global app)
 
 ```ts
-// nuxt.config.ts
+// projects/misebox/misebox-app/nuxt.config.ts
 import { defineNuxtConfig } from 'nuxt/config'
-import { createFireuxConfig } from 'fireux-core/config/app/fireux-config'
+import { createFireuxConfig } from 'fireux-core'
 
 export default defineNuxtConfig(
   createFireuxConfig({
-    modules: ['fireux-misebox'], // add more: 'fireux-jobs', etc.
+    appName: 'Misebox',
+    appShortName: 'Misebox',
     ecosystem: 'misebox',
-    appName: process.env.APP_NAME,
-    appShortName: process.env.APP_SHORT_NAME,
-    primaryColor: process.env.APP_PRIMARY_COLOR,
-    neutralColor: process.env.APP_NEUTRAL_COLOR,
+    modules: ['fireux-misebox'],
+    role: 'global',
   })
 )
 ```
 
-## TypeScript
+`createFireuxConfig` lives in `packages/core/fireux-core/src/config/fireux/fireux-config.ts` and acts as the single entry point for app configuration. It:
 
-- Root `tsconfig.json` uses:
-  - "module": "ESNext", "moduleResolution": "Bundler"
-  - central "paths" to packages/\*_/src/_
-- App tsconfig.json:
+- Adds Nuxt UI, Nuxt Icon, VueFire, and PWA modules automatically.
+- Deduplicates additional modules you pass in (`modules` option) so tenants/extensions can safely re-install dependencies.
+- Reads Firebase, PWA, and color theming from environment variables (`APP_*`, `FIREBASE_*`, `GOOGLE_PLACES_API_KEY`).
+- Mirrors ecosystem metadata to `runtimeConfig.public` so composables can introspect the app.
+- Restricts Vite `server.fs.allow` to the workspace root during dev for security.
 
-```json
+When an app must skip core (rare legacy cases), pass `includeCore: false` — otherwise leave it alone and let the helper install `fireux-core`.
+
+## TypeScript setup
+
+- Root `tsconfig.json` sets `module` to `ESNext`, `moduleResolution` to `Bundler`, and declares package path aliases.
+- App configs extend the shared base; example below aligns with `projects/misebox/misebox-app/tsconfig.json`:
+
+```jsonc
 {
   "extends": "../tsconfig.app.base.json",
-  "files": ["../../../types/fireux.d.ts"],
   "compilerOptions": {
     "baseUrl": ".",
     "moduleResolution": "Bundler",
@@ -66,21 +72,24 @@ export default defineNuxtConfig(
 }
 ```
 
+Notes:
+
+- Leave Nuxt’s own aliases (`~`, `@`, `~~`) untouched; they always point to `app/`.
+- The legacy `#fireux-core-runtime/*` alias remains for backwards compatibility, but new imports should prefer `fireux-core/runtime/...`.
+- For tenant apps, add their own package aliases as needed (e.g. `fireux-cleanbox/*`).
+
 ## Environment loading
 
-- .env next to the app (e.g. `projects/misebox/niederhorn/.env`)
-- VueFire reads Firebase keys from `createFireuxConfig` via the `nuxt-vuefire` module options
-- Public mirroring is exposed at `runtimeConfig.public.firebaseConfig`
+- App-level `.env` files live next to each Nuxt app (e.g. `projects/misebox/niederhorn/.env`).
+- `createFireuxConfig` parses both combined (`FIREBASE_SERVICE_ACCOUNT`) and split Firebase credentials, normalising private keys with `\n` handling.
+- VueFire configuration is injected through the `nuxt-vuefire` module options, exposing Firebase config via `runtimeConfig.public.firebaseConfig`.
+- Google Places API access comes from `GOOGLE_PLACES_API_KEY` and lands in `runtimeConfig.googlePlacesApiKey` for server handlers like `/api/places/details`.
 
-## fireux-core exports → import paths
+## Quick checks before shipping config changes
 
-Common subpath exports and how to import them from apps:
-
-- Export: "./config/app/\*" → Import: `import { createFireuxConfig } from 'fireux-core/config/app/fireux-config'`
-- Export: "./config/\*" → Import: `import { someHelper } from 'fireux-core/config/some-helper'`
-- Export: "./runtime/\*" → Import: `import { something } from 'fireux-core/runtime/something'`
-
-Note: Packages export directly from `src/` via package.json#exports (src-first). Avoid deep relative imports across packages.
+- `pnpm build:packages` should succeed; it exercises module setup for packages and tenants.
+- `pnpm dev:<app>` must show the correct module stack in `runtimeConfig.public.modules` (inspect via browser devtools: `useRuntimeConfig()`).
+- Run `pnpm lint` if you alter path aliases to ensure ESLint picks up updated config.
 
 ---
 
