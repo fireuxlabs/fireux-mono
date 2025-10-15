@@ -50,42 +50,114 @@
   >
     <UCard class="h-full rounded-[inherit] bg-white/95">
       <template #header>
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <UBadge color="primary" variant="soft" size="xs">Editing</UBadge>
-            <div class="font-medium">Edit experience place</div>
-          </div>
-          <UButton
-            v-if="hasRemoveAction"
-            icon="i-lucide-trash-2"
-            color="error"
-            variant="soft"
-            size="xs"
-            @click="emit('remove')"
-          >
-            Remove
-          </UButton>
+        <div class="flex items-center gap-2">
+          <UBadge color="primary" variant="soft" size="xs">Editing</UBadge>
+          <div class="font-medium">Edit experience details</div>
         </div>
+        <UButton
+          v-if="hasRemoveAction"
+          icon="i-lucide-trash-2"
+          color="error"
+          variant="soft"
+          size="xs"
+          @click="emit('remove')"
+        >
+          Remove
+        </UButton>
       </template>
 
-      <UForm :state="item" class="space-y-4" @submit.prevent="emit('save')">
-        <UFormGroup label="Place ID" name="place_id">
-          <UInput
-            v-model="item.place_id"
-            placeholder="e.g., ChIJDx…"
-            autocomplete="off"
-          />
-        </UFormGroup>
+      <UForm :state="item" class="space-y-6" @submit.prevent="emit('save')">
+        <section class="space-y-3">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <MoleculesPill
+              :avatar="displayAvatar || ''"
+              :title="organizationLabel"
+              :subtitle="locationLabel || '—'"
+            />
+          </div>
+          <p class="text-xs text-neutral-500">
+            Place link is fixed. Contact support if the wrong place was chosen.
+          </p>
+        </section>
 
-        <UAlert
-          icon="i-lucide-info"
-          color="primary"
-          variant="soft"
-          class="text-sm"
-        >
-          Only the canonical Google Place ID is required right now. Additional
-          fields will be added once the place is set.
-        </UAlert>
+        <div class="grid gap-4 md:grid-cols-2">
+          <UFormGroup label="Role" name="role">
+            <UInput
+              v-model="item.role"
+              placeholder="Role (e.g. Sous Chef)"
+              autocomplete="off"
+            />
+          </UFormGroup>
+
+          <UFormGroup
+            label="Responsibilities"
+            name="responsibilities"
+            class="md:col-span-2"
+          >
+            <UTextarea
+              v-model="item.responsibilities"
+              :rows="3"
+              placeholder="Key responsibilities or accomplishments"
+            />
+          </UFormGroup>
+        </div>
+
+        <div class="space-y-4">
+          <div class="text-sm font-medium text-neutral-700">Timeline</div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <UFormGroup label="Start month" name="from_month">
+              <USelect
+                v-model="item.from_month"
+                :items="monthOptions"
+                option-attribute="label"
+                value-attribute="value"
+                placeholder="Select month"
+              />
+            </UFormGroup>
+
+            <UFormGroup label="Start year" name="from_year">
+              <USelect
+                v-model="item.from_year"
+                :items="yearOptions"
+                option-attribute="label"
+                value-attribute="value"
+                placeholder="Select year"
+                searchable
+              />
+            </UFormGroup>
+          </div>
+
+          <div
+            class="flex items-center gap-3 text-sm font-medium text-neutral-900"
+          >
+            <USwitch v-model="item.ongoing" />
+            <span>Ongoing</span>
+          </div>
+
+          <div v-if="!item.ongoing" class="grid gap-4 md:grid-cols-2">
+            <UFormGroup label="End month" name="to_month">
+              <USelect
+                v-model="item.to_month"
+                :items="monthOptions"
+                option-attribute="label"
+                value-attribute="value"
+                placeholder="Select month"
+              />
+            </UFormGroup>
+
+            <UFormGroup label="End year" name="to_year">
+              <USelect
+                v-model="item.to_year"
+                :items="yearOptions"
+                option-attribute="label"
+                value-attribute="value"
+                placeholder="Select year"
+                searchable
+              />
+            </UFormGroup>
+          </div>
+        </div>
       </UForm>
 
       <div class="flex justify-end gap-2 pt-4">
@@ -111,7 +183,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, shallowRef, watch, type Ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { Place } from 'fireux-places/runtime/models/place.model.ts'
 import { usePlaces } from 'fireux-places/runtime/composables/usePlaces.ts'
 
@@ -131,17 +203,32 @@ const props = defineProps<{
 
 const { place: fetchPlaceDoc } = usePlaces()
 
-const placeRef = shallowRef<Ref<Place | undefined> | null>(null)
+const hydratedPlace = ref<Place | null>(null)
+
+let stopWatchingPlace: (() => void) | null = null
 
 watch(
   () => canonicalPlaceId(props.item?.place_id),
   (id) => {
-    placeRef.value = id ? fetchPlaceDoc(id) : null
+    stopWatchingPlace?.()
+    stopWatchingPlace = null
+
+    if (!id) {
+      hydratedPlace.value = null
+      return
+    }
+
+    const placeDoc = fetchPlaceDoc(id)
+    stopWatchingPlace = watch(
+      placeDoc,
+      (next) => {
+        hydratedPlace.value = next ?? null
+      },
+      { immediate: true }
+    )
   },
   { immediate: true }
 )
-
-const hydratedPlace = computed(() => placeRef.value?.value ?? null)
 
 const displayAvatar = computed(() => {
   const avatarFromPlace = hydratedPlace.value?.avatar
@@ -163,8 +250,6 @@ const organizationLabel = computed(() => {
 const locationLabel = computed(() => {
   const placeFormatted = hydratedPlace.value?.formatted_address?.trim()
   if (placeFormatted) return placeFormatted
-  const placeShort = hydratedPlace.value?.short_address?.trim()
-  if (placeShort) return placeShort
   const formatted = (props.item?.formatted_address ?? '').toString().trim()
   if (formatted) return formatted
   const shortAddr = (props.item?.short_address ?? '').toString().trim()
@@ -195,4 +280,38 @@ function canonicalPlaceId(id: string | null | undefined) {
   if (!normalized) return null
   return normalized.replace(/^places\//, '') || null
 }
+
+const monthOptions = [
+  { label: 'January', value: 'January' },
+  { label: 'February', value: 'February' },
+  { label: 'March', value: 'March' },
+  { label: 'April', value: 'April' },
+  { label: 'May', value: 'May' },
+  { label: 'June', value: 'June' },
+  { label: 'July', value: 'July' },
+  { label: 'August', value: 'August' },
+  { label: 'September', value: 'September' },
+  { label: 'October', value: 'October' },
+  { label: 'November', value: 'November' },
+  { label: 'December', value: 'December' },
+]
+
+const yearOptions = computed(() => {
+  const currentYear = new Date().getFullYear()
+  const span = 50
+  return Array.from({ length: span + 6 }, (_, index) => {
+    const year = currentYear + 1 - index
+    return { label: year.toString(), value: year.toString() }
+  })
+})
+
+watch(
+  () => props.item?.ongoing,
+  (ongoing) => {
+    if (ongoing && props.item) {
+      props.item.to_month = null
+      props.item.to_year = null
+    }
+  }
+)
 </script>

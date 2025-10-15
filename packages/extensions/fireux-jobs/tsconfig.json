@@ -36,9 +36,6 @@
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.vue"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.vue"],
   "exclude": ["node_modules", "dist"]
 }

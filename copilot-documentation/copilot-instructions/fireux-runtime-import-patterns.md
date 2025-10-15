@@ -12,7 +12,7 @@ Nuxt’s auto-import aliases (for example `#fireux-core-composables`) only resol
   - Use `fireux-core/runtime/composables/...` (with the `.ts` suffix because we use `"verbatimModuleSyntax": true` and moduleResolution `Bundler`).
   - Example: `import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate.ts'`.
   - The same rule applies to other FireUX packages (e.g. `fireux-places/runtime/composables/usePlaceSave.ts`).
-- **Do not import from `fireux-core/src/**`** unless you are inside the `fireux-core` package. ESLint now enforces this by blocking only the raw `src` paths.
+- **Do not import from `fireux-core/src/**`** unless you are inside the `fireux-core`package. ESLint now enforces this by blocking only the raw`src` paths.
 - **Nuxt auto-import aliases are runtime conveniences only.** They keep working inside app code, but cross-package code must stick to the package export paths.
 
 ## TypeScript setup checklist
