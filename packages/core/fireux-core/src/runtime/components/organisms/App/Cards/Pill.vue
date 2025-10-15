@@ -1,7 +1,11 @@
 <template>
   <UCard class="pill">
     <div class="pill-content">
-      <UAvatar :src="app?.avatarUrl" :alt="app?.app_name" size="sm" />
+      <UAvatar
+        :src="app?.avatar_url ?? app?.avatarUrl ?? undefined"
+        :alt="app?.app_name"
+        size="sm"
+      />
 
       <div class="pill-info">
         <div class="pill-title">
@@ -22,10 +26,10 @@
 </template>
 
 <script setup lang="ts">
-import type { App } from '../../../../models/core/app.model'
+import type { AppCard } from '../../../../models/core/app.model'
 
 interface Props {
-  app: App.Card.Pill
+  app: AppCard.Pill
 }
 
 defineProps<Props>()

@@ -1,7 +1,7 @@
 // packages/core/fireux-core/src/runtime/composables/firestore/user/useUserEnsure.ts
 import { shallowRef, type Ref } from 'vue'
 import { useCurrentUser, useFirestore } from 'vuefire'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useImageStorage } from '../../firebase/useImageStorage'
 import type {
@@ -50,14 +50,18 @@ export function useUserEnsure(_user?: Ref<User | null>) {
     const source = (auth.photoURL as string) || getDefaultImageUrl()
     const avatarUrl = await uploadImage(`core-users/${auth.uid}/avatar`, source)
 
-    const payload: Partial<CoreUserDoc> = {
+    const now = serverTimestamp()
+
+    const payload: CoreUserDoc = {
       id: auth.uid,
-      email: auth.email!,
+      email: auth.email ?? '',
       display_name: auth.displayName || 'New User',
       avatar: avatarUrl,
+      created_at: now as unknown as CoreUserDoc['created_at'],
+      updated_at: now as unknown as CoreUserDoc['updated_at'],
     }
 
-    await setDoc(coreRef, payload as CoreUserDoc, { merge: false })
+    await setDoc(coreRef, payload, { merge: false })
     return { created: true, avatarUrl }
   }
 
@@ -75,14 +79,18 @@ export function useUserEnsure(_user?: Ref<User | null>) {
     const snap = await getDoc(appRef)
     if (snap.exists()) return { created: false }
 
-    const payload: Partial<AppUserDoc> = {
+    const now = serverTimestamp()
+
+    const payload: AppUserDoc = {
       id: auth.uid,
       role: 'user',
       display_name: auth.displayName || 'New User',
       avatar: coreAvatarUrl || '',
+      created_at: now as unknown as AppUserDoc['created_at'],
+      updated_at: now as unknown as AppUserDoc['updated_at'],
     }
 
-    await setDoc(appRef, payload as AppUserDoc, { merge: false })
+    await setDoc(appRef, payload, { merge: false })
     return { created: true }
   }
 

@@ -2,7 +2,11 @@
 import type { Ref } from 'vue'
 import { useCurrentUser } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig'
-import type { User } from '../../../models/core/user.model'
+import type {
+  User,
+  CoreUserDoc,
+  AppUserDoc,
+} from '../../../models/core/user.model'
 import { useFirestoreUpdate } from '../useFirestoreUpdate'
 import { useImageStorage } from '../../firebase/useImageStorage'
 
@@ -36,22 +40,43 @@ export function useUserUpdate(userRef?: Ref<User | null>) {
   }
 
   /** low-level writer */
-  const updateFieldsScoped = async (
-    partial: Partial<User>,
-    scope: TargetScope = 'auto'
+  type ScopePartialMap = {
+    core: Partial<CoreUserDoc>
+    app: Partial<AppUserDoc>
+    auto: Partial<CoreUserDoc> | Partial<AppUserDoc>
+  }
+
+  const updateFieldsScoped = async <S extends TargetScope>(
+    partial: ScopePartialMap[S],
+    scope: S = 'auto' as S
   ) => {
     const { collection, id } = targetFromScope(scope)
-    await updateDocument<User>(collection, id, partial)
+    const isAppCollection = collection.startsWith('apps/')
+
+    if (isAppCollection) {
+      await updateDocument<AppUserDoc>(
+        collection,
+        id,
+        partial as ScopePartialMap['app']
+      )
+      return
+    }
+
+    await updateDocument<CoreUserDoc>(
+      collection,
+      id,
+      partial as ScopePartialMap['core']
+    )
   }
 
   /** Field updaters (scoped) */
   const updateDisplayName = async (
     display_name: string,
     scope: TargetScope = 'auto'
-  ) => updateFieldsScoped({ display_name } as Partial<User>, scope)
+  ) => updateFieldsScoped({ display_name }, scope)
 
   const updateHandle = async (handle: string, scope: TargetScope = 'auto') =>
-    updateFieldsScoped({ handle } as Partial<User>, scope)
+    updateFieldsScoped({ handle }, scope)
 
   const updateAvatar = async (
     source: Blob | string,
@@ -60,7 +85,7 @@ export function useUserUpdate(userRef?: Ref<User | null>) {
     const { collection, id } = targetFromScope(scope)
     const path = `${collection}/${id}/avatar`
     const url = await uploadImage(path, source)
-    await updateFieldsScoped({ avatar: url } as Partial<User>, scope)
+    await updateFieldsScoped({ avatar: url }, scope)
     return url
   }
 

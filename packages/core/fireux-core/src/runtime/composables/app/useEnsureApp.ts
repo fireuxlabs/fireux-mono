@@ -1,9 +1,9 @@
 import { doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore'
+import type { Firestore } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import type { App } from '../../models/core/app.model'
+import type { AppDoc, AppRole, AppDefaults } from '../../models/core/app.model'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useFirestoreManager } from '../firestore/useFirestoreManager'
-import { useImageStorage } from '../firebase/useImageStorage'
 
 /**
  * Composable to ensure an app exists in Firestore
@@ -17,125 +17,140 @@ export function useAppEnsure() {
    * @returns The app ID if successful
    */
   async function ensureApp(coreUser?: any) {
-    console.log('🚀 [ensureApp] Function invoked.')
+    if (!import.meta.client) return null
 
-    // Ensure this only runs on the client side
-    if (!import.meta.client) {
-      console.log('🚫 [ensureApp] Skipping on server side')
-      return null
+    const { setDocument, waitForCurrentUser } = useFirestoreManager()
+    const uid = await resolveActorId(coreUser, waitForCurrentUser)
+
+    const {
+      appId,
+      appName,
+      appShortName,
+      ecosystem,
+      role,
+      globalAppId,
+      primaryColor,
+      neutralColor,
+    } = useFireUXConfig()
+
+    const db = useFirestore()
+    const normalizedRole = (role === 'global' ? 'global' : 'tenant') as AppRole
+    let targetAppId = appId
+
+    if (normalizedRole === 'global') {
+      targetAppId = globalAppId || appId
+      if (!targetAppId && ecosystem) {
+        targetAppId = `${ecosystem}-app`
+      }
     }
 
-    try {
-      // Step 1: Get user data (either provided or from auth)
-      const { setDocument } = useFirestoreManager()
-      let uid: string
-
-      if (coreUser?.id) {
-        // Use the provided core user
-        uid = coreUser.id
-        console.log(`✅ [ensureApp] Using provided core user: ${uid}`)
-      } else {
-        // Get the current authenticated user
-        const { waitForCurrentUser } = useFirestoreManager()
-        const currentUser = await waitForCurrentUser()
-
-        if (!currentUser?.uid) {
-          throw new Error('No authenticated user found')
-        }
-
-        uid = currentUser.uid
-        console.log(`✅ [ensureApp] Using authenticated user: ${uid}`)
-      }
-
-      // Step 2: Get app configuration
-      const { appId, appName, ecosystem, modules, role } = useFireUXConfig()
-      const db = useFirestore()
-
-      console.log(
-        `🔍 [ensureApp] Detected modules: ${
-          Array.isArray(modules) ? modules.join(', ') : ''
-        }`
+    if (!targetAppId) {
+      throw new Error(
+        'Missing app identifier. Set APP_ID or configure ecosystem.'
       )
-      console.log(`🔍 [ensureApp] Detected ecosystem: ${ecosystem ?? 'none'}`)
-
-      // Step 3: Check if app already exists
-      const appDocRef = doc(db, 'apps', appId)
-      const appSnapshot = await getDoc(appDocRef)
-
-      if (appSnapshot.exists()) {
-        const appData = appSnapshot.data() as App
-        const createdAt =
-          typeof appData.created_at === 'string'
-            ? appData.created_at
-            : 'unknown date'
-        console.log(
-          `✅ [ensureApp] App '${appId}' already exists. Created on ${createdAt}.`
-        )
-        return appId
-      }
-
-      // Step 4: Prepare default avatar in Storage (best-effort)
-      const avatarUrl = await prepareDefaultAppAvatar(appId)
-
-      // Step 5: Create the app if it doesn't exist
-      const appData: Partial<App> = {
-        id: appId,
-        app_name: appName,
-        admin_ids: [uid],
-        creator_id: uid,
-        // Reflect current role: tenant apps mark is_tenant=true; global/platform mark false
-        is_tenant: String(role || '').toLowerCase() === 'tenant',
-        ...(ecosystem ? { ecosystem } : {}), // Add ecosystem if detected from modules
-        ...(avatarUrl ? { avatarUrl } : {}),
-        created_at: new Date().toISOString(),
-      }
-
-      // Write the app document without automatic stamping (explicit system fields already set)
-      await setDocument('apps', appId, appData, { raw: true })
-      console.log(
-        `🎉 [ensureApp] App '${appId}' created successfully with ecosystem: ${
-          ecosystem ?? 'none'
-        }`
-      )
-
-      // Step 6: Update core user with admin role
-      if (coreUser?.adminOf?.includes(appId)) {
-        console.log(
-          `✅ [ensureApp] Core user already has admin role for app '${appId}'.`
-        )
-      } else {
-        const coreUserRef = doc(db, 'core-users', uid)
-        await updateDoc(coreUserRef, {
-          adminOf: arrayUnion(appId),
-        })
-        console.log(
-          `✅ [ensureApp] Core user updated with admin role for app '${appId}'.`
-        )
-      }
-
-      return appId
-    } catch (error) {
-      console.error('❌ [ensureApp] Error occurred:', error)
-      throw error
     }
+
+    const snapshot = await getDoc(doc(db, 'apps', targetAppId))
+    if (snapshot.exists()) return targetAppId
+
+    const payload = buildAppPayload({
+      appId: targetAppId,
+      appName,
+      appShortName,
+      ecosystem,
+      role: normalizedRole,
+      uid,
+      primaryColor,
+      neutralColor,
+    })
+
+    await setDocument('apps', targetAppId, payload, { raw: true })
+    await ensureCoreUserAdmin(db, uid, targetAppId, coreUser)
+
+    return targetAppId
   }
 
-  /** Best-effort default app avatar upload. Returns a URL or undefined on failure. */
-  async function prepareDefaultAppAvatar(
-    appId: string
-  ): Promise<string | undefined> {
-    try {
-      const { uploadImage, getDefaultImageUrl } = useImageStorage()
-      const url = await uploadImage(
-        `apps/${appId}/avatar.jpg`,
-        getDefaultImageUrl()
-      )
-      if (url) console.log('🖼️ [ensureApp] App avatar uploaded to Storage')
-      return url || undefined
-    } catch (e) {
-      console.warn('⚠️ [ensureApp] Failed to upload default app avatar:', e)
-      return undefined
+  async function resolveActorId(
+    coreUser: any,
+    waitForCurrentUser: () => Promise<any>
+  ) {
+    if (coreUser?.id) return coreUser.id
+
+    const currentUser = await waitForCurrentUser()
+    if (!currentUser?.uid) {
+      throw new Error('No authenticated user found')
     }
+
+    return currentUser.uid
+  }
+
+  function buildAppPayload(params: {
+    appId: string
+    appName: string
+    appShortName?: string
+    ecosystem?: string
+    role: AppRole
+    uid: string
+    primaryColor?: string
+    neutralColor?: string
+  }): Partial<AppDoc> {
+    const {
+      appId,
+      appName,
+      appShortName,
+      ecosystem,
+      role,
+      uid,
+      primaryColor,
+      neutralColor,
+    } = params
+
+    if (!ecosystem) {
+      throw new Error('Missing ecosystem configuration for app creation.')
+    }
+
+    const payload: Partial<AppDoc> = {
+      id: appId,
+      app_name: appName,
+      role,
+      ecosystem,
+      admin_ids: [uid],
+      creator_id: uid,
+    }
+
+    if (appShortName) {
+      payload.app_short_name = appShortName
+    }
+
+    if (role === 'global') {
+      const brand: AppDefaults['brand'] | undefined =
+        primaryColor || neutralColor
+          ? {
+              ...(primaryColor ? { primary: primaryColor } : {}),
+              ...(neutralColor ? { neutral: neutralColor } : {}),
+            }
+          : undefined
+
+      if (brand) {
+        payload.defaults = { brand }
+      }
+    }
+
+    return payload
+  }
+
+  async function ensureCoreUserAdmin(
+    db: Firestore,
+    uid: string,
+    appId: string,
+    coreUser?: any
+  ) {
+    if (coreUser?.adminOf?.includes(appId)) return
+
+    const coreUserRef = doc(db, 'core-users', uid)
+    await updateDoc(coreUserRef, {
+      adminOf: arrayUnion(appId),
+    })
   }
 
   return { ensureApp }

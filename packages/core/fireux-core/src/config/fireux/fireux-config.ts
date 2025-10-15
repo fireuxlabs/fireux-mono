@@ -8,14 +8,14 @@ export interface TenantConfig {
   ecosystem: string
   appName: string
   appShortName: string
+  role: 'global' | 'tenant'
   modules?: ModuleEntry[]
-  includeCore?: boolean // default true
+  includeCore?: boolean
   primaryColor?: string
   neutralColor?: string
   vuefire?: Record<string, any>
   pwa?: Record<string, any>
   compatibilityDate?: string
-  role?: string
 }
 
 function dedupeKeepLast(mods: ModuleEntry[] = []): ModuleEntry[] {
@@ -35,6 +35,14 @@ function dedupeKeepLast(mods: ModuleEntry[] = []): ModuleEntry[] {
 
 // concise env helper per Sonar (typescript:S6582)
 const env = (k: string) => process.env[k]?.trim() || undefined
+
+const requireEnv = (key: string) => {
+  const value = env(key)
+  if (!value) {
+    throw new Error(`[fireux] Environment variable ${key} is required.`)
+  }
+  return value
+}
 
 function readServiceAccount():
   | { projectId: string; clientEmail: string; privateKey: string }
@@ -78,9 +86,27 @@ function resolveWorkspaceRoot() {
 export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
   const includeCore = opts.includeCore ?? true
 
-  const primaryColor =
-    opts.primaryColor ?? env('APP_PRIMARY_COLOR') ?? '#000000'
+  const ecosystem = opts.ecosystem.trim()
+  if (!ecosystem) {
+    throw new Error('[fireux] createFireuxConfig requires an ecosystem name.')
+  }
+
+  const appName = opts.appName.trim()
+  if (!appName) {
+    throw new Error('[fireux] createFireuxConfig requires appName.')
+  }
+
+  const appShortName = opts.appShortName.trim()
+  if (!appShortName) {
+    throw new Error('[fireux] createFireuxConfig requires appShortName.')
+  }
+
+  const role = opts.role
+
+  const primaryColor = opts.primaryColor ?? env('APP_PRIMARY_COLOR')
   const neutralColor = opts.neutralColor ?? env('APP_NEUTRAL_COLOR')
+  const centralSignupUrl = env('CENTRAL_SIGNUP_URL')
+  const appIcon = env('APP_ICON')
 
   const sa = readServiceAccount()
 
@@ -131,13 +157,8 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
 
   const modules = dedupeKeepLast([...base, ...(opts.modules ?? [])])
 
-  const appId = env('APP_ID')
-  if (process.env.NODE_ENV !== 'production' && !appId) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      '[fireux] APP_ID is not set. Some app-level composables may not resolve.'
-    )
-  }
+  const appId = requireEnv('APP_ID')
+  const globalAppId = ecosystem ? `${ecosystem}-app` : undefined
 
   // dev-only, minimal Vite fs.allow: just the workspace root
   const devFsAllow =
@@ -148,26 +169,29 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     imports: { dirs: ['composables/**', 'utils/**'] },
 
     modules,
-    app: { head: { title: opts.appName } },
+    app: { head: { title: appName } },
 
     runtimeConfig: {
-      googlePlacesApiKey: env('GOOGLE_PLACES_API_KEY') || '',
-      firebaseServiceAccount: env('FIREBASE_SERVICE_ACCOUNT') || '',
+      googlePlacesApiKey: env('GOOGLE_PLACES_API_KEY'),
+      firebaseServiceAccount: env('FIREBASE_SERVICE_ACCOUNT'),
       public: {
-        ecosystem: opts.ecosystem,
-        appName: opts.appName,
-        appShortName: opts.appShortName,
+        ecosystem,
+        appName,
+        appShortName,
         primaryColor,
         neutralColor,
+        centralSignupUrl,
+        appIcon,
         firebaseConfig: { ...(vuefireMerged.config || {}) },
         appSettings: {
           appId,
-          ecosystem: opts.ecosystem,
-          appName: opts.appName,
-          appShortName: opts.appShortName,
+          ecosystem,
+          appName,
+          appShortName,
         },
         modules: modules.map((m) => (Array.isArray(m) ? m[0] : m)),
-        role: opts.role ?? 'tenant',
+        role,
+        globalAppId,
       },
     },
 

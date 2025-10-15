@@ -1,7 +1,11 @@
 <template>
   <UCard class="profile">
     <div class="profile-header">
-      <UAvatar :src="app?.avatarUrl" :alt="app?.app_name" size="xl" />
+      <UAvatar
+        :src="app?.avatar_url ?? app?.avatarUrl ?? undefined"
+        :alt="app?.app_name"
+        size="xl"
+      />
 
       <div class="profile-info">
         <div class="profile-name">
@@ -30,9 +34,9 @@
           {{
             app?.parent
               ? `${app.parent} tenant`
-              : app?.is_tenant
+              : app?.role === 'tenant'
               ? 'Tenant'
-              : 'Platform'
+              : 'Global'
           }}
         </div>
         <div v-if="app?.created_at" class="profile-detail">
@@ -84,10 +88,11 @@
       <div class="detail-grid">
         <div class="profile-detail">
           <strong>Tenant App:</strong>
-          {{ app?.is_tenant !== false ? 'Yes' : 'No' }}
+          {{ app?.role === 'tenant' ? 'Yes' : 'No' }}
         </div>
         <div class="profile-detail">
-          <strong>Avatar URL:</strong> {{ app?.avatarUrl ? 'Set' : 'Not set' }}
+          <strong>Avatar URL:</strong>
+          {{ app?.avatar_url || app?.avatarUrl ? 'Set' : 'Not set' }}
         </div>
         <div v-if="app?.parent" class="profile-detail">
           <strong>Parent System:</strong> {{ app.parent }}
@@ -98,10 +103,10 @@
 </template>
 
 <script setup lang="ts">
-import type { App } from '../../../../models/core/app.model'
+import type { AppCard } from '../../../../models/core/app.model'
 
 interface Props {
-  app: App.Card.Profile | null
+  app: AppCard.Profile | null
 }
 
 defineProps<Props>()

@@ -7,10 +7,11 @@ import { useUserComputed } from './useUserComputed'
 import { useUserEnsure } from './useUserEnsure'
 import { useUserDelete } from './useUserDelete'
 import { useUserState } from '../../state/useUserState'
-import type {
-  User,
-  CoreUserDoc,
-  AppUserDoc,
+import {
+  toUser,
+  type User,
+  type CoreUserDoc,
+  type AppUserDoc,
 } from '../../../models/core/user.model'
 import type { User as FirebaseUser } from 'firebase/auth'
 
@@ -53,21 +54,10 @@ export function useUser() {
   const user = computed<User | null>(() => {
     if (!uid.value) return null
 
-    const base = { id: uid.value }
     const core = coreDoc.value ?? null
-    const app = isTenant ? appDoc.value ?? null : undefined
+    const app = isTenant && appId ? appDoc.value ?? null : null
 
-    const flat = {
-      ...base,
-      ...(core ?? {}),
-      ...(app ?? {}),
-    }
-
-    return {
-      ...flat,
-      core,
-      app,
-    } as User
+    return toUser(core, app, uid.value)
   })
 
   // Mirror into Nuxt state
