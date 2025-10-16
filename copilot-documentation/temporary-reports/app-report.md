@@ -11,6 +11,22 @@ created: 2025-10-15
 - Runtime composables (`useFireUXConfig`, `useApp*`) expose the normalized settings and initialization gates used across the app shell and feature layers.
 - The app shell component (`FireuxAppShell.vue`) is the only thing project apps render directly; everything else flows from the core runtime.
 
+## Latest Updates (2025-10-15)
+
+- **Runtime config hardened**: `packages/core/fireux-core/src/runtime/composables/FireUXConfig.ts` now fails fast when `appId`, `appName`, `appShortName`, `ecosystem`, or `role` are missing and exposes optional fields (`centralSignupUrl`, `appIcon`, etc.) without defaults.
+- **Nuxt factory tightened**: `packages/core/fireux-core/src/config/fireux/fireux-config.ts` requires `role`, enforces `APP_ID`, and forwards optional branding URLs while dropping silent fallbacks.
+- **App seeding minimalized**: `packages/core/fireux-core/src/runtime/composables/app/useEnsureApp.ts` seeds Firestore docs using the canonical layout (no implicit defaults, `defaults.brand` only when colors provided).
+- **Env check aligned**: `packages/core/fireux-core/src/runtime/server/api/app/env-check.ts` now demands `APP_ID`, reports Firebase admin/Stripe status, and surfaces warnings instead of guessing.
+- **Firestore migrated**: `scripts/2025-10-migrate-apps.ts` landed and was executed to reset `apps` collection to `misebox-app` and `niederhorn` records.
+
+## Suggested Follow-Ups
+
+- Re-run onboarding flows that call `useAppEnsure` to confirm fresh environments reseed the expected docs; watch Firestore for drift.
+- Update tenant configs (`projects/**/nuxt.config.ts`) if they rely on removed defaults (check for missing `role` definitions or branding overrides).
+- Audit downstream composables/components that expected deprecated `AppDoc` fields (e.g. legacy `avatarUrl`, `defaults.domain`) and remove stale references.
+- Capture console clean-up work flagged by `pnpm lint --filter fireux-core` (numerous `console.*` warnings remain across runtime/dist bundles).
+- When ready, extend the migration script to snapshot results or wire into CI so future schema changes stay reproducible.
+
 ## Core Execution Flow Snapshot
 
 - App-level `nuxt.config.ts` calls `createFireuxConfig({ modules: ['fireux-tenant'] })` to merge tenant overrides with core defaults.

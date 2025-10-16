@@ -62,7 +62,7 @@ async function scan() {
     '!**/.nuxt/**',
     '!**/dist/**',
     '!**/.git/**',
-    '!tools/scripts/scan-deprecated-files.mjs',
+    '!automation/maintenance/scan-deprecated-files.mjs',
     '!copilot-documentation/**',
   ]
   const files = globSync(patterns, { cwd: CWD, dot: true, nodir: true })

@@ -1,0 +1,76 @@
+{
+  "total": 7,
+  "professionals": [
+    {
+      "id": "FoPLMYVPirSiMm2eDskwsZja0q42",
+      "created_at": {
+        "_seconds": 1739204453,
+        "_nanoseconds": 771000000
+      },
+      "display_name": "Joe Dean",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/core-users%2FFoPLMYVPirSiMm2eDskwsZja0q42%2Favatar.jpg?alt=media",
+      "bioShort": "I am an experienced chef...",
+      "bioLong": "With a career spanning...",
+      "updated_at": {
+        "_seconds": 1758565739,
+        "_nanoseconds": 256000000
+      }
+    },
+    {
+      "id": "OnLDg1ZcGqh30aaopCZggBIyhbS2",
+      "created_at": {
+        "_seconds": 1739088353,
+        "_nanoseconds": 283000000
+      },
+      "display_name": "Henrique Macedo",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/core-users%2FOnLDg1ZcGqh30aaopCZggBIyhbS2%2Favatar.jpg?alt=media",
+      "bioShort": "I’m a Sous Chef...",
+      "bioLong": "I started my culinary career...",
+      "updated_at": {
+        "_seconds": 1758565739,
+        "_nanoseconds": 256000000
+      }
+    },
+    {
+      "id": "WShQtlmVVVdqajd9muSHBLnm9kD2",
+      "created_at": {
+        "_seconds": 1741217092,
+        "_nanoseconds": 306000000
+      },
+      "display_name": "Sebastian Nagel ",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/core-users%2FWShQtlmVVVdqajd9muSHBLnm9kD2%2Favatar.jpg?alt=media",
+      "updated_at": {
+        "_seconds": 1758565739,
+        "_nanoseconds": 256000000
+      }
+    },
+    {
+      "id": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
+      "created_at": {
+        "_seconds": 1736511886,
+        "_nanoseconds": 948000000
+      },
+      "display_name": "d.m.watson1985@gmail.com",
+      "avatar": "https://lh3.googleusercontent.com/a/ACg8ocJnKv9Df1jTQbtbeo7IgDjcB8lnGz4QZQhgQPI_eLgsqcFweDY=s96-c",
+      "bioShort": "\"Private Chef with experience...\"",
+      "updated_at": {
+        "_seconds": 1758565739,
+        "_nanoseconds": 256000000
+      }
+    },
+    {
+      "id": "rEssOnUA8wVHdNKE2JETqWAdwdm1",
+      "created_at": {
+        "_seconds": 1739298507,
+        "_nanoseconds": 420000000
+      },
+      "display_name": "Richi’s Reinigung",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/core-users%2FrEssOnUA8wVHdNKE2JETqWAdwdm1%2Favatar.jpg?alt=media",
+      "bioShort": "Holiday home kitchen cleaner. ",
+      "updated_at": {
+        "_seconds": 1758565739,
+        "_nanoseconds": 256000000
+      }
+    }
+  ]
+}

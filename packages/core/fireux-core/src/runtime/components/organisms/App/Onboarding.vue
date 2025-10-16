@@ -35,16 +35,11 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useUser } from '../../../composables/firestore/user/useUser'
-import { useAppEnsure } from '../../../composables/app/useEnsureApp'
+import { useApp } from '../../../composables/app/useApp'
 const { user } = useUser()
 const coreUser = computed(() => user.value?.core ?? null)
-if (import.meta.dev) {
-  watch(coreUser, (val) => {
-    console.log('[Onboarding] coreUser changed', val)
-  })
-}
 const { data: envData, error: envError } = await useFetch(
   '/api/app/env-check',
   {
@@ -52,40 +47,27 @@ const { data: envData, error: envError } = await useFetch(
     default: () => null,
   }
 )
-const { ensureApp } = useAppEnsure()
+const { factory } = useApp()
+const { ensure, ensuring, lastError, lastEnsuredId } = factory
+const ensureError = computed(() => lastError.value?.message ?? null)
+const ensuredAppId = computed(() => lastEnsuredId.value ?? null)
 
 const pin = ref([])
 const isUnlocked = ref(false)
 
-// Debug logging
-console.log('🚀 Onboarding component mounted', {
-  coreUser: coreUser.value,
-  isUnlocked: isUnlocked.value,
-  envData: envData.value,
-})
-
-// Log any environment check errors
-if (envError.value) {
-  console.error('Environment check failed:', envError.value)
-}
-
 function checkPin() {
-  console.log('PIN input complete:', pin.value)
   if (pin.value.join('') === '1234') {
-    console.log('Correct PIN entered! Unlocking...')
     isUnlocked.value = true
   } else {
-    console.log('Incorrect PIN. Please try again.')
+    pin.value = []
   }
 }
 
 async function createAppHandler() {
   try {
-    // Pass the coreUser object to avoid refetching it
-    const appId = await ensureApp(coreUser.value)
-    console.log(`App '${appId}' successfully created or already exists.`)
+    await ensure(coreUser.value)
   } catch (error) {
-    console.error('Error creating app:', error)
+    // factory.lastError already captures the thrown error for UI display
   }
 }
 </script>

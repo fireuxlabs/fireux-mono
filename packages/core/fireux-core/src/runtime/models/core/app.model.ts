@@ -7,7 +7,7 @@ export interface FirestoreTimestamp {
 type TSOrISO = FirestoreTimestamp | string
 
 /** App scope role */
-export type AppRole = 'global' | 'tenant'
+export type AppRole = 'global' | 'tenant' | 'sandbox'
 
 /** Branding */
 export interface AppBrand {
@@ -34,8 +34,10 @@ export interface AppDoc {
   /** == Firestore doc id */
   id: string
 
-  /** Display names */
+  /** Display name */
   app_name: string
+
+  /** Short name (only for global/tenant apps) */
   app_short_name?: string
 
   /** Scope + lineage */
@@ -50,7 +52,7 @@ export interface AppDoc {
   defaults?: AppDefaults
 
   /** Governance */
-  admin_ids: string[]
+  admin_ids?: string[]
   creator_id: string
   is_active?: boolean
 
@@ -82,7 +84,7 @@ export namespace AppCard {
     id: string
     app_name: string
     role: AppRole
-    admin_ids: string[]
+    admin_ids?: string[]
     creator_id: string
     created_at?: TSOrISO
     avatar_url?: string | null
@@ -92,7 +94,7 @@ export namespace AppCard {
     id: string
     app_name: string
     role: AppRole
-    admin_ids: string[]
+    admin_ids?: string[]
     creator_id: string
     created_at?: TSOrISO
     avatar_url?: string | null

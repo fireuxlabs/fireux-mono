@@ -6,7 +6,7 @@ import { globSync } from 'glob'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-// Repo root is two levels up from this script: tools/scripts -> repoRoot
+// Repo root is two levels up from this script: automation/maintenance -> repoRoot
 const repoRoot = path.resolve(__dirname, '../..')
 
 const TARGET_GLOBS = ['packages/**/src/**/*.vue']

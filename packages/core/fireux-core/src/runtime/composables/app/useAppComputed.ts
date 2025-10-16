@@ -1,41 +1,31 @@
 // ~/composables/app/useAppComputed.ts
 import { computed, shallowRef, type Ref } from 'vue'
-import { useRuntimeConfig } from 'nuxt/app'
 import { useCurrentUser } from 'vuefire'
 import type { User } from 'firebase/auth'
-import type { App } from '../../models/core/app.model'
+import type { AppDoc } from '../../models/core/app.model'
+import { useFireUXConfig } from '../FireUXConfig'
 
-export function useAppComputed(app: Ref<App | null | undefined>) {
+export function useAppComputed(app: Ref<AppDoc | null | undefined>) {
+  const { role, ecosystem } = useFireUXConfig()
+
   const currentUser = import.meta.client
     ? useCurrentUser()
     : (shallowRef<User | null>(null) as ReturnType<typeof useCurrentUser>)
-  const rc = useRuntimeConfig()
 
-  // Role is canonical: 'global' | 'tenant'
-  const role =
-    (rc.public?.role as string | undefined)?.toLowerCase() || 'tenant'
-
-  // Back-compat: expose appTenancy string mirroring role
+  // Mirror role in older UI fields
   const appTenancy = computed(() => role)
-
-  // Human-readable tenancy display
   const tenancyDisplay = computed(() => {
-    const eco = (rc.public as any)?.ecosystem || 'ecosystem'
-    if (role === 'global') return `Global of ${eco}`
-    if (role === 'tenant') return `Tenant of ${eco}`
-    return `${role} of ${eco}`
+    if (role === 'global') return `Global of ${ecosystem}`
+    if (role === 'tenant') return `Tenant of ${ecosystem}`
+    return role
   })
 
-  // Existing computed: loading/initialized
   const isLoading = computed(() => app.value === undefined)
-
   const isInitialized = computed(() => {
-    if (app.value === undefined) return false // loading
-    if (app.value === null) return false // no doc yet
-    return !!app.value.admin_ids?.length
+    if (!app.value) return false
+    return Array.isArray(app.value.admin_ids) && app.value.admin_ids.length > 0
   })
 
-  // Existing helpers
   function hasAdmins(): boolean {
     return !!app.value?.admin_ids?.length
   }
@@ -47,11 +37,8 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
   }
 
   return {
-    // New readout
     appTenancy,
     tenancyDisplay,
-
-    // Existing
     isLoading,
     isInitialized,
     hasAdmins,

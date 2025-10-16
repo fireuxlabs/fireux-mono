@@ -8,10 +8,10 @@
  *  2) Otherwise sets a static default path '/img/default-image.png'
  *
  * Usage:
- *   pnpm dlx tsx scripts/backfill-core-avatars.ts <project> [--dry-run] [--force]
+ *   pnpm tsx automation/migrations/backfill-core-avatars.ts <project> [--dry-run]
  * Examples:
- *   tsx scripts/backfill-core-avatars.ts fireux --dry-run
- *   tsx scripts/backfill-core-avatars.ts misebox
+ *   pnpm tsx automation/migrations/backfill-core-avatars.ts fireux --dry-run
+ *   pnpm tsx automation/migrations/backfill-core-avatars.ts misebox
  */
 
 import { initializeApp, cert } from 'firebase-admin/app'
@@ -22,29 +22,30 @@ import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+const repoRoot = resolve(__dirname, '..', '..')
 
 const PROJECTS = {
   fireux: {
     name: 'FireUX',
     serviceAccountPath: resolve(
-      __dirname,
-      '../projects/fireux/fireux-app/config/service-account.json'
+      repoRoot,
+      'projects/fireux/fireux-app/config/service-account.json'
     ),
     projectId: 'fireux-2005',
   },
   misebox: {
     name: 'MiseBox',
     serviceAccountPath: resolve(
-      __dirname,
-      '../packages/tenants/fireux-misebox/config/service-account.json'
+      repoRoot,
+      'packages/tenants/fireux-misebox/config/service-account.json'
     ),
     projectId: 'misebox-78f9c',
   },
   cleanbox: {
     name: 'CleanBox',
     serviceAccountPath: resolve(
-      __dirname,
-      '../packages/tenants/fireux-cleanbox/config/service-account.json'
+      repoRoot,
+      'packages/tenants/fireux-cleanbox/config/service-account.json'
     ),
     projectId: 'cleanbox-f15bc',
   },
@@ -119,11 +120,9 @@ async function main() {
   const args = process.argv.slice(2)
   const project = args[0] as ProjectKey
   const dryRun = args.includes('--dry-run')
-  const force = args.includes('--force')
-
   if (!project || !PROJECTS[project]) {
     console.log(
-      'Usage: tsx scripts/backfill-core-avatars.ts <project> [--dry-run] [--force]'
+      'Usage: pnpm tsx automation/migrations/backfill-core-avatars.ts <project> [--dry-run]'
     )
     console.log(`Projects: ${Object.keys(PROJECTS).join(', ')}`)
     process.exit(1)
@@ -153,7 +152,9 @@ async function main() {
   const appUsersSnap = await db.collection(appUsersCollection).get()
 
   const appUsersMap = new Map<string, FirebaseFirestore.DocumentData>()
-  appUsersSnap.forEach((doc) => appUsersMap.set(doc.id, doc.data()))
+  for (const doc of appUsersSnap.docs) {
+    appUsersMap.set(doc.id, doc.data())
+  }
 
   console.log(
     `📊 Core Users: ${coreSnap.size}, App Users: ${appUsersSnap.size}`
@@ -166,7 +167,7 @@ async function main() {
     const existing = coreUser.avatar as string | undefined
 
     if (isTruthyString(existing)) {
-      // Already has an avatar — skip unless forced replacement requested in future
+      // Already has an avatar — skip unless future requirements call for replacement
       stats.skipped++
       continue
     }
@@ -232,7 +233,9 @@ async function main() {
   if (stats.errors > 0) process.exit(1)
 }
 
-main().catch((e) => {
+try {
+  await main()
+} catch (e) {
   console.error('💥 Unhandled error:', e)
   process.exit(1)
-})
+}

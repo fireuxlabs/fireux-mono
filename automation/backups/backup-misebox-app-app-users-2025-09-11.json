@@ -1,0 +1,734 @@
+{
+  "exportedAt": "2025-09-11T17:11:34.635Z",
+  "collectionPath": "apps/misebox-app/users",
+  "total": 23,
+  "users": [
+    {
+      "id": "CNDY890Hp3h9HYHGkcFDJURdl6h1",
+      "uid": "CNDY890Hp3h9HYHGkcFDJURdl6h1",
+      "email": "kopmanadam@gmail.com",
+      "display_name": "Adam Kopman",
+      "handle": "kopmanadam",
+      "bio": "",
+      "created_at": "2025-02-27T06:33:13.112Z",
+      "role": "user",
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "adam-kopman",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FCNDY890Hp3h9HYHGkcFDJURdl6h1%2Favatar.jpg?alt=media&token=f441dcbf-d119-48ac-9425-fb2cc281a344",
+      "updated_at": "2025-07-29T19:20:49.632Z"
+    },
+    {
+      "id": "EDDRMUHMXWVajkAbIyNwkOmqnOj2",
+      "uid": "EDDRMUHMXWVajkAbIyNwkOmqnOj2",
+      "email": "jordanmorgannyc@gmail.com",
+      "display_name": "User-EDDRMUHMXWVajkAbIyNwkOmqnOj2",
+      "handle": "jordanmorgannyc",
+      "bio": "",
+      "created_at": "2025-03-20T16:19:56.583Z",
+      "role": "user",
+      "subscription": {
+        "plan": "premium",
+        "status": "active",
+        "started_at": "2025-03-20T16:20:14.000Z",
+        "is_pro": true
+      },
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "jordanmorgannyc",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FEDDRMUHMXWVajkAbIyNwkOmqnOj2%2Favatar.jpg?alt=media&token=c9b223df-eac2-4bae-a3d0-f78106575369",
+      "updated_at": "2025-07-29T19:20:49.661Z"
+    },
+    {
+      "id": "FoPLMYVPirSiMm2eDskwsZja0q42",
+      "uid": "FoPLMYVPirSiMm2eDskwsZja0q42",
+      "email": "joey.dean@hotmail.com",
+      "display_name": "Joe Dean",
+      "handle": "joey.dean",
+      "bio": "I use Misebox to track job opportunities, manage kitchen operations, and streamline communication with teams. As a chef working across high-end restaurants, hotels, and freelance contracts, Misebox helps me stay organized with menu planning, supplier coordination, and workflow management. Whether preparing for a private dining experience or leading a fast-paced service, Misebox keeps everything efficient and structured.",
+      "created_at": "2025-02-10T16:13:52.699Z",
+      "role": "user",
+      "subscription": {
+        "plan": "premium",
+        "status": "active",
+        "started_at": "2025-02-10T16:20:19.000Z",
+        "is_pro": true
+      },
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "address": {
+        "town": "Kristiansand",
+        "country": "Norway",
+        "postalCode": "4968",
+        "street": "Kongensgate",
+        "houseNumber": "63"
+      },
+      "location": {
+        "lng": 8.038378310916933,
+        "short_address": "Kristiansand, Norway",
+        "formatted_address": "Kongsgård alle 90, 4633 Kristiansand, Norway",
+        "lat": 58.157643859378766
+      },
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "joe-dean",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FFoPLMYVPirSiMm2eDskwsZja0q42%2Favatar.jpg?alt=media&token=aed11746-679c-4df4-9a1f-b00a1b14f7c1",
+      "profiles": [
+        "chef"
+      ],
+      "updated_at": "2025-07-29T19:20:49.690Z"
+    },
+    {
+      "id": "LYtaNPR4lZXVjLpZ7HY1MqKxNZq2",
+      "uid": "LYtaNPR4lZXVjLpZ7HY1MqKxNZq2",
+      "email": "gileshousden@gmail.com",
+      "role": "user",
+      "display_name": "gileshousden@gmail.com",
+      "avatar": "https://lh3.googleusercontent.com/a/ACg8ocIReUUjxz7gg1aYIvOv2LalQukdbgE5LTSIFBI30Mw86hksPQ=s96-c",
+      "handle": "gileshousden@gmail.com",
+      "bio": "",
+      "appId": "misebox-app",
+      "creator_id": "LYtaNPR4lZXVjLpZ7HY1MqKxNZq2",
+      "created_at": {
+        "_seconds": 1750713874,
+        "_nanoseconds": 398000000
+      },
+      "slug": "gileshousden",
+      "updated_at": "2025-07-29T19:20:49.720Z"
+    },
+    {
+      "id": "OnLDg1ZcGqh30aaopCZggBIyhbS2",
+      "uid": "OnLDg1ZcGqh30aaopCZggBIyhbS2",
+      "email": "henrique_macedo@yahoo.com",
+      "display_name": "Henrique Macedo",
+      "handle": "henrique_macedo",
+      "bio": "As a Sous Chef at Seehotel Bönigen, I use Misebox to keep my kitchen organized and efficient. It helps me track ingredients, manage suppliers, and streamline mise en place. With Misebox, I can optimize workflows, reduce waste, and maintain high hygiene standards while ensuring smooth day-to-day operations",
+      "created_at": "2025-07-01T09:21:09.791Z",
+      "role": "user",
+      "subscription": {
+        "plan": "premium",
+        "status": "active",
+        "started_at": "2025-02-09T06:58:37.000Z",
+        "is_pro": true
+      },
+      "following": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "address": {
+        "number": "12",
+        "town": "Unterseen",
+        "county": "Berner Oberland",
+        "postalCode": "3800",
+        "country": "Schweiz",
+        "street": "Hauptstrasse"
+      },
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "henrique-macedo",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FOnLDg1ZcGqh30aaopCZggBIyhbS2%2Favatar.jpg?alt=media&token=0f99afdf-082d-4437-812b-b870eb35f7d8",
+      "profiles": [
+        "chef"
+      ],
+      "updated_at": "2025-07-29T19:20:49.750Z"
+    },
+    {
+      "id": "PWu17mL3cTX9ia3OlAdI0Rux6Ek2",
+      "uid": "PWu17mL3cTX9ia3OlAdI0Rux6Ek2",
+      "email": "shane802@hotmail.co.uk",
+      "display_name": "Shane Dickinson",
+      "handle": "shane802",
+      "bio": "I have been a Chef since 2015 in a variety of pubs and restaurants around Manchester, UK. During this period I've been a supervisor and manager of a kitchen. Im clean, well organised and know how to work fast. ",
+      "created_at": "2025-02-27T11:13:21.833Z",
+      "role": "user",
+      "following": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "location": {
+        "formatted_address": "25 Darley St, Stretford, Manchester M32 0PN, UK",
+        "short_address": "Manchester M32 0PN, UK",
+        "lat": 53.45726309047302,
+        "lng": -2.302300390126626
+      },
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "shane-dickinson",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FPWu17mL3cTX9ia3OlAdI0Rux6Ek2%2Favatar.jpg?alt=media&token=62988d10-d3fa-4e4c-9598-029737969ca0",
+      "profiles": [
+        "chef"
+      ],
+      "updated_at": "2025-07-29T19:20:49.778Z"
+    },
+    {
+      "id": "Rn7ThivQ6uY7LQWsoOY1W7oNmbk2",
+      "uid": "Rn7ThivQ6uY7LQWsoOY1W7oNmbk2",
+      "email": "poo@poo.com",
+      "display_name": "User-Rn7ThivQ6uY7LQWsoOY1W7oNmbk2",
+      "handle": "poo",
+      "bio": "",
+      "created_at": "2025-02-26T22:52:10.506Z",
+      "role": "user",
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "poo",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FRn7ThivQ6uY7LQWsoOY1W7oNmbk2%2Favatar.jpg?alt=media&token=a2c5c73f-b9a2-47e6-9f39-396c1fe46e50",
+      "updated_at": "2025-07-29T19:20:49.806Z"
+    },
+    {
+      "id": "TYTEvqtsPQdA082hMSHntxXmPtm1",
+      "uid": "TYTEvqtsPQdA082hMSHntxXmPtm1",
+      "email": "ldmarchetti@yahoo.com",
+      "display_name": "User-TYTEvqtsPQdA082hMSHntxXmPtm1",
+      "handle": "ldmarchetti",
+      "bio": "",
+      "created_at": "2025-03-30T20:12:12.268Z",
+      "role": "user",
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "ldmarchetti",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FTYTEvqtsPQdA082hMSHntxXmPtm1%2Favatar.jpg?alt=media&token=689b743c-eb5b-44e9-9300-febeb8f0e0c4",
+      "updated_at": "2025-07-29T19:20:49.834Z"
+    },
+    {
+      "id": "UA2ObgR9ugNTHBpre0I0hY0wrv52",
+      "uid": "UA2ObgR9ugNTHBpre0I0hY0wrv52",
+      "email": "ngordon812@gmail.com",
+      "role": "user",
+      "display_name": "ngordon812@gmail.com",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/Misebox%2Fusers%2FUA2ObgR9ugNTHBpre0I0hY0wrv52%2Favatar.jpg?alt=media&token=cabf08f8-7533-4051-b1ed-da6e756c2d38",
+      "handle": "ngordon812@gmail.com",
+      "bio": "",
+      "appId": "misebox-app",
+      "creator_id": "UA2ObgR9ugNTHBpre0I0hY0wrv52",
+      "created_at": {
+        "_seconds": 1752529734,
+        "_nanoseconds": 173000000
+      },
+      "updated_at": "2025-07-29T19:20:49.861Z"
+    },
+    {
+      "id": "WShQtlmVVVdqajd9muSHBLnm9kD2",
+      "uid": "WShQtlmVVVdqajd9muSHBLnm9kD2",
+      "email": "nagel.sebasti@gmail.com",
+      "display_name": "Sebastian Nagel ",
+      "handle": "NagelSebi",
+      "bio": "28 y.o. Chef, Over 10 years experience in the kitchen in all categories (Most in Switzerland), Chef de partie,Tournant, Entremetier, Garde-Manger, Pâtissier. Very Good team quality's. Overall good guy with sometimes stubborn attitude ( disclaimer, just a joke). Languages, German,Czech,English fluent.",
+      "created_at": "2025-02-10T18:45:37.170Z",
+      "role": "user",
+      "subscription": {
+        "plan": "premium",
+        "status": "active",
+        "started_at": "2025-03-05T22:42:20.000Z",
+        "is_pro": true
+      },
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "location": {
+        "formatted_address": "Bergbahn Rinderberg, Talstation Rinderberg, 3770 Zweisimmen, Schweiz",
+        "short_address": "Zweisimmen, Schweiz",
+        "lat": 46.551010347137314,
+        "lng": 7.37431526184082
+      },
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "sebastian-nagel",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FWShQtlmVVVdqajd9muSHBLnm9kD2%2Favatar.jpg?alt=media&token=f7c3f5aa-5742-4e9f-a84f-95ad46f7ae2b",
+      "profiles": [
+        "chef"
+      ],
+      "updated_at": "2025-07-29T19:20:49.889Z"
+    },
+    {
+      "id": "WjqzWuxCtOQ2gRALFAzzOscUHTV2",
+      "uid": "WjqzWuxCtOQ2gRALFAzzOscUHTV2",
+      "email": "kevinwyssen@gmail.com",
+      "display_name": "User-WjqzWuxCtOQ2gRALFAzzOscUHTV2",
+      "handle": "kevinwyssen",
+      "bio": "",
+      "created_at": "2025-03-11T18:58:17.726Z",
+      "role": "user",
+      "subscription": {
+        "plan": "premium",
+        "status": "active",
+        "started_at": "2025-03-11T18:58:27.000Z",
+        "is_pro": true
+      },
+      "address": {
+        "flatNumber": "Wychelstrasse",
+        "houseNumber": "2"
+      },
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "kevinwyssen",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FWjqzWuxCtOQ2gRALFAzzOscUHTV2%2Favatar.jpg?alt=media&token=6e47e751-f417-4158-8d83-e908a3eb2d79",
+      "updated_at": "2025-07-29T19:20:49.917Z"
+    },
+    {
+      "id": "X0hPqXlxYLQSuUd9VWehulExicR2",
+      "uid": "X0hPqXlxYLQSuUd9VWehulExicR2",
+      "email": "massengine99@gmail.com",
+      "display_name": "Peter Hargrave",
+      "handle": "Pescchheeee",
+      "bio": "Passionate creator and devourer of food and drink from across the globe!",
+      "created_at": "2025-07-01T09:21:10.083Z",
+      "role": "user",
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "address": {
+        "number": "110",
+        "country": "Switzerland",
+        "town": "Bern",
+        "postalCode": "3018",
+        "street": "Brünnenstrasse"
+      },
+      "full_name": {
+        "firstName": "Peter",
+        "lastName": "Hargrave"
+      },
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "peter-hargrave",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FX0hPqXlxYLQSuUd9VWehulExicR2%2Favatar.jpg?alt=media&token=68ecef3e-7b50-456e-9e86-8a333d2cde83",
+      "profiles": [
+        "chef"
+      ],
+      "updated_at": "2025-07-29T19:20:49.950Z"
+    },
+    {
+      "id": "ZtTAhrUCroUC3AzYUm9V5m24lMm2",
+      "uid": "ZtTAhrUCroUC3AzYUm9V5m24lMm2",
+      "email": "leander.i@bluewin.ch",
+      "display_name": "Swissmountainhighlander",
+      "handle": "leander.i",
+      "bio": "",
+      "created_at": "2025-03-03T21:14:05.223Z",
+      "role": "user",
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "swissmountainhighlander",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FZtTAhrUCroUC3AzYUm9V5m24lMm2%2Favatar.jpg?alt=media&token=68f355d9-49b8-43c9-93e5-dd70f8ce73a4",
+      "updated_at": "2025-07-29T19:20:49.978Z"
+    },
+    {
+      "id": "dins2pTOHYMNy6at0DdmaLDbLqy1",
+      "uid": "dins2pTOHYMNy6at0DdmaLDbLqy1",
+      "email": "",
+      "role": "user",
+      "display_name": "",
+      "handle": "laz1i9ex",
+      "bio": "",
+      "creator_id": "dins2pTOHYMNy6at0DdmaLDbLqy1",
+      "appId": "misebox-app",
+      "created_at": {
+        "_seconds": 1750702194,
+        "_nanoseconds": 316000000
+      },
+      "slug": "laz1i9ex",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2Fdins2pTOHYMNy6at0DdmaLDbLqy1%2Favatar.jpg?alt=media&token=a0574272-ac02-425b-a26e-5ef17d4b400d",
+      "updated_at": "2025-07-29T19:20:50.008Z"
+    },
+    {
+      "id": "dxRjwTbISOhra6RmtyhHOXqvS4n1",
+      "uid": "dxRjwTbISOhra6RmtyhHOXqvS4n1",
+      "email": "vaittinenalessandro@gmail.com",
+      "display_name": "User-dxRjwTbISOhra6RmtyhHOXqvS4n1",
+      "handle": "vaittinenalessandro",
+      "bio": "",
+      "created_at": "2025-02-24T22:45:24.913Z",
+      "role": "user",
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "vaittinenalessandro",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FdxRjwTbISOhra6RmtyhHOXqvS4n1%2Favatar.jpg?alt=media&token=c81de1f2-3b30-44ac-9bc4-56a6964735ad",
+      "updated_at": "2025-07-29T19:20:50.036Z"
+    },
+    {
+      "id": "gQ7RKTSCPjdGwCuTmjAqpLTzCsh1",
+      "uid": "gQ7RKTSCPjdGwCuTmjAqpLTzCsh1",
+      "email": "marisa.brenzikofer@gmx.ch",
+      "display_name": "New User",
+      "handle": "marisa.brenzikofer",
+      "bio": "",
+      "created_at": "2025-07-01T09:21:10.211Z",
+      "role": "user",
+      "following": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "new-user",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FgQ7RKTSCPjdGwCuTmjAqpLTzCsh1%2Favatar.jpg?alt=media&token=83e13f2e-67ba-413e-acbc-ff711e71bb46",
+      "updated_at": "2025-07-29T19:20:50.065Z"
+    },
+    {
+      "id": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
+      "role": "admin",
+      "email": "d.m.watson1985@gmail.com",
+      "uid": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
+      "creator_id": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
+      "appId": "misebox-app",
+      "created_at": {
+        "_seconds": 1749576123,
+        "_nanoseconds": 256000000
+      },
+      "last_name": "Watson",
+      "middle_name": "Marc",
+      "address": {
+        "street": "Bachtalenweg 21",
+        "city": "Ringgenberg",
+        "state": "Berner Oberland",
+        "country": "Switzerland",
+        "postal_code": "3852"
+      },
+      "phone": "+4407583282242",
+      "bio": "I love using this app as it helps me facilittate my entire workflow",
+      "slug": "daniel-watson",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FjMK33p5XlhYS8rBCEf8qUiogfMg2%2Favatar.jpg?alt=media&token=f115c549-ad82-4556-8f3b-0ff244a03159",
+      "display_name": "Daniel",
+      "handle": "ddddeano",
+      "first_name": "Daniel",
+      "preferences": {
+        "theme": "dark",
+        "language": "en"
+      },
+      "profiles": [
+        "chef",
+        "professional",
+        "supplier"
+      ],
+      "updated_at": "2025-07-29T19:20:50.097Z"
+    },
+    {
+      "id": "noJNDJ6mtnWByVcBfBPKEkPjRgy1",
+      "uid": "noJNDJ6mtnWByVcBfBPKEkPjRgy1",
+      "email": "colin.amacher@gmail.com",
+      "display_name": "User-noJNDJ6mtnWByVcBfBPKEkPjRgy1",
+      "handle": "colin.amacher",
+      "bio": "",
+      "created_at": "2025-02-27T16:13:57.626Z",
+      "role": "user",
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "colinamacher",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FnoJNDJ6mtnWByVcBfBPKEkPjRgy1%2Favatar.jpg?alt=media&token=5ce497e7-e4a0-4726-8eb4-6ad07e0cd0b5",
+      "updated_at": "2025-07-29T19:20:50.130Z"
+    },
+    {
+      "id": "rEssOnUA8wVHdNKE2JETqWAdwdm1",
+      "uid": "rEssOnUA8wVHdNKE2JETqWAdwdm1",
+      "email": "pilchy1974x@gmail.com",
+      "display_name": "Richi’s Reinigung",
+      "handle": "pilchy",
+      "bio": "Been in the kitchen industry for 10yrs now. ",
+      "created_at": "2025-02-11T18:18:57.869Z",
+      "role": "user",
+      "subscription": {
+        "plan": "premium",
+        "status": "active",
+        "started_at": "2025-02-11T18:19:45.000Z",
+        "is_pro": true
+      },
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "location": {
+        "formatted_address": "Lindenallee 106, 3800 Interlaken, Switzerland",
+        "short_address": "Interlaken, Switzerland",
+        "lat": 46.68860334962786,
+        "lng": 7.878055572509766
+      },
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "richis-reinigung",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FrEssOnUA8wVHdNKE2JETqWAdwdm1%2Favatar.jpg?alt=media&token=739d9e56-d546-47ec-ad03-0afc42b4fa5b",
+      "profiles": [
+        "chef"
+      ],
+      "updated_at": "2025-07-29T19:20:50.162Z"
+    },
+    {
+      "id": "s9hKBxO7mJSFC5vHNOo3mt9Dgi42",
+      "uid": "s9hKBxO7mJSFC5vHNOo3mt9Dgi42",
+      "email": "davecook241@gmail.com",
+      "display_name": "David Cook",
+      "handle": "davecook241",
+      "bio": "As a freelance chef, I use Misebox to streamline my catering business, manage event logistics, and organize kitchen operations. Whether planning menus for private dining, large-scale events, or high-profile clients, Misebox helps me track ingredients, coordinate suppliers, and communicate efficiently with teams. It keeps everything organized, reduces waste, and ensures smooth execution in every kitchen I work in.",
+      "created_at": "2025-02-09T10:27:41.558Z",
+      "role": "user",
+      "subscription": {
+        "plan": "premium",
+        "status": "active",
+        "started_at": "2025-02-09T10:30:36.000Z",
+        "is_pro": true
+      },
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "david-cook",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2Fs9hKBxO7mJSFC5vHNOo3mt9Dgi42%2Favatar.jpg?alt=media&token=574d7cb2-1219-453d-b21d-0d08ef2fc4c2",
+      "profiles": [
+        "chef"
+      ],
+      "updated_at": "2025-07-29T19:20:50.191Z"
+    },
+    {
+      "id": "vkDlOLbK1NgAga58N9tsxASgZkA2",
+      "uid": "vkDlOLbK1NgAga58N9tsxASgZkA2",
+      "email": "alexburet.net@gmail.com",
+      "display_name": "Alexandre",
+      "handle": "alex",
+      "bio": "",
+      "created_at": "2025-06-13T22:04:34.504Z",
+      "role": "user",
+      "subscription": {
+        "plan": "premium",
+        "status": "active",
+        "started_at": "2025-06-13T22:07:58.000Z",
+        "is_pro": true
+      },
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "alexandre",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FvkDlOLbK1NgAga58N9tsxASgZkA2%2Favatar.jpg?alt=media&token=dae002d5-88fc-42a4-84e7-8f375fdeb372",
+      "updated_at": "2025-07-29T19:20:50.220Z"
+    },
+    {
+      "id": "xdu83J77YeOROlePJdibPekxkDp2",
+      "uid": "xdu83J77YeOROlePJdibPekxkDp2",
+      "email": "tahneq@gmail.com",
+      "display_name": "Tahneeq",
+      "handle": "tahneq",
+      "bio": "",
+      "created_at": "2025-02-11T08:42:02.016Z",
+      "role": "user",
+      "subscription": {
+        "plan": "premium",
+        "status": "active",
+        "started_at": "2025-02-11T08:42:56.000Z",
+        "is_pro": true
+      },
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "tahneeq",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2Fxdu83J77YeOROlePJdibPekxkDp2%2Favatar.jpg?alt=media&token=0a86aa80-bf0f-4ad7-97d4-78c46c4ace95",
+      "updated_at": "2025-07-29T19:20:50.251Z"
+    },
+    {
+      "id": "yzLigKeaYOeumbei6opZQnAYh5p1",
+      "uid": "yzLigKeaYOeumbei6opZQnAYh5p1",
+      "email": "test@test.com",
+      "display_name": "Paul Kazano",
+      "handle": "pulled-pork-lover",
+      "bio": "",
+      "created_at": "2025-02-15T19:21:03.446Z",
+      "role": "user",
+      "subscription": {
+        "plan": "premium",
+        "status": "active",
+        "started_at": "2025-02-15T19:21:32.000Z",
+        "is_pro": true
+      },
+      "followers": [
+        "jMK33p5XlhYS8rBCEf8qUiogfMg2"
+      ],
+      "notifications": {
+        "enabled": true,
+        "types": [
+          "email",
+          "push"
+        ]
+      },
+      "preferences": {
+        "theme": "light",
+        "language": "en"
+      },
+      "slug": "paul-kazano",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fusers%2FyzLigKeaYOeumbei6opZQnAYh5p1%2Favatar.jpg?alt=media&token=b3f9b4c8-d018-419a-80b2-13bd3700d5e6",
+      "updated_at": "2025-07-29T19:20:50.284Z"
+    }
+  ]
+}

@@ -1,74 +1,38 @@
 // ~/composables/app/useApp.ts
-import { computed, shallowRef } from 'vue'
-import { doc, collection } from 'firebase/firestore'
-import { useFirestore, useDocument, useCollection } from 'vuefire'
+import { computed } from 'vue'
+import { doc } from 'firebase/firestore'
+import { useFirestore, useDocument } from 'vuefire'
 import type { DocumentReference } from 'firebase/firestore'
-import { useFirestoreManager } from '../firestore/useFirestoreManager'
-import { useFireUXConfig } from '../FireUXConfig'
-import { useAppUpdate } from './useAppUpdate'
-import { useAppComputed } from './useAppComputed'
-import { useAppEnsure } from './useEnsureApp'
-import { useAppSubscriptionSetup } from './useAppSubscriptionSetup'
-import type { App } from '../../models/core/app.model'
 import { getApps } from 'firebase/app'
 
-export function useApp() {
-  const { role, appId } = useFireUXConfig()
+import { useFirestoreManager } from '../firestore/useFirestoreManager'
+import { useFireUXConfig } from '../FireUXConfig'
+import { useAppComputed } from './useAppComputed'
+import { useAppUpdate } from './useAppUpdate'
+import { useAppFactory } from './useAppFactory'
+import type { AppDoc } from '../../models/core/app.model'
 
-  // Ensure Firebase is initialized
+export function useApp() {
+  const { appId } = useFireUXConfig()
+
   if (!getApps().length) {
-    throw new Error(
-      'Firebase is not initialized. Please initialize Firebase before using this composable.'
-    )
+    throw new Error('Firebase not initialized before useApp().')
   }
 
   const db = useFirestore()
   const { firestoreFetchCollection } = useFirestoreManager()
 
-  const appDocRef = computed<DocumentReference<App> | null>(() => {
-    return appId ? (doc(db, 'apps', appId) as DocumentReference<App>) : null
-  })
-
-  const { data: app } = useDocument<App>(appDocRef)
-
-  // Collections as Ref (sync wrapper returns Ref via VueFire stream)
-  const apps = firestoreFetchCollection<App>('apps')
-
-  // Users subcollection for any app
-  const getAppUsers = (appId: string) => {
-    const usersRef = collection(db, 'apps', appId, 'users')
-    return useCollection(usersRef)
-  }
-
-  // Client-only extras: expose a loader to avoid awaiting inside composable
-  const extras = shallowRef<any>(null)
-  async function loadClientExtras() {
-    if (!import.meta.client) return null
-    if (extras.value) return extras.value
-    const mod = await import('./useAppOnboarding')
-    extras.value = mod.useAppOnboarding()
-    return extras.value
-  }
+  const appDocRef = computed<DocumentReference<AppDoc> | null>(() =>
+    appId ? (doc(db, 'apps', appId) as DocumentReference<AppDoc>) : null
+  )
+  const { data: app } = useDocument<AppDoc>(appDocRef)
+  const apps = firestoreFetchCollection<AppDoc>('apps')
 
   return {
-    // Role & App identity
-    role,
-    appId,
-    // Current entity
     app,
-
-    // Collections
     apps,
-
-    // Users subcollection
-    getAppUsers,
-
-    // Child functions
-    ...useAppUpdate(),
     ...useAppComputed(app),
-    ...useAppSubscriptionSetup(),
-    ...useAppEnsure(),
-    // Onboarding helpers (client-only loader)
-    loadClientExtras,
+    ...useAppUpdate(app),
+    factory: useAppFactory(app),
   }
 }
