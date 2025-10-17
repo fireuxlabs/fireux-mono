@@ -1,148 +1,74 @@
 <template>
-  <section>
-    <div class="section-header">
-      <h2>Cleaning Solutions for Every Need</h2>
-      <p>Professional tools designed for cleaning businesses of all sizes</p>
-    </div>
-    <div class="grid">
-      <UCard
-        v-for="solution in solutions"
-        :key="solution.title"
-        :to="solution.link"
-        class="solution-card"
-      >
-        <template #header>
-          <div class="card-header">
-            <UIcon :name="solution.icon" class="solution-icon" />
-            <h3>{{ solution.title }}</h3>
-          </div>
-        </template>
+  <UContainer>
+    <UPageSection class="py-16 lg:py-24 space-y-12">
+      <div class="mx-auto max-w-2xl space-y-3 text-center">
+        <h2 class="text-3xl font-black">{{ title }}</h2>
+        <p
+          v-if="subtitle"
+          class="text-base text-[color:var(--ui-text-muted)] lg:text-lg"
+        >
+          {{ subtitle }}
+        </p>
+      </div>
 
-        <p>{{ solution.description }}</p>
+      <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <UCard
+          v-for="item in items"
+          :key="item.title"
+          :to="item.to"
+          class="h-full"
+        >
+          <template #header>
+            <div class="flex items-start gap-3">
+              <div
+                v-if="item.icon"
+                class="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary"
+              >
+                <UIcon :name="item.icon" />
+              </div>
+              <div class="space-y-1">
+                <UBadge v-if="item.badge" variant="soft" color="primary">
+                  {{ item.badge }}
+                </UBadge>
+                <h3 class="text-lg font-semibold">{{ item.title }}</h3>
+              </div>
+            </div>
+          </template>
 
-        <template #footer>
-          <UButton variant="soft" size="sm" block>
-            {{ solution.buttonText }}
-          </UButton>
-        </template>
-      </UCard>
-    </div>
-  </section>
+          <p class="text-sm text-[color:var(--ui-text-muted)]">
+            {{ item.description }}
+          </p>
+
+          <template #footer>
+            <UButton
+              variant="ghost"
+              size="sm"
+              trailing-icon="i-heroicons-arrow-right"
+            >
+              {{ item.cta ?? 'Learn more' }}
+            </UButton>
+          </template>
+        </UCard>
+      </div>
+    </UPageSection>
+  </UContainer>
 </template>
 
-<script setup>
-const solutions = [
-  {
-    title: 'Residential Cleaning',
-    description:
-      'Manage home cleaning services with automated scheduling and client communication.',
-    icon: 'i-lucide-home',
-    link: '/residential',
-    buttonText: 'Learn More',
-  },
-  {
-    title: 'Commercial Cleaning',
-    description:
-      'Scale your business with tools for office buildings, retail spaces, and facilities.',
-    icon: 'i-lucide-building',
-    link: '/commercial',
-    buttonText: 'Get Started',
-  },
-  {
-    title: 'Specialized Services',
-    description:
-      'Carpet cleaning, window washing, post-construction cleanup and more.',
-    icon: 'i-lucide-sparkles',
-    link: '/specialized',
-    buttonText: 'Explore Services',
-  },
-  {
-    title: 'Team Management',
-    description:
-      'Coordinate staff, track hours, and manage payroll for your cleaning team.',
-    icon: 'i-lucide-users',
-    link: '/team',
-    buttonText: 'Manage Team',
-  },
-  {
-    title: 'Client Portal',
-    description:
-      'Give clients easy access to booking, billing, and service history.',
-    icon: 'i-lucide-user-check',
-    link: '/portal',
-    buttonText: 'View Portal',
-  },
-  {
-    title: 'Analytics & Reports',
-    description:
-      'Track performance, revenue, and growth with detailed business insights.',
-    icon: 'i-lucide-bar-chart-3',
-    link: '/analytics',
-    buttonText: 'See Reports',
-  },
-]
+<script setup lang="ts">
+export interface LandingSolutionItem {
+  title: string
+  description: string
+  to: string
+  cta?: string
+  icon?: string
+  badge?: string
+}
+
+export interface LandingSolutionsProps {
+  title: string
+  subtitle?: string
+  items: LandingSolutionItem[]
+}
+
+defineProps<LandingSolutionsProps>()
 </script>
-
-<style scoped>
-.section-header {
-  text-align: center;
-  margin-bottom: var(--space-8);
-}
-
-.section-header h2 {
-  font-size: var(--text-3xl);
-  font-weight: 700;
-  margin-bottom: var(--space-3);
-}
-
-.section-header p {
-  font-size: var(--text-lg);
-  color: var(--color-gray-600);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-6);
-}
-
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.solution-card {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.solution-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.solution-icon {
-  color: var(--color-primary-500);
-  font-size: 1.5rem;
-}
-
-.card-header h3 {
-  font-size: var(--text-lg);
-  font-weight: 600;
-  margin: 0;
-}
-</style>

@@ -1,148 +1,74 @@
 <template>
-  <section>
-    <div class="section-header">
-      <h2>Kitchen Solutions for Every Operation</h2>
-      <p>Professional tools designed for culinary businesses of all scales</p>
-    </div>
-    <div class="grid">
-      <UCard
-        v-for="solution in solutions"
-        :key="solution.title"
-        :to="solution.link"
-        class="solution-card"
-      >
-        <template #header>
-          <div class="card-header">
-            <UIcon :name="solution.icon" class="solution-icon" />
-            <h3>{{ solution.title }}</h3>
-          </div>
-        </template>
+  <UContainer>
+    <UPageSection class="py-16 lg:py-24 space-y-12">
+      <div class="mx-auto max-w-2xl space-y-3 text-center">
+        <h2 class="text-3xl font-black">{{ title }}</h2>
+        <p
+          v-if="subtitle"
+          class="text-base text-[color:var(--ui-text-muted)] lg:text-lg"
+        >
+          {{ subtitle }}
+        </p>
+      </div>
 
-        <p>{{ solution.description }}</p>
+      <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <UCard
+          v-for="item in items"
+          :key="item.title"
+          :to="item.to"
+          class="h-full"
+        >
+          <template #header>
+            <div class="flex items-start gap-3">
+              <div
+                v-if="item.icon"
+                class="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary"
+              >
+                <UIcon :name="item.icon" />
+              </div>
+              <div class="space-y-1">
+                <UBadge v-if="item.badge" variant="soft" color="primary">
+                  {{ item.badge }}
+                </UBadge>
+                <h3 class="text-lg font-semibold">{{ item.title }}</h3>
+              </div>
+            </div>
+          </template>
 
-        <template #footer>
-          <UButton variant="soft" size="sm" block>
-            {{ solution.buttonText }}
-          </UButton>
-        </template>
-      </UCard>
-    </div>
-  </section>
+          <p class="text-sm text-[color:var(--ui-text-muted)]">
+            {{ item.description }}
+          </p>
+
+          <template #footer>
+            <UButton
+              variant="ghost"
+              size="sm"
+              trailing-icon="i-heroicons-arrow-right"
+            >
+              {{ item.cta ?? 'Learn more' }}
+            </UButton>
+          </template>
+        </UCard>
+      </div>
+    </UPageSection>
+  </UContainer>
 </template>
 
-<script setup>
-const solutions = [
-  {
-    title: 'Recipe Management',
-    description:
-      'Digital recipe cards with cost calculation, scaling, and version control.',
-    icon: 'i-lucide-book-open',
-    link: '/recipes',
-    buttonText: 'Manage Recipes',
-  },
-  {
-    title: 'Inventory Tracking',
-    description:
-      'Real-time ingredient tracking with automatic reorder points and supplier management.',
-    icon: 'i-lucide-package',
-    link: '/inventory',
-    buttonText: 'Track Inventory',
-  },
-  {
-    title: 'Menu Planning',
-    description:
-      'Strategic menu design with cost analysis, seasonal planning, and profit optimization.',
-    icon: 'i-lucide-clipboard-list',
-    link: '/menu-planning',
-    buttonText: 'Plan Menus',
-  },
-  {
-    title: 'Kitchen Operations',
-    description:
-      'Streamline prep schedules, cooking times, and kitchen workflow management.',
-    icon: 'i-lucide-chef-hat',
-    link: '/operations',
-    buttonText: 'Optimize Kitchen',
-  },
-  {
-    title: 'Cost Control',
-    description:
-      'Monitor food costs, track waste, and analyze profitability by dish and ingredient.',
-    icon: 'i-lucide-calculator',
-    link: '/cost-control',
-    buttonText: 'Control Costs',
-  },
-  {
-    title: 'Team Management',
-    description:
-      'Coordinate kitchen staff, track certifications, and manage scheduling.',
-    icon: 'i-lucide-users',
-    link: '/team',
-    buttonText: 'Manage Team',
-  },
-]
+<script setup lang="ts">
+export interface LandingSolutionItem {
+  title: string
+  description: string
+  to: string
+  cta?: string
+  icon?: string
+  badge?: string
+}
+
+export interface LandingSolutionsProps {
+  title: string
+  subtitle?: string
+  items: LandingSolutionItem[]
+}
+
+defineProps<LandingSolutionsProps>()
 </script>
-
-<style scoped>
-.section-header {
-  text-align: center;
-  margin-bottom: var(--space-8);
-}
-
-.section-header h2 {
-  font-size: var(--text-3xl);
-  font-weight: 700;
-  margin-bottom: var(--space-3);
-}
-
-.section-header p {
-  font-size: var(--text-lg);
-  color: var(--color-gray-600);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-6);
-}
-
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.solution-card {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.solution-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.solution-icon {
-  color: var(--color-primary-500);
-  font-size: 1.5rem;
-}
-
-.card-header h3 {
-  font-size: var(--text-lg);
-  font-weight: 600;
-  margin: 0;
-}
-</style>

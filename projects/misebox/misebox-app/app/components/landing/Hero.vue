@@ -1,13 +1,31 @@
 <template>
-  <section class="hero">
-    <h1>
-      <strong>{{ hero.verb }}</strong>
-    </h1>
-    <h1 class="highlight">{{ hero.subheadline }}</h1>
-    <h2 class="tagline">{{ hero.tagline }}</h2>
-    <p class="hero-description">{{ hero.description }}</p>
+  <div class="space-y-6">
+    <div class="space-y-2">
+      <h1 class="hero-title"><strong>Mise</strong> en place</h1>
+      <h1 class="hero-title hero-title--accent">Culinary Excellence</h1>
+    </div>
 
-    <div class="button-group">
+    <p class="text-base lg:text-xl leading-relaxed max-w-prose">
+      The complete platform for culinary professionals to manage recipes,
+      inventory, and kitchen operations with
+      <span class="text-primary">precision workflows</span> &amp;
+      <span class="text-primary">ingredient tracking</span>.
+    </p>
+
+    <div class="flex items-center gap-6 pt-2">
+      <img
+        src="/logo-type-light.png"
+        alt="Flagship tenant"
+        class="h-10 opacity-80"
+      />
+      <img
+        src="/logo-type-light.png"
+        alt="Flagship tenant"
+        class="h-10 opacity-80"
+      />
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 pt-6">
       <UButton variant="solid" size="lg" :to="hero.primary.to">
         {{ hero.primary.label }}
       </UButton>
@@ -20,65 +38,46 @@
         {{ hero.secondary.label }}
       </UButton>
     </div>
-  </section>
+
+    <ul class="grid gap-3 sm:grid-cols-2 pt-4">
+      <li class="flex items-center gap-2 text-sm">
+        <UIcon name="i-lucide-book-open" class="shrink-0" />
+        <span>Recipe cards with cost &amp; scaling</span>
+      </li>
+      <li class="flex items-center gap-2 text-sm">
+        <UIcon name="i-lucide-package" class="shrink-0" />
+        <span>Inventory &amp; supplier connections</span>
+      </li>
+      <li class="flex items-center gap-2 text-sm">
+        <UIcon name="i-lucide-chef-hat" class="shrink-0" />
+        <span>Kitchen prep &amp; workflow tools</span>
+      </li>
+      <li class="flex items-center gap-2 text-sm">
+        <UIcon name="i-lucide-credit-card" class="shrink-0" />
+        <span>POS insights &amp; cost control</span>
+      </li>
+    </ul>
+  </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 const hero = {
-  verb: 'Mise',
-  subheadline: 'en place',
-  tagline: 'With Style.',
-  description:
-    'The professional platform for chefs to manage recipes, ingredients, and kitchen operations — designed for efficiency and creative flair.',
-  primary: { label: 'Get Started', to: '/getting-started' },
-  secondary: { label: 'View Kitchen', to: '/dashboard' },
+  primary: { label: 'Get Started', to: '/get-started' },
+  secondary: { label: 'Explore Kitchens', to: '/kitchens' },
 }
 </script>
 
 <style scoped>
-.hero {
-  text-align: left;
-  padding: var(--space-12) var(--space-8);
-}
-
-h1 {
-  line-height: 1.1;
+.hero-title {
   font-weight: var(--font-weight-black);
+  font-size: clamp(2.75rem, 6vw, 4.5rem);
+  line-height: 1.15;
+  color: var(--ui-text);
 }
-
-h1 strong {
-  font-size: clamp(3rem, 6vw, 6rem);
+.hero-title strong {
+  font-weight: inherit;
 }
-
-.highlight {
-  font-size: clamp(2rem, 5vw, 4rem);
-  color: var(--color-primary-600);
-  display: block;
-}
-
-.tagline {
-  font-size: clamp(1.25rem, 2vw, 2rem);
-  color: var(--color-gray-600);
-  margin-top: var(--space-2);
-}
-
-.hero-description {
-  margin-top: var(--space-6);
-  font-size: var(--text-base);
-  line-height: 1.6;
-  max-width: 50ch;
-}
-
-.button-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
-}
-
-@media (min-width: 768px) {
-  .button-group {
-    flex-direction: row;
-  }
+.hero-title--accent {
+  color: var(--color-primary-500);
 }
 </style>

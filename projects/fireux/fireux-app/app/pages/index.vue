@@ -1,67 +1,148 @@
 <template>
-  <!-- Landing Background Effect -->
-  <EffectsStarfield />
-
-  <!-- Main Content -->
-  <div class="page">
-    <!-- Unified Hero (replaces old LandingHero) -->
-    <HeroPrimary
-      line1="Ignite"
-      line1After="with"
-      line2="Powerful Applications"
-      :links="[
-        { label: 'Get Started', to: '/getting-started', color: 'primary' },
-        {
-          label: 'Explore Projects',
-          href: 'https://fireux.app/projects',
-          variant: 'ghost',
-          color: 'neutral',
-          icon: 'i-heroicons-arrow-right',
-        },
-      ]"
-    >
-      <template #description>
-        A low-code ecosystem for responsive, scalable, and data-driven applications built upon
-        <span class="text-primary">Nuxt4</span> & <span class="text-primary">Firebase</span>.
+  <div>
+    <LandingShell>
+      <template #left>
+        <LandingHero
+          :title-main="titleMain"
+          :title-prefix="titlePrefix"
+          :title-accent="titleAccent"
+          :paragraph="paragraph"
+          :badges="badges"
+          :primary="hero.primary"
+          :secondary="hero.secondary"
+          :tertiary="hero.tertiary"
+          :bullets="bullets"
+        />
       </template>
 
-      <template #brandmarks>
-        <img src="/img/nuxt-white.png" alt="Nuxt logo" class="h-12 opacity-80" />
-        <img src="/img/firebase-white.png" alt="Firebase logo" class="h-12 opacity-80" />
+      <template #right>
+        <LandingQuickPeek :items="quickPeek" :footer-badge="footerBadge" />
       </template>
-    </HeroPrimary>
+    </LandingShell>
 
-    <!-- Keep existing sections -->
-    <LandingSolutions />
-    <LandingSkillsIcons />
-    <LandingProducts />
-    <LandingFuel />
-    <LandingFireUX />
+    <LandingSolutions
+      :title="solutions.title"
+      :subtitle="solutions.subtitle"
+      :items="solutions.items"
+    />
   </div>
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'default',
+  layout: 'landing',
   nav: {
     key: 'home',
     label: 'Home',
     icon: 'i-lucide-home',
     desktop: true,
     mobile: true,
-    layouts: ['default'],
+    layouts: ['landing'],
   },
 })
 
 useSeoMeta({
-  title: 'FireUX - Vue.js Development Ecosystem',
+  title: 'FireUX — Vue.js Development Ecosystem',
   description:
-    'Build faster with FireUX Core, manage data with Cleanbox, and deploy with Misebox.',
+    'Build faster with FireUX Core and deploy streamlined, data-driven applications.',
 })
-</script>
 
-<style scoped>
-.page {
-  min-height: 60vh;
+const titleMain = 'Ignite'
+const titlePrefix = 'with'
+const titleAccent = 'Powerful Applications'
+const paragraph =
+  'A low-code ecosystem for responsive, scalable, and data-driven applications built upon <span class="text-primary">Nuxt4</span> &amp; <span class="text-primary">Firebase</span>.'
+
+const badges = [
+  { src: '/img/nuxt-white.png', alt: 'Nuxt' },
+  { src: '/img/firebase-white.png', alt: 'Firebase' },
+]
+
+const hero = {
+  primary: { label: 'Get Started', to: '/get-started' },
+  secondary: { label: 'Explore Projects', to: '/projects' },
+  tertiary: undefined,
 }
-</style>
+
+const bullets = [
+  {
+    icon: 'i-lucide-cable',
+    text: 'Nuxt 4 + Firebase orchestration out of the box',
+  },
+  {
+    icon: 'i-lucide-layout-dashboard',
+    text: 'Reusable design system &amp; shared components',
+  },
+  { icon: 'i-lucide-layers-2', text: 'Tenant-aware &amp; white-label runtime' },
+  { icon: 'i-lucide-zap', text: 'Automations, PWA, and CI presets' },
+]
+
+const quickPeek = [
+  {
+    title: 'Modules',
+    copy: 'Wire Nuxt + Firebase with ready composables.',
+    icon: 'i-lucide-puzzle',
+  },
+  {
+    title: 'Tenant theming',
+    copy: 'White-label overrides with a single config.',
+    icon: 'i-lucide-palette',
+  },
+  {
+    title: 'CI ready',
+    copy: 'PWA, CI presets and deploy pipelines.',
+    icon: 'i-lucide-rocket',
+  },
+]
+
+const footerBadge = 'Nuxt · Firebase · Stripe'
+
+const solutions = {
+  title: 'Solutions',
+  subtitle: 'Ship faster with platform primitives built for modern Vue teams.',
+  items: [
+    {
+      title: 'Products',
+      description: 'Hosted tools ready to deploy without provisioning.',
+      to: '/products',
+      cta: 'Explore',
+      icon: 'i-lucide-package',
+    },
+    {
+      title: 'White-label',
+      description: 'Rebrand FireUX apps with tenant-aware theming.',
+      to: '/whitelabel',
+      cta: 'Partner',
+      icon: 'i-lucide-badge-check',
+    },
+    {
+      title: 'SaaS',
+      description: 'Managed subscriptions with billing and auth baked in.',
+      to: '/saas',
+      cta: 'See plans',
+      icon: 'i-lucide-zap',
+    },
+    {
+      title: 'Templates',
+      description: 'Starter kits for founders and internal tooling teams.',
+      to: '/templates',
+      cta: 'Browse',
+      icon: 'i-lucide-layers-2',
+    },
+    {
+      title: 'API-first',
+      description: 'Composable endpoints to extend existing stacks.',
+      to: '/api',
+      cta: 'Docs',
+      icon: 'i-lucide-code-xml',
+    },
+    {
+      title: 'Automation',
+      description: 'No-code workflows, webhooks, and scheduled jobs.',
+      to: '/automation',
+      cta: 'Set up',
+      icon: 'i-lucide-bot',
+    },
+  ],
+}
+</script>
