@@ -6,9 +6,8 @@
   <LandingShell>
     <template #left>
       <LandingHero
-        :title-main="titleMain"
-        :title-prefix="titlePrefix"
-        :title-accent="titleAccent"
+        :title="title"
+        :accent="accent"
         :paragraph="paragraph"
         :badges="badges"
         :primary="hero.primary"
@@ -54,9 +53,8 @@ useSeoMeta({
     'Build faster with FireUX Core and deploy streamlined, data-driven applications.',
 })
 
-const titleMain = 'Ignite'
-const titlePrefix = 'with'
-const titleAccent = 'Powerful Applications'
+const title = 'Ignite With'
+const accent = 'Powerful Applications'
 const paragraph =
   'A low-code ecosystem for responsive, scalable, and data-driven applications built upon <span class="text-primary">Nuxt4</span> &amp; <span class="text-primary">Firebase</span>.'
 

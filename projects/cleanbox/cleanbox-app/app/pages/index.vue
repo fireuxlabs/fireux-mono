@@ -6,9 +6,8 @@
     <LandingShell>
       <template #left>
         <LandingHero
-          :title-main="hero.titleMain"
-          :title-prefix="hero.titlePrefix"
-          :title-accent="hero.titleAccent"
+          :title="hero.title"
+          :accent="hero.accent"
           :paragraph="hero.paragraph"
           :badges="hero.badges"
           :primary="hero.primary"
@@ -56,9 +55,8 @@ useSeoMeta({
 })
 
 const hero = {
-  titleMain: 'Bling',
-  titlePrefix: 'with',
-  titleAccent: 'Operational Clarity',
+  title: 'Bling with',
+  accent: 'Operational Clarity',
   paragraph:
     'Coordinate crews, quality checks, and billing from one dashboard. Cleanbox keeps every service <span class="text-primary">scheduled</span>, <span class="text-primary">verified</span>, and <span class="text-primary">client-ready</span>.',
   badges: [
