@@ -1,4 +1,7 @@
 <template>
+  <!-- Background effect (Misebox) -->
+  <EffectsSteam />
+
   <div>
     <UContainer>
       <UPageSection class="py-16 lg:py-24">

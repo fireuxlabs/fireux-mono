@@ -1,10 +1,16 @@
 <template>
-  <div class="starfield">
-    <div v-for="n in 50" :key="n" class="star" />
+  <div class="starfield" aria-hidden="true">
+    <div v-for="n in count" :key="n" class="star" />
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import { useStarfield } from '../../composables/useStarfield'
+
+const props = withDefaults(defineProps<{ count?: number }>(), { count: 64 })
+const count = props.count
+
 const { initializeStars } = useStarfield()
 
 onMounted(() => {
@@ -26,7 +32,7 @@ onMounted(() => {
 
 .star {
   position: absolute;
-  background: var(--ui-primary);
+  background: var(--color-primary-500, var(--ui-primary));
   border-radius: 50%;
   animation-name: twinkle, moveUp;
   animation-duration: 4s, 60s;
@@ -34,6 +40,12 @@ onMounted(() => {
   animation-direction: alternate, normal;
   animation-timing-function: ease, linear;
   animation-fill-mode: none, none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star {
+    animation: none;
+  }
 }
 
 @keyframes twinkle {

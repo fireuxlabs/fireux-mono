@@ -1,4 +1,7 @@
 <template>
+  <!-- Background effect (Cleanbox) -->
+  <EffectsBubbles />
+
   <div>
     <LandingShell>
       <template #left>

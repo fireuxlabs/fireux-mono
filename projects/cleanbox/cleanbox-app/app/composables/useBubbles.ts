@@ -1,53 +1,102 @@
-// Cleanbox bubble effect composable
-export function useBubbles() {
-  const initializeBubbles = () => {
-    const bubbles = document.querySelectorAll('.bubble')
+const isClient = typeof globalThis !== 'undefined' && 'window' in globalThis
 
-    bubbles.forEach((bubble) => {
-      const bubbleElement = bubble as HTMLElement
+const randomInRange = (min: number, max: number) =>
+  Math.random() * (max - min) + min
 
-      // Random horizontal position
-      bubbleElement.style.left = `${Math.random() * 100}%`
+type Cleanup = () => void
 
-      // Start at random positions in the animation cycle
-      const startingPoint = Math.random() * 100
-      bubbleElement.style.top = `${startingPoint}%`
+const applyFromDataset = (el: HTMLElement, reducedMotion: boolean) => {
+  const riseSeconds = Number.parseFloat(el.dataset.bubbleRiseSeconds ?? '22')
+  const pulseSeconds = Number.parseFloat(el.dataset.bubblePulseSeconds ?? '6')
+  const delaySeconds = Number.parseFloat(el.dataset.bubbleDelaySeconds ?? '0')
 
-      // Initial transform to sync animation
-      const initialYPos = 100 - startingPoint
-      bubbleElement.style.transform = `translateY(${initialYPos}vh)`
+  el.style.setProperty(
+    '--bubble-rise',
+    reducedMotion ? '0s' : `${riseSeconds.toFixed(2)}s`
+  )
+  el.style.setProperty(
+    '--bubble-pulse',
+    reducedMotion ? '0s' : `${pulseSeconds.toFixed(2)}s`
+  )
+  el.style.animationDelay = reducedMotion
+    ? '0s, 0s'
+    : `${delaySeconds.toFixed(2)}s, ${(delaySeconds * 0.5).toFixed(2)}s`
+}
 
-      // Random size for variety
-      const size = Math.random() * 20 + 10 // 10-30px
-      bubbleElement.style.width = `${size}px`
-      bubbleElement.style.height = `${size}px`
+export const useBubbles = () => {
+  const cleanups: Cleanup[] = []
 
-      // Random initial opacity
-      const initialOpacity = Math.random() * 0.3 + 0.1
-      bubbleElement.style.opacity = initialOpacity.toString()
-
-      // Random durations for natural movement
-      const floatDuration = Math.random() * 5 + 8 // 8-13 seconds
-      const popDuration = Math.random() * 2 + 2 // 2-4 seconds
-      const sway = Math.random() * 3 + 2 // 2-5 seconds
-
-      // Use negative delay to start at different animation points
-      const floatDelay = -(floatDuration * (startingPoint / 100))
-      const popDelay = Math.random() * 3
-      const swayDelay = Math.random() * 2
-
-      bubbleElement.style.animationDelay = `${popDelay}s, ${floatDelay}s, ${swayDelay}s`
-      bubbleElement.style.animationDuration = `${popDuration}s, ${floatDuration}s, ${sway}s`
-
-      // Listen for animation end and reset bubble position
-      bubbleElement.addEventListener('animationiteration', () => {
-        bubbleElement.style.top = '100%' // Move back to bottom
-        bubbleElement.style.transform = `translateY(-100vh)` // Start floating up again
-      })
-    })
+  const cleanup = () => {
+    while (cleanups.length) {
+      const dispose = cleanups.pop()
+      if (dispose) dispose()
+    }
   }
 
-  return {
-    initializeBubbles,
+  const initializeBubbles = (root: HTMLElement) => {
+    cleanup()
+
+    if (!isClient) return
+
+    const bubbles = Array.from(root.children).filter(
+      (node): node is HTMLElement => node instanceof HTMLElement
+    )
+
+    const mediaQuery = globalThis.matchMedia('(prefers-reduced-motion: reduce)')
+    const initialReduced = mediaQuery.matches
+
+    for (const el of bubbles) {
+      const riseSeconds = randomInRange(18, 28)
+      const pulseSeconds = randomInRange(5, 9)
+      const size = randomInRange(16, 42)
+      const drift = randomInRange(18, 54) * (Math.random() > 0.5 ? 1 : -1)
+      const scaleBase = randomInRange(0.85, 1.3)
+      const scalePeak = scaleBase * 1.08
+      const opacity = randomInRange(0.28, 0.6)
+      const offsetRatio = Math.random()
+      const delaySeconds = -riseSeconds * offsetRatio
+      const xOffset = randomInRange(-45, 45)
+
+      el.dataset.bubbleRiseSeconds = riseSeconds.toFixed(2)
+      el.dataset.bubblePulseSeconds = pulseSeconds.toFixed(2)
+      el.dataset.bubbleDelaySeconds = delaySeconds.toFixed(2)
+
+      el.style.setProperty('--x', `${xOffset.toFixed(2)}vw`)
+      el.style.setProperty('--drift', `${drift.toFixed(2)}px`)
+      el.style.setProperty('--bubble-scale-start', scaleBase.toFixed(2))
+      el.style.setProperty('--bubble-scale-peak', scalePeak.toFixed(2))
+      el.style.setProperty('--bubble-scale-end', scaleBase.toFixed(2))
+      el.style.setProperty('--bubble-opacity', opacity.toFixed(2))
+
+      el.style.width = `${size.toFixed(2)}px`
+      el.style.height = `${size.toFixed(2)}px`
+
+      applyFromDataset(el, initialReduced)
+    }
+
+    const handleChange = () => {
+      const reduced = mediaQuery.matches
+      for (const el of bubbles) {
+        applyFromDataset(el, reduced)
+      }
+    }
+
+    mediaQuery.addEventListener('change', handleChange)
+
+    cleanups.push(
+      () => {
+        mediaQuery.removeEventListener('change', handleChange)
+      },
+      () => {
+        for (const el of bubbles) {
+          el.removeAttribute('style')
+          delete el.dataset.bubbleRiseSeconds
+          delete el.dataset.bubblePulseSeconds
+          delete el.dataset.bubbleDelaySeconds
+        }
+      }
+    )
   }
+
+  return { initializeBubbles, cleanup }
 }

@@ -1,80 +1,83 @@
 <template>
-  <div class="steamfield">
-    <div v-for="n in 15" :key="n" class="steam-puff" />
+  <div ref="root" class="fx-steam" aria-hidden="true">
+    <div v-for="n in count" :key="n" class="puff" />
   </div>
 </template>
 
-<script setup>
-const { initializeSteam } = useSteam()
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { useSteam } from '../../composables/useSteam'
+
+const props = withDefaults(defineProps<{ count?: number }>(), { count: 18 })
+const count = props.count
+
+const root = ref<HTMLElement | null>(null)
+const { initializeSteam, cleanup } = useSteam()
 
 onMounted(() => {
-  initializeSteam()
+  if (root.value) initializeSteam(root.value)
+})
+
+onBeforeUnmount(() => {
+  cleanup()
 })
 </script>
 
 <style scoped>
-.steamfield {
+.fx-steam {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   overflow: hidden;
   z-index: -1;
   pointer-events: none;
 }
 
-.steam-puff {
+.puff {
   position: absolute;
+  top: 0;
+  left: 50%;
+  border-radius: 50%;
   background: radial-gradient(
-    ellipse at center,
-    rgba(59, 130, 246, 0.4) 0%,
-    rgba(147, 197, 253, 0.3) 40%,
-    rgba(186, 230, 253, 0.2) 70%,
+    ellipse at 40% 40%,
+    rgba(59, 130, 246, 0.42) 0%,
+    rgba(147, 197, 253, 0.28) 38%,
+    rgba(191, 219, 254, 0.18) 70%,
     transparent 100%
   );
-  border-radius: 50%;
-  filter: blur(2px);
-  animation-name: expand, riseUp, drift;
-  animation-iteration-count: infinite, infinite, infinite;
-  animation-direction: alternate, normal, alternate;
-  animation-timing-function: ease-out, ease-in, ease-in-out;
-  animation-fill-mode: none, none, none;
+  filter: blur(var(--steam-blur, 4px));
+  transform-origin: center;
+  animation: steam-rise var(--steam-rise, 26s) linear infinite,
+    steam-fade var(--steam-fade, 8s) ease-in-out infinite alternate;
+  opacity: var(--steam-opacity, 0.4);
 }
 
-@keyframes expand {
+@media (prefers-reduced-motion: reduce) {
+  .puff {
+    animation: none;
+  }
+}
+
+@keyframes steam-rise {
   0% {
-    transform: scale(0.5);
-    opacity: 0.6;
+    transform: translate3d(calc(var(--x, 0px) - var(--drift, 0px)), 120vh, 0)
+      scale(var(--steam-scale-start, 1));
   }
   50% {
-    transform: scale(1.5);
-    opacity: 0.3;
+    transform: translate3d(var(--x, 0px), 12vh, 0)
+      scale(var(--steam-scale-peak, 1.2));
   }
   100% {
-    transform: scale(2);
-    opacity: 0.1;
+    transform: translate3d(calc(var(--x, 0px) + var(--drift, 0px)), -130vh, 0)
+      scale(var(--steam-scale-end, 1.1));
   }
 }
 
-@keyframes riseUp {
+@keyframes steam-fade {
   0% {
-    transform: translateY(100vh);
+    opacity: calc(var(--steam-opacity, 0.4) * 0.65);
   }
   100% {
-    transform: translateY(-100vh);
-  }
-}
-
-@keyframes drift {
-  0% {
-    transform: translateX(-20px) rotate(-2deg);
-  }
-  50% {
-    transform: translateX(15px) rotate(1deg);
-  }
-  100% {
-    transform: translateX(-10px) rotate(-1deg);
+    opacity: calc(var(--steam-opacity, 0.4) * 1.05);
   }
 }
 </style>

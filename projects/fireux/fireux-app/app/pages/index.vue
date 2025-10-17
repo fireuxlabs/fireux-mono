@@ -1,31 +1,38 @@
 <template>
-  <div>
-    <LandingShell>
-      <template #left>
-        <LandingHero
-          :title-main="titleMain"
-          :title-prefix="titlePrefix"
-          :title-accent="titleAccent"
-          :paragraph="paragraph"
-          :badges="badges"
-          :primary="hero.primary"
-          :secondary="hero.secondary"
-          :tertiary="hero.tertiary"
-          :bullets="bullets"
-        />
-      </template>
+  <!-- Background effect (FireUX) -->
+  <EffectsStars />
 
-      <template #right>
-        <LandingQuickPeek :items="quickPeek" :footer-badge="footerBadge" />
-      </template>
-    </LandingShell>
+  <!-- Hero row -->
+  <LandingShell>
+    <template #left>
+      <LandingHero
+        :title-main="titleMain"
+        :title-prefix="titlePrefix"
+        :title-accent="titleAccent"
+        :paragraph="paragraph"
+        :badges="badges"
+        :primary="hero.primary"
+        :secondary="hero.secondary"
+        :bullets="bullets"
+      />
+    </template>
+    <template #right>
+      <LandingQuickPeek :items="quickPeek" :footer-badge="footerBadge" />
+    </template>
+  </LandingShell>
 
-    <LandingSolutions
-      :title="solutions.title"
-      :subtitle="solutions.subtitle"
-      :items="solutions.items"
-    />
-  </div>
+  <!-- Core solutions grid -->
+  <LandingSolutions
+    :title="solutions.title"
+    :subtitle="solutions.subtitle"
+    :items="solutions.items"
+  />
+
+  <!-- Sections to ship now -->
+  <LandingProducts :items="products" />
+  <LandingFuel />
+  <LandingFeatures first />
+  <LandingSkillsIcons />
 </template>
 
 <script setup>
@@ -61,7 +68,6 @@ const badges = [
 const hero = {
   primary: { label: 'Get Started', to: '/get-started' },
   secondary: { label: 'Explore Projects', to: '/projects' },
-  tertiary: undefined,
 }
 
 const bullets = [
@@ -145,4 +151,31 @@ const solutions = {
     },
   ],
 }
+
+const products = [
+  {
+    title: 'Cleanbox',
+    description: 'Scheduling, QA, billing for crews.',
+    to: '/cleanbox',
+    logo: '/img/cleanbox.png',
+    tag: 'Ops',
+    tagColor: 'sky',
+  },
+  {
+    title: 'Misebox',
+    description: 'Recipes, inventory, suppliers.',
+    to: '/misebox',
+    logo: '/img/misebox.png',
+    tag: 'Kitchen',
+    tagColor: 'violet',
+  },
+  {
+    title: 'FireUX',
+    description: 'Nuxt + Firebase + Stripe core.',
+    to: '/core',
+    logo: '/img/fireux.png',
+    tag: 'Core',
+    tagColor: 'primary',
+  },
+]
 </script>
