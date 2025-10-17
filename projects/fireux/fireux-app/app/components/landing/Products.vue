@@ -25,20 +25,33 @@
         v-for="app in items"
         :key="app.title"
         :to="app.to"
-        :ui="{ header: { padding: 'p-4' }, body: { padding: 'p-4' }, footer: { padding: 'p-4' } }"
+        :ui="{
+          header: { padding: 'p-4' },
+          body: { padding: 'p-4' },
+          footer: { padding: 'p-4' },
+        }"
       >
         <template #header>
           <div class="flex items-center gap-3">
-            <img v-if="app.logo" :src="app.logo" :alt="app.title" class="h-6 opacity-80" />
+            <img
+              v-if="app.logo"
+              :src="app.logo"
+              :alt="app.title"
+              class="h-6 opacity-80"
+            />
             <h3 class="font-semibold">{{ app.title }}</h3>
           </div>
         </template>
 
-        <p class="text-sm text-[color:var(--ui-text-muted)]">{{ app.description }}</p>
+        <p class="text-sm text-[color:var(--ui-text-muted)]">
+          {{ app.description }}
+        </p>
 
         <template #footer>
           <div class="flex items-center gap-2">
-            <UBadge :color="app.tagColor || 'primary'" variant="soft">{{ app.tag || 'App' }}</UBadge>
+            <UBadge :color="app.tagColor || 'primary'" variant="soft">{{
+              app.tag || 'App'
+            }}</UBadge>
             <UButton size="sm" variant="soft" :to="app.to">Open</UButton>
           </div>
         </template>

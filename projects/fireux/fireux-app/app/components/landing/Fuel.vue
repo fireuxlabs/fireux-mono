@@ -8,13 +8,22 @@
 
       <div class="flex flex-col md:flex-row items-center justify-center gap-8">
         <div class="fuel-item">
-          <img :src="isDark ? logos.nuxt.dark : logos.nuxt.light" alt="Nuxt logo" />
+          <img
+            :src="isDark ? logos.nuxt.dark : logos.nuxt.light"
+            alt="Nuxt logo"
+          />
         </div>
         <div class="fuel-item">
-          <img :src="isDark ? logos.firebase.dark : logos.firebase.light" alt="Firebase logo" />
+          <img
+            :src="isDark ? logos.firebase.dark : logos.firebase.light"
+            alt="Firebase logo"
+          />
         </div>
         <div class="fuel-item">
-          <img :src="isDark ? logos.stripe.dark : logos.stripe.light" alt="Stripe logo" />
+          <img
+            :src="isDark ? logos.stripe.dark : logos.stripe.light"
+            alt="Stripe logo"
+          />
         </div>
       </div>
     </UPageSection>
@@ -31,7 +40,10 @@ const isDark = computed(() => colorMode?.value === 'dark')
 
 const logos = {
   nuxt: { light: '/img/nuxt-black.png', dark: '/img/nuxt-white.png' },
-  firebase: { light: '/img/firebase-black.png', dark: '/img/firebase-white.png' },
+  firebase: {
+    light: '/img/firebase-black.png',
+    dark: '/img/firebase-white.png',
+  },
   stripe: { light: '/img/stripe-black.png', dark: '/img/stripe-white.png' },
 }
 </script>
