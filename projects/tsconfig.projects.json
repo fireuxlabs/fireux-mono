@@ -1,17 +1,6 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
-    "paths": {
-      "fireux-core": ["../packages/core/fireux-core/src/module.ts"],
-      "fireux-core/*": ["../packages/core/fireux-core/src/*"],
-      "fireux-core/runtime/*": ["../packages/core/fireux-core/src/runtime/*"],
-      "fireux-core/config/*": ["../packages/core/fireux-core/src/config/*"],
-      "@fireux-core/*": ["../packages/core/fireux-core/src/*"],
-      "@fireux-jobs/*": ["../packages/extensions/fireux-jobs/src/*"],
-      "@fireux-misebox/*": ["../packages/tenants/fireux-misebox/src/*"],
-      "@fireux-cleanbox/*": ["../packages/tenants/fireux-cleanbox/src/*"],
-      "@fireux-places/*": ["../packages/extensions/fireux-places/src/*"]
-    }
+    "baseUrl": "./"
   }
 }

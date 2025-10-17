@@ -4,22 +4,38 @@
 
   <!-- Main Content -->
   <div class="page">
-    <!-- Hero Component -->
-    <LandingHero />
+    <!-- Unified Hero (replaces old LandingHero) -->
+    <HeroPrimary
+      line1="Ignite"
+      line1After="with"
+      line2="Powerful Applications"
+      :links="[
+        { label: 'Get Started', to: '/getting-started', color: 'primary' },
+        {
+          label: 'Explore Projects',
+          href: 'https://fireux.app/projects',
+          variant: 'ghost',
+          color: 'neutral',
+          icon: 'i-heroicons-arrow-right',
+        },
+      ]"
+    >
+      <template #description>
+        A low-code ecosystem for responsive, scalable, and data-driven applications built upon
+        <span class="text-primary">Nuxt4</span> & <span class="text-primary">Firebase</span>.
+      </template>
 
-    <!-- Solutions Component -->
+      <template #brandmarks>
+        <img src="/img/nuxt-white.png" alt="Nuxt logo" class="h-12 opacity-80" />
+        <img src="/img/firebase-white.png" alt="Firebase logo" class="h-12 opacity-80" />
+      </template>
+    </HeroPrimary>
+
+    <!-- Keep existing sections -->
     <LandingSolutions />
-
-    <!-- Skills Icons Component -->
     <LandingSkillsIcons />
-
-    <!-- Products Component -->
     <LandingProducts />
-
-    <!-- Fuel Component -->
     <LandingFuel />
-
-    <!-- FireUX Features Component -->
     <LandingFireUX />
   </div>
 </template>
@@ -36,7 +52,7 @@ definePageMeta({
     layouts: ['default'],
   },
 })
-// Simple SEO
+
 useSeoMeta({
   title: 'FireUX - Vue.js Development Ecosystem',
   description:
@@ -45,7 +61,6 @@ useSeoMeta({
 </script>
 
 <style scoped>
-/* Let components handle their own spacing with Tailwind/NuxtUI utilities */
 .page {
   min-height: 60vh;
 }

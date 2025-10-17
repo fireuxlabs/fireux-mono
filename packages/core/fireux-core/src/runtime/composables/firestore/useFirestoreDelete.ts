@@ -1,11 +1,10 @@
 import { deleteDoc, doc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFirestoreUtils } from './useFirestoreUtils'
 import { useFireUXConfig } from '../FireUXConfig'
+import { useRequireUser } from '../auth/useRequireUser'
 
 export function useFirestoreDelete() {
   const db = useFirestore()
-  const { waitForCurrentUser } = useFirestoreUtils()
   useFireUXConfig()
 
   async function deleteDocument(
@@ -13,7 +12,7 @@ export function useFirestoreDelete() {
     id: string,
     _opts?: { appScoped?: boolean }
   ): Promise<void> {
-    await waitForCurrentUser()
+    await useRequireUser()
     const ref = doc(db, name, id)
     // Optionally: fetch doc and check appId if appScoped (for extra safety)
     // For now, just delete by ID

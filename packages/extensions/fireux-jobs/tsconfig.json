@@ -1,37 +1,16 @@
 {
-  "extends": "../../../tsconfig.json",
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
     "noEmit": true,
     "composite": false,
-    "baseUrl": ".",
-    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
     "paths": {
       "#fireux-jobs-models/*": ["./src/runtime/models/*"],
       "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
-      "fireux-core": ["../../core/fireux-core/src/module.ts"],
-      "fireux-core/*": ["../../core/fireux-core/src/*"],
       "#fireux-core-runtime/*": ["../../core/fireux-core/src/runtime/*"],
       "#fireux-core-composables/*": [
         "../../core/fireux-core/src/runtime/composables/*"
-      ],
-      "fireux-places": ["../fireux-places/src/module.ts"],
-      "fireux-places/*": ["../fireux-places/src/*"],
-      "fireux-places/runtime/*": ["../fireux-places/src/runtime/*"],
-      "fireux-places/runtime/composables/*": [
-        "../fireux-places/src/runtime/composables/*"
       ]
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]

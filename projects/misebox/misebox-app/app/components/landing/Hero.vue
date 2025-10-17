@@ -1,88 +1,72 @@
 <template>
   <section class="hero">
-    <h1><strong class="font-black">Mise</strong> en place</h1>
-    <h1><span class="highlight fade-in">Culinary Excellence</span></h1>
-    <p class="hero-description">
-      The complete platform for culinary professionals to manage recipes,
-      inventory, and kitchen operations with
-      <span class="highlight">precision workflows</span> &amp;
-      <span class="highlight">ingredient tracking</span>.
-    </p>
-    <ClientOnly>
-      <div class="features-preview">
-        <div class="feature-item">
-          <UIcon name="i-lucide-chef-hat" class="feature-icon" />
-          <span>Recipe Management</span>
-        </div>
-        <div class="feature-item">
-          <UIcon name="i-lucide-package" class="feature-icon" />
-          <span>Inventory Control</span>
-        </div>
-        <div class="feature-item">
-          <UIcon name="i-lucide-users" class="feature-icon" />
-          <span>Team Coordination</span>
-        </div>
-      </div>
-    </ClientOnly>
+    <h1>
+      <strong>{{ hero.verb }}</strong>
+    </h1>
+    <h1 class="highlight">{{ hero.subheadline }}</h1>
+    <h2 class="tagline">{{ hero.tagline }}</h2>
+    <p class="hero-description">{{ hero.description }}</p>
+
     <div class="button-group">
-      <UButton variant="solid" to="/getting-started" size="lg"
-        >Get Started</UButton
-      >
+      <UButton variant="solid" size="lg" :to="hero.primary.to">
+        {{ hero.primary.label }}
+      </UButton>
       <UButton
         variant="outline"
-        to="/dashboard"
         size="lg"
+        :to="hero.secondary.to"
         trailing-icon="i-heroicons-arrow-right"
       >
-        View Kitchen
+        {{ hero.secondary.label }}
       </UButton>
     </div>
   </section>
 </template>
 
-<script setup>
-// No additional script needed for this component
+<script setup lang="ts">
+const hero = {
+  verb: 'Mise',
+  subheadline: 'en place',
+  tagline: 'With Style.',
+  description:
+    'The professional platform for chefs to manage recipes, ingredients, and kitchen operations — designed for efficiency and creative flair.',
+  primary: { label: 'Get Started', to: '/getting-started' },
+  secondary: { label: 'View Kitchen', to: '/dashboard' },
+}
 </script>
 
 <style scoped>
-/* Mobile-first Styles for Hero Component */
 .hero {
   text-align: left;
-  padding: var(--space-8);
+  padding: var(--space-12) var(--space-8);
 }
 
-.hero h1 {
-  font-size: var(--text-5xl);
-  line-height: 1.2;
+h1 {
+  line-height: 1.1;
   font-weight: var(--font-weight-black);
 }
 
-.hero-description {
-  font-size: var(--text-base);
-  margin-top: var(--space-4);
-  line-height: 1.6;
+h1 strong {
+  font-size: clamp(3rem, 6vw, 6rem);
 }
 
-.features-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
-  justify-content: flex-start;
+.highlight {
+  font-size: clamp(2rem, 5vw, 4rem);
+  color: var(--color-primary-600);
+  display: block;
 }
 
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  font-weight: 500;
+.tagline {
+  font-size: clamp(1.25rem, 2vw, 2rem);
   color: var(--color-gray-600);
+  margin-top: var(--space-2);
 }
 
-.feature-icon {
-  color: var(--color-primary-500);
-  font-size: 1.2rem;
+.hero-description {
+  margin-top: var(--space-6);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  max-width: 50ch;
 }
 
 .button-group {
@@ -90,23 +74,11 @@
   flex-direction: column;
   gap: var(--space-4);
   margin-top: var(--space-8);
-  width: 100%;
 }
 
-/* Larger Screen Overrides */
 @media (min-width: 768px) {
   .button-group {
     flex-direction: row;
-    width: auto;
-  }
-}
-
-@media (min-width: 1024px) {
-  .hero h1 {
-    font-size: var(--text-7xl);
-  }
-  .hero-description {
-    font-size: var(--text-xl);
   }
 }
 </style>

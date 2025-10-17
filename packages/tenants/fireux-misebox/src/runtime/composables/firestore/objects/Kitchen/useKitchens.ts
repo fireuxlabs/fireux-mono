@@ -1,68 +1,79 @@
 import { computed } from 'vue'
-import { useFirestore, useCollection, useDocument } from 'vuefire'
-import {
-  collection,
-  query,
-  orderBy,
-  doc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from 'firebase/firestore'
-import { normalizeKitchen } from '../../../../models/objects/Kitchen.model'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager.ts'
+import type { Kitchen, KitchenCard } from '../../../../models/Kitchen.model'
 
-// Simple CRUD for kitchens
-export function useKitchens() {
-  const db = useFirestore()
-  const colRef = collection(db, 'kitchens')
-  const q = query(colRef, orderBy('name'))
-  const { data, pending, error } = useCollection(q, { ssrKey: 'kitchens' })
+const COLLECTION_PATH = 'kitchens'
 
-  // Get app ID from environment
-  const appId = process.env.APP_ID || 'niederhorn'
+type KitchenFirestoreDoc = Partial<Kitchen> & {
+  id?: string
+  place_id?: string
+  appId?: string | null
+}
 
-  // All kitchens
-  const all = computed(() => {
-    if (!data.value) return []
-    return data.value.map((raw: any) => normalizeKitchen(raw.id, raw))
-  })
+function mapKitchen(
+  raw: KitchenFirestoreDoc,
+  fallbackId?: string
+): Kitchen | null {
+  const id = raw.id || raw.place_id || fallbackId
+  if (!id) return null
 
-  // Get kitchen by ID
-  const getById = (id: string) => {
-    const docRef = doc(db, 'kitchens', id)
-    const { data: rawData } = useDocument(docRef)
-    return computed(() =>
-      rawData.value ? normalizeKitchen(id, rawData.value) : null
-    )
-  }
-
-  // Fetch the app's specific kitchen by ID
-  const appKitchen = getById(appId)
-
-  // Check if app has a kitchen (true if kitchen document exists)
-  const hasKitchen = computed(() => !!appKitchen.value)
-
-  // Add ingredient to kitchen
-  const addIngredient = (kitchenId: string, ingredientId: string) => {
-    const docRef = doc(db, 'kitchens', kitchenId)
-    return updateDoc(docRef, { ingredients: arrayUnion(ingredientId) })
-  }
-
-  // Remove ingredient from kitchen
-  const removeIngredient = (kitchenId: string, ingredientId: string) => {
-    const docRef = doc(db, 'kitchens', kitchenId)
-    return updateDoc(docRef, { ingredients: arrayRemove(ingredientId) })
-  }
+  const resolvedAppId = raw.app_id ?? raw.appId ?? null
 
   return {
-    all,
-    getById,
-    addIngredient,
-    removeIngredient,
-    pending,
-    error,
-    hasKitchen,
-    appKitchen,
-    appId,
+    id,
+    name: raw.name ?? 'Untitled kitchen',
+    description: raw.description || undefined,
+    app_id: resolvedAppId,
+  }
+}
+
+function toCell(kitchen: Kitchen): KitchenCard.Cell {
+  return {
+    id: kitchen.id,
+    name: kitchen.name,
+    app_id: kitchen.app_id ?? null,
+  }
+}
+
+// Unified Firestore-backed kitchens collection helpers
+export function useKitchens() {
+  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreManager()
+
+  const rawCollection =
+    firestoreFetchCollection<KitchenFirestoreDoc>(COLLECTION_PATH)
+
+  const kitchens = computed<Kitchen[]>(() => {
+    const values = rawCollection.value ?? []
+    return values
+      .map((entry) => mapKitchen(entry))
+      .filter((entry): entry is Kitchen => entry !== null)
+  })
+
+  const kitchenCells = computed<KitchenCard.Cell[]>(() =>
+    kitchens.value.map((kitchen) => toCell(kitchen))
+  )
+
+  function useKitchenDoc(id: string) {
+    return firestoreFetchDoc<KitchenFirestoreDoc>(COLLECTION_PATH, id)
+  }
+
+  function useKitchen(id: string) {
+    const docRef = useKitchenDoc(id)
+    return computed<Kitchen | null>(() => {
+      const value = docRef.value
+      if (value === undefined || value === null) return null
+      return mapKitchen(value, id)
+    })
+  }
+
+  const isLoaded = computed(() => rawCollection.value !== undefined)
+
+  return {
+    rawCollection,
+    kitchens,
+    kitchenCells,
+    useKitchen,
+    useKitchenDoc,
+    isLoaded,
   }
 }

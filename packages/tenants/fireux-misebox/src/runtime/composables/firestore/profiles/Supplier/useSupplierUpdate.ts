@@ -1,14 +1,13 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate'
-import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils'
+import { useRequireUser } from 'fireux-core/runtime/composables/auth/useRequireUser'
 
 const COLLECTION = 'suppliers'
 
 export function useSupplierUpdate() {
   const { updateDocument } = useFirestoreUpdate()
-  const { waitForCurrentUser } = useFirestoreUtils()
 
-  async function getUid() {
-    const u = await waitForCurrentUser()
+  const getUid = async () => {
+    const u = await useRequireUser()
     if (!u?.uid) throw new Error('User not authenticated')
     return u.uid
   }

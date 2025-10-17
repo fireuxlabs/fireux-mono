@@ -14,7 +14,6 @@ import {
   type AppUserDoc,
 } from '../../../models/core/user.model'
 import type { User as FirebaseUser } from 'firebase/auth'
-
 import { useUserUpdate } from './useUserUpdate'
 import { useUserFormattingAndValidation } from './useUserFormattingAndValidation'
 
@@ -23,12 +22,12 @@ export function useUser() {
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant'
 
-  const authUser = import.meta.client
+  // Auth user (SSR-safe: null ref on server)
+  const authUser: Ref<FirebaseUser | null> = import.meta.client
     ? (useCurrentUser() as Ref<FirebaseUser | null>)
-    : (shallowRef<FirebaseUser | null>(null) as ReturnType<
-        typeof useCurrentUser
-      >)
-  const uid = computed(() => authUser.value?.uid || null)
+    : shallowRef<FirebaseUser | null>(null)
+
+  const uid = computed(() => authUser.value?.uid ?? null)
 
   // Core user doc
   const coreRef = computed<DocumentReference<CoreUserDoc> | null>(() =>
@@ -38,7 +37,7 @@ export function useUser() {
   )
   const { data: coreDoc } = useDocument<CoreUserDoc>(coreRef)
 
-  // App user doc
+  // App user doc (tenant scope)
   const appRef = computed<DocumentReference<AppUserDoc> | null>(() =>
     uid.value && isTenant && appId
       ? (doc(
@@ -50,13 +49,11 @@ export function useUser() {
   )
   const { data: appDoc } = useDocument<AppUserDoc>(appRef)
 
-  // Unified user (flattened; app > core > base), plus partitioned refs
+  // Flattened current user (app > core > base)
   const user = computed<User | null>(() => {
     if (!uid.value) return null
-
     const core = coreDoc.value ?? null
     const app = isTenant && appId ? appDoc.value ?? null : null
-
     return toUser(core, app, uid.value)
   })
 
@@ -72,17 +69,15 @@ export function useUser() {
   const collectionLocal =
     isTenant && appId ? firestoreFetchCollection(`apps/${appId}/users`) : null
 
-  let collectionGlobal = !isTenant
-    ? firestoreFetchCollection('core-users')
-    : null
+  let collectionGlobal = isTenant
+    ? null
+    : firestoreFetchCollection('core-users')
 
   function fetchGlobal() {
     if (!isTenant) return collectionGlobal
     collectionGlobal ??= firestoreFetchCollection('core-users')
     return collectionGlobal
   }
-
-  // Provide a simple alias for avatar to reduce prop churn in components
 
   return {
     user,

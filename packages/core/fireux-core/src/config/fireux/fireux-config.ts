@@ -111,7 +111,7 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
   const sa = readServiceAccount()
 
   const vuefireDefaults: Record<string, any> = {
-    auth: { enabled: true, sessionCookie: false },
+    auth: { sessionCookie: false },
     config: {
       apiKey: env('FIREBASE_API_KEY'),
       authDomain: env('FIREBASE_AUTH_DOMAIN'),

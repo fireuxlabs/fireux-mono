@@ -1,5 +1,5 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate.ts'
-import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/auth/useRequireUser.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
 
@@ -11,13 +11,12 @@ type TargetScope = 'auto' | 'core' | 'app'
 
 export function useEmployerUpdate() {
   const { updateDocument } = useFirestoreUpdate()
-  const { waitForCurrentUser } = useFirestoreUtils()
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant' && !!appId
   const { uploadImage } = useImageStorage()
 
-  async function getUid() {
-    const u = await waitForCurrentUser()
+  const getUid = async () => {
+    const u = await useRequireUser()
     if (!u?.uid) throw new Error('User not authenticated')
     return u.uid
   }

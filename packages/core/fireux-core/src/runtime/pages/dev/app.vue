@@ -183,10 +183,22 @@ definePageMeta({
 })
 
 // Get app information
-const { ecosystem, globalAppId, role: runtimeRole, appId: fallbackAppId } =
-  useFireUXConfig()
-const { app, apps, appTenancy, tenancyDisplay, isLoading, isInitialized, hasAdmins, isUserAdmin } =
-  useApp()
+const {
+  ecosystem,
+  globalAppId,
+  role: runtimeRole,
+  appId: fallbackAppId,
+} = useFireUXConfig()
+const {
+  app,
+  apps,
+  appTenancy,
+  tenancyDisplay,
+  isLoading,
+  isInitialized,
+  hasAdmins,
+  isUserAdmin,
+} = useApp()
 
 const adminIds = computed(() => app.value?.admin_ids ?? [])
 const creatorId = computed(() => app.value?.creator_id || 'Unknown')
@@ -196,5 +208,4 @@ const formattedCreatedAt = computed(() =>
 )
 const appsCount = computed(() => apps.value?.length ?? 0)
 const appsData = computed(() => apps.value ?? [])
-</script>
 </script>

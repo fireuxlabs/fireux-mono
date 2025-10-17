@@ -1,0 +1,16 @@
+// projects/tsconfig.json
+{
+  "files": [],
+  "references": [
+    { "path": "cleanbox/cleanbox-app" },
+    { "path": "cleanbox/richies-reinigung" },
+    { "path": "fireux/fireux-app" },
+    { "path": "fireux/tennant" },
+    { "path": "misebox/misebox-app" },
+    { "path": "misebox/niederhorn" }
+  ],
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "types": ["nuxt"]
+  }
+}

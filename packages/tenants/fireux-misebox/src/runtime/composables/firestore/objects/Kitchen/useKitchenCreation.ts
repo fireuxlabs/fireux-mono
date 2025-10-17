@@ -1,57 +1,52 @@
 import { ref } from 'vue'
-import { useFirestore } from 'vuefire'
-import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore'
-import { useCurrentUser } from 'vuefire'
-import type {
-  Kitchen,
-  NewKitchenInput,
-} from '../../../../models/objects/Kitchen.model'
-import { normalizeKitchen } from '../../../../models/objects/Kitchen.model'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager.ts'
+import type { Kitchen } from '../../../../models/Kitchen.model'
+
+interface KitchenCreatePayload {
+  id: string
+  name: string
+  description?: string
+  app_id?: string | null
+}
 
 export function useKitchenCreation() {
-  const db = useFirestore()
-  const currentUser = useCurrentUser()
+  const { setDocument } = useFirestoreManager()
   const isCreating = ref(false)
   const error = ref<string | null>(null)
 
-  const create = async (input: NewKitchenInput): Promise<Kitchen> => {
-    if (!currentUser.value) {
-      throw new Error('User must be authenticated to create a kitchen')
+  async function create(payload: KitchenCreatePayload): Promise<Kitchen> {
+    const id = payload.id?.trim()
+    const name = payload.name?.trim()
+
+    if (!id) {
+      throw new Error('Kitchen requires an id that matches the place_id.')
+    }
+    if (!name) {
+      throw new Error('Kitchen name is required.')
     }
 
     isCreating.value = true
     error.value = null
 
+    const body = {
+      name,
+      description: payload.description?.trim() || null,
+      app_id: payload.app_id ?? null,
+    }
+
     try {
-      // Create new document reference
-      const colRef = collection(db, 'kitchens')
-      const docRef = doc(colRef)
+      await setDocument('kitchens', id, body)
 
-      // Kitchen data with required fields
-      const kitchenData = {
-        name: input.name,
-        owner_id: currentUser.value.uid,
-        app_id: process.env.APP_ID || 'niederhorn',
-        ingredients: [], // Start with empty ingredients array
-        created_at: serverTimestamp(),
-        updated_at: serverTimestamp(),
-        created_by: currentUser.value.uid,
+      return {
+        id,
+        name,
+        description: body.description ?? undefined,
+        app_id: body.app_id,
       }
-
-      // Save to Firestore
-      await setDoc(docRef, kitchenData)
-
-      // Return normalized kitchen object
-      const kitchen = normalizeKitchen(docRef.id, {
-        ...kitchenData,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-
-      return kitchen
     } catch (err: any) {
-      error.value = err.message || 'Failed to create kitchen'
-      throw err
+      const message = err?.message ?? 'Failed to create kitchen'
+      error.value = message
+      throw new Error(message)
     } finally {
       isCreating.value = false
     }

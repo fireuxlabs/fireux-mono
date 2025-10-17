@@ -17,9 +17,10 @@
 import { initializeApp, cert } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
-import { readFileSync } from 'fs'
-import { resolve, dirname } from 'path'
-import { fileURLToPath } from 'url'
+import type { Storage } from 'firebase-admin/storage'
+import { readFileSync } from 'node:fs'
+import { resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..', '..')
@@ -52,14 +53,25 @@ const PROJECTS = {
 } as const
 
 type ProjectKey = keyof typeof PROJECTS
+type ProjectConfig = (typeof PROJECTS)[ProjectKey]
+type StorageBucket = ReturnType<Storage['bucket']>
 
 const DEFAULT_AVATAR_STATIC = '/img/default-image.png'
 
-const stats = {
-  processed: 0,
-  updated: 0,
-  skipped: 0,
-  errors: 0,
+type BackfillStats = {
+  processed: number
+  updated: number
+  skipped: number
+  errors: number
+}
+
+function createStats(): BackfillStats {
+  return {
+    processed: 0,
+    updated: 0,
+    skipped: 0,
+    errors: 0,
+  }
 }
 
 function getDefaultBucketName(projectId: string) {
@@ -117,9 +129,27 @@ function getAppId(project: ProjectKey) {
 }
 
 async function main() {
+  const { project, dryRun } = parseArgs()
+  const config = PROJECTS[project]
+
+  logRunInfo(config, dryRun)
+
+  const firebase = initFirebase(config)
+  const stats = await backfillCoreUsers({
+    project,
+    dryRun,
+    ...firebase,
+  })
+
+  reportStats(stats)
+  if (stats.errors > 0) process.exit(1)
+}
+
+function parseArgs(): { project: ProjectKey; dryRun: boolean } {
   const args = process.argv.slice(2)
   const project = args[0] as ProjectKey
   const dryRun = args.includes('--dry-run')
+
   if (!project || !PROJECTS[project]) {
     console.log(
       'Usage: pnpm tsx automation/migrations/backfill-core-avatars.ts <project> [--dry-run]'
@@ -128,13 +158,18 @@ async function main() {
     process.exit(1)
   }
 
-  const config = PROJECTS[project]
+  return { project, dryRun }
+}
+
+function logRunInfo(config: ProjectConfig, dryRun: boolean) {
   console.log(
     `\n🔧 Backfilling Core Avatars for ${config.name} (${config.projectId})`
   )
   console.log(`📁 Service Account: ${config.serviceAccountPath}`)
   if (dryRun) console.log('🧪 DRY RUN: no writes will be performed')
+}
 
+function initFirebase(config: ProjectConfig) {
   const serviceAccount = JSON.parse(
     readFileSync(config.serviceAccountPath, 'utf8')
   )
@@ -147,90 +182,166 @@ async function main() {
   const bucketName = getDefaultBucketName(config.projectId)
   const bucket = storage.bucket(bucketName)
 
+  return { db, bucket, bucketName }
+}
+
+async function backfillCoreUsers({
+  project,
+  dryRun,
+  db,
+  bucket,
+  bucketName,
+}: {
+  project: ProjectKey
+  dryRun: boolean
+  db: FirebaseFirestore.Firestore
+  bucket: StorageBucket
+  bucketName: string
+}): Promise<BackfillStats> {
+  const stats = createStats()
+
   const coreSnap = await db.collection('core-users').get()
   const appUsersCollection = await getAppUsersCollection(db, project)
   const appUsersSnap = await db.collection(appUsersCollection).get()
-
-  const appUsersMap = new Map<string, FirebaseFirestore.DocumentData>()
-  for (const doc of appUsersSnap.docs) {
-    appUsersMap.set(doc.id, doc.data())
-  }
+  const appUsersMap = buildAppUsersMap(appUsersSnap)
 
   console.log(
     `📊 Core Users: ${coreSnap.size}, App Users: ${appUsersSnap.size}`
   )
 
   for (const doc of coreSnap.docs) {
-    stats.processed++
-    const coreUser = { id: doc.id, ...(doc.data() as any) }
-    const uid = coreUser.id as string
-    const existing = coreUser.avatar as string | undefined
-
-    if (isTruthyString(existing)) {
-      // Already has an avatar — skip unless future requirements call for replacement
-      stats.skipped++
-      continue
-    }
-
-    const appUser = appUsersMap.get(uid) || {}
-    const candidate = (appUser.avatar ||
-      appUser.avatarUrl ||
-      appUser.photoURL ||
-      appUser.photoUrl) as string | undefined
-
-    let newAvatarUrl: string | null = null
-
-    if (isHttpUrl(candidate)) {
-      try {
-        const resp = await fetch(candidate)
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
-        const contentType = resp.headers.get('content-type') || undefined
-        const ext = inferExtension(contentType)
-        const arrayBuf = await resp.arrayBuffer()
-        const buffer = Buffer.from(arrayBuf)
-        const token = (globalThis.crypto?.randomUUID?.() ||
-          Math.random().toString(36).slice(2)) as string
-        const path = `core-users/${uid}/avatar.${ext}`
-
-        if (!dryRun) {
-          await bucket.file(path).save(buffer, {
-            contentType:
-              contentType || (ext === 'png' ? 'image/png' : 'image/jpeg'),
-            metadata: { metadata: { firebaseStorageDownloadTokens: token } },
-            public: false,
-            resumable: false,
-            validation: false,
-          })
-        }
-
-        newAvatarUrl = buildDownloadUrl(bucketName, path, token)
-      } catch (err: any) {
-        console.warn(
-          `  ⚠️  ${coreUser.email || uid}: failed to copy app avatar →`,
-          err.message
-        )
-      }
-    }
-
-    if (!newAvatarUrl) {
-      // Fallback to static default path
-      newAvatarUrl = DEFAULT_AVATAR_STATIC
-    }
-
-    if (!dryRun) {
-      await doc.ref.update({ avatar: newAvatarUrl })
-    }
-    stats.updated++
-    console.log(`  ✅ ${coreUser.email || uid}: avatar set`)
+    await processCoreUser(doc, appUsersMap, {
+      bucket,
+      bucketName,
+      dryRun,
+      stats,
+    })
   }
 
+  return stats
+}
+
+function buildAppUsersMap(
+  snap: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>
+) {
+  const map = new Map<string, FirebaseFirestore.DocumentData>()
+  for (const doc of snap.docs) {
+    map.set(doc.id, doc.data())
+  }
+  return map
+}
+
+async function processCoreUser(
+  doc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>,
+  appUsersMap: Map<string, FirebaseFirestore.DocumentData>,
+  {
+    bucket,
+    bucketName,
+    dryRun,
+    stats,
+  }: {
+    bucket: StorageBucket
+    bucketName: string
+    dryRun: boolean
+    stats: BackfillStats
+  }
+) {
+  stats.processed++
+
+  const coreUser = { id: doc.id, ...(doc.data() as any) }
+  const uid = coreUser.id as string
+  const displayId = (coreUser.email || uid) as string
+  const existing = coreUser.avatar as string | undefined
+
+  if (isTruthyString(existing)) {
+    // Already has an avatar — skip unless future requirements call for replacement
+    stats.skipped++
+    return
+  }
+
+  const appUser = appUsersMap.get(uid)
+  const candidate = getCandidateAvatar(appUser)
+  const copied = await tryCopyAppAvatar(candidate, {
+    bucket,
+    bucketName,
+    dryRun,
+    uid,
+    label: displayId,
+  })
+
+  const newAvatarUrl = copied ?? DEFAULT_AVATAR_STATIC
+
+  if (!dryRun) {
+    await doc.ref.update({ avatar: newAvatarUrl })
+  }
+
+  stats.updated++
+  console.log(`  ✅ ${displayId}: avatar set`)
+}
+
+function getCandidateAvatar(
+  appUser?: FirebaseFirestore.DocumentData
+): string | undefined {
+  if (!appUser) return undefined
+  return (appUser.avatar ||
+    appUser.avatarUrl ||
+    appUser.photoURL ||
+    appUser.photoUrl) as string | undefined
+}
+
+async function tryCopyAppAvatar(
+  candidate: string | undefined,
+  {
+    bucket,
+    bucketName,
+    dryRun,
+    uid,
+    label,
+  }: {
+    bucket: StorageBucket
+    bucketName: string
+    dryRun: boolean
+    uid: string
+    label: string
+  }
+): Promise<string | null> {
+  if (!isHttpUrl(candidate)) return null
+
+  try {
+    const resp = await fetch(candidate)
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+    const contentType = resp.headers.get('content-type') || undefined
+    const ext = inferExtension(contentType)
+    const arrayBuf = await resp.arrayBuffer()
+    const buffer = Buffer.from(arrayBuf)
+    const token = (globalThis.crypto?.randomUUID?.() ||
+      Math.random().toString(36).slice(2)) as string
+    const path = `core-users/${uid}/avatar.${ext}`
+
+    if (!dryRun) {
+      await bucket.file(path).save(buffer, {
+        contentType:
+          contentType || (ext === 'png' ? 'image/png' : 'image/jpeg'),
+        metadata: { metadata: { firebaseStorageDownloadTokens: token } },
+        public: false,
+        resumable: false,
+        validation: false,
+      })
+    }
+
+    return buildDownloadUrl(bucketName, path, token)
+  } catch (err: any) {
+    console.warn(`  ⚠️  ${label}: failed to copy app avatar →`, err.message)
+    return null
+  }
+}
+
+function reportStats(stats: BackfillStats) {
   console.log('\n📈 Backfill Summary:')
   console.log(`   Processed: ${stats.processed}`)
   console.log(`   Updated:   ${stats.updated}`)
   console.log(`   Skipped:   ${stats.skipped}`)
   console.log(`   Errors:    ${stats.errors}`)
-
-  if (stats.errors > 0) process.exit(1)
 }
 
 try {

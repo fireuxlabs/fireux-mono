@@ -1,31 +1,17 @@
 //packages/tenants/fireux-misebox/tsconfig.json
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
     "noEmit": true,
     "composite": false,
-    "baseUrl": ".",
-    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
     "paths": {
       "#fireux-misebox-models/*": ["./src/runtime/models/*"],
       "#fireux-places-models/*": [
         "../../extensions/fireux-places/src/runtime/models/*"
       ],
-      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
-      "fireux-core": ["../../core/fireux-core/src/module.ts"],
-      "fireux-core/*": ["../../core/fireux-core/src/*"]
+      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"]
     },
     "types": ["nuxt", "nuxt/schema", "@nuxt/ui", "@types/node"]
   },

@@ -5,15 +5,14 @@ import type { Ref } from 'vue'
 
 import type { AppDoc } from '../../models/core/app.model'
 import { useFireUXConfig } from '../FireUXConfig'
-import { useFirestoreUtils } from '../firestore/useFirestoreUtils'
 import { useFirestoreManager } from '../firestore/useFirestoreManager'
 import { validateAppField } from './utils/useAppValidation'
 import { formatAppField } from './utils/useAppFormatting'
 import type { AppSocialLinks } from './utils/useAppValidation'
+import { useRequireUser } from '../auth/useRequireUser'
 
 export function useAppUpdate(app: Ref<AppDoc | null | undefined>) {
   const db = useFirestore()
-  const { waitForCurrentUser } = useFirestoreUtils()
   const { appId: fallbackAppId } = useFireUXConfig()
   const { setDocument, deleteDocument } = useFirestoreManager()
 
@@ -31,7 +30,7 @@ export function useAppUpdate(app: Ref<AppDoc | null | undefined>) {
   }
 
   async function updateAppField(field: string, value: any) {
-    const user = await waitForCurrentUser()
+    const user = await useRequireUser()
     if (!user) throw new Error('User not authenticated')
 
     const validationError = validateAppField(field, value)

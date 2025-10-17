@@ -1,92 +1,72 @@
 <template>
   <section class="hero">
-    <h1><strong class="font-black">Clean</strong> with</h1>
-    <h1><span class="highlight fade-in">Professional Solutions</span></h1>
-    <p class="hero-description">
-      The complete platform for cleaning professionals to manage bookings, track
-      services, and grow their business with
-      <span class="highlight">automated workflows</span> &amp;
-      <span class="highlight">client management</span>.
-    </p>
-    <ClientOnly>
-      <div class="features-preview">
-        <div class="feature-item">
-          <UIcon name="i-lucide-calendar" class="feature-icon" />
-          <span>Smart Scheduling</span>
-        </div>
-        <div class="feature-item">
-          <UIcon name="i-lucide-users" class="feature-icon" />
-          <span>Client Management</span>
-        </div>
-        <div class="feature-item">
-          <UIcon name="i-lucide-credit-card" class="feature-icon" />
-          <span>Easy Payments</span>
-        </div>
-      </div>
-    </ClientOnly>
+    <h1>
+      <strong>{{ hero.verb }}</strong>
+    </h1>
+    <h1 class="highlight">{{ hero.subheadline }}</h1>
+    <h2 class="tagline">{{ hero.tagline }}</h2>
+    <p class="hero-description">{{ hero.description }}</p>
+
     <div class="button-group">
-      <UButton variant="solid" to="/getting-started" size="lg"
-        >Get Started</UButton
-      >
+      <UButton variant="solid" size="lg" :to="hero.primary.to">
+        {{ hero.primary.label }}
+      </UButton>
       <UButton
         variant="outline"
-        to="/dashboard"
         size="lg"
+        :to="hero.secondary.to"
         trailing-icon="i-heroicons-arrow-right"
       >
-        View Dashboard
+        {{ hero.secondary.label }}
       </UButton>
     </div>
   </section>
 </template>
 
-<script setup>
-// No additional script needed for this component
+<script setup lang="ts">
+const hero = {
+  verb: 'Bling',
+  subheadline: 'with CleanBox',
+  tagline: 'Shine Smarter.',
+  description:
+    'The all-in-one cleaning business suite for scheduling, team coordination, and client management — clean, simple, powerful.',
+  primary: { label: 'Get Started', to: '/auth' },
+  secondary: { label: 'See Services', to: '/services' },
+}
 </script>
 
 <style scoped>
-/* Mobile-first Styles for Hero Component */
 .hero {
   text-align: left;
-  padding: var(--space-8);
+  padding: var(--space-12) var(--space-8);
 }
 
-.hero h1 {
-  font-size: var(--text-5xl);
-  line-height: 1.2;
+h1 {
+  line-height: 1.1;
   font-weight: var(--font-weight-black);
 }
 
-.hero-description {
-  font-size: var(--text-base);
-  margin-top: var(--space-4);
-  line-height: 1.6;
+h1 strong {
+  font-size: clamp(3rem, 6vw, 6rem);
 }
 
 .highlight {
-  color: var(--ui-primary);
+  font-size: clamp(2rem, 5vw, 4rem);
+  color: var(--color-primary-600);
+  display: block;
 }
 
-.features-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
-  justify-content: flex-start;
-}
-
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  font-weight: 500;
+.tagline {
+  font-size: clamp(1.25rem, 2vw, 2rem);
   color: var(--color-gray-600);
+  margin-top: var(--space-2);
 }
 
-.feature-icon {
-  color: var(--color-primary-500);
-  font-size: 1.2rem;
+.hero-description {
+  margin-top: var(--space-6);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  max-width: 50ch;
 }
 
 .button-group {
@@ -94,23 +74,11 @@
   flex-direction: column;
   gap: var(--space-4);
   margin-top: var(--space-8);
-  width: 100%;
 }
 
-/* Larger Screen Overrides */
 @media (min-width: 768px) {
   .button-group {
     flex-direction: row;
-    width: auto;
-  }
-}
-
-@media (min-width: 1024px) {
-  .hero h1 {
-    font-size: var(--text-7xl);
-  }
-  .hero-description {
-    font-size: var(--text-xl);
   }
 }
 </style>

@@ -1,5 +1,5 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate.ts'
-import { useFirestoreUtils } from 'fireux-core/runtime/composables/firestore/useFirestoreUtils.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/auth/useRequireUser.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
 import { usePlaceSave } from 'fireux-places/runtime/composables/usePlaceSave.ts'
 import { useFirestore } from 'vuefire'
@@ -14,13 +14,12 @@ const COLLECTION = 'professionals'
 
 export function useProfessionalUpdate() {
   const { updateDocument } = useFirestoreUpdate()
-  const { waitForCurrentUser } = useFirestoreUtils()
   const { ensurePlaceExists } = usePlaceSave()
   const { uploadImage } = useImageStorage()
   const db = useFirestore()
 
-  async function getUid(): Promise<string> {
-    const u = await waitForCurrentUser()
+  const getUid = async (): Promise<string> => {
+    const u = await useRequireUser()
     if (!u?.uid) throw new Error('User not authenticated')
     return u.uid
   }
