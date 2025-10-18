@@ -17,17 +17,19 @@ The system is composed of:
   - FireUX App (marketing + docs portal)
 
 ### Guiding Principles
+
 1. **Modular first** – every feature lives in its smallest possible package.
 2. **Tenant-aware** – core handles auth, data, billing; tenants define branding + flags.
 3. **Composable** – every data model exposes `useX()` composables.
 4. **Ship-ready** – each app must run without backend edits once environment vars are filled.
 
 ### Feature Families
-| Domain | Features |
-|--------|-----------|
-| Core | Auth, Firestore, Stripe, PWA, CI, Docs |
-| Jobs | Postings, Applications, Contracts, Ratings |
-| Places | Search, Verification, Map, Linking |
-| Misebox | Profiles, Recipes, Suppliers, Prep Plans |
-| Cleanbox | Crews, QA, Billing, Clients |
-| FireUX | Governance, Marketplace, Scaffolding |
+
+| Domain   | Features                                   |
+| -------- | ------------------------------------------ |
+| Core     | Auth, Firestore, Stripe, PWA, CI, Docs     |
+| Jobs     | Postings, Applications, Contracts, Ratings |
+| Places   | Search, Verification, Map, Linking         |
+| Misebox  | Profiles, Recipes, Suppliers, Prep Plans   |
+| Cleanbox | Crews, QA, Billing, Clients                |
+| FireUX   | Governance, Marketplace, Scaffolding       |
