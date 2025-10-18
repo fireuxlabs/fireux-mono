@@ -1,19 +1,60 @@
-# Cleanbox liturature
+# Cleanbox App
 
-- **Hero heading**: "Bling with" + "Operational Clarity".
-- **Hero paragraph**: "Coordinate crews, quality checks, and billing from one dashboard. Cleanbox keeps every service scheduled, verified, and client-ready."
-- **Hero badges**: Flagship tenant (dual logo lockups).
-- **Hero CTAs**: Get Started (`/get-started`), Explore Crews (`/crews`).
-- **Hero bullets**:
-  - Smart scheduling & crew assignments.
-  - QA checklists with photo proof.
-  - Compliance & certification tracking.
-  - Stripe-ready invoicing & exports.
-- **Quick peek title**: "Ops at a Glance" with CTA "Explore the Dashboard" (`/dashboard`).
-- **Quick peek items**:
-  - Real-Time Scheduling — instant crew updates and coverage alerts.
-  - QA with Photo Receipts — location-tagged proof for clients and compliance.
-  - Billing That Syncs — Stripe-ready invoices with attached QA proof.
-  - Crew Experience — direct access to schedules, feedback, and earnings.
-- **Quick peek footer**: "Need rollout support?" CTA "Talk to Sales" (`/sales`).
-- **Solutions grid**: Scheduling, QA & Proof, Compliance, Billing, Clients, Reports — each with descriptive copy and dedicated routes.
+The live SaaS platform for cleaning companies to manage teams, schedules, quality checks, and billing — built on the FireUX framework.
+
+---
+
+## Audience
+
+Cleaning business owners, operations managers, and team leaders who want to digitize and automate their daily workflows.
+
+---
+
+## Purpose
+
+The Cleanbox App is the production tenant of FireUX Cleanbox.
+It transforms field operations into a structured system with clear accountability, client proof, and automated billing — all accessible through desktop or mobile.
+
+---
+
+## Key Features
+
+- Real-time job scheduling and crew assignments
+- QA checklists with photo uploads and timestamps
+- Client dashboards showing proof of work
+- Stripe-powered invoicing and payment tracking
+- Certification and compliance tracking per crew member
+- Chat and feedback tools between management and staff
+- Analytics dashboard for productivity and client satisfaction
+- PWA-ready mobile access for crews on the go
+
+---
+
+## Main Pages / Routes
+
+- `/` – marketing homepage
+- `/get-started` – onboarding for new companies
+- `/dashboard` – operational overview for managers
+- `/crews` – list of team members and shift assignments
+- `/qa` – quality assurance and proof uploads
+- `/billing` – invoices, payments, and exports
+- `/clients` – client overview and report access
+- `/reports` – analytics and performance summaries
+
+---
+
+## Next Steps
+
+- Complete client login portal for shared QA reports
+- Improve mobile-first PWA experience for field crews
+- Add supervisor approval flow for QA submissions
+- Automate invoice generation after job completion
+- Connect to FireUX analytics for multi-tenant reporting
+- Launch demo environment for potential clients
+
+---
+
+## Summary
+
+The Cleanbox App is where the FireUX system becomes a real business tool.
+It helps cleaning teams operate like modern SaaS-driven companies — transparent, efficient, and client-ready from day one.

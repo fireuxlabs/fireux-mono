@@ -1,21 +1,57 @@
-# FireUX liturature
+# FireUX App
 
-- **Hero heading**: "Ignite With" + "Powerful Applications"
-- **Hero paragraph**: "A low-code ecosystem for responsive, scalable, and data-driven applications built upon Nuxt4 & Firebase."
-- **Hero badges**: Nuxt, Firebase.
-- **Hero CTAs**: Get Started (`/get-started`), Explore Projects (`/projects`).
-- **Hero bullets**:
-  - Nuxt 4 + Firebase orchestration out of the box.
-  - Reusable design system & shared components.
-  - Tenant-aware & white-label runtime.
-  - Automations, PWA, and CI presets.
-- **Quick peek**:
-  - Modules — "Wire Nuxt + Firebase with ready composables."
-  - Tenant theming — "White-label overrides with a single config."
-  - CI ready — "PWA, CI presets and deploy pipelines."
-- **Quick peek footer badge**: "Nuxt · Firebase · Stripe".
-- **Solutions grid**: Products, White-label, SaaS, Templates, API-first, Automation (each with matching descriptions and CTA routes).
-- **Products section**: Cleanbox (Ops), Misebox (Kitchen), FireUX (Core) with "Apps index coming soon" placeholder when no data.
-- **Fuel trio**: Nuxt, Firebase, Stripe logos with dark/light variants.
-- **Features (first six)**: PWA First, Pre-built Templates, SaaS Solutions, White-Label, Low-Code Core, Dashboard-Driven — opinionated tooling notes.
-- **Skills icons**: Nuxt.js, Tailwind CSS, SCSS, Firebase, PWA, JavaScript, TypeScript, GitHub, CSS3, HTML5, Node.js.
+The public-facing application for the FireUX ecosystem — where developers, businesses, and creators explore, build, and connect through FireUX-powered apps.
+
+---
+
+## Audience
+
+Developers, partners, and potential clients who want to build or subscribe to SaaS solutions using the FireUX platform.
+
+---
+
+## Purpose
+
+The FireUX App acts as the main hub of the FireUX network.
+It introduces the core framework, showcases active tenant apps (like Misebox and Cleanbox), and provides tools for new developers to get started with FireUX.
+
+---
+
+## Key Features
+
+- Developer onboarding and documentation portal
+- App showcase highlighting tenants and templates
+- Access to starter projects and templates (Cleanbox, Misebox)
+- Account system linked to all FireUX tenants
+- Subscription management and billing
+- News and updates about FireUX ecosystem growth
+- Contact and partner inquiry forms
+
+---
+
+## Main Pages / Routes
+
+- `/` – home / hero landing page
+- `/get-started` – developer onboarding
+- `/projects` – showcase of FireUX-powered apps
+- `/developers` – technical documentation and guides
+- `/pricing` – FireUX subscription tiers
+- `/contact` – partner and support inquiries
+
+---
+
+## Next Steps
+
+- Publish developer documentation for cloning and setup
+- Add automated signup flow for managed subscriptions
+- Launch the FireUX Partner Program for agencies and builders
+- Integrate GitHub sign-in for developer onboarding
+- Implement analytics dashboard showing ecosystem growth
+- Build "FireUX Shop" for templates and extensions
+
+---
+
+## Summary
+
+The FireUX App is the gateway to the entire ecosystem.
+It’s where new developers discover what FireUX can do, subscribe to managed hosting, or partner to create new tenant apps — all connected through one platform.
