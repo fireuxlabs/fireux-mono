@@ -1,0 +1,21 @@
+# FireUX liturature
+
+- **Hero heading**: "Ignite With" + "Powerful Applications"
+- **Hero paragraph**: "A low-code ecosystem for responsive, scalable, and data-driven applications built upon Nuxt4 & Firebase."
+- **Hero badges**: Nuxt, Firebase.
+- **Hero CTAs**: Get Started (`/get-started`), Explore Projects (`/projects`).
+- **Hero bullets**:
+  - Nuxt 4 + Firebase orchestration out of the box.
+  - Reusable design system & shared components.
+  - Tenant-aware & white-label runtime.
+  - Automations, PWA, and CI presets.
+- **Quick peek**:
+  - Modules — "Wire Nuxt + Firebase with ready composables."
+  - Tenant theming — "White-label overrides with a single config."
+  - CI ready — "PWA, CI presets and deploy pipelines."
+- **Quick peek footer badge**: "Nuxt · Firebase · Stripe".
+- **Solutions grid**: Products, White-label, SaaS, Templates, API-first, Automation (each with matching descriptions and CTA routes).
+- **Products section**: Cleanbox (Ops), Misebox (Kitchen), FireUX (Core) with "Apps index coming soon" placeholder when no data.
+- **Fuel trio**: Nuxt, Firebase, Stripe logos with dark/light variants.
+- **Features (first six)**: PWA First, Pre-built Templates, SaaS Solutions, White-Label, Low-Code Core, Dashboard-Driven — opinionated tooling notes.
+- **Skills icons**: Nuxt.js, Tailwind CSS, SCSS, Firebase, PWA, JavaScript, TypeScript, GitHub, CSS3, HTML5, Node.js.

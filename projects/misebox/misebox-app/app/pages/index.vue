@@ -3,14 +3,14 @@
   <EffectsSteam />
 
   <div>
-    <UContainer>
-      <UPageSection class="py-16 lg:py-24">
-        <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
-          <LandingHero />
-          <LandingQuickPeek />
-        </div>
-      </UPageSection>
-    </UContainer>
+    <LandingShell>
+      <template #left>
+        <LandingHero />
+      </template>
+      <template #right>
+        <LandingQuickPeek />
+      </template>
+    </LandingShell>
 
     <LandingSolutions
       :title="solutions.title"

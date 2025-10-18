@@ -13,7 +13,7 @@
         <span class="text-primary">ingredient tracking</span>.
       </p>
 
-      <div class="flex items-center gap-6">
+      <div class="flex items-center gap-6 pt-2">
         <img
           src="/logo-type-light.png"
           alt="Flagship tenant"
@@ -26,7 +26,7 @@
         />
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-4">
+      <div class="flex flex-col sm:flex-row gap-4 pt-6">
         <UButton variant="solid" size="lg" :to="hero.primary.to">
           {{ hero.primary.label }}
         </UButton>

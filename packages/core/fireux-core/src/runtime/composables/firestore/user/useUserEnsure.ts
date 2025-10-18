@@ -11,6 +11,7 @@ import type {
 } from '../../../models/core/user.model'
 import { useRouter } from 'vue-router'
 import type { User as FirebaseUser } from 'firebase/auth'
+import { useAuthUiDebugState } from '../../state/useAuthUiDebugState'
 
 /**
  * Dev-simple ensure:
@@ -29,6 +30,7 @@ export function useUserEnsure(_user?: Ref<User | null>) {
   const isTenant = role === 'tenant'
   const { uploadImage, getDefaultImageUrl } = useImageStorage()
   const router = useRouter()
+  const { authUiDebug } = useAuthUiDebugState()
 
   async function ensureCoreUser(): Promise<{
     created: boolean
@@ -46,9 +48,35 @@ export function useUserEnsure(_user?: Ref<User | null>) {
       return { created: false, avatarUrl: data?.avatar }
     }
 
-    // Upload avatar → Storage; if no auth photo, use default image
+    // Upload avatar → Storage; if upload fails fallback to defaults
     const source = (auth.photoURL as string) || getDefaultImageUrl()
-    const avatarUrl = await uploadImage(`core-users/${auth.uid}/avatar`, source)
+    let avatarUrl = ''
+
+    try {
+      avatarUrl = await uploadImage(`core-users/${auth.uid}/avatar`, source)
+    } catch (error) {
+      const message = (() => {
+        if (error instanceof Error) return error.message
+        if (typeof error === 'string') return error
+        try {
+          return JSON.stringify(error)
+        } catch {
+          return `${error}`
+        }
+      })()
+      authUiDebug.value = {
+        ...authUiDebug.value,
+        lastEvent: 'core-user-avatar-upload-failed',
+        errorTitle: 'Avatar upload fallback activated',
+        errorDescription: message,
+        errorHint:
+          'Check Firebase Storage rules or credentials; using auth.photoURL/default avatar as fallback.',
+      }
+      avatarUrl =
+        typeof auth.photoURL === 'string' && auth.photoURL.length
+          ? auth.photoURL
+          : getDefaultImageUrl()
+    }
 
     const now = serverTimestamp()
 
