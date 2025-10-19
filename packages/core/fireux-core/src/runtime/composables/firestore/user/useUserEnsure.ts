@@ -1,7 +1,14 @@
 // packages/core/fireux-core/src/runtime/composables/firestore/user/useUserEnsure.ts
 import { shallowRef, type Ref } from 'vue'
 import { useCurrentUser, useFirestore } from 'vuefire'
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import {
+  arrayUnion,
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore'
 import { useFireUXConfig } from '../../FireUXConfig'
 import { useImageStorage } from '../../firebase/useImageStorage'
 import type {
@@ -11,7 +18,6 @@ import type {
 } from '../../../models/core/user.model'
 import { useRouter } from 'vue-router'
 import type { User as FirebaseUser } from 'firebase/auth'
-import { useAuthUiDebugState } from '../../state/useAuthUiDebugState'
 
 /**
  * Dev-simple ensure:
@@ -30,7 +36,6 @@ export function useUserEnsure(_user?: Ref<User | null>) {
   const isTenant = role === 'tenant'
   const { uploadImage, getDefaultImageUrl } = useImageStorage()
   const router = useRouter()
-  const { authUiDebug } = useAuthUiDebugState()
 
   async function ensureCoreUser(): Promise<{
     created: boolean
@@ -45,6 +50,14 @@ export function useUserEnsure(_user?: Ref<User | null>) {
     const snap = await getDoc(coreRef)
     if (snap.exists()) {
       const data = snap.data() as Partial<CoreUserDoc>
+
+      if (isTenant && appId && !data?.userOf?.includes(appId)) {
+        await updateDoc(coreRef, {
+          userOf: arrayUnion(appId),
+          updated_at: serverTimestamp(),
+        })
+      }
+
       return { created: false, avatarUrl: data?.avatar }
     }
 
@@ -64,13 +77,8 @@ export function useUserEnsure(_user?: Ref<User | null>) {
           return `${error}`
         }
       })()
-      authUiDebug.value = {
-        ...authUiDebug.value,
-        lastEvent: 'core-user-avatar-upload-failed',
-        errorTitle: 'Avatar upload fallback activated',
-        errorDescription: message,
-        errorHint:
-          'Check Firebase Storage rules or credentials; using auth.photoURL/default avatar as fallback.',
+      if (import.meta.dev) {
+        console.warn('[ensureCoreUser] Avatar upload fallback:', message)
       }
       avatarUrl =
         typeof auth.photoURL === 'string' && auth.photoURL.length
@@ -87,6 +95,7 @@ export function useUserEnsure(_user?: Ref<User | null>) {
       avatar: avatarUrl,
       created_at: now as unknown as CoreUserDoc['created_at'],
       updated_at: now as unknown as CoreUserDoc['updated_at'],
+      ...(isTenant && appId ? { userOf: [appId] } : {}),
     }
 
     await setDoc(coreRef, payload, { merge: false })

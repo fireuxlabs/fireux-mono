@@ -2,89 +2,76 @@
   <UContainer class="center-content">
     <ClientOnly>
       <Transition name="fade">
-        <div>
-          <div v-if="authState === 'AUTHENTICATED'">
-            <OrganismsAuthAuthenticated />
-          </div>
+        <div v-if="authState === 'AUTHENTICATED'" class="auth-central">
+          <OrganismsAuthAuthenticated />
+        </div>
 
-          <div v-else class="auth-central">
-            <div class="auth-shell">
-              <UAuthForm
-                class="auth-form"
-                :title="formTitle"
-                :fields="fields"
-                :separator="separatorLabel"
-                :submit="submitButton"
-                :icon="formIcon"
-                :loading="formLoading"
-                :disabled="formDisabled"
-                @submit="onSubmit"
-              >
-                <template #providers>
-                  <button
-                    type="button"
-                    class="google-button"
-                    :disabled="providerLoading"
-                    :aria-busy="providerLoading"
-                    aria-label="Continue with Google"
-                    @click="handleGoogle"
-                  >
-                    <img
-                      :src="googleLogo"
-                      alt="Continue with Google"
-                      class="google-logo"
-                    />
-                    <span v-if="providerLoading" class="sr-only">Loading</span>
-                  </button>
-                </template>
-                <template #description>
-                  <p class="form-description">
-                    <span v-if="isTenant">
-                      Sign in with your {{ signInBrand }} account to join
-                      <strong>{{ appName }}</strong
-                      >.
-                    </span>
-                    <span v-else>
-                      Use your {{ signInBrand }} credentials or create a new
-                      account below.
-                    </span>
-                  </p>
-                </template>
+        <div v-else class="auth-central">
+          <section class="auth-shell">
+            <UAuthForm
+              class="auth-form"
+              :title="formTitle"
+              :fields="fields"
+              :icon="formIcon"
+              :separator="separatorLabel"
+              :submit="submitButton"
+              :loading="formLoading"
+              :disabled="formDisabled"
+              @submit="onSubmit"
+            >
+              <template #description>
+                <p class="form-description">
+                  {{ descriptionMessage }}
+                </p>
+              </template>
 
-                <template #validation>
-                  <UAlert
-                    v-if="error"
-                    color="amber"
-                    variant="subtle"
-                    :title="error.title"
-                    :description="error.description"
+              <template v-if="appLogo" #leading>
+                <img
+                  :src="appLogo"
+                  :alt="`${tenantLabel} logo`"
+                  class="app-logo"
+                />
+              </template>
+
+              <template #providers>
+                <UButton
+                  block
+                  size="lg"
+                  variant="ghost"
+                  :loading="providerLoading"
+                  class="google-button"
+                  @click="handleGoogle"
+                >
+                  <img
+                    :src="googleLogo"
+                    alt="Continue with Google"
+                    class="google-logo"
                   />
-                  <p v-if="error?.hint" class="hint">
-                    {{ error.hint }}
-                  </p>
-                </template>
+                </UButton>
+              </template>
 
-                <template v-if="!isTenant" #footer>
-                  <div class="footer-group">
-                    <USwitch v-model="isSignUp" label="Create a new account" />
-                    <p v-if="centralSignupUrl" class="hint">
-                      Prefer the central signup?
-                      <ULink :to="centralSignupUrl" target="_blank">
-                        Open portal </ULink
-                      >.
-                    </p>
-                  </div>
-                </template>
+              <template #validation>
+                <UAlert
+                  v-if="error"
+                  color="amber"
+                  variant="subtle"
+                  :title="error"
+                />
+              </template>
 
-                <template v-else #footer>
-                  <p class="hint">
-                    Need access? Ask your {{ signInBrand }} administrator to
-                    invite you.
+              <template v-if="canToggleSignUp" #footer>
+                <div class="footer-group">
+                  <USwitch v-model="isSignUp" label="Create a new account" />
+                  <p v-if="centralSignupUrl" class="hint">
+                    Prefer the central portal?
+                    <ULink :to="centralSignupUrl" target="_blank"
+                      >Open signup</ULink
+                    >.
                   </p>
-                </template>
-              </UAuthForm>
-            </div>
-          </div>
+                </div>
+              </template>
+            </UAuthForm>
+          </section>
         </div>
       </Transition>
     </ClientOnly>
@@ -95,13 +82,8 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useNuxtApp } from 'nuxt/app'
-
 import { useAuth } from '../../../composables/firebase/useAuth'
 import { useFireUXConfig } from '../../../composables/FireUXConfig'
-import {
-  useAuthUiDebugState,
-  type AuthUiDebugMode,
-} from '../../../composables/state/useAuthUiDebugState'
 
 const router = useRouter()
 const {
@@ -110,15 +92,23 @@ const {
   signInWithEmailPassword,
   signUpWithEmailPassword,
 } = useAuth()
-const { role, appName, centralSignupUrl, ecosystem } = useFireUXConfig()
-const { authUiDebug } = useAuthUiDebugState()
+const { role, appName, ecosystem, centralSignupUrl } = useFireUXConfig()
+const nuxtApp = useNuxtApp()
+const colorMode = nuxtApp.$colorMode as { value: string } | undefined
 
 const isTenant = computed(() => role === 'tenant')
-const isSignUp = ref(false)
-const lastEvent = ref('idle')
+const formatBrand = (value?: string) => value?.trim() || ''
+const ecosystemLabel = computed(() => formatBrand(ecosystem) || 'FireUX')
+const tenantLabel = computed(() => formatBrand(appName) || ecosystemLabel.value)
+const appLogo = computed(() =>
+  colorMode?.value === 'dark'
+    ? '/img/wordmark-dark.svg'
+    : '/img/wordmark-light.svg'
+)
 
+const isSignUp = ref(false)
 watch(
-  () => isTenant.value,
+  isTenant,
   (tenant) => {
     if (tenant) isSignUp.value = false
   },
@@ -127,54 +117,33 @@ watch(
 
 const formLoading = ref(false)
 const providerLoading = ref(false)
+const error = ref<string | null>(null)
 
-type AuthError = {
-  title: string
-  description: string
-  hint?: string
-}
+const canToggleSignUp = computed(() => !isTenant.value)
 
-const error = ref<AuthError | null>(null)
-
-const authMode = computed<AuthUiDebugMode>(() =>
-  !isTenant.value && isSignUp.value ? 'sign-up' : 'sign-in'
-)
-
-const toBrandLabel = (value: string) => {
-  const lower = value.toLowerCase()
-  if (lower === 'fireux') return 'FireUX'
-  return value
-    .split(/[-_]/)
-    .filter(Boolean)
-    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-    .join(' ')
-}
-
-const ecosystemLabel = computed(() => toBrandLabel(ecosystem))
-const signInBrand = computed(() =>
-  isTenant.value ? ecosystemLabel.value : appName
-)
-
-const nuxtApp = useNuxtApp()
-const colorMode = nuxtApp.$colorMode as { value: string } | undefined
-const googleLogo = computed(() =>
-  colorMode?.value === 'dark'
-    ? '/img/sign-in-dark.svg'
-    : '/img/sign-in-light.svg'
+const formTitle = computed(() =>
+  isTenant.value ? `Join ${tenantLabel.value}` : 'Welcome back!'
 )
 
 const formIcon = computed(() =>
   isTenant.value ? 'i-lucide-users' : 'i-lucide-lock'
 )
-const formTitle = computed(() =>
-  isTenant.value ? `Join ${appName}` : 'Welcome back!'
-)
-const separatorLabel = computed(() => 'or continue with email')
-const formDescription = computed(() =>
+
+const descriptionMessage = computed(() =>
   isTenant.value
-    ? `Sign in with your ${signInBrand.value} account to join ${appName}.`
-    : `Use your ${signInBrand.value} credentials or create a new account below.`
+    ? `Sign in with your ${ecosystemLabel.value} account to join ${tenantLabel.value}.`
+    : `Use your ${ecosystemLabel.value} credentials or create a new ${tenantLabel.value} account below.`
 )
+
+const separatorLabel = computed(() => 'or continue with email')
+
+const submitButton = computed(() => ({
+  label: isTenant.value || !isSignUp.value ? 'Continue' : 'Create account',
+  block: true,
+  size: 'lg',
+}))
+
+const formDisabled = computed(() => formLoading.value || providerLoading.value)
 
 const passwordLabel = computed(() => {
   if (isTenant.value) return 'Password'
@@ -189,19 +158,16 @@ const passwordAutocomplete = computed(() =>
   isSignUp.value ? 'new-password' : 'current-password'
 )
 
-type AuthField = {
-  name: string
-  type: 'email' | 'password'
-  label: string
-  placeholder: string
-  required: boolean
-  autocomplete: string
-}
+const googleLogo = computed(() =>
+  colorMode?.value === 'dark'
+    ? '/img/sign-in-dark.svg'
+    : '/img/sign-in-light.svg'
+)
 
-const fields = computed<AuthField[]>(() => [
+const fields = computed(() => [
   {
     name: 'email',
-    type: 'email',
+    type: 'email' as const,
     label: 'Email',
     placeholder: 'name@example.com',
     required: true,
@@ -209,7 +175,7 @@ const fields = computed<AuthField[]>(() => [
   },
   {
     name: 'password',
-    type: 'password',
+    type: 'password' as const,
     label: passwordLabel.value,
     placeholder: passwordPlaceholder.value,
     required: true,
@@ -217,138 +183,65 @@ const fields = computed<AuthField[]>(() => [
   },
 ])
 
-const submitButton = computed(() => ({
-  label: isTenant.value || !isSignUp.value ? 'Continue' : 'Create account',
-  block: true,
-  size: 'lg',
-}))
-
-const formDisabled = computed(() => formLoading.value || providerLoading.value)
-
-const updateDebugSnapshot = () => {
-  authUiDebug.value = {
-    isTenant: isTenant.value,
-    mode: authMode.value,
-    formTitle: formTitle.value,
-    description: formDescription.value,
-    brandLabel: signInBrand.value,
-    submitLabel: submitButton.value.label,
-    separatorLabel: separatorLabel.value,
-    isSignUpToggle: isSignUp.value,
-    formLoading: formLoading.value,
-    providerLoading: providerLoading.value,
-    lastEvent: lastEvent.value,
-    errorTitle: error.value?.title,
-    errorDescription: error.value?.description,
-    errorHint: error.value?.hint,
-  }
-}
-
-const setEmailError = (mode: 'sign-in' | 'sign-up') => {
-  const brand = signInBrand.value
-  error.value =
-    mode === 'sign-up'
-      ? {
-          title: 'Account may already exist',
-          description: `Looks like you might already have a ${brand} account with this email.`,
-          hint: 'Try signing in instead.',
-        }
-      : {
-          title: 'No account found',
-          description: `We could not find a ${brand} account with that email.`,
-          hint: centralSignupUrl
-            ? 'Toggle "Create a new account" below or open the central portal.'
-            : 'Toggle "Create a new account" below to continue.',
-        }
-  updateDebugSnapshot()
-}
-
-const handleGoogle = async () => {
+async function handleGoogle() {
   if (providerLoading.value) return
-  lastEvent.value = 'google-click'
   providerLoading.value = true
   error.value = null
-  updateDebugSnapshot()
-
-  const user = await signInWithGoogle()
-  if (user?.uid) {
-    lastEvent.value = 'google-success'
-    await router.push('/')
-  } else {
-    lastEvent.value = 'google-failed'
-    error.value = {
-      title: 'Google sign-in failed',
-      description: 'Please try again or continue with email.',
+  try {
+    const result = await signInWithGoogle()
+    providerLoading.value = false
+    if (result?.uid) {
+      await router.push('/')
+      return
     }
+    error.value = 'Google sign-in failed. Please try again.'
+  } catch (err) {
+    providerLoading.value = false
+    error.value =
+      err instanceof Error
+        ? err.message
+        : 'Google sign-in failed. Please try again.'
   }
-
-  providerLoading.value = false
-  updateDebugSnapshot()
 }
 
-type FormValues = {
-  email?: string
-  password?: string
-}
-
-const onSubmit = async ({ data }: { data?: FormValues }) => {
+async function onSubmit({ data }: { data?: Record<string, unknown> }) {
   const email = String(data?.email ?? '').trim()
   const password = String(data?.password ?? '')
 
   if (!email || !password) {
-    error.value = {
-      title: 'Missing information',
-      description: 'Enter your email and password to continue.',
-    }
-    updateDebugSnapshot()
+    error.value = 'Enter your email and password.'
     return
   }
 
-  error.value = null
   formLoading.value = true
-  lastEvent.value =
-    authMode.value === 'sign-up' ? 'submit-sign-up' : 'submit-sign-in'
-  updateDebugSnapshot()
+  error.value = null
 
-  const submitMode: 'sign-in' | 'sign-up' =
-    !isTenant.value && isSignUp.value ? 'sign-up' : 'sign-in'
+  const handler =
+    !isTenant.value && isSignUp.value
+      ? signUpWithEmailPassword
+      : signInWithEmailPassword
 
-  const result =
-    submitMode === 'sign-up'
-      ? await signUpWithEmailPassword(email, password)
-      : await signInWithEmailPassword(email, password)
-
-  if (result?.uid) {
-    lastEvent.value = 'submit-success'
-    await router.push('/')
+  try {
+    const result = await handler(email, password)
     formLoading.value = false
-    updateDebugSnapshot()
-    return
+
+    if (result?.uid) {
+      await router.push('/')
+      return
+    }
+
+    error.value =
+      !isTenant.value && isSignUp.value
+        ? 'Sign-up failed. Try a different email.'
+        : 'Sign-in failed. Check your details.'
+  } catch (err) {
+    formLoading.value = false
+    error.value =
+      err instanceof Error
+        ? err.message
+        : 'Something went wrong. Please try again.'
   }
-
-  setEmailError(submitMode)
-  formLoading.value = false
-  lastEvent.value = 'submit-failed'
-  updateDebugSnapshot()
 }
-
-watch(
-  [
-    isTenant,
-    isSignUp,
-    formLoading,
-    providerLoading,
-    submitButton,
-    separatorLabel,
-    formTitle,
-    formDescription,
-  ],
-  () => updateDebugSnapshot(),
-  { immediate: true }
-)
-
-watch(error, () => updateDebugSnapshot(), { deep: true })
-watch(lastEvent, () => updateDebugSnapshot())
 </script>
 
 <style scoped>
@@ -377,20 +270,15 @@ watch(lastEvent, () => updateDebugSnapshot())
   box-shadow: var(--shadow-sm);
 }
 
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-}
-
 .form-description {
   font-size: 0.95rem;
   color: var(--ui-text-muted);
+  text-align: center;
 }
 
 .footer-group {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
   justify-items: center;
 }
 
@@ -401,45 +289,23 @@ watch(lastEvent, () => updateDebugSnapshot())
 }
 
 .google-button {
-  display: flex;
-  justify-content: center;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   width: 100%;
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  position: relative;
-}
-
-.google-button:disabled,
-.google-button[aria-busy='true'] {
-  cursor: wait;
-  opacity: 0.7;
-}
-
-.google-button:focus-visible {
-  outline: 2px solid var(--ui-primary);
-  outline-offset: 4px;
-  border-radius: 999px;
+  padding: var(--space-2) var(--space-3);
+  min-height: 52px;
 }
 
 .google-logo {
-  display: block;
-  max-width: 100%;
-  height: auto;
+  height: 32px;
+  width: auto;
 }
 
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.app-logo {
+  height: 36px;
+  width: auto;
+  margin: 0 auto;
 }
 
 /* Fade transition styles */
