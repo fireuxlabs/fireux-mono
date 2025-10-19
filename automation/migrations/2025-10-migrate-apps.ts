@@ -1,7 +1,6 @@
 /* scripts/2025-10-migrate-apps.ts
  * Normalize the Firestore `apps` collection to the canonical FireUX dataset.
  */
-/* eslint-disable no-console */
 
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -13,10 +12,10 @@ import {
   initializeApp,
 } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
-import type { AppDoc } from '../packages/core/fireux-core/src/runtime/models/core/app.model'
+import type { App } from '../../packages/core/fireux-core/src/runtime/models/core/app.model'
 
 type TargetApp = Pick<
-  AppDoc,
+  App,
   | 'id'
   | 'app_name'
   | 'app_short_name'

@@ -3,7 +3,7 @@ import { doc, updateDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import type { Ref } from 'vue'
 
-import type { AppDoc } from '../../models/core/app.model'
+import type { App } from '../../models/core/app.model'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useFirestoreManager } from '../firestore/useFirestoreManager'
 import { validateAppField } from './utils/useAppValidation'
@@ -11,7 +11,7 @@ import { formatAppField } from './utils/useAppFormatting'
 import type { AppSocialLinks } from './utils/useAppValidation'
 import { useRequireUser } from '../auth/useRequireUser'
 
-export function useAppUpdate(app: Ref<AppDoc | null | undefined>) {
+export function useAppUpdate(app: Ref<App | null | undefined>) {
   const db = useFirestore()
   const { appId: fallbackAppId } = useFireUXConfig()
   const { setDocument, deleteDocument } = useFirestoreManager()

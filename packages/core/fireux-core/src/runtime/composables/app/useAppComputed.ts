@@ -1,12 +1,12 @@
 // ~/composables/app/useAppComputed.ts
-import { computed, shallowRef, type Ref } from 'vue'
+import { computed, shallowRef, watchEffect, type Ref } from 'vue'
 import { useCurrentUser } from 'vuefire'
 import type { User } from 'firebase/auth'
-import type { AppDoc } from '../../models/core/app.model'
+import type { App } from '../../models/core/app.model'
 import { useFireUXConfig } from '../FireUXConfig'
 
-export function useAppComputed(app: Ref<AppDoc | null | undefined>) {
-  const { role, ecosystem } = useFireUXConfig()
+export function useAppComputed(app: Ref<App | null | undefined>) {
+  const { role, ecosystem, appId } = useFireUXConfig()
 
   const currentUser = import.meta.client
     ? useCurrentUser()
@@ -25,6 +25,29 @@ export function useAppComputed(app: Ref<AppDoc | null | undefined>) {
     if (!app.value) return false
     return Array.isArray(app.value.admin_ids) && app.value.admin_ids.length > 0
   })
+
+  if (import.meta.dev && import.meta.client) {
+    let lastSignature = ''
+    watchEffect(() => {
+      const payload = {
+        source: 'useAppComputed',
+        appId,
+        role,
+        ecosystem,
+        hasAppDoc: !!app.value,
+        adminIds: app.value?.admin_ids ?? null,
+        adminCount: app.value?.admin_ids?.length ?? 0,
+        isInitialized: isInitialized.value,
+        isLoading: isLoading.value,
+        currentUid: currentUser.value?.uid ?? null,
+      }
+      const signature = JSON.stringify(payload)
+      if (signature !== lastSignature) {
+        lastSignature = signature
+        console.info('[fireux][app-init-debug]', payload)
+      }
+    })
+  }
 
   function hasAdmins(): boolean {
     return !!app.value?.admin_ids?.length

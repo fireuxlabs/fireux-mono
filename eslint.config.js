@@ -43,7 +43,7 @@ export default [
       },
     },
     rules: {
-      'no-console': 'warn',
+      'no-console': 'off',
       'no-debugger': 'warn',
       'no-restricted-imports': [
         'error',
@@ -73,7 +73,7 @@ export default [
       },
     },
     rules: {
-      'no-console': 'warn',
+      'no-console': 'off',
       'no-debugger': 'warn',
       'no-restricted-imports': [
         'error',

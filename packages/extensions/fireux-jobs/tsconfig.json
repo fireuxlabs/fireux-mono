@@ -6,11 +6,32 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "#fireux-jobs-models/*": ["./src/runtime/models/*"],
-      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
-      "#fireux-core-runtime/*": ["../../core/fireux-core/src/runtime/*"],
+      "#fireux-jobs-models/*": [
+        "packages/extensions/fireux-jobs/src/runtime/models/*"
+      ],
+      "#fireux-core-models/*": [
+        "packages/core/fireux-core/src/runtime/models/*"
+      ],
+      "#fireux-core-runtime/*": ["packages/core/fireux-core/src/runtime/*"],
       "#fireux-core-composables/*": [
-        "../../core/fireux-core/src/runtime/composables/*"
+        "packages/core/fireux-core/src/runtime/composables/*"
+      ],
+      "fireux-core/*": ["packages/core/fireux-core/src/*"],
+      "fireux-core/runtime/*": ["packages/core/fireux-core/src/runtime/*"],
+      "fireux-core/runtime/composables/*": [
+        "packages/core/fireux-core/src/runtime/composables/*"
+      ],
+      "fireux-core/runtime/models/*": [
+        "packages/core/fireux-core/src/runtime/models/*"
+      ],
+      "fireux-core/runtime/composables/firestore/useFirestoreManager": [
+        "packages/core/fireux-core/src/runtime/composables/firestore/useFirestoreManager.ts"
+      ],
+      "fireux-core/runtime/composables/firestore/profiles/useProfile": [
+        "packages/core/fireux-core/src/runtime/composables/firestore/profiles/useProfile.ts"
+      ],
+      "fireux-core/runtime/models/profiles/profile.model": [
+        "packages/core/fireux-core/src/runtime/models/profiles/profile.model.ts"
       ]
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]

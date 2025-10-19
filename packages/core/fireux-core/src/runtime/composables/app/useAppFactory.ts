@@ -1,18 +1,18 @@
 // ~/composables/app/useAppFactory.ts
 import type { Ref } from 'vue'
 
-import type { AppDoc, AppRole } from '../../models/core/app.model'
+import type { App, AppRole } from '../../models/core/app.model'
 import { useFireUXConfig } from '../FireUXConfig'
 
 // Only override allowed: name a sandbox via tuple
 export type CreateAppInput = ['sandbox', string] | undefined
 
-export function useAppFactory(_app?: Ref<AppDoc | null | undefined>) {
+export function useAppFactory(_app?: Ref<App | null | undefined>) {
   const { ecosystem, role, appId, appName, appShortName } = useFireUXConfig()
   if (!ecosystem)
     throw new Error('AppFactory: missing ecosystem in runtime config.')
 
-  function createApp(input?: CreateAppInput): Partial<AppDoc> {
+  function createApp(input?: CreateAppInput): Partial<App> {
     const r = role as AppRole
 
     // sandbox only from global shell (tuple form to pass the name)

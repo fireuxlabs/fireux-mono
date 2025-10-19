@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppDoc } from '../../models/core/app.model'
+import type { App } from '../../models/core/app.model'
 import { useApp } from '../../composables/app/useApp'
 
 declare function definePageMeta(meta: any): void
@@ -76,10 +76,10 @@ definePageMeta({
 const { app, apps } = useApp()
 
 const currentApp = computed(() => app?.value ?? null)
-const appsList = computed<AppDoc[]>(() => [...(apps?.value ?? [])])
+const appsList = computed<App[]>(() => [...(apps?.value ?? [])])
 const appsCount = computed(() => appsList.value.length)
 
-function displayName(entry: AppDoc | null | undefined) {
+function displayName(entry: App | null | undefined) {
   return entry?.app_name ?? entry?.app_short_name ?? entry?.id ?? 'Unnamed App'
 }
 </script>

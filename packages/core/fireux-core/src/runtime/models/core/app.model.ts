@@ -30,7 +30,7 @@ export interface AppDefaults {
  * - Global hub (role='global') may include `defaults`
  * - Tenant (role='tenant') can set `brand`/`domain` overrides
  */
-export interface AppDoc {
+export interface App {
   /** == Firestore doc id */
   id: string
 

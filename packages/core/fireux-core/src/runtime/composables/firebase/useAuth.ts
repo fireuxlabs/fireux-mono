@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 // ~/composables/useAuth.ts
 import { computed, ref, shallowRef, type Ref } from 'vue'
 import { useFirebaseAuth, useCurrentUser } from 'vuefire'
@@ -37,12 +36,7 @@ export function useAuth() {
     if (!user?.uid) return null
     if (ensuring.value || lastEnsuredUid.value === user.uid) return user
 
-    if (!auth) {
-      if (import.meta.dev) {
-        console.warn('[useAuth] postProcessAuth called without auth instance')
-      }
-      return user
-    }
+    if (!auth) return user
 
     try {
       ensuring.value = true
@@ -53,7 +47,9 @@ export function useAuth() {
 
       lastEnsuredUid.value = user.uid
     } catch (e) {
-      console.warn('[useAuth] postProcessAuth failed:', e)
+      if (import.meta.dev) {
+        console.error('[useAuth] postProcessAuth failed:', e)
+      }
     } finally {
       ensuring.value = false
     }
@@ -73,7 +69,6 @@ export function useAuth() {
       const provider = new GoogleAuthProvider()
       const result = await signInWithPopup(auth, provider)
       await postProcessAuth(result.user)
-      console.log('✅ Google Sign-In Success - User:', result.user)
       return result.user
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -91,7 +86,6 @@ export function useAuth() {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password)
       await postProcessAuth(result.user)
-      console.log('✅ Email Sign-In Success - User:', result.user)
       return result.user
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -109,7 +103,6 @@ export function useAuth() {
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password)
       await postProcessAuth(result.user)
-      console.log('✅ Email Sign-Up Success - User:', result.user)
       return result.user
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -128,7 +121,6 @@ export function useAuth() {
       await signOut(auth)
       // reset guard on sign-out so next sign-in will re-run ensure
       lastEnsuredUid.value = null
-      console.log('✅ Signed out successfully')
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error('❌ Sign-Out Failed:', error.message)

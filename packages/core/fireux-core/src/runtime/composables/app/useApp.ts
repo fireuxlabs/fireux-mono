@@ -10,7 +10,7 @@ import { useFireUXConfig } from '../FireUXConfig'
 import { useAppComputed } from './useAppComputed'
 import { useAppUpdate } from './useAppUpdate'
 import { useAppFactory } from './useAppFactory'
-import type { AppDoc } from '../../models/core/app.model'
+import type { App } from '../../models/core/app.model'
 
 export function useApp() {
   const { appId } = useFireUXConfig()
@@ -22,11 +22,11 @@ export function useApp() {
   const db = useFirestore()
   const { firestoreFetchCollection } = useFirestoreManager()
 
-  const appDocRef = computed<DocumentReference<AppDoc> | null>(() =>
-    appId ? (doc(db, 'apps', appId) as DocumentReference<AppDoc>) : null
+  const appDocRef = computed<DocumentReference<App> | null>(() =>
+    appId ? (doc(db, 'apps', appId) as DocumentReference<App>) : null
   )
-  const { data: app } = useDocument<AppDoc>(appDocRef)
-  const apps = firestoreFetchCollection<AppDoc>('apps')
+  const { data: app } = useDocument<App>(appDocRef)
+  const apps = firestoreFetchCollection<App>('apps')
 
   return {
     app,

@@ -136,7 +136,10 @@
 </template>
 
 <script setup lang="ts">
-// Nav meta unified
+// Removed duplicate definePageMeta declaration
+import type { DropdownMenuItem } from '@nuxt/ui'
+import { computed, reactive, shallowRef, ref } from 'vue'
+
 definePageMeta({
   nav: {
     key: 'dashboard-home',
@@ -149,9 +152,7 @@ definePageMeta({
   requiresAuth: true,
   layout: 'dashboard',
 })
-// Removed duplicate definePageMeta declaration
-import type { DropdownMenuItem } from '@nuxt/ui'
-import { computed, reactive, shallowRef, ref } from 'vue'
+
 
 // Nuxt app auto-imports are not visible to package TS, declare lightweight types
 declare function useRuntimeConfig(): any

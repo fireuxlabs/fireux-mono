@@ -14,6 +14,7 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "strict": true,
+    "plugins": [{ "name": "@vue/typescript-plugin" }],
     "paths": {
       "fireux-core": ["packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["packages/core/fireux-core/src/*"],
