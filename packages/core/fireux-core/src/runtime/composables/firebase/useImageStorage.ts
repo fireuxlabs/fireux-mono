@@ -1,11 +1,16 @@
 // packages/core/fireux-core/src/runtime/composables/firebase/useImageStorage.ts
 import { useFirebaseStorage } from 'vuefire'
+import { useRuntimeConfig } from 'nuxt/app'
 import {
   ref as storageRef,
   uploadBytes,
   getDownloadURL,
   getStorage,
 } from 'firebase/storage'
+
+function getDefaultImageUrl(path: string = '/img/default-image.png'): string {
+  return path
+}
 
 /**
  * Image Storage (no fallbacks)
@@ -14,7 +19,13 @@ import {
  * - Returns the download URL
  */
 export function useImageStorage() {
-  const storage = useFirebaseStorage()
+  const runtimeConfig = useRuntimeConfig()
+  const storage = resolveStorageBucket(useFirebaseStorage(), runtimeConfig)
+  const debug = (...args: unknown[]) => {
+    if (import.meta.env?.DEV ?? import.meta.dev) {
+      console.log('[useImageStorage]', ...args)
+    }
+  }
 
   const proxiedUrl = (url: string) =>
     url.startsWith('/')
@@ -23,17 +34,25 @@ export function useImageStorage() {
 
   async function fetchAsBlob(url: string): Promise<Blob> {
     const proxied = proxiedUrl(url)
+    debug('fetchAsBlob:start', { url, proxied })
     const res = await fetch(proxied, { cache: 'no-store' })
     if (!res.ok) {
       throw new Error(
         `[useImageStorage] fetch failed ${res.status} ${res.statusText}`
       )
     }
-    return await res.blob()
+    const blob = await res.blob()
+    debug('fetchAsBlob:success', { url, size: blob.size, type: blob.type })
+    return blob
   }
 
   async function toBlob(source: Blob | string): Promise<Blob> {
-    return source instanceof Blob ? source : fetchAsBlob(source)
+    if (source instanceof Blob) {
+      debug('toBlob:input-blob', { size: source.size, type: source.type })
+      return source
+    }
+    debug('toBlob:fetch', { source })
+    return fetchAsBlob(source)
   }
 
   async function uploadBlobToStorage(
@@ -42,16 +61,11 @@ export function useImageStorage() {
   ): Promise<string> {
     const bucket = getStorage()?.app?.options?.storageBucket
     const fileRef = storageRef(storage, path)
-    console.log('[useImageStorage] upload', {
-      bucket,
-      path,
-      size: blob.size,
-      type: blob.type,
-    })
+    debug('upload', { bucket, path, size: blob.size, type: blob.type })
 
     await uploadBytes(fileRef, blob, { contentType: blob.type })
     const url = await getDownloadURL(fileRef)
-    console.log('[useImageStorage] url', url)
+    debug('upload:success', { path, url })
     return url
   }
 
@@ -67,20 +81,72 @@ export function useImageStorage() {
     if (!path || !source) {
       throw new Error('[useImageStorage] path and source are required')
     }
+    debug('uploadImage:start', { path, sourceType: typeof source })
     const blob = await toBlob(source)
+    debug('uploadImage:blob-ready', { path, size: blob.size, type: blob.type })
     return uploadBlobToStorage(blob, path)
   }
 
   // Optional convenience when you already have a URL
   async function uploadFromUrl(path: string, url: string): Promise<string> {
+    debug('uploadFromUrl:start', { path, url })
     const blob = await fetchAsBlob(url)
     return uploadBlobToStorage(blob, path)
   }
 
-  // Default image helper (centralized default location)
-  function getDefaultImageUrl(path: string = '/img/default-image.png'): string {
-    return path
+  async function getDownloadUrlForPath(path: string): Promise<string> {
+    if (!path) {
+      throw new Error('[useImageStorage] path is required for download lookup')
+    }
+    const fileRef = storageRef(storage, path)
+    return getDownloadURL(fileRef)
   }
 
-  return { uploadImage, uploadFromUrl, getDefaultImageUrl }
+  return {
+    uploadImage,
+    uploadFromUrl,
+    getDefaultImageUrl,
+    getDownloadUrlForPath,
+  }
+}
+
+function resolveStorageBucket(
+  storage: ReturnType<typeof useFirebaseStorage>,
+  runtimeConfig: ReturnType<typeof useRuntimeConfig>
+) {
+  try {
+    const rawBucket =
+      (runtimeConfig?.public as any)?.firebaseConfig?.storageBucket ??
+      storage.app.options.storageBucket
+
+    const normalized = normalizeBucketName(rawBucket)
+    if (!normalized || normalized === storage.app.options.storageBucket) {
+      return storage
+    }
+
+    const resolved = getStorage(storage.app, `gs://${normalized}`)
+    if (import.meta.dev) {
+      console.log('[useImageStorage] remapped storage bucket', {
+        from: storage.app.options.storageBucket,
+        to: normalized,
+      })
+    }
+    return resolved
+  } catch (error) {
+    if (import.meta.dev) {
+      console.warn('[useImageStorage] failed to resolve custom bucket', error)
+    }
+    return storage
+  }
+}
+
+function normalizeBucketName(bucket?: string | null): string | undefined {
+  if (!bucket) return undefined
+  const trimmed = bucket.trim()
+  if (!trimmed) return undefined
+  if (trimmed.includes('firebasestorage.app')) return trimmed
+  if (trimmed.endsWith('.appspot.com')) {
+    return trimmed.replace(/\.appspot\.com$/i, '.firebasestorage.app')
+  }
+  return trimmed
 }

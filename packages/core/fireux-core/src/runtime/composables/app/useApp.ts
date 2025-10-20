@@ -9,7 +9,7 @@ import { useFirestoreManager } from '../firestore/useFirestoreManager'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useAppComputed } from './useAppComputed'
 import { useAppUpdate } from './useAppUpdate'
-import { useAppFactory } from './useAppFactory'
+import { useAppEnsure } from './useAppEnsure'
 import type { App } from '../../models/core/app.model'
 
 export function useApp() {
@@ -33,6 +33,8 @@ export function useApp() {
     apps,
     ...useAppComputed(app),
     ...useAppUpdate(app),
-    factory: useAppFactory(app),
+    ensure: useAppEnsure(app),
+    // temporary alias to maintain compatibility while callers update
+    factory: useAppEnsure(app),
   }
 }

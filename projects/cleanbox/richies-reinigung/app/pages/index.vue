@@ -13,14 +13,24 @@
         </p>
 
         <div class="quick-actions">
-          <FireButton to="/cleaners" variant="primary" size="lg">
+          <UButton
+            to="/professionals"
+            variant="solid"
+            color="primary"
+            size="lg"
+          >
             <UIcon name="i-lucide-users" />
-            Our Cleaners
-          </FireButton>
-          <FireButton to="/services" variant="outline" size="lg">
+            Meet Our Professionals
+          </UButton>
+          <UButton
+            to="/professionals#services"
+            variant="outline"
+            color="primary"
+            size="lg"
+          >
             <UIcon name="i-lucide-sparkles" />
             Our Services
-          </FireButton>
+          </UButton>
         </div>
       </div>
     </section>

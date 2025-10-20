@@ -1,12 +1,16 @@
 <template>
   <UContainer>
-    <template v-if="coreUser == null">
+    <!-- 1) Auth -->
+    <template v-if="!coreUser">
       <OrganismsAuthSystem />
     </template>
 
+    <!-- 2) PIN -->
     <template v-else-if="!isUnlocked">
-      <div class="pin-section">
-        <p class="pin-instruction">🔒 Enter the developer PIN to continue.</p>
+      <div class="flex min-h-[30vh] flex-col items-center justify-center gap-4">
+        <p class="text-sm text-gray-500">
+          🔒 Enter the developer PIN to continue.
+        </p>
         <UPinInput
           v-model="pin"
           :length="4"
@@ -17,320 +21,248 @@
       </div>
     </template>
 
+    <!-- 3) Env check + proceed -->
     <template v-else>
-      <div class="debug-root">
-        <header class="debug-header">
-          <h2>App Onboarding</h2>
-          <div class="debug-actions">
-            <UButton size="xs" variant="soft" @click="refreshEnv"
-              >Refresh Env</UButton
-            >
-            <UButton size="xs" variant="soft" @click="refreshFactory"
-              >Refresh Factory</UButton
-            >
+      <div class="space-y-6 py-6">
+        <header class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-semibold">Environment Check</h2>
+            <UBadge :color="env.isValid ? 'green' : 'orange'" variant="soft">
+              {{ env.isValid ? 'ready' : 'pending' }}
+            </UBadge>
           </div>
+          <UButton size="xs" variant="soft" @click="refreshEnv"
+            >Refresh</UButton
+          >
         </header>
 
-        <section class="debug-section">
-          <header>
-            <h3>Core User</h3>
-          </header>
-          <pre class="code-block">{{ prettyJson(coreUser) }}</pre>
-        </section>
+        <!-- Overall status -->
+        <UAlert
+          :color="env.isValid ? 'green' : 'orange'"
+          :title="
+            env.isValid
+              ? 'All required variables are present.'
+              : 'Missing required variables.'
+          "
+          :description="envSummaryText"
+        />
 
-        <section class="debug-section">
-          <header>
-            <h3>Environment Check</h3>
-            <span v-if="envData?.isValid" class="meta success">ready</span>
-            <span v-else class="meta warning">pending</span>
-          </header>
-          <p v-if="envErrorMessage" class="error-text">
-            Env error: {{ envErrorMessage }}
-          </p>
-          <pre class="code-block">{{ prettyJson(envData) }}</pre>
-        </section>
-
-        <section class="debug-section">
-          <header>
-            <h3>App Factory</h3>
-            <span v-if="factoryPreview?.sandboxAllowed" class="meta"
-              >sandbox enabled</span
-            >
-          </header>
-          <p v-if="factoryError" class="error-text">
-            Factory error: {{ factoryError }}
-          </p>
-          <pre class="code-block">{{ prettyJson(factoryPreview) }}</pre>
-        </section>
-
-        <section class="debug-section">
-          <header>
-            <h3>App Document</h3>
-            <span
-              class="meta"
-              :class="isAppProvisioned ? 'success' : 'warning'"
-            >
-              {{ isAppProvisioned ? 'exists' : 'missing' }}
-            </span>
-          </header>
-          <pre class="code-block">{{ prettyJson(appDoc) }}</pre>
-        </section>
-
-        <section class="action-panel">
-          <UButton
-            block
-            :loading="ensuring"
-            :disabled="ensureDisabled"
-            @click="createAppHandler"
+        <!-- Quick summary chips -->
+        <div class="flex flex-wrap items-center gap-2">
+          <UBadge :color="env.isValid ? 'green' : 'orange'" variant="soft">
+            Required: {{ env.summary.required }}
+          </UBadge>
+          <UBadge color="gray" variant="soft">
+            Optional (client): {{ env.summary.optionalClient }}
+          </UBadge>
+          <UBadge color="gray" variant="soft">
+            Optional (server): {{ env.summary.optionalServer }}
+          </UBadge>
+          <UBadge
+            :color="env.server.adminAuth.configured ? 'green' : 'orange'"
+            variant="soft"
           >
-            {{ ensureButtonLabel }}
+            Admin SDK:
+            {{
+              env.server.adminAuth.configured ? 'configured' : 'not configured'
+            }}
+          </UBadge>
+        </div>
+
+        <!-- Required keys -->
+        <UCard v-if="env.required.length">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <h3 class="font-medium">Required variables</h3>
+              <UBadge :color="env.isValid ? 'green' : 'orange'" variant="soft">
+                {{ env.summary.required }}
+              </UBadge>
+            </div>
+          </template>
+
+          <div class="flex flex-wrap gap-2">
+            <UBadge
+              v-for="r in env.required"
+              :key="r.key"
+              :color="r.present ? 'green' : 'red'"
+              :variant="r.present ? 'soft' : 'subtle'"
+            >
+              <span class="font-mono">{{ r.key }}</span>
+            </UBadge>
+          </div>
+        </UCard>
+
+        <!-- Optional (client) -->
+        <UCard v-if="env.optionalClient.length">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <h3 class="font-medium">Optional (client)</h3>
+              <UBadge color="gray" variant="soft">
+                {{ env.summary.optionalClient }}
+              </UBadge>
+            </div>
+          </template>
+
+          <div class="flex flex-wrap gap-2">
+            <UBadge
+              v-for="o in env.optionalClient"
+              :key="o.key"
+              :variant="o.present ? 'soft' : 'outline'"
+            >
+              <span class="font-mono">{{ o.key }}</span>
+            </UBadge>
+          </div>
+        </UCard>
+
+        <!-- Optional (server) -->
+        <UCard v-if="env.server.optional.length">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <h3 class="font-medium">Optional (server)</h3>
+              <UBadge color="gray" variant="soft">
+                {{ env.summary.optionalServer }}
+              </UBadge>
+            </div>
+          </template>
+
+          <div class="flex flex-wrap gap-2">
+            <UBadge
+              v-for="o in env.server.optional"
+              :key="o.key"
+              :variant="o.present ? 'soft' : 'outline'"
+            >
+              <span class="font-mono">{{ o.key }}</span>
+            </UBadge>
+          </div>
+        </UCard>
+
+        <!-- Warnings / Notes accordion -->
+        <UAccordion
+          v-if="env.warnings.length || env.notes.length"
+          variant="soft"
+          size="sm"
+        >
+          <UAccordionItem
+            v-if="env.warnings.length"
+            value="warnings"
+            title="Warnings"
+          >
+            <ul class="mt-2 list-disc pl-5 text-sm">
+              <li v-for="(w, i) in env.warnings" :key="i">{{ w }}</li>
+            </ul>
+          </UAccordionItem>
+          <UAccordionItem v-if="env.notes.length" value="notes" title="Notes">
+            <ul class="mt-2 list-disc pl-5 text-sm">
+              <li v-for="(n, i) in env.notes" :key="i">{{ n }}</li>
+            </ul>
+          </UAccordionItem>
+        </UAccordion>
+
+        <!-- Continue -->
+        <div class="pt-2">
+          <UButton block size="lg" :disabled="!env.isValid" @click="onProceed">
+            Continue
           </UButton>
-          <p v-if="ensureError" class="error-text">{{ ensureError }}</p>
-          <pre v-if="ensureResult" class="code-block"
-            >{{ prettyJson(ensureResult) }}
-          </pre>
-        </section>
+          <p v-if="!env.isValid" class="mt-2 text-xs text-gray-500">
+            Fix required environment variables to enable this action.
+          </p>
+        </div>
       </div>
     </template>
   </UContainer>
 </template>
 
-<script setup>
-import { ref, computed, watch } from 'vue'
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useFetch } from 'nuxt/app'
 import { useUser } from '../../../composables/firestore/user/useUser'
-import { useApp } from '../../../composables/app/useApp'
-import { useFirestoreManager } from '../../../composables/firestore/useFirestoreManager'
+import { useAppEnsure } from '../../../composables/app/useAppEnsure'
 
+type EnvVarEntry = { key: string; present: boolean; value?: string }
+type AdminAuthStatus = {
+  json: boolean
+  splitKeys: {
+    FIREBASE_PROJECT_ID: boolean
+    FIREBASE_CLIENT_EMAIL: boolean
+    FIREBASE_PRIVATE_KEY: boolean
+  }
+  configured: boolean
+}
+interface EnvCheckResponse {
+  isValid: boolean
+  required: EnvVarEntry[]
+  optionalClient: EnvVarEntry[]
+  server: { adminAuth: AdminAuthStatus; optional: EnvVarEntry[] }
+  missingRequired: string[]
+  summary: { required: string; optionalClient: string; optionalServer: string }
+  warnings: string[]
+  notes: string[]
+}
+
+/** 1) Core user gate */
 const { user } = useUser()
 const coreUser = computed(() => user.value?.core ?? null)
 
-const pin = ref([])
+/** 2) PIN gate */
+const pin = ref<string[]>([])
 const isUnlocked = ref(false)
-
-const {
-  data: envData,
-  error: envError,
-  refresh: refreshEnv,
-} = await useFetch('/api/app/env-check', {
-  server: false,
-  default: () => null,
-})
-
-const envErrorMessage = computed(() => {
-  const value = envError.value
-  if (!value) return null
-  if (value instanceof Error) return value.message
-  return typeof value === 'string' ? value : JSON.stringify(value)
-})
-
-const { app, factory } = useApp()
-const { createApp, canCreateSandbox } = factory
-const appDoc = computed(() => app.value ?? null)
-const isAppProvisioned = computed(() => Boolean(appDoc.value))
-
-const { setDocument } = useFirestoreManager()
-
-const factoryPreview = ref(null)
-const factoryError = ref(null)
-const ensureResult = ref(null)
-const ensureError = ref(null)
-const ensuring = ref(false)
-
 function checkPin() {
-  if (pin.value.join('') === '1234') {
-    isUnlocked.value = true
-    pin.value = []
-  } else {
-    pin.value = []
-  }
+  if (pin.value.join('') === '1234') isUnlocked.value = true
+  pin.value = []
 }
 
-function refreshFactory() {
-  factoryError.value = null
-  try {
-    const sandboxAllowed = canCreateSandbox()
-    const defaultPayload = createApp()
-    const sandboxPayload = sandboxAllowed
-      ? createApp(['sandbox', 'Debug Sandbox'])
-      : null
-
-    factoryPreview.value = {
-      sandboxAllowed,
-      defaultPayload,
-      ...(sandboxPayload ? { sandboxPayload } : {}),
-    }
-  } catch (error) {
-    factoryError.value = error instanceof Error ? error.message : String(error)
-    factoryPreview.value = null
-  }
-}
-
-watch(
-  () => isUnlocked.value,
-  (value) => {
-    if (value) refreshFactory()
+/** 3) Env check */
+const { data, refresh: refreshEnv } = await useFetch<EnvCheckResponse>(
+  '/api/app/env-check',
+  {
+    server: false,
+    default: () =>
+      ({
+        isValid: false,
+        required: [],
+        optionalClient: [],
+        server: {
+          adminAuth: {
+            json: false,
+            splitKeys: {
+              FIREBASE_PROJECT_ID: false,
+              FIREBASE_CLIENT_EMAIL: false,
+              FIREBASE_PRIVATE_KEY: false,
+            },
+            configured: false,
+          },
+          optional: [],
+        },
+        missingRequired: [],
+        summary: {
+          required: '0/0',
+          optionalClient: '0/0',
+          optionalServer: '0/0',
+        },
+        warnings: [],
+        notes: [],
+      } as EnvCheckResponse),
   }
 )
 
-watch(
-  () => appDoc.value,
-  () => {
-    if (isUnlocked.value) refreshFactory()
-  }
-)
-
-const ensureDisabled = computed(() => {
-  if (ensuring.value) return true
-  if (!envData.value?.isValid) return true
-  if (!coreUser.value?.id) return true
-  return isAppProvisioned.value
+const env = computed(() => data.value as EnvCheckResponse)
+const envSummaryText = computed(() => {
+  if (env.value.isValid) return 'Ready.'
+  const miss = env.value.missingRequired
+  return miss.length ? `Missing: ${miss.join(', ')}` : 'Pending.'
 })
 
-const ensureButtonLabel = computed(() => {
-  if (isAppProvisioned.value) return 'App Already Initialised'
-  if (!envData.value?.isValid) return 'Environment Not Ready'
-  return ensuring.value ? 'Initialising…' : 'Initialise App'
-})
+/** 4) Continue button → useAppEnsure */
+const { ensureApp } = useAppEnsure()
 
-async function createAppHandler() {
-  if (ensureDisabled.value) return
-  ensuring.value = true
-  ensureError.value = null
-  ensureResult.value = null
-
+async function onProceed() {
+  if (!env.value.isValid) return
+  console.log('[proceed] env ok:', env.value.isValid)
   try {
-    const userId = coreUser.value?.id
-    if (!userId) throw new Error('Missing core user id.')
-
-    if (isAppProvisioned.value && appDoc.value?.id) {
-      ensureResult.value = {
-        status: 'already-initialised',
-        id: appDoc.value.id,
-      }
-      return
-    }
-
-    const blueprint = createApp()
-    if (!blueprint?.id) throw new Error('Factory did not provide an app id.')
-
-    const adminIds = Array.from(
-      new Set([
-        userId,
-        ...(Array.isArray(blueprint.admin_ids) ? blueprint.admin_ids : []),
-      ])
-    )
-
-    const payload = {
-      ...blueprint,
-      admin_ids: adminIds,
-      is_active: true,
-    }
-
-    await setDocument('apps', blueprint.id, payload)
-
-    ensureResult.value = {
-      status: 'created',
-      id: blueprint.id,
-      payload,
-    }
-
-    await refreshEnv()
+    const ensured = await ensureApp()
+    console.log('[proceed] ensureApp result', ensured)
   } catch (error) {
-    ensureError.value = error instanceof Error ? error.message : String(error)
-  } finally {
-    ensuring.value = false
-  }
-}
-
-function prettyJson(source) {
-  try {
-    return JSON.stringify(source ?? null, null, 2)
-  } catch (error) {
-    console.warn('Unable to stringify debug payload.', error)
-    return '[unserializable]'
+    console.error('[proceed] ensureApp failed', error)
   }
 }
 </script>
-
-<style scoped>
-.pin-section {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 30vh;
-  gap: var(--space-4);
-}
-
-.pin-instruction {
-  text-align: center;
-  color: var(--text-secondary);
-}
-
-.debug-root {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-  padding: var(--space-6) 0;
-}
-
-.debug-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.debug-actions {
-  display: flex;
-  gap: var(--space-3);
-}
-
-.debug-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.debug-section header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.meta {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
-}
-
-.meta.success {
-  color: var(--green-600);
-}
-
-.meta.warning {
-  color: var(--orange-600);
-}
-
-.code-block {
-  background: var(--ui-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  font-family: monospace;
-  font-size: 0.875rem;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.error-text {
-  color: var(--red-600);
-  font-size: 0.875rem;
-}
-
-.action-panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-</style>

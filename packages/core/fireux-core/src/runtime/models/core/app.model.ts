@@ -54,7 +54,6 @@ export interface App {
   /** Governance */
   admin_ids?: string[]
   creator_id: string
-  is_active?: boolean
 
   /** System metadata */
   created_at?: TSOrISO
