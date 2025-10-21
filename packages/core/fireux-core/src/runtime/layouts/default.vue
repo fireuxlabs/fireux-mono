@@ -15,13 +15,12 @@
 
 <script setup lang="ts">
 import { watchEffect } from 'vue'
-import { useNav } from '../composables/app/nav'
+import { useNav } from '../composables/fireUX/useNav'
 
 if (import.meta.dev) {
   const navDebug = useNav()
 
   watchEffect(() => {
-    // eslint-disable-next-line no-console
     console.debug('[core-default:nav]', {
       items: navDebug.items.value,
       desktop: navDebug.desktop.value,

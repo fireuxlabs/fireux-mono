@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useNav } from '../composables/app/nav'
+import { useNav } from '../composables/fireUX/useNav'
 
 defineOptions({ name: 'CoreDashboard' })
 

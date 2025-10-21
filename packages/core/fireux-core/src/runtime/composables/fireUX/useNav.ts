@@ -1,4 +1,4 @@
-// packages/core/fireux-core/src/runtime/composables/app/nav.ts
+// packages/core/fireux-core/src/runtime/composables/fireUX/useNav.ts
 import { computed } from 'vue'
 // Note: App-level nav composable. There may be other feature-specific nav helpers in the codebase.
 

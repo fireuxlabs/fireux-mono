@@ -28,7 +28,7 @@
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { useNav } from '../../../composables/app/nav'
+import { useNav } from '../../../composables/fireUX/useNav'
 import { useUser } from '../../../composables/firestore/user/useUser'
 
 defineOptions({ name: 'LayoutsDashboardProfilesMenu' })

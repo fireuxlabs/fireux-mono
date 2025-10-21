@@ -14,6 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import OrganismsProfilePage from 'fireux-core/src/runtime/components/organisms/Profile/Page.vue'
+import OrganismsProfilePage from 'fireux-core/runtime/components/organisms/Profile/Page.vue'
 import { chefConfig } from '../../models/profiles/Chef.model'
 </script>

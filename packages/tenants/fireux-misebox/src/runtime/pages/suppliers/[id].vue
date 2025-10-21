@@ -13,6 +13,6 @@
 </template>
 
 <script setup lang="ts">
-import OrganismsProfilePage from 'fireux-core/src/runtime/components/organisms/Profile/Page.vue'
+import OrganismsProfilePage from 'fireux-core/runtime/components/organisms/Profile/Page.vue'
 import { supplierConfig } from '../../models/profiles/Supplier.model'
 </script>

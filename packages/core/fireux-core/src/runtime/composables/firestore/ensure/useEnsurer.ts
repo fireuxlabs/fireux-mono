@@ -1,6 +1,6 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useImageStorage } from '../firebase/useImageStorage'
+import { useImageStorage } from '../../firebase/useImageStorage'
 
 type TargetTuple = [string, string]
 

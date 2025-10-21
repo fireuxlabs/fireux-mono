@@ -1,4 +1,4 @@
-// packages/core/fireux-core/src/runtime/composables/app/nav/useNavIndex.ts
+// packages/core/fireux-core/src/runtime/composables/fireUX/nav/useNavIndex.ts
 import { computed } from 'vue'
 import type { NormalizedNavItem } from '../../../types/nav'
 import { useUser } from '../../firestore/user/useUser'

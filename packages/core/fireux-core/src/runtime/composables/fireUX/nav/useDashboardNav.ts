@@ -1,4 +1,4 @@
-// packages/core/fireux-core/src/runtime/composables/app/nav/useDashboardNav.ts
+// packages/core/fireux-core/src/runtime/composables/fireUX/nav/useDashboardNav.ts
 import { computed } from 'vue'
 import { useNavIndex } from './useNavIndex'
 import type { NormalizedNavItem } from '../../../types/nav'

@@ -1,4 +1,4 @@
-// packages/core/fireux-core/src/runtime/composables/app/nav/defineNav.ts
+// packages/core/fireux-core/src/runtime/composables/fireUX/nav/defineNav.ts
 import type { NavMeta } from '../../../types/nav'
 
 // Nuxt macro shim for package typechecking (apps provide the real macro)

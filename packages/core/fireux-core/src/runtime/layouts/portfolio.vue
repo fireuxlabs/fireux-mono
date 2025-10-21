@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useNavDefault } from '../composables/app/nav/useNavDefault'
+import { useNavDefault } from '../composables/fireUX/nav/useNavDefault'
 const nav = useNavDefault()
 const menuBarLinks = computed(() => nav.desktop.value)
 const mobileLinks = computed(() => nav.mobile.value)

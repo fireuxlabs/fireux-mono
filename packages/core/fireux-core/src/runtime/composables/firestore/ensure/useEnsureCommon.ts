@@ -1,5 +1,5 @@
-import { useRequireUser } from '../auth/useRequireUser'
-import { useImageStorage } from '../firebase/useImageStorage'
+import { useRequireUser } from '../../firebase/useRequireUser'
+import { useImageStorage } from '../../firebase/useImageStorage'
 
 /**
  * Resolve the authenticated Firebase user and ensure a UID is present.

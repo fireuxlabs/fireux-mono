@@ -1,7 +1,7 @@
 // ~/composables/firestore/operations/useFirestoreUpdate.ts
 import { updateDoc, doc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useRequireUser } from '../auth/useRequireUser'
+import { useRequireUser } from '../firebase/useRequireUser'
 
 export function useFirestoreUpdate() {
   const db = useFirestore()

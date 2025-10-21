@@ -1,7 +1,7 @@
 // Grouping helper for dev pages
 import { computed } from 'vue'
-import type { NavItem } from './nav'
-import { useNav } from './nav'
+import type { NavItem } from './useNav'
+import { useNav } from './useNav'
 
 type Groups = {
   Core: NavItem[]

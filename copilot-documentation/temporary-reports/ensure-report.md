@@ -15,7 +15,7 @@ _Last updated: 2025-10-20_
 import { useFirestore } from 'vuefire'
 import { useCurrentApp } from 'fireux-core/runtime/composables/useCurrentApp.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/auth/useRequireUser.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
 import type { FireUXApp } from 'fireux-core/runtime/typings/app.ts'
 import { getDeviceAvatar } from 'fireux-core/runtime/composables/useDeviceAvatar.ts'
 import { doc, getDoc } from 'firebase/firestore'
@@ -63,7 +63,7 @@ export async function useAppEnsure(input?: EnsureAppInput) {
 
     ### ensure / useEnsurer.ts
 
-    - **Path:** `packages/core/fireux-core/src/runtime/composables/ensure/useEnsurer.ts`
+  - **Path:** `packages/core/fireux-core/src/runtime/composables/firestore/ensure/useEnsurer.ts`
     - **Purpose:** Provide a reusable `ensureDoc` helper that wraps Firestore create-if-missing logic and optional Storage uploads.
     - **Key API:** `ensureDoc(adapter)`, `EnsureAdapter`, `EnsureResult`
     - **Notes:** Leaves creator/timestamp stamping to callers; image handling is opt-in via the adapter.
@@ -163,7 +163,7 @@ export async function useAppEnsure(input?: EnsureAppInput) {
       ensureDoc,
       type EnsureAdapter,
       type EnsureResult,
-    } from '../ensure/useEnsurer'
+  } from '../firestore/ensure/useEnsurer'
 
     /**
      * Only override allowed: name a sandbox via tuple
@@ -429,7 +429,7 @@ import { computed } from 'vue'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/auth/useRequireUser.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
 
 interface ProfileDoc {
   id: string

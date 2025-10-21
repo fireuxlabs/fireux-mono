@@ -1,5 +1,5 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/auth/useRequireUser.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
 

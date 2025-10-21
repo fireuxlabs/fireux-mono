@@ -1,4 +1,4 @@
-// packages/core/fireux-core/src/runtime/composables/app/nav/useNavDefault.ts
+// packages/core/fireux-core/src/runtime/composables/fireUX/nav/useNavDefault.ts
 import { computed } from 'vue'
 import { useNavIndex } from './useNavIndex'
 import type { NormalizedNavItem } from '../../../types/nav'

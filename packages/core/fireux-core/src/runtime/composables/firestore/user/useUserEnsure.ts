@@ -15,8 +15,8 @@ import type {
   User,
 } from '../../../models/core/user.model'
 import { useRouter } from 'vue-router'
-import { useFirestoreCreate } from '../../firestore/useFirestoreCreate'
-import { requireUid, ensureAvatarUrl } from '../../ensure/useEnsureCommon'
+import { useFirestoreCreate } from '../useFirestoreCreate'
+import { requireUid, ensureAvatarUrl } from '../ensure/useEnsureCommon'
 
 /**
  * Dev-simple ensure:
@@ -86,14 +86,10 @@ export function useUserEnsure(_user?: Ref<User | null>) {
     const snap = await getDoc(appRef)
     if (snap.exists()) return { created: false }
 
-    await setDocument(
-      `apps/${appId}/users`,
-      uid,
-      {
-        id: uid,
-        role: 'user',
-      } as Partial<AppUserDoc>
-    )
+    await setDocument(`apps/${appId}/users`, uid, {
+      id: uid,
+      role: 'user',
+    } as Partial<AppUserDoc>)
     return { created: true }
   }
 

@@ -11,7 +11,10 @@ import { useFireUXConfig } from '../FireUXConfig'
 import { useFirestoreCreate } from '../firestore/useFirestoreCreate'
 import type { App, AppRole } from '../../models/core/app.model'
 import type { AppUserDoc } from '../../models/core/user.model'
-import { requireUid, ensureAvatarUrl } from '../ensure/useEnsureCommon'
+import {
+  requireUid,
+  ensureAvatarUrl,
+} from '../firestore/ensure/useEnsureCommon'
 
 type EnsureAppResult = {
   created: boolean

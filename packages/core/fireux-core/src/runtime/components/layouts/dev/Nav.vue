@@ -33,7 +33,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useNav } from '../../../composables/app/nav'
+import { useRoute } from 'vue-router'
+import { useNav } from '../../../composables/fireUX/useNav'
 import { useFireUXConfig } from '../../../composables/FireUXConfig'
 const route = useRoute()
 

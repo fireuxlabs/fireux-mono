@@ -5,7 +5,7 @@ export function useLandingEffect() {
   ) => {
     const elements = document.querySelectorAll('.effect-particle')
 
-    elements.forEach((element) => {
+    for (const element of elements) {
       const particleElement = element as HTMLElement
 
       // Common positioning
@@ -30,7 +30,7 @@ export function useLandingEffect() {
           initializeCode(particleElement, startingPoint)
           break
       }
-    })
+    }
   }
 
   const initializeStars = (element: HTMLElement, startingPoint: number) => {

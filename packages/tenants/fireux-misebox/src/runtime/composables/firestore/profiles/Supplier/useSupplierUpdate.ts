@@ -1,5 +1,5 @@
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate'
-import { useRequireUser } from 'fireux-core/runtime/composables/auth/useRequireUser'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
 
 const COLLECTION = 'suppliers'
 

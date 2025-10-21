@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useNav } from '../../../composables/app/nav'
+import { useNav } from '../../../composables/fireUX/useNav'
 import { useAuth } from '../../../composables/firebase/useAuth'
 import { useUser } from '../../../composables/firestore/user/useUser'
 import { useUserComputed } from '../../../composables/firestore/user/useUserComputed'

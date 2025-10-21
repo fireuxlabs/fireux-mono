@@ -1,7 +1,7 @@
 import { useFirestore } from 'vuefire'
 import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/auth/useRequireUser.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
 
 /**
  * Delete Professional document in current context (core vs tenant overlay).

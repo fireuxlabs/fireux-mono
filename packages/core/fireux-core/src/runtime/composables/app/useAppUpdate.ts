@@ -9,7 +9,7 @@ import { useFirestoreManager } from '../firestore/useFirestoreManager'
 import { validateAppField } from './utils/useAppValidation'
 import { formatAppField } from './utils/useAppFormatting'
 import type { AppSocialLinks } from './utils/useAppValidation'
-import { useRequireUser } from '../auth/useRequireUser'
+import { useRequireUser } from '../firebase/useRequireUser'
 
 export function useAppUpdate(app: Ref<App | null | undefined>) {
   const db = useFirestore()
