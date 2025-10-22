@@ -157,9 +157,9 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '../composables/firebase/useAuth'
-import { useUser } from '../composables/firestore/user/useUser'
-import { useUserEnsure } from '../composables/firestore/user/useUserEnsure'
+import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
+import { useUser } from '../composables/firestore/core/user/useUser'
+import { useUserEnsure } from '../composables/firestore/core/user/useUserEnsure'
 import { useHead } from '#imports'
 import { useFireUXConfig } from '../composables/FireUXConfig'
 import { useAuthUiDebugState } from '../composables/state/useAuthUiDebugState'

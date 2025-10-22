@@ -278,12 +278,12 @@ const route = useRoute()
 const rawId = route.params.id
 const userId = Array.isArray(rawId) ? rawId[0] : String(rawId ?? '')
 
-const { role, appId } = useFireUXConfig()
+const { isTenant, appId } = useFireUXConfig()
 const { firestoreFetchDoc } = useFirestoreRead()
 
 const coreRef = userId ? firestoreFetchDoc<CoreUserDoc>('core-users', userId) : null
 const appRef =
-  userId && role === 'tenant' && appId
+  userId && isTenant
     ? firestoreFetchDoc<AppUserDoc>(`apps/${appId}/users`, userId)
     : null
 
@@ -429,7 +429,7 @@ const appRaw = computed(() => {
   return appRawJson.value ?? '—'
 })
 const appDocPath = computed(() =>
-  role === 'tenant' && appId ? `apps/${appId}/users/${userId}` : null
+  isTenant ? `apps/${appId}/users/${userId}` : null
 )
 
 useHead({
@@ -478,35 +478,21 @@ function validateSchemaRecord(
   record: Record<string, any>,
   config: SchemaValidationConfig
 ): string[] {
-  const issues: string[] = []
-
-  issues.push(
-    ...collectMissingFields(record, config.required, config.scope)
-  )
-  issues.push(
-    ...collectUnexpectedFields(record, config.allowed, config.scope)
-  )
-  issues.push(
-    ...collectStringFieldIssues(record, config.stringFields, config.scope)
-  )
-  issues.push(
-    ...collectArrayStringIssues(record, config.stringArrayFields, config.scope)
-  )
-  issues.push(
-    ...collectTimestampIssues(record, config.timestampFields, config.scope)
-  )
-
-  if (typeof record.id === 'string' && record.id !== config.routeId) {
-    issues.push(
-      `Field "id" on ${config.scope} doc does not match route id (expected "${config.routeId}").`
-    )
-  }
-
-  if (config.enumFields) {
-    issues.push(...collectEnumIssues(record, config.enumFields, config.scope))
-  }
-
-  return issues
+  return [
+    ...collectMissingFields(record, config.required, config.scope),
+    ...collectUnexpectedFields(record, config.allowed, config.scope),
+    ...collectStringFieldIssues(record, config.stringFields, config.scope),
+    ...collectArrayStringIssues(record, config.stringArrayFields, config.scope),
+    ...collectTimestampIssues(record, config.timestampFields, config.scope),
+    ...(typeof record.id === 'string' && record.id !== config.routeId
+      ? [
+          `Field "id" on ${config.scope} doc does not match route id (expected "${config.routeId}").`,
+        ]
+      : []),
+    ...(config.enumFields
+      ? collectEnumIssues(record, config.enumFields, config.scope)
+      : []),
+  ]
 }
 
 function collectMissingFields(

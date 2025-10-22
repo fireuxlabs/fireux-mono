@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { App } from '../../models/core/app.model'
-import { useApp } from '../../composables/app/useApp'
+import { useApp } from '../../composables/firestore/core/app/useApp'
 import { useFireUXConfig } from '../../composables/FireUXConfig'
 
 declare function definePageMeta(meta: any): void
@@ -71,16 +71,13 @@ definePageMeta({
 })
 
 const { app, apps } = useApp()
-const { role, ecosystem } = useFireUXConfig()
-
-const isGlobal = computed(() => role === 'global')
-const isTenant = computed(() => role === 'tenant')
+const { isGlobal, isTenant, ecosystem } = useFireUXConfig()
 
 const currentApp = computed(() => app?.value ?? null)
 const appsList = computed<App[]>(() => {
   const list = [...(apps?.value ?? [])]
 
-  if (isTenant.value) {
+  if (isTenant) {
     return currentApp.value ? [currentApp.value] : []
   }
 
@@ -93,7 +90,7 @@ const appsList = computed<App[]>(() => {
 const scopedApps = computed(() => {
   const currentId = currentApp.value?.id
 
-  if (!isGlobal.value || !currentId) {
+  if (!isGlobal || !currentId) {
     return appsList.value
   }
 

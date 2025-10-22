@@ -82,7 +82,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useNuxtApp } from 'nuxt/app'
-import { useAuth } from '../../../composables/firebase/useAuth'
+import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 import { useFireUXConfig } from '../../../composables/FireUXConfig'
 
 const router = useRouter()

@@ -29,9 +29,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUser } from '../../../composables/firestore/user/useUser'
+import { useUser } from '../../../composables/firestore/core/user/useUser'
 import type { UserCard } from '../../../models/core/user.model'
-import { useUserComputed } from '../../../composables/firestore/user/useUserComputed'
+import { useUserComputed } from '../../../composables/firestore/core/user/useUserComputed'
 
 defineOptions({ name: 'LayoutsDashboardUserMenu' })
 defineProps<{ collapsed?: boolean }>()

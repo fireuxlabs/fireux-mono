@@ -80,7 +80,7 @@ definePageMeta({
 
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/FireUXConfig'
-import { useUser } from '../../composables/firestore/user/useUser'
+import { useUser } from '../../composables/firestore/core/user/useUser'
 
 // Unified user API
 const {
@@ -94,8 +94,7 @@ const {
 } = useUser()
 
 // Env (tenant vs global)
-const { role, appId } = useFireUXConfig()
-const isTenant = role === 'tenant'
+const { isTenant, appId } = useFireUXConfig()
 
 // Collections
 const localCount = computed(() => collection.local?.value?.length ?? 0)

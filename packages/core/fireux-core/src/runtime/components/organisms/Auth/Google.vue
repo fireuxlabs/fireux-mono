@@ -6,7 +6,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { useAuth } from '../../../composables/firebase/useAuth'
+import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 import { computed } from 'vue'
 
 const router = useRouter()

@@ -175,7 +175,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useFetch } from 'nuxt/app'
-import { useUser } from '../../../composables/firestore/user/useUser'
+import { useUser } from '../../../composables/firestore/core/user/useUser'
 import { useAppEnsure } from '../../../composables/app/useAppEnsure'
 
 type EnvVarEntry = { key: string; present: boolean; value?: string }

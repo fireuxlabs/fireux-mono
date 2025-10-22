@@ -1,82 +1,112 @@
+// FILE: packages/core/fireux-core/src/runtime/composables/FireUXConfig.ts
 import { useRuntimeConfig } from 'nuxt/app'
 
-type MaybeString = string | undefined
+export type FireUXRole = 'global' | 'tenant'
 
-function requireString(value: unknown, key: string): string {
-  if (typeof value === 'string') {
-    const trimmed = value.trim()
-    if (trimmed.length > 0) return trimmed
-  }
-  throw new Error(`[fireux] runtimeConfig.public.${key} is required.`)
+export interface FireUXConfig {
+  devMode: boolean
+  role: FireUXRole
+  ecosystem: string
+  appId: string
+  appName: string
+  appShortName: string
+  modules: string[]
+  appIcon?: string
+  primaryColor?: string
+  neutralColor?: string
+  centralSignupUrl?: string
+  globalAppId?: string
+  // derived
+  isTenant: boolean
+  isGlobal: boolean
 }
 
-function optionalString(value: unknown): MaybeString {
-  if (typeof value !== 'string') return undefined
-  const trimmed = value.trim()
-  return trimmed.length > 0 ? trimmed : undefined
-}
+const FIREUX_CACHE_KEY = '__FIREUX_CONFIG'
 
-function toStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return []
-  return value
-    .map((entry) =>
-      typeof entry === 'string' ? entry.trim() : String(entry ?? '').trim()
-    )
-    .filter((entry) => entry.length > 0)
-}
-
-export function useFireUXConfig() {
-  const runtimeConfig = useRuntimeConfig()
-  const publicConfig = (runtimeConfig.public ?? {}) as Record<string, unknown>
-  const appSettings = (publicConfig.appSettings ?? {}) as Record<
-    string,
-    unknown
-  >
-
-  const appId = requireString(
-    appSettings.appId ?? publicConfig.appId,
-    'appSettings.appId'
-  )
-  const appName = requireString(
-    appSettings.appName ?? publicConfig.appName,
-    'appSettings.appName'
-  )
-  const appShortName = requireString(
-    appSettings.appShortName ?? publicConfig.appShortName,
-    'appSettings.appShortName'
-  )
-  const ecosystem = requireString(publicConfig.ecosystem, 'ecosystem')
-
-  const rawRole = requireString(publicConfig.role, 'role')
-  const normalizedRole = rawRole.toLowerCase()
-  if (normalizedRole !== 'global' && normalizedRole !== 'tenant') {
+function reqString(src: Record<string, unknown>, key: string): string {
+  const v = src[key]
+  if (typeof v !== 'string' || !v.trim()) {
     throw new Error(
-      `[fireux] runtimeConfig.public.role must be "global" or "tenant" (received "${rawRole}").`
+      `[fireux] runtimeConfig.public.${key} must be a non-empty string.`
     )
   }
+  return v.trim()
+}
+function optString(
+  src: Record<string, unknown>,
+  key: string
+): string | undefined {
+  const v = src[key]
+  if (typeof v !== 'string') return undefined
+  const t = v.trim()
+  return t || undefined
+}
+function toStringArray(v: unknown): string[] {
+  if (!Array.isArray(v)) return []
+  return v
+    .map((e) => (typeof e === 'string' ? e.trim() : String(e ?? '').trim()))
+    .filter(Boolean)
+}
 
-  const role = normalizedRole === 'global' ? 'global' : 'tenant'
-  const modules = toStringArray(publicConfig.modules)
-  const devMode = Boolean(publicConfig.devMode)
-  const primaryColor = optionalString(publicConfig.primaryColor)
-  const neutralColor = optionalString(publicConfig.neutralColor)
-  const globalAppId = optionalString(publicConfig.globalAppId)
-  const centralSignupUrl = optionalString(publicConfig.centralSignupUrl)
-  const appIcon =
-    optionalString(appSettings.appIcon) ?? optionalString(publicConfig.appIcon)
+/**
+ * Central accessor:
+ * - On client, reuses window.__FIREUX_CONFIG set by the plugin
+ * - On server (or if plugin didn’t run), builds from runtime config
+ * - Returns a frozen object with derived flags
+ */
+export function useFireUXConfig(): Readonly<FireUXConfig> {
+  const g = globalThis as Record<string, unknown>
+  const isBrowser = globalThis.window !== undefined
 
-  return {
-    devMode,
-    appId,
-    appName,
-    appShortName,
-    ecosystem,
-    modules,
-    role,
-    primaryColor,
-    neutralColor,
-    globalAppId,
-    centralSignupUrl,
-    appIcon,
+  // prefer plugin-provided cache on client
+  if (isBrowser && g[FIREUX_CACHE_KEY]) {
+    return g[FIREUX_CACHE_KEY] as Readonly<FireUXConfig>
   }
+
+  // SSR or fallback: build from runtimeConfig
+  const pub = (useRuntimeConfig().public ?? {}) as Record<string, unknown>
+
+  const devMode = Boolean(pub.devMode)
+  const rawRole = reqString(pub, 'role').toLowerCase()
+  if (rawRole !== 'global' && rawRole !== 'tenant') {
+    throw new Error(
+      `[fireux] runtimeConfig.public.role must be "global" or "tenant".`
+    )
+  }
+  const role = rawRole as FireUXRole
+
+  const cfg: Readonly<FireUXConfig> = Object.freeze({
+    devMode,
+    role,
+    ecosystem: reqString(pub, 'ecosystem'),
+    appId: reqString(pub, 'appId'),
+    appName: reqString(pub, 'appName'),
+    appShortName: reqString(pub, 'appShortName'),
+    modules: toStringArray(pub.modules),
+    appIcon: optString(pub, 'appIcon'),
+    primaryColor: optString(pub, 'primaryColor'),
+    neutralColor: optString(pub, 'neutralColor'),
+    centralSignupUrl: optString(pub, 'centralSignupUrl'),
+    globalAppId: optString(pub, 'globalAppId'),
+    isTenant: role === 'tenant',
+    isGlobal: role === 'global',
+  })
+
+  // seed cache client-side if needed
+  if (isBrowser) {
+    g[FIREUX_CACHE_KEY] = cfg
+  }
+
+  return cfg
+}
+
+/** Guarded helper for code that REQUIRES tenant scope */
+export function requireTenantAppId(): string {
+  const { isTenant, appId } = useFireUXConfig()
+  if (!isTenant) {
+    throw new Error(
+      '[fireux] requireTenantAppId() called outside tenant scope.'
+    )
+  }
+  return appId
 }

@@ -8,7 +8,7 @@
 
         <div v-if="currentUser" class="text-sm">
           <p class="font-medium truncate">
-            {{ currentUser.display_name || currentUser.id }}
+            {{ currentUser }}
           </p>
           <p class="opacity-70 truncate">ID: {{ currentUser.id }}</p>
         </div>
@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from '../../composables/firestore/user/useUser'
+import { useUser } from '../../composables/firestore/core/user/useUser'
 
 declare function definePageMeta(meta: any): void
 

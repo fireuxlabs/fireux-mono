@@ -1,4 +1,3 @@
-// packages/core/fireux-core/src/runtime/composables/firebase/useImageStorage.ts
 import { useFirebaseStorage } from 'vuefire'
 import { useRuntimeConfig } from 'nuxt/app'
 import {
@@ -13,7 +12,7 @@ function getDefaultImageUrl(path: string = '/img/default-image.png'): string {
 }
 
 /**
- * Image Storage (no fallbacks)
+ * Image Storage
  * - Accepts a Blob or URL (URL is fetched via /api/proxy/image)
  * - Uploads to Firebase Storage
  * - Returns the download URL
@@ -87,7 +86,6 @@ export function useImageStorage() {
     return uploadBlobToStorage(blob, path)
   }
 
-  // Optional convenience when you already have a URL
   async function uploadFromUrl(path: string, url: string): Promise<string> {
     debug('uploadFromUrl:start', { path, url })
     const blob = await fetchAsBlob(url)
@@ -147,6 +145,7 @@ function normalizeBucketName(bucket?: string | null): string | undefined {
   if (trimmed.includes('firebasestorage.app')) return trimmed
   if (trimmed.endsWith('.appspot.com')) {
     return trimmed.replace(/\.appspot\.com$/i, '.firebasestorage.app')
+    // allows gs://<bucket>.firebasestorage.app
   }
   return trimmed
 }
