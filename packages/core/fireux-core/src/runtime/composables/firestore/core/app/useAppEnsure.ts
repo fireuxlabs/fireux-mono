@@ -1,14 +1,8 @@
-// packages/core/fireux-core/src/runtime/composables/firestore/core/app/useAppEnsure.ts
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  serverTimestamp,
-} from 'firebase/firestore'
+// FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/app/useAppEnsure.ts
+import { doc, getDoc, arrayUnion } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useFirestoreCreate } from '../../operations/useFirestoreCreate.ts'
+import { useFirestoreManager } from '../../operations/useFirestoreManager.ts'
 import type { App, AppRole } from 'fireux-core/runtime/models/core/app.model.ts'
 import type { AppUserDoc } from 'fireux-core/runtime/models/core/user.model.ts'
 import { requireUid, ensureAvatarUrl } from '../../utils/useEnsureCommon.ts'
@@ -16,142 +10,94 @@ import { requireUid, ensureAvatarUrl } from '../../utils/useEnsureCommon.ts'
 type EnsureAppResult = {
   created: boolean
   id: string
-  avatarUrl?: string | null
 }
 
 export function useAppEnsure() {
   const db = useFirestore()
-  const cfg = useFireUXConfig()
-  const { setDocument } = useFirestoreCreate()
-
-  const buildAvatarCandidates = (authPhotoUrl?: string | null) => {
-    const candidates: Array<string | null | undefined> = []
-    const configuredIcon =
-      typeof cfg.appIcon === 'string' ? cfg.appIcon.trim() : ''
-
-    if (configuredIcon.length > 0) {
-      const lower = configuredIcon.toLowerCase()
-      if (
-        lower.startsWith('http://') ||
-        lower.startsWith('https://') ||
-        configuredIcon.startsWith('/') ||
-        configuredIcon.includes('/public/')
-      ) {
-        candidates.push(configuredIcon)
-      }
-    }
-
-    const staticWordmarkPath = `projects/${cfg.ecosystem}/${cfg.appId}/public/img/wordmark-light.svg`
-    if (!candidates.includes(staticWordmarkPath)) {
-      candidates.push(staticWordmarkPath)
-    }
-
-    const trimmedPhoto =
-      typeof authPhotoUrl === 'string' ? authPhotoUrl.trim() : ''
-    if (trimmedPhoto.length > 0) {
-      candidates.push(trimmedPhoto)
-    }
-
-    return candidates
-  }
+  const { setDocument, updateDocument } = useFirestoreManager()
+  const { appId, ecosystem, role, appName } = useFireUXConfig()
 
   async function ensureApp(): Promise<EnsureAppResult> {
-    if (!cfg.ecosystem) {
-      throw new Error('[ensureApp] Missing ecosystem in config.')
-    }
+    if (ecosystem === '') throw new Error('[ensureApp] Missing ecosystem.')
+    if (appId === '') throw new Error('[ensureApp] Missing appId.')
 
-    if (!cfg.appId) {
-      throw new Error('[ensureApp] Missing appId in config.')
-    }
+    // Auth required; we only need the uid
+    const { uid } = await requireUid()
 
-    const { uid, auth } = await requireUid()
-
-    const ref = doc(db, 'apps', cfg.appId)
+    const ref = doc(db, 'apps', appId)
     const snap = await getDoc(ref)
 
+    // ---------- Existing app ----------
     if (snap.exists()) {
       const existing = snap.data() as Partial<App>
       const admins = Array.isArray(existing.admin_ids) ? existing.admin_ids : []
       const resolvedRole: AppRole =
-        (existing.role as AppRole) || (cfg.role as AppRole) || 'tenant'
+        (existing.role as AppRole) || (role as AppRole)
 
+      // Ensure caller is admin; always bump updated_at via updateDocument
       if (admins.includes(uid)) {
-        await syncCoreAdminMembership(uid, resolvedRole)
+        await updateDocument<App>('apps', appId, {}) // stamps updated_at only
       } else {
-        await updateDoc(ref, { admin_ids: arrayUnion(uid) })
-        await syncCoreAdminMembership(uid, resolvedRole)
+        await updateDocument<App>('apps', appId, {
+          admin_ids: arrayUnion(uid) as unknown as string[],
+        })
       }
 
-      return {
-        created: false,
-        id: cfg.appId,
-        avatarUrl: existing.avatar_url ?? null,
-      }
+      await syncCoreAdminMembership(uid, resolvedRole)
+      return { created: false, id: appId }
     }
 
-    const role: AppRole = (cfg.role as AppRole) || 'tenant'
+    // ---------- New app ----------
+    // Upload required brand assets from /public → Storage
+    const [avatarUrl, logoUrl, wordmarkUrl] = await Promise.all([
+      ensureAvatarUrl(`apps/${appId}/brand/avatar.png`, ['/img/brand/avatar.png'], true),
+      ensureAvatarUrl(`apps/${appId}/brand/logo.png`, ['/img/brand/logo.png'], true),
+      ensureAvatarUrl(`apps/${appId}/brand/wordmark.png`, ['/img/brand/wordmark.png'], true),
+    ])
+
+    // NOTE: We intentionally store only flat URLs; no nested brand object and no dimensions/types.
     const payload: App = {
-      id: cfg.appId,
-      ecosystem: cfg.ecosystem,
-      role,
-      app_name: cfg.appName || 'New App',
-      ...(cfg.appShortName ? { app_short_name: cfg.appShortName } : {}),
-      admin_ids: [uid],
+      id: appId,
+      ecosystem,
+      role: role as AppRole,
+      app_name: appName,
+      admin_ids: [uid],           
       creator_id: uid,
-      avatar_url: null,
+      avatar_url: avatarUrl,      
+      logo_url: logoUrl,
+      wordmark_url: wordmarkUrl,
     }
 
-    const avatarUrl = await ensureAvatarUrl(
-      `apps/${cfg.appId}/avatar.png`,
-      buildAvatarCandidates(auth?.photoURL),
-      true
-    )
+    await setDocument('apps', appId, payload)
+    await syncCoreAdminMembership(uid, role as AppRole)
 
-    await setDocument('apps', cfg.appId, {
-      ...payload,
-      avatar_url: avatarUrl,
-    })
-
-    await syncCoreAdminMembership(uid, role)
-
+    // Create app-user only for non-global apps
     if (role !== 'global') {
-      const appUserPayload: Partial<AppUserDoc> = {
-        id: uid,
-        role: 'admin',
-      }
-
-      await setDocument(
-        `apps/${cfg.appId}/users`,
-        uid,
-        appUserPayload as AppUserDoc
-      )
+      const appUserPayload: AppUserDoc = { id: uid, role: 'admin' }
+      await setDocument(`apps/${appId}/users`, uid, appUserPayload)
     }
 
-    return { created: true, id: cfg.appId, avatarUrl }
+    return { created: true, id: appId }
   }
 
   return { ensureApp }
 
-  async function syncCoreAdminMembership(uid: string, role: AppRole) {
+  // ---------- Helpers ----------
+  async function syncCoreAdminMembership(uid: string, r: AppRole) {
     try {
-      const coreRef = doc(db, 'core-users', uid)
-      const coreSnap = await getDoc(coreRef)
-      if (!coreSnap.exists()) return
-
       const updates: Record<string, unknown> = {
-        adminOf: arrayUnion(cfg.appId),
-        updated_at: serverTimestamp(),
+        adminOf: arrayUnion(appId) as unknown as string[],
       }
 
-      if (role !== 'global') {
-        updates.userOf = arrayUnion(cfg.appId)
+      if (r === 'global') {
+        // global hubs do not maintain userOf lists
+      } else {
+        updates.userOf = arrayUnion(appId) as unknown as string[]
       }
 
-      await updateDoc(coreRef, updates)
-    } catch (error) {
-      if (import.meta.dev) {
-        console.warn('[ensureApp] failed to sync core membership', error)
-      }
+      await updateDocument('core-users', uid, updates as any)
+    } catch (err) {
+      if (import.meta.dev) console.warn('[ensureApp] core sync failed', err)
     }
   }
 }

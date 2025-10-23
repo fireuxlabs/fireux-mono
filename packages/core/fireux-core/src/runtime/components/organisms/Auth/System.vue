@@ -102,8 +102,8 @@ const ecosystemLabel = computed(() => formatBrand(ecosystem) || 'FireUX')
 const tenantLabel = computed(() => formatBrand(appName) || ecosystemLabel.value)
 const appLogo = computed(() =>
   colorMode?.value === 'dark'
-    ? '/img/wordmark-dark.svg'
-    : '/img/wordmark-light.svg'
+    ? '/img/brand/wordmark-dark.svg'
+    : '/img/brand/wordmark-light.svg'
 )
 
 const isSignUp = ref(false)

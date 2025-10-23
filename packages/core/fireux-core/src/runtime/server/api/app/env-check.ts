@@ -1,5 +1,8 @@
-// packages/core/fireux-core/src/runtime/server/api/app/env-check.ts
+// FILE: packages/core/fireux-core/src/runtime/server/api/app/env-check.ts
 import { defineEventHandler } from 'h3'
+import { join } from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+import imageSize from 'image-size'
 
 /** Typed shape consumed by the client */
 interface EnvVarEntry {
@@ -16,6 +19,14 @@ interface AdminAuthStatus {
   }
   configured: boolean
 }
+interface BrandAssetCheck {
+  name: string
+  path: string
+  ok: boolean
+  reason?: string
+  width?: number
+  height?: number
+}
 interface EnvCheckResponse {
   isValid: boolean
   required: EnvVarEntry[]
@@ -29,15 +40,86 @@ interface EnvCheckResponse {
     required: string
     optionalClient: string
     optionalServer: string
+    brandAssets: string
   }
   warnings: string[]
   notes: string[]
+  brandAssets: BrandAssetCheck[]
+}
+
+/**
+ * Utility: check if brand image exists and meets expected dimensions.
+ */
+function checkBrandImage(
+  name: string,
+  relativePath: string,
+  requiredWidth?: number,
+  requiredHeight?: number,
+  minWidth?: number,
+  minHeight?: number,
+  minAspect?: number
+): BrandAssetCheck {
+  const absPath = join(process.cwd(), 'public', relativePath)
+  const result: BrandAssetCheck = { name, path: relativePath, ok: false }
+
+  if (!existsSync(absPath)) {
+    result.reason = `Missing file: /public/${relativePath}`
+    return result
+  }
+
+  const buf = readFileSync(absPath)
+  const dim = imageSize(buf)
+  result.width = dim.width
+  result.height = dim.height
+
+  if (!dim.type) {
+    result.reason = 'Unknown file type'
+    return result
+  }
+
+  const isSvg = dim.type === 'svg'
+  const isPng = dim.type === 'png'
+
+  if (name === 'wordmark' && isSvg) {
+    result.ok = true
+    return result
+  }
+
+  if (!isSvg && !isPng) {
+    result.reason = 'Must be SVG or PNG'
+    return result
+  }
+
+  // Validation per asset type
+  if (name === 'avatar' || name === 'logo') {
+    if (!requiredWidth || !requiredHeight) {
+      result.ok = true
+      return result
+    }
+    if (dim.width === requiredWidth && dim.height === requiredHeight) {
+      result.ok = true
+    } else {
+      result.reason = `Must be exactly ${requiredWidth}×${requiredHeight} (got ${dim.width}×${dim.height})`
+    }
+  } else if (name === 'wordmark' && isPng) {
+    if (
+      dim.width >= (minWidth || 256) &&
+      dim.height >= (minHeight || 64) &&
+      dim.width / dim.height >= (minAspect || 3)
+    ) {
+      result.ok = true
+    } else {
+      result.reason = `Must be ≥256×64 with aspect ≥3:1 (got ${dim.width}×${dim.height})`
+    }
+  }
+
+  return result
 }
 
 /**
  * NOTE:
  * - `role` is enforced via Nuxt config (createFireuxConfig), not env; we do NOT check it here.
- * - This route only validates process.env presence/shape.
+ * - This route only validates process.env presence/shape and brand asset existence.
  */
 export default defineEventHandler<EnvCheckResponse>(() => {
   const env = process.env as Record<string, string | undefined>
@@ -50,17 +132,17 @@ export default defineEventHandler<EnvCheckResponse>(() => {
     'FIREBASE_MESSAGING_SENDER_ID',
     'FIREBASE_APP_ID',
     'APP_ID',
-  ]
-
-  const optionalClient = [
-    'FIREBASE_MEASUREMENT_ID',
-    'FIREBASE_RECAPTCHA_V3_KEY',
     'APP_NAME',
     'APP_SHORT_NAME',
     'APP_PRIMARY_COLOR',
     'APP_NEUTRAL_COLOR',
     'APP_ICON',
     'APP_DOMAIN',
+  ]
+
+  const optionalClient = [
+    'FIREBASE_MEASUREMENT_ID',
+    'FIREBASE_RECAPTCHA_V3_KEY',
     'GOOGLE_PLACES_API_KEY',
   ]
 
@@ -83,6 +165,23 @@ export default defineEventHandler<EnvCheckResponse>(() => {
   const presentOptionalClient = optionalClient.filter((k) => !!env[k])
   const presentOptionalServer = optionalServer.filter((k) => !!env[k])
 
+  // Brand asset checks
+  const brandAssets: BrandAssetCheck[] = [
+    checkBrandImage('avatar', 'img/brand/avatar.png', 512, 512),
+    checkBrandImage('logo', 'img/brand/logo.png', 512, 512),
+    checkBrandImage(
+      'wordmark',
+      'img/brand/wordmark.png',
+      undefined,
+      undefined,
+      256,
+      64,
+      3
+    ),
+  ]
+
+  const passedBrandCount = brandAssets.filter((b) => b.ok).length
+
   // Build warnings
   const warnings: string[] = []
   if (!serverAuthConfigured) {
@@ -104,7 +203,8 @@ export default defineEventHandler<EnvCheckResponse>(() => {
   })
 
   return {
-    isValid: missingRequired.length === 0,
+    isValid:
+      missingRequired.length === 0 && passedBrandCount === brandAssets.length,
 
     required: requiredClient.map(mask),
     optionalClient: optionalClient.map(mask),
@@ -130,13 +230,17 @@ export default defineEventHandler<EnvCheckResponse>(() => {
       }`,
       optionalClient: `${presentOptionalClient.length}/${optionalClient.length}`,
       optionalServer: `${presentOptionalServer.length}/${optionalServer.length}`,
+      brandAssets: `${passedBrandCount}/${brandAssets.length}`,
     },
 
     warnings,
 
     notes: [
-      "Role is enforced by Nuxt config (createFireuxConfig) and isn't checked here.",
-      'Fail fast: no fallbacks are applied. Supply all required env vars before boot.',
+      'Role is enforced by Nuxt config (createFireuxConfig) and is not checked here.',
+      'Env vars are fixed and non-editable via UI.',
+      'Brand asset validation checks /public/img/brand for required files and dimensions.',
     ],
+
+    brandAssets,
   }
 })

@@ -11,14 +11,15 @@
   </ClientOnly>
 </template>
 
-<script setup>import { computed } from 'vue'
+<script setup>
+import { computed } from 'vue'
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
 const logos = {
-  light: '/img/wordmark-light.svg',
-  dark: '/img/wordmark-dark.svg',
+  light: '/img/brand/wordmark-light.svg',
+  dark: '/img/brand/wordmark-dark.svg',
 }
 
 const props = defineProps({
@@ -73,5 +74,8 @@ const logoSizeClass = computed(() => ({
 
 /* Hero size - 80px height, constrained width */
 .logo.h-20 {
+  height: 5rem;
+  width: auto;
+  max-width: 10rem;
 }
 </style>

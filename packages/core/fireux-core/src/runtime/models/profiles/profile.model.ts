@@ -1,4 +1,4 @@
-import type { FirebaseTimestamp } from '../types/firebase'
+import type { FirebaseTimestamp } from '../../types/firebase.ts'
 
 /**
  * Minimal, shared base for any profile document (core or app).

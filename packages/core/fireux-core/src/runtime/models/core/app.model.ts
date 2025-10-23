@@ -1,35 +1,9 @@
-/** DX-friendly union for Firestore timestamps or ISO strings */
-export interface FirestoreTimestamp {
-  type: 'firestore/timestamp/1.0'
-  seconds: number
-  nanoseconds: number
-}
-type TSOrISO = FirestoreTimestamp | string
+// FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
+import type { FirestoreTimestampOrString } from '../../types/firebase.ts'
 
-/** App scope role */
 export type AppRole = 'global' | 'tenant' | 'sandbox'
+type TimestampValue = FirestoreTimestampOrString
 
-/** Branding */
-export interface AppBrand {
-  primary?: string
-  neutral?: string
-  icon?: string
-  logo_url?: string | null
-}
-
-/** Ecosystem-wide defaults (only on the global hub doc) */
-export interface AppDefaults {
-  brand?: AppBrand
-  features?: Record<string, boolean>
-  domain?: string
-}
-
-/**
- * Canonical App document
- * Collection: apps/{appId}
- * - Global hub (role='global') may include `defaults`
- * - Tenant (role='tenant') can set `brand`/`domain` overrides
- */
 export interface App {
   /** == Firestore doc id */
   id: string
@@ -37,40 +11,26 @@ export interface App {
   /** Display name */
   app_name: string
 
-  /** Short name (only for global/tenant apps) */
-  app_short_name?: string
-
   /** Scope + lineage */
   role: AppRole
   ecosystem: string
-
-  /** Tenant overrides (optional) */
-  brand?: AppBrand
-  domain?: string
-
-  /** Only on global hub (apps/{ecosystem}-app) */
-  defaults?: AppDefaults
 
   /** Governance */
   admin_ids?: string[]
   creator_id: string
 
   /** System metadata */
-  created_at?: TSOrISO
-  updated_at?: TSOrISO
+  created_at?: TimestampValue
+  updated_at?: TimestampValue
 
-  /** Media */
+  /** Brand/media URLs (flat) */
   avatar_url?: string | null
-
-  /** Billing (optional) */
-  billing?: {
-    stripe_customer_id?: string
-    plan?: 'basic' | 'standard' | 'pro' | 'full'
-  }
+  logo_url?: string | null
+  wordmark_url?: string | null
 }
 
 /* ---------------------------
- * UI Card View Models (strict)
+ * UI Card View Models
  * --------------------------- */
 export namespace AppCard {
   export interface Pill {
@@ -85,8 +45,10 @@ export namespace AppCard {
     role: AppRole
     admin_ids?: string[]
     creator_id: string
-    created_at?: TSOrISO
+    created_at?: TimestampValue
     avatar_url?: string | null
+    logo_url?: string | null
+    wordmark_url?: string | null
   }
 
   export interface Profile {
@@ -95,9 +57,9 @@ export namespace AppCard {
     role: AppRole
     admin_ids?: string[]
     creator_id: string
-    created_at?: TSOrISO
+    created_at?: TimestampValue
     avatar_url?: string | null
-    brand?: AppBrand
-    domain?: string
+    logo_url?: string | null
+    wordmark_url?: string | null
   }
 }

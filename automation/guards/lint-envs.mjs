@@ -66,9 +66,35 @@ for (const app of apps) {
   const hasPathSA = env.has('GOOGLE_APPLICATION_CREDENTIALS')
   const saOk = hasInlineSA || hasPathSA
 
-  if (missing.length || !saOk) {
+  const brandDir = join(process.cwd(), app, 'public', 'img', 'brand')
+  const brandIssues = []
+  const avatarCandidates = ['avatar.png']
+  const logoCandidates = ['logo.svg', 'logo.png']
+  const wordmarkCandidates = ['wordmark.svg', 'wordmark.png']
+
+  if (!existsSync(brandDir)) {
+    brandIssues.push('brand directory (public/img/brand)')
+  } else {
+    const resolveFile = (candidates) =>
+      candidates.some((file) => existsSync(join(brandDir, file)))
+
+    if (!resolveFile(avatarCandidates)) {
+      brandIssues.push('avatar asset (avatar.png)')
+    }
+
+    if (!resolveFile(logoCandidates)) {
+      brandIssues.push('logo asset (logo.svg|logo.png)')
+    }
+
+    if (!resolveFile(wordmarkCandidates)) {
+      brandIssues.push('wordmark asset (wordmark.svg|wordmark.png)')
+    }
+  }
+
+  if (missing.length || !saOk || brandIssues.length) {
     let msg = `❌ ${app}: missing ${missing.join(', ') || '—'}`
     if (!saOk) msg += ' SERVICE_ACCOUNT'
+    if (brandIssues.length) msg += ` | brand: ${brandIssues.join(', ')}`
     console.error(msg)
     failures++
   } else {

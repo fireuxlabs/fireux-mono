@@ -176,7 +176,7 @@ export async function useAppEnsure(input?: EnsureAppInput) {
      * - Combines the logic previously in `useAppFactory`
      * - Safe to call anywhere — no Firestore writes yet
      */
-    const DEFAULT_SANDBOX_AVATAR = '/img/wordmark-light.svg'
+  const DEFAULT_SANDBOX_AVATAR = '/img/brand/wordmark-light.svg'
 
       id: uid,
       avatar_url?: string | null

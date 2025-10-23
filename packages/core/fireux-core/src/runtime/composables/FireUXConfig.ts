@@ -1,5 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/FireUXConfig.ts
 import { useRuntimeConfig } from 'nuxt/app'
+import { getApps } from 'firebase/app'
 
 export type FireUXRole = 'global' | 'tenant'
 
@@ -73,6 +74,12 @@ function toStringArray(v: unknown): string[] {
 export function useFireUXConfig(): Readonly<FireUXConfig> {
   const g = globalThis as Record<string, unknown>
   const isBrowser = globalThis.window !== undefined
+
+  if (!getApps().length) {
+    throw new Error(
+      'Firebase must be initialized before calling useFireUXConfig().'
+    )
+  }
 
   // prefer plugin-provided cache on client
   if (isBrowser && g[FIREUX_CACHE_KEY]) {

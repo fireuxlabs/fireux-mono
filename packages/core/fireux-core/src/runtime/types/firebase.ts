@@ -1,13 +1,23 @@
-/**
- * Firebase Types
- *
- * Reusable type definitions for Firebase integrations
- */
+// packages/core/fireux-core/src/runtime/types/firebase.ts
 
 /**
- * Firebase Timestamp type for compatibility
+ * Tagged Firestore timestamp snapshot used across FireUX services.
  */
-export interface FirebaseTimestamp {
+export interface FirestoreTimestamp {
+  type: 'firestore/timestamp/1.0'
   seconds: number
   nanoseconds: number
 }
+
+/**
+ * Firestore timestamps returned by the SDK omit the tag; keep compatibility.
+ */
+export type FirebaseTimestamp = Omit<FirestoreTimestamp, 'type'>
+
+/**
+ * Convenience union for APIs that accept ISO strings or Firestore timestamps.
+ */
+export type FirestoreTimestampOrString =
+  | FirestoreTimestamp
+  | FirebaseTimestamp
+  | string

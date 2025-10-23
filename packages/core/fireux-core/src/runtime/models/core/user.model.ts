@@ -1,4 +1,4 @@
-import type { FirebaseTimestamp } from '../types/firebase'
+import type { FirebaseTimestamp } from '../../types/firebase.ts'
 
 /** ------------------------------------------------------------------
  *  Base: shared fields across core and app user documents
