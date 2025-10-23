@@ -16,8 +16,12 @@ export function useUserState() {
 
 ### Directory: /packages/core/fireux-core/src/runtime/composables/app/utils
 
-(empty)
+- `useAvatarProxy.ts`
+- `useBreadcrumbs.ts`
+- `useEditHandler.ts`
 
-### Directory: /packages/core/fireux-core/src/runtime/composables/app/utils/effects
+### Tenant-owned effect composables
 
-(empty)
+- `packages/tenants/fireux-cleanbox/src/runtime/composables/app/utils/effects/useLandingEffect.ts`
+- `packages/tenants/fireux-fireux/src/runtime/composables/app/utils/effects/useLandingEffect.ts`
+- `packages/tenants/fireux-misebox/src/runtime/composables/app/utils/effects/useLandingEffect.ts`

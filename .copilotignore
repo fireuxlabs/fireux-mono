@@ -1,0 +1,13 @@
+# Exclude large dependency trees
+node_modules/
+**/node_modules/
+
+# Skip build artifacts and generated outputs
+artifacts/
+**/dist/
+**/.nuxt/
+**/.output/
+
+# Ignore package manager caches and lock artifacts for scans
+**/.pnpm-store/
+**/.cache/
