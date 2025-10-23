@@ -63,7 +63,7 @@ export function useCreateBlogPostState() {
       content: '',
       metaDescription: '',
       slug: '',
-  author: blogPost.value.author,
+      author: blogPost.value.author,
       keywords: [],
       tags: [],
       canonicalUrl: '',
@@ -87,7 +87,7 @@ export function useCreateBlogPostState() {
       ...blogPost.value,
       created_at: now,
       updated_at: now,
-  appId: tenantId,
+      appId: tenantId,
     }
   }
 
@@ -99,7 +99,6 @@ export function useCreateBlogPostState() {
     getBlogPostPayload,
   }
 }
-
 ```
 
 ## FILE: packages/core/fireux-core/src/runtime/composables-old/firestore/objects/Blog/useBlogCreate.ts
@@ -121,7 +120,6 @@ export function useBlogCreate() {
 
   return { createBlogPost }
 }
-
 ```
 
 ## FILE: packages/core/fireux-core/src/runtime/composables-old/firestore/objects/Blog/useBlogUpdate.ts
@@ -164,7 +162,6 @@ export function useBlogUpdate() {
 
   return { updateBlogPost }
 }
-
 ```
 
 ## FILE: packages/core/fireux-core/src/runtime/composables-old/firestore/objects/Blog/useBlogDelete.ts
@@ -192,7 +189,6 @@ export function useBlogDelete() {
 
   return { deleteBlogPost }
 }
-
 ```
 
 ## FILE: packages/core/fireux-core/src/runtime/composables-old/firestore/objects/Blog/useBlogPosts.ts
@@ -236,7 +232,6 @@ export async function useBlogPosts() {
     ...useBlogPostUtils(),
   }
 }
-
 ```
 
 ## FILE: packages/core/fireux-core/src/runtime/composables-old/firestore/objects/Blog/useBlogs.ts
@@ -289,7 +284,6 @@ export async function useBlogs() {
     ...blogFormatting,
   }
 }
-
 ```
 
 ## FILE: packages/core/fireux-core/src/runtime/composables-old/firestore/objects/Blog/useBlogPostUtils.ts
@@ -349,7 +343,6 @@ export function useBlogPostUtils() {
     getDefaultImages,
   }
 }
-
 ```
 
 ## FILE: packages/core/fireux-core/src/runtime/composables-old/firestore/objects/Blog/utils/useBlogValidation.ts
@@ -455,7 +448,6 @@ export function useBlogValidation() {
     isValidReadingTime,
   }
 }
-
 ```
 
 ## FILE: packages/core/fireux-core/src/runtime/composables-old/firestore/objects/Blog/utils/useBlogFormatting.ts
@@ -643,5 +635,4 @@ export function useBlogFormatting() {
     formatTags,
   }
 }
-
 ```

@@ -32,6 +32,22 @@ function reqString(src: Record<string, unknown>, key: string): string {
   }
   return v.trim()
 }
+function reqStringWithFallback(
+  src: Record<string, unknown>,
+  key: string,
+  fallbackObj?: Record<string, unknown>,
+  fallbackKey?: string
+): string {
+  const v = src[key]
+  if (typeof v === 'string' && v.trim()) return v.trim()
+  if (fallbackObj && fallbackKey) {
+    const f = fallbackObj[fallbackKey]
+    if (typeof f === 'string' && f.trim()) return f.trim()
+  }
+  throw new Error(
+    `[fireux] runtimeConfig.public.${key} must be a non-empty string.`
+  )
+}
 function optString(
   src: Record<string, unknown>,
   key: string
@@ -65,6 +81,7 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
 
   // SSR or fallback: build from runtimeConfig
   const pub = (useRuntimeConfig().public ?? {}) as Record<string, unknown>
+  const appSettings = (pub.appSettings ?? {}) as Record<string, unknown>
 
   const devMode = Boolean(pub.devMode)
   const rawRole = reqString(pub, 'role').toLowerCase()
@@ -79,9 +96,14 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
     devMode,
     role,
     ecosystem: reqString(pub, 'ecosystem'),
-    appId: reqString(pub, 'appId'),
-    appName: reqString(pub, 'appName'),
-    appShortName: reqString(pub, 'appShortName'),
+    appId: reqStringWithFallback(pub, 'appId', appSettings, 'appId'),
+    appName: reqStringWithFallback(pub, 'appName', appSettings, 'appName'),
+    appShortName: reqStringWithFallback(
+      pub,
+      'appShortName',
+      appSettings,
+      'appShortName'
+    ),
     modules: toStringArray(pub.modules),
     appIcon: optString(pub, 'appIcon'),
     primaryColor: optString(pub, 'primaryColor'),

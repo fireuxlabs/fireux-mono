@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { watchEffect } from 'vue'
-import { useNav } from '../composables/fireUX/useNav'
+import { useNav } from '../composables/fireUX/nav/useNav'
 
 if (import.meta.dev) {
   const navDebug = useNav()

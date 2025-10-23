@@ -176,7 +176,7 @@
 import { computed, ref } from 'vue'
 import { useFetch } from 'nuxt/app'
 import { useUser } from '../../../composables/firestore/core/user/useUser'
-import { useAppEnsure } from '../../../composables/app/useAppEnsure'
+import { useAppEnsure } from '../../../composables/firestore/core/app/useAppEnsure'
 
 type EnvVarEntry = { key: string; present: boolean; value?: string }
 type AdminAuthStatus = {

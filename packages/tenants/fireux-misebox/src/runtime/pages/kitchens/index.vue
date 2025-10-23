@@ -122,7 +122,7 @@
 import { computed } from 'vue'
 import { useHead } from 'nuxt/app'
 import { useKitchens } from '../../composables/firestore/objects/Kitchen/useKitchens'
-import { useApp } from 'fireux-core/runtime/composables/app/useApp'
+import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp'
 
 const { kitchens, isLoaded } = useKitchens()
 const { apps } = useApp()

@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useNav } from '../../../composables/fireUX/useNav'
+import { useDefaultNav } from '../../../composables/fireUX/nav/presets'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 import { useUser } from '../../../composables/firestore/core/user/useUser'
 import { useUserComputed } from '../../../composables/firestore/core/user/useUserComputed'
@@ -61,7 +61,7 @@ import { useUserComputed } from '../../../composables/firestore/core/user/useUse
 defineOptions({ name: 'LayoutsDefaultHeader' })
 
 /** Nav (meta-driven, scoped to default layout) */
-const { desktop, mobile } = useNav(['default'])
+const { desktop, mobile } = useDefaultNav()
 
 /** Auth + Core User */
 const { currentUser, signOutUser } = useAuth()

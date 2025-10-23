@@ -1,4 +1,4 @@
-// packages/core/fireux-core/src/runtime/composables/app/useAppEnsure.ts
+// packages/core/fireux-core/src/runtime/composables/firestore/core/app/useAppEnsure.ts
 import {
   doc,
   getDoc,

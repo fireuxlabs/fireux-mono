@@ -175,14 +175,18 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
       googlePlacesApiKey: env('GOOGLE_PLACES_API_KEY'),
       firebaseServiceAccount: env('FIREBASE_SERVICE_ACCOUNT'),
       public: {
+        // flat fields used by FireUX runtime
+        devMode: process.env.NODE_ENV !== 'production',
         ecosystem,
+        appId,
         appName,
         appShortName,
         primaryColor,
         neutralColor,
         centralSignupUrl,
         appIcon,
-        firebaseConfig: { ...(vuefireMerged.config || {}) },
+        firebaseConfig: { ...vuefireMerged.config },
+        // legacy compatibility for older tenants
         appSettings: {
           appId,
           ecosystem,

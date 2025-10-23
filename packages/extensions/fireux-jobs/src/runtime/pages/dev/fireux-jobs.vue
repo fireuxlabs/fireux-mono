@@ -1,3 +1,4 @@
+//Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-jobs/src/runtime/pages/dev/fireux-jobs.vue
 <template>
   <div>
     <UCard>

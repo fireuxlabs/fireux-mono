@@ -1,3 +1,4 @@
+//packages/tenants/fireux-misebox/src/runtime/pages/dev/index.vue
 <template>
   <div class="page">
     <UCard>

@@ -1,24 +1,27 @@
 export interface NavMeta {
-  key: string
+  key?: string
   label?: string
   icon?: string
   group?: string
-  order?: number
-  area?: string
+  order?: number | string
+  profileId?: string
   desktop?: boolean
   mobile?: boolean
+  layouts?: string[]
 }
 
-export interface NormalizedNavItem {
-  key: string
+export interface NavItem {
+  key?: string
   label: string
   icon?: string
   to: string
-  group: string
+  group?: string
+  profileId?: string
   order: number
-  area: string
   desktop: boolean
   mobile: boolean
-  requiresAuth: boolean
-  roles: string[]
+  layouts: string[]
+  requiresAuth?: boolean
+  roles?: string[]
+  tenant?: string
 }

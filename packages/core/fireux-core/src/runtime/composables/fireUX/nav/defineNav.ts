@@ -1,20 +1,32 @@
 import { definePageMeta } from 'nuxt/app'
 import type { NavMeta } from '../../../types/nav'
 
-export function defineNav(
-  meta: NavMeta & { requiresAuth?: boolean; roles?: string[]; tenant?: string }
-) {
+type DefineNavOptions = NavMeta & {
+  requiresAuth?: boolean
+  roles?: string[]
+  tenant?: string
+}
+
+function normaliseLayouts(value: NavMeta['layouts']): string[] | undefined {
+  if (!value || value.length === 0) return undefined
+  return value
+}
+
+export function defineNav(meta: DefineNavOptions) {
+  const { requiresAuth, roles, tenant, ...navMeta } = meta
+  const layouts = normaliseLayouts(navMeta.layouts)
+
   definePageMeta({
     nav: {
-      group: 'Other',
-      order: 999,
-      area: 'default',
-      desktop: false,
-      mobile: false,
-      ...meta,
+      group: navMeta.group ?? 'Other',
+      order: navMeta.order ?? 999,
+      desktop: navMeta.desktop ?? false,
+      mobile: navMeta.mobile ?? false,
+      ...navMeta,
+      ...(layouts ? { layouts } : {}),
     },
-    requiresAuth: meta.requiresAuth ?? false,
-    roles: meta.roles ?? [],
-    tenant: meta.tenant,
+    requiresAuth: requiresAuth ?? false,
+    roles: roles ?? [],
+    tenant,
   })
 }

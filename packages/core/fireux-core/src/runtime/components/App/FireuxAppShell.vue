@@ -58,7 +58,7 @@
 import { ref, computed } from 'vue'
 import { useHead, navigateTo } from 'nuxt/app'
 import { useFireUXConfig } from '../../composables/FireUXConfig'
-import { useApp } from '../../composables/app/useApp'
+import { useApp } from '../../composables/firestore/core/app/useApp'
 
 // Names from our FireUX config
 const { appName, appShortName } = useFireUXConfig()

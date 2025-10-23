@@ -37,12 +37,12 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useNav } from '../composables/fireUX/useNav'
+import { useDashboardNav } from '../composables/fireUX/nav/presets'
 
 defineOptions({ name: 'CoreDashboard' })
 
 const open = ref(false)
-const { desktop } = useNav(['dashboard'])
+const { desktop } = useDashboardNav()
 
 // Show only non-profile items in the main nav; child manages profiles.
 const primary = computed(() =>

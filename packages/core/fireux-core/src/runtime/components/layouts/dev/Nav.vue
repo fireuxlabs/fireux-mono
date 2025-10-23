@@ -34,12 +34,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useNav } from '../../../composables/fireUX/useNav'
+import { useDevNav } from '../../../composables/fireUX/nav/presets'
 import { useFireUXConfig } from '../../../composables/FireUXConfig'
 const route = useRoute()
 
 // Collect all dev-layout nav items and group them by meta.group
-const { desktop } = useNav(['dev'])
+const { desktop } = useDevNav()
 const { ecosystem } = useFireUXConfig()
 
 const core = computed(() => desktop.value.filter((i) => i.group === 'core'))

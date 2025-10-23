@@ -1,3 +1,4 @@
+///Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/tenants/fireux-misebox/src/runtime/pages/dev/fireux-misebox.vue
 <template>
   <div>
     <UCard>

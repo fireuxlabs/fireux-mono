@@ -137,7 +137,7 @@
 
 <script setup lang="ts">
 import { computed, unref } from 'vue'
-import { useApp } from '../../composables/app/useApp'
+import { useApp } from '../../composables/firestore/core/app/useApp'
 import { useFireUXConfig } from '../../composables/FireUXConfig'
 import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
 
