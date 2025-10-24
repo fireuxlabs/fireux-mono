@@ -41,7 +41,7 @@ import { useFirebaseApp, useFirestore, useCurrentUser } from 'vuefire'
 ## Observability & Diagnostics
 
 - Logging: prefer Nitro `logger` for server-side messages and `consola` for client-side debug logs. Maintain consistent prefixes (`[fireux-core]`, `[fireux-places]`, etc.).
-- Dev tools: `fireux-core` provides dev pages (e.g. `/dev/app`, `/dev/users`) to inspect runtime state. When extending diagnostics, add new dev pages under the owning package and tag them with `layout: 'dev'` and appropriate `nav` metadata.
+- Dev tools: `fireux-core` provides dev pages (e.g. `/dev/app` (alias `/dev/apps`), `/dev/users`) to inspect runtime state. When extending diagnostics, add new dev pages under the owning package and tag them with `layout: 'dev'` and appropriate `nav` metadata.
 - Future appendices will collect alert destinations and monitoring dashboards once they are standardised.
 
 Continue to [Development Workflow](./copilot-05-development-workflow.md) for day-to-day practices.

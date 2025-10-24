@@ -61,7 +61,7 @@ Dev pages inventory (grouped, meta-driven)
   - packages/core/fireux-core/src/runtime/pages/dev/index.vue
     meta: { layout: 'dev', nav: { key: 'dev-index', label: 'Overview', icon: 'i-lucide-wrench', desktop: true, group: 'core', layouts: ['dev'] } }
   - packages/core/fireux-core/src/runtime/pages/dev/app.vue
-    meta: { layout: 'dev', nav: { key: 'dev-app', label: 'App Config', icon: 'i-lucide-settings', desktop: true, group: 'core', layouts: ['dev'] } }
+    meta: { layout: 'dev', alias: ['/dev/apps'], nav: { key: 'dev-app', label: 'Apps', icon: 'i-lucide-settings', desktop: true, group: 'core', layouts: ['dev'] } }
   - packages/core/fireux-core/src/runtime/pages/dev/fireux-core.vue
     meta: { layout: 'dev', nav: { key: 'dev-fireux-core', label: 'FireUX Core', icon: 'i-lucide-cpu', desktop: true, group: 'core', layouts: ['dev'] } }
   - packages/core/fireux-core/src/runtime/pages/dev/users.vue

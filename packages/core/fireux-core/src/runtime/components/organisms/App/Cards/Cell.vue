@@ -1,71 +1,67 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Cell.vue -->
 <template>
   <UCard class="cell">
-    <div class="cell-header">
-      <div
-        class="app-icon"
-        :style="{ backgroundColor: app?.theme?.primary || '#3b82f6' }"
-      >
-        <UIcon :name="getAppIcon(app?.id)" />
-      </div>
+    <div class="row">
+      <UAvatar
+        :src="app?.avatar_url || app?.logo_url || app?.wordmark_url || ''"
+        :alt="app?.app_name || app?.id || '—'"
+        size="md"
+        class="avatar"
+      />
 
-      <div class="cell-content">
-        <div class="cell-title-row">
-          <h3 class="cell-title">
-            {{ appName }}
-          </h3>
-          <div class="cell-badges">
-            <UBadge v-if="isInitialized" color="green" variant="soft">
-              Active
-            </UBadge>
-            <UBadge v-if="hasAdmins" color="blue" variant="soft">
-              {{ adminCount }} Admin{{ adminCount !== 1 ? 's' : '' }}
-            </UBadge>
-          </div>
-        </div>
-
-        <p v-if="app?.description" class="cell-subtitle">
-          {{ app.description }}
+      <div class="main">
+        <h3 class="title">{{ app?.app_name || app?.id }}</h3>
+        <p class="subtitle">
+          <span v-if="app?.id">{{ app.id }}</span>
+          <span v-if="app?.role">• {{ app.role }}</span>
+          <span v-if="app?.ecosystem">• {{ app.ecosystem }}</span>
         </p>
-
-        <div class="cell-meta">
-          <span>ID: {{ app?.id || 'Unknown' }}</span>
-          <span v-if="app?.created_at">
-            Created: {{ formatDate(app.created_at) }}
-          </span>
-        </div>
       </div>
     </div>
   </UCard>
 </template>
 
-<script setup>import { computed } from 'vue'
-
-const props = defineProps(['app'])
-
-// Computed properties matching useApp pattern
-const appName = computed(
-  () => props.app?.app_name || props.app?.id || 'Unknown App'
-)
-const isInitialized = computed(() => !!props.app?.admin_ids?.length)
-const hasAdmins = computed(() => !!props.app?.admin_ids?.length)
-const adminCount = computed(() => props.app?.admin_ids?.length || 0)
-
-function getAppIcon(appId) {
-  const iconMap = {
-    fireux: 'i-heroicons-fire',
-    cleanbox: 'i-heroicons-sparkles',
-    misebox: 'i-heroicons-beaker',
-    default: 'i-heroicons-cube',
-  }
-  return iconMap[appId] || iconMap.default
-}
-
-function formatDate(date) {
-  if (!date) return 'Unknown'
-  try {
-    return new Date(date.seconds * 1000).toLocaleDateString()
-  } catch {
-    return 'Unknown'
-  }
-}
+<script setup lang="ts">
+import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+defineProps<{ app?: Partial<App> | null }>()
 </script>
+
+<style scoped>
+.cell {
+  background: var(--ui-background-200, rgba(148, 163, 184, 0.08));
+  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
+  transition: border-color 0.15s ease;
+}
+
+.cell:hover {
+  border-color: var(--ui-primary-500, rgba(79, 70, 229, 0.6));
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.avatar {
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1px var(--ui-border-200, rgba(148, 163, 184, 0.45)) inset;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.title {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
+}
+</style>

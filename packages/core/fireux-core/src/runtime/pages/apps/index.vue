@@ -1,6 +1,27 @@
 <template>
   <UPage>
-    <UPageBody>
+    <UPageBody class="space-y-6">
+      <UCard v-if="canEditApp">
+        <div
+          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div>
+            <h3 class="text-base font-medium">App management available</h3>
+            <p class="text-sm text-gray-500">
+              You are an app administrator. Manage identity, admins, and social
+              links from the dashboard.
+            </p>
+          </div>
+          <UButton
+            to="/dashboard/app"
+            color="primary"
+            variant="soft"
+            icon="i-lucide-settings-2"
+            label="Open app settings"
+          />
+        </div>
+      </UCard>
+
       <UCard>
         <template #header>
           <h3 class="text-base font-medium">Current App</h3>
@@ -53,6 +74,7 @@ import { computed } from 'vue'
 import type { App } from '../../models/core/app.model'
 import { useApp } from '../../composables/firestore/core/app/useApp'
 import { useFireUXConfig } from '../../composables/FireUXConfig'
+import { useUser } from '../../composables/firestore/core/user/useUser'
 
 declare function definePageMeta(meta: any): void
 
@@ -72,6 +94,7 @@ definePageMeta({
 
 const { app, apps } = useApp()
 const { isGlobal, isTenant, ecosystem } = useFireUXConfig()
+const { isAdmin } = useUser()
 
 const currentApp = computed(() => app?.value ?? null)
 const appsList = computed<App[]>(() => {
@@ -101,6 +124,7 @@ const ecosystemTitle = computed(() => {
   if (!ecosystem) return 'Apps'
   return ecosystem.charAt(0).toUpperCase() + ecosystem.slice(1)
 })
+const canEditApp = computed(() => isAdmin.value === true)
 
 function displayName(entry: App | null | undefined) {
   return entry?.app_name ?? entry?.id ?? 'Unnamed App'

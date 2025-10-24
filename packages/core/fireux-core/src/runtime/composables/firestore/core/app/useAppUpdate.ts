@@ -17,6 +17,9 @@ import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 // Runtime config (only used to double-check/derive id if needed)
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
+type UpdateResult<A extends string, Extra extends object = {}> =
+  { success: true; action: A } & Extra
+
 export function useAppUpdate(app: App) {
   const db = useFirestore()
   const { appId: runtimeAppId } = useFireUXConfig()
@@ -30,24 +33,23 @@ export function useAppUpdate(app: App) {
   // ---------------------------
   // 1) description (editable)
   // ---------------------------
-  async function updateDescription(description: string) {
+  async function updateDescription(description: string): Promise<UpdateResult<'updateDescription'>> {
     const value = String(description ?? '').trim()
-    // Optional: enforce max length or strip HTML here if desired.
     await updateDoc(appRef, {
       description: value,
       updated_at: serverTimestamp(),
     })
-    return { success: true as const, action: 'updateDescription' as const }
+    return { success: true, action: 'updateDescription' }
   }
 
   // ---------------------------
   // 2) admin_ids (editable)
   // ---------------------------
-  function cleanIds(ids: string[]) {
-    return Array.from(new Set(ids.map((s) => s?.trim()).filter(Boolean)))
+  function cleanIds(ids: string[]): string[] {
+    return Array.from(new Set(ids.map((s) => String(s ?? '').trim()).filter(Boolean)))
   }
 
-  async function addAdmin(userId: string) {
+  async function addAdmin(userId: string): Promise<UpdateResult<'addAdmin', { uid: string }>> {
     const uid = String(userId ?? '').trim()
     if (!uid) throw new Error('[app/update] addAdmin requires a user id.')
 
@@ -55,21 +57,21 @@ export function useAppUpdate(app: App) {
       admin_ids: arrayUnion(uid),
       updated_at: serverTimestamp(),
     })
-    return { success: true as const, action: 'addAdmin' as const, uid }
+    return { success: true, action: 'addAdmin', uid }
   }
 
-  async function removeAdmin(userId: string) {
+  async function removeAdmin(userId: string): Promise<UpdateResult<'removeAdmin' | 'noop', { uid: string }>> {
     const uid = String(userId ?? '').trim()
     if (!uid) throw new Error('[app/update] removeAdmin requires a user id.')
 
-    // Fetch current admin_ids to guard against removing the last one
+    // Guard against removing the last admin
     const snap = await getDoc(appRef)
     if (!snap.exists()) throw new Error('[app/update] App document not found.')
     const data = snap.data() as { admin_ids?: string[] }
     const current = cleanIds(data.admin_ids ?? [])
+
     if (!current.includes(uid)) {
-      // nothing to do
-      return { success: true as const, action: 'noop' as const }
+      return { success: true, action: 'noop', uid }
     }
     if (current.length <= 1) {
       throw new Error('[app/update] Cannot remove the last admin.')
@@ -79,10 +81,10 @@ export function useAppUpdate(app: App) {
       admin_ids: arrayRemove(uid),
       updated_at: serverTimestamp(),
     })
-    return { success: true as const, action: 'removeAdmin' as const, uid }
+    return { success: true, action: 'removeAdmin', uid }
   }
 
-  async function setAdmins(next: string[]) {
+  async function setAdmins(next: string[]): Promise<UpdateResult<'setAdmins', { admin_ids: string[] }>> {
     const cleaned = cleanIds(next)
     if (cleaned.length === 0) {
       throw new Error('[app/update] setAdmins requires at least one admin.')
@@ -91,7 +93,7 @@ export function useAppUpdate(app: App) {
       admin_ids: cleaned,
       updated_at: serverTimestamp(),
     })
-    return { success: true as const, action: 'setAdmins' as const, admin_ids: cleaned }
+    return { success: true, action: 'setAdmins', admin_ids: cleaned }
   }
 
   // ---------------------------
@@ -103,10 +105,12 @@ export function useAppUpdate(app: App) {
     role?: 'user' | 'manager' | 'admin'
     created_at?: unknown
     updated_at?: unknown
-    // add any light profile fields you mirror here
   }
 
-  async function addUserToApp(userId: string, payload?: Partial<AppUserDoc>) {
+  async function addUserToApp(
+    userId: string,
+    payload?: Partial<AppUserDoc>
+  ): Promise<UpdateResult<'addUserToApp', { uid: string }>> {
     const uid = String(userId ?? '').trim()
     if (!uid) throw new Error('[app/update] addUserToApp requires a user id.')
 
@@ -120,24 +124,20 @@ export function useAppUpdate(app: App) {
     const data: DocumentData = { ...base, ...(payload ?? {}) }
 
     await setDoc(userRef, data, { merge: true })
+    await updateDoc(appRef, { updated_at: serverTimestamp() }) // reflect activity
 
-    // Optionally reflect activity on the parent app doc
-    await updateDoc(appRef, { updated_at: serverTimestamp() })
-
-    return { success: true as const, action: 'addUserToApp' as const, uid }
+    return { success: true, action: 'addUserToApp', uid }
   }
 
-  async function removeUserFromApp(userId: string) {
+  async function removeUserFromApp(userId: string): Promise<UpdateResult<'removeUserFromApp', { uid: string }>> {
     const uid = String(userId ?? '').trim()
     if (!uid) throw new Error('[app/update] removeUserFromApp requires a user id.')
 
     const userRef = doc(db, `apps/${id}/users`, uid)
     await deleteDoc(userRef)
+    await updateDoc(appRef, { updated_at: serverTimestamp() }) // reflect activity
 
-    // Optionally reflect activity on the parent app doc
-    await updateDoc(appRef, { updated_at: serverTimestamp() })
-
-    return { success: true as const, action: 'removeUserFromApp' as const, uid }
+    return { success: true, action: 'removeUserFromApp', uid }
   }
 
   return {

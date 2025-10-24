@@ -11,6 +11,9 @@ export interface App {
   /** Display name */
   app_name: string
 
+  /** Optional short name used in UI badges */
+  app_short_name?: string
+
   /** Scope + lineage */
   role: AppRole
   ecosystem: string
@@ -18,6 +21,10 @@ export interface App {
   /** Governance */
   admin_ids?: string[]
   creator_id: string
+
+  /** Optional metadata */
+  description?: string | null
+  social_links?: Record<string, string> | null
 
   /** System metadata */
   created_at?: TimestampValue

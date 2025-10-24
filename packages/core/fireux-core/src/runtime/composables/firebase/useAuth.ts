@@ -132,12 +132,15 @@ export function useAuth() {
     }
   }
 
-  return {
-    currentUser,
-    authState,
-    signInWithGoogle,
-    signInWithEmailPassword,
-    signUpWithEmailPassword,
-    signOutUser,
-  }
+const uid = computed(() => currentUser.value?.uid ?? null)
+
+return {
+  currentUser,
+  uid,
+  authState,
+  signInWithGoogle,
+  signInWithEmailPassword,
+  signUpWithEmailPassword,
+  signOutUser,
+}
 }

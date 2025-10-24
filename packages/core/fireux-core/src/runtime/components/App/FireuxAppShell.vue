@@ -66,8 +66,9 @@ const appDisplayName = computed(() => appShortName || appName || 'FireUX')
 const isDev = process.dev
 const devToolsOpen = ref(false)
 
-// Single source of truth: useApp() already exposes isInitialized via useAppComputed(app)
-const { isInitialized } = useApp()
+// Single source of truth: useApp().computed carries initialization state
+const { computed: appComputed } = useApp()
+const isInitialized = appComputed.isInitialized ?? computed(() => false)
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],

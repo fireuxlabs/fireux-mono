@@ -12,9 +12,9 @@ export function getCleanboxDevRoutes() {
   const coreDevRoutes: RouteLink[] = [
     {
       id: 'dev-app',
-      label: 'App Core',
+      label: 'Apps',
       icon: 'i-heroicons-cog-6-tooth',
-      to: '/dev/app',
+      to: '/dev/apps',
     },
   ]
 
