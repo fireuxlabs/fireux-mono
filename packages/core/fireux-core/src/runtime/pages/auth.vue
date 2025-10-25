@@ -77,76 +77,6 @@
             </div>
           </dl>
 
-          <section class="debug-subpanel">
-            <div class="debug-subpanel__header">
-              <h3 class="subpanel-title">UI Messages</h3>
-              <UBadge variant="soft" color="primary">
-                {{ uiSummary.isTenant ? 'Tenant' : 'Global' }} ·
-                {{ uiSummary.mode }}
-              </UBadge>
-            </div>
-
-            <dl class="debug-grid">
-              <div>
-                <dt>Form title</dt>
-                <dd>{{ uiSummary.formTitle || '—' }}</dd>
-              </div>
-              <div>
-                <dt>Brand</dt>
-                <dd>{{ uiSummary.brandLabel || '—' }}</dd>
-              </div>
-              <div>
-                <dt>Submit label</dt>
-                <dd>{{ uiSummary.submitLabel || '—' }}</dd>
-              </div>
-              <div>
-                <dt>Separator</dt>
-                <dd>{{ uiSummary.separatorLabel || '—' }}</dd>
-              </div>
-              <div>
-                <dt>Toggle</dt>
-                <dd>{{ uiSummary.isSignUpToggle }}</dd>
-              </div>
-              <div>
-                <dt>Form loading</dt>
-                <dd>{{ uiSummary.formLoading }}</dd>
-              </div>
-              <div>
-                <dt>Provider loading</dt>
-                <dd>{{ uiSummary.providerLoading }}</dd>
-              </div>
-              <div>
-                <dt>Last event</dt>
-                <dd>{{ uiSummary.lastEvent }}</dd>
-              </div>
-            </dl>
-
-            <div v-if="uiSummary.description" class="ui-description">
-              <h4>Description</h4>
-              <p>{{ uiSummary.description }}</p>
-            </div>
-
-            <div
-              v-if="
-                uiSummary.errorTitle ||
-                uiSummary.errorDescription ||
-                uiSummary.errorHint
-              "
-              class="ui-error"
-            >
-              <h4>Error</h4>
-              <p v-if="uiSummary.errorTitle">
-                <strong>{{ uiSummary.errorTitle }}</strong>
-              </p>
-              <p v-if="uiSummary.errorDescription">
-                {{ uiSummary.errorDescription }}
-              </p>
-              <p v-if="uiSummary.errorHint" class="ui-hint">
-                {{ uiSummary.errorHint }}
-              </p>
-            </div>
-          </section>
-
           <pre class="debug-json"><code>{{ debugJson }}</code></pre>
         </section>
       </div>
@@ -162,7 +92,6 @@ import { useUser } from '../composables/firestore/core/user/useUser'
 import { useUserEnsure } from '../composables/firestore/core/user/useUserEnsure'
 import { useHead } from '#imports'
 import { useFireUXConfig } from '../composables/FireUXConfig'
-import { useAuthUiDebugState } from '../composables/state/useAuthUiDebugState'
 
 const config = useFireUXConfig()
 const appName = config.appName
@@ -177,7 +106,6 @@ const {
   hasAppProfile,
 } = useUser()
 const { ensureUser } = useUserEnsure()
-const { authUiDebug } = useAuthUiDebugState()
 
 const ensureLoading = ref(false)
 const ensureStatus = ref('')
@@ -217,23 +145,6 @@ const summary = computed(() => ({
   authUid: currentUser.value?.uid ?? '',
 }))
 
-const uiSummary = computed(() => ({
-  mode: authUiDebug.value.mode,
-  formTitle: authUiDebug.value.formTitle,
-  brandLabel: authUiDebug.value.brandLabel || '',
-  description: authUiDebug.value.description,
-  submitLabel: authUiDebug.value.submitLabel,
-  separatorLabel: authUiDebug.value.separatorLabel,
-  isTenant: authUiDebug.value.isTenant,
-  isSignUpToggle: authUiDebug.value.isSignUpToggle,
-  formLoading: authUiDebug.value.formLoading,
-  providerLoading: authUiDebug.value.providerLoading,
-  lastEvent: authUiDebug.value.lastEvent,
-  errorTitle: authUiDebug.value.errorTitle || '',
-  errorDescription: authUiDebug.value.errorDescription || '',
-  errorHint: authUiDebug.value.errorHint || '',
-}))
-
 const debugJson = computed(() =>
   JSON.stringify(
     {
@@ -270,7 +181,6 @@ const debugJson = computed(() =>
           }
         : null,
       nextCta: nextCta.value,
-      ui: authUiDebug.value,
     },
     null,
     2
@@ -360,46 +270,6 @@ definePageMeta({
   font-size: 0.875rem;
   font-weight: 600;
   color: rgba(15, 23, 42, 0.85);
-}
-
-.debug-subpanel {
-  border-top: 1px solid rgba(148, 163, 184, 0.3);
-  padding-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.debug-subpanel__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.subpanel-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: rgba(15, 23, 42, 0.9);
-}
-
-.ui-description,
-.ui-error {
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  background: rgba(148, 163, 184, 0.12);
-  display: grid;
-  gap: 0.35rem;
-}
-
-.ui-error {
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  background: rgba(254, 226, 226, 0.25);
-}
-
-.ui-hint {
-  color: rgba(30, 64, 175, 0.8);
-  font-size: 0.8rem;
 }
 
 .debug-json {

@@ -11,23 +11,15 @@
 
     <template v-else-if="envData">
       <UAlert
-        :color="envData.isValid ? 'success' : 'error'"
-        :icon="envData.isValid ? 'i-ph-check-circle' : 'i-ph-warning'"
-        :title="
-          envData.isValid
-            ? 'Ready to create app'
-            : `${envData.missingRequired?.length || 0} required items missing`
-        "
-        :description="
-          envData.isValid
-            ? 'All required variables and assets look good.'
-            : 'Resolve the issues below, restart the dev server, and refresh.'
-        "
+        :color="status.color"
+        :icon="status.icon"
+        :title="status.title"
+        :description="status.description"
         variant="soft"
       />
 
       <div class="flex flex-wrap items-center gap-2">
-        <UBadge :color="envData.isValid ? 'success' : 'error'" variant="soft">
+        <UBadge :color="requiredBadgeColor" variant="soft">
           Required: {{ summaryRequired }}
         </UBadge>
         <UBadge color="primary" variant="subtle">
@@ -36,14 +28,11 @@
         <UBadge color="primary" variant="subtle">
           Optional (server): {{ summaryOptionalServer }}
         </UBadge>
-        <UBadge
-          :color="envData.server?.adminAuth?.configured ? 'success' : 'warning'"
-          variant="soft"
-        >
+        <UBadge :color="adminBadgeColor" variant="soft">
           Admin SDK:
           {{ envData.server?.adminAuth?.configured ? 'configured' : 'missing' }}
         </UBadge>
-        <UBadge color="primary" variant="subtle">
+        <UBadge :color="brandBadgeColor" variant="soft">
           Brand assets: {{ summaryBrand }}
         </UBadge>
       </div>
@@ -130,7 +119,9 @@
         <template #header>
           <div class="flex items-center justify-between">
             <span class="font-medium">🎨 Brand Assets</span>
-            <UBadge color="primary" variant="subtle">{{ summaryBrand }}</UBadge>
+            <UBadge :color="brandBadgeColor" variant="soft">
+              {{ summaryBrand }}
+            </UBadge>
           </div>
         </template>
         <div class="grid gap-4 sm:grid-cols-2">
@@ -195,7 +186,7 @@
       </UAccordion>
 
       <UAlert
-        v-if="!envData.isValid"
+        v-if="!overallValid"
         color="warning"
         variant="soft"
         icon="i-ph-list-checks"
@@ -231,6 +222,7 @@ type AdminAuthStatus = {
     FIREBASE_CLIENT_EMAIL: boolean
     FIREBASE_PRIVATE_KEY: boolean
   }
+  file?: boolean
   configured: boolean
 }
 type BrandAssetCheck = {
@@ -291,6 +283,73 @@ const brandAssets = computed(() => envData.value?.brandAssets ?? [])
 
 const warnings = computed(() => envData.value?.warnings ?? [])
 const notes = computed(() => envData.value?.notes ?? [])
+
+const missingRequiredCount = computed(
+  () => envData.value?.missingRequired?.length ?? 0
+)
+const hasRequiredIssues = computed(() => missingRequiredCount.value > 0)
+const hasBrandIssues = computed(() =>
+  brandAssets.value.some((asset) => asset.ok === false)
+)
+const adminConfigured = computed(
+  () => envData.value?.server?.adminAuth?.configured ?? false
+)
+const hasAdminIssues = computed(() => !adminConfigured.value)
+const overallValid = computed(
+  () =>
+    !hasRequiredIssues.value && !hasBrandIssues.value && !hasAdminIssues.value
+)
+
+const status = computed(() => {
+  if (hasRequiredIssues.value) {
+    const count = missingRequiredCount.value
+    const nouns = count === 1 ? 'item' : 'items'
+    return {
+      color: 'error' as const,
+      icon: 'i-ph-warning',
+      title: `${count} required ${nouns} missing`,
+      description:
+        'Resolve the issues below, restart the dev server, and refresh.',
+    }
+  }
+
+  if (hasBrandIssues.value) {
+    return {
+      color: 'error' as const,
+      icon: 'i-ph-warning',
+      title: 'Brand assets incomplete',
+      description:
+        'Upload the required brand assets, restart the dev server, and refresh.',
+    }
+  }
+
+  if (hasAdminIssues.value) {
+    return {
+      color: 'error' as const,
+      icon: 'i-ph-warning',
+      title: 'Firebase Admin SDK missing',
+      description:
+        'Add FIREBASE_SERVICE_ACCOUNT (or file) so server features and onboarding can run.',
+    }
+  }
+
+  return {
+    color: 'success' as const,
+    icon: 'i-ph-check-circle',
+    title: 'Ready to create app',
+    description: 'All required variables and assets look good.',
+  }
+})
+
+const requiredBadgeColor = computed(() =>
+  hasRequiredIssues.value ? 'error' : 'success'
+)
+const brandBadgeColor = computed(() =>
+  hasBrandIssues.value ? 'error' : 'success'
+)
+const adminBadgeColor = computed(() =>
+  adminConfigured.value ? 'success' : 'error'
+)
 
 const assetPreviewSrc = (asset: { path: string }) => {
   const segments = asset.path?.split('/') ?? []

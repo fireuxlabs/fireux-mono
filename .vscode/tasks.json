@@ -63,6 +63,18 @@
 			"isBackground": true
 		},
 		{
+			"label": "dev:tennant (3005)",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"dev:tennant"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": true
+		},
+		{
 			"label": "dev:richies (3004)",
 			"type": "shell",
 			"command": "pnpm",

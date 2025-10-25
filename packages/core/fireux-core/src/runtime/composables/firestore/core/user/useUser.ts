@@ -17,15 +17,31 @@ import {
 
 export type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
+function resolveCurrentUser(): Ref<import('firebase/auth').User | null> {
+  if (!import.meta.client) {
+    return shallowRef<import('firebase/auth').User | null>(null)
+  }
+
+  try {
+    return useCurrentUser() as Ref<import('firebase/auth').User | null>
+  } catch (error) {
+    if (import.meta.dev) {
+      console.warn(
+        '[useUser] useCurrentUser unavailable. Ensure VueFire auth module is registered.',
+        error
+      )
+    }
+    return shallowRef<import('firebase/auth').User | null>(null)
+  }
+}
+
 export function useUser() {
   const db = useFirestore()
   const { isTenant, appId } = useFireUXConfig()
   const { firestoreFetchCollection } = useFirestoreRead()
 
   // Auth user (SSR-safe: null ref on server)
-  const authUser: Ref<import('firebase/auth').User | null> = import.meta.client
-    ? (useCurrentUser() as Ref<import('firebase/auth').User | null>)
-    : shallowRef<import('firebase/auth').User | null>(null)
+  const authUser = resolveCurrentUser()
 
   const uid = computed(() => authUser.value?.uid ?? null)
 

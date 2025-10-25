@@ -105,11 +105,16 @@ const { user } = useUser()
 const coreUser = computed(() => user.value?.core ?? null)
 
 /** 2) PIN gate */
-const pin = ref<string[]>([])
-const isUnlocked = ref(false)
+const EXPECTED_PIN = '1234' as const
+const DEV_PIN_AUTO_UNLOCK = true
+// TODO: Disable dev PIN auto-unlock before production deployment.
+const pin = ref<string[]>(DEV_PIN_AUTO_UNLOCK ? EXPECTED_PIN.split('') : [])
+const isUnlocked = ref(DEV_PIN_AUTO_UNLOCK)
 function checkPin() {
-  if (pin.value.join('') === '1234') isUnlocked.value = true
-  pin.value = []
+  if (pin.value.join('') === EXPECTED_PIN) {
+    isUnlocked.value = true
+  }
+  pin.value = DEV_PIN_AUTO_UNLOCK ? EXPECTED_PIN.split('') : []
 }
 
 /** 3) Env check */

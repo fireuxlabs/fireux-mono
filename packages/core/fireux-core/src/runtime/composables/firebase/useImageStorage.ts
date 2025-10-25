@@ -140,12 +140,10 @@ function resolveStorageBucket(
 
 function normalizeBucketName(bucket?: string | null): string | undefined {
   if (!bucket) return undefined
-  const trimmed = bucket.trim()
+  let trimmed = bucket.trim()
   if (!trimmed) return undefined
-  if (trimmed.includes('firebasestorage.app')) return trimmed
-  if (trimmed.endsWith('.appspot.com')) {
-    return trimmed.replace(/\.appspot\.com$/i, '.firebasestorage.app')
-    // allows gs://<bucket>.firebasestorage.app
+  if (trimmed.startsWith('gs://')) {
+    trimmed = trimmed.slice(5)
   }
   return trimmed
 }

@@ -52,12 +52,42 @@ async function tryEnsureUserOnce(uid: string | null | undefined) {
   }
 }
 
-export function useAuth() {
-  const auth = import.meta.client ? useFirebaseAuth() : null
+function resolveFirebaseAuth() {
+  if (!import.meta.client) return null
+  try {
+    return useFirebaseAuth()
+  } catch (error) {
+    if (import.meta.dev) {
+      console.warn(
+        '[useAuth] useFirebaseAuth unavailable; falling back to null.',
+        error
+      )
+    }
+    return null
+  }
+}
 
-  const currentUser: Ref<AuthUser | null | undefined> = import.meta.client
-    ? (useCurrentUser() as Ref<AuthUser | null | undefined>)
-    : shallowRef<AuthUser | null | undefined>(undefined)
+function resolveCurrentUser(): Ref<AuthUser | null | undefined> {
+  if (!import.meta.client) {
+    return shallowRef<AuthUser | null | undefined>(undefined)
+  }
+  try {
+    return useCurrentUser() as Ref<AuthUser | null | undefined>
+  } catch (error) {
+    if (import.meta.dev) {
+      console.warn(
+        '[useAuth] useCurrentUser unavailable. Ensure VueFire auth module is registered.',
+        error
+      )
+    }
+    return shallowRef<AuthUser | null | undefined>(undefined)
+  }
+}
+
+export function useAuth() {
+  const auth = resolveFirebaseAuth()
+
+  const currentUser = resolveCurrentUser()
 
   const lastEnsuredUid = ref<string | null>(null)
   const ensuring = ref(false)
@@ -132,15 +162,15 @@ export function useAuth() {
     }
   }
 
-const uid = computed(() => currentUser.value?.uid ?? null)
+  const uid = computed(() => currentUser.value?.uid ?? null)
 
-return {
-  currentUser,
-  uid,
-  authState,
-  signInWithGoogle,
-  signInWithEmailPassword,
-  signUpWithEmailPassword,
-  signOutUser,
-}
+  return {
+    currentUser,
+    uid,
+    authState,
+    signInWithGoogle,
+    signInWithEmailPassword,
+    signUpWithEmailPassword,
+    signOutUser,
+  }
 }
