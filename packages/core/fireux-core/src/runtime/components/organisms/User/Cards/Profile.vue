@@ -1,50 +1,56 @@
 <template>
-  <UCard>
+  <UCard class="profile-card">
     <div class="profile">
-      <!-- Header: avatar, name, email, role badge -->
-      <div class="header">
-        <UAvatar
-          :src="user?.avatar || ''"
-          :alt="user?.display_name || user?.handle || user?.id || 'User'"
-          size="lg"
-        />
-        <div class="id-block">
+      <div class="profile-header">
+        <div class="avatar-wrap">
+          <UAvatar
+            :src="user?.avatar || ''"
+            :alt="user?.display_name || user?.handle || user?.id || 'User'"
+            size="xl"
+            class="avatar"
+          />
+        </div>
+        <div class="identity">
           <h2 class="name">
             {{ user?.display_name || user?.handle || user?.id || 'User' }}
           </h2>
-          <div class="sub">
+          <div class="identity-meta">
             <span v-if="user?.handle" class="handle">@{{ user.handle }}</span>
             <span v-if="user?.email" class="email">{{ user.email }}</span>
+          </div>
+          <div
+            v-if="user?.role || user?.appId || user?.created_in || user?.coreStatus || user?.appStatus"
+            class="status-chips"
+          >
+            <UBadge v-if="user?.role" size="sm" variant="soft" color="primary">
+              {{ user.role }}
+            </UBadge>
+            <UBadge v-if="user?.appId" size="sm" variant="subtle" color="neutral">
+              App · {{ user.appId }}
+            </UBadge>
+            <UBadge v-if="user?.created_in" size="sm" variant="subtle" color="neutral">
+              Created · {{ user.created_in }}
+            </UBadge>
+            <UBadge v-if="user?.coreStatus" size="sm" variant="soft" color="primary">
+              Core · {{ user.coreStatus }}
+            </UBadge>
+            <UBadge v-if="user?.appStatus" size="sm" variant="soft" color="gray">
+              App · {{ user.appStatus }}
+            </UBadge>
           </div>
         </div>
       </div>
 
-      <USeparator class="my-3" />
-
-      <!-- Context chips -->
-      <div class="chips">
-        <UBadge v-if="user?.role" variant="soft" color="primary">
-          Role: {{ user.role }}
-        </UBadge>
-        <UBadge v-if="user?.appId" variant="subtle" color="neutral"
-          >App: {{ user.appId }}</UBadge
-        >
-        <UBadge v-if="user?.created_in" variant="subtle" color="neutral"
-          >Created in: {{ user.created_in }}</UBadge
-        >
-        <UBadge v-if="user?.coreStatus" variant="soft" color="primary"
-          >Core: {{ user.coreStatus }}</UBadge
-        >
-        <UBadge v-if="user?.appStatus" variant="soft" color="gray"
-          >App: {{ user.appStatus }}</UBadge
-        >
+      <div v-if="user?.bio" class="bio">
+        <p>{{ user.bio }}</p>
       </div>
 
-      <!-- Memberships -->
-      <div class="grid memberships">
-        <div>
-          <h3 class="section">Profiles</h3>
-          <div class="chip-row">
+      <USeparator />
+
+      <div class="section-grid">
+        <section class="section-card">
+          <h3 class="section-title">Profiles</h3>
+          <div class="chip-group">
             <template
               v-if="Array.isArray(user?.profiles) && user.profiles.length"
             >
@@ -53,63 +59,67 @@
                 :key="`profile-${profile}`"
                 size="xs"
                 variant="soft"
-                >{{ profile }}</UBadge
               >
+                {{ profile }}
+              </UBadge>
             </template>
-            <span v-else class="muted">—</span>
+            <span v-else class="muted">No profiles yet</span>
           </div>
-        </div>
-        <div>
-          <h3 class="section">Admin of</h3>
-          <div class="chip-row">
+        </section>
+        <section class="section-card">
+          <h3 class="section-title">Admin Of</h3>
+          <div class="chip-group">
             <template
               v-if="Array.isArray(user?.adminOf) && user.adminOf.length"
             >
               <UBadge
-                v-for="a in user.adminOf"
-                :key="`admin-${a}`"
+                v-for="app in user.adminOf"
+                :key="`admin-${app}`"
                 size="xs"
                 variant="soft"
-                >{{ a }}</UBadge
               >
+                {{ app }}
+              </UBadge>
             </template>
-            <span v-else class="muted">—</span>
+            <span v-else class="muted">No admin memberships</span>
           </div>
-        </div>
-        <div>
-          <h3 class="section">Member of</h3>
-          <div class="chip-row">
+        </section>
+        <section class="section-card">
+          <h3 class="section-title">Member Of</h3>
+          <div class="chip-group">
             <template v-if="Array.isArray(user?.userOf) && user.userOf.length">
               <UBadge
-                v-for="m in user.userOf"
-                :key="`member-${m}`"
+                v-for="membership in user.userOf"
+                :key="`member-${membership}`"
                 size="xs"
                 variant="soft"
-                >{{ m }}</UBadge
               >
+                {{ membership }}
+              </UBadge>
             </template>
-            <span v-else class="muted">—</span>
+            <span v-else class="muted">No memberships yet</span>
           </div>
-        </div>
+        </section>
       </div>
 
-      <!-- Details -->
-      <div class="details">
-        <div class="row">
-          <span class="label">User ID</span>
-          <span class="value mono">{{ user?.id }}</span>
+      <USeparator />
+
+      <div class="detail-grid">
+        <div class="detail-row">
+          <span class="detail-label">User ID</span>
+          <span class="detail-value mono">{{ user?.id || '—' }}</span>
         </div>
-        <div class="row" v-if="user?.created_at">
-          <span class="label">Created</span>
-          <span class="value flex items-center gap-1">
-            <UIcon name="i-lucide-clock" class="size-4 text-dimmed" />
+        <div v-if="user?.created_at" class="detail-row">
+          <span class="detail-label">Created</span>
+          <span class="detail-value">
+            <UIcon name="i-lucide-clock" class="icon" />
             {{ String(user.created_at) }}
           </span>
         </div>
-        <div class="row" v-if="user?.updated_at">
-          <span class="label">Updated</span>
-          <span class="value flex items-center gap-1">
-            <UIcon name="i-lucide-refresh-cw" class="size-4 text-dimmed" />
+        <div v-if="user?.updated_at" class="detail-row">
+          <span class="detail-label">Updated</span>
+          <span class="detail-value">
+            <UIcon name="i-lucide-refresh-cw" class="icon" />
             {{ String(user.updated_at) }}
           </span>
         </div>
@@ -124,72 +134,163 @@ defineProps<{ user: any }>()
 </script>
 
 <style scoped>
-.header {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-.id-block .name {
-  font-weight: 800;
-}
-.sub {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  opacity: 0.85;
-}
-.sub .handle {
-  font-size: 0.9rem;
-}
-.sub .email {
-  opacity: 0.8;
-  font-size: 0.9rem;
+.profile-card {
+  padding: 0;
+  overflow: hidden;
 }
 
-.chips {
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.profile-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.avatar-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar {
+  box-shadow: 0 0 0 3px var(--ui-background-100, rgba(15, 23, 42, 0.05)),
+    0 8px 30px -12px rgba(15, 23, 42, 0.35);
+  border: 2px solid var(--ui-border-200, rgba(148, 163, 184, 0.4));
+}
+
+.identity {
+  flex: 1;
+  min-width: 14rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.name {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.identity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--ui-text-500, rgba(100, 116, 139, 0.95));
+}
+
+.identity-meta .handle {
+  font-weight: 600;
+}
+
+.status-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
-.memberships {
+
+.bio {
+  background: var(--ui-background-50, rgba(148, 163, 184, 0.1));
+  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.3));
+  border-radius: 0.75rem;
+  padding: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ui-text-600, rgba(71, 85, 105, 0.95));
+}
+
+.section-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
-  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
 }
-.section {
+
+.section-card {
+  background: var(--ui-background-100, rgba(148, 163, 184, 0.12));
+  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.2));
+  border-radius: 0.75rem;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 0.95rem;
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--ui-text-500, rgba(100, 116, 139, 0.95));
 }
-.chip-row {
+
+.chip-group {
   display: flex;
   flex-wrap: wrap;
   gap: 0.375rem;
 }
-.timestamps {
-  opacity: 0.7;
-  margin-top: 1rem;
-  display: flex;
-  gap: 1rem;
-}
-.details {
-  margin-top: 1rem;
+
+.detail-grid {
   display: grid;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  font-size: 0.95rem;
 }
-.details .row {
+
+.detail-row {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
+  align-items: center;
 }
-.details .label {
-  opacity: 0.7;
+
+.detail-label {
+  font-weight: 600;
+  color: var(--ui-text-500, rgba(100, 116, 139, 0.95));
 }
-.details .value.mono {
+
+.detail-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ui-text-600, rgba(71, 85, 105, 0.95));
+}
+
+.detail-value.mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.92rem;
 }
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--ui-text-400, rgba(148, 163, 184, 0.9));
+}
+
 .muted {
-  opacity: 0.6;
+  color: var(--ui-text-400, rgba(148, 163, 184, 0.9));
+  font-size: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  .profile {
+    padding: 1.25rem;
+    gap: 1.25rem;
+  }
+
+  .name {
+    font-size: 1.35rem;
+  }
 }
 </style>

@@ -1,13 +1,21 @@
 <template>
   <client-only>
     <div v-if="user">
-      <UPageCard
-        title="Profile"
-        description="Manage your display name, handle and avatar."
-        variant="naked"
-        orientation="horizontal"
-        class="mb-4"
-      />
+      <UPageCard variant="naked" orientation="horizontal" class="mb-4">
+        <div
+          class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between"
+        >
+          <MoleculesPill
+            :avatar="user.avatar"
+            :initials="initialsFor(user)"
+            :title="user.display_name"
+            :subtitle="user.handle"
+            :badges="badges(user)"
+            class="md:max-w-sm"
+          />
+          <OrganismsUserCardsCell :user="user" class="md:max-w-md" />
+        </div>
+      </UPageCard>
 
       <UPageCard variant="subtle">
         <div class="grid gap-4 md:grid-cols-2">
@@ -30,7 +38,9 @@
   </client-only>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser'
+
 definePageMeta({
   layout: 'dashboard',
   nav: {
@@ -45,5 +55,5 @@ definePageMeta({
 
 useHead({ title: 'Your Profile' })
 
-const { user } = useUser()
+const { user, badges, initialsFor } = useUser()
 </script>

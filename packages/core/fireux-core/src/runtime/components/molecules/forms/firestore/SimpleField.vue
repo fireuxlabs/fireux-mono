@@ -1,195 +1,260 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/components/molecules/forms/Firestore/SimpleField.vue -->
 <template>
-  <UFormField
-    :label="label"
-    :error="errorMessage || undefined"
-    class="flex max-sm:flex-col justify-between items-start gap-4"
-  >
-    <div class="w-full">
-      <!-- Display mode -->
-      <div v-if="!isEditing" class="flex items-center gap-3 py-2 min-h-10">
-        <span class="text-gray-700">{{ displayValue }}</span>
-        <div class="ms-auto flex items-center gap-2">
-          <UButton
-            size="xs"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-pencil"
-            @click="startEditing"
-          />
-          <UButton
-            v-if="hasData"
-            size="xs"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-trash-2"
-            @click="deleteValue"
-          />
-        </div>
-      </div>
+  <div class="flex w-full flex-col gap-1.5">
+    <div class="flex items-center justify-between gap-2">
+      <label v-if="label" class="font-medium" :for="inputId">{{ label }}</label>
 
-      <!-- Edit mode -->
-      <div v-else class="flex items-start gap-3">
-        <component
-          :is="type === 'textarea' ? 'UTextarea' : 'UInput'"
-          v-model="localValue"
-          :placeholder="placeholder"
-          class="w-full"
-          :rows="type === 'textarea' ? rows || 4 : undefined"
-          :maxlength="maxlength || 500"
-          :type="inputType"
-          @input="handleInput"
-          @keyup.enter="onEnter"
-          @keyup.esc="cancelEditing"
+      <div class="flex flex-none gap-2">
+        <UButton
+          v-if="!isEditing"
+          size="xs"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-pencil"
+          aria-label="Edit"
+          title="Edit"
+          @click="startEditing"
         />
-        <div class="ms-auto flex items-center gap-2">
-          <UButton
-            size="xs"
-            color="neutral"
-            icon="i-lucide-check"
-            @click="saveChanges"
-          />
+        <template v-else>
           <UButton
             size="xs"
             color="neutral"
             variant="soft"
             icon="i-lucide-x"
-            @click="cancelEditing"
+            aria-label="Cancel"
+            title="Cancel"
+            :disabled="saving"
+            @click="cancel"
           />
           <UButton
             size="xs"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-trash-2"
-            @click="deleteValue"
+            color="primary"
+            icon="i-lucide-check"
+            aria-label="Save"
+            title="Save"
+            :loading="saving"
+            :disabled="saving"
+            @click="save"
           />
-        </div>
+        </template>
       </div>
     </div>
-  </UFormField>
+
+    <div v-if="!isEditing" class="flex min-h-9 items-center gap-2">
+      <span>{{ displayValue }}</span>
+    </div>
+
+    <div v-else>
+      <UTextarea
+        v-if="isTextarea"
+        v-model="draft"
+        :id="inputId"
+        :placeholder="placeholder || ''"
+        :maxlength="maxlength || 500"
+        :rows="props.rows"
+        resize="vertical"
+        :disabled="saving"
+        @keydown.enter="saveOnEnter"
+        @keydown.esc.prevent="cancel"
+      />
+      <UInput
+        v-else
+        v-model="draft"
+        :id="inputId"
+        :placeholder="placeholder || ''"
+        :type="inputType"
+        :maxlength="maxlength || 500"
+        :disabled="saving"
+        @keydown.enter.prevent="save"
+        @keydown.esc.prevent="cancel"
+      />
+    </div>
+
+    <p v-if="errorMessage" class="text-xs text-red-500">
+      {{ errorMessage }}
+    </p>
+  </div>
 </template>
 
-<script setup>
-import { ref, computed, watchEffect } from 'vue'
+<script setup lang="ts">
+import { computed, getCurrentInstance, ref, watch } from 'vue'
 
-const props = defineProps({
-  label: { type: String, default: '' },
-  firebaseValue: { type: String, default: '' },
-  placeholder: { type: String, default: '' },
-  updateFunction: { type: Function, required: true },
-  deleteFunction: { type: Function, default: null },
-  type: { type: String, default: 'text' }, // 'text', 'textarea', 'phone', 'email'
-  rows: { type: Number, default: 4 },
-  maxlength: { type: Number, default: 500 },
-  validationFunction: { type: Function, default: null },
-  formattingFunction: { type: Function, default: null },
-})
+type ValidationResult = {
+  isValid: boolean
+  message?: string
+}
 
-const isEditing = ref(false)
-const localValue = ref('')
-const errorMessage = ref('')
+type ValidationFn = ((value: string) => ValidationResult) | null
 
-const hasData = computed(
-  () => !!(props.firebaseValue && props.firebaseValue.length)
+type FormattingFn = ((value: string) => string) | null
+
+type UpdateFn = (value: string) => unknown | Promise<unknown>
+
+const props = withDefaults(
+  defineProps<{
+    label?: string
+    firebaseValue?: string | number | null
+    placeholder?: string
+    updateFunction: UpdateFn
+    type?: string
+    maxlength?: number
+    validationFunction?: ValidationFn
+    formattingFunction?: FormattingFn
+    rows?: number
+    id?: string
+  }>(),
+  {
+    label: '',
+    firebaseValue: '',
+    placeholder: '',
+    type: 'text',
+    maxlength: 500,
+    validationFunction: null,
+    formattingFunction: null,
+    rows: 4,
+    id: undefined,
+  }
 )
 
-const inputType = computed(() => {
-  switch (props.type) {
-    case 'phone':
-      return 'tel'
-    case 'email':
-      return 'email'
-    case 'textarea':
-      return 'text'
-    default:
-      return 'text'
-  }
+const emit = defineEmits<{ updated: [value: string] }>()
+
+const isEditing = ref(false)
+const draft = ref('')
+const saving = ref(false)
+const errorMessage = ref('')
+
+const isTextarea = computed(() => props.type === 'textarea')
+
+const instance = getCurrentInstance()
+const instanceId = instance?.uid ?? 0
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/(^-|-$)/g, '')
+
+const inputId = computed(() => {
+  if (props.id) return props.id
+  const labelSlug = props.label ? slugify(props.label) : 'field'
+  return `simple-field-${labelSlug}-${instanceId}`
 })
 
-watchEffect(() => {
-  localValue.value = props.firebaseValue || ''
+const toStringValue = (value?: string | number | null) => {
+  if (value === null || value === undefined) return ''
+  return String(value)
+}
+
+const inputType = computed(() => {
+  if (isTextarea.value) return 'text'
+  if (!props.type) return 'text'
+  if (['email', 'tel', 'number', 'password'].includes(props.type))
+    return props.type
+  return 'text'
 })
+
+watch(
+  () => props.firebaseValue,
+  (next) => {
+    if (!isEditing.value) {
+      draft.value = toStringValue(next)
+    }
+  },
+  { immediate: true }
+)
 
 const displayValue = computed(() => {
-  return localValue.value || props.placeholder || 'Not set'
+  const raw = toStringValue(props.firebaseValue).trim()
+  if (raw.length) return raw
+  if (props.placeholder?.length) return props.placeholder
+  return 'Not set'
 })
 
-function handleInput() {
-  if (props.type === 'phone') formatPhone()
-}
-
-function formatPhone() {
-  if (props.type !== 'phone') return
-  let cleaned = localValue.value.replace(/\D/g, '').slice(0, 10)
-  if (cleaned.length >= 6) {
-    cleaned = cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
-  } else if (cleaned.length >= 3) {
-    cleaned = cleaned.replace(/(\d{3})(\d{0,3})/, '($1) $2')
-  }
-  localValue.value = cleaned
-}
-
 function startEditing() {
+  console.log('[SimpleField] startEditing', {
+    label: props.label,
+    firebaseValue: toStringValue(props.firebaseValue),
+  })
+  draft.value = toStringValue(props.firebaseValue)
   isEditing.value = true
   errorMessage.value = ''
 }
 
-function cancelEditing() {
-  localValue.value = props.firebaseValue || ''
+function cancel() {
+  console.log('[SimpleField] cancel', {
+    label: props.label,
+    firebaseValue: toStringValue(props.firebaseValue),
+  })
+  draft.value = toStringValue(props.firebaseValue)
   isEditing.value = false
   errorMessage.value = ''
 }
 
-async function deleteValue() {
-  try {
-    errorMessage.value = ''
-    if (props.deleteFunction) {
-      await props.deleteFunction()
-    } else {
-      await props.updateFunction('')
-    }
-    localValue.value = ''
-    isEditing.value = false
-  } catch (error) {
-    errorMessage.value = error?.message || 'Error deleting value'
+function saveOnEnter(event: KeyboardEvent) {
+  if (!isTextarea.value) {
+    save()
+    return
+  }
+
+  if (event.metaKey || event.ctrlKey) {
+    event.preventDefault()
+    save()
   }
 }
 
-function onEnter(e) {
-  // Allow Ctrl/Cmd+Enter for textarea, Enter for input
-  if (props.type === 'textarea') {
-    if (e.metaKey || e.ctrlKey) saveChanges()
-  } else {
-    saveChanges()
-  }
-}
+async function save() {
+  if (saving.value) return
 
-async function saveChanges() {
-  try {
-    errorMessage.value = ''
-    const trimmedValue = (localValue.value || '').trim()
+  console.log('[SimpleField] save requested', {
+    label: props.label,
+    draft: draft.value,
+  })
 
-    if (props.validationFunction) {
-      const result = props.validationFunction(trimmedValue)
+  errorMessage.value = ''
+  const trimmed = (draft.value || '').trim()
+
+  if (props.validationFunction) {
+    try {
+      const result = props.validationFunction(trimmed)
       if (!result?.isValid) {
         errorMessage.value = result?.message || 'Invalid value'
+        console.warn('[SimpleField] validation failed', {
+          label: props.label,
+          result,
+        })
         return
       }
+    } catch (error) {
+      console.error('[SimpleField] validation threw', {
+        label: props.label,
+        error,
+      })
+      errorMessage.value = 'Validation failed.'
+      return
     }
+  }
 
-    const valueToSave = props.formattingFunction
-      ? props.formattingFunction(trimmedValue)
-      : trimmedValue
+  const valueToSave = props.formattingFunction
+    ? props.formattingFunction(trimmed)
+    : trimmed
 
+  saving.value = true
+  try {
     await props.updateFunction(valueToSave)
+    emit('updated', valueToSave)
+    console.log('[SimpleField] save success', {
+      label: props.label,
+      value: valueToSave,
+    })
     isEditing.value = false
   } catch (error) {
-    errorMessage.value = error?.message || 'Error saving changes'
+    console.error('[SimpleField] save error', {
+      label: props.label,
+      error,
+    })
+    errorMessage.value = (error as Error)?.message || 'Error saving value.'
+  } finally {
+    saving.value = false
   }
 }
 </script>
-
-<style scoped>
-.min-h-10 {
-  min-height: var(--space-10);
-}
-</style>

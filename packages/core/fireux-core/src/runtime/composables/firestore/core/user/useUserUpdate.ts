@@ -49,6 +49,12 @@ export function useUserUpdate(userRef?: Ref<User | null>) {
   const updateHandle = async (handle: string, scope: TargetScope = 'auto') =>
     updateFieldsScoped({ handle }, scope)
 
+  const updateEmail = async (email: string, scope: TargetScope = 'auto') =>
+    updateFieldsScoped({ email }, scope)
+
+  const updateBio = async (bio: string, scope: TargetScope = 'auto') =>
+    updateFieldsScoped({ bio }, scope)
+
   const updateAvatar = async (
     source: Blob | string,
     scope: TargetScope = 'auto'
@@ -64,6 +70,8 @@ export function useUserUpdate(userRef?: Ref<User | null>) {
     updateFields: updateFieldsScoped,
     updateDisplayName,
     updateHandle,
+    updateEmail,
+    updateBio,
     updateAvatar,
   }
 }

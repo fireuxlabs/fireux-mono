@@ -11,6 +11,7 @@ export interface BaseUserDoc {
   avatar: string
   handle?: string
   email?: string
+  bio?: string                // ⬅️ NEW
   profiles?: string[]
   created_at: FirebaseTimestamp
   updated_at?: FirebaseTimestamp
@@ -44,6 +45,7 @@ export interface User {
   avatar: string
   handle?: string
   email?: string
+  bio?: string                // ⬅️ NEW
   profiles?: string[]
   role?: 'user' | 'admin'
   userOf?: string[]
@@ -72,6 +74,8 @@ export namespace UserCard {
 
   /** Profile extends cell for detail panes */
   export interface Profile extends Cell {
+    bio?: string              // ⬅️ NEW (for profile panes)
+    email?: string            // (already on User; included here for convenience in detail UIs)
     created_at?: FirebaseTimestamp
     updated_at?: FirebaseTimestamp
   }

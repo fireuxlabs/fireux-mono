@@ -3,6 +3,9 @@ const MIN_DISPLAY_NAME_LENGTH = 2
 const MAX_DISPLAY_NAME_LENGTH = 60
 const MIN_HANDLE_LENGTH = 3
 const MAX_HANDLE_LENGTH = 30
+const MAX_EMAIL_LENGTH = 254
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const MAX_BIO_LENGTH = 280
 
 function validateDisplayName(name: string) {
   const value = (name || '').trim()
@@ -51,11 +54,46 @@ function formatHandle(raw: string) {
   return candidate.slice(0, MAX_HANDLE_LENGTH)
 }
 
+function validateEmail(raw: string) {
+  const value = (raw || '').trim()
+  if (!value) return { isValid: false, message: 'Email cannot be empty.' }
+  if (value.length > MAX_EMAIL_LENGTH)
+    return { isValid: false, message: 'Email is too long.' }
+  if (!EMAIL_REGEX.test(value))
+    return { isValid: false, message: 'Enter a valid email address.' }
+  return { isValid: true }
+}
+
+function formatEmail(raw: string) {
+  return (raw || '').trim().toLowerCase()
+}
+
+function validateBio(raw: string) {
+  const value = typeof raw === 'string' ? raw.trim() : ''
+  if (!value) return { isValid: true }
+  if (value.length > MAX_BIO_LENGTH) {
+    return {
+      isValid: false,
+      message: `Bio must be ${MAX_BIO_LENGTH} characters or less.`,
+    }
+  }
+  return { isValid: true }
+}
+
+function formatBio(raw: string) {
+  if (typeof raw !== 'string') return ''
+  return raw.replaceAll('\r\n', '\n').trim()
+}
+
 export function useUserFormattingAndValidation() {
   return {
     validateDisplayName,
     formatDisplayName,
     validateHandle,
     formatHandle,
+    validateEmail,
+    formatEmail,
+    validateBio,
+    formatBio,
   }
 }
