@@ -5,15 +5,30 @@
       <template #header>
         <div class="flex items-center justify-between gap-3">
           <h1 class="text-base font-semibold">Current App</h1>
-          <UButton
-            v-if="currentApp"
-            size="xs"
-            variant="ghost"
-            icon="i-lucide-copy"
-            @click="copyJSON(currentApp)"
-          >
-            Copy JSON
-          </UButton>
+          <div class="flex items-center gap-2">
+            <UButton
+              v-if="currentApp"
+              size="xs"
+              variant="ghost"
+              icon="i-lucide-copy"
+              @click="copyJSON(currentApp)"
+            >
+              Copy JSON
+            </UButton>
+            <UButton
+              v-if="currentAppJson"
+              size="xs"
+              variant="ghost"
+              :icon="
+                showCurrentJson
+                  ? 'i-lucide-chevron-up'
+                  : 'i-lucide-chevron-down'
+              "
+              @click="toggleCurrentJson"
+            >
+              {{ showCurrentJson ? 'Hide JSON' : 'Show JSON' }}
+            </UButton>
+          </div>
         </div>
       </template>
 
@@ -44,6 +59,12 @@
             </li>
           </ul>
         </div>
+
+        <pre
+          v-if="showCurrentJson && currentAppJson"
+          class="overflow-auto rounded-md bg-slate-950/90 p-4 text-xs text-slate-100"
+          >{{ currentAppJson }}
+        </pre>
       </div>
 
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -66,6 +87,20 @@
               @click="copyJSON(apps)"
             >
               Copy JSON
+            </UButton>
+
+            <UButton
+              v-if="appsJson"
+              size="xs"
+              variant="ghost"
+              :icon="
+                showCollectionJson
+                  ? 'i-lucide-chevron-up'
+                  : 'i-lucide-chevron-down'
+              "
+              @click="toggleCollectionJson"
+            >
+              {{ showCollectionJson ? 'Hide JSON' : 'Show JSON' }}
             </UButton>
 
             <!-- Tenant-only: fetch on demand -->
@@ -127,12 +162,18 @@
           </li>
         </ul>
       </div>
+
+      <pre
+        v-if="showCollectionJson && appsJson"
+        class="overflow-auto rounded-md bg-slate-950/90 p-4 text-xs text-slate-100"
+        >{{ appsJson }}
+      </pre>
     </UCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
@@ -156,6 +197,24 @@ const { app, collection, computed: appComputed } = useApp()
 
 const currentApp = computed(() => app.value ?? null)
 const apps = computed(() => collection.all.value ?? [])
+
+const currentAppJson = computed(() =>
+  currentApp.value ? JSON.stringify(currentApp.value, null, 2) : null
+)
+const appsJson = computed(() =>
+  apps.value.length ? JSON.stringify(apps.value, null, 2) : null
+)
+
+const showCurrentJson = ref(false)
+const showCollectionJson = ref(false)
+
+function toggleCurrentJson() {
+  showCurrentJson.value = !showCurrentJson.value
+}
+
+function toggleCollectionJson() {
+  showCollectionJson.value = !showCollectionJson.value
+}
 
 const currentInfo = computed(() => {
   const current = currentApp.value

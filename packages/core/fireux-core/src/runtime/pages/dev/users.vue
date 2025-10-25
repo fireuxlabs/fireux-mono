@@ -24,15 +24,28 @@
       <template #header>
         <div class="flex items-center justify-between gap-3">
           <h2 class="text-base font-semibold">Users Collection</h2>
-          <UButton
-            v-if="users.length"
-            size="xs"
-            variant="ghost"
-            icon="i-lucide-copy"
-            @click="copyJSON(users)"
-          >
-            Copy JSON
-          </UButton>
+          <div class="flex items-center gap-2">
+            <UButton
+              v-if="users.length"
+              size="xs"
+              variant="ghost"
+              icon="i-lucide-copy"
+              @click="copyJSON(users)"
+            >
+              Copy JSON
+            </UButton>
+            <UButton
+              v-if="usersJson"
+              size="xs"
+              variant="ghost"
+              :icon="
+                showUsersJson ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
+              "
+              @click="toggleUsersJson"
+            >
+              {{ showUsersJson ? 'Hide JSON' : 'Show JSON' }}
+            </UButton>
+          </div>
         </div>
       </template>
 
@@ -49,6 +62,12 @@
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
         No users found.
       </p>
+
+      <pre
+        v-if="showUsersJson && usersJson"
+        class="mt-4 overflow-auto rounded-md bg-slate-950/90 p-4 text-xs text-slate-100"
+        >{{ usersJson }}
+      </pre>
     </UCard>
 
     <!-- APP USERS SUBCOLLECTION -->
@@ -56,15 +75,30 @@
       <template #header>
         <div class="flex items-center justify-between gap-3">
           <h2 class="text-base font-semibold">App Users</h2>
-          <UButton
-            v-if="appUsers.length"
-            size="xs"
-            variant="ghost"
-            icon="i-lucide-copy"
-            @click="copyJSON(appUsers)"
-          >
-            Copy JSON
-          </UButton>
+          <div class="flex items-center gap-2">
+            <UButton
+              v-if="appUsers.length"
+              size="xs"
+              variant="ghost"
+              icon="i-lucide-copy"
+              @click="copyJSON(appUsers)"
+            >
+              Copy JSON
+            </UButton>
+            <UButton
+              v-if="appUsersJson"
+              size="xs"
+              variant="ghost"
+              :icon="
+                showAppUsersJson
+                  ? 'i-lucide-chevron-up'
+                  : 'i-lucide-chevron-down'
+              "
+              @click="toggleAppUsersJson"
+            >
+              {{ showAppUsersJson ? 'Hide JSON' : 'Show JSON' }}
+            </UButton>
+          </div>
         </div>
       </template>
 
@@ -85,12 +119,18 @@
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
         App users subcollection is not available for this runtime.
       </p>
+
+      <pre
+        v-if="showAppUsersJson && appUsersJson"
+        class="mt-4 overflow-auto rounded-md bg-slate-950/90 p-4 text-xs text-slate-100"
+        >{{ appUsersJson }}
+      </pre>
     </UCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
@@ -117,6 +157,24 @@ const users = computed(() =>
 )
 
 const appUsers = computed(() => subcollections?.users?.value ?? [])
+
+const usersJson = computed(() =>
+  users.value.length ? JSON.stringify(users.value, null, 2) : null
+)
+const appUsersJson = computed(() =>
+  appUsers.value.length ? JSON.stringify(appUsers.value, null, 2) : null
+)
+
+const showUsersJson = ref(false)
+const showAppUsersJson = ref(false)
+
+function toggleUsersJson() {
+  showUsersJson.value = !showUsersJson.value
+}
+
+function toggleAppUsersJson() {
+  showAppUsersJson.value = !showAppUsersJson.value
+}
 
 async function copyJSON(payload: unknown) {
   if (!payload || typeof navigator === 'undefined') {

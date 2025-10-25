@@ -5,26 +5,15 @@
       <div class="header">
         <UAvatar
           :src="user?.avatar || ''"
-          :alt="
-            user?.display_name ||
-            user?.handle ||
-            user?.email ||
-            user?.id ||
-            'User'
-          "
+          :alt="user?.display_name || user?.handle || user?.id || 'User'"
           size="lg"
         />
         <div class="id-block">
           <h2 class="name">
-            {{
-              user?.display_name ||
-              user?.handle ||
-              user?.email ||
-              user?.id ||
-              'User'
-            }}
+            {{ user?.display_name || user?.handle || user?.id || 'User' }}
           </h2>
           <div class="sub">
+            <span v-if="user?.handle" class="handle">@{{ user.handle }}</span>
             <span v-if="user?.email" class="email">{{ user.email }}</span>
           </div>
         </div>
@@ -34,16 +23,42 @@
 
       <!-- Context chips -->
       <div class="chips">
+        <UBadge v-if="user?.role" variant="soft" color="primary">
+          Role: {{ user.role }}
+        </UBadge>
         <UBadge v-if="user?.appId" variant="subtle" color="neutral"
           >App: {{ user.appId }}</UBadge
         >
         <UBadge v-if="user?.created_in" variant="subtle" color="neutral"
           >Created in: {{ user.created_in }}</UBadge
         >
+        <UBadge v-if="user?.coreStatus" variant="soft" color="primary"
+          >Core: {{ user.coreStatus }}</UBadge
+        >
+        <UBadge v-if="user?.appStatus" variant="soft" color="gray"
+          >App: {{ user.appStatus }}</UBadge
+        >
       </div>
 
       <!-- Memberships -->
       <div class="grid memberships">
+        <div>
+          <h3 class="section">Profiles</h3>
+          <div class="chip-row">
+            <template
+              v-if="Array.isArray(user?.profiles) && user.profiles.length"
+            >
+              <UBadge
+                v-for="profile in user.profiles"
+                :key="`profile-${profile}`"
+                size="xs"
+                variant="soft"
+                >{{ profile }}</UBadge
+              >
+            </template>
+            <span v-else class="muted">—</span>
+          </div>
+        </div>
         <div>
           <h3 class="section">Admin of</h3>
           <div class="chip-row">
@@ -117,6 +132,15 @@ defineProps<{ user: any }>()
 .id-block .name {
   font-weight: 800;
 }
+.sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  opacity: 0.85;
+}
+.sub .handle {
+  font-size: 0.9rem;
+}
 .sub .email {
   opacity: 0.8;
   font-size: 0.9rem;
@@ -129,7 +153,7 @@ defineProps<{ user: any }>()
 }
 .memberships {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
   margin-top: 1rem;
 }

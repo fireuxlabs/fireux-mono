@@ -1,82 +1,96 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/pages/apps.vue -->
 <template>
-  <UPage>
-    <UPageBody class="space-y-6">
-      <UCard v-if="canEditApp">
-        <div
-          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+  <div class="space-y-6">
+    <!-- CURRENT APP -->
+    <UCard>
+      <template #header>
+        <h1 class="text-base font-semibold">Current App</h1>
+      </template>
+
+      <div v-if="app" class="space-y-4">
+        <NuxtLink
+          v-if="currentAppLink"
+          :to="currentAppLink"
+          class="block space-y-4 no-underline text-inherit"
         >
-          <div>
-            <h3 class="text-base font-medium">App management available</h3>
-            <p class="text-sm text-gray-500">
-              You are an app administrator. Manage identity, admins, and social
-              links from the dashboard.
-            </p>
-          </div>
+          <MoleculesPill
+            :avatar="app.avatar_url"
+            :title="app.app_name"
+            :subtitle="app.ecosystem"
+          />
+          <OrganismsAppCardsCell :app="app" />
+        </NuxtLink>
+        <template v-else>
+          <MoleculesPill
+            :avatar="app.avatar_url"
+            :title="app.app_name"
+            :subtitle="app.ecosystem"
+          />
+          <OrganismsAppCardsCell :app="app" />
+        </template>
+      </div>
+
+      <p v-else class="text-sm text-gray-500 dark:text-gray-400">
+        No app resolved for this runtime.
+      </p>
+    </UCard>
+
+    <!-- ALL APPS -->
+    <UCard>
+      <template #header>
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-base font-semibold">All Apps</h2>
+
+          <!-- Tenant-only: fetch on demand -->
           <UButton
-            to="/dashboard/app"
-            color="primary"
+            v-if="isTenant"
+            size="xs"
             variant="soft"
-            icon="i-lucide-settings-2"
-            label="Open app settings"
+            icon="i-lucide-database"
+            @click="collection.fetchAll()"
+          >
+            Load all apps
+          </UButton>
+        </div>
+      </template>
+
+      <div v-if="apps.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <NuxtLink
+          v-for="a in apps"
+          :key="a.id"
+          :to="`/apps/${a.id}`"
+          class="block no-underline text-inherit"
+        >
+          <MoleculesPill
+            :avatar="a.avatar_url || a.logo_url || a.wordmark_url"
+            :title="a.app_name"
+            :subtitle="a.ecosystem"
           />
-        </div>
-      </UCard>
+        </NuxtLink>
+      </div>
 
-      <UCard>
-        <template #header>
-          <h3 class="text-base font-medium">Current App</h3>
-        </template>
-
-        <div v-if="currentApp">
-          <UAvatar
-            :src="appMedia(currentApp)"
-            :alt="displayName(currentApp)"
-            size="lg"
-          />
-          <p>{{ displayName(currentApp) }}</p>
-          <p>ID: {{ currentApp.id }}</p>
-          <p v-if="currentApp.role">Role: {{ currentApp.role }}</p>
-          <p v-if="currentApp.ecosystem">
-            Ecosystem: {{ currentApp.ecosystem }}
-          </p>
-        </div>
-        <p v-else class="opacity-70">No current app.</p>
-      </UCard>
-
-      <UCard v-if="isGlobal">
-        <template #header>
-          <h3 class="text-base font-medium">
-            {{ ecosystemTitle }} ({{ appsCount }})
-          </h3>
-        </template>
-
-        <div v-if="appsCount">
-          <UCard v-for="entry in scopedApps" :key="entry.id">
-            <UAvatar
-              :src="appMedia(entry)"
-              :alt="displayName(entry)"
-              size="lg"
-            />
-            <p>{{ displayName(entry) }}</p>
-            <p>ID: {{ entry.id }}</p>
-            <p v-if="entry.role">Role: {{ entry.role }}</p>
-            <p v-if="entry.ecosystem">Ecosystem: {{ entry.ecosystem }}</p>
-          </UCard>
-        </div>
-        <p v-else class="opacity-70">No apps found.</p>
-      </UCard>
-    </UPageBody>
-  </UPage>
+      <p v-else class="text-sm text-gray-500 dark:text-gray-400">
+        <span v-if="isTenant">
+          Global apps not loaded yet.
+          <UButton
+            size="xs"
+            variant="link"
+            class="ml-1"
+            @click="collection.fetchAll()"
+          >
+            Load all apps
+          </UButton>
+        </span>
+        <span v-else>No apps found in collection.</span>
+      </p>
+    </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { App } from '../../models/core/app.model'
-import { useApp } from '../../composables/firestore/core/app/useApp'
-import { useFireUXConfig } from '../../composables/FireUXConfig'
-import { useUser } from '../../composables/firestore/core/user/useUser'
-
-declare function definePageMeta(meta: any): void
+import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
 definePageMeta({
   nav: {
@@ -92,46 +106,16 @@ definePageMeta({
   description: 'Registered FireUX apps',
 })
 
-const { app, apps } = useApp()
-const { isGlobal, isTenant, ecosystem } = useFireUXConfig()
-const { isAdmin } = useUser()
+const { role, appId } = useFireUXConfig()
+const isTenant = computed(() => role === 'tenant')
 
-const currentApp = computed(() => app?.value ?? null)
-const appsList = computed<App[]>(() => {
-  const list = [...(apps?.value ?? [])]
+const { app: appRef, collection } = useApp()
 
-  if (isTenant) {
-    return currentApp.value ? [currentApp.value] : []
-  }
-
-  if (ecosystem) {
-    return list.filter((entry) => entry?.ecosystem === ecosystem)
-  }
-
-  return list
+// v-model style unwrapping in template -> expose plain values here
+const app = computed(() => appRef.value ?? null)
+const apps = computed(() => collection.all.value ?? [])
+const currentAppLink = computed(() => {
+  const id = app.value?.id ?? appId ?? ''
+  return id ? `/apps/${id}` : null
 })
-const scopedApps = computed(() => {
-  const currentId = currentApp.value?.id
-
-  if (!isGlobal || !currentId) {
-    return appsList.value
-  }
-
-  return appsList.value.filter((entry) => entry?.id !== currentId)
-})
-const appsCount = computed(() => scopedApps.value.length)
-const ecosystemTitle = computed(() => {
-  if (!ecosystem) return 'Apps'
-  return ecosystem.charAt(0).toUpperCase() + ecosystem.slice(1)
-})
-const canEditApp = computed(() => isAdmin.value === true)
-
-function displayName(entry: App | null | undefined) {
-  return entry?.app_name ?? entry?.id ?? 'Unnamed App'
-}
-
-function appMedia(entry: App | null | undefined) {
-  if (!entry) return undefined
-  return entry.avatar_url ?? undefined
-}
 </script>

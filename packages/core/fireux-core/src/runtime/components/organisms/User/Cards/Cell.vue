@@ -17,9 +17,10 @@
         </div>
 
         <div class="subrow">
-          <span v-if="Array.isArray(user.profiles) && user.profiles.length">
-            Profiles: {{ user.profiles.length }}
-          </span>
+          <span v-if="email" class="pill">{{ email }}</span>
+          <span v-if="profilesLabel" class="pill">{{ profilesLabel }}</span>
+          <span v-if="memberLabel" class="pill">{{ memberLabel }}</span>
+          <span v-if="adminLabel" class="pill">{{ adminLabel }}</span>
         </div>
       </div>
     </div>
@@ -30,7 +31,14 @@
 import { computed } from 'vue'
 import type { UserCard } from '../../../../models/core/user.model'
 
-const props = defineProps<{ user: UserCard.Cell }>()
+const props = defineProps<{
+  user: UserCard.Cell & {
+    email?: string | null
+    profiles?: string[] | null
+    userOf?: string[] | null
+    adminOf?: string[] | null
+  }
+}>()
 
 const looksLikeEmail = (v?: string) => !!v && v.includes('@')
 const safeDisplay = (vs: Array<string | undefined>, fallback: string) => {
@@ -44,13 +52,50 @@ const safeDisplay = (vs: Array<string | undefined>, fallback: string) => {
 }
 
 const displayName = computed(() =>
-  safeDisplay([props.user.display_name, props.user.handle, props.user.id], 'User')
+  safeDisplay(
+    [props.user.display_name, props.user.handle, props.user.id],
+    'User'
+  )
 )
+
+const email = computed(() => props.user.email ?? '')
+
+const profilesLabel = computed(() => {
+  const profiles = Array.isArray(props.user.profiles)
+    ? props.user.profiles.filter(Boolean)
+    : []
+  if (!profiles.length) return ''
+  if (profiles.length <= 3) return `Profiles: ${profiles.join(', ')}`
+  return `Profiles: ${profiles.length}`
+})
+
+const memberLabel = computed(() => {
+  const userOf = Array.isArray(props.user.userOf)
+    ? props.user.userOf.filter(Boolean)
+    : []
+  if (!userOf.length) return ''
+  if (userOf.length === 1) return `Member of ${userOf[0]}`
+  return `Member of ${userOf.length} apps`
+})
+
+const adminLabel = computed(() => {
+  const adminOf = Array.isArray(props.user.adminOf)
+    ? props.user.adminOf.filter(Boolean)
+    : []
+  if (!adminOf.length) return ''
+  if (adminOf.length === 1) return `Admin of ${adminOf[0]}`
+  return `Admin of ${adminOf.length} apps`
+})
 
 const avatarInitials = computed(() => {
   const name = displayName.value.trim()
   if (!name) return 'U'
-  return name.split(/\s+/).map(w => w[0] || '').join('').toUpperCase().slice(0, 2)
+  return name
+    .split(/\s+/)
+    .map((w) => w[0] || '')
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 })
 </script>
 
@@ -78,10 +123,19 @@ const avatarInitials = computed(() => {
 }
 .subrow {
   margin-top: 0.25rem;
-  opacity: 0.7;
+  opacity: 0.8;
   font-size: 0.85rem;
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.15);
+  padding: 0.15rem 0.6rem;
+  line-height: 1.1;
 }
 </style>

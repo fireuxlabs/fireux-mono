@@ -1,606 +1,244 @@
 <template>
-  <UPage>
-    <UPageHeader
-      :title="headerTitle"
-      :description="pageDescription"
-      :badge="userId"
-    />
-
-    <UContainer class="max-w-5xl space-y-8 py-8">
-      <section v-if="isLoading" class="space-y-6">
-        <USkeleton class="h-36 w-full rounded-xl" />
-        <div class="grid gap-6 md:grid-cols-2">
-          <USkeleton class="h-56 rounded-xl" />
-          <USkeleton class="h-56 rounded-xl" />
+  <div class="space-y-6">
+    <UCard>
+      <template #header>
+        <div class="flex items-center justify-between gap-3">
+          <h1 class="text-base font-semibold">{{ headerTitle }}</h1>
+          <UBadge v-if="userId" variant="subtle">{{ userId }}</UBadge>
         </div>
-        <USkeleton class="h-48 w-full rounded-xl" />
-      </section>
+      </template>
 
-      <section
-        v-else-if="showMissingState"
-        class="rounded-xl border border-dashed border-gray-300 p-10 text-center text-sm text-gray-500 dark:border-gray-700"
-      >
-        This user is not available. The document may have been removed or you
-        lack access.
-      </section>
+      <div v-if="isLoading" class="space-y-4">
+        <USkeleton class="h-16 rounded-xl" />
+        <USkeleton class="h-32 rounded-xl" />
+      </div>
 
-      <section v-else class="space-y-8">
-        <OrganismsUserProfile v-if="profileCardUser" :user="profileCardUser" />
+      <div v-else-if="resolvedUser" class="space-y-4">
+        <MoleculesPill
+          :avatar="resolvedUser.avatar"
+          :title="pillTitle"
+          :subtitle="pillSubtitle"
+        />
 
-        <div class="grid gap-6 md:grid-cols-2">
-          <UCard :ui="{ body: 'space-y-3' }" class="shadow-sm">
-            <template #header>
-              <div class="flex items-center justify-between gap-2">
-                <div class="flex items-center gap-2 font-semibold">
-                  <UIcon name="i-lucide-database" /> Core document
-                </div>
-                <UBadge variant="soft" color="primary">
-                  {{ coreStatusLabel }}
-                </UBadge>
-              </div>
-            </template>
-
-            <div v-if="coreUser" class="space-y-3 text-sm">
-              <div class="info-row">
-                <span class="info-label">Display name</span>
-                <span class="info-value">{{ coreUser.display_name }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Email</span>
-                <span class="info-value">{{ coreUser.email ?? '—' }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Profiles</span>
-                <span class="info-value">
-                  <template v-if="coreProfiles.length">
-                    <span class="inline-flex flex-wrap gap-2">
-                      <UBadge
-                        v-for="profile in coreProfiles"
-                        :key="`core-profile-${profile}`"
-                        size="xs"
-                        variant="subtle"
-                      >
-                        {{ profile }}
-                      </UBadge>
-                    </span>
-                  </template>
-                  <template v-else>—</template>
-                </span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Admin of</span>
-                <span class="info-value">
-                  <template v-if="coreAdminOf.length">
-                    <span class="inline-flex flex-wrap gap-2">
-                      <UBadge
-                        v-for="tenant in coreAdminOf"
-                        :key="`core-admin-${tenant}`"
-                        size="xs"
-                        variant="outline"
-                      >
-                        {{ tenant }}
-                      </UBadge>
-                    </span>
-                  </template>
-                  <template v-else>—</template>
-                </span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Member of</span>
-                <span class="info-value">
-                  <template v-if="coreUserOf.length">
-                    <span class="inline-flex flex-wrap gap-2">
-                      <UBadge
-                        v-for="tenant in coreUserOf"
-                        :key="`core-member-${tenant}`"
-                        size="xs"
-                        variant="outline"
-                      >
-                        {{ tenant }}
-                      </UBadge>
-                    </span>
-                  </template>
-                  <template v-else>—</template>
-                </span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Created</span>
-                <span class="info-value">{{ coreCreatedAt ?? 'Unknown' }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Updated</span>
-                <span class="info-value">{{ coreUpdatedAt ?? '—' }}</span>
-              </div>
-              <div
-                v-if="coreSchemaIssues.length"
-                class="rounded-lg border border-amber-300/80 bg-amber-100/70 p-3 text-xs text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100"
-              >
-                <p class="font-semibold">Schema warnings</p>
-                <ul class="mt-1 list-disc space-y-1 pl-4">
-                  <li v-for="issue in coreSchemaIssues" :key="issue">
-                    {{ issue }}
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <p
-              v-else
-              class="rounded-lg border border-dashed border-gray-200 p-4 text-xs text-gray-500 dark:border-gray-800"
-            >
-              No core user document found.
-            </p>
-          </UCard>
-
-          <UCard :ui="{ body: 'space-y-3' }" class="shadow-sm">
-            <template #header>
-              <div class="flex items-center justify-between gap-2">
-                <div class="flex items-center gap-2 font-semibold">
-                  <UIcon name="i-lucide-layer" /> App document
-                </div>
-                <UBadge variant="soft" color="gray">
-                  {{ appStatusLabel }}
-                </UBadge>
-              </div>
-            </template>
-
-            <div v-if="appUser" class="space-y-3 text-sm">
-              <div class="info-row">
-                <span class="info-label">Display name</span>
-                <span class="info-value">{{ appUser.display_name }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Email</span>
-                <span class="info-value">{{ appUser.email ?? '—' }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Role</span>
-                <span class="info-value">{{ appUser.role ?? 'user' }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Profiles</span>
-                <span class="info-value">
-                  <template v-if="appProfiles.length">
-                    <span class="inline-flex flex-wrap gap-2">
-                      <UBadge
-                        v-for="profile in appProfiles"
-                        :key="`app-profile-${profile}`"
-                        size="xs"
-                        variant="subtle"
-                      >
-                        {{ profile }}
-                      </UBadge>
-                    </span>
-                  </template>
-                  <template v-else>—</template>
-                </span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Created</span>
-                <span class="info-value">{{ appCreatedAt ?? 'Unknown' }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Updated</span>
-                <span class="info-value">{{ appUpdatedAt ?? '—' }}</span>
-              </div>
-              <div
-                v-if="appSchemaIssues.length"
-                class="rounded-lg border border-amber-300/80 bg-amber-100/70 p-3 text-xs text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100"
-              >
-                <p class="font-semibold">Schema warnings</p>
-                <ul class="mt-1 list-disc space-y-1 pl-4">
-                  <li v-for="issue in appSchemaIssues" :key="issue">
-                    {{ issue }}
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <p
-              v-else
-              class="rounded-lg border border-dashed border-gray-200 p-4 text-xs text-gray-500 dark:border-gray-800"
-            >
-              No app overlay exists for this user.
-            </p>
-          </UCard>
+        <div class="flex flex-wrap gap-2">
+          <UBadge variant="soft" color="primary">{{ coreStatus }}</UBadge>
+          <UBadge v-if="isTenant" variant="soft" color="gray">{{
+            appStatus
+          }}</UBadge>
         </div>
 
-        <UCard :ui="{ body: 'space-y-4' }" class="shadow-sm">
-          <template #header>
-            <div class="flex items-center justify-between gap-3">
-              <div class="flex items-center gap-2 font-semibold">
-                <UIcon name="i-lucide-code-2" /> Raw documents
-              </div>
-              <div class="flex items-center gap-2">
-                <UButton
-                  size="xs"
-                  variant="ghost"
-                  icon="i-lucide-copy"
-                  :disabled="!coreRawJson"
-                  @click="copyCoreJson"
-                >
-                  Copy core
-                </UButton>
-                <UButton
-                  size="xs"
-                  variant="ghost"
-                  icon="i-lucide-copy"
-                  :disabled="!appRawJson"
-                  @click="copyAppJson"
-                >
-                  Copy app
-                </UButton>
-              </div>
-            </div>
-          </template>
-          <div class="grid gap-4 md:grid-cols-2">
-            <div>
-              <h3 class="text-sm font-semibold text-gray-400">core-users/{{
-                userId
-              }}</h3>
-              <pre class="mt-2 overflow-auto rounded-lg bg-gray-900 p-4 text-xs text-gray-100">
-{{ coreRaw }}
-              </pre>
-            </div>
-            <div>
-              <h3 class="text-sm font-semibold text-gray-400">
-                {{ appDocPath ?? 'apps/<appId>/users/' + userId }}
-              </h3>
-              <pre class="mt-2 overflow-auto rounded-lg bg-gray-900 p-4 text-xs text-gray-100">
-{{ appRaw }}
-              </pre>
-            </div>
+        <dl class="grid gap-3 sm:grid-cols-2">
+          <div
+            v-for="item in infoRows"
+            :key="item.label"
+            class="rounded-lg border border-gray-200 p-3 text-sm dark:border-gray-800"
+          >
+            <dt
+              class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+            >
+              {{ item.label }}
+            </dt>
+            <dd class="mt-1 text-gray-900 dark:text-gray-100">
+              {{ item.value }}
+            </dd>
           </div>
-        </UCard>
-      </section>
-    </UContainer>
-  </UPage>
+        </dl>
+      </div>
+
+      <p v-else class="text-sm text-gray-500 dark:text-gray-400">
+        User not found.
+      </p>
+    </UCard>
+
+    <OrganismsUserCardsProfile v-if="profileCardUser" :user="profileCardUser" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useHead } from 'nuxt/app'
 import { useRoute } from 'vue-router'
-import { useFireUXConfig } from '../../composables/FireUXConfig'
-import { useFirestoreRead } from '../../composables/firestore/useFirestoreRead'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
 import {
-  coerceFirestoreTimestamp,
-  formatFirestoreTimestamp,
-} from '../../utils/formatTimestamp'
-import type {
-  CoreUserDoc,
-  AppUserDoc,
-  UserCard,
-} from '../../models/core/user.model'
-import OrganismsUserProfile from '../../components/organisms/User/Profile.vue'
+  type CoreUserDoc,
+  type AppUserDoc,
+} from 'fireux-core/runtime/models/core/user.model.ts'
+import { formatFirestoreTimestamp } from 'fireux-core/runtime/utils/formatTimestamp.ts'
+
+const normalizeStringArray = (input: unknown): string[] => {
+  if (!Array.isArray(input)) return []
+  return input
+    .filter(
+      (entry): entry is string =>
+        typeof entry === 'string' && entry.trim().length > 0
+    )
+    .map((entry) => entry.trim())
+}
 
 const route = useRoute()
 const rawId = route.params.id
-const userId = Array.isArray(rawId) ? rawId[0] : String(rawId ?? '')
+let resolvedId = ''
+if (Array.isArray(rawId)) {
+  resolvedId = rawId[0] ?? ''
+} else if (rawId !== undefined && rawId !== null) {
+  resolvedId = String(rawId)
+}
+const userId = resolvedId
 
 const { isTenant, appId } = useFireUXConfig()
 const { firestoreFetchDoc } = useFirestoreRead()
 
-const coreRef = userId ? firestoreFetchDoc<CoreUserDoc>('core-users', userId) : null
+const coreRef = userId
+  ? firestoreFetchDoc<CoreUserDoc>('core-users', userId)
+  : null
 const appRef =
-  userId && isTenant
+  userId && isTenant && appId
     ? firestoreFetchDoc<AppUserDoc>(`apps/${appId}/users`, userId)
     : null
 
-const coreDocState = computed<CoreUserDoc | null | undefined>(() => coreRef?.value)
-const appDocState = computed<AppUserDoc | null | undefined>(() => appRef?.value)
+const coreUser = computed<CoreUserDoc | null>(() => coreRef?.value ?? null)
+const appUser = computed<AppUserDoc | null>(() => appRef?.value ?? null)
+const resolvedUser = computed(() => appUser.value ?? coreUser.value ?? null)
 
-const coreUser = computed<CoreUserDoc | null>(() =>
-  coreDocState.value === undefined ? null : coreDocState.value ?? null
+const isCoreLoading = computed(() =>
+  Boolean(coreRef && coreRef.value === undefined)
 )
-const appUser = computed<AppUserDoc | null>(() =>
-  appDocState.value === undefined ? null : appDocState.value ?? null
+const isAppLoading = computed(() =>
+  Boolean(appRef && appRef.value === undefined)
+)
+const isLoading = computed(() => isCoreLoading.value || isAppLoading.value)
+
+const coreStatus = computed(() => {
+  if (!coreRef) return 'Unavailable'
+  if (coreRef.value === undefined) return 'Loading…'
+  return coreUser.value ? 'Core loaded' : 'Core missing'
+})
+const appStatus = computed(() => {
+  if (!isTenant) return 'Overlay unavailable'
+  if (!appRef) return 'Overlay unavailable'
+  if (appRef.value === undefined) return 'Loading…'
+  return appUser.value ? 'App loaded' : 'App missing'
+})
+
+const pillTitle = computed(
+  () =>
+    resolvedUser.value?.display_name ||
+    resolvedUser.value?.handle ||
+    resolvedUser.value?.id ||
+    userId ||
+    'User'
+)
+const pillSubtitle = computed(
+  () =>
+    resolvedUser.value?.email ||
+    resolvedUser.value?.handle ||
+    resolvedUser.value?.id ||
+    userId
 )
 
-const coreLoading = computed(() => !!coreRef && coreDocState.value === undefined)
-const appLoading = computed(() => !!appRef && appDocState.value === undefined)
-const isLoading = computed(() => coreLoading.value || appLoading.value)
-
-const hasAnyRecord = computed(() => Boolean(coreUser.value || appUser.value))
-const showMissingState = computed(
-  () => !isLoading.value && !hasAnyRecord.value
+const headerTitle = computed(() =>
+  resolvedUser.value ? pillTitle.value : 'User Details'
 )
 
-const mergedUser = computed(() => {
-  const core = coreDocState.value
-  const app = appDocState.value
-  if (!core && !app) return null
-  const base: Record<string, unknown> = { id: userId }
-  if (core) Object.assign(base, core)
-  if (app) Object.assign(base, app)
+const profileNames = computed(() => {
+  const fromApp = normalizeStringArray(appUser.value?.profiles)
+  if (fromApp.length) return fromApp
+  return normalizeStringArray(coreUser.value?.profiles)
+})
+
+const profileList = computed(() => {
+  if (!profileNames.value.length) return '—'
+  if (profileNames.value.length <= 3) {
+    return profileNames.value.join(', ')
+  }
+  return `${profileNames.value.length} profiles`
+})
+
+const adminOfList = computed(() =>
+  normalizeStringArray(coreUser.value?.adminOf)
+)
+
+const memberOfList = computed(() =>
+  normalizeStringArray(coreUser.value?.userOf)
+)
+
+const createdAt = computed(
+  () =>
+    formatFirestoreTimestamp(
+      appUser.value?.created_at ?? coreUser.value?.created_at,
+      { fallback: undefined }
+    ) ?? '—'
+)
+const updatedAt = computed(
+  () =>
+    formatFirestoreTimestamp(
+      appUser.value?.updated_at ?? coreUser.value?.updated_at,
+      { fallback: undefined }
+    ) ?? '—'
+)
+
+const createdAtDisplay = computed(() =>
+  createdAt.value === '—' ? null : createdAt.value
+)
+const updatedAtDisplay = computed(() =>
+  updatedAt.value === '—' ? null : updatedAt.value
+)
+
+const infoRows = computed(() => {
+  const rows = [
+    { label: 'Email', value: resolvedUser.value?.email ?? '—', always: true },
+    {
+      label: 'Handle',
+      value: resolvedUser.value?.handle ?? '—',
+      always: false,
+    },
+    {
+      label: 'Role',
+      value: appUser.value?.role ?? '—',
+      always: false,
+      tenantOnly: true,
+    },
+    { label: 'Profiles', value: profileList.value, always: false },
+    { label: 'Created', value: createdAt.value, always: false },
+    { label: 'Updated', value: updatedAt.value, always: false },
+  ]
+
+  return rows
+    .filter((row) => {
+      if ('tenantOnly' in row && row.tenantOnly && !isTenant) {
+        return false
+      }
+      return row.always || row.value !== '—'
+    })
+    .map((row) => ({ label: row.label, value: row.value }))
+})
+
+const profileCardUser = computed(() => {
+  if (!resolvedUser.value) return null
+
   return {
-    ...base,
-    core: core ?? null,
-    app: app ?? null,
+    id: resolvedUser.value.id || userId,
+    display_name: pillTitle.value,
+    handle: resolvedUser.value.handle ?? null,
+    email: resolvedUser.value.email ?? null,
+    avatar: resolvedUser.value.avatar ?? null,
+    profiles: profileNames.value,
+    adminOf: adminOfList.value,
+    userOf: memberOfList.value,
+    role: appUser.value?.role ?? null,
+    appId: isTenant && appId ? appId : null,
+    created_in: isTenant ? 'Tenant overlay' : 'Global core',
+    created_at: createdAtDisplay.value,
+    updated_at: updatedAtDisplay.value,
+    coreStatus: coreStatus.value,
+    appStatus: isTenant ? appStatus.value : null,
   }
 })
-
-const displayName = computed(() =>
-  (appUser.value?.display_name || coreUser.value?.display_name || userId || 'User').trim()
-)
-
-const headerTitle = computed(() => displayName.value || 'User details')
-const pageDescription = computed(() =>
-  coreUser.value?.email || appUser.value?.email || 'Inspect FireUX user records.'
-)
-
-const profileCardUser = computed<UserCard.Profile | null>(() => {
-  if (!mergedUser.value) return null
-  const payload: any = mergedUser.value
-  return {
-    id: userId,
-    display_name: String(
-      payload.display_name || payload.handle || payload.email || userId
-    ),
-    avatar: payload.avatar ?? undefined,
-    profiles: payload.profiles ?? undefined,
-    created_at:
-      payload.created_at ?? payload.core?.created_at ?? payload.app?.created_at,
-    updated_at:
-      payload.updated_at ?? payload.core?.updated_at ?? payload.app?.updated_at,
-  }
-})
-
-const coreProfiles = computed(() => coreUser.value?.profiles ?? [])
-const appProfiles = computed(() => appUser.value?.profiles ?? [])
-const coreAdminOf = computed(() => coreUser.value?.adminOf ?? [])
-const coreUserOf = computed(() => coreUser.value?.userOf ?? [])
-
-const coreRequiredFields = ['id', 'display_name', 'avatar', 'created_at'] as const
-const coreAllowedFields = new Set<string>([
-  ...coreRequiredFields,
-  'handle',
-  'email',
-  'userOf',
-  'adminOf',
-  'profiles',
-  'updated_at',
-])
-const appRequiredFields = ['id', 'display_name', 'avatar', 'created_at'] as const
-const appAllowedFields = new Set<string>([
-  ...appRequiredFields,
-  'handle',
-  'email',
-  'role',
-  'profiles',
-  'updated_at',
-])
-
-const coreCreatedAt = computed(() =>
-  formatFirestoreTimestamp(coreUser.value?.created_at)
-)
-const coreUpdatedAt = computed(() =>
-  formatFirestoreTimestamp(coreUser.value?.updated_at)
-)
-const appCreatedAt = computed(() =>
-  formatFirestoreTimestamp(appUser.value?.created_at)
-)
-const appUpdatedAt = computed(() =>
-  formatFirestoreTimestamp(appUser.value?.updated_at)
-)
-
-const coreSchemaIssues = computed(() => {
-  const doc = coreDocState.value
-  if (!doc) return []
-  return validateSchemaRecord(doc as Record<string, any>, {
-    scope: 'core',
-    required: coreRequiredFields,
-    allowed: coreAllowedFields,
-    stringFields: ['id', 'display_name', 'avatar', 'handle', 'email'],
-    stringArrayFields: ['profiles', 'adminOf', 'userOf'],
-    timestampFields: ['created_at', 'updated_at'],
-    routeId: userId,
-  })
-})
-
-const appSchemaIssues = computed(() => {
-  const doc = appDocState.value
-  if (!doc) return []
-  return validateSchemaRecord(doc as Record<string, any>, {
-    scope: 'app',
-    required: appRequiredFields,
-    allowed: appAllowedFields,
-    stringFields: ['id', 'display_name', 'avatar', 'handle', 'email'],
-    stringArrayFields: ['profiles'],
-    timestampFields: ['created_at', 'updated_at'],
-    routeId: userId,
-    enumFields: [{ field: 'role', values: ['user', 'admin'] }],
-  })
-})
-
-const coreRawJson = computed(() =>
-  coreDocState.value ? JSON.stringify(coreDocState.value, null, 2) : null
-)
-const appRawJson = computed(() =>
-  appDocState.value ? JSON.stringify(appDocState.value, null, 2) : null
-)
-
-const coreRaw = computed(() => {
-  if (coreDocState.value === undefined) return 'Loading…'
-  return coreRawJson.value ?? '—'
-})
-const appRaw = computed(() => {
-  if (appDocState.value === undefined) return 'Loading…'
-  return appRawJson.value ?? '—'
-})
-const appDocPath = computed(() =>
-  isTenant ? `apps/${appId}/users/${userId}` : null
-)
 
 useHead({
-  title: computed(() => (displayName.value ? `${displayName.value} · User` : 'User details')),
+  title: computed(() =>
+    resolvedUser.value ? `${pillTitle.value} · User` : 'User Details'
+  ),
 })
-
-const coreStatusLabel = computed(() => {
-  if (!coreRef) return 'Unavailable'
-  if (coreDocState.value === undefined) return 'Loading…'
-  return coreUser.value ? 'Loaded' : 'Missing'
-})
-const appStatusLabel = computed(() => {
-  if (!appRef) return 'Unavailable'
-  if (appDocState.value === undefined) return 'Loading…'
-  return appUser.value ? 'Loaded' : 'Missing'
-})
-
-function copyToClipboard(text: string | null) {
-  if (!text) return
-  if (typeof navigator === 'undefined' || !navigator.clipboard) return
-  navigator.clipboard.writeText(text)
-}
-
-function copyCoreJson() {
-  copyToClipboard(coreRawJson.value)
-}
-
-function copyAppJson() {
-  copyToClipboard(appRawJson.value)
-}
-
-type SchemaScope = 'core' | 'app'
-
-interface SchemaValidationConfig {
-  scope: SchemaScope
-  required: readonly string[]
-  allowed: Set<string>
-  stringFields: readonly string[]
-  stringArrayFields: readonly string[]
-  timestampFields: readonly string[]
-  routeId: string
-  enumFields?: Array<{ field: string; values: readonly string[] }>
-}
-
-function validateSchemaRecord(
-  record: Record<string, any>,
-  config: SchemaValidationConfig
-): string[] {
-  return [
-    ...collectMissingFields(record, config.required, config.scope),
-    ...collectUnexpectedFields(record, config.allowed, config.scope),
-    ...collectStringFieldIssues(record, config.stringFields, config.scope),
-    ...collectArrayStringIssues(record, config.stringArrayFields, config.scope),
-    ...collectTimestampIssues(record, config.timestampFields, config.scope),
-    ...(typeof record.id === 'string' && record.id !== config.routeId
-      ? [
-          `Field "id" on ${config.scope} doc does not match route id (expected "${config.routeId}").`,
-        ]
-      : []),
-    ...(config.enumFields
-      ? collectEnumIssues(record, config.enumFields, config.scope)
-      : []),
-  ]
-}
-
-function collectMissingFields(
-  record: Record<string, any>,
-  fields: readonly string[],
-  scope: SchemaScope
-) {
-  return fields
-    .filter((field) => record[field] === undefined || record[field] === null)
-    .map((field) => `Missing required field "${field}" on ${scope} doc.`)
-}
-
-function collectUnexpectedFields(
-  record: Record<string, any>,
-  allowed: Set<string>,
-  scope: SchemaScope
-) {
-  return Object.keys(record)
-    .filter((key) => !allowed.has(key))
-    .map((key) => `Unexpected field "${key}" present on ${scope} doc.`)
-}
-
-function collectStringFieldIssues(
-  record: Record<string, any>,
-  fields: readonly string[],
-  scope: SchemaScope
-) {
-  return fields
-    .filter((field) => {
-      const value = record[field]
-      return value !== undefined && value !== null && typeof value !== 'string'
-    })
-    .map((field) => `Field "${field}" should be a string on ${scope} doc.`)
-}
-
-function collectArrayStringIssues(
-  record: Record<string, any>,
-  fields: readonly string[],
-  scope: SchemaScope
-) {
-  const issues: string[] = []
-  for (const field of fields) {
-    const value = record[field]
-    if (value === undefined || value === null) continue
-    if (!Array.isArray(value)) {
-      issues.push(
-        `Field "${field}" should be an array of strings on ${scope} doc.`
-      )
-      continue
-    }
-    if (value.some((item) => typeof item !== 'string')) {
-      issues.push(
-        `Field "${field}" contains non-string entries on ${scope} doc.`
-      )
-    }
-  }
-  return issues
-}
-
-function collectTimestampIssues(
-  record: Record<string, any>,
-  fields: readonly string[],
-  scope: SchemaScope
-) {
-  return fields
-    .filter((field) => record[field] !== undefined && record[field] !== null)
-    .filter((field) => !coerceFirestoreTimestamp(record[field]))
-    .map(
-      (field) =>
-        `Field "${field}" is not a valid Firestore timestamp on ${scope} doc.`
-    )
-}
-
-function collectEnumIssues(
-  record: Record<string, any>,
-  enums: Array<{ field: string; values: readonly string[] }>,
-  scope: SchemaScope
-) {
-  const issues: string[] = []
-  for (const { field, values } of enums) {
-    const value = record[field]
-    if (value === undefined || value === null) continue
-    if (!values.includes(value)) {
-      issues.push(
-        `Field "${field}" has unsupported value "${value}" on ${scope} doc.`
-      )
-    }
-  }
-  return issues
-}
 </script>
-
-<style scoped>
-.info-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.info-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ui-text-muted, rgb(156, 163, 175));
-}
-
-.info-value {
-  font-size: 0.9rem;
-  color: var(--ui-text, rgb(31, 41, 55));
-}
-</style>
