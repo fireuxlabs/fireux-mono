@@ -33,11 +33,20 @@
       </template>
 
       <div v-if="user" class="space-y-4">
-        <MoleculesPill
-          :avatar="user.avatar"
-          :title="user.display_name"
-          :subtitle="user.email"
-        />
+        <NuxtLink
+          :to="`/users/${user.id}`"
+          class="block no-underline text-inherit"
+        >
+          <MoleculesPill
+            :avatar="user.avatar"
+            :initials="initialsFor(user)"
+            :title="user.display_name"
+            :subtitle="user.handle"
+            :badges="badges(user)"
+          />
+        </NuxtLink>
+
+        <OrganismsUserCardsCell :user="user" />
       </div>
 
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -82,17 +91,24 @@
       </template>
 
       <div v-if="users.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <MoleculesPill
+        <NuxtLink
           v-for="u in users"
           :key="u.id"
-          :avatar="u.avatar"
-          :title="u.display_name"
-          :subtitle="u.email || u.id"
-        />
+          :to="`/users/${u.id}`"
+          class="block no-underline text-inherit"
+        >
+          <MoleculesPill
+            :avatar="u.avatar"
+            :initials="initialsFor(u)"
+            :title="u.display_name"
+            :subtitle="u.handle"
+            :badges="badges(u)"
+          />
+        </NuxtLink>
       </div>
 
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-        No users found.
+        {{ emptyMessage }}
       </p>
 
       <pre
@@ -181,14 +197,18 @@ definePageMeta({
 })
 
 const { isTenant } = useFireUXConfig()
-const { user, collection } = useUser()
+const { user, collection, badges, initialsFor } = useUser()
 const { subcollections } = useApp()
 
 const users = computed(() =>
-  isTenant ? collection.local?.value ?? [] : collection.global?.value ?? []
+  isTenant ? subcollections?.users?.value ?? [] : collection.global?.value ?? []
 )
 
-const appUsers = computed(() => subcollections?.users?.value ?? [])
+const appUsers = computed(() => (isTenant ? collection.local?.value ?? [] : []))
+
+const emptyMessage = computed(() =>
+  isTenant ? 'No users found in this app.' : 'No users found.'
+)
 
 const currentUserJson = computed(() =>
   user.value ? JSON.stringify(user.value, null, 2) : null

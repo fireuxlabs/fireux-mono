@@ -17,19 +17,11 @@ import type {
 export type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
 function resolveCurrentUser(): Ref<import('firebase/auth').User | null> {
-  if (!import.meta.client) {
-    return shallowRef<import('firebase/auth').User | null>(null)
-  }
+  if (!import.meta.client) return shallowRef(null)
   try {
     return useCurrentUser() as Ref<import('firebase/auth').User | null>
-  } catch (error) {
-    if (import.meta.dev) {
-      console.warn(
-        '[useUser] useCurrentUser unavailable. Ensure VueFire auth module is registered.',
-        error
-      )
-    }
-    return shallowRef<import('firebase/auth').User | null>(null)
+  } catch {
+    return shallowRef(null)
   }
 }
 
@@ -38,73 +30,53 @@ export function useUser() {
   const { isTenant, appId } = useFireUXConfig()
   const { firestoreFetchCollection } = useFirestoreRead()
 
-  // Auth user (SSR-safe: null ref on server)
   const authUser = resolveCurrentUser()
   const uid = computed(() => authUser.value?.uid ?? null)
 
-  // Core user doc
+  // core-users/{uid}
   const coreRef = computed<DocumentReference<CoreUserDoc> | null>(() =>
-    uid.value
-      ? (doc(db, 'core-users', uid.value) as DocumentReference<CoreUserDoc>)
-      : null
+    uid.value ? (doc(db, 'core-users', uid.value) as DocumentReference<CoreUserDoc>) : null
   )
   const { data: coreDoc } = useDocument<CoreUserDoc>(coreRef)
 
-  // App user doc (tenant scope)
+  // apps/{appId}/users/{uid} (tenant only)
   const appRef = computed<DocumentReference<AppUserDoc> | null>(() =>
     uid.value && isTenant && appId
-      ? (doc(
-          db,
-          `apps/${appId}/users`,
-          uid.value
-        ) as DocumentReference<AppUserDoc>)
+      ? (doc(db, `apps/${appId}/users`, uid.value) as DocumentReference<AppUserDoc>)
       : null
   )
   const { data: appDoc } = useDocument<AppUserDoc>(appRef)
 
-  // Overlay: app (tenant) over core — NO UI fallbacks here
+  /**
+   * Final shape:
+   * - Spread core into top-level
+   * - Overlay app fields (role, avatar, etc.)
+   * - Keep app nested for reference
+   * - Drop `core`
+   */
   const user = computed<User | null>(() => {
     const id = uid.value
-    if (!id) return null
+    const core = coreDoc.value
+    if (!id || !core) return null
 
-    const core = coreDoc.value ?? undefined
     const app = isTenant ? appDoc.value ?? undefined : undefined
-    const base = app ?? core
-    if (!base) return null
 
     return {
       id,
-      display_name: base.display_name,
-      avatar: base.avatar,
-      handle: base.handle,
-      email: base.email,
-      profiles: base.profiles,
-      role: app?.role,
-      userOf: core?.userOf,
-      adminOf: core?.adminOf,
-      core,
-      app,
+      ...core,        // 🔹 flatten all core fields
+      app,            // 🔹 keep app nested for reference only
     }
   })
 
-  // Collections (aligned naming)
+  // Collections
   const collection = {
-    local:
-      isTenant && appId
-        ? firestoreFetchCollection<AppUserDoc>(`apps/${appId}/users`)
-        : null,
-    global: !isTenant
-      ? firestoreFetchCollection<CoreUserDoc>('core-users')
-      : null,
-    fetchGlobal() {
-      return this.global
-    },
+    local: isTenant && appId ? firestoreFetchCollection<AppUserDoc>(`apps/${appId}/users`) : null,
+    global: !isTenant ? firestoreFetchCollection<CoreUserDoc>('core-users') : null,
   } as const
 
   return {
     user,
     collection,
-    // helpers & services
     ...useUserComputed(user),
     ...useUserEnsure(user),
     ...useUserDelete(user),

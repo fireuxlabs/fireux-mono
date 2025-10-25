@@ -14,7 +14,9 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
 
   const isSignedIn = computed(() => Boolean(user.value?.id))
   const hasCoreProfile = computed(() => Boolean(user.value?.core))
-  const hasAppProfile = computed(() => (isTenant ? Boolean(user.value?.app) : false))
+  const hasAppProfile = computed(() =>
+    isTenant ? Boolean(user.value?.app) : false
+  )
 
   const isAdmin = computed(() => {
     const u = user.value
@@ -26,11 +28,13 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     return (u.core?.adminOf?.length ?? 0) > 0
   })
 
-  const initials = computed(() => {
-    const name = user.value?.display_name?.trim() ?? ''
-    if (!name) return 'U'
-    const [a = '', b = ''] = name.split(/\s+/)
-    return ((a[0] ?? '') + (b[0] ?? '') || a[0] || 'U').toUpperCase()
+  const initialsFor = computed(() => {
+    return (target?: Pick<User, 'display_name'> | null) => {
+      const name = target?.display_name?.trim() ?? ''
+      if (!name) return 'U'
+      const [a = '', b = ''] = name.split(/\s+/)
+      return ((a[0] ?? '') + (b[0] ?? '') || a[0] || 'U').toUpperCase()
+    }
   })
 
   // Unified CTA logic for all views (header, dashboard, index, etc.)
@@ -39,7 +43,11 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
       return { key: 'sign-in', label: 'Sign in', to: '/auth' }
 
     if (!hasCoreProfile.value)
-      return { key: 'create-core-user', label: 'Create profile', to: '/onboarding' }
+      return {
+        key: 'create-core-user',
+        label: 'Create profile',
+        to: '/onboarding',
+      }
 
     if (isTenant && !hasAppProfile.value)
       return { key: 'join-app', label: 'Join this app', to: '/join' }
@@ -64,8 +72,8 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     hasCoreProfile,
     hasAppProfile,
     isAdmin,
-    initials,
-    cta,     // unified call-to-action state
+    initialsFor,
+    cta, // unified call-to-action state
     badges,
   }
 }

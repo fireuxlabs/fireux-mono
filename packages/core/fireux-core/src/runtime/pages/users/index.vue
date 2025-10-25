@@ -14,7 +14,7 @@
         >
           <MoleculesPill
             :avatar="user.avatar"
-            :initials="initialsFrom(user.display_name)"
+            :initials="initialsFor(user)"
             :title="user.display_name"
             :subtitle="user.handle"
             :badges="badges(user)"
@@ -51,7 +51,7 @@
         >
           <MoleculesPill
             :avatar="u.avatar"
-            :initials="initialsFrom(u.display_name)"
+            :initials="initialsFor(u)"
             :title="u.display_name"
             :subtitle="u.handle"
             :badges="badges(u)"
@@ -79,7 +79,7 @@ definePageMeta({
 })
 
 const { isTenant } = useFireUXConfig()
-const { user, collection, badges } = useUser()
+const { user, collection, badges, initialsFor } = useUser()
 const { subcollections } = useApp()
 
 // Tenant: merged app users; Global: core users
@@ -90,17 +90,4 @@ const users = computed(() =>
 const emptyMessage = computed(() =>
   isTenant ? 'No users found in this app.' : 'No users found.'
 )
-
-function initialsFrom(name?: string) {
-  const trimmed = String(name ?? '')
-    .trim()
-    .replaceAll(/\s+/g, ' ')
-  if (!trimmed) return undefined
-  return trimmed
-    .split(' ')
-    .map((part) => part[0] ?? '')
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-}
 </script>

@@ -85,7 +85,7 @@ const avatarSrc = computed(() => {
   const trimmed = typeof src === 'string' ? src.trim() : ''
   return trimmed || undefined
 })
-const initials = computed(() => u.initials.value) // fallback initials
+const initials = computed(() => u.initialsFor.value(user.value ?? null)) // fallback initials
 
 /** Avatar dropdown */
 const avatarMenuItems = computed(() => [

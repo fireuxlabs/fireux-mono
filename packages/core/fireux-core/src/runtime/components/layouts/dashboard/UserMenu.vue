@@ -15,7 +15,7 @@
       class="shrink-0"
       :src="safeAvatarSrc"
       :alt="safeAlt"
-      :text="uc.initials.value"
+      :text="uc.initialsFor.value(user.value ?? null)"
     />
   </UButton>
 
@@ -61,7 +61,7 @@ const pillUser = computed<UserCard.Pill | undefined>(() => {
     id: u.id,
     display_name: activeDisplayName.value,
     avatar: safeAvatarSrc.value,
-    initials: uc.initials.value,
+    initials: uc.initialsFor.value(user.value ?? null),
     role: (u as any).role, // if present in app doc
     handle: u.app?.handle || u.core?.handle,
   }
