@@ -1,25 +1,42 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/molecules/Pill.vue -->
 <template>
   <div class="pill flex items-center gap-3 rounded-xl px-3 py-2 shadow-sm">
-    <UAvatar :src="avatar" :alt="title || '—'" size="sm" class="avatar" />
-    <div class="flex flex-col leading-tight">
-      <span class="title">
-        {{ title || 'Untitled' }}
+    <UAvatar
+      :src="avatar"
+      :alt="title"
+      :text="initials"
+      size="sm"
+      class="avatar"
+    />
+
+    <div class="flex flex-1 flex-col leading-tight min-w-0">
+      <span class="title truncate">
+        {{ title }}
       </span>
-      <span class="subtitle">
-        {{ subtitle || '—' }}
+
+      <span v-if="subtitle" class="subtitle truncate">
+        {{ subtitle }}
       </span>
+
+      <div v-if="badges?.length" class="badges">
+        <UBadge
+          v-for="badge in badges"
+          :key="badge"
+          color="primary"
+          variant="soft"
+          size="md"
+        >
+          {{ badge }}
+        </UBadge>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-interface Props {
-  avatar?: string
-  title?: string
-  subtitle?: string
-}
-defineProps<Props>()
+import type { Pill } from '../../types/pill.model'
+
+defineProps<Pill.Props>()
 </script>
 
 <style scoped>
@@ -45,5 +62,12 @@ defineProps<Props>()
 .avatar {
   border-radius: 9999px;
   box-shadow: 0 0 0 1px var(--ui-border-200, rgba(148, 163, 184, 0.45)) inset;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
 }
 </style>

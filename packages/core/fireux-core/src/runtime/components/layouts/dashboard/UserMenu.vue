@@ -40,20 +40,28 @@ const router = useRouter()
 const { user } = useUser()
 const uc = useUserComputed(user)
 
+const activeDisplayName = computed(
+  () => user.value?.app?.display_name || user.value?.core?.display_name || ''
+)
+const activeAvatar = computed(
+  () => user.value?.app?.avatar || user.value?.core?.avatar || ''
+)
+
 // Avoid passing an empty string to UAvatar src (shows broken image). Return undefined instead.
 const safeAvatarSrc = computed(() => {
-  const s = uc.avatarSrc?.value ?? ''
+  const s = activeAvatar.value ?? ''
   const trimmed = typeof s === 'string' ? s.trim() : ''
   return trimmed.length ? trimmed : undefined
 })
-const safeAlt = computed(() => uc.displayName?.value?.trim() || 'User')
+const safeAlt = computed(() => activeDisplayName.value.trim() || 'User')
 const pillUser = computed<UserCard.Pill | undefined>(() => {
   const u = user.value
   if (!u) return undefined
   return {
     id: u.id,
-    display_name: uc.displayName.value,
-    avatar: uc.avatarSrc.value || undefined,
+    display_name: activeDisplayName.value,
+    avatar: safeAvatarSrc.value,
+    initials: uc.initials.value,
     role: (u as any).role, // if present in app doc
     handle: u.app?.handle || u.core?.handle,
   }

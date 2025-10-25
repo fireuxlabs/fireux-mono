@@ -64,8 +64,8 @@
               <dd>{{ summary.hasAppProfile }}</dd>
             </div>
             <div>
-              <dt>Header state</dt>
-              <dd>{{ summary.headerState }}</dd>
+              <dt>CTA key</dt>
+              <dd>{{ summary.ctaKey }}</dd>
             </div>
             <div>
               <dt>Next CTA</dt>
@@ -97,14 +97,7 @@ const config = useFireUXConfig()
 const appName = config.appName
 const router = useRouter()
 const { currentUser, authState } = useAuth()
-const {
-  user,
-  headerState,
-  nextCta,
-  isSignedIn,
-  hasCoreProfile,
-  hasAppProfile,
-} = useUser()
+const { user, cta, isSignedIn, hasCoreProfile, hasAppProfile } = useUser()
 const { ensureUser } = useUserEnsure()
 
 const ensureLoading = ref(false)
@@ -138,9 +131,9 @@ const summary = computed(() => ({
   isSignedIn: isSignedIn.value,
   hasCoreProfile: hasCoreProfile.value,
   hasAppProfile: hasAppProfile.value,
-  headerState: headerState.value,
-  ctaLabel: nextCta.value?.label ?? '',
-  ctaTo: nextCta.value?.to ?? '',
+  ctaKey: cta.value.key,
+  ctaLabel: cta.value.label ?? '',
+  ctaTo: cta.value.to ?? '',
   userId: user.value?.id ?? '',
   authUid: currentUser.value?.uid ?? '',
 }))
@@ -180,7 +173,7 @@ const debugJson = computed(() =>
               : null,
           }
         : null,
-      nextCta: nextCta.value,
+      cta: cta.value,
     },
     null,
     2

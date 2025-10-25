@@ -9,6 +9,17 @@ import { useFirestoreManager } from '../../operations/useFirestoreManager.ts'
 import { requireUid, ensureAvatarUrl } from '../../utils/useEnsureCommon.ts'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 
+const NON_ALPHANUMERIC = /[^a-z0-9]/g
+
+function generateHandle(displayName: string, uid: string): string {
+  const clean = displayName.toLowerCase().replaceAll(NON_ALPHANUMERIC, '')
+  if (clean.length >= 6) return clean.slice(0, 6)
+  return (clean + uid.slice(0, 4))
+    .toLowerCase()
+    .replaceAll(NON_ALPHANUMERIC, '')
+    .slice(0, 6)
+}
+
 export function useUserEnsure(_user?: Ref<User | null>) {
   const db = useFirestore()
   const { isTenant, appId } = useFireUXConfig()
@@ -27,12 +38,23 @@ export function useUserEnsure(_user?: Ref<User | null>) {
 
     if (snap.exists()) {
       const data = snap.data() as any
-      // Only record tenant membership if the tenant app exists
+
+      // Ensure handle exists for legacy users
+      if (!data?.handle) {
+        const newHandle = generateHandle(
+          data?.display_name || auth?.displayName || 'user',
+          uid
+        )
+        await updateDocument('core-users', uid, { handle: newHandle } as any)
+      }
+
+      // Add tenant membership if needed
       if (isTenant && appId && app.value && !data?.userOf?.includes(appId)) {
         await updateDocument('core-users', uid, {
           userOf: arrayUnion(appId) as unknown as string[],
         } as any)
       }
+
       return {
         created: false,
         id: uid,
@@ -42,6 +64,7 @@ export function useUserEnsure(_user?: Ref<User | null>) {
 
     // Create new core user
     const displayName = auth?.displayName || 'New User'
+    const handle = generateHandle(displayName, uid)
     const avatarUrl = await ensureAvatarUrl(
       `core-users/${uid}/avatar`,
       [auth?.photoURL],
@@ -52,6 +75,7 @@ export function useUserEnsure(_user?: Ref<User | null>) {
       id: uid,
       email: auth?.email ?? '',
       display_name: displayName,
+      handle,
       avatar: avatarUrl,
       ...(isTenant && appId && app.value ? { userOf: [appId] } : {}),
     } as any)

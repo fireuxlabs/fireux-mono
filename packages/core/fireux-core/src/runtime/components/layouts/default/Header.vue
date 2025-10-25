@@ -18,7 +18,7 @@
 
         <!-- CTA button for missing steps -->
         <UButton
-          v-else-if="cta"
+          v-else-if="hasCta"
           :to="cta.to"
           size="sm"
           color="primary"
@@ -68,18 +68,30 @@ const { currentUser, signOutUser } = useAuth()
 const isAuthResolved = computed(() => currentUser.value !== undefined)
 
 const { user } = useUser()
-const u = useUserComputed(user) // adds headerState + nextCta + display helpers
+const u = useUserComputed(user) // adds CTA + display helpers
+
+const activeDisplayName = computed(
+  () => user.value?.app?.display_name || user.value?.core?.display_name || ''
+)
+const activeAvatar = computed(
+  () => user.value?.app?.avatar || user.value?.core?.avatar || ''
+)
 
 /** CTA + avatar data */
-const cta = computed(() => u.nextCta.value) // { label, to } | null
-const avatarSrc = computed(() => u.avatarSrc.value) // string | ''
+const cta = computed(() => u.cta.value)
+const hasCta = computed(() => cta.value.key !== 'avatar')
+const avatarSrc = computed(() => {
+  const src = activeAvatar.value ?? ''
+  const trimmed = typeof src === 'string' ? src.trim() : ''
+  return trimmed || undefined
+})
 const initials = computed(() => u.initials.value) // fallback initials
 
 /** Avatar dropdown */
 const avatarMenuItems = computed(() => [
   [
     {
-      label: u.displayName.value || 'Account',
+      label: activeDisplayName.value || 'Account',
       icon: 'i-lucide-user',
       to: '/users',
     },

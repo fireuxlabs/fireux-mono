@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
 import { ref, watch } from 'vue'
 import type { BasePlace, PlaceCard } from '../models/place.model'
-import { useFirestoreSearch } from 'fireux-core/runtime/composables/firestore/useFirestoreSearch.ts'
+import { useFirestoreSearch } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreSearch'
 import {
   canonicalPlaceId,
   fetchGoogle,
@@ -19,7 +18,9 @@ const pendingLogos = new Map<string, Promise<string | null>>()
 async function resolveLogo(
   details: PlaceDetailsResult
 ): Promise<string | null> {
-  if (typeof window === 'undefined') return null
+  if (!globalThis.window) {
+    return null
+  }
 
   const params = new URLSearchParams()
   if (details.google.website) {
@@ -35,7 +36,8 @@ async function resolveLogo(
   }
 
   try {
-    const url = new URL('/api/places/logo', window.location.origin)
+    const origin = globalThis.window.location.origin
+    const url = new URL('/api/places/logo', origin)
     url.search = params.toString()
     const res = await fetch(url.toString(), {
       headers: { accept: 'application/json' },
@@ -107,7 +109,9 @@ export function usePlacesSearch() {
   watch(
     results,
     (cells) => {
-      if (typeof window === 'undefined') return
+      if (!globalThis.window) {
+        return
+      }
 
       const googleCells = cells.filter((c) => c.source === 'google').slice(0, 6)
 
@@ -179,7 +183,7 @@ export function usePlacesSearch() {
     }
 
     // enrich from details (lat/lng, but keep avatar if we already have one)
-    if (cell.source === 'google' && typeof window !== 'undefined') {
+    if (cell.source === 'google' && globalThis.window) {
       try {
         const details = await fetchPlaceDetails(id)
         if (!details) return

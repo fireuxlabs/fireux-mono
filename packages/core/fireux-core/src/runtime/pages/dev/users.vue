@@ -3,7 +3,33 @@
     <!-- CURRENT USER -->
     <UCard>
       <template #header>
-        <h1 class="text-base font-semibold">Current User</h1>
+        <div class="flex items-center justify-between gap-3">
+          <h1 class="text-base font-semibold">Current User</h1>
+          <div class="flex items-center gap-2">
+            <UButton
+              v-if="user"
+              size="xs"
+              variant="ghost"
+              icon="i-lucide-copy"
+              @click="copyJSON(user)"
+            >
+              Copy JSON
+            </UButton>
+            <UButton
+              v-if="currentUserJson"
+              size="xs"
+              variant="ghost"
+              :icon="
+                showCurrentJson
+                  ? 'i-lucide-chevron-up'
+                  : 'i-lucide-chevron-down'
+              "
+              @click="toggleCurrentJson"
+            >
+              {{ showCurrentJson ? 'Hide JSON' : 'Show JSON' }}
+            </UButton>
+          </div>
+        </div>
       </template>
 
       <div v-if="user" class="space-y-4">
@@ -17,6 +43,12 @@
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
         No user resolved for this runtime.
       </p>
+
+      <pre
+        v-if="showCurrentJson && currentUserJson"
+        class="mt-4 overflow-auto rounded-md bg-slate-950/90 p-4 text-xs text-slate-100"
+        >{{ currentUserJson }}
+      </pre>
     </UCard>
 
     <!-- USERS COLLECTION -->
@@ -158,6 +190,10 @@ const users = computed(() =>
 
 const appUsers = computed(() => subcollections?.users?.value ?? [])
 
+const currentUserJson = computed(() =>
+  user.value ? JSON.stringify(user.value, null, 2) : null
+)
+
 const usersJson = computed(() =>
   users.value.length ? JSON.stringify(users.value, null, 2) : null
 )
@@ -167,6 +203,7 @@ const appUsersJson = computed(() =>
 
 const showUsersJson = ref(false)
 const showAppUsersJson = ref(false)
+const showCurrentJson = ref(false)
 
 function toggleUsersJson() {
   showUsersJson.value = !showUsersJson.value
@@ -174,6 +211,10 @@ function toggleUsersJson() {
 
 function toggleAppUsersJson() {
   showAppUsersJson.value = !showAppUsersJson.value
+}
+
+function toggleCurrentJson() {
+  showCurrentJson.value = !showCurrentJson.value
 }
 
 async function copyJSON(payload: unknown) {

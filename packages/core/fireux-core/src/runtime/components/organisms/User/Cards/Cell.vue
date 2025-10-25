@@ -1,26 +1,23 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/user/Organisms/User/Cards/Cell.vue -->
 <template>
   <UCard class="cell">
     <div class="cell-inner">
       <UAvatar
-        :src="user.avatar || ''"
-        :alt="displayName"
+        :src="user.avatar"
+        :alt="user.display_name"
         size="md"
-        :text="avatarInitials"
+        :text="initials"
       />
+
       <div class="meta">
         <div class="row">
-          <strong class="name">{{ displayName }}</strong>
+          <strong class="name">{{ user.display_name }}</strong>
           <span v-if="user.handle" class="handle">@{{ user.handle }}</span>
-          <UBadge v-if="user.role" size="xs" variant="subtle">
-            {{ user.role }}
-          </UBadge>
+          <UBadge v-if="user.role" size="xs" variant="subtle">{{ user.role }}</UBadge>
         </div>
 
-        <div class="subrow">
-          <span v-if="email" class="pill">{{ email }}</span>
-          <span v-if="profilesLabel" class="pill">{{ profilesLabel }}</span>
-          <span v-if="memberLabel" class="pill">{{ memberLabel }}</span>
-          <span v-if="adminLabel" class="pill">{{ adminLabel }}</span>
+        <div v-if="user.profiles?.length" class="subrow">
+          <span class="pill">{{ user.profiles.join(', ') }}</span>
         </div>
       </div>
     </div>
@@ -29,70 +26,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserCard } from '../../../../models/core/user.model'
+import type { UserCard } from 'fireux-core/runtime/models/core/user.model'
 
 const props = defineProps<{
-  user: UserCard.Cell & {
-    email?: string | null
-    profiles?: string[] | null
-    userOf?: string[] | null
-    adminOf?: string[] | null
-  }
+  user: UserCard.Cell
 }>()
 
-const looksLikeEmail = (v?: string) => !!v && v.includes('@')
-const safeDisplay = (vs: Array<string | undefined>, fallback: string) => {
-  for (const v of vs) {
-    if (!v) continue
-    if (looksLikeEmail(v)) continue
-    const t = v.trim()
-    if (t) return t
-  }
-  return fallback
-}
-
-const displayName = computed(() =>
-  safeDisplay(
-    [props.user.display_name, props.user.handle, props.user.id],
-    'User'
-  )
-)
-
-const email = computed(() => props.user.email ?? '')
-
-const profilesLabel = computed(() => {
-  const profiles = Array.isArray(props.user.profiles)
-    ? props.user.profiles.filter(Boolean)
-    : []
-  if (!profiles.length) return ''
-  if (profiles.length <= 3) return `Profiles: ${profiles.join(', ')}`
-  return `Profiles: ${profiles.length}`
-})
-
-const memberLabel = computed(() => {
-  const userOf = Array.isArray(props.user.userOf)
-    ? props.user.userOf.filter(Boolean)
-    : []
-  if (!userOf.length) return ''
-  if (userOf.length === 1) return `Member of ${userOf[0]}`
-  return `Member of ${userOf.length} apps`
-})
-
-const adminLabel = computed(() => {
-  const adminOf = Array.isArray(props.user.adminOf)
-    ? props.user.adminOf.filter(Boolean)
-    : []
-  if (!adminOf.length) return ''
-  if (adminOf.length === 1) return `Admin of ${adminOf[0]}`
-  return `Admin of ${adminOf.length} apps`
-})
-
-const avatarInitials = computed(() => {
-  const name = displayName.value.trim()
+const initials = computed(() => {
+  const name = props.user.display_name?.trim() ?? ''
   if (!name) return 'U'
   return name
     .split(/\s+/)
-    .map((w) => w[0] || '')
+    .map((w) => w[0])
     .join('')
     .toUpperCase()
     .slice(0, 2)
@@ -119,17 +64,16 @@ const avatarInitials = computed(() => {
   font-weight: 700;
 }
 .handle {
-  opacity: 0.75;
+  opacity: 0.7;
 }
 .subrow {
   margin-top: 0.25rem;
-  opacity: 0.8;
+  opacity: 0.85;
   font-size: 0.85rem;
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
-
 .pill {
   display: inline-flex;
   align-items: center;

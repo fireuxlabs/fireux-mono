@@ -7,33 +7,21 @@
         <h1 class="text-base font-semibold">Current User</h1>
       </template>
 
-      <div v-if="currentUser" class="space-y-4">
+      <div v-if="user" class="space-y-4">
         <NuxtLink
-          v-if="currentUserLink"
-          :to="currentUserLink"
-          class="block space-y-4 no-underline text-inherit"
+          :to="`/users/${user.id}`"
+          class="block no-underline text-inherit"
         >
           <MoleculesPill
-            :avatar="currentUser.avatar"
-            :title="currentUser.display_name"
-            :subtitle="currentUser.handle"
-          />
-          <OrganismsUserCardsCell
-            v-if="currentUserCell"
-            :user="currentUserCell"
+            :avatar="user.avatar"
+            :initials="initialsFrom(user.display_name)"
+            :title="user.display_name"
+            :subtitle="user.handle"
+            :badges="badges(user)"
           />
         </NuxtLink>
-        <template v-else>
-          <MoleculesPill
-            :avatar="currentUser.avatar"
-            :title="currentUser.display_name"
-            :subtitle="currentUser.handle"
-          />
-          <OrganismsUserCardsCell
-            v-if="currentUserCell"
-            :user="currentUserCell"
-          />
-        </template>
+
+        <OrganismsUserCardsCell :user="user" />
       </div>
 
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -51,16 +39,6 @@
               users.length
             }}</UBadge>
           </div>
-
-          <UButton
-            v-if="isTenant"
-            size="xs"
-            variant="soft"
-            icon="i-lucide-database"
-            @click="fetchUsers"
-          >
-            Load all users
-          </UButton>
         </div>
       </template>
 
@@ -73,20 +51,16 @@
         >
           <MoleculesPill
             :avatar="u.avatar"
+            :initials="initialsFrom(u.display_name)"
             :title="u.display_name"
             :subtitle="u.handle"
+            :badges="badges(u)"
           />
         </NuxtLink>
       </div>
 
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-        <span v-if="isTenant">
-          Users not loaded yet.
-          <UButton size="xs" variant="link" class="ml-1" @click="fetchUsers">
-            Load all users
-          </UButton>
-        </span>
-        <span v-else>No users found.</span>
+        {{ emptyMessage }}
       </p>
     </UCard>
   </div>
@@ -94,9 +68,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig'
+import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp'
 
 definePageMeta({
   nav: { key: 'users', label: 'Users', icon: 'i-lucide-users' },
@@ -105,42 +79,28 @@ definePageMeta({
 })
 
 const { isTenant } = useFireUXConfig()
-const { user, collection } = useUser()
+const { user, collection, badges } = useUser()
 const { subcollections } = useApp()
 
-// exact current user (no fallbacks rendered)
-const currentUser = computed(() => user.value ?? null)
-const currentUserCell = computed(() => {
-  const value = currentUser.value
-  if (!value) return null
-  return {
-    id: value.id,
-    display_name:
-      value.display_name ?? value.handle ?? value.core?.display_name ?? 'User',
-    avatar: value.avatar ?? value.core?.avatar ?? '',
-    handle: value.handle ?? value.core?.handle,
-    email: value.email ?? value.core?.email ?? null,
-    profiles: value.profiles ?? value.core?.profiles ?? null,
-    userOf: value.userOf ?? value.core?.userOf ?? null,
-    adminOf: value.adminOf ?? value.core?.adminOf ?? null,
-    role: value.role ?? value.app?.role,
-  }
-})
-const currentUserLink = computed(() => {
-  const id = currentUser.value?.id ?? ''
-  return id ? `/users/${id}` : null
-})
+// Tenant: merged app users; Global: core users
+const users = computed(() =>
+  isTenant ? subcollections?.users?.value ?? [] : collection.global?.value ?? []
+)
 
-// tenant: merged app subcollection; global: global core-users collection
-const users = computed(() => {
-  if (isTenant) return subcollections?.users?.value ?? []
-  return collection.global?.value ?? []
-})
+const emptyMessage = computed(() =>
+  isTenant ? 'No users found in this app.' : 'No users found.'
+)
 
-function fetchUsers() {
-  if (!isTenant) return
-  if (typeof subcollections?.fetchAll === 'function') {
-    subcollections.fetchAll()
-  }
+function initialsFrom(name?: string) {
+  const trimmed = String(name ?? '')
+    .trim()
+    .replaceAll(/\s+/g, ' ')
+  if (!trimmed) return undefined
+  return trimmed
+    .split(' ')
+    .map((part) => part[0] ?? '')
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 }
 </script>

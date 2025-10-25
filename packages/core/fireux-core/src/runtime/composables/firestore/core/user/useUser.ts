@@ -8,11 +8,10 @@ import { useUserComputed } from './useUserComputed.ts'
 import { useUserEnsure } from './useUserEnsure.ts'
 import { useUserDelete } from './useUserDelete.ts'
 import { useUserUpdate } from './useUserUpdate.ts'
-import {
-  toUser,
-  type User,
-  type CoreUserDoc,
-  type AppUserDoc,
+import type {
+  User,
+  CoreUserDoc,
+  AppUserDoc,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 
 export type { User } from 'fireux-core/runtime/models/core/user.model.ts'
@@ -21,7 +20,6 @@ function resolveCurrentUser(): Ref<import('firebase/auth').User | null> {
   if (!import.meta.client) {
     return shallowRef<import('firebase/auth').User | null>(null)
   }
-
   try {
     return useCurrentUser() as Ref<import('firebase/auth').User | null>
   } catch (error) {
@@ -42,7 +40,6 @@ export function useUser() {
 
   // Auth user (SSR-safe: null ref on server)
   const authUser = resolveCurrentUser()
-
   const uid = computed(() => authUser.value?.uid ?? null)
 
   // Core user doc
@@ -65,12 +62,29 @@ export function useUser() {
   )
   const { data: appDoc } = useDocument<AppUserDoc>(appRef)
 
-  // Flatten: app overlay > core base
+  // Overlay: app (tenant) over core — NO UI fallbacks here
   const user = computed<User | null>(() => {
-    if (!uid.value) return null
-    const core = coreDoc.value ?? null
-    const app = isTenant ? appDoc.value ?? null : null
-    return toUser(core, app, uid.value)
+    const id = uid.value
+    if (!id) return null
+
+    const core = coreDoc.value ?? undefined
+    const app = isTenant ? appDoc.value ?? undefined : undefined
+    const base = app ?? core
+    if (!base) return null
+
+    return {
+      id,
+      display_name: base.display_name,
+      avatar: base.avatar,
+      handle: base.handle,
+      email: base.email,
+      profiles: base.profiles,
+      role: app?.role,
+      userOf: core?.userOf,
+      adminOf: core?.adminOf,
+      core,
+      app,
+    }
   })
 
   // Collections (aligned naming)
@@ -83,7 +97,6 @@ export function useUser() {
       ? firestoreFetchCollection<CoreUserDoc>('core-users')
       : null,
     fetchGlobal() {
-      // lazy getter pattern preserved (optional)
       return this.global
     },
   } as const
