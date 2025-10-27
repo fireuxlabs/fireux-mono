@@ -236,7 +236,9 @@ import { useRoute } from 'vue-router'
 import type { Place } from '../../models/place.model'
 import { usePlaces } from '../../composables/usePlaces'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/useFirestoreRead'
-import type { CoreUserDoc } from 'fireux-core/runtime/models/core/user.model'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
+
+type UserDoc = Omit<User, 'appUser'>
 
 type RosterPlace = Place & {
   creator_id?: string
@@ -281,11 +283,11 @@ const mapLink = computed(() => {
 const currentRoster = computed(() => place.value?.professionals_current ?? [])
 const alumniRoster = computed(() => place.value?.professionals_alumni ?? [])
 
-const userDocRefs = new Map<string, Ref<CoreUserDoc | undefined>>()
+const userDocRefs = new Map<string, Ref<UserDoc | undefined>>()
 
 function ensureUserDoc(uid: string) {
   if (!userDocRefs.has(uid)) {
-    userDocRefs.set(uid, firestoreFetchDoc<CoreUserDoc>('core-users', uid))
+    userDocRefs.set(uid, firestoreFetchDoc<UserDoc>('users', uid))
   }
   return userDocRefs.get(uid)!
 }

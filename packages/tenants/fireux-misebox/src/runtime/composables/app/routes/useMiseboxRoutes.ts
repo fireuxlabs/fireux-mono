@@ -17,10 +17,9 @@ export function useMiseboxRoutes() {
   const { user } = useUser()
 
   const hasProfile = (profileType: string) => {
-    const app = user.value?.app
-    if (!app) return false
-    const list = Array.isArray(app?.app_profiles) ? app.app_profiles : []
-    return list.includes(profileType)
+    const source = user.value?.profiles
+    const profiles = Array.isArray(source) ? source : []
+    return profiles.includes(profileType)
   }
 
   // Public Misebox discovery routes

@@ -92,10 +92,12 @@
   </client-only>
 </template>
 
-<script setup>import { ref, computed } from 'vue'
+<script setup>
+import { ref, computed } from 'vue'
+import { useUser } from '../../../../../composables/firestore/core/user/useUser'
 
 const { user } = useUser()
-const hasApp = computed(() => !!user.value?.app)
+const hasApp = computed(() => !!user.value?.appUser)
 
 // Toggle state for edit mode
 const isExpanded = ref(false)

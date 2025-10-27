@@ -67,9 +67,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute, navigateTo, useHead, useSeoMeta } from 'nuxt/app'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/useFirestoreRead'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import type { ProfileConfig } from 'fireux-core/runtime/models/profiles/profile.model'
+
+declare function useRoute(): any
+declare function navigateTo(path: string): Promise<unknown>
+declare function useHead(input: unknown): void
+declare function useSeoMeta(input: unknown): void
 
 /** Props */
 const props = defineProps<{
@@ -106,7 +111,7 @@ const docId = Array.isArray(raw) ? raw[0] : String(raw || '')
 
 /** Current app user (for edit visibility) */
 const { user } = useUser()
-const appUser = computed(() => user.value?.app)
+const appUser = computed(() => user.value?.appUser)
 
 /** Fetch profile doc */
 const { firestoreFetchDoc } = useFirestoreRead()
@@ -161,9 +166,3 @@ useHead({
   ],
 })
 </script>
-
-<style scoped>
-.profile-card {
-  /* container style hook */
-}
-</style>

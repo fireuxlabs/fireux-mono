@@ -70,12 +70,8 @@ const isAuthResolved = computed(() => currentUser.value !== undefined)
 const { user } = useUser()
 const u = useUserComputed(user) // adds CTA + display helpers
 
-const activeDisplayName = computed(
-  () => user.value?.app?.display_name || user.value?.core?.display_name || ''
-)
-const activeAvatar = computed(
-  () => user.value?.app?.avatar || user.value?.core?.avatar || ''
-)
+const activeDisplayName = computed(() => user.value?.display_name || '')
+const activeAvatar = computed(() => user.value?.avatar || '')
 
 /** CTA + avatar data */
 const cta = computed(() => u.cta.value)

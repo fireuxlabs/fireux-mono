@@ -1,5 +1,6 @@
 <template>
   <UContainer>
+    <pre>{{}}</pre>
     <!-- 1) Auth -->
     <template v-if="!coreUser">
       <OrganismsAuthSystem />
@@ -60,54 +61,22 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useFetch } from 'nuxt/app'
 import { useUser } from '../../../composables/firestore/core/user/useUser'
+import { useUserComputed } from '../../../composables/firestore/core/user/useUserComputed'
 import { useAppEnsure } from '../../../composables/firestore/core/app/useAppEnsure'
-
-type EnvVarEntry = { key: string; present: boolean; value?: string }
-type AdminAuthStatus = {
-  json: boolean
-  splitKeys: {
-    FIREBASE_PROJECT_ID: boolean
-    FIREBASE_CLIENT_EMAIL: boolean
-    FIREBASE_PRIVATE_KEY: boolean
-  }
-  configured: boolean
-}
-type BrandAssetCheck = {
-  name: string
-  path: string
-  ok: boolean
-  reason?: string
-  width?: number
-  height?: number
-}
-interface EnvCheckResponse {
-  isValid: boolean
-  required: EnvVarEntry[]
-  optionalClient: EnvVarEntry[]
-  optional?: EnvVarEntry[]
-  server: { adminAuth: AdminAuthStatus; optional: EnvVarEntry[] }
-  missingRequired: string[]
-  summary: {
-    required: string
-    optionalClient: string
-    optionalServer: string
-    brandAssets?: string
-  }
-  warnings: string[]
-  notes: string[]
-  brandAssets: BrandAssetCheck[]
-}
+import type { EnvCheckResponse } from '../../../types/app/onboarding'
+import { useEnvCheck } from '../../../composables/firestore/core/app/useEnvCheck'
 
 /** 1) Core user gate */
 const { user } = useUser()
-const coreUser = computed(() => user.value?.core ?? null)
+const { hasCoreProfile: hasProfile } = useUserComputed(user)
+// TODO: revert to useUser once hasProfile lives there again.
+const coreUser = computed(() => (hasProfile.value ? user.value : null))
 
 /** 2) PIN gate */
 const EXPECTED_PIN = '1234' as const
 const DEV_PIN_AUTO_UNLOCK = true
-// TODO: Disable dev PIN auto-unlock before production deployment.
+// NOTE: Disable dev PIN auto-unlock before production deployment.
 const pin = ref<string[]>(DEV_PIN_AUTO_UNLOCK ? EXPECTED_PIN.split('') : [])
 const isUnlocked = ref(DEV_PIN_AUTO_UNLOCK)
 function checkPin() {
@@ -118,43 +87,7 @@ function checkPin() {
 }
 
 /** 3) Env check */
-const {
-  data,
-  pending,
-  error,
-  refresh: refreshEnv,
-} = await useFetch<EnvCheckResponse>('/api/app/env-check', {
-  server: false,
-  default: () =>
-    ({
-      isValid: false,
-      required: [],
-      optionalClient: [],
-      optional: [],
-      server: {
-        adminAuth: {
-          json: false,
-          splitKeys: {
-            FIREBASE_PROJECT_ID: false,
-            FIREBASE_CLIENT_EMAIL: false,
-            FIREBASE_PRIVATE_KEY: false,
-          },
-          configured: false,
-        },
-        optional: [],
-      },
-      missingRequired: [],
-      summary: {
-        required: '0/0',
-        optionalClient: '0/0',
-        optionalServer: '0/0',
-        brandAssets: '0/0',
-      },
-      warnings: [],
-      notes: [],
-      brandAssets: [],
-    } as EnvCheckResponse),
-})
+const { data, pending, error, refresh: refreshEnv } = await useEnvCheck()
 
 const env = computed(() => (data.value as EnvCheckResponse) ?? null)
 const envError = computed(() => {

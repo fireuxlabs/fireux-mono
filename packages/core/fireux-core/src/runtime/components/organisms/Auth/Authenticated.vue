@@ -15,18 +15,21 @@ import { useRouter } from 'vue-router'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 import { useUserEnsure } from 'fireux-core/runtime/composables/firestore/core/user/useUserEnsure.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useUserComputed } from 'fireux-core/runtime/composables/firestore/core/user/useUserComputed.ts'
 
 const router = useRouter()
 const { signOutUser } = useAuth()
 const { ensureUser } = useUserEnsure()
-const { hasCoreProfile } = useUser()
+const { user } = useUser()
+const { hasCoreProfile: hasProfile } = useUserComputed(user)
+// TODO: take this from useUser once hasProfile lives in that composable again.
 
 const primaryLabel = computed(() =>
-  hasCoreProfile.value ? 'Go to Dashboard' : 'Create Core User'
+  hasProfile.value ? 'Go to Dashboard' : 'Create User Profile'
 )
 
 const handlePrimary = async () => {
-  if (hasCoreProfile.value) {
+  if (hasProfile.value) {
     await router.push('/dashboard')
     return
   }

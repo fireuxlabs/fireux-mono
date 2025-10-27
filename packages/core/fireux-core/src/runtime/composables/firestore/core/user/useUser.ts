@@ -10,12 +10,15 @@ import { useFirestore, useDocument } from 'vuefire'
 
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
+import { useScopedCollection } from '../../utils/useScoped.ts'
+import { useUserComputed } from './useUserComputed.ts'
 
 import type {
   User,
-  CoreUserDoc,
-  AppUserDoc,
+  AppUser,
 } from 'fireux-core/runtime/models/core/user.model.ts'
+
+type CoreUserRecord = Omit<User, 'appUser'>
 
 export type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
@@ -31,11 +34,11 @@ export function useUser() {
   const { uid } = useAuth()
 
   // --- current user (core + optional app)
-  const coreDoc = getDocData<CoreUserDoc>(db, () =>
-    uid.value ? `core-users/${uid.value}` : null
+  const coreDoc = getDocData<CoreUserRecord>(db, () =>
+    uid.value ? `users/${uid.value}` : null
   )
 
-  const appDoc = getDocData<AppUserDoc>(db, () =>
+  const appDoc = getDocData<AppUser>(db, () =>
     isTenant && appId && uid.value ? `apps/${appId}/users/${uid.value}` : null
   )
 
@@ -43,13 +46,42 @@ export function useUser() {
     mergeUser(coreDoc.value, appDoc.value, isTenant)
   )
 
+  // --- collection listing (auto scopes to tenant/global)
+  const scopedCollection = useScopedCollection<CoreUserRecord, AppUser>({
+    corePath: 'users',
+    appPath: (targetAppId: string) => `apps/${targetAppId}/users`,
+  })
+
+  const collection = computed<User[]>(() => {
+    const list = scopedCollection.collection.value
+    if (!Array.isArray(list) || !list.length) return []
+    return list as unknown as User[]
+  })
+
+  type UserCollectionRef = typeof collection & {
+    local: typeof scopedCollection.local
+    global: typeof scopedCollection.global
+    loading: typeof scopedCollection.loading
+    context: typeof scopedCollection.context
+  }
+
+  const extendedCollection = Object.assign(collection, {
+    local: scopedCollection.local,
+    global: scopedCollection.global,
+    loading: scopedCollection.loading,
+    context: scopedCollection.context,
+  }) as UserCollectionRef
+
+  // --- computed helpers (cta, pills, etc.)
+  const computedHelpers = useUserComputed(user)
+
   // --- on-demand fetch by id (same merge rules)
   function fetchedUser(id: string) {
     const idRef = computed(() => id)
-    const core = getDocData<CoreUserDoc>(db, () =>
-      idRef.value ? `core-users/${idRef.value}` : null
+    const core = getDocData<CoreUserRecord>(db, () =>
+      idRef.value ? `users/${idRef.value}` : null
     )
-    const app = getDocData<AppUserDoc>(db, () =>
+    const app = getDocData<AppUser>(db, () =>
       isTenant && appId && idRef.value
         ? `apps/${appId}/users/${idRef.value}`
         : null
@@ -60,9 +92,11 @@ export function useUser() {
     return { user: value }
   }
 
-  return { 
-    user, 
-    fetchedUser 
+  return {
+    user,
+    fetchedUser,
+    collection: extendedCollection,
+    ...computedHelpers,
   }
 }
 
@@ -87,13 +121,14 @@ function getDocData<T>(db: Firestore, pathResolver: () => string | null) {
  * - If no core → return null.
  */
 function mergeUser(
-  core: CoreUserDoc | null | undefined,
-  app: AppUserDoc | null | undefined,
+  core: CoreUserRecord | null | undefined,
+  app: AppUser | null | undefined,
   isTenant: boolean
 ): User | null {
   if (!core) return null
   return {
     ...core,
-    app: isTenant ? app ?? undefined : undefined,
+    role: isTenant ? app?.role ?? core.role : core.role,
+    appUser: isTenant ? app ?? null : null,
   }
 }

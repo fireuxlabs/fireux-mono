@@ -12,7 +12,7 @@ export class AvatarManager {
    * Generate core user avatar storage path
    */
   static getCoreUserAvatarPath(userId: string): string {
-    return `core-users/${userId}/avatar`
+    return `users/${userId}/avatar`
   }
 
   /**
@@ -26,24 +26,23 @@ export class AvatarManager {
    * Generate Firebase Storage URL
    */
   static generateStorageUrl(bucketName: string, storagePath: string): string {
-    return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(storagePath)}?alt=media`
+    return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(
+      storagePath
+    )}?alt=media`
   }
 
   /**
    * Check if avatar URL is app-specific (not core user avatar)
    */
   static isAppSpecificAvatar(avatarUrl: string, appId: string): boolean {
-    return (
-      avatarUrl.includes(`${appId}/users/`) &&
-      !avatarUrl.includes('core-users/')
-    )
+    return avatarUrl.includes(`apps/${appId}/users/`)
   }
 
   /**
    * Check if avatar URL is a core user avatar
    */
   static isCoreUserAvatar(avatarUrl: string): boolean {
-    return avatarUrl.includes('core-users/')
+    return avatarUrl.includes('users/') && !avatarUrl.includes('apps/')
   }
 
   /**

@@ -1,5 +1,7 @@
 import { useFirebaseStorage } from 'vuefire'
-import { useRuntimeConfig } from 'nuxt/app'
+import type { RuntimeConfig } from 'nuxt/schema'
+
+declare function useRuntimeConfig(): RuntimeConfig
 import {
   ref as storageRef,
   uploadBytes,
@@ -70,7 +72,7 @@ export function useImageStorage() {
 
   /**
    * Upload an image to Firebase Storage
-   * @param path   Storage path (e.g. "core-users/{uid}/avatar")
+   * @param path   Storage path (e.g. "users/{uid}/avatar")
    * @param source Blob or URL (required)
    */
   async function uploadImage(
@@ -110,7 +112,7 @@ export function useImageStorage() {
 
 function resolveStorageBucket(
   storage: ReturnType<typeof useFirebaseStorage>,
-  runtimeConfig: ReturnType<typeof useRuntimeConfig>
+  runtimeConfig: RuntimeConfig
 ) {
   try {
     const rawBucket =

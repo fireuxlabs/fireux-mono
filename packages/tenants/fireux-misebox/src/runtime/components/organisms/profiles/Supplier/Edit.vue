@@ -27,7 +27,7 @@ const { updateDisplayName, updateAvatar } = useSupplierUpdate()
 // useImageStorage is auto-imported by fireux-core module
 const { uploadImage } = useImageStorage()
 const uploadCoreAvatar = (source: File | string, uid: string) =>
-  uploadImage(`core-users/${uid}/avatar.jpg`, source)
+  uploadImage(`users/${uid}/avatar.jpg`, source)
 
 const onSaveDisplayName = (v: string) => updateDisplayName(v)
 

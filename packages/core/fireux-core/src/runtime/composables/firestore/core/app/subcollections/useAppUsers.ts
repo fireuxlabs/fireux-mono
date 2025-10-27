@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/app/subcollections/useAppUsers.ts
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, watch, type Ref } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 
@@ -7,14 +7,16 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts
 import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
 
 import type {
-  AppUserDoc,
-  CoreUserDoc,
+  AppUser,
+  User,
 } from 'fireux-core/runtime/models/core/user.model.ts'
+
+type CoreUserRecord = Omit<User, 'appUser'>
 
 /**
  * Returns `users` merged from:
  * - apps/{appId}/users/{uid}
- * - core-users/{uid}
+ * - users/{uid}
  *
  * App fields override core fields.
  */
@@ -24,20 +26,20 @@ export function useAppUsers() {
   const { firestoreFetchCollection } = useFirestoreRead()
 
   // Fetch app-level users
-  const appUsers = firestoreFetchCollection<AppUserDoc>(`apps/${appId}/users`)
+  const appUsers = firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
 
   // Map of core user subscriptions
   const coreMap = reactive(
-    new Map<string, ReturnType<typeof useDocument<CoreUserDoc>>['data']>()
+    new Map<string, Ref<CoreUserRecord | null | undefined>>()
   )
 
-  function syncCoreRefs(list: AppUserDoc[] | undefined | null) {
+  function syncCoreRefs(list: AppUser[] | undefined | null) {
     const ids = new Set((list ?? []).map((u) => u.id).filter(Boolean))
 
     for (const uid of ids) {
       if (!coreMap.has(uid)) {
-        const ref = doc(db, 'core-users', uid)
-        const { data } = useDocument<CoreUserDoc>(ref)
+        const ref = doc(db, 'users', uid)
+        const { data } = useDocument<CoreUserRecord>(ref)
         coreMap.set(uid, data)
       }
     }
@@ -56,12 +58,19 @@ export function useAppUsers() {
   }
 
   // Merge core + app users (app overrides)
-  const users = computed(() => {
+  const users = computed<User[]>(() => {
     const list = appUsers.value ?? []
-    return list.map((appUser) => {
-      const core = coreMap.get(appUser.id)?.value ?? {}
-      return { id: appUser.id, ...core, ...appUser }
-    })
+    return list
+      .map((appUser) => {
+        const core = coreMap.get(appUser.id)?.value ?? null
+        if (!core) return null
+        return {
+          ...core,
+          role: appUser.role ?? core.role,
+          appUser,
+        } as User
+      })
+      .filter((entry): entry is User => entry !== null)
   })
 
   return { users, fetchAll }

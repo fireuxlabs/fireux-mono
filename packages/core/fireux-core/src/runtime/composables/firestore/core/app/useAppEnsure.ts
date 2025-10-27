@@ -1,10 +1,13 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/app/useAppEnsure.ts
-import { doc, getDoc, arrayUnion } from 'firebase/firestore'
+import { doc, getDoc, arrayUnion, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useFirestoreManager } from '../../operations/useFirestoreManager.ts'
 import type { App, AppRole } from 'fireux-core/runtime/models/core/app.model.ts'
-import type { AppUserDoc } from 'fireux-core/runtime/models/core/user.model.ts'
+import type {
+  AppUser,
+  User,
+} from 'fireux-core/runtime/models/core/user.model.ts'
 import { requireUid, ensureAvatarUrl } from '../../utils/useEnsureCommon.ts'
 
 type EnsureAppResult = {
@@ -50,9 +53,21 @@ export function useAppEnsure() {
     // ---------- New app ----------
     // Upload required brand assets from /public → Storage
     const [avatarUrl, logoUrl, wordmarkUrl] = await Promise.all([
-      ensureAvatarUrl(`apps/${appId}/brand/avatar.png`, ['/img/brand/avatar.png'], true),
-      ensureAvatarUrl(`apps/${appId}/brand/logo.png`, ['/img/brand/logo.png'], true),
-      ensureAvatarUrl(`apps/${appId}/brand/wordmark.png`, ['/img/brand/wordmark.png'], true),
+      ensureAvatarUrl(
+        `apps/${appId}/brand/avatar.png`,
+        ['/img/brand/avatar.png'],
+        true
+      ),
+      ensureAvatarUrl(
+        `apps/${appId}/brand/logo.png`,
+        ['/img/brand/logo.png'],
+        true
+      ),
+      ensureAvatarUrl(
+        `apps/${appId}/brand/wordmark.png`,
+        ['/img/brand/wordmark.png'],
+        true
+      ),
     ])
 
     // NOTE: We intentionally store only flat URLs; no nested brand object and no dimensions/types.
@@ -61,9 +76,9 @@ export function useAppEnsure() {
       ecosystem,
       role: role as AppRole,
       app_name: appName,
-      admin_ids: [uid],           
+      admin_ids: [uid],
       creator_id: uid,
-      avatar_url: avatarUrl,      
+      avatar_url: avatarUrl,
       logo_url: logoUrl,
       wordmark_url: wordmarkUrl,
     }
@@ -73,7 +88,13 @@ export function useAppEnsure() {
 
     // Create app-user only for non-global apps
     if (role !== 'global') {
-      const appUserPayload: AppUserDoc = { id: uid, role: 'admin' }
+      const appUserPayload: AppUser = {
+        id: uid,
+        role: 'admin',
+        creator_id: uid,
+        created_at: serverTimestamp() as unknown as AppUser['created_at'],
+        updated_at: serverTimestamp() as unknown as AppUser['created_at'],
+      }
       await setDocument(`apps/${appId}/users`, uid, appUserPayload)
     }
 
@@ -85,7 +106,7 @@ export function useAppEnsure() {
   // ---------- Helpers ----------
   async function syncCoreAdminMembership(uid: string, r: AppRole) {
     try {
-      const updates: Record<string, unknown> = {
+      const updates: Partial<User> = {
         adminOf: arrayUnion(appId) as unknown as string[],
       }
 
@@ -95,7 +116,7 @@ export function useAppEnsure() {
         updates.userOf = arrayUnion(appId) as unknown as string[]
       }
 
-      await updateDocument('core-users', uid, updates as any)
+      await updateDocument<User>('users', uid, updates)
     } catch (err) {
       if (import.meta.dev) console.warn('[ensureApp] core sync failed', err)
     }

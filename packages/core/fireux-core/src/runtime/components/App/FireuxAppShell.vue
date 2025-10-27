@@ -10,7 +10,7 @@
     <ClientOnly>
       <div
         v-if="isDev"
-        class="fixed top-2 left-1/2 -translate-x-1/2 z-[9999] select-none"
+        class="fixed top-1/2 right-4 -translate-y-1/2 z-[9999] select-none"
       >
         <UTooltip text="Open dev tools" :popper="{ placement: 'bottom' }">
           <UButton
@@ -44,27 +44,17 @@
         <OrganismsAppOnboarding />
       </template>
     </UModal>
-
-    <!-- Dev tools modal -->
-    <UModal v-model:open="devToolsOpen" title="Developer Tools">
-      <template #body>
-        <AppDebug />
-      </template>
-    </UModal>
   </UApp>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useHead, navigateTo } from 'nuxt/app'
-import { useFireUXConfig } from '../../composables/FireUXConfig'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useHead } from 'nuxt/app'
 import { useApp } from '../../composables/firestore/core/app/useApp'
 
-// Names from our FireUX config
-const { appName, appShortName } = useFireUXConfig()
-const appDisplayName = computed(() => appShortName || appName || 'FireUX')
-const isDev = process.dev
-const devToolsOpen = ref(false)
+const isDev = import.meta.dev
+const router = useRouter()
 
 // Single source of truth: useApp().computed carries initialization state
 const { computed: appComputed } = useApp()
@@ -75,6 +65,6 @@ useHead({
 })
 
 function goToDev() {
-  navigateTo('/dev')
+  router.push('/dev')
 }
 </script>

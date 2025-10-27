@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const bucket = storage.bucket()
-  const path = `core-users/${uid}/avatar.jpg`
+  const path = `users/${uid}/avatar.jpg`
 
   // Accept either JSON with { url } or raw binary body
   const contentType =

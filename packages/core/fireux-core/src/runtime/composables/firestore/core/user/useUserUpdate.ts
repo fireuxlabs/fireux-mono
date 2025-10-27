@@ -20,7 +20,7 @@ export function useUserUpdate(userRef?: Ref<User | null>) {
     const id = getUid()
     if (!id) throw new Error('Not signed in and no userRef.id provided')
 
-    if (scope === 'core') return { collection: 'core-users', id }
+    if (scope === 'core') return { collection: 'users', id }
     if (scope === 'app') {
       if (!appId) throw new Error('Missing appId for tenant-scoped update')
       return { collection: `apps/${appId}/users`, id }
@@ -30,7 +30,7 @@ export function useUserUpdate(userRef?: Ref<User | null>) {
     if (isTenant) {
       return { collection: `apps/${appId}/users`, id }
     }
-    return { collection: 'core-users', id }
+    return { collection: 'users', id }
   }
 
   const updateFieldsScoped = async <S extends TargetScope>(

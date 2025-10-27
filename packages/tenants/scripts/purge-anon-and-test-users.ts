@@ -198,14 +198,12 @@ async function deleteCoreUsers(
   let missing = 0
 
   for (const user of users) {
-    const ref = firestore.doc(`core-users/${user.uid}`)
+    const ref = firestore.doc(`users/${user.uid}`)
 
     if (dryRun) {
       const snapshot = await ref.get()
       if (snapshot.exists) {
-        console.log(
-          `[${ecosystem}] dry-run: would delete core-users/${user.uid}`
-        )
+        console.log(`[${ecosystem}] dry-run: would delete users/${user.uid}`)
       } else {
         missing += 1
       }

@@ -1,7 +1,7 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserEnsure.ts
 import type { Ref } from 'vue'
 import { useFirestore } from 'vuefire'
-import { doc, getDoc, arrayUnion } from 'firebase/firestore'
+import { doc, getDoc, arrayUnion, serverTimestamp } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type { User } from './useUser.ts'
 import { useRouter } from 'vue-router'
@@ -33,7 +33,7 @@ export function useUserEnsure(_user?: Ref<User | null>) {
     displayName: string
   }> {
     const { uid, auth } = await requireUid()
-    const coreRef = doc(db, 'core-users', uid)
+    const coreRef = doc(db, 'users', uid)
     const snap = await getDoc(coreRef)
 
     if (snap.exists()) {
@@ -45,12 +45,12 @@ export function useUserEnsure(_user?: Ref<User | null>) {
           data?.display_name || auth?.displayName || 'user',
           uid
         )
-        await updateDocument('core-users', uid, { handle: newHandle } as any)
+        await updateDocument('users', uid, { handle: newHandle } as any)
       }
 
       // Add tenant membership if needed
       if (isTenant && appId && app.value && !data?.userOf?.includes(appId)) {
-        await updateDocument('core-users', uid, {
+        await updateDocument('users', uid, {
           userOf: arrayUnion(appId) as unknown as string[],
         } as any)
       }
@@ -66,12 +66,12 @@ export function useUserEnsure(_user?: Ref<User | null>) {
     const displayName = auth?.displayName || 'New User'
     const handle = generateHandle(displayName, uid)
     const avatarUrl = await ensureAvatarUrl(
-      `core-users/${uid}/avatar`,
+      `users/${uid}/avatar`,
       [auth?.photoURL],
       true
     )
 
-    await setDocument('core-users', uid, {
+    await setDocument('users', uid, {
       id: uid,
       email: auth?.email ?? '',
       display_name: displayName,
@@ -94,6 +94,9 @@ export function useUserEnsure(_user?: Ref<User | null>) {
     await setDocument(`apps/${appId}/users`, uid, {
       id: uid,
       role: 'user',
+      creator_id: uid,
+      created_at: serverTimestamp(),
+      updated_at: serverTimestamp(),
     } as any)
 
     return { created: true }

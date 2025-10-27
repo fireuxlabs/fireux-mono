@@ -18,14 +18,14 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
   const isSignedIn = computed(() => Boolean(user.value?.id))
   const hasCoreProfile = computed(() => Boolean(user.value))
   const hasAppProfile = computed(() =>
-    isTenant ? Boolean(user.value?.app) : false
+    isTenant ? Boolean(user.value?.appUser) : false
   )
 
   const isAdmin = computed(() => {
     const u = user.value
     if (!u) return false
     if (isTenant) {
-      if (u.app?.role === 'admin') return true
+      if (u.appUser?.role === 'admin') return true
       return Boolean(appId && u.adminOf?.includes(appId))
     }
     return (u.adminOf?.length ?? 0) > 0
@@ -62,7 +62,7 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     return (target?: User | null): string[] => {
       if (!target) return []
       if (isTenant) {
-        if (target.app?.role === 'admin') return ['admin']
+        if (target.appUser?.role === 'admin') return ['admin']
         if (appId && target.adminOf?.includes(appId)) return ['admin']
         return []
       }

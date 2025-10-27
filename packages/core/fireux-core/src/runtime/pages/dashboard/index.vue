@@ -45,19 +45,11 @@
           variant="subtle"
           :ui="{ container: 'flex flex-col sm:flex-row sm:items-center gap-4' }"
         >
-          <UAvatar
-            :src="(user as any)?.app?.avatar || (user as any)?.app?.photoURL"
-            :alt="(user as any)?.app?.displayName || 'User'"
-            size="lg"
-          />
+          <UAvatar :src="userAvatar" :alt="userGreeting" size="lg" />
           <div class="min-w-0">
             <p class="text-sm text-dimmed">Welcome back</p>
             <h2 class="text-lg font-medium truncate">
-              {{
-                (user as any)?.app?.displayName ||
-                (user as any)?.app?.name ||
-                'there'
-              }}
+              {{ userGreeting }}
             </h2>
             <p class="text-sm text-dimmed mt-1 truncate">
               {{ appName }}<span v-if="appEnv"> · {{ appEnv }}</span
@@ -153,7 +145,6 @@ definePageMeta({
   layout: 'dashboard',
 })
 
-
 // Nuxt app auto-imports are not visible to package TS, declare lightweight types
 declare function useRuntimeConfig(): any
 declare function useUser(): { user: any }
@@ -165,6 +156,14 @@ type Range = { start: Date; end: Date }
 // Local notifications slideover state (was useDashboard)
 const isNotificationsSlideoverOpen = ref(false)
 const { user } = useUser()
+const userAvatar = computed(() => {
+  const raw = user?.value?.avatar ?? ''
+  const normalized = typeof raw === 'string' ? raw.trim() : ''
+  return normalized || undefined
+})
+const userGreeting = computed(
+  () => user?.value?.display_name || user?.value?.handle || 'there'
+)
 const config = useRuntimeConfig()
 
 const appName = computed(() => (config as any)?.public?.appName ?? 'FireUX')

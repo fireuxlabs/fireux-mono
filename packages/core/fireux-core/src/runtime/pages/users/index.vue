@@ -41,10 +41,11 @@
 import { computed } from 'vue'
 import { useUser } from '../../composables/firestore/core/user/useUser'
 import type {
-  AppUserDoc,
-  CoreUserDoc,
+  AppUser,
   User,
 } from 'fireux-core/runtime/models/core/user.model.ts'
+
+type CoreUserRecord = Omit<User, 'appUser'>
 
 definePageMeta({
   nav: { key: 'users', label: 'Users', icon: 'i-lucide-users' },
@@ -66,23 +67,26 @@ const collectionLoading = computed(() => {
 
 const userCollection = computed<User[]>(() => {
   if (usingLocalCollection.value) {
-    const docs = collection.local?.value as AppUserDoc[] | undefined
+    const docs = collection.local?.value as AppUser[] | undefined
     if (!docs || !docs.length) return []
-    return docs.map((doc) => ({
-      ...doc,
-      role: doc.role,
-      app: doc,
-    }))
+    return docs
+      .map((doc) => ({
+        ...doc,
+        role: doc.role,
+        appUser: doc,
+      }))
+      .filter(Boolean) as unknown as User[]
   }
 
-  const docs = collection.global?.value as CoreUserDoc[] | undefined
+  const docs = collection.global?.value as CoreUserRecord[] | undefined
   if (!docs || !docs.length) return []
-  return docs.map((doc) => ({
-    ...doc,
-    userOf: doc.userOf,
-    adminOf: doc.adminOf,
-    core: doc,
-  }))
+  return docs
+    .map((doc) => ({
+      ...doc,
+      userOf: doc.userOf,
+      adminOf: doc.adminOf,
+    }))
+    .filter(Boolean) as unknown as User[]
 })
 
 const pillPropsFor = (target: User | null) =>

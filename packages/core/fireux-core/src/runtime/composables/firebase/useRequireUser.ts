@@ -1,6 +1,6 @@
-import { shallowRef, watch, type Ref } from 'vue'
 import type { User as FirebaseUser } from 'firebase/auth'
-import { useAuth } from './useAuth'
+import { getApps } from 'firebase/app'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 /**
  * Waits for a signed-in Firebase user on the client.
@@ -11,27 +11,38 @@ export function useRequireUser(timeout = 5000): Promise<FirebaseUser> {
     throw new Error('useRequireUser() must be called on the client.')
   }
 
-  const { currentUser } = useAuth()
-  const ref =
-    (currentUser as Ref<FirebaseUser | null | undefined>) ??
-    shallowRef<FirebaseUser | null>(null)
+  if (!getApps().length) {
+    throw new Error(
+      'Firebase must be initialized before calling useRequireUser().'
+    )
+  }
 
-  if (ref.value) return Promise.resolve(ref.value)
+  const auth = getAuth()
+  const existing = auth.currentUser
+  if (existing) return Promise.resolve(existing)
 
   return new Promise((resolve, reject) => {
-    const start = performance.now()
-    const stop = watch(
-      ref,
-      (val) => {
-        if (val) {
-          stop()
-          resolve(val)
-        } else if (performance.now() - start > timeout) {
-          stop()
-          reject(new Error('User not authenticated (timeout).'))
-        }
+    const timer = globalThis.setTimeout(() => {
+      cleanup()
+      reject(new Error('User not authenticated (timeout).'))
+    }, timeout)
+
+    const cleanup = () => {
+      globalThis.clearTimeout(timer)
+      unsubscribe?.()
+    }
+
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (user) => {
+        if (!user) return
+        cleanup()
+        resolve(user)
       },
-      { immediate: true }
+      (err) => {
+        cleanup()
+        reject(err)
+      }
     )
   })
 }
