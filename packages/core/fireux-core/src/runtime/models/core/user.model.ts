@@ -1,6 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/user.model.ts
 import type { FirebaseTimestamp } from '../../types/firebase'
-import type { Pill } from '../../types/pill.model'
+import type { Pill as PillModel } from '../../types/pill.model'
 
 /** ------------------------------------------------------------------
  *  BASE USER DOCUMENT (shared across core and app scopes)
@@ -11,7 +11,7 @@ export interface BaseUserDoc {
   avatar: string
   handle?: string
   email?: string
-  bio?: string                // ⬅️ NEW
+  bio?: string
   profiles?: string[]
   created_at: FirebaseTimestamp
   updated_at?: FirebaseTimestamp
@@ -45,7 +45,7 @@ export interface User {
   avatar: string
   handle?: string
   email?: string
-  bio?: string                // ⬅️ NEW
+  bio?: string
   profiles?: string[]
   role?: 'user' | 'admin'
   userOf?: string[]
@@ -60,9 +60,16 @@ export interface User {
  *  subtitle -> handle
  *  badges   -> (optional, up to the view-model)
  *  ------------------------------------------------------------------ */
+
+// Canonical Pill props that <MoleculesPill> expects
+export type UserPillProps = PillModel.Props & { to: string }
+
+// Type helper for typed mapping functions (used in composables)
+export type UserToPillMapper = (u: User) => UserPillProps
+
 export namespace UserCard {
   /** Minimal pill-ready shape */
-  export interface Pill extends Pill.Props {
+  export interface Pill extends UserPillProps {
     id: string
     role?: 'user' | 'admin'
   }
@@ -74,9 +81,19 @@ export namespace UserCard {
 
   /** Profile extends cell for detail panes */
   export interface Profile extends Cell {
-    bio?: string              // ⬅️ NEW (for profile panes)
-    email?: string            // (already on User; included here for convenience in detail UIs)
+    bio?: string
+    email?: string
     created_at?: FirebaseTimestamp
     updated_at?: FirebaseTimestamp
   }
 }
+
+/** ------------------------------------------------------------------
+ *  NOTES:
+ *  - The `PillModel.Props` contract is shared across all Pill-like
+ *    components in FireUX (User, App, Chef, etc.).
+ *  - `UserToPillMapper` is used in composables to ensure a single,
+ *    consistent mapping between the User model and UI components.
+ *  - All view-models (UserCard.*, etc.) are purely structural and
+ *    contain no fallbacks or computed formatting logic.
+ *  ------------------------------------------------------------------ */

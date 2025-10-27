@@ -1,33 +1,36 @@
 <template>
   <div class="auth-authenticated">
     <div class="button-group">
-      <UButton block @click="handleClick">
-        {{ buttonLabel }}
+      <UButton block @click="handlePrimary">
+        {{ primaryLabel }}
       </UButton>
       <UButton block @click="handleSignOut">Sign Out</UButton>
     </div>
   </div>
 </template>
 
-<script setup>import { computed } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
+import { useUserEnsure } from 'fireux-core/runtime/composables/firestore/core/user/useUserEnsure.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
 const router = useRouter()
 const { signOutUser } = useAuth()
 const { ensureUser } = useUserEnsure()
-const { role } = useFireUXConfig()
-const isTenant = computed(() => role === 'tenant')
-const { user } = useUser()
+const { hasCoreProfile } = useUser()
 
-const buttonLabel = computed(() => {
-  const hasCore = !!user.value?.core
-  const hasApp = !!user.value?.app
-  if (!hasCore) return 'Create Core User'
-  if (isTenant.value && !hasApp) return 'Join App'
-  return 'Go to Dashboard'
-})
+const primaryLabel = computed(() =>
+  hasCoreProfile.value ? 'Go to Dashboard' : 'Create Core User'
+)
 
-const handleClick = async () => {
-  // Ensure user first; redirect happens inside ensureUser when requested
+const handlePrimary = async () => {
+  if (hasCoreProfile.value) {
+    await router.push('/dashboard')
+    return
+  }
+
   await ensureUser()
 }
 

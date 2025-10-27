@@ -1,3 +1,4 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/pages/users/[id].vue -->
 <template>
   <client-only>
     <div v-if="user">
@@ -5,14 +6,7 @@
         <div
           class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between"
         >
-          <MoleculesPill
-            :avatar="user.avatar"
-            :initials="initialsFor(user)"
-            :title="user.display_name"
-            :subtitle="user.handle"
-            :badges="badges(user)"
-            class="md:max-w-sm"
-          />
+          <MoleculesPill v-bind="pillPropsFor(user)" class="md:max-w-sm" />
           <OrganismsUserCardsCell :user="user" class="md:max-w-md" />
         </div>
       </UPageCard>
@@ -24,6 +18,7 @@
         </div>
       </UPageCard>
     </div>
+
     <div v-else>
       <UCard>
         <div class="text-center py-8">
@@ -39,7 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser'
+import { useUser } from '../../composables/firestore/core/user/useUser'
+import type { User } from '../../composables/firestore/core/user/useUser'
 
 definePageMeta({
   layout: 'dashboard',
@@ -53,7 +49,13 @@ definePageMeta({
   requiresAuth: true,
 })
 
-useHead({ title: 'Your Profile' })
+const useHeadFn = (globalThis as any).useHead as
+  | undefined
+  | ((input: any) => void)
+useHeadFn?.({ title: 'Your Profile' })
 
-const { user, badges, initialsFor } = useUser()
+const { user, pillProps } = useUser()
+
+const pillPropsFor = (target: User | null | undefined) =>
+  target ? pillProps.value(target) : undefined
 </script>

@@ -125,7 +125,7 @@
       <template #header>
         <h2>Runtime JSON</h2>
       </template>
-      <DevJson :data="{ runtime: cfg }" title="useFireUXConfig()" />
+      <DevJsonPanel :data="{ runtime: cfg }" />
     </UCard>
   </div>
 </template>

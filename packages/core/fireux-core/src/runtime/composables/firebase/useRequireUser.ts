@@ -1,6 +1,6 @@
 import { shallowRef, watch, type Ref } from 'vue'
-import { useCurrentUser } from 'vuefire'
 import type { User as FirebaseUser } from 'firebase/auth'
+import { useAuth } from './useAuth'
 
 /**
  * Waits for a signed-in Firebase user on the client.
@@ -11,8 +11,10 @@ export function useRequireUser(timeout = 5000): Promise<FirebaseUser> {
     throw new Error('useRequireUser() must be called on the client.')
   }
 
-  const ref: Ref<FirebaseUser | null> =
-    (useCurrentUser() as Ref<FirebaseUser | null>) ?? shallowRef(null)
+  const { currentUser } = useAuth()
+  const ref =
+    (currentUser as Ref<FirebaseUser | null | undefined>) ??
+    shallowRef<FirebaseUser | null>(null)
 
   if (ref.value) return Promise.resolve(ref.value)
 

@@ -1,7 +1,7 @@
 ---
 title: FireUX Handbook ToC
 status: active
-updated: 2025-10-15
+updated: 2025-10-26
 ---
 
 # FireUX Handbook
@@ -35,6 +35,12 @@ Legacy documentation has been retired after migration into this handbook. The se
 
 - [Package documentation map](./package-docs-index.md)
 
+## Spec Kit Workspace
+
+- `.specify/` — live specs, plans, and task flows managed by GitHub Spec Kit.
+- `.github/prompts/` — slash-command prompts that drive Spec Kit workflows inside VS Code.
+- Use these alongside the handbook to keep planning artifacts and conventions aligned.
+
 ## ADRs
 
 - [0001 — Nuxt config simplification](./copilot-adr/copilot-0001-nuxt-config-simplification.md)
@@ -43,4 +49,4 @@ Legacy documentation has been retired after migration into this handbook. The se
 
 ## Meta
 
-- This handbook is the canonical source; superseded reports were removed on 2025-10-15 after migration.
+- This handbook and the Spec Kit workspace are complementary sources. Use the handbook for enduring conventions and Spec Kit for active specs and implementations.

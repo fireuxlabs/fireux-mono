@@ -1,5 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
 import type { FirestoreTimestampOrString } from '../../types/firebase.ts'
+import type { Pill as PillModel } from '../../types/pill.model.ts'
 
 export type AppRole = 'global' | 'tenant' | 'sandbox'
 type TimestampValue = FirestoreTimestampOrString
@@ -40,10 +41,11 @@ export interface App {
  * UI Card View Models
  * --------------------------- */
 export namespace AppCard {
-  export interface Pill {
+  export interface Pill extends AppPillProps {
     id: string
     app_name: string
     avatar_url?: string | null
+    ecosystem?: string
   }
 
   export interface Cell {
@@ -70,3 +72,6 @@ export namespace AppCard {
     wordmark_url?: string | null
   }
 }
+
+export type AppPillProps = PillModel.Props & { to: string }
+export type AppToPillMapper = (app: App) => AppPillProps

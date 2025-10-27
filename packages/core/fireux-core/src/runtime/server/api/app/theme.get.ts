@@ -43,9 +43,9 @@ export default defineEventHandler(async (event) => {
 
     // App logos with absolute URLs
     logos: {
-      light: `${domain}/img/brand/wordmark-light.svg`,
-      dark: `${domain}/img/brand/wordmark-dark.svg`,
-      default: `${domain}/img/brand/wordmark-dark.svg`,
+      light: `${domain}/img/brand/wordmark.png`,
+      dark: `${domain}/img/brand/wordmark.png`,
+      default: `${domain}/img/brand/wordmark.png`,
     },
 
     // Basic metadata

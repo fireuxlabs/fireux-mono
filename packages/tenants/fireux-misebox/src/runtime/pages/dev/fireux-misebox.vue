@@ -6,9 +6,8 @@
         <h1>🍳 Global Chefs Collection</h1>
       </template>
       <p>Total Global Chefs: {{ globalChefs?.length || 0 }}</p>
-      <DevJson
+      <DevJsonPanel
         :data="{ total: globalChefs?.length || 0, chefs: globalChefs }"
-        title="Global Chefs JSON"
       />
     </UCard>
 
@@ -17,10 +16,7 @@
         <template #header>
           <h2>👤 Current Chef (global)</h2>
         </template>
-        <DevJson
-          :data="profile.current?.global || null"
-          title="Current Global Chef"
-        />
+        <DevJsonPanel :data="profile.current?.global || null" />
       </UCard>
     </div>
 
@@ -29,12 +25,11 @@
         <h1>🚚 Global Suppliers Collection</h1>
       </template>
       <p>Total Global Suppliers: {{ globalSuppliers?.length || 0 }}</p>
-      <DevJson
+      <DevJsonPanel
         :data="{
           total: globalSuppliers?.length || 0,
           suppliers: globalSuppliers,
         }"
-        title="Global Suppliers JSON"
       />
     </UCard>
 
@@ -43,10 +38,7 @@
         <template #header>
           <h2>👤 Current Supplier (global)</h2>
         </template>
-        <DevJson
-          :data="supplierProfile.current?.global || null"
-          title="Current Global Supplier"
-        />
+        <DevJsonPanel :data="supplierProfile.current?.global || null" />
       </UCard>
     </div>
   </div>

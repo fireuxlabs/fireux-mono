@@ -26,7 +26,7 @@
       <template #header>
         <h2>DevNav Debug</h2>
       </template>
-      <DevJson :data="{ ecosystem, core, eco, app, ext }" title="Grouped" />
+      <DevJsonPanel :data="{ ecosystem, core, eco, app, ext }" />
     </UCard>
   </div>
 </template>

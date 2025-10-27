@@ -5,10 +5,7 @@
         <h1>🗺️ Places Collection</h1>
       </template>
       <p>Total Places: {{ totalPlaces }}</p>
-      <DevJson
-        :data="{ total: totalPlaces, places: placesList }"
-        title="Places JSON"
-      />
+      <DevJsonPanel :data="{ total: totalPlaces, places: placesList }" />
     </UCard>
   </div>
 </template>

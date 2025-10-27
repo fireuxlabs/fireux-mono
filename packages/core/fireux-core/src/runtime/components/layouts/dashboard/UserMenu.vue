@@ -15,7 +15,7 @@
       class="shrink-0"
       :src="safeAvatarSrc"
       :alt="safeAlt"
-      :text="uc.initialsFor.value(user.value ?? null)"
+      :text="uc.initialsFor.value(user ?? null)"
     />
   </UButton>
 
@@ -40,32 +40,24 @@ const router = useRouter()
 const { user } = useUser()
 const uc = useUserComputed(user)
 
-const activeDisplayName = computed(
-  () => user.value?.app?.display_name || user.value?.core?.display_name || ''
-)
-const activeAvatar = computed(
-  () => user.value?.app?.avatar || user.value?.core?.avatar || ''
-)
-
-// Avoid passing an empty string to UAvatar src (shows broken image). Return undefined instead.
-const safeAvatarSrc = computed(() => {
-  const s = activeAvatar.value ?? ''
-  const trimmed = typeof s === 'string' ? s.trim() : ''
-  return trimmed.length ? trimmed : undefined
-})
-const safeAlt = computed(() => activeDisplayName.value.trim() || 'User')
 const pillUser = computed<UserCard.Pill | undefined>(() => {
   const u = user.value
   if (!u) return undefined
+  const base = uc.pillProps.value(u)
   return {
+    ...base,
     id: u.id,
-    display_name: activeDisplayName.value,
-    avatar: safeAvatarSrc.value,
-    initials: uc.initialsFor.value(user.value ?? null),
-    role: (u as any).role, // if present in app doc
-    handle: u.app?.handle || u.core?.handle,
+    role: (u as any).role,
   }
 })
+
+const safeAvatarSrc = computed(() => {
+  const src = pillUser.value?.avatar ?? ''
+  const trimmed = typeof src === 'string' ? src.trim() : ''
+  return trimmed.length ? trimmed : undefined
+})
+
+const safeAlt = computed(() => pillUser.value?.title?.trim() || 'User')
 
 // No local mapping; pass the raw user into the Pill component
 

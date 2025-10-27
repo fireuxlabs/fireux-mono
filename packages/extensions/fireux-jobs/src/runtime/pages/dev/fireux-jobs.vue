@@ -6,12 +6,11 @@
         <h1>🏢 Global Employers Collection</h1>
       </template>
       <p>Total Global Employers: {{ globalEmployers?.length || 0 }}</p>
-      <DevJson
+      <DevJsonPanel
         :data="{
           total: globalEmployers?.length || 0,
           employers: globalEmployers,
         }"
-        title="Global Employers JSON"
       />
     </UCard>
 
@@ -20,10 +19,7 @@
         <template #header>
           <h2>👤 Current Employer (global)</h2>
         </template>
-        <DevJson
-          :data="employerProfile.current?.global || null"
-          title="Current Global Employer"
-        />
+        <DevJsonPanel :data="employerProfile.current?.global || null" />
       </UCard>
     </div>
 
@@ -32,12 +28,11 @@
         <h1>🧑‍🍳 Global Professionals Collection</h1>
       </template>
       <p>Total Global Professionals: {{ globalProfessionals?.length || 0 }}</p>
-      <DevJson
+      <DevJsonPanel
         :data="{
           total: globalProfessionals?.length || 0,
           professionals: globalProfessionals,
         }"
-        title="Global Professionals JSON"
       />
     </UCard>
 
@@ -46,10 +41,7 @@
         <template #header>
           <h2>👤 Current Professional (global)</h2>
         </template>
-        <DevJson
-          :data="professionalProfile.current?.global || null"
-          title="Current Global Professional"
-        />
+        <DevJsonPanel :data="professionalProfile.current?.global || null" />
       </UCard>
     </div>
   </div>

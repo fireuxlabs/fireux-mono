@@ -1,76 +1,50 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/pages/users.vue -->
+<!-- FILE: packages/core/fireux-core/src/runtime/pages/users/index.vue -->
 <template>
-  <div class="space-y-6">
-    <!-- CURRENT USER -->
-    <UCard>
-      <template #header>
-        <h1 class="text-base font-semibold">Current User</h1>
+  <UPage>
+    <UPageBody class="space-y-6">
+      <template v-if="currentUser">
+        <UCard class="space-y-4">
+          <MoleculesPill v-bind="pillPropsFor(currentUser)" />
+          <OrganismsUserCardsCell :user="currentUser" />
+        </UCard>
       </template>
+      <MoleculesNotFound
+        v-else
+        kind="document"
+        entity="user"
+        :loading="userLoading"
+      />
 
-      <div v-if="user" class="space-y-4">
-        <NuxtLink
-          :to="`/users/${user.id}`"
-          class="block no-underline text-inherit"
+      <UCard>
+        <div
+          v-if="userCollection.length"
+          class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
         >
           <MoleculesPill
-            :avatar="user.avatar"
-            :initials="initialsFor(user)"
-            :title="user.display_name"
-            :subtitle="user.handle"
-            :badges="badges(user)"
+            v-for="u in userCollection"
+            :key="u.id"
+            v-bind="pillPropsFor(u)"
           />
-        </NuxtLink>
-
-        <OrganismsUserCardsCell :user="user" />
-      </div>
-
-      <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-        No user resolved for this runtime.
-      </p>
-    </UCard>
-
-    <!-- USERS COLLECTION -->
-    <UCard>
-      <template #header>
-        <div class="flex items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <h2 class="text-base font-semibold">Users Collection</h2>
-            <UBadge v-if="users.length" variant="subtle">{{
-              users.length
-            }}</UBadge>
-          </div>
         </div>
-      </template>
-
-      <div v-if="users.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <NuxtLink
-          v-for="u in users"
-          :key="u.id"
-          :to="`/users/${u.id}`"
-          class="block no-underline text-inherit"
-        >
-          <MoleculesPill
-            :avatar="u.avatar"
-            :initials="initialsFor(u)"
-            :title="u.display_name"
-            :subtitle="u.handle"
-            :badges="badges(u)"
-          />
-        </NuxtLink>
-      </div>
-
-      <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-        {{ emptyMessage }}
-      </p>
-    </UCard>
-  </div>
+        <MoleculesNotFound
+          v-else
+          kind="collection"
+          entity="users"
+          :loading="collectionLoading"
+        />
+      </UCard>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig'
-import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp'
+import { useUser } from '../../composables/firestore/core/user/useUser'
+import type {
+  AppUserDoc,
+  CoreUserDoc,
+  User,
+} from 'fireux-core/runtime/models/core/user.model.ts'
 
 definePageMeta({
   nav: { key: 'users', label: 'Users', icon: 'i-lucide-users' },
@@ -78,16 +52,39 @@ definePageMeta({
   description: 'FireUX user accounts resolved for this runtime.',
 })
 
-const { isTenant } = useFireUXConfig()
-const { user, collection, badges, initialsFor } = useUser()
-const { subcollections } = useApp()
+const { user: userRef, pillProps, collection } = useUser()
 
-// Tenant: merged app users; Global: core users
-const users = computed(() =>
-  isTenant ? subcollections?.users?.value ?? [] : collection.global?.value ?? []
-)
+const currentUser = computed<User | null>(() => userRef.value ?? null)
+const userLoading = computed(() => currentUser.value === null)
 
-const emptyMessage = computed(() =>
-  isTenant ? 'No users found in this app.' : 'No users found.'
-)
+const usingLocalCollection = computed(() => Boolean(collection.local))
+
+const collectionLoading = computed(() => {
+  if (usingLocalCollection.value) return collection.local?.value === undefined
+  return collection.global?.value === undefined
+})
+
+const userCollection = computed<User[]>(() => {
+  if (usingLocalCollection.value) {
+    const docs = collection.local?.value as AppUserDoc[] | undefined
+    if (!docs || !docs.length) return []
+    return docs.map((doc) => ({
+      ...doc,
+      role: doc.role,
+      app: doc,
+    }))
+  }
+
+  const docs = collection.global?.value as CoreUserDoc[] | undefined
+  if (!docs || !docs.length) return []
+  return docs.map((doc) => ({
+    ...doc,
+    userOf: doc.userOf,
+    adminOf: doc.adminOf,
+    core: doc,
+  }))
+})
+
+const pillPropsFor = (target: User | null) =>
+  target ? pillProps.value(target) : undefined
 </script>

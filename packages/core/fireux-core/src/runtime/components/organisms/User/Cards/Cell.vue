@@ -1,43 +1,55 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/user/Organisms/User/Cards/Cell.vue -->
 <template>
-  <UCard class="cell">
-    <div class="cell-inner">
-      <UAvatar
-        :src="user.avatar"
-        :alt="user.display_name"
-        size="md"
-        :text="initials"
-      />
+  <component :is="wrapperTag" v-bind="wrapperBindings" :class="wrapperClass">
+    <UCard class="cell">
+      <div class="cell-inner">
+        <UAvatar
+          :src="user.avatar"
+          :alt="user.display_name"
+          size="md"
+          :text="initials"
+        />
 
-      <div class="meta">
-        <div class="row">
-          <strong class="name">{{ user.display_name }}</strong>
-          <span v-if="user.handle" class="handle">@{{ user.handle }}</span>
-          <UBadge v-if="user.role" size="xs" variant="subtle">{{ user.role }}</UBadge>
-        </div>
+        <div class="meta">
+          <div class="row">
+            <strong class="name">{{ user.display_name }}</strong>
+            <span v-if="user.handle" class="handle">@{{ user.handle }}</span>
+            <UBadge v-if="user.role" size="xs" variant="subtle">{{
+              user.role
+            }}</UBadge>
+          </div>
 
-        <div v-if="user.profiles?.length" class="subrow">
-          <span class="pill">{{ user.profiles.join(', ') }}</span>
+          <div v-if="user.profiles?.length" class="subrow">
+            <span class="pill">{{ user.profiles.join(', ') }}</span>
+          </div>
         </div>
       </div>
-    </div>
-  </UCard>
+    </UCard>
+  </component>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserCard } from 'fireux-core/runtime/models/core/user.model'
+import type { RouteLocationRaw } from 'vue-router'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
 const props = defineProps<{
-  user: UserCard.Cell
+  user: User
+  to?: RouteLocationRaw | null
 }>()
+
+const wrapperTag = computed(() => (props.to ? 'NuxtLink' : 'div'))
+const wrapperBindings = computed(() => (props.to ? { to: props.to } : {}))
+const wrapperClass = computed(() =>
+  props.to ? 'block no-underline text-inherit' : undefined
+)
 
 const initials = computed(() => {
   const name = props.user.display_name?.trim() ?? ''
   if (!name) return 'U'
   return name
     .split(/\s+/)
-    .map((w) => w[0])
+    .map((w: string) => w[0])
     .join('')
     .toUpperCase()
     .slice(0, 2)

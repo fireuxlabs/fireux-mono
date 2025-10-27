@@ -81,7 +81,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useNuxtApp } from 'nuxt/app'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 import { useFireUXConfig } from '../../../composables/FireUXConfig'
 
@@ -93,18 +92,12 @@ const {
   signUpWithEmailPassword,
 } = useAuth()
 const { role, appName, ecosystem, centralSignupUrl } = useFireUXConfig()
-const nuxtApp = useNuxtApp()
-const colorMode = nuxtApp.$colorMode as { value: string } | undefined
 
 const isTenant = computed(() => role === 'tenant')
 const formatBrand = (value?: string) => value?.trim() || ''
 const ecosystemLabel = computed(() => formatBrand(ecosystem) || 'FireUX')
 const tenantLabel = computed(() => formatBrand(appName) || ecosystemLabel.value)
-const appLogo = computed(() =>
-  colorMode?.value === 'dark'
-    ? '/img/brand/wordmark-dark.svg'
-    : '/img/brand/wordmark-light.svg'
-)
+const appLogo = computed(() => '/img/brand/wordmark.png')
 
 const isSignUp = ref(false)
 watch(
@@ -158,11 +151,7 @@ const passwordAutocomplete = computed(() =>
   isSignUp.value ? 'new-password' : 'current-password'
 )
 
-const googleLogo = computed(() =>
-  colorMode?.value === 'dark'
-    ? '/img/sign-in-dark.svg'
-    : '/img/sign-in-light.svg'
-)
+const googleLogo = computed(() => '/img/sign-in-light.svg')
 
 const fields = computed(() => [
   {

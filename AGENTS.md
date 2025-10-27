@@ -6,36 +6,47 @@ Effective: 2025-09-12
 
 Repository: fireux-mono
 
-Primary knowledge base for agents: `./copilot-documentation/` (authoritative). Imported human-oriented docs live under `./copilot-documentation/imported/` and mirror their former locations. Outside of `copilot-documentation`, the only Markdown files should be `README.md` and this `AGENTS.md`.
+Primary knowledge bases for agents:
+
+- `./copilot-documentation/` — handbook for repo-wide conventions, workflows, and historical context.
+- `.specify/` and `.github/prompts/` — Spec Kit workspace for live specs, plans, prompts, and task flows.
+  Imported human-oriented docs live under `./copilot-documentation/imported/` and mirror their former locations.
 
 Guidance for all agents
 
 - Alignment
+
   - This is a mono-repo for FireUX projects (core packages, extensions, tenants, apps).
   - Prefer automation, repeatability, and minimal changes per commit.
-  - Treat `copilot-documentation` as the canonical source for internal guidance, ADRs, conventions, and workflows.
+  - Treat `copilot-documentation` as the handbook for conventions and decisions, and `.specify/` as the source for active spec-driven work. Keep both in sync when workflows overlap.
 
 - Where to look first
-  1. `copilot-documentation/copilot-00-toc.md` for the table of contents.
-  2. `copilot-documentation/README.md` for structure and expectations.
-  3. `copilot-documentation/` subfolders:
+
+  1. `.specify/memory/constitution.md` once drafted for current Spec Kit principles and guardrails.
+  2. `copilot-documentation/copilot-00-toc.md` for the handbook table of contents.
+  3. `copilot-documentation/copilot-01-orientation.md` for mission and structure, followed by relevant chapters.
+  4. `copilot-documentation/` subfolders:
      - `copilot-adr/` Architectural decisions
      - `copilot-instructions/` Agent operating guides
      - `copilot-appendices/` References and troubleshooting
      - `imported/` Human docs migrated for agent use (source path noted at top of each file)
 
 - Routing and decision tree
-  - If the task is about code behavior, conventions, or workflows: start in `copilot-documentation/` (not `imported/`).
+
+  - For Spec Kit-driven specs, plans, tasks, and implementations: work in `.specify/` using the prompts in `.github/prompts/` as the authoritative workflow.
+  - For repo conventions, workflows, or historical decisions: start in `copilot-documentation/` (not `imported/`).
   - If the task references a filename that used to exist outside `copilot-documentation`, search `copilot-documentation/imported/<former path>`.
   - If you need tenant- or app-specific info, search imported docs under `imported/packages/` or `imported/projects/` before asking for clarification.
-  - Prefer up-to-date ADRs and instructions over legacy reports in `imported/`.
+  - Prefer up-to-date ADRs, Spec Kit artifacts, and instructions over legacy reports in `imported/`.
 
 - Authoring conventions for agents
-  - Keep changes small and localized; update or add docs under `copilot-documentation` where appropriate.
-  - Do not create Markdown files outside `copilot-documentation` except `README.md` and `AGENTS.md`.
+
+  - Keep changes small and localized; update or add docs under `copilot-documentation` or `.specify/` where appropriate.
+  - Markdown is allowed in `.specify/`, `.github/prompts/`, `copilot-documentation/`, and repo root (`README.md`, `AGENTS.md`). Avoid introducing Markdown elsewhere without approval.
   - When importing new human docs, place them under `copilot-documentation/imported/` with an agent header indicating the source path and date.
 
 - Output style
+
   - Be concise. Use skimmable bullets. Include filenames in backticks.
   - When adding code, follow the repo’s TypeScript/Vue/Nuxt conventions.
 
@@ -46,18 +57,22 @@ Guidance for all agents
 Index and shortcuts
 
 - Core references
-  - `copilot-documentation/copilot-01-overview.md`
-  - `copilot-documentation/copilot-02-structure.md`
-  - `copilot-documentation/copilot-03-config.md`
-  - `copilot-documentation/copilot-04-firebase.md`
-  - `copilot-documentation/copilot-05-dev-workflow.md`
+
+  - `copilot-documentation/copilot-01-orientation.md`
+  - `copilot-documentation/copilot-02-architecture.md`
+  - `copilot-documentation/copilot-03-configuration.md`
+  - `copilot-documentation/copilot-04-platform-services.md`
+  - `copilot-documentation/copilot-05-development-workflow.md`
   - `copilot-documentation/copilot-06-ci-cd.md`
-  - `copilot-documentation/copilot-07-conventions.md`
+  - `copilot-documentation/copilot-07-ux-conventions.md`
+  - `copilot-documentation/copilot-08-operations.md`
 
 - ADRs
+
   - `copilot-documentation/copilot-adr/`
 
 - Appendices
+
   - `copilot-documentation/copilot-appendices/`
 
 - Imported human docs
@@ -66,8 +81,8 @@ Index and shortcuts
 Operating policy
 
 - Agents may edit and create files under `copilot-documentation` as needed (except ADR history edits; add new ADRs instead).
-- Agents should not create Markdown files outside `copilot-documentation`.
-- Agents should ensure that only `README.md` and `AGENTS.md` exist as Markdown at repo root; all other Markdown belongs under `copilot-documentation/`.
+- Agents may author Spec Kit artifacts under `.specify/` and maintain associated prompts under `.github/prompts/`.
+- Agents should ensure that only approved Markdown exists outside those directories (repo root `README.md`, `AGENTS.md`, Spec Kit folders, `.github/prompts/`).
 
 Notes for VS Code agent-mode
 

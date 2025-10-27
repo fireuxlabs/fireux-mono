@@ -8,26 +8,13 @@
       </template>
 
       <div v-if="app" class="space-y-4">
-        <NuxtLink
-          v-if="currentAppLink"
+        <MoleculesPill
+          :avatar="app.avatar_url"
+          :title="app.app_name"
+          :subtitle="app.ecosystem"
           :to="currentAppLink"
-          class="block space-y-4 no-underline text-inherit"
-        >
-          <MoleculesPill
-            :avatar="app.avatar_url"
-            :title="app.app_name"
-            :subtitle="app.ecosystem"
-          />
-          <OrganismsAppCardsCell :app="app" />
-        </NuxtLink>
-        <template v-else>
-          <MoleculesPill
-            :avatar="app.avatar_url"
-            :title="app.app_name"
-            :subtitle="app.ecosystem"
-          />
-          <OrganismsAppCardsCell :app="app" />
-        </template>
+        />
+        <OrganismsAppCardsCell :app="app" :to="currentAppLink" />
       </div>
 
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -55,18 +42,14 @@
       </template>
 
       <div v-if="apps.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <NuxtLink
+        <MoleculesPill
           v-for="a in apps"
           :key="a.id"
+          :avatar="a.avatar_url || a.logo_url || a.wordmark_url"
+          :title="a.app_name"
+          :subtitle="a.ecosystem"
           :to="`/apps/${a.id}`"
-          class="block no-underline text-inherit"
-        >
-          <MoleculesPill
-            :avatar="a.avatar_url || a.logo_url || a.wordmark_url"
-            :title="a.app_name"
-            :subtitle="a.ecosystem"
-          />
-        </NuxtLink>
+        />
       </div>
 
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -106,13 +89,11 @@ definePageMeta({
   description: 'Registered FireUX apps',
 })
 
+const { app: currentAppRef, collection } = useApp()
 const { role, appId } = useFireUXConfig()
+
 const isTenant = computed(() => role === 'tenant')
-
-const { app: appRef, collection } = useApp()
-
-// v-model style unwrapping in template -> expose plain values here
-const app = computed(() => appRef.value ?? null)
+const app = computed(() => currentAppRef.value ?? null)
 const apps = computed(() => collection.all.value ?? [])
 const currentAppLink = computed(() => {
   const id = app.value?.id ?? appId ?? ''

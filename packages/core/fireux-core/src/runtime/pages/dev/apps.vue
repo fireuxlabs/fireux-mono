@@ -1,3 +1,4 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/pages/dev/apps.vue -->
 <template>
   <div class="space-y-6">
     <!-- CURRENT APP -->
@@ -15,19 +16,6 @@
             >
               Copy JSON
             </UButton>
-            <UButton
-              v-if="currentAppJson"
-              size="xs"
-              variant="ghost"
-              :icon="
-                showCurrentJson
-                  ? 'i-lucide-chevron-up'
-                  : 'i-lucide-chevron-down'
-              "
-              @click="toggleCurrentJson"
-            >
-              {{ showCurrentJson ? 'Hide JSON' : 'Show JSON' }}
-            </UButton>
           </div>
         </div>
       </template>
@@ -37,8 +25,9 @@
           :avatar="currentApp.avatar_url"
           :title="currentApp.app_name"
           :subtitle="currentApp.ecosystem"
+          :to="currentAppLink"
         />
-        <OrganismsAppCardsCell :app="currentApp" />
+        <OrganismsAppCardsCell :app="currentApp" :to="currentAppLink" />
 
         <div
           class="rounded-md border border-slate-200/60 bg-slate-50/40 p-3 text-sm text-slate-600 dark:border-slate-700/60 dark:bg-slate-900/40 dark:text-slate-300"
@@ -60,11 +49,7 @@
           </ul>
         </div>
 
-        <pre
-          v-if="showCurrentJson && currentAppJson"
-          class="overflow-auto rounded-md bg-slate-950/90 p-4 text-xs text-slate-100"
-          >{{ currentAppJson }}
-        </pre>
+        <DevJsonPanel v-if="currentAppJson" :data="currentAppJson" />
       </div>
 
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -89,20 +74,6 @@
               Copy JSON
             </UButton>
 
-            <UButton
-              v-if="appsJson"
-              size="xs"
-              variant="ghost"
-              :icon="
-                showCollectionJson
-                  ? 'i-lucide-chevron-up'
-                  : 'i-lucide-chevron-down'
-              "
-              @click="toggleCollectionJson"
-            >
-              {{ showCollectionJson ? 'Hide JSON' : 'Show JSON' }}
-            </UButton>
-
             <!-- Tenant-only: fetch on demand -->
             <UButton
               v-if="isTenant"
@@ -124,6 +95,7 @@
           :avatar="a.avatar_url || a.logo_url || a.wordmark_url"
           :title="a.app_name"
           :subtitle="a.ecosystem"
+          :to="`/apps/${a.id}`"
         />
       </div>
 
@@ -163,19 +135,16 @@
         </ul>
       </div>
 
-      <pre
-        v-if="showCollectionJson && appsJson"
-        class="overflow-auto rounded-md bg-slate-950/90 p-4 text-xs text-slate-100"
-        >{{ appsJson }}
-      </pre>
+      <DevJsonPanel v-if="appsJson" :data="appsJson" />
     </UCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useDevClipboard } from '../../composables/dev/useDevClipboard.ts'
 
 definePageMeta({
   layout: 'dev',
@@ -198,23 +167,14 @@ const { app, collection, computed: appComputed } = useApp()
 const currentApp = computed(() => app.value ?? null)
 const apps = computed(() => collection.all.value ?? [])
 
-const currentAppJson = computed(() =>
-  currentApp.value ? JSON.stringify(currentApp.value, null, 2) : null
+const currentAppJson = computed(() => currentApp.value ?? null)
+const appsJson = computed(() => (apps.value.length ? apps.value : null))
+
+const currentAppLink = computed(() =>
+  currentApp.value?.id ? `/apps/${currentApp.value.id}` : null
 )
-const appsJson = computed(() =>
-  apps.value.length ? JSON.stringify(apps.value, null, 2) : null
-)
 
-const showCurrentJson = ref(false)
-const showCollectionJson = ref(false)
-
-function toggleCurrentJson() {
-  showCurrentJson.value = !showCurrentJson.value
-}
-
-function toggleCollectionJson() {
-  showCollectionJson.value = !showCollectionJson.value
-}
+const { copyJSON } = useDevClipboard()
 
 const currentInfo = computed(() => {
   const current = currentApp.value
@@ -259,17 +219,5 @@ const collectionInfo = computed(() => {
 
 function loadAll() {
   collection.fetchAll()
-}
-
-async function copyJSON(payload: unknown) {
-  if (!payload || typeof navigator === 'undefined') {
-    return
-  }
-
-  try {
-    await navigator.clipboard?.writeText(JSON.stringify(payload, null, 2))
-  } catch (error) {
-    console.error('[dev/apps] Failed to copy JSON', error)
-  }
 }
 </script>

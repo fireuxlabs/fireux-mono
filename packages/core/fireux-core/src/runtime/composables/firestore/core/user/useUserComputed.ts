@@ -1,7 +1,10 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserComputed.ts
 import { computed, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import type {
+  User,
+  UserToPillMapper,
+  UserPillProps,
+} from 'fireux-core/runtime/models/core/user.model.ts'
 
 export interface UserCta {
   key: 'sign-in' | 'create-core-user' | 'join-app' | 'avatar'
@@ -13,7 +16,7 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
   const { isTenant, appId } = useFireUXConfig()
 
   const isSignedIn = computed(() => Boolean(user.value?.id))
-  const hasCoreProfile = computed(() => Boolean(user.value?.core))
+  const hasCoreProfile = computed(() => Boolean(user.value))
   const hasAppProfile = computed(() =>
     isTenant ? Boolean(user.value?.app) : false
   )
@@ -23,9 +26,9 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     if (!u) return false
     if (isTenant) {
       if (u.app?.role === 'admin') return true
-      return Boolean(appId && u.core?.adminOf?.includes(appId))
+      return Boolean(appId && u.adminOf?.includes(appId))
     }
-    return (u.core?.adminOf?.length ?? 0) > 0
+    return (u.adminOf?.length ?? 0) > 0
   })
 
   const initialsFor = computed(() => {
@@ -60,11 +63,23 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
       if (!target) return []
       if (isTenant) {
         if (target.app?.role === 'admin') return ['admin']
-        if (appId && target.core?.adminOf?.includes(appId)) return ['admin']
+        if (appId && target.adminOf?.includes(appId)) return ['admin']
         return []
       }
-      return (target.core?.adminOf?.length ?? 0) > 0 ? ['admin'] : []
+      return (target.adminOf?.length ?? 0) > 0 ? ['admin'] : []
     }
+  })
+
+  // Canonical mapper for MoleculesPill props (no fallbacks)
+  const pillProps = computed<UserToPillMapper>(() => {
+    return (u: User): UserPillProps => ({
+      avatar: u.avatar,
+      initials: initialsFor.value(u),
+      title: u.display_name,
+      subtitle: u.handle,
+      badges: badges.value(u),
+      to: `/users/${u.id}`,
+    })
   })
 
   return {
@@ -75,5 +90,6 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     initialsFor,
     cta, // unified call-to-action state
     badges,
+    pillProps,
   }
 }

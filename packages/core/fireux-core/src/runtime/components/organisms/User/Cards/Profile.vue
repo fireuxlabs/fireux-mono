@@ -19,22 +19,48 @@
             <span v-if="user?.email" class="email">{{ user.email }}</span>
           </div>
           <div
-            v-if="user?.role || user?.appId || user?.created_in || user?.coreStatus || user?.appStatus"
+            v-if="
+              user?.role ||
+              user?.appId ||
+              user?.created_in ||
+              user?.coreStatus ||
+              user?.appStatus
+            "
             class="status-chips"
           >
             <UBadge v-if="user?.role" size="sm" variant="soft" color="primary">
               {{ user.role }}
             </UBadge>
-            <UBadge v-if="user?.appId" size="sm" variant="subtle" color="neutral">
+            <UBadge
+              v-if="user?.appId"
+              size="sm"
+              variant="subtle"
+              color="neutral"
+            >
               App · {{ user.appId }}
             </UBadge>
-            <UBadge v-if="user?.created_in" size="sm" variant="subtle" color="neutral">
+            <UBadge
+              v-if="user?.created_in"
+              size="sm"
+              variant="subtle"
+              color="neutral"
+            >
               Created · {{ user.created_in }}
             </UBadge>
-            <UBadge v-if="user?.coreStatus" size="sm" variant="soft" color="primary">
+            <UBadge
+              v-if="user?.coreStatus"
+              size="sm"
+              variant="soft"
+              color="primary"
+            >
               Core · {{ user.coreStatus }}
             </UBadge>
-            <UBadge v-if="user?.appStatus" size="sm" variant="soft" color="gray">
+            <UBadge
+              v-if="user?.appStatus"
+              size="sm"
+              variant="soft"
+              color="gray"
+            >
               App · {{ user.appStatus }}
             </UBadge>
           </div>

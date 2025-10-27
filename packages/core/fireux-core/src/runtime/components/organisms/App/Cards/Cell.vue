@@ -1,29 +1,43 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Cell.vue -->
 <template>
-  <UCard class="cell">
-    <div class="row">
-      <UAvatar
-        :src="app?.avatar_url || app?.logo_url || app?.wordmark_url || ''"
-        :alt="app?.app_name || app?.id || '—'"
-        size="md"
-        class="avatar"
-      />
+  <component :is="wrapperTag" v-bind="wrapperBindings" :class="wrapperClass">
+    <UCard class="cell">
+      <div class="row">
+        <UAvatar
+          :src="app?.avatar_url || app?.logo_url || app?.wordmark_url || ''"
+          :alt="app?.app_name || app?.id || '—'"
+          size="md"
+          class="avatar"
+        />
 
-      <div class="main">
-        <h3 class="title">{{ app?.app_name || app?.id }}</h3>
-        <p class="subtitle">
-          <span v-if="app?.id">{{ app.id }}</span>
-          <span v-if="app?.role">• {{ app.role }}</span>
-          <span v-if="app?.ecosystem">• {{ app.ecosystem }}</span>
-        </p>
+        <div class="main">
+          <h3 class="title">{{ app?.app_name || app?.id }}</h3>
+          <p class="subtitle">
+            <span v-if="app?.id">{{ app.id }}</span>
+            <span v-if="app?.role">• {{ app.role }}</span>
+            <span v-if="app?.ecosystem">• {{ app.ecosystem }}</span>
+          </p>
+        </div>
       </div>
-    </div>
-  </UCard>
+    </UCard>
+  </component>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import type { RouteLocationRaw } from 'vue-router'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-defineProps<{ app?: Partial<App> | null }>()
+
+const props = defineProps<{
+  app?: Partial<App> | null
+  to?: RouteLocationRaw | null
+}>()
+
+const wrapperTag = computed(() => (props.to ? 'NuxtLink' : 'div'))
+const wrapperBindings = computed(() => (props.to ? { to: props.to } : {}))
+const wrapperClass = computed(() =>
+  props.to ? 'block no-underline text-inherit' : undefined
+)
 </script>
 
 <style scoped>

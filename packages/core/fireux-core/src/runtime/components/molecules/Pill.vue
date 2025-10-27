@@ -1,6 +1,6 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/molecules/Pill.vue -->
 <template>
-  <div class="pill flex items-center gap-3 rounded-xl px-3 py-2 shadow-sm">
+  <component :is="wrapperTag" v-bind="linkBindings" :class="rootClass">
     <UAvatar
       :src="avatar"
       :alt="title"
@@ -30,13 +30,24 @@
         </UBadge>
       </div>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Pill } from '../../types/pill.model'
 
-defineProps<Pill.Props>()
+const props = defineProps<Pill.Props>()
+
+const linkTarget = computed(() => props.to ?? null)
+const wrapperTag = computed(() => (linkTarget.value ? 'NuxtLink' : 'div'))
+const linkBindings = computed(() =>
+  linkTarget.value ? { to: linkTarget.value } : {}
+)
+const rootClass = computed(() => [
+  'pill flex items-center gap-3 rounded-xl px-3 py-2 shadow-sm',
+  linkTarget.value ? 'block no-underline text-inherit' : null,
+])
 </script>
 
 <style scoped>
