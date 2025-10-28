@@ -1,4 +1,4 @@
-import { ref, computed, watchEffect } from 'vue'
+import { ref, computed, type Ref } from 'vue'
 import { doc, type DocumentReference } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 
@@ -16,28 +16,35 @@ export function useApp() {
   const { firestoreFetchCollection } = useFirestoreManager()
 
   // --- Current app document
-  const appRef = computed<DocumentReference<App>>(
-    () => doc(db, 'apps', appId) as DocumentReference<App>
+  const appRef = computed<DocumentReference<App> | null>(() =>
+    appId ? (doc(db, 'apps', appId) as DocumentReference<App>) : null
   )
   const { data: app } = useDocument<App>(appRef)
 
   // --- Global list (auto for global, lazy for tenants)
-  const autoAll =
+  type AppCollectionRef = Ref<App[] | undefined>
+
+  const autoAll: AppCollectionRef | null =
     role === 'global' ? firestoreFetchCollection<App>('apps') : null
 
-  const lazyAll = ref<ReturnType<typeof firestoreFetchCollection<App>> | null>(null)
   const requestAll = ref(false)
+  let tenantAll: AppCollectionRef | null = null
 
-  watchEffect(() => {
-    if (role !== 'global' && requestAll.value) {
-      lazyAll.value ??= firestoreFetchCollection<App>('apps')
-    }
+  const getCollectionRef = (): AppCollectionRef | null => {
+    if (autoAll) return autoAll
+    if (!requestAll.value) return null
+    tenantAll ??= firestoreFetchCollection<App>('apps')
+    return tenantAll
+  }
+
+  const all = computed<App[] | null>(() => {
+    const source = getCollectionRef()
+    return source?.value ?? null
   })
 
-  // 🔽 Flatten to avoid double `.value` at call sites
-  const all = computed<App[] | null>(() => {
-    const src = autoAll ?? lazyAll.value
-    return src?.value ?? null
+  const loadingAll = computed<boolean>(() => {
+    const source = getCollectionRef()
+    return source ? source.value === undefined : false
   })
 
   function fetchAll() {
@@ -58,8 +65,9 @@ export function useApp() {
   return {
     app,
     collection: {
-      all,       // Ref<App[] | null> (flattened)
-      fetchAll,  // trigger for tenants
+      all,
+      loadingAll,
+      fetchAll,
     },
     subcollections: { ...sub },
     computed: computedFlags,

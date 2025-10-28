@@ -3,17 +3,20 @@ import type { FirestoreTimestampOrString } from '../../types/firebase.ts'
 import type { Pill as PillModel } from '../../types/pill.model.ts'
 
 export type AppRole = 'global' | 'tenant' | 'sandbox'
-type TimestampValue = FirestoreTimestampOrString
+export type AppStatus = 'active' | 'archived'
+type Ts = FirestoreTimestampOrString
+
+export type AppPillProps = PillModel.Props & { to: string }
+export type AppToPillMapper = (app: App) => AppPillProps
 
 export interface App {
   /** == Firestore doc id */
   id: string
 
-  /** Display name */
+  /** Display */
   app_name: string
-
-  /** Optional short name used in UI badges */
   app_short_name?: string
+  slug?: string
 
   /** Scope + lineage */
   role: AppRole
@@ -21,15 +24,20 @@ export interface App {
 
   /** Governance */
   admin_ids?: string[]
+  // Optional future-proof alternative:
+  // roles?: Record<string, 'owner' | 'admin' | 'editor' | 'viewer'>
   creator_id: string
+
+  /** Ops */
+  status?: AppStatus
 
   /** Optional metadata */
   description?: string | null
-  social_links?: Record<string, string> | null
+  social_links?: Partial<Record<'site'|'instagram'|'facebook'|'x'|'linkedin', string>>
 
   /** System metadata */
-  created_at?: TimestampValue
-  updated_at?: TimestampValue
+  created_at: Ts              // required – set via serverTimestamp on create
+  updated_at?: Ts             // set via serverTimestamp on update
 
   /** Brand/media URLs (flat) */
   avatar_url?: string | null
@@ -52,26 +60,13 @@ export namespace AppCard {
     id: string
     app_name: string
     role: AppRole
-    admin_ids?: string[]
     creator_id: string
-    created_at?: TimestampValue
+    admin_ids?: string[]
+    created_at?: Ts
     avatar_url?: string | null
     logo_url?: string | null
     wordmark_url?: string | null
   }
 
-  export interface Profile {
-    id: string
-    app_name: string
-    role: AppRole
-    admin_ids?: string[]
-    creator_id: string
-    created_at?: TimestampValue
-    avatar_url?: string | null
-    logo_url?: string | null
-    wordmark_url?: string | null
-  }
+  export interface Profile extends Cell {}
 }
-
-export type AppPillProps = PillModel.Props & { to: string }
-export type AppToPillMapper = (app: App) => AppPillProps

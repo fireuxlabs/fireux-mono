@@ -1,134 +1,95 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUser.ts
-import { computed, type Ref } from 'vue'
-import {
-  doc,
-  type DocumentReference,
-  type DocumentData,
-  type Firestore,
-} from 'firebase/firestore'
-import { useFirestore, useDocument } from 'vuefire'
+import { computed } from 'vue'
 
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
-import { useScopedCollection } from '../../utils/useScoped.ts'
+import { createOverlayAccessors, mergeOverlayCollection } from '../../_shared/overlay.ts'
 import { useUserComputed } from './useUserComputed.ts'
+import { useFirestoreRead } from '../../operations/useFirestoreRead.ts'
 
 import type {
-  User,
   AppUser,
+  User,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 
-type CoreUserRecord = Omit<User, 'appUser'>
+type UserDoc = Omit<User, 'appUser'>
+
+const mergeUser = (
+  core: UserDoc | null,
+  overlay: AppUser | null,
+  fallbackId: string | undefined,
+  isTenant: boolean
+): User | null => {
+  if (!core) return null
+  const id = core.id ?? fallbackId
+  if (!id) return null
+
+  return {
+    ...core,
+    id,
+    role: isTenant ? overlay?.role ?? core.role : core.role,
+    appUser: isTenant ? overlay ?? null : null,
+  }
+}
 
 export type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
 /**
- * Core user composable.
- * Returns only:
- * - `user`: current runtime user (core flattened, app nested)
- * - `fetchedUser(id)`: fetch by ID on demand
+ * Returns current user (core merged with tenant overlay when available) plus a by-id accessor.
  */
 export function useUser() {
-  const db = useFirestore()
-  const { isTenant, appId } = useFireUXConfig()
   const { uid } = useAuth()
+  const { isTenant, appId } = useFireUXConfig()
 
-  // --- current user (core + optional app)
-  const coreDoc = getDocData<CoreUserRecord>(db, () =>
-    uid.value ? `users/${uid.value}` : null
-  )
-
-  const appDoc = getDocData<AppUser>(db, () =>
-    isTenant && appId && uid.value ? `apps/${appId}/users/${uid.value}` : null
-  )
-
-  const user = computed<User | null>(() =>
-    mergeUser(coreDoc.value, appDoc.value, isTenant)
-  )
-
-  // --- collection listing (auto scopes to tenant/global)
-  const scopedCollection = useScopedCollection<CoreUserRecord, AppUser>({
-    corePath: 'users',
-    appPath: (targetAppId: string) => `apps/${targetAppId}/users`,
+  const { current, byId } = createOverlayAccessors<UserDoc, AppUser, User>({
+    id: uid,
+    key: 'users',
+    requireCore: true,
+    map: ({ id, isTenant, core, app }) => {
+      if (!core) return null
+      return {
+        ...core,
+        id: core.id ?? id,
+        role: isTenant ? app?.role ?? core.role : core.role,
+        appUser: isTenant ? app ?? null : null,
+      }
+    },
   })
 
-  const collection = computed<User[]>(() => {
-    const list = scopedCollection.collection.value
-    if (!Array.isArray(list) || !list.length) return []
-    return list as unknown as User[]
+  const helpers = useUserComputed(current)
+  const { firestoreFetchCollection } = useFirestoreRead()
+
+  const globalRef = firestoreFetchCollection<UserDoc>('users')
+  const localRef =
+    isTenant && appId
+      ? firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
+      : null
+
+  const collectionValue = computed<User[]>(() =>
+    mergeOverlayCollection<UserDoc, AppUser, User>({
+      cores: globalRef.value ?? [],
+      overlays: localRef?.value ?? [],
+      isTenant,
+      appId: appId ?? null,
+      requireCore: true,
+      map: ({ id, core, app, isTenant }) =>
+        mergeUser(core, app, id, isTenant),
+    })
+  )
+
+  const collection = Object.assign(collectionValue, {
+    local: localRef,
+    global: globalRef,
+    fetchGlobal: () => globalRef,
   })
 
-  type UserCollectionRef = typeof collection & {
-    local: typeof scopedCollection.local
-    global: typeof scopedCollection.global
-    loading: typeof scopedCollection.loading
-    context: typeof scopedCollection.context
-  }
-
-  const extendedCollection = Object.assign(collection, {
-    local: scopedCollection.local,
-    global: scopedCollection.global,
-    loading: scopedCollection.loading,
-    context: scopedCollection.context,
-  }) as UserCollectionRef
-
-  // --- computed helpers (cta, pills, etc.)
-  const computedHelpers = useUserComputed(user)
-
-  // --- on-demand fetch by id (same merge rules)
   function fetchedUser(id: string) {
-    const idRef = computed(() => id)
-    const core = getDocData<CoreUserRecord>(db, () =>
-      idRef.value ? `users/${idRef.value}` : null
-    )
-    const app = getDocData<AppUser>(db, () =>
-      isTenant && appId && idRef.value
-        ? `apps/${appId}/users/${idRef.value}`
-        : null
-    )
-    const value = computed<User | null>(() =>
-      mergeUser(core.value, app.value, isTenant)
-    )
-    return { user: value }
+    return { user: byId(id) }
   }
 
   return {
-    user,
+    user: current,
     fetchedUser,
-    collection: extendedCollection,
-    ...computedHelpers,
-  }
-}
-
-/* --------------------------------- helpers -------------------------------- */
-
-/** Generic “path → doc data” reader. Returns Ref<T | null | undefined> */
-function getDocData<T>(db: Firestore, pathResolver: () => string | null) {
-  const ref = computed(() => {
-    const path = pathResolver()
-    return path ? (doc(db, path) as DocumentReference<T>) : null
-  })
-  const { data } = useDocument<T>(
-    ref as unknown as Ref<DocumentReference<DocumentData> | null>
-  )
-  return data // undefined while loading, null if missing, T when present
-}
-
-/**
- * Merge rule:
- * - Always flatten core fields into the User.
- * - In tenant mode, include `app` nested (role/overrides).
- * - If no core → return null.
- */
-function mergeUser(
-  core: CoreUserRecord | null | undefined,
-  app: AppUser | null | undefined,
-  isTenant: boolean
-): User | null {
-  if (!core) return null
-  return {
-    ...core,
-    role: isTenant ? app?.role ?? core.role : core.role,
-    appUser: isTenant ? app ?? null : null,
+    collection,
+    ...helpers,
   }
 }

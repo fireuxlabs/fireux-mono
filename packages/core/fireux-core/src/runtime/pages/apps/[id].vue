@@ -1,3 +1,4 @@
+//packages/core/fireux-core/src/runtime/pages/apps/[id].vue
 <template>
   <div class="space-y-6">
     <UCard>

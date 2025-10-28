@@ -3,7 +3,7 @@ import { computed, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type { ProfileBase, ProfileConfig } from './useProfile'
 
-type ProfileLike = { core?: unknown; app?: unknown } & ProfileBase
+type ProfileLike = ProfileBase & { appProfile?: ProfileBase | null }
 
 /**
  * Derived booleans + CTA text for profile UIs.
@@ -14,9 +14,9 @@ export function useProfileComputed(
 ) {
   const { isTenant } = useFireUXConfig()
 
-  const hasCoreProfile = computed(() => !!profile.value?.core)
+  const hasCoreProfile = computed(() => Boolean(profile.value))
   const hasAppProfile = isTenant
-    ? computed(() => !!profile.value?.app)
+    ? computed(() => Boolean(profile.value?.appProfile))
     : undefined
 
   // When tenant, consider profile "present" if either app or core exists.

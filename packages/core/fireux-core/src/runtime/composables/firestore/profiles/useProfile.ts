@@ -1,7 +1,8 @@
-import { computed, watchEffect, type ComputedRef, type Ref } from 'vue'
-import { doc, type DocumentReference } from 'firebase/firestore'
-import { useFirestore, useDocument, useCurrentUser } from 'vuefire'
+import { computed, watchEffect } from 'vue'
+import { useCurrentUser } from 'vuefire'
+
 import { useFireUXConfig } from '../../FireUXConfig.ts'
+import { createOverlayAccessors, mergeOverlayCollection } from '../_shared/overlay.ts'
 import { useFirestoreRead } from '../operations/useFirestoreRead.ts'
 import { useProfileDelete } from './useProfileDelete.ts'
 import { useProfileEnsure } from './useProfileEnsure.ts'
@@ -21,11 +22,6 @@ type ProfileUnion<
   app?: TApp | null
 }
 
-type ProfileCollectionRef<
-  TCore extends ProfileBase,
-  TApp extends ProfileBase
-> = Ref<ProfileUnion<TCore, TApp>[] | undefined>
-
 /**
  * Unified profile accessor bridging core and tenant overlays.
  */
@@ -33,51 +29,20 @@ export function useProfile<
   TCore extends ProfileBase,
   TApp extends ProfileBase = TCore
 >(config: ProfileConfig) {
-  const db = useFirestore()
   const currentUser = useCurrentUser()
-  const { role, appId } = useFireUXConfig()
-  const isTenant = role === 'tenant' && !!appId
+  const { isTenant, appId } = useFireUXConfig()
 
   const uid = computed(() => currentUser.value?.uid ?? null)
 
-  const coreRef = computed<DocumentReference<TCore> | null | undefined>(() =>
-    uid.value
-      ? (doc(db, config.collectionName, uid.value) as DocumentReference<TCore>)
-      : null
-  )
-  const { data: coreDoc } = useDocument<TCore>(coreRef)
-
-  const appRef = computed<DocumentReference<TApp> | null | undefined>(() =>
-    uid.value && isTenant
-      ? (doc(
-          db,
-          `apps/${appId}/${config.collectionName}`,
-          uid.value
-        ) as DocumentReference<TApp>)
-      : null
-  )
-  const { data: appDoc } = useDocument<TApp>(appRef)
-
-  const profile: ComputedRef<ProfileUnion<TCore, TApp> | null> = computed(
-    () => {
-      if (!uid.value) return null
-
-      const base = { id: uid.value }
-      const core = coreDoc.value ?? null
-      const app = isTenant ? appDoc.value ?? null : undefined
-
-      const merged = {
-        ...base,
-        core,
-        app,
-      } as ProfileUnion<TCore, TApp>
-
-      if (core) Object.assign(merged, core)
-      if (app) Object.assign(merged, app)
-
-      return merged
-    }
-  )
+  const { current: profile, byId } = createOverlayAccessors<
+    TCore,
+    TApp,
+    ProfileUnion<TCore, TApp>
+  >({
+    id: uid,
+    key: config.collectionName,
+    requireCore: true,
+  })
 
   const { profile: profileState } = useProfileState<ProfileUnion<
     TCore,
@@ -89,31 +54,38 @@ export function useProfile<
 
   const { firestoreFetchCollection } = useFirestoreRead()
 
-  const collectionLocal: ProfileCollectionRef<TCore, TApp> | null = isTenant
-    ? firestoreFetchCollection<ProfileUnion<TCore, TApp>>(
-        `apps/${appId}/${config.collectionName}`
-      )
-    : null
+  const globalRef = firestoreFetchCollection<TCore>(config.collectionName)
+  const localRef =
+    isTenant && appId
+      ? firestoreFetchCollection<TApp>(
+          `apps/${appId}/${config.collectionName}`
+        )
+      : null
 
-  let collectionGlobal: ProfileCollectionRef<TCore, TApp> | null = isTenant
-    ? null
-    : firestoreFetchCollection<ProfileUnion<TCore, TApp>>(config.collectionName)
+  const collectionValue = computed<ProfileUnion<TCore, TApp>[]>(() =>
+    mergeOverlayCollection<TCore, TApp, ProfileUnion<TCore, TApp>>({
+      cores: globalRef.value ?? [],
+      overlays: localRef?.value ?? [],
+      isTenant,
+      appId: appId ?? null,
+      requireCore: true,
+    })
+  )
 
-  const fetchGlobal = (): ProfileCollectionRef<TCore, TApp> | null => {
-    if (!isTenant) return collectionGlobal
-    collectionGlobal ??= firestoreFetchCollection<ProfileUnion<TCore, TApp>>(
-      config.collectionName
-    )
-    return collectionGlobal
+  const collection = Object.assign(collectionValue, {
+    local: localRef,
+    global: globalRef,
+    fetchGlobal: () => globalRef,
+  })
+
+  function fetchedProfile(id: string) {
+    return { profile: byId(id) }
   }
 
   return {
     profile,
-    collection: {
-      local: collectionLocal,
-      global: collectionGlobal,
-      fetchGlobal,
-    },
+    fetchedProfile,
+    collection,
     ...useProfileComputed(profile, config),
     ...useProfileDelete(profile, config),
     ...useProfileEnsure(profile, config),

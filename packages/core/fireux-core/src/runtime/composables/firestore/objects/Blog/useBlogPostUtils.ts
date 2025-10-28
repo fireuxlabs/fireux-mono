@@ -21,11 +21,10 @@ async function getAuthor(): Promise<Author> {
   const { user } = useUser()
   return {
     id: user.value?.id || '',
-    display_name:
-      user.value?.core?.display_name || user.value?.core?.email || '',
-    handle: user.value?.core?.handle || '',
-    avatar: user.value?.core?.avatar || '/img/default-image.png',
-    email: user.value?.core?.email || '',
+    display_name: user.value?.display_name || user.value?.email || '',
+    handle: user.value?.handle || '',
+    avatar: user.value?.avatar || '/img/default-image.png',
+    email: user.value?.email || '',
   }
 }
 

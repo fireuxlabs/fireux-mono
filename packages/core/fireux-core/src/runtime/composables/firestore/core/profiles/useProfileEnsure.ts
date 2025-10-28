@@ -20,10 +20,10 @@ export function useProfileEnsure(_profile: unknown, config: ProfileConfig) {
     if (!user.value?.id) throw new Error('User not loaded')
     const uid = user.value.id
 
-    const base: ProfileBase = {
+    const base: Partial<ProfileBase> = {
       id: uid,
-      display_name: user.value.core?.display_name || uid,
-      avatar: user.value.core?.avatar || '',
+      display_name: user.value.display_name || uid,
+      avatar: user.value.avatar || '',
     }
 
     let createdCore = false

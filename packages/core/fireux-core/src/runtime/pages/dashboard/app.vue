@@ -1,3 +1,4 @@
+packages/core/fireux-core/src/runtime/pages/dashboard/app.vue
 <template>
   <client-only>
     <UPage>
