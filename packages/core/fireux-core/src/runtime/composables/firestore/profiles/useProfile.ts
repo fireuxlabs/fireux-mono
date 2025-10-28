@@ -2,7 +2,10 @@ import { computed, watchEffect } from 'vue'
 import { useCurrentUser } from 'vuefire'
 
 import { useFireUXConfig } from '../../FireUXConfig.ts'
-import { createOverlayAccessors, mergeOverlayCollection } from '../_shared/overlay.ts'
+import {
+  createOverlayAccessors,
+  mergeOverlayCollection,
+} from '../_shared/overlay.ts'
 import { useFirestoreRead } from '../operations/useFirestoreRead.ts'
 import { useProfileDelete } from './useProfileDelete.ts'
 import { useProfileEnsure } from './useProfileEnsure.ts'
@@ -57,9 +60,7 @@ export function useProfile<
   const globalRef = firestoreFetchCollection<TCore>(config.collectionName)
   const localRef =
     isTenant && appId
-      ? firestoreFetchCollection<TApp>(
-          `apps/${appId}/${config.collectionName}`
-        )
+      ? firestoreFetchCollection<TApp>(`apps/${appId}/${config.collectionName}`)
       : null
 
   const collectionValue = computed<ProfileUnion<TCore, TApp>[]>(() =>

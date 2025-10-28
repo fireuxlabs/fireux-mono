@@ -1,25 +1,26 @@
+packages/tenants/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue
 <template>
-  <UPage>
-    <UPageBody>
-      <OrganismsProfileRoot :config="supplierConfig">
-        <!-- When a profile exists, render the editor -->
-        <template #current-assets="{ profile }">
-          <div v-if="profile">
-            <h2 class="mb-4">Edit Supplier Profile</h2>
-            <MiseProfilesSupplierEdit :supplier="profile" />
-          </div>
-        </template>
+  <DashboardEditStructure
+    title="Supplier Profile"
+    description="Share your supplier details with the Misebox marketplace."
+  >
+    <OrganismsProfileRoot :config="supplierConfig">
+      <template #current-assets="{ profile }">
+        <div v-if="profile">
+          <MiseProfilesSupplierEdit :supplier="profile" />
+        </div>
+      </template>
 
-        <!-- Optional: omit list rendering by leaving #item empty -->
-        <template #item></template>
-      </OrganismsProfileRoot>
-    </UPageBody>
-  </UPage>
+      <template #item></template>
+    </OrganismsProfileRoot>
+  </DashboardEditStructure>
 </template>
 
 <script setup lang="ts">
 declare function definePageMeta(meta: any): void
+import DashboardEditStructure from 'fireux-core/runtime/components/layouts/dashboard/EditStructure.vue'
 import { supplierConfig } from '../../models/profiles/Supplier.model'
+import MiseProfilesSupplierEdit from '../../components/organisms/profiles/Supplier/Edit.vue'
 definePageMeta({
   layout: 'dashboard',
   nav: {

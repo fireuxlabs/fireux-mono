@@ -1,4 +1,4 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/pages/apps.vue -->
+<!-- FILE: packages/core/fireux-core/src/runtime/pages/apps/index.vue -->
 <template>
   <div class="space-y-6">
     <!-- CURRENT APP -->
@@ -9,7 +9,8 @@
 
       <div v-if="app" class="space-y-4">
         <MoleculesPill
-          :avatar="app.avatar_url"
+          :avatar="app?.avatar_url ?? null"
+          :initials="initialsForApp(app)"
           :title="app.app_name"
           :subtitle="app.ecosystem"
           :to="currentAppLink"
@@ -34,7 +35,7 @@
             size="xs"
             variant="soft"
             icon="i-lucide-database"
-            @click="collection.fetchAll()"
+            @click="loadAllApps"
           >
             Load all apps
           </UButton>
@@ -45,7 +46,8 @@
         <MoleculesPill
           v-for="a in apps"
           :key="a.id"
-          :avatar="a.avatar_url || a.logo_url || a.wordmark_url"
+          :avatar="a?.avatar_url ?? null"
+          :initials="initialsForApp(a)"
           :title="a.app_name"
           :subtitle="a.ecosystem"
           :to="`/apps/${a.id}`"
@@ -55,12 +57,7 @@
       <p v-else class="text-sm text-gray-500 dark:text-gray-400">
         <span v-if="isTenant">
           Global apps not loaded yet.
-          <UButton
-            size="xs"
-            variant="link"
-            class="ml-1"
-            @click="collection.fetchAll()"
-          >
+          <UButton size="xs" variant="link" class="ml-1" @click="loadAllApps">
             Load all apps
           </UButton>
         </span>
@@ -74,6 +71,7 @@
 import { computed } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 
 definePageMeta({
   nav: {
@@ -99,4 +97,20 @@ const currentAppLink = computed(() => {
   const id = app.value?.id ?? appId ?? ''
   return id ? `/apps/${id}` : null
 })
+
+function initialsForApp(target?: Partial<App> | null) {
+  const name = target?.app_name?.trim() ?? ''
+  if (name) {
+    const [first = '', second = ''] = name.split(/\s+/)
+    const combined = `${first[0] ?? ''}${second[0] ?? ''}`.trim()
+    if (combined) return combined.toUpperCase()
+    if (first) return first.slice(0, 2).toUpperCase()
+  }
+  const fallback = target?.id?.trim()
+  return fallback ? fallback.slice(0, 2).toUpperCase() : 'AP'
+}
+
+function loadAllApps() {
+  collection.fetchAll()
+}
 </script>

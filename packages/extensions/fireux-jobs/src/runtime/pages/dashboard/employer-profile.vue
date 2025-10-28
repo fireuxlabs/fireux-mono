@@ -1,25 +1,26 @@
+packages/extensions/fireux-jobs/src/runtime/pages/dashboard/employer-profile.vue
 <template>
-  <UPage>
-    <UPageBody>
-      <OrganismsProfileRoot :config="employerConfig">
-        <!-- When a profile exists, render the editor -->
-        <template #current-assets="{ profile }">
-          <div v-if="profile">
-            <h2 class="mb-4">Edit Employer Profile</h2>
-            <JobProfilesEmployerEdit :employer="profile" />
-          </div>
-        </template>
+  <DashboardEditStructure
+    title="Employer Profile"
+    description="Keep your employer brand details up to date."
+  >
+    <OrganismsProfileRoot :config="employerConfig">
+      <template #current-assets="{ profile }">
+        <div v-if="profile">
+          <JobProfilesEmployerEdit :employer="profile" />
+        </div>
+      </template>
 
-        <!-- Optional: omit list rendering by leaving #item empty -->
-        <template #item></template>
-      </OrganismsProfileRoot>
-    </UPageBody>
-  </UPage>
+      <template #item></template>
+    </OrganismsProfileRoot>
+  </DashboardEditStructure>
 </template>
 
 <script setup lang="ts">
 declare function definePageMeta(meta: any): void
+import DashboardEditStructure from 'fireux-core/runtime/components/layouts/dashboard/EditStructure.vue'
 import { employerConfig } from '../../models/profiles/Employer.model'
+import JobProfilesEmployerEdit from '../../components/Organisms/profiles/Employer/Edit.vue'
 definePageMeta({
   layout: 'dashboard',
   nav: {

@@ -1,41 +1,36 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/pages/users/[id].vue -->
 <template>
-  <client-only>
-    <div v-if="user">
-      <UPageCard variant="naked" orientation="horizontal" class="mb-4">
-        <div
-          class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between"
-        >
-          <MoleculesPill v-bind="pillPropsFor(user)" class="md:max-w-sm" />
-          <OrganismsUserCardsCell :user="user" class="md:max-w-md" />
-        </div>
-      </UPageCard>
+  <DashboardEditStructure
+    title="Your Profile"
+    description="Manage your personal profile and account details."
+    :hero="hero"
+    :dev-data="user"
+  >
+    <UPageCard v-if="user" variant="subtle">
+      <div class="grid gap-4 md:grid-cols-2">
+        <OrganismsUserCardsProfile :user="user" />
+        <OrganismsUserEdit :user="user" />
+      </div>
+    </UPageCard>
 
-      <UPageCard variant="subtle">
-        <div class="grid gap-4 md:grid-cols-2">
-          <OrganismsUserCardsProfile :user="user" />
-          <OrganismsUserEdit :user="user" />
-        </div>
-      </UPageCard>
-    </div>
-
-    <div v-else>
-      <UCard>
-        <div class="text-center py-8">
-          <UIcon
-            name="i-heroicons-user-circle"
-            class="w-12 h-12 mx-auto mb-4 text-gray-400"
-          />
-          <p>Loading profile...</p>
-        </div>
-      </UCard>
-    </div>
-  </client-only>
+    <UCard v-else>
+      <div class="py-8 text-center">
+        <UIcon
+          name="i-heroicons-user-circle"
+          class="mx-auto mb-4 h-12 w-12 text-gray-400"
+        />
+        <p>Loading profile...</p>
+      </div>
+    </UCard>
+  </DashboardEditStructure>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import DashboardEditStructure from '../../components/layouts/dashboard/EditStructure.vue'
+import OrganismsUserCardsCell from '../../components/organisms/User/Cards/Cell.vue'
+import OrganismsUserCardsProfile from '../../components/organisms/User/Cards/Profile.vue'
+import OrganismsUserEdit from '../../components/organisms/User/Edit.vue'
 import { useUser } from '../../composables/firestore/core/user/useUser'
-import type { User } from '../../composables/firestore/core/user/useUser'
 
 definePageMeta({
   layout: 'dashboard',
@@ -54,8 +49,19 @@ const useHeadFn = (globalThis as any).useHead as
   | ((input: any) => void)
 useHeadFn?.({ title: 'Your Profile' })
 
-const { user, pillProps } = useUser()
+const { user: userRef, pillProps } = useUser()
 
-const pillPropsFor = (target: User | null | undefined) =>
-  target ? pillProps.value(target) : undefined
+const user = computed(() => userRef.value ?? null)
+
+const hero = computed(() => {
+  const value = user.value
+  if (!value) return null
+  return {
+    pill: pillProps.value(value),
+    cellComponent: OrganismsUserCardsCell,
+    cellProps: {
+      user: value,
+    },
+  }
+})
 </script>

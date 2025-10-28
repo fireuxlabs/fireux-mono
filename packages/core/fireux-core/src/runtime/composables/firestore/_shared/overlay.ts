@@ -156,18 +156,12 @@ export function mergeOverlayCollection<
   TApp = TCore,
   TResult = OverlayRecord<TCore, TApp>
 >(options: OverlayCollectionMergeOptions<TCore, TApp, TResult>): TResult[] {
-  const {
-    cores,
-    overlays = [],
-    isTenant,
-    appId,
-    requireCore,
-    map,
-  } = options
+  const { cores, overlays = [], isTenant, appId, requireCore, map } = options
 
-  const mapper = map ?? ((input: OverlayMergeInput<TCore, TApp>) =>
-    defaultMap(input, requireCore, isTenant) as TResult | null
-  )
+  const mapper =
+    map ??
+    ((input: OverlayMergeInput<TCore, TApp>) =>
+      defaultMap(input, requireCore, isTenant) as TResult | null)
 
   const overlaysById = isTenant
     ? overlays.reduce((acc, overlay) => {
@@ -180,7 +174,11 @@ export function mergeOverlayCollection<
 
   const results: TResult[] = []
 
-  const pushRecord = (id: string | null, core: TCore | null, overlay: TApp | null) => {
+  const pushRecord = (
+    id: string | null,
+    core: TCore | null,
+    overlay: TApp | null
+  ) => {
     if (!id) return
     const payload: OverlayMergeInput<TCore, TApp> = {
       id,

@@ -1,4 +1,4 @@
-//packages/core/fireux-core/src/runtime/pages/apps/[id].vue
+<!-- FILE: packages/core/fireux-core/src/runtime/pages/apps/[id].vue -->
 <template>
   <div class="space-y-6">
     <UCard>
@@ -16,7 +16,8 @@
 
       <div v-else-if="app" class="space-y-4">
         <MoleculesPill
-          :avatar="app.avatar_url || app.logo_url || app.wordmark_url"
+          :avatar="app?.avatar_url ?? null"
+          :initials="initialsForApp(app)"
           :title="app.app_name"
           :subtitle="app.ecosystem"
         />
@@ -74,6 +75,18 @@ const appRef = appId ? firestoreFetchDoc<App>('apps', appId) : null
 const app = computed<App | null>(() => appRef?.value ?? null)
 const isLoading = computed(() => Boolean(appRef && appRef.value === undefined))
 const headerTitle = computed(() => app.value?.app_name ?? 'App Details')
+
+function initialsForApp(target?: Partial<App> | null) {
+  const name = target?.app_name?.trim() ?? ''
+  if (name) {
+    const [first = '', second = ''] = name.split(/\s+/)
+    const combined = `${first[0] ?? ''}${second[0] ?? ''}`.trim()
+    if (combined) return combined.toUpperCase()
+    if (first) return first.slice(0, 2).toUpperCase()
+  }
+  const fallback = target?.id?.trim()
+  return fallback ? fallback.slice(0, 2).toUpperCase() : 'AP'
+}
 
 const rawDisplay = computed(() => {
   if (isLoading.value) return 'Loading…'

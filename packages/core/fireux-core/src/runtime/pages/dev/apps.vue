@@ -22,7 +22,8 @@
 
       <div v-if="currentApp" class="space-y-4">
         <MoleculesPill
-          :avatar="currentApp.avatar_url"
+          :avatar="currentApp?.avatar_url ?? null"
+          :initials="initialsForApp(currentApp)"
           :title="currentApp.app_name"
           :subtitle="currentApp.ecosystem"
           :to="currentAppLink"
@@ -74,13 +75,12 @@
               Copy JSON
             </UButton>
 
-            <!-- Tenant-only: fetch on demand -->
             <UButton
               v-if="isTenant"
               size="xs"
               variant="soft"
               icon="i-lucide-database"
-              @click="loadAll"
+              @click="loadAllApps"
             >
               Load all apps
             </UButton>
@@ -92,7 +92,8 @@
         <MoleculesPill
           v-for="a in apps"
           :key="a.id"
-          :avatar="a.avatar_url || a.logo_url || a.wordmark_url"
+          :avatar="a?.avatar_url ?? null"
+          :initials="initialsForApp(a)"
           :title="a.app_name"
           :subtitle="a.ecosystem"
           :to="`/apps/${a.id}`"
@@ -107,7 +108,7 @@
             variant="link"
             color="primary"
             class="ml-1"
-            @click="loadAll"
+            @click="loadAllApps"
           >
             Load all apps
           </UButton>
@@ -145,6 +146,7 @@ import { computed } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard.ts'
+import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 
 definePageMeta({
   layout: 'dev',
@@ -166,13 +168,15 @@ const { app, collection, computed: appComputed } = useApp()
 
 const currentApp = computed(() => app.value ?? null)
 const apps = computed(() => collection.all.value ?? [])
+const loadAllApps = () => collection.fetchAll()
 
 const currentAppJson = computed(() => currentApp.value ?? null)
 const appsJson = computed(() => (apps.value.length ? apps.value : null))
 
-const currentAppLink = computed(() =>
-  currentApp.value?.id ? `/apps/${currentApp.value.id}` : null
-)
+const currentAppLink = computed(() => {
+  const id = currentApp.value?.id ?? ''
+  return id ? `/apps/${id}` : null
+})
 
 const { copyJSON } = useDevClipboard()
 
@@ -217,7 +221,15 @@ const collectionInfo = computed(() => {
   ]
 })
 
-function loadAll() {
-  collection.fetchAll()
+function initialsForApp(target?: Partial<App> | null) {
+  const name = target?.app_name?.trim() ?? ''
+  if (name) {
+    const [first = '', second = ''] = name.split(/\s+/)
+    const combined = `${first[0] ?? ''}${second[0] ?? ''}`.trim()
+    if (combined) return combined.toUpperCase()
+    if (first) return first.slice(0, 2).toUpperCase()
+  }
+  const fallback = target?.id?.trim()
+  return fallback ? fallback.slice(0, 2).toUpperCase() : 'AP'
 }
 </script>

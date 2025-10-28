@@ -2,7 +2,10 @@ import { computed } from 'vue'
 
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
-import { createOverlayAccessors, mergeOverlayCollection } from '../../_shared/overlay.ts'
+import {
+  createOverlayAccessors,
+  mergeOverlayCollection,
+} from '../../_shared/overlay.ts'
 import { useUserComputed } from './useUserComputed.ts'
 import { useFirestoreRead } from '../../operations/useFirestoreRead.ts'
 
@@ -71,8 +74,7 @@ export function useUser() {
       isTenant,
       appId: appId ?? null,
       requireCore: true,
-      map: ({ id, core, app, isTenant }) =>
-        mergeUser(core, app, id, isTenant),
+      map: ({ id, core, app, isTenant }) => mergeUser(core, app, id, isTenant),
     })
   )
 

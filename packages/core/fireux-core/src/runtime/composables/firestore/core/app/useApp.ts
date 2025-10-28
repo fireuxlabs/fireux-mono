@@ -37,9 +37,9 @@ export function useApp() {
     return tenantAll
   }
 
-  const all = computed<App[] | null>(() => {
+  const all = computed<App[] | undefined>(() => {
     const source = getCollectionRef()
-    return source?.value ?? null
+    return source?.value
   })
 
   const loadingAll = computed<boolean>(() => {
@@ -52,6 +52,8 @@ export function useApp() {
     return all.value
   }
 
+  const apps = computed<App[] | undefined>(() => all.value)
+
   // --- Subcollections
   const sub = useAppUsers()
 
@@ -62,8 +64,37 @@ export function useApp() {
   const ensure = computed(() => (app.value ? null : useAppEnsure()))
   const updates = computed(() => (app.value ? useAppUpdate(app.value) : null))
 
+  type UpdateService = ReturnType<typeof useAppUpdate>
+
+  function requireUpdate<K extends keyof UpdateService>(
+    key: K
+  ): UpdateService[K] {
+    const service = updates.value
+    const fn = service?.[key]
+    if (typeof fn !== 'function') {
+      throw new TypeError(
+        `[useApp] Update "${String(
+          key
+        )}" is unavailable before the app document loads.`
+      )
+    }
+    return fn
+  }
+
+  const updateDescription = (
+    ...args: Parameters<UpdateService['updateDescription']>
+  ) => requireUpdate('updateDescription')(...args)
+
+  const updateSocialLinks = (
+    ...args: Parameters<UpdateService['updateSocialLinks']>
+  ) => requireUpdate('updateSocialLinks')(...args)
+
+  const updateAdmins = (...args: Parameters<UpdateService['updateAdmins']>) =>
+    requireUpdate('updateAdmins')(...args)
+
   return {
     app,
+    apps,
     collection: {
       all,
       loadingAll,
@@ -73,5 +104,8 @@ export function useApp() {
     computed: computedFlags,
     ensure,
     updates,
+    updateDescription,
+    updateSocialLinks,
+    updateAdmins,
   }
 }
