@@ -1,44 +1,55 @@
 <!-- packages/tenants/fireux-misebox/src/runtime/components/organisms/profiles/Chef/Edit.vue -->
-<!-- chef edit -->
 <template>
   <ClientOnly>
-    <UCard class="space-y-6">
-      <MoleculesFormsFirestoreAvatarPicker
-        :src="props.chef?.avatar"
-        :alt="props.chef?.display_name || 'Chef'"
-        :initials="initials"
-        :update-function="onSaveAvatar"
-      />
-      <MoleculesFormsFirestoreField
-        label="Display Name"
-        :firebase-value="props.chef?.display_name"
-        placeholder="Enter your display name"
-        :update-function="onSaveDisplayName"
-      />
-    </UCard>
+    <div v-if="chef" class="space-y-6">
+      <UCard>
+        <MoleculesFormsFirestoreSimpleField
+          label="Display Name"
+          :firebase-value="chef.display_name || ''"
+          placeholder="Enter your display name"
+          :update-function="handleDisplayName"
+        />
+      </UCard>
+    </div>
+
+    <MoleculesNotFound v-else entity="chef profile" kind="document" loading />
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Chef } from '../../../../models/profiles/Chef.model'
 import { useChefUpdate } from '../../../../composables/firestore/profiles/Chef/useChefUpdate'
-import { computed } from 'vue'
 
-const props = defineProps<{ chef: Chef }>()
-const { updateDisplayName, updateAvatar } = useChefUpdate()
+const props = defineProps<{ chef: Chef | null }>()
+const chef = computed(() => props.chef ?? null)
 
-const initials = computed(() => {
-  const name = props.chef?.display_name || 'C'
-  return name
-    .split(' ')
-    .map((s) => s[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-})
+const { updateDisplayName } = useChefUpdate(chef)
 
-const onSaveDisplayName = (v: string) => updateDisplayName(v)
-const onSaveAvatar = (file: File) => updateAvatar(file)
+const useToastFn = (globalThis as any).useToast as undefined | (() => any)
+const toast = useToastFn ? useToastFn() : undefined
+
+const handleDisplayName = async (value: string) => {
+  if (!chef.value) return 'success'
+  try {
+    await updateDisplayName(value)
+    toast?.add({
+      title: 'Display name updated',
+      icon: 'i-heroicons-check-circle',
+    })
+    return 'success'
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast?.add({
+      title: 'Failed to update display name',
+      description,
+      color: 'amber',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+    throw error
+  }
+}
 </script>
 <!--
 LEGACY EDITOR (preserved as comment)

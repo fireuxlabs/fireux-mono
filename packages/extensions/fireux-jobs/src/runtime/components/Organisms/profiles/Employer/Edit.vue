@@ -1,314 +1,288 @@
-<!-- employer edit -->
 <template>
   <ClientOnly>
-    <UCard class="space-y-6">
-      <MoleculesFormsFirestoreAvatarSelection
-        :user="{ ...employer, avatar_url: employer?.avatar }"
-        @upload="onUploadAvatar"
-      />
+    <div v-if="record" class="space-y-6">
+      <UCard>
+        <div class="space-y-4">
+          <MoleculesFormsFirestoreSimpleField
+            label="Display Name"
+            :firebase-value="record.display_name || ''"
+            placeholder="Company or organization name"
+            :update-function="handleDisplayName"
+            :validation-function="validateDisplayName"
+            :formatting-function="formatDisplayName"
+          />
 
-      <MoleculesFormsFirestoreField
-        label="Display Name"
-        :firebase-value="employer?.display_name"
-        placeholder="Enter your display name"
-        :update-function="onSaveDisplayName"
-      />
-    </UCard>
+          <MoleculesFormsFirestoreSimpleField
+            label="Headline"
+            :firebase-value="coreProfile?.title || ''"
+            placeholder="Add a headline or role"
+            :update-function="updateCoreTitle"
+          />
+        </div>
+      </UCard>
+
+      <UCard>
+        <div class="space-y-4">
+          <header class="space-y-1">
+            <h3 class="text-base font-semibold text-gray-900">Core Profile</h3>
+            <p class="text-sm text-gray-500">
+              Shared across every FireUX app that lists this employer.
+            </p>
+          </header>
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Short Bio"
+            type="textarea"
+            :rows="3"
+            :maxlength="200"
+            :firebase-value="coreProfile?.bio_short || ''"
+            placeholder="Summarize your company in a few sentences"
+            :update-function="updateCoreBioShort"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Long Bio"
+            type="textarea"
+            :rows="6"
+            :maxlength="1000"
+            :firebase-value="coreProfile?.bio_long || ''"
+            placeholder="Tell the deeper story of your organization"
+            :update-function="updateCoreBioLong"
+          />
+
+          <MoleculesFormsFirestoreArrayOfStrings
+            label="Specialties"
+            :firebase-value="coreProfile?.specialties || []"
+            item-placeholder="Add specialty"
+            new-item-placeholder="Add specialty"
+            :update-function="updateCoreSpecialties"
+          />
+        </div>
+      </UCard>
+
+      <UCard v-if="canEditAppOverlay">
+        <div class="space-y-4">
+          <header class="space-y-1">
+            <h3 class="text-base font-semibold text-gray-900">App Overlay</h3>
+            <p class="text-sm text-gray-500">
+              {{ appCardDescription }}
+            </p>
+          </header>
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Headline Override"
+            :firebase-value="appProfile?.title || ''"
+            placeholder="Optional tenant-specific headline"
+            :update-function="updateAppTitle"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Short Bio Override"
+            type="textarea"
+            :rows="3"
+            :maxlength="200"
+            :firebase-value="appProfile?.bio_short || ''"
+            placeholder="Tailor the short bio for this app"
+            :update-function="updateAppBioShort"
+          />
+
+          <MoleculesFormsFirestoreArrayOfStrings
+            label="App Specialties"
+            :firebase-value="appProfile?.specialties || []"
+            item-placeholder="Add specialty"
+            new-item-placeholder="Add specialty"
+            :update-function="updateAppSpecialties"
+          />
+        </div>
+      </UCard>
+
+      <UCard>
+        <dl class="grid gap-4 sm:grid-cols-2">
+          <div class="space-y-1">
+            <dt class="text-sm font-medium text-gray-500">Employer ID</dt>
+            <dd class="text-sm font-semibold text-gray-900">{{ record.id }}</dd>
+          </div>
+
+          <div class="space-y-1">
+            <dt class="text-sm font-medium text-gray-500">Core Updated</dt>
+            <dd class="text-sm text-gray-900">{{ coreUpdatedAt }}</dd>
+          </div>
+
+          <div class="space-y-1">
+            <dt class="text-sm font-medium text-gray-500">Core Specialties</dt>
+            <dd class="text-sm text-gray-900">
+              {{ coreSpecialtiesCount }} item{{
+                coreSpecialtiesCount === 1 ? '' : 's'
+              }}
+            </dd>
+          </div>
+
+          <div class="space-y-1">
+            <dt class="text-sm font-medium text-gray-500">App Overlay</dt>
+            <dd class="text-sm text-gray-900">{{ appOverlayStatus }}</dd>
+          </div>
+
+          <div v-if="canEditAppOverlay" class="space-y-1">
+            <dt class="text-sm font-medium text-gray-500">App Updated</dt>
+            <dd class="text-sm text-gray-900">{{ appUpdatedAt }}</dd>
+          </div>
+        </dl>
+      </UCard>
+    </div>
+
+    <MoleculesNotFound
+      v-else
+      entity="employer profile"
+      kind="document"
+      loading
+    />
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Employer } from '../../../../models/profiles/Employer.model'
-import { useEmployer } from '../../../../composables/firestore/profiles/Employer/useEmployer'
-
-const props = defineProps<{ employer: Employer }>()
-
-const {
-  avatar,
-  displayName,
-  updateDisplayName,
-  updateAvatar,
-  formatDisplayName,
-  validateDisplayName,
-} = useEmployer()
-// useImageStorage is auto-imported by fireux-core module
-const { uploadImage } = useImageStorage()
-const uploadCoreAvatar = (source: File | string, uid: string) =>
-  uploadImage(`users/${uid}/avatar.jpg`, source)
-
-const onSaveDisplayName = (v: string) => {
-  const formatted = formatDisplayName(v)
-  const valid = validateDisplayName(formatted)
-  if (valid === true) return updateDisplayName(formatted)
-  // Optionally surface error via a toast/notification in future
-}
-
-const onUploadAvatar = async (file: File) => {
-  await updateAvatar(file)
-}
-</script>
-
-<!-- TODO: Legacy employer editor preserved below for reference. Do not remove until replacement is fully validated.
-
-LEGACY EDITOR (preserved as comment)
-
-<template>
-  <client-only>
-    <div class="profile-edit-container">
-      [Avatar Upload]
-      <FireMoleculesFormsFirestoreAvatarSelection
-        :user="{
-          ...props.employer,
-          avatar_url: props.employer?.avatarUrl,
-        }"
-      />
-
-      [Company Name Field (Primary Identifier)]
-      <FireMoleculesFormsFirestoreField
-        label="Company Name"
-        :firebase-value="props.employer?.company_name"
-        placeholder="Enter your company name"
-        :update-function="updateCompanyName"
-      />
-
-      [Business Type Field]
-      <FireMoleculesFormsFirestoreField
-        label="Business Type"
-        :firebase-value="props.employer?.business_type"
-        placeholder="e.g., Restaurant, Catering, Hotel, Food Manufacturer"
-        :update-function="updateBusinessType"
-      />
-
-      [Your Title]
-      <FireMoleculesFormsFirestoreField
-        label="Your Title"
-        :firebase-value="props.employer?.title"
-        placeholder="e.g., Owner, HR Manager, Executive Chef"
-        :update-function="updateTitle"
-      />
-
-      [Company Overview]
-      <FireMoleculesFormsFirestoreField
-        label="Company Overview"
-        :firebase-value="props.employer?.bio_short"
-        placeholder="Brief description of your company..."
-        type="textarea"
-        :rows="3"
-        :maxlength="200"
-        :update-function="updateBioShort"
-      />
-
-      [Detailed Company Description]
-      <FireMoleculesFormsFirestoreField
-        label="Detailed Company Description"
-        :firebase-value="props.employer?.bio_long"
-        placeholder="Tell the story of your company in detail..."
-        type="textarea"
-        :rows="6"
-        :maxlength="1000"
-        :update-function="updateBioLong"
-      />
-
-      [Cuisine Types Array]
-      <FireMoleculesFormsFirestoreArrayOfStrings
-        label="Cuisine Types"
-        :firebase-value="props.employer?.cuisine_types || []"
-        item-placeholder="Cuisine type"
-        new-item-placeholder="Add cuisine type (e.g., Italian, French, Asian, etc.)"
-        :update-function="updateCuisineTypes"
-      />
-
-      [Services Offered Array]
-      <FireMoleculesFormsFirestoreArrayOfStrings
-        label="Services Offered"
-        :firebase-value="props.employer?.services_offered || []"
-        item-placeholder="Service"
-        new-item-placeholder="Add service (e.g., Fine Dining, Catering, Events, etc.)"
-        :update-function="updateServicesOffered"
-      />
-
-      [Employee Benefits]
-      <FireMoleculesFormsFirestoreArrayOfStrings
-        label="Employee Benefits"
-        :firebase-value="props.employer?.benefits || []"
-        item-placeholder="Benefit"
-        new-item-placeholder="Add benefit (e.g., Health Insurance, Paid Time Off, etc.)"
-        :update-function="updateBenefits"
-      />
-
-      [Years Established]
-      <FireMoleculesFormsFirestoreField
-        label="Years Established"
-        :firebase-value="props.employer?.years_established"
-        placeholder="Enter year company was established"
-        type="number"
-        :update-function="updateYearsEstablished"
-      />
-
-      [Employee Count]
-      <FireMoleculesFormsFirestoreField
-        label="Employee Count"
-        :firebase-value="props.employer?.employee_count"
-        placeholder="Number of employees"
-        type="number"
-        :update-function="updateEmployeeCount"
-      />
-
-      [Business Email]
-      <FireMoleculesFormsFirestoreField
-        label="Business Email"
-        :firebase-value="props.employer?.email"
-        placeholder="business@example.com"
-        type="email"
-        :update-function="updateEmail"
-      />
-
-      [Business Phone]
-      <FireMoleculesFormsFirestoreField
-        label="Business Phone"
-        :firebase-value="props.employer?.phone"
-        placeholder="(123) 456-7890"
-        type="phone"
-        :update-function="updatePhone"
-      />
-
-      [Company Website]
-      <FireMoleculesFormsFirestoreField
-        label="Company Website"
-        :firebase-value="props.employer?.website"
-        placeholder="https://yourcompany.com"
-        type="url"
-        :update-function="updateWebsite"
-      />
-
-      [Primary Location]
-      <FireMoleculesFormsFirestoreMultiField
-        label="Primary Location"
-        :firebase-value="props.employer?.location || {}"
-        :placeholders="{
-          city: 'City',
-          state: 'State/Province',
-          country: 'Country',
-        }"
-        :update-function="updateLocation"
-        :commas="true"
-      />
-
-      [Operating Hours]
-      <FireMoleculesFormsFirestoreField
-        label="Operating Hours"
-        :firebase-value="props.employer?.operating_hours"
-        placeholder="e.g., Mon-Fri 9AM-5PM, Weekend hours vary"
-        :update-function="updateOperatingHours"
-      />
-
-      [Company Size]
-      <FireMoleculesFormsFirestoreSelect
-        label="Company Size"
-        :firebase-value="props.employer?.company_size || 'small'"
-        :options="[
-          { label: 'Startup (1-10 employees)', value: 'startup' },
-          { label: 'Small (11-50 employees)', value: 'small' },
-          { label: 'Medium (51-200 employees)', value: 'medium' },
-          { label: 'Large (201-1000 employees)', value: 'large' },
-          { label: 'Enterprise (1000+ employees)', value: 'enterprise' },
-        ]"
-        placeholder="Select company size"
-        :update-function="updateCompanySize"
-      />
-
-      [Hiring Status]
-      <FireMoleculesFormsFirestoreSelect
-        label="Hiring Status"
-        :firebase-value="props.employer?.hiring_status || 'hiring'"
-        :options="[
-          { label: 'Actively Hiring', value: 'hiring' },
-          { label: 'Selective Hiring', value: 'selective' },
-          { label: 'Not Hiring', value: 'not_hiring' },
-          { label: 'Seasonal Hiring', value: 'seasonal' },
-        ]"
-        placeholder="Select hiring status"
-        :update-function="updateHiringStatus"
-      />
-
-      [Social Media]
-      <FireMoleculesFormsFirestoreSocialLinks
-        label="Social Media"
-        :firebase-value="props.employer?.social_links || {}"
-        :update-function="updateSocialLinks"
-      />
-
-      [Profile Verification]
-      <FireMoleculesFormsFirestoreCheckbox
-        label="Profile Verification"
-        :firebase-value="props.employer?.verified || false"
-        checkbox-label="Mark as verified employer profile"
-        :update-function="updateVerified"
-      />
-
-      [Read-only: Active Jobs Count]
-      <div class="read-only-field">
-        <span class="read-only-label">Active Job Openings</span>
-        <div class="value">
-          {{ props.employer?.active_jobs?.length || 0 }} open positions
-        </div>
-      </div>
-    </div>
-  </client-only>
-</template>
-
-<script setup>
 import { employerConfig } from '../../../../models/profiles/Employer.model'
+import { useEmployerUpdate } from '../../../../composables/firestore/profiles/Employer/useEmployerUpdate'
+import { useEmployerFormattingAndValidation } from '../../../../composables/firestore/profiles/Employer/useEmployerFormattingAndValidation'
+import { useProfileUpdate } from 'fireux-core/runtime/composables/firestore/core/profiles/useProfileUpdate.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { formatFirestoreTimestamp } from 'fireux-core/runtime/utils/formatTimestamp.ts'
 
-// Define props
-const props = defineProps({
-  employer: {
-    type: Object,
-    required: true,
-  },
+const props = defineProps<{ employer: Employer | null }>()
+
+const record = computed(() => props.employer)
+const coreProfile = computed(() => record.value?.core ?? null)
+const appProfile = computed(() => record.value?.app ?? null)
+
+const fireUXConfig = useFireUXConfig()
+const canEditAppOverlay = computed(() => fireUXConfig.isTenant)
+
+const { updateDisplayName } = useEmployerUpdate()
+const { formatDisplayName, validateDisplayName } =
+  useEmployerFormattingAndValidation()
+const { updateCore, updateApp } = useProfileUpdate(employerConfig)
+
+const useToastFn = (globalThis as any).useToast as undefined | (() => any)
+const toast = useToastFn ? useToastFn() : undefined
+
+const coreUpdatedAt = computed(
+  () =>
+    formatFirestoreTimestamp(
+      coreProfile.value?.updated_at || coreProfile.value?.created_at,
+      {
+        fallback: 'Never updated',
+        format: { dateStyle: 'medium', timeStyle: 'short' },
+      }
+    ) ?? 'Never updated'
+)
+
+const appUpdatedAt = computed(
+  () =>
+    formatFirestoreTimestamp(
+      appProfile.value?.updated_at || appProfile.value?.created_at,
+      {
+        fallback: appProfile.value ? 'Never updated' : 'Not customized',
+        format: { dateStyle: 'medium', timeStyle: 'short' },
+      }
+    ) ?? (appProfile.value ? 'Never updated' : 'Not customized')
+)
+
+const coreSpecialtiesCount = computed(
+  () => coreProfile.value?.specialties?.length ?? 0
+)
+
+const appOverlayStatus = computed(() => {
+  if (!canEditAppOverlay.value) return 'Global scope only'
+  return appProfile.value ? 'Active' : 'Not customized'
 })
 
-// Get generic profile update functions
-const { updateProfile } = useProfileUpdate(employerConfig)
+const appCardDescription = computed(() =>
+  appProfile.value
+    ? 'These overrides apply only to this tenant.'
+    : 'Add tenant-specific messaging without changing the global profile.'
+)
 
-// Create field-specific update functions
-const updateCompanyName = (value) =>
-  updateProfile({ company_name: value }, props.employer.uid)
-const updateBusinessType = (value) =>
-  updateProfile({ business_type: value }, props.employer.uid)
-const updateTitle = (value) =>
-  updateProfile({ title: value }, props.employer.uid)
-const updateBioShort = (value) =>
-  updateProfile({ bio_short: value }, props.employer.uid)
-const updateBioLong = (value) =>
-  updateProfile({ bio_long: value }, props.employer.uid)
-const updateCuisineTypes = (value) =>
-  updateProfile({ cuisine_types: value }, props.employer.uid)
-const updateServicesOffered = (value) =>
-  updateProfile({ services_offered: value }, props.employer.uid)
-const updateBenefits = (value) =>
-  updateProfile({ benefits: value }, props.employer.uid)
-const updateYearsEstablished = (value) =>
-  updateProfile({ years_established: parseInt(value) || 0 }, props.employer.uid)
-const updateEmployeeCount = (value) =>
-  updateProfile({ employee_count: parseInt(value) || 0 }, props.employer.uid)
-const updateEmail = (value) =>
-  updateProfile({ email: value }, props.employer.uid)
-const updatePhone = (value) =>
-  updateProfile({ phone: value }, props.employer.uid)
-const updateWebsite = (value) =>
-  updateProfile({ website: value }, props.employer.uid)
-const updateLocation = (value) =>
-  updateProfile({ location: value }, props.employer.uid)
-const updateOperatingHours = (value) =>
-  updateProfile({ operating_hours: value }, props.employer.uid)
-const updateCompanySize = (value) =>
-  updateProfile({ company_size: value }, props.employer.uid)
-const updateHiringStatus = (value) =>
-  updateProfile({ hiring_status: value }, props.employer.uid)
-const updateSocialLinks = (value) =>
-  updateProfile({ social_links: value }, props.employer.uid)
-const updateVerified = (value) =>
-  updateProfile({ verified: value }, props.employer.uid)
+const cleanString = (value: string | null | undefined) => {
+  const input = typeof value === 'string' ? value.trim() : ''
+  return input.length ? input : null
+}
+
+const handleDisplayName = async (value: string) => {
+  const formatted = formatDisplayName(value)
+  const validationResult = validateDisplayName(formatted)
+  if (validationResult === true) {
+    try {
+      await updateDisplayName(formatted)
+      toast?.add({
+        title: 'Display name updated',
+        icon: 'i-heroicons-check-circle',
+      })
+      return 'success'
+    } catch (error) {
+      const description =
+        error instanceof Error ? error.message : 'Please try again.'
+      toast?.add({
+        title: 'Failed to update display name',
+        description,
+        color: 'amber',
+        icon: 'i-heroicons-exclamation-triangle',
+      })
+      throw error
+    }
+  }
+  throw new Error(
+    typeof validationResult === 'string'
+      ? validationResult
+      : 'Invalid display name'
+  )
+}
+
+const handleCoreUpdate = async (
+  partial: Record<string, unknown>,
+  message?: string
+) => {
+  const id = record.value?.id
+  if (!id) return 'success'
+  const result = await updateCore(partial, id)
+  if (message) {
+    toast?.add({ title: message, icon: 'i-heroicons-check-circle' })
+  }
+  return result
+}
+
+const handleAppUpdate = async (
+  partial: Record<string, unknown>,
+  message?: string
+) => {
+  if (!canEditAppOverlay.value) return 'success'
+  const id = record.value?.id
+  if (!id) return 'success'
+  const result = await updateApp(partial, id)
+  if (message) {
+    toast?.add({ title: message, icon: 'i-heroicons-check-circle' })
+  }
+  return result
+}
+
+const updateCoreTitle = (value: string) =>
+  handleCoreUpdate({ title: cleanString(value) }, 'Headline updated')
+
+const updateCoreBioShort = (value: string) =>
+  handleCoreUpdate({ bio_short: cleanString(value) }, 'Short bio updated')
+
+const updateCoreBioLong = (value: string) =>
+  handleCoreUpdate({ bio_long: cleanString(value) }, 'Long bio updated')
+
+const updateCoreSpecialties = (value: string[]) =>
+  handleCoreUpdate({ specialties: value }, 'Core specialties updated')
+
+const updateAppTitle = (value: string) =>
+  handleAppUpdate({ title: cleanString(value) }, 'App headline updated')
+
+const updateAppBioShort = (value: string) =>
+  handleAppUpdate({ bio_short: cleanString(value) }, 'App bio updated')
+
+const updateAppSpecialties = (value: string[]) =>
+  handleAppUpdate({ specialties: value }, 'App specialties updated')
 </script>
--->

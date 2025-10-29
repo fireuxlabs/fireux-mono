@@ -1,5 +1,23 @@
 import type { Ref } from 'vue'
 
+interface FireUXToastMessage {
+  id?: string
+  title?: string
+  description?: string
+  icon?: string
+  color?: string
+  timeout?: number
+  [key: string]: unknown
+}
+
+interface FireUXToastApi {
+  add: (toast: FireUXToastMessage) => void
+  remove?: (id: string) => void
+  success?: (message: string, options?: Record<string, unknown>) => void
+  error?: (message: string, options?: Record<string, unknown>) => void
+  [key: string]: unknown
+}
+
 interface FireUXUseFetchResponse<T> {
   data: Ref<T | null>
   pending: Ref<boolean>
@@ -14,4 +32,13 @@ declare module 'nuxt/app' {
     request: string,
     options?: Record<string, any>
   ): Promise<FireUXUseFetchResponse<T>>
+  export function useToast(): FireUXToastApi
 }
+
+declare global {
+  // Provided by the Nuxt injections used across FireUX runtime
+  // Allows optional access without requiring direct imports in every file.
+  var useToast: undefined | (() => FireUXToastApi)
+}
+
+export {}

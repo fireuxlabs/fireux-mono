@@ -1,77 +1,50 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/app/subcollections/useAppUsers.ts
-import { computed, reactive, watch, type Ref } from 'vue'
-import { doc } from 'firebase/firestore'
-import { useFirestore, useDocument } from 'vuefire'
+import { computed, ref } from 'vue'
+import { collection } from 'firebase/firestore'
+import { useFirestore, useCollection } from 'vuefire'
 
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
+import { useFetchUser } from 'fireux-core/runtime/composables/firestore/core/user/useFetchUser.ts'
+import type { User, AppUser } from 'fireux-core/runtime/models/core/user.model.ts'
 
-import type {
-  AppUser,
-  User,
-} from 'fireux-core/runtime/models/core/user.model.ts'
-
-type CoreUserRecord = Omit<User, 'appUser'>
+type AppUserWithCore = Partial<User> & { appUser: AppUser }
 
 /**
- * Returns `users` merged from:
- * - apps/{appId}/users/{uid}
- * - users/{uid}
- *
- * App fields override core fields.
+ * Combined app users:
+ *  - Fetches all /apps/{appId}/users (AppUser)
+ *  - For each, fetches /core-users/{uid} (User)
+ *  - Returns merged array: { ...coreUser, appUser }
  */
 export function useAppUsers() {
   const db = useFirestore()
   const { appId } = useFireUXConfig()
-  const { firestoreFetchCollection } = useFirestoreRead()
 
-  // Fetch app-level users
-  const appUsers = firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
+  if (!appId) {
+    return { appUsers: ref<AppUserWithCore[]>([]) }
+  }
 
-  // Map of core user subscriptions
-  const coreMap = reactive(
-    new Map<string, Ref<CoreUserRecord | null | undefined>>()
+  // Fetch all app users (overlays)
+  const appOverlays = useCollection<AppUser>(
+    collection(db, 'apps', appId, 'users') as any
   )
 
-  function syncCoreRefs(list: AppUser[] | undefined | null) {
-    const ids = new Set((list ?? []).map((u) => u.id).filter(Boolean))
+  // Lazy cache of core-user refs
+  const coreCache: Record<string, ReturnType<typeof useFetchUser>['user']> = {}
 
-    for (const uid of ids) {
-      if (!coreMap.has(uid)) {
-        const ref = doc(db, 'users', uid)
-        const { data } = useDocument<CoreUserRecord>(ref)
-        coreMap.set(uid, data)
+  const getCoreRef = (uid: string) => {
+    if (!coreCache[uid]) coreCache[uid] = useFetchUser(uid).user
+    return coreCache[uid]
+  }
+
+  // Merged array
+  const appUsers = computed<AppUserWithCore[]>(() =>
+    (appOverlays.value ?? []).map((overlay) => {
+      const core = getCoreRef(overlay.id).value ?? { id: overlay.id }
+      return {
+        ...(core as Partial<User>),
+        appUser: overlay,
       }
-    }
+    })
+  )
 
-    for (const key of Array.from(coreMap.keys())) {
-      if (!ids.has(key)) coreMap.delete(key)
-    }
-  }
-
-  // Watch for ids and subscribe to each matching core user doc
-  watch(appUsers, (list) => syncCoreRefs(list), { immediate: true })
-
-  function fetchAll() {
-    syncCoreRefs(appUsers.value)
-    return appUsers.value
-  }
-
-  // Merge core + app users (app overrides)
-  const users = computed<User[]>(() => {
-    const list = appUsers.value ?? []
-    return list
-      .map((appUser) => {
-        const core = coreMap.get(appUser.id)?.value ?? null
-        if (!core) return null
-        return {
-          ...core,
-          role: appUser.role ?? core.role,
-          appUser,
-        } as User
-      })
-      .filter((entry): entry is User => entry !== null)
-  })
-
-  return { users, fetchAll }
+  return { appUsers }
 }

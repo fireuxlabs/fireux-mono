@@ -55,7 +55,7 @@
 import { computed } from 'vue'
 import { useDefaultNav } from '../../../composables/fireUX/nav/presets'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
-import { useUser } from '../../../composables/firestore/core/user/useUser'
+import { useUser } from '../../../composables/firestore/core/user/_useUser'
 import { useUserComputed } from '../../../composables/firestore/core/user/useUserComputed'
 
 defineOptions({ name: 'LayoutsDefaultHeader' })

@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { useUser } from '../../composables/firestore/core/user/useUser'
+import { useUser } from '../../composables/firestore/core/user/_useUser'
 
 const route = useRoute()
 const id = String(route.params.id ?? '')

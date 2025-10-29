@@ -4,7 +4,7 @@ import { useFirestore } from 'vuefire'
 
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type { ProfileConfig, ProfileBase } from './useProfile'
-import { useUser } from '../user/useUser.ts'
+import { useUser } from '../user/_useUser.ts'
 
 /**
  * Ensure profile documents exist (core + optional app overlay).

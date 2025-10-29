@@ -94,7 +94,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useUser } from '../../../../../composables/firestore/core/user/useUser'
+import { useUser } from '../../../../../composables/firestore/core/user/_useUser'
 
 const { user } = useUser()
 const hasApp = computed(() => !!user.value?.appUser)

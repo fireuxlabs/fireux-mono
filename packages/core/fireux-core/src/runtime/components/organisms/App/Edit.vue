@@ -1,222 +1,162 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Edit.vue -->
 <template>
-  <client-only>
-    <div v-if="app" class="app-edit-component">
-      <!-- App Information Section -->
+  <ClientOnly>
+    <div v-if="app" class="space-y-6">
+      <!-- About -->
       <UCard>
-        <div class="card-content">
-          <div class="app-info-header">
-            <h3 class="app-name">{{ app.app_name }}</h3>
-            <p class="app-id">App ID: {{ app.id }}</p>
+        <MoleculesFormsFirestoreSimpleField
+          label="Description"
+          type="textarea"
+          :rows="3"
+          :maxlength="500"
+          :firebase-value="app.description"
+          placeholder="Describe your application..."
+          :update-function="handleDescriptionUpdate"
+        />
+      </UCard>
+
+      <!-- Social (Instagram) -->
+      <UCard>
+        <MoleculesFormsFirestoreSimpleField
+          label="Instagram"
+          type="url"
+          :firebase-value="app.social_links?.instagram"
+          placeholder="https://instagram.com/your-app"
+          :update-function="handleUpdateInstagram"
+        />
+      </UCard>
+
+      <!-- Join Requests (with avatar + name) -->
+      <UCard v-if="joinRequestItems.length">
+        <div class="space-y-3">
+          <div class="space-y-1">
+            <h3 class="text-sm font-medium text-gray-700">Join Requests</h3>
+            <p class="text-xs text-gray-500">
+              Approve to add a member to the app. Remove to just clear the
+              request.
+            </p>
           </div>
 
-          <FireMoleculesFormsFirestoreField
-            label="Description"
-            :firebase-value="app.description || ''"
-            placeholder="Describe your application..."
-            :update-function="updateDescription"
-            type="textarea"
-            :rows="3"
-            :maxlength="500"
+          <MoleculesFormsFirestoreListActions
+            :items="joinRequestItems"
+            :action-approve="onApprove"
+            :action-reject="onRemove"
+            approve-label="Approve"
+            reject-label="Remove"
           />
         </div>
       </UCard>
-
-      <!-- Social Links Section -->
-      <UCard>
-        <div class="card-content">
-          <FireMoleculesFormsFirestoreSocialLinks
-            :firebase-value="app.social_links || {}"
-            :update-function="updateSocialLinks"
-          />
-        </div>
-      </UCard>
-
-      <!-- Admin Management Section -->
-      <UCard>
-        <div class="card-content">
-          <FireMoleculesFormsFirestoreArrayOfStrings
-            label="Admin Users"
-            :firebase-value="app.admin_ids || []"
-            placeholder="Enter user ID or email"
-            :update-function="updateAdmins"
-          />
-        </div>
-      </UCard>
-
-      <!-- App Metadata Section -->
-      <UCard>
-        <div class="card-content">
-          <div class="app-metadata">
-            <div class="metadata-item">
-              <span class="metadata-label">Created:</span>
-              <span class="metadata-value">{{
-                formatDate(app.created_at)
-              }}</span>
-            </div>
-            <div class="metadata-item" v-if="app.project">
-              <span class="metadata-label">Project:</span>
-              <span class="metadata-value">{{ app.project }}</span>
-            </div>
-            <div class="metadata-item">
-              <span class="metadata-label">Admins:</span>
-              <span class="metadata-value"
-                >{{ app.admin_ids?.length || 0 }} user(s)</span
-              >
-            </div>
+      <UCard v-else>
+        <div class="space-y-3">
+          <div class="space-y-1">
+            <h3 class="text-sm font-medium text-gray-700">Join Requests</h3>
+            <p class="text-xs text-gray-500">
+              Approve to add a member to the app. Remove to just clear the
+              request.
+            </p>
           </div>
+
+          <p class="text-xs text-gray-500">No pending requests.</p>
+        </div>
+      </UCard>
+
+      <!-- Team IDs (debug) -->
+      <UCard>
+        <div class="space-y-2">
+          <h3 class="text-sm font-medium text-gray-700">Team</h3>
+          <p class="text-xs text-gray-500">Current member document IDs.</p>
+          <ul v-if="teamIds.length" class="space-y-1 text-xs text-gray-600">
+            <li v-for="id in teamIds" :key="id" class="font-mono">
+              {{ id }}
+            </li>
+          </ul>
+
+          <p v-else class="text-xs text-gray-500">No members yet.</p>
         </div>
       </UCard>
     </div>
-    <div v-else>
-      <UCard>
-        <div class="app-loading-content">
-          <UIcon name="i-heroicons-cog-6-tooth" class="app-loading-icon" />
-          <p>Loading app settings...</p>
-        </div>
-      </UCard>
-    </div>
-  </client-only>
+
+    <MoleculesNotFound v-else entity="app settings" kind="document" loading />
+  </ClientOnly>
 </template>
 
-<script setup>
-const { app, updateDescription, updateSocialLinks, updateAdmins } = useApp()
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/_useUser.ts'
+import { useAppJoinRequests } from 'fireux-core/runtime/composables/firestore/core/app/utils/useAppJoinRequests.ts'
+import { useAppUpdate } from 'fireux-core/runtime/composables/firestore/core/app/useAppUpdate.ts'
+import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/useAppUsers.ts'
 
-// Helper function to format dates
-const formatDate = (dateString) => {
-  if (!dateString) return 'Unknown'
+/**
+ * Join requests are handled via the shared helper so this view just wires up
+ * success/failure toast messaging and renders the list molecule.
+ */
+const { app } = useApp()
+const { fetchedUser, initialsFor, pillProps } = useUser()
+const { updateDescription, updateInstagram, handleJoinRequests } =
+  useAppUpdate(app)
+const { users: appUsers } = useAppUsers()
 
-  try {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
-  } catch {
-    return 'Invalid date'
+const toast = useToast?.()
+
+const createHandler =
+  <T>(
+    operation: (value: T) => Promise<unknown>,
+    messages: { success: string; failure: string }
+  ) =>
+  async (value: T) => {
+    try {
+      await operation(value)
+      toast?.add({ title: messages.success, icon: 'i-heroicons-check-circle' })
+    } catch (error) {
+      toast?.add({
+        title: messages.failure,
+        description:
+          error instanceof Error ? error.message : 'Please try again.',
+        color: 'amber',
+        icon: 'i-heroicons-exclamation-triangle',
+      })
+      throw error
+    }
   }
-}
+
+const handleDescriptionUpdate = createHandler(updateDescription, {
+  success: 'App description updated',
+  failure: 'Failed to update description',
+})
+
+const handleUpdateInstagram = createHandler(updateInstagram, {
+  success: 'Instagram link saved',
+  failure: 'Failed to update Instagram link',
+})
+
+const {
+  items: joinRequestItems,
+  approve: approveJoinRequest,
+  reject: rejectJoinRequest,
+} = useAppJoinRequests({
+  app,
+  handleJoinRequests,
+  fetchedUser,
+  pillProps,
+  initialsFor,
+})
+
+const teamIds = computed(() =>
+  (appUsers.value ?? [])
+    .map((entry) => entry?.id?.trim())
+    .filter((id): id is string => Boolean(id))
+)
+
+// Approve / Remove actions
+const onApprove = createHandler((uid: string) => approveJoinRequest(uid), {
+  success: 'Join request approved',
+  failure: 'Failed to approve request',
+})
+
+const onRemove = createHandler((uid: string) => rejectJoinRequest(uid), {
+  success: 'Join request removed',
+  failure: 'Failed to remove request',
+})
 </script>
-
-<style scoped>
-/* App Edit Component - Using FireUX Design System */
-.app-edit-component {
-  width: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-@media (min-width: 640px) {
-  .app-edit-component {
-    gap: var(--space-6);
-  }
-}
-
-.card-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-@media (min-width: 640px) {
-  .card-content {
-    gap: var(--space-6);
-  }
-}
-
-.app-info-header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: var(--space-4);
-}
-
-.app-name {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
-}
-
-.app-id {
-  font-size: 0.875rem;
-  color: #6b7280;
-  font-family: monospace;
-  margin: 0;
-}
-
-.app-metadata {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-@media (min-width: 640px) {
-  .app-metadata {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-4);
-  }
-}
-
-.metadata-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-@media (min-width: 640px) {
-  .metadata-item {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-2);
-  }
-}
-
-.metadata-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-  flex-shrink: 0;
-}
-
-@media (min-width: 640px) {
-  .metadata-label {
-    min-width: 80px;
-  }
-}
-
-.metadata-value {
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
-.app-loading-content {
-  text-align: center;
-  padding: var(--space-8) var(--space-4);
-}
-
-@media (min-width: 640px) {
-  .app-loading-content {
-    padding: var(--space-12) var(--space-4);
-  }
-}
-
-.app-loading-icon {
-  width: var(--space-10);
-  height: var(--space-10);
-  color: #d1d5db;
-  margin: 0 auto var(--space-4) auto;
-  display: block;
-}
-
-@media (min-width: 640px) {
-  .app-loading-icon {
-    width: var(--space-12);
-    height: var(--space-12);
-  }
-}
-</style>

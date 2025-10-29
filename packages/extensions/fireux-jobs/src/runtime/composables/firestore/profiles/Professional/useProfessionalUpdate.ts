@@ -1,4 +1,4 @@
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/useFirestoreUpdate.ts'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreUpdate.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
 import { usePlaceSave } from 'fireux-places/runtime/composables/usePlaceSave.ts'

@@ -52,12 +52,13 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHead } from 'nuxt/app'
 import { useApp } from '../../composables/firestore/core/app/useApp'
+import { useAppComputed } from '../../composables/firestore/core/app/useAppComputed'
 
 const isDev = import.meta.dev
 const router = useRouter()
 
-// Single source of truth: useApp().computed carries initialization state
-const { computed: appComputed } = useApp()
+const { app } = useApp()
+const appComputed = useAppComputed(app)
 const isInitialized = appComputed.isInitialized ?? computed(() => false)
 
 useHead({

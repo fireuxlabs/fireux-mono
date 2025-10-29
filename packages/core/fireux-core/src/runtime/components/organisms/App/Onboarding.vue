@@ -61,11 +61,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useUser } from '../../../composables/firestore/core/user/useUser'
+import { useUser } from '../../../composables/firestore/core/user/_useUser'
 import { useUserComputed } from '../../../composables/firestore/core/user/useUserComputed'
 import { useAppEnsure } from '../../../composables/firestore/core/app/useAppEnsure'
 import type { EnvCheckResponse } from '../../../types/app/onboarding'
-import { useEnvCheck } from '../../../composables/firestore/core/app/useEnvCheck'
+import { useEnvCheck } from '../../../composables/firestore/core/app/utils/useEnvCheck'
 
 /** 1) Core user gate */
 const { user } = useUser()

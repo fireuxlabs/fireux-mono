@@ -23,6 +23,7 @@ export interface App {
   ecosystem: string
 
   /** Governance */
+  join_requests?: string[]
   admin_ids?: string[]
   // Optional future-proof alternative:
   // roles?: Record<string, 'owner' | 'admin' | 'editor' | 'viewer'>
@@ -33,11 +34,13 @@ export interface App {
 
   /** Optional metadata */
   description?: string | null
-  social_links?: Partial<Record<'site'|'instagram'|'facebook'|'x'|'linkedin', string>>
+  social_links?: Partial<
+    Record<'site' | 'instagram' | 'facebook' | 'x' | 'linkedin', string | null>
+  >
 
   /** System metadata */
-  created_at: Ts              // required – set via serverTimestamp on create
-  updated_at?: Ts             // set via serverTimestamp on update
+  created_at: Ts // required – set via serverTimestamp on create
+  updated_at?: Ts // set via serverTimestamp on update
 
   /** Brand/media URLs (flat) */
   avatar_url?: string | null

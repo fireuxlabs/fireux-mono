@@ -1,6 +1,9 @@
 import { useFetch } from 'nuxt/app'
-import type { EnvCheckResponse } from '../../../../types/app/onboarding'
+import type { EnvCheckResponse } from '../../../../../types/app/onboarding'
 
+/**
+ * Fetches the onboarding environment validation summary from the server.
+ */
 export function useEnvCheck() {
   return useFetch<EnvCheckResponse>('/api/app/env-check', {
     server: false,

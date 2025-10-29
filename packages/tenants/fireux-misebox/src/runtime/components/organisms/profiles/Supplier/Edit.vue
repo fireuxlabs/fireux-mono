@@ -1,40 +1,58 @@
-<!-- supplier edit -->
 <template>
   <ClientOnly>
-    <UCard class="space-y-6">
-      <MoleculesFormsFirestoreAvatarSelection
-        :user="{ ...supplier, avatar_url: supplier?.avatar }"
-        @upload="onUploadAvatar"
-      />
+    <div v-if="supplier" class="space-y-6">
+      <UCard>
+        <MoleculesFormsFirestoreSimpleField
+          label="Display Name"
+          :firebase-value="supplier.display_name || ''"
+          placeholder="Enter your display name"
+          :update-function="handleDisplayName"
+        />
+      </UCard>
+    </div>
 
-      <MoleculesFormsFirestoreField
-        label="Display Name"
-        :firebase-value="supplier?.display_name"
-        placeholder="Enter your display name"
-        :update-function="onSaveDisplayName"
-      />
-    </UCard>
+    <MoleculesNotFound
+      v-else
+      entity="supplier profile"
+      kind="document"
+      loading
+    />
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Supplier } from '../../../../models/profiles/Supplier.model'
 import { useSupplierUpdate } from '../../../../composables/firestore/profiles/Supplier/useSupplierUpdate'
 
-const props = defineProps<{ supplier: Supplier }>()
+const props = defineProps<{ supplier: Supplier | null }>()
 
-const { updateDisplayName, updateAvatar } = useSupplierUpdate()
-// useImageStorage is auto-imported by fireux-core module
-const { uploadImage } = useImageStorage()
-const uploadCoreAvatar = (source: File | string, uid: string) =>
-  uploadImage(`users/${uid}/avatar.jpg`, source)
+const supplier = computed(() => props.supplier ?? null)
+const { updateDisplayName } = useSupplierUpdate()
 
-const onSaveDisplayName = (v: string) => updateDisplayName(v)
+const useToastFn = (globalThis as any).useToast as undefined | (() => any)
+const toast = useToastFn ? useToastFn() : undefined
 
-const onUploadAvatar = async (file: File) => {
-  if (!props.supplier?.id) return
-  const url = await uploadCoreAvatar(file, props.supplier.id)
-  if (url) await updateAvatar(url)
+const handleDisplayName = async (value: string) => {
+  if (!supplier.value) return 'success'
+  try {
+    await updateDisplayName(value)
+    toast?.add({
+      title: 'Display name updated',
+      icon: 'i-heroicons-check-circle',
+    })
+    return 'success'
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast?.add({
+      title: 'Failed to update display name',
+      description,
+      color: 'amber',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+    throw error
+  }
 }
 </script>
 

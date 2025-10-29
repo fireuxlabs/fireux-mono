@@ -1,152 +1,103 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/dev/apps.vue -->
 <template>
-  <div class="space-y-6">
-    <!-- CURRENT APP -->
-    <UCard>
-      <template #header>
-        <div class="flex items-center justify-between gap-3">
-          <h1 class="text-base font-semibold">Current App</h1>
-          <div class="flex items-center gap-2">
-            <UButton
-              v-if="currentApp"
-              size="xs"
-              variant="ghost"
-              icon="i-lucide-copy"
-              @click="copyJSON(currentApp)"
-            >
-              Copy JSON
-            </UButton>
-          </div>
-        </div>
-      </template>
-
-      <div v-if="currentApp" class="space-y-4">
-        <MoleculesPill
-          :avatar="currentApp?.avatar_url ?? null"
-          :initials="initialsForApp(currentApp)"
-          :title="currentApp.app_name"
-          :subtitle="currentApp.ecosystem"
-          :to="currentAppLink"
-        />
-        <OrganismsAppCardsCell :app="currentApp" :to="currentAppLink" />
-
-        <div
-          class="rounded-md border border-slate-200/60 bg-slate-50/40 p-3 text-sm text-slate-600 dark:border-slate-700/60 dark:bg-slate-900/40 dark:text-slate-300"
+  <UCard>
+    <template #header>
+      <div class="flex items-center justify-between">
+        <h1 class="text-base font-semibold">Current App</h1>
+        <UButton
+          v-if="app"
+          size="xs"
+          variant="ghost"
+          icon="i-lucide-copy"
+          @click="copyJSON(app)"
         >
-          <p class="mb-2 font-medium text-slate-700 dark:text-slate-200">
-            Current app info
-          </p>
-          <ul class="space-y-1">
-            <li
-              v-for="item in currentInfo"
-              :key="item.label"
-              class="flex items-center justify-between gap-3"
-            >
-              <span class="font-medium text-slate-700 dark:text-slate-200">{{
-                item.label
-              }}</span>
-              <span class="truncate text-right">{{ item.value }}</span>
-            </li>
-          </ul>
-        </div>
-
-        <DevJsonPanel v-if="currentAppJson" :data="currentAppJson" />
+          Copy JSON
+        </UButton>
       </div>
+    </template>
 
-      <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-        No app resolved for this runtime.
-      </p>
-    </UCard>
+    <div v-if="app" class="space-y-4">
+      <MoleculesPill v-bind="pillProps(app)" />
 
-    <!-- ALL APPS -->
-    <UCard>
-      <template #header>
-        <div class="flex items-center justify-between gap-3">
-          <h2 class="text-base font-semibold">All Apps</h2>
-
-          <div class="flex items-center gap-2">
-            <UButton
-              v-if="apps.length"
-              size="xs"
-              variant="ghost"
-              icon="i-lucide-copy"
-              @click="copyJSON(apps)"
-            >
-              Copy JSON
-            </UButton>
-
-            <UButton
-              v-if="isTenant"
-              size="xs"
-              variant="soft"
-              icon="i-lucide-database"
-              @click="loadAllApps"
-            >
-              Load all apps
-            </UButton>
-          </div>
-        </div>
-      </template>
-
-      <div v-if="apps.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <MoleculesPill
-          v-for="a in apps"
-          :key="a.id"
-          :avatar="a?.avatar_url ?? null"
-          :initials="initialsForApp(a)"
-          :title="a.app_name"
-          :subtitle="a.ecosystem"
-          :to="`/apps/${a.id}`"
-        />
-      </div>
-
-      <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-        <span v-if="isTenant">
-          Global apps not loaded yet.
-          <UButton
-            size="xs"
-            variant="link"
-            color="primary"
-            class="ml-1"
-            @click="loadAllApps"
-          >
-            Load all apps
-          </UButton>
-        </span>
-        <span v-else>No apps found in collection.</span>
-      </p>
+      <OrganismsAppCardsCell :app="app" :to="pillProps(app).to" />
+      <OrganismsAppCardsProfile :app="app" />
 
       <div
-        class="mt-4 rounded-md border border-slate-200/60 bg-slate-50/40 p-3 text-sm text-slate-600 dark:border-slate-700/60 dark:bg-slate-900/40 dark:text-slate-300"
+        class="rounded-md border border-slate-200/60 bg-slate-50/40 p-3 text-xs text-slate-600 dark:border-slate-700/60 dark:bg-slate-900/40 dark:text-slate-300"
       >
         <p class="mb-2 font-medium text-slate-700 dark:text-slate-200">
-          Collection info
+          Computed flags
         </p>
         <ul class="space-y-1">
-          <li
-            v-for="item in collectionInfo"
-            :key="item.label"
-            class="flex items-center justify-between gap-3"
-          >
-            <span class="font-medium text-slate-700 dark:text-slate-200">{{
-              item.label
-            }}</span>
-            <span class="truncate text-right">{{ item.value }}</span>
-          </li>
+          <li><strong>isLoading:</strong> {{ isLoading }}</li>
+          <li><strong>isInitialized:</strong> {{ isInitialized }}</li>
         </ul>
       </div>
 
-      <DevJsonPanel v-if="appsJson" :data="appsJson" />
-    </UCard>
-  </div>
+      <div
+        class="rounded-md border border-slate-200/60 bg-slate-50/40 p-3 text-xs text-slate-600 dark:border-slate-700/60 dark:bg-slate-900/40 dark:text-slate-300"
+      >
+        <p class="mb-2 font-medium text-slate-700 dark:text-slate-200">
+          App users subcollection
+        </p>
+        <div v-if="appUsers?.length" class="space-y-3">
+          <div class="flex flex-wrap gap-2">
+            <MoleculesPill
+              v-for="(entry, index) in appUsers || []"
+              :key="entry.appUser.id ?? index"
+              v-bind="userPill(entry)"
+            />
+          </div>
+
+          <DevJsonPanel :data="appUsers" />
+        </div>
+
+        <p v-else class="text-xs text-gray-500 dark:text-gray-400">
+          No app users found.
+        </p>
+      </div>
+
+      <DevJsonPanel :data="app" class="mt-4" />
+    </div>
+
+    <p v-else class="text-sm text-gray-500">
+      No app resolved for this runtime.
+    </p>
+  </UCard>
+
+  <UCard class="mt-6">
+    <template #header>
+      <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+        Apps collection
+      </h2>
+    </template>
+
+    <div class="space-y-3 text-xs text-slate-600 dark:text-slate-300">
+      <div v-if="apps?.length" class="space-y-3">
+        <div class="flex flex-wrap gap-2">
+          <MoleculesPill
+            v-for="(entry, index) in apps || []"
+            :key="entry.id ?? index"
+            v-bind="pillProps(entry)"
+          />
+        </div>
+
+        <DevJsonPanel :data="apps" />
+      </div>
+
+      <p v-else class="text-xs text-gray-500 dark:text-gray-400">
+        No apps found in collection.
+      </p>
+    </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/useAppCollection.ts'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard.ts'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 
 definePageMeta({
   layout: 'dev',
@@ -161,75 +112,31 @@ definePageMeta({
   },
 })
 
-const { role } = useFireUXConfig()
-const isTenant = computed(() => role === 'tenant')
-
-const { app, collection, computed: appComputed } = useApp()
-
-const currentApp = computed(() => app.value ?? null)
-const apps = computed(() => collection.all.value ?? [])
-const loadAllApps = () => collection.fetchAll()
-
-const currentAppJson = computed(() => currentApp.value ?? null)
-const appsJson = computed(() => (apps.value.length ? apps.value : null))
-
-const currentAppLink = computed(() => {
-  const id = currentApp.value?.id ?? ''
-  return id ? `/apps/${id}` : null
-})
-
+const { app, appUsers, isLoading, isInitialized, pillProps } = useApp()
+const { apps } = useAppCollection()
 const { copyJSON } = useDevClipboard()
 
-const currentInfo = computed(() => {
-  const current = currentApp.value
-  if (!current) {
-    return []
+const userPill = computed(() => {
+  const toInitials = (input?: string | null) => {
+    const source = (input ?? '').trim()
+    if (!source) return 'U'
+    const parts = source.split(/\s+/)
+    const [first = '', second = ''] = parts
+    const letters = `${first[0] ?? ''}${second[0] ?? ''}`.trim().toUpperCase()
+    return letters || (first[0]?.toUpperCase() ?? 'U')
   }
 
-  const adminCount = current.admin_ids?.length ?? 0
-
-  return [
-    { label: 'ID', value: current.id },
-    { label: 'Role', value: current.role },
-    { label: 'Ecosystem', value: current.ecosystem },
-    { label: 'Creator', value: current.creator_id ?? '—' },
-    { label: 'Admins', value: adminCount ? `${adminCount}` : '—' },
-    {
-      label: 'Initialized',
-      value: appComputed.isInitialized.value ? 'Yes' : 'No',
-    },
-  ]
-})
-
-const collectionInfo = computed(() => {
-  const list = apps.value
-  const previewNames = list
-    .slice(0, 3)
-    .map((item) => item.app_name || item.id)
-    .filter(Boolean)
-    .join(', ')
-  const remaining = list.length > 3 ? ` +${list.length - 3} more` : ''
-
-  return [
-    { label: 'Mode', value: isTenant.value ? 'Tenant' : 'Global' },
-    { label: 'Loaded', value: list.length ? 'Yes' : 'No' },
-    { label: 'Total apps', value: `${list.length}` },
-    {
-      label: 'Preview',
-      value: previewNames ? `${previewNames}${remaining}` : '—',
-    },
-  ]
-})
-
-function initialsForApp(target?: Partial<App> | null) {
-  const name = target?.app_name?.trim() ?? ''
-  if (name) {
-    const [first = '', second = ''] = name.split(/\s+/)
-    const combined = `${first[0] ?? ''}${second[0] ?? ''}`.trim()
-    if (combined) return combined.toUpperCase()
-    if (first) return first.slice(0, 2).toUpperCase()
+  return (entry: any) => {
+    const name = entry?.display_name ?? entry?.appUser?.id ?? 'User'
+    const badges = entry?.appUser?.role === 'admin' ? ['admin'] : undefined
+    return {
+      avatar: entry?.avatar,
+      initials: toInitials(name),
+      title: name,
+      subtitle: entry?.appUser?.role ?? 'user',
+      badges,
+      to: entry?.id ? `/users/${entry.id}` : '#',
+    }
   }
-  const fallback = target?.id?.trim()
-  return fallback ? fallback.slice(0, 2).toUpperCase() : 'AP'
-}
+})
 </script>

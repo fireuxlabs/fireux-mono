@@ -122,18 +122,16 @@
 import { computed } from 'vue'
 import { useHead } from 'nuxt/app'
 import { useKitchens } from '../../composables/firestore/objects/Kitchen/useKitchens'
-import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp'
+import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 
 const { kitchens, isLoaded } = useKitchens()
-const { apps } = useApp()
+const { app: currentApp } = useApp()
 
 const appLookup = computed(() => {
   const map = new Map<string, string>()
-  for (const app of apps.value ?? []) {
-    const key = app?.id
-    if (key) {
-      map.set(key, app.app_name ?? key)
-    }
+  const app = currentApp.value
+  if (app?.id) {
+    map.set(app.id, app.app_name ?? app.id)
   }
   return map
 })

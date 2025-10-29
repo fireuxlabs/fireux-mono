@@ -1,6 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserDelete.ts
 import { ref, type Ref } from 'vue'
-import type { User } from './useUser.ts'
+import type { User } from './_useUser.ts'
 
 export function useUserDelete(userRef?: Ref<User | null | undefined>) {
   const deleting = ref(false)

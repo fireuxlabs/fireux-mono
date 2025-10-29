@@ -30,7 +30,7 @@ import DashboardEditStructure from '../../components/layouts/dashboard/EditStruc
 import OrganismsUserCardsCell from '../../components/organisms/User/Cards/Cell.vue'
 import OrganismsUserCardsProfile from '../../components/organisms/User/Cards/Profile.vue'
 import OrganismsUserEdit from '../../components/organisms/User/Edit.vue'
-import { useUser } from '../../composables/firestore/core/user/useUser'
+import { useUser } from '../../composables/firestore/core/user/_useUser'
 
 definePageMeta({
   layout: 'dashboard',

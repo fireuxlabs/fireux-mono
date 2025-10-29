@@ -14,7 +14,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 import { useUserEnsure } from 'fireux-core/runtime/composables/firestore/core/user/useUserEnsure.ts'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/_useUser.ts'
 import { useUserComputed } from 'fireux-core/runtime/composables/firestore/core/user/useUserComputed.ts'
 
 const router = useRouter()

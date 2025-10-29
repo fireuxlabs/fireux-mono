@@ -8,6 +8,7 @@ import {
 } from '../../_shared/overlay.ts'
 import { useUserComputed } from './useUserComputed.ts'
 import { useFirestoreRead } from '../../operations/useFirestoreRead.ts'
+import { useUserUpdate } from './useUserUpdate.ts'
 
 import type {
   AppUser,
@@ -60,6 +61,7 @@ export function useUser() {
 
   const helpers = useUserComputed(current)
   const { firestoreFetchCollection } = useFirestoreRead()
+  const updates = useUserUpdate(current)
 
   const globalRef = firestoreFetchCollection<UserDoc>('users')
   const localRef =
@@ -93,5 +95,6 @@ export function useUser() {
     fetchedUser,
     collection,
     ...helpers,
+    ...updates,
   }
 }

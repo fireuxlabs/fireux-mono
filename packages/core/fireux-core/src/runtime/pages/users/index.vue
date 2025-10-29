@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from '../../composables/firestore/core/user/useUser'
+import { useUser } from '../../composables/firestore/core/user/_useUser'
 import type {
   AppUser,
   User,

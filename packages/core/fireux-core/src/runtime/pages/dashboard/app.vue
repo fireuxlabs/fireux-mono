@@ -7,7 +7,7 @@ packages/core/fireux-core/src/runtime/pages/dashboard/app.vue
     :hero="hero"
     :dev-data="app"
   >
-    <OrganismsAppEdit v-if="canEdit && app" />
+    <OrganismsAppEdit v-if="canEdit && app" :app="app" />
   </DashboardEditStructure>
 </template>
 
@@ -18,7 +18,7 @@ import OrganismsAppCardsCell from '../../components/organisms/App/Cards/Cell.vue
 // @ts-expect-error Vue SFC import without explicit types
 import OrganismsAppEdit from '../../components/organisms/App/Edit.vue'
 import { useApp } from '../../composables/firestore/core/app/useApp.ts'
-import { useUser } from '../../composables/firestore/core/user/useUser'
+import { useUser } from '../../composables/firestore/core/user/_useUser.ts'
 
 definePageMeta({
   layout: 'dashboard',

@@ -1,29 +1,49 @@
-<!-- Professional Edit -->
 <template>
   <ClientOnly>
-    <template v-if="professional">
-      <div class="space-y-8">
-        <!-- Relevant Experience -->
-        <section class="space-y-4">
-          <h3 class="text-base font-semibold">Relevant Experience</h3>
+    <div v-if="record" class="space-y-6">
+      <UCard>
+        <div class="space-y-4">
+          <header class="space-y-1">
+            <h3 class="text-base font-semibold text-gray-900">
+              Relevant Experience
+            </h3>
+            <p class="text-sm text-gray-500">
+              Capture the roles that best represent your expertise.
+            </p>
+          </header>
           <OrganismsProfilesProfessionalFieldsExperienceSection
             title="Relevant Experience"
-            :items="professional.relevant_experience || []"
+            :items="record.relevant_experience || []"
             :onSave="onSaveRelevantExperience"
           />
-        </section>
+        </div>
+      </UCard>
 
-        <!-- Other Experience -->
-        <section class="space-y-4">
-          <h3 class="text-base font-semibold">Other Experience</h3>
+      <UCard>
+        <div class="space-y-4">
+          <header class="space-y-1">
+            <h3 class="text-base font-semibold text-gray-900">
+              Other Experience
+            </h3>
+            <p class="text-sm text-gray-500">
+              Track supporting roles, projects, and contract work.
+            </p>
+          </header>
           <OrganismsProfilesProfessionalFieldsExperienceSection
             title="Other Experience"
-            :items="professional.other_experience || []"
+            :items="record.other_experience || []"
             :onSave="onSaveOtherExperience"
           />
-        </section>
-      </div>
-    </template>
+        </div>
+      </UCard>
+    </div>
+
+    <MoleculesNotFound
+      v-else
+      entity="professional profile"
+      kind="document"
+      loading
+    />
   </ClientOnly>
 </template>
 
@@ -40,13 +60,50 @@ const props = defineProps<{
   professional: ProfessionalCoreProfile | null
 }>()
 
-const professional = computed(() => props.professional)
+const record = computed(() => props.professional)
 
 const { setRelevantExperience, setOtherExperience } = useProfessionalUpdate()
 
-const onSaveRelevantExperience = (items: RelevantExperienceItem[]) =>
-  setRelevantExperience(items)
+const useToastFn = (globalThis as any).useToast as undefined | (() => any)
+const toast = useToastFn ? useToastFn() : undefined
 
-const onSaveOtherExperience = (items: OtherExperienceItem[]) =>
-  setOtherExperience(items)
+const onSaveRelevantExperience = async (items: RelevantExperienceItem[]) => {
+  try {
+    await setRelevantExperience(items)
+    toast?.add({
+      title: 'Relevant experience updated',
+      icon: 'i-heroicons-check-circle',
+    })
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast?.add({
+      title: 'Failed to update experience',
+      description,
+      color: 'amber',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+    throw error
+  }
+}
+
+const onSaveOtherExperience = async (items: OtherExperienceItem[]) => {
+  try {
+    await setOtherExperience(items)
+    toast?.add({
+      title: 'Other experience updated',
+      icon: 'i-heroicons-check-circle',
+    })
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast?.add({
+      title: 'Failed to update experience',
+      description,
+      color: 'amber',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+    throw error
+  }
+}
 </script>
