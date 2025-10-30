@@ -3,21 +3,21 @@
 ## App
 
 - [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/useApp.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/useAppComputed.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/useAppEnsure.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppComputed.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppEnsure.ts
 - [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/useApps.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/useAppUpdate.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppUpdate.ts
 - [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/utils/useAppFormatting.ts
 - [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/utils/useAppValidation.ts
 
 ## User
 
 - [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUser.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserComputed.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserDelete.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserEnsure.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserComputed.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserDelete.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserEnsure.ts
 - [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserFormattingAndValidation.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserUpdate.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserUpdate.ts
 
 ## Profiles
 

@@ -44,8 +44,17 @@
           <div class="flex flex-wrap gap-2">
             <MoleculesPill
               v-for="(entry, index) in appUsers || []"
-              :key="entry.appUser.id ?? index"
-              v-bind="userPill(entry)"
+              :key="entry.appUser?.id ?? index"
+              :avatar="entry?.avatar ?? null"
+              :initials="
+                (
+                  (entry?.display_name ?? entry?.appUser?.id ?? 'U')[0] ?? 'U'
+                ).toUpperCase()
+              "
+              :title="entry?.display_name ?? entry?.appUser?.id ?? 'User'"
+              :subtitle="entry?.appUser?.role ?? 'user'"
+              :badges="entry?.appUser?.role === 'admin' ? ['admin'] : undefined"
+              :to="entry?.id ? `/users/${entry.id}` : '#'"
             />
           </div>
 
@@ -93,10 +102,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
-import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/useAppCollection.ts'
+import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard.ts'
 
 definePageMeta({
@@ -115,28 +122,4 @@ definePageMeta({
 const { app, appUsers, isLoading, isInitialized, pillProps } = useApp()
 const { apps } = useAppCollection()
 const { copyJSON } = useDevClipboard()
-
-const userPill = computed(() => {
-  const toInitials = (input?: string | null) => {
-    const source = (input ?? '').trim()
-    if (!source) return 'U'
-    const parts = source.split(/\s+/)
-    const [first = '', second = ''] = parts
-    const letters = `${first[0] ?? ''}${second[0] ?? ''}`.trim().toUpperCase()
-    return letters || (first[0]?.toUpperCase() ?? 'U')
-  }
-
-  return (entry: any) => {
-    const name = entry?.display_name ?? entry?.appUser?.id ?? 'User'
-    const badges = entry?.appUser?.role === 'admin' ? ['admin'] : undefined
-    return {
-      avatar: entry?.avatar,
-      initials: toInitials(name),
-      title: name,
-      subtitle: entry?.appUser?.role ?? 'user',
-      badges,
-      to: entry?.id ? `/users/${entry.id}` : '#',
-    }
-  }
-})
 </script>

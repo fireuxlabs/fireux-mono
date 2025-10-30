@@ -39,13 +39,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from '../../composables/firestore/core/user/_useUser'
-import type {
-  AppUser,
-  User,
-} from 'fireux-core/runtime/models/core/user.model.ts'
-
-type CoreUserRecord = Omit<User, 'appUser'>
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import { useUser } from '../../composables/firestore/core/user/useUser'
+import { useUserCollection } from '../../composables/firestore/core/user/main/useUserCollection'
 
 definePageMeta({
   nav: { key: 'users', label: 'Users', icon: 'i-lucide-users' },
@@ -53,42 +49,23 @@ definePageMeta({
   description: 'FireUX user accounts resolved for this runtime.',
 })
 
-const { user: userRef, pillProps, collection } = useUser()
+const { user: userRef, pillProps } = useUser()
+const { users, global, local } = useUserCollection()
 
 const currentUser = computed<User | null>(() => userRef.value ?? null)
 const userLoading = computed(() => currentUser.value === null)
 
-const usingLocalCollection = computed(() => Boolean(collection.local))
+const usingLocalCollection = computed(() => Boolean(local))
 
 const collectionLoading = computed(() => {
-  if (usingLocalCollection.value) return collection.local?.value === undefined
-  return collection.global?.value === undefined
+  if (usingLocalCollection.value) return local?.value === undefined
+  return global.value === undefined
 })
 
 const userCollection = computed<User[]>(() => {
-  if (usingLocalCollection.value) {
-    const docs = collection.local?.value as AppUser[] | undefined
-    if (!docs || !docs.length) return []
-    return docs
-      .map((doc) => ({
-        ...doc,
-        role: doc.role,
-        appUser: doc,
-      }))
-      .filter(Boolean) as unknown as User[]
-  }
-
-  const docs = collection.global?.value as CoreUserRecord[] | undefined
-  if (!docs || !docs.length) return []
-  return docs
-    .map((doc) => ({
-      ...doc,
-      userOf: doc.userOf,
-      adminOf: doc.adminOf,
-    }))
-    .filter(Boolean) as unknown as User[]
+  return users.value ?? []
 })
 
 const pillPropsFor = (target: User | null) =>
-  target ? pillProps.value(target) : undefined
+  target ? pillProps(target) : undefined
 </script>

@@ -72,8 +72,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useUser } from '../../../composables/firestore/core/user/_useUser.ts'
-import { useUserFormattingAndValidation } from '../../../composables/firestore/core/user/useUserFormattingAndValidation.ts'
+import { useUser } from '../../../composables/firestore/core/user/useUser.ts'
+import { useUserFormattingAndValidation } from '../../../composables/firestore/core/user/utils/forms/useUserFormatting.ts'
 
 const {
   user,

@@ -2,7 +2,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../FireUXConfig.ts'
 import type { ProfileConfig } from '../../../models/profiles/profile.model.ts'
-import { useUser } from '../core/user/_useUser.ts'
+import { useUser } from '../core/user/useUser.ts'
 
 type ProfileEnsureResult = {
   createdCore: boolean

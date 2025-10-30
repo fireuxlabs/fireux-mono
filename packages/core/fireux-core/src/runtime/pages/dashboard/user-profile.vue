@@ -26,11 +26,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import DashboardEditStructure from '../../components/layouts/dashboard/EditStructure.vue'
-import OrganismsUserCardsCell from '../../components/organisms/User/Cards/Cell.vue'
-import OrganismsUserCardsProfile from '../../components/organisms/User/Cards/Profile.vue'
-import OrganismsUserEdit from '../../components/organisms/User/Edit.vue'
-import { useUser } from '../../composables/firestore/core/user/_useUser'
+import { useUser } from '../../composables/firestore/core/user/useUser'
 
 definePageMeta({
   layout: 'dashboard',
@@ -57,8 +53,8 @@ const hero = computed(() => {
   const value = user.value
   if (!value) return null
   return {
-    pill: pillProps.value(value),
-    cellComponent: OrganismsUserCardsCell,
+    pill: pillProps(value),
+    cellComponent: 'OrganismsUserCardsCell',
     cellProps: {
       user: value,
     },

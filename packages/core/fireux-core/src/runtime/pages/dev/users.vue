@@ -36,7 +36,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from '../../composables/firestore/core/user/_useUser'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import { useUser } from '../../composables/firestore/core/user/useUser'
+import { useUserCollection } from '../../composables/firestore/core/user/main/useUserCollection'
 
 definePageMeta({
   layout: 'dev',
@@ -51,20 +53,23 @@ definePageMeta({
   },
 })
 
-const { user, collection, pillProps } = useUser()
+const { user, pillProps } = useUser()
+const { users: usersCollection } = useUserCollection()
 
-const pillFor = computed(() => pillProps.value)
+const pillFor = (target: User | null | undefined) =>
+  target ? pillProps(target) : null
 
 const currentUser = computed(() => user.value ?? null)
 
 const currentUserLink = computed(() => {
   const u = currentUser.value
-  return u ? pillFor.value(u).to : null
+  const pill = u ? pillProps(u) : null
+  return pill?.to ?? null
 })
 
 const currentUserJson = computed(() => currentUser.value ?? null)
 
-const users = computed(() => collection.value ?? [])
+const users = computed(() => usersCollection.value ?? [])
 
 const usersJson = computed(() => {
   const list = users.value

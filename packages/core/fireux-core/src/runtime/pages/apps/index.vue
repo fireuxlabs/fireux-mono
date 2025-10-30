@@ -2,20 +2,24 @@
 <template>
   <UPage>
     <UPageBody class="space-y-6">
+      <UPageHeader
+        title="Apps"
+        description="Review the current runtime app and optionally browse the directory."
+      />
+
       <UCard>
         <template #header>
-          <h1 class="text-base font-semibold">Current App</h1>
+          <div class="flex items-center justify-between gap-3">
+            <h1 class="text-base font-semibold">Current App</h1>
+            <UBadge v-if="currentAppId" variant="subtle">{{
+              currentAppId
+            }}</UBadge>
+          </div>
         </template>
 
-        <div v-if="app" class="space-y-4">
-          <MoleculesPill
-            :avatar="app?.avatar_url ?? null"
-            :initials="initialsForApp(app)"
-            :title="app.app_name"
-            :subtitle="app.ecosystem"
-            :to="currentAppLink"
-          />
-          <OrganismsAppCardsCell :app="app" :to="currentAppLink" />
+        <div v-if="currentPill" class="space-y-4">
+          <MoleculesPill v-bind="currentPill" />
+          <OrganismsAppCardsCell :app="app" :to="currentPill.to" />
         </div>
 
         <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -62,11 +66,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
-import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/useAppCollection.ts'
+import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 
 definePageMeta({
   nav: {
@@ -81,33 +83,18 @@ definePageMeta({
   title: 'Apps',
   description: 'Registered FireUX apps',
 })
-
-const { app: currentAppRef, pillProps } = useApp()
-const { apps: appsRef } = useAppCollection()
 const { appId, isGlobal } = useFireUXConfig()
-const app = computed(() => currentAppRef.value ?? null)
-const currentAppLink = computed(() => {
-  const id = app.value?.id ?? appId ?? ''
-  return id ? `/apps/${id}` : null
-})
+const { app, pillProps } = useApp()
+const { apps } = useAppCollection()
+
+const currentPill = computed(() => (app.value ? pillProps(app.value) : null))
+const currentAppId = computed(() => app.value?.id ?? appId ?? null)
 
 const showAll = ref(isGlobal)
-const allApps = computed(() => (showAll.value ? appsRef.value ?? [] : []))
+const allApps = computed(() => (showAll.value ? apps.value ?? [] : []))
 
 function loadAllApps() {
   if (showAll.value) return
   showAll.value = true
-}
-
-function initialsForApp(target?: Partial<App> | null) {
-  const name = target?.app_name?.trim() ?? ''
-  if (name) {
-    const [first = '', second = ''] = name.split(/\s+/)
-    const combined = `${first[0] ?? ''}${second[0] ?? ''}`.trim()
-    if (combined) return combined.toUpperCase()
-    if (first) return first.slice(0, 2).toUpperCase()
-  }
-  const fallback = target?.id?.trim()
-  return fallback ? fallback.slice(0, 2).toUpperCase() : 'AP'
 }
 </script>

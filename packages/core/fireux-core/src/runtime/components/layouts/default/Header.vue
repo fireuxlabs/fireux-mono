@@ -55,8 +55,7 @@
 import { computed } from 'vue'
 import { useDefaultNav } from '../../../composables/fireUX/nav/presets'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
-import { useUser } from '../../../composables/firestore/core/user/_useUser'
-import { useUserComputed } from '../../../composables/firestore/core/user/useUserComputed'
+import { useUser } from '../../../composables/firestore/core/user/useUser'
 
 defineOptions({ name: 'LayoutsDefaultHeader' })
 
@@ -67,21 +66,19 @@ const { desktop, mobile } = useDefaultNav()
 const { currentUser, signOutUser } = useAuth()
 const isAuthResolved = computed(() => currentUser.value !== undefined)
 
-const { user } = useUser()
-const u = useUserComputed(user) // adds CTA + display helpers
+const { user, cta, initialsFor } = useUser() // includes CTA + display helpers
 
 const activeDisplayName = computed(() => user.value?.display_name || '')
 const activeAvatar = computed(() => user.value?.avatar || '')
 
 /** CTA + avatar data */
-const cta = computed(() => u.cta.value)
 const hasCta = computed(() => cta.value.key !== 'avatar')
 const avatarSrc = computed(() => {
   const src = activeAvatar.value ?? ''
   const trimmed = typeof src === 'string' ? src.trim() : ''
   return trimmed || undefined
 })
-const initials = computed(() => u.initialsFor.value(user.value ?? null)) // fallback initials
+const initials = computed(() => initialsFor(user.value ?? null))
 
 /** Avatar dropdown */
 const avatarMenuItems = computed(() => [

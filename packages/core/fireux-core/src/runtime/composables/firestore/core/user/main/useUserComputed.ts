@@ -2,7 +2,6 @@ import { computed, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type {
   User,
-  UserToPillMapper,
   UserPillProps,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 
@@ -31,14 +30,12 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     return (u.adminOf?.length ?? 0) > 0
   })
 
-  const initialsFor = computed(() => {
-    return (target?: Pick<User, 'display_name'> | null) => {
-      const name = target?.display_name?.trim() ?? ''
-      if (!name) return 'U'
-      const [a = '', b = ''] = name.split(/\s+/)
-      return ((a[0] ?? '') + (b[0] ?? '') || a[0] || 'U').toUpperCase()
-    }
-  })
+  const initialsFor = (target?: Pick<User, 'display_name'> | null) => {
+    const name = target?.display_name?.trim() ?? ''
+    if (!name) return 'U'
+    const [a = '', b = ''] = name.split(/\s+/)
+    return ((a[0] ?? '') + (b[0] ?? '') || a[0] || 'U').toUpperCase()
+  }
 
   // Unified CTA logic for all views (header, dashboard, index, etc.)
   const cta = computed<UserCta>(() => {
@@ -58,28 +55,24 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     return { key: 'avatar', label: 'Profile' } // final fallback (no to)
   })
 
-  const badges = computed(() => {
-    return (target?: User | null): string[] => {
-      if (!target) return []
-      if (isTenant) {
-        if (target.appUser?.role === 'admin') return ['admin']
-        if (appId && target.adminOf?.includes(appId)) return ['admin']
-        return []
-      }
-      return (target.adminOf?.length ?? 0) > 0 ? ['admin'] : []
+  const badgesFor = (target?: User | null): string[] => {
+    if (!target) return []
+    if (isTenant) {
+      if (target.appUser?.role === 'admin') return ['admin']
+      if (appId && target.adminOf?.includes(appId)) return ['admin']
+      return []
     }
-  })
+    return (target.adminOf?.length ?? 0) > 0 ? ['admin'] : []
+  }
 
   // Canonical mapper for MoleculesPill props (no fallbacks)
-  const pillProps = computed<UserToPillMapper>(() => {
-    return (u: User): UserPillProps => ({
-      avatar: u.avatar,
-      initials: initialsFor.value(u),
-      title: u.display_name,
-      subtitle: u.handle,
-      badges: badges.value(u),
-      to: `/users/${u.id}`,
-    })
+  const pillProps = (u: User): UserPillProps => ({
+    avatar: u.avatar,
+    initials: initialsFor(u),
+    title: u.display_name,
+    subtitle: u.handle,
+    badges: badgesFor(u),
+    to: `/users/${u.id}`,
   })
 
   return {
@@ -88,8 +81,8 @@ export function useUserComputed(user: Ref<User | null | undefined>) {
     hasAppProfile,
     isAdmin,
     initialsFor,
-    cta, // unified call-to-action state
-    badges,
+    badgesFor,
+    cta,
     pillProps,
   }
 }

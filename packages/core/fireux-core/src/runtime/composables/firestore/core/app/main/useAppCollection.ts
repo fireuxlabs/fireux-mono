@@ -1,4 +1,4 @@
-import { useFirestoreRead } from '../../operations/useFirestoreRead.ts'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 
 /**

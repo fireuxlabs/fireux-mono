@@ -17,7 +17,7 @@ function computeReadingTime(content: string): string {
 }
 
 async function getAuthor(): Promise<Author> {
-  const { useUser } = await import('../../core/user/_useUser.ts')
+  const { useUser } = await import('../../core/user/useUser')
   const { user } = useUser()
   return {
     id: user.value?.id || '',

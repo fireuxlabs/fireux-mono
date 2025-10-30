@@ -83,9 +83,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/_useUser.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
 import { useAppJoinRequests } from 'fireux-core/runtime/composables/firestore/core/app/utils/useAppJoinRequests.ts'
-import { useAppUpdate } from 'fireux-core/runtime/composables/firestore/core/app/useAppUpdate.ts'
+import { useAppUpdate } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppUpdate.ts'
 import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/useAppUsers.ts'
 
 /**
@@ -93,10 +94,17 @@ import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/
  * success/failure toast messaging and renders the list molecule.
  */
 const { app } = useApp()
-const { fetchedUser, initialsFor, pillProps } = useUser()
+const { initialsFor, pillProps } = useUser()
+const fetchedUser = (uid: string) => {
+  const { user } = useUserFetch(uid)
+  const hydrated = computed(() => user.value ?? null)
+  return { user: hydrated }
+}
+const pillPropsRef = computed(() => pillProps)
+const initialsForRef = computed(() => initialsFor)
 const { updateDescription, updateInstagram, handleJoinRequests } =
   useAppUpdate(app)
-const { users: appUsers } = useAppUsers()
+const { appUsers } = useAppUsers()
 
 const toast = useToast?.()
 
@@ -139,15 +147,16 @@ const {
   app,
   handleJoinRequests,
   fetchedUser,
-  pillProps,
-  initialsFor,
+  pillProps: pillPropsRef,
+  initialsFor: initialsForRef,
 })
 
-const teamIds = computed(() =>
-  (appUsers.value ?? [])
-    .map((entry) => entry?.id?.trim())
+const teamIds = computed(() => {
+  const list = (appUsers.value ?? []) as Array<{ id?: string | null }>
+  return list
+    .map((entry) => entry.id?.trim() ?? '')
     .filter((id): id is string => Boolean(id))
-)
+})
 
 // Approve / Remove actions
 const onApprove = createHandler((uid: string) => approveJoinRequest(uid), {

@@ -12,28 +12,20 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
-import { useUserEnsure } from 'fireux-core/runtime/composables/firestore/core/user/useUserEnsure.ts'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/_useUser.ts'
-import { useUserComputed } from 'fireux-core/runtime/composables/firestore/core/user/useUserComputed.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
 const router = useRouter()
 const { signOutUser } = useAuth()
-const { ensureUser } = useUserEnsure()
-const { user } = useUser()
-const { hasCoreProfile: hasProfile } = useUserComputed(user)
-// TODO: take this from useUser once hasProfile lives in that composable again.
+const { ensureUser, hasCoreProfile: hasProfile } = useUser()
 
 const primaryLabel = computed(() =>
   hasProfile.value ? 'Go to Dashboard' : 'Create User Profile'
 )
 
 const handlePrimary = async () => {
-  if (hasProfile.value) {
-    await router.push('/dashboard')
-    return
-  }
-
+  if (hasProfile.value) return router.push('/dashboard')
   await ensureUser()
 }
 
@@ -51,6 +43,7 @@ const handleSignOut = async () => {
   width: 100%;
 }
 .button-group {
+  display: flex;
   flex-direction: column;
   margin: 0;
 }

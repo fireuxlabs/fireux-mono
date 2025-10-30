@@ -7,12 +7,16 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useUser } from '../../composables/firestore/core/user/_useUser'
+import { useUserFetch } from '../../composables/firestore/core/user/main/useUserFetch'
+import { useUserComputed } from '../../composables/firestore/core/user/main/useUserComputed'
 
 const route = useRoute()
 const id = String(route.params.id ?? '')
 
-const { fetchedUser, pillProps } = useUser()
-const { user } = fetchedUser(id)
+const { user: fetchedUser } = useUserFetch(id)
+const { pillProps } = useUserComputed(fetchedUser)
+
+const user = computed(() => fetchedUser.value ?? null)
 </script>

@@ -15,7 +15,7 @@
       class="shrink-0"
       :src="safeAvatarSrc"
       :alt="safeAlt"
-      :text="uc.initialsFor.value(user ?? null)"
+      :text="initialsFor(user ?? null)"
     />
   </UButton>
 
@@ -29,21 +29,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUser } from '../../../composables/firestore/core/user/_useUser'
+import { useUser } from '../../../composables/firestore/core/user/useUser'
 import type { UserCard } from '../../../models/core/user.model'
-import { useUserComputed } from '../../../composables/firestore/core/user/useUserComputed'
 
 defineOptions({ name: 'LayoutsDashboardUserMenu' })
 defineProps<{ collapsed?: boolean }>()
 
 const router = useRouter()
-const { user } = useUser()
-const uc = useUserComputed(user)
+const { user, pillProps, initialsFor } = useUser()
 
 const pillUser = computed<UserCard.Pill | undefined>(() => {
   const u = user.value
   if (!u) return undefined
-  const base = uc.pillProps.value(u)
+  const base = pillProps(u)
   return {
     ...base,
     id: u.id,

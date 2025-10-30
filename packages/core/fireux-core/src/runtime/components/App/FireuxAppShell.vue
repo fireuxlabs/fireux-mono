@@ -52,7 +52,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHead } from 'nuxt/app'
 import { useApp } from '../../composables/firestore/core/app/useApp'
-import { useAppComputed } from '../../composables/firestore/core/app/useAppComputed'
+import { useAppComputed } from '../../composables/firestore/core/app/main/useAppComputed'
 
 const isDev = import.meta.dev
 const router = useRouter()

@@ -1,13 +1,13 @@
 import { useFireUXConfig } from '../../../FireUXConfig'
-import { useFetchApp } from './useFetchApp'
-import { useAppComputed } from './useAppComputed'
-import { useAppEnsure } from './useAppEnsure'
-import { useAppUpdate } from './useAppUpdate'
+import { useAppFetch } from './main/useAppFetch'
+import { useAppComputed } from './main/useAppComputed'
+import { useAppEnsure } from './main/useAppEnsure'
+import { useAppUpdate } from './main/useAppUpdate'
 import { useAppUsers } from './subcollections/useAppUsers'
 
 export function useApp() {
   const { appId } = useFireUXConfig()
-  const { app } = useFetchApp(appId)
+  const { app } = useAppFetch(appId)
   const { appUsers } = useAppUsers()
   return {
     app,

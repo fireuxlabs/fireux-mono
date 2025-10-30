@@ -6,8 +6,8 @@ import type {
   User,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import { arrayRemove, arrayUnion } from 'firebase/firestore'
-import { useFirestoreUpdate } from '../../operations/useFirestoreUpdate.ts'
-import { useFirestoreCreate } from '../../operations/useFirestoreCreate.ts'
+import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
+import { useFirestoreCreate } from '../../../operations/useFirestoreCreate.ts'
 
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const { updateDocument } = useFirestoreUpdate()

@@ -1,3 +1,4 @@
+// FILE: packages/core/fireux-core/src/runtime/composables/firebase/useAuth.ts
 import { computed, ref, shallowRef, type Ref } from 'vue'
 import { useFirebaseAuth, useCurrentUser } from 'vuefire'
 import {
@@ -16,10 +17,6 @@ type AuthUser = {
   photoURL?: string | null
 }
 
-/**
- * Attempt to run user ensure if the module exists.
- * This keeps useAuth decoupled from Firestore modules.
- */
 type EnsureModule = {
   useUserEnsure?: () => { ensureUser?: () => Promise<unknown> }
 }
@@ -33,21 +30,14 @@ async function tryEnsureUserOnce(uid: string | null | undefined) {
 
   for (const ensurePath of ensurePaths) {
     try {
-      const mod = (await import(
-        /* @vite-ignore */ ensurePath
-      )) as EnsureModule | null
+      const mod = (await import(/* @vite-ignore */ ensurePath)) as EnsureModule | null
       const ensureUser = mod?.useUserEnsure?.().ensureUser
       if (typeof ensureUser === 'function') {
         await ensureUser()
         return
       }
-    } catch (error) {
-      if (import.meta.dev) {
-        console.warn('[useAuth] optional ensureUser failed (ignored):', {
-          ensurePath,
-          error,
-        })
-      }
+    } catch {
+      // ignore in prod; warn in dev if you want
     }
   }
 }
@@ -56,49 +46,31 @@ function resolveFirebaseAuth() {
   if (!import.meta.client) return null
   try {
     return useFirebaseAuth()
-  } catch (error) {
-    if (import.meta.dev) {
-      console.warn(
-        '[useAuth] useFirebaseAuth unavailable; falling back to null.',
-        error
-      )
-    }
+  } catch {
     return null
   }
 }
 
 function resolveCurrentUser(): Ref<AuthUser | null | undefined> {
-  if (!import.meta.client) {
-    return shallowRef<AuthUser | null | undefined>(undefined)
-  }
+  if (!import.meta.client) return shallowRef<AuthUser | null | undefined>(undefined)
   try {
     return useCurrentUser() as Ref<AuthUser | null | undefined>
-  } catch (error) {
-    if (import.meta.dev) {
-      console.warn(
-        '[useAuth] useCurrentUser unavailable. Ensure VueFire auth module is registered.',
-        error
-      )
-    }
+  } catch {
     return shallowRef<AuthUser | null | undefined>(undefined)
   }
 }
 
 export function useAuth() {
   const auth = resolveFirebaseAuth()
-
   const currentUser = resolveCurrentUser()
 
   const lastEnsuredUid = ref<string | null>(null)
   const ensuring = ref(false)
 
-  const postProcessAuth = async (
-    user: { uid?: string | null } | null | undefined
-  ) => {
+  const postProcessAuth = async (user: { uid?: string | null } | null | undefined) => {
     const uid = user?.uid ?? null
     if (!uid || !auth) return user
     if (ensuring.value || lastEnsuredUid.value === uid) return user
-
     try {
       ensuring.value = true
       await tryEnsureUserOnce(uid)
@@ -110,63 +82,52 @@ export function useAuth() {
   }
 
   const authState = computed(() =>
-    currentUser.value && !currentUser.value.isAnonymous
-      ? 'AUTHENTICATED'
-      : 'NOT_AUTHENTICATED'
+    currentUser.value && !currentUser.value.isAnonymous ? 'AUTHENTICATED' : 'NOT_AUTHENTICATED'
   )
 
   const signInWithGoogle = async () => {
     if (!auth) return null
-    try {
-      const provider = new GoogleAuthProvider()
-      const result = await signInWithPopup(auth, provider)
-      await postProcessAuth(result.user)
-      return result.user
-    } catch (error) {
-      if (import.meta.dev) console.error('❌ Google Sign-In Failed:', error)
-      return null
-    }
+    const provider = new GoogleAuthProvider()
+    const result = await signInWithPopup(auth, provider).catch(() => null)
+    if (result) await postProcessAuth(result.user)
+    return result?.user ?? null
   }
 
   const signInWithEmailPassword = async (email: string, password: string) => {
     if (!auth) return null
-    try {
-      const result = await signInWithEmailAndPassword(auth, email, password)
-      await postProcessAuth(result.user)
-      return result.user
-    } catch (error) {
-      if (import.meta.dev) console.error('❌ Email Sign-In Failed:', error)
-      return null
-    }
+    const result = await signInWithEmailAndPassword(auth, email, password).catch(() => null)
+    if (result) await postProcessAuth(result.user)
+    return result?.user ?? null
   }
 
   const signUpWithEmailPassword = async (email: string, password: string) => {
     if (!auth) return null
-    try {
-      const result = await createUserWithEmailAndPassword(auth, email, password)
-      await postProcessAuth(result.user)
-      return result.user
-    } catch (error) {
-      if (import.meta.dev) console.error('❌ Email Sign-Up Failed:', error)
-      return null
-    }
+    const result = await createUserWithEmailAndPassword(auth, email, password).catch(() => null)
+    if (result) await postProcessAuth(result.user)
+    return result?.user ?? null
   }
 
   const signOutUser = async (): Promise<void> => {
     if (!auth) return
-    try {
-      await signOut(auth)
-      lastEnsuredUid.value = null
-    } catch (error) {
-      if (import.meta.dev) console.error('❌ Sign-Out Failed:', error)
-    }
+    await signOut(auth).catch(() => {})
+    lastEnsuredUid.value = null
   }
 
-  const uid = computed(() => currentUser.value?.uid ?? null)
+  // --- Clean surfaces ---
+  const uid = computed(() => currentUser.value?.uid ?? null)       // reactive ref
+  const isAuthenticated = computed(() => !!uid.value)              // reactive ref
+  const uidOrNull = () => uid.value                                // snapshot getter
+  const uidOrThrow = () => {                                       // snapshot getter w/ guard
+    if (!uid.value) throw new Error('Not authenticated')
+    return uid.value
+  }
 
   return {
     currentUser,
-    uid,
+    uid,                // use this with useUserFetch(uid)
+    isAuthenticated,
+    uidOrNull,          // optional: snapshot if you really need a value
+    uidOrThrow,         // optional: throws if unauthenticated
     authState,
     signInWithGoogle,
     signInWithEmailPassword,
