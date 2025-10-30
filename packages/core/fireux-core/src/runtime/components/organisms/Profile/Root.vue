@@ -54,9 +54,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { ProfileConfig } from '../../../models/profiles/profile.model'
-import { useProfile } from '../../../composables/firestore/profiles/useProfile'
-import { useProfileComputed } from '../../../composables/firestore/profiles/useProfileComputed'
+import type { ProfileConfig } from '../../../models/core/profile.model'
+import { useProfile } from '../../../composables/firestore/core/profiles/useProfile.ts'
 
 const props = defineProps<{
   config: ProfileConfig
@@ -65,10 +64,7 @@ const props = defineProps<{
 
 // unified profile + computed signals
 const profileRef = useProfile(props.config)
-const { hasCoreProfile, hasAppProfile, ctaMessage } = useProfileComputed(
-  profileRef.profile,
-  props.config
-)
+const { hasCoreProfile, hasAppProfile, ctaMessage } = profileRef
 
 // CTA visible if missing global OR app overlay
 const showCreate = computed(() => {

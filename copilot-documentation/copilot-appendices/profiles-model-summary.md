@@ -25,7 +25,7 @@ We standardize profiles across Misebox with a global + tenant overlay pattern. E
 - `FlatProfile<TCore, TApp>` merges core + app state, optionally exposing `appProfile` where overlays exist.
 
 ```ts
-// packages/core/fireux-core/src/runtime/models/profiles/profile.model.ts
+// packages/core/fireux-core/src/runtime/models/core/profile.model.ts
 export interface ProfileBase {
   created_at: FirebaseTimestamp
   updated_at?: FirebaseTimestamp

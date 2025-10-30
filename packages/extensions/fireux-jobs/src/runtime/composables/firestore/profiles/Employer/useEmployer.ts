@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { employerConfig } from '../../../../models/profiles/Employer.model'
 import { useEmployerUpdate } from './useEmployerUpdate'
 import { useEmployerFormattingAndValidation } from './useEmployerFormattingAndValidation'
-import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile.ts'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profiles/useProfile.ts'
 
 /**
  * Facade: compose generic profile primitives + employer-specific helpers

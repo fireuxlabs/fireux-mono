@@ -2,7 +2,7 @@
 import type {
   ProfileBase,
   ProfileConfig,
-} from 'fireux-core/runtime/models/profiles/profile.model'
+} from 'fireux-core/runtime/models/core/profile.model'
 
 /** Unified Supplier (kept symmetric with Chef) */
 export interface Supplier {

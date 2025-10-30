@@ -1,59 +1,33 @@
-import { computed } from 'vue'
-import { useCurrentUser } from 'vuefire'
-
-import { createOverlayAccessors } from '../../_shared/overlay.ts'
-
+import { useAuth } from '../../../firebase/useAuth.ts'
+import { useProfileFetch } from './main/useProfileFetch.ts'
+import { useProfileComputed } from './main/useProfileComputed.ts'
+import { useProfileEnsure } from './main/useProfileEnsure.ts'
+import { useProfileDelete } from './main/useProfileDelete.ts'
+import { useProfileCollection } from './main/useProfileCollection.ts'
 import type {
   ProfileBase,
   ProfileConfig,
-} from '../../../../models/profiles/profile.model.ts'
-
-export type {
-  ProfileBase,
-  ProfileConfig,
-} from '../../../../models/profiles/profile.model.ts'
-
-export type ProfileRecord<
-  TCore extends ProfileBase,
-  TApp extends ProfileBase
-> = TCore & {
-  appProfile: TApp | null
-}
+} from '../../../../models/core/profile.model.ts'
 
 /**
- * Minimal overlay-aware profile reader.
- * Returns the current profile plus a by-id accessor without collection wiring.
+ * Sleek public entry — same vibe as `useUser()` / `useApp()`.
+ * Call with the profile collection you want (e.g., { id: 'chef', collectionName: 'chefs' }).
  */
 export function useProfile<
   TCore extends ProfileBase,
   TApp extends ProfileBase = TCore
 >(config: ProfileConfig) {
-  const currentUser = useCurrentUser()
-  const uid = computed(() => currentUser.value?.uid ?? null)
-
-  const { current, byId } = createOverlayAccessors<
-    TCore,
-    TApp,
-    ProfileRecord<TCore, TApp>
-  >({
-    id: uid,
-    key: config.collectionName,
-    requireCore: true,
-    map: ({ core, app, isTenant }) => {
-      if (!core) return null
-      return {
-        ...core,
-        appProfile: isTenant ? app ?? null : null,
-      }
-    },
+  const { uid } = useAuth()
+  const { profile } = useProfileFetch<TCore, TApp>(uid, {
+    collectionName: config.collectionName,
   })
-
-  function fetchedProfile(id: string) {
-    return { profile: byId(id) }
-  }
+  const collection = useProfileCollection<TCore, TApp>(config)
 
   return {
-    profile: current,
-    fetchedProfile,
+    profile,
+    collection,
+    ...useProfileComputed(profile, config),
+    ...useProfileEnsure(profile, config),
+    ...useProfileDelete(profile, config),
   }
 }

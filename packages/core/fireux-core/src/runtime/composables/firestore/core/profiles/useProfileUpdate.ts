@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useCurrentUser } from 'vuefire'
 
-import type { ProfileConfig } from './useProfile'
+import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
 import { useFirestoreManager } from '../../operations/useFirestoreManager.ts'
 import { useFireUXConfig } from '../../../FireUXConfig.ts'
 

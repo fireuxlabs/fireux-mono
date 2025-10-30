@@ -1,5 +1,5 @@
 // packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefCreate.ts
-import { useProfile } from 'fireux-core/runtime/composables/firestore/profiles/useProfile'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profiles/useProfile.ts'
 import { chefConfig } from '../../../../models/profiles/Chef.model'
 import type { ChefCoreProfile } from '../../../../models/profiles/Chef.model'
 

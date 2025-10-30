@@ -1,7 +1,7 @@
 import type {
   ProfileBase,
   ProfileConfig,
-} from 'fireux-core/runtime/models/profiles/profile.model'
+} from 'fireux-core/runtime/models/core/profile.model'
 
 /** Unified Chef view (flattened convenience + partitions) */
 export interface Chef {

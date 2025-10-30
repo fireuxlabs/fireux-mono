@@ -69,7 +69,7 @@
 import { computed } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
-import type { ProfileConfig } from 'fireux-core/runtime/models/profiles/profile.model.ts'
+import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
 
 declare function useRoute(): any
 declare function navigateTo(path: string): Promise<unknown>

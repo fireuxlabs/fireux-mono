@@ -22,10 +22,11 @@
 ## Profiles
 
 - [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/useProfile.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/useProfileComputed.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/useProfileEnsure.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/main/useProfileFetch.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/main/useProfileComputed.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/main/useProfileEnsure.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/main/useProfileDelete.ts — still a stub; extend for Firestore deletes when needed
 - [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/useProfileUpdate.ts
-- [ ] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/useProfileDelete.ts — wire Firestore deletes for core and tenant overlays
 
 ## Core Dependencies
 

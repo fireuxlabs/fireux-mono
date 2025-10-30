@@ -417,9 +417,9 @@ export async function useAppEnsure(input?: EnsureAppInput) {
 }
 ````
 
-### profiles / useProfileEnsure.ts
+### core/profiles / useProfileEnsure.ts
 
-- **Path:** `packages/core/fireux-core/src/runtime/composables/firestore/profiles/useProfileEnsure.ts`
+- **Path:** `packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/main/useProfileEnsure.ts`
 - **Purpose:** Create profile documents in both core scope and tenant overlay when missing.
 - **Key API:** `ensure(profile?)`
 - **Notes:** Non-destructive; skips existing docs and mirrors core profile fields into tenant collection.
