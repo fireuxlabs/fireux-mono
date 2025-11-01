@@ -2,7 +2,7 @@
 import type {
   ProfileBase,
   ProfileConfig,
-} from 'fireux-core/runtime/models/core/profile.model'
+} from 'fireux-core/runtime/models/core/profile.model.ts'
 
 /** Unified Employer */
 export interface Employer {

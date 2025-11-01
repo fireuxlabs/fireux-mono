@@ -8,7 +8,9 @@
     <div v-if="showCreate">
       <UPageSection>
         <UPageCTA
-          :title="ctaMessage || `Complete your ${props.config.profileType} profile`"
+          :title="
+            ctaMessage || `Complete your ${props.config.profileType} profile`
+          "
           variant="soft"
         >
           <template #links>
@@ -54,7 +56,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { ProfileConfig } from '../../../models/core/profile.model'
+import type { ProfileConfig } from '../../../models/core/profile.model.ts'
 import { useProfile } from '../../../composables/firestore/core/profiles/useProfile.ts'
 
 const props = defineProps<{
@@ -74,7 +76,9 @@ const showCreate = computed(() => {
 })
 
 const primaryLabel = computed(() =>
-  hasCoreProfile.value ? 'Add to this app' : `Create ${props.config.profileType} profile`
+  hasCoreProfile.value
+    ? 'Add to this app'
+    : `Create ${props.config.profileType} profile`
 )
 
 const ensuring = ref(false)
@@ -83,9 +87,9 @@ async function onEnsureClick() {
   ensuring.value = true
   try {
     if (props.onEnsure) {
-      await props.onEnsure()             // use external handler if provided
+      await props.onEnsure() // use external handler if provided
     } else {
-      await profileRef.ensure()          // fallback to generic ensure
+      await profileRef.ensure() // fallback to generic ensure
     }
   } finally {
     ensuring.value = false
@@ -94,12 +98,17 @@ async function onEnsureClick() {
 
 /* ------- Minimal list wiring ------- */
 const hasLocal = computed(() => Boolean(profileRef.collection.local))
-const hasGlobalLoaded = computed(() => Boolean(profileRef.collection.global?.value))
-const showing = computed<'local' | 'global'>(() => (hasLocal.value ? 'local' : 'global'))
-const list = computed<any[]>(() =>
-  (profileRef.collection.local?.value as any[]) ??
-  (profileRef.collection.global?.value as any[]) ??
-  []
+const hasGlobalLoaded = computed(() =>
+  Boolean(profileRef.collection.global?.value)
+)
+const showing = computed<'local' | 'global'>(() =>
+  hasLocal.value ? 'local' : 'global'
+)
+const list = computed<any[]>(
+  () =>
+    (profileRef.collection.local?.value as any[]) ??
+    (profileRef.collection.global?.value as any[]) ??
+    []
 )
 function fetchGlobal() {
   profileRef.collection.fetchGlobal?.()
