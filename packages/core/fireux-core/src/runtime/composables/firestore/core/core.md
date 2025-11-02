@@ -19,14 +19,12 @@
 - [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserFormattingAndValidation.ts
 - [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserUpdate.ts
 
-## Profiles
+## Profile
 
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/useProfile.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/main/useProfileFetch.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/main/useProfileComputed.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/main/useProfileEnsure.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/main/useProfileDelete.ts — still a stub; extend for Firestore deletes when needed
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/useProfileUpdate.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profile/useProfile.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileFetch.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileEnsure.ts
+- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileDelete.ts — still a stub; extend for Firestore deletes when needed
 
 ## Core Dependencies
 

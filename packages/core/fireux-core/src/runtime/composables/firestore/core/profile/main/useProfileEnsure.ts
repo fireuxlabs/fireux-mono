@@ -1,11 +1,9 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
-
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type {
   ProfileBase,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
+import { ensureDoc } from '../../../utils/ensureCommon.ts'
 import { useUser } from '../../user/useUser.ts'
 
 /**
@@ -13,7 +11,6 @@ import { useUser } from '../../user/useUser.ts'
  * - Creates only if missing; never overwrites.
  */
 export function useProfileEnsure(_profile: unknown, config: ProfileConfig) {
-  const db = useFirestore()
   const { isTenant, appId } = useFireUXConfig()
 
   const { user } = useUser()
@@ -28,30 +25,23 @@ export function useProfileEnsure(_profile: unknown, config: ProfileConfig) {
       avatar: user.value.avatar || '',
     }
 
-    let createdCore = false
-    let createdApp = false
+    const createdCore = await ensureDoc(config.collectionName, uid, {
+      ...base,
+      ...profile,
+    })
 
-    // Core (global) doc
-    {
-      const coreRef = doc(db, config.collectionName, uid)
-      const snap = await getDoc(coreRef)
-      if (!snap.exists()) {
-        await setDoc(coreRef, { ...base, ...profile }, { merge: false })
-        createdCore = true
-      }
-    }
+    const appResult =
+      isTenant && appId
+        ? await ensureDoc(`apps/${appId}/${config.collectionName}`, uid, {
+            ...base,
+            ...profile,
+          })
+        : { created: false }
 
-    // App (tenant overlay)
-    if (isTenant && appId) {
-      const appRef = doc(db, `apps/${appId}/${config.collectionName}`, uid)
-      const snap = await getDoc(appRef)
-      if (!snap.exists()) {
-        await setDoc(appRef, { ...base, ...profile }, { merge: false })
-        createdApp = true
-      }
-    }
-
-    return { createdCore, createdApp } as const
+    return {
+      createdCore: createdCore.created,
+      createdApp: appResult.created,
+    } as const
   }
 
   return { ensure }

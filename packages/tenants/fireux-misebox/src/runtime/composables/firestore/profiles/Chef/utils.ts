@@ -1,4 +1,4 @@
-import type { ChefCoreProfile as Chef } from '../../../../../models/profiles/Chef.model'
+import type { ChefCoreProfile as Chef } from '../../../../models/profiles/Chef.model'
 
 export function useChefValidation() {
   // Validate chef name
@@ -216,8 +216,6 @@ export function useChefValidation() {
       if (!res.isValid && res.error) errors.push(res.error)
     }
 
-    // Required fields validation (ChefCoreProfile uses ProfileBase with id set from auth elsewhere)
-
     // Optional field validations
     if (chefData.display_name) {
       addErrorIfInvalid(validateChefName(chefData.display_name))
@@ -226,9 +224,6 @@ export function useChefValidation() {
     if (chefData.specialties) {
       addErrorIfInvalid(validateSpecialties(chefData.specialties))
     }
-
-    // Note: experience/certifications aren't part of the current Chef model
-    // If added later, re-enable and adjust validation accordingly
 
     // Support both snake_case (canonical) and camelCase inputs
     const bios = [
@@ -244,16 +239,6 @@ export function useChefValidation() {
     for (const b of bios) {
       if (b.val) addErrorIfInvalid(validateBio(b.val, b.kind))
     }
-
-    // Remove availability validation since it's not in the Chef model
-    // if (chefData.availability) {
-    //   const availabilityValidation = validateAvailability(chefData.availability)
-    //   if (!availabilityValidation.isValid && availabilityValidation.error) {
-    //     errors.push(availabilityValidation.error)
-    //   }
-    // }
-
-    // Hourly rate is not part of current Chef model
 
     return {
       isValid: errors.length === 0,

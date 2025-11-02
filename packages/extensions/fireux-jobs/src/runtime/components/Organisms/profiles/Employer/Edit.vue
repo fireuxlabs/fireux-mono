@@ -142,10 +142,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Employer } from '../../../../models/profiles/Employer.model'
-import { employerConfig } from '../../../../models/profiles/Employer.model'
-import { useEmployerUpdate } from '../../../../composables/firestore/profiles/Employer/useEmployerUpdate'
-import { useEmployerFormattingAndValidation } from '../../../../composables/firestore/profiles/Employer/useEmployerFormattingAndValidation'
-import { useProfileUpdate } from 'fireux-core/runtime/composables/firestore/core/profiles/useProfileUpdate.ts'
+import { useEmployerUpdate } from '../../../../composables/firestore/profiles/Employer/main/useEmployerUpdate'
+import { useEmployerFormattingAndValidation } from '../../../../composables/firestore/profiles/Employer/utils'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { formatFirestoreTimestamp } from 'fireux-core/runtime/utils/formatTimestamp.ts'
 
@@ -158,10 +156,9 @@ const appProfile = computed(() => record.value?.app ?? null)
 const fireUXConfig = useFireUXConfig()
 const canEditAppOverlay = computed(() => fireUXConfig.isTenant)
 
-const { updateDisplayName } = useEmployerUpdate()
+const { updateDisplayName, updateCore, updateApp } = useEmployerUpdate()
 const { formatDisplayName, validateDisplayName } =
   useEmployerFormattingAndValidation()
-const { updateCore, updateApp } = useProfileUpdate(employerConfig)
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined

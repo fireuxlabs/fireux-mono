@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { supplierConfig } from '../../models/profiles/Supplier.model'
-import { useSupplierCreate } from '../../composables/firestore/profiles/Supplier/useSupplierCreate'
+import { useSupplierCreate } from '../../composables/firestore/profiles/Supplier/main/useSupplierCreate'
 
 const { createSupplier } = useSupplierCreate()
 async function onEnsureSupplier() {

@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { employerConfig } from '../../models/profiles/Employer.model'
-import { useEmployerCreate } from '../../composables/firestore/profiles/Employer/useEmployerCreate'
+import { useEmployerCreate } from '../../composables/firestore/profiles/Employer/main/useEmployerCreate'
 
 const { createEmployer } = useEmployerCreate()
 async function onEnsureEmployer() {

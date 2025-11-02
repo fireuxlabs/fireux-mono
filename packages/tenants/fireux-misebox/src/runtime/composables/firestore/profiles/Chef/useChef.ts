@@ -1,4 +1,4 @@
-import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profiles/useProfile.ts'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profile/useProfile.ts'
 import {
   chefConfig,
   type ChefCoreProfile,

@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProfessionalUpdate } from '../../../../composables/firestore/profiles/Professional/useProfessionalUpdate'
+import { useProfessionalUpdate } from '../../../../composables/firestore/profiles/Professional/main/useProfessionalUpdate'
 import type {
   ProfessionalCoreProfile,
   RelevantExperienceItem,

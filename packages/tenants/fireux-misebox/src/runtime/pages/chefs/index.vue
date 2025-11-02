@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { chefConfig } from '../../models/profiles/Chef.model'
-import { useChefCreate } from '../../composables/firestore/profiles/Chef/useChefCreate'
+import { useChefCreate } from '../../composables/firestore/profiles/Chef/main/useChefCreate'
 
 const { createChef } = useChefCreate()
 

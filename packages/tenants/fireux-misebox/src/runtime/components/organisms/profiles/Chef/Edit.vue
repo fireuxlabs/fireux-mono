@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Chef } from '../../../../models/profiles/Chef.model'
-import { useChefUpdate } from '../../../../composables/firestore/profiles/Chef/useChefUpdate'
+import { useChefUpdate } from '../../../../composables/firestore/profiles/Chef/main/useChefUpdate'
 
 const props = defineProps<{ chef: Chef | null }>()
 const chef = computed(() => props.chef ?? null)

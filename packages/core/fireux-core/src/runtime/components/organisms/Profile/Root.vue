@@ -57,7 +57,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { ProfileConfig } from '../../../models/core/profile.model.ts'
-import { useProfile } from '../../../composables/firestore/core/profiles/useProfile.ts'
+import { useProfile } from '../../../composables/firestore/core/profile/useProfile.ts'
+import { useFireUXConfig } from '../../../composables/FireUXConfig.ts'
 
 const props = defineProps<{
   config: ProfileConfig
@@ -66,7 +67,16 @@ const props = defineProps<{
 
 // unified profile + computed signals
 const profileRef = useProfile(props.config)
-const { hasCoreProfile, hasAppProfile, ctaMessage } = profileRef
+const { isTenant } = useFireUXConfig()
+
+const hasCoreProfile = computed(() => Boolean(profileRef.coreProfile.value))
+const hasAppProfile = isTenant
+  ? computed(() => Boolean(profileRef.appProfile.value))
+  : undefined
+const ctaMessage = computed(() => {
+  if (hasCoreProfile.value) return null
+  return props.config.cta || `Complete your ${props.config.profileType} profile to continue.`
+})
 
 // CTA visible if missing global OR app overlay
 const showCreate = computed(() => {

@@ -1,20 +1,13 @@
-import { doc, getDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
 import type { Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
 import { requireUid } from '../../../utils/useEnsureCommon.ts'
-import type {
-  User,
-  AppUser,
-} from 'fireux-core/runtime/models/core/user.model.ts'
-
-function makeHandle(displayName: string, uid: string) {
-  const base = displayName.toLowerCase().replaceAll(/[^a-z0-9]/g, '')
-  const padded = base || 'user'
-  return `${padded}${uid.slice(0, 4)}`.slice(0, 12)
-}
+import {
+  ensureAppMembership as ensureAppMembershipDoc,
+  ensureDoc,
+  makeHandle,
+} from '../../../utils/ensureCommon.ts'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
 type EnsureUserDocResult = {
   created: boolean
@@ -24,30 +17,28 @@ type EnsureUserDocResult = {
 type EnsureMembershipResult = { created: boolean }
 
 export function useUserEnsure(_user?: Ref<User | null | undefined>) {
-  const db = useFirestore()
   const router = useRouter()
   const { isTenant, appId } = useFireUXConfig()
-  const { setDocument } = useFirestoreManager()
 
   async function ensureUserDoc(): Promise<EnsureUserDocResult> {
     const { uid, auth } = await requireUid()
-    const ref = doc(db, 'users', uid)
-    const snap = await getDoc(ref)
-    if (snap.exists()) {
-      const existing = snap.data() as Partial<User>
-      const displayName = existing.display_name || auth?.displayName || 'User'
-      return { created: false, id: uid, displayName }
-    }
-
     const displayName = auth?.displayName || 'New User'
     const payload = {
       id: uid,
       email: auth?.email ?? '',
       display_name: displayName,
       handle: makeHandle(displayName, uid),
-    } as User
+    } as Partial<User>
 
-    await setDocument('users', uid, payload)
+    const result = await ensureDoc<User>('users', uid, payload as User)
+
+    if (!result.created) {
+      const existing = result.snapshot?.data() as Partial<User> | undefined
+      const resolvedDisplayName =
+        existing?.display_name || auth?.displayName || 'User'
+      return { created: false, id: uid, displayName: resolvedDisplayName }
+    }
+
     return { created: true, id: uid, displayName }
   }
 
@@ -55,18 +46,8 @@ export function useUserEnsure(_user?: Ref<User | null | undefined>) {
     if (!isTenant || !appId) return { created: false }
 
     const { uid } = await requireUid()
-    const ref = doc(db, `apps/${appId}/users`, uid)
-    const snap = await getDoc(ref)
-    if (snap.exists()) return { created: false }
-
-    const payload = {
-      id: uid,
-      role: 'user',
-      creator_id: uid,
-    } as AppUser
-
-    await setDocument(`apps/${appId}/users`, uid, payload)
-    return { created: true }
+    const result = await ensureAppMembershipDoc(appId, uid, 'user')
+    return { created: result.created }
   }
 
   async function ensureUser() {

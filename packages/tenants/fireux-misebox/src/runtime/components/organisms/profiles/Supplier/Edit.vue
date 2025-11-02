@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Supplier } from '../../../../models/profiles/Supplier.model'
-import { useSupplierUpdate } from '../../../../composables/firestore/profiles/Supplier/useSupplierUpdate'
+import { useSupplierUpdate } from '../../../../composables/firestore/profiles/Supplier/main/useSupplierUpdate'
 
 const props = defineProps<{ supplier: Supplier | null }>()
 

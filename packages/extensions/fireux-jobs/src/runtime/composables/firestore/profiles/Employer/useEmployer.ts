@@ -1,5 +1,5 @@
 // packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployer.ts
-import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profiles/useProfile.ts'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profile/useProfile.ts'
 import {
   employerConfig,
   type EmployerCoreProfile,

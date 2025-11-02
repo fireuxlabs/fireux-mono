@@ -1,32 +1,13 @@
-import type { Supplier } from '../../../../../models/profiles/Supplier.model'
+import type { Supplier } from '../../../../models/profiles/Supplier.model'
 
 export function useSupplierValidation() {
-  /**
-   * Validate supplier data
-   */
+  /** Validate supplier data */
   function validateSupplier(supplier: Partial<Supplier>) {
     const errors: string[] = []
 
-    // Required fields
     if (!supplier.display_name?.trim()) {
       errors.push('Display name is required')
     }
-
-    // Supplier model is independent and uses `id` as its primary key.
-    // If you need to enforce creator/owner linkage, validate `created_by` at creation time instead.
-
-    // Business type validation
-    // Business type is not part of the slim Supplier model
-
-    // Email validation
-    // Email, phone, website, etc. are not part of the slim Supplier model
-
-    // Phone validation
-    // Keep helper utilities for future extension types
-
-    // Note: website is not part of the current Supplier model
-
-    // Note: years_in_business, employee_count and payment_terms are not in the current Supplier model
 
     return {
       isValid: errors.length === 0,
@@ -34,9 +15,7 @@ export function useSupplierValidation() {
     }
   }
 
-  /**
-   * Validate business hours format
-   */
+  /** Validate business hours format */
   function validateBusinessHours(hours: any) {
     const errors: string[] = []
     const validDays = [
@@ -77,25 +56,19 @@ export function useSupplierValidation() {
     }
   }
 
-  /**
-   * Helper function to validate email format
-   */
+  /** Helper function to validate email format */
   function isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
   }
 
-  /**
-   * Helper function to validate phone format
-   */
+  /** Helper function to validate phone format */
   function isValidPhone(phone: string): boolean {
     const phoneRegex = /^\+?[\d\s\-()]{10,}$/
     return phoneRegex.test(phone)
   }
 
-  /**
-   * Helper function to validate URL format
-   */
+  /** Helper function to validate URL format */
   function isValidUrl(url: string): boolean {
     try {
       new URL(url)
@@ -105,9 +78,7 @@ export function useSupplierValidation() {
     }
   }
 
-  /**
-   * Helper function to validate time format (HH:MM)
-   */
+  /** Helper function to validate time format (HH:MM) */
   function isValidTime(time: string): boolean {
     const timeRegex = /^([01]?\d|2[0-3]):[0-5]\d$/
     return timeRegex.test(time)

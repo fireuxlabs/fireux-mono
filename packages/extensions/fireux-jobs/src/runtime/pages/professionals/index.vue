@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { professionalConfig } from '../../models/profiles/Professional.model'
-import { useProfessionalCreate } from '../../composables/firestore/profiles/Professional/useProfessionalCreate'
+import { useProfessionalCreate } from '../../composables/firestore/profiles/Professional/main/useProfessionalCreate'
 
 const { createProfessional } = useProfessionalCreate()
 async function onEnsureProfessional() {

@@ -1,17 +1,14 @@
 export function useProfessionalFormatting() {
-  // Format professional name for display
   const formatProfessionalName = (name: string): string => {
     if (!name || name.trim().length === 0) return 'Professional Name Not Set'
     return name.trim()
   }
 
-  // Format title/role for display
   const formatTitle = (title: string): string => {
     if (!title || title.trim().length === 0) return 'Title not specified'
     return title.trim()
   }
 
-  // Format languages for display
   const formatLanguages = (languages: any[]): string => {
     if (!languages || languages.length === 0) return 'No languages specified'
 
@@ -28,7 +25,6 @@ export function useProfessionalFormatting() {
     return `${formattedLangs.slice(0, 3).join(', ')} & ${formattedLangs.length - 3} more`
   }
 
-  // Format kitchen experience duration
   const formatExperienceDuration = (experience: any): string => {
     if (!experience.from_year) return 'Duration unknown'
 
@@ -43,7 +39,6 @@ export function useProfessionalFormatting() {
     return `${experience.from_month} ${experience.from_year}`
   }
 
-  // Format kitchen experience for display
   const formatKitchenExperience = (experience: any[]): string => {
     if (!experience || experience.length === 0)
       return 'No kitchen experience listed'
@@ -55,7 +50,7 @@ export function useProfessionalFormatting() {
       return `${currentPosition.role} at ${currentPosition.name} (Current) + ${totalPositions - 1} previous`
     }
 
-    const mostRecent = experience[0] // Assuming sorted by most recent
+    const mostRecent = experience[0]
     if (mostRecent) {
       return `${mostRecent.role} at ${mostRecent.name} + ${totalPositions - 1} more`
     }
@@ -63,7 +58,6 @@ export function useProfessionalFormatting() {
     return `${totalPositions} kitchen positions`
   }
 
-  // Format education for display
   const formatEducation = (education: any[]): string => {
     if (!education || education.length === 0)
       return 'No formal education listed'
@@ -76,7 +70,6 @@ export function useProfessionalFormatting() {
     return `${education.length} qualifications including ${education[0].degree}`
   }
 
-  // Format certifications for display
   const formatCertifications = (certifications: any[]): string => {
     if (!certifications || certifications.length === 0)
       return 'No certifications listed'
@@ -87,7 +80,6 @@ export function useProfessionalFormatting() {
     return `${certifications[0].name} & ${certifications.length - 1} more certifications`
   }
 
-  // Format projects for display
   const formatProjects = (projects: any[]): string => {
     if (!projects || projects.length === 0) return 'No projects listed'
 
@@ -95,14 +87,12 @@ export function useProfessionalFormatting() {
     return `${projects.length} projects including ${projects[0].name}`
   }
 
-  // Format bio with length limits
   const formatBioShort = (bio: string, maxLength: number = 120): string => {
     if (!bio || bio.trim().length === 0) return 'No description available'
     if (bio.length <= maxLength) return bio
     return bio.substring(0, maxLength - 3).trim() + '...'
   }
 
-  // Format years of experience calculation
   const calculateYearsOfExperience = (kitchenExperience: any[]): string => {
     if (!kitchenExperience || kitchenExperience.length === 0) return '0 years'
 
@@ -124,7 +114,7 @@ export function useProfessionalFormatting() {
           endYear = parseInt(exp.to_year)
           endMonth = getMonthNumber(exp.to_month)
         } else {
-          return // Skip incomplete entries
+          return
         }
 
         const months = (endYear - startYear) * 12 + (endMonth - startMonth)
@@ -146,7 +136,6 @@ export function useProfessionalFormatting() {
     return `${years} years, ${remainingMonths} months`
   }
 
-  // Helper function to convert month name to number
   const getMonthNumber = (monthName: string): number => {
     const months = {
       January: 1,
@@ -165,13 +154,11 @@ export function useProfessionalFormatting() {
     return months[monthName as keyof typeof months] || 1
   }
 
-  // Format location for display
   const formatLocations = (locations: any[]): string => {
     if (!locations || locations.length === 0) return 'Location not specified'
 
     const locationNames = locations.map((loc) => {
       if (loc.formatted_address) {
-        // Extract city from formatted address
         const parts = loc.formatted_address.split(',')
         return parts[0]?.trim() || loc.formatted_address
       }
@@ -195,5 +182,11 @@ export function useProfessionalFormatting() {
     formatBioShort,
     calculateYearsOfExperience,
     formatLocations,
+  }
+}
+
+export function useProfessionalFormattingAndValidation() {
+  return {
+    ...useProfessionalFormatting(),
   }
 }

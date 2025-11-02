@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useSupplierQuickCreate } from '../../../../../composables/firestore/profiles/Supplier/useSupplierQuickCreate'
+import { useSupplierQuickCreate } from '../../../../../composables/firestore/profiles/Supplier/main/useSupplierQuickCreate'
 
 // Emits
 const emit = defineEmits<{
