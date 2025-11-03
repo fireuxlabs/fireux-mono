@@ -1,59 +1,59 @@
-//Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-jobs/src/runtime/pages/dev/fireux-jobs.vue
 <template>
-  <div>
-    <UCard>
-      <template #header>
-        <h1>🏢 Global Employers Collection</h1>
-      </template>
-      <p>Total Global Employers: {{ globalEmployers?.length || 0 }}</p>
-      <DevJsonPanel
-        :data="{
-          total: globalEmployers?.length || 0,
-          employers: globalEmployers,
-        }"
-      />
-    </UCard>
-
-    <div style="margin-top: 16px; display: grid; gap: 16px">
+  <UPage>
+    <UPageBody class="space-y-6">
+      <!-- Current Professional -->
       <UCard>
         <template #header>
-          <h2>👤 Current Employer (global)</h2>
+          <h1 class="text-base font-semibold">Current Professional</h1>
         </template>
-        <DevJsonPanel :data="employerProfile.current?.global || null" />
+
+        <template v-if="professional?.user?.avatar && professional?.user?.display_name">
+          <MoleculesPill
+            :avatar="professional.user.avatar"
+            initials="A"
+            :title="professional.user.display_name"
+            :subtitle="professional.title"
+            :badges="professional.specialties"
+            :to="`/professionals/${professional.id}`"
+          />
+          <DevJsonPanel :data="professional" />
+        </template>
+        <MoleculesNotFound v-else kind="document" entity="professional" />
       </UCard>
-    </div>
 
-    <UCard style="margin-top: 16px">
-      <template #header>
-        <h1>🧑‍🍳 Global Professionals Collection</h1>
-      </template>
-      <p>Total Global Professionals: {{ globalProfessionals?.length || 0 }}</p>
-      <DevJsonPanel
-        :data="{
-          total: globalProfessionals?.length || 0,
-          professionals: globalProfessionals,
-        }"
-      />
-    </UCard>
-
-    <div style="margin-top: 16px; display: grid; gap: 16px">
+      <!-- Current Employer -->
       <UCard>
         <template #header>
-          <h2>👤 Current Professional (global)</h2>
+          <h1 class="text-base font-semibold">Current Employer</h1>
         </template>
-        <DevJsonPanel :data="professionalProfile.current?.global || null" />
+
+        <template v-if="employer?.user?.avatar && employer?.user?.display_name">
+          <MoleculesPill
+            :avatar="employer.user.avatar"
+            initials="A"
+            :title="employer.user.display_name"
+            :subtitle="employer.title"
+            :badges="employer.specialties"
+            :to="`/employers/${employer.id}`"
+          />
+          <DevJsonPanel :data="employer" />
+        </template>
+        <MoleculesNotFound v-else kind="document" entity="employer" />
       </UCard>
-    </div>
-  </div>
+    </UPageBody>
+  </UPage>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import { employerConfig } from '../../models/profiles/Employer.model'
+<script setup lang="ts">
+declare function definePageMeta(meta: any): void
+
+import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profile/useProfile'
 import { professionalConfig } from '../../models/profiles/Professional.model'
+import { employerConfig } from '../../models/profiles/Employer.model'
 
 definePageMeta({
   layout: 'dev',
+  alias: ['/dev/fireux-jobs'],
   nav: {
     key: 'dev-ext-jobs',
     label: 'Jobs (Ext)',
@@ -64,17 +64,7 @@ definePageMeta({
   },
 })
 
-// Employers
-const employerProfile = useProfile(employerConfig)
-const globalEmployers = employerProfile.collection?.fetchGlobal?.() ?? ref([])
+const { profile: professional } = useProfile(professionalConfig)
+const { profile: employer } = useProfile(employerConfig)
 
-// Professionals
-const professionalProfile = useProfile(professionalConfig)
-const globalProfessionals =
-  professionalProfile.collection?.fetchGlobal?.() ?? ref([])
-
-onMounted(() => {
-  employerProfile.collection?.fetchGlobal?.()
-  professionalProfile.collection?.fetchGlobal?.()
-})
 </script>

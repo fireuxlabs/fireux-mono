@@ -1,6 +1,6 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type {
-  ProfileBase,
+  Profile,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
 import { ensureDoc } from '../../../utils/ensureCommon.ts'
@@ -12,17 +12,21 @@ import { useUser } from '../../user/useUser.ts'
  */
 export function useProfileEnsure(config: ProfileConfig) {
   const { isTenant, appId } = useFireUXConfig()
-
   const { user } = useUser()
 
   const ensure = async (profile: Record<string, unknown> = {}) => {
     if (!user.value?.id) throw new Error('User not loaded')
     const uid = user.value.id
 
-    const base: Partial<ProfileBase> = {
+    const base: Partial<Profile> = {
       id: uid,
-      display_name: user.value.display_name || uid,
-      avatar: user.value.avatar || '',
+      domain: config.id,
+      user: {
+        id: uid,
+        display_name: user.value.display_name,
+        avatar: user.value.avatar,
+        handle: (user.value as any)?.handle,
+      },
     }
 
     const createdCore = await ensureDoc(config.collectionName, uid, {

@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import type { PageMeta } from 'nuxt/dist/pages/runtime/composables'
 
 interface FireUXToastMessage {
   id?: string
@@ -26,7 +27,7 @@ interface FireUXUseFetchResponse<T> {
 }
 
 declare module 'nuxt/app' {
-  export function definePageMeta(meta: Record<string, any>): void
+  export function definePageMeta(meta: PageMeta): void
   export function useHead(input: Record<string, any>): void
   export function useFetch<T = unknown>(
     request: string,
@@ -38,6 +39,7 @@ declare module 'nuxt/app' {
 declare global {
   // Provided by the Nuxt injections used across FireUX runtime
   // Allows optional access without requiring direct imports in every file.
+  const definePageMeta: (meta: PageMeta) => void
   var useToast: undefined | (() => FireUXToastApi)
 }
 

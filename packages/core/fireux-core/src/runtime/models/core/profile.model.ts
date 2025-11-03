@@ -13,10 +13,10 @@ export interface Profile {
   /** Reference to the owning user (can be a full User or pill later) */
   user: Partial<User>
 
-  /** Domain-specific metadata (optional per app) */
+  /** Optional domain (e.g. 'chef', 'supplier', etc.) */
   domain?: string
 
-  /** Timestamps */
+  /** Creation and update timestamps */
   created_at: FirebaseTimestamp
   updated_at?: FirebaseTimestamp
 }

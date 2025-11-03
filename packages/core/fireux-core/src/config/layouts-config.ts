@@ -1,5 +1,4 @@
-import { addComponentsDir, addLayout } from '@nuxt/kit'
-import { join } from 'node:path'
+import { addComponentsDir } from '@nuxt/kit'
 import { existsSync } from 'node:fs'
 
 /**
@@ -19,27 +18,4 @@ export function configureLayouts(resolver: any, _nuxt: any) {
     global: true,
     pathPrefix: false,
   })
-
-  // Register layout keys that exist on disk
-  // Note: We intentionally do NOT register 'default' here to avoid
-  // layer key collisions with app-level app/layouts/default.vue.
-  // Apps own their default.vue; core still exposes CoreDefault as a component.
-  const keys = [
-    'dashboard',
-    'dev',
-    'design',
-    'docs',
-    'landing',
-    'portfolio',
-    'auth',
-    'chat',
-    'changelog',
-    'starter',
-  ]
-  for (const key of keys) {
-    const file = join(layoutsDir, `${key}.vue`)
-    if (existsSync(file)) {
-      addLayout({ src: file, filename: `fireux-core-${key}.vue` }, key)
-    }
-  }
 }
