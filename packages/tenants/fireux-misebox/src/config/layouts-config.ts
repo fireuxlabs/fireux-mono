@@ -1,5 +1,4 @@
-import { addComponentsDir, addLayout } from '@nuxt/kit'
-import { join } from 'node:path'
+import { addComponentsDir } from '@nuxt/kit'
 import { existsSync } from 'node:fs'
 
 /**
@@ -18,11 +17,4 @@ export function configureLayouts(resolver: any, _nuxt: any) {
     global: true,
     pathPrefix: false,
   })
-
-  // Optionally register as Nuxt layout keys
-  for (const key of ['MiseboxDefault', 'MiseboxDashboard', 'MiseboxDev']) {
-    const f = join(layoutsDir, `${key}.vue`)
-    if (existsSync(f))
-      addLayout({ src: f, filename: `misebox-${key}.vue` }, key)
-  }
 }

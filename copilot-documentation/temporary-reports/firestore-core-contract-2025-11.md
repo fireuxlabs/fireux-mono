@@ -63,9 +63,9 @@ Profiles are driven by a tiny `ProfileConfig`:
 ```ts
 // packages/core/fireux-core/src/runtime/models/core/profile.model.ts
 export interface ProfileConfig {
-  id: string                  // 'chef' | 'supplier' | 'professional' | 'employer'
-  collectionName: string      // e.g. 'chefs'
-  profileType: string         // Human label: 'Chef'
+  id: string // 'chef' | 'supplier' | 'professional' | 'employer'
+  collectionName: string // e.g. 'chefs'
+  profileType: string // Human label: 'Chef'
   cta?: string
 }
 ```
@@ -86,7 +86,9 @@ import { useFirestore, useDocument } from 'vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type { ProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
 
-interface UseProfileFetchOptions { collectionName: string }
+interface UseProfileFetchOptions {
+  collectionName: string
+}
 
 export function useProfileFetch<
   TCore extends ProfileBase,
@@ -124,11 +126,18 @@ export function useProfileFetch<
 // packages/core/fireux-core/src/runtime/composables/firestore/core/profile/useProfile.ts
 import { useAuth } from '../../../firebase/useAuth.ts'
 import { useProfileFetch } from './main/useProfileFetch.ts'
-import type { ProfileConfig, ProfileBase } from '../../../../models/core/profile.model.ts'
+import type {
+  ProfileConfig,
+  ProfileBase,
+} from '../../../../models/core/profile.model.ts'
 
-export function useProfile<T extends ProfileBase = ProfileBase>(config: ProfileConfig) {
+export function useProfile<T extends ProfileBase = ProfileBase>(
+  config: ProfileConfig
+) {
   const { uid } = useAuth()
-  const { profile } = useProfileFetch<T>(uid.value || '', { collectionName: config.collectionName })
+  const { profile } = useProfileFetch<T>(uid.value || '', {
+    collectionName: config.collectionName,
+  })
   return { profile }
 }
 ```
