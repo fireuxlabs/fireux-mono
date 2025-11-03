@@ -3,13 +3,17 @@ import {
   professionalConfig,
   type ProfessionalCoreProfile,
   type ProfessionalAppProfile,
-} from '../../../../models/profiles/Professional.model'
+} from '../../../../models/profiles/Professional.model.ts'
 
-/** Minimal facade for Professional profiles. */
+/**
+ * Public Professional composable (read-only).
+ * Exposes separate reactive refs for core and app overlays.
+ */
 export function useProfessional() {
-  const { profile } = useProfile<
+  const { coreProfile, appProfile } = useProfile<
     ProfessionalCoreProfile,
     ProfessionalAppProfile
   >(professionalConfig)
-  return { profile }
+
+  return { coreProfile, appProfile }
 }

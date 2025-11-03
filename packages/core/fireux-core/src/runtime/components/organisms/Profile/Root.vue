@@ -75,7 +75,10 @@ const hasAppProfile = isTenant
   : undefined
 const ctaMessage = computed(() => {
   if (hasCoreProfile.value) return null
-  return props.config.cta || `Complete your ${props.config.profileType} profile to continue.`
+  return (
+    props.config.cta ||
+    `Complete your ${props.config.profileType} profile to continue.`
+  )
 })
 
 // CTA visible if missing global OR app overlay

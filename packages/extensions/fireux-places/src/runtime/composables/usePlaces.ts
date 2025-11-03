@@ -1,4 +1,4 @@
-import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager.ts'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager.ts'
 import type { Place } from '../models/place.model'
 import { usePlacesSearch } from './usePlacesSearch'
 import { usePlaceSave } from './usePlaceSave'

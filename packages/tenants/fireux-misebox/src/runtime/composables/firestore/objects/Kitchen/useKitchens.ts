@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager.ts'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager.ts'
 import type { Kitchen, KitchenCard } from '../../../../models/Kitchen.model'
 
 const COLLECTION_PATH = 'kitchens'

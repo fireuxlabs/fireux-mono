@@ -22,7 +22,9 @@ export function useProfessionalFormatting() {
     if (formattedLangs.length === 1) return formattedLangs[0]
     if (formattedLangs.length === 2) return formattedLangs.join(' & ')
     if (formattedLangs.length <= 4) return formattedLangs.join(', ')
-    return `${formattedLangs.slice(0, 3).join(', ')} & ${formattedLangs.length - 3} more`
+    return `${formattedLangs.slice(0, 3).join(', ')} & ${
+      formattedLangs.length - 3
+    } more`
   }
 
   const formatExperienceDuration = (experience: any): string => {
@@ -47,12 +49,16 @@ export function useProfessionalFormatting() {
     const currentPosition = experience.find((exp) => exp.ongoing)
 
     if (currentPosition) {
-      return `${currentPosition.role} at ${currentPosition.name} (Current) + ${totalPositions - 1} previous`
+      return `${currentPosition.role} at ${currentPosition.name} (Current) + ${
+        totalPositions - 1
+      } previous`
     }
 
     const mostRecent = experience[0]
     if (mostRecent) {
-      return `${mostRecent.role} at ${mostRecent.name} + ${totalPositions - 1} more`
+      return `${mostRecent.role} at ${mostRecent.name} + ${
+        totalPositions - 1
+      } more`
     }
 
     return `${totalPositions} kitchen positions`
@@ -77,7 +83,9 @@ export function useProfessionalFormatting() {
     if (certifications.length === 1) return certifications[0].name
     if (certifications.length === 2)
       return `${certifications[0].name} & ${certifications[1].name}`
-    return `${certifications[0].name} & ${certifications.length - 1} more certifications`
+    return `${certifications[0].name} & ${
+      certifications.length - 1
+    } more certifications`
   }
 
   const formatProjects = (projects: any[]): string => {

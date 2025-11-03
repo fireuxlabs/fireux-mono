@@ -1,6 +1,5 @@
-/* eslint-disable no-console */
 import { doc, getDoc } from 'firebase/firestore'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager.ts'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager.ts'
 import { useFirestore } from 'vuefire'
 import type { Place } from '../models/place.model'
 import { canonicalPlaceId } from './usePlacesGoogle'

@@ -1,36 +1,169 @@
-# Firestore Core Report
+# Firestore Core – Current Fetch & Ensure Contract (2025-11)
 
-## App
+This page documents the minimal, stable surface we’re shipping for Firestore core composables. It’s intentionally small so domains (Chef, Supplier, Professional, Employer) can sit cleanly on top.
 
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/useApp.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppComputed.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppEnsure.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/useApps.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppUpdate.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/utils/useAppFormatting.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/app/utils/useAppValidation.ts
+⸻
 
-## User
+TL;DR
+• User
+• useUser() → returns one reactive user (core-only).
+• Tenant overlay (appUser) is fetched by useUserFetch but not merged by useUser().
+• Profiles (Chef/Supplier/Professional/Employer)
+• useProfile(config) → returns one reactive profile.
+• If in tenant context, the profile includes app overlay as profile.app (no field merges into core).
+• No profile computed/update layers
+• useProfileComputed.ts and useProfileUpdate.ts are not part of the public surface.
+• Ensure
+• Core ensure lives at profiles/main/useProfileEnsure.ts.
+• Domains expose create facades that call ensure and (optionally) add domain flags/props.
 
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUser.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserComputed.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserDelete.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserEnsure.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserFormattingAndValidation.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserUpdate.ts
+⸻
 
-## Profile
+## Pill Protocol (unchanged)
 
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profile/useProfile.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileFetch.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileEnsure.ts
-- [x] /packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileDelete.ts — still a stub; extend for Firestore deletes when needed
+Use the generic Pill component for UI. It accepts a small, shared prop shape (avatar, title, subtitle, badges, to). Domains can map their data to it, but don’t bake domain logic into the component.
 
-## Core Dependencies
+⸻
 
-- /packages/core/fireux-core/src/runtime/composables/FireUXConfig.ts
-- /packages/core/fireux-core/src/runtime/composables/firebase/useAuth.ts
-- /packages/core/fireux-core/src/runtime/composables/firebase/useImageStorage.ts
-- /packages/core/fireux-core/src/runtime/composables/firebase/useRequireUser.ts
-- /packages/core/fireux-core/src/runtime/composables/firestore/operations/\*
-- /packages/core/fireux-core/src/runtime/composables/firestore/utils/\*
+## User API
+
+useUserFetch(id)
+• Fetches:
+• users/{id} → user
+• apps/{appId}/users/{id} when tenant → appUser
+• Returns both raw refs for flexibility:
+• { user, appUser }
+
+useUser()
+• Public entry point.
+• Returns one reactive object: user (core-only).
+• Keeps extra helpers (computed/ensure/update/delete) colocated, but these are not part of this doc’s minimal surface.
+
+Example
+
+```
+// packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUser.ts
+import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
+import { useUserFetch } from './main/useUserFetch.ts'
+
+export function useUser() {
+	const { uid } = useAuth()
+	const { user } = useUserFetch(uid)
+	return { user }
+}
+```
+
+⸻
+
+## Profile API
+
+Profiles are driven by a tiny ProfileConfig:
+
+```
+// packages/core/fireux-core/src/runtime/models/core/profile.model.ts
+export interface ProfileConfig {
+	id: string                  // 'chef' | 'supplier' | 'professional' | 'employer'
+	collectionName: string      // e.g. 'chefs'
+	profileType: string         // Human label: 'Chef'
+	cta?: string
+}
+```
+
+useProfileFetch(id, { collectionName })
+• Always fetches core: /{collectionName}/{id}
+• If tenant context is active, also fetches overlay: /apps/{appId}/{collectionName}/{id}
+• Returns one computed profile:
+• Contents are the core profile fields, plus an app property when overlay exists.
+• No field merging into core; the overlay stays namespaced under app.
+
+```
+// packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileFetch.ts
+import { computed } from 'vue'
+import { doc } from 'firebase/firestore'
+import { useFirestore, useDocument } from 'vuefire'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import type { ProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
+
+interface UseProfileFetchOptions { collectionName: string }
+
+export function useProfileFetch<
+	TCore extends ProfileBase,
+	TApp extends ProfileBase = TCore
+>(id: string, options: UseProfileFetchOptions) {
+	const db = useFirestore()
+	const { isTenant, appId } = useFireUXConfig()
+
+	const { data: core } = useDocument<TCore>(
+		id ? (doc(db, options.collectionName, id) as any) : null
+	)
+
+	const { data: app } = useDocument<TApp>(
+		id && isTenant && appId
+			? (doc(db, 'apps', appId, options.collectionName, id) as any)
+			: null
+	)
+
+	const profile = computed<(TCore & { app?: TApp | null }) | null>(() => {
+		const base = core.value
+		if (!base) return null
+		return { ...base, app: app.value ?? null }
+	})
+
+	return { profile }
+}
+```
+
+useProfile(config)
+• Public entry point for any profile domain.
+• Returns one reactive profile as above.
+
+```
+// packages/core/fireux-core/src/runtime/composables/firestore/core/profile/useProfile.ts
+import { useAuth } from '../../../firebase/useAuth.ts'
+import { useProfileFetch } from './main/useProfileFetch.ts'
+import type { ProfileConfig, ProfileBase } from '../../../../models/core/profile.model.ts'
+
+export function useProfile<T extends ProfileBase = ProfileBase>(config: ProfileConfig) {
+	const { uid } = useAuth()
+	const { profile } = useProfileFetch<T>(uid.value || '', { collectionName: config.collectionName })
+	return { profile }
+}
+```
+
+⸻
+
+## Ensure vs Create
+
+• Core ensure (profiles/main/useProfileEnsure.ts):
+• Creates core doc if missing.
+• If in tenant context, creates overlay doc if missing.
+• Does not overwrite existing docs.
+• Can add a simple domain marker when invoked by domains.
+• Domain create (tenants/extensions):
+• Wraps core ensure and passes minimal domain payload (e.g., { domain: 'professional' }).
+• No extra fields required right now—kept intentionally lean.
+
+⸻
+
+## What We’ve Explicitly Avoided (for now)
+
+• Merging tenant overlay fields into core.
+• Profile-level computed and update composables.
+• isRef ceremony and over-generic fetch signatures in the public surface.
+• Spreading UI-mapping logic (like pills) into core.
+
+⸻
+
+## Why This Shape?
+
+• Keeps core predictable and domain-agnostic.
+• Domains get clear extension points (create, validation, lists) without fighting the base layer.
+• UI stays in control: it decides whether to show/ignore overlays, and how to build card/pill shapes.
+
+⸻
+
+If you need to enrich pills/cells, do it in domain UI/composables by reading user (for avatar/display_name) and profile (for role/specialties/etc.), then map to your Pill.Props.
+
+⸻
+
+That’s it—clean, consistent, and easy to extend.

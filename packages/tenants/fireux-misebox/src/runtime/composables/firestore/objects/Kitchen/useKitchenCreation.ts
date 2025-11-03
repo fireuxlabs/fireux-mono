@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/useFirestoreManager.ts'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager.ts'
 import type { Kitchen } from '../../../../models/Kitchen.model'
 
 interface KitchenCreatePayload {

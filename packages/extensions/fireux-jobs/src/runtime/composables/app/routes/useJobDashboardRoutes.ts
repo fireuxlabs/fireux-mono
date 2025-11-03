@@ -1,11 +1,6 @@
+import type { RouteLink } from './useJobRoutes.ts'
+
 // Dashboard-only job profile routes (no public discovery links)
-export interface RouteLink {
-  id: string
-  label: string
-  icon?: string
-  to?: string
-  children?: RouteLink[]
-}
 
 export function getJobDashboardRoutes(
   hasProfile: (profileType: string) => boolean

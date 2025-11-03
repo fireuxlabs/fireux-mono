@@ -10,8 +10,26 @@
         </template>
 
         <MoleculesPill v-bind="pillFor(currentUser)" />
+
+        <!-- New: show tenant overlay status -->
+        <div class="flex items-center gap-2">
+          <span class="text-sm opacity-80">
+            App overlay:
+            <strong>{{ currentUser.appUser ? 'present' : 'none' }}</strong>
+          </span>
+          <UBadge
+            v-if="currentUser.appUser?.role"
+            color="primary"
+            variant="soft"
+            size="sm"
+          >
+            role: {{ currentUser.appUser.role }}
+          </UBadge>
+        </div>
+
         <OrganismsUserCardsCell :user="currentUser" :to="currentUserLink" />
 
+        <!-- This JSON now includes `appUser` because it's merged into `user` -->
         <DevJsonPanel v-if="currentUserJson" :data="currentUserJson" />
       </UCard>
       <MoleculesNotFound v-else kind="document" entity="user" />

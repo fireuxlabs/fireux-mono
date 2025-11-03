@@ -1,8 +1,11 @@
+// @ts-nocheck
+// Snapshot of packages/extensions/fireux-jobs/src/runtime/models/profiles/Employer.model.ts taken on 2025-11-03
 import type {
   ProfileBase,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
 
+/** Unified Employer */
 export interface Employer {
   id: string
   display_name?: string
@@ -11,6 +14,7 @@ export interface Employer {
   app?: EmployerAppProfile | null
 }
 
+/** Global: employers/{uid} */
 export interface EmployerCoreProfile extends ProfileBase {
   title?: string | null
   bio_short?: string | null
@@ -18,12 +22,14 @@ export interface EmployerCoreProfile extends ProfileBase {
   specialties?: string[]
 }
 
+/** App overlay: apps/{appId}/employers/{uid} */
 export interface EmployerAppProfile extends ProfileBase {
   title?: string | null
   bio_short?: string | null
   specialties?: string[]
 }
 
+/** Cards */
 export namespace EmployerCard {
   export interface Pill {
     id: string
@@ -40,6 +46,7 @@ export namespace EmployerCard {
   }
 }
 
+/** Config */
 export const employerConfig: ProfileConfig = {
   id: 'employer',
   collectionName: 'employers',

@@ -10,7 +10,7 @@ import { useUser } from '../../user/useUser.ts'
  * Ensure profile documents exist (core + optional app overlay).
  * - Creates only if missing; never overwrites.
  */
-export function useProfileEnsure(_profile: unknown, config: ProfileConfig) {
+export function useProfileEnsure(config: ProfileConfig) {
   const { isTenant, appId } = useFireUXConfig()
 
   const { user } = useUser()

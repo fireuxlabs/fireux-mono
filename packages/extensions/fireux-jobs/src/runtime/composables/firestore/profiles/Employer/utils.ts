@@ -55,7 +55,9 @@ export function useEmployerFormatting() {
     if (specialties.length === 1) return specialties[0] || ''
     if (specialties.length === 2) return specialties.join(' & ')
     if (specialties.length <= 4) return specialties.join(', ')
-    return `${specialties.slice(0, 3).join(', ')} & ${specialties.length - 3} more`
+    return `${specialties.slice(0, 3).join(', ')} & ${
+      specialties.length - 3
+    } more`
   }
 
   const formatCuisineTypes = (cuisines: string[]): string => {

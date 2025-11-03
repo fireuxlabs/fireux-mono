@@ -1,18 +1,20 @@
 import type { FirebaseTimestamp } from '../../types/firebase.ts'
+import type { User } from './user.model.ts'
 
 /**
- * Minimal, shared base for any profile document (core or app).
- * Enforces display_name + avatar + timestamps.
+ * Minimal shared Profile shape.
+ * Each profile belongs to a user and represents a domain entity
+ * like Chef, Supplier, Employer, or Professional.
  */
-export interface ProfileBase {
-  /** Canonical id (== Firebase Auth UID & Firestore doc id) */
+export interface Profile {
+  /** Canonical Firestore id (== Firebase Auth UID) */
   id: string
 
-  /** Display name to show in UI (never fallback to email in storage) */
-  display_name: string
+  /** Reference to the owning user (can be a full User or pill later) */
+  user: Partial<User>
 
-  /** Primary avatar URL to display everywhere */
-  avatar: string
+  /** Domain-specific metadata (optional per app) */
+  domain?: string
 
   /** Timestamps */
   created_at: FirebaseTimestamp
@@ -20,19 +22,18 @@ export interface ProfileBase {
 }
 
 /**
- * Slim config to describe a profile type.
- * Kept tiny so components/composables don’t drift.
+ * Config describing how a profile collection behaves.
  */
 export interface ProfileConfig {
-  /** Lowercase singular identifier: 'chef', 'supplier', 'professional', 'employer' */
+  /** Lowercase identifier like 'chef', 'supplier', 'employer', 'professional' */
   id: string
 
-  /** Firestore collection name, e.g. 'chefs', 'professionals' */
+  /** Firestore collection name */
   collectionName: string
 
-  /** Human-readable type label, e.g. 'Chef', 'Supplier' */
+  /** Human-readable label */
   profileType: string
 
-  /** Optional CTA text when profile is missing (used by ProfileRoot/UI) */
+  /** Optional CTA text for UI when profile missing */
   cta?: string
 }
