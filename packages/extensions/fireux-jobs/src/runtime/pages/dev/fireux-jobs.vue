@@ -7,18 +7,27 @@
           <h1 class="text-base font-semibold">Current Professional</h1>
         </template>
 
-        <template v-if="professional?.user?.avatar && professional?.user?.display_name">
+        <template
+          v-if="
+            professional &&
+            professional.user?.avatar &&
+            professional.user.display_name
+          "
+        >
           <MoleculesPill
             :avatar="professional.user.avatar"
             initials="A"
             :title="professional.user.display_name"
-            :subtitle="professional.title"
-            :badges="professional.specialties"
+            :subtitle="professional.subtitle"
+            :badges="professional.badges"
             :to="`/professionals/${professional.id}`"
           />
-          <DevJsonPanel :data="professional" />
         </template>
         <MoleculesNotFound v-else kind="document" entity="professional" />
+
+        <template #footer>
+          <DevJsonPanel v-if="professional" :data="professional" />
+        </template>
       </UCard>
 
       <!-- Current Employer -->
@@ -27,18 +36,23 @@
           <h1 class="text-base font-semibold">Current Employer</h1>
         </template>
 
-        <template v-if="employer?.user?.avatar && employer?.user?.display_name">
+        <template
+          v-if="employer && employer.user?.avatar && employer.user.display_name"
+        >
           <MoleculesPill
             :avatar="employer.user.avatar"
             initials="A"
             :title="employer.user.display_name"
-            :subtitle="employer.title"
-            :badges="employer.specialties"
+            :subtitle="employer.subtitle"
+            :badges="employer.badges"
             :to="`/employers/${employer.id}`"
           />
-          <DevJsonPanel :data="employer" />
         </template>
         <MoleculesNotFound v-else kind="document" entity="employer" />
+
+        <template #footer>
+          <DevJsonPanel v-if="employer" :data="employer" />
+        </template>
       </UCard>
     </UPageBody>
   </UPage>
@@ -48,8 +62,14 @@
 declare function definePageMeta(meta: any): void
 
 import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profile/useProfile'
-import { professionalConfig } from '../../models/profiles/Professional.model'
-import { employerConfig } from '../../models/profiles/Employer.model'
+import {
+  professionalConfig,
+  type ProfessionalProfile,
+} from '../../models/profiles/Professional.model'
+import {
+  employerConfig,
+  type EmployerProfile,
+} from '../../models/profiles/Employer.model'
 
 definePageMeta({
   layout: 'dev',
@@ -64,7 +84,7 @@ definePageMeta({
   },
 })
 
-const { profile: professional } = useProfile(professionalConfig)
-const { profile: employer } = useProfile(employerConfig)
-
+const { profile: professional } =
+  useProfile<ProfessionalProfile>(professionalConfig)
+const { profile: employer } = useProfile<EmployerProfile>(employerConfig)
 </script>

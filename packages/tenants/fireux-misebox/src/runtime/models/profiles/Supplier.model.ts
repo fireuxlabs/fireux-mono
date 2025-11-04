@@ -1,6 +1,6 @@
 // packages/tenants/fireux-misebox/src/runtime/models/profiles/Supplier.model.ts
 import type {
-  ProfileBase,
+  Profile,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
 
@@ -13,20 +13,21 @@ export interface Supplier {
   app?: SupplierAppProfile | null
 }
 
-/** Global: suppliers/{uid} */
-export interface SupplierCoreProfile extends ProfileBase {
+/** Domain Supplier profile */
+export interface SupplierProfile extends Profile {
   title?: string | null
+  subtitle?: string | null
+  badges?: string[]
   bio_short?: string | null
   bio_long?: string | null
   specialties?: string[]
 }
 
+/** Global: suppliers/{uid} */
+export type SupplierCoreProfile = SupplierProfile
+
 /** App overlay: apps/{appId}/suppliers/{uid} */
-export interface SupplierAppProfile extends ProfileBase {
-  title?: string | null
-  bio_short?: string | null
-  specialties?: string[]
-}
+export type SupplierAppProfile = SupplierProfile
 
 /** Card shapes (mirrors Chef shapes) */
 export namespace SupplierCard {

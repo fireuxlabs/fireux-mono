@@ -2,10 +2,9 @@ import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profi
 import {
   chefConfig,
   type ChefCoreProfile,
-  type ChefAppProfile,
-} from '../../../../models/profiles/Chef.model'
+} from '../../../../models/profiles/Chef.model.ts'
 
 export function useChef() {
-  const { profile } = useProfile<ChefCoreProfile, ChefAppProfile>(chefConfig)
+  const { profile } = useProfile<ChefCoreProfile>(chefConfig)
   return { profile }
 }

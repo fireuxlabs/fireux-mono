@@ -2,12 +2,9 @@ import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profi
 import {
   supplierConfig,
   type SupplierCoreProfile,
-  type SupplierAppProfile,
-} from '../../../../models/profiles/Supplier.model'
+} from '../../../../models/profiles/Supplier.model.ts'
 
 export function useSupplier() {
-  const { profile } = useProfile<SupplierCoreProfile, SupplierAppProfile>(
-    supplierConfig
-  )
+  const { profile } = useProfile<SupplierCoreProfile>(supplierConfig)
   return { profile }
 }

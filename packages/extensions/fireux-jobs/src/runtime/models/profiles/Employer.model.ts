@@ -1,6 +1,6 @@
 // packages/extensions/fireux-jobs/src/runtime/models/profiles/Employer.model.ts
 import type {
-  ProfileBase,
+  Profile,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
 
@@ -13,20 +13,21 @@ export interface Employer {
   app?: EmployerAppProfile | null
 }
 
-/** Global: employers/{uid} */
-export interface EmployerCoreProfile extends ProfileBase {
+/** Domain profile exposed to Jobs UI (extends core Profile shape) */
+export interface EmployerProfile extends Profile {
   title?: string | null
+  subtitle?: string | null
+  badges?: string[]
   bio_short?: string | null
   bio_long?: string | null
   specialties?: string[]
 }
 
+/** Global: employers/{uid} */
+export type EmployerCoreProfile = EmployerProfile
+
 /** App overlay: apps/{appId}/employers/{uid} */
-export interface EmployerAppProfile extends ProfileBase {
-  title?: string | null
-  bio_short?: string | null
-  specialties?: string[]
-}
+export type EmployerAppProfile = EmployerProfile
 
 /** Cards */
 export namespace EmployerCard {

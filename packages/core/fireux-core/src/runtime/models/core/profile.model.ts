@@ -16,6 +16,15 @@ export interface Profile {
   /** Optional domain (e.g. 'chef', 'supplier', etc.) */
   domain?: string
 
+  /** Main title for pill or card (e.g. 'Freelance Chef', 'Catering Agency') */
+  title?: string | null
+
+  /** Secondary subtitle for pill or card (e.g. 'Zürich, Switzerland') */
+  subtitle?: string | null
+
+  /** Optional badges (skills, tags, specialties, etc.) */
+  badges?: string[]
+
   /** Creation and update timestamps */
   created_at: FirebaseTimestamp
   updated_at?: FirebaseTimestamp

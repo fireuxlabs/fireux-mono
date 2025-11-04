@@ -2,14 +2,11 @@
 import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profile/useProfile.ts'
 import {
   employerConfig,
-  type EmployerCoreProfile,
-  type EmployerAppProfile,
-} from '../../../../models/profiles/Employer.model'
+  type EmployerProfile,
+} from '../../../../models/profiles/Employer.model.ts'
 
 /** Minimal facade for Employer profiles. */
 export function useEmployer() {
-  const { profile } = useProfile<EmployerCoreProfile, EmployerAppProfile>(
-    employerConfig
-  )
+  const { profile } = useProfile<EmployerProfile>(employerConfig)
   return { profile }
 }

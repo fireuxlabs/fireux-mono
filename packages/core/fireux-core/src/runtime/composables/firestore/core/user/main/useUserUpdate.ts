@@ -3,15 +3,26 @@ import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import type { UserRefs } from './useUserFetch.ts'
 
 type UpdatePayload = Partial<User> & Record<string, unknown>
 
-export function useUserUpdate(user?: Ref<User | null | undefined>) {
+type UserSource = Ref<User | null | undefined> | UserRefs | undefined
+
+export function useUserUpdate(user?: UserSource) {
   const { uid } = useAuth()
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
 
-  const targetId = computed(() => user?.value?.id ?? uid.value ?? null)
+  const targetId = computed(() => {
+    if (!user) return uid.value ?? null
+    if ('coreUser' in (user as UserRefs)) {
+      const grouped = user as UserRefs
+      return grouped.coreUser.value?.id ?? uid.value ?? null
+    }
+    const refUser = user as Ref<User | null | undefined>
+    return refUser.value?.id ?? uid.value ?? null
+  })
 
   const requireUid = () => {
     const value = targetId.value

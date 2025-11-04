@@ -1,5 +1,5 @@
 import type {
-  ProfileBase,
+  Profile,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
 
@@ -12,20 +12,21 @@ export interface Chef {
   app?: ChefAppProfile | null
 }
 
-/** Global: chefs/{uid} */
-export interface ChefCoreProfile extends ProfileBase {
+/** Domain Chef profile (global + overlays share this shape) */
+export interface ChefProfile extends Profile {
   title?: string | null
+  subtitle?: string | null
+  badges?: string[]
   bio_short?: string | null
   bio_long?: string | null
   specialties?: string[]
 }
 
+/** Global: chefs/{uid} */
+export type ChefCoreProfile = ChefProfile
+
 /** App overlay: apps/{appId}/chefs/{uid} */
-export interface ChefAppProfile extends ProfileBase {
-  title?: string | null
-  bio_short?: string | null
-  specialties?: string[]
-}
+export type ChefAppProfile = ChefProfile
 
 /** Card shapes */
 export namespace ChefCard {

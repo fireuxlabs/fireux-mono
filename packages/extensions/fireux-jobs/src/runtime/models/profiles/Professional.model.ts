@@ -1,19 +1,7 @@
-// Local minimal copies of core types to avoid restricted subpath imports
-// Keep in sync with fireux-core runtime models if fields evolve
-export interface ProfileBase {
-  id: string
-  display_name: string
-  avatar: string
-  created_at: any
-  updated_at?: any
-}
-
-export interface ProfileConfig {
-  id: string
-  collectionName: string
-  profileType: string
-  cta?: string
-}
+import type {
+  Profile,
+  ProfileConfig,
+} from 'fireux-core/runtime/models/core/profile.model.ts'
 
 /** Minimal shared structure for any experience entry */
 export interface ExperienceBase {
@@ -46,43 +34,40 @@ export interface OtherExperienceItem extends ExperienceBase {
 /** Unified Professional experience item */
 export type ExperienceItem = RelevantExperienceItem | OtherExperienceItem
 
-/** Unified Professional */
-export interface Professional {
-  id: string
+/**
+ * Domain profile used by Jobs UIs.
+ * Extends the minimal core `Profile` shape with domain fields.
+ * - `title | subtitle | badges` live on the base Profile for pill compatibility.
+ */
+export interface ProfessionalProfile extends Profile {
   display_name?: string
-  avatar?: string
-  core: ProfessionalCoreProfile | null
-  app?: ProfessionalAppProfile | null
-}
-
-/** Global: professionals/{uid} */
-export interface ProfessionalCoreProfile extends ProfileBase {
+  avatar?: string | null
   title?: string | null
+  subtitle?: string | null
+  badges?: string[]
   bio_short?: string | null
   bio_long?: string | null
   specialties?: string[]
-  /** neutralized experience fields */
   relevant_experience?: RelevantExperienceItem[]
   other_experience?: OtherExperienceItem[]
 }
 
-/** App overlay: apps/{appId}/professionals/{uid} */
-export interface ProfessionalAppProfile extends ProfileBase {
-  title?: string | null
-  bio_short?: string | null
-  specialties?: string[]
-  /** allow app-level overlays too */
-  relevant_experience?: RelevantExperienceItem[]
-  other_experience?: OtherExperienceItem[]
-}
+/**
+ * Legacy aliases retained while downstream modules migrate.
+ * - Core/App profiles previously used separate interfaces; now they share the domain shape.
+ */
+export type ProfessionalCoreProfile = ProfessionalProfile
+export type ProfessionalAppProfile = ProfessionalProfile
 
 /** Cards */
 export namespace ProfessionalCard {
   export interface Pill {
     id: string
-    display_name: string
-    avatar?: string
+    display_name?: string
+    avatar?: string | null
     title?: string | null
+    subtitle?: string | null
+    badges?: string[]
   }
   export interface Cell extends Pill {
     bio_short?: string | null
@@ -93,7 +78,7 @@ export namespace ProfessionalCard {
   }
 }
 
-// Bios use snake_case (bio_short, bio_long) across core/app/card.
+// Bios use snake_case (bio_short, bio_long) across the domain profile and cards.
 
 /** Config */
 export const professionalConfig: ProfileConfig = {

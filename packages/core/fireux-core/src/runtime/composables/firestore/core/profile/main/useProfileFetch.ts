@@ -6,7 +6,13 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts
 import { useUser } from '../../user/useUser.ts'
 import type { Profile, ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
 
-export function useProfileFetch(
+/**
+ * Returns ONE reactive `profile`:
+ * - null if no id or core doc missing
+ * - attaches app fields when tenant
+ * - attaches minimal `user` (avatar, display_name, handle)
+ */
+export function useProfileFetch<TProfile extends Profile = Profile>(
   id: string | null | undefined,
   config: ProfileConfig
 ) {
@@ -15,28 +21,37 @@ export function useProfileFetch(
   const { user } = useUser()
 
   if (!id) {
-    const profile = computed<Profile | null>(() => null)
+    const profile = computed<TProfile | null>(() => null)
     return { profile }
   }
 
-  const { data: coreRef } = useDocument<Profile | undefined>(
+  const { data: coreRef } = useDocument<TProfile | undefined>(
     doc(db, config.collectionName, id) as any
   )
 
-  const { data: appRef } = useDocument<Record<string, unknown> | undefined>(
-    isTenant && appId ? (doc(db, 'apps', appId, config.collectionName, id) as any) : null
+  const { data: appRef } = useDocument<Partial<TProfile> | undefined>(
+    isTenant && appId
+      ? (doc(db, 'apps', appId, config.collectionName, id) as any)
+      : null
   )
 
-  const profile = computed<Profile | null>(() => {
+  const profile = computed<TProfile | null>(() => {
     const core = coreRef.value
     if (!core) return null
 
     const u = user.value
-    const minimalUser = u
-      ? { id: u.id, display_name: u.display_name, avatar: u.avatar, handle: (u as any).handle }
+    const attachedUser = u
+      ? {
+          id: u.id,
+          display_name: u.display_name,
+          avatar: u.avatar,
+          handle: (u as any)?.handle,
+        }
       : {}
 
-    return { ...core, ...(appRef.value ?? {}), user: minimalUser } as Profile
+    const appFields: Partial<TProfile> = appRef.value ? { ...appRef.value } : {}
+
+    return { ...core, ...appFields, user: attachedUser } as TProfile
   })
 
   return { profile }
