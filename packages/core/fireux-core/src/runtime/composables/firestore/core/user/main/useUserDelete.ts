@@ -1,6 +1,5 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserDelete.ts
 import { ref, type Ref } from 'vue'
-import type { User } from '../useUser.ts'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from './useUserFetch.ts'
 
 type UserSource = Ref<User | null | undefined> | UserRefs | undefined
@@ -13,11 +12,13 @@ export function useUserDelete(userRef?: UserSource) {
     const resolvedId = (() => {
       if (id) return id
       if (!userRef) return undefined
-      if ('coreUser' in (userRef as UserRefs)) {
-        return (userRef as UserRefs).coreUser.value?.id
+      const maybeGrouped = userRef as any
+      if (maybeGrouped && 'coreUser' in maybeGrouped) {
+        return maybeGrouped.coreUser?.value?.id
       }
       return (userRef as Ref<User | null | undefined>).value?.id
     })()
+
     if (!resolvedId) throw new Error('User id is required')
 
     deleting.value = true

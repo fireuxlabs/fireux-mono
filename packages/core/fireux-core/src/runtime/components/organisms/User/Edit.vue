@@ -75,15 +75,7 @@ import { ref } from 'vue'
 import { useUser } from '../../../composables/firestore/core/user/useUser.ts'
 import { useUserFormattingAndValidation } from '../../../composables/firestore/core/user/utils/forms/useUserFormatting.ts'
 
-const {
-  user,
-  initialsFor,
-  updateDisplayName,
-  updateHandle,
-  updateEmail,
-  updateBio,
-  updateAvatar,
-} = useUser()
+const { user, initialsFor, updateDisplayName, updateAppRole } = useUser()
 
 const {
   formatDisplayName,
@@ -123,37 +115,18 @@ const handleUpdateDisplayName = createHandler(updateDisplayName, {
   success: 'Display name updated',
   failure: 'Failed to update display name',
 })
-const handleUpdateEmail = createHandler(updateEmail, {
-  success: 'Email updated',
-  failure: 'Failed to update email',
-})
-const handleUpdateHandle = createHandler(updateHandle, {
-  success: 'Handle updated',
-  failure: 'Failed to update handle',
-})
-const handleUpdateBio = createHandler(updateBio, {
-  success: 'Bio updated',
-  failure: 'Failed to update bio',
-})
+const handleUpdateEmail = async () => {
+  throw new Error('updateEmail not available')
+}
+const handleUpdateHandle = async () => {
+  throw new Error('updateHandle not available')
+}
+const handleUpdateBio = async () => {
+  throw new Error('updateBio not available')
+}
 
-// Avatar upload (file-based op kept explicit)
 const avatarUploading = ref(false)
-async function handleAvatarUpload(file: File) {
-  if (avatarUploading.value) return
-  avatarUploading.value = true
-  try {
-    await updateAvatar(file)
-    toast?.add({ title: 'Avatar updated', icon: 'i-heroicons-check-circle' })
-  } catch (err) {
-    toast?.add({
-      title: 'Avatar upload failed',
-      description: err instanceof Error ? err.message : 'Please try again.',
-      color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    console.error('Avatar upload failed', err)
-  } finally {
-    avatarUploading.value = false
-  }
+async function handleAvatarUpload() {
+  throw new Error('updateAvatar not available')
 }
 </script>

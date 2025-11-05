@@ -3,12 +3,12 @@
     title="Your Profile"
     description="Manage your personal profile and account details."
     :hero="hero"
-    :dev-data="user"
+    :dev-data="currentUser"
   >
-    <UPageCard v-if="user" variant="subtle">
+    <UPageCard v-if="currentUser" variant="subtle">
       <div class="grid gap-4 md:grid-cols-2">
-        <OrganismsUserCardsProfile :user="user" />
-        <OrganismsUserEdit :user="user" />
+        <OrganismsUserCardsProfile :user="currentUser" />
+        <OrganismsUserEdit :user="currentUser" />
       </div>
     </UPageCard>
 
@@ -18,7 +18,7 @@
           name="i-heroicons-user-circle"
           class="mx-auto mb-4 h-12 w-12 text-gray-400"
         />
-        <p>Loading profile...</p>
+        <p>{{ isLoading ? 'Loading profile...' : 'Profile not found.' }}</p>
       </div>
     </UCard>
   </DashboardEditStructure>
@@ -45,12 +45,10 @@ const useHeadFn = (globalThis as any).useHead as
   | ((input: any) => void)
 useHeadFn?.({ title: 'Your Profile' })
 
-const { user: userRef, pillProps } = useUser()
-
-const user = computed(() => userRef.value ?? null)
+const { currentUser, pillProps, isLoading } = useUser()
 
 const hero = computed(() => {
-  const value = user.value
+  const value = currentUser.value
   if (!value) return null
   return {
     pill: pillProps(value),

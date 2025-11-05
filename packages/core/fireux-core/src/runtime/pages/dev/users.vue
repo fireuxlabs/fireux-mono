@@ -32,7 +32,12 @@
         <!-- This JSON now includes `appUser` because it's merged into `user` -->
         <DevJsonPanel v-if="currentUserJson" :data="currentUserJson" />
       </UCard>
-      <MoleculesNotFound v-else kind="document" entity="user" />
+      <MoleculesNotFound
+        v-else
+        kind="document"
+        entity="user"
+        :loading="isLoading"
+      />
 
       <UCard v-if="users.length" class="space-y-4">
         <template #header>
@@ -71,13 +76,11 @@ definePageMeta({
   },
 })
 
-const { user, pillProps } = useUser()
+const { currentUser, pillProps, isLoading } = useUser()
 const { users: usersCollection } = useUserCollection()
 
 const pillFor = (target: User | null | undefined) =>
   target ? pillProps(target) : null
-
-const currentUser = computed(() => user.value ?? null)
 
 const currentUserLink = computed(() => {
   const u = currentUser.value

@@ -2,36 +2,32 @@
 <template>
   <UPage>
     <UPageBody class="space-y-6">
-      <template v-if="currentUser">
-        <UCard class="space-y-4">
-          <MoleculesPill v-bind="pillPropsFor(currentUser)" />
-          <OrganismsUserCardsCell :user="currentUser" />
-        </UCard>
-      </template>
+      <!-- Current User -->
+      <UCard v-if="currentUser" class="space-y-4">
+        <MoleculesPill v-if="pillForCurrentUser" v-bind="pillForCurrentUser" />
+        <OrganismsUserCardsCell :user="currentUser" />
+      </UCard>
+
       <MoleculesNotFound
         v-else
         kind="document"
         entity="user"
-        :loading="userLoading"
+        :loading="isLoading"
       />
 
+      <!-- Users Collection -->
       <UCard>
         <div
-          v-if="userCollection.length"
+          v-if="visibleUsers.length"
           class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
         >
           <MoleculesPill
-            v-for="u in userCollection"
+            v-for="u in visibleUsers"
             :key="u.id"
-            v-bind="pillPropsFor(u)"
+            v-bind="pillProps(u)"
           />
         </div>
-        <MoleculesNotFound
-          v-else
-          kind="collection"
-          entity="users"
-          :loading="collectionLoading"
-        />
+        <MoleculesNotFound v-else kind="collection" entity="users" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -39,7 +35,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import { useUser } from '../../composables/firestore/core/user/useUser'
 import { useUserCollection } from '../../composables/firestore/core/user/main/useUserCollection'
 
@@ -49,23 +44,19 @@ definePageMeta({
   description: 'FireUX user accounts resolved for this runtime.',
 })
 
-const { user: userRef, pillProps } = useUser()
-const { users, global, local } = useUserCollection()
+const { user, pillProps, isLoading } = useUser()
+const { users } = useUserCollection()
 
-const currentUser = computed<User | null>(() => userRef.value ?? null)
-const userLoading = computed(() => currentUser.value === null)
+const currentUser = computed(() => user.value ?? null)
 
-const usingLocalCollection = computed(() => Boolean(local))
-
-const collectionLoading = computed(() => {
-  if (usingLocalCollection.value) return local?.value === undefined
-  return global.value === undefined
+const pillForCurrentUser = computed(() => {
+  const value = currentUser.value
+  if (!value) return null
+  if (!value.avatar || !value.display_name) return null
+  return pillProps(value)
 })
 
-const userCollection = computed<User[]>(() => {
-  return users.value ?? []
-})
-
-const pillPropsFor = (target: User | null) =>
-  target ? pillProps(target) : undefined
+const visibleUsers = computed(() =>
+  (users.value ?? []).filter((entry) => entry.avatar && entry.display_name)
+)
 </script>

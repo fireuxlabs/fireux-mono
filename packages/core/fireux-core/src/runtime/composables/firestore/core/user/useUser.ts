@@ -5,11 +5,17 @@ import { useUserEnsure } from './main/useUserEnsure.ts'
 import { useUserUpdate } from './main/useUserUpdate.ts'
 import { useUserDelete } from './main/useUserDelete.ts'
 
+/**
+ * DO NOT REFACTOR:
+ * This composable intentionally returns the grouped refs from useUserFetch:
+ *   { user } where user = { coreUser, appUser }
+ * Helpers (computed/ensure/update/delete) depend on that exact shape.
+ */
 export type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
 export function useUser() {
-  const { uid } = useAuth() 
-  const { user } = useUserFetch(uid.value) 
+  const { uid } = useAuth()
+  const { user } = useUserFetch(uid.value)
 
   return {
     user,

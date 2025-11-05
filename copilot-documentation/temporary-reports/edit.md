@@ -229,6 +229,8 @@ const formatDate = (dateString) => {
 
 ## packages/core/fireux-core/src/runtime/components/organisms/user/Edit.vue
 
+> ⚠️ Heads-up: `useUserUpdate` now only returns `updateDisplayName` and `updateAppRole`. The extra update helpers shown below are legacy and need local replacements before this component is runnable.
+
 ```vue
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/user/Edit.vue -->
 <template>

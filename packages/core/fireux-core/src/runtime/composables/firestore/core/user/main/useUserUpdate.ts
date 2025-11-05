@@ -1,68 +1,33 @@
-import { computed, type Ref } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
-import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
-import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import type {
+  User,
+  AppUser,
+} from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from './useUserFetch.ts'
+import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
-type UpdatePayload = Partial<User> & Record<string, unknown>
-
-type UserSource = Ref<User | null | undefined> | UserRefs | undefined
-
-export function useUserUpdate(user?: UserSource) {
-  const { uid } = useAuth()
+export function useUserUpdate(user: UserRefs) {
   const { updateDocument } = useFirestoreUpdate()
-  const { uploadImage } = useImageStorage()
+  const { appId } = useFireUXConfig()
 
-  const targetId = computed(() => {
-    if (!user) return uid.value ?? null
-    if ('coreUser' in (user as UserRefs)) {
-      const grouped = user as UserRefs
-      return grouped.coreUser.value?.id ?? uid.value ?? null
-    }
-    const refUser = user as Ref<User | null | undefined>
-    return refUser.value?.id ?? uid.value ?? null
-  })
+  const core = user.coreUser as { value: User | undefined }
+  const app = user.appUser as { value: AppUser | undefined }
 
-  const requireUid = () => {
-    const value = targetId.value
-    if (!value) throw new Error('[useUserUpdate] Missing uid (not signed in)')
-    return value
+  const updateDisplayName = async (display_name: string) => {
+    const id = core.value?.id
+    if (!id) throw new Error('[useUserUpdate] Missing core user id')
+    await updateDocument('users', id, { display_name })
   }
 
-  const updateUser = async (partial: UpdatePayload) => {
-    const id = requireUid()
-    await updateDocument<User>('users', id, partial)
+  const updateAppRole = async (role: 'user' | 'admin') => {
+    const id = app.value?.id
+    if (!appId || !id)
+      throw new Error('[useUserUpdate] Missing appId or app user id')
+    await updateDocument(`apps/${appId}/users`, id, { role })
   }
-
-  const updateDisplayName = (display_name: string) =>
-    updateUser({ display_name })
-
-  const updateHandle = (handle: string) => updateUser({ handle })
-
-  const updateEmail = (email: string) => updateUser({ email })
-
-  const updateBio = (bio: string) => updateUser({ bio })
-
-  const updateAvatar = async (source: Blob | string) => {
-    const id = requireUid()
-    const path = `users/${id}/avatar.jpg`
-    const url = await uploadImage(path, source)
-    await updateUser({ avatar: url })
-    return url
-  }
-
-  const updateFields = (partial: Record<string, unknown>) =>
-    updateUser(partial as UpdatePayload)
 
   return {
-    targetId,
-    updateFields,
-    updateUser,
     updateDisplayName,
-    updateHandle,
-    updateEmail,
-    updateBio,
-    updateAvatar,
+    updateAppRole,
   }
 }

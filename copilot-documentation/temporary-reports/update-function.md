@@ -15,14 +15,10 @@ Canonical editors should resolve to a single prop (the object being edited) and 
 
 ## User (`useUserUpdate`)
 
-All functions accept an optional `scope: 'auto' | 'core' | 'app'` (default `auto`).
+Pass the grouped refs `{ coreUser, appUser }` from `useUser()` or `useUserFetch()`.
 
-- `updateFields(partial: Record<string, any>, scope?)` – generic patch helper.
-- `updateDisplayName(display_name: string, scope?)`
-- `updateHandle(handle: string, scope?)`
-- `updateEmail(email: string, scope?)`
-- `updateBio(bio: string, scope?)`
-- `updateAvatar(source: Blob | string, scope?)` – uploads via storage, then stores the download URL.
+- `updateDisplayName(display_name: string)` – writes to `users/{id}`; throws when the core user ref lacks an id.
+- `updateAppRole(role: 'user' | 'admin')` – writes to `apps/{appId}/users/{id}`; throws when the app overlay or app id is unavailable.
 
 ## Professional (`useProfessionalUpdate`)
 

@@ -1,14 +1,11 @@
 # User Stack – Frozen (Stable)
 
-Current baseline is **good**:
+Baseline (Nov 2025):
 
-- `useUserFetch` returns `{ coreUser, appUser }`
-- `useUser()` distributes this object to `useUserComputed`, `useUserEnsure`, `useUserUpdate`, `useUserDelete`
-- No computed merge or overlay logic
+- `useUserFetch` returns raw refs `{ coreUser, appUser }` (no computed merge).
+- `useUser()` returns the grouped refs as `user` (same `{ coreUser, appUser }`) and fans those into `useUserComputed`, `useUserEnsure`, `useUserUpdate`, `useUserDelete`.
+- `useUserComputed()` currently only returns a `pill` computed derived from `coreUser`.
+- `useUserUpdate()` takes the grouped refs and exposes `updateDisplayName` and `updateAppRole`, updating the respective core/app documents when ids exist.
+- Downstream helpers (`useUserEnsure`, `useUserDelete`) keep accepting the raw grouped refs.
 
-**Do not refactor further** unless:
-
-- A new feature truly requires it
-- Type errors appear that block builds
-
-Treat this as the reference state when working on the user composables.
+Only change this stack when a concrete feature requires it or a type error blocks builds. Otherwise treat this layout as the stable contract.
