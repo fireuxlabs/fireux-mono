@@ -23,13 +23,19 @@ export function useAppUsers() {
   )
 
   const cache: Record<string, ReturnType<typeof useUserFetch>['user']> = {}
-  const coreRef = (uid: string) => (cache[uid] ||= useUserFetch(uid).user)
+  const ensureUserRefs = (uid: string) =>
+    (cache[uid] ||= useUserFetch(uid).user)
 
   const appUsers = computed<AppUserWithCore[]>(() =>
-    (overlays.value ?? []).map((overlay) => ({
-      ...(coreRef(overlay.id).value ?? { id: overlay.id }),
-      appUser: overlay,
-    }))
+    (overlays.value ?? []).map((overlay) => {
+      const { coreUser } = ensureUserRefs(overlay.id)
+      const core = coreUser?.value as User | undefined
+
+      return {
+        ...(core ?? { id: overlay.id }),
+        appUser: overlay,
+      }
+    })
   )
 
   return { appUsers }

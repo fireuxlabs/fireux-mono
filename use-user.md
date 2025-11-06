@@ -9,6 +9,7 @@ import { useUserComputed } from './main/useUserComputed.ts'
 import { useUserEnsure } from './main/useUserEnsure.ts'
 import { useUserUpdate } from './main/useUserUpdate.ts'
 import { useUserDelete } from './main/useUserDelete.ts'
+import { useUserInterface } from './main/useUserInterface.ts'
 
 /**
  * DO NOT REFACTOR:
@@ -21,10 +22,13 @@ export type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 export function useUser() {
   const { uid } = useAuth()
   const { user } = useUserFetch(uid.value)
+  const interfaceApi = useUserInterface(user)
 
   return {
     user,
     ...useUserComputed(user),
+    ...interfaceApi,
+    pillProps: interfaceApi.toPill,
     ...useUserEnsure(user),
     ...useUserUpdate(user),
     ...useUserDelete(user),
@@ -81,21 +85,64 @@ import type {
 import type { UserRefs } from './useUserFetch.ts'
 
 export function useUserComputed(user: UserRefs) {
-  const core = user.coreUser as { value: User | undefined }
-  const app = user.appUser as { value: AppUser | undefined } // its ok
+  const coreUser = user.coreUser as { value: User | null | undefined }
+  const appUser = user.appUser as { value: AppUser | null | undefined }
 
-  if (app.value) {
+  if (appUser.value) {
     // overlay merge hook reserved for future tenant overlays
   }
 
-  const pill = computed(() => ({
-    avatar: core.value?.avatar || '',
-    title: core.value?.display_name || '',
-    subtitle: core.value?.handle || '',
-    to: core.value?.id ? `/users/${core.value.id}` : '#',
-  }))
+  const currentUser = computed(() => coreUser.value ?? null)
+  const hasCoreProfile = computed(() => Boolean(coreUser.value))
+  const hasAppProfile = computed(() => Boolean(appUser.value))
+  const hasAnyProfile = computed(
+    () => hasCoreProfile.value || hasAppProfile.value
+  )
 
-  return { pill }
+  return { currentUser, hasCoreProfile, hasAppProfile, hasAnyProfile }
+}
+```
+
+## packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserInterface.ts
+
+```ts
+import type { Ref } from 'vue'
+import type {
+  User,
+  AppUser,
+} from 'fireux-core/runtime/models/core/user.model.ts'
+import type { UserRefs } from './main/useUserFetch.ts'
+import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
+
+export function useUserInterface(
+  user: Ref<User | null | undefined> | UserRefs
+) {
+  const core =
+    (user as UserRefs).coreUser?.value ??
+    (user as Ref<User | null | undefined>)?.value ??
+    null
+
+  const app = (user as UserRefs).appUser?.value as AppUser | undefined
+
+  if (app) {
+    // overlay merge reserved for future tenant overlays
+  }
+
+  const toPill = (): Pill.Props => {
+    const overlay = app as unknown as Partial<User> | undefined
+    const source = overlay ?? core
+
+    return {
+      avatar: overlay?.avatar ?? core?.avatar ?? '',
+      initials: 'A',
+      title: source?.display_name ?? '',
+      subtitle: source?.handle ? `@${source.handle}` : '',
+      badges: source?.profiles ?? [],
+      to: source?.id ? `/users/${source.id}` : '',
+    }
+  }
+
+  return { toPill }
 }
 ```
 

@@ -1,6 +1,7 @@
 import { useFireUXConfig } from '../../../FireUXConfig'
 import { useAppFetch } from './main/useAppFetch'
 import { useAppComputed } from './main/useAppComputed'
+import { useAppInterface } from './main/useAppInterface'
 import { useAppEnsure } from './main/useAppEnsure'
 import { useAppUpdate } from './main/useAppUpdate'
 import { useAppUsers } from './subcollections/useAppUsers'
@@ -13,6 +14,7 @@ export function useApp() {
     app,
     appUsers,
     ...useAppComputed(app),
+    ...useAppInterface(app),
     ...useAppEnsure(),
     ...useAppUpdate(app),
   }

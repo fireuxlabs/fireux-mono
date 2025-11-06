@@ -4,9 +4,10 @@ import {
   employerConfig,
   type EmployerProfile,
 } from '../../../../models/profiles/Employer.model.ts'
+import { useEmployerInterface } from './main/useEmployerInterface.ts'
 
 /** Minimal facade for Employer profiles. */
 export function useEmployer() {
   const { profile } = useProfile<EmployerProfile>(employerConfig)
-  return { profile }
+  return { profile, ...useEmployerInterface(profile) }
 }

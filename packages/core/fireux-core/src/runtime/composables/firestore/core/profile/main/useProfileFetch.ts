@@ -1,58 +1,40 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileFetch.ts
-import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useUser } from '../../user/useUser.ts'
-import type { Profile, ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { Ref } from 'vue'
+import type {
+  Profile,
+  ProfileConfig,
+} from 'fireux-core/runtime/models/core/profile.model.ts'
 
 /**
- * Returns ONE reactive `profile`:
- * - null if no id or core doc missing
- * - attaches app fields when tenant
- * - attaches minimal `user` (avatar, display_name, handle)
+ * Minimal profile fetch:
+ * - Fires global + app listeners (when path pieces exist)
+ * - Returns refs directly (no computed merge)
  */
+export type ProfileRefs<TProfile extends Profile = Profile> = {
+  coreProfile: Ref<TProfile | undefined | null>
+  appProfile: Ref<Partial<TProfile> | undefined | null>
+}
+
 export function useProfileFetch<TProfile extends Profile = Profile>(
   id: string | null | undefined,
   config: ProfileConfig
 ) {
   const db = useFirestore()
   const { isTenant, appId } = useFireUXConfig()
-  const { user } = useUser()
 
-  if (!id) {
-    const profile = computed<TProfile | null>(() => null)
-    return { profile }
-  }
-
-  const { data: coreRef } = useDocument<TProfile | undefined>(
-    doc(db, config.collectionName, id) as any
+  const { data: coreProfile } = useDocument<TProfile | undefined>(
+    id ? (doc(db, config.collectionName, id) as any) : null
   )
 
-  const { data: appRef } = useDocument<Partial<TProfile> | undefined>(
-    isTenant && appId
+  const { data: appProfile } = useDocument<Partial<TProfile> | undefined>(
+    id && isTenant && appId
       ? (doc(db, 'apps', appId, config.collectionName, id) as any)
       : null
   )
 
-  const profile = computed<TProfile | null>(() => {
-    const core = coreRef.value
-    if (!core) return null
-
-    const u = user.value
-    const attachedUser = u
-      ? {
-          id: u.id,
-          display_name: u.display_name,
-          avatar: u.avatar,
-          handle: (u as any)?.handle,
-        }
-      : {}
-
-    const appFields: Partial<TProfile> = appRef.value ? { ...appRef.value } : {}
-
-    return { ...core, ...appFields, user: attachedUser } as TProfile
-  })
-
+  const profile: ProfileRefs<TProfile> = { coreProfile, appProfile }
   return { profile }
 }

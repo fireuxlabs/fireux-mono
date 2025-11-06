@@ -4,6 +4,7 @@ import { useUserComputed } from './main/useUserComputed.ts'
 import { useUserEnsure } from './main/useUserEnsure.ts'
 import { useUserUpdate } from './main/useUserUpdate.ts'
 import { useUserDelete } from './main/useUserDelete.ts'
+import { useUserInterface } from './main/useUserInterface.ts'
 
 /**
  * DO NOT REFACTOR:
@@ -20,6 +21,7 @@ export function useUser() {
   return {
     user,
     ...useUserComputed(user),
+    ...useUserInterface(user),
     ...useUserEnsure(user),
     ...useUserUpdate(user),
     ...useUserDelete(user),

@@ -15,17 +15,18 @@ export function useProfileEnsure(config: ProfileConfig) {
   const { user } = useUser()
 
   const ensure = async (profile: Record<string, unknown> = {}) => {
-    if (!user.value?.id) throw new Error('User not loaded')
-    const uid = user.value.id
+    const core = user.coreUser?.value
+    if (!core?.id) throw new Error('User not loaded')
+    const uid = core.id
 
     const base: Partial<Profile> = {
       id: uid,
       domain: config.id,
       user: {
         id: uid,
-        display_name: user.value.display_name,
-        avatar: user.value.avatar,
-        handle: (user.value as any)?.handle,
+        display_name: core.display_name,
+        avatar: core.avatar,
+        handle: (core as any)?.handle,
       },
     }
 

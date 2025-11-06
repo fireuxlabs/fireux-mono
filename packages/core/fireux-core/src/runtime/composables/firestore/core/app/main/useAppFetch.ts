@@ -7,7 +7,9 @@ import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
  * Fetch a single app document by id.
  * Reactive through VueFire — no computed layer required.
  */
-export function useAppFetch(appId: string) {
-  const { data: app } = useDocument<App>(doc(useFirestore(), 'apps', appId))
+export function useAppFetch(appId: string | null | undefined) {
+  const db = useFirestore()
+  const docRef = appId ? (doc(db, 'apps', appId) as any) : null
+  const { data: app } = useDocument<App | undefined>(docRef)
   return { app }
 }

@@ -7,19 +7,19 @@ import type {
 import type { UserRefs } from './useUserFetch.ts'
 
 export function useUserComputed(user: UserRefs) {
-  const core = user.coreUser as { value: User | undefined }
+  const coreUser = user.coreUser as { value: User | null | undefined }
+  const appUser = user.appUser as { value: AppUser | null | undefined }
 
-  const app = user.appUser as { value: AppUser | undefined } // its ok
-  if (app.value) {
+  if (appUser.value) {
     // overlay merge hook reserved for future tenant overlays
   }
 
-  const pill = computed(() => ({
-    avatar: core.value?.avatar || '',
-    title: core.value?.display_name || '',
-    subtitle: core.value?.handle || '',
-    to: core.value?.id ? `/users/${core.value.id}` : '#',
-  }))
+  const currentUser = computed(() => coreUser.value ?? null)
+  const hasCoreProfile = computed(() => Boolean(coreUser.value))
+  const hasAppProfile = computed(() => Boolean(appUser.value))
+  const hasAnyProfile = computed(
+    () => hasCoreProfile.value || hasAppProfile.value
+  )
 
-  return { pill }
+  return { currentUser, hasCoreProfile, hasAppProfile, hasAnyProfile }
 }

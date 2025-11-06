@@ -74,43 +74,77 @@ export interface ProfileConfig {
 
 - Always fetches core: `/{collectionName}/{id}`
 - If tenant context is active, also fetches overlay: `/apps/{appId}/{collectionName}/{id}`
-- Returns one computed profile:
-  - Contents are the core profile fields, plus an app property when overlay exists.
-  - No field merging into core; the overlay stays namespaced under `app`.
+- Returns grouped refs `{ coreProfile, appProfile }`; no merging at the fetch layer.
 
 ```ts
 // packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileFetch.ts
-import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import type { ProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { Ref } from 'vue'
+import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
 
-interface UseProfileFetchOptions {
-  collectionName: string
+export type ProfileRefs<TProfile extends Profile = Profile> = {
+  coreProfile: Ref<TProfile | undefined | null>
+  appProfile: Ref<Partial<TProfile> | undefined | null>
 }
 
-export function useProfileFetch<
-  TCore extends ProfileBase,
-  TApp extends ProfileBase = TCore
->(id: string, options: UseProfileFetchOptions) {
+export function useProfileFetch<TProfile extends Profile = Profile>(
+  id: string | null | undefined,
+  options: { collectionName: string }
+) {
   const db = useFirestore()
   const { isTenant, appId } = useFireUXConfig()
 
-  const { data: core } = useDocument<TCore>(
+  const { data: coreProfile } = useDocument<TProfile | undefined>(
     id ? (doc(db, options.collectionName, id) as any) : null
   )
 
-  const { data: app } = useDocument<TApp>(
+  const { data: appProfile } = useDocument<Partial<TProfile> | undefined>(
     id && isTenant && appId
       ? (doc(db, 'apps', appId, options.collectionName, id) as any)
       : null
   )
 
-  const profile = computed<(TCore & { app?: TApp | null }) | null>(() => {
-    const base = core.value
-    if (!base) return null
-    return { ...base, app: app.value ?? null }
+  const profile: ProfileRefs<TProfile> = { coreProfile, appProfile }
+  return { profile }
+}
+```
+
+`useProfileComputed(profileRefs)`
+
+- Responsible for merging `{ coreProfile, appProfile }` when the core exists.
+- Attaches minimal current-user metadata (id/display_name/avatar/handle) to the merged object.
+
+```ts
+// packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileComputed.ts
+import { computed } from 'vue'
+import { useUser } from '../../user/useUser.ts'
+import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { ProfileRefs } from './useProfileFetch.ts'
+
+export function useProfileComputed<TProfile extends Profile = Profile>(
+  profileRefs: ProfileRefs<TProfile>
+) {
+  const { user } = useUser()
+
+  const profile = computed<TProfile | null>(() => {
+    const core = profileRefs.coreProfile.value
+    if (!core) return null
+
+    const overlay = profileRefs.appProfile.value ?? {}
+    const currentCore = user.coreUser?.value
+
+    const attachedUser = currentCore
+      ? {
+          id: currentCore.id,
+          display_name: currentCore.display_name,
+          avatar: currentCore.avatar,
+          handle: (currentCore as any)?.handle,
+        }
+      : {}
+
+    return { ...core, ...overlay, user: attachedUser } as TProfile
   })
 
   return { profile }
@@ -120,25 +154,28 @@ export function useProfileFetch<
 `useProfile(config)`
 
 - Public entry point for any profile domain.
-- Returns one reactive profile as above.
+- Returns both grouped refs (`profileRefs`) and the merged profile computed.
 
 ```ts
 // packages/core/fireux-core/src/runtime/composables/firestore/core/profile/useProfile.ts
 import { useAuth } from '../../../firebase/useAuth.ts'
 import { useProfileFetch } from './main/useProfileFetch.ts'
+import { useProfileComputed } from './main/useProfileComputed.ts'
 import type {
   ProfileConfig,
-  ProfileBase,
+  Profile,
 } from '../../../../models/core/profile.model.ts'
 
-export function useProfile<T extends ProfileBase = ProfileBase>(
+export function useProfile<TProfile extends Profile = Profile>(
   config: ProfileConfig
 ) {
   const { uid } = useAuth()
-  const { profile } = useProfileFetch<T>(uid.value || '', {
+  const { profile: profileRefs } = useProfileFetch<TProfile>(uid.value, {
     collectionName: config.collectionName,
   })
-  return { profile }
+  const { profile } = useProfileComputed(profileRefs)
+
+  return { profileRefs, profile }
 }
 ```
 
