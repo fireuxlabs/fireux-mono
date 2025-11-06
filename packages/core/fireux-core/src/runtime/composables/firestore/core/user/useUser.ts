@@ -21,7 +21,7 @@ export function useUser() {
   return {
     user,
     ...useUserComputed(user),
-    ...useUserInterface(user),
+    ...useUserInterface(user), // exposes toPill/pillProps/initialsFor helpers
     ...useUserEnsure(user),
     ...useUserUpdate(user),
     ...useUserDelete(user),

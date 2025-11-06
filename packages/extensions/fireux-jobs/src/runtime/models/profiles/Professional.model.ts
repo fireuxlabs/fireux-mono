@@ -42,9 +42,11 @@ export type ExperienceItem = RelevantExperienceItem | OtherExperienceItem
 export interface ProfessionalProfile extends Profile {
   display_name?: string
   avatar?: string | null
+  avatar_url?: string | null
   title?: string | null
   subtitle?: string | null
   badges?: string[]
+  health_certifications?: string[]
   bio_short?: string | null
   bio_long?: string | null
   specialties?: string[]
@@ -72,6 +74,7 @@ export namespace ProfessionalCard {
   export interface Cell extends Pill {
     bio_short?: string | null
     specialties?: string[]
+    to?: string
   }
   export interface Profile extends Cell {
     bio_long?: string | null

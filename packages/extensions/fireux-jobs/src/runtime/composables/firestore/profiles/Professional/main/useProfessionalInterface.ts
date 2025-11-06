@@ -1,65 +1,68 @@
 import type { Ref } from 'vue'
 import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
-import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
-
-type ProfessionalCell = {
-  id: string
-  title: string
-  subtitle: string
-  avatar_url: string
-  badges: string[]
-  to?: string
-}
-
-const SUBTITLE = 'professional'
-
-const toStringArray = (source: unknown): string[] => {
-  if (!Array.isArray(source)) return []
-  return source.filter(
-    (entry): entry is string => typeof entry === 'string' && entry.length > 0
-  )
-}
-
-const resolveAvatar = (value: ProfessionalProfile | null | undefined) =>
-  ((value as any)?.avatar_url ?? (value as any)?.avatar ?? '') as string
+import type {
+  ProfessionalProfile,
+  ProfessionalCard,
+} from '../../../../../models/profiles/Professional.model.ts'
 
 export function useProfessionalInterface(
-  profile: Ref<ProfessionalProfile | null | undefined>
+  profileRef?: Ref<ProfessionalProfile | null | undefined>
 ) {
-  const toHref = (id: string) => (id ? `/profiles/${id}` : '')
-
-  const resolveBadges = (value: ProfessionalProfile | null | undefined) =>
-    toStringArray(value?.badges ?? value?.specialties)
+  const resolve = () => profileRef?.value ?? null
+  const toLink = (id?: string) => (id ? `/profiles/${id}` : '')
+  const avatar = () => {
+    const profile = resolve()
+    return profile?.avatar_url ?? profile?.avatar ?? ''
+  }
+  const title = () => {
+    const profile = resolve()
+    return profile?.title ?? profile?.display_name ?? ''
+  }
+  const badges = () => {
+    const profile = resolve()
+    return (
+      profile?.health_certifications ??
+      profile?.specialties ??
+      profile?.badges ??
+      []
+    )
+  }
 
   const toPill = (): Pill.Props => {
-    const value = profile.value ?? null
-    const id = value?.id ?? ''
+    const profile = resolve()
+    const id = profile?.id ?? ''
 
     return {
-      avatar: resolveAvatar(value),
+      avatar: avatar(),
       initials: 'A',
-      title: value?.title ?? value?.display_name ?? '',
-      subtitle: SUBTITLE,
-      badges: resolveBadges(value),
-      to: toHref(id),
+      title: title(),
+      subtitle: 'professional',
+      badges: badges(),
+      to: toLink(id),
     }
   }
 
-  const toCell = (): ProfessionalCell => {
-    const value = profile.value ?? null
-    const id = value?.id ?? ''
+  const toCell = (): ProfessionalCard.Cell => {
+    const profile = resolve()
+    const id = profile?.id ?? ''
 
     return {
       id,
-      title: value?.title ?? value?.display_name ?? '',
-      subtitle: SUBTITLE,
-      avatar_url: resolveAvatar(value),
-      badges: resolveBadges(value),
-      to: toHref(id) || undefined,
+      display_name: profile?.display_name ?? profile?.title ?? '',
+      avatar: avatar(),
+      title: profile?.title ?? '',
+      subtitle: profile?.subtitle ?? '',
+      badges: profile?.badges ?? [],
+      bio_short: profile?.bio_short ?? '',
+      specialties: profile?.specialties ?? [],
+      to: toLink(id),
     }
   }
 
-  const toProfile = (): ProfessionalCell => toCell()
+  const toProfile = (): ProfessionalCard.Profile => {
+    const profile = resolve()
+    return { ...toCell(), bio_long: profile?.bio_long ?? '' }
+  }
 
   return { toPill, toCell, toProfile }
 }

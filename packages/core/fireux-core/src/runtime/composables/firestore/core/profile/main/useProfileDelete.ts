@@ -5,8 +5,7 @@ import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.mode
 type ProfileDeleteResult = 'success'
 
 /**
- * Placeholder delete handler for profile documents.
- * Future implementations can extend to scoped deletions.
+ * Stub delete handler reserved for future hooks.
  */
 export function useProfileDelete(
   _profile: Ref<unknown>,
@@ -15,18 +14,7 @@ export function useProfileDelete(
   const deleting = ref(false)
   const deleteError = ref<Error | null>(null)
 
-  const deleteProfile = async (
-    opts: { id?: string } = {}
-  ): Promise<ProfileDeleteResult> => {
-    const { id } = opts
-    if (!id) throw new Error('Profile id is required')
-
-    deleting.value = true
-    deleteError.value = null
-
-    deleting.value = false
-    return 'success'
-  }
+  const deleteProfile = async (): Promise<ProfileDeleteResult> => 'success'
 
   return {
     deleteProfile,

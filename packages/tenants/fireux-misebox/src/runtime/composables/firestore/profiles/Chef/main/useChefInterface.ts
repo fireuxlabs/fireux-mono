@@ -1,61 +1,57 @@
 import type { Ref } from 'vue'
 import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
-import type { ChefProfile } from '../../../../../models/profiles/Chef.model.ts'
+import type {
+  ChefProfile,
+  ChefCard,
+} from '../../../../../models/profiles/Chef.model.ts'
 
-type ChefCell = {
-  id: string
-  title: string
-  subtitle: string
-  avatar_url: string
-  badges: string[]
-  to?: string
-}
-
-export function useChefInterface(profile: Ref<ChefProfile | null | undefined>) {
-  const resolveAvatar = (value: ChefProfile | null | undefined) =>
-    ((value as any)?.avatar_url ?? (value as any)?.avatar ?? '') as string
-
-  const toStringArray = (source: unknown): string[] => {
-    if (!Array.isArray(source)) return []
-    return source.filter(
-      (entry): entry is string => typeof entry === 'string' && entry.length > 0
-    )
+export function useChefInterface(
+  profileRef?: Ref<ChefProfile | null | undefined>
+) {
+  const resolve = () => profileRef?.value ?? null
+  const toLink = (id?: string) => (id ? `/profiles/${id}` : '')
+  const avatar = () => {
+    const profile = resolve()
+    return profile?.avatar_url ?? profile?.avatar ?? ''
+  }
+  const badges = () => {
+    const profile = resolve()
+    return profile?.specialties ?? profile?.badges ?? []
   }
 
-  const resolveBadges = (value: ChefProfile | null | undefined) =>
-    toStringArray(value?.specialties ?? value?.badges)
-
-  const toHref = (id: string) => (id ? `/profiles/${id}` : '')
-
   const toPill = (): Pill.Props => {
-    const value = profile.value ?? null
-    const id = value?.id ?? ''
+    const profile = resolve()
+    const id = profile?.id ?? ''
 
     return {
-      avatar: resolveAvatar(value),
+      avatar: avatar(),
       initials: 'A',
-      title: value?.title ?? '',
+      title: profile?.title ?? '',
       subtitle: 'chef',
-      badges: resolveBadges(value),
-      to: toHref(id),
+      badges: badges(),
+      to: toLink(id),
     }
   }
 
-  const toCell = (): ChefCell => {
-    const value = profile.value ?? null
-    const id = value?.id ?? ''
+  const toCell = (): ChefCard.Cell => {
+    const profile = resolve()
+    const id = profile?.id ?? ''
 
     return {
       id,
-      title: value?.title ?? '',
-      subtitle: 'chef',
-      avatar_url: resolveAvatar(value),
-      badges: resolveBadges(value),
-      to: toHref(id) || undefined,
+      display_name: profile?.title ?? '',
+      avatar: avatar(),
+      title: profile?.title ?? '',
+      bio_short: profile?.bio_short ?? '',
+      specialties: profile?.specialties ?? [],
+      to: toLink(id),
     }
   }
 
-  const toProfile = (): ChefCell => toCell()
+  const toProfile = (): ChefCard.Profile => {
+    const profile = resolve()
+    return { ...toCell(), bio_long: profile?.bio_long ?? '' }
+  }
 
   return { toPill, toCell, toProfile }
 }

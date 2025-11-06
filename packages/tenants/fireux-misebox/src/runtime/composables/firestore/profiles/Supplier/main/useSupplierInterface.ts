@@ -1,65 +1,57 @@
 import type { Ref } from 'vue'
 import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
-import type { SupplierProfile } from '../../../../../models/profiles/Supplier.model.ts'
-
-type SupplierCell = {
-  id: string
-  title: string
-  subtitle: string
-  avatar_url: string
-  badges: string[]
-  to?: string
-}
-
-const SUBTITLE = 'supplier'
-
-const toStringArray = (source: unknown): string[] => {
-  if (!Array.isArray(source)) return []
-  return source.filter(
-    (entry): entry is string => typeof entry === 'string' && entry.length > 0
-  )
-}
-
-const resolveAvatar = (value: SupplierProfile | null | undefined) =>
-  ((value as any)?.avatar_url ?? (value as any)?.avatar ?? '') as string
+import type {
+  SupplierProfile,
+  SupplierCard,
+} from '../../../../../models/profiles/Supplier.model.ts'
 
 export function useSupplierInterface(
-  profile: Ref<SupplierProfile | null | undefined>
+  profileRef?: Ref<SupplierProfile | null | undefined>
 ) {
-  const toHref = (id: string) => (id ? `/profiles/${id}` : '')
-
-  const resolveBadges = (value: SupplierProfile | null | undefined) =>
-    toStringArray(value?.specialties ?? value?.badges)
+  const resolve = () => profileRef?.value ?? null
+  const toLink = (id?: string) => (id ? `/profiles/${id}` : '')
+  const avatar = () => {
+    const profile = resolve()
+    return profile?.avatar_url ?? profile?.avatar ?? ''
+  }
+  const badges = () => {
+    const profile = resolve()
+    return profile?.categories ?? profile?.specialties ?? profile?.badges ?? []
+  }
 
   const toPill = (): Pill.Props => {
-    const value = profile.value ?? null
-    const id = value?.id ?? ''
+    const profile = resolve()
+    const id = profile?.id ?? ''
 
     return {
-      avatar: resolveAvatar(value),
+      avatar: avatar(),
       initials: 'A',
-      title: value?.title ?? '',
-      subtitle: SUBTITLE,
-      badges: resolveBadges(value),
-      to: toHref(id),
+      title: profile?.title ?? '',
+      subtitle: 'supplier',
+      badges: badges(),
+      to: toLink(id),
     }
   }
 
-  const toCell = (): SupplierCell => {
-    const value = profile.value ?? null
-    const id = value?.id ?? ''
+  const toCell = (): SupplierCard.Cell => {
+    const profile = resolve()
+    const id = profile?.id ?? ''
 
     return {
       id,
-      title: value?.title ?? '',
-      subtitle: SUBTITLE,
-      avatar_url: resolveAvatar(value),
-      badges: resolveBadges(value),
-      to: toHref(id) || undefined,
+      display_name: profile?.title ?? '',
+      avatar: avatar(),
+      title: profile?.title ?? '',
+      bio_short: profile?.bio_short ?? '',
+      specialties: profile?.specialties ?? profile?.categories ?? [],
+      to: toLink(id),
     }
   }
 
-  const toProfile = (): SupplierCell => toCell()
+  const toProfile = (): SupplierCard.Profile => {
+    const profile = resolve()
+    return { ...toCell(), bio_long: profile?.bio_long ?? '' }
+  }
 
   return { toPill, toCell, toProfile }
 }

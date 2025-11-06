@@ -2,7 +2,7 @@
 <template>
   <div class="space-y-6">
     <!-- current (whatever exists: core/app) -->
-    <slot name="current-assets" :profile="profileRef.profile.value" />
+    <slot name="current-assets" :profile="profileApi.profileComputed.value" />
 
     <!-- CTA when missing (global OR app overlay) -->
     <div v-if="showCreate">
@@ -66,12 +66,14 @@ const props = defineProps<{
 }>()
 
 // unified profile + computed signals
-const profileRef = useProfile(props.config)
+const profileApi = useProfile(props.config)
 const { isTenant } = useFireUXConfig()
 
-const hasCoreProfile = computed(() => Boolean(profileRef.coreProfile.value))
+const hasCoreProfile = computed(() =>
+  Boolean(profileApi.profile.coreProfile.value)
+)
 const hasAppProfile = isTenant
-  ? computed(() => Boolean(profileRef.appProfile.value))
+  ? computed(() => Boolean(profileApi.profile.appProfile.value))
   : undefined
 const ctaMessage = computed(() => {
   if (hasCoreProfile.value) return null
@@ -102,7 +104,7 @@ async function onEnsureClick() {
     if (props.onEnsure) {
       await props.onEnsure() // use external handler if provided
     } else {
-      await profileRef.ensure() // fallback to generic ensure
+      await profileApi.ensure() // fallback to generic ensure
     }
   } finally {
     ensuring.value = false
@@ -110,20 +112,20 @@ async function onEnsureClick() {
 }
 
 /* ------- Minimal list wiring ------- */
-const hasLocal = computed(() => Boolean(profileRef.collection.local))
+const hasLocal = computed(() => Boolean(profileApi.collection.local))
 const hasGlobalLoaded = computed(() =>
-  Boolean(profileRef.collection.global?.value)
+  Boolean(profileApi.collection.global?.value)
 )
 const showing = computed<'local' | 'global'>(() =>
   hasLocal.value ? 'local' : 'global'
 )
 const list = computed<any[]>(
   () =>
-    (profileRef.collection.local?.value as any[]) ??
-    (profileRef.collection.global?.value as any[]) ??
+    (profileApi.collection.local?.value as any[]) ??
+    (profileApi.collection.global?.value as any[]) ??
     []
 )
 function fetchGlobal() {
-  profileRef.collection.fetchGlobal?.()
+  profileApi.collection.fetchGlobal?.()
 }
 </script>

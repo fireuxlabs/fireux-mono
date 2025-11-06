@@ -21,6 +21,9 @@ export interface SupplierProfile extends Profile {
   bio_short?: string | null
   bio_long?: string | null
   specialties?: string[]
+  categories?: string[]
+  avatar?: string | null
+  avatar_url?: string | null
 }
 
 /** Global: suppliers/{uid} */
@@ -34,12 +37,13 @@ export namespace SupplierCard {
   export interface Pill {
     id: string
     display_name: string
-    avatar?: string
+    avatar?: string | null
     title?: string | null
   }
   export interface Cell extends Pill {
     bio_short?: string | null
     specialties?: string[]
+    to?: string
   }
   export interface Profile extends Cell {
     bio_long?: string | null

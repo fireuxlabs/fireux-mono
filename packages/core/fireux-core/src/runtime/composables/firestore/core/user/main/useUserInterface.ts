@@ -2,38 +2,91 @@
 import type { Ref } from 'vue'
 import type {
   User,
-  AppUser,
+  UserToPillMapper,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
 import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
 
+type MaybeUser = Pick<User, 'id' | 'display_name' | 'avatar' | 'handle'> & {
+  profiles?: string[] | null
+}
+
+const toMaybeUser = (candidate?: MaybeUser | null): MaybeUser | null => {
+  if (!candidate) return null
+  return {
+    id: candidate.id ?? '',
+    display_name: candidate.display_name ?? '',
+    avatar: candidate.avatar ?? '',
+    handle: candidate.handle ?? '',
+    profiles: Array.isArray(candidate.profiles)
+      ? candidate.profiles
+      : undefined,
+  }
+}
+
+const initialsFromName = (name: string): string => {
+  const normalized = name.trim()
+  if (!normalized) return 'A'
+  const parts = normalized.split(/\s+/).filter(Boolean).slice(0, 2)
+  if (!parts.length) return 'A'
+  const initials = parts.map((part) => part[0]?.toUpperCase() ?? '').join('')
+  return initials || 'A'
+}
+
 export function useUserInterface(
-  user: Ref<User | null | undefined> | UserRefs
+  source?: Ref<User | null | undefined> | UserRefs
 ) {
-  const core =
-    (user as UserRefs).coreUser?.value ??
-    (user as Ref<User | null | undefined>)?.value ??
-    null
+  const resolveCore = (): MaybeUser | null => {
+    if (!source) return null
+    const grouped = source as UserRefs
+    if (grouped.coreUser) {
+      return toMaybeUser(grouped.coreUser.value as MaybeUser | null)
+    }
 
-  const app = (user as UserRefs).appUser?.value as AppUser | undefined
-
-  if (app) {
-    // overlay merge reserved for future tenant overlays
+    const ref = source as Ref<User | null | undefined>
+    return toMaybeUser(ref?.value ?? null)
   }
 
-  const toPill = (): Pill.Props => {
-    const overlay = app as unknown as Partial<User> | undefined
-    const source = overlay ?? core
+  const pickActive = (target?: User | null | undefined): MaybeUser | null =>
+    target ? toMaybeUser(target) : resolveCore()
+
+  const initialsFor = (target?: Pick<User, 'display_name'> | null) =>
+    initialsFromName(
+      String(target?.display_name ?? resolveCore()?.display_name ?? '')
+    )
+
+  const buildPill = (input?: MaybeUser | null) => {
+    const active = input ?? resolveCore()
+    const title = active?.display_name ?? ''
+    const subtitle = active?.handle ? `@${active.handle}` : ''
+    const badges = active?.profiles ?? []
+    const avatar = active?.avatar ?? ''
+    const to = active?.id ? `/users/${active.id}` : ''
 
     return {
-      avatar: overlay?.avatar ?? core?.avatar ?? '',
-      initials: 'A',
-      title: source?.display_name ?? '',
-      subtitle: source?.handle ? `@${source.handle}` : '',
-      badges: source?.profiles ?? [],
-      to: source?.id ? `/users/${source.id}` : '',
+      avatar,
+      initials: initialsFor(active ?? undefined),
+      title,
+      subtitle,
+      badges,
+      to,
     }
   }
 
-  return { toPill }
+  const toPill = (): Pill.Props => {
+    const base = buildPill()
+    return {
+      avatar: base.avatar,
+      initials: base.initials,
+      title: base.title,
+      subtitle: base.subtitle,
+      badges: base.badges,
+      to: base.to,
+    }
+  }
+
+  const pillProps: UserToPillMapper = (user: User) =>
+    buildPill(pickActive(user))
+
+  return { toPill, pillProps, initialsFor }
 }

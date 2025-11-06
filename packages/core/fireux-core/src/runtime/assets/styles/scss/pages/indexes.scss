@@ -1,0 +1,44 @@
+/* ------------------------------------------------------------------
+ * Index Page Layout Helpers
+ * Centralised layout primitives for page-level index listings.
+ * ------------------------------------------------------------------ */
+
+.page-index {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l, 1.5rem);
+}
+
+.index-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m, 1rem);
+}
+
+.index-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.entity-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .entity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .entity-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.index-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
