@@ -15,7 +15,7 @@ export function useProfile<TProfile extends Profile = Profile>(
   config: ProfileConfig
 ) {
   const { uid } = useAuth()
-  const { profile } = useProfileFetch<TProfile>(uid.value, config)
+  const { profile } = useProfileFetch<TProfile>(uid, config)
 
   return { profile }
 }

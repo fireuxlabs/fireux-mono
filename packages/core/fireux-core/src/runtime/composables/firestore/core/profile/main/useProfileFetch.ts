@@ -1,6 +1,7 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileFetch.ts
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
+import { computed, isRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type { Ref } from 'vue'
 import type {
@@ -19,20 +20,30 @@ export type ProfileRefs<TProfile extends Profile = Profile> = {
 }
 
 export function useProfileFetch<TProfile extends Profile = Profile>(
-  id: string | null | undefined,
+  id: string | null | undefined | Ref<string | null | undefined>,
   config: ProfileConfig
 ) {
   const db = useFirestore()
   const { isTenant, appId } = useFireUXConfig()
 
+  const uid = computed(() => (isRef(id) ? id.value : id))
+
+  const coreDoc = computed(() =>
+    uid.value ? (doc(db, config.collectionName, uid.value) as any) : null
+  )
+
+  const appDoc = computed(() =>
+    uid.value && isTenant && appId
+      ? (doc(db, 'apps', appId, config.collectionName, uid.value) as any)
+      : null
+  )
+
   const { data: coreProfile } = useDocument<TProfile | undefined>(
-    id ? (doc(db, config.collectionName, id) as any) : null
+    coreDoc as any
   )
 
   const { data: appProfile } = useDocument<Partial<TProfile> | undefined>(
-    id && isTenant && appId
-      ? (doc(db, 'apps', appId, config.collectionName, id) as any)
-      : null
+    appDoc as any
   )
 
   const profile: ProfileRefs<TProfile> = { coreProfile, appProfile }

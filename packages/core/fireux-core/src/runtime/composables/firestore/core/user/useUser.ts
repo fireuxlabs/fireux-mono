@@ -10,7 +10,7 @@ export type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
 export function useUser() {
   const { uid } = useAuth()
-  const { coreUser, appUser } = useUserFetch(uid.value)
+  const { coreUser, appUser } = useUserFetch(uid)
 
   return {
     coreUser,
