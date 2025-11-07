@@ -6,14 +6,19 @@
         <!-- Current profile (optional) -->
         <template #current-assets="{ profile }">
           <template v-if="profile">
-            <OrganismsProfilesChefCardsPill :chef="profile" class="mb-3" />
-            <OrganismsProfilesChefCardsCell :chef="profile" />
+            <div class="space-y-3">
+              <OrganismsProfilesChefCardsPill :chef="pillProps(profile)" />
+              <OrganismsProfilesChefCardsCell :chef="cellProps(profile)" />
+            </div>
           </template>
         </template>
 
         <!-- List items -->
         <template #item="{ profile }">
-          <OrganismsProfilesChefCardsCell :chef="profile" />
+          <div class="space-y-3">
+            <OrganismsProfilesChefCardsPill :chef="pillProps(profile)" />
+            <OrganismsProfilesChefCardsCell :chef="cellProps(profile)" />
+          </div>
         </template>
       </OrganismsProfileRoot>
     </UContainer>
@@ -22,8 +27,10 @@
 
 <script setup lang="ts">
 import { chefConfig } from '../../models/profiles/Chef.model'
-import { useChefCreate } from '../../composables/firestore/profiles/Chef/main/useChefCreate'
+import { useChef } from '../../composables/firestore/profiles/Chef/useChef.ts'
+import { useChefCreate } from '../../composables/firestore/profiles/Chef/main/useChefCreate.ts'
 
+const { pillProps, cellProps } = useChef()
 const { createChef } = useChefCreate()
 
 async function onEnsureChef() {

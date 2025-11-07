@@ -8,6 +8,10 @@ created: 2025-10-16
 
 This report captures every `index.vue` currently tracked in the monorepo. Paths are relative to the repo root. Groupings reflect how the FireUX team wants to manage entry points going forward.
 
+## TODO
+
+- [ ] Update `packages/core/fireux-core/src/runtime/components/organisms/Profile/Root.vue` to consume the shared pill/cell helpers (`use*Interface`) before refitting profile index pages.
+
 ## Group 1 — App Entry Indexes
 
 Stay put: these are the live Nuxt app home pages under `projects/**/app/pages/index.vue`.

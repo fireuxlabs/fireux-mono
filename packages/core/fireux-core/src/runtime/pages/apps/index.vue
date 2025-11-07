@@ -12,9 +12,11 @@
           </div>
         </template>
 
-        <template v-if="app">
-          <MoleculesPill v-bind="pillProps(app)" />
-          <OrganismsAppCardsCell :app="app" />
+        <template v-if="currentApp">
+          <div class="space-y-3">
+            <MoleculesPill v-bind="pillProps(currentApp)" />
+            <OrganismsAppCardsCell :app="currentApp" />
+          </div>
         </template>
 
         <MoleculesNotFound v-else kind="document" entity="app" />
@@ -23,11 +25,10 @@
       <!-- Collection -->
       <UCard class="index-card">
         <div v-if="apps?.length" class="entity-grid">
-          <MoleculesPill
-            v-for="item in apps"
-            :key="item.id"
-            v-bind="pillProps(item)"
-          />
+          <div v-for="item in apps" :key="item.id" class="entity-stack">
+            <MoleculesPill v-bind="pillProps(item)" />
+            <OrganismsAppCardsCell :app="item" />
+          </div>
         </div>
 
         <MoleculesNotFound v-else kind="collection" entity="apps" />
@@ -38,6 +39,7 @@
 
 <script setup lang="ts">
 import 'fireux-core/runtime/assets/styles/scss/pages/indexes.scss'
+import { computed } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
 
@@ -57,4 +59,5 @@ definePageMeta({
 
 const { app, pillProps } = useApp()
 const { apps } = useAppCollection()
+const currentApp = computed(() => app.value ?? null)
 </script>

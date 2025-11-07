@@ -1,70 +1,67 @@
-// packages/core/fireux-core/src/runtime/composables/firestore/profiles/chef/useChefUpdate.ts
-import type { Ref } from 'vue'
-import { useCurrentUser } from 'vuefire'
-// Composables are auto-imported from core; avoid restricted subpath imports
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreUpdate.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
+import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import type { ChefProfile } from '../../../../../models/profiles/Chef.model.ts'
 
-/**
- * Environment-aware updater for a Chef profile.
- *
- * Behavior mirrors `useUserUpdate`:
- * - If `chefRef` provided → writes to that chef's doc (by `id`).
- * - Else → writes to the signed-in user's chef doc.
- *
- * Scopes:
- *   - Global  → chefs/{uid}
- *   - Tenant  → apps/{appId}/chefs/{uid}
- *
- * NOTE:
- * - This composable only WRITES finalized data (e.g. an avatar DOWNLOAD URL).
- * - Uploading is done elsewhere (e.g. your AvatarPicker / storage utilities).
- */
-type WithId = { id: string }
+const COLLECTION = 'chefs'
 
 type TargetScope = 'auto' | 'core' | 'app'
 
-export function useChefUpdate(chefRef?: Ref<WithId | null>) {
-  const authRef = useCurrentUser()
-  const { role, appId } = useFireUXConfig()
-  const isTenant = role === 'tenant'
+export function useChefUpdate(_profile: ProfileRefs<ChefProfile>) {
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
+  const { role, appId } = useFireUXConfig()
+  const isTenant = role === 'tenant' && !!appId
 
-  const resolveTarget = (scope: TargetScope = 'auto') => {
-    const id = chefRef?.value?.id ?? authRef.value?.uid
-    if (!id) throw new Error('Not signed in and no chefRef.id provided')
-    if (scope === 'app' || (scope === 'auto' && isTenant)) {
-      if (!appId) throw new Error('Missing appId for tenant-scoped chef update')
-      return { collection: `apps/${appId}/chefs`, id }
-    }
-    return { collection: 'chefs', id }
+  const resolveUid = async (explicitId?: string) => {
+    if (explicitId) return explicitId
+    const u = await useRequireUser()
+    if (!u?.uid) throw new Error('User not authenticated')
+    return u.uid
   }
 
-  /** Generic partial update for arbitrary chef fields */
+  const resolveTarget = async (scope: TargetScope, explicitId?: string) => {
+    const id = await resolveUid(explicitId)
+    if (scope === 'app') {
+      if (!appId) throw new Error('Missing appId for tenant-scoped chef update')
+      return { collection: `apps/${appId}/${COLLECTION}`, id }
+    }
+    if (scope === 'core') {
+      return { collection: COLLECTION, id }
+    }
+    if (isTenant) {
+      if (!appId) throw new Error('Missing appId for tenant-scoped chef update')
+      return { collection: `apps/${appId}/${COLLECTION}`, id }
+    }
+    return { collection: COLLECTION, id }
+  }
+
   const updateFields = async (
     partial: Record<string, unknown>,
-    scope: TargetScope = 'auto'
+    scope: TargetScope = 'auto',
+    explicitId?: string
   ) => {
-    const { collection, id } = resolveTarget(scope)
-    await updateDocument(collection, id, partial)
+    const target = await resolveTarget(scope, explicitId)
+    await updateDocument(target.collection, target.id, partial)
   }
 
-  /** Update display name */
-  const updateDisplayName = async (
+  const updateDisplayName = (
     display_name: string,
-    scope: TargetScope = 'auto'
-  ) => {
-    await updateFields({ display_name }, scope)
-  }
+    scope: TargetScope = 'auto',
+    explicitId?: string
+  ) => updateFields({ display_name }, scope, explicitId)
 
-  /** Avatar: build `${collection}/${id}/avatar` and upload via useImageStorage */
   const updateAvatar = async (
     source: Blob | string,
-    scope: TargetScope = 'auto'
+    scope: TargetScope = 'auto',
+    explicitId?: string
   ) => {
-    const { collection, id } = resolveTarget(scope)
-    const path = `${collection}/${id}/avatar`
+    const target = await resolveTarget(scope, explicitId)
+    const path = `${target.collection}/${target.id}/avatar`
     const url = await uploadImage(path, source)
-    await updateFields({ avatar: url }, scope)
+    await updateDocument(target.collection, target.id, { avatar: url })
     return url
   }
 

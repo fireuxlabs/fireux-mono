@@ -1,92 +1,78 @@
 // FILE: ~/composables/user/useUserInterface.ts
 import type { Ref } from 'vue'
+import type { RouteLocationRaw } from 'vue-router'
 import type {
   User,
-  UserToPillMapper,
+  UserCard,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
 import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
 
-type MaybeUser = Pick<User, 'id' | 'display_name' | 'avatar' | 'handle'> & {
-  profiles?: string[] | null
+const DEFAULT_INITIALS = 'A'
+
+const initialsFor = (name?: string | null): string => {
+  const t = (name ?? '').trim()
+  return t ? t.charAt(0).toUpperCase() : DEFAULT_INITIALS
 }
 
-const toMaybeUser = (candidate?: MaybeUser | null): MaybeUser | null => {
-  if (!candidate) return null
-  return {
-    id: candidate.id ?? '',
-    display_name: candidate.display_name ?? '',
-    avatar: candidate.avatar ?? '',
-    handle: candidate.handle ?? '',
-    profiles: Array.isArray(candidate.profiles)
-      ? candidate.profiles
-      : undefined,
-  }
-}
+const subtitleFor = (handle?: string | null): string =>
+  handle ? `@${handle}` : ''
 
-const initialsFromName = (name: string): string => {
-  const normalized = name.trim()
-  if (!normalized) return 'A'
-  const parts = normalized.split(/\s+/).filter(Boolean).slice(0, 2)
-  if (!parts.length) return 'A'
-  const initials = parts.map((part) => part[0]?.toUpperCase() ?? '').join('')
-  return initials || 'A'
-}
+const toUserPath = (id?: string | null): string => (id ? `/users/${id}` : '')
 
 export function useUserInterface(
   source?: Ref<User | null | undefined> | UserRefs
 ) {
-  const resolveCore = (): MaybeUser | null => {
+  const resolve = (): User | null => {
     if (!source) return null
-    const grouped = source as UserRefs
-    if (grouped.coreUser) {
-      return toMaybeUser(grouped.coreUser.value as MaybeUser | null)
+    if ('coreUser' in (source as UserRefs)) {
+      return (source as UserRefs).coreUser.value ?? null
     }
-
-    const ref = source as Ref<User | null | undefined>
-    return toMaybeUser(ref?.value ?? null)
+    return (source as Ref<User | null | undefined>).value ?? null
   }
 
-  const pickActive = (target?: User | null | undefined): MaybeUser | null =>
-    target ? toMaybeUser(target) : resolveCore()
-
-  const initialsFor = (target?: Pick<User, 'display_name'> | null) =>
-    initialsFromName(
-      String(target?.display_name ?? resolveCore()?.display_name ?? '')
-    )
-
-  const buildPill = (input?: MaybeUser | null) => {
-    const active = input ?? resolveCore()
-    const title = active?.display_name ?? ''
-    const subtitle = active?.handle ? `@${active.handle}` : ''
-    const badges = active?.profiles ?? []
-    const avatar = active?.avatar ?? ''
-    const to = active?.id ? `/users/${active.id}` : ''
+  const pillProps = (target?: User | null): Pill.Props => {
+    const user = target ?? resolve()
+    const title = user?.display_name ?? ''
 
     return {
-      avatar,
-      initials: initialsFor(active ?? undefined),
+      avatar: user?.avatar ?? '',
+      initials: initialsFor(title),
       title,
-      subtitle,
-      badges,
-      to,
+      subtitle: subtitleFor(user?.handle),
+      badges: user?.profiles ?? [],
+      to: (toUserPath(user?.id) || null) as RouteLocationRaw,
     }
   }
 
-  const toPill = (): Pill.Props => {
-    const base = buildPill()
+  // NOTE: In User model, Cell EXTENDS Pill (unlike App), so including pill fields is correct.
+  const cellProps = (target?: User | null): UserCard.Cell => {
+    const user = target ?? resolve()
+    const title = user?.display_name ?? ''
+
     return {
-      avatar: base.avatar,
-      initials: base.initials,
-      title: base.title,
-      subtitle: base.subtitle,
-      badges: base.badges,
-      to: base.to,
+      avatar: user?.avatar ?? '',
+      initials: initialsFor(title),
+      title,
+      subtitle: subtitleFor(user?.handle),
+      badges: user?.profiles ?? [],
+      to: toUserPath(user?.id),
+      id: user?.id ?? '',
+      profiles: user?.profiles ?? [],
     }
   }
 
-  const pillProps: UserToPillMapper = (user: User) =>
-    buildPill(pickActive(user))
+  const profileProps = (target?: User | null): UserCard.Profile => {
+    const user = target ?? resolve()
 
-  return { toPill, pillProps, initialsFor }
+    return {
+      ...cellProps(user ?? undefined),
+      email: user?.email,
+      bio: user?.bio,
+      created_at: user?.created_at,
+      updated_at: user?.updated_at,
+    }
+  }
+
+  return { pillProps, cellProps, profileProps }
 }

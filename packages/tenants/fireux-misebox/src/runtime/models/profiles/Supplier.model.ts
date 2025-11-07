@@ -3,6 +3,7 @@ import type {
   Profile,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
 
 /** Unified Supplier (kept symmetric with Chef) */
 export interface Supplier {
@@ -34,17 +35,16 @@ export type SupplierAppProfile = SupplierProfile
 
 /** Card shapes (mirrors Chef shapes) */
 export namespace SupplierCard {
-  export interface Pill {
-    id: string
-    display_name: string
-    avatar?: string | null
-    title?: string | null
-  }
+  export interface Pill extends PillModel.Props {}
+
   export interface Cell extends Pill {
+    id: string
+    to?: string
     bio_short?: string | null
     specialties?: string[]
-    to?: string
+    categories?: string[]
   }
+
   export interface Profile extends Cell {
     bio_long?: string | null
   }

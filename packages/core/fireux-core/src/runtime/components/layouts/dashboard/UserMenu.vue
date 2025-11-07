@@ -15,7 +15,7 @@
       class="shrink-0"
       :src="safeAvatarSrc"
       :alt="safeAlt"
-      :text="initialsFor(user ?? null)"
+      :text="avatarInitials"
     />
   </UButton>
 
@@ -36,16 +36,21 @@ defineOptions({ name: 'LayoutsDashboardUserMenu' })
 defineProps<{ collapsed?: boolean }>()
 
 const router = useRouter()
-const { user, pillProps, initialsFor } = useUser()
+const { currentUser, pillProps } = useUser()
+const user = currentUser
+
+const avatarInitials = computed(
+  () => pillProps(user.value ?? null).initials ?? 'A'
+)
 
 const pillUser = computed<UserCard.Pill | undefined>(() => {
   const u = user.value
   if (!u) return undefined
   const base = pillProps(u)
+  const link = typeof base.to === 'string' ? base.to : ''
   return {
     ...base,
-    id: u.id,
-    role: (u as any).role,
+    to: link,
   }
 })
 

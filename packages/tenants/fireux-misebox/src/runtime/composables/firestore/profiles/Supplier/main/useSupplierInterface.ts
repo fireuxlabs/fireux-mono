@@ -1,57 +1,98 @@
-import type { Ref } from 'vue'
 import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type {
   SupplierProfile,
   SupplierCard,
 } from '../../../../../models/profiles/Supplier.model.ts'
 
-export function useSupplierInterface(
-  profileRef?: Ref<SupplierProfile | null | undefined>
-) {
-  const resolve = () => profileRef?.value ?? null
-  const toLink = (id?: string) => (id ? `/profiles/${id}` : '')
-  const avatar = () => {
-    const profile = resolve()
-    return profile?.avatar_url ?? profile?.avatar ?? ''
-  }
-  const badges = () => {
-    const profile = resolve()
-    return profile?.categories ?? profile?.specialties ?? profile?.badges ?? []
-  }
+const DEFAULT_INITIALS = 'A'
+const toLink = (id?: string | null) => (id ? `/profiles/${id}` : '')
 
-  const toPill = (): Pill.Props => {
-    const profile = resolve()
-    const id = profile?.id ?? ''
+const initialsFrom = (source?: string | null) => {
+  const value = (source ?? '').trim()
+  return value ? value.charAt(0).toUpperCase() : DEFAULT_INITIALS
+}
 
-    return {
-      avatar: avatar(),
-      initials: 'A',
-      title: profile?.title ?? '',
-      subtitle: 'supplier',
-      badges: badges(),
-      to: toLink(id),
-    }
-  }
+export function useSupplierInterface(profile: ProfileRefs<SupplierProfile>) {
+  const core = () => profile.coreProfile.value ?? null
+  const appOverlay = () => profile.appProfile.value ?? null
 
-  const toCell = (): SupplierCard.Cell => {
-    const profile = resolve()
-    const id = profile?.id ?? ''
+  const derive = (target?: SupplierProfile | null) => {
+    const overlay: Partial<SupplierProfile> | null =
+      target ?? appOverlay() ?? null
+    const base: Partial<SupplierProfile> | null = target ? null : core()
+
+    const pick = <T>(
+      selector: (p: Partial<SupplierProfile>) => T | null | undefined
+    ): T | undefined =>
+      (overlay && selector(overlay)) ?? (base && selector(base)) ?? undefined
+
+    const id = pick((p) => p.id) ?? ''
+    const title = pick((p) => p.title) ?? 'Supplier'
+    const subtitle = pick((p) => p.subtitle) ?? 'supplier'
+    const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''
+    const badgesCandidate =
+      pick((p) => p.categories) ??
+      pick((p) => p.specialties) ??
+      pick((p) => p.badges)
+    const specialtiesCandidate = pick((p) => p.specialties)
+    const categoriesCandidate = pick((p) => p.categories)
+    const badges = Array.isArray(badgesCandidate) ? badgesCandidate : []
+    const specialties = Array.isArray(specialtiesCandidate)
+      ? specialtiesCandidate
+      : []
+    const categories = Array.isArray(categoriesCandidate)
+      ? categoriesCandidate
+      : []
+    const bioShort = pick((p) => p.bio_short) ?? ''
+    const bioLong = pick((p) => p.bio_long) ?? ''
 
     return {
       id,
-      display_name: profile?.title ?? '',
-      avatar: avatar(),
-      title: profile?.title ?? '',
-      bio_short: profile?.bio_short ?? '',
-      specialties: profile?.specialties ?? profile?.categories ?? [],
-      to: toLink(id),
+      title,
+      subtitle,
+      avatar,
+      badges,
+      specialties,
+      categories,
+      bioShort,
+      bioLong,
     }
   }
 
-  const toProfile = (): SupplierCard.Profile => {
-    const profile = resolve()
-    return { ...toCell(), bio_long: profile?.bio_long ?? '' }
+  const pillProps = (target?: SupplierProfile | null): Pill.Props => {
+    const derived = derive(target)
+    return {
+      avatar: derived.avatar,
+      initials: initialsFrom(derived.title),
+      title: derived.title,
+      subtitle: derived.subtitle,
+      badges: derived.badges,
+      to: derived.id ? toLink(derived.id) : null,
+    }
   }
 
-  return { toPill, toCell, toProfile }
+  const cellProps = (target?: SupplierProfile | null): SupplierCard.Cell => {
+    const derived = derive(target)
+    return {
+      ...pillProps(target),
+      id: derived.id,
+      to: derived.id ? toLink(derived.id) : undefined,
+      bio_short: derived.bioShort,
+      specialties: derived.specialties,
+      categories: derived.categories,
+    }
+  }
+
+  const profileProps = (
+    target?: SupplierProfile | null
+  ): SupplierCard.Profile => {
+    const derived = derive(target)
+    return {
+      ...cellProps(target),
+      bio_long: derived.bioLong,
+    }
+  }
+
+  return { pillProps, cellProps, profileProps }
 }

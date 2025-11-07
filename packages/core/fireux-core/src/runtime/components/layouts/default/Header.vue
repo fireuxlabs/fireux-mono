@@ -66,10 +66,10 @@ const { desktop, mobile } = useDefaultNav()
 const { currentUser, signOutUser } = useAuth()
 const isAuthResolved = computed(() => currentUser.value !== undefined)
 
-const { user, cta, initialsFor } = useUser() // includes CTA + display helpers
+const { currentUser: coreUser, cta, pillProps } = useUser()
 
-const activeDisplayName = computed(() => user.value?.display_name || '')
-const activeAvatar = computed(() => user.value?.avatar || '')
+const activeDisplayName = computed(() => coreUser.value?.display_name || '')
+const activeAvatar = computed(() => coreUser.value?.avatar || '')
 
 /** CTA + avatar data */
 const hasCta = computed(() => cta.value.key !== 'avatar')
@@ -78,7 +78,9 @@ const avatarSrc = computed(() => {
   const trimmed = typeof src === 'string' ? src.trim() : ''
   return trimmed || undefined
 })
-const initials = computed(() => initialsFor(user.value ?? null))
+const initials = computed(
+  () => pillProps(coreUser.value ?? null).initials ?? 'A'
+)
 
 /** Avatar dropdown */
 const avatarMenuItems = computed(() => [

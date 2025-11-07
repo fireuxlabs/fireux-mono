@@ -1,16 +1,40 @@
 import { computed } from 'vue'
-import type { ProfessionalProfile } from '../../../../models/profiles/Professional.model'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
 
-/**
- * Read-only computed accessors for Professional profile values used by editors.
- */
 export function useProfessionalComputed(
-  professional?: ProfessionalProfile | null
+  profile: ProfileRefs<ProfessionalProfile>
 ) {
-  const base = professional ?? ({} as ProfessionalProfile)
+  const coreProfile = computed<ProfessionalProfile | null>(
+    () =>
+      (profile.coreProfile.value as ProfessionalProfile | null | undefined) ??
+      null
+  )
 
-  const avatar = computed<string>(() => (base as any)?.avatar || '')
-  const displayName = computed<string>(() => (base as any)?.display_name || '')
+  const appProfile = computed<ProfessionalProfile | null>(
+    () =>
+      (profile.appProfile.value as ProfessionalProfile | null | undefined) ??
+      null
+  )
 
-  return { avatar, displayName }
+  const activeProfile = computed<ProfessionalProfile | null>(() => {
+    const core = coreProfile.value
+    const overlay = appProfile.value
+    if (!core && !overlay) return null
+    const merged = {} as ProfessionalProfile
+    if (core) Object.assign(merged, core)
+    if (overlay) Object.assign(merged, overlay)
+    return merged
+  })
+
+  const hasCoreProfile = computed(() => Boolean(coreProfile.value))
+  const hasAppProfile = computed(() => Boolean(appProfile.value))
+
+  return {
+    coreProfile,
+    appProfile,
+    activeProfile,
+    hasCoreProfile,
+    hasAppProfile,
+  }
 }

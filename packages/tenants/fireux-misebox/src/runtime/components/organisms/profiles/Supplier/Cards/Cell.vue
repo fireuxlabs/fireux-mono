@@ -1,28 +1,35 @@
 <template>
   <UCard class="profile-card">
     <div class="profile-header">
-      <UAvatar :src="supplier.avatar" :alt="supplier.display_name" size="md" />
+      <UAvatar
+        :src="props.supplier.avatar"
+        :alt="props.supplier.title || 'Supplier'"
+        :text="props.supplier.initials"
+        size="md"
+      />
       <div class="profile-info">
-        <h4 class="profile-name">{{ supplier.display_name }}</h4>
-        <p v-if="supplier.title" class="profile-subtitle">
-          {{ supplier.title }}
+        <h4 class="profile-name">
+          {{ props.supplier.title || 'Supplier' }}
+        </h4>
+        <p v-if="props.supplier.subtitle" class="profile-subtitle">
+          {{ props.supplier.subtitle }}
         </p>
       </div>
     </div>
 
-    <p v-if="supplier.bio_short" class="profile-bio">
-      {{ supplier.bio_short }}
+    <p v-if="props.supplier.bio_short" class="profile-bio">
+      {{ props.supplier.bio_short }}
     </p>
 
-    <div v-if="supplier.specialties?.length" class="profile-tags">
+    <div v-if="props.supplier.specialties?.length" class="profile-tags">
       <span
-        v-for="(tag, i) in supplier.specialties.slice(0, 3)"
+        v-for="(tag, i) in props.supplier.specialties.slice(0, 3)"
         :key="tag + i"
         class="tag"
         >{{ tag }}</span
       >
-      <span v-if="supplier.specialties.length > 3" class="tag-more">
-        +{{ supplier.specialties.length - 3 }} more
+      <span v-if="props.supplier.specialties.length > 3" class="tag-more">
+        +{{ props.supplier.specialties.length - 3 }} more
       </span>
     </div>
   </UCard>
@@ -30,5 +37,6 @@
 
 <script setup lang="ts">
 import type { SupplierCard } from '../../../../../models/profiles/Supplier.model'
-defineProps<{ supplier: SupplierCard.Cell }>()
+
+const props = defineProps<{ supplier: SupplierCard.Cell }>()
 </script>

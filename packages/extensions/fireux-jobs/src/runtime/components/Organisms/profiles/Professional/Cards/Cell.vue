@@ -2,31 +2,34 @@
   <UCard class="profile-card">
     <div class="profile-header">
       <UAvatar
-        :src="professional.avatar"
-        :alt="professional.display_name"
+        :src="props.professional.avatar"
+        :alt="props.professional.title || 'Professional'"
+        :text="props.professional.initials"
         size="md"
       />
       <div class="profile-info">
-        <h4 class="profile-name">{{ professional.display_name }}</h4>
-        <p v-if="professional.title" class="profile-subtitle">
-          {{ professional.title }}
+        <h4 class="profile-name">
+          {{ props.professional.title || 'Professional' }}
+        </h4>
+        <p v-if="props.professional.subtitle" class="profile-subtitle">
+          {{ props.professional.subtitle }}
         </p>
       </div>
     </div>
 
-    <p v-if="professional.bio_short" class="profile-bio">
-      {{ professional.bio_short }}
+    <p v-if="props.professional.bio_short" class="profile-bio">
+      {{ props.professional.bio_short }}
     </p>
 
-    <div v-if="professional.specialties?.length" class="profile-tags">
+    <div v-if="props.professional.specialties?.length" class="profile-tags">
       <span
-        v-for="(tag, i) in professional.specialties.slice(0, 3)"
+        v-for="(tag, i) in props.professional.specialties.slice(0, 3)"
         :key="tag + i"
         class="tag"
         >{{ tag }}</span
       >
-      <span v-if="professional.specialties.length > 3" class="tag-more">
-        +{{ professional.specialties.length - 3 }} more
+      <span v-if="props.professional.specialties.length > 3" class="tag-more">
+        +{{ props.professional.specialties.length - 3 }} more
       </span>
     </div>
   </UCard>
@@ -34,7 +37,8 @@
 
 <script setup lang="ts">
 import type { ProfessionalCard } from '../../../../../models/profiles/Professional.model'
-defineProps<{ professional: ProfessionalCard.Cell }>()
+
+const props = defineProps<{ professional: ProfessionalCard.Cell }>()
 </script>
 
 <style scoped>
@@ -88,5 +92,4 @@ defineProps<{ professional: ProfessionalCard.Cell }>()
   font-size: 0.75rem;
   color: rgba(17, 24, 39, 0.6);
 }
-
 </style>

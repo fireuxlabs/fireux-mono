@@ -2,7 +2,10 @@
 <template>
   <UPage>
     <UPageBody class="page-index">
-      <UPageHeader title="Users" description="Review the current runtime user." />
+      <UPageHeader
+        title="Users"
+        description="Review the current runtime user."
+      />
 
       <!-- Single -->
       <UCard class="index-card">
@@ -13,10 +16,11 @@
         </template>
 
         <!-- just check the nested ref; no .value needed in templates -->
-        <template v-if="user.coreUser">
-          <!-- pillProps(user.coreUser) auto-unwraps in template -->
-          <MoleculesPill v-bind="pillProps(user.coreUser)" />
-          <OrganismsUserCardsCell :user="user.coreUser" />
+        <template v-if="currentUser">
+          <div class="space-y-3">
+            <MoleculesPill v-bind="pillProps(currentUser)" />
+            <OrganismsUserCardsCell :user="currentUser" />
+          </div>
         </template>
 
         <MoleculesNotFound v-else kind="document" entity="user" />
@@ -25,11 +29,10 @@
       <!-- Collection -->
       <UCard class="index-card">
         <div v-if="users?.length" class="entity-grid">
-          <MoleculesPill
-            v-for="item in users"
-            :key="item.id"
-            v-bind="pillProps(item)"
-          />
+          <div v-for="item in users" :key="item.id" class="entity-stack">
+            <MoleculesPill v-bind="pillProps(item)" />
+            <OrganismsUserCardsCell :user="item" />
+          </div>
         </div>
 
         <MoleculesNotFound v-else kind="collection" entity="users" />
@@ -43,11 +46,22 @@ import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/use
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
 
 definePageMeta({
-  nav: { key: 'users', label: 'Users', icon: 'i-lucide-users', order: 50, desktop: true, mobile: true, layouts: ['default'] },
+  nav: {
+    key: 'users',
+    label: 'Users',
+    icon: 'i-lucide-users',
+    order: 50,
+    desktop: true,
+    mobile: true,
+    layouts: ['default'],
+  },
   title: 'Users',
   description: 'FireUX user accounts resolved for this runtime.',
 })
 
+import { computed } from 'vue'
+
 const { user, pillProps } = useUser()
 const { users } = useUserCollection()
+const currentUser = computed(() => user.coreUser.value ?? null)
 </script>

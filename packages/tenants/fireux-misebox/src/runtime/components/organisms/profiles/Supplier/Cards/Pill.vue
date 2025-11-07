@@ -1,10 +1,19 @@
 <template>
   <UCard class="pill">
     <div class="profile-header">
-      <UAvatar :src="supplier.avatar" :alt="supplier.display_name" size="sm" />
+      <UAvatar
+        :src="props.supplier.avatar"
+        :alt="props.supplier.title || 'Supplier'"
+        :text="props.supplier.initials"
+        size="sm"
+      />
       <div class="profile-info">
-        <h4 class="profile-name">{{ supplier.display_name }}</h4>
-        <p v-if="supplier.title" class="profile-title">{{ supplier.title }}</p>
+        <h4 class="profile-name">
+          {{ props.supplier.title || 'Supplier' }}
+        </h4>
+        <p v-if="props.supplier.subtitle" class="profile-title">
+          {{ props.supplier.subtitle }}
+        </p>
       </div>
     </div>
   </UCard>
@@ -13,5 +22,5 @@
 <script setup lang="ts">
 import type { SupplierCard } from '../../../../../models/profiles/Supplier.model'
 
-defineProps<{ supplier: SupplierCard.Pill }>()
+const props = defineProps<{ supplier: SupplierCard.Pill }>()
 </script>

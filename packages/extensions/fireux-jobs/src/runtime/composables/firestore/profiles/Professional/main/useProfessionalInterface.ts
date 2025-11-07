@@ -1,68 +1,97 @@
-import type { Ref } from 'vue'
 import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type {
   ProfessionalProfile,
   ProfessionalCard,
 } from '../../../../../models/profiles/Professional.model.ts'
 
+const DEFAULT_INITIALS = 'A'
+const toLink = (id?: string | null) => (id ? `/profiles/${id}` : '')
+
+const initialsFrom = (source?: string | null) => {
+  const value = (source ?? '').trim()
+  return value ? value.charAt(0).toUpperCase() : DEFAULT_INITIALS
+}
+
 export function useProfessionalInterface(
-  profileRef?: Ref<ProfessionalProfile | null | undefined>
+  profile: ProfileRefs<ProfessionalProfile>
 ) {
-  const resolve = () => profileRef?.value ?? null
-  const toLink = (id?: string) => (id ? `/profiles/${id}` : '')
-  const avatar = () => {
-    const profile = resolve()
-    return profile?.avatar_url ?? profile?.avatar ?? ''
-  }
-  const title = () => {
-    const profile = resolve()
-    return profile?.title ?? profile?.display_name ?? ''
-  }
-  const badges = () => {
-    const profile = resolve()
-    return (
-      profile?.health_certifications ??
-      profile?.specialties ??
-      profile?.badges ??
-      []
-    )
-  }
+  const core = () => profile.coreProfile.value ?? null
+  const appOverlay = () => profile.appProfile.value ?? null
 
-  const toPill = (): Pill.Props => {
-    const profile = resolve()
-    const id = profile?.id ?? ''
+  const derive = (target?: ProfessionalProfile | null) => {
+    const overlay: Partial<ProfessionalProfile> | null =
+      target ?? appOverlay() ?? null
+    const base: Partial<ProfessionalProfile> | null = target ? null : core()
 
-    return {
-      avatar: avatar(),
-      initials: 'A',
-      title: title(),
-      subtitle: 'professional',
-      badges: badges(),
-      to: toLink(id),
-    }
-  }
+    const pick = <T>(
+      selector: (p: Partial<ProfessionalProfile>) => T | null | undefined
+    ): T | undefined =>
+      (overlay && selector(overlay)) ?? (base && selector(base)) ?? undefined
 
-  const toCell = (): ProfessionalCard.Cell => {
-    const profile = resolve()
-    const id = profile?.id ?? ''
+    const id = pick((p) => p.id) ?? ''
+    const title =
+      pick((p) => p.title) ?? pick((p) => p.display_name) ?? 'Professional'
+    const subtitle = pick((p) => p.subtitle) ?? 'professional'
+    const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''
+    const badgesCandidate =
+      pick((p) => p.health_certifications) ??
+      pick((p) => p.badges) ??
+      pick((p) => p.specialties)
+    const specialtiesCandidate = pick((p) => p.specialties)
+    const badges = Array.isArray(badgesCandidate) ? badgesCandidate : []
+    const specialties = Array.isArray(specialtiesCandidate)
+      ? specialtiesCandidate
+      : []
+    const bioShort = pick((p) => p.bio_short) ?? ''
+    const bioLong = pick((p) => p.bio_long) ?? ''
 
     return {
       id,
-      display_name: profile?.display_name ?? profile?.title ?? '',
-      avatar: avatar(),
-      title: profile?.title ?? '',
-      subtitle: profile?.subtitle ?? '',
-      badges: profile?.badges ?? [],
-      bio_short: profile?.bio_short ?? '',
-      specialties: profile?.specialties ?? [],
-      to: toLink(id),
+      title,
+      subtitle,
+      avatar,
+      badges,
+      specialties,
+      bioShort,
+      bioLong,
     }
   }
 
-  const toProfile = (): ProfessionalCard.Profile => {
-    const profile = resolve()
-    return { ...toCell(), bio_long: profile?.bio_long ?? '' }
+  const pillProps = (target?: ProfessionalProfile | null): Pill.Props => {
+    const derived = derive(target)
+    return {
+      avatar: derived.avatar,
+      initials: initialsFrom(derived.title),
+      title: derived.title,
+      subtitle: derived.subtitle,
+      badges: derived.badges,
+      to: derived.id ? toLink(derived.id) : null,
+    }
   }
 
-  return { toPill, toCell, toProfile }
+  const cellProps = (
+    target?: ProfessionalProfile | null
+  ): ProfessionalCard.Cell => {
+    const derived = derive(target)
+    return {
+      ...pillProps(target),
+      id: derived.id,
+      to: derived.id ? toLink(derived.id) : undefined,
+      bio_short: derived.bioShort,
+      specialties: derived.specialties,
+    }
+  }
+
+  const profileProps = (
+    target?: ProfessionalProfile | null
+  ): ProfessionalCard.Profile => {
+    const derived = derive(target)
+    return {
+      ...cellProps(target),
+      bio_long: derived.bioLong,
+    }
+  }
+
+  return { pillProps, cellProps, profileProps }
 }

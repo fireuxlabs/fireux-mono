@@ -1,10 +1,7 @@
-import type { FirebaseTimestamp } from '../../types/firebase'
-import type { Pill as PillModel } from '../../types/pill.model'
+import type { FirebaseTimestamp } from '../../types/firebase.ts'
+import type { Pill as PillModel } from '../../types/pill.model.ts'
 
-/** ------------------------------------------------------------------
- *  USER (core flattened + optional tenant overlay)
- *  Firestore Location: europe-west6
- *  ------------------------------------------------------------------ */
+/** Core Firestore User document */
 export interface User {
   id: string
   display_name: string
@@ -13,21 +10,21 @@ export interface User {
   email?: string
   bio?: string
   profiles?: string[]
+
+  // System metadata
   created_at: FirebaseTimestamp
   updated_at?: FirebaseTimestamp
 
-  /** Core membership */
+  // Core membership
   userOf?: string[]
   adminOf?: string[]
 
-  /** Overlay from tenant (if present) */
+  // Optional overlay info (tenant)
   role?: 'user' | 'admin'
   appUser?: AppUser | null
 }
 
-/** ------------------------------------------------------------------
- *  TENANT APP USER (minimal)
- *  ------------------------------------------------------------------ */
+/** Minimal tenant overlay for user */
 export interface AppUser {
   id: string
   role: 'user' | 'admin'
@@ -36,25 +33,21 @@ export interface AppUser {
   updated_at?: FirebaseTimestamp
 }
 
-/** ------------------------------------------------------------------
- *  UI SHAPES (aligned with Pill protocol)
- *  ------------------------------------------------------------------ */
-export type UserPillProps = PillModel.Props & { to: string }
-export type UserToPillMapper = (u: User) => UserPillProps
-
+/* ---------------------------
+ * UI View Models (purely structural)
+ * --------------------------- */
 export namespace UserCard {
-  export interface Pill extends UserPillProps {
+  /** Cell extends Pill props + adds 'to' and domain fields */
+  export interface Cell extends PillModel.Props {
+    to: string
     id: string
-    role?: 'user' | 'admin'
-  }
-
-  export interface Cell extends Pill {
     profiles?: string[]
   }
 
+  /** Profile = Cell with extra descriptive metadata */
   export interface Profile extends Cell {
-    bio?: string
     email?: string
+    bio?: string
     created_at?: FirebaseTimestamp
     updated_at?: FirebaseTimestamp
   }

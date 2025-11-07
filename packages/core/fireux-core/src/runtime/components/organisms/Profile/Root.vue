@@ -2,7 +2,7 @@
 <template>
   <div class="space-y-6">
     <!-- current (whatever exists: core/app) -->
-    <slot name="current-assets" :profile="profileApi.profileComputed.value" />
+    <slot name="current-assets" :profile="profileApi.activeProfile.value" />
 
     <!-- CTA when missing (global OR app overlay) -->
     <div v-if="showCreate">
@@ -114,17 +114,17 @@ async function onEnsureClick() {
 /* ------- Minimal list wiring ------- */
 const hasLocal = computed(() => Boolean(profileApi.collection.local))
 const hasGlobalLoaded = computed(() =>
-  Boolean(profileApi.collection.global?.value)
+  Boolean(profileApi.collection.global.value)
 )
 const showing = computed<'local' | 'global'>(() =>
   hasLocal.value ? 'local' : 'global'
 )
-const list = computed<any[]>(
-  () =>
-    (profileApi.collection.local?.value as any[]) ??
-    (profileApi.collection.global?.value as any[]) ??
-    []
-)
+const list = computed<any[]>(() => {
+  if (hasLocal.value) {
+    return (profileApi.collection.local?.value as any[]) ?? []
+  }
+  return (profileApi.collection.global.value as any[]) ?? []
+})
 function fetchGlobal() {
   profileApi.collection.fetchGlobal?.()
 }

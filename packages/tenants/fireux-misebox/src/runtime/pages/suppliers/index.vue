@@ -8,17 +8,27 @@
         <!-- Current profile (optional) -->
         <template #current-assets="{ profile }">
           <template v-if="profile">
-            <OrganismsProfilesSupplierCardsPill
-              :supplier="profile"
-              class="mb-3"
-            />
-            <OrganismsProfilesSupplierCardsCell :supplier="profile" />
+            <div class="space-y-3">
+              <OrganismsProfilesSupplierCardsPill
+                :supplier="pillProps(profile)"
+              />
+              <OrganismsProfilesSupplierCardsCell
+                :supplier="cellProps(profile)"
+              />
+            </div>
           </template>
         </template>
 
         <!-- List items -->
         <template #item="{ profile }">
-          <OrganismsProfilesSupplierCardsCell :supplier="profile" />
+          <div class="space-y-3">
+            <OrganismsProfilesSupplierCardsPill
+              :supplier="pillProps(profile)"
+            />
+            <OrganismsProfilesSupplierCardsCell
+              :supplier="cellProps(profile)"
+            />
+          </div>
         </template>
       </OrganismsProfileRoot>
     </UContainer>
@@ -27,8 +37,10 @@
 
 <script setup lang="ts">
 import { supplierConfig } from '../../models/profiles/Supplier.model'
-import { useSupplierCreate } from '../../composables/firestore/profiles/Supplier/main/useSupplierCreate'
+import { useSupplier } from '../../composables/firestore/profiles/Supplier/useSupplier.ts'
+import { useSupplierCreate } from '../../composables/firestore/profiles/Supplier/main/useSupplierCreate.ts'
 
+const { pillProps, cellProps } = useSupplier()
 const { createSupplier } = useSupplierCreate()
 async function onEnsureSupplier() {
   await createSupplier()

@@ -63,7 +63,7 @@ import { useHead } from 'nuxt/app'
 import { useRoute } from 'vue-router'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
-import { useAppComputed } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppComputed.ts'
+import { useAppInterface } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppInterface.ts'
 
 const route = useRoute()
 const appId = Array.isArray(route.params.id)
@@ -78,7 +78,7 @@ const isLoading = computed(() => Boolean(app.value === undefined))
 const headerTitle = computed(() => app.value?.app_name ?? 'App Details')
 const pageTitle = computed(() => app.value?.app_name ?? 'App Details')
 
-const { pillProps } = useAppComputed(app)
+const { pillProps } = useAppInterface(app)
 
 useHead({
   title: computed(() =>

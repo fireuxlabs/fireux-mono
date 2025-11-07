@@ -1,10 +1,8 @@
 import { computed, ref, watchEffect, type ComputedRef, type Ref } from 'vue'
 
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import type {
-  User,
-  UserToPillMapper,
-} from 'fireux-core/runtime/models/core/user.model.ts'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
 
 type JoinRequestItem = {
   id: string
@@ -18,16 +16,13 @@ type HandleJoinRequests = (uid: string, approve: boolean) => Promise<unknown>
 
 type UserRef = ComputedRef<User | null>
 
-type InitialsFn = ComputedRef<
-  (target?: Pick<User, 'display_name'> | null) => string
->
+type PillBuilder = ComputedRef<(target?: User | null) => Pill.Props>
 
 type Options = {
   app: Ref<App | null | undefined>
   handleJoinRequests: HandleJoinRequests
   fetchedUser: (uid: string) => { user: UserRef }
-  pillProps: ComputedRef<UserToPillMapper>
-  initialsFor: InitialsFn
+  pillProps: PillBuilder
 }
 
 /**
@@ -38,7 +33,6 @@ export function useAppJoinRequests({
   handleJoinRequests,
   fetchedUser,
   pillProps,
-  initialsFor,
 }: Options): {
   items: ComputedRef<JoinRequestItem[]>
   approve: (uid: string) => Promise<unknown>
@@ -74,7 +68,7 @@ export function useAppJoinRequests({
     return {
       id: uid,
       avatar: pill.avatar ?? undefined,
-      initials: pill.initials ?? initialsFor.value(profile),
+      initials: pill.initials ?? 'A',
       title: pill.title || profile.display_name || profile.handle || uid,
       subtitle: pill.subtitle || profile.handle || profile.email || undefined,
     }

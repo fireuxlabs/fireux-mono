@@ -7,7 +7,7 @@
           <MoleculesFormsFirestoreAvatarPicker
             :src="user.avatar"
             :alt="user.display_name || user.handle || 'User'"
-            :initials="initialsFor(user || undefined)"
+            :initials="avatarInitials"
             :update-function="handleAvatarUpload"
           />
           <p v-if="avatarUploading" class="text-xs text-gray-500">
@@ -71,11 +71,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useUser } from '../../../composables/firestore/core/user/useUser.ts'
 import { useUserFormattingAndValidation } from '../../../composables/firestore/core/user/utils/forms/useUserFormatting.ts'
 
-const { user, initialsFor, updateDisplayName, updateAppRole } = useUser()
+const { currentUser, pillProps, updateDisplayName } = useUser()
+const user = currentUser
+const avatarInitials = computed(
+  () => pillProps(user.value ?? null).initials ?? 'A'
+)
 
 const {
   formatDisplayName,

@@ -94,14 +94,13 @@ import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/
  * success/failure toast messaging and renders the list molecule.
  */
 const { app } = useApp()
-const { initialsFor, pillProps } = useUser()
+const { pillProps } = useUser()
 const fetchedUser = (uid: string) => {
   const { user } = useUserFetch(uid)
-  const hydrated = computed(() => user.value ?? null)
+  const hydrated = computed(() => user.coreUser.value ?? null)
   return { user: hydrated }
 }
 const pillPropsRef = computed(() => pillProps)
-const initialsForRef = computed(() => initialsFor)
 const { updateDescription, updateInstagram, handleJoinRequests } =
   useAppUpdate(app)
 const { appUsers } = useAppUsers()
@@ -148,7 +147,6 @@ const {
   handleJoinRequests,
   fetchedUser,
   pillProps: pillPropsRef,
-  initialsFor: initialsForRef,
 })
 
 const teamIds = computed(() => {

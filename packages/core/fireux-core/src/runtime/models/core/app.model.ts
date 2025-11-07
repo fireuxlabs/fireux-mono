@@ -6,60 +6,50 @@ export type AppRole = 'global' | 'tenant' | 'sandbox'
 export type AppStatus = 'active' | 'archived'
 type Ts = FirestoreTimestampOrString
 
-export type AppPillProps = PillModel.Props & { to: string }
-export type AppToPillMapper = (app: App) => AppPillProps
-
+/** Core Firestore App document */
 export interface App {
-  /** == Firestore doc id */
   id: string
 
-  /** Display */
+  // Display
   app_name: string
   app_short_name?: string
   slug?: string
 
-  /** Scope + lineage */
+  // Scope + lineage
   role: AppRole
   ecosystem: string
 
-  /** Governance */
+  // Governance
   join_requests?: string[]
   admin_ids?: string[]
-  // Optional future-proof alternative:
-  // roles?: Record<string, 'owner' | 'admin' | 'editor' | 'viewer'>
   creator_id: string
 
-  /** Ops */
+  // Ops
   status?: AppStatus
 
-  /** Optional metadata */
+  // Optional metadata
   description?: string | null
   social_links?: Partial<
     Record<'site' | 'instagram' | 'facebook' | 'x' | 'linkedin', string | null>
   >
 
-  /** System metadata */
-  created_at: Ts // required – set via serverTimestamp on create
-  updated_at?: Ts // set via serverTimestamp on update
+  // System metadata
+  created_at: Ts
+  updated_at?: Ts
 
-  /** Brand/media URLs (flat) */
+  // Brand/media URLs (flat)
   avatar_url?: string | null
   logo_url?: string | null
   wordmark_url?: string | null
 }
 
 /* ---------------------------
- * UI Card View Models
+ * UI View Models (purely structural)
  * --------------------------- */
 export namespace AppCard {
-  export interface Pill extends AppPillProps {
-    id: string
-    app_name: string
-    avatar_url?: string | null
-    ecosystem?: string
-  }
-
-  export interface Cell {
+  /** Cell extends Pill props + adds 'to' and domain fields */
+  export interface Cell extends PillModel.Props {
+    to: string
     id: string
     app_name: string
     role: AppRole
@@ -71,5 +61,6 @@ export namespace AppCard {
     wordmark_url?: string | null
   }
 
+  /** Profile mirrors Cell for future expansion */
   export interface Profile extends Cell {}
 }

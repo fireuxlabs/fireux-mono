@@ -1,7 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/users/[id].vue -->
 <template>
   <div v-if="currentUser" class="space-y-6">
-    <MoleculesPill v-bind="toPill()" />
+    <MoleculesPill v-bind="pillProps()" />
     <OrganismsUserCardsProfile :user="currentUser" />
   </div>
 </template>
@@ -17,5 +17,5 @@ const id = String(route.params.id ?? '')
 
 const { user } = useUserFetch(id)
 const { currentUser } = useUserComputed(user)
-const { toPill } = useUserInterface(user)
+const { pillProps } = useUserInterface(user)
 </script>

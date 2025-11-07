@@ -1,57 +1,95 @@
-import type { Ref } from 'vue'
 import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type {
   ChefProfile,
   ChefCard,
 } from '../../../../../models/profiles/Chef.model.ts'
 
-export function useChefInterface(
-  profileRef?: Ref<ChefProfile | null | undefined>
-) {
-  const resolve = () => profileRef?.value ?? null
-  const toLink = (id?: string) => (id ? `/profiles/${id}` : '')
-  const avatar = () => {
-    const profile = resolve()
-    return profile?.avatar_url ?? profile?.avatar ?? ''
-  }
-  const badges = () => {
-    const profile = resolve()
-    return profile?.specialties ?? profile?.badges ?? []
-  }
+const DEFAULT_INITIALS = 'A'
+const toLink = (id?: string | null) => (id ? `/profiles/${id}` : '')
 
-  const toPill = (): Pill.Props => {
-    const profile = resolve()
-    const id = profile?.id ?? ''
+const initialsFrom = (source?: string | null) => {
+  const value = (source ?? '').trim()
+  return value ? value.charAt(0).toUpperCase() : DEFAULT_INITIALS
+}
 
-    return {
-      avatar: avatar(),
-      initials: 'A',
-      title: profile?.title ?? '',
-      subtitle: 'chef',
-      badges: badges(),
-      to: toLink(id),
+/**
+ * Overlay-first getters (app → core) with optional target overrides.
+ * Keeps parity with useAppInterface/useUserInterface.
+ */
+export function useChefInterface(profile: ProfileRefs<ChefProfile>) {
+  const core = () => profile.coreProfile.value ?? null
+  const app = () => profile.appProfile.value ?? null
+
+  const derive = (target?: ChefProfile | null) => {
+    const overlay: Partial<ChefProfile> | null = target ?? app() ?? null
+    const base: Partial<ChefProfile> | null = target ? null : core()
+
+    const pick = <T>(
+      selector: (p: Partial<ChefProfile>) => T | null | undefined
+    ): T | undefined => {
+      return (
+        (overlay && selector(overlay)) ?? (base && selector(base)) ?? undefined
+      )
     }
-  }
 
-  const toCell = (): ChefCard.Cell => {
-    const profile = resolve()
-    const id = profile?.id ?? ''
+    const id = pick((p) => p.id) ?? ''
+    const title = pick((p) => p.title) ?? 'Chef'
+    const subtitle = pick((p) => p.subtitle) ?? 'chef'
+    const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''
+    const badgesCandidate = pick((p) => p.badges) ?? pick((p) => p.specialties)
+    const specialtiesCandidate = pick((p) => p.specialties)
+    const badges = Array.isArray(badgesCandidate) ? badgesCandidate : []
+    const specialties = Array.isArray(specialtiesCandidate)
+      ? specialtiesCandidate
+      : []
+    const bioShort = pick((p) => p.bio_short) ?? ''
+    const bioLong = pick((p) => p.bio_long) ?? ''
 
     return {
       id,
-      display_name: profile?.title ?? '',
-      avatar: avatar(),
-      title: profile?.title ?? '',
-      bio_short: profile?.bio_short ?? '',
-      specialties: profile?.specialties ?? [],
-      to: toLink(id),
+      title,
+      subtitle,
+      avatar,
+      badges,
+      specialties,
+      bioShort,
+      bioLong,
     }
   }
 
-  const toProfile = (): ChefCard.Profile => {
-    const profile = resolve()
-    return { ...toCell(), bio_long: profile?.bio_long ?? '' }
+  const pillProps = (target?: ChefProfile | null): Pill.Props => {
+    const derived = derive(target)
+    return {
+      avatar: derived.avatar,
+      initials: initialsFrom(derived.title),
+      title: derived.title,
+      subtitle: derived.subtitle,
+      badges: derived.badges,
+      to: derived.id ? toLink(derived.id) : null,
+    }
   }
 
-  return { toPill, toCell, toProfile }
+  const cellProps = (target?: ChefProfile | null): ChefCard.Cell => {
+    const derived = derive(target)
+    return {
+      ...pillProps(target),
+      id: derived.id,
+      to: derived.id ? toLink(derived.id) : undefined,
+      bio_short: derived.bioShort,
+      specialties: Array.isArray(derived.specialties)
+        ? derived.specialties
+        : [],
+    }
+  }
+
+  const profileProps = (target?: ChefProfile | null): ChefCard.Profile => {
+    const derived = derive(target)
+    return {
+      ...cellProps(target),
+      bio_long: derived.bioLong,
+    }
+  }
+
+  return { pillProps, cellProps, profileProps }
 }

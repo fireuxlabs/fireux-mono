@@ -2,6 +2,8 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/op
 import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import type { EmployerProfile } from '../../../../../models/profiles/Employer.model.ts'
 
 // Note: All helpers are auto-imported at runtime by the Nuxt module, but we import explicitly for type safety.
 
@@ -10,7 +12,7 @@ const COLLECTION = 'employers'
 type TargetScope = 'auto' | 'core' | 'app'
 type UpdateResult = 'success'
 
-export function useEmployerUpdate() {
+export function useEmployerUpdate(_profile: ProfileRefs<EmployerProfile>) {
   const { updateDocument } = useFirestoreUpdate()
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant' && !!appId

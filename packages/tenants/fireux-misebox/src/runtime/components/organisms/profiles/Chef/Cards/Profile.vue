@@ -2,10 +2,12 @@
   <UCard class="profile">
     <!-- Header -->
     <div class="profile-header">
-      <UAvatar :src="chef.avatar" :alt="displayName" size="xl" />
+      <UAvatar :src="props.chef.avatar" :alt="displayName" size="xl" />
       <div class="meta">
         <div class="name">{{ displayName }}</div>
-        <div v-if="chef.title" class="subtitle">{{ chef.title }}</div>
+        <div v-if="props.chef.subtitle" class="subtitle">
+          {{ props.chef.subtitle }}
+        </div>
       </div>
     </div>
 
@@ -16,10 +18,15 @@
     </div>
 
     <!-- Specialties -->
-    <div v-if="chef.specialties?.length" class="section">
+    <div v-if="props.chef.specialties?.length" class="section">
       <div class="section-title">Specialties</div>
       <div class="tags">
-        <UBadge v-for="s in chef.specialties" :key="s" variant="soft" size="xs">
+        <UBadge
+          v-for="s in props.chef.specialties"
+          :key="s"
+          variant="soft"
+          size="xs"
+        >
           {{ s }}
         </UBadge>
       </div>
@@ -41,7 +48,7 @@ import type { ChefCard } from '../../../../../models/profiles/Chef.model'
 
 const props = defineProps<{ chef: ChefCard.Profile }>()
 
-const displayName = computed(() => props.chef?.display_name || 'Chef')
+const displayName = computed(() => props.chef?.title || 'Chef')
 
 const bioText = computed(
   () => props.chef?.bio_long ?? props.chef?.bio_short ?? ''

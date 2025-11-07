@@ -1,69 +1,51 @@
-// ~/composables/app/useAppInterface.ts
+// FILE: ~/composables/app/useAppInterface.ts
 import type { Ref } from 'vue'
-import type {
-  App,
-  AppCard,
-  AppToPillMapper,
-} from 'fireux-core/runtime/models/core/app.model.ts'
+import type { App, AppCard } from 'fireux-core/runtime/models/core/app.model.ts'
 import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
 
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
-  const resolve = () => appRef?.value ?? null
+  const app = appRef?.value ?? null
 
-  const mapToPill = (app?: App | null): AppCard.Pill => {
-    const role = app?.role ?? ''
-    const status = app?.status ?? ''
-    const badges = [role, status].filter(Boolean)
-    const title = app?.app_name ?? ''
-    const initials = title.trim().charAt(0).toUpperCase() || 'A'
-
+  const pillProps = (target?: App | null): Pill.Props => {
+    const a = target ?? app
     return {
-      id: app?.id ?? '',
-      app_name: title,
-      avatar_url: app?.avatar_url ?? '',
-      ecosystem: app?.ecosystem ?? '',
-      avatar: app?.avatar_url ?? '',
-      initials,
+      avatar: a?.avatar_url ?? '',
+      initials: 'A',
+      title: a?.app_name ?? '',
+      subtitle: a?.ecosystem ?? '',
+      badges: [a?.role, a?.status].filter(Boolean) as string[],
+      to: a?.id ? `/apps/${a.id}` : null,
+    }
+  }
+
+  const cellProps = (target?: App | null): AppCard.Cell => {
+    const a = target ?? app
+    const title = a?.app_name ?? ''
+    return {
+      // Pill fields (since Cell extends Pill.Props)
+      avatar: a?.avatar_url ?? '',
+      initials: 'A',
       title,
-      subtitle: app?.ecosystem ?? '',
-      badges,
-      to: app?.id ? `/apps/${app.id}` : '',
+      subtitle: a?.ecosystem ?? '',
+      badges: [a?.role, a?.status].filter(Boolean) as string[],
+      to: a?.id ? `/apps/${a.id}` : '',
+
+      // App extras
+      id: a?.id ?? '',
+      app_name: title,
+      role: a?.role ?? 'tenant',
+      creator_id: a?.creator_id ?? '',
+      admin_ids: a?.admin_ids ?? [],
+      created_at: a?.created_at,
+      avatar_url: a?.avatar_url ?? '',
+      logo_url: a?.logo_url ?? '',
+      wordmark_url: a?.wordmark_url ?? '',
     }
   }
 
-  const pillProps: AppToPillMapper = (app) => mapToPill(app)
-
-  const toPill = (): Pill.Props => {
-    const pill = mapToPill(resolve())
-    return {
-      avatar: pill.avatar,
-      initials: pill.initials,
-      title: pill.title,
-      subtitle: pill.subtitle,
-      badges: pill.badges,
-      to: pill.to,
-    }
-  }
-
-  const toCell = (): AppCard.Cell & { to?: string } => {
-    const app = resolve()
-    return {
-      id: app?.id ?? '',
-      app_name: app?.app_name ?? '',
-      role: app?.role ?? 'tenant',
-      creator_id: app?.creator_id ?? '',
-      admin_ids: app?.admin_ids ?? [],
-      created_at: app?.created_at,
-      avatar_url: app?.avatar_url ?? '',
-      logo_url: app?.logo_url ?? '',
-      wordmark_url: app?.wordmark_url ?? '',
-      to: app?.id ? `/apps/${app.id}` : '',
-    }
-  }
-
-  const toProfile = (): AppCard.Profile & { to?: string } => ({
-    ...toCell(),
+  const profileProps = (target?: App | null): AppCard.Profile => ({
+    ...cellProps(target),
   })
 
-  return { toPill, pillProps, toCell, toProfile }
+  return { pillProps, cellProps, profileProps }
 }

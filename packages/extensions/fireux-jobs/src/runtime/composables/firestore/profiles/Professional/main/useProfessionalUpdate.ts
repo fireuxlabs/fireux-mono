@@ -5,14 +5,18 @@ import { usePlaceSave } from 'fireux-places/runtime/composables/usePlaceSave.ts'
 import { useFirestore } from 'vuefire'
 import { arrayRemove, arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/usePlacesGoogle.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type {
   RelevantExperienceItem,
   OtherExperienceItem,
-} from '../../../../models/profiles/Professional.model'
+  ProfessionalProfile,
+} from '../../../../../models/profiles/Professional.model.ts'
 
 const COLLECTION = 'professionals'
 
-export function useProfessionalUpdate() {
+export function useProfessionalUpdate(
+  _profile: ProfileRefs<ProfessionalProfile>
+) {
   const { updateDocument } = useFirestoreUpdate()
   const { ensurePlaceExists } = usePlaceSave()
   const { uploadImage } = useImageStorage()

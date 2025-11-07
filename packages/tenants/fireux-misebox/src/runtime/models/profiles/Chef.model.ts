@@ -2,6 +2,7 @@ import type {
   Profile,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
 
 /** Unified Chef view (flattened convenience + partitions) */
 export interface Chef {
@@ -34,17 +35,15 @@ export type ChefAppProfile = ChefProfile
 
 /** Card shapes */
 export namespace ChefCard {
-  export interface Pill {
-    id: string
-    display_name: string
-    avatar?: string | null
-    title?: string | null
-  }
+  export interface Pill extends PillModel.Props {}
+
   export interface Cell extends Pill {
+    id: string
+    to?: string
     bio_short?: string | null
     specialties?: string[]
-    to?: string
   }
+
   export interface Profile extends Cell {
     bio_long?: string | null
   }

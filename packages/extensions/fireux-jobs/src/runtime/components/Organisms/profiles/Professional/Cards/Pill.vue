@@ -2,14 +2,17 @@
   <UCard class="pill">
     <div class="profile-header">
       <UAvatar
-        :src="professional.avatar"
-        :alt="professional.display_name"
+        :src="props.professional.avatar"
+        :alt="props.professional.title || 'Professional'"
+        :text="props.professional.initials"
         size="sm"
       />
       <div class="profile-info">
-        <h4 class="profile-name">{{ professional.display_name }}</h4>
-        <p v-if="professional.title" class="profile-title">
-          {{ professional.title }}
+        <h4 class="profile-name">
+          {{ props.professional.title || 'Professional' }}
+        </h4>
+        <p v-if="props.professional.subtitle" class="profile-title">
+          {{ props.professional.subtitle }}
         </p>
       </div>
     </div>
@@ -19,5 +22,5 @@
 <script setup lang="ts">
 import type { ProfessionalCard } from '../../../../../models/profiles/Professional.model'
 
-defineProps<{ professional: ProfessionalCard.Pill }>()
+const props = defineProps<{ professional: ProfessionalCard.Pill }>()
 </script>
