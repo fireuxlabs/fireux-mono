@@ -1,41 +1,39 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/users/index.vue -->
 <template>
   <UPage>
-    <UPageBody class="page-index">
-      <UPageHeader
-        title="Users"
-        description="Review the current runtime user."
-      />
-
-      <!-- Single -->
-      <UCard class="index-card">
-        <template #header>
-          <div class="index-card-header">
-            <h1 class="index-title">Current User</h1>
-          </div>
-        </template>
-
-        <!-- just check the nested ref; no .value needed in templates -->
-        <template v-if="currentUser">
-          <div class="space-y-3">
-            <MoleculesPill v-bind="pillProps(currentUser)" />
-            <OrganismsUserCardsCell :user="currentUser" />
-          </div>
-        </template>
-
-        <MoleculesNotFound v-else kind="document" entity="user" />
+    <UPageBody class="space-y-6">
+      <!-- Core user -->
+      <UCard v-if="coreUser">
+        <template #header><h2>Core User</h2></template>
+        <MoleculesPill v-bind="pillProps(coreUser)" class="mb-3" />
       </UCard>
 
-      <!-- Collection -->
-      <UCard class="index-card">
-        <div v-if="users?.length" class="entity-grid">
-          <div v-for="item in users" :key="item.id" class="entity-stack">
-            <MoleculesPill v-bind="pillProps(item)" />
-            <OrganismsUserCardsCell :user="item" />
-          </div>
-        </div>
+      <!-- App user (tenant overlay) -->
+      <UCard v-if="appUser">
+        <template #header><h2>App User</h2></template>
 
-        <MoleculesNotFound v-else kind="collection" entity="users" />
+        <!-- Use coreUser for identity visuals -->
+        <MoleculesPill v-bind="pillProps(coreUser)" class="mb-3" />
+
+        <!-- Overlay-specific bits from appUser -->
+        <div class="mt-3 text-sm opacity-80">
+          <div v-if="appUser.role">
+            Role: <UBadge variant="soft">{{ appUser.role }}</UBadge>
+          </div>
+          <div v-else>No app-specific role set.</div>
+        </div>
+      </UCard>
+
+      <!-- Users collection -->
+      <UCard>
+        <template #header><h2>Users</h2></template>
+        <div
+          v-if="users?.length"
+          class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          <MoleculesPill v-for="u in users" :key="u.id" v-bind="pillProps(u)" />
+        </div>
+        <p v-else class="text-sm opacity-70">No users found.</p>
       </UCard>
     </UPageBody>
   </UPage>
@@ -59,9 +57,6 @@ definePageMeta({
   description: 'FireUX user accounts resolved for this runtime.',
 })
 
-import { computed } from 'vue'
-
-const { user, pillProps } = useUser()
+const { coreUser, appUser, pillProps } = useUser()
 const { users } = useUserCollection()
-const currentUser = computed(() => user.coreUser.value ?? null)
 </script>

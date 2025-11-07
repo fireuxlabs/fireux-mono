@@ -1,40 +1,61 @@
 <!-- packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue -->
 <template>
   <UPage>
-    <UContainer class="py-8">
-      <OrganismsProfileRoot :config="chefConfig" :onEnsure="onEnsureChef">
-        <!-- Current profile (optional) -->
-        <template #current-assets="{ profile }">
-          <template v-if="profile">
-            <div class="space-y-3">
-              <OrganismsProfilesChefCardsPill :chef="pillProps(profile)" />
-              <OrganismsProfilesChefCardsCell :chef="cellProps(profile)" />
-            </div>
-          </template>
+    <UPageBody class="page-index">
+      <UPageHeader title="Chefs" />
+
+      <!-- Current Chef -->
+      <UCard class="index-card">
+        <template v-if="current">
+          <MoleculesPill v-bind="pillProps(current)" />
+          <OrganismsProfilesChefCardsCell :chef="cellProps(current)" />
         </template>
 
-        <!-- List items -->
-        <template #item="{ profile }">
-          <div class="space-y-3">
-            <OrganismsProfilesChefCardsPill :chef="pillProps(profile)" />
-            <OrganismsProfilesChefCardsCell :chef="cellProps(profile)" />
+        <template v-else>
+          <UPageCTA title="Create your Chef profile to appear in listings.">
+            <template #links>
+              <UButton color="primary" :loading="creating" @click="onCreate">
+                Create Chef Profile
+              </UButton>
+            </template>
+          </UPageCTA>
+        </template>
+      </UCard>
+
+      <!-- Chef Collection -->
+      <UCard class="index-card">
+        <template v-if="items.length">
+          <div class="entity-grid">
+            <OrganismsProfilesChefCardsCell
+              v-for="(p, index) in items"
+              :key="p.id || 'chef-' + index"
+              :chef="cellProps(p)"
+            />
           </div>
         </template>
-      </OrganismsProfileRoot>
-    </UContainer>
+
+        <MoleculesNotFound v-else kind="collection" entity="chefs" />
+      </UCard>
+    </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { chefConfig } from '../../models/profiles/Chef.model'
+import 'fireux-core/runtime/assets/styles/scss/pages/indexes.scss'
+import { computed } from 'vue'
+import OrganismsProfilesChefCardsCell from '../../components/organisms/profiles/Chef/Cards/Cell.vue'
 import { useChef } from '../../composables/firestore/profiles/Chef/useChef.ts'
-import { useChefCreate } from '../../composables/firestore/profiles/Chef/main/useChefCreate.ts'
 
-const { pillProps, cellProps } = useChef()
-const { createChef } = useChefCreate()
+const chef = useChef()
+const { pillProps, cellProps, createChef, collection, activeProfile } = chef
 
-async function onEnsureChef() {
-  // minimal: delegate creation; no UI side-effects here
+const current = activeProfile
+
+const items = computed(() => collection.chefs?.value ?? [])
+
+const creating = createChef.state
+
+const onCreate = async () => {
   await createChef()
 }
 </script>

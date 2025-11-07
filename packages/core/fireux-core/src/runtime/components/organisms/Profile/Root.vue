@@ -1,28 +1,18 @@
 <!-- packages/core/fireux-core/src/runtime/components/organisms/Profile/Root.vue -->
 <template>
   <div class="space-y-6">
-    <!-- current (whatever exists: core/app) -->
-    <slot name="current-assets" :profile="profileApi.activeProfile.value" />
+    <slot name="current" :profile="current" />
 
-    <!-- CTA when missing (global OR app overlay) -->
-    <div v-if="showCreate">
+    <div v-if="shouldShowCta">
       <UPageSection>
-        <UPageCTA
-          :title="
-            ctaMessage || `Complete your ${props.config.profileType} profile`
-          "
-          variant="soft"
-        >
+        <UPageCTA :title="cta" variant="soft">
           <template #links>
-            <!-- Allow consumer to fully override links if desired -->
-            <slot name="cta-links">
+            <slot name="cta">
               <UButton
                 size="lg"
                 color="primary"
-                :label="primaryLabel"
-                :loading="ensuring"
-                :disabled="ensuring"
-                @click="onEnsureClick"
+                :label="ctaLabel"
+                @click="$emit('ensure')"
               />
             </slot>
           </template>
@@ -30,102 +20,64 @@
       </UPageSection>
     </div>
 
-    <!-- Simple list -->
     <UPageSection>
       <div class="flex items-center gap-2 mb-3">
-        <span class="opacity-70 text-sm">Showing: {{ showing }}</span>
+        <slot name="list-header" />
         <UButton
-          v-if="hasLocal && !hasGlobalLoaded"
+          v-if="more"
           size="xs"
           variant="ghost"
-          @click="fetchGlobal"
+          @click="$emit('load-more')"
         >
-          Load global
+          {{ moreLabel }}
         </UButton>
       </div>
 
-      <div v-if="list.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <template v-for="p in list" :key="p.id || p.uid">
-          <slot name="item" :profile="p" />
-        </template>
+      <div
+        v-if="items?.length"
+        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        <slot
+          v-for="it in items"
+          name="item"
+          :key="it?.id || it?.uid"
+          :profile="it"
+        />
       </div>
-      <p v-else class="opacity-70">No profiles yet.</p>
+      <p v-else class="opacity-70">{{ emptyText }}</p>
     </UPageSection>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import type { ProfileConfig } from '../../../models/core/profile.model.ts'
-import { useProfile } from '../../../composables/firestore/core/profile/useProfile.ts'
-import { useFireUXConfig } from '../../../composables/FireUXConfig.ts'
+import { computed } from 'vue'
 
-const props = defineProps<{
-  config: ProfileConfig
-  onEnsure?: () => Promise<any> // <- optional external ensure handler
-}>()
-
-// unified profile + computed signals
-const profileApi = useProfile(props.config)
-const { isTenant } = useFireUXConfig()
-
-const hasCoreProfile = computed(() =>
-  Boolean(profileApi.profile.coreProfile.value)
-)
-const hasAppProfile = isTenant
-  ? computed(() => Boolean(profileApi.profile.appProfile.value))
-  : undefined
-const ctaMessage = computed(() => {
-  if (hasCoreProfile.value) return null
-  return (
-    props.config.cta ||
-    `Complete your ${props.config.profileType} profile to continue.`
-  )
-})
-
-// CTA visible if missing global OR app overlay
-const showCreate = computed(() => {
-  const hasCore = hasCoreProfile.value
-  const hasApp = hasAppProfile?.value ?? true
-  return !(hasCore && hasApp)
-})
-
-const primaryLabel = computed(() =>
-  hasCoreProfile.value
-    ? 'Add to this app'
-    : `Create ${props.config.profileType} profile`
-)
-
-const ensuring = ref(false)
-async function onEnsureClick() {
-  if (ensuring.value) return
-  ensuring.value = true
-  try {
-    if (props.onEnsure) {
-      await props.onEnsure() // use external handler if provided
-    } else {
-      await profileApi.ensure() // fallback to generic ensure
-    }
-  } finally {
-    ensuring.value = false
+const props = withDefaults(
+  defineProps<{
+    current?: any | null
+    items?: any[]
+    cta?: string
+    ctaLabel?: string
+    emptyText?: string
+    more?: boolean
+    moreLabel?: string
+    ctaVisible?: boolean
+  }>(),
+  {
+    current: null,
+    items: () => [],
+    cta: 'Complete your profile',
+    ctaLabel: 'Create',
+    emptyText: 'Nothing to show yet.',
+    more: false,
+    moreLabel: 'Load more',
+    ctaVisible: undefined,
   }
-}
+)
 
-/* ------- Minimal list wiring ------- */
-const hasLocal = computed(() => Boolean(profileApi.collection.local))
-const hasGlobalLoaded = computed(() =>
-  Boolean(profileApi.collection.global.value)
+defineEmits<{ (e: 'ensure'): void; (e: 'load-more'): void }>()
+
+const shouldShowCta = computed(() =>
+  props.ctaVisible !== undefined ? props.ctaVisible : props.current == null
 )
-const showing = computed<'local' | 'global'>(() =>
-  hasLocal.value ? 'local' : 'global'
-)
-const list = computed<any[]>(() => {
-  if (hasLocal.value) {
-    return (profileApi.collection.local?.value as any[]) ?? []
-  }
-  return (profileApi.collection.global.value as any[]) ?? []
-})
-function fetchGlobal() {
-  profileApi.collection.fetchGlobal?.()
-}
 </script>
