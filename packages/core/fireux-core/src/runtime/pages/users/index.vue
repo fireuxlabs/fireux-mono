@@ -7,21 +7,10 @@
         <template #header><h2>Core User (raw)</h2></template>
         <pre class="text-xs whitespace-pre-wrap">{{ coreUser }}</pre>
       </UCard>
-      <UCard v-else>
-        <template #header><h2>Core User</h2></template>
-        <p class="text-sm opacity-70">No core user loaded (not signed in?).</p>
-      </UCard>
-
       <!-- App user (tenant overlay) -->
       <UCard v-if="appUser">
         <template #header><h2>App User (raw)</h2></template>
         <pre class="text-xs whitespace-pre-wrap">{{ appUser }}</pre>
-      </UCard>
-      <UCard v-else>
-        <template #header><h2>App User</h2></template>
-        <p class="text-sm opacity-70">
-          No app user for this app (or no app selected).
-        </p>
       </UCard>
 
       <!-- Users collection -->
@@ -41,6 +30,8 @@ import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/use
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
 
 // Full page meta (nav + SEO)
+declare function definePageMeta(meta: any): void
+
 definePageMeta({
   nav: {
     key: 'users',
@@ -57,7 +48,6 @@ definePageMeta({
   name: 'UsersIndexPage',
 })
 
-// Returned refs are already auto-unwrapped in templates
 const { coreUser, appUser } = useUser()
 const { users } = useUserCollection()
 </script>
