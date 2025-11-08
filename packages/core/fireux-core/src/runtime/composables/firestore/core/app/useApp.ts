@@ -4,15 +4,19 @@ import { useAppComputed } from './main/useAppComputed'
 import { useAppInterface } from './main/useAppInterface'
 import { useAppEnsure } from './main/useAppEnsure'
 import { useAppUpdate } from './main/useAppUpdate'
-import { useAppUsers } from './subcollections/useAppUsers'
 
+/**
+ * useApp
+ * - Fetches and manages the current runtime app.
+ * - Always uses the FireUXConfig appId.
+ * - For arbitrary app docs, call useAppFetch(appId) directly.
+ */
 export function useApp() {
   const { appId } = useFireUXConfig()
   const { app } = useAppFetch(appId)
-  const { appUsers } = useAppUsers()
+
   return {
     app,
-    appUsers,
     ...useAppComputed(app),
     ...useAppInterface(app),
     ...useAppEnsure(),

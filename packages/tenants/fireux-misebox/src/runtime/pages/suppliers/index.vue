@@ -2,14 +2,23 @@
 <!-- packages/tenants/fireux-misebox/src/runtime/pages/suppliers/index.vue -->
 <template>
   <UPage>
-    <UPageBody class="page-index">
-      <UPageHeader title="Suppliers" />
+    <UPageHeader
+      title="Suppliers"
+      description="Track your supplier profile and explore the supplier roster available to this runtime."
+    />
 
-      <!-- Current Supplier -->
-      <UCard class="index-card">
+    <UPageBody class="space-y-6">
+      <!-- Current supplier profile -->
+      <UCard>
+        <template #header><h2>Your Supplier Profile</h2></template>
+
         <template v-if="current">
-          <MoleculesPill v-bind="pillProps(current)" />
-          <OrganismsProfilesSupplierCardsCell :supplier="cellProps(current)" />
+          <div class="space-y-4">
+            <MoleculesPill v-bind="pillProps(current)" class="max-w-md" />
+            <OrganismsProfilesSupplierCardsCell
+              :supplier="cellProps(current)"
+            />
+          </div>
         </template>
 
         <template v-else>
@@ -23,19 +32,69 @@
         </template>
       </UCard>
 
-      <!-- Supplier Collection -->
-      <UCard class="index-card">
-        <template v-if="items.length">
-          <div class="entity-grid">
-            <OrganismsProfilesSupplierCardsCell
-              v-for="(p, index) in items"
-              :key="p.id || 'supplier-' + index"
-              :supplier="cellProps(p)"
-            />
+      <!-- Supplier directory -->
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between gap-2">
+            <h2>Supplier Directory</h2>
+            <UBadge variant="soft">{{ totalSuppliers }} total</UBadge>
           </div>
         </template>
 
-        <MoleculesNotFound v-else kind="collection" entity="suppliers" />
+        <div
+          v-if="directoryPills.length"
+          class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          <MoleculesPill
+            v-for="pill in directoryPills"
+            :key="pill.title + (pill.subtitle || '')"
+            v-bind="pill"
+          />
+        </div>
+        <p v-else class="text-sm opacity-70">
+          No suppliers found in this environment.
+        </p>
+      </UCard>
+
+      <!-- Raw snapshots -->
+      <UCard>
+        <template #header><h2>Raw Snapshots</h2></template>
+        <div class="grid gap-4 text-xs md:grid-cols-2">
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Core Profile
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{
+              profile.coreProfile?.value
+            }}</pre>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              App Overlay
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{
+              profile.appProfile?.value
+            }}</pre>
+          </div>
+          <div class="md:col-span-2">
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Roster (merged)
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{ roster }}</pre>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Global Store
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{ globalSuppliers }}</pre>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Tenant Overlays
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{ localSuppliers }}</pre>
+          </div>
+        </div>
       </UCard>
     </UPageBody>
   </UPage>
@@ -54,11 +113,19 @@ import { useSupplierCreate } from '../../composables/firestore/profiles/Supplier
 const { profile } = useSupplier()
 const { activeProfile } = useSupplierComputed(profile)
 const { pillProps, cellProps } = useSupplierInterface(profile)
-const { suppliers } = useSupplierCollection()
+const { suppliers, global, local } = useSupplierCollection()
 const { createSupplier } = useSupplierCreate()
 
 const current = activeProfile
-const items = computed(() => suppliers.value ?? [])
+
+const roster = computed(() => suppliers.value ?? [])
+const directoryPills = computed(() =>
+  roster.value.map((entry) => pillProps(entry))
+)
+const totalSuppliers = computed(() => directoryPills.value.length)
+
+const globalSuppliers = computed(() => global?.value ?? [])
+const localSuppliers = computed(() => local?.value ?? [])
 
 const creating = createSupplier.state
 

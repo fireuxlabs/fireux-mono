@@ -7,51 +7,51 @@
         description="Firestore snapshot for this app."
       />
 
-      <UCard>
+      <UCard class="fx-section">
         <template #header>
-          <div class="flex items-center justify-between gap-3">
-            <h1 class="text-base font-semibold">{{ headerTitle }}</h1>
+          <div class="fx-section__header">
+            <div class="fx-section__copy">
+              <h1 class="text-base font-semibold">{{ headerTitle }}</h1>
+              <p class="text-xs text-gray-500">
+                Inspect the normalized view for this app.
+              </p>
+            </div>
             <UBadge v-if="appId" variant="subtle">{{ appId }}</UBadge>
           </div>
         </template>
 
-        <div v-if="isLoading" class="space-y-4">
+        <template v-if="isLoading">
           <USkeleton class="h-16 rounded-xl" />
           <USkeleton class="h-48 rounded-xl" />
-        </div>
+        </template>
 
-        <div v-else-if="app" class="space-y-4">
-          <MoleculesPill v-bind="pillProps(app)" />
-          <OrganismsAppCardsCell :app="app" />
-        </div>
+        <template v-else-if="currentApp">
+          <MoleculesPill v-if="pill" v-bind="pill" />
+          <OrganismsAppCardsCell :app="currentApp" :to="pill?.to ?? null" />
+          <OrganismsAppCardsProfile v-if="profile" :app="profile" />
+        </template>
 
-        <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-          App not found.
-        </p>
+        <p v-else class="fx-section__empty">App not found.</p>
       </UCard>
 
-      <UCard>
+      <UCard class="fx-section">
         <template #header>
-          <div class="flex items-center justify-between gap-3">
-            <h2 class="text-base font-semibold">Raw Document</h2>
-            <span class="text-xs text-gray-500 dark:text-gray-400"
-              >Read-only snapshot.</span
-            >
+          <div class="fx-section__header">
+            <div class="fx-section__copy">
+              <h2 class="text-base font-semibold">Raw Document</h2>
+              <p class="text-xs text-gray-500">Read-only snapshot.</p>
+            </div>
           </div>
         </template>
 
-        <div class="space-y-2">
-          <h3 class="text-sm font-semibold text-gray-400">
-            apps/{{ appId || '—' }}
-          </h3>
+        <div class="fx-section__item">
+          <h3 class="fx-section__label">apps/{{ appId || '—' }}</h3>
           <div v-if="isLoading" class="space-y-2">
             <USkeleton class="h-6 w-40 rounded" />
             <USkeleton class="h-32 rounded-xl" />
           </div>
-          <DevJsonPanel v-else-if="app" :data="app" />
-          <p v-else class="text-xs text-gray-500 dark:text-gray-400">
-            No document loaded.
-          </p>
+          <DevJsonPanel v-else-if="currentApp" :data="currentApp" />
+          <p v-else class="fx-section__empty">No document loaded.</p>
         </div>
       </UCard>
     </UPageBody>
@@ -59,10 +59,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useHead } from 'nuxt/app'
 import { useRoute } from 'vue-router'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
+import { useAppFetch } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppFetch.ts'
 import { useAppInterface } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppInterface.ts'
 
 const route = useRoute()
@@ -70,19 +70,29 @@ const appId = Array.isArray(route.params.id)
   ? route.params.id[0] ?? ''
   : route.params.id?.toString() ?? ''
 
-const { firestoreFetchDoc } = useFirestoreRead()
-const app = appId
-  ? firestoreFetchDoc<App>('apps', appId)
-  : computed<App | null | undefined>(() => null)
-const isLoading = computed(() => Boolean(app.value === undefined))
-const headerTitle = computed(() => app.value?.app_name ?? 'App Details')
-const pageTitle = computed(() => app.value?.app_name ?? 'App Details')
+const { app } = useAppFetch(appId || null)
+const { pillProps, profileProps } = useAppInterface(app)
 
-const { pillProps } = useAppInterface(app)
+const isLoading = computed(() => app.value === undefined)
+const currentApp = computed(() =>
+  app.value === undefined ? null : app.value ?? null
+)
+
+const pill = computed(() =>
+  currentApp.value ? pillProps(currentApp.value) : null
+)
+const profile = computed(() =>
+  currentApp.value ? profileProps(currentApp.value) : null
+)
+
+const headerTitle = computed(() => currentApp.value?.app_name ?? 'App Details')
+const pageTitle = computed(() => currentApp.value?.app_name ?? 'App Details')
 
 useHead({
   title: computed(() =>
-    app.value?.app_name ? `${app.value.app_name} · App` : 'App Details'
+    currentApp.value?.app_name
+      ? `${currentApp.value.app_name} · App`
+      : 'App Details'
   ),
 })
 </script>

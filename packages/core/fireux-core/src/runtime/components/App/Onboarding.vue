@@ -61,17 +61,16 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useUser } from '../../../composables/firestore/core/user/useUser'
-import { useUserComputed } from '../../../composables/firestore/core/user/main/useUserComputed'
-import { useAppEnsure } from '../../../composables/firestore/core/app/main/useAppEnsure'
-import type { EnvCheckResponse } from '../../../types/app/onboarding'
-import { useEnvCheck } from '../../../composables/firestore/core/app/utils/useEnvCheck'
+import { useUser } from '../../composables/firestore/core/user/useUser.ts'
+import { useAppEnsure } from '../../composables/firestore/core/app/main/useAppEnsure'
+import type { EnvCheckResponse } from '../../types/app/onboarding'
+import { useEnvCheck } from '../../composables/firestore/core/app/utils/useEnvCheck'
 
 /** 1) Core user gate */
-const { user } = useUser()
-const { hasCoreProfile: hasProfile } = useUserComputed(user)
-// TODO: revert to useUser once hasProfile lives there again.
-const coreUser = computed(() => (hasProfile.value ? user.value : null))
+const { coreUser: coreUserRef, hasCoreProfile } = useUser()
+const coreUser = computed(() =>
+  hasCoreProfile.value ? coreUserRef.value : null
+)
 
 /** 2) PIN gate */
 const EXPECTED_PIN = '1234' as const

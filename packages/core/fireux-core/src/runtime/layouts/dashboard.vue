@@ -38,14 +38,23 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useDashboardNav } from '../composables/fireUX/nav/presets'
+import { useUser } from '../composables/firestore/core/user/useUser'
 
 defineOptions({ name: 'CoreDashboard' })
 
 const open = ref(false)
 const { desktop } = useDashboardNav()
+const { isAdmin } = useUser()
 
 // Show only non-profile items in the main nav; child manages profiles.
 const primary = computed(() =>
-  desktop.value.filter((i) => i.group !== 'profiles')
+  desktop.value
+    .filter((i) => i.group !== 'profiles')
+    .filter((item) => {
+      if (item.key === 'dashboard-app' || item.to === '/dashboard/app') {
+        return isAdmin.value
+      }
+      return true
+    })
 )
 </script>

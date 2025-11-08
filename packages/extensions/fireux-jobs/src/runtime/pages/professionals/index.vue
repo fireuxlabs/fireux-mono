@@ -1,16 +1,23 @@
 <!-- packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue -->
 <template>
   <UPage>
-    <UPageBody class="page-index">
-      <UPageHeader title="Professionals" />
+    <UPageHeader
+      title="Professionals"
+      description="Maintain your professional profile and view the directory of professionals in this workspace."
+    />
 
-      <!-- Current Professional -->
-      <UCard class="index-card">
+    <UPageBody class="space-y-6">
+      <!-- Current professional profile -->
+      <UCard>
+        <template #header><h2>Your Professional Profile</h2></template>
+
         <template v-if="current">
-          <MoleculesPill v-bind="pillProps(current)" />
-          <OrganismsProfilesProfessionalCardsCell
-            :professional="cellProps(current)"
-          />
+          <div class="space-y-4">
+            <MoleculesPill v-bind="pillProps(current)" class="max-w-md" />
+            <OrganismsProfilesProfessionalCardsCell
+              :professional="cellProps(current)"
+            />
+          </div>
         </template>
 
         <template v-else>
@@ -26,19 +33,71 @@
         </template>
       </UCard>
 
-      <!-- Professional Collection -->
-      <UCard class="index-card">
-        <template v-if="items.length">
-          <div class="entity-grid">
-            <OrganismsProfilesProfessionalCardsCell
-              v-for="(p, index) in items"
-              :key="p.id || 'professional-' + index"
-              :professional="cellProps(p)"
-            />
+      <!-- Professional directory -->
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between gap-2">
+            <h2>Professional Directory</h2>
+            <UBadge variant="soft">{{ totalProfessionals }} total</UBadge>
           </div>
         </template>
 
-        <MoleculesNotFound v-else kind="collection" entity="professionals" />
+        <div
+          v-if="directoryPills.length"
+          class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          <MoleculesPill
+            v-for="pill in directoryPills"
+            :key="pill.title + (pill.subtitle || '')"
+            v-bind="pill"
+          />
+        </div>
+        <p v-else class="text-sm opacity-70">
+          No professionals found in this environment.
+        </p>
+      </UCard>
+
+      <!-- Raw snapshots -->
+      <UCard>
+        <template #header><h2>Raw Snapshots</h2></template>
+        <div class="grid gap-4 text-xs md:grid-cols-2">
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Core Profile
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{
+              profile.coreProfile?.value
+            }}</pre>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              App Overlay
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{
+              profile.appProfile?.value
+            }}</pre>
+          </div>
+          <div class="md:col-span-2">
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Roster (merged)
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{ roster }}</pre>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Global Store
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{
+              globalProfessionals
+            }}</pre>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Tenant Overlays
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{ localProfessionals }}</pre>
+          </div>
+        </div>
       </UCard>
     </UPageBody>
   </UPage>
@@ -57,11 +116,19 @@ import { useProfessionalCreate } from '../../composables/firestore/profiles/Prof
 const { profile } = useProfessional()
 const { activeProfile } = useProfessionalComputed(profile)
 const { pillProps, cellProps } = useProfessionalInterface(profile)
-const { professionals } = useProfessionalCollection()
+const { professionals, global, local } = useProfessionalCollection()
 const { createProfessional } = useProfessionalCreate()
 
 const current = activeProfile
-const items = computed(() => professionals.value ?? [])
+
+const roster = computed(() => professionals.value ?? [])
+const directoryPills = computed(() =>
+  roster.value.map((entry) => pillProps(entry))
+)
+const totalProfessionals = computed(() => directoryPills.value.length)
+
+const globalProfessionals = computed(() => global?.value ?? [])
+const localProfessionals = computed(() => local?.value ?? [])
 
 const creating = createProfessional.state
 

@@ -1,24 +1,36 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/apps/index.vue -->
 <template>
   <UPage>
-    <UPageBody class="space-y-6">
-      <UCard>
-        <template #header><h2>Current App (raw)</h2></template>
-        <pre class="text-xs whitespace-pre-wrap">{{ app }}</pre>
-      </UCard>
+    <UPageHeader
+      title="Apps"
+      description="Inspect the current app, its members, and browse all apps available to this runtime."
+    />
 
-      <UCard>
-        <template #header><h2>All Apps (raw)</h2></template>
-        <pre class="text-xs whitespace-pre-wrap">{{ apps }}</pre>
-      </UCard>
+    <UPageBody class="space-y-6">
+      <OrganismsAppSectionsSingle />
+      <OrganismsAppSectionsSubcollection />
+      <OrganismsAppSectionsCollection />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
-import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
+// Page meta kept minimal; adjust if you use your nav system here.
+declare function definePageMeta(meta: any): void
 
-const { app } = useApp()
-const { apps } = useAppCollection()
+definePageMeta({
+  nav: {
+    key: 'apps',
+    label: 'Apps',
+    icon: 'i-lucide-app-window',
+    order: 40,
+    desktop: true,
+    mobile: true,
+    layouts: ['default'],
+  },
+  title: 'Apps',
+  description: 'FireUX apps resolved for this runtime.',
+  layout: 'default',
+  name: 'AppsIndexPage',
+})
 </script>

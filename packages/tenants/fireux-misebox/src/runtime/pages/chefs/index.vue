@@ -1,14 +1,21 @@
 <!-- packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue -->
 <template>
   <UPage>
-    <UPageBody class="page-index">
-      <UPageHeader title="Chefs" />
+    <UPageHeader
+      title="Chefs"
+      description="Manage the chef profile attached to this account and browse the roster of all chefs in scope."
+    />
 
-      <!-- Current Chef -->
-      <UCard class="index-card">
+    <UPageBody class="space-y-6">
+      <!-- Current chef profile -->
+      <UCard>
+        <template #header><h2>Your Chef Profile</h2></template>
+
         <template v-if="current">
-          <MoleculesPill v-bind="pillProps(current)" />
-          <OrganismsProfilesChefCardsCell :chef="cellProps(current)" />
+          <div class="space-y-4">
+            <MoleculesPill v-bind="pillProps(current)" class="max-w-md" />
+            <OrganismsProfilesChefCardsCell :chef="cellProps(current)" />
+          </div>
         </template>
 
         <template v-else>
@@ -22,19 +29,69 @@
         </template>
       </UCard>
 
-      <!-- Chef Collection -->
-      <UCard class="index-card">
-        <template v-if="items.length">
-          <div class="entity-grid">
-            <OrganismsProfilesChefCardsCell
-              v-for="(p, index) in items"
-              :key="p.id || 'chef-' + index"
-              :chef="cellProps(p)"
-            />
+      <!-- Chef directory -->
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between gap-2">
+            <h2>Chef Directory</h2>
+            <UBadge variant="soft">{{ totalChefs }} total</UBadge>
           </div>
         </template>
 
-        <MoleculesNotFound v-else kind="collection" entity="chefs" />
+        <div
+          v-if="directoryPills.length"
+          class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          <MoleculesPill
+            v-for="pill in directoryPills"
+            :key="pill.title + (pill.subtitle || '')"
+            v-bind="pill"
+          />
+        </div>
+        <p v-else class="text-sm opacity-70">
+          No chefs found in this environment.
+        </p>
+      </UCard>
+
+      <!-- Raw snapshots -->
+      <UCard>
+        <template #header><h2>Raw Snapshots</h2></template>
+        <div class="grid gap-4 text-xs md:grid-cols-2">
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Core Profile
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{
+              profile.coreProfile?.value
+            }}</pre>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              App Overlay
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{
+              profile.appProfile?.value
+            }}</pre>
+          </div>
+          <div class="md:col-span-2">
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Roster (merged)
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{ roster }}</pre>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Global Store
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{ globalChefs }}</pre>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase opacity-60">
+              Tenant Overlays
+            </h3>
+            <pre class="mt-2 whitespace-pre-wrap">{{ localChefs }}</pre>
+          </div>
+        </div>
       </UCard>
     </UPageBody>
   </UPage>
@@ -47,11 +104,19 @@ import OrganismsProfilesChefCardsCell from '../../components/organisms/profiles/
 import { useChef } from '../../composables/firestore/profiles/Chef/useChef.ts'
 
 const chef = useChef()
-const { pillProps, cellProps, createChef, collection, activeProfile } = chef
+const { profile, pillProps, cellProps, createChef, collection, activeProfile } =
+  chef
 
 const current = activeProfile
 
-const items = computed(() => collection.chefs?.value ?? [])
+const roster = computed(() => collection.chefs?.value ?? [])
+const directoryPills = computed(() =>
+  roster.value.map((entry) => pillProps(entry))
+)
+const totalChefs = computed(() => directoryPills.value.length)
+
+const globalChefs = computed(() => collection.global?.value ?? [])
+const localChefs = computed(() => collection.local?.value ?? [])
 
 const creating = createChef.state
 

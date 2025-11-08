@@ -2,41 +2,67 @@
 <template>
   <ClientOnly>
     <div v-if="app" class="space-y-6">
-      <!-- About -->
-      <UCard>
-        <MoleculesFormsFirestoreSimpleField
-          label="Description"
-          type="textarea"
-          :rows="3"
-          :maxlength="500"
-          :firebase-value="app.description"
-          placeholder="Describe your application..."
-          :update-function="handleDescriptionUpdate"
-        />
-      </UCard>
-
-      <!-- Social (Instagram) -->
-      <UCard>
-        <MoleculesFormsFirestoreSimpleField
-          label="Instagram"
-          type="url"
-          :firebase-value="app.social_links?.instagram"
-          placeholder="https://instagram.com/your-app"
-          :update-function="handleUpdateInstagram"
-        />
-      </UCard>
-
-      <!-- Join Requests (with avatar + name) -->
-      <UCard v-if="joinRequestItems.length">
-        <div class="space-y-3">
-          <div class="space-y-1">
-            <h3 class="text-sm font-medium text-gray-700">Join Requests</h3>
-            <p class="text-xs text-gray-500">
-              Approve to add a member to the app. Remove to just clear the
-              request.
-            </p>
+      <UCard class="fx-section">
+        <template #header>
+          <div class="fx-section__header">
+            <div class="fx-section__copy">
+              <h3 class="text-base font-semibold">About</h3>
+              <p class="text-xs text-gray-500">
+                Keep the human-facing description up to date.
+              </p>
+            </div>
           </div>
+        </template>
 
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
+            label="Description"
+            type="textarea"
+            :rows="3"
+            :maxlength="500"
+            :firebase-value="app.description"
+            placeholder="Describe your application..."
+            :update-function="handleDescriptionUpdate"
+          />
+        </div>
+      </UCard>
+
+      <UCard class="fx-section">
+        <template #header>
+          <div class="fx-section__header">
+            <div class="fx-section__copy">
+              <h3 class="text-base font-semibold">Social</h3>
+              <p class="text-xs text-gray-500">
+                Link tenant-visible marketing or support channels.
+              </p>
+            </div>
+          </div>
+        </template>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
+            label="Instagram"
+            type="url"
+            :firebase-value="app.social_links?.instagram"
+            placeholder="https://instagram.com/your-app"
+            :update-function="handleUpdateInstagram"
+          />
+        </div>
+      </UCard>
+
+      <UCard class="fx-section">
+        <template #header>
+          <div class="fx-section__header">
+            <div class="fx-section__copy">
+              <h3 class="text-base font-semibold">Join Requests</h3>
+              <p class="text-xs text-gray-500">
+                Approve to add new members or clear pending invites.
+              </p>
+            </div>
+          </div>
+        </template>
+
+        <div v-if="joinRequestItems.length" class="fx-section__item">
           <MoleculesFormsFirestoreListActions
             :items="joinRequestItems"
             :action-approve="onApprove"
@@ -45,34 +71,27 @@
             reject-label="Remove"
           />
         </div>
+        <p v-else class="fx-section__empty">No pending requests.</p>
       </UCard>
-      <UCard v-else>
-        <div class="space-y-3">
-          <div class="space-y-1">
-            <h3 class="text-sm font-medium text-gray-700">Join Requests</h3>
-            <p class="text-xs text-gray-500">
-              Approve to add a member to the app. Remove to just clear the
-              request.
-            </p>
+
+      <UCard class="fx-section">
+        <template #header>
+          <div class="fx-section__header">
+            <div class="fx-section__copy">
+              <h3 class="text-base font-semibold">Team</h3>
+              <p class="text-xs text-gray-500">
+                Current tenant member document identifiers.
+              </p>
+            </div>
           </div>
+        </template>
 
-          <p class="text-xs text-gray-500">No pending requests.</p>
-        </div>
-      </UCard>
-
-      <!-- Team IDs (debug) -->
-      <UCard>
-        <div class="space-y-2">
-          <h3 class="text-sm font-medium text-gray-700">Team</h3>
-          <p class="text-xs text-gray-500">Current member document IDs.</p>
-          <ul v-if="teamIds.length" class="space-y-1 text-xs text-gray-600">
-            <li v-for="id in teamIds" :key="id" class="font-mono">
-              {{ id }}
-            </li>
+        <div v-if="teamIds.length" class="fx-section__item">
+          <ul class="fx-section__grid font-mono text-[0.75rem]">
+            <li v-for="id in teamIds" :key="id">{{ id }}</li>
           </ul>
-
-          <p v-else class="text-xs text-gray-500">No members yet.</p>
         </div>
+        <p v-else class="fx-section__empty">No members yet.</p>
       </UCard>
     </div>
 
@@ -82,45 +101,38 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
-import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
-import { useAppJoinRequests } from 'fireux-core/runtime/composables/firestore/core/app/utils/useAppJoinRequests.ts'
+import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 import { useAppUpdate } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppUpdate.ts'
 import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/useAppUsers.ts'
+import { useAppJoinRequests } from 'fireux-core/runtime/composables/firestore/core/app/utils/useAppJoinRequests.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
 
-/**
- * Join requests are handled via the shared helper so this view just wires up
- * success/failure toast messaging and renders the list molecule.
- */
-const { app } = useApp()
-const { pillProps } = useUser()
-const fetchedUser = (uid: string) => {
-  const { user } = useUserFetch(uid)
-  const hydrated = computed(() => user.coreUser.value ?? null)
-  return { user: hydrated }
-}
-const pillPropsRef = computed(() => pillProps)
+const props = defineProps<{ app: App }>()
+
+const appRef = computed(() => props.app)
+const appIdRef = computed(() => props.app.id ?? null)
+const app = appRef
+
 const { updateDescription, updateInstagram, handleJoinRequests } =
-  useAppUpdate(app)
-const { appUsers } = useAppUsers()
+  useAppUpdate(appRef)
+const { appUsers } = useAppUsers(appIdRef)
 
-const toast = useToast?.()
+const useToastFn = (globalThis as any).useToast as undefined | (() => any)
+const toast = useToastFn ? useToastFn() : undefined
+const { pillProps } = useUser()
 
-const createHandler =
-  <T>(
-    operation: (value: T) => Promise<unknown>,
-    messages: { success: string; failure: string }
-  ) =>
+const withToast =
+  <T>(operation: (value: T) => Promise<unknown>, ok: string, fail: string) =>
   async (value: T) => {
     try {
       await operation(value)
-      toast?.add({ title: messages.success, icon: 'i-heroicons-check-circle' })
+  toast?.add?.({ title: ok, icon: 'i-heroicons-check-circle' })
     } catch (error) {
-      toast?.add({
-        title: messages.failure,
-        description:
-          error instanceof Error ? error.message : 'Please try again.',
+      const message = error instanceof Error ? error.message : 'Please try again.'
+      toast?.add?.({
+        title: fail,
+        description: message,
         color: 'amber',
         icon: 'i-heroicons-exclamation-triangle',
       })
@@ -128,42 +140,51 @@ const createHandler =
     }
   }
 
-const handleDescriptionUpdate = createHandler(updateDescription, {
-  success: 'App description updated',
-  failure: 'Failed to update description',
-})
+const handleDescriptionUpdate = withToast(
+  updateDescription,
+  'App description updated',
+  'Failed to update description'
+)
 
-const handleUpdateInstagram = createHandler(updateInstagram, {
-  success: 'Instagram link saved',
-  failure: 'Failed to update Instagram link',
-})
+const handleUpdateInstagram = withToast(
+  updateInstagram,
+  'Instagram link saved',
+  'Failed to update Instagram link'
+)
+
+const fetchedUser = (uid: string) => {
+  const { coreUser } = useUserFetch(uid)
+  return { user: computed(() => coreUser.value ?? null) }
+}
+
+const pillPropsRef = computed(() => pillProps)
 
 const {
   items: joinRequestItems,
   approve: approveJoinRequest,
   reject: rejectJoinRequest,
 } = useAppJoinRequests({
-  app,
+  app: appRef,
   handleJoinRequests,
   fetchedUser,
   pillProps: pillPropsRef,
 })
 
-const teamIds = computed(() => {
-  const list = (appUsers.value ?? []) as Array<{ id?: string | null }>
-  return list
-    .map((entry) => entry.id?.trim() ?? '')
-    .filter((id): id is string => Boolean(id))
-})
+const teamIds = computed(() =>
+  (appUsers.value ?? [])
+    .map((entry) => (entry?.id ?? '').trim())
+    .filter((id) => id.length > 0)
+)
 
-// Approve / Remove actions
-const onApprove = createHandler((uid: string) => approveJoinRequest(uid), {
-  success: 'Join request approved',
-  failure: 'Failed to approve request',
-})
+const onApprove = withToast(
+  (uid: string) => approveJoinRequest(uid),
+  'Join request approved',
+  'Failed to approve request'
+)
 
-const onRemove = createHandler((uid: string) => rejectJoinRequest(uid), {
-  success: 'Join request removed',
-  failure: 'Failed to remove request',
-})
+const onRemove = withToast(
+  (uid: string) => rejectJoinRequest(uid),
+  'Join request removed',
+  'Failed to remove request'
+)
 </script>

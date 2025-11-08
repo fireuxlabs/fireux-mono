@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, unref, type MaybeRef } from 'vue'
 import { collection } from 'firebase/firestore'
 import { useFirestore, useCollection } from 'vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
@@ -13,23 +13,28 @@ type AppUserWithCore = Partial<User> & { appUser: AppUser }
 /**
  * Fetch /apps/{appId}/users and merge each overlay with its core user.
  */
-export function useAppUsers() {
+export function useAppUsers(targetAppId?: MaybeRef<string | null | undefined>) {
   const db = useFirestore()
-  const { appId } = useFireUXConfig()
-  if (!appId) return { appUsers: ref<AppUserWithCore[]>([]) }
+  const { appId: configAppId } = useFireUXConfig()
+  const effectiveAppId = unref(targetAppId) ?? configAppId
+
+  if (!effectiveAppId) {
+    const overlays = ref<AppUser[]>([])
+    const merged = computed<AppUserWithCore[]>(() => [])
+    return { appUsers: merged, overlays }
+  }
 
   const overlays = useCollection<AppUser>(
-    collection(db, 'apps', appId, 'users') as any
+    collection(db, 'apps', effectiveAppId, 'users') as any
   )
 
-  const cache: Record<string, ReturnType<typeof useUserFetch>['user']> = {}
-  const ensureUserRefs = (uid: string) =>
-    (cache[uid] ||= useUserFetch(uid).user)
+  const cache: Record<string, ReturnType<typeof useUserFetch>> = {}
+  const ensureUserRefs = (uid: string) => (cache[uid] ||= useUserFetch(uid))
 
-  const appUsers = computed<AppUserWithCore[]>(() =>
+  const merged = computed<AppUserWithCore[]>(() =>
     (overlays.value ?? []).map((overlay) => {
       const { coreUser } = ensureUserRefs(overlay.id)
-      const core = coreUser?.value as User | undefined
+      const core = (coreUser.value ?? undefined) as User | undefined
 
       return {
         ...(core ?? { id: overlay.id }),
@@ -38,5 +43,5 @@ export function useAppUsers() {
     })
   )
 
-  return { appUsers }
+  return { appUsers: merged, overlays }
 }
