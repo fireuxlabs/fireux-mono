@@ -15,11 +15,12 @@ export type { App } from 'fireux-core/runtime/models/core/app.model.ts'
  */
 export function useApp() {
   const { appId } = useFireUXConfig()
-  const { app } = useAppFetch(appId)
+  const { app, pending } = useAppFetch(appId)
 
   return {
     app,
-    ...useAppComputed(app),
+    pending,
+    ...useAppComputed(app, pending),
     ...useAppInterface(app),
     ...useAppEnsure(),
     ...useAppUpdate(app),

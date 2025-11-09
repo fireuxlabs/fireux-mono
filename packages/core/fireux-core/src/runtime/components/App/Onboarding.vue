@@ -68,7 +68,9 @@ import { useEnvCheck } from '../../composables/firestore/core/app/utils/useEnvCh
 
 /** 1) Core user gate */
 const { coreUser: coreUserRef, hasCoreProfile } = useUser()
-const coreUser = computed(() => (hasCoreProfile.value ? coreUserRef.value : null))
+const coreUser = computed(() =>
+  hasCoreProfile.value ? coreUserRef.value : null
+)
 
 /** 2) PIN gate */
 const EXPECTED_PIN = '1234' as const

@@ -34,32 +34,32 @@
     </UMain>
 
     <!-- Blocker until app is initialized -->
-    <UModal
-      :open="!isInitialized"
-      prevent-close
-      title="🚫 Blocked"
-      description="This app needs to be initialized."
-    >
-      <template #body>
-        <OrganismsAppOnboarding />
-      </template>
-    </UModal>
+    <!-- ClientOnly prevents SSR mismatch / initial flash.
+         isInitialized stays true during pending to avoid flicker. -->
+    <ClientOnly>
+      <UModal
+        :open="!isInitialized"
+        prevent-close
+        title="🚫 Blocked"
+        description="This app needs to be initialized."
+      >
+        <template #body>
+          <OrganismsAppOnboarding />
+        </template>
+      </UModal>
+    </ClientOnly>
   </UApp>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHead } from '#imports'
-import { useApp } from '../../composables/firestore/core/app/useApp'
-import { useAppComputed } from '../../composables/firestore/core/app/main/useAppComputed'
+import { useApp } from '../../composables/firestore/core/app/useApp.ts'
 
 const isDev = import.meta.dev
 const router = useRouter()
 
-const { app } = useApp()
-const appComputed = useAppComputed(app)
-const isInitialized = appComputed.isInitialized ?? computed(() => false)
+const { isInitialized } = useApp()
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
