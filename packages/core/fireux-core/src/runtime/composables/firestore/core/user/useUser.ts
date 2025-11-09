@@ -8,23 +8,24 @@ import { useUserInterface } from './main/useUserInterface.ts'
 
 export type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
+/**
+ * useUser
+ * - Resolves both coreUser (global) and appUser (tenant overlay)
+ * - Defaults to the authenticated Firebase UID
+ * - For arbitrary UID, call useUserFetch(uid) directly
+ */
 export function useUser() {
   const { uid } = useAuth()
-  const refs = useUserFetch(uid)
-  const computed = useUserComputed(refs)
-  const ui = useUserInterface(refs)
-  const ensure = useUserEnsure(refs)
-  const update = useUserUpdate(refs)
-  const del = useUserDelete(refs)
+  const { coreUser, appUser } = useUserFetch(uid)
 
   return {
-    coreUser: refs.coreUser,
-    appUser: refs.appUser,
-    user: computed.currentUser,
-    ...computed,
-    ...ui,
-    ...ensure,
-    ...update,
-    ...del,
+    coreUser,
+    appUser,
+    user: coreUser,
+    ...useUserComputed({ coreUser, appUser }),
+    ...useUserInterface({ coreUser, appUser }),
+    ...useUserEnsure({ coreUser, appUser }),
+    ...useUserUpdate({ coreUser, appUser }),
+    ...useUserDelete({ coreUser, appUser }),
   }
 }

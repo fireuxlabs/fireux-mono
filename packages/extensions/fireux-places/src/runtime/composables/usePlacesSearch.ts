@@ -1,6 +1,6 @@
 import { ref, watch } from 'vue'
 import type { BasePlace, PlaceCard } from '../models/place.model'
-import { useFirestoreSearch } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreSearch'
+import { useFirestoreSearch } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreSearch.ts'
 import {
   canonicalPlaceId,
   fetchGoogle,
@@ -78,7 +78,12 @@ export function usePlacesSearch() {
       }>({ collection: 'places', field: 'search_term', query: term, limit: 5 })
 
       if (fx.length) {
-        results.value = fx.map<PlaceCard.Cell>((p) => ({
+        results.value = fx.map<PlaceCard.Cell>((p: {
+          place_id: string
+          name: string
+          formatted_address?: string
+          avatar?: string | null
+        }) => ({
           place_id: p.place_id,
           name: p.name,
           formatted_address: p.formatted_address ?? undefined,

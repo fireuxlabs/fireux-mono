@@ -1,4 +1,7 @@
-import type { ChefCoreProfile as Chef } from '../../../../models/profiles/Chef.model'
+import type {
+  Chef,
+  ChefProfile,
+} from '../../../../models/profiles/Chef.model.ts'
 
 export function useChefValidation() {
   // Validate chef name
@@ -207,7 +210,7 @@ export function useChefValidation() {
 
   // Comprehensive chef data validation
   const validateChefData = (
-    chefData: Partial<Chef>
+    chefData: Partial<Chef> & Partial<ChefProfile>
   ): { isValid: boolean; errors: string[] } => {
     const errors: string[] = []
 

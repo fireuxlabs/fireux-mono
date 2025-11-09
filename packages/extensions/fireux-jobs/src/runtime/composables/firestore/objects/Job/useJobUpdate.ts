@@ -1,6 +1,6 @@
 import { serverTimestamp } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager'
-import type { Job } from '../../../../models/objects/Job.model'
+import type { Job } from '../../../../models/objects/Job.model.ts'
 
 export function useJobUpdate() {
   const { updateDocument } = useFirestoreManager()

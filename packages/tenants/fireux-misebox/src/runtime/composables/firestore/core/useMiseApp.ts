@@ -1,6 +1,6 @@
 // Simple extension of core app functionality with kitchen support
 import { computed } from 'vue'
-import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp'
+import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 
 export function useMiseApp() {
   const coreApp = useApp()

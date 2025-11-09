@@ -59,6 +59,7 @@ export namespace AppCard {
     avatar_url?: string | null
     logo_url?: string | null
     wordmark_url?: string | null
+    ecosystem?: string
   }
 
   /** Profile mirrors Cell for future expansion */

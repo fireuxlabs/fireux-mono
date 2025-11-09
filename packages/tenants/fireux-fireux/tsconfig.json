@@ -9,7 +9,8 @@
       "#fireux-fireux-models/*": ["./src/runtime/models/*"],
       "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
       "#fireux-core-runtime/*": ["../../core/fireux-core/src/runtime/*"],
-      "fireux-core/runtime/*": ["../../core/fireux-core/src/runtime/*"]
+      "fireux-core/runtime/*": ["../../core/fireux-core/src/runtime/*"],
+      "#imports": ["types/nuxt-imports.d.ts"]
     },
     "types": ["nuxt", "nuxt/schema", "vite/client", "node"]
   },

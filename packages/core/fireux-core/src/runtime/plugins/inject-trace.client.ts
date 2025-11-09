@@ -1,15 +1,16 @@
-import { defineNuxtPlugin } from 'nuxt/app'
+import { defineNuxtPlugin } from '#imports'
+import type { NuxtApp } from 'nuxt/app'
+import type { ComponentPublicInstance } from 'vue'
 
 /**
  * inject-trace.client
  * Dev helper: intercept Vue warns for inject()/Nuxt composables used outside setup
  * and print a focused report with component file and filtered stack lines.
  */
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
   if (process.env.NODE_ENV === 'production') return
 
   // Minimal startup marker (kept concise to avoid client noise)
-  // eslint-disable-next-line no-console
   console.info(
     '%c[InjectTrace]%c running',
     'color:#ef4444;font-weight:bold',
@@ -19,7 +20,6 @@ export default defineNuxtPlugin((nuxtApp) => {
   const config = nuxtApp.vueApp.config
   const originalWarnHandler = config.warnHandler
 
-  // eslint-disable-next-line no-console
   console.info(
     '%c[InjectTrace]%c warnHandler attached',
     'color:#ef4444;font-weight:bold',
@@ -74,7 +74,11 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   }
 
-  config.warnHandler = (message, instance, trace) => {
+  config.warnHandler = (
+    message: string,
+    instance: ComponentPublicInstance | null,
+    trace: string
+  ) => {
     const msg = String(message ?? '')
     const isInjectWarn = msg.includes('inject() can only be used inside setup')
     const isUseNuxtAppWarn = msg.includes(

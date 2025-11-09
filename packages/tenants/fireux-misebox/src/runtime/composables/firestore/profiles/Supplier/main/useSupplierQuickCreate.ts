@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { Supplier } from '../../../../models/profiles/Supplier.model'
+import type { Supplier } from '../../../../../models/profiles/Supplier.model.ts'
 
 export function useSupplierQuickCreate() {
   const creating = ref(false)

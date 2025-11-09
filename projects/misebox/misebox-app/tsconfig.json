@@ -9,7 +9,7 @@
       "#fireux-core-runtime/*": [
         "../../../packages/core/fireux-core/src/runtime/*"
       ],
-      "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index.d.ts"],
+      "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
       "#imports": [".nuxt/imports.d.ts"],
       "#build/*": [".nuxt/*"]
       // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
@@ -17,7 +17,12 @@
     "skipLibCheck": true,
     "types": ["nuxt", "vite/client", "@vite-pwa/nuxt"]
   },
-  "include": ["./.nuxt/nuxt.d.ts", "./**/*.ts", "./**/*.d.ts"],
+  "include": [
+    "./.nuxt/nuxt.d.ts",
+    "./**/*.ts",
+    "./**/*.d.ts",
+    "../../../types/**/*.d.ts"
+  ],
   "exclude": [
     "node_modules",
     "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"

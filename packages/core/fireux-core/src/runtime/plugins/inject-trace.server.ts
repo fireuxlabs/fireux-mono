@@ -1,4 +1,4 @@
-import { defineNuxtPlugin } from 'nuxt/app'
+import { defineNuxtPlugin } from '#imports'
 
 /**
  * inject-trace.server
@@ -10,7 +10,6 @@ import { defineNuxtPlugin } from 'nuxt/app'
 export default defineNuxtPlugin(() => {
   if (process.env.NODE_ENV === 'production') return
 
-  // eslint-disable-next-line no-console
   console.info('[InjectTrace:server] running')
 
   const g = globalThis as unknown as {
@@ -39,9 +38,10 @@ export default defineNuxtPlugin(() => {
           )
           .filter((line) => !line.includes('node_modules'))
         const hint = filtered[0]?.trim() || '(no userland frame)'
-        // eslint-disable-next-line no-console
         console.log(
-          `[InjectTrace:server] ${isInjectWarn ? 'inject()' : 'nuxt composable'} misuse\n` +
+          `[InjectTrace:server] ${
+            isInjectWarn ? 'inject()' : 'nuxt composable'
+          } misuse\n` +
             `Message: ${text}\n` +
             `Hint: ${hint}\n` +
             (filtered.length > 1

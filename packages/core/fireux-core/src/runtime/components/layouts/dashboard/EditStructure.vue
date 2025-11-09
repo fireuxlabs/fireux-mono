@@ -12,7 +12,11 @@
           <div
             class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between"
           >
-            <MoleculesPill v-bind="hero.pill" class="md:max-w-sm" />
+            <MoleculesPill
+              v-if="hero?.pill"
+              v-bind="hero.pill"
+              :class="['md:max-w-sm', hero?.pillClass].filter(Boolean)"
+            />
             <component
               :is="hero.cellComponent"
               v-bind="hero.cellProps"
@@ -36,13 +40,15 @@
 
 <script setup lang="ts">
 import DashboardBaseSection from './BaseSection.vue'
+import type { Pill } from '../../../types/pill.model.ts'
 
 defineProps<{
   title: string
   description?: string
   guardMessage?: string | null
   hero?: {
-    pill: Record<string, any>
+    pill?: Pill.Props | null
+    pillClass?: string | null
     cellComponent: any
     cellProps: Record<string, any>
   } | null

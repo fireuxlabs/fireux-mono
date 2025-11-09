@@ -8,7 +8,6 @@
 
     <UPageBody class="space-y-6">
       <OrganismsUserSectionsSingle />
-      <OrganismsUserSectionsSubcollection />
       <OrganismsUserSectionsCollection />
     </UPageBody>
   </UPage>

@@ -29,7 +29,8 @@
       ],
       "fireux-core/runtime/models/core/profile.model": [
         "packages/core/fireux-core/src/runtime/models/core/profile.model.ts"
-      ]
+      ],
+      "#imports": ["types/nuxt-imports.d.ts"]
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },

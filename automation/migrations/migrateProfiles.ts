@@ -1,12 +1,11 @@
-/* eslint-disable no-console */
 import * as admin from 'firebase-admin'
 
 // ---------- CLI ----------
 type Cli = {
   collection: string // e.g. "professionals", "chefs", "suppliers", "employers"
   appId?: string // migrate overlays under apps/{appId}/{collection}
-  allApps?: boolean // migrate all app overlays via collection group
-  apply?: boolean // perform writes (otherwise dry-run)
+  allApps: boolean // migrate all app overlays via collection group
+  apply: boolean // perform writes (otherwise dry-run)
   limit?: number // optional cap for testing
 }
 

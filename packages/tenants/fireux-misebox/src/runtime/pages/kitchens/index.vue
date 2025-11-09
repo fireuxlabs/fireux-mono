@@ -120,7 +120,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useHead } from 'nuxt/app'
+import { useHead } from '#imports'
 import { useKitchens } from '../../composables/firestore/objects/Kitchen/useKitchens'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 

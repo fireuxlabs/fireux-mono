@@ -59,7 +59,7 @@
               v-if="user?.appStatus"
               size="sm"
               variant="soft"
-              color="gray"
+              color="neutral"
             >
               App · {{ user.appStatus }}
             </UBadge>

@@ -2,7 +2,7 @@
   <UCard class="profile">
     <div class="profile-header">
       <UAvatar
-        :src="app?.avatar_url ?? app?.avatarUrl ?? undefined"
+        :src="app?.avatar_url ?? undefined"
         :alt="app?.app_name"
         size="xl"
       />
@@ -12,13 +12,13 @@
           {{ app?.app_name }}
         </div>
         <UBadge
-          v-if="app?.parent"
+          v-if="app?.ecosystem"
           icon="i-lucide-building"
           size="lg"
           color="primary"
           variant="solid"
         >
-          {{ app.parent }}
+          {{ app.ecosystem }}
         </UBadge>
         <div class="profile-id">ID: {{ app?.id }}</div>
       </div>
@@ -31,13 +31,7 @@
         <div class="profile-detail"><strong>App ID:</strong> {{ app?.id }}</div>
         <div class="profile-detail">
           <strong>System Type:</strong>
-          {{
-            app?.parent
-              ? `${app.parent} tenant`
-              : app?.role === 'tenant'
-              ? 'Tenant'
-              : 'Global'
-          }}
+          {{ app?.role === 'tenant' ? 'Tenant' : 'Global' }}
         </div>
         <div v-if="app?.created_at" class="profile-detail">
           <strong>Created:</strong> {{ app.created_at }}
@@ -92,10 +86,7 @@
         </div>
         <div class="profile-detail">
           <strong>Avatar URL:</strong>
-          {{ app?.avatar_url || app?.avatarUrl ? 'Set' : 'Not set' }}
-        </div>
-        <div v-if="app?.parent" class="profile-detail">
-          <strong>Parent System:</strong> {{ app.parent }}
+          {{ app?.avatar_url ? 'Set' : 'Not set' }}
         </div>
       </div>
     </div>

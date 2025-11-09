@@ -8,13 +8,6 @@ import type {
 import type { UserRefs } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
 import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
 
-const DEFAULT_INITIALS = 'A'
-
-const initialsFor = (name?: string | null): string => {
-  const t = (name ?? '').trim()
-  return t ? t.charAt(0).toUpperCase() : DEFAULT_INITIALS
-}
-
 const subtitleFor = (handle?: string | null): string =>
   handle ? `@${handle}` : ''
 
@@ -31,13 +24,16 @@ export function useUserInterface(
     return (source as Ref<User | null | undefined>).value ?? null
   }
 
+  const firstInitial = (u?: User | null) =>
+    (u?.display_name?.[0]?.toUpperCase() || 'A')
+
   const pillProps = (target?: User | null): Pill.Props => {
     const user = target ?? resolve()
     const title = user?.display_name ?? ''
 
     return {
       avatar: user?.avatar ?? '',
-      initials: initialsFor(title),
+      initials: firstInitial(user),
       title,
       subtitle: subtitleFor(user?.handle),
       badges: user?.profiles ?? [],
@@ -52,7 +48,7 @@ export function useUserInterface(
 
     return {
       avatar: user?.avatar ?? '',
-      initials: initialsFor(title),
+      initials: firstInitial(user),
       title,
       subtitle: subtitleFor(user?.handle),
       badges: user?.profiles ?? [],

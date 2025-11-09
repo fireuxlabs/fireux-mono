@@ -6,7 +6,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "#fireux-core-models/*": ["./src/runtime/models/*"]
+      "#fireux-core-models/*": ["./src/runtime/models/*"],
+      "#imports": ["types/nuxt-imports.d.ts"]
     },
     "types": ["nuxt", "nuxt/schema", "vite/client", "node"]
   },

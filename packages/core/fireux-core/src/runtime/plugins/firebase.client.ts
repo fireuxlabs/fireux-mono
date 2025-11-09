@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app'
+import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 import {
   initializeApp,
   getApps,

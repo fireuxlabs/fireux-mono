@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app'
+import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 
 export default defineNuxtPlugin(() => {
   const pub = (useRuntimeConfig().public ?? {}) as Record<string, unknown>

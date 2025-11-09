@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/state/useUserState.ts
-import { useState } from 'nuxt/app'
+import { useState } from '#imports'
 import type { User } from '../../models/core/user.model'
 
 export type UserState = User | null

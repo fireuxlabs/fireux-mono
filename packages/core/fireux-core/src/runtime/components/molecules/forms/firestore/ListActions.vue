@@ -7,8 +7,8 @@
       class="flex items-center justify-between gap-3"
     >
       <MoleculesPill
-        :avatar="item.avatar ?? undefined"
-        :initials="item.initials ?? undefined"
+        :avatar="item.avatar ?? ''"
+        :initials="item.initials ?? ''"
         :title="item.title"
         :subtitle="item.subtitle ?? ''"
         :to="item.to ?? undefined"

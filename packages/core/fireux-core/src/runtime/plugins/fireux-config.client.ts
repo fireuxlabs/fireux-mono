@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/plugins/fireux-config.client.ts
-import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app'
+import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 
 const FIREUX_CACHE_KEY = '__FIREUX_CONFIG'
 

@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/FireUXConfig.ts
-import { useRuntimeConfig } from 'nuxt/app'
+import { useRuntimeConfig } from '#imports'
 import { getApps } from 'firebase/app'
 
 export type FireUXRole = 'global' | 'tenant'

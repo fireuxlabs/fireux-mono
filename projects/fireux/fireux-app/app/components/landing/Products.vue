@@ -25,11 +25,7 @@
         v-for="app in items"
         :key="app.title"
         :to="app.to"
-        :ui="{
-          header: { padding: 'p-4' },
-          body: { padding: 'p-4' },
-          footer: { padding: 'p-4' },
-        }"
+        :ui="{ header: 'p-4', body: 'p-4', footer: 'p-4' }"
       >
         <template #header>
           <div class="flex items-center gap-3">
@@ -49,7 +45,7 @@
 
         <template #footer>
           <div class="flex items-center gap-2">
-            <UBadge :color="app.tagColor || 'primary'" variant="soft">{{
+            <UBadge :color="normalizeBadgeColor(app.tagColor)" variant="soft">{{
               app.tag || 'App'
             }}</UBadge>
             <UButton size="sm" variant="soft" :to="app.to">Open</UButton>
@@ -71,4 +67,20 @@ type ProductItem = {
 }
 
 defineProps<{ items?: ProductItem[] }>()
+
+const normalizeBadgeColor = (value?: ProductItem['tagColor']) => {
+  switch (value) {
+    case 'neutral':
+      return 'neutral'
+    case 'sky':
+      return 'info'
+    case 'violet':
+      return 'secondary'
+    case 'amber':
+      return 'warning'
+    case 'primary':
+    default:
+      return 'primary'
+  }
+}
 </script>

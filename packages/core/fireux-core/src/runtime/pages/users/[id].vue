@@ -1,21 +1,48 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/users/[id].vue -->
 <template>
-  <div v-if="currentUser" class="space-y-6">
-    <MoleculesPill v-bind="pillProps()" />
-    <OrganismsUserCardsProfile :user="currentUser" />
-  </div>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
+
+    <UPageBody class="space-y-6">
+      <OrganismsUserSectionsSingle :user-id="userId" :compact="false" />
+      <OrganismsUserSectionsCollection />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useHead } from '#imports'
 import { useRoute } from 'vue-router'
-import { useUserFetch } from '../../composables/firestore/core/user/main/useUserFetch'
-import { useUserComputed } from '../../composables/firestore/core/user/main/useUserComputed'
-import { useUserInterface } from '../../composables/firestore/core/user/main/useUserInterface'
+import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
 
 const route = useRoute()
-const id = String(route.params.id ?? '')
 
-const { user } = useUserFetch(id)
-const { currentUser } = useUserComputed(user)
-const { pillProps } = useUserInterface(user)
+const userId = computed(() => {
+  const param = route.params.id
+  const raw = Array.isArray(param) ? param[0] ?? '' : param?.toString() ?? ''
+  const value = raw.trim()
+  return value.length ? value : null
+})
+
+const { coreUser } = useUserFetch(userId)
+
+const currentUser = computed(() => coreUser.value ?? null)
+
+const pageTitle = computed(
+  () => currentUser.value?.display_name ?? 'User Details'
+)
+const pageDescription = computed(() =>
+  currentUser.value?.display_name
+    ? `Inspect ${currentUser.value.display_name}, their overlays, and related users.`
+    : 'Inspect the selected user, their overlays, and related users.'
+)
+
+useHead({
+  title: computed(() =>
+    currentUser.value?.display_name
+      ? `${currentUser.value.display_name} · User`
+      : 'User Details'
+  ),
+})
 </script>

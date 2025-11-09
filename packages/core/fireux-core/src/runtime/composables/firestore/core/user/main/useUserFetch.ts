@@ -36,3 +36,5 @@ export function useUserFetch(
 
   return { coreUser, appUser }
 }
+
+export type UserRefs = ReturnType<typeof useUserFetch>

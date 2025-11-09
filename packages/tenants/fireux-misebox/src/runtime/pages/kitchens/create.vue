@@ -131,7 +131,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useHead } from 'nuxt/app'
+import { useHead } from '#imports'
 import { useKitchenCreation } from '../../composables/firestore/objects/Kitchen/useKitchenCreation'
 
 declare function useToast(): {

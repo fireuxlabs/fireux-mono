@@ -9,7 +9,7 @@ import {
 } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
 import imageSize from 'image-size'
-import { useRuntimeConfig } from '#imports'
+import type { ISizeCalculationResult } from 'image-size/dist/types/interface'
 import { fileURLToPath } from 'node:url'
 
 /** Typed shape consumed by the client */
@@ -25,6 +25,7 @@ interface AdminAuthStatus {
     FIREBASE_CLIENT_EMAIL: boolean
     FIREBASE_PRIVATE_KEY: boolean
   }
+  file: boolean
   configured: boolean
 }
 interface BrandAssetCheck {
@@ -65,7 +66,7 @@ function findRepoRoot(start: string): string {
 
 function validateBrandDimensions(
   name: string,
-  dim: imageSize.ImageInfo,
+  dim: ISizeCalculationResult,
   constraints: BrandConstraints
 ): string | null {
   const type = dim.type
@@ -153,10 +154,34 @@ function checkBrandImage(
  * - `role` is enforced via Nuxt config (createFireuxConfig), not env; we do NOT check it here.
  * - This route only validates process.env presence/shape and brand asset existence.
  */
+interface EnvCheckResponse {
+  isValid: boolean
+  required: EnvVarEntry[]
+  optionalClient: EnvVarEntry[]
+  server: {
+    adminAuth: AdminAuthStatus
+    optional: EnvVarEntry[]
+  }
+  missingRequired: string[]
+  summary: {
+    required: string
+    optionalClient: string
+    optionalServer: string
+    brandAssets: string
+  }
+  warnings: string[]
+  notes: string[]
+  brandAssets: BrandAssetCheck[]
+}
+
 export default defineEventHandler<EnvCheckResponse>((event) => {
   const env = process.env as Record<string, string | undefined>
-  const runtimeConfig = useRuntimeConfig(event)
-  const ecosystem = runtimeConfig.public?.ecosystem as string | undefined
+  const runtimeConfig = (
+    event.context as {
+      runtimeConfig?: { public?: Record<string, unknown> }
+    }
+  ).runtimeConfig
+  const ecosystem = runtimeConfig?.public?.ecosystem as string | undefined
   const here = dirname(fileURLToPath(import.meta.url))
   const repoRoot = findRepoRoot(here)
 

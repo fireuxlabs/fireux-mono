@@ -60,6 +60,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       avatar_url: a?.avatar_url ?? '',
       logo_url: a?.logo_url ?? '',
       wordmark_url: a?.wordmark_url ?? '',
+      ecosystem: a?.ecosystem ?? undefined,
     }
   }
 

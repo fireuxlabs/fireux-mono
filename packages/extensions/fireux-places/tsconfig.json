@@ -13,7 +13,8 @@
       ],
       "#fireux-core-composables/firebase/*": [
         "../../core/fireux-core/src/runtime/composables/firebase/*"
-      ]
+      ],
+      "#imports": ["types/nuxt-imports.d.ts"]
     },
     "types": ["nuxt", "nuxt/schema", "@types/node"]
   },

@@ -2,9 +2,8 @@
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
-
     <UPageBody class="space-y-6">
-      <OrganismsAppSectionsSingle :app-id="appId" />
+      <OrganismsAppSectionsSingle :app="currentApp" :compact="false" />
       <OrganismsAppSectionsCollection />
     </UPageBody>
   </UPage>
@@ -12,20 +11,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useHead } from 'nuxt/app'
+import { useHead } from '#imports'
 import { useRoute } from 'vue-router'
 import { useAppFetch } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppFetch.ts'
 
 const route = useRoute()
-const appId = Array.isArray(route.params.id)
-  ? route.params.id[0] ?? ''
-  : route.params.id?.toString() ?? ''
 
-const { app } = useAppFetch(appId || null)
+const appId = computed(() => {
+  const param = route.params.id
+  const raw = Array.isArray(param) ? param[0] ?? '' : param?.toString() ?? ''
+  const value = raw.trim()
+  return value.length ? value : null
+})
 
-const currentApp = computed(() =>
-  app.value === undefined ? null : app.value ?? null
-)
+const { app } = useAppFetch(appId)
+const currentApp = computed(() => app.value ?? null)
 
 const pageTitle = computed(() => currentApp.value?.app_name ?? 'App Details')
 const pageDescription = computed(() =>

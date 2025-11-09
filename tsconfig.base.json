@@ -41,7 +41,9 @@
       "@fireux-places/*": ["packages/extensions/fireux-places/src/*"],
       "@fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],
       "@fireux-cleanbox/*": ["packages/tenants/fireux-cleanbox/src/*"],
-      "@fireux-fireux/*": ["packages/tenants/fireux-fireux/src/*"]
+      "@fireux-fireux/*": ["packages/tenants/fireux-fireux/src/*"],
+      "#imports": ["types/nuxt-imports.d.ts"],
+      "#pwa": ["types/pwa.d.ts"]
     }
   }
 }

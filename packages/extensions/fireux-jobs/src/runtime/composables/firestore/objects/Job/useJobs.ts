@@ -1,34 +1,31 @@
+import { ref, type Ref } from 'vue'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager'
+import type { Job } from '../../../../models/objects/Job.model.ts'
 import { useJobCreate } from './useJobCreate'
 import { useJobUpdate } from './useJobUpdate'
 import { useJobDelete } from './useJobDelete'
-import { useObject } from 'fireux-core/runtime/composables/firestore/objects/useObject.ts'
-// Minimal local type to avoid deep import from fireux-core
-type ObjectConfig = {
-  collectionName: string
-  objectType: string
-  createComposable?: (...args: any[]) => any
-  updateComposable?: (...args: any[]) => any
-  deleteComposable?: (...args: any[]) => any
-}
 
-export async function useJobs() {
-  // Configure job-specific CRUD operations
-  const jobConfig: ObjectConfig = {
-    collectionName: 'jobs',
-    objectType: 'Job', // This will create 'fetchJob' method
-    createComposable: useJobCreate,
-    updateComposable: useJobUpdate,
-    deleteComposable: useJobDelete,
-  }
+export function useJobs() {
+  const { firestoreFetchCollection, firestoreFetchDoc, getCollectionPath } =
+    useFirestoreManager()
 
-  // Use the generic object composable with job-specific config
-  const jobsComposable = await useObject(jobConfig)
+  const collectionPath = getCollectionPath('jobs')
+  const jobsCollection =
+    (firestoreFetchCollection<Job>(collectionPath) as Ref<Job[] | undefined>) ??
+    ref<Job[] | undefined>([])
+
+  const fetchJob = (slug: string) =>
+    firestoreFetchDoc<Job>(collectionPath, slug)
+
+  const { createJob } = useJobCreate()
+  const { updateJob } = useJobUpdate()
+  const { deleteJob } = useJobDelete()
 
   return {
-    // Rename for job-specific context
-    jobsCollection: jobsComposable.all,
-    fetchJob: (jobsComposable as any).fetchJob, // Dynamic property based on objectType
-    // All CRUD operations are included via spread
-    ...jobsComposable,
+    jobsCollection,
+    fetchJob,
+    createJob,
+    updateJob,
+    deleteJob,
   }
 }

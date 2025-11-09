@@ -107,7 +107,7 @@ const createHandler =
         title: m.failure,
         description:
           error instanceof Error ? error.message : 'Please try again.',
-        color: 'amber',
+        color: 'warning',
         icon: 'i-heroicons-exclamation-triangle',
       })
       throw error

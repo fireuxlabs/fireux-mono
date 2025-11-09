@@ -1,6 +1,6 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Onboarding.vue -->
 <template>
   <UContainer>
-    <pre>{{}}</pre>
     <!-- 1) Auth -->
     <template v-if="!coreUser">
       <OrganismsAuthSystem />
@@ -35,7 +35,7 @@
               {{ env?.isValid ? 'ready' : 'pending' }}
             </UBadge>
           </div>
-          <UButton size="xs" variant="soft" @click="refreshEnv">
+          <UButton size="xs" variant="soft" @click="onRefreshEnv">
             Refresh
           </UButton>
         </header>
@@ -62,27 +62,30 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useUser } from '../../composables/firestore/core/user/useUser.ts'
-import { useAppEnsure } from '../../composables/firestore/core/app/main/useAppEnsure'
-import type { EnvCheckResponse } from '../../types/app/onboarding'
-import { useEnvCheck } from '../../composables/firestore/core/app/utils/useEnvCheck'
+import { useAppEnsure } from '../../composables/firestore/core/app/main/useAppEnsure.ts'
+import type { EnvCheckResponse } from '../../types/app/onboarding.ts'
+import { useEnvCheck } from '../../composables/firestore/core/app/utils/useEnvCheck.ts'
 
 /** 1) Core user gate */
 const { coreUser: coreUserRef, hasCoreProfile } = useUser()
-const coreUser = computed(() =>
-  hasCoreProfile.value ? coreUserRef.value : null
-)
+const coreUser = computed(() => (hasCoreProfile.value ? coreUserRef.value : null))
 
 /** 2) PIN gate */
 const EXPECTED_PIN = '1234' as const
+const EXPECTED_PIN_DIGITS = EXPECTED_PIN.split('').map(Number)
 const DEV_PIN_AUTO_UNLOCK = true
-// NOTE: Disable dev PIN auto-unlock before production deployment.
-const pin = ref<string[]>(DEV_PIN_AUTO_UNLOCK ? EXPECTED_PIN.split('') : [])
+const pin = ref<number[]>(DEV_PIN_AUTO_UNLOCK ? [...EXPECTED_PIN_DIGITS] : [])
 const isUnlocked = ref(DEV_PIN_AUTO_UNLOCK)
+
+const resetPin = () => {
+  pin.value = DEV_PIN_AUTO_UNLOCK ? [...EXPECTED_PIN_DIGITS] : []
+}
+
 function checkPin() {
   if (pin.value.join('') === EXPECTED_PIN) {
     isUnlocked.value = true
   }
-  pin.value = DEV_PIN_AUTO_UNLOCK ? EXPECTED_PIN.split('') : []
+  resetPin()
 }
 
 /** 3) Env check */
@@ -98,14 +101,17 @@ const envError = computed(() => {
 /** 4) Continue button → useAppEnsure */
 const { ensureApp } = useAppEnsure()
 
+function onRefreshEnv() {
+  void refreshEnv()
+}
+
 async function onProceed() {
   if (!env.value?.isValid) return
-  console.log('[proceed] env ok:', env.value.isValid)
   try {
     const ensured = await ensureApp()
     console.log('[proceed] ensureApp result', ensured)
-  } catch (error) {
-    console.error('[proceed] ensureApp failed', error)
+  } catch (e) {
+    console.error('[proceed] ensureApp failed', e)
   }
 }
 </script>

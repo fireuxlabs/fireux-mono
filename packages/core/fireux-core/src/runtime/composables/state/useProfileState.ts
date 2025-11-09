@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/state/useProfileState.ts
-import { useState } from 'nuxt/app'
+import { useState } from '#imports'
 
 /**
  * Namespaced per-profile-type state slot.

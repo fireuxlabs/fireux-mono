@@ -11,7 +11,8 @@
       "#fireux-places-models/*": [
         "../../extensions/fireux-places/src/runtime/models/*"
       ],
-      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"]
+      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
+      "#imports": ["types/nuxt-imports.d.ts"]
     },
     "types": ["nuxt", "nuxt/schema", "@nuxt/ui", "@types/node"]
   },

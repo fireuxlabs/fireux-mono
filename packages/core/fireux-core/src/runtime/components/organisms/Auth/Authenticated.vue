@@ -24,14 +24,17 @@ const primaryLabel = computed(() =>
   hasProfile.value ? 'Go to Dashboard' : 'Create User Profile'
 )
 
-const handlePrimary = async () => {
-  if (hasProfile.value) return router.push('/dashboard')
+const handlePrimary = async (): Promise<void> => {
+  if (hasProfile.value) {
+    await router.push('/dashboard').catch(() => {})
+    return
+  }
   await ensureUser()
 }
 
-const handleSignOut = async () => {
+const handleSignOut = async (): Promise<void> => {
   await signOutUser()
-  router.push('/auth')
+  await router.push('/auth').catch(() => {})
 }
 </script>
 

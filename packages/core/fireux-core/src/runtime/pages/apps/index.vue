@@ -1,20 +1,18 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/apps/index.vue -->
 <template>
   <UPage>
-    <UPageHeader
-      title="Apps"
-      description="Inspect the current app, its members, and browse all apps available to this runtime."
-    />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="space-y-6">
-      <OrganismsAppSectionsSingle />
+      <OrganismsAppSectionsSingle :app="currentApp" />
       <OrganismsAppSectionsCollection />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-// Page meta kept minimal; adjust if you use your nav system here.
-declare function definePageMeta(meta: any): void
+import { computed } from 'vue'
+import { useHead } from '#imports'
+import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 
 definePageMeta({
   nav: {
@@ -30,5 +28,21 @@ definePageMeta({
   description: 'FireUX apps resolved for this runtime.',
   layout: 'default',
   name: 'AppsIndexPage',
+})
+
+const { app } = useApp()
+const currentApp = computed(() => app.value ?? null)
+
+const pageTitle = computed(() => currentApp.value?.app_name ?? 'Apps')
+const pageDescription = computed(() =>
+  currentApp.value?.app_name
+    ? `Inspect ${currentApp.value.app_name}, its overlays, and related apps.`
+    : 'Inspect the current app and browse all apps available to this runtime.'
+)
+
+useHead({
+  title: computed(() =>
+    currentApp.value?.app_name ? `${currentApp.value.app_name} · Apps` : 'Apps'
+  ),
 })
 </script>

@@ -1,4 +1,4 @@
-import { useFetch } from 'nuxt/app'
+import { useFetch } from '#imports'
 import type { EnvCheckResponse } from '../../../../../types/app/onboarding'
 
 /**

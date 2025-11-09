@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useHead } from 'nuxt/app'
+import { useHead } from '#imports'
 import { useApp } from '../../composables/firestore/core/app/useApp'
 import { useAppComputed } from '../../composables/firestore/core/app/main/useAppComputed'
 

@@ -18,13 +18,14 @@ function computeReadingTime(content: string): string {
 
 async function getAuthor(): Promise<Author> {
   const { useUser } = await import('../../core/user/useUser')
-  const { user } = useUser()
+  const { currentUser } = useUser()
+  const user = currentUser.value
   return {
-    id: user.value?.id || '',
-    display_name: user.value?.display_name || user.value?.email || '',
-    handle: user.value?.handle || '',
-    avatar: user.value?.avatar || '/img/default-image.png',
-    email: user.value?.email || '',
+    id: user?.id || '',
+    display_name: user?.display_name || user?.email || '',
+    handle: user?.handle || '',
+    avatar: user?.avatar || '/img/default-image.png',
+    email: user?.email || '',
   }
 }
 

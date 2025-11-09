@@ -231,7 +231,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, type Ref } from 'vue'
-import { useHead } from 'nuxt/app'
+import { useHead } from '#imports'
 import { useRoute } from 'vue-router'
 import type { Place } from '../../models/place.model'
 import { usePlaces } from '../../composables/usePlaces'

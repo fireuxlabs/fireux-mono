@@ -1,4 +1,4 @@
-import type { FirestoreObject } from './object.model'
+import type { FirestoreObject } from 'fireux-core/runtime/models/objects/object.model.ts'
 
 export interface DishObject extends Partial<FirestoreObject> {
   name: string

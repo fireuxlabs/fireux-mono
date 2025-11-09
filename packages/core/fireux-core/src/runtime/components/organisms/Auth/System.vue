@@ -53,7 +53,7 @@
               <template #validation>
                 <UAlert
                   v-if="error"
-                  color="amber"
+                  color="warning"
                   variant="subtle"
                   :title="error"
                 />
@@ -82,7 +82,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
-import { useFireUXConfig } from '../../../composables/FireUXConfig'
+import { useFireUXConfig } from '../../../composables/FireUXConfig.ts'
 
 const router = useRouter()
 const {
@@ -133,7 +133,7 @@ const separatorLabel = computed(() => 'or continue with email')
 const submitButton = computed(() => ({
   label: isTenant.value || !isSignUp.value ? 'Continue' : 'Create account',
   block: true,
-  size: 'lg',
+  size: 'lg' as const,
 }))
 
 const formDisabled = computed(() => formLoading.value || providerLoading.value)
@@ -180,7 +180,7 @@ async function handleGoogle() {
     const result = await signInWithGoogle()
     providerLoading.value = false
     if (result?.uid) {
-      await router.push('/')
+      await router.push('/').catch(() => {})
       return
     }
     error.value = 'Google sign-in failed. Please try again.'
@@ -215,7 +215,7 @@ async function onSubmit({ data }: { data?: Record<string, unknown> }) {
     formLoading.value = false
 
     if (result?.uid) {
-      await router.push('/')
+      await router.push('/').catch(() => {})
       return
     }
 

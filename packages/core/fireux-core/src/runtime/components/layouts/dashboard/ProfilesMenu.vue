@@ -28,8 +28,8 @@
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { useDashboardNav } from '../../../composables/fireUX/nav/presets'
-import { useUser } from '../../../composables/firestore/core/user/useUser'
+import { useDashboardNav } from '../../../composables/fireUX/nav/presets.ts'
+import { useUser } from '../../../composables/firestore/core/user/useUser.ts'
 
 defineOptions({ name: 'LayoutsDashboardProfilesMenu' })
 defineProps<{ collapsed?: boolean }>()
