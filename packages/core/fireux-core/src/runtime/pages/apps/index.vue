@@ -5,10 +5,8 @@
       title="Apps"
       description="Inspect the current app, its members, and browse all apps available to this runtime."
     />
-
     <UPageBody class="space-y-6">
       <OrganismsAppSectionsSingle />
-      <OrganismsAppSectionsSubcollection />
       <OrganismsAppSectionsCollection />
     </UPageBody>
   </UPage>

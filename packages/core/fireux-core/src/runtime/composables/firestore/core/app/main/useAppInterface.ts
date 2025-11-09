@@ -3,32 +3,52 @@ import type { Ref } from 'vue'
 import type { App, AppCard } from 'fireux-core/runtime/models/core/app.model.ts'
 import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
 
+const DEFAULT_INITIALS = 'A'
+
+const initialsFor = (name?: string | null): string => {
+  const trimmed = (name ?? '').trim()
+  if (!trimmed) return DEFAULT_INITIALS
+
+  const parts = trimmed.split(/\s+/)
+  if (parts.length === 1) {
+    return parts[0].charAt(0).toUpperCase() || DEFAULT_INITIALS
+  }
+
+  const first = parts[0]?.charAt(0) ?? ''
+  const last = parts.at(-1)?.charAt(0) ?? ''
+
+  return (first + last).toUpperCase().slice(0, 2)
+}
+
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   const app = appRef?.value ?? null
 
   const pillProps = (target?: App | null): Pill.Props => {
     const a = target ?? app
+    const title = a?.app_name ?? ''
+    const link = a?.id ? `/apps/${a.id}` : ''
     return {
       avatar: a?.avatar_url ?? '',
-      initials: 'A',
-      title: a?.app_name ?? '',
+      initials: initialsFor(title),
+      title,
       subtitle: a?.ecosystem ?? '',
       badges: [a?.role, a?.status].filter(Boolean) as string[],
-      to: a?.id ? `/apps/${a.id}` : null,
+      to: link || null,
     }
   }
 
   const cellProps = (target?: App | null): AppCard.Cell => {
     const a = target ?? app
     const title = a?.app_name ?? ''
+    const link = a?.id ? `/apps/${a.id}` : ''
     return {
       // Pill fields (since Cell extends Pill.Props)
       avatar: a?.avatar_url ?? '',
-      initials: 'A',
+      initials: initialsFor(title),
       title,
       subtitle: a?.ecosystem ?? '',
       badges: [a?.role, a?.status].filter(Boolean) as string[],
-      to: a?.id ? `/apps/${a.id}` : '',
+      to: link,
 
       // App extras
       id: a?.id ?? '',

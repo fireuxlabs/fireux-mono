@@ -26,13 +26,13 @@
         />
       </section>
 
-      <!-- App Directory -->
+      <!-- App Collection -->
       <section class="space-y-4">
-        <OrganismsAppSectionsCollection />
+        <OrganismsAppSectionsCollection :show-cells="false" />
         <DevJsonPanel
-          title="Dev · App Directory"
-          :data="appsDev"
-          :default-open="hasDirectory"
+          title="Dev · App Collection"
+          :data="appCollectionDev"
+          :default-open="hasCollection"
         />
       </section>
     </UPageBody>
@@ -83,12 +83,12 @@ const appUsersDev = computed(() => ({
   members: appUsersList.value,
 }))
 
-const appsDev = computed(() => ({
+const appCollectionDev = computed(() => ({
   total: appsList.value.length,
   apps: appsList.value,
 }))
 
 const hasCurrentApp = computed(() => Boolean(appSnapshot.value))
 const hasAppMembers = computed(() => appUsersList.value.length > 0)
-const hasDirectory = computed(() => appsList.value.length > 0)
+const hasCollection = computed(() => appsList.value.length > 0)
 </script>

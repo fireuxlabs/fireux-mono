@@ -27,7 +27,9 @@ const { isAdmin } = useUser()
 const router = useRouter()
 
 const isLoading = computed(() => app.value === undefined)
-const currentApp = computed(() => (app.value === undefined ? null : app.value ?? null))
+const currentApp = computed(() =>
+  app.value === undefined ? null : app.value ?? null
+)
 
 definePageMeta({
   layout: 'dashboard',

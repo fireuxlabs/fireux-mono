@@ -127,9 +127,10 @@ const withToast =
   async (value: T) => {
     try {
       await operation(value)
-  toast?.add?.({ title: ok, icon: 'i-heroicons-check-circle' })
+      toast?.add?.({ title: ok, icon: 'i-heroicons-check-circle' })
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Please try again.'
+      const message =
+        error instanceof Error ? error.message : 'Please try again.'
       toast?.add?.({
         title: fail,
         description: message,
