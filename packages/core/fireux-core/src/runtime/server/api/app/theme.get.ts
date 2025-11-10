@@ -16,8 +16,24 @@ export default defineEventHandler(async (event) => {
 
   // Access environment variables directly in server context
   const appName = process.env.APP_NAME || 'FireUX App'
-  const appPrimaryColor = process.env.APP_PRIMARY_COLOR || 'FACC15'
-  const appNeutralColor = process.env.APP_NEUTRAL_COLOR || '71717A'
+  const normalizeHex = (value: string, fallback: string) => {
+    const cleaned = (value || '').replace(/['"]/g, '').trim()
+    const target = cleaned || fallback
+    return target.startsWith('#') ? target : `#${target}`
+  }
+
+  const appPrimaryColor = normalizeHex(
+    process.env.APP_PRIMARY_COLOR || '',
+    '#FACC15'
+  )
+  const appNeutralColor = normalizeHex(
+    process.env.APP_NEUTRAL_COLOR || '',
+    '#71717A'
+  )
+  const appSecondaryColor = normalizeHex(
+    process.env.APP_SECONDARY_COLOR || '',
+    '#F97316'
+  )
   const projectName = process.env.PROJECT_NAME || 'FireUX'
   const appId = process.env.APP_ID || 'fireux-app'
   const appShortName = process.env.APP_SHORT_NAME || 'FireUX'
@@ -34,8 +50,9 @@ export default defineEventHandler(async (event) => {
 
     // Theme colors (the main purpose of this endpoint)
     theme: {
-      primary: `#${appPrimaryColor}`,
-      neutral: `#${appNeutralColor}`,
+      primary: appPrimaryColor,
+      neutral: appNeutralColor,
+      secondary: appSecondaryColor,
     },
 
     // App icon from environment

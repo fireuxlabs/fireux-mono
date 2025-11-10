@@ -117,6 +117,22 @@
             }}</span>
           </div>
         </li>
+
+        <li
+          v-if="cfg.secondaryColor"
+          class="flex items-center justify-between gap-3"
+        >
+          <span class="font-medium">secondaryColor</span>
+          <div class="flex items-center gap-2">
+            <div
+              class="w-5 h-5 rounded border border-gray-300 dark:border-gray-700"
+              :style="{ backgroundColor: cfg.secondaryColor }"
+            />
+            <span class="text-gray-500 dark:text-gray-400">
+              {{ cfg.secondaryColor }}
+            </span>
+          </div>
+        </li>
       </ul>
     </UCard>
 

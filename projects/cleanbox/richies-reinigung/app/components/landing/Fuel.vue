@@ -3,13 +3,25 @@
     <div class="fuel__content">
       <h2>Powered by CleanBox automations</h2>
       <p>
-        Auto-send reminders, balance team load, and surface cross-sell opportunities without adding admin hours.
+        Auto-send reminders, balance team load, and surface cross-sell
+        opportunities without adding admin hours.
       </p>
       <div class="fuel__actions">
-        <UButton color="primary" size="lg" icon="i-lucide-rocket" @click="$emit('startTour')">
+        <UButton
+          color="primary"
+          size="lg"
+          icon="i-lucide-rocket"
+          @click="$emit('startTour')"
+        >
           Start interactive tour
         </UButton>
-        <UButton color="neutral" variant="ghost" size="lg" icon="i-lucide-download" @click="$emit('downloadPlaybook')">
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="lg"
+          icon="i-lucide-download"
+          @click="$emit('downloadPlaybook')"
+        >
           Download playbook
         </UButton>
       </div>
@@ -22,7 +34,10 @@
           <span>{{ meter.label }}</span>
         </div>
         <div class="fuel__progress">
-          <div class="fuel__progress-bar" :style="{ width: meter.value + '%' }" />
+          <div
+            class="fuel__progress-bar"
+            :style="{ width: meter.value + '%' }"
+          />
         </div>
         <div class="fuel__value">{{ meter.value }}%</div>
       </div>
@@ -51,7 +66,11 @@ defineOptions({ name: 'RichiesLandingFuel' })
 .fuel {
   border-radius: 1.75rem;
   border: 1px solid var(--ui-border-subtle);
-  background: linear-gradient(135deg, rgba(13, 79, 73, 0.92), rgba(14, 116, 144, 0.8));
+  background: linear-gradient(
+    135deg,
+    rgba(13, 79, 73, 0.92),
+    rgba(14, 116, 144, 0.8)
+  );
   color: #f8fafc;
   padding: clamp(2rem, 5vw, 3rem);
   display: grid;

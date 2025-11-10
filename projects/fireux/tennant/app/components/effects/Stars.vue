@@ -22,7 +22,11 @@ defineOptions({ name: 'TenantEffectsStars' })
   position: absolute;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0, transparent 55%)
+  background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.18) 0,
+      transparent 55%
+    )
     repeat;
   animation: drift 40s linear infinite;
   opacity: 0.35;

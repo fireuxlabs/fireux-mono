@@ -40,7 +40,6 @@ export function defineNav(
     tenant: meta.tenant,
   })
 }
-
 ```
 
 ## FILE: fireUX/nav/useDashboardNav.ts
@@ -83,7 +82,6 @@ export function useDashboardNav() {
 
   return { items, user, admin }
 }
-
 ```
 
 ## FILE: fireUX/nav/useNavDefault.ts
@@ -121,7 +119,6 @@ export function useNavDefault() {
 
   return { desktop, mobile }
 }
-
 ```
 
 ## FILE: fireUX/nav/useNavIndex.ts
@@ -198,5 +195,4 @@ export function useNavIndex() {
 
   return { all, byKey, filter, sorted }
 }
-
 ```

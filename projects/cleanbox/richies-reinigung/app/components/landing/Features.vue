@@ -6,7 +6,11 @@
     </header>
 
     <div class="features__grid">
-      <article v-for="feature in features" :key="feature.title" class="features__card">
+      <article
+        v-for="feature in features"
+        :key="feature.title"
+        class="features__card"
+      >
         <h3>{{ feature.title }}</h3>
         <p>{{ feature.copy }}</p>
       </article>

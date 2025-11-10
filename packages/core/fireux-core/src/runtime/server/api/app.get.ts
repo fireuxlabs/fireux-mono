@@ -9,11 +9,15 @@ export default defineEventHandler(async (_event) => {
   const domain = process.env.APP_DOMAIN || 'https://fireux.app'
   const appPrimaryColor = process.env.APP_PRIMARY_COLOR || 'FACC15'
   const appNeutralColor = process.env.APP_NEUTRAL_COLOR || '71717A'
+  const appSecondaryColor = process.env.APP_SECONDARY_COLOR || 'F97316'
   const appIcon = process.env.APP_ICON || 'flame'
 
   // Ensure a single leading '#'
-  const normalizeHex = (value: string) =>
-    `#${(value || '').replace(/^#+/, '').trim()}`
+  const normalizeHex = (value: string) => {
+    const cleaned = (value || '').replace(/['"]/g, '').trim()
+    if (!cleaned) return '#000000'
+    return cleaned.startsWith('#') ? cleaned : `#${cleaned}`
+  }
 
   // App info using environment variables
   const appInfo = {
@@ -30,6 +34,7 @@ export default defineEventHandler(async (_event) => {
     theme: {
       primary: normalizeHex(appPrimaryColor),
       neutral: normalizeHex(appNeutralColor),
+      secondary: normalizeHex(appSecondaryColor),
     },
 
     // Assets

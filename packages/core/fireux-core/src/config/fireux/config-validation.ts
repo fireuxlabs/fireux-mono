@@ -13,6 +13,8 @@ export interface ValidationTenantConfig {
   appName: string
   appShortName: string
   primaryColor: string
+  neutralColor?: string
+  secondaryColor?: string
   tenantModule: string
   environmentVariables: Record<string, string>
 }
@@ -38,6 +40,12 @@ export function validateTenantConfig(
 
   // Validate color configuration
   validateColorConfig(config.primaryColor, result)
+  if (config.neutralColor) {
+    validateColorConfig(config.neutralColor, result, 'Neutral color', false)
+  }
+  if (config.secondaryColor) {
+    validateColorConfig(config.secondaryColor, result, 'Secondary color', false)
+  }
 
   // Validate module configuration
   validateModuleConfig(config.tenantModule, result)
@@ -130,8 +138,10 @@ function validateEnvironmentVariables(
  * Validates color configuration
  */
 function validateColorConfig(
-  primaryColor: string,
-  result: ConfigValidationResult
+  color: string,
+  result: ConfigValidationResult,
+  label = 'Primary color',
+  required = true
 ) {
   const validNuxtColors = [
     'red',
@@ -158,12 +168,15 @@ function validateColorConfig(
     'stone',
   ]
 
-  if (!primaryColor || primaryColor.trim() === '') {
-    result.errors.push('Primary color is required')
-  } else if (!validNuxtColors.includes(primaryColor)) {
-    result.warnings.push(
-      `Primary color "${primaryColor}" is not a standard NuxtUI color`
-    )
+  if (!color || color.trim() === '') {
+    if (required) {
+      result.errors.push(`${label} is required`)
+    }
+    return
+  }
+
+  if (!validNuxtColors.includes(color)) {
+    result.warnings.push(`${label} "${color}" is not a standard NuxtUI color`)
     result.suggestions.push(
       `Consider using one of: ${validNuxtColors.slice(0, 10).join(', ')}, etc.`
     )
@@ -288,6 +301,7 @@ export default defineNuxtConfig({
  */
 export function generateEnvFile(config: ValidationTenantConfig): string {
   const colorHex = getColorHex(config.primaryColor)
+  const secondaryHex = getColorHex(config.secondaryColor ?? 'orange')
 
   return `# Firebase Configuration (Server-side)
 NUXT_FIREBASE_API_KEY=your_api_key_here
@@ -309,6 +323,7 @@ APP_NAME=${config.appName}
 APP_SHORT_NAME=${config.appShortName}
 APP_PRIMARY_COLOR=${colorHex}
 APP_NEUTRAL_COLOR=64748B
+APP_SECONDARY_COLOR=${secondaryHex}
 APP_ICON=your_icon_name
 AUTHOR_NAME=Your Team Name
 
@@ -330,7 +345,8 @@ export function generateAppConfig(config: ValidationTenantConfig): string {
   ui: {
     colors: {
       primary: '${config.primaryColor}',
-      neutral: 'zinc',
+      neutral: '${config.neutralColor ?? 'zinc'}',
+      secondary: '${config.secondaryColor ?? 'orange'}',
     },
   },
 })`

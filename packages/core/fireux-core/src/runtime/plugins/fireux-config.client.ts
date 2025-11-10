@@ -49,6 +49,7 @@ export default defineNuxtPlugin(() => {
     appIcon: asOptString(pub.appIcon),
     primaryColor: asOptString(pub.primaryColor),
     neutralColor: asOptString(pub.neutralColor),
+    secondaryColor: asOptString(pub.secondaryColor),
     centralSignupUrl: asOptString(pub.centralSignupUrl),
 
     globalAppId: asOptString(pub.globalAppId),

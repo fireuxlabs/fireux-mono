@@ -123,9 +123,6 @@ const overlays = computed<OverlayEntry[]>(() => {
       const base = pillProps(user)
       const record = user as User
       const roleLabel = overlay.role === 'admin' ? 'App Admin' : 'App Member'
-      const badges = new Set<string>((base.badges ?? []) as string[])
-      badges.add(roleLabel)
-
       let link: RouteLocationRaw | null = base.to ?? null
       if (!link) {
         if (record?.id) {
@@ -137,9 +134,11 @@ const overlays = computed<OverlayEntry[]>(() => {
 
       const pill: Pill.Props = {
         ...base,
-        badges: Array.from(badges).filter(Boolean),
         subtitle: base.subtitle || `Role: ${overlay.role ?? 'member'}`,
         to: link,
+        special: overlay.role === 'admin',
+        specialIcon: 'i-lucide-star',
+        specialTooltip: overlay.role === 'admin' ? 'App Admin' : undefined,
       }
 
       const details: DetailItem[] = [

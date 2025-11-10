@@ -36,6 +36,29 @@
         </UBadge>
       </div>
     </div>
+
+    <div v-if="hasSpecial" class="meta">
+      <UTooltip
+        v-if="specialTooltip"
+        :text="specialTooltip"
+        :popper="tooltipPopper"
+      >
+        <span :class="specialClass" :aria-label="specialAriaLabel">
+          <UIcon
+            :name="specialIconResolved"
+            class="special-icon"
+            aria-hidden="true"
+          />
+        </span>
+      </UTooltip>
+      <span v-else :class="specialClass" :aria-label="specialAriaLabel">
+        <UIcon
+          :name="specialIconResolved"
+          class="special-icon"
+          aria-hidden="true"
+        />
+      </span>
+    </div>
   </button>
 </template>
 
@@ -51,10 +74,29 @@ const props = withDefaults(defineProps<Pill.Props>(), {
   subtitle: undefined,
   badges: () => [],
   to: null,
+  special: false,
+  specialIcon: 'i-lucide-star',
+  specialTooltip: undefined,
 })
 
 const router = useRouter()
 const hasLink = computed(() => Boolean(props.to))
+
+const hasSpecial = computed(() => Boolean(props.special))
+
+const specialIconResolved = computed(() => props.specialIcon || 'i-lucide-star')
+
+const specialTooltip = computed(() => props.specialTooltip ?? '')
+
+const specialAriaLabel = computed(
+  () => props.specialTooltip ?? 'Special user indicator'
+)
+
+const tooltipPopper = { placement: 'top' as const }
+
+const specialClass = computed(() =>
+  props.special ? ['special-wrap', 'special-wrap--active'] : ['special-wrap']
+)
 
 const rootClass = computed(() => [
   'pill flex items-center gap-3 rounded-xl px-3 py-2 shadow-sm',
@@ -102,5 +144,31 @@ const handleClick = () => {
   flex-wrap: wrap;
   gap: 0.25rem;
   margin-top: 0.35rem;
+}
+
+.meta {
+  margin-left: auto;
+}
+
+.special-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
+  padding: 0.25rem;
+  background: var(--ui-background-100, rgba(148, 163, 184, 0.12));
+  color: var(--ui-text-400, rgba(148, 163, 184, 0.9));
+}
+
+.special-wrap--active {
+  border-color: var(--ui-warning-300, rgba(253, 224, 71, 0.65));
+  background: var(--ui-warning-50, rgba(253, 224, 71, 0.18));
+  color: var(--ui-warning-600, rgba(217, 119, 6, 1));
+}
+
+.special-icon {
+  width: 1rem;
+  height: 1rem;
 }
 </style>

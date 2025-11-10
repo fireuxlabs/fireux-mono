@@ -4,7 +4,9 @@
       <div class="solutions__eyebrow">Signature stations</div>
       <h2 class="solutions__title">Curated for alpine hospitality</h2>
       <p class="solutions__copy">
-        Niederhorn kitchens are designed for high altitude service with zero-compromise mise en place. Pick from ready-to-run stations or tailor your own with our production planners.
+        Niederhorn kitchens are designed for high altitude service with
+        zero-compromise mise en place. Pick from ready-to-run stations or tailor
+        your own with our production planners.
       </p>
     </header>
 

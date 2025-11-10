@@ -54,7 +54,9 @@ async function main() {
     console.log(`   Theme: ${config.primaryColor}/${config.secondaryColor}`)
     console.log(`   Modules: ${config.modules.join(', ')}`)
     console.log(
-      `   Stripe: ${config.copyStripeKeys ? 'Copy from parent' : 'Blank (separate account)'}`
+      `   Stripe: ${
+        config.copyStripeKeys ? 'Copy from parent' : 'Blank (separate account)'
+      }`
     )
 
     const confirm = await prompt('\nCreate tenant? (y/N): ')
@@ -157,11 +159,12 @@ async function gatherTenantConfig(system) {
     (await prompt(`Port (suggested: ${suggestedPort}): `)) || suggestedPort
   const primaryColor =
     (await prompt(
-      'Primary color (violet, blue, green, red, yellow, purple, pink, indigo): '
+      'Primary color (blue, green, yellow, violet, amber, teal, cyan, rose, purple, pink, indigo): '
     )) || 'blue'
   const secondaryColor =
-    (await prompt('Secondary color (slate, gray, zinc, neutral, stone): ')) ||
-    'slate'
+    (await prompt(
+      'Secondary color (sky, teal, lime, rose, cyan, amber, slate, gray, zinc, neutral, stone): '
+    )) || 'slate'
 
   // Additional environment configuration
   const domain =
@@ -351,6 +354,7 @@ function createAppConfig(config) {
     colors: {
       primary: '${config.primaryColor}',
       neutral: '${config.secondaryColor}',
+      secondary: '${config.secondaryColor}',
     },
   },
 })`
@@ -407,12 +411,16 @@ function createLayouts(config) {
 
 function createIndexPage(config) {
   const indexVue = `<template>
-  <div class="min-h-screen bg-gradient-to-br from-${config.primaryColor}-50 to-${config.secondaryColor}-100">
+  <div class="min-h-screen bg-gradient-to-br from-${
+    config.primaryColor
+  }-50 to-${config.secondaryColor}-100">
     <section class="relative overflow-hidden">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div class="text-center">
           <h1 class="text-5xl md:text-7xl font-bold text-slate-900 mb-6">
-            <span class="text-${config.primaryColor}-600">${capitalizeFirst(config.displayName)}</span>
+            <span class="text-${config.primaryColor}-600">${capitalizeFirst(
+    config.displayName
+  )}</span>
             <br />
             <span class="text-3xl md:text-5xl font-medium text-slate-600">
               ${capitalizeFirst(config.system)} Tenant
@@ -426,7 +434,9 @@ function createIndexPage(config) {
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <NuxtLink
               to="/dashboard"
-              class="bg-${config.primaryColor}-600 hover:bg-${config.primaryColor}-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors"
+              class="bg-${config.primaryColor}-600 hover:bg-${
+    config.primaryColor
+  }-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors"
             >
               Get Started
             </NuxtLink>
@@ -439,7 +449,9 @@ function createIndexPage(config) {
 
 <script setup>
 useHead({
-  title: '${capitalizeFirst(config.displayName)} - ${capitalizeFirst(config.system)} Tenant',
+  title: '${capitalizeFirst(config.displayName)} - ${capitalizeFirst(
+    config.system
+  )} Tenant',
   meta: [
     { name: 'description', content: 'Powered by: ${config.modules.join(', ')}' }
   ]
@@ -530,7 +542,8 @@ export default defineNuxtConfig({
 }
 
 function createEnvFile(config) {
-  const colorHex = getColorHex(config.primaryColor).slice(1)
+  const colorHex = getColorHex(config.primaryColor)
+  const secondaryHex = getColorHex(config.secondaryColor)
 
   // Read Firebase config from parent app
   const parentEnvPath = `${config.parentPath}/.env`
@@ -575,10 +588,14 @@ function createEnvFile(config) {
     }
   }
 
-  const envContent = `# ${capitalizeFirst(config.displayName)} Tenant Environment
+  const envContent = `# ${capitalizeFirst(
+    config.displayName
+  )} Tenant Environment
 
 # Firebase Admin Credentials
-GOOGLE_APPLICATION_CREDENTIALS=/Users/danielwatson/Dev/fireux/projects/${config.system}/${config.name}/config/service-account.json
+GOOGLE_APPLICATION_CREDENTIALS=/Users/danielwatson/Dev/fireux/projects/${
+    config.system
+  }/${config.name}/config/service-account.json
 
 # Firebase Configuration (inherited from ${config.system}-app)
 FIREBASE_API_KEY=${firebaseConfig.apiKey}
@@ -593,8 +610,9 @@ PROJECT_NAME=${capitalizeFirst(config.system)}
 APP_NAME=${capitalizeFirst(config.displayName)}
 APP_ID=${config.name}
 APP_SHORT_NAME=${config.name.slice(0, 4)}
-APP_PRIMARY_COLOR=${colorHex}
-APP_NEUTRAL_COLOR=64748B
+APP_PRIMARY_COLOR="${colorHex}"
+APP_NEUTRAL_COLOR="#64748B"
+APP_SECONDARY_COLOR="${secondaryHex}"
 AUTHOR_NAME=Daniel Watson (fireux)
 DOMAIN=https://${config.domain}
 
@@ -606,7 +624,11 @@ OPENAI_API_KEY=
 NODE_ENV=development
 DEV_DOMAIN=${config.port}
 
-# Stripe Keys${config.copyStripeKeys ? ' (inherited from ' + config.system + '-app)' : ' (blank - configure separately)'}
+# Stripe Keys${
+    config.copyStripeKeys
+      ? ' (inherited from ' + config.system + '-app)'
+      : ' (blank - configure separately)'
+  }
 STRIPE_PUBLISHABLE_KEY=${stripeConfig.publishableKey}
 STRIPE_SECRET_KEY=${stripeConfig.secretKey}
 STRIPE_WEBHOOK_SECRET=${stripeConfig.webhookSecret}
@@ -624,8 +646,9 @@ function updateRootPackage(config) {
   const rootPackagePath = 'package.json'
   const packageJson = JSON.parse(fs.readFileSync(rootPackagePath, 'utf8'))
 
-  packageJson.scripts[`dev:${config.name}`] =
-    `pnpm --filter ./projects/${config.system}/${config.name} dev`
+  packageJson.scripts[
+    `dev:${config.name}`
+  ] = `pnpm --filter ./projects/${config.system}/${config.name} dev`
 
   fs.writeFileSync(rootPackagePath, JSON.stringify(packageJson, null, 2))
 }
@@ -645,6 +668,7 @@ function normalizeTenantName(name) {
 
 function getColorHex(color) {
   const colorMap = {
+    amber: '#F59E0B',
     violet: '#8B5CF6',
     blue: '#3B82F6',
     green: '#22C55E',
@@ -653,6 +677,11 @@ function getColorHex(color) {
     purple: '#A855F7',
     pink: '#EC4899',
     indigo: '#6366F1',
+    slate: '#64748B',
+    gray: '#6B7280',
+    zinc: '#71717A',
+    neutral: '#737373',
+    stone: '#78716C',
   }
   return colorMap[color] || '#3B82F6'
 }

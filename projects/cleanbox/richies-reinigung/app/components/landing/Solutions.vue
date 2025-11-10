@@ -2,9 +2,12 @@
   <section class="solutions">
     <header class="solutions__header">
       <div class="solutions__eyebrow">Essential workflows</div>
-      <h2 class="solutions__title">Coordinate every clean without spreadsheets</h2>
+      <h2 class="solutions__title">
+        Coordinate every clean without spreadsheets
+      </h2>
       <p class="solutions__copy">
-        Keep bookings organised, crews dispatched, and client communication tidy. Start with the tools that cleaners rely on daily.
+        Keep bookings organised, crews dispatched, and client communication
+        tidy. Start with the tools that cleaners rely on daily.
       </p>
     </header>
 

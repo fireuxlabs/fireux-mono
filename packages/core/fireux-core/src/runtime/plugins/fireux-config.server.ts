@@ -18,6 +18,8 @@ export default defineNuxtPlugin(() => {
       typeof pub.primaryColor === 'string' ? pub.primaryColor : undefined,
     neutralColor:
       typeof pub.neutralColor === 'string' ? pub.neutralColor : undefined,
+    secondaryColor:
+      typeof pub.secondaryColor === 'string' ? pub.secondaryColor : undefined,
     centralSignupUrl:
       typeof pub.centralSignupUrl === 'string'
         ? pub.centralSignupUrl

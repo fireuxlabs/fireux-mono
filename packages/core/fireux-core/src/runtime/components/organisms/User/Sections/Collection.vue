@@ -43,21 +43,14 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
   return list.map((entry: any) => {
     const base = pillProps(entry)
     const overlayRole = entry?.appUser?.role
-    if (!overlayRole) {
-      return {
-        key: entry?.id ?? `${base.title}-${base.subtitle || ''}`,
-        pill: base,
-      }
-    }
-
-    const badges = new Set<string>((base.badges ?? []) as string[])
-    badges.add(overlayRole === 'admin' ? 'App Admin' : 'App Member')
 
     return {
       key: entry?.id ?? `${base.title}-${base.subtitle || ''}`,
       pill: {
         ...base,
-        badges: Array.from(badges),
+        special: overlayRole === 'admin',
+        specialIcon: 'i-lucide-star',
+        specialTooltip: overlayRole === 'admin' ? 'App Admin' : undefined,
       },
     }
   })

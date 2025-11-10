@@ -14,6 +14,7 @@ export interface TenantConfig {
   includeCore?: boolean
   primaryColor?: string
   neutralColor?: string
+  secondaryColor?: string
   vuefire?: Record<string, any>
   pwa?: Record<string, any>
   compatibilityDate?: string
@@ -253,6 +254,7 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
 
   const primaryColor = opts.primaryColor ?? env('APP_PRIMARY_COLOR')
   const neutralColor = opts.neutralColor ?? env('APP_NEUTRAL_COLOR')
+  const secondaryColor = opts.secondaryColor ?? env('APP_SECONDARY_COLOR')
   const centralSignupUrl = env('CENTRAL_SIGNUP_URL')
   const appIcon = env('APP_ICON')
   const developerPin = env('PIN')
@@ -334,6 +336,7 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
         appShortName,
         primaryColor,
         neutralColor,
+        secondaryColor,
         centralSignupUrl,
         appIcon,
         developerPin,

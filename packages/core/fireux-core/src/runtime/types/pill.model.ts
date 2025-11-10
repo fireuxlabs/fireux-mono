@@ -12,5 +12,8 @@ export namespace Pill {
     subtitle?: string
     badges?: string[]
     to?: RouteLocationRaw | null
+    special?: boolean
+    specialIcon?: string
+    specialTooltip?: string
   }
 }

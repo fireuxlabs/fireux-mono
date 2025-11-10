@@ -67,7 +67,10 @@ const heroContent = {
   primary: { label: 'Open kitchen console', to: '/apps' },
   secondary: { label: 'Invite brigade', to: '/users' },
   bullets: [
-    { icon: 'i-lucide-thermometer-sun', text: 'Altitude calibrated prep plans' },
+    {
+      icon: 'i-lucide-thermometer-sun',
+      text: 'Altitude calibrated prep plans',
+    },
     { icon: 'i-lucide-gauge', text: 'Real-time production meters' },
     { icon: 'i-lucide-truck', text: 'Supply runs synced to gondola drops' },
     { icon: 'i-lucide-sparkles', text: 'Sanitation routines automated' },
@@ -76,7 +79,7 @@ const heroContent = {
 
 const quickPeek = [
   {
-    title: 'Tonight\'s service',
+    title: "Tonight's service",
     copy: 'Plated menu locked. 6 covers flagged VIP.',
     icon: 'i-lucide-calendar-clock',
   },
@@ -167,6 +170,7 @@ const handleDownloadSpecs = () => {
   display: flex;
   flex-direction: column;
   gap: clamp(2.5rem, 6vw, 4rem);
-  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3rem) clamp(4rem, 8vw, 6rem);
+  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3rem)
+    clamp(4rem, 8vw, 6rem);
 }
 </style>

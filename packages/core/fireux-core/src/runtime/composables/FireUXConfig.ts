@@ -15,6 +15,7 @@ export interface FireUXConfig {
   appIcon?: string
   primaryColor?: string
   neutralColor?: string
+  secondaryColor?: string
   centralSignupUrl?: string
   globalAppId?: string
   developerPin?: string
@@ -116,6 +117,7 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
     appIcon: optString(pub, 'appIcon'),
     primaryColor: optString(pub, 'primaryColor'),
     neutralColor: optString(pub, 'neutralColor'),
+    secondaryColor: optString(pub, 'secondaryColor'),
     centralSignupUrl: optString(pub, 'centralSignupUrl'),
     globalAppId: optString(pub, 'globalAppId'),
     developerPin: optString(pub, 'developerPin'),

@@ -197,6 +197,7 @@ export default defineEventHandler<EnvCheckResponse>((event) => {
     'APP_SHORT_NAME',
     'APP_PRIMARY_COLOR',
     'APP_NEUTRAL_COLOR',
+    'APP_SECONDARY_COLOR',
     'APP_ICON',
     'APP_DOMAIN',
   ]

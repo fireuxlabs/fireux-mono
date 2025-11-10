@@ -3,12 +3,17 @@
     <header class="features__header">
       <h2>What crews love</h2>
       <p>
-        Everything you need for consistent alpine service; nothing that slows you down.
+        Everything you need for consistent alpine service; nothing that slows
+        you down.
       </p>
     </header>
 
     <div class="features__grid">
-      <article v-for="feature in features" :key="feature.title" class="features__card">
+      <article
+        v-for="feature in features"
+        :key="feature.title"
+        class="features__card"
+      >
         <h3>{{ feature.title }}</h3>
         <p>{{ feature.copy }}</p>
       </article>

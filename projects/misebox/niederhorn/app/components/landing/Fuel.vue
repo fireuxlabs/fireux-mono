@@ -3,13 +3,25 @@
     <div class="fuel__content">
       <h2>Powered by MiseBox stations</h2>
       <p>
-        Sync prep plans with your alpine pantry, track yield in real-time, and keep every service window ahead of the rush.
+        Sync prep plans with your alpine pantry, track yield in real-time, and
+        keep every service window ahead of the rush.
       </p>
       <div class="fuel__actions">
-        <UButton color="primary" size="lg" icon="i-heroicons-rocket-launch-20-solid" @click="$emit('bookTour')">
+        <UButton
+          color="primary"
+          size="lg"
+          icon="i-heroicons-rocket-launch-20-solid"
+          @click="$emit('bookTour')"
+        >
           Book a kitchen tour
         </UButton>
-        <UButton color="neutral" variant="ghost" size="lg" icon="i-heroicons-document-text-20-solid" @click="$emit('downloadSpecs')">
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="lg"
+          icon="i-heroicons-document-text-20-solid"
+          @click="$emit('downloadSpecs')"
+        >
           Download station specs
         </UButton>
       </div>
@@ -22,7 +34,10 @@
           <span>{{ meter.label }}</span>
         </div>
         <div class="fuel__progress">
-          <div class="fuel__progress-bar" :style="{ width: meter.value + '%' }" />
+          <div
+            class="fuel__progress-bar"
+            :style="{ width: meter.value + '%' }"
+          />
         </div>
         <div class="fuel__value">{{ meter.value }}%</div>
       </div>
@@ -51,7 +66,11 @@ defineOptions({ name: 'NiederhornLandingFuel' })
 .fuel {
   border-radius: 1.75rem;
   border: 1px solid var(--ui-border-subtle);
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(14, 116, 144, 0.8));
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.92),
+    rgba(14, 116, 144, 0.8)
+  );
   color: #f8fafc;
   padding: clamp(2rem, 5vw, 3rem);
   display: grid;

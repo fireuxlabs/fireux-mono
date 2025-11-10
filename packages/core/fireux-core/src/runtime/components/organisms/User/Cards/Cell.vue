@@ -19,8 +19,19 @@
             }}</UBadge>
           </div>
 
-          <div v-if="user.profiles?.length" class="subrow">
-            <span class="pill">{{ user.profiles.join(', ') }}</span>
+          <div v-if="profileBadges.length" class="subrow">
+            <ul class="profiles" aria-label="Profile memberships">
+              <li v-for="badge in profileBadges" :key="badge">
+                <UBadge
+                  size="xs"
+                  variant="soft"
+                  class="profile-badge"
+                  :style="profileBadgeStyle"
+                >
+                  {{ badge }}
+                </UBadge>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -32,17 +43,75 @@
 import { computed } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
 const props = defineProps<{
   user: User
   to?: RouteLocationRaw | null
 }>()
 
+const fireux = useFireUXConfig()
+
 const wrapperTag = computed(() => (props.to ? 'NuxtLink' : 'div'))
 const wrapperBindings = computed(() => (props.to ? { to: props.to } : {}))
 const wrapperClass = computed(() =>
   props.to ? 'block no-underline text-inherit' : undefined
 )
+
+const profileBadges = computed(() =>
+  Array.from(new Set(props.user.profiles ?? [])).filter(
+    (entry): entry is string => Boolean(entry)
+  )
+)
+
+const sanitizeColor = (value?: string | null): string | undefined => {
+  if (!value) return undefined
+  const trimmed = String(value).replace(/['"]/g, '').trim()
+  return trimmed || undefined
+}
+
+const toHex = (value?: string | null): string | undefined => {
+  const sanitized = sanitizeColor(value)
+  if (!sanitized) return undefined
+  const hex = sanitized.startsWith('#') ? sanitized.slice(1) : sanitized
+  if (/^[0-9a-fA-F]{6}$/.test(hex)) {
+    return `#${hex.toUpperCase()}`
+  }
+  return undefined
+}
+
+const hexToRgba = (hex: string, alpha: number): string | undefined => {
+  const raw = hex.replace('#', '')
+  if (!/^[0-9a-fA-F]{6}$/.test(raw)) return undefined
+  const bigint = parseInt(raw, 16)
+  const r = (bigint >> 16) & 255
+  const g = (bigint >> 8) & 255
+  const b = bigint & 255
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+const badgeHex = computed(
+  () => toHex(fireux.secondaryColor) ?? toHex(fireux.primaryColor) ?? '#3B82F6'
+)
+
+const badgeColor = computed(
+  () =>
+    sanitizeColor(fireux.secondaryColor) ??
+    sanitizeColor(fireux.primaryColor) ??
+    badgeHex.value
+)
+
+const profileBadgeStyle = computed(() => {
+  const hex = badgeHex.value
+  const background = hexToRgba(hex, 0.16)
+  const border = hexToRgba(hex, 0.32)
+  const text = hexToRgba(hex, 0.85)
+  return {
+    backgroundColor: background ?? badgeColor.value,
+    borderColor: border ?? hex,
+    color: text ?? hex,
+  }
+})
 
 const initials = computed(() => {
   const name = props.user.display_name?.trim() ?? ''
@@ -80,18 +149,21 @@ const initials = computed(() => {
 }
 .subrow {
   margin-top: 0.25rem;
-  opacity: 0.85;
   font-size: 0.85rem;
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
 }
-.pill {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  background: rgba(148, 163, 184, 0.15);
-  padding: 0.15rem 0.6rem;
-  line-height: 1.1;
+.profiles {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.profile-badge {
+  text-transform: none;
+  border-width: 1px;
+  border-style: solid;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 </style>
