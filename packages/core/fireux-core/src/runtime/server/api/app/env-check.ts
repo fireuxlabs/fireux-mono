@@ -223,6 +223,9 @@ export default defineEventHandler<EnvCheckResponse>((event) => {
   if (env.FIREBASE_SERVICE_ACCOUNT_FILE) {
     serviceAccountPaths.add(env.FIREBASE_SERVICE_ACCOUNT_FILE)
   }
+  if (env.GOOGLE_APPLICATION_CREDENTIALS) {
+    serviceAccountPaths.add(env.GOOGLE_APPLICATION_CREDENTIALS)
+  }
   if (ecosystem) {
     serviceAccountPaths.add(
       join(

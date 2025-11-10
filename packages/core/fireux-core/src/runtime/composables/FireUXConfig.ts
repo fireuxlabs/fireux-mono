@@ -17,6 +17,7 @@ export interface FireUXConfig {
   neutralColor?: string
   centralSignupUrl?: string
   globalAppId?: string
+  developerPin?: string
   // derived
   isTenant: boolean
   isGlobal: boolean
@@ -117,6 +118,7 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
     neutralColor: optString(pub, 'neutralColor'),
     centralSignupUrl: optString(pub, 'centralSignupUrl'),
     globalAppId: optString(pub, 'globalAppId'),
+    developerPin: optString(pub, 'developerPin'),
     isTenant: role === 'tenant',
     isGlobal: role === 'global',
   })

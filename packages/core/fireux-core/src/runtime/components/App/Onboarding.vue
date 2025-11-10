@@ -14,11 +14,12 @@
         </p>
         <UPinInput
           v-model="pin"
-          :length="4"
+          :length="pinLength"
           type="number"
           placeholder="○"
           @complete="checkPin"
         />
+        <p v-if="pinError" class="text-xs text-red-500">{{ pinError }}</p>
       </div>
     </template>
 
@@ -40,18 +41,24 @@
           </UButton>
         </header>
 
-        <OrganismsAppOnboardingVariables
+        <AppOnboardingVariables
           :env-data="env"
           :pending="pending"
           :error="envError"
         />
 
         <div class="pt-2">
-          <UButton block size="lg" :disabled="!env?.isValid" @click="onProceed">
+          <UButton block size="lg" :disabled="!canProceed" @click="onProceed">
             Continue
           </UButton>
-          <p v-if="!env?.isValid" class="mt-2 text-xs text-gray-500">
+          <p
+            v-if="!env?.isValid && !canProceed"
+            class="mt-2 text-xs text-gray-500"
+          >
             Fix required environment variables to enable this action.
+          </p>
+          <p v-else-if="bypassWarning" class="mt-2 text-xs text-amber-500">
+            Continuing in dev mode without required environment variables.
           </p>
         </div>
       </div>
@@ -60,60 +67,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useUser } from '../../composables/firestore/core/user/useUser.ts'
-import { useAppEnsure } from '../../composables/firestore/core/app/main/useAppEnsure.ts'
-import type { EnvCheckResponse } from '../../types/app/onboarding.ts'
-import { useEnvCheck } from '../../composables/firestore/core/app/utils/useEnvCheck.ts'
+import { useAppOnboarding } from '../../composables/app/useAppOnboarding.ts'
 
-/** 1) Core user gate */
-const { coreUser: coreUserRef, hasCoreProfile } = useUser()
-const coreUser = computed(() =>
-  hasCoreProfile.value ? coreUserRef.value : null
-)
-
-/** 2) PIN gate */
-const EXPECTED_PIN = '1234' as const
-const EXPECTED_PIN_DIGITS = EXPECTED_PIN.split('').map(Number)
-const DEV_PIN_AUTO_UNLOCK = true
-const pin = ref<number[]>(DEV_PIN_AUTO_UNLOCK ? [...EXPECTED_PIN_DIGITS] : [])
-const isUnlocked = ref(DEV_PIN_AUTO_UNLOCK)
-
-const resetPin = () => {
-  pin.value = DEV_PIN_AUTO_UNLOCK ? [...EXPECTED_PIN_DIGITS] : []
-}
-
-function checkPin() {
-  if (pin.value.join('') === EXPECTED_PIN) {
-    isUnlocked.value = true
-  }
-  resetPin()
-}
-
-/** 3) Env check */
-const { data, pending, error, refresh: refreshEnv } = await useEnvCheck()
-
-const env = computed(() => (data.value as EnvCheckResponse) ?? null)
-const envError = computed(() => {
-  if (!error.value) return null
-  if (error.value instanceof Error) return error.value.message
-  return String(error.value)
-})
-
-/** 4) Continue button → useAppEnsure */
-const { ensureApp } = useAppEnsure()
-
-function onRefreshEnv() {
-  void refreshEnv()
-}
-
-async function onProceed() {
-  if (!env.value?.isValid) return
-  try {
-    const ensured = await ensureApp()
-    console.log('[proceed] ensureApp result', ensured)
-  } catch (e) {
-    console.error('[proceed] ensureApp failed', e)
-  }
-}
+const {
+  coreUser,
+  isUnlocked,
+  pin,
+  pinError,
+  pinLength,
+  env,
+  envError,
+  pending,
+  canProceed,
+  bypassWarning,
+  checkPin,
+  onRefreshEnv,
+  onProceed,
+} = useAppOnboarding()
 </script>

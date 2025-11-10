@@ -1,102 +1,172 @@
 <template>
-  <div class="app-dashboard">
-    <section class="welcome-section">
-      <div class="welcome-content">
-        <h1 class="app-title">
-          <span class="brand-name">Niederhorn</span>
-          <span class="app-subtitle">Kitchen Management</span>
-        </h1>
+  <div class="landing-page">
+    <EffectsStars />
 
-        <p class="app-description">
-          Manage your ingredients, suppliers, and culinary operations with
-          precision.
-        </p>
+    <LandingShell>
+      <template #left>
+        <LandingHero
+          :title="heroContent.title"
+          :accent="heroContent.accent"
+          :paragraph="heroContent.paragraph"
+          :badges="heroContent.badges"
+          :primary="heroContent.primary"
+          :secondary="heroContent.secondary"
+          :bullets="heroContent.bullets"
+        />
+      </template>
 
-        <div class="quick-actions">
-          <UButton to="/ingredients" variant="solid" size="lg">
-            <UIcon name="i-lucide-package" />
-            Manage Ingredients
-          </UButton>
-          <UButton to="/suppliers" variant="outline" size="lg">
-            <UIcon name="i-lucide-truck" />
-            Manage Suppliers
-          </UButton>
-        </div>
-      </div>
-    </section>
+      <template #right>
+        <LandingQuickPeek :items="quickPeek" :footer-badge="quickPeekFooter" />
+      </template>
+    </LandingShell>
+
+    <LandingSolutions :cards="solutionCards" />
+
+    <LandingFuel
+      :meters="fuelMeters"
+      @bookTour="handleBookTour"
+      @downloadSpecs="handleDownloadSpecs"
+    />
+
+    <LandingFeatures :features="featureList" />
+
+    <LandingSkillsIcons :skills="skillTags" />
   </div>
 </template>
 
-<script setup>
-useSeoMeta({
-  title: 'Niederhorn - Kitchen Management',
-  description: 'Manage ingredients, suppliers, and culinary operations.',
-})
+<script setup lang="ts">
+const router = useRouter()
 
 definePageMeta({
-  layout: 'default',
+  layout: 'landing',
   nav: {
     key: 'home',
     label: 'Home',
     icon: 'i-lucide-home',
     desktop: true,
     mobile: true,
-    layouts: ['default'],
+    layouts: ['landing'],
   },
 })
+
+useSeoMeta({
+  title: 'Niederhorn — MiseBox Kitchens',
+  description:
+    'Alpine hospitality kitchens that sync mise en place, production, and service windows with MiseBox.',
+})
+
+const heroContent = {
+  title: 'Niederhorn Kitchens',
+  accent: 'Alpine mise en place, on tempo',
+  paragraph:
+    'Run altitude-ready production, sync pantry replenishment, and keep every <span class="text-primary">service window</span> prepared before the gondola arrives.',
+  badges: [
+    { src: '/img/misebox-logo.svg', alt: 'MiseBox' },
+    { src: '/img/firebase-white.png', alt: 'Firebase' },
+  ],
+  primary: { label: 'Open kitchen console', to: '/apps' },
+  secondary: { label: 'Invite brigade', to: '/users' },
+  bullets: [
+    { icon: 'i-lucide-thermometer-sun', text: 'Altitude calibrated prep plans' },
+    { icon: 'i-lucide-gauge', text: 'Real-time production meters' },
+    { icon: 'i-lucide-truck', text: 'Supply runs synced to gondola drops' },
+    { icon: 'i-lucide-sparkles', text: 'Sanitation routines automated' },
+  ],
+}
+
+const quickPeek = [
+  {
+    title: 'Tonight\'s service',
+    copy: 'Plated menu locked. 6 covers flagged VIP.',
+    icon: 'i-lucide-calendar-clock',
+  },
+  {
+    title: 'Pantry hold',
+    copy: 'Protein pulls complete · pastry freezer restocked.',
+    icon: 'i-lucide-ice-cream',
+  },
+  {
+    title: 'Brigade',
+    copy: 'Sous, garde manger, and steward synced to tasks.',
+    icon: 'i-lucide-users',
+  },
+]
+
+const quickPeekFooter = 'MiseBox · Firestore · IoT sensors'
+
+const solutionCards = [
+  {
+    title: 'Station planner',
+    copy: 'Configure pass, garde manger, and pastry to match your service.',
+    href: '/stations',
+    cta: 'Plan stations',
+    icon: 'i-lucide-layers',
+  },
+  {
+    title: 'Production log',
+    copy: 'Audit prep yields, variance, and temp logs straight from the line.',
+    href: '/production',
+    cta: 'View log',
+    icon: 'i-lucide-clipboard-check',
+  },
+  {
+    title: 'Crew roster',
+    copy: 'Update roles, availability, and onboarding for each service week.',
+    href: '/users',
+    cta: 'Manage crew',
+    icon: 'i-lucide-users',
+  },
+]
+
+const fuelMeters = [
+  { label: 'Prep complete', value: 86, icon: 'i-lucide-knife' },
+  { label: 'Service readiness', value: 92, icon: 'i-lucide-badge-check' },
+  { label: 'Inventory sync', value: 74, icon: 'i-lucide-package-search' },
+]
+
+const featureList = [
+  {
+    title: 'Altitude smart timers',
+    copy: 'Automatic adjustments for simmer, proof, and rest at 1960 m.',
+  },
+  {
+    title: 'Prep-to-pass sync',
+    copy: 'Line dashboards align mise en place with pass tickets in real time.',
+  },
+  {
+    title: 'Supplier cadence',
+    copy: 'Purchasing schedules anchored to lift and road access windows.',
+  },
+  {
+    title: 'Safety + HACCP logs',
+    copy: 'Document temp checks, sanitation, and hold times without clipboards.',
+  },
+]
+
+const skillTags = [
+  { label: 'Sous chef', icon: 'i-lucide-sparkles' },
+  { label: 'Garde manger', icon: 'i-lucide-leaf' },
+  { label: 'Pastry lead', icon: 'i-lucide-cookie' },
+  { label: 'Steward', icon: 'i-lucide-droplets' },
+  { label: 'Sommelier', icon: 'i-lucide-wine' },
+  { label: 'Service captain', icon: 'i-lucide-badge-check' },
+]
+
+const handleBookTour = () => {
+  router.push('/contact')
+}
+
+const handleDownloadSpecs = () => {
+  router.push('/docs/niederhorn-stations')
+}
 </script>
 
 <style scoped>
-.app-dashboard {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-8);
-}
-
-.welcome-section {
-  text-align: center;
-  max-width: 600px;
-}
-
-.app-title {
-  margin-bottom: var(--space-6);
-}
-
-.brand-name {
-  display: block;
-  font-size: var(--text-5xl);
-  font-weight: var(--font-weight-black);
-  color: var(--color-primary-600);
-  margin-bottom: var(--space-2);
-}
-
-.app-subtitle {
-  display: block;
-  font-size: var(--text-2xl);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-gray-600);
-}
-
-.app-description {
-  font-size: var(--text-lg);
-  color: var(--color-gray-600);
-  margin-bottom: var(--space-8);
-  line-height: 1.6;
-}
-
-.quick-actions {
+.landing-page {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  align-items: center;
-}
-
-@media (min-width: 640px) {
-  .quick-actions {
-    flex-direction: row;
-    justify-content: center;
-  }
+  gap: clamp(2.5rem, 6vw, 4rem);
+  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3rem) clamp(4rem, 8vw, 6rem);
 }
 </style>

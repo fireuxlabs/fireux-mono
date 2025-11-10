@@ -3,8 +3,8 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="space-y-6">
-      <OrganismsAppSectionsSingle :app="currentApp" :compact="false" />
-      <OrganismsAppSectionsCollection />
+  <OrganismsAppSectionsSingle :app="currentApp" :compact="false" />
+  <OrganismsAppSectionsCollection />
     </UPageBody>
   </UPage>
 </template>

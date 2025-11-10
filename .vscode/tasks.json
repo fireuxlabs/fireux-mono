@@ -12,7 +12,10 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"isBackground": true
+			"isBackground": true,
+			"problemMatcher": [
+				"$eslint-compact"
+			]
 		},
 		{
 			"label": "dev:misebox (3001)",

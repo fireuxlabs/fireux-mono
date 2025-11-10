@@ -120,6 +120,71 @@
       </ul>
     </UCard>
 
+    <!-- Firebase Admin SDK status -->
+    <UCard>
+      <template #header>
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <h2>🔥 Firebase Admin SDK</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Server-side credentials detected via env or service-account file.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <UBadge :color="adminStatus.color" variant="soft">
+              {{ adminStatus.label }}
+            </UBadge>
+            <UButton
+              size="xs"
+              variant="ghost"
+              :loading="envPending"
+              icon="i-lucide-refresh-ccw"
+              @click="refreshEnvCheck"
+            >
+              Refresh
+            </UButton>
+          </div>
+        </div>
+      </template>
+
+      <div class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+        <p>
+          {{ adminStatus.description }}
+        </p>
+
+        <ul class="space-y-1">
+          <li class="flex items-center justify-between gap-3">
+            <span class="font-medium">JSON env string</span>
+            <span>{{ adminAuth?.json ? 'present' : 'missing' }}</span>
+          </li>
+          <li class="flex items-center justify-between gap-3">
+            <span class="font-medium">Split env keys</span>
+            <span>
+              {{ adminAuth?.splitKeys?.FIREBASE_PROJECT_ID ? '✓' : '✗' }}
+              projectId /
+              {{ adminAuth?.splitKeys?.FIREBASE_CLIENT_EMAIL ? '✓' : '✗' }}
+              clientEmail /
+              {{ adminAuth?.splitKeys?.FIREBASE_PRIVATE_KEY ? '✓' : '✗' }}
+              privateKey
+            </span>
+          </li>
+          <li class="flex items-center justify-between gap-3">
+            <span class="font-medium">Service-account file</span>
+            <span>{{ adminAuth?.file ? 'detected' : 'not found' }}</span>
+          </li>
+        </ul>
+
+        <template v-if="adminNotes.length">
+          <div class="space-y-1">
+            <h3 class="text-sm font-medium">Notes</h3>
+            <ul class="list-disc pl-5 space-y-1">
+              <li v-for="note in adminNotes" :key="note">{{ note }}</li>
+            </ul>
+          </div>
+        </template>
+      </div>
+    </UCard>
+
     <!-- Runtime JSON -->
     <UCard v-if="showRuntimeJson">
       <template #header>
@@ -131,8 +196,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useEnvCheck } from '../../composables/firestore/core/app/utils/useEnvCheck.ts'
 
 definePageMeta({
   title: 'Development Tools',
@@ -149,6 +215,60 @@ definePageMeta({
 
 const cfg = useFireUXConfig()
 const showRuntimeJson = ref(false)
+
+const {
+  data: envData,
+  pending: envPending,
+  refresh: refreshEnv,
+} = useEnvCheck()
+
+const adminAuth = computed(() => envData.value?.server?.adminAuth ?? null)
+const adminConfigured = computed(() => adminAuth.value?.configured ?? false)
+
+const adminNotes = computed(() => {
+  const notes = envData.value?.notes ?? []
+  return notes.filter((note) => note.toLowerCase().includes('service account'))
+})
+
+const adminStatus = computed(() => {
+  if (envPending.value) {
+    return {
+      color: 'info' as const,
+      label: 'checking…',
+      description: 'Validating Firebase Admin configuration…',
+    }
+  }
+
+  if (adminConfigured.value) {
+    let source = 'Detected via service-account file.'
+    if (adminAuth.value?.json) {
+      source = 'Using FIREBASE_SERVICE_ACCOUNT JSON.'
+    } else if (
+      adminAuth.value?.splitKeys?.FIREBASE_PROJECT_ID &&
+      adminAuth.value?.splitKeys?.FIREBASE_CLIENT_EMAIL &&
+      adminAuth.value?.splitKeys?.FIREBASE_PRIVATE_KEY
+    ) {
+      source = 'Using split FIREBASE_* env keys.'
+    }
+
+    return {
+      color: 'success' as const,
+      label: 'configured',
+      description: source,
+    }
+  }
+
+  return {
+    color: 'warning' as const,
+    label: 'missing',
+    description:
+      'Add FIREBASE_SERVICE_ACCOUNT JSON, split keys, or service-account.json under packages/tenants/<ecosystem>/config/.',
+  }
+})
+
+const refreshEnvCheck = () => {
+  void refreshEnv()
+}
 
 const copyRuntime = () => {
   if (typeof navigator === 'undefined' || !navigator.clipboard) return

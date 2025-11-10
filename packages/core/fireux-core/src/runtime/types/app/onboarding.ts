@@ -11,6 +11,7 @@ export type AdminAuthStatus = {
     FIREBASE_CLIENT_EMAIL: boolean
     FIREBASE_PRIVATE_KEY: boolean
   }
+  file?: boolean
   configured: boolean
 }
 

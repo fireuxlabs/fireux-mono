@@ -1,148 +1,106 @@
 <template>
-  <section>
-    <div class="section-header">
-      <h2>Cleaning Solutions for Every Need</h2>
-      <p>Professional tools designed for cleaning businesses of all sizes</p>
-    </div>
-    <div class="grid">
-      <UCard
-        v-for="solution in solutions"
-        :key="solution.title"
-        :to="solution.link"
-        class="solution-card"
-      >
-        <template #header>
-          <div class="card-header">
-            <UIcon :name="solution.icon" class="solution-icon" />
-            <h3>{{ solution.title }}</h3>
-          </div>
-        </template>
+  <section class="solutions">
+    <header class="solutions__header">
+      <div class="solutions__eyebrow">Essential workflows</div>
+      <h2 class="solutions__title">Coordinate every clean without spreadsheets</h2>
+      <p class="solutions__copy">
+        Keep bookings organised, crews dispatched, and client communication tidy. Start with the tools that cleaners rely on daily.
+      </p>
+    </header>
 
-        <p>{{ solution.description }}</p>
-
-        <template #footer>
-          <UButton variant="soft" size="sm" block>
-            {{ solution.buttonText }}
-          </UButton>
-        </template>
-      </UCard>
+    <div class="solutions__grid">
+      <article v-for="card in cards" :key="card.title" class="solutions__card">
+        <div class="solutions__card-icon">
+          <UIcon :name="card.icon" />
+        </div>
+        <h3>{{ card.title }}</h3>
+        <p>{{ card.copy }}</p>
+        <ULink :to="card.href" class="solutions__cta">
+          {{ card.cta }}
+          <UIcon name="i-heroicons-arrow-up-right-20-solid" />
+        </ULink>
+      </article>
     </div>
   </section>
 </template>
 
-<script setup>
-const solutions = [
-  {
-    title: 'Residential Cleaning',
-    description:
-      'Manage home cleaning services with automated scheduling and client communication.',
-    icon: 'i-lucide-home',
-    link: '/residential',
-    buttonText: 'Learn More',
-  },
-  {
-    title: 'Commercial Cleaning',
-    description:
-      'Scale your business with tools for office buildings, retail spaces, and facilities.',
-    icon: 'i-lucide-building',
-    link: '/commercial',
-    buttonText: 'Get Started',
-  },
-  {
-    title: 'Specialized Services',
-    description:
-      'Carpet cleaning, window washing, post-construction cleanup and more.',
-    icon: 'i-lucide-sparkles',
-    link: '/specialized',
-    buttonText: 'Explore Services',
-  },
-  {
-    title: 'Team Management',
-    description:
-      'Coordinate staff, track hours, and manage payroll for your cleaning team.',
-    icon: 'i-lucide-users',
-    link: '/team',
-    buttonText: 'Manage Team',
-  },
-  {
-    title: 'Client Portal',
-    description:
-      'Give clients easy access to booking, billing, and service history.',
-    icon: 'i-lucide-user-check',
-    link: '/portal',
-    buttonText: 'View Portal',
-  },
-  {
-    title: 'Analytics & Reports',
-    description:
-      'Track performance, revenue, and growth with detailed business insights.',
-    icon: 'i-lucide-bar-chart-3',
-    link: '/analytics',
-    buttonText: 'See Reports',
-  },
-]
+<script setup lang="ts">
+export interface SolutionCard {
+  title: string
+  copy: string
+  cta: string
+  href: string
+  icon: string
+}
+
+defineProps<{ cards: SolutionCard[] }>()
+
+defineOptions({ name: 'RichiesLandingSolutions' })
 </script>
 
 <style scoped>
-.section-header {
-  text-align: center;
-  margin-bottom: var(--space-8);
-}
-
-.section-header h2 {
-  font-size: var(--text-3xl);
-  font-weight: 700;
-  margin-bottom: var(--space-3);
-}
-
-.section-header p {
-  font-size: var(--text-lg);
-  color: var(--color-gray-600);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-6);
-}
-
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.solution-card {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.solution-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
+.solutions {
   display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 4vw, 3rem);
+}
+
+.solutions__header {
+  max-width: 48rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.solutions__eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ui-text-muted);
+}
+
+.solutions__title {
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  font-weight: 700;
+}
+
+.solutions__copy {
+  font-size: 1rem;
+  color: var(--ui-text-muted);
+}
+
+.solutions__grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.solutions__card {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--ui-border-subtle);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: var(--ui-shadow-sm);
+}
+
+.solutions__card-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at top, #0d4f49, #041f1c);
+  color: #ecfeff;
+}
+
+.solutions__cta {
+  margin-top: auto;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-3);
-}
-
-.solution-icon {
-  color: var(--color-primary-500);
-  font-size: 1.5rem;
-}
-
-.card-header h3 {
-  font-size: var(--text-lg);
+  gap: 0.5rem;
   font-weight: 600;
-  margin: 0;
 }
 </style>

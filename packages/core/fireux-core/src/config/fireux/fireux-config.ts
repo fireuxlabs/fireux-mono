@@ -1,5 +1,6 @@
 import type { NuxtConfig } from 'nuxt/schema'
 import { resolve as pathResolve, dirname } from 'node:path'
+import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 type ModuleEntry = string | [string, Record<string, any>]
@@ -44,32 +45,163 @@ const requireEnv = (key: string) => {
   return value
 }
 
-function readServiceAccount():
-  | { projectId: string; clientEmail: string; privateKey: string }
-  | undefined {
-  const json = env('FIREBASE_SERVICE_ACCOUNT')
-  if (json) {
-    try {
-      const parsed = JSON.parse(json)
-      const projectId = parsed.project_id ?? parsed.projectId
-      const clientEmail = parsed.client_email ?? parsed.clientEmail
-      const rawKey = parsed.private_key ?? parsed.privateKey
-      const privateKey =
-        typeof rawKey === 'string' ? rawKey.replace(/\\n/g, '\n') : undefined
-      if (projectId && clientEmail && privateKey)
-        return { projectId, clientEmail, privateKey }
-    } catch {
-      /* ignore and fall through to split envs */
-    }
+type ServiceAccountPayload = {
+  credentials: {
+    projectId: string
+    clientEmail: string
+    privateKey: string
   }
+  json: string
+}
+
+function toServiceAccountPayload(
+  input: Record<string, unknown>
+): ServiceAccountPayload | undefined {
+  const projectId = input.project_id ?? input.projectId
+  const clientEmail = input.client_email ?? input.clientEmail
+  const rawKey = input.private_key ?? input.privateKey
+
+  if (typeof projectId !== 'string' || !projectId.trim()) return undefined
+  if (typeof clientEmail !== 'string' || !clientEmail.trim()) return undefined
+  if (typeof rawKey !== 'string' || !rawKey.trim()) return undefined
+
+  let normalizedKey = rawKey
+  if (rawKey.includes('\\n')) {
+    normalizedKey = rawKey.replace(/\\n/g, '\n')
+  }
+
+  const escapedKey = normalizedKey.replace(/\n/g, String.raw`\n`)
+
+  const json = JSON.stringify(
+    {
+      project_id: projectId,
+      client_email: clientEmail,
+      private_key: escapedKey,
+    },
+    null,
+    2
+  )
+
+  return {
+    credentials: {
+      projectId,
+      clientEmail,
+      privateKey: normalizedKey,
+    },
+    json,
+  }
+}
+
+function readServiceAccountFromFile(
+  path: string
+): ServiceAccountPayload | undefined {
+  try {
+    const raw = readFileSync(path, 'utf-8')
+    const parsed = JSON.parse(raw) as Record<string, unknown>
+    return toServiceAccountPayload(parsed)
+  } catch {
+    return undefined
+  }
+}
+
+function readServiceAccountFromInline(): ServiceAccountPayload | undefined {
+  const inlineJson = env('FIREBASE_SERVICE_ACCOUNT')
+  if (!inlineJson) return undefined
+  try {
+    const parsed = JSON.parse(inlineJson) as Record<string, unknown>
+    return toServiceAccountPayload(parsed)
+  } catch {
+    return undefined
+  }
+}
+
+function readServiceAccountFromSplitEnv(): ServiceAccountPayload | undefined {
   const projectId = env('FIREBASE_PROJECT_ID')
   const clientEmail = env('FIREBASE_CLIENT_EMAIL')
   const rawKey = env('FIREBASE_PRIVATE_KEY')
-  const privateKey =
-    typeof rawKey === 'string' ? rawKey.replace(/\\n/g, '\n') : undefined
-  if (projectId && clientEmail && privateKey)
-    return { projectId, clientEmail, privateKey }
+  if (!projectId || !clientEmail || !rawKey) return undefined
+
+  return toServiceAccountPayload({
+    project_id: projectId,
+    client_email: clientEmail,
+    private_key: rawKey,
+  })
+}
+
+function serviceAccountCandidatePaths(ecosystem: string): string[] {
+  const fileEnv = env('FIREBASE_SERVICE_ACCOUNT_FILE')
+  const gcloudCredentials = env('GOOGLE_APPLICATION_CREDENTIALS')
+  const workspaceRoot = resolveWorkspaceRoot()
+  const cwd = process.cwd()
+  const paths = new Set<string>()
+
+  const addPath = (candidate: string) => {
+    if (!candidate) return
+    if (/^\s*$/.test(candidate)) return
+
+    if (candidate.startsWith('file://')) {
+      try {
+        const url = new URL(candidate)
+        paths.add(fileURLToPath(url))
+        return
+      } catch {
+        return
+      }
+    }
+
+    if (pathResolve(candidate) === candidate && candidate.startsWith('/')) {
+      paths.add(candidate)
+      return
+    }
+
+    paths.add(pathResolve(cwd, candidate))
+    paths.add(pathResolve(workspaceRoot, candidate))
+  }
+
+  addPath(fileEnv ?? '')
+  addPath(gcloudCredentials ?? '')
+
+  paths.add(
+    pathResolve(
+      workspaceRoot,
+      `packages/tenants/${ecosystem}-${ecosystem}/config/service-account.json`
+    )
+  )
+  paths.add(
+    pathResolve(
+      workspaceRoot,
+      `packages/tenants/fireux-${ecosystem}/config/service-account.json`
+    )
+  )
+  paths.add(
+    pathResolve(
+      workspaceRoot,
+      `packages/tenants/${ecosystem}/config/service-account.json`
+    )
+  )
+
+  return Array.from(paths)
+}
+
+function readServiceAccountFromFiles(
+  ecosystem: string
+): ServiceAccountPayload | undefined {
+  for (const candidate of serviceAccountCandidatePaths(ecosystem)) {
+    if (!existsSync(candidate)) continue
+    const payload = readServiceAccountFromFile(candidate)
+    if (payload) return payload
+  }
   return undefined
+}
+
+function readServiceAccount(
+  ecosystem: string
+): ServiceAccountPayload | undefined {
+  return (
+    readServiceAccountFromInline() ??
+    readServiceAccountFromSplitEnv() ??
+    readServiceAccountFromFiles(ecosystem)
+  )
 }
 
 /**
@@ -77,10 +209,26 @@ function readServiceAccount():
  * package source via @fs. Safer than process.cwd() guesses.
  */
 function resolveWorkspaceRoot() {
-  const here = dirname(fileURLToPath(import.meta.url))
-  // adjust depth if this file moves
-  const repoRoot = pathResolve(here, '../../../')
-  return repoRoot
+  const explicit = env('FIREUX_WORKSPACE_ROOT')
+  if (explicit) {
+    return pathResolve(explicit)
+  }
+
+  let current = dirname(fileURLToPath(import.meta.url))
+
+  for (let i = 0; i < 10; i += 1) {
+    const hasWorkspace = existsSync(pathResolve(current, 'pnpm-workspace.yaml'))
+    const hasGit = existsSync(pathResolve(current, '.git'))
+    if (hasWorkspace || hasGit) {
+      return current
+    }
+
+    const parent = pathResolve(current, '..')
+    if (parent === current) break
+    current = parent
+  }
+
+  return current
 }
 
 export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
@@ -107,8 +255,10 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
   const neutralColor = opts.neutralColor ?? env('APP_NEUTRAL_COLOR')
   const centralSignupUrl = env('CENTRAL_SIGNUP_URL')
   const appIcon = env('APP_ICON')
+  const developerPin = env('PIN')
 
-  const sa = readServiceAccount()
+  const serviceAccount = readServiceAccount(ecosystem)
+  const sa = serviceAccount?.credentials
 
   const vuefireDefaults: Record<string, any> = {
     auth: { sessionCookie: false },
@@ -173,7 +323,8 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
 
     runtimeConfig: {
       googlePlacesApiKey: env('GOOGLE_PLACES_API_KEY'),
-      firebaseServiceAccount: env('FIREBASE_SERVICE_ACCOUNT'),
+      firebaseServiceAccount:
+        serviceAccount?.json ?? env('FIREBASE_SERVICE_ACCOUNT'),
       public: {
         // flat fields used by FireUX runtime
         devMode: process.env.NODE_ENV !== 'production',
@@ -185,6 +336,7 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
         neutralColor,
         centralSignupUrl,
         appIcon,
+        developerPin,
         firebaseConfig: { ...vuefireMerged.config },
         // legacy compatibility for older tenants
         appSettings: {

@@ -1,116 +1,129 @@
 <template>
   <section class="hero">
-    <h1><strong class="font-black">Clean</strong> with</h1>
-    <h1><span class="highlight fade-in">Professional Solutions</span></h1>
-    <p class="hero-description">
-      The complete platform for cleaning professionals to manage bookings, track
-      services, and grow their business with
-      <span class="highlight">automated workflows</span> &amp;
-      <span class="highlight">client management</span>.
-    </p>
-    <ClientOnly>
-      <div class="features-preview">
-        <div class="feature-item">
-          <UIcon name="i-lucide-calendar" class="feature-icon" />
-          <span>Smart Scheduling</span>
-        </div>
-        <div class="feature-item">
-          <UIcon name="i-lucide-users" class="feature-icon" />
-          <span>Client Management</span>
-        </div>
-        <div class="feature-item">
-          <UIcon name="i-lucide-credit-card" class="feature-icon" />
-          <span>Easy Payments</span>
-        </div>
-      </div>
-    </ClientOnly>
-    <div class="button-group">
-      <UButton variant="solid" to="/getting-started" size="lg"
-        >Get Started</UButton
-      >
-      <UButton
-        variant="outline"
-        to="/dashboard"
-        size="lg"
-        trailing-icon="i-heroicons-arrow-right"
-      >
-        View Dashboard
+    <header class="hero__heading">
+      <p v-if="title" class="hero__title">{{ title }}</p>
+      <p v-if="accent" class="hero__accent">{{ accent }}</p>
+    </header>
+
+    <p class="hero__paragraph" v-html="paragraph"></p>
+
+    <ul v-if="badges?.length" class="hero__badges">
+      <li v-for="badge in badges" :key="badge.alt">
+        <img :src="badge.src" :alt="badge.alt" />
+      </li>
+    </ul>
+
+    <div class="hero__actions">
+      <UButton variant="solid" size="lg" :to="primary.to">
+        {{ primary.label }}
+      </UButton>
+      <UButton variant="outline" size="lg" :to="secondary.to">
+        {{ secondary.label }}
       </UButton>
     </div>
+
+    <ul class="hero__bullets">
+      <li v-for="bullet in bullets" :key="bullet.text">
+        <UIcon :name="bullet.icon" />
+        <span v-html="bullet.text" />
+      </li>
+    </ul>
   </section>
 </template>
 
-<script setup>
-// No additional script needed for this component
+<script setup lang="ts">
+export interface HeroBadge {
+  src: string
+  alt: string
+}
+
+export interface HeroLink {
+  label: string
+  to: string
+}
+
+export interface HeroBullet {
+  icon: string
+  text: string
+}
+
+defineProps<{
+  title: string
+  accent?: string
+  paragraph: string
+  badges?: HeroBadge[]
+  primary: HeroLink
+  secondary: HeroLink
+  bullets: HeroBullet[]
+}>()
+
+defineOptions({ name: 'RichiesLandingHero' })
 </script>
 
 <style scoped>
-/* Mobile-first Styles for Hero Component */
 .hero {
-  text-align: left;
-  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vw, 1.75rem);
 }
 
-.hero h1 {
-  font-size: var(--text-5xl);
-  line-height: 1.2;
-  font-weight: var(--font-weight-black);
+.hero__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
-.hero-description {
-  font-size: var(--text-base);
-  margin-top: var(--space-4);
+.hero__title {
+  font-size: clamp(2.25rem, 4.5vw, 3.25rem);
+  font-weight: 700;
+}
+
+.hero__accent {
+  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  font-weight: 700;
+  color: #0f766e;
+}
+
+.hero__paragraph {
+  color: var(--ui-text-muted);
+  font-size: clamp(1rem, 2.4vw, 1.125rem);
   line-height: 1.6;
 }
 
-.highlight {
-  color: var(--color-primary-500);
-}
-
-.features-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
-  justify-content: flex-start;
-}
-
-.feature-item {
+.hero__badges {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-gray-600);
+  gap: 1.5rem;
 }
 
-.feature-icon {
-  color: var(--color-primary-500);
-  font-size: 1.2rem;
+.hero__badges img {
+  height: 42px;
+  border-radius: 0.75rem;
+  box-shadow: var(--ui-shadow-sm);
 }
 
-.button-group {
+.hero__actions {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
-  width: 100%;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-/* Larger Screen Overrides */
-@media (min-width: 768px) {
-  .button-group {
-    flex-direction: row;
-    width: auto;
-  }
+.hero__bullets {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  color: var(--ui-text-muted);
+  font-size: 0.95rem;
 }
 
-@media (min-width: 1024px) {
-  .hero h1 {
-    font-size: var(--text-7xl);
-  }
-  .hero-description {
-    font-size: var(--text-xl);
-  }
+.hero__bullets li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hero__bullets i,
+.hero__bullets svg {
+  color: #0f766e;
 }
 </style>

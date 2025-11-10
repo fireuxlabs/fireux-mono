@@ -1,113 +1,172 @@
 <template>
-  <div class="app-dashboard">
-    <section class="welcome-section">
-      <div class="welcome-content">
-        <h1 class="app-title">
-          <span class="brand-name">Richies Reinigung</span>
-          <span class="app-subtitle">Trusted Cleaning for Homes & Offices</span>
-        </h1>
+  <div class="landing-page">
+    <EffectsBubbles />
 
-        <p class="app-description">
-          Book one‑off or recurring cleans, coordinate your team, and keep
-          client relationships on track — all in one place.
-        </p>
+    <LandingShell>
+      <template #left>
+        <LandingHero
+          :title="heroContent.title"
+          :accent="heroContent.accent"
+          :paragraph="heroContent.paragraph"
+          :badges="heroContent.badges"
+          :primary="heroContent.primary"
+          :secondary="heroContent.secondary"
+          :bullets="heroContent.bullets"
+        />
+      </template>
 
-        <div class="quick-actions">
-          <UButton
-            to="/professionals"
-            variant="solid"
-            color="primary"
-            size="lg"
-          >
-            <UIcon name="i-lucide-users" />
-            Meet Our Professionals
-          </UButton>
-          <UButton
-            to="/professionals#services"
-            variant="outline"
-            color="primary"
-            size="lg"
-          >
-            <UIcon name="i-lucide-sparkles" />
-            Our Services
-          </UButton>
-        </div>
-      </div>
-    </section>
+      <template #right>
+        <LandingQuickPeek :items="quickPeek" :footer-badge="quickPeekFooter" />
+      </template>
+    </LandingShell>
+
+    <LandingSolutions :cards="solutionCards" />
+
+    <LandingFuel
+      :meters="fuelMeters"
+      @startTour="handleStartTour"
+      @downloadPlaybook="handleDownloadPlaybook"
+    />
+
+    <LandingFeatures :features="featureList" />
+
+    <LandingSkillsIcons :skills="skillTags" />
   </div>
 </template>
 
-<script setup>
-useSeoMeta({
-  title: 'Richies Reinigung – Professional Cleaning Services',
-  description:
-    'Trusted home and office cleaning. Schedule services, manage staff, and keep clients happy in one place.',
-})
+<script setup lang="ts">
+const router = useRouter()
 
 definePageMeta({
-  layout: 'default',
+  layout: 'landing',
   nav: {
     key: 'home',
     label: 'Home',
     icon: 'i-lucide-home',
     desktop: true,
     mobile: true,
-    layouts: ['default'],
+    layouts: ['landing'],
   },
 })
+
+useSeoMeta({
+  title: 'Richies Reinigung — CleanBox Tenant',
+  description:
+    'Book recurring cleans, coordinate crews, and surprise clients with spotless routes — powered by CleanBox.',
+})
+
+const heroContent = {
+  title: 'Richies Reinigung',
+  accent: 'Sparkling spaces. Happy clients.',
+  paragraph:
+    'Keep recurring cleans on schedule, balance crews across city zones, and automate every <span class="text-primary">follow-up</span>. It is the clean sweep for ops leads.',
+  badges: [
+    { src: '/img/cleanbox-logo.svg', alt: 'CleanBox' },
+    { src: '/img/firebase-white.png', alt: 'Firebase' },
+  ],
+  primary: { label: 'Open booking board', to: '/bookings' },
+  secondary: { label: 'Manage clients', to: '/professionals' },
+  bullets: [
+    { icon: 'i-lucide-calendar-check-2', text: 'Route-ready scheduling templates' },
+    { icon: 'i-lucide-map', text: 'Zone-based crew assignments' },
+    { icon: 'i-lucide-message-circle', text: 'Automated client updates' },
+    { icon: 'i-lucide-droplets', text: 'Inventory tied to job kits' },
+  ],
+}
+
+const quickPeek = [
+  {
+    title: 'Routes dispatched',
+    copy: '15 stops across Kreis 1–4 · traffic buffer applied.',
+    icon: 'i-lucide-route',
+  },
+  {
+    title: 'Crew coverage',
+    copy: 'All hands confirmed · 2 floaters on standby.',
+    icon: 'i-lucide-users',
+  },
+  {
+    title: 'Client feedback',
+    copy: 'NPS 68 · 4 kudos waiting for replies.',
+    icon: 'i-lucide-heart-handshake',
+  },
+]
+
+const quickPeekFooter = 'CleanBox · Firestore · Twilio'
+
+const solutionCards = [
+  {
+    title: 'Booking board',
+    copy: 'Drag-and-drop jobs, lock teams, and keep routes balanced.',
+    href: '/bookings',
+    cta: 'View board',
+    icon: 'i-lucide-calendar-clock',
+  },
+  {
+    title: 'Client CRM',
+    copy: 'Track preferences, notes, and service agreements without spreadsheets.',
+    href: '/professionals',
+    cta: 'Open CRM',
+    icon: 'i-lucide-id-card',
+  },
+  {
+    title: 'Supplies & kits',
+    copy: 'Assign consumables to jobs and auto-reorder when bins run low.',
+    href: '/inventory',
+    cta: 'Manage kits',
+    icon: 'i-lucide-sprout',
+  },
+]
+
+const fuelMeters = [
+  { label: 'Route readiness', value: 88, icon: 'i-lucide-map' },
+  { label: 'Crew availability', value: 95, icon: 'i-lucide-smile' },
+  { label: 'Customer delight', value: 91, icon: 'i-lucide-stars' },
+]
+
+const featureList = [
+  {
+    title: 'Zone smart routing',
+    copy: 'Optimise travel blocks with postcode-level grouping and live traffic buffers.',
+  },
+  {
+    title: 'Checklist automation',
+    copy: 'Push tailored checklists to each crew member before arrival.',
+  },
+  {
+    title: 'Customer pulse',
+    copy: 'Get instant feedback and queue responses before the team drives away.',
+  },
+  {
+    title: 'Cleaner wallets',
+    copy: 'Handle payouts, tips, and reimbursements in one ledger.',
+  },
+]
+
+const skillTags = [
+  { label: 'Deep clean lead', icon: 'i-lucide-sparkles' },
+  { label: 'Window specialist', icon: 'i-lucide-scan' },
+  { label: 'Floor care pro', icon: 'i-lucide-squeegee' },
+  { label: 'Office route', icon: 'i-lucide-briefcase' },
+  { label: 'Move-out crew', icon: 'i-lucide-box' },
+  { label: 'Eco supplies', icon: 'i-lucide-leaf' },
+]
+
+const handleStartTour = () => {
+  router.push('/getting-started')
+}
+
+const handleDownloadPlaybook = () => {
+  router.push('/docs/cleaning-playbook')
+}
 </script>
 
 <style scoped>
-.app-dashboard {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-8);
-}
-
-.welcome-section {
-  text-align: center;
-  max-width: 600px;
-}
-
-.app-title {
-  margin-bottom: var(--space-6);
-}
-
-.brand-name {
-  display: block;
-  font-size: var(--text-5xl);
-  font-weight: var(--font-weight-black);
-  color: var(--color-primary-600);
-  margin-bottom: var(--space-2);
-}
-
-.app-subtitle {
-  display: block;
-  font-size: var(--text-2xl);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-gray-600);
-}
-
-.app-description {
-  font-size: var(--text-lg);
-  color: var(--color-gray-600);
-  margin-bottom: var(--space-8);
-  line-height: 1.6;
-}
-
-.quick-actions {
+.landing-page {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  align-items: center;
-}
-
-@media (min-width: 640px) {
-  .quick-actions {
-    flex-direction: row;
-    justify-content: center;
-  }
+  gap: clamp(2.5rem, 6vw, 4rem);
+  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3rem) clamp(4rem, 8vw, 6rem);
 }
 </style>
