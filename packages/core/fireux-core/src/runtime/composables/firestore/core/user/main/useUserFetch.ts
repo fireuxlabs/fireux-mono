@@ -27,14 +27,36 @@ export function useUserFetch(
       : null
   )
 
-  const { data: coreUserRef } = useDocument<User | undefined>(coreDoc as any)
+  const { data: coreUserRef, pending: corePending } = useDocument<
+    User | undefined
+  >(coreDoc as any)
 
-  const { data: appUserRef } = useDocument<AppUser | undefined>(appDoc as any)
+  const { data: appUserRef, pending: appPending } = useDocument<
+    AppUser | undefined
+  >(appDoc as any)
 
   const coreUser = computed(() => coreUserRef.value ?? null)
   const appUser = computed(() => appUserRef.value ?? null)
 
-  return { coreUser, appUser }
+  const user = computed<User | null>(() => {
+    const core = coreUser.value
+    const app = appUser.value
+
+    if (!core) return null
+    if (!app) return core
+
+    return {
+      ...core,
+      role: app.role ?? core.role,
+      appUser: app,
+    }
+  })
+
+  const pending = computed(
+    () => Boolean(corePending.value) || Boolean(appPending?.value)
+  )
+
+  return { user, coreUser, appUser, pending }
 }
 
 export type UserRefs = ReturnType<typeof useUserFetch>

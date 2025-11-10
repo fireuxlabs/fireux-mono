@@ -16,16 +16,18 @@ export type { User } from 'fireux-core/runtime/models/core/user.model.ts'
  */
 export function useUser() {
   const { uid } = useAuth()
-  const { coreUser, appUser } = useUserFetch(uid)
+  const refs = useUserFetch(uid)
+  const { user, coreUser, appUser, pending } = refs
 
   return {
+    user,
     coreUser,
     appUser,
-    user: coreUser,
-    ...useUserComputed({ coreUser, appUser }),
-    ...useUserInterface({ coreUser, appUser }),
-    ...useUserEnsure({ coreUser, appUser }),
-    ...useUserUpdate({ coreUser, appUser }),
-    ...useUserDelete({ coreUser, appUser }),
+    pending,
+    ...useUserComputed(refs, pending),
+    ...useUserInterface(refs),
+    ...useUserEnsure(refs),
+    ...useUserUpdate(refs),
+    ...useUserDelete(refs),
   }
 }

@@ -18,27 +18,25 @@ import { useAppFetch } from 'fireux-core/runtime/composables/firestore/core/app/
 const route = useRoute()
 
 const appId = computed(() => {
-  const param = route.params.id
-  const raw = Array.isArray(param) ? param[0] ?? '' : param?.toString() ?? ''
-  const value = raw.trim()
-  return value.length ? value : null
+  const raw = Array.isArray(route.params.id)
+    ? route.params.id[0]
+    : route.params.id
+  return String(raw ?? '').trim() || null
 })
 
-const { app } = useAppFetch(appId)
-const currentApp = computed(() => app.value ?? null)
+const { app: currentApp } = useAppFetch(appId)
 
-const pageTitle = computed(() => currentApp.value?.app_name ?? 'App Details')
+const appName = computed(() => currentApp.value?.app_name ?? null)
+const pageTitle = computed(() => appName.value ?? 'App Details')
 const pageDescription = computed(() =>
-  currentApp.value?.app_name
-    ? `Inspect ${currentApp.value.app_name}, its overlays, and related apps.`
+  appName.value
+    ? `Inspect ${appName.value}, its overlays, and related apps.`
     : 'Inspect the selected app, its overlays, and related apps.'
 )
 
-useHead({
-  title: computed(() =>
-    currentApp.value?.app_name
-      ? `${currentApp.value.app_name} · App`
-      : 'App Details'
-  ),
-})
+const headTitle = computed(() =>
+  appName.value ? `${appName.value} · App` : 'App Details'
+)
+
+useHead({ title: headTitle })
 </script>

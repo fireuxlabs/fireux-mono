@@ -1,5 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserComputed.ts
 import { computed } from 'vue'
+import type { Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type {
@@ -8,15 +9,15 @@ import type {
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from './useUserFetch.ts'
 
-export type HeaderState = 'sign-in' | 'create-core-user' | 'join-app' | 'avatar'
+type UserCtaKey = 'sign-in' | 'create-core-user' | 'join-app' | 'avatar'
 
-export type NextCta = {
-  key: HeaderState
+type UserCta = {
+  key: UserCtaKey
   label: string
   to: string
 }
 
-const CTA_MAP: Record<HeaderState, NextCta> = {
+const CTA_CONFIG: Record<UserCtaKey, UserCta> = {
   'sign-in': {
     key: 'sign-in',
     label: 'Sign in',
@@ -39,7 +40,7 @@ const CTA_MAP: Record<HeaderState, NextCta> = {
   },
 }
 
-export function useUserComputed(user: UserRefs) {
+export function useUserComputed(user: UserRefs, pending?: Ref<boolean>) {
   const coreUser = user.coreUser as { value: User | null | undefined }
   const appUser = user.appUser as { value: AppUser | null | undefined }
 
@@ -50,15 +51,20 @@ export function useUserComputed(user: UserRefs) {
     () => role === 'tenant' && typeof appId === 'string' && appId.length > 0
   )
 
-  const isLoading = computed(() => coreUser.value === undefined)
+  const isPending = computed(() => Boolean(pending?.value))
+  const isLoading = computed(
+    () => isPending.value || coreUser.value === undefined
+  )
   const currentUser = computed(() => coreUser.value ?? null)
   const hasCoreProfile = computed(() => Boolean(coreUser.value))
   const hasAppProfile = computed(() => Boolean(appUser.value))
-  const hasAnyProfile = computed(
-    () => hasCoreProfile.value || hasAppProfile.value
-  )
 
-  const isSignedIn = computed(() => isAuthenticated.value || Boolean(uid.value))
+  const resolveCtaKey = computed<UserCtaKey>(() => {
+    if (!isAuthenticated.value && !uid.value) return 'sign-in'
+    if (!hasCoreProfile.value) return 'create-core-user'
+    if (isTenant.value && !hasAppProfile.value) return 'join-app'
+    return 'avatar'
+  })
 
   const isAdmin = computed(() => {
     if (appUser.value?.role === 'admin') return true
@@ -73,14 +79,7 @@ export function useUserComputed(user: UserRefs) {
     return appId ? adminOf.includes(appId) : adminOf.length > 0
   })
 
-  const headerState = computed<HeaderState>(() => {
-    if (!isSignedIn.value) return 'sign-in'
-    if (!hasCoreProfile.value) return 'create-core-user'
-    if (isTenant.value && !hasAppProfile.value) return 'join-app'
-    return 'avatar'
-  })
-
-  const cta = computed<NextCta>(() => CTA_MAP[headerState.value])
+  const cta = computed<UserCta>(() => CTA_CONFIG[resolveCtaKey.value])
 
   const hasProfile = (profileType: string): boolean => {
     const core = coreUser.value
@@ -92,12 +91,9 @@ export function useUserComputed(user: UserRefs) {
   return {
     currentUser,
     isLoading,
+    isPending,
     hasCoreProfile,
-    hasAppProfile,
-    hasAnyProfile,
-    isSignedIn,
     isAdmin,
-    headerState,
     cta,
     hasProfile,
   }

@@ -2,9 +2,8 @@
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
-
     <UPageBody class="space-y-6">
-      <OrganismsUserSectionsSingle :user-id="userId" :compact="false" />
+      <OrganismsUserSectionsSingle :user="currentUser" :compact="false" />
       <OrganismsUserSectionsCollection />
     </UPageBody>
   </UPage>
@@ -19,30 +18,25 @@ import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/use
 const route = useRoute()
 
 const userId = computed(() => {
-  const param = route.params.id
-  const raw = Array.isArray(param) ? param[0] ?? '' : param?.toString() ?? ''
-  const value = raw.trim()
-  return value.length ? value : null
+  const raw = Array.isArray(route.params.id)
+    ? route.params.id[0]
+    : route.params.id
+  return String(raw ?? '').trim() || null
 })
 
-const { coreUser } = useUserFetch(userId)
+const { user: currentUser } = useUserFetch(userId)
 
-const currentUser = computed(() => coreUser.value ?? null)
-
-const pageTitle = computed(
-  () => currentUser.value?.display_name ?? 'User Details'
-)
+const displayName = computed(() => currentUser.value?.display_name ?? null)
+const pageTitle = computed(() => displayName.value ?? 'User Details')
 const pageDescription = computed(() =>
-  currentUser.value?.display_name
-    ? `Inspect ${currentUser.value.display_name}, their overlays, and related users.`
+  displayName.value
+    ? `Inspect ${displayName.value}, their overlays, and related users.`
     : 'Inspect the selected user, their overlays, and related users.'
 )
 
-useHead({
-  title: computed(() =>
-    currentUser.value?.display_name
-      ? `${currentUser.value.display_name} · User`
-      : 'User Details'
-  ),
-})
+const headTitle = computed(() =>
+  displayName.value ? `${displayName.value} · User` : 'User Details'
+)
+
+useHead({ title: headTitle })
 </script>

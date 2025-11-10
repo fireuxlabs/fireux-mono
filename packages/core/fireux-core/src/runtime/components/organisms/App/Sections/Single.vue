@@ -3,14 +3,14 @@
   <div class="space-y-6">
     <UCard>
       <template #header>
-        <h2>{{ current?.app_name ?? 'App' }}</h2>
-        <p>{{ current?.description ?? 'App details' }}</p>
+        <h2>{{ headerTitle }}</h2>
+        <p>{{ headerDescription }}</p>
       </template>
 
-      <template v-if="current">
-        <MoleculesPill v-if="pill" v-bind="pill" />
+      <div v-if="current" class="space-y-4">
+        <MoleculesPill v-if="currentPill" v-bind="currentPill" />
         <OrganismsAppCardsCell :app="current" :to="appLink" />
-      </template>
+      </div>
 
       <p v-else>No app loaded.</p>
     </UCard>
@@ -19,7 +19,7 @@
 
     <OrganismsAppSectionsSubcollection
       v-if="showExtended"
-      :app-id="current?.id ?? null"
+      :app-id="subcollectionId"
     />
   </div>
 </template>
@@ -43,15 +43,21 @@ const current = computed<App | null>(
   () => props.app ?? runtimeApp.value ?? null
 )
 
-const pill = computed<Pill.Props | null>(() =>
+const headerTitle = computed(() => current.value?.app_name ?? 'App')
+const headerDescription = computed(
+  () => current.value?.description ?? 'App details'
+)
+
+const currentPill = computed<Pill.Props | null>(() =>
   current.value ? pillProps(current.value) : null
 )
 
-const appLink = computed(() => pill.value?.to ?? null)
+const appLink = computed(() => currentPill.value?.to ?? null)
 
 const profile = computed<AppCard.Profile | null>(() =>
   current.value ? profileProps(current.value) : null
 )
 
 const showExtended = computed(() => !props.compact)
+const subcollectionId = computed(() => current.value?.id ?? null)
 </script>

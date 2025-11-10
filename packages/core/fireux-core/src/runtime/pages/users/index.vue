@@ -3,17 +3,20 @@
   <UPage>
     <UPageHeader
       title="Users"
-      description="Inspect the current user, their overlays, and browse all users available to this runtime."
+      description="Inspect the current user and browse all users available to this runtime."
     />
 
     <UPageBody class="space-y-6">
-      <OrganismsUserSectionsSingle />
+      <OrganismsUserSectionsSingle :user="currentUser" />
       <OrganismsUserSectionsCollection />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import { useHead } from '#imports'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+
 definePageMeta({
   nav: {
     key: 'users',
@@ -29,4 +32,8 @@ definePageMeta({
   layout: 'default',
   name: 'UsersIndexPage',
 })
+
+const { user: currentUser } = useUser()
+
+useHead({ title: 'Users' })
 </script>
