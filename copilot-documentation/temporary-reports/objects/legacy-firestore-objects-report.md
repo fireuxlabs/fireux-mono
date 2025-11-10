@@ -1,3 +1,12 @@
+---
+title: Legacy Firestore Objects Report
+origin: objects-report.md
+archived-on: 2025-11-10
+status: draft
+---
+
+> Migrated from `objects-report.md` on 2025-11-10 as part of the documentation reorganisation.
+
 # Legacy Firestore Objects Report
 
 ## FILE: firestore/objects/Product/useCreateProductState.ts

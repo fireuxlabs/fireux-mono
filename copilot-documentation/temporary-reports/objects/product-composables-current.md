@@ -1,3 +1,12 @@
+---
+title: FireUX Product Composables (Current)
+origin: product-report.md
+archived-on: 2025-11-10
+status: draft
+---
+
+> Migrated from `product-report.md` on 2025-11-10 during the cleanup of root-level markdown.
+
 # FireUX Product Composables (Current)
 
 ## FILE: firestore/objects/Product/useCreateProductState.ts

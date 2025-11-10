@@ -1,3 +1,12 @@
+---
+title: Legacy Navigation Composables Snapshot
+origin: nav-report.md
+archived-on: 2025-11-10
+status: draft
+---
+
+> Migrated from `nav-report.md` on 2025-11-10 during the markdown relocation effort.
+
 # Legacy fireUX/nav catalog
 
 ## FILE: fireUX/nav/defineNav.ts

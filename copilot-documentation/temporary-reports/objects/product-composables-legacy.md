@@ -1,3 +1,12 @@
+---
+title: Legacy Product Composables Snapshot
+origin: product-files.md
+archived-on: 2025-11-10
+status: draft
+---
+
+> Migrated from `product-files.md` on 2025-11-10 while clearing markdown from the repository root.
+
 # Legacy Product Composables Snapshot
 
 ## FILE: firestore/objects/Product/useCreateProductState.ts

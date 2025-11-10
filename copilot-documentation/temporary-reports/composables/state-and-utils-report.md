@@ -1,3 +1,12 @@
+---
+title: FireUX Composables Inventory
+origin: state-and-utils-report.md
+archived-on: 2025-11-10
+status: draft
+---
+
+> Migrated from `state-and-utils-report.md` on 2025-11-10 during the markdown relocation task.
+
 # FireUX Composables Inventory Report
 
 ### Directory: /packages/core/fireux-core/src/runtime/composables/state

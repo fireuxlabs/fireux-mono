@@ -1,3 +1,12 @@
+---
+title: App vs User Stack Comparison
+origin: app-v-user.md
+archived-on: 2025-11-10
+status: draft
+---
+
+> Migrated from `app-v-user.md` on 2025-11-10 during the markdown organisation sweep.
+
 # App vs User Stack Comparison
 
 Legend: `✅` similar responsibilities · `🔄` partial overlap with notable drift · `⚠️` key difference · `🆕` app-only · `👤` user-only

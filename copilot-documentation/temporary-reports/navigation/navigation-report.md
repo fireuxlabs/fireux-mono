@@ -1,3 +1,12 @@
+---
+title: Navigation Metadata Report
+origin: navigation-report.md
+archived-on: 2025-11-10
+status: draft
+---
+
+> Migrated from `navigation-report.md` on 2025-11-10 as part of the root markdown cleanup.
+
 # Navigation Report
 
 ## Active Navigation Composables

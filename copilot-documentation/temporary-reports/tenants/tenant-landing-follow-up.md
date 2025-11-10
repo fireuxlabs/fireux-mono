@@ -1,3 +1,12 @@
+---
+title: Tenant Landing Follow-Up
+origin: landing.md
+archived-on: 2025-11-10
+status: draft
+---
+
+> Migrated from `landing.md` on 2025-11-10 while consolidating documentation under `copilot-documentation/`.
+
 # Tenant Landing Follow-Up
 
 We refreshed the FireUX, Niederhorn, and Richies tenant landing experiences with the new modular component stack. Before shipping, plan these clean-up tasks so the copy and calls-to-action line up with the finished apps:

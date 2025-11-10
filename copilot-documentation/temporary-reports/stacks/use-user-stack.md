@@ -1,3 +1,12 @@
+---
+title: FireUX `useUser` Stack
+origin: use-user.md
+archived-on: 2025-11-10
+status: draft
+---
+
+> Migrated from `use-user.md` on 2025-11-10 during the markdown organisation sweep.
+
 # FireUX Core User Composable Stack
 
 ## packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUser.ts
@@ -458,3 +467,4 @@ export function useUserFormattingAndValidation() {
 ## packages/core/fireux-core/src/runtime/composables/firestore/core/user/utils/forms/usUserValidation.ts
 
 _(file is empty)_
+```}

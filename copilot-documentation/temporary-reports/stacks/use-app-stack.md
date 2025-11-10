@@ -1,3 +1,12 @@
+---
+title: FireUX `useApp` Stack
+origin: use-app.md
+archived-on: 2025-11-10
+status: draft
+---
+
+> Migrated from `use-app.md` on 2025-11-10 during the markdown organisation sweep.
+
 # FireUX Core App Composable Stack
 
 ## packages/core/fireux-core/src/runtime/composables/firestore/core/app/useApp.ts
@@ -316,7 +325,4 @@ export function useAppUsers() {
   return { appUsers }
 }
 ```
-
-```
-
-```
+```}
