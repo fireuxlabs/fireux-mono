@@ -8,7 +8,7 @@
       </template>
 
       <div v-if="current" class="space-y-4">
-        <MoleculesPill v-if="currentPill" v-bind="currentPill" />
+        <OrganismsUserCardsPill v-if="currentPill" :user="currentPill" />
         <OrganismsUserCardsCell :user="current" :to="coreLink" />
       </div>
 
@@ -28,7 +28,6 @@ import type {
   User,
   UserCard,
 } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
 const props = withDefaults(
@@ -49,7 +48,7 @@ const headerDescription = computed(() => {
   return handle ? `@${handle}` : '@unknown'
 })
 
-const currentPill = computed<Pill.Props | null>(() =>
+const currentPill = computed<UserCard.Pill | null>(() =>
   current.value ? { ...pillProps(current.value) } : null
 )
 

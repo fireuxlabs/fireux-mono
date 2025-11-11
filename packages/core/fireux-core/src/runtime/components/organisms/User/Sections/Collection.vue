@@ -14,10 +14,10 @@
     </template>
 
     <div v-if="directoryEntries.length" class="fx-section__grid">
-      <MoleculesPill
+      <OrganismsUserCardsPill
         v-for="entry in directoryEntries"
         :key="entry.key"
-        v-bind="entry.pill"
+        :user="entry.pill"
       />
     </div>
 
@@ -29,12 +29,12 @@
 import { computed } from 'vue'
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
 import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserInterface.ts'
-import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
+import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
 
 const { users } = useUserCollection()
 const { pillProps } = useUserInterface()
 
-type DirectoryEntry = { key: string; pill: Pill.Props }
+type DirectoryEntry = { key: string; pill: UserCard.Pill }
 
 const directoryEntries = computed<DirectoryEntry[]>(() => {
   const list = users.value ?? []

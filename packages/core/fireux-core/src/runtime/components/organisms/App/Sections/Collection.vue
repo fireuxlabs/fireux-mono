@@ -19,7 +19,7 @@
         :key="entry.key"
         class="space-y-2"
       >
-        <MoleculesPill v-bind="entry.pill" />
+        <OrganismsAppCardsPill :app="entry.pill" />
       </article>
     </div>
 
@@ -31,12 +31,11 @@
 import { computed } from 'vue'
 import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
 import { useAppInterface } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppInterface.ts'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
+import type { App, AppCard } from 'fireux-core/runtime/models/core/app.model.ts'
 const { apps } = useAppCollection()
 const { pillProps } = useAppInterface()
 
-type DirectoryEntry = { key: string; pill: Pill.Props }
+type DirectoryEntry = { key: string; pill: AppCard.Pill }
 
 const directoryEntries = computed<DirectoryEntry[]>(() => {
   const list = apps.value ?? []

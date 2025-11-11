@@ -37,8 +37,10 @@ export interface AppUser {
  * UI View Models (purely structural)
  * --------------------------- */
 export namespace UserCard {
+  export interface Pill extends PillModel.Props {}
+
   /** Cell extends Pill props + adds 'to' and domain fields */
-  export interface Cell extends PillModel.Props {
+  export interface Cell extends Pill {
     to: string
     id: string
     profiles?: string[]

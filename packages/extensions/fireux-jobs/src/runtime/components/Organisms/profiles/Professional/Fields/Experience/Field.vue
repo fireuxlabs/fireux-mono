@@ -3,11 +3,22 @@
   <div v-if="mode === 'display'" class="space-y-3">
     <div class="flex items-start justify-between gap-3">
       <div class="flex-1 min-w-0">
-        <MoleculesPill
-          :avatar="displayAvatar || ''"
-          :title="organizationLabel"
-          :subtitle="item.role || '—'"
-        />
+        <div class="experience-pill">
+          <UAvatar
+            :src="displayAvatar || undefined"
+            :alt="organizationLabel"
+            size="sm"
+            class="experience-pill__avatar"
+          />
+          <div class="experience-pill__text">
+            <span class="experience-pill__title">
+              {{ organizationLabel }}
+            </span>
+            <span class="experience-pill__subtitle">
+              {{ roleLabel || '—' }}
+            </span>
+          </div>
+        </div>
       </div>
       <UButton
         size="xs"
@@ -69,11 +80,22 @@
       <UForm :state="item" class="space-y-6" @submit.prevent="emit('save')">
         <section class="space-y-3">
           <div class="flex flex-wrap items-start justify-between gap-3">
-            <MoleculesPill
-              :avatar="displayAvatar || ''"
-              :title="organizationLabel"
-              :subtitle="locationLabel || '—'"
-            />
+            <div class="experience-pill experience-pill--elevated">
+              <UAvatar
+                :src="displayAvatar || undefined"
+                :alt="organizationLabel"
+                size="sm"
+                class="experience-pill__avatar"
+              />
+              <div class="experience-pill__text">
+                <span class="experience-pill__title">
+                  {{ organizationLabel }}
+                </span>
+                <span class="experience-pill__subtitle">
+                  {{ locationLabel || '—' }}
+                </span>
+              </div>
+            </div>
           </div>
           <p class="text-xs text-neutral-500">
             Place link is fixed. Contact support if the wrong place was chosen.
@@ -237,6 +259,11 @@ const displayAvatar = computed(() => {
   return manual || undefined
 })
 
+const roleLabel = computed(() => {
+  const role = (props.item?.role ?? '').toString().trim()
+  return role || null
+})
+
 const organizationLabel = computed(() => {
   const placeName = hydratedPlace.value?.name?.trim()
   if (placeName) return placeName
@@ -315,3 +342,53 @@ watch(
   }
 )
 </script>
+
+<style scoped>
+.experience-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 9999px;
+  background: var(--ui-background-200, rgba(148, 163, 184, 0.12));
+  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
+}
+
+.experience-pill--elevated {
+  background: var(--ui-background-100, rgba(255, 255, 255, 0.9));
+  border-color: var(--ui-primary-200, rgba(191, 219, 254, 0.65));
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+}
+
+.experience-pill__avatar {
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1px var(--ui-border-200, rgba(148, 163, 184, 0.45)) inset;
+}
+
+.experience-pill__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.experience-pill__title {
+  font-weight: 600;
+  line-height: 1.1;
+  display: block;
+  max-width: 20rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.experience-pill__subtitle {
+  font-size: 0.75rem;
+  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
+  display: block;
+  max-width: 20rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>

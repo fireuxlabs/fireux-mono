@@ -2,54 +2,11 @@
    FireUX Cards - Minimal Dev Mode Stubs
    ============================ */
 
-/* Card stub classes */
-.card {
-  display: block; /* Future: enhanced card styling */
-}
-
-.card.pill {
-  display: block; /* Future: pill card styling */
-}
-
-.card.cell {
-  display: block; /* Future: cell card styling */
-}
-
-/* Card content stubs */
-.card-header {
-  display: block; /* Future: card header styling */
-}
-
-.card-content {
-  display: block; /* Future: card content styling */
-}
-
-.card-footer {
-  display: block; /* Future: card footer styling */
-}
-
-/* Profile card stubs */
+/* Card stubs */
+.card,
+.card-header,
+.card-content,
+.card-footer,
 .profile-card {
-  display: block; /* Future: profile card styling */
-}
-
-.user-card {
-  display: block; /* Future: user card styling */
-}
-
-/* Domain-specific stubs */
-.chef-pill {
-  display: block; /* Future: chef styling */
-}
-
-.supplier-pill {
-  display: block; /* Future: supplier styling */
-}
-
-.professional-pill {
-  display: block; /* Future: professional styling */
-}
-
-.employer-pill {
-  display: block; /* Future: employer styling */
+  display: block;
 }

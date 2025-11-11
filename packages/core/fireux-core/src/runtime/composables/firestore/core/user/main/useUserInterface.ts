@@ -6,7 +6,6 @@ import type {
   UserCard,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
-import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
 
 const subtitleFor = (handle?: string | null): string =>
   handle ? `@${handle}` : ''
@@ -25,9 +24,9 @@ export function useUserInterface(
   }
 
   const firstInitial = (u?: User | null) =>
-    (u?.display_name?.[0]?.toUpperCase() || 'A')
+    u?.display_name?.[0]?.toUpperCase() || 'A'
 
-  const pillProps = (target?: User | null): Pill.Props => {
+  const pillProps = (target?: User | null): UserCard.Pill => {
     const user = target ?? resolve()
     const title = user?.display_name ?? ''
 

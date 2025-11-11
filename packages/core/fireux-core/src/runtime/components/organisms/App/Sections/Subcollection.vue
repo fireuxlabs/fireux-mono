@@ -21,10 +21,10 @@
         >
           <h3 class="fx-section__label font-semibold">{{ section.title }}</h3>
           <div v-if="section.pills.length" class="fx-section__grid">
-            <MoleculesPill
+            <OrganismsUserCardsPill
               v-for="pill in section.pills"
               :key="pill.title + (pill.subtitle || '')"
-              v-bind="pill"
+              :user="pill"
             />
           </div>
           <p v-else class="fx-section__empty">No entries found.</p>

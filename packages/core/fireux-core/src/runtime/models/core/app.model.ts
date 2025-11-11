@@ -47,8 +47,10 @@ export interface App {
  * UI View Models (purely structural)
  * --------------------------- */
 export namespace AppCard {
+  export interface Pill extends PillModel.Props {}
+
   /** Cell extends Pill props + adds 'to' and domain fields */
-  export interface Cell extends PillModel.Props {
+  export interface Cell extends Pill {
     to: string
     id: string
     app_name: string
@@ -62,6 +64,16 @@ export namespace AppCard {
     ecosystem?: string
   }
 
-  /** Profile mirrors Cell for future expansion */
-  export interface Profile extends Cell {}
+  /** Profile extends Cell with richer metadata */
+  export interface Profile extends Cell {
+    app_short_name?: string | null
+    slug?: string | null
+    description?: string | null
+    status?: AppStatus | null
+    social_links?: App['social_links']
+    join_requests?: string[]
+    joinRequestCount?: number
+    adminCount?: number
+    updated_at?: Ts
+  }
 }

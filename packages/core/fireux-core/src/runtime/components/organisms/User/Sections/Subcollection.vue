@@ -21,7 +21,7 @@
           class="space-y-3 rounded-md border border-slate-200 p-3 text-sm dark:border-slate-800"
         >
           <header class="flex items-center justify-between gap-2">
-            <MoleculesPill v-bind="entry.pill" class="max-w-md" />
+            <OrganismsUserCardsPill :user="entry.pill" class="max-w-md" />
             <UBadge variant="soft">{{ entry.roleLabel }}</UBadge>
           </header>
 
@@ -76,15 +76,17 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
 import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserInterface.ts'
 import type { FirebaseTimestamp } from 'fireux-core/runtime/types/firebase.ts'
-import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import type {
+  User,
+  UserCard,
+} from 'fireux-core/runtime/models/core/user.model.ts'
 import type { RouteLocationRaw } from 'vue-router'
 
 type DetailItem = { label: string; value: string; mono?: boolean }
 
 type OverlayEntry = {
   key: string
-  pill: Pill.Props
+  pill: UserCard.Pill
   roleLabel: string
   details: DetailItem[]
   overlay: Record<string, unknown>
@@ -132,7 +134,7 @@ const overlays = computed<OverlayEntry[]>(() => {
         }
       }
 
-      const pill: Pill.Props = {
+      const pill: UserCard.Pill = {
         ...base,
         subtitle: base.subtitle || `Role: ${overlay.role ?? 'member'}`,
         to: link,

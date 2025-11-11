@@ -13,7 +13,10 @@
 
         <template v-if="current">
           <div class="space-y-4">
-            <MoleculesPill v-bind="pillProps(current)" class="max-w-md" />
+            <JobProfilesProfessionalCardsPill
+              :professional="pillProps(current)"
+              class="max-w-md"
+            />
             <OrganismsProfilesProfessionalCardsCell
               :professional="cellProps(current)"
             />
@@ -46,10 +49,10 @@
           v-if="directoryPills.length"
           class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
         >
-          <MoleculesPill
+          <JobProfilesProfessionalCardsPill
             v-for="pill in directoryPills"
             :key="pill.title + (pill.subtitle || '')"
-            v-bind="pill"
+            :professional="pill"
           />
         </div>
         <p v-else class="text-sm opacity-70">
@@ -104,9 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import 'fireux-core/runtime/assets/styles/scss/pages/indexes.scss'
 import { computed } from 'vue'
-import OrganismsProfilesProfessionalCardsCell from '../../components/Organisms/profiles/Professional/Cards/Cell.vue'
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
 import { useProfessionalComputed } from '../../composables/firestore/profiles/Professional/main/useProfessionalComputed.ts'
 import { useProfessionalInterface } from '../../composables/firestore/profiles/Professional/main/useProfessionalInterface.ts'

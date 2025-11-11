@@ -30,7 +30,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUser } from '../../../composables/firestore/core/user/useUser.ts'
-import type { Pill } from '../../../types/pill.model.ts'
+import type { UserCard } from '../../../models/core/user.model.ts'
 
 defineOptions({ name: 'LayoutsDashboardUserMenu' })
 defineProps<{ collapsed?: boolean }>()
@@ -43,7 +43,7 @@ const avatarInitials = computed(
   () => pillProps(user.value ?? null).initials ?? 'A'
 )
 
-const pillUser = computed<Pill.Props | undefined>(() => {
+const pillUser = computed<UserCard.Pill | undefined>(() => {
   const u = user.value
   if (!u) return undefined
   const base = pillProps(u)

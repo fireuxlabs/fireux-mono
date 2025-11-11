@@ -6,8 +6,15 @@
     :dev-data="currentUser"
   >
     <UPageCard v-if="currentUser" variant="subtle">
-      <div class="grid gap-4 md:grid-cols-2">
-        <OrganismsUserCardsProfile :user="currentUser" />
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div class="space-y-4">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <OrganismsUserCardsPill :user="currentUserPill" />
+            <OrganismsUserCardsCell :user="currentUser" :to="userLink" />
+          </div>
+          <OrganismsUserCardsProfile :user="currentUser" />
+        </div>
+
         <OrganismsUserEdit :user="currentUser" />
       </div>
     </UPageCard>
@@ -47,11 +54,20 @@ useHeadFn?.({ title: 'Your Profile' })
 
 const { currentUser, pillProps, isLoading } = useUser()
 
+const currentUserPill = computed(() =>
+  currentUser.value ? pillProps(currentUser.value) : null
+)
+const userLink = computed(() =>
+  currentUser.value?.id ? `/users/${currentUser.value.id}` : null
+)
+
 const hero = computed(() => {
   const value = currentUser.value
   if (!value) return null
+  const pill = currentUserPill.value
   return {
-    pill: pillProps(value),
+    pillComponent: 'OrganismsUserCardsPill',
+    pillProps: pill ? { user: pill } : null,
     cellComponent: 'OrganismsUserCardsCell',
     cellProps: {
       user: value,

@@ -14,7 +14,10 @@
 
         <template v-if="current">
           <div class="space-y-4">
-            <MoleculesPill v-bind="pillProps(current)" class="max-w-md" />
+            <MiseProfilesSupplierCardsPill
+              :supplier="pillProps(current)"
+              class="max-w-md"
+            />
             <OrganismsProfilesSupplierCardsCell
               :supplier="cellProps(current)"
             />
@@ -45,10 +48,10 @@
           v-if="directoryPills.length"
           class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
         >
-          <MoleculesPill
+          <MiseProfilesSupplierCardsPill
             v-for="pill in directoryPills"
             :key="pill.title + (pill.subtitle || '')"
-            v-bind="pill"
+            :supplier="pill"
           />
         </div>
         <p v-else class="text-sm opacity-70">
@@ -101,9 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import 'fireux-core/runtime/assets/styles/scss/pages/indexes.scss'
 import { computed } from 'vue'
-import OrganismsProfilesSupplierCardsCell from '../../components/organisms/profiles/Supplier/Cards/Cell.vue'
 import { useSupplier } from '../../composables/firestore/profiles/Supplier/useSupplier.ts'
 import { useSupplierComputed } from '../../composables/firestore/profiles/Supplier/main/useSupplierComputed.ts'
 import { useSupplierInterface } from '../../composables/firestore/profiles/Supplier/main/useSupplierInterface.ts'

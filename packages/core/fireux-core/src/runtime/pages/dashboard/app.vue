@@ -7,7 +7,20 @@ packages/core/fireux-core/src/runtime/pages/dashboard/app.vue
     :hero="hero"
     :dev-data="app"
   >
-    <OrganismsAppEdit v-if="isAdmin && currentApp" :app="currentApp" />
+    <UPageCard v-if="isAdmin && currentApp" variant="subtle">
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div class="space-y-4">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <OrganismsAppCardsPill :app="currentAppPill" />
+            <OrganismsAppCardsCell :app="currentApp" :to="appLink" />
+          </div>
+          <OrganismsAppCardsProfile :app="currentApp" />
+        </div>
+
+        <OrganismsAppEdit :app="currentApp" />
+      </div>
+    </UPageCard>
+
     <template v-else-if="!isLoading && !isAdmin">
       <p class="text-sm text-gray-500">
         You don’t have permission to edit this app.
@@ -21,14 +34,23 @@ import { computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useApp } from '../../composables/firestore/core/app/useApp.ts'
 import { useUser } from '../../composables/firestore/core/user/useUser.ts'
+import { useAppInterface } from '../../composables/firestore/core/app/main/useAppInterface.ts'
 
 const { app } = useApp()
 const { isAdmin } = useUser()
+const { pillProps: appPillProps } = useAppInterface(app)
 const router = useRouter()
 
 const isLoading = computed(() => app.value === undefined)
 const currentApp = computed(() =>
   app.value === undefined ? null : app.value ?? null
+)
+const appLink = computed(() => {
+  const value = currentApp.value
+  return value?.id ? `/apps/${value.id}` : null
+})
+const currentAppPill = computed(() =>
+  currentApp.value ? appPillProps(currentApp.value) : null
 )
 
 definePageMeta({
@@ -47,15 +69,11 @@ const hero = computed(() => {
   const value = currentApp.value
   if (!value) return null
 
-  const to = value.id ? `/apps/${value.id}` : null
+  const pill = currentAppPill.value
+  const to = appLink.value
   return {
-    pill: {
-      to,
-      title: value.app_name || value.id,
-      subtitle: value.ecosystem || value.role || null,
-      avatar: value.avatar_url || value.logo_url || value.wordmark_url || null,
-      initials: 'A',
-    },
+    pillComponent: 'OrganismsAppCardsPill',
+    pillProps: pill ? { app: pill } : null,
     cellComponent: 'OrganismsAppCardsCell',
     cellProps: {
       app: value,

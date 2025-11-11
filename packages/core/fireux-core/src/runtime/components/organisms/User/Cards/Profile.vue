@@ -135,18 +135,18 @@
           <span class="detail-label">User ID</span>
           <span class="detail-value mono">{{ user?.id || '—' }}</span>
         </div>
-        <div v-if="user?.created_at" class="detail-row">
+        <div v-if="createdAt" class="detail-row">
           <span class="detail-label">Created</span>
           <span class="detail-value">
             <UIcon name="i-lucide-clock" class="icon" />
-            {{ String(user.created_at) }}
+            {{ createdAt }}
           </span>
         </div>
-        <div v-if="user?.updated_at" class="detail-row">
+        <div v-if="updatedAt" class="detail-row">
           <span class="detail-label">Updated</span>
           <span class="detail-value">
             <UIcon name="i-lucide-refresh-cw" class="icon" />
-            {{ String(user.updated_at) }}
+            {{ updatedAt }}
           </span>
         </div>
       </div>
@@ -155,8 +155,18 @@
 </template>
 
 <script setup lang="ts">
-// Accept any user-like shape for now; template is resilient to partials
-defineProps<{ user: any }>()
+import { computed } from 'vue'
+import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
+
+const props = defineProps<{ user: any }>()
+
+const user = computed(() => props.user ?? null)
+const createdAt = computed(
+  () => formatFirestoreTimestamp(user.value?.created_at) ?? ''
+)
+const updatedAt = computed(
+  () => formatFirestoreTimestamp(user.value?.updated_at) ?? ''
+)
 </script>
 
 <style scoped>

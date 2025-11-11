@@ -1,8 +1,10 @@
 import { computed, ref, watchEffect, type ComputedRef, type Ref } from 'vue'
 
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
+import type {
+  User,
+  UserCard,
+} from 'fireux-core/runtime/models/core/user.model.ts'
 
 type JoinRequestItem = {
   id: string
@@ -16,7 +18,7 @@ type HandleJoinRequests = (uid: string, approve: boolean) => Promise<unknown>
 
 type UserRef = ComputedRef<User | null>
 
-type PillBuilder = ComputedRef<(target?: User | null) => Pill.Props>
+type PillBuilder = ComputedRef<(target?: User | null) => UserCard.Pill>
 
 type Options = {
   app: Ref<App | null | undefined>

@@ -6,6 +6,7 @@ const MAX_HANDLE_LENGTH = 30
 const MAX_EMAIL_LENGTH = 254
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_BIO_LENGTH = 280
+const MAX_AVATAR_URL_LENGTH = 2048
 
 function validateDisplayName(name: string) {
   const value = (name || '').trim()
@@ -85,15 +86,70 @@ function formatBio(raw: string) {
   return raw.replaceAll('\r\n', '\n').trim()
 }
 
+function validateAvatarUrl(raw: string | null | undefined) {
+  const value = typeof raw === 'string' ? raw.trim() : ''
+  if (!value) return { isValid: true }
+  if (value.length > MAX_AVATAR_URL_LENGTH) {
+    return {
+      isValid: false,
+      message: 'URL is too long.',
+    }
+  }
+
+  try {
+    const url = new URL(value)
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      return {
+        isValid: false,
+        message: 'Use an http or https URL.',
+      }
+    }
+  } catch {
+    return {
+      isValid: false,
+      message: 'Enter a valid URL.',
+    }
+  }
+
+  return { isValid: true }
+}
+
+function formatAvatarUrl(raw: string | null | undefined) {
+  if (typeof raw !== 'string') return ''
+  return raw.trim()
+}
+
+const DisplayName = {
+  validate: validateDisplayName,
+  format: formatDisplayName,
+}
+
+const Handle = {
+  validate: validateHandle,
+  format: formatHandle,
+}
+
+const Email = {
+  validate: validateEmail,
+  format: formatEmail,
+}
+
+const Bio = {
+  validate: validateBio,
+  format: formatBio,
+}
+
+const AvatarUrl = {
+  validate: validateAvatarUrl,
+  format: formatAvatarUrl,
+}
+
 export function useUserFormattingAndValidation() {
   return {
-    validateDisplayName,
-    formatDisplayName,
-    validateHandle,
-    formatHandle,
-    validateEmail,
-    formatEmail,
-    validateBio,
-    formatBio,
+    DisplayName,
+    Handle,
+    Email,
+    Bio,
+    AvatarUrl,
   }
 }

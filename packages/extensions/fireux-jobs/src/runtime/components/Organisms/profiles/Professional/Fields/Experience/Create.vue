@@ -7,11 +7,20 @@
       <!-- Selected place & experience form -->
       <div v-if="selected" class="rounded-xl bg-background-2/90 p-4 space-y-4">
         <div class="flex flex-wrap items-start justify-between gap-3">
-          <MoleculesPill
-            :avatar="selected.avatar || ''"
-            :title="selected.name"
-            :subtitle="selected.formatted_address || '—'"
-          />
+          <div class="experience-pill experience-pill--elevated">
+            <UAvatar
+              :src="selected.avatar || undefined"
+              :alt="selected.name"
+              size="sm"
+              class="experience-pill__avatar"
+            />
+            <div class="experience-pill__text">
+              <span class="experience-pill__title">{{ selected.name }}</span>
+              <span class="experience-pill__subtitle">
+                {{ selected.formatted_address || '—' }}
+              </span>
+            </div>
+          </div>
         </div>
 
         <UForm :state="form" class="space-y-6" @submit.prevent="onConfirm">
@@ -326,3 +335,53 @@ watch(
   }
 )
 </script>
+
+<style scoped>
+.experience-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 9999px;
+  background: var(--ui-background-200, rgba(148, 163, 184, 0.12));
+  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
+}
+
+.experience-pill--elevated {
+  background: var(--ui-background-100, rgba(255, 255, 255, 0.9));
+  border-color: var(--ui-primary-200, rgba(191, 219, 254, 0.65));
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+}
+
+.experience-pill__avatar {
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1px var(--ui-border-200, rgba(148, 163, 184, 0.45)) inset;
+}
+
+.experience-pill__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.experience-pill__title {
+  font-weight: 600;
+  line-height: 1.1;
+  display: block;
+  max-width: 20rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.experience-pill__subtitle {
+  font-size: 0.75rem;
+  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
+  display: block;
+  max-width: 20rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>

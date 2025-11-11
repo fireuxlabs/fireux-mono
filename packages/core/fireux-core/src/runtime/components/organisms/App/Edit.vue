@@ -2,6 +2,21 @@
 <template>
   <ClientOnly>
     <div v-if="app" class="space-y-6">
+      <!-- Avatar -->
+      <UCard>
+        <div class="flex flex-col items-center gap-2">
+          <MoleculesFormsFirestoreAvatarPicker
+            :src="avatarSrc"
+            :alt="app.app_name || app.id || 'App'"
+            :initials="avatarInitials"
+            :update-function="handleAvatarUpdate"
+          />
+          <p v-if="avatarUploading" class="text-xs text-gray-500">
+            Uploading avatar…
+          </p>
+        </div>
+      </UCard>
+
       <UCard class="fx-section">
         <template #header>
           <div class="fx-section__header">
@@ -100,13 +115,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 import { useAppUpdate } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppUpdate.ts'
 import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/useAppUsers.ts'
 import { useAppJoinRequests } from 'fireux-core/runtime/composables/firestore/core/app/utils/useAppJoinRequests.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
+import { useToastify } from '../../../composables/ui/useToastify.ts'
 
 const props = defineProps<{ app: App }>()
 
@@ -114,29 +130,36 @@ const appRef = computed(() => props.app)
 const appIdRef = computed(() => props.app.id ?? null)
 const app = appRef
 
-const { updateDescription, updateInstagram, handleJoinRequests } =
+const toast = useToastify()
+
+const { updateDescription, updateInstagram, uploadAvatar, handleJoinRequests } =
   useAppUpdate(appRef)
 const { appUsers } = useAppUsers(appIdRef)
-
-const useToastFn = (globalThis as any).useToast as undefined | (() => any)
-const toast = useToastFn ? useToastFn() : undefined
 const { pillProps } = useUser()
+
+const avatarSrc = computed(
+  () =>
+    app.value?.avatar_url ||
+    app.value?.logo_url ||
+    app.value?.wordmark_url ||
+    ''
+)
+
+const avatarInitials = computed(() => {
+  const name = app.value?.app_name || app.value?.id || 'A'
+  return name.slice(0, 2).toUpperCase()
+})
 
 const withToast =
   <T>(operation: (value: T) => Promise<unknown>, ok: string, fail: string) =>
   async (value: T) => {
     try {
       await operation(value)
-      toast?.add?.({ title: ok, icon: 'i-heroicons-check-circle' })
+      toast.success(ok)
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'Please try again.'
-      toast?.add?.({
-        title: fail,
-        description: message,
-        color: 'amber',
-        icon: 'i-heroicons-exclamation-triangle',
-      })
+      toast.error(`${fail}: ${message}`)
       throw error
     }
   }
@@ -152,6 +175,21 @@ const handleUpdateInstagram = withToast(
   'Instagram link saved',
   'Failed to update Instagram link'
 )
+
+const avatarUploading = ref(false)
+const handleAvatarUpdate = async (file: File) => {
+  avatarUploading.value = true
+  try {
+    await uploadAvatar(file)
+    toast.success('Avatar updated')
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Failed to update avatar: ${message}`)
+    throw error
+  } finally {
+    avatarUploading.value = false
+  }
+}
 
 const fetchedUser = (uid: string) => {
   const { coreUser } = useUserFetch(uid)

@@ -1,33 +1,5 @@
-/* ============================
-   FireUX SCSS - Minimal Dev Mode Stubs
-   ============================ */
-
-/* Base foundation */
-@use './base.scss';
-@use './grids.scss';
-@use './utilities.scss';
-@use './atoms/atoms.scss';
+/* FireUX SCSS bundle */
 @use './atoms/tokens.scss';
-@use './pages/indexes.scss';
-
-/* Organism stubs */
-@use './organisms/profiles.scss';
-@use './organisms/objects.scss';
-@use './organisms/profile.scss';
 @use './organisms/cards.scss';
+@use './organisms/profiles.scss';
 @use './organisms/sections.scss';
-
-/* ============================
-   Available CSS Classes (Stubs for Future Development)
-   ============================ */
-
-/* 
-Base: .base-container, .base-content
-Grids: .grid, .grid-cols-1, .grid-cols-2, .grid-cols-3, .dashboard-grid, .profile-grid  
-Utilities: .button-group, .fade-in, .flex, .flex-center, .highlight
-Atoms: .badge, .flame-icon, .ui-icon
-Cards: .card, .card.pill, .card.cell, .card-header, .card-content, .card-footer, .profile-card, .user-card
-Objects: .objects, .objects .title, .objects .subtitle, .objects .description, .object-card, .object-list, .object-grid
-Profiles: .profile-edit-container, .read-only-field, .edit-profile-section, .edit-profile-button, .profile-create
-Profile View: .profile-view, .profile-view-header, .profile-view-avatar, .profile-view-info, .profile-view-content
-*/

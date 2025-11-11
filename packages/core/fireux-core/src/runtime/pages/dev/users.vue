@@ -9,7 +9,7 @@
           </div>
         </template>
 
-        <MoleculesPill v-bind="pillFor(currentUser)" />
+        <OrganismsUserCardsPill :user="pillFor(currentUser)" />
 
         <!-- New: show tenant overlay status -->
         <div class="flex items-center gap-2">
@@ -47,7 +47,11 @@
         </template>
 
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <MoleculesPill v-for="u in users" :key="u.id" v-bind="pillFor(u)" />
+          <OrganismsUserCardsPill
+            v-for="u in users"
+            :key="u.id"
+            :user="pillFor(u)"
+          />
         </div>
 
         <DevJsonPanel v-if="usersJson" :data="usersJson" />

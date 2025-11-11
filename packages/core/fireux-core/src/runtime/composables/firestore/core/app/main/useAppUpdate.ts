@@ -8,10 +8,12 @@ import type {
 import { arrayRemove, arrayUnion } from 'firebase/firestore'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate.ts'
+import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
 
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const { updateDocument } = useFirestoreUpdate()
   const { setDocument } = useFirestoreCreate()
+  const { uploadImage } = useImageStorage()
 
   const ensureAppId = () => {
     const id = appRef.value?.id
@@ -19,19 +21,78 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     return id
   }
 
+  const sanitizeDescription = (description: string) =>
+    String(description ?? '')
+      .trim()
+      .slice(0, 500)
+
+  const sanitizeInstagram = (raw: string | null | undefined) => {
+    const value = String(raw ?? '').trim()
+    if (!value) return null
+
+    const normalised = (() => {
+      if (value.startsWith('@'))
+        return `https://instagram.com/${value.slice(1)}`
+      if (/^https?:\/\//i.test(value)) return value
+      return `https://instagram.com/${value}`
+    })()
+
+    try {
+      const url = new URL(normalised)
+      return url.toString()
+    } catch {
+      throw new Error('Invalid Instagram URL')
+    }
+  }
+
+  const sanitizeAvatarUrl = (raw: string | null | undefined) => {
+    const value = String(raw ?? '').trim()
+    if (!value) return null
+    try {
+      const url = new URL(value)
+      if (!['http:', 'https:'].includes(url.protocol)) {
+        throw new Error('Avatar URL must use http or https')
+      }
+      return url.toString()
+    } catch (error) {
+      throw new Error(
+        error instanceof Error && error.message
+          ? error.message
+          : 'Invalid avatar URL'
+      )
+    }
+  }
+
   async function updateDescription(description: string) {
     const id = ensureAppId()
-    const value = String(description ?? '').trim()
+    const value = sanitizeDescription(description)
     await updateDocument<App>('apps', id, { description: value })
   }
 
-  async function updateInstagram(url: string) {
+  async function updateInstagram(url: string | null) {
     const id = ensureAppId()
-    const value = String(url ?? '').trim()
-    const sanitized = value.length > 0 ? value : null
+    const sanitized = sanitizeInstagram(url)
     await updateDocument<App>('apps', id, {
       social_links: { instagram: sanitized },
     })
+  }
+
+  async function updateAvatarUrl(url: string | null) {
+    const id = ensureAppId()
+    const value = sanitizeAvatarUrl(url)
+    await updateDocument<App>('apps', id, { avatar_url: value })
+  }
+
+  async function uploadAvatar(source: File | Blob) {
+    const id = ensureAppId()
+    const token =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : Date.now().toString(36)
+    const path = `apps/${id}/media/avatar/${token}`
+    const url = await uploadImage(path, source)
+    await updateDocument<App>('apps', id, { avatar_url: url })
+    return url
   }
 
   /**
@@ -91,6 +152,8 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   return {
     updateDescription,
     updateInstagram,
+    updateAvatarUrl,
+    uploadAvatar,
     handleJoinRequests,
     setAppUserAdmin,
   }

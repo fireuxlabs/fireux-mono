@@ -13,7 +13,10 @@
 
         <template v-if="current">
           <div class="space-y-4">
-            <MoleculesPill v-bind="pillProps(current)" class="max-w-md" />
+            <MiseProfilesChefCardsPill
+              :chef="pillProps(current)"
+              class="max-w-md"
+            />
             <OrganismsProfilesChefCardsCell :chef="cellProps(current)" />
           </div>
         </template>
@@ -42,10 +45,10 @@
           v-if="directoryPills.length"
           class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
         >
-          <MoleculesPill
+          <MiseProfilesChefCardsPill
             v-for="pill in directoryPills"
             :key="pill.title + (pill.subtitle || '')"
-            v-bind="pill"
+            :chef="pill"
           />
         </div>
         <p v-else class="text-sm opacity-70">
@@ -98,9 +101,7 @@
 </template>
 
 <script setup lang="ts">
-import 'fireux-core/runtime/assets/styles/scss/pages/indexes.scss'
 import { computed } from 'vue'
-import OrganismsProfilesChefCardsCell from '../../components/organisms/profiles/Chef/Cards/Cell.vue'
 import { useChef } from '../../composables/firestore/profiles/Chef/useChef.ts'
 
 const chef = useChef()

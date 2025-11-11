@@ -13,6 +13,5 @@
 </template>
 
 <script setup lang="ts">
-import OrganismsProfilePage from 'fireux-core/runtime/components/organisms/Profile/Page.vue'
 import { professionalConfig } from '../../models/profiles/Professional.model'
 </script>

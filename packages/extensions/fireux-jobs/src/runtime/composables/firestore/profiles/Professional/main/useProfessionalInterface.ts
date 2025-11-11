@@ -1,4 +1,3 @@
-import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type {
   ProfessionalProfile,
@@ -58,7 +57,9 @@ export function useProfessionalInterface(
     }
   }
 
-  const pillProps = (target?: ProfessionalProfile | null): Pill.Props => {
+  const pillProps = (
+    target?: ProfessionalProfile | null
+  ): ProfessionalCard.Pill => {
     const derived = derive(target)
     return {
       avatar: derived.avatar,

@@ -8,7 +8,7 @@
       </template>
 
       <div v-if="current" class="space-y-4">
-        <MoleculesPill v-if="currentPill" v-bind="currentPill" />
+        <OrganismsAppCardsPill v-if="currentPill" :app="currentPill" />
         <OrganismsAppCardsCell :app="current" :to="appLink" />
       </div>
 
@@ -27,7 +27,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { App, AppCard } from 'fireux-core/runtime/models/core/app.model.ts'
-import type { Pill } from 'fireux-core/runtime/types/pill.model.ts'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 
 const props = withDefaults(
@@ -48,7 +47,7 @@ const headerDescription = computed(
   () => current.value?.description ?? 'App details'
 )
 
-const currentPill = computed<Pill.Props | null>(() =>
+const currentPill = computed<AppCard.Pill | null>(() =>
   current.value ? pillProps(current.value) : null
 )
 

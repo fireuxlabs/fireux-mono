@@ -7,21 +7,8 @@
           <h1 class="text-base font-semibold">Current Professional</h1>
         </template>
 
-        <template
-          v-if="
-            professional &&
-            professional.user?.avatar &&
-            professional.user.display_name
-          "
-        >
-          <MoleculesPill
-            :avatar="professional.user.avatar"
-            initials="A"
-            :title="professional.user.display_name"
-            :subtitle="professional.subtitle"
-            :badges="professional.badges"
-            :to="`/professionals/${professional.id}`"
-          />
+        <template v-if="professionalPill">
+          <JobProfilesProfessionalCardsPill :professional="professionalPill" />
         </template>
         <MoleculesNotFound v-else kind="document" entity="professional" />
 
@@ -36,17 +23,8 @@
           <h1 class="text-base font-semibold">Current Employer</h1>
         </template>
 
-        <template
-          v-if="employer && employer.user?.avatar && employer.user.display_name"
-        >
-          <MoleculesPill
-            :avatar="employer.user.avatar"
-            initials="A"
-            :title="employer.user.display_name"
-            :subtitle="employer.subtitle"
-            :badges="employer.badges"
-            :to="`/employers/${employer.id}`"
-          />
+        <template v-if="employerPill">
+          <JobProfilesEmployerCardsPill :employer="employerPill" />
         </template>
         <MoleculesNotFound v-else kind="document" entity="employer" />
 
@@ -61,14 +39,17 @@
 <script setup lang="ts">
 declare function definePageMeta(meta: any): void
 
+import { computed } from 'vue'
 import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profile/useProfile'
 import {
   professionalConfig,
   type ProfessionalProfile,
+  type ProfessionalCard,
 } from '../../models/profiles/Professional.model'
 import {
   employerConfig,
   type EmployerProfile,
+  type EmployerCard,
 } from '../../models/profiles/Employer.model'
 
 definePageMeta({
@@ -87,4 +68,48 @@ definePageMeta({
 const { profile: professional } =
   useProfile<ProfessionalProfile>(professionalConfig)
 const { profile: employer } = useProfile<EmployerProfile>(employerConfig)
+
+const professionalPill = computed<ProfessionalCard.Pill | null>(() => {
+  const value = professional.value
+  if (!value) return null
+
+  const title = (value.title || value.display_name || '').trim()
+  const normalizedTitle = title || 'Professional'
+  const subtitle = value.subtitle || ''
+  const avatar = value.avatar_url || value.avatar || undefined
+  const badges = Array.isArray(value.badges) ? value.badges : []
+  const to = value.id ? `/professionals/${value.id}` : null
+  const initials = normalizedTitle.charAt(0).toUpperCase() || 'P'
+
+  return {
+    avatar: avatar ?? '',
+    initials,
+    title: normalizedTitle,
+    subtitle,
+    badges,
+    to,
+  }
+})
+
+const employerPill = computed<EmployerCard.Pill | null>(() => {
+  const value = employer.value
+  if (!value) return null
+
+  const title = (value.title || value.organization_name || '').trim()
+  const normalizedTitle = title || 'Employer'
+  const subtitle = value.subtitle || ''
+  const avatar = value.avatar_url || value.avatar || undefined
+  const badges = Array.isArray(value.badges) ? value.badges : []
+  const to = value.id ? `/employers/${value.id}` : null
+  const initials = normalizedTitle.charAt(0).toUpperCase() || 'E'
+
+  return {
+    avatar: avatar ?? '',
+    initials,
+    title: normalizedTitle,
+    subtitle,
+    badges,
+    to,
+  }
+})
 </script>

@@ -6,13 +6,26 @@
       :key="item.id"
       class="flex items-center justify-between gap-3"
     >
-      <MoleculesPill
-        :avatar="item.avatar ?? ''"
-        :initials="item.initials ?? ''"
-        :title="item.title"
-        :subtitle="item.subtitle ?? ''"
-        :to="item.to ?? undefined"
-      />
+      <component
+        :is="item.to ? 'NuxtLink' : 'div'"
+        v-bind="item.to ? { to: item.to } : {}"
+        class="list-pill"
+      >
+        <UAvatar
+          :src="item.avatar || undefined"
+          :text="initialsFor(item)"
+          :alt="item.title"
+          size="sm"
+          class="list-pill__avatar"
+        />
+
+        <div class="list-pill__text">
+          <span class="list-pill__title">{{ item.title }}</span>
+          <span v-if="item.subtitle" class="list-pill__subtitle">
+            {{ item.subtitle }}
+          </span>
+        </div>
+      </component>
 
       <div class="flex items-center gap-2">
         <template v-if="actionApprove || actionReject">
@@ -129,6 +142,18 @@ const safeToggleState = (id: string) => {
   }
 }
 
+const initialsFor = (item: ListItem): string => {
+  const base = (item.initials || item.title || '').trim()
+  if (!base) return '·'
+  if (base.length === 1) return base.toUpperCase()
+  const parts = base.split(/\s+/).filter(Boolean)
+  if (!parts.length) return base.charAt(0).toUpperCase()
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
+  const first = parts[0]?.charAt(0) ?? ''
+  const last = parts.at(-1)?.charAt(0) ?? ''
+  return `${first}${last}`.toUpperCase()
+}
+
 async function runAction(action: Ref<ActionHandler | undefined>, id: string) {
   const fn = action.value
   if (!fn || isBusy(id)) return
@@ -162,3 +187,50 @@ const handleToggle = (id: string, next: boolean) =>
 
 defineOptions({ name: 'MoleculesFormsFirestoreListActions' })
 </script>
+
+<style scoped>
+.list-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 9999px;
+  background: var(--ui-background-200, rgba(148, 163, 184, 0.12));
+  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.list-pill__avatar {
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1px var(--ui-border-200, rgba(148, 163, 184, 0.45)) inset;
+}
+
+.list-pill__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.list-pill__title {
+  font-weight: 600;
+  line-height: 1.1;
+  display: block;
+  max-width: 20rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-pill__subtitle {
+  font-size: 0.75rem;
+  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
+  display: block;
+  max-width: 20rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>
