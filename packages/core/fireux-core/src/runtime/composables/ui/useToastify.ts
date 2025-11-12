@@ -18,6 +18,10 @@ type Toastify = {
   success: ToastCaller
   error: ToastCaller
   warn: ToastCaller
+  withToast: <T extends unknown[]>(
+    fn: (...args: T) => Promise<unknown>,
+    messages: { ok: string; fail: string }
+  ) => (...args: T) => Promise<unknown>
 }
 
 function resolveToast(): ToastApi | null {
@@ -104,9 +108,27 @@ export function useToastify(): Toastify {
   const warn: ToastCaller = (message) =>
     callWithFallback(toast, 'warn', message)
 
+  const withToast =
+    <T extends unknown[]>(
+      fn: (...args: T) => Promise<unknown>,
+      messages: { ok: string; fail: string }
+    ) =>
+    async (...args: T) => {
+      try {
+        await fn(...args)
+        if (messages.ok) success(messages.ok)
+      } catch (err) {
+        const detail = err instanceof Error ? err.message : 'Please try again.'
+        const prefix = messages.fail ? `${messages.fail}: ` : ''
+        error(`${prefix}${detail}`)
+        throw err
+      }
+    }
+
   return {
     success,
     error,
     warn,
+    withToast,
   }
 }

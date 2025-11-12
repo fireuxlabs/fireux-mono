@@ -60,48 +60,7 @@
         </p>
       </UCard>
 
-      <!-- Raw snapshots -->
-      <UCard>
-        <template #header><h2>Raw Snapshots</h2></template>
-        <div class="grid gap-4 text-xs md:grid-cols-2">
-          <div>
-            <h3 class="text-xs font-semibold uppercase opacity-60">
-              Core Profile
-            </h3>
-            <pre class="mt-2 whitespace-pre-wrap">{{
-              profile.coreProfile?.value
-            }}</pre>
-          </div>
-          <div>
-            <h3 class="text-xs font-semibold uppercase opacity-60">
-              App Overlay
-            </h3>
-            <pre class="mt-2 whitespace-pre-wrap">{{
-              profile.appProfile?.value
-            }}</pre>
-          </div>
-          <div class="md:col-span-2">
-            <h3 class="text-xs font-semibold uppercase opacity-60">
-              Roster (merged)
-            </h3>
-            <pre class="mt-2 whitespace-pre-wrap">{{ roster }}</pre>
-          </div>
-          <div>
-            <h3 class="text-xs font-semibold uppercase opacity-60">
-              Global Store
-            </h3>
-            <pre class="mt-2 whitespace-pre-wrap">{{
-              globalProfessionals
-            }}</pre>
-          </div>
-          <div>
-            <h3 class="text-xs font-semibold uppercase opacity-60">
-              Tenant Overlays
-            </h3>
-            <pre class="mt-2 whitespace-pre-wrap">{{ localProfessionals }}</pre>
-          </div>
-        </div>
-      </UCard>
+      <!-- Snapshot debugging lives in dev routes only -->
     </UPageBody>
   </UPage>
 </template>
@@ -117,7 +76,7 @@ import { useProfessionalCreate } from '../../composables/firestore/profiles/Prof
 const { profile } = useProfessional()
 const { activeProfile } = useProfessionalComputed(profile)
 const { pillProps, cellProps } = useProfessionalInterface(profile)
-const { professionals, global, local } = useProfessionalCollection()
+const { professionals } = useProfessionalCollection()
 const { createProfessional } = useProfessionalCreate()
 
 const current = activeProfile
@@ -127,9 +86,6 @@ const directoryPills = computed(() =>
   roster.value.map((entry) => pillProps(entry))
 )
 const totalProfessionals = computed(() => directoryPills.value.length)
-
-const globalProfessionals = computed(() => global?.value ?? [])
-const localProfessionals = computed(() => local?.value ?? [])
 
 const creating = createProfessional.state
 

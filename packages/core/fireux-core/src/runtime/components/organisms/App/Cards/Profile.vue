@@ -144,7 +144,7 @@ const roleLabel = computed(() => {
 
 const adminIds = computed(() => {
   const ids = Array.isArray(app.value?.admin_ids)
-    ? (app.value?.admin_ids ?? [])
+    ? app.value?.admin_ids ?? []
     : []
 
   if (!ids.length) return []
@@ -194,7 +194,9 @@ const ensureAdminFetcher = (uid: string) => {
 }
 
 const placeholderPill = (id: string, pending: boolean): UserCard.Pill => {
-  const initials = (id.replace(/[^a-z0-9]/gi, '').slice(0, 2) || 'ID').toUpperCase()
+  const initials = (
+    id.replace(/[^a-z0-9]/gi, '').slice(0, 2) || 'ID'
+  ).toUpperCase()
 
   return {
     avatar: '',

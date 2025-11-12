@@ -58,46 +58,7 @@
         </p>
       </UCard>
 
-      <!-- Raw snapshots -->
-      <UCard>
-        <template #header><h2>Raw Snapshots</h2></template>
-        <div class="grid gap-4 text-xs md:grid-cols-2">
-          <div>
-            <h3 class="text-xs font-semibold uppercase opacity-60">
-              Core Profile
-            </h3>
-            <pre class="mt-2 whitespace-pre-wrap">{{
-              profile.coreProfile?.value
-            }}</pre>
-          </div>
-          <div>
-            <h3 class="text-xs font-semibold uppercase opacity-60">
-              App Overlay
-            </h3>
-            <pre class="mt-2 whitespace-pre-wrap">{{
-              profile.appProfile?.value
-            }}</pre>
-          </div>
-          <div class="md:col-span-2">
-            <h3 class="text-xs font-semibold uppercase opacity-60">
-              Roster (merged)
-            </h3>
-            <pre class="mt-2 whitespace-pre-wrap">{{ roster }}</pre>
-          </div>
-          <div>
-            <h3 class="text-xs font-semibold uppercase opacity-60">
-              Global Store
-            </h3>
-            <pre class="mt-2 whitespace-pre-wrap">{{ globalEmployers }}</pre>
-          </div>
-          <div>
-            <h3 class="text-xs font-semibold uppercase opacity-60">
-              Tenant Overlays
-            </h3>
-            <pre class="mt-2 whitespace-pre-wrap">{{ localEmployers }}</pre>
-          </div>
-        </div>
-      </UCard>
+      <!-- No raw snapshots here; dev tooling lives under /dev/fireux-jobs -->
     </UPageBody>
   </UPage>
 </template>
@@ -113,7 +74,7 @@ import { useEmployerCreate } from '../../composables/firestore/profiles/Employer
 const { profile } = useEmployer()
 const { activeProfile } = useEmployerComputed(profile)
 const { pillProps, cellProps } = useEmployerInterface(profile)
-const { employers, global, local } = useEmployerCollection()
+const { employers } = useEmployerCollection()
 const { createEmployer } = useEmployerCreate()
 
 const current = activeProfile
@@ -123,9 +84,6 @@ const directoryPills = computed(() =>
   roster.value.map((entry) => pillProps(entry))
 )
 const totalEmployers = computed(() => directoryPills.value.length)
-
-const globalEmployers = computed(() => global?.value ?? [])
-const localEmployers = computed(() => local?.value ?? [])
 
 const creating = createEmployer.state
 
