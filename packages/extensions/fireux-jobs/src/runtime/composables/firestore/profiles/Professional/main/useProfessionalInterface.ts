@@ -4,56 +4,64 @@ import type {
   ProfessionalCard,
 } from '../../../../../models/profiles/Professional.model.ts'
 
-const DEFAULT_INITIALS = 'A'
-const toLink = (id?: string | null) => (id ? `/profiles/${id}` : '')
+type CtaAction = {
+  id: string
+  label: string
+  to?: string | null
+  color?: string
+  variant?: string
+}
 
-const initialsFrom = (source?: string | null) => {
-  const value = (source ?? '').trim()
-  return value ? value.charAt(0).toUpperCase() : DEFAULT_INITIALS
+type CtaDescriptor = {
+  title: string
+  description?: string
+  actions: CtaAction[]
 }
 
 export function useProfessionalInterface(
   profile: ProfileRefs<ProfessionalProfile>
 ) {
   const core = () => profile.coreProfile.value ?? null
-  const appOverlay = () => profile.appProfile.value ?? null
+  const overlay = () => profile.appProfile.value ?? null
+
+  const toPath = (id?: string | null) => (id ? `/professionals/${id}` : '')
+
+  const resolve = (target?: ProfessionalProfile | null) => {
+    if (target) return target
+    const base = core()
+    const app = overlay()
+    if (!base && !app) return null
+    if (base && app) return { ...base, ...app }
+    return base ?? app ?? null
+  }
+
+  const badgesFrom = (source?: ProfessionalProfile | null) => {
+    if (!source) return [] as string[]
+    const { health_certifications, badges, specialties } = source
+    if (Array.isArray(health_certifications) && health_certifications.length)
+      return health_certifications
+    if (Array.isArray(badges) && badges.length) return badges
+    if (Array.isArray(specialties) && specialties.length) return specialties
+    return [] as string[]
+  }
+
+  const specialtiesFrom = (source?: ProfessionalProfile | null) => {
+    const list = source?.specialties
+    return Array.isArray(list) ? [...list] : []
+  }
 
   const derive = (target?: ProfessionalProfile | null) => {
-    const overlay: Partial<ProfessionalProfile> | null =
-      target ?? appOverlay() ?? null
-    const base: Partial<ProfessionalProfile> | null = target ? null : core()
-
-    const pick = <T>(
-      selector: (p: Partial<ProfessionalProfile>) => T | null | undefined
-    ): T | undefined =>
-      (overlay && selector(overlay)) ?? (base && selector(base)) ?? undefined
-
-    const id = pick((p) => p.id) ?? ''
-    const title =
-      pick((p) => p.title) ?? pick((p) => p.display_name) ?? 'Professional'
-    const subtitle = pick((p) => p.subtitle) ?? 'professional'
-    const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''
-    const badgesCandidate =
-      pick((p) => p.health_certifications) ??
-      pick((p) => p.badges) ??
-      pick((p) => p.specialties)
-    const specialtiesCandidate = pick((p) => p.specialties)
-    const badges = Array.isArray(badgesCandidate) ? badgesCandidate : []
-    const specialties = Array.isArray(specialtiesCandidate)
-      ? specialtiesCandidate
-      : []
-    const bioShort = pick((p) => p.bio_short) ?? ''
-    const bioLong = pick((p) => p.bio_long) ?? ''
-
+    const profileValue = resolve(target)
     return {
-      id,
-      title,
-      subtitle,
-      avatar,
-      badges,
-      specialties,
-      bioShort,
-      bioLong,
+      id: profileValue?.id ?? '',
+      title:
+        profileValue?.title ?? profileValue?.display_name ?? 'Professional',
+      subtitle: profileValue?.subtitle ?? 'professional',
+      avatar: profileValue?.avatar_url ?? profileValue?.avatar ?? '',
+      badges: badgesFrom(profileValue),
+      specialties: specialtiesFrom(profileValue),
+      bioShort: profileValue?.bio_short ?? '',
+      bioLong: profileValue?.bio_long ?? '',
     }
   }
 
@@ -63,11 +71,10 @@ export function useProfessionalInterface(
     const derived = derive(target)
     return {
       avatar: derived.avatar,
-      initials: initialsFrom(derived.title),
       title: derived.title,
       subtitle: derived.subtitle,
       badges: derived.badges,
-      to: derived.id ? toLink(derived.id) : null,
+      to: derived.id ? toPath(derived.id) : null,
     }
   }
 
@@ -78,7 +85,7 @@ export function useProfessionalInterface(
     return {
       ...pillProps(target),
       id: derived.id,
-      to: derived.id ? toLink(derived.id) : undefined,
+      to: derived.id ? toPath(derived.id) : undefined,
       bio_short: derived.bioShort,
       specialties: derived.specialties,
     }
@@ -94,5 +101,36 @@ export function useProfessionalInterface(
     }
   }
 
-  return { pillProps, cellProps, profileProps }
+  const ctaFor = (target?: ProfessionalProfile | null): CtaDescriptor => {
+    const profileValue = resolve(target)
+    if (profileValue) {
+      return {
+        title: 'Professional profile ready',
+        description: 'Keep your experience current so employers can reach out.',
+        actions: [
+          {
+            id: 'edit-professional',
+            label: 'Open dashboard',
+            to: '/dashboard/professional-profile',
+            color: 'primary',
+          },
+        ],
+      }
+    }
+
+    return {
+      title: 'Create your Professional profile to appear in listings.',
+      description: 'Share your experience so employers can learn about you.',
+      actions: [
+        {
+          id: 'create-professional',
+          label: 'Create Professional Profile',
+          to: '/dashboard/professional-profile',
+          color: 'primary',
+        },
+      ],
+    }
+  }
+
+  return { pillProps, cellProps, profileProps, ctaFor }
 }

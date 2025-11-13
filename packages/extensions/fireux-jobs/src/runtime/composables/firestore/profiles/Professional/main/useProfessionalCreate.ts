@@ -1,6 +1,6 @@
 import { ref, type Ref } from 'vue'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileEnsure.ts'
-import { professionalConfig } from '../../../../models/profiles/Professional.model.ts'
+import { professionalConfig } from '../../../../../models/profiles/Professional.model.ts'
 
 type CreateProfessionalHandler = ((
   patch?: Record<string, unknown>

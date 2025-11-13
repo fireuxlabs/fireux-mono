@@ -7,11 +7,6 @@ import type {
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
 
-const subtitleFor = (handle?: string | null): string =>
-  handle ? `@${handle}` : ''
-
-const toUserPath = (id?: string | null): string => (id ? `/users/${id}` : '')
-
 export function useUserInterface(
   source?: Ref<User | null | undefined> | UserRefs
 ) {
@@ -23,35 +18,27 @@ export function useUserInterface(
     return (source as Ref<User | null | undefined>).value ?? null
   }
 
-  const firstInitial = (u?: User | null) =>
-    u?.display_name?.[0]?.toUpperCase() || 'A'
+  const toPath = (id?: string | null) => (id ? `/users/${id}` : '')
+  const subtitle = (handle?: string | null) => (handle ? `@${handle}` : '')
 
   const pillProps = (target?: User | null): UserCard.Pill => {
     const user = target ?? resolve()
-    const title = user?.display_name ?? ''
-
     return {
       avatar: user?.avatar ?? '',
-      initials: firstInitial(user),
-      title,
-      subtitle: subtitleFor(user?.handle),
+      title: user?.display_name ?? '',
+      subtitle: subtitle(user?.handle),
       badges: user?.profiles ?? [],
-      to: (toUserPath(user?.id) || null) as RouteLocationRaw,
+      to: (toPath(user?.id) || null) as RouteLocationRaw,
     }
   }
 
-  // NOTE: In User model, Cell EXTENDS Pill (unlike App), so including pill fields is correct.
   const cellProps = (target?: User | null): UserCard.Cell => {
     const user = target ?? resolve()
-    const title = user?.display_name ?? ''
+    const base = pillProps(user)
 
     return {
-      avatar: user?.avatar ?? '',
-      initials: firstInitial(user),
-      title,
-      subtitle: subtitleFor(user?.handle),
-      badges: user?.profiles ?? [],
-      to: toUserPath(user?.id),
+      ...base,
+      to: toPath(user?.id),
       id: user?.id ?? '',
       profiles: user?.profiles ?? [],
     }

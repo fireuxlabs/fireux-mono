@@ -26,7 +26,7 @@ export function useUser() {
     pending,
     ...useUserComputed(refs, pending),
     ...useUserInterface(refs),
-    ...useUserEnsure(refs),
+    ...useUserEnsure(),
     ...useUserUpdate(refs),
     ...useUserDelete(refs),
   }

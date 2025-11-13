@@ -7,7 +7,6 @@ import {
   makeHandle,
 } from '../../../utils/ensureCommon.ts'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from './useUserFetch.ts'
 
 type EnsureUserResult = {
   createdCore: boolean
@@ -16,7 +15,7 @@ type EnsureUserResult = {
   displayName: string
 }
 
-export function useUserEnsure(_user?: UserRefs) {
+export function useUserEnsure() {
   const router = useRouter()
   const { isTenant, appId } = useFireUXConfig()
 
@@ -28,22 +27,19 @@ export function useUserEnsure(_user?: UserRefs) {
     const { uid, auth } = await requireUid()
     const displayName = auth?.displayName || 'New User'
 
-    const payload: Partial<User> = {
+    const result = await ensureDoc<User>('users', uid, {
       id: uid,
       email: auth?.email ?? '',
       display_name: displayName,
       handle: makeHandle(displayName, uid),
+    } as User)
+
+    const existing = result.snapshot?.data() as Partial<User> | undefined
+    return {
+      created: result.created,
+      id: uid,
+      displayName: existing?.display_name || displayName,
     }
-
-    const result = await ensureDoc<User>('users', uid, payload as User)
-
-    if (!result.created) {
-      const existing = result.snapshot?.data() as Partial<User> | undefined
-      const resolvedDisplayName = existing?.display_name || displayName
-      return { created: false, id: uid, displayName: resolvedDisplayName }
-    }
-
-    return { created: true, id: uid, displayName }
   }
 
   const ensureApp = async (): Promise<{ created: boolean }> => {

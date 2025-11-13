@@ -1,22 +1,15 @@
 <template>
   <div class="page">
-    <UContainer class="max-w-md mx-auto py-12">
-      <div class="space-y-10">
-        <!-- App Logo and Branding -->
-        <div class="text-center">
-          <h1 class="text-2xl font-bold">Welcome to {{ appName }}</h1>
-        </div>
+    <UContainer class="layout">
+      <header class="heading">
+        <h1 class="title">Welcome to {{ appName }}</h1>
+      </header>
 
-        <!-- Auth System Component -->
-        <OrganismsAuthSystem />
+      <OrganismsAuthSystem />
 
-        <!-- App Info Section -->
-        <div class="text-center">
-          <p class="text-sm text-gray-600">
-            By signing in, you agree to our Terms of Service and Privacy Policy
-          </p>
-        </div>
-      </div>
+      <p class="footnote">
+        By signing in, you agree to our Terms of Service and Privacy Policy.
+      </p>
     </UContainer>
   </div>
 </template>
@@ -43,10 +36,34 @@ useHeadFn?.({
   ],
 })
 
-// Define page metadata for Nuxt
 definePageMeta({
   layout: 'default',
   title: 'Authentication',
   icon: 'i-lucide-lock',
 })
 </script>
+
+<style scoped>
+.layout {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+  display: grid;
+  gap: 2.5rem;
+}
+
+.heading {
+  text-align: center;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.footnote {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--ui-text-muted, #6b7280);
+}
+</style>

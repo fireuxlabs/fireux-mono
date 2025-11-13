@@ -26,7 +26,7 @@ const CTA_CONFIG: Record<UserCtaKey, UserCta> = {
   'create-core-user': {
     key: 'create-core-user',
     label: 'Create Profile',
-    to: '/onboarding',
+    to: '/auth',
   },
   'join-app': {
     key: 'join-app',

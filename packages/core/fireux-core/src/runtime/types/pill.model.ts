@@ -7,7 +7,7 @@ import type { RouteLocationRaw } from 'vue-router'
 export namespace Pill {
   export interface Props {
     avatar: string
-    initials: string
+    initials?: string
     title: string
     subtitle?: string
     badges?: string[]

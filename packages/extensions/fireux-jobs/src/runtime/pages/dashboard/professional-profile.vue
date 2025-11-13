@@ -54,7 +54,7 @@ import type { ProfessionalCoreProfile } from '../../models/profiles/Professional
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional'
 import { useProfessionalComputed } from '../../composables/firestore/profiles/Professional/main/useProfessionalComputed'
 import { useProfessionalInterface } from '../../composables/firestore/profiles/Professional/main/useProfessionalInterface'
-import { useProfessionalCreate } from '../../composables/firestore/profiles/Professional/useProfessionalCreate'
+import { useProfessionalCreate } from '../../composables/firestore/profiles/Professional/main/useProfessionalCreate'
 
 definePageMeta({
   layout: 'dashboard',

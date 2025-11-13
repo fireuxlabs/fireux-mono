@@ -1,6 +1,6 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreUpdate.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
-import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { usePlaceSave } from 'fireux-places/runtime/composables/usePlaceSave.ts'
 import { useFirestore } from 'vuefire'
 import { arrayRemove, arrayUnion, doc, getDoc } from 'firebase/firestore'
@@ -15,23 +15,48 @@ import type {
 const COLLECTION = 'professionals'
 
 export function useProfessionalUpdate(
-  _profile: ProfileRefs<ProfessionalProfile>
+  _profile?: ProfileRefs<ProfessionalProfile>
 ) {
   const { updateDocument } = useFirestoreUpdate()
   const { ensurePlaceExists } = usePlaceSave()
-  const { uploadImage } = useImageStorage()
   const db = useFirestore()
+  const { appId, role } = useFireUXConfig()
+  const isTenant = role === 'tenant' && !!appId
 
-  const getUid = async (): Promise<string> => {
+  type UpdateOptions = { id?: string | null }
+
+  const resolveUid = async (explicit?: string | null): Promise<string> => {
+    if (explicit?.trim()) return explicit.trim()
     const u = await useRequireUser()
     if (!u?.uid) throw new Error('User not authenticated')
     return u.uid
   }
 
+  const updateCoreProfessional = async (
+    payload: Partial<ProfessionalProfile>,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    await updateDocument(COLLECTION, uid, payload)
+  }
+
+  const updateAppProfessional = async (
+    payload: Partial<ProfessionalProfile>,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    if (!isTenant || !appId) {
+      throw new Error(
+        'Missing tenant context for app-scoped professional update'
+      )
+    }
+    const uid = await resolveUid(options.id)
+    await updateDocument(`apps/${appId}/${COLLECTION}`, uid, payload)
+  }
+
   async function setRelevantExperience(
     items: RelevantExperienceItem[] = []
   ): Promise<void> {
-    const uid = await getUid()
+    const uid = await resolveUid()
 
     const professionalRef = doc(db, COLLECTION, uid)
     const snapshot = await getDoc(professionalRef)
@@ -103,16 +128,19 @@ export function useProfessionalUpdate(
 
     await Promise.all(placeTasks)
 
-    await updateDocument(COLLECTION, uid, {
-      relevant_experience: sanitized,
-    })
+    await updateCoreProfessional(
+      {
+        relevant_experience: sanitized,
+      },
+      { id: uid }
+    )
   }
 
   // Overwrite the whole array. Minimal transform: canonicalize optional place_id.
   async function setOtherExperience(
     items: OtherExperienceItem[] = []
   ): Promise<void> {
-    const uid = await getUid()
+    const uid = await resolveUid()
 
     const normalized = items.map((item) => ({
       ...item,
@@ -122,27 +150,17 @@ export function useProfessionalUpdate(
         : undefined,
     }))
 
-    await updateDocument(COLLECTION, uid, {
-      other_experience: normalized,
-    })
-  }
-
-  async function updateDisplayName(display_name: string): Promise<void> {
-    const uid = await getUid()
-    await updateDocument(COLLECTION, uid, { display_name })
-  }
-
-  async function updateAvatar(source: Blob | string): Promise<string> {
-    const uid = await getUid()
-    const path = `${COLLECTION}/${uid}/avatar`
-    const url = await uploadImage(path, source)
-    await updateDocument(COLLECTION, uid, { avatar: url })
-    return url
+    await updateCoreProfessional(
+      {
+        other_experience: normalized,
+      },
+      { id: uid }
+    )
   }
 
   return {
-    updateDisplayName,
-    updateAvatar,
+    updateCoreProfessional,
+    updateAppProfessional,
     setRelevantExperience,
     setOtherExperience,
   }

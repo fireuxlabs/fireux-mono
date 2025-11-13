@@ -2,109 +2,85 @@
 import type { Ref } from 'vue'
 import type { App, AppCard } from 'fireux-core/runtime/models/core/app.model.ts'
 
-const DEFAULT_INITIALS = 'A'
-type SocialLinks = NonNullable<App['social_links']>
-
-const initialsFor = (name?: string | null): string => {
-  const trimmed = (name ?? '').trim()
-  if (!trimmed) return DEFAULT_INITIALS
-
-  const parts = trimmed.split(/\s+/)
-  if (parts.length === 1) {
-    return parts[0].charAt(0).toUpperCase() || DEFAULT_INITIALS
-  }
-
-  const first = parts[0]?.charAt(0) ?? ''
-  const last = parts.at(-1)?.charAt(0) ?? ''
-
-  return (first + last).toUpperCase().slice(0, 2)
-}
-
-const toUniqueStrings = (
-  input?: Array<string | null | undefined>
-): string[] => {
-  if (!Array.isArray(input) || input.length === 0) return []
-
-  const trimmed = input
-    .map((value) => (value ?? '').trim())
-    .filter((value): value is string => value.length > 0)
-
-  return trimmed.length ? Array.from(new Set(trimmed)) : []
-}
-
-const sanitizeSocialLinks = (
-  links?: App['social_links']
-): App['social_links'] | undefined => {
-  if (!links) return undefined
-
-  const result: SocialLinks = {}
-  let hasValue = false
-
-  for (const [key, raw] of Object.entries(links)) {
-    const value = typeof raw === 'string' ? raw.trim() : ''
-    if (!value) continue
-    result[key as keyof SocialLinks] = value
-    hasValue = true
-  }
-
-  return hasValue ? result : undefined
-}
-
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
-  const app = appRef?.value ?? null
+  const current = appRef?.value ?? null
+
+  const toPath = (id?: string | null) => (id ? `/apps/${id}` : '')
+
+  const uniqueStrings = (arr?: Array<string | null | undefined>) =>
+    Array.isArray(arr)
+      ? [
+          ...new Set(
+            arr
+              .map((value) => (value ?? '').trim())
+              .filter((value): value is string => value.length > 0)
+          ),
+        ]
+      : []
+
+  const sanitizeLinks = (links?: App['social_links']) => {
+    if (!links) return undefined
+    const clean = Object.entries(links).reduce<Record<string, string>>(
+      (acc, [key, value]) => {
+        if (typeof value === 'string') {
+          const trimmed = value.trim()
+          if (trimmed) acc[key] = trimmed
+        }
+        return acc
+      },
+      {}
+    )
+    return Object.keys(clean).length
+      ? (clean as App['social_links'])
+      : undefined
+  }
 
   const pillProps = (target?: App | null): AppCard.Pill => {
-    const a = target ?? app
-    const title = a?.app_name ?? ''
-    const link = a?.id ? `/apps/${a.id}` : ''
+    const app = target ?? current
     return {
-      avatar: a?.avatar_url ?? '',
-      initials: initialsFor(title),
-      title,
-      subtitle: a?.ecosystem ?? '',
-      badges: [a?.role, a?.status].filter(Boolean) as string[],
-      to: link || null,
+      avatar: app?.avatar_url ?? '',
+      title: app?.app_name ?? '',
+      subtitle: app?.ecosystem ?? '',
+      badges: [app?.role, app?.status].filter(Boolean) as string[],
+      to: toPath(app?.id) || null,
     }
   }
 
   const cellProps = (target?: App | null): AppCard.Cell => {
-    const a = target ?? app
-    const title = a?.app_name ?? ''
-    const link = a?.id ? `/apps/${a.id}` : ''
-    const base = pillProps(target)
-    const admins = toUniqueStrings(a?.admin_ids)
+    const app = target ?? current
+    const admins = uniqueStrings(app?.admin_ids)
     return {
-      ...base,
-      to: link,
-      id: a?.id ?? '',
-      app_name: title,
-      role: a?.role ?? 'tenant',
-      creator_id: a?.creator_id ?? '',
+      ...pillProps(app),
+      to: toPath(app?.id),
+      id: app?.id ?? '',
+      app_name: app?.app_name ?? '',
+      role: app?.role ?? 'tenant',
+      creator_id: app?.creator_id ?? '',
       admin_ids: admins,
-      created_at: a?.created_at,
-      avatar_url: a?.avatar_url ?? '',
-      logo_url: a?.logo_url ?? '',
-      wordmark_url: a?.wordmark_url ?? '',
-      ecosystem: a?.ecosystem ?? undefined,
+      created_at: app?.created_at,
+      avatar_url: app?.avatar_url ?? '',
+      logo_url: app?.logo_url ?? '',
+      wordmark_url: app?.wordmark_url ?? '',
+      ecosystem: app?.ecosystem ?? undefined,
     }
   }
 
   const profileProps = (target?: App | null): AppCard.Profile => {
-    const a = target ?? app
-    const cell = cellProps(target)
-    const joinRequests = toUniqueStrings(a?.join_requests)
+    const app = target ?? current
+    const cell = cellProps(app)
+    const joins = uniqueStrings(app?.join_requests)
 
     return {
       ...cell,
-      app_short_name: a?.app_short_name ?? null,
-      slug: a?.slug ?? null,
-      description: a?.description ?? null,
-      status: a?.status ?? null,
-      social_links: sanitizeSocialLinks(a?.social_links),
-      join_requests: joinRequests,
-      joinRequestCount: joinRequests.length,
+      app_short_name: app?.app_short_name ?? null,
+      slug: app?.slug ?? null,
+      description: app?.description ?? null,
+      status: app?.status ?? null,
+      social_links: sanitizeLinks(app?.social_links),
+      join_requests: joins,
+      joinRequestCount: joins.length,
       adminCount: cell.admin_ids?.length ?? 0,
-      updated_at: a?.updated_at,
+      updated_at: app?.updated_at,
     }
   }
 

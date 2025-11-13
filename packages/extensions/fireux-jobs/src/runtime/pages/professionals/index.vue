@@ -3,93 +3,111 @@
   <UPage>
     <UPageHeader
       title="Professionals"
-      description="Maintain your professional profile and view the directory of professionals in this workspace."
+      description="Inspect your professional profile and browse all professionals available to this runtime."
     />
 
     <UPageBody class="space-y-6">
-      <!-- Current professional profile -->
-      <UCard>
-        <template #header><h2>Your Professional Profile</h2></template>
+      <template v-if="currentProfessional">
+        <OrganismsProfilesProfessionalSectionsSingle
+          :professional="currentProfessional"
+        />
+      </template>
+      <template v-else>
+        <UPageCTA :title="cta.title" :description="cta.description">
+          <template #links>
+            <UButton
+              v-for="action in cta.actions"
+              :key="action.id"
+              :color="action.color ?? 'primary'"
+              :variant="action.variant ?? 'solid'"
+              :to="action.click ? undefined : action.to ?? undefined"
+              :loading="action.loading ?? false"
+              @click="onAction(action, $event)"
+            >
+              {{ action.label }}
+            </UButton>
+          </template>
+        </UPageCTA>
+      </template>
 
-        <template v-if="current">
-          <div class="space-y-4">
-            <JobProfilesProfessionalCardsPill
-              :professional="pillProps(current)"
-              class="max-w-md"
-            />
-            <OrganismsProfilesProfessionalCardsCell
-              :professional="cellProps(current)"
-            />
-          </div>
-        </template>
-
-        <template v-else>
-          <UPageCTA
-            title="Create your Professional profile to appear in listings."
-          >
-            <template #links>
-              <UButton color="primary" :loading="creating" @click="onCreate">
-                Create Professional Profile
-              </UButton>
-            </template>
-          </UPageCTA>
-        </template>
-      </UCard>
-
-      <!-- Professional directory -->
-      <UCard>
-        <template #header>
-          <div class="flex items-center justify-between gap-2">
-            <h2>Professional Directory</h2>
-            <UBadge variant="soft">{{ totalProfessionals }} total</UBadge>
-          </div>
-        </template>
-
-        <div
-          v-if="directoryPills.length"
-          class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          <JobProfilesProfessionalCardsPill
-            v-for="pill in directoryPills"
-            :key="pill.title + (pill.subtitle || '')"
-            :professional="pill"
-          />
-        </div>
-        <p v-else class="text-sm opacity-70">
-          No professionals found in this environment.
-        </p>
-      </UCard>
-
-      <!-- Snapshot debugging lives in dev routes only -->
+      <OrganismsProfilesProfessionalSectionsCollection />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useHead } from '#imports'
+
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
 import { useProfessionalComputed } from '../../composables/firestore/profiles/Professional/main/useProfessionalComputed.ts'
 import { useProfessionalInterface } from '../../composables/firestore/profiles/Professional/main/useProfessionalInterface.ts'
-import { useProfessionalCollection } from '../../composables/firestore/profiles/Professional/main/useProfessionalCollection.ts'
-import { useProfessionalCreate } from '../../composables/firestore/profiles/Professional/useProfessionalCreate.ts'
+import { useProfessionalCreate } from '../../composables/firestore/profiles/Professional/main/useProfessionalCreate.ts'
+
+definePageMeta({
+  nav: {
+    key: 'professionals',
+    label: 'Professionals',
+    icon: 'i-lucide-briefcase',
+    order: 60,
+    desktop: true,
+    mobile: true,
+    layouts: ['default'],
+  },
+  title: 'Professionals',
+  description: 'Professional profiles resolved for this runtime.',
+  layout: 'default',
+  name: 'ProfessionalsIndexPage',
+})
+
+useHead({ title: 'Professionals' })
 
 const { profile } = useProfessional()
 const { activeProfile } = useProfessionalComputed(profile)
-const { pillProps, cellProps } = useProfessionalInterface(profile)
-const { professionals } = useProfessionalCollection()
+const { ctaFor } = useProfessionalInterface(profile)
 const { createProfessional } = useProfessionalCreate()
 
-const current = activeProfile
+const currentProfessional = computed(() => activeProfile.value ?? null)
 
-const roster = computed(() => professionals.value ?? [])
-const directoryPills = computed(() =>
-  roster.value.map((entry) => pillProps(entry))
-)
-const totalProfessionals = computed(() => directoryPills.value.length)
+type ViewAction = {
+  id: string
+  label: string
+  to?: string | null
+  color?: string
+  variant?: string
+  click?: () => unknown | Promise<unknown>
+  loading?: boolean
+}
 
 const creating = createProfessional.state
 
-const onCreate = async () => {
+const onEnsure = async () => {
   await createProfessional()
+}
+
+const cta = computed(() => {
+  const base = ctaFor(currentProfessional.value)
+  const actions: ViewAction[] = base.actions.map((action) => {
+    if (action.id === 'create-professional') {
+      return {
+        ...action,
+        click: onEnsure,
+        loading: creating.value,
+      }
+    }
+    return action
+  })
+
+  return {
+    title: base.title,
+    description: base.description,
+    actions,
+  }
+})
+
+const onAction = async (action: ViewAction, event: MouseEvent) => {
+  if (!action.click) return
+  event.preventDefault()
+  await action.click()
 }
 </script>

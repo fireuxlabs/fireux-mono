@@ -1,45 +1,31 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/Auth/System.vue -->
 <template>
   <UContainer class="center-content">
     <ClientOnly>
       <Transition name="fade">
-        <div v-if="authState === 'AUTHENTICATED'" class="auth-central">
+        <div v-if="authState === 'AUTHENTICATED'">
           <OrganismsAuthAuthenticated />
         </div>
 
-        <div v-else class="auth-central">
+        <div v-else>
           <section class="auth-shell">
             <UAuthForm
               class="auth-form"
-              :title="formTitle"
+              :title="title"
               :fields="fields"
-              :icon="formIcon"
-              :separator="separatorLabel"
-              :submit="submitButton"
-              :loading="formLoading"
-              :disabled="formDisabled"
+              :submit="submitBtn"
+              :loading="loading"
               @submit="onSubmit"
             >
-              <template #description>
-                <p class="form-description">
-                  {{ descriptionMessage }}
-                </p>
-              </template>
-
-              <template v-if="appLogo" #leading>
-                <img
-                  :src="appLogo"
-                  :alt="`${tenantLabel} logo`"
-                  class="app-logo"
-                />
+              <template #leading>
+                <img :src="appLogo" :alt="`${appName} logo`" class="app-logo" />
               </template>
 
               <template #providers>
                 <UButton
                   block
-                  size="lg"
                   variant="ghost"
                   :loading="providerLoading"
-                  class="google-button"
                   @click="handleGoogle"
                 >
                   <img
@@ -59,16 +45,8 @@
                 />
               </template>
 
-              <template v-if="canToggleSignUp" #footer>
-                <div class="footer-group">
-                  <USwitch v-model="isSignUp" label="Create a new account" />
-                  <p v-if="centralSignupUrl" class="hint">
-                    Prefer the central portal?
-                    <ULink :to="centralSignupUrl" target="_blank"
-                      >Open signup</ULink
-                    >.
-                  </p>
-                </div>
+              <template #footer>
+                <USwitch v-model="isSignUp" label="Create a new account" />
               </template>
             </UAuthForm>
           </section>
@@ -79,8 +57,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 import { useFireUXConfig } from '../../../composables/FireUXConfig.ts'
 
@@ -91,109 +70,53 @@ const {
   signInWithEmailPassword,
   signUpWithEmailPassword,
 } = useAuth()
-const { role, appName, ecosystem, centralSignupUrl } = useFireUXConfig()
-
-const isTenant = computed(() => role === 'tenant')
-const formatBrand = (value?: string) => value?.trim() || ''
-const ecosystemLabel = computed(() => formatBrand(ecosystem) || 'FireUX')
-const tenantLabel = computed(() => formatBrand(appName) || ecosystemLabel.value)
-const appLogo = computed(() => '/img/brand/wordmark.png')
+const { appName } = useFireUXConfig()
 
 const isSignUp = ref(false)
-watch(
-  isTenant,
-  (tenant) => {
-    if (tenant) isSignUp.value = false
-  },
-  { immediate: true }
-)
-
-const formLoading = ref(false)
+const loading = ref(false)
 const providerLoading = ref(false)
 const error = ref<string | null>(null)
 
-const canToggleSignUp = computed(() => !isTenant.value)
-
-const formTitle = computed(() =>
-  isTenant.value ? `Join ${tenantLabel.value}` : 'Welcome back!'
+const title = computed(() =>
+  isSignUp.value ? `Create your ${appName} account` : `Sign in to ${appName}`
 )
 
-const formIcon = computed(() =>
-  isTenant.value ? 'i-lucide-users' : 'i-lucide-lock'
-)
-
-const descriptionMessage = computed(() =>
-  isTenant.value
-    ? `Sign in with your ${ecosystemLabel.value} account to join ${tenantLabel.value}.`
-    : `Use your ${ecosystemLabel.value} credentials or create a new ${tenantLabel.value} account below.`
-)
-
-const separatorLabel = computed(() => 'or continue with email')
-
-const submitButton = computed(() => ({
-  label: isTenant.value || !isSignUp.value ? 'Continue' : 'Create account',
+const submitBtn = computed(() => ({
+  label: isSignUp.value ? 'Create Account' : 'Continue',
   block: true,
-  size: 'lg' as const,
 }))
 
-const formDisabled = computed(() => formLoading.value || providerLoading.value)
+const fields = [
+  { name: 'email', type: 'email', label: 'Email', required: true },
+  { name: 'password', type: 'password', label: 'Password', required: true },
+]
 
-const passwordLabel = computed(() => {
-  if (isTenant.value) return 'Password'
-  return isSignUp.value ? 'Create password' : 'Password'
-})
+const appLogo = '/img/brand/wordmark.png'
+const googleLogo = '/img/sign-in-light.svg'
 
-const passwordPlaceholder = computed(() =>
-  isSignUp.value ? 'At least 8 characters' : 'Enter your password'
-)
+const pushDashboard = async () => {
+  await router.push('/dashboard').catch(() => {})
+}
 
-const passwordAutocomplete = computed(() =>
-  isSignUp.value ? 'new-password' : 'current-password'
-)
-
-const googleLogo = computed(() => '/img/sign-in-light.svg')
-
-const fields = computed(() => [
-  {
-    name: 'email',
-    type: 'email' as const,
-    label: 'Email',
-    placeholder: 'name@example.com',
-    required: true,
-    autocomplete: 'email',
-  },
-  {
-    name: 'password',
-    type: 'password' as const,
-    label: passwordLabel.value,
-    placeholder: passwordPlaceholder.value,
-    required: true,
-    autocomplete: passwordAutocomplete.value,
-  },
-])
-
-async function handleGoogle() {
-  if (providerLoading.value) return
+const handleGoogle = async () => {
   providerLoading.value = true
   error.value = null
+
   try {
     const result = await signInWithGoogle()
     providerLoading.value = false
     if (result?.uid) {
-      await router.push('/').catch(() => {})
+      await pushDashboard()
       return
     }
-    error.value = 'Google sign-in failed. Please try again.'
+    error.value = 'Google sign-in failed.'
   } catch (err) {
     providerLoading.value = false
-    error.value =
-      err instanceof Error
-        ? err.message
-        : 'Google sign-in failed. Please try again.'
+    error.value = err instanceof Error ? err.message : 'Google sign-in failed.'
   }
 }
 
-async function onSubmit({ data }: { data?: Record<string, unknown> }) {
+const onSubmit = async ({ data }: { data?: Record<string, unknown> }) => {
   const email = String(data?.email ?? '').trim()
   const password = String(data?.password ?? '')
 
@@ -202,33 +125,25 @@ async function onSubmit({ data }: { data?: Record<string, unknown> }) {
     return
   }
 
-  formLoading.value = true
+  loading.value = true
   error.value = null
 
-  const handler =
-    !isTenant.value && isSignUp.value
+  try {
+    const handler = isSignUp.value
       ? signUpWithEmailPassword
       : signInWithEmailPassword
-
-  try {
     const result = await handler(email, password)
-    formLoading.value = false
+    loading.value = false
 
     if (result?.uid) {
-      await router.push('/').catch(() => {})
+      await pushDashboard()
       return
     }
 
-    error.value =
-      !isTenant.value && isSignUp.value
-        ? 'Sign-up failed. Try a different email.'
-        : 'Sign-in failed. Check your details.'
+    error.value = 'Authentication failed.'
   } catch (err) {
-    formLoading.value = false
-    error.value =
-      err instanceof Error
-        ? err.message
-        : 'Something went wrong. Please try again.'
+    loading.value = false
+    error.value = err instanceof Error ? err.message : 'Authentication failed.'
   }
 }
 </script>
@@ -236,72 +151,41 @@ async function onSubmit({ data }: { data?: Record<string, unknown> }) {
 <style scoped>
 .center-content {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  padding: var(--space-10) var(--space-4);
-}
-
-.auth-central {
-  display: flex;
   justify-content: center;
   width: 100%;
 }
 
 .auth-shell {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: var(--space-8, 2rem);
   border: 1px solid rgba(148, 163, 184, 0.35);
-  border-radius: var(--radius-xl);
-  background-color: var(--ui-bg);
-  padding: var(--space-10) var(--space-8);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-xl, 1rem);
+  background-color: var(--ui-bg, #fff);
+  box-shadow: var(--shadow-sm, 0 10px 30px rgba(15, 23, 42, 0.1));
 }
 
-.form-description {
-  font-size: 0.95rem;
-  color: var(--ui-text-muted);
-  text-align: center;
-}
-
-.footer-group {
-  display: grid;
-  gap: var(--space-3);
-  justify-items: center;
-}
-
-.hint {
-  color: var(--ui-text-muted);
-  font-size: 0.85rem;
-  text-align: center;
-}
-
-.google-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.auth-form {
   width: 100%;
-  padding: var(--space-2) var(--space-3);
-  min-height: 52px;
-}
-
-.google-logo {
-  height: 32px;
-  width: auto;
 }
 
 .app-logo {
-  height: 36px;
+  height: 34px;
   width: auto;
   margin: 0 auto;
 }
 
-/* Fade transition styles */
+.google-logo {
+  height: 28px;
+  width: auto;
+}
+
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.6s ease;
+  transition: opacity 0.4s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

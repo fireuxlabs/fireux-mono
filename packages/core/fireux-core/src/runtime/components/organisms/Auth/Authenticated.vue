@@ -1,38 +1,23 @@
 <template>
   <div class="auth-authenticated">
-    <div class="button-group">
-      <UButton block @click="handlePrimary">
-        {{ primaryLabel }}
-      </UButton>
-      <UButton block @click="handleSignOut">Sign Out</UButton>
-    </div>
+    <UButton block @click="goDashboard">Go to Dashboard</UButton>
+    <UButton block variant="ghost" @click="handleSignOut">Sign Out</UButton>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
 const router = useRouter()
 const { signOutUser } = useAuth()
-const { ensureUser, hasCoreProfile: hasProfile } = useUser()
 
-const primaryLabel = computed(() =>
-  hasProfile.value ? 'Go to Dashboard' : 'Create User Profile'
-)
-
-const handlePrimary = async (): Promise<void> => {
-  if (hasProfile.value) {
-    await router.push('/dashboard').catch(() => {})
-    return
-  }
-  await ensureUser()
+const goDashboard = () => {
+  router.push('/dashboard').catch(() => {})
 }
 
-const handleSignOut = async (): Promise<void> => {
+const handleSignOut = async () => {
   await signOutUser()
   await router.push('/auth').catch(() => {})
 }
@@ -44,10 +29,5 @@ const handleSignOut = async (): Promise<void> => {
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-}
-.button-group {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
 }
 </style>
