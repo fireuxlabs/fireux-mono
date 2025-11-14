@@ -8,7 +8,7 @@
       resizable
       class="bg-elevated/25"
     >
-      <!-- Top: profiles (self-hides internally) -->
+      <!-- Top: profile switcher (self-hides when unnecessary) -->
       <template #header>
         <LayoutsDashboardProfilesMenu />
       </template>

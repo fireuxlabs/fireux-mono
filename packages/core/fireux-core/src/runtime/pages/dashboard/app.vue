@@ -3,7 +3,7 @@
   <LayoutsDashboardEditStructure
     title="App Settings"
     description="Manage app identity, social links, and admin access."
-    :guard-message="'You need admin access to manage this app. Ask an existing admin to add you in the Admin Users list.'"
+    :guard-message="'🟢 You are viewing this page because you have admin privileges for this app.'"
     :hero="hero"
     :dev-data="app"
   >

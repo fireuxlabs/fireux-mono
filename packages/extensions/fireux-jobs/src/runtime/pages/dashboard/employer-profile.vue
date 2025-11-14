@@ -3,7 +3,6 @@
   <LayoutsDashboardEditStructure
     title="Employer Profile"
     description="Keep your employer brand details up to date."
-    :hero="hero"
     :dev-data="employerRecord"
   >
     <UPageCard
@@ -33,16 +32,7 @@
     </UPageCard>
 
     <UCard v-else>
-      <div class="empty-state">
-        <UIcon name="i-lucide-briefcase-business" class="empty-icon" />
-        <h3 class="empty-title">Set up your employer profile</h3>
-        <p class="empty-copy">
-          Create your employer presence to manage listings and brand details.
-        </p>
-        <UButton color="primary" :loading="creating" @click="onEnsure">
-          Create Employer Profile
-        </UButton>
-      </div>
+      <p class="fallback">error</p>
     </UCard>
   </LayoutsDashboardEditStructure>
 </template>
@@ -50,11 +40,12 @@
 <script setup lang="ts">
 declare function definePageMeta(meta: any): void
 import { computed } from 'vue'
-import { type Employer } from '../../models/profiles/Employer.model'
+import type {
+  Employer,
+  EmployerProfile,
+} from '../../models/profiles/Employer.model'
 import { useEmployer } from '../../composables/firestore/profiles/Employer/useEmployer'
-import { useEmployerComputed } from '../../composables/firestore/profiles/Employer/main/useEmployerComputed'
 import { useEmployerInterface } from '../../composables/firestore/profiles/Employer/main/useEmployerInterface'
-import { useEmployerCreate } from '../../composables/firestore/profiles/Employer/main/useEmployerCreate'
 
 definePageMeta({
   layout: 'dashboard',
@@ -71,81 +62,64 @@ definePageMeta({
 })
 
 const { profile } = useEmployer()
-const { coreProfile, appProfile, activeProfile } = useEmployerComputed(profile)
 const { pillProps, cellProps, profileProps } = useEmployerInterface(profile)
-const { createEmployer } = useEmployerCreate()
 
-const currentEmployer = activeProfile
+const coreEmployer = computed<EmployerProfile | null>(
+  () =>
+    (profile.coreProfile.value as EmployerProfile | null | undefined) ?? null
+)
+const appEmployer = computed<EmployerProfile | null>(
+  () => (profile.appProfile.value as EmployerProfile | null | undefined) ?? null
+)
+
+const mergedEmployer = computed<EmployerProfile | null>(() => {
+  const core = coreEmployer.value
+  const overlay = appEmployer.value
+  if (!core && !overlay) return null
+  const merged: EmployerProfile = {} as EmployerProfile
+  if (core) Object.assign(merged, core)
+  if (overlay) Object.assign(merged, overlay)
+  return merged
+})
+
+const hasEmployerProfile = computed(() => Boolean(mergedEmployer.value))
+
 const currentEmployerPill = computed(() =>
-  currentEmployer.value ? pillProps(currentEmployer.value) : null
+  hasEmployerProfile.value ? pillProps(mergedEmployer.value ?? undefined) : null
 )
 const currentEmployerCell = computed(() =>
-  currentEmployer.value ? cellProps(currentEmployer.value) : null
+  hasEmployerProfile.value ? cellProps(mergedEmployer.value ?? undefined) : null
 )
 const currentEmployerProfileCard = computed(() =>
-  currentEmployer.value ? profileProps(currentEmployer.value) : null
+  hasEmployerProfile.value
+    ? profileProps(mergedEmployer.value ?? undefined)
+    : null
 )
 
 const employerRecord = computed<Employer | null>(() => {
-  const active = currentEmployer.value
-  if (!active) return null
+  const merged = mergedEmployer.value
+  if (!merged) return null
   const displayName =
-    active.display_name ??
-    active.title ??
-    active.organization_name ??
+    merged.display_name ??
+    merged.title ??
+    merged.organization_name ??
     'Employer'
   return {
-    id: active.id,
+    id: merged.id ?? '',
     display_name: displayName,
-    avatar: active.avatar ?? active.avatar_url ?? undefined,
-    core: coreProfile.value,
-    app: appProfile.value,
+    avatar: merged.avatar ?? merged.avatar_url ?? undefined,
+    core: coreEmployer.value,
+    app: appEmployer.value ?? null,
   }
 })
-
-const hero = computed(() => {
-  const cell = currentEmployerCell.value
-  if (!cell) return null
-  const pill = currentEmployerPill.value
-  return {
-    pillComponent: pill ? 'JobProfilesEmployerCardsPill' : undefined,
-    pillProps: pill ? { employer: pill } : null,
-    pillClass: null,
-    cellComponent: 'OrganismsProfilesEmployerCardsCell',
-    cellProps: { employer: cell },
-  }
-})
-
-const creating = createEmployer.state
-const onEnsure = async () => {
-  await createEmployer()
-}
 </script>
 
 <style scoped>
-.empty-state {
-  display: grid;
-  gap: 0.75rem;
-  padding: 2.5rem 1rem;
-  text-align: center;
-  justify-items: center;
-}
-
-.empty-icon {
-  width: 3rem;
-  height: 3rem;
-  color: var(--ui-text-300, rgba(148, 163, 184, 0.9));
-}
-
-.empty-title {
+.fallback {
   margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-}
-
-.empty-copy {
-  margin: 0;
-  color: var(--ui-text-500, rgba(100, 116, 139, 0.95));
-  max-width: 26rem;
+  padding: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.875rem;
 }
 </style>

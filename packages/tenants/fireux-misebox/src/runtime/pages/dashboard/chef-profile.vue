@@ -3,7 +3,6 @@
   <LayoutsDashboardEditStructure
     title="Chef Profile"
     description="Edit your chef identity and tenant-specific context."
-    :hero="hero"
     :dev-data="chefRecord"
   >
     <UPageCard v-if="currentChefProfileCard && chefRecord" variant="subtle">
@@ -28,16 +27,7 @@
     </UPageCard>
 
     <UCard v-else>
-      <div class="empty-state">
-        <UIcon name="i-lucide-chef-hat" class="empty-icon" />
-        <h3 class="empty-title">Create your chef profile</h3>
-        <p class="empty-copy">
-          Set up your chef presence to appear in Misebox directories and menus.
-        </p>
-        <UButton color="primary" :loading="creating" @click="onEnsure">
-          Create Chef Profile
-        </UButton>
-      </div>
+      <p class="fallback">error</p>
     </UCard>
   </LayoutsDashboardEditStructure>
 </template>
@@ -70,22 +60,22 @@ const {
   pillProps,
   cellProps,
   profileProps,
-  createChef,
 } = useChef()
 
-const currentChef = activeProfile
+const hasChefProfile = computed(() => Boolean(activeProfile.value))
+
 const currentChefPill = computed(() =>
-  currentChef.value ? pillProps(currentChef.value) : null
+  hasChefProfile.value ? pillProps(activeProfile.value ?? undefined) : null
 )
 const currentChefCell = computed(() =>
-  currentChef.value ? cellProps(currentChef.value) : null
+  hasChefProfile.value ? cellProps(activeProfile.value ?? undefined) : null
 )
 const currentChefProfileCard = computed(() =>
-  currentChef.value ? profileProps(currentChef.value) : null
+  hasChefProfile.value ? profileProps(activeProfile.value ?? undefined) : null
 )
 
 const chefRecord = computed<Chef | null>(() => {
-  const active = currentChef.value
+  const active = activeProfile.value
   if (!active) return null
   const displayName =
     active.display_name ?? active.title ?? active.subtitle ?? 'Chef'
@@ -97,50 +87,14 @@ const chefRecord = computed<Chef | null>(() => {
     app: (appProfile.value as any) ?? null,
   }
 })
-
-const hero = computed(() => {
-  const cell = currentChefCell.value
-  if (!cell) return null
-  const pill = currentChefPill.value
-  return {
-    pillComponent: pill ? 'OrganismsProfilesChefCardsPill' : undefined,
-    pillProps: pill ? { chef: pill } : null,
-    pillClass: null,
-    cellComponent: 'OrganismsProfilesChefCardsCell',
-    cellProps: { chef: cell },
-  }
-})
-
-const creating = createChef.state
-const onEnsure = async () => {
-  await createChef()
-}
 </script>
 
 <style scoped>
-.empty-state {
-  display: grid;
-  gap: 0.75rem;
-  padding: 2.5rem 1rem;
-  text-align: center;
-  justify-items: center;
-}
-
-.empty-icon {
-  width: 3rem;
-  height: 3rem;
-  color: var(--ui-text-300, rgba(148, 163, 184, 0.9));
-}
-
-.empty-title {
+.fallback {
   margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-}
-
-.empty-copy {
-  margin: 0;
-  color: var(--ui-text-500, rgba(100, 116, 139, 0.95));
-  max-width: 26rem;
+  padding: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.875rem;
 }
 </style>

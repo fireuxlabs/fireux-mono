@@ -1,500 +1,912 @@
 # Profiles Stack
 
-## Core profile composables (`packages/core/fireux-core/src/runtime/composables/firestore/core/profile`)
+-## Core profile composables (`packages/core/fireux-core/src/runtime/composables/firestore/core/profile/`)
 
-- `useProfile.ts` – wraps `useProfileFetch` with the active user id (via `useAuth`) and returns grouped profile refs.
-- `main/useProfileCollection.ts` – streams global + tenant overlay collections and merges them into a single computed list.
-- `main/useProfileDelete.ts` – stub for future delete handling; exposes `deleteProfile`, `deleting`, `deleteError` refs.
-- `main/useProfileEnsure.ts` – placeholder ensure helper returning `{ createdCore: false, createdApp: false }`.
-- `main/useProfileFetch.ts` – fetches core + tenant overlay documents for a given profile id and returns raw refs.
-- Domain-specific layers own computed/update flows; core profile utilities stop at fetching/collection.
-
-## Profile-related page scripts
-
-### jobs extension (`packages/extensions/fireux-jobs/src/runtime/pages`)
-
-`professionals/index.vue`:
+### `useProfile.ts`
 
 ```ts
-<script setup lang="ts">
-import { definePageMeta, useHead } from '#imports'
-import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
-import { useProfessionalCreate } from '../../composables/firestore/profiles/Professional/useProfessionalCreate.ts'
-import { useProfessionalComputed } from '../../composables/firestore/profiles/Professional/main/useProfessionalComputed.ts'
-import { useProfessionalInterface } from '../../composables/firestore/profiles/Professional/main/useProfessionalInterface.ts'
-import { useProfessionalCollection } from '../../composables/firestore/profiles/Professional/main/useProfessionalCollection.ts'
+import { useAuth } from '../../../firebase/useAuth.ts'
+import { useProfileFetch } from './main/useProfileFetch.ts'
+import type {
+  Profile,
+  ```ts
+  import { computed } from 'vue'
+  import type { Ref } from 'vue'
+  import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+  import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
 
-definePageMeta({
-  nav: {
-    key: 'professionals',
-    label: 'Professionals',
-    icon: 'i-lucide-user-round',
-    order: 65,
-    desktop: true,
-    mobile: true,
-    layouts: ['default'],
-  },
-  title: 'Professionals',
-  layout: 'default',
-  name: 'ProfessionalsIndexPage',
-})
+  export function useProfessionalComputed(
+    profile: ProfileRefs<ProfessionalProfile>,
+    pending?: Ref<boolean>
+  ) {
+    const coreProfile = computed<ProfessionalProfile | null>(
+      () =>
+        (profile.coreProfile.value as ProfessionalProfile | null | undefined) ??
+        null
+    )
 
-useHead({ title: 'Professionals' })
+    const appProfile = computed<ProfessionalProfile | null>(
+      () =>
+        (profile.appProfile.value as ProfessionalProfile | null | undefined) ??
+        null
+    )
 
-const { profile } = useProfessional()
-const currentProfessional = profile.activeProfile
+    const activeProfile = computed<ProfessionalProfile | null>(() => {
+      const core = coreProfile.value
+      const overlay = appProfile.value
+      if (!core && !overlay) return null
+      const merged = {} as ProfessionalProfile
+      if (core) Object.assign(merged, core)
+      if (overlay) Object.assign(merged, overlay)
+      return merged
+    })
 
-const { createProfessional } = useProfessionalCreate()
-const creating = createProfessional.state
-const onCreate = async () => { await createProfessional() }
-</script>
+    const hasCoreProfile = computed(() => Boolean(coreProfile.value))
+    const hasAppProfile = computed(() => Boolean(appProfile.value))
+
+    const runtimeProfile = computed<ProfessionalProfile | null>(
+      () => coreProfile.value
+    )
+
+    const isPending = computed(() => Boolean(pending?.value))
+    const isLoading = computed(
+      () =>
+        isPending.value ||
+        profile.coreProfile.value === undefined ||
+        profile.appProfile.value === undefined
+    )
+
+    return {
+      profile: activeProfile,
+      activeProfile,
+      runtimeProfile,
+      hasCoreProfile,
+      hasAppProfile,
+      isPending,
+      isLoading,
+    }
+  }
+  ```
+
+  const uid = computed(() => (isRef(id) ? id.value : id))
+
+  const coreDoc = computed(() =>
+    uid.value ? (doc(db, config.collectionName, uid.value) as any) : null
+  )
+
+  const appDoc = computed(() =>
+    uid.value && isTenant && appId
+      ? (doc(db, 'apps', appId, config.collectionName, uid.value) as any)
+      : null
+  )
+
+  const { data: coreProfile } = useDocument<TProfile | undefined>(
+    coreDoc as any
+  )
+
+  const { data: appProfile } = useDocument<Partial<TProfile> | undefined>(
+    appDoc as any
+  )
+
+  const profile: ProfileRefs<TProfile> = { coreProfile, appProfile }
+  return { profile }
+}
 ```
 
-`professionals/[id].vue`:
+### `main/useProfileEnsure.ts`
 
 ```ts
-<script setup lang="ts">
-  import {professionalConfig} from '../../models/profiles/Professional.model'
-</script>
+import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
+
+export function useProfileEnsure(_config: ProfileConfig) {
+  const ensure = async (_patch: Record<string, unknown> = {}) =>
+    ({ createdCore: false, createdApp: false } as const)
+  return { ensure }
+}
 ```
 
-`dashboard/professional-profile.vue`:
+### `main/useProfileDelete.ts`
 
 ```ts
-<script setup lang="ts">
-declare function definePageMeta(meta: any): void
-import { computed } from 'vue'
-import type { ProfessionalCoreProfile } from '../../models/profiles/Professional.model'
-import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional'
-import { useProfessionalComputed } from '../../composables/firestore/profiles/Professional/main/useProfessionalComputed'
-import { useProfessionalInterface } from '../../composables/firestore/profiles/Professional/main/useProfessionalInterface'
-import { useProfessionalCreate } from '../../composables/firestore/profiles/Professional/useProfessionalCreate'
+import { ref, type Ref } from 'vue'
 
-definePageMeta({
-  layout: 'dashboard',
-  nav: {
-    key: 'dashboard-professional-profile',
-    label: 'Professional Profile',
-    icon: 'i-lucide-user-round-cog',
-    desktop: true,
-    layouts: ['dashboard'],
-    group: 'profiles',
-    profileId: 'professional',
-  },
-  requiresAuth: true,
-})
+import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
 
-const { profile } = useProfessional()
-const { coreProfile, activeProfile } = useProfessionalComputed(profile)
-const { pillProps, cellProps, profileProps } = useProfessionalInterface(profile)
-const { createProfessional } = useProfessionalCreate()
+type ProfileDeleteResult = 'success'
 
-const currentProfessional = activeProfile
-const currentProfessionalPill = computed(() =>
-  currentProfessional.value ? pillProps(currentProfessional.value) : null
-)
-const currentProfessionalCell = computed(() =>
-  currentProfessional.value ? cellProps(currentProfessional.value) : null
-)
-const currentProfessionalProfileCard = computed(() =>
-  currentProfessional.value ? profileProps(currentProfessional.value) : null
-)
+export function useProfileDelete(
+  _profile: Ref<unknown>,
+  _config: ProfileConfig
+) {
+  const deleting = ref(false)
+  const deleteError = ref<Error | null>(null)
 
-const professionalRecord = computed<ProfessionalCoreProfile | null>(
-  () => coreProfile.value
-)
+  const deleteProfile = async (): Promise<ProfileDeleteResult> => 'success'
 
-const hero = computed(() => {
-  const cell = currentProfessionalCell.value
-  if (!cell) return null
-  const pill = currentProfessionalPill.value
   return {
-    pillComponent: pill ? 'JobProfilesProfessionalCardsPill' : undefined,
-    pillProps: pill ? { professional: pill } : null,
-    pillClass: null,
-    cellComponent: 'OrganismsProfilesProfessionalCardsCell',
-    cellProps: { professional: cell },
+    deleteProfile,
+    deleting,
+    deleteError,
   }
-})
-
-const creating = createProfessional.state
-const onEnsure = async () => {
-  await createProfessional()
 }
-</script>
 ```
 
-`employers/index.vue`:
+### `main/useProfileCollection.ts`
 
 ```ts
-<script setup lang="ts">
 import { computed } from 'vue'
-import { useEmployer } from '../../composables/firestore/profiles/Employer/useEmployer.ts'
-import { useEmployerComputed } from '../../composables/firestore/profiles/Employer/main/useEmployerComputed.ts'
-import { useEmployerInterface } from '../../composables/firestore/profiles/Employer/main/useEmployerInterface.ts'
-import { useEmployerCollection } from '../../composables/firestore/profiles/Employer/main/useEmployerCollection.ts'
-import { useEmployerCreate } from '../../composables/firestore/profiles/Employer/main/useEmployerCreate.ts'
+import { collection } from 'firebase/firestore'
+import { useFirestore, useCollection } from 'vuefire'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import type {
+  Profile,
+  ProfileConfig,
+} from 'fireux-core/runtime/models/core/profile.model.ts'
 
-const { profile } = useEmployer()
-const { activeProfile } = useEmployerComputed(profile)
-const { pillProps, cellProps } = useEmployerInterface(profile)
-const { employers } = useEmployerCollection()
-const { createEmployer } = useEmployerCreate()
+export function useProfileCollection<TProfile extends Profile = Profile>(
+  config: ProfileConfig
+) {
+  const db = useFirestore()
+  const { isTenant, appId } = useFireUXConfig()
 
-const current = activeProfile
+  const global = useCollection<TProfile>(
+    collection(db, config.collectionName) as any
+  )
 
-const roster = computed(() => employers.value ?? [])
-const directoryPills = computed(() =>
-  roster.value.map((entry) => pillProps(entry))
-)
-const totalEmployers = computed(() => directoryPills.value.length)
+  const local =
+    isTenant && appId
+      ? useCollection<Partial<TProfile>>(
+          collection(db, 'apps', appId, config.collectionName) as any
+        )
+      : null
 
-const creating = createEmployer.state
+  const profiles = computed<TProfile[]>(() => {
+    const coreList = (global.value ?? []) as TProfile[]
+    const overlayList = (local?.value ?? []) as Partial<TProfile>[]
 
-const onCreate = async () => {
-  await createEmployer()
-}
-</script>
-```
+    if (!overlayList.length) return coreList
 
-`employers/[id].vue`:
+    const overlayById = new Map<string, Partial<TProfile>>()
+    for (const overlay of overlayList) {
+      const id = (overlay as any)?.id ?? (overlay as any)?.uid
+      if (id) overlayById.set(id, overlay)
+    }
 
-```ts
-<script setup lang="ts">
-  import {employerConfig} from '../../models/profiles/Employer.model'
-</script>
-```
+    const merged = coreList.map((core) => {
+      const id = (core as any)?.id ?? (core as any)?.uid
+      const overlay = id ? overlayById.get(id) : undefined
+      if (overlay) {
+        overlayById.delete(id)
+        return { ...core, ...overlay } as TProfile
+      }
+      return core
+    })
 
-`dashboard/employer-profile.vue`:
+    if (!overlayById.size) return merged
 
-```ts
-<script setup lang="ts">
-declare function definePageMeta(meta: any): void
-import { computed } from 'vue'
-import { type Employer } from '../../models/profiles/Employer.model'
-import { useEmployer } from '../../composables/firestore/profiles/Employer/useEmployer'
-import { useEmployerComputed } from '../../composables/firestore/profiles/Employer/main/useEmployerComputed'
-import { useEmployerInterface } from '../../composables/firestore/profiles/Employer/main/useEmployerInterface'
-import { useEmployerCreate } from '../../composables/firestore/profiles/Employer/main/useEmployerCreate'
+    const extras = Array.from(overlayById.entries()).map(
+      ([id, overlay]) => ({ id, ...(overlay as object) } as TProfile)
+    )
 
-definePageMeta({
-  layout: 'dashboard',
-  nav: {
-    key: 'dashboard-employer-profile',
-    label: 'Employer Profile',
-    icon: 'i-lucide-briefcase-business',
-    desktop: true,
-    layouts: ['dashboard'],
-    group: 'profiles',
-    profileId: 'employer',
-  },
-  requiresAuth: true,
-})
-
-const { profile } = useEmployer()
-const { coreProfile, appProfile, activeProfile } = useEmployerComputed(profile)
-const { pillProps, cellProps, profileProps } = useEmployerInterface(profile)
-const { createEmployer } = useEmployerCreate()
-
-const currentEmployer = activeProfile
-const currentEmployerPill = computed(() =>
-  currentEmployer.value ? pillProps(currentEmployer.value) : null
-)
-const currentEmployerCell = computed(() =>
-  currentEmployer.value ? cellProps(currentEmployer.value) : null
-)
-const currentEmployerProfileCard = computed(() =>
-  currentEmployer.value ? profileProps(currentEmployer.value) : null
-)
-
-const employerRecord = computed<Employer | null>(() => {
-  const active = currentEmployer.value
-  if (!active) return null
-  const displayName =
-    active.display_name ??
-    active.title ??
-    active.organization_name ??
-    'Employer'
-  return {
-    id: active.id,
-    display_name: displayName,
-    avatar: active.avatar ?? active.avatar_url ?? undefined,
-    core: coreProfile.value,
-    app: appProfile.value,
-  }
-})
-
-const hero = computed(() => {
-  const cell = currentEmployerCell.value
-  if (!cell) return null
-  const pill = currentEmployerPill.value
-  return {
-    pillComponent: pill ? 'JobProfilesEmployerCardsPill' : undefined,
-    pillProps: pill ? { employer: pill } : null,
-    pillClass: null,
-    cellComponent: 'OrganismsProfilesEmployerCardsCell',
-    cellProps: { employer: cell },
-  }
-})
-
-const creating = createEmployer.state
-const onEnsure = async () => {
-  await createEmployer()
-}
-</script>
-```
-
-### misebox tenant (`packages/tenants/fireux-misebox/src/runtime/pages`)
-
-`chefs/index.vue`:
-
-```ts
-<script setup lang="ts">
-import { computed } from 'vue'
-import { useChef } from '../../composables/firestore/profiles/Chef/useChef.ts'
-
-const chef = useChef()
-const { profile, pillProps, cellProps, createChef, collection, activeProfile } =
-  chef
-
-const current = activeProfile
-
-const roster = computed(() => collection.chefs?.value ?? [])
-const directoryPills = computed(() =>
-  roster.value.map((entry) => pillProps(entry))
-)
-const totalChefs = computed(() => directoryPills.value.length)
-
-const globalChefs = computed(() => collection.global?.value ?? [])
-const localChefs = computed(() => collection.local?.value ?? [])
-
-const creating = createChef.state
-
-const onCreate = async () => {
-  await createChef()
-}
-</script>
-```
-
-`chefs/[id].vue`:
-
-```ts
-<script setup lang="ts">
-  import {chefConfig} from '../../models/profiles/Chef.model'
-</script>
-```
-
-`suppliers/index.vue`:
-
-```ts
-<script setup lang="ts">
-import { computed } from 'vue'
-import { useSupplier } from '../../composables/firestore/profiles/Supplier/useSupplier.ts'
-import { useSupplierComputed } from '../../composables/firestore/profiles/Supplier/main/useSupplierComputed.ts'
-import { useSupplierInterface } from '../../composables/firestore/profiles/Supplier/main/useSupplierInterface.ts'
-import { useSupplierCollection } from '../../composables/firestore/profiles/Supplier/main/useSupplierCollection.ts'
-import { useSupplierCreate } from '../../composables/firestore/profiles/Supplier/main/useSupplierCreate.ts'
-
-const { profile } = useSupplier()
-const { activeProfile } = useSupplierComputed(profile)
-const { pillProps, cellProps } = useSupplierInterface(profile)
-const { suppliers, global, local } = useSupplierCollection()
-const { createSupplier } = useSupplierCreate()
-
-const current = activeProfile
-
-const roster = computed(() => suppliers.value ?? [])
-const directoryPills = computed(() =>
-  roster.value.map((entry) => pillProps(entry))
-)
-const totalSuppliers = computed(() => directoryPills.value.length)
-
-const globalSuppliers = computed(() => global?.value ?? [])
-const localSuppliers = computed(() => local?.value ?? [])
-
-const creating = createSupplier.state
-
-const onCreate = async () => {
-  await createSupplier()
-}
-</script>
-```
-
-`suppliers/[id].vue`:
-
-```ts
-<script setup lang="ts">
-  import {supplierConfig} from '../../models/profiles/Supplier.model'
-</script>
-```
-
-## Component scripts (selected profile UI building blocks)
-
-### Professional components (`packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Professional`)
-
-`Cards/Pill.vue`:
-
-```ts
-<script setup lang="ts">
-import type { ProfessionalCard } from '../../../../../models/profiles/Professional.model'
-
-const props = defineProps<{ professional: ProfessionalCard.Pill }>()
-</script>
-```
-
-`Cards/Cell.vue`:
-
-```ts
-<script setup lang="ts">
-import type { ProfessionalCard } from '../../../../../models/profiles/Professional.model'
-
-const props = defineProps<{ professional: ProfessionalCard.Cell }>()
-</script>
-```
-
-`Cards/Profile.vue`:
-
-```ts
-<script setup lang="ts">
-import { computed } from 'vue'
-
-const props = defineProps<{
-  professional?: any
-  navigate?: (profile: any) => void
-}>()
-
-const handleClick = () => {
-  if (props.navigate && props.professional) {
-    props.navigate(props.professional)
-  }
-}
-
-function getLocationText(location: any): string {
-  if (!location) return ''
-  if (location?.formatted_address) {
-    return String(location.formatted_address)
-  }
-  if (location?.city || location?.country) {
-    return [location.city, location.country].filter(Boolean).join(', ')
-  }
-  return 'Location not specified'
-}
-
-function getExperienceYears(experiences: any[] | undefined): number {
-  if (!Array.isArray(experiences) || experiences.length === 0) return 0
-  let years = 0
-  for (const exp of experiences) {
-    const from = parseInt(exp?.from_year) || 0
-    const to = exp?.ongoing
-      ? new Date().getFullYear()
-      : parseInt(exp?.to_year) || from
-    years += Math.max(0, to - from)
-  }
-  return years
-}
-
-const allExperience = computed<any[]>(() => {
-  const p: any = props.professional || {}
-  const rel = Array.isArray(p?.relevant_experience) ? p.relevant_experience : []
-  const oth = Array.isArray(p?.other_experience) ? p.other_experience : []
-  return [...rel, ...oth]
-})
-
-const experienceYears = computed(() => getExperienceYears(allExperience.value))
-
-const latestExp = computed(() => {
-  const list = allExperience.value
-  if (!Array.isArray(list) || list.length === 0) return null as any
-  const ongoing = list.find((e) => e?.ongoing)
-  if (ongoing) return ongoing
-  const sorted = [...list].sort((a, b) => {
-    const aYear = parseInt(a?.to_year || new Date().getFullYear())
-    const bYear = parseInt(b?.to_year || new Date().getFullYear())
-    return bYear - aYear
+    return [...merged, ...extras]
   })
-  return sorted[0] || null
-})
-</script>
+
+  return { profiles, global, local }
+}
 ```
 
-### Employer components (`packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Employer`)
+### Removed core helpers
 
-`Cards/Pill.vue`:
+- `useProfileComputed.ts` and `useProfileUpdate.ts` were removed on 2025-11-14 because their behaviour was domain-specific.
+- Domain layers should expose their own computed/update helpers (see professional/chef/supplier stacks).
 
-```ts
-<script setup lang="ts">
-import type { EmployerCard } from '../../../../../models/profiles/Employer.model'
+## Jobs extension – Professional profile composables (`packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Professional/`)
 
-const props = defineProps<{ employer: EmployerCard.Pill }>()
-</script>
-```
-
-`Cards/Cell.vue`:
+### `useProfessional.ts`
 
 ```ts
-<script setup lang="ts">
-import type { EmployerCard } from '../../../../../models/profiles/Employer.model'
+import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profile/useProfile.ts'
+import {
+  professionalConfig,
+  type ProfessionalProfile,
+} from '../../../../models/profiles/Professional.model.ts'
+import { useProfessionalComputed } from './main/useProfessionalComputed.ts'
 
-const props = defineProps<{ employer: EmployerCard.Cell }>()
-</script>
-```
+export function useProfessional() {
+  const { profile: refs, pending } =
+    useProfile<ProfessionalProfile>(professionalConfig)
+  const { coreProfile, appProfile } = refs
 
-`Cards/Profile.vue`:
-
-```ts
-<script setup lang="ts">
-const props = defineProps<{
-  employer?: any
-  navigate?: (profile: any) => void
-}>()
-
-const handleClick = () => {
-  if (props.navigate && props.employer) {
-    props.navigate(props.employer)
+  return {
+    profile: refs,
+    coreProfile,
+    appProfile,
+    pending,
+    ...useProfessionalComputed(refs, pending),
   }
 }
-</script>
 ```
 
-(Additional employer/professional edit forms pull in rich update helpers but are omitted here for brevity.)
+### `main/useProfessionalInterface.ts`
 
-## Component stacks by profile domain
+```ts
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import type {
+  ProfessionalProfile,
+  ProfessionalCard,
+} from '../../../../../models/profiles/Professional.model.ts'
 
-### Professional (fireux-jobs)
+type CtaAction = {
+  id: string
+  label: string
+  to?: string | null
+  color?: string
+  variant?: string
+}
 
-- **Pages:** `/professionals` (listing + CTA), `/professionals/[id]` (detail via `OrganismsProfilePage`), `/dashboard/professional-profile` (editor).
-- **Composables:** `useProfessional`, `main/useProfessionalComputed`, `main/useProfessionalInterface`, `main/useProfessionalCollection`, `main/useProfessionalUpdate`, `useProfessionalCreate`.
-- **Interface helpers:** `useProfessionalInterface(profile)` now adds `ctaFor(target?)` alongside pill/cell/profile mappers.
-- **UI components:** `OrganismsProfessionalSections{Single,Collection}`, `JobProfilesProfessionalCards{Pill,Cell,Profile}`, `JobProfilesProfessionalEdit`, experience field components under `Fields/Experience`, modal/sections referenced by dashboards.
+type CtaDescriptor = {
+  title: string
+  description?: string
+  actions: CtaAction[]
+}
 
-| Scope     | File / Component                                                                                                 | Primary trigger                                                                                                                        | Central dependencies                                                                         |
-| --------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Page      | `packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue`                                      | Uses sections components; CTA delegates to `useProfessionalCreate().createProfessional` via `useProfessionalInterface(profile).ctaFor` | `useProfessional()`, `useProfessionalComputed(profile)`, `useProfessionalInterface(profile)` |
-| Page      | `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional-profile.vue`                           | Experience saves call `useProfessionalUpdate(profile).setRelevantExperience/Other`                                                     | `useProfessional()` for refs, `useProfessionalComputed(profile)` for merge                   |
-| Component | `packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Professional/Sections/Single.vue`     | Presents pill/cell/profile snapshot for current professional                                                                           | `useProfessional()`, `useProfessionalComputed(profile)`, `useProfessionalInterface(profile)` |
-| Component | `packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Professional/Sections/Collection.vue` | Directory mapping rendered pills for all professionals                                                                                 | `useProfessionalCollection()`, `useProfessionalInterface(profile)`                           |
-| Component | `packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Professional/Edit.vue`                | Emits `save` events wired to `useProfessionalUpdate(profile)` helpers                                                                  | Depends on `useProfessionalComputed(profile)` for current record                             |
-| Component | `packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Professional/Cards/Profile.vue`       | Emits navigation callback, no mutation                                                                                                 | Only reads `useProfessionalInterface` output                                                 |
-| Component | `packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Professional/Cards/Pill.vue`          | Navigation only                                                                                                                        | `useProfessionalInterface.pillProps`                                                         |
+export function useProfessionalInterface(
+  profile: ProfileRefs<ProfessionalProfile>
+) {
+  const core = () => profile.coreProfile.value ?? null
+  const overlay = () => profile.appProfile.value ?? null
 
-### Employer (fireux-jobs)
+  const toPath = (id?: string | null) => (id ? `/professionals/${id}` : '')
 
-- **Pages:** `/employers`, `/employers/[id]`, `/dashboard/employer-profile`.
-- **Composables:** `useEmployer`, `main/useEmployerComputed`, `main/useEmployerInterface`, `main/useEmployerCollection`, `main/useEmployerCreate`, `main/useEmployerUpdate`.
-- **UI components:** `JobProfilesEmployerCards{Pill,Cell,Profile}`, `JobProfilesEmployerEdit`, CTA/Create helpers.
+  const resolve = (target?: ProfessionalProfile | null) => {
+    if (target) return target
+    const base = core()
+    const app = overlay()
+    if (!base && !app) return null
+    if (base && app) return { ...base, ...app }
+    return base ?? app ?? null
+  }
 
-### Chef (misebox tenant)
+  const badgesFrom = (source?: ProfessionalProfile | null) => {
+    if (!source) return [] as string[]
+    const { health_certifications, badges, specialties } = source
+    if (Array.isArray(health_certifications) && health_certifications.length)
+      return health_certifications
+    if (Array.isArray(badges) && badges.length) return badges
+    if (Array.isArray(specialties) && specialties.length) return specialties
+    return [] as string[]
+  }
 
-- **Pages:** `/chefs`, `/chefs/[id]`, `/dashboard/chef-profile` (in the tenant module; mirrors jobs stack).
-- **Composables:** `useChef()` bundle exposes profile refs, pills, cells, create handler, and collection utilities.
-- **UI components:** `MiseProfilesChefCards{Pill,Cell,Profile}`, `OrganismsProfilesChefEdit`, etc.
+  const specialtiesFrom = (source?: ProfessionalProfile | null) => {
+    const list = source?.specialties
+    return Array.isArray(list) ? [...list] : []
+  }
 
-### Supplier (misebox tenant)
+  const derive = (target?: ProfessionalProfile | null) => {
+    const profileValue = resolve(target)
+    return {
+      id: profileValue?.id ?? '',
+      title:
+        profileValue?.title ?? profileValue?.display_name ?? 'Professional',
+      subtitle: profileValue?.subtitle ?? 'professional',
+      avatar: profileValue?.avatar_url ?? profileValue?.avatar ?? '',
+      badges: badgesFrom(profileValue),
+      specialties: specialtiesFrom(profileValue),
+      bioShort: profileValue?.bio_short ?? '',
+      bioLong: profileValue?.bio_long ?? '',
+    }
+  }
 
-- **Pages:** `/suppliers`, `/suppliers/[id]`, `/dashboard/supplier-profile`.
-- **Composables:** `useSupplier`, `main/useSupplierComputed`, `main/useSupplierInterface`, `main/useSupplierCollection`, `main/useSupplierCreate`.
-- **UI components:** `MiseProfilesSupplierCards{Pill,Cell,Profile}`, supporting edit/create components under the tenant runtime.
+  const pillProps = (
+    target?: ProfessionalProfile | null
+  ): ProfessionalCard.Pill => {
+    const derived = derive(target)
+    return {
+      avatar: derived.avatar,
+      title: derived.title,
+      subtitle: derived.subtitle,
+      badges: derived.badges,
+      to: derived.id ? toPath(derived.id) : null,
+    }
+  }
 
----
+  const cellProps = (
+    target?: ProfessionalProfile | null
+  ): ProfessionalCard.Cell => {
+    const derived = derive(target)
+    return {
+      ...pillProps(target),
+      id: derived.id,
+      to: derived.id ? toPath(derived.id) : undefined,
+      bio_short: derived.bioShort,
+      specialties: derived.specialties,
+    }
+  }
 
-This document should help spot the moving pieces (core composables, page scripts, and component stacks) whenever we introduce new profile types or relocate profile UI away from the shared `Organisms/Profile` templates.
+  const profileProps = (
+    target?: ProfessionalProfile | null
+  ): ProfessionalCard.Profile => {
+    const derived = derive(target)
+    return {
+      ...cellProps(target),
+      bio_long: derived.bioLong,
+    }
+  }
+
+  const ctaFor = (target?: ProfessionalProfile | null): CtaDescriptor => {
+    const profileValue = resolve(target)
+    if (profileValue) {
+      return {
+        title: 'Professional profile ready',
+        description: 'Keep your experience current so employers can reach out.',
+        actions: [
+          {
+            id: 'edit-professional',
+            label: 'Open dashboard',
+            to: '/dashboard/professional-profile',
+            color: 'primary',
+          },
+        ],
+      }
+    }
+
+    return {
+      title: 'Create your Professional profile to appear in listings.',
+      description: 'Share your experience so employers can learn about you.',
+      actions: [
+        {
+          id: 'create-professional',
+          label: 'Create Professional Profile',
+          to: '/dashboard/professional-profile',
+          color: 'primary',
+        },
+      ],
+    }
+  }
+
+  return { pillProps, cellProps, profileProps, ctaFor }
+}
+```
+
+### `main/useProfessionalComputed.ts`
+
+```ts
+import { computed } from 'vue'
+import type { Ref } from 'vue'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
+
+export function useProfessionalComputed(
+  profile: ProfileRefs<ProfessionalProfile>,
+  pending?: Ref<boolean>
+) {
+  const coreProfile = computed<ProfessionalProfile | null>(
+    () =>
+      (profile.coreProfile.value as ProfessionalProfile | null | undefined) ??
+      null
+  )
+
+  const appProfile = computed<Partial<ProfessionalProfile> | null>(
+    () =>
+      (profile.appProfile.value as
+        | Partial<ProfessionalProfile>
+        | null
+        | undefined) ?? null
+  )
+
+  const activeProfile = computed<ProfessionalProfile | null>(() => {
+    const core = coreProfile.value
+    const overlay = appProfile.value
+    if (!core && !overlay) return null
+    const merged = {} as ProfessionalProfile
+    if (core) Object.assign(merged, core)
+    if (overlay) Object.assign(merged, overlay)
+    return merged
+  })
+
+  const hasCoreProfile = computed(() => Boolean(coreProfile.value))
+  const hasAppProfile = computed(() => Boolean(appProfile.value))
+
+  const runtimeProfile = computed<ProfessionalProfile | null>(
+    () => coreProfile.value
+  )
+
+  const isPending = computed(() => Boolean(pending?.value))
+  const isLoading = computed(
+    () =>
+      isPending.value ||
+      profile.coreProfile.value === undefined ||
+      profile.appProfile.value === undefined
+  )
+
+  return {
+    profile: activeProfile,
+    activeProfile,
+    runtimeProfile,
+    hasCoreProfile,
+    hasAppProfile,
+    isPending,
+    isLoading,
+  }
+}
+```
+
+### `main/useProfessionalCollection.ts`
+
+```ts
+import { useProfileCollection } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileCollection.ts'
+import {
+  professionalConfig,
+  type ProfessionalProfile,
+} from '../../../../../models/profiles/Professional.model.ts'
+
+export function useProfessionalCollection() {
+  const { profiles, global, local } =
+    useProfileCollection<ProfessionalProfile>(professionalConfig)
+
+  return { professionals: profiles, global, local }
+}
+```
+
+### `main/useProfessionalCreate.ts`
+
+```ts
+import { ref, type Ref } from 'vue'
+import { useProfileEnsure } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileEnsure.ts'
+import { professionalConfig } from '../../../../../models/profiles/Professional.model.ts'
+
+type CreateProfessionalHandler = ((
+  patch?: Record<string, unknown>
+) => Promise<unknown>) & {
+  readonly state: Ref<boolean>
+}
+
+export function useProfessionalCreate() {
+  const { ensure } = useProfileEnsure(professionalConfig)
+  const creating = ref(false)
+
+  const createProfessional = (async (patch: Record<string, unknown> = {}) => {
+    if (creating.value) return undefined
+    creating.value = true
+    try {
+      return await ensure({ domain: 'professional', ...patch })
+    } finally {
+      creating.value = false
+    }
+  }) as CreateProfessionalHandler
+
+  Object.defineProperty(createProfessional, 'state', {
+    get: () => creating,
+    enumerable: true,
+  })
+
+  return { createProfessional }
+}
+```
+
+### `main/useProfessionalDelete.ts`
+
+```ts
+import { useFirestore } from 'vuefire'
+import { deleteDoc, doc } from 'firebase/firestore'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
+
+type DeleteScope = 'auto' | 'core' | 'app' | 'both'
+
+export function useProfessionalDelete(
+  _profile: ProfileRefs<ProfessionalProfile>
+) {
+  const db = useFirestore()
+  const { role, appId } = useFireUXConfig()
+  const isTenant = role === 'tenant' && !!appId
+
+  const resolveUid = async (explicitId?: string) => {
+    if (explicitId) return explicitId
+    const u = await useRequireUser()
+    if (!u?.uid) throw new Error('Not authenticated')
+    return u.uid
+  }
+
+  const deleteAtPath = async (collection: string, id: string) => {
+    await deleteDoc(doc(db, collection, id))
+  }
+
+  const deleteProfessional = async (options?: {
+    scope?: DeleteScope
+    id?: string
+  }) => {
+    const scope = options?.scope ?? 'auto'
+    const id = await resolveUid(options?.id)
+
+    if (
+      scope === 'core' ||
+      scope === 'both' ||
+      (!isTenant && scope === 'auto')
+    ) {
+      await deleteAtPath('professionals', id)
+    }
+
+    const deleteAppScope =
+      scope === 'app' || scope === 'both' || (isTenant && scope === 'auto')
+
+    if (deleteAppScope) {
+      if (!appId) throw new Error('Missing appId for tenant-scoped delete')
+      await deleteAtPath(`apps/${appId}/professionals`, id)
+    }
+
+    let effectiveScope: DeleteScope = scope
+    if (scope === 'auto') {
+      effectiveScope = isTenant ? 'app' : 'core'
+    }
+
+    return { id, scope: effectiveScope }
+  }
+
+  return { deleteProfessional }
+}
+```
+
+### `main/useProfessionalUpdate.ts`
+
+```ts
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreUpdate.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { usePlaceSave } from 'fireux-places/runtime/composables/usePlaceSave.ts'
+import { useFirestore } from 'vuefire'
+import { arrayRemove, arrayUnion, doc, getDoc } from 'firebase/firestore'
+import { canonicalPlaceId } from 'fireux-places/runtime/composables/usePlacesGoogle.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import type {
+  RelevantExperienceItem,
+  OtherExperienceItem,
+  ProfessionalProfile,
+} from '../../../../../models/profiles/Professional.model.ts'
+
+const COLLECTION = 'professionals'
+
+export function useProfessionalUpdate(
+  _profile?: ProfileRefs<ProfessionalProfile>
+) {
+  const { updateDocument } = useFirestoreUpdate()
+  const { ensurePlaceExists } = usePlaceSave()
+  const db = useFirestore()
+  const { appId, role } = useFireUXConfig()
+  const isTenant = role === 'tenant' && !!appId
+
+  type UpdateOptions = { id?: string | null }
+
+  const resolveUid = async (explicit?: string | null): Promise<string> => {
+    if (explicit?.trim()) return explicit.trim()
+    const u = await useRequireUser()
+    if (!u?.uid) throw new Error('User not authenticated')
+    return u.uid
+  }
+
+  const updateCoreProfessional = async (
+    payload: Partial<ProfessionalProfile>,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    await updateDocument(COLLECTION, uid, payload)
+  }
+
+  const updateAppProfessional = async (
+    payload: Partial<ProfessionalProfile>,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    if (!isTenant || !appId) {
+      throw new Error(
+        'Missing tenant context for app-scoped professional update'
+      )
+    }
+    const uid = await resolveUid(options.id)
+    await updateDocument(`apps/${appId}/${COLLECTION}`, uid, payload)
+  }
+
+  async function setRelevantExperience(
+    items: RelevantExperienceItem[] = []
+  ): Promise<void> {
+    const uid = await resolveUid()
+
+    const professionalRef = doc(db, COLLECTION, uid)
+    const snapshot = await getDoc(professionalRef)
+    const previousItems = Array.isArray(snapshot.data()?.relevant_experience)
+      ? (snapshot.data()?.relevant_experience as RelevantExperienceItem[])
+      : []
+
+    const previousPlaceIds = new Set(
+      previousItems
+        .map((item) => canonicalPlaceId(item?.place_id ?? undefined))
+        .filter((id): id is string => typeof id === 'string' && id.length > 0)
+    )
+
+    const sanitized: RelevantExperienceItem[] = []
+    const roster = new Map<string, boolean>()
+
+    for (const item of items) {
+      const placeId = canonicalPlaceId(item?.place_id ?? undefined)
+      if (!placeId) continue
+
+      const normalized: RelevantExperienceItem = {
+        ...item,
+        place_id: placeId,
+        ongoing: item?.ongoing === true,
+      }
+
+      sanitized.push(normalized)
+
+      if (roster.get(placeId) === true) continue
+      roster.set(placeId, normalized.ongoing === true)
+    }
+
+    const newPlaceIds = new Set(roster.keys())
+
+    const removalTargets = [...previousPlaceIds].filter(
+      (placeId) => !newPlaceIds.has(placeId)
+    )
+
+    const placeTasks: Promise<void>[] = []
+
+    for (const [placeId, isCurrent] of roster) {
+      await ensurePlaceExists({
+        place_id: placeId,
+        name: '(unknown)',
+        formatted_address: '',
+        lat: 0,
+        lng: 0,
+        source: 'firestore',
+        search_term: placeId,
+        created_at: new Date(),
+      } as any)
+
+      placeTasks.push(
+        updateDocument('places', placeId, {
+          professionals_current: isCurrent ? arrayUnion(uid) : arrayRemove(uid),
+          professionals_alumni: isCurrent ? arrayRemove(uid) : arrayUnion(uid),
+        })
+      )
+    }
+
+    for (const placeId of removalTargets) {
+      placeTasks.push(
+        updateDocument('places', placeId, {
+          professionals_current: arrayRemove(uid),
+          professionals_alumni: arrayRemove(uid),
+        })
+      )
+    }
+
+    await Promise.all(placeTasks)
+
+    await updateCoreProfessional(
+      {
+        relevant_experience: sanitized,
+      },
+      { id: uid }
+    )
+  }
+
+  async function setOtherExperience(
+    items: OtherExperienceItem[] = []
+  ): Promise<void> {
+    const uid = await resolveUid()
+
+    const normalized = items.map((item) => ({
+      ...item,
+      place_id: item.place_id
+        ? canonicalPlaceId(item.place_id) ?? null
+        : undefined,
+    }))
+
+    await updateCoreProfessional(
+      {
+        other_experience: normalized,
+      },
+      { id: uid }
+    )
+  }
+
+  return {
+    updateCoreProfessional,
+    updateAppProfessional,
+    setRelevantExperience,
+    setOtherExperience,
+  }
+}
+```
+
+### `main/useProfessionalCollection.ts`
+
+```ts
+import { useProfileCollection } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileCollection.ts'
+import {
+  professionalConfig,
+  type ProfessionalProfile,
+} from '../../../../../models/profiles/Professional.model.ts'
+
+export function useProfessionalCollection() {
+  const { profiles, global, local } =
+    useProfileCollection<ProfessionalProfile>(professionalConfig)
+
+  return { professionals: profiles, global, local }
+}
+```
+
+### `main/useProfessionalDelete.ts`
+
+```ts
+import { useFirestore } from 'vuefire'
+import { deleteDoc, doc } from 'firebase/firestore'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
+
+type DeleteScope = 'auto' | 'core' | 'app' | 'both'
+
+export function useProfessionalDelete(
+  _profile: ProfileRefs<ProfessionalProfile>
+) {
+  const db = useFirestore()
+  const { role, appId } = useFireUXConfig()
+  const isTenant = role === 'tenant' && !!appId
+
+  const resolveUid = async (explicitId?: string) => {
+    if (explicitId) return explicitId
+    const u = await useRequireUser()
+    if (!u?.uid) throw new Error('Not authenticated')
+    return u.uid
+  }
+
+  const deleteAtPath = async (collection: string, id: string) => {
+    await deleteDoc(doc(db, collection, id))
+  }
+
+  const deleteProfessional = async (options?: {
+    scope?: DeleteScope
+    id?: string
+  }) => {
+    const scope = options?.scope ?? 'auto'
+    const id = await resolveUid(options?.id)
+
+    if (
+      scope === 'core' ||
+      scope === 'both' ||
+      (!isTenant && scope === 'auto')
+    ) {
+      await deleteAtPath('professionals', id)
+    }
+
+    const deleteAppScope =
+      scope === 'app' || scope === 'both' || (isTenant && scope === 'auto')
+
+    if (deleteAppScope) {
+      if (!appId) throw new Error('Missing appId for tenant-scoped delete')
+      await deleteAtPath(`apps/${appId}/professionals`, id)
+    }
+
+    let effectiveScope: DeleteScope = scope
+    if (scope === 'auto') {
+      effectiveScope = isTenant ? 'app' : 'core'
+    }
+
+    return { id, scope: effectiveScope }
+  }
+
+  return { deleteProfessional }
+}
+```
+
+### `main/useProfessionalUpdate.ts`
+
+```ts
+// code listed above (see section)
+```
+
+### `main/useProfessionalCollection.ts`
+
+```ts
+// code listed above (see section)
+```
+
+### `main/useProfessionalCreate.ts`
+
+```ts
+// code listed above (see section)
+```
+
+### `main/useProfessionalDelete.ts`
+
+```ts
+// code listed above (see section)
+```
+
+## Notes & next steps
+
+- Core profile stack now surfaces only generic primitives (fetch, ensure, delete, collection, auth wiring).
+- Domain layers (professional/chef/supplier/etc.) own their computed + update logic.
+- Professional stack still exposes `useProfessionalComputed` for legacy consumers; migrate remaining callers to the lean `useProfessional()` signature.
+
+## Jobs extension – Employer profile composables (`packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/`)
+
+### Top-level entry
+
+- `useEmployer.ts` – lightweight wrapper around `useProfile` that exposes raw `ProfileRefs` for employer documents using `employerConfig`.
+
+### Main helpers (`.../Employer/main/`)
+
+- `useEmployerInterface.ts` – maps employer data into pill, cell, and profile card props for UI components.
+- `useEmployerComputed.ts` – merges core and app employer documents and exposes `activeProfile` plus existence flags.
+- `useEmployerCollection.ts` – delegates to `useProfileCollection` and returns `{ employers, global, local }` streams.
+- `useEmployerCreate.ts` – calls the shared ensure stub to create a tenant overlay and exposes a `createEmployer.state` ref.
+- `useEmployerUpdate.ts` – updates core or tenant employer documents and includes helpers for nested fields.
+- `useEmployerDelete.ts` – removes employer docs across scopes after resolving the active uid.
+
+### Utility helpers
+
+- `utils.ts` – employer-specific formatting helpers used by cards and edit flows.
+
+### Key runtime consumers
+
+- `packages/extensions/fireux-jobs/src/runtime/pages/employers/index.vue` – pulls `useEmployer()`, `useEmployerInterface()`, collection helpers, and create handler to render the roster and CTA.
+- `packages/extensions/fireux-jobs/src/runtime/pages/employers/[id].vue` – loads employer config for detail routes.
+- `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/employer-profile.vue` – merges profile refs locally for the dashboard editor and shows an `error` fallback when missing.
+- `packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Employer/**/*` – cards, CTA, create, and edit components that consume `pillProps`, `cellProps`, `profileProps`, and update helpers.
+
+## Misebox tenant – Chef profile composables (`packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/`)
+
+### Top-level entry
+
+- `useChef.ts` – composes the chef facade by combining `useProfile`, computed/collection/interface helpers, plus create/update/delete handlers into a single return object.
+
+### Main helpers (`.../Chef/main/`)
+
+- `useChefComputed.ts` – merges core and tenant chef documents and exposes `activeProfile`, status flags, and derived refs.
+- `useChefInterface.ts` – returns pill, cell, and profile prop builders for chef UI components.
+- `useChefCollection.ts` – streams global and local chef lists and merges them, mirroring the shared collection helper.
+- `useChefCreate.ts` – wraps the ensure stub with a busy flag for CTA buttons.
+- `useChefUpdate.ts` – applies mutations to chef documents in the correct scope.
+- `useChefDelete.ts` – removes chef documents across scopes.
+
+### Utility helpers
+
+- `utils.ts` – formatting helpers for chef names, experience, and bios.
+
+### Key runtime consumers
+
+- `packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue` – uses the aggregated `useChef()` return to render directories, pills, and create actions.
+- `packages/tenants/fireux-misebox/src/runtime/pages/chefs/[id].vue` – config-backed detail route.
+- `packages/tenants/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue` – presents merged chef profile data with an `error` fallback when absent.
+- `packages/tenants/fireux-misebox/src/runtime/components/organisms/profiles/Chef/**/*` – cards, CTA, create, and edit modules wired to the chef interface helpers.
+
+## Misebox tenant – Supplier profile composables (`packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/`)
+
+### Top-level entry
+
+- `useSupplier.ts` – minimal wrapper around `useProfile` that exposes raw supplier `ProfileRefs` via `supplierConfig`.
+
+### Main helpers (`.../Supplier/main/`)
+
+- `useSupplierInterface.ts` – maps supplier profiles into pill, cell, and profile props.
+- `useSupplierComputed.ts` – merges core and tenant supplier documents and exposes `activeProfile` with status flags.
+- `useSupplierCollection.ts` – streams supplier lists for global and tenant scopes and merges them.
+- `useSupplierCreate.ts` – ensure wrapper with loading ref for CTA buttons.
+- `useSupplierUpdate.ts` – updates supplier documents across scopes.
+- `useSupplierDelete.ts` – deletes supplier documents after resolving scope and uid.
+- `useSupplierList.ts` – convenience helper for listing suppliers in lightweight contexts.
+- `useSupplierQuickCreate.ts` – streamlined creator for modal-driven supplier onboarding flows.
+
+### Utility helpers
+
+- `utils.ts` – supplier-centric formatting helpers (names, contact info, catalogs).
+
+### Key runtime consumers
+
+- `packages/tenants/fireux-misebox/src/runtime/pages/suppliers/index.vue` – stitches together supplier interface helpers, collection streams, and create handler.
+- `packages/tenants/fireux-misebox/src/runtime/pages/suppliers/[id].vue` – config-backed supplier detail view.
+- `packages/tenants/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue` – merges supplier refs for the dashboard editor with an `error` fallback state.
+- `packages/tenants/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/**/*` – cards, CTA, quick-create, and edit components consuming supplier interface helpers.

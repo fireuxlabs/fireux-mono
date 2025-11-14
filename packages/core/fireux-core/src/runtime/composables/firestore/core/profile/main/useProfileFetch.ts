@@ -38,14 +38,18 @@ export function useProfileFetch<TProfile extends Profile = Profile>(
       : null
   )
 
-  const { data: coreProfile } = useDocument<TProfile | undefined>(
-    coreDoc as any
-  )
+  const { data: coreProfile, pending: corePending } = useDocument<
+    TProfile | undefined
+  >(coreDoc as any)
 
-  const { data: appProfile } = useDocument<Partial<TProfile> | undefined>(
-    appDoc as any
-  )
+  const { data: appProfile, pending: appPending } = useDocument<
+    Partial<TProfile> | undefined
+  >(appDoc as any)
 
   const profile: ProfileRefs<TProfile> = { coreProfile, appProfile }
-  return { profile }
+  const pending = computed(
+    () => Boolean(corePending.value) || Boolean(appPending?.value)
+  )
+
+  return { profile, pending }
 }
