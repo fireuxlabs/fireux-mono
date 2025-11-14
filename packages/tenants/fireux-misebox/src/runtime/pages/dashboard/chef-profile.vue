@@ -1,6 +1,6 @@
-packages/tenants/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue
+<!-- packages/tenants/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue -->
 <template>
-  <DashboardEditStructure
+  <LayoutsDashboardEditStructure
     title="Chef Profile"
     description="Edit your chef identity and tenant-specific context."
     :hero="hero"
@@ -39,7 +39,7 @@ packages/tenants/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue
         </UButton>
       </div>
     </UCard>
-  </DashboardEditStructure>
+  </LayoutsDashboardEditStructure>
 </template>
 
 <script setup lang="ts">

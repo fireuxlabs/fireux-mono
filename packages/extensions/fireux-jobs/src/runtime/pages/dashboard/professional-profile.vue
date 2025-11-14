@@ -1,6 +1,6 @@
-packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional-profile.vue
+<!-- packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional-profile.vue -->
 <template>
-  <DashboardEditStructure
+  <LayoutsDashboardEditStructure
     title="Professional Profile"
     description="Manage how employers see your professional presence."
     :hero="hero"
@@ -44,7 +44,7 @@ packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional-profile
         </UButton>
       </div>
     </UCard>
-  </DashboardEditStructure>
+  </LayoutsDashboardEditStructure>
 </template>
 
 <script setup lang="ts">

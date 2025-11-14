@@ -20,12 +20,39 @@ export function useUserInterface(
 
   const toPath = (id?: string | null) => (id ? `/users/${id}` : '')
   const subtitle = (handle?: string | null) => (handle ? `@${handle}` : '')
+  const uniqueStrings = (value?: unknown): string[] => {
+    if (!Array.isArray(value)) return []
+    const filtered = value
+      .filter(
+        (entry): entry is string =>
+          typeof entry === 'string' && entry.trim().length > 0
+      )
+      .map((entry) => entry.trim())
+    return Array.from(new Set(filtered))
+  }
+  const toInitials = (value?: string | null): string | undefined => {
+    const input = (value ?? '').trim()
+    if (!input) return undefined
+    return input
+      .split(/\s+/)
+      .map((token) => token[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
 
   const pillProps = (target?: User | null): UserCard.Pill => {
     const user = target ?? resolve()
+    const displayName =
+      user?.display_name?.trim() ||
+      user?.handle?.trim() ||
+      user?.id?.trim() ||
+      ''
+
     return {
       avatar: user?.avatar ?? '',
-      title: user?.display_name ?? '',
+      initials: toInitials(displayName),
+      title: displayName,
       subtitle: subtitle(user?.handle),
       badges: user?.profiles ?? [],
       to: (toPath(user?.id) || null) as RouteLocationRaw,
@@ -40,7 +67,10 @@ export function useUserInterface(
       ...base,
       to: toPath(user?.id),
       id: user?.id ?? '',
-      profiles: user?.profiles ?? [],
+      profiles: uniqueStrings(user?.profiles),
+      role: user?.role ?? user?.appUser?.role ?? undefined,
+      adminOf: uniqueStrings(user?.adminOf),
+      userOf: uniqueStrings(user?.userOf),
     }
   }
 
@@ -49,10 +79,11 @@ export function useUserInterface(
 
     return {
       ...cellProps(user ?? undefined),
-      email: user?.email,
       bio: user?.bio,
       created_at: user?.created_at,
       updated_at: user?.updated_at,
+      adminOf: uniqueStrings(user?.adminOf),
+      userOf: uniqueStrings(user?.userOf),
     }
   }
 

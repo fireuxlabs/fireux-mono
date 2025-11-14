@@ -23,8 +23,12 @@
       </template>
 
       <!-- Bottom: user menu -->
-      <template #footer="{ collapsed }">
-        <LayoutsDashboardUserMenu :collapsed="collapsed" />
+      <template #footer>
+        <OrganismsUserCardsPill
+          v-if="pillUser"
+          :user="pillUser"
+          class="w-full"
+        />
       </template>
     </UDashboardSidebar>
 
@@ -39,12 +43,24 @@
 import { ref, computed } from 'vue'
 import { useDashboardNav } from '../composables/fireUX/nav/presets'
 import { useUser } from '../composables/firestore/core/user/useUser'
+import type { UserCard } from '../models/core/user.model.ts'
 
 defineOptions({ name: 'CoreDashboard' })
 
 const open = ref(false)
 const { desktop } = useDashboardNav()
-const { isAdmin } = useUser()
+const { isAdmin, user, pillProps } = useUser()
+
+const pillUser = computed<UserCard.Pill | undefined>(() => {
+  const current = user.value
+  if (!current) return undefined
+  const { badges: _badges, ...rest } = pillProps(current)
+  return {
+    ...rest,
+    badges: [],
+    to: '/dashboard/user-profile',
+  }
+})
 
 // Show only non-profile items in the main nav; child manages profiles.
 const primary = computed(() =>

@@ -22,9 +22,17 @@ export function useUserCollection() {
     const overlays = local?.value ?? []
     if (!overlays.length) return base
 
+    const overlayById = new Map(overlays.map((entry) => [entry.id, entry]))
+
     return base.map((core) => {
-      const overlay = overlays.find((entry) => entry.id === core.id)
-      return overlay ? { ...core, appUser: overlay } : core
+      const overlay = overlayById.get(core.id)
+      if (!overlay) return core
+
+      return {
+        ...core,
+        role: overlay.role ?? core.role,
+        appUser: overlay,
+      }
     })
   })
 

@@ -69,7 +69,7 @@
                     />
                     <div>
                       <p>
-                        {{ user.display_name || user.handle || user.email }}
+                        {{ user.display_name || user.handle || user.uid }}
                       </p>
                       <div>
                         <UBadge

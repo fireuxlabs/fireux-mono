@@ -1,6 +1,7 @@
+<!-- packages/core/fireux-core/src/runtime/components/layouts/dashboard/EditStructure.vue -->
 <template>
   <client-only>
-    <DashboardBaseSection :title="title" :description="description">
+    <LayoutsDashboardBaseSection :title="title" :description="description">
       <template #guard>
         <UPageCard v-if="guardMessage" variant="subtle">
           <p class="text-sm text-gray-500">{{ guardMessage }}</p>
@@ -33,14 +34,16 @@
 
       <template #dev>
         <!-- T0DO remove DevJsonPanel once diagnostics migrate elsewhere -->
-        <DevJsonPanel v-if="devData" :data="devData" />
+        <DevJsonPanel v-if="shouldShowDevPanel && devData" :data="devData" />
       </template>
-    </DashboardBaseSection>
+    </LayoutsDashboardBaseSection>
   </client-only>
 </template>
 
 <script setup lang="ts">
-import DashboardBaseSection from './BaseSection.vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
 defineProps<{
   title: string
   description?: string
@@ -54,4 +57,7 @@ defineProps<{
   } | null
   devData?: any
 }>()
+
+const route = useRoute()
+const shouldShowDevPanel = computed(() => route.path.includes('/dev/'))
 </script>

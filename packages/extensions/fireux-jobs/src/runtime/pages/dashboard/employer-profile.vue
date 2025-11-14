@@ -1,6 +1,6 @@
-packages/extensions/fireux-jobs/src/runtime/pages/dashboard/employer-profile.vue
+<!-- packages/extensions/fireux-jobs/src/runtime/pages/dashboard/employer-profile.vue -->
 <template>
-  <DashboardEditStructure
+  <LayoutsDashboardEditStructure
     title="Employer Profile"
     description="Keep your employer brand details up to date."
     :hero="hero"
@@ -44,7 +44,7 @@ packages/extensions/fireux-jobs/src/runtime/pages/dashboard/employer-profile.vue
         </UButton>
       </div>
     </UCard>
-  </DashboardEditStructure>
+  </LayoutsDashboardEditStructure>
 </template>
 
 <script setup lang="ts">

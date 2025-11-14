@@ -1,5 +1,6 @@
+<!-- packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue -->
 <template>
-  <DashboardEditStructure
+  <LayoutsDashboardEditStructure
     title="Your Profile"
     description="Manage your personal profile and account details."
     :hero="hero"
@@ -28,7 +29,7 @@
         <p>{{ isLoading ? 'Loading profile...' : 'Profile not found.' }}</p>
       </div>
     </UCard>
-  </DashboardEditStructure>
+  </LayoutsDashboardEditStructure>
 </template>
 
 <script setup lang="ts">

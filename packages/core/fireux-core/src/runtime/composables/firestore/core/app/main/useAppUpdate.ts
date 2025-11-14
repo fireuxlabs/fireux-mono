@@ -9,11 +9,13 @@ import { arrayRemove, arrayUnion } from 'firebase/firestore'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
+import { useAppEnsure } from './useAppEnsure.ts'
 
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const { updateDocument } = useFirestoreUpdate()
   const { setDocument } = useFirestoreCreate()
   const { uploadImage } = useImageStorage()
+  const { ensureAppMembership } = useAppEnsure()
 
   const ensureAppId = () => {
     const id = appRef.value?.id
@@ -98,7 +100,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   /**
    * Handles an app join request.
    * - Always removes user from `join_requests[]`
-   * - If approve=true, adds minimal doc to `apps/{id}/users/{uid}`
+   * - If approve=true, ensures membership doc and user link are created
    */
   async function handleJoinRequests(uid: string, approve: boolean) {
     const appId = ensureAppId()
@@ -108,10 +110,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     })
 
     if (approve) {
-      await setDocument(`apps/${appId}/users`, uid, { id: uid, role: 'user' })
-      await updateDocument<User>('users', uid, {
-        userOf: arrayUnion(appId) as unknown as string[],
-      })
+      await ensureAppMembership(uid, 'user')
     }
   }
 

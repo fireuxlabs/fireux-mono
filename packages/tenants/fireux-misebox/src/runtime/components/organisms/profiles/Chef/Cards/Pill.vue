@@ -24,6 +24,11 @@ const props = defineProps<{ chef: ChefCard.Pill }>()
 </script>
 
 <style scoped>
+.pill {
+  align-self: flex-start;
+  max-height: var(--fireux-pill-height, 3.5rem);
+  overflow: hidden;
+}
 .pill-inner {
   display: flex;
   align-items: center;
@@ -32,9 +37,21 @@ const props = defineProps<{ chef: ChefCard.Pill }>()
 .meta .name {
   font-weight: 600;
   line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .meta .title {
   font-size: 0.85rem;
   opacity: 0.75;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
 }
 </style>

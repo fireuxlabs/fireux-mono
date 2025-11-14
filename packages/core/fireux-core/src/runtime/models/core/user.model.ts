@@ -44,6 +44,9 @@ export namespace UserCard {
     to: string
     id: string
     profiles?: string[]
+    role?: string
+    adminOf?: string[]
+    userOf?: string[]
   }
 
   /** Profile = Cell with extra descriptive metadata */

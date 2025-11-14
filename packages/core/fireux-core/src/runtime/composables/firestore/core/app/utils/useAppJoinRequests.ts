@@ -72,7 +72,7 @@ export function useAppJoinRequests({
       avatar: pill.avatar ?? undefined,
       initials: pill.initials ?? 'A',
       title: pill.title || profile.display_name || profile.handle || uid,
-      subtitle: pill.subtitle || profile.handle || profile.email || undefined,
+      subtitle: pill.subtitle || profile.handle || undefined,
     }
   }
 

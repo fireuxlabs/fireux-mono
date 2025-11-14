@@ -27,11 +27,6 @@
         <p v-if="professional.title" class="subtitle">
           {{ professional.title }}
         </p>
-        <div v-if="professional.email" class="contact">
-          <UIcon name="i-heroicons-envelope" />
-          {{ professional.email }}
-        </div>
-
         <!-- Location Info -->
         <div v-if="professional.locations?.length" class="location">
           <UIcon name="i-heroicons-map-pin" />

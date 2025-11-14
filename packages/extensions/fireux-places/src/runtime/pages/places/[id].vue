@@ -143,9 +143,6 @@
                   <UIcon name="i-lucide-user" class="h-4 w-4 text-gray-400" />
                   <div class="flex flex-col">
                     <span class="font-medium">{{ entry.name }}</span>
-                    <span v-if="entry.email" class="text-xs text-gray-400">
-                      {{ entry.email }}
-                    </span>
                   </div>
                 </div>
                 <NuxtLink
@@ -190,9 +187,6 @@
                   />
                   <div class="flex flex-col">
                     <span class="font-medium">{{ entry.name }}</span>
-                    <span v-if="entry.email" class="text-xs text-gray-400">
-                      {{ entry.email }}
-                    </span>
                   </div>
                 </div>
                 <NuxtLink
@@ -297,8 +291,7 @@ const currentRosterEntries = computed(() =>
     const doc = ensureUserDoc(uid).value
     return {
       uid,
-      name: doc?.display_name || doc?.email || uid,
-      email: doc?.email ?? '',
+      name: doc?.display_name || doc?.handle || uid,
     }
   })
 )
@@ -308,8 +301,7 @@ const alumniRosterEntries = computed(() =>
     const doc = ensureUserDoc(uid).value
     return {
       uid,
-      name: doc?.display_name || doc?.email || uid,
-      email: doc?.email ?? '',
+      name: doc?.display_name || doc?.handle || uid,
     }
   })
 )

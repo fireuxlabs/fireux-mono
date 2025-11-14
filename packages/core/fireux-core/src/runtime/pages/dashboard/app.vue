@@ -1,6 +1,6 @@
-packages/core/fireux-core/src/runtime/pages/dashboard/app.vue
+<!-- packages/core/fireux-core/src/runtime/pages/dashboard/app.vue -->
 <template>
-  <DashboardEditStructure
+  <LayoutsDashboardEditStructure
     title="App Settings"
     description="Manage app identity, social links, and admin access."
     :guard-message="'You need admin access to manage this app. Ask an existing admin to add you in the Admin Users list.'"
@@ -26,7 +26,7 @@ packages/core/fireux-core/src/runtime/pages/dashboard/app.vue
         You don’t have permission to edit this app.
       </p>
     </template>
-  </DashboardEditStructure>
+  </LayoutsDashboardEditStructure>
 </template>
 
 <script setup lang="ts">

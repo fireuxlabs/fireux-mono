@@ -25,15 +25,6 @@
           </UDropdownMenu>
         </template>
       </UDashboardNavbar>
-
-      <UDashboardToolbar>
-        <template #left>
-          <!-- NOTE: The `-ms-1` class is used to align with the `DashboardSidebarCollapse` button here. -->
-          <LayoutsDashboardHomeDateRangePicker v-model="range" class="-ms-1" />
-
-          <LayoutsDashboardHomePeriodSelect v-model="period" :range="range" />
-        </template>
-      </UDashboardToolbar>
     </template>
 
     <template #body>
@@ -114,10 +105,6 @@
           </div>
         </UPageCard>
       </div>
-
-      <LayoutsDashboardHomeStats :period="period" :range="range" />
-      <LayoutsDashboardHomeChart :period="period" :range="range" />
-      <LayoutsDashboardHomeSales :period="period" :range="range" />
     </template>
   </UDashboardPanel>
 
@@ -130,7 +117,7 @@
 <script setup lang="ts">
 // Removed duplicate definePageMeta declaration
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { computed, reactive, shallowRef, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
 definePageMeta({
   nav: {
@@ -148,10 +135,6 @@ definePageMeta({
 // Nuxt app auto-imports are not visible to package TS, declare lightweight types
 declare function useRuntimeConfig(): any
 declare function useUser(): { user: any }
-
-// Local lightweight types to avoid external deps
-type Period = 'daily' | 'weekly' | 'monthly'
-type Range = { start: Date; end: Date }
 
 // Local notifications slideover state (was useDashboard)
 const isNotificationsSlideoverOpen = ref(false)
@@ -201,11 +184,4 @@ const items = [
     },
   ],
 ] satisfies DropdownMenuItem[][]
-
-// Compute last 14 days without date-fns
-const range = shallowRef<Range>({
-  start: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
-  end: new Date(),
-})
-const period = ref<Period>('daily')
 </script>

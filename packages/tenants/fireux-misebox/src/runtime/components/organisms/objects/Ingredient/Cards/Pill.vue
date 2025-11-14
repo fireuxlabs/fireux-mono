@@ -20,3 +20,37 @@ defineProps<{
   ingredient?: Record<string, any>
 }>()
 </script>
+
+<style scoped>
+.pill {
+  align-self: flex-start;
+  max-height: var(--fireux-pill-height, 3.5rem);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.title,
+.subtitle {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+</style>

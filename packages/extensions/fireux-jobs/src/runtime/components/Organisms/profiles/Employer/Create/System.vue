@@ -17,13 +17,7 @@
           <div class="user-details" v-if="appUser">
             <div class="user-field">
               <span class="field-label">Name:</span>
-              <span class="field-value">{{
-                appUser.full_name || appUser.displayName || appUser.email
-              }}</span>
-            </div>
-            <div class="user-field">
-              <span class="field-label">Email:</span>
-              <span class="field-value">{{ appUser.email }}</span>
+              <span class="field-value">{{ accountDisplayName }}</span>
             </div>
           </div>
         </div>
@@ -90,10 +84,25 @@
   </div>
 </template>
 
-<script setup>import { ref, computed, onMounted } from 'vue'
+<script setup>
+import { ref, computed, onMounted } from 'vue'
 
 // Get current user data
 const { appUser } = useAppUser()
+
+const accountDisplayName = computed(() => {
+  const user = appUser.value
+  if (!user) return 'Your account'
+
+  return (
+    user.full_name ||
+    user.displayName ||
+    user.handle ||
+    user.uid ||
+    user.id ||
+    'Your account'
+  )
+})
 
 // Initialize employer create composable
 const { createEmployer, creating, error } = useEmployerCreate()

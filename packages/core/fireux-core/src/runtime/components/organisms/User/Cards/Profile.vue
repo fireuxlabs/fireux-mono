@@ -5,18 +5,15 @@
         <div class="avatar-wrap">
           <UAvatar
             :src="user?.avatar || ''"
-            :alt="user?.display_name || user?.handle || user?.id || 'User'"
+            :alt="avatarAlt"
             size="xl"
             class="avatar"
           />
         </div>
         <div class="identity">
-          <h2 class="name">
-            {{ user?.display_name || user?.handle || user?.id || 'User' }}
-          </h2>
-          <div class="identity-meta">
-            <span v-if="user?.handle" class="handle">@{{ user.handle }}</span>
-            <span v-if="user?.email" class="email">{{ user.email }}</span>
+          <h2 class="name">{{ displayName }}</h2>
+          <div v-if="handle" class="identity-meta">
+            <span class="handle">@{{ handle }}</span>
           </div>
           <div
             v-if="
@@ -73,57 +70,61 @@
 
       <USeparator />
 
-      <div class="section-grid">
-        <section class="section-card">
-          <h3 class="section-title">Profiles</h3>
+      <div v-if="hasSectionContent" class="section-grid">
+        <section v-if="profileBadges.length" class="section-card">
+          <div class="section-card__header">
+            <h3 class="section-title">Profiles</h3>
+            <span class="section-count">{{ profileBadges.length }}</span>
+          </div>
           <div class="chip-group">
-            <template
-              v-if="Array.isArray(user?.profiles) && user.profiles.length"
+            <UBadge
+              v-for="profile in profileBadges"
+              :key="`profile-${profile}`"
+              size="xs"
+              variant="soft"
             >
-              <UBadge
-                v-for="profile in user.profiles"
-                :key="`profile-${profile}`"
-                size="xs"
-                variant="soft"
-              >
-                {{ profile }}
-              </UBadge>
-            </template>
-            <span v-else class="muted">No profiles yet</span>
+              {{ profile }}
+            </UBadge>
           </div>
         </section>
-        <section class="section-card">
-          <h3 class="section-title">Admin Of</h3>
-          <div class="chip-group">
-            <template
-              v-if="Array.isArray(user?.adminOf) && user.adminOf.length"
-            >
-              <UBadge
-                v-for="app in user.adminOf"
-                :key="`admin-${app}`"
-                size="xs"
-                variant="soft"
-              >
-                {{ app }}
-              </UBadge>
-            </template>
-            <span v-else class="muted">No admin memberships</span>
+        <section
+          v-if="adminMemberships.length || memberMemberships.length"
+          class="section-card"
+        >
+          <div class="section-card__header">
+            <h3 class="section-title">{{ membershipTitle }}</h3>
+            <span class="section-count">{{ membershipTotal }}</span>
           </div>
-        </section>
-        <section class="section-card">
-          <h3 class="section-title">Member Of</h3>
-          <div class="chip-group">
-            <template v-if="Array.isArray(user?.userOf) && user.userOf.length">
-              <UBadge
-                v-for="membership in user.userOf"
-                :key="`member-${membership}`"
-                size="xs"
-                variant="soft"
-              >
-                {{ membership }}
-              </UBadge>
-            </template>
-            <span v-else class="muted">No memberships yet</span>
+
+          <div v-if="adminMemberships.length" class="chip-subtitle">
+            Administrates
+          </div>
+          <div v-if="adminMemberships.length" class="chip-group">
+            <UBadge
+              v-for="app in adminMemberships"
+              :key="`admin-${app}`"
+              size="xs"
+              variant="soft"
+            >
+              {{ app }}
+            </UBadge>
+          </div>
+
+          <div
+            v-if="memberMemberships.length"
+            :class="[
+              'chip-group',
+              adminMemberships.length ? 'with-border' : '',
+            ]"
+          >
+            <UBadge
+              v-for="membership in memberMemberships"
+              :key="`member-${membership}`"
+              size="xs"
+              variant="soft"
+            >
+              {{ membership }}
+            </UBadge>
           </div>
         </section>
       </div>
@@ -161,6 +162,40 @@ import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
 const props = defineProps<{ user: any }>()
 
 const user = computed(() => props.user ?? null)
+
+const listUniqueStrings = (value?: unknown): string[] => {
+  if (!Array.isArray(value)) return []
+  return Array.from(new Set(value)).filter(
+    (entry): entry is string => typeof entry === 'string' && entry.length > 0
+  )
+}
+
+const displayName = computed(
+  () =>
+    user.value?.display_name?.trim() ||
+    user.value?.handle?.trim() ||
+    user.value?.id ||
+    'User'
+)
+const handle = computed(() => user.value?.handle?.trim() || '')
+const avatarAlt = computed(() =>
+  handle.value ? `${displayName.value} (@${handle.value})` : displayName.value
+)
+
+const profileBadges = computed(() => listUniqueStrings(user.value?.profiles))
+const adminMemberships = computed(() => listUniqueStrings(user.value?.adminOf))
+const memberMemberships = computed(() => listUniqueStrings(user.value?.userOf))
+
+const membershipTotal = computed(
+  () => adminMemberships.value.length + memberMemberships.value.length
+)
+
+const membershipTitle = computed(() => 'User Of')
+
+const hasSectionContent = computed(
+  () => profileBadges.value.length || membershipTotal.value > 0
+)
+
 const createdAt = computed(
   () => formatFirestoreTimestamp(user.value?.created_at) ?? ''
 )
@@ -261,6 +296,12 @@ const updatedAt = computed(
   gap: 0.5rem;
 }
 
+.section-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .section-title {
   margin: 0;
   font-size: 0.95rem;
@@ -274,6 +315,29 @@ const updatedAt = computed(
   display: flex;
   flex-wrap: wrap;
   gap: 0.375rem;
+}
+
+.section-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.25rem 0.55rem;
+  border-radius: 9999px;
+  background: var(--ui-background-200, rgba(148, 163, 184, 0.12));
+}
+
+.chip-subtitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ui-text-400, rgba(148, 163, 184, 0.9));
+  margin-top: 0.35rem;
+}
+
+.with-border {
+  border-top: 1px dashed var(--ui-border-200, rgba(148, 163, 184, 0.3));
+  padding-top: 0.45rem;
+  margin-top: 0.45rem;
 }
 
 .detail-grid {
@@ -312,11 +376,6 @@ const updatedAt = computed(
   width: 1rem;
   height: 1rem;
   color: var(--ui-text-400, rgba(148, 163, 184, 0.9));
-}
-
-.muted {
-  color: var(--ui-text-400, rgba(148, 163, 184, 0.9));
-  font-size: 0.85rem;
 }
 
 @media (max-width: 640px) {

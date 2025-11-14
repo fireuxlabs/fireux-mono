@@ -1,6 +1,6 @@
-packages/tenants/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue
+<!-- packages/tenants/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue -->
 <template>
-  <DashboardEditStructure
+  <LayoutsDashboardEditStructure
     title="Supplier Profile"
     description="Share your supplier details with the Misebox marketplace."
     :hero="hero"
@@ -45,7 +45,7 @@ packages/tenants/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue
         </UButton>
       </div>
     </UCard>
-  </DashboardEditStructure>
+  </LayoutsDashboardEditStructure>
 </template>
 
 <script setup lang="ts">

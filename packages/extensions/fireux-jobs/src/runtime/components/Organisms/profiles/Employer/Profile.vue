@@ -27,10 +27,6 @@
         </p>
 
         <div class="profile-contact-info">
-          <p v-if="employer.email" class="profile-contact">
-            <UIcon name="i-heroicons-envelope" />
-            {{ employer.email }}
-          </p>
           <p v-if="employer.website" class="profile-contact">
             <UIcon name="i-heroicons-globe-alt" />
             <a
@@ -193,12 +189,11 @@
       <div class="contacts-grid">
         <div
           v-for="contact in employer.contacts"
-          :key="contact.email"
+          :key="contact.email || contact.name"
           class="contact-item"
         >
           <h4 class="contact-name">{{ contact.name }}</h4>
           <p class="contact-title">{{ contact.title }}</p>
-          <p class="contact-email">{{ contact.email }}</p>
           <p v-if="contact.phone" class="contact-phone">{{ contact.phone }}</p>
         </div>
       </div>
