@@ -1,19 +1,19 @@
-import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type { SupplierProfile } from '../../../../../models/profiles/Supplier.model.ts'
 
 /**
  * useSupplierComputed
- * - Parity with other profile composables
- * - Accepts refs + pending so we can safely expose them today and layer on
- *   derived helpers later without signature churn
+ * - Stubbed computed helpers for Supplier profiles
+ * - Accepts refs + pending but does not use them yet
+ * - Safe to spread into useSupplier() return
  */
 export function useSupplierComputed(
-  profile: ProfileRefs<SupplierProfile>,
-  pending?: Ref<boolean>
+  refs: ProfileRefs<SupplierProfile>,
+  pending: unknown
 ) {
-  return {
-    profile,
-    pending,
-  }
+  // Stub: keep args for future use, avoid TS “unused” warnings
+  void refs
+  void pending
+
+  return {}
 }

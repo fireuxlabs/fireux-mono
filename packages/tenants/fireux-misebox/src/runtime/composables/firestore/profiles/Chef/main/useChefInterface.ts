@@ -1,8 +1,10 @@
+import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type {
   ChefProfile,
   ChefCard,
 } from '../../../../../models/profiles/Chef.model.ts'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
 const DEFAULT_INITIALS = 'A'
 const toLink = (id?: string | null) => (id ? `/profiles/${id}` : '')
@@ -16,7 +18,10 @@ const initialsFrom = (source?: string | null) => {
  * Overlay-first getters (app → core) with optional target overrides.
  * Keeps parity with useAppInterface/useUserInterface.
  */
-export function useChefInterface(profile: ProfileRefs<ChefProfile>) {
+export function useChefInterface(
+  profile: ProfileRefs<ChefProfile>,
+  user: Ref<User | null>
+) {
   const core = () => profile.coreProfile.value ?? null
   const app = () => profile.appProfile.value ?? null
 
@@ -33,8 +38,9 @@ export function useChefInterface(profile: ProfileRefs<ChefProfile>) {
     }
 
     const id = pick((p) => p.id) ?? ''
-    const title = pick((p) => p.title) ?? 'Chef'
-    const subtitle = pick((p) => p.subtitle) ?? 'chef'
+    const fallbackTitle = user.value?.display_name ?? 'Chef'
+    const title = pick((p) => p.title) ?? fallbackTitle
+    const subtitle = pick((p) => p.subtitle) ?? user.value?.handle ?? 'chef'
     const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''
     const badgesCandidate = pick((p) => p.badges) ?? pick((p) => p.specialties)
     const specialtiesCandidate = pick((p) => p.specialties)

@@ -1,4 +1,7 @@
+// FILE: packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplier.ts
+
 import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profile/useProfile.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import {
   supplierConfig,
   type SupplierProfile,
@@ -13,31 +16,38 @@ export type { SupplierProfile, SupplierCoreProfile, SupplierCard }
 
 /**
  * useSupplier
- * - Thin facade over generic profile stack
+ * - Runtime facade for Supplier profiles
  * - Exposes:
- *   - raw refs: profile, coreProfile, appProfile
+ *   - raw refs: profile, coreProfile, appProfile, pending
  *   - computed helpers
- *   - UI helpers
+ *   - UI helpers (pill etc.) that use coreUser
  *   - update helpers
  */
 export function useSupplier() {
   const { profile: refs, pending } = useProfile<SupplierProfile>(supplierConfig)
   const { coreProfile, appProfile } = refs
 
+  // canonical user to feed UI layer
+  const { coreUser } = useUser()
+
   const computed = useSupplierComputed(refs, pending)
-  const ui = useSupplierInterface(refs)
+  const ui = useSupplierInterface(refs, coreUser)
   const update = useSupplierUpdate(refs)
 
   return {
-    // raw
+    // raw firestore refs
     profile: refs,
     coreProfile,
     appProfile,
     pending,
 
-    // helpers
+    // computed helpers
     ...computed,
+
+    // UI helpers (pill etc., all using coreUser)
     ...ui,
+
+    // update helpers
     ...update,
   }
 }

@@ -1,5 +1,7 @@
-// packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployer.ts
+// FILE: packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployer.ts
+
 import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profile/useProfile.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import {
   employerConfig,
   type EmployerProfile,
@@ -14,31 +16,38 @@ export type { EmployerProfile, EmployerCoreProfile, EmployerCard }
 
 /**
  * useEmployer
- * - Thin facade over generic profile stack
+ * - Runtime facade for Employer profiles
  * - Exposes:
- *   - raw refs: profile, coreProfile, appProfile
+ *   - raw refs: profile, coreProfile, appProfile, pending
  *   - computed helpers
- *   - UI helpers
+ *   - UI helpers (pill etc.) that use coreUser
  *   - update helpers
  */
 export function useEmployer() {
   const { profile: refs, pending } = useProfile<EmployerProfile>(employerConfig)
   const { coreProfile, appProfile } = refs
 
+  // canonical user to feed UI layer
+  const { coreUser } = useUser()
+
   const computed = useEmployerComputed(refs, pending)
-  const ui = useEmployerInterface(refs)
+  const ui = useEmployerInterface(refs, coreUser)
   const update = useEmployerUpdate(refs)
 
   return {
-    // raw
+    // raw firestore refs
     profile: refs,
     coreProfile,
     appProfile,
     pending,
 
-    // helpers
+    // computed helpers
     ...computed,
+
+    // UI helpers (pill etc., all using coreUser)
     ...ui,
+
+    // update helpers
     ...update,
   }
 }

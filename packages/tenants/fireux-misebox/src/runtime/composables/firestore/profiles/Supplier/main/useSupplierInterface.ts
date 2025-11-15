@@ -1,8 +1,10 @@
+import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type {
   SupplierProfile,
   SupplierCard,
 } from '../../../../../models/profiles/Supplier.model.ts'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
 const DEFAULT_INITIALS = 'A'
 const toLink = (id?: string | null) => (id ? `/profiles/${id}` : '')
@@ -12,7 +14,10 @@ const initialsFrom = (source?: string | null) => {
   return value ? value.charAt(0).toUpperCase() : DEFAULT_INITIALS
 }
 
-export function useSupplierInterface(profile: ProfileRefs<SupplierProfile>) {
+export function useSupplierInterface(
+  profile: ProfileRefs<SupplierProfile>,
+  user: Ref<User | null>
+) {
   const core = () => profile.coreProfile.value ?? null
   const appOverlay = () => profile.appProfile.value ?? null
 
@@ -27,8 +32,10 @@ export function useSupplierInterface(profile: ProfileRefs<SupplierProfile>) {
       (overlay && selector(overlay)) ?? (base && selector(base)) ?? undefined
 
     const id = pick((p) => p.id) ?? ''
-    const title = pick((p) => p.title) ?? 'Supplier'
-    const subtitle = pick((p) => p.subtitle) ?? 'supplier'
+    const fallbackTitle = user.value?.display_name ?? 'Supplier'
+    const fallbackSubtitle = user.value?.handle ?? 'supplier'
+    const title = pick((p) => p.title) ?? fallbackTitle
+    const subtitle = pick((p) => p.subtitle) ?? fallbackSubtitle
     const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''
     const badgesCandidate =
       pick((p) => p.categories) ??

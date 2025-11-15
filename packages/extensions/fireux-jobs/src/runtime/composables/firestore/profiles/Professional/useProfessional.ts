@@ -22,7 +22,7 @@ export type { ProfessionalProfile, ProfessionalCoreProfile, ProfessionalCard }
  * - Exposes:
  *   - raw refs: profile, coreProfile, appProfile, pending
  *   - computed helpers
- *   - UI helpers
+ *   - UI helpers (pill etc.) that use coreUser
  *   - update helpers
  */
 export function useProfessional() {
@@ -31,7 +31,7 @@ export function useProfessional() {
 
   const { coreProfile, appProfile } = refs
 
-  // canonical user
+  // canonical user to feed UI layer
   const { coreUser } = useUser()
 
   const computed = useProfessionalComputed(refs, pending)
@@ -48,7 +48,7 @@ export function useProfessional() {
     // computed helpers
     ...computed,
 
-    // UI helpers
+    // UI helpers (pill etc., all using coreUser)
     ...ui,
 
     // update helpers

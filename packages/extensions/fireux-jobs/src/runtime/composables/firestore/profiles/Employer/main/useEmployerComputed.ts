@@ -1,19 +1,19 @@
-import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type { EmployerProfile } from '../../../../../models/profiles/Employer.model.ts'
 
 /**
  * useEmployerComputed
- * - Stubbed for future derived state
- * - Mirrors useProfessionalComputed signature so we can swap implementations
- *   without reworking the public API surface
+ * - Stubbed computed helpers for Employer profiles
+ * - Accepts refs + pending but does not use them yet
+ * - Safe to spread into useEmployer() return
  */
 export function useEmployerComputed(
-  profile: ProfileRefs<EmployerProfile>,
-  pending?: Ref<boolean>
+  refs: ProfileRefs<EmployerProfile>,
+  pending: unknown
 ) {
-  return {
-    profile,
-    pending,
-  }
+  // Stub: keep args for future use, avoid TS “unused” warnings
+  void refs
+  void pending
+
+  return {}
 }

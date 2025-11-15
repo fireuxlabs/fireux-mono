@@ -1,20 +1,19 @@
-import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
 
 /**
  * useProfessionalComputed
- * - Stubbed computed layer for Professional profiles
- * - Takes `profile` refs and optional `pending` to keep the API aligned
- * - For now, just returns them as-is so we can safely spread this
- *   in `useProfessional()` without over-engineering.
+ * - Stubbed computed helpers for Professional profiles
+ * - Accepts refs + pending but does not use them yet
+ * - Safe to spread into useProfessional() return
  */
 export function useProfessionalComputed(
-  profile: ProfileRefs<ProfessionalProfile>,
-  pending?: Ref<boolean>
+  refs: ProfileRefs<ProfessionalProfile>,
+  pending: unknown
 ) {
-  return {
-    profile,
-    pending,
-  }
+  // Stub: keep args for future use, avoid TS “unused” warnings
+  void refs
+  void pending
+
+  return {}
 }

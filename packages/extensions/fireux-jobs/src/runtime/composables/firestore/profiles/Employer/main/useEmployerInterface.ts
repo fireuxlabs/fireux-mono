@@ -1,8 +1,10 @@
+import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type {
   EmployerProfile,
   EmployerCard,
 } from '../../../../../models/profiles/Employer.model.ts'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
 const DEFAULT_INITIALS = 'A'
 const toLink = (id?: string | null) => (id ? `/profiles/${id}` : '')
@@ -12,7 +14,10 @@ const initialsFrom = (source?: string | null) => {
   return value ? value.charAt(0).toUpperCase() : DEFAULT_INITIALS
 }
 
-export function useEmployerInterface(profile: ProfileRefs<EmployerProfile>) {
+export function useEmployerInterface(
+  profile: ProfileRefs<EmployerProfile>,
+  user: Ref<User | null>
+) {
   const core = () => profile.coreProfile.value ?? null
   const appOverlay = () => profile.appProfile.value ?? null
 
@@ -27,8 +32,9 @@ export function useEmployerInterface(profile: ProfileRefs<EmployerProfile>) {
       (overlay && selector(overlay)) ?? (base && selector(base)) ?? undefined
 
     const id = pick((p) => p.id) ?? ''
+    const fallbackTitle = user.value?.display_name ?? 'Employer'
     const title =
-      pick((p) => p.title) ?? pick((p) => p.organization_name) ?? 'Employer'
+      pick((p) => p.title) ?? pick((p) => p.organization_name) ?? fallbackTitle
     const subtitle = pick((p) => p.subtitle) ?? 'employer'
     const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''
     const badgesCandidate = pick((p) => p.locations) ?? pick((p) => p.badges)
