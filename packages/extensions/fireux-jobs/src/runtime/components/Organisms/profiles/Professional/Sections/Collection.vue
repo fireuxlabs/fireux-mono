@@ -11,7 +11,7 @@
     </template>
 
     <div v-if="pills.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <JobProfilesProfessionalCardsPill
+      <OrganismsProfilesProfessionalCardsPill
         v-for="pill in pills"
         :key="pillKey(pill)"
         :professional="pill"
@@ -24,6 +24,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import type {
+  ProfessionalProfile,
+  ProfessionalCard,
+} from '../../../../../models/profiles/Professional.model.ts'
+import { useProfessional } from '../../../../../composables/firestore/profiles/Professional/useProfessional.ts'
+import { useProfessionalCollection } from '../../../../../composables/firestore/profiles/Professional/main/useProfessionalCollection.ts'
 
 const props = withDefaults(
   defineProps<{ title?: string; description?: string }>(),
@@ -33,13 +41,19 @@ const props = withDefaults(
   }
 )
 
-const { profile } = useProfessional()
+const { pillForUser } = useProfessional()
 const { professionals } = useProfessionalCollection()
-const { pillProps } = useProfessionalInterface(profile)
 
-const pills = computed(() =>
-  (professionals.value ?? []).map((entry) => pillProps(entry))
-)
+const pills = computed(() => {
+  const entries = professionals.value ?? []
+  return entries
+    .map((entry: ProfessionalProfile) => {
+      const user = entry?.user as User | undefined
+      if (!user) return null
+      return pillForUser(user, entry)
+    })
+    .filter((pill): pill is ProfessionalCard.Pill => pill !== null)
+})
 
 const total = computed(() => pills.value.length)
 

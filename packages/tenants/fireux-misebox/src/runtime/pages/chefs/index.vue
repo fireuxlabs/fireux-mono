@@ -103,10 +103,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useChef } from '../../composables/firestore/profiles/Chef/useChef.ts'
+import { useChefCreate } from '../../composables/firestore/profiles/Chef/main/useChefCreate.ts'
+import { useChefCollection } from '../../composables/firestore/profiles/Chef/main/useChefCollection.ts'
 
-const chef = useChef()
-const { profile, pillProps, cellProps, createChef, collection, activeProfile } =
-  chef
+const { profile, pillProps, cellProps, activeProfile } = useChef()
+const { createChef } = useChefCreate()
+const collection = useChefCollection()
 
 const current = activeProfile
 

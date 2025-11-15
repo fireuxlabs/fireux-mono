@@ -8,7 +8,9 @@
         </template>
 
         <template v-if="professionalPill">
-          <JobProfilesProfessionalCardsPill :professional="professionalPill" />
+          <OrganismsProfilesProfessionalCardsPill
+            :professional="professionalPill"
+          />
         </template>
         <MoleculesNotFound v-else kind="document" entity="professional" />
 
@@ -24,7 +26,7 @@
         </template>
 
         <template v-if="employerPill">
-          <JobProfilesEmployerCardsPill :employer="employerPill" />
+          <OrganismsProfilesEmployerCardsPill :employer="employerPill" />
         </template>
         <MoleculesNotFound v-else kind="document" entity="employer" />
 

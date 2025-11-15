@@ -13,7 +13,7 @@
 
         <template v-if="current">
           <div class="space-y-4">
-            <JobProfilesEmployerCardsPill
+            <OrganismsProfilesEmployerCardsPill
               :employer="pillProps(current)"
               class="max-w-md"
             />
@@ -47,7 +47,7 @@
           v-if="directoryPills.length"
           class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
         >
-          <JobProfilesEmployerCardsPill
+          <OrganismsProfilesEmployerCardsPill
             v-for="pill in directoryPills"
             :key="pill.title + (pill.subtitle || '')"
             :employer="pill"

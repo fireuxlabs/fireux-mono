@@ -106,14 +106,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSupplier } from '../../composables/firestore/profiles/Supplier/useSupplier.ts'
-import { useSupplierComputed } from '../../composables/firestore/profiles/Supplier/main/useSupplierComputed.ts'
-import { useSupplierInterface } from '../../composables/firestore/profiles/Supplier/main/useSupplierInterface.ts'
 import { useSupplierCollection } from '../../composables/firestore/profiles/Supplier/main/useSupplierCollection.ts'
 import { useSupplierCreate } from '../../composables/firestore/profiles/Supplier/main/useSupplierCreate.ts'
 
-const { profile } = useSupplier()
-const { activeProfile } = useSupplierComputed(profile)
-const { pillProps, cellProps } = useSupplierInterface(profile)
+const { profile, activeProfile, pillProps, cellProps } = useSupplier()
 const { suppliers, global, local } = useSupplierCollection()
 const { createSupplier } = useSupplierCreate()
 

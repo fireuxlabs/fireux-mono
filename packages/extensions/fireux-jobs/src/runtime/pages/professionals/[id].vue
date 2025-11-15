@@ -7,7 +7,7 @@
     :fallback-href="'/professionals'"
   >
     <template #profile="{ profile }">
-      <JobProfilesProfessionalProfile :professional="profile" />
+      <OrganismsProfilesProfessionalProfile :professional="profile" />
     </template>
   </OrganismsProfilePage>
 </template>

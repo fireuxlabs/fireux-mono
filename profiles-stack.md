@@ -4,7 +4,7 @@
 
 ### `useProfile.ts`
 
-```ts
+````ts
 import { useAuth } from '../../../firebase/useAuth.ts'
 import { useProfileFetch } from './main/useProfileFetch.ts'
 import type {
@@ -66,32 +66,33 @@ import type {
       isLoading,
     }
   }
-  ```
+````
 
-  const uid = computed(() => (isRef(id) ? id.value : id))
+const uid = computed(() => (isRef(id) ? id.value : id))
 
-  const coreDoc = computed(() =>
-    uid.value ? (doc(db, config.collectionName, uid.value) as any) : null
-  )
+const coreDoc = computed(() =>
+uid.value ? (doc(db, config.collectionName, uid.value) as any) : null
+)
 
-  const appDoc = computed(() =>
-    uid.value && isTenant && appId
-      ? (doc(db, 'apps', appId, config.collectionName, uid.value) as any)
-      : null
-  )
+const appDoc = computed(() =>
+uid.value && isTenant && appId
+? (doc(db, 'apps', appId, config.collectionName, uid.value) as any)
+: null
+)
 
-  const { data: coreProfile } = useDocument<TProfile | undefined>(
-    coreDoc as any
-  )
+const { data: coreProfile } = useDocument<TProfile | undefined>(
+coreDoc as any
+)
 
-  const { data: appProfile } = useDocument<Partial<TProfile> | undefined>(
-    appDoc as any
-  )
+const { data: appProfile } = useDocument<Partial<TProfile> | undefined>(
+appDoc as any
+)
 
-  const profile: ProfileRefs<TProfile> = { coreProfile, appProfile }
-  return { profile }
+const profile: ProfileRefs<TProfile> = { coreProfile, appProfile }
+return { profile }
 }
-```
+
+````
 
 ### `main/useProfileEnsure.ts`
 
@@ -103,7 +104,7 @@ export function useProfileEnsure(_config: ProfileConfig) {
     ({ createdCore: false, createdApp: false } as const)
   return { ensure }
 }
-```
+````
 
 ### `main/useProfileDelete.ts`
 

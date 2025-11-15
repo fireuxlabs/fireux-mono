@@ -1,25 +1,23 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional-profile.vue -->
 <template>
-  <div class="space-y-6">
-    <UPageCard v-if="hasCoreProfile">
-      <div class="space-y-6">
-        <OrganismsProfilesProfessionalEditCore
-          :professional="coreProfessional"
-        />
-        <OrganismsProfilesProfessionalEditApp :professional="appProfessional" />
-      </div>
-    </UPageCard>
+  <UPageCard v-if="coreProfile" variant="subtle">
+    <div class="space-y-6">
+      <OrganismsProfilesProfessionalEditCore :professional="coreProfile" />
+      <OrganismsProfilesProfessionalEditApp
+        v-if="isTenant"
+        :professional="appProfile"
+      />
+    </div>
+  </UPageCard>
 
-    <UCard v-else>
-      <p class="fallback">Professional profile not found.</p>
-    </UCard>
-  </div>
+  <UCard v-else>
+    <p class="fallback">Professional profile not found.</p>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
-import type { ProfessionalProfile } from '../../models/profiles/Professional.model.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
 declare function definePageMeta(meta: any): void
 
@@ -38,16 +36,8 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile } = useProfessional()
-
-const coreProfessional = computed<ProfessionalProfile | null>(
-  () => (coreProfile.value as ProfessionalProfile | null | undefined) ?? null
-)
-
-const appProfessional = computed<ProfessionalProfile | null>(
-  () => (appProfile.value as ProfessionalProfile | null | undefined) ?? null
-)
-
-const hasCoreProfile = computed(() => Boolean(coreProfessional.value))
+const { role, appId } = useFireUXConfig()
+const isTenant = role === 'tenant' && !!appId
 </script>
 
 <style scoped>

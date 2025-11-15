@@ -1,11 +1,6 @@
 <!-- packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue -->
 <template>
-  <LayoutsDashboardEditStructure
-    title="Your Profile"
-    description="Manage your personal profile and account details."
-    :hero="hero"
-    :dev-data="currentUser"
-  >
+  <div class="space-y-6">
     <UPageCard v-if="currentUser" variant="subtle">
       <div class="grid gap-6 lg:grid-cols-2">
         <div class="space-y-4">
@@ -16,7 +11,10 @@
           <OrganismsUserCardsProfile :user="currentUser" />
         </div>
 
-        <OrganismsUserEdit :user="currentUser" />
+        <div class="space-y-4">
+          <OrganismsUserEditCore :user="currentUser" />
+          <OrganismsUserEditApp v-if="isTenant" :user="currentUser" />
+        </div>
       </div>
     </UPageCard>
 
@@ -29,12 +27,13 @@
         <p>{{ isLoading ? 'Loading profile...' : 'Profile not found.' }}</p>
       </div>
     </UCard>
-  </LayoutsDashboardEditStructure>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useUser } from '../../composables/firestore/core/user/useUser'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
 definePageMeta({
   layout: 'dashboard',
@@ -62,17 +61,11 @@ const userLink = computed(() =>
   currentUser.value?.id ? `/users/${currentUser.value.id}` : null
 )
 
-const hero = computed(() => {
-  const value = currentUser.value
-  if (!value) return null
-  const pill = currentUserPill.value
-  return {
-    pillComponent: 'OrganismsUserCardsPill',
-    pillProps: pill ? { user: pill } : null,
-    cellComponent: 'OrganismsUserCardsCell',
-    cellProps: {
-      user: value,
-    },
-  }
-})
+const config = useFireUXConfig()
+const isTenant = computed(
+  () =>
+    config.role === 'tenant' &&
+    typeof config.appId === 'string' &&
+    config.appId.length > 0
+)
 </script>

@@ -1,12 +1,6 @@
 <!-- packages/core/fireux-core/src/runtime/pages/dashboard/app.vue -->
 <template>
-  <LayoutsDashboardEditStructure
-    title="App Settings"
-    description="Manage app identity, social links, and admin access."
-    :guard-message="'🟢 You are viewing this page because you have admin privileges for this app.'"
-    :hero="hero"
-    :dev-data="app"
-  >
+  <div class="space-y-6">
     <UPageCard v-if="isAdmin && currentApp" variant="subtle">
       <div class="grid gap-6 lg:grid-cols-2">
         <div class="space-y-4">
@@ -21,12 +15,38 @@
       </div>
     </UPageCard>
 
-    <template v-else-if="!isLoading && !isAdmin">
-      <p class="text-sm text-gray-500">
-        You don’t have permission to edit this app.
-      </p>
-    </template>
-  </LayoutsDashboardEditStructure>
+    <UCard v-else-if="isAdmin && !isLoading">
+      <div class="py-8 text-center space-y-2">
+        <UIcon
+          name="i-heroicons-cog-8-tooth"
+          class="mx-auto h-12 w-12 text-gray-400"
+        />
+        <p class="text-sm text-gray-500">App settings not found.</p>
+      </div>
+    </UCard>
+
+    <UCard v-else-if="!isLoading && !isAdmin">
+      <div class="py-8 text-center space-y-2">
+        <UIcon
+          name="i-heroicons-lock-closed"
+          class="mx-auto h-12 w-12 text-gray-400"
+        />
+        <p class="text-sm text-gray-500">
+          You don’t have permission to edit this app.
+        </p>
+      </div>
+    </UCard>
+
+    <UCard v-else>
+      <div class="py-8 text-center space-y-2">
+        <UIcon
+          name="i-heroicons-arrow-path"
+          class="mx-auto h-12 w-12 animate-spin text-gray-300"
+        />
+        <p class="text-sm text-gray-500">Loading app settings…</p>
+      </div>
+    </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -63,23 +83,6 @@ definePageMeta({
     layouts: ['dashboard'],
   },
   requiresAuth: true,
-})
-
-const hero = computed(() => {
-  const value = currentApp.value
-  if (!value) return null
-
-  const pill = currentAppPill.value
-  const to = appLink.value
-  return {
-    pillComponent: 'OrganismsAppCardsPill',
-    pillProps: pill ? { app: pill } : null,
-    cellComponent: 'OrganismsAppCardsCell',
-    cellProps: {
-      app: value,
-      to,
-    },
-  }
 })
 
 if (import.meta.client) {

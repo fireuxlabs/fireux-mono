@@ -1,136 +1,144 @@
+// FILE: packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Professional/main/useProfessionalInterface.ts
+
+import { computed } from 'vue'
+import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type {
   ProfessionalProfile,
   ProfessionalCard,
 } from '../../../../../models/profiles/Professional.model.ts'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
-type CtaAction = {
-  id: string
-  label: string
-  to?: string | null
-  color?: string
-  variant?: string
+const DEFAULT_TITLE = 'Professional'
+
+const normalizeBadgeList = (source?: string[] | null) =>
+  Array.isArray(source) ? (source.filter(Boolean) as string[]) : []
+
+const normalizeSpecialties = (source?: string[] | null) =>
+  Array.isArray(source) ? (source.filter(Boolean) as string[]) : []
+
+const resolveSubtitle = (
+  user: User,
+  profile?: Partial<ProfessionalProfile> | null
+) => {
+  if (user.handle) return `@${user.handle}`
+  const candidate = profile?.subtitle
+  return candidate ?? ''
 }
 
-type CtaDescriptor = {
-  title: string
-  description?: string
-  actions: CtaAction[]
+const resolveTitle = (
+  user: User,
+  profile?: Partial<ProfessionalProfile> | null
+) =>
+  profile?.display_name?.trim() ||
+  user.display_name?.trim() ||
+  profile?.title?.trim() ||
+  DEFAULT_TITLE
+
+const resolveAvatar = (
+  user: User,
+  profile?: Partial<ProfessionalProfile> | null
+) => profile?.avatar ?? profile?.avatar_url ?? user.avatar ?? ''
+
+const resolveId = (user: User, profile?: Partial<ProfessionalProfile> | null) =>
+  profile?.id ?? user.id
+
+const buildCell = (
+  user: User,
+  profile?: Partial<ProfessionalProfile> | null
+): ProfessionalCard.Cell => {
+  const id = resolveId(user, profile)
+  return {
+    id,
+    avatar: resolveAvatar(user, profile),
+    title: resolveTitle(user, profile),
+    subtitle: resolveSubtitle(user, profile),
+    to: id ? `/professionals/${id}` : undefined,
+    badges: normalizeBadgeList(profile?.badges),
+    bio_short: profile?.bio_short ?? null,
+    specialties: normalizeSpecialties(profile?.specialties ?? []),
+  }
 }
+
+const buildProfileCore = (
+  cell: ProfessionalCard.Cell,
+  profile?: Partial<ProfessionalProfile> | null
+): ProfessionalCard.ProfileCore => ({
+  ...cell,
+  badges: normalizeBadgeList(profile?.badges ?? cell.badges),
+  health_certifications: normalizeBadgeList(
+    (profile as ProfessionalProfile | undefined)?.health_certifications
+  ),
+  bio_long: profile?.bio_long ?? null,
+  relevant_experience: Array.isArray(
+    (profile as ProfessionalProfile | undefined)?.relevant_experience
+  )
+    ? (profile as ProfessionalProfile).relevant_experience
+    : undefined,
+  other_experience: Array.isArray(
+    (profile as ProfessionalProfile | undefined)?.other_experience
+  )
+    ? (profile as ProfessionalProfile).other_experience
+    : undefined,
+})
+
+const buildProfileApp = (
+  cell: ProfessionalCard.Cell,
+  profile?: Partial<ProfessionalProfile> | null
+): ProfessionalCard.ProfileApp => ({
+  ...cell,
+  bio_short: profile?.bio_short ?? cell.bio_short,
+  specialties: normalizeSpecialties(profile?.specialties ?? cell.specialties),
+})
 
 export function useProfessionalInterface(
-  profile: ProfileRefs<ProfessionalProfile>
+  profile: ProfileRefs<ProfessionalProfile>,
+  user: Ref<User | null>
 ) {
-  const core = () => profile.coreProfile.value ?? null
-  const overlay = () => profile.appProfile.value ?? null
+  const coreProfile = () => profile.coreProfile.value ?? null
+  const appProfile = () => profile.appProfile.value ?? null
 
-  const toPath = (id?: string | null) => (id ? `/professionals/${id}` : '')
-
-  const resolve = (target?: ProfessionalProfile | null) => {
-    if (target) return target
-    const base = core()
-    const app = overlay()
-    if (!base && !app) return null
-    if (base && app) return { ...base, ...app }
-    return base ?? app ?? null
-  }
-
-  const badgesFrom = (source?: ProfessionalProfile | null) => {
-    if (!source) return [] as string[]
-    const { health_certifications, badges, specialties } = source
-    if (Array.isArray(health_certifications) && health_certifications.length)
-      return health_certifications
-    if (Array.isArray(badges) && badges.length) return badges
-    if (Array.isArray(specialties) && specialties.length) return specialties
-    return [] as string[]
-  }
-
-  const specialtiesFrom = (source?: ProfessionalProfile | null) => {
-    const list = source?.specialties
-    return Array.isArray(list) ? [...list] : []
-  }
-
-  const derive = (target?: ProfessionalProfile | null) => {
-    const profileValue = resolve(target)
+  const pill = computed<ProfessionalCard.Pill | null>(() => {
+    const value = user.value
+    if (!value) return null
+    const source = appProfile() ?? coreProfile()
+    const base = buildCell(value, source)
     return {
-      id: profileValue?.id ?? '',
-      title:
-        profileValue?.title ?? profileValue?.display_name ?? 'Professional',
-      subtitle: profileValue?.subtitle ?? 'professional',
-      avatar: profileValue?.avatar_url ?? profileValue?.avatar ?? '',
-      badges: badgesFrom(profileValue),
-      specialties: specialtiesFrom(profileValue),
-      bioShort: profileValue?.bio_short ?? '',
-      bioLong: profileValue?.bio_long ?? '',
+      avatar: base.avatar,
+      title: base.title,
+      subtitle: base.subtitle,
+      badges: base.badges,
+      to: base.to ?? null,
     }
+  })
+
+  const cell = computed<ProfessionalCard.Cell | null>(() => {
+    const value = user.value
+    if (!value) return null
+    const source = appProfile() ?? coreProfile()
+    return buildCell(value, source)
+  })
+
+  const profileCore = computed<ProfessionalCard.ProfileCore | null>(() => {
+    const value = user.value
+    if (!value) return null
+    const source = coreProfile()
+    const base = buildCell(value, source)
+    return buildProfileCore(base, source)
+  })
+
+  const profileApp = computed<ProfessionalCard.ProfileApp | null>(() => {
+    const value = user.value
+    if (!value) return null
+    const source = appProfile()
+    const base = buildCell(value, source)
+    return buildProfileApp(base, source)
+  })
+
+  return {
+    pill,
+    cell,
+    profileCore,
+    profileApp,
   }
-
-  const pillProps = (
-    target?: ProfessionalProfile | null
-  ): ProfessionalCard.Pill => {
-    const derived = derive(target)
-    return {
-      avatar: derived.avatar,
-      title: derived.title,
-      subtitle: derived.subtitle,
-      badges: derived.badges,
-      to: derived.id ? toPath(derived.id) : null,
-    }
-  }
-
-  const cellProps = (
-    target?: ProfessionalProfile | null
-  ): ProfessionalCard.Cell => {
-    const derived = derive(target)
-    return {
-      ...pillProps(target),
-      id: derived.id,
-      to: derived.id ? toPath(derived.id) : undefined,
-      bio_short: derived.bioShort,
-      specialties: derived.specialties,
-    }
-  }
-
-  const profileProps = (
-    target?: ProfessionalProfile | null
-  ): ProfessionalCard.Profile => {
-    const derived = derive(target)
-    return {
-      ...cellProps(target),
-      bio_long: derived.bioLong,
-    }
-  }
-
-  const ctaFor = (target?: ProfessionalProfile | null): CtaDescriptor => {
-    const profileValue = resolve(target)
-    if (profileValue) {
-      return {
-        title: 'Professional profile ready',
-        description: 'Keep your experience current so employers can reach out.',
-        actions: [
-          {
-            id: 'edit-professional',
-            label: 'Open dashboard',
-            to: '/dashboard/professional-profile',
-            color: 'primary',
-          },
-        ],
-      }
-    }
-
-    return {
-      title: 'Create your Professional profile to appear in listings.',
-      description: 'Share your experience so employers can learn about you.',
-      actions: [
-        {
-          id: 'create-professional',
-          label: 'Create Professional Profile',
-          to: '/dashboard/professional-profile',
-          color: 'primary',
-        },
-      ],
-    }
-  }
-
-  return { pillProps, cellProps, profileProps, ctaFor }
 }
