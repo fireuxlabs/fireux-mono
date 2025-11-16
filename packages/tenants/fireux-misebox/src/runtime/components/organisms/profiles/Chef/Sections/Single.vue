@@ -2,13 +2,11 @@
   <div class="space-y-6">
     <UCard v-if="coreProfile">
       <template #header>
-        <h2>{{ coreProfile?.title || 'Chef' }}</h2>
+        <h2>{{ coreUser?.display_name || '-' }}</h2>
       </template>
 
       <div class="space-y-4">
         <MiseProfilesChefCardsPill v-if="pill" :chef="pill" class="max-w-md" />
-
-        <pre class="text-xs whitespace-pre-wrap">{{ pill }}</pre>
       </div>
     </UCard>
 
@@ -21,10 +19,13 @@ import type {
   ChefProfile,
   ChefCard,
 } from '../../../../../models/profiles/Chef.model.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
 defineProps<{
   coreProfile: ChefProfile | null | undefined
   appProfile?: Partial<ChefProfile> | null | undefined
   pill: ChefCard.Pill | null
 }>()
+
+const { coreUser } = useUser()
 </script>

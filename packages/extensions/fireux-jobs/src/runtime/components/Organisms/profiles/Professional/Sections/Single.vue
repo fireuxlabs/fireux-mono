@@ -3,7 +3,7 @@
   <div class="space-y-6">
     <UCard v-if="coreProfile">
       <template #header>
-        <h2>{{ coreProfile.display_name || 'Professional' }}</h2>
+        <h2>{{ coreUser?.display_name || '-' }}</h2>
       </template>
 
       <div class="space-y-4">
@@ -12,8 +12,6 @@
           :professional="pill"
           class="max-w-md"
         />
-
-        <pre>{{ pill }}</pre>
       </div>
     </UCard>
 
@@ -26,10 +24,13 @@ import type {
   ProfessionalProfile,
   ProfessionalCard,
 } from '../../../../../models/profiles/Professional.model.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
 defineProps<{
   coreProfile: ProfessionalProfile | null | undefined
   appProfile?: Partial<ProfessionalProfile> | null | undefined
   pill: ProfessionalCard.Pill | null
 }>()
+
+const { coreUser } = useUser()
 </script>
