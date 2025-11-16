@@ -4,7 +4,7 @@ import type {
 } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
 
-/** Unified Chef view (flattened convenience + partitions) */
+/** Unified Chef wrapper (core + app overlays) */
 export interface Chef {
   id: string
   display_name?: string
@@ -13,41 +13,58 @@ export interface Chef {
   app?: ChefAppProfile | null
 }
 
-/** Domain Chef profile (global + overlays share this shape) */
-export interface ChefProfile extends Profile {
-  title?: string | null
-  subtitle?: string | null
-  badges?: string[]
-  bio_short?: string | null
-  bio_long?: string | null
-  specialties?: string[]
-  avatar?: string | null
-  avatar_url?: string | null
-  organization_name?: string | null
-  locations?: string[]
-}
-
-/** Global: chefs/{uid} */
-export type ChefCoreProfile = ChefProfile
-
-/** App overlay: apps/{appId}/chefs/{uid} */
-export type ChefAppProfile = ChefProfile
-
-/** Card shapes */
+/**
+ * Card + domain shapes
+ * - All “profile fields” live inside ProfileCore / ProfileApp
+ * - Core/App remain delta-friendly
+ */
 export namespace ChefCard {
+  /** Pill shape */
   export interface Pill extends PillModel.Props {}
 
+  /** Cell shape */
   export interface Cell extends Pill {
     id: string
-    to?: string
     bio_short?: string | null
     specialties?: string[]
   }
 
-  export interface Profile extends Cell {
+  /** Full CORE profile surface */
+  export interface ProfileCore extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
+    badges?: string[]
     bio_long?: string | null
+    avatar?: string | null
+    avatar_url?: string | null
+    organization_name?: string | null
+    locations?: string[]
+  }
+
+  /** Tenant APP overlay (delta space) */
+  export interface ProfileApp extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
+    badges?: string[]
+    bio_long?: string | null
+    organization_name?: string | null
+    locations?: string[]
   }
 }
+
+/**
+ * Firestore-facing profile types
+ * - Core profile == UI ProfileCore
+ * - App profile == UI ProfileApp
+ * - ChefProfile used when a generic profile type is needed
+ */
+export type ChefProfile = ChefCard.ProfileCore
+export type ChefCoreProfile = ChefCard.ProfileCore
+export type ChefAppProfile = ChefCard.ProfileApp
 
 /** Config */
 export const chefConfig: ProfileConfig = {

@@ -20,14 +20,14 @@ export type { EmployerProfile, EmployerCoreProfile, EmployerCard }
  * - Exposes:
  *   - raw refs: profile, coreProfile, appProfile, pending
  *   - computed helpers
- *   - UI helpers (pill etc.) that use coreUser
+ *   - UI helpers (pill, cell, profileCore, profileApp)
  *   - update helpers
  */
 export function useEmployer() {
   const { profile: refs, pending } = useProfile<EmployerProfile>(employerConfig)
   const { coreProfile, appProfile } = refs
 
-  // canonical user to feed UI layer
+  // canonical user
   const { coreUser } = useUser()
 
   const computed = useEmployerComputed(refs, pending)
@@ -35,19 +35,13 @@ export function useEmployer() {
   const update = useEmployerUpdate(refs)
 
   return {
-    // raw firestore refs
     profile: refs,
     coreProfile,
     appProfile,
     pending,
 
-    // computed helpers
     ...computed,
-
-    // UI helpers (pill etc., all using coreUser)
     ...ui,
-
-    // update helpers
     ...update,
   }
 }

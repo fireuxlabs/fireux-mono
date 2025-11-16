@@ -12,10 +12,6 @@
         :app-profile="appProfile"
         :pill="pill"
       />
-
-      <!-- Debug: show pill payload from runtime -->
-      <pre>{{ pill }}</pre>
-
       <OrganismsProfilesProfessionalSectionsCollection />
     </UPageBody>
   </UPage>

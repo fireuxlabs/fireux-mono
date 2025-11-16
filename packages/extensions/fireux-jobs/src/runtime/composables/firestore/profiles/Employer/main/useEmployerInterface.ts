@@ -1,8 +1,10 @@
+import { computed } from 'vue'
 import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
-import type {
-  EmployerProfile,
-  EmployerCard,
+import {
+  employerConfig,
+  type EmployerProfile,
+  type EmployerCard,
 } from '../../../../../models/profiles/Employer.model.ts'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
@@ -20,6 +22,18 @@ export function useEmployerInterface(
 ) {
   const core = () => profile.coreProfile.value ?? null
   const appOverlay = () => profile.appProfile.value ?? null
+
+  const pill = computed<EmployerCard.Pill | null>(() => {
+    const value = user.value
+    if (!value) return null
+
+    return {
+      avatar: value.avatar ?? '',
+      title: value.display_name ?? '',
+      subtitle: value.handle ? `@${value.handle}` : '',
+      to: `/${employerConfig.collectionName}/${value.id}`,
+    }
+  })
 
   const derive = (target?: EmployerProfile | null) => {
     const overlay: Partial<EmployerProfile> | null =
@@ -91,5 +105,5 @@ export function useEmployerInterface(
     }
   }
 
-  return { pillProps, cellProps, profileProps }
+  return { pill, pillProps, cellProps, profileProps }
 }

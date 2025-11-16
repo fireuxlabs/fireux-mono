@@ -35,19 +35,12 @@ export function useSupplier() {
   const update = useSupplierUpdate(refs)
 
   return {
-    // raw firestore refs
     profile: refs,
     coreProfile,
     appProfile,
     pending,
-
-    // computed helpers
     ...computed,
-
-    // UI helpers (pill etc., all using coreUser)
     ...ui,
-
-    // update helpers
     ...update,
   }
 }

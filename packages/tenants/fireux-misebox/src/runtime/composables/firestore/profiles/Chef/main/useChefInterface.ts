@@ -1,8 +1,10 @@
+import { computed } from 'vue'
 import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
-import type {
-  ChefProfile,
-  ChefCard,
+import {
+  chefConfig,
+  type ChefProfile,
+  type ChefCard,
 } from '../../../../../models/profiles/Chef.model.ts'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
@@ -24,6 +26,18 @@ export function useChefInterface(
 ) {
   const core = () => profile.coreProfile.value ?? null
   const app = () => profile.appProfile.value ?? null
+
+  const pill = computed<ChefCard.Pill | null>(() => {
+    const value = user.value
+    if (!value) return null
+
+    return {
+      avatar: value.avatar ?? '',
+      title: value.display_name ?? '',
+      subtitle: value.handle ? `@${value.handle}` : '',
+      to: `/${chefConfig.collectionName}/${value.id}`,
+    }
+  })
 
   const derive = (target?: ChefProfile | null) => {
     const overlay: Partial<ChefProfile> | null = target ?? app() ?? null
@@ -96,5 +110,5 @@ export function useChefInterface(
     }
   }
 
-  return { pillProps, cellProps, profileProps }
+  return { pill, pillProps, cellProps, profileProps }
 }

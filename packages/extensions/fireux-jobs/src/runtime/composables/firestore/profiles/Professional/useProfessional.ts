@@ -10,8 +10,8 @@ import {
   type ProfessionalCard,
 } from '../../../../models/profiles/Professional.model.ts'
 
-import { useProfessionalInterface } from './main/useProfessionalInterface.ts'
 import { useProfessionalComputed } from './main/useProfessionalComputed.ts'
+import { useProfessionalInterface } from './main/useProfessionalInterface.ts'
 import { useProfessionalUpdate } from './main/useProfessionalUpdate.ts'
 
 export type { ProfessionalProfile, ProfessionalCoreProfile, ProfessionalCard }
@@ -22,7 +22,7 @@ export type { ProfessionalProfile, ProfessionalCoreProfile, ProfessionalCard }
  * - Exposes:
  *   - raw refs: profile, coreProfile, appProfile, pending
  *   - computed helpers
- *   - UI helpers (pill etc.) that use coreUser
+ *   - UI helpers (pill, cell, profileCore, profileApp)
  *   - update helpers
  */
 export function useProfessional() {
@@ -31,7 +31,7 @@ export function useProfessional() {
 
   const { coreProfile, appProfile } = refs
 
-  // canonical user to feed UI layer
+  // canonical user
   const { coreUser } = useUser()
 
   const computed = useProfessionalComputed(refs, pending)
@@ -39,19 +39,13 @@ export function useProfessional() {
   const update = useProfessionalUpdate(refs)
 
   return {
-    // raw firestore refs
     profile: refs,
     coreProfile,
     appProfile,
     pending,
 
-    // computed helpers
     ...computed,
-
-    // UI helpers (pill etc., all using coreUser)
     ...ui,
-
-    // update helpers
     ...update,
   }
 }

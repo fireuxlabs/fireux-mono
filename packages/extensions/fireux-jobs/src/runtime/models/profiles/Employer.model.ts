@@ -1,11 +1,12 @@
-// packages/extensions/fireux-jobs/src/runtime/models/profiles/Employer.model.ts
+// FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Employer.model.ts
+
 import type {
   Profile,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
 
-/** Unified Employer */
+/** Unified Employer wrapper (core + app overlays) */
 export interface Employer {
   id: string
   display_name?: string
@@ -14,41 +15,59 @@ export interface Employer {
   app?: EmployerAppProfile | null
 }
 
-/** Domain profile exposed to Jobs UI (extends core Profile shape) */
-export interface EmployerProfile extends Profile {
-  title?: string | null
-  subtitle?: string | null
-  badges?: string[]
-  bio_short?: string | null
-  bio_long?: string | null
-  specialties?: string[]
-  avatar?: string | null
-  avatar_url?: string | null
-  organization_name?: string | null
-  locations?: string[]
-}
-
-/** Global: employers/{uid} */
-export type EmployerCoreProfile = EmployerProfile
-
-/** App overlay: apps/{appId}/employers/{uid} */
-export type EmployerAppProfile = EmployerProfile
-
-/** Cards */
+/**
+ * Card + domain shapes
+ * - All “profile fields” live inside ProfileCore / ProfileApp
+ * - Core/App remain delta-friendly
+ */
 export namespace EmployerCard {
+  /** Pill shape */
   export interface Pill extends PillModel.Props {}
 
+  /** Cell shape */
   export interface Cell extends Pill {
     id: string
-    to?: string
     bio_short?: string | null
     specialties?: string[]
+    locations?: string[]
   }
 
-  export interface Profile extends Cell {
+  /** Full CORE profile surface */
+  export interface ProfileCore extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
+    title?: string | null
+    subtitle?: string | null
+    badges?: string[]
     bio_long?: string | null
+    avatar?: string | null
+    avatar_url?: string | null
+    organization_name?: string | null
+  }
+
+  /** Tenant APP overlay (delta space) */
+  export interface ProfileApp extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
+    bio_short?: string | null
+    specialties?: string[]
+    locations?: string[]
   }
 }
+
+/**
+ * Firestore-facing profile types
+ * - Core profile == UI ProfileCore
+ * - App profile == UI ProfileApp
+ * - EmployerProfile used when a generic profile type is needed
+ */
+export type EmployerProfile = EmployerCard.ProfileCore
+export type EmployerCoreProfile = EmployerCard.ProfileCore
+export type EmployerAppProfile = EmployerCard.ProfileApp
 
 /** Config */
 export const employerConfig: ProfileConfig = {

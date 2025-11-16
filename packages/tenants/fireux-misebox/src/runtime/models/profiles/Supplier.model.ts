@@ -1,11 +1,10 @@
-// packages/tenants/fireux-misebox/src/runtime/models/profiles/Supplier.model.ts
 import type {
   Profile,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
 
-/** Unified Supplier (kept symmetric with Chef) */
+/** Unified Supplier wrapper (core + app overlays) */
 export interface Supplier {
   id: string
   display_name?: string
@@ -14,41 +13,54 @@ export interface Supplier {
   app?: SupplierAppProfile | null
 }
 
-/** Domain Supplier profile */
-export interface SupplierProfile extends Profile {
-  title?: string | null
-  subtitle?: string | null
-  badges?: string[]
-  bio_short?: string | null
-  bio_long?: string | null
-  specialties?: string[]
-  categories?: string[]
-  avatar?: string | null
-  avatar_url?: string | null
-}
-
-/** Global: suppliers/{uid} */
-export type SupplierCoreProfile = SupplierProfile
-
-/** App overlay: apps/{appId}/suppliers/{uid} */
-export type SupplierAppProfile = SupplierProfile
-
-/** Card shapes (mirrors Chef shapes) */
+/**
+ * Card + domain shapes (mirrors Chef)
+ * - ProfileCore/App host the domain fields for delta-friendly overlays
+ */
 export namespace SupplierCard {
+  /** Pill shape */
   export interface Pill extends PillModel.Props {}
 
+  /** Cell shape */
   export interface Cell extends Pill {
     id: string
-    to?: string
     bio_short?: string | null
     specialties?: string[]
     categories?: string[]
   }
 
-  export interface Profile extends Cell {
+  /** Full CORE profile surface */
+  export interface ProfileCore extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
+    badges?: string[]
+    bio_long?: string | null
+    avatar?: string | null
+    avatar_url?: string | null
+  }
+
+  /** Tenant APP overlay (delta space) */
+  export interface ProfileApp extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
+    badges?: string[]
     bio_long?: string | null
   }
 }
+
+/**
+ * Firestore-facing profile types
+ * - Core profile == UI ProfileCore
+ * - App profile == UI ProfileApp
+ * - SupplierProfile used when a generic profile type is needed
+ */
+export type SupplierProfile = SupplierCard.ProfileCore
+export type SupplierCoreProfile = SupplierCard.ProfileCore
+export type SupplierAppProfile = SupplierCard.ProfileApp
 
 /** Config */
 export const supplierConfig: ProfileConfig = {

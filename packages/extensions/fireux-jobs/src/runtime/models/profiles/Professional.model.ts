@@ -17,28 +17,11 @@ export interface Professional {
   app?: ProfessionalAppProfile | null
 }
 
-/** Domain-level Professional profile (Firestore document shape) */
-export interface ProfessionalProfile extends Profile {
-  title?: string | null
-  subtitle?: string | null
-  badges?: string[]
-  health_certifications?: string[]
-  bio_short?: string | null
-  bio_long?: string | null
-  specialties?: string[]
-  avatar?: string | null
-  avatar_url?: string | null
-  relevant_experience?: RelevantExperienceItem[]
-  other_experience?: OtherExperienceItem[]
-}
-
-/** Global: professionals/{uid} */
-export type ProfessionalCoreProfile = ProfessionalProfile
-
-/** App overlay: apps/{appId}/professionals/{uid} */
-export type ProfessionalAppProfile = ProfessionalProfile
-
-/** Professional card shapes consumed by the UI */
+/**
+ * Card + domain shapes
+ * - All “profile fields” live inside ProfileCore / ProfileApp
+ * - Core/App are clearly separated for future delta usage
+ */
 export namespace ProfessionalCard {
   /** Pill model (UI header chip) */
   export interface Pill extends PillModel.Props {}
@@ -52,20 +35,44 @@ export namespace ProfessionalCard {
 
   /** Full CORE profile surface */
   export interface ProfileCore extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
+    // Domain profile fields (previously on ProfessionalProfile)
+    title?: string | null
     subtitle?: string | null
     badges?: string[]
     health_certifications?: string[]
+    bio_short?: string | null
     bio_long?: string | null
+    specialties?: string[]
+    avatar?: string | null
+    avatar_url?: string | null
     relevant_experience?: RelevantExperienceItem[]
     other_experience?: OtherExperienceItem[]
   }
 
   /** Tenant APP overlay (delta space) */
   export interface ProfileApp extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
     bio_short?: string | null
     specialties?: string[]
   }
 }
+
+/**
+ * Firestore-facing profile types
+ * - For now, core profile == UI ProfileCore
+ * - App profile == UI ProfileApp (delta)
+ * - ProfessionalProfile used where a generic profile type is needed
+ */
+export type ProfessionalProfile = ProfessionalCard.ProfileCore
+export type ProfessionalCoreProfile = ProfessionalCard.ProfileCore
+export type ProfessionalAppProfile = ProfessionalCard.ProfileApp
 
 // Re-export runtime config for convenience
 export { professionalConfig }
