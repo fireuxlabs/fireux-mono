@@ -11,29 +11,22 @@ export function useUserCollection() {
   const db = useFirestore()
   const { isTenant, appId } = useFireUXConfig()
 
-  const global = useCollection<User>(collection(db, 'users') as any)
+  const global = useCollection<User>(collection(db, 'users') as any, {
+    idField: 'id',
+  })
   const local =
     isTenant && appId
-      ? useCollection<AppUser>(collection(db, 'apps', appId, 'users') as any)
+      ? useCollection<AppUser>(collection(db, 'apps', appId, 'users') as any, {
+          idField: 'id',
+        })
       : null
 
   const users = computed<User[]>(() => {
     const base = global.value ?? []
-    const overlays = local?.value ?? []
-    if (!overlays.length) return base
-
-    const overlayById = new Map(overlays.map((entry) => [entry.id, entry]))
-
-    return base.map((core) => {
-      const overlay = overlayById.get(core.id)
-      if (!overlay) return core
-
-      return {
-        ...core,
-        role: overlay.role ?? core.role,
-        appUser: overlay,
-      }
-    })
+    return base.map((entry: any) => ({
+      ...entry,
+      id: typeof entry?.id === 'string' ? entry.id : '',
+    })) as User[]
   })
 
   return { users, global, local }

@@ -6,7 +6,11 @@
       </template>
 
       <div class="space-y-4">
-        <MiseProfilesChefCardsPill v-if="pill" :chef="pill" class="max-w-md" />
+        <OrganismsProfilesChefCardsPill
+          v-if="pill"
+          :chef="pill"
+          class="max-w-md"
+        />
       </div>
     </UCard>
 

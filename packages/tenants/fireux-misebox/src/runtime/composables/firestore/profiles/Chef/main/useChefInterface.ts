@@ -1,104 +1,51 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import {
   chefConfig,
   type ChefProfile,
   type ChefCard,
 } from '../../../../../models/profiles/Chef.model.ts'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
-const DEFAULT_INITIALS = 'A'
-const toLink = (id?: string | null) => (id ? `/profiles/${id}` : '')
-
-const initialsFrom = (source?: string | null) => {
-  const value = (source ?? '').trim()
-  return value ? value.charAt(0).toUpperCase() : DEFAULT_INITIALS
-}
+const routeFor = (id?: string | null) =>
+  id ? `/${chefConfig.collectionName}/${id}` : null
 
 /**
- * Overlay-first getters (app → core) with optional target overrides.
- * Keeps parity with useAppInterface/useUserInterface.
+ * Minimal chef interface.
+ * No merging, no overrides.
+ * Pill = user.avatar + user.display_name + profile.subtitle.
  */
 export function useChefInterface(
   profile: ProfileRefs<ChefProfile>,
   user: Ref<User | null>
 ) {
-  const core = () => profile.coreProfile.value ?? null
-  const app = () => profile.appProfile.value ?? null
-
-  const pill = computed<ChefCard.Pill | null>(() => pillProps())
-
-  const derive = (target?: ChefProfile | null) => {
-    const overlay: Partial<ChefProfile> | null = target ?? app() ?? null
-    const base: Partial<ChefProfile> | null = target ? null : core()
-
-    const pick = <T>(
-      selector: (p: Partial<ChefProfile>) => T | null | undefined
-    ): T | undefined => {
-      return (
-        (overlay && selector(overlay)) ?? (base && selector(base)) ?? undefined
-      )
-    }
-
-    const id = pick((p) => p.id) ?? ''
-    const fallbackTitle = user.value?.display_name ?? 'Chef'
-    const title = pick((p) => p.title) ?? fallbackTitle
-    const subtitle = pick((p) => p.subtitle) ?? ''
-    const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''
-    const badgesCandidate = pick((p) => p.badges) ?? pick((p) => p.specialties)
-    const specialtiesCandidate = pick((p) => p.specialties)
-    const badges = Array.isArray(badgesCandidate) ? badgesCandidate : []
-    const specialties = Array.isArray(specialtiesCandidate)
-      ? specialtiesCandidate
-      : []
-    const bioShort = pick((p) => p.bio_short) ?? ''
-    const bioLong = pick((p) => p.bio_long) ?? ''
+  // Guardrail: keep the pill minimal—canonical user name/avatar + profile subtitle only.
+  const pill = computed<ChefCard.Pill | null>(() => {
+    const u = user.value
+    if (!u) return null
 
     return {
-      id,
-      title,
-      subtitle,
-      avatar,
-      badges,
-      specialties,
-      bioShort,
-      bioLong,
+      avatar: u.avatar ?? '',
+      title: u.display_name ?? '',
+      subtitle: profile.coreProfile.value?.subtitle ?? '',
+      badges: [],
+      to: routeFor(u.id),
     }
-  }
+  })
 
-  const pillProps = (target?: ChefProfile | null): ChefCard.Pill => {
-    const derived = derive(target)
-    return {
-      avatar: derived.avatar,
-      initials: initialsFrom(derived.title),
-      title: derived.title,
-      subtitle: derived.subtitle,
-      badges: derived.badges,
-      to: derived.id ? toLink(derived.id) : null,
-    }
-  }
-
-  const cellProps = (target?: ChefProfile | null): ChefCard.Cell => {
-    const derived = derive(target)
-    return {
-      ...pillProps(target),
-      id: derived.id,
-      to: derived.id ? toLink(derived.id) : undefined,
-      bio_short: derived.bioShort,
-      specialties: Array.isArray(derived.specialties)
-        ? derived.specialties
-        : [],
-    }
-  }
-
-  const profileProps = (target?: ChefProfile | null): ChefCard.Profile => {
-    const derived = derive(target)
-    return {
-      ...cellProps(target),
-      bio_long: derived.bioLong,
-    }
-  }
-
-  return { pill, pillProps, cellProps, profileProps }
+  return { pill }
 }
+
+export const resolveChefPill = (
+  profile?: ChefProfile | null
+): ChefCard.Pill => ({
+  avatar: profile?.user?.avatar ?? '',
+  title: profile?.user?.display_name ?? '',
+  subtitle: profile?.subtitle ?? '',
+  badges: [],
+  to: routeFor(profile?.id),
+})
+
+export const resolveChefPillKey = (pill: ChefCard.Pill) =>
+  pill.to ?? pill.title ?? 'chef'

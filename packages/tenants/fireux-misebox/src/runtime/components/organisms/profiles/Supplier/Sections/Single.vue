@@ -6,7 +6,7 @@
       </template>
 
       <div class="space-y-4">
-        <MiseProfilesSupplierCardsPill
+        <OrganismsProfilesSupplierCardsPill
           v-if="pill"
           :supplier="pill"
           class="max-w-md"

@@ -20,14 +20,11 @@ export function useUserInterface(
 
   const toPath = (id?: string | null) => (id ? `/users/${id}` : '')
   const subtitle = (handle?: string | null) => (handle ? `@${handle}` : '')
-  const uniqueStrings = (value?: unknown): string[] => {
+  const badgeList = (value?: unknown): string[] => {
     if (!Array.isArray(value)) return []
     const filtered = value
-      .filter(
-        (entry): entry is string =>
-          typeof entry === 'string' && entry.trim().length > 0
-      )
-      .map((entry) => entry.trim())
+      .map((entry) => (typeof entry === 'string' ? entry.trim() : ''))
+      .filter((entry) => entry.length > 0)
     return Array.from(new Set(filtered))
   }
   const toInitials = (value?: string | null): string | undefined => {
@@ -54,38 +51,10 @@ export function useUserInterface(
       initials: toInitials(displayName),
       title: displayName,
       subtitle: subtitle(user?.handle),
-      badges: user?.profiles ?? [],
+      badges: badgeList(user?.profiles),
       to: (toPath(user?.id) || null) as RouteLocationRaw,
     }
   }
 
-  const cellProps = (target?: User | null): UserCard.Cell => {
-    const user = target ?? resolve()
-    const base = pillProps(user)
-
-    return {
-      ...base,
-      to: toPath(user?.id),
-      id: user?.id ?? '',
-      profiles: uniqueStrings(user?.profiles),
-      role: user?.role ?? user?.appUser?.role ?? undefined,
-      adminOf: uniqueStrings(user?.adminOf),
-      userOf: uniqueStrings(user?.userOf),
-    }
-  }
-
-  const profileProps = (target?: User | null): UserCard.Profile => {
-    const user = target ?? resolve()
-
-    return {
-      ...cellProps(user ?? undefined),
-      bio: user?.bio,
-      created_at: user?.created_at,
-      updated_at: user?.updated_at,
-      adminOf: uniqueStrings(user?.adminOf),
-      userOf: uniqueStrings(user?.userOf),
-    }
-  }
-
-  return { pillProps, cellProps, profileProps }
+  return { pillProps }
 }

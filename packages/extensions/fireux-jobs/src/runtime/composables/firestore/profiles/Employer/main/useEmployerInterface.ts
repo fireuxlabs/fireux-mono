@@ -1,99 +1,51 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import {
   employerConfig,
   type EmployerProfile,
   type EmployerCard,
 } from '../../../../../models/profiles/Employer.model.ts'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
-const DEFAULT_INITIALS = 'A'
-const toLink = (id?: string | null) => (id ? `/profiles/${id}` : '')
+const routeFor = (id?: string | null) =>
+  id ? `/${employerConfig.collectionName}/${id}` : null
 
-const initialsFrom = (source?: string | null) => {
-  const value = (source ?? '').trim()
-  return value ? value.charAt(0).toUpperCase() : DEFAULT_INITIALS
-}
-
+/**
+ * Minimal employer interface.
+ * No merging, no overrides.
+ * Pill = user.avatar + user.display_name + profile.subtitle.
+ */
 export function useEmployerInterface(
   profile: ProfileRefs<EmployerProfile>,
   user: Ref<User | null>
 ) {
-  const core = () => profile.coreProfile.value ?? null
-  const appOverlay = () => profile.appProfile.value ?? null
-
-  const pill = computed<EmployerCard.Pill | null>(() => pillProps())
-
-  const derive = (target?: EmployerProfile | null) => {
-    const overlay: Partial<EmployerProfile> | null =
-      target ?? appOverlay() ?? null
-    const base: Partial<EmployerProfile> | null = target ? null : core()
-
-    const pick = <T>(
-      selector: (p: Partial<EmployerProfile>) => T | null | undefined
-    ): T | undefined =>
-      (overlay && selector(overlay)) ?? (base && selector(base)) ?? undefined
-
-    const id = pick((p) => p.id) ?? ''
-    const fallbackTitle = user.value?.display_name ?? 'Employer'
-    const title =
-      pick((p) => p.title) ?? pick((p) => p.organization_name) ?? fallbackTitle
-    const subtitle = pick((p) => p.subtitle) ?? ''
-    const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''
-    const badgesCandidate = pick((p) => p.locations) ?? pick((p) => p.badges)
-    const specialtiesCandidate = pick((p) => p.specialties)
-    const badges = Array.isArray(badgesCandidate) ? badgesCandidate : []
-    const specialties = Array.isArray(specialtiesCandidate)
-      ? specialtiesCandidate
-      : []
-    const bioShort = pick((p) => p.bio_short) ?? ''
-    const bioLong = pick((p) => p.bio_long) ?? ''
+  // Guardrail: keep the pill minimal—canonical user name/avatar + profile subtitle only.
+  const pill = computed<EmployerCard.Pill | null>(() => {
+    const u = user.value
+    if (!u) return null
 
     return {
-      id,
-      title,
-      subtitle,
-      avatar,
-      badges,
-      specialties,
-      bioShort,
-      bioLong,
+      avatar: u.avatar ?? '',
+      title: u.display_name ?? '',
+      subtitle: profile.coreProfile.value?.subtitle ?? '',
+      badges: [],
+      to: routeFor(u.id),
     }
-  }
+  })
 
-  const pillProps = (target?: EmployerProfile | null): EmployerCard.Pill => {
-    const derived = derive(target)
-    return {
-      avatar: derived.avatar,
-      initials: initialsFrom(derived.title),
-      title: derived.title,
-      subtitle: derived.subtitle,
-      badges: derived.badges,
-      to: derived.id ? toLink(derived.id) : null,
-    }
-  }
-
-  const cellProps = (target?: EmployerProfile | null): EmployerCard.Cell => {
-    const derived = derive(target)
-    return {
-      ...pillProps(target),
-      id: derived.id,
-      to: derived.id ? toLink(derived.id) : undefined,
-      bio_short: derived.bioShort,
-      specialties: derived.specialties,
-    }
-  }
-
-  const profileProps = (
-    target?: EmployerProfile | null
-  ): EmployerCard.Profile => {
-    const derived = derive(target)
-    return {
-      ...cellProps(target),
-      bio_long: derived.bioLong,
-    }
-  }
-
-  return { pill, pillProps, cellProps, profileProps }
+  return { pill }
 }
+
+export const resolveEmployerPill = (
+  profile?: EmployerProfile | null
+): EmployerCard.Pill => ({
+  avatar: profile?.user?.avatar ?? '',
+  title: profile?.user?.display_name ?? '',
+  subtitle: profile?.subtitle ?? '',
+  badges: [],
+  to: routeFor(profile?.id),
+})
+
+export const resolveEmployerPillKey = (pill: EmployerCard.Pill) =>
+  pill.to ?? pill.title ?? 'employer'

@@ -8,7 +8,7 @@
 
     <UPageBody class="space-y-6">
       <template v-if="hasProfile">
-        <MiseProfilesSupplierSectionsSingle
+        <OrganismsProfilesSupplierSectionsSingle
           :core-profile="coreProfile"
           :app-profile="appProfile"
           :pill="pill"
@@ -23,7 +23,8 @@
         :links="supplierCtaLinks"
       />
 
-      <MiseProfilesSupplierSectionsCollection />
+      <OrganismsProfilesSupplierSectionsGlobalCollection />
+      <OrganismsProfilesSupplierSectionsLocalCollection v-if="isTenant" />
     </UPageBody>
   </UPage>
 </template>
@@ -32,6 +33,10 @@
 import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useSupplier } from '../../composables/firestore/profiles/Supplier/useSupplier.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import OrganismsProfilesSupplierSectionsSingle from '../../components/organisms/profiles/Supplier/Sections/Single.vue'
+import OrganismsProfilesSupplierSectionsGlobalCollection from '../../components/organisms/profiles/Supplier/Sections/GlobalCollection.vue'
+import OrganismsProfilesSupplierSectionsLocalCollection from '../../components/organisms/profiles/Supplier/Sections/LocalCollection.vue'
 
 definePageMeta({
   nav: {
@@ -65,6 +70,7 @@ const supplierCtaLinks = [
   },
 ]
 const hasProfile = computed(() => Boolean(coreProfile.value))
+const { isTenant } = useFireUXConfig()
 
 useHead({ title: 'Suppliers' })
 </script>

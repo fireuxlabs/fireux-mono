@@ -8,7 +8,7 @@
 
     <UPageBody class="space-y-6">
       <template v-if="hasProfile">
-        <MiseProfilesChefSectionsSingle
+        <OrganismsProfilesChefSectionsSingle
           :core-profile="coreProfile"
           :app-profile="appProfile"
           :pill="pill"
@@ -23,7 +23,8 @@
         :links="chefCtaLinks"
       />
 
-      <MiseProfilesChefSectionsCollection />
+      <OrganismsProfilesChefSectionsGlobalCollection />
+      <OrganismsProfilesChefSectionsLocalCollection v-if="isTenant" />
     </UPageBody>
   </UPage>
 </template>
@@ -32,6 +33,10 @@
 import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useChef } from '../../composables/firestore/profiles/Chef/useChef.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import OrganismsProfilesChefSectionsSingle from '../../components/organisms/profiles/Chef/Sections/Single.vue'
+import OrganismsProfilesChefSectionsGlobalCollection from '../../components/organisms/profiles/Chef/Sections/GlobalCollection.vue'
+import OrganismsProfilesChefSectionsLocalCollection from '../../components/organisms/profiles/Chef/Sections/LocalCollection.vue'
 
 definePageMeta({
   nav: {
@@ -65,6 +70,7 @@ const chefCtaLinks = [
   },
 ]
 const hasProfile = computed(() => Boolean(coreProfile.value))
+const { isTenant } = useFireUXConfig()
 
 useHead({ title: 'Chefs' })
 </script>

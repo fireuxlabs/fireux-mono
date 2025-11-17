@@ -15,7 +15,9 @@
       <div>
         <h2 class="font-semibold">With a Supplier Profile you can:</h2>
         <ul class="mt-2 list-disc space-y-1 pl-6">
-          <li>Highlight your product range or services to the right audience.</li>
+          <li>
+            Highlight your product range or services to the right audience.
+          </li>
           <li>Connect with decision makers inside FireUX apps.</li>
           <li>Earn trust by maintaining a consistent business identity.</li>
           <li>Increase visibility as the supplier network expands.</li>

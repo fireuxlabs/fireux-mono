@@ -27,10 +27,13 @@ export function useProfessionalInterface(
     const u = user.value
     if (!u) return null
 
+    const displayName = u.display_name?.trim() || ''
+    const subtitle = profile.coreProfile.value?.subtitle?.trim() || ''
+
     return {
       avatar: u.avatar ?? '',
-      title: u.display_name ?? '',
-      subtitle: profile.coreProfile.value?.subtitle ?? '',
+      title: displayName,
+      subtitle,
       badges: [],
       to: routeFor(u.id),
     }
@@ -43,8 +46,8 @@ export const resolveProfessionalPill = (
   profile?: ProfessionalProfile | null
 ): ProfessionalCard.Pill => ({
   avatar: profile?.user?.avatar ?? '',
-  title: profile?.user?.display_name ?? '',
-  subtitle: profile?.subtitle ?? '',
+  title: profile?.user?.display_name?.trim() || '',
+  subtitle: profile?.subtitle?.trim() || '',
   badges: [],
   to: routeFor(profile?.id),
 })

@@ -22,7 +22,8 @@
         :links="employerCtaLinks"
       />
 
-      <OrganismsProfilesEmployerSectionsCollection />
+      <OrganismsProfilesEmployerSectionsGlobalCollection />
+      <OrganismsProfilesEmployerSectionsLocalCollection v-if="isTenant" />
     </UPageBody>
   </UPage>
 </template>
@@ -30,7 +31,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useHead } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useEmployer } from '../../composables/firestore/profiles/Employer/useEmployer.ts'
+import OrganismsProfilesEmployerSectionsSingle from '../../components/Organisms/profiles/Employer/Sections/Single.vue'
+import OrganismsProfilesEmployerSectionsGlobalCollection from '../../components/Organisms/profiles/Employer/Sections/GlobalCollection.vue'
+import OrganismsProfilesEmployerSectionsLocalCollection from '../../components/Organisms/profiles/Employer/Sections/LocalCollection.vue'
 
 definePageMeta({
   nav: {
@@ -49,6 +54,7 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile, pill } = useEmployer()
+const { isTenant } = useFireUXConfig()
 const employerCtaLinks = [
   {
     label: 'Get started',

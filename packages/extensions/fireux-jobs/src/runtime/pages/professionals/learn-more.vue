@@ -7,9 +7,9 @@
 
     <UPageBody class="space-y-4 text-sm">
       <p>
-        A Professional Profile introduces who you are, what you do, and what kind
-        of work you are seeking. It is the single source that follows you into
-        every FireUX experience—no duplication, no extra setup.
+        A Professional Profile introduces who you are, what you do, and what
+        kind of work you are seeking. It is the single source that follows you
+        into every FireUX experience—no duplication, no extra setup.
       </p>
 
       <div>

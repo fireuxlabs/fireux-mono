@@ -35,7 +35,7 @@ const props = withDefaults(
   { compact: true }
 )
 
-const { user: runtimeUser, pillProps, profileProps } = useUser()
+const { user: runtimeUser, pillProps } = useUser()
 
 const current = computed<User | null>(
   () => props.user ?? runtimeUser.value ?? null
@@ -58,9 +58,7 @@ const coreLink = computed<RouteLocationRaw | null>(() => {
   return id ? `/users/${id}` : null
 })
 
-const profile = computed<UserCard.Profile | null>(() =>
-  current.value ? profileProps(current.value) : null
-)
+const profile = computed<User | null>(() => current.value)
 
 const showExtended = computed(() => !props.compact)
 </script>
