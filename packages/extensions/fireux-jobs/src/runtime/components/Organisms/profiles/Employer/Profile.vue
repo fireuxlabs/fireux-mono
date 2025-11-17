@@ -296,18 +296,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { profileUi } from '../shared/profileUi'
 // Loosen typing to accommodate varied data shapes during migration
 const props = defineProps<{
   employer?: any
 }>()
 
-const ui = profileUi
-const statClasses = [
-  ui.surface.base,
-  ui.surface.padding.compact,
-  'flex items-center gap-3 text-sm text-gray-600',
-]
+const statClasses =
+  'bg-gray-50 border border-gray-200/70 rounded-xl p-4 flex items-center gap-3 text-sm text-gray-600'
 
 // Helper functions for template use only - no complex logic
 const hasBusinessStats = computed(() => {

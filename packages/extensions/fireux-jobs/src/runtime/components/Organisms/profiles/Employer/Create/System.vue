@@ -68,8 +68,8 @@
             <div class="form-actions">
               <UButton
                 type="submit"
-                :loading="creating"
-                :disabled="!isFormValid"
+                :loading="isSubmitting"
+                :disabled="!isFormValid || isSubmitting"
                 size="lg"
                 color="primary"
                 class="create-button"
@@ -105,7 +105,7 @@ const accountDisplayName = computed(() => {
 })
 
 // Initialize employer create composable
-const { createEmployer, creating, error } = useEmployerCreate()
+const { createEmployer } = useEmployerCreate()
 
 // Form state
 const formData = ref({
@@ -120,18 +120,14 @@ const isFormValid = computed(() => {
   return formData.value.companyName.trim()
 })
 
+const isSubmitting = ref(false)
+
 async function onCreateEmployer() {
-  if (!isFormValid.value || creating.value) return
+  if (!isFormValid.value || isSubmitting.value) return
 
   try {
-    // Prepare employer data
-    const employerData = {
-      ...formData.value,
-      contactEmail: formData.value.contactEmail || appUser.value?.email,
-    }
-
-    // Create the employer profile with all form data
-    await createEmployer(employerData)
+    isSubmitting.value = true
+    await createEmployer()
 
     // Success feedback
     console.log('Employer profile created successfully!')
@@ -141,6 +137,8 @@ async function onCreateEmployer() {
   } catch (err) {
     console.error('Failed to create employer profile:', err)
     // You might want to show a toast or error message here
+  } finally {
+    isSubmitting.value = false
   }
 }
 

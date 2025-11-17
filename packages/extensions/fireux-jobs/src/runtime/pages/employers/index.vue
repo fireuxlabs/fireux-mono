@@ -19,8 +19,21 @@
         title="Create your employer profile"
         description="Add an employer profile to your FireUX portfolio so talent knows who is hiring."
         variant="naked"
-        :links="employerCtaLinks"
-      />
+      >
+        <template #links>
+          <UButton
+            color="primary"
+            size="lg"
+            :loading="isCreating"
+            :disabled="isCreating"
+            @click="handleCreate"
+          >
+            {{ isCreating ? 'Creating...' : 'Create employer profile' }}
+          </UButton>
+        </template>
+      </UPageCTA>
+
+      <p v-if="createError" class="cta-error">{{ createError }}</p>
 
       <OrganismsProfilesEmployerSectionsGlobalCollection />
       <OrganismsProfilesEmployerSectionsLocalCollection v-if="isTenant" />
@@ -29,10 +42,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useEmployer } from '../../composables/firestore/profiles/Employer/useEmployer.ts'
+import { useEmployerCreate } from '../../composables/firestore/profiles/Employer/main/useEmployerCreate.ts'
 import OrganismsProfilesEmployerSectionsSingle from '../../components/Organisms/profiles/Employer/Sections/Single.vue'
 import OrganismsProfilesEmployerSectionsGlobalCollection from '../../components/Organisms/profiles/Employer/Sections/GlobalCollection.vue'
 import OrganismsProfilesEmployerSectionsLocalCollection from '../../components/Organisms/profiles/Employer/Sections/LocalCollection.vue'
@@ -54,22 +68,41 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile, pill } = useEmployer()
+const { createEmployer } = useEmployerCreate()
 const { isTenant } = useFireUXConfig()
-const employerCtaLinks = [
-  {
-    label: 'Get started',
-    color: 'neutral',
-    to: '/dashboard/employer-profile',
-  },
-  {
-    label: 'Learn more',
-    color: 'neutral',
-    variant: 'subtle',
-    trailingIcon: 'i-lucide-arrow-right',
-    to: '/employers/learn-more',
-  },
-]
+
+const isCreating = ref(false)
+const createError = ref<string | null>(null)
+
+const handleCreate = async () => {
+  if (isCreating.value) return
+
+  isCreating.value = true
+  createError.value = null
+
+  try {
+    await createEmployer()
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Unable to create employer profile. Please try again.'
+    createError.value = message
+  } finally {
+    if (createError.value) {
+      isCreating.value = false
+    }
+  }
+}
 const hasProfile = computed(() => Boolean(coreProfile.value))
 
 useHead({ title: 'Employers' })
 </script>
+
+<style scoped>
+.cta-error {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+</style>

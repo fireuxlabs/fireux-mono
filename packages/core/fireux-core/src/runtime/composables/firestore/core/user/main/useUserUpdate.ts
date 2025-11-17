@@ -1,3 +1,5 @@
+import { computed } from 'vue'
+import { arrayRemove, arrayUnion } from 'firebase/firestore'
 import type {
   User,
   AppUser,
@@ -55,6 +57,29 @@ export function useUserUpdate(user: UserRefs) {
     return url
   }
 
+  const normalizeProfileId = (value: string) => {
+    const trimmed = (value ?? '').trim()
+    return trimmed || null
+  }
+
+  const addProfileTag = async (profileId: string) => {
+    const normalized = normalizeProfileId(profileId)
+    if (!normalized) return
+    const id = ensureCoreId()
+    await updateDocument<User>('users', id, {
+      profiles: arrayUnion(normalized) as unknown as string[],
+    })
+  }
+
+  const removeProfileTag = async (profileId: string) => {
+    const normalized = normalizeProfileId(profileId)
+    if (!normalized) return
+    const id = ensureCoreId()
+    await updateDocument<User>('users', id, {
+      profiles: arrayRemove(normalized) as unknown as string[],
+    })
+  }
+
   const updateAppRole = async (role: 'user' | 'admin') => {
     const id = app.value?.id
     if (!appId || !id)
@@ -66,6 +91,27 @@ export function useUserUpdate(user: UserRefs) {
     updateDisplayName,
     updateAvatarUrl,
     uploadAvatar,
+    addProfileTag,
+    removeProfileTag,
     updateAppRole,
   }
+}
+
+export function useUserUpdateForUid(uid: string) {
+  const coreUser = computed<User | null>(
+    () =>
+      ({
+        id: uid,
+      } as User)
+  )
+  const appUser = computed<AppUser | null>(() => null)
+  const user = computed<User | null>(() => coreUser.value)
+  const pending = computed(() => false)
+
+  return useUserUpdate({
+    user,
+    coreUser,
+    appUser,
+    pending,
+  } as UserRefs)
 }
