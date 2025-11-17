@@ -5,8 +5,17 @@ import {
 } from '../../../../../models/profiles/Supplier.model.ts'
 
 export function useSupplierCollection() {
-  const { profiles, global, local } =
-    useProfileCollection<SupplierProfile>(supplierConfig)
+  const {
+    globalProfiles,
+    localProfiles,
+    globalProfilesWithUser,
+    localProfilesWithUser,
+  } = useProfileCollection<SupplierProfile>(supplierConfig)
 
-  return { suppliers: profiles, global, local }
+  return {
+    globalSuppliers: globalProfilesWithUser,
+    localSuppliers: localProfilesWithUser,
+    rawGlobalSuppliers: globalProfiles,
+    rawLocalSuppliers: localProfiles,
+  }
 }

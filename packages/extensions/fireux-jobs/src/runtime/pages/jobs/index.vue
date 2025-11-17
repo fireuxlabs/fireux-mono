@@ -86,7 +86,6 @@ import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useJobCollection } from '../../composables/firestore/jobs/main/useJobCollection.ts'
 import { useEmployer } from '../../composables/firestore/profiles/Employer/useEmployer.ts'
-import { useEmployerComputed } from '../../composables/firestore/profiles/Employer/main/useEmployerComputed.ts'
 
 definePageMeta({
   layout: 'default',
@@ -105,11 +104,12 @@ useHead({ title: 'Jobs' })
 
 const { appId } = useFireUXConfig()
 const { jobs, pending } = useJobCollection()
-const { profile } = useEmployer()
-const { activeProfile } = useEmployerComputed(profile)
+const { coreProfile, appProfile } = useEmployer()
 
 const jobList = computed(() => jobs.value ?? [])
-const hasEmployerProfile = computed(() => Boolean(activeProfile.value))
+const hasEmployerProfile = computed(() =>
+  Boolean(coreProfile.value ?? appProfile.value)
+)
 
 const badgeColor = (status?: string | null) => {
   if (status === 'open') return 'success'

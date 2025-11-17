@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-4">
     <header
-      class="flex items-center gap-2 text-base font-semibold text-gray-900"
+      class="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-gray-100"
     >
       <UIcon name="i-lucide-award" class="h-5 w-5 text-gray-400" />
       <h2>Certifications</h2>
@@ -11,7 +11,7 @@
       <article
         v-for="item in items"
         :key="item.id"
-        :class="[ui.surface.base, ui.surface.padding.compact]"
+        class="rounded-xl border border-gray-100 p-4 shadow-sm dark:border-gray-800"
       >
         <div class="flex items-center gap-3">
           <img
@@ -23,15 +23,25 @@
 
           <div class="flex-1 space-y-2">
             <div class="space-y-1">
-              <h3 :class="ui.text.nameMd">
+              <h3
+                class="text-lg font-semibold text-gray-900 dark:text-gray-100"
+              >
                 {{ item.name }}
               </h3>
-              <p v-if="item.issuer" :class="ui.text.meta">
+              <p
+                v-if="item.issuer"
+                class="text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ item.issuer }}
               </p>
             </div>
 
-            <p v-if="item.year" :class="ui.text.meta">Issued {{ item.year }}</p>
+            <p
+              v-if="item.year"
+              class="text-sm text-gray-500 dark:text-gray-400"
+            >
+              Issued {{ item.year }}
+            </p>
           </div>
         </div>
       </article>
@@ -40,8 +50,6 @@
 </template>
 
 <script setup lang="ts">
-import { profileUi } from '../../shared/profileUi'
-
 interface CertificationItem {
   id: string
   name: string | null
@@ -51,6 +59,4 @@ interface CertificationItem {
 }
 
 defineProps<{ items: CertificationItem[] }>()
-
-const ui = profileUi
 </script>

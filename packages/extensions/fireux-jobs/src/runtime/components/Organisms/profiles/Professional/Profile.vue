@@ -1,181 +1,189 @@
 <template>
-  <UCard
-    v-if="view"
-    :class="[
-      ui.surface.base,
-      ui.surface.padding.spacious,
-      'max-w-3xl',
-      'space-y-10',
-    ]"
-  >
-    <template>
-      <UPageCard
-        v-if="view"
+  <UCard v-if="view" class="max-w-3xl space-y-10">
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
+      <UAvatar
+        :src="view.avatar"
+        :alt="view.name"
+        size="xl"
+        class="self-start shadow-sm"
+        :text="view.initials"
+      />
 
-    <script setup lang="ts">
-    import ProfileEducationSection from './Profile/EducationSection.vue'
-    import ProfileCertificationSection from './Profile/CertificationSection.vue'
-    import ProfileProjectSection from './Profile/ProjectSection.vue'
-    import ProfileVolunteerSection from './Profile/VolunteerSection.vue'
-    import { profileUi } from '../shared/profileUi'
-            ui.surface.base,
-            ui.surface.padding.spacious,
-            ui.layout.hero,
-          ]"
+      <div class="flex flex-col gap-3">
+        <div class="space-y-2">
+          <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+            {{ view.name }}
+          </h1>
+
+          <div
+            v-if="view.verified"
+            class="inline-flex items-center gap-1 text-sm font-medium text-primary-600"
+          >
+            <UIcon name="i-heroicons-check-badge" class="h-5 w-5" />
+            <span>Verified Professional</span>
+          </div>
+
+          <p v-if="view.subtitle" class="text-base text-gray-600">
+            {{ view.subtitle }}
+          </p>
+
+          <div
+            v-if="view.location"
+            class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400"
+          >
+            <UIcon name="i-heroicons-map-pin" class="h-4 w-4 text-gray-400" />
+            <span>{{ view.location }}</span>
+          </div>
+        </div>
+
+        <div v-if="view.badges.length" class="flex flex-wrap gap-2 pt-1">
+          <UBadge
+            v-for="badge in view.badges"
+            :key="badge"
+            size="sm"
+            variant="soft"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
+
+        <dl
+          v-if="view.experienceCount || view.otherCount || view.educationCount"
+          class="grid gap-4 pt-4 text-sm text-gray-500 sm:grid-cols-3"
         >
-          <UAvatar
-            :src="view.avatar"
-            :alt="view.name"
-            size="xl"
-            class="self-start shadow-sm"
-            :text="view.initials"
-          />
-
-          <div :class="[ui.layout.infoStack, 'gap-3']">
-            <div class="space-y-2">
-              <h1 :class="ui.text.nameXl">{{ view.name }}</h1>
-
-              <div
-                v-if="view.verified"
-                class="inline-flex items-center gap-1 text-sm font-medium text-primary-600"
-              >
-                <UIcon name="i-heroicons-check-badge" class="h-5 w-5" />
-                <span>Verified Professional</span>
-              </div>
-
-              <p v-if="view.subtitle" class="text-base text-gray-600">
-                {{ view.subtitle }}
-              </p>
-
-              <div v-if="view.location" :class="ui.layout.metaRow">
-                <UIcon name="i-heroicons-map-pin" class="h-4 w-4 text-gray-400" />
-                <span>{{ view.location }}</span>
-              </div>
-            </div>
-
-            <div v-if="view.badges.length" :class="[ui.chip.group, 'pt-1']">
-              <UBadge
-                v-for="badge in view.badges"
-                :key="badge"
-                size="sm"
-                variant="soft"
-              >
-                {{ badge }}
-              </UBadge>
-            </div>
-
-            <dl
-              v-if="view.experienceCount || view.otherCount || view.educationCount"
-              class="grid gap-4 pt-4 text-sm text-gray-500 sm:grid-cols-3"
+          <div v-if="view.experienceCount" class="space-y-1">
+            <dt
+              class="text-xs font-semibold uppercase tracking-wide text-gray-500"
             >
-              <div v-if="view.experienceCount" class="space-y-1">
-                <dt :class="ui.text.labelSm">Relevant Experience</dt>
-                <dd :class="ui.text.nameMd">{{ view.experienceCount }}</dd>
-              </div>
-              <div v-if="view.otherCount" class="space-y-1">
-                <dt :class="ui.text.labelSm">Other Experience</dt>
-                <dd :class="ui.text.nameMd">{{ view.otherCount }}</dd>
-              </div>
-              <div v-if="view.educationCount" class="space-y-1">
-                <dt :class="ui.text.labelSm">Education</dt>
-                <dd :class="ui.text.nameMd">{{ view.educationCount }}</dd>
-              </div>
-            </dl>
+              Relevant Experience
+            </dt>
+            <dd class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              {{ view.experienceCount }}
+            </dd>
           </div>
-        </div>
-
-        <div
-          v-if="view.bio || view.languages.length"
-          :class="[ui.surface.base, ui.surface.padding.comfy, 'space-y-6']"
-        >
-          <div v-if="view.bio" class="space-y-2">
-            <h2 :class="ui.text.nameMd">About</h2>
-            <p :class="ui.text.body">{{ view.bio }}</p>
+          <div v-if="view.otherCount" class="space-y-1">
+            <dt
+              class="text-xs font-semibold uppercase tracking-wide text-gray-500"
+            >
+              Other Experience
+            </dt>
+            <dd class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              {{ view.otherCount }}
+            </dd>
           </div>
-
-          <div v-if="view.languages.length" class="space-y-3">
-            <h2 :class="ui.text.nameMd">Languages</h2>
-            <div :class="ui.chip.group">
-              <UBadge
-                v-for="language in view.languages"
-                :key="language.label"
-                variant="outline"
-                size="sm"
-              >
-                {{ language.label }}
-              </UBadge>
-            </div>
+          <div v-if="view.educationCount" class="space-y-1">
+            <dt
+              class="text-xs font-semibold uppercase tracking-wide text-gray-500"
+            >
+              Education
+            </dt>
+            <dd class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              {{ view.educationCount }}
+            </dd>
           </div>
-        </div>
+        </dl>
+      </div>
+    </div>
 
-        <div
-          v-if="view.relevantExperience.length || view.otherExperience.length"
-          :class="[ui.surface.base, ui.surface.padding.comfy, 'space-y-6']"
-        >
-          <ProfileExperienceSection
-            v-if="view.relevantExperience.length"
-            title="Relevant Experience"
-            :items="view.relevantExperience"
-          />
-
-          <ProfileExperienceSection
-            v-if="view.otherExperience.length"
-            title="Other Experience"
-            :items="view.otherExperience"
-          />
-        </div>
-
-        <div
-          v-if="view.education.length || view.certifications.length"
-          :class="[ui.surface.base, ui.surface.padding.comfy, 'space-y-6']"
-        >
-          <ProfileEducationSection
-            v-if="view.education.length"
-            :items="view.education"
-          />
-
-          <ProfileCertificationSection
-            v-if="view.certifications.length"
-            :items="view.certifications"
-          />
-        </div>
-
-        <div
-          v-if="view.projects.length || view.volunteering.length"
-          :class="[ui.surface.base, ui.surface.padding.comfy, 'space-y-6']"
-        >
-          <ProfileProjectSection
-            v-if="view.projects.length"
-            :items="view.projects"
-          />
-
-          <ProfileVolunteerSection
-            v-if="view.volunteering.length"
-            :items="view.volunteering"
-          />
-        </div>
-      </UPageCard>
-
-      <UPageCard
-        v-else
-        variant="subtle"
-        class="w-full max-w-2xl"
-        :ui="{ container: 'flex flex-col items-center gap-3 py-16 text-sm text-gray-500' }"
-      >
-        <UIcon name="i-lucide-user-round" class="h-10 w-10 text-gray-300" />
-        <h2 class="text-base font-semibold text-gray-700">
-          No professional profile found
+    <div
+      v-if="view.bio || view.languages.length"
+      class="space-y-6 rounded-xl border border-gray-100 p-6 shadow-sm dark:border-gray-800"
+    >
+      <div v-if="view.bio" class="space-y-2">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          About
         </h2>
-        <p>This profile may have been removed or is not available.</p>
-      </UPageCard>
-    </template>
+        <p class="text-base text-gray-600 dark:text-gray-300">{{ view.bio }}</p>
+      </div>
+
+      <div v-if="view.languages.length" class="space-y-3">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          Languages
+        </h2>
+        <div class="flex flex-wrap gap-2">
+          <UBadge
+            v-for="language in view.languages"
+            :key="language.label"
+            variant="outline"
+            size="sm"
+          >
+            {{ language.label }}
+          </UBadge>
+        </div>
+      </div>
+    </div>
+
+    <div
+      v-if="view.relevantExperience.length || view.otherExperience.length"
+      class="space-y-6 rounded-xl border border-gray-100 p-6 shadow-sm dark:border-gray-800"
+    >
+      <ProfileExperienceSection
+        v-if="view.relevantExperience.length"
+        title="Relevant Experience"
+        :items="view.relevantExperience"
+      />
+
+      <ProfileExperienceSection
+        v-if="view.otherExperience.length"
+        title="Other Experience"
+        :items="view.otherExperience"
+      />
+    </div>
+
+    <div
+      v-if="view.education.length || view.certifications.length"
+      class="space-y-6 rounded-xl border border-gray-100 p-6 shadow-sm dark:border-gray-800"
+    >
+      <ProfileEducationSection
+        v-if="view.education.length"
+        :items="view.education"
+      />
+
+      <ProfileCertificationSection
+        v-if="view.certifications.length"
+        :items="view.certifications"
+      />
+    </div>
+
+    <div
+      v-if="view.projects.length || view.volunteering.length"
+      class="space-y-6 rounded-xl border border-gray-100 p-6 shadow-sm dark:border-gray-800"
+    >
+      <ProfileProjectSection
+        v-if="view.projects.length"
+        :items="view.projects"
+      />
+
+      <ProfileVolunteerSection
+        v-if="view.volunteering.length"
+        :items="view.volunteering"
+      />
+    </div>
+  </UCard>
+
+  <UPageCard
+    v-else
+    variant="subtle"
+    class="w-full max-w-2xl"
+    :ui="{
+      container: 'flex flex-col items-center gap-3 py-16 text-sm text-gray-500',
+    }"
+  >
+    <UIcon name="i-lucide-user-round" class="h-10 w-10 text-gray-300" />
+    <h2 class="text-base font-semibold text-gray-700">
+      No professional profile found
+    </h2>
+    <p>This profile may have been removed or is not available.</p>
+  </UPageCard>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import ProfileExperienceSection from './Profile/ExperienceSection.vue'
 import ProfileEducationSection from './Profile/EducationSection.vue'
 import ProfileCertificationSection from './Profile/CertificationSection.vue'
 import ProfileProjectSection from './Profile/ProjectSection.vue'
 import ProfileVolunteerSection from './Profile/VolunteerSection.vue'
-import { profileUi } from '../shared/profileUi'
-
-const ui = profileUi
 
 interface ProfessionalLanguage {
   language: string

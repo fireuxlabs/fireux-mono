@@ -1,17 +1,8 @@
 <template>
   <ClientOnly>
-    <div v-if="professional" class="space-y-6">
+    <div v-if="professional">
       <UCard>
-        <div class="space-y-4">
-          <header class="space-y-1">
-            <h3 class="text-base font-semibold text-gray-900">
-              Profile Subtitle
-            </h3>
-            <p class="text-sm text-gray-500">
-              Show a concise descriptor below your name across listings.
-            </p>
-          </header>
-
+        <div>
           <MoleculesFormsFirestoreSimpleField
             label="Subtitle"
             :firebase-value="professional.subtitle || ''"
@@ -22,15 +13,7 @@
       </UCard>
 
       <UCard>
-        <div class="space-y-4">
-          <header class="space-y-1">
-            <h3 class="text-base font-semibold text-gray-900">
-              Relevant Experience
-            </h3>
-            <p class="text-sm text-gray-500">
-              Capture the roles that best represent your expertise.
-            </p>
-          </header>
+        <div>
           <OrganismsProfilesProfessionalFieldsExperienceSection
             title="Relevant Experience"
             :items="professional.relevant_experience || []"
@@ -40,15 +23,7 @@
       </UCard>
 
       <UCard>
-        <div class="space-y-4">
-          <header class="space-y-1">
-            <h3 class="text-base font-semibold text-gray-900">
-              Other Experience
-            </h3>
-            <p class="text-sm text-gray-500">
-              Track supporting roles, projects, and contract work.
-            </p>
-          </header>
+        <div>
           <OrganismsProfilesProfessionalFieldsExperienceSection
             title="Other Experience"
             :items="professional.other_experience || []"

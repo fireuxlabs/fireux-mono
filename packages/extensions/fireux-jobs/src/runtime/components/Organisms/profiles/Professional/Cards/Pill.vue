@@ -7,7 +7,6 @@
       size="sm"
       class="avatar"
     />
-
     <div class="content">
       <span class="title">{{ professional.title }}</span>
 

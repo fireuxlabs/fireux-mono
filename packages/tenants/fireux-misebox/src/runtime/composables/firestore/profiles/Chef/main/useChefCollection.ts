@@ -5,8 +5,17 @@ import {
 } from '../../../../../models/profiles/Chef.model.ts'
 
 export function useChefCollection() {
-  const { profiles, global, local } =
-    useProfileCollection<ChefProfile>(chefConfig)
+  const {
+    globalProfiles,
+    localProfiles,
+    globalProfilesWithUser,
+    localProfilesWithUser,
+  } = useProfileCollection<ChefProfile>(chefConfig)
 
-  return { chefs: profiles, global, local }
+  return {
+    globalChefs: globalProfilesWithUser,
+    localChefs: localProfilesWithUser,
+    rawGlobalChefs: globalProfiles,
+    rawLocalChefs: localProfiles,
+  }
 }
