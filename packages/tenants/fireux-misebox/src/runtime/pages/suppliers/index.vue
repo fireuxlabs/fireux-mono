@@ -7,10 +7,20 @@
     />
 
     <UPageBody class="space-y-6">
-      <MiseProfilesSupplierSectionsSingle
-        :core-profile="coreProfile"
-        :app-profile="appProfile"
-        :pill="pill"
+      <template v-if="hasProfile">
+        <MiseProfilesSupplierSectionsSingle
+          :core-profile="coreProfile"
+          :app-profile="appProfile"
+          :pill="pill"
+        />
+      </template>
+
+      <UPageCTA
+        v-else
+        title="Create your supplier profile"
+        description="Introduce your products to chefs and venues across the FireUX network."
+        variant="naked"
+        :links="supplierCtaLinks"
       />
 
       <MiseProfilesSupplierSectionsCollection />
@@ -19,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useSupplier } from '../../composables/firestore/profiles/Supplier/useSupplier.ts'
 
@@ -39,6 +50,21 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile, pill } = useSupplier()
+const supplierCtaLinks = [
+  {
+    label: 'Get started',
+    color: 'neutral',
+    to: '/dashboard/supplier-profile',
+  },
+  {
+    label: 'Learn more',
+    color: 'neutral',
+    variant: 'subtle',
+    trailingIcon: 'i-lucide-arrow-right',
+    to: '/suppliers/learn-more',
+  },
+]
+const hasProfile = computed(() => Boolean(coreProfile.value))
 
 useHead({ title: 'Suppliers' })
 </script>

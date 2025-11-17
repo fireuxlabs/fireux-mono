@@ -7,11 +7,22 @@
     />
 
     <UPageBody class="space-y-6">
-      <OrganismsProfilesProfessionalSectionsSingle
-        :core-profile="coreProfile"
-        :app-profile="appProfile"
-        :pill="pill"
+      <template v-if="hasProfile">
+        <OrganismsProfilesProfessionalSectionsSingle
+          :core-profile="coreProfile"
+          :app-profile="appProfile"
+          :pill="pill"
+        />
+      </template>
+
+      <UPageCTA
+        v-else
+        title="Create your professional profile"
+        description="Add a professional profile to your FireUX portfolio so employers can discover you more easily."
+        variant="naked"
+        :links="professionalCtaLinks"
       />
+
       <OrganismsProfilesProfessionalSectionsGlobalCollection />
       <OrganismsProfilesProfessionalSectionsLocalCollection v-if="isTenant" />
     </UPageBody>
@@ -19,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
@@ -41,6 +53,21 @@ definePageMeta({
 
 const { coreProfile, appProfile, pill } = useProfessional()
 const { isTenant } = useFireUXConfig()
+const professionalCtaLinks = [
+  {
+    label: 'Get started',
+    color: 'neutral',
+    to: '/dashboard/professional-profile',
+  },
+  {
+    label: 'Learn more',
+    color: 'neutral',
+    variant: 'subtle',
+    trailingIcon: 'i-lucide-arrow-right',
+    to: '/professionals/learn-more',
+  },
+]
+const hasProfile = computed(() => Boolean(coreProfile.value))
 
 useHead({ title: 'Professionals' })
 </script>

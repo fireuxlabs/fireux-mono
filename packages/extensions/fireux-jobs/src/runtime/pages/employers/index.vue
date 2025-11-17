@@ -5,12 +5,21 @@
       title="Employers"
       description="Inspect your employer profile and browse all employers resolved for this runtime."
     />
-
     <UPageBody class="space-y-6">
-      <OrganismsProfilesEmployerSectionsSingle
-        :core-profile="coreProfile"
-        :app-profile="appProfile"
-        :pill="pill"
+      <template v-if="hasProfile">
+        <OrganismsProfilesEmployerSectionsSingle
+          :core-profile="coreProfile"
+          :app-profile="appProfile"
+          :pill="pill"
+        />
+      </template>
+
+      <UPageCTA
+        v-else
+        title="Create your employer profile"
+        description="Add an employer profile to your FireUX portfolio so talent knows who is hiring."
+        variant="naked"
+        :links="employerCtaLinks"
       />
 
       <OrganismsProfilesEmployerSectionsCollection />
@@ -19,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useEmployer } from '../../composables/firestore/profiles/Employer/useEmployer.ts'
 
@@ -39,6 +49,21 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile, pill } = useEmployer()
+const employerCtaLinks = [
+  {
+    label: 'Get started',
+    color: 'neutral',
+    to: '/dashboard/employer-profile',
+  },
+  {
+    label: 'Learn more',
+    color: 'neutral',
+    variant: 'subtle',
+    trailingIcon: 'i-lucide-arrow-right',
+    to: '/employers/learn-more',
+  },
+]
+const hasProfile = computed(() => Boolean(coreProfile.value))
 
 useHead({ title: 'Employers' })
 </script>
