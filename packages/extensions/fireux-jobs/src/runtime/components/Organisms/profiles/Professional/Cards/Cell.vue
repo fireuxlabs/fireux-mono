@@ -1,34 +1,38 @@
 <template>
-  <UCard class="profile-card">
-    <div class="profile-header">
+  <UCard :class="[ui.surface.base, ui.surface.padding.comfy, ui.layout.stackTight]">
+    <div :class="ui.layout.headerTight">
       <UAvatar
         :src="props.professional.avatar"
         :alt="props.professional.title || 'Professional'"
         :text="props.professional.initials"
         size="md"
       />
-      <div class="profile-info">
-        <h4 class="profile-name">
+      <div :class="ui.layout.infoStack">
+        <h4 :class="ui.text.nameMd">
           {{ props.professional.title || 'Professional' }}
         </h4>
-        <p v-if="props.professional.subtitle" class="profile-subtitle">
+        <p v-if="props.professional.subtitle" :class="ui.text.subtitle">
           {{ props.professional.subtitle }}
         </p>
       </div>
     </div>
 
-    <p v-if="props.professional.bio_short" class="profile-bio">
+    <p v-if="props.professional.bio_short" :class="ui.text.body">
       {{ props.professional.bio_short }}
     </p>
 
-    <div v-if="props.professional.specialties?.length" class="profile-tags">
+    <div v-if="props.professional.specialties?.length" :class="ui.chip.group">
       <span
         v-for="(tag, i) in props.professional.specialties.slice(0, 3)"
         :key="tag + i"
-        class="tag"
-        >{{ tag }}</span
+        :class="ui.chip.item"
       >
-      <span v-if="props.professional.specialties.length > 3" class="tag-more">
+        {{ tag }}
+      >
+      <span
+        v-if="props.professional.specialties.length > 3"
+        :class="ui.chip.more"
+      >
         +{{ props.professional.specialties.length - 3 }} more
       </span>
     </div>
@@ -37,59 +41,8 @@
 
 <script setup lang="ts">
 import type { ProfessionalCard } from '../../../../../models/profiles/Professional.model'
+import { profileUi } from '../../shared/profileUi'
 
 const props = defineProps<{ professional: ProfessionalCard.Cell }>()
+const ui = profileUi
 </script>
-
-<style scoped>
-.profile-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.profile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.profile-name {
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.profile-subtitle {
-  font-size: 0.9rem;
-  color: rgba(17, 24, 39, 0.7);
-}
-
-.profile-bio {
-  font-size: 0.95rem;
-  color: rgba(17, 24, 39, 0.8);
-}
-
-.profile-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.tag {
-  background-color: rgba(17, 24, 39, 0.05);
-  padding: 0.25rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-}
-
-.tag-more {
-  font-size: 0.75rem;
-  color: rgba(17, 24, 39, 0.6);
-}
-</style>

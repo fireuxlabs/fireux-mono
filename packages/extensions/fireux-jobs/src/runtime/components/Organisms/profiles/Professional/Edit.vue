@@ -1,6 +1,26 @@
 <template>
   <ClientOnly>
-    <div v-if="record" class="space-y-6">
+    <div v-if="professional" class="space-y-6">
+      <UCard>
+        <div class="space-y-4">
+          <header class="space-y-1">
+            <h3 class="text-base font-semibold text-gray-900">
+              Profile Subtitle
+            </h3>
+            <p class="text-sm text-gray-500">
+              Show a concise descriptor below your name across listings.
+            </p>
+          </header>
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Subtitle"
+            :firebase-value="professional.subtitle || ''"
+            placeholder="Ex: Private chef, pastry specialist"
+            :update-function="onUpdateSubtitle"
+          />
+        </div>
+      </UCard>
+
       <UCard>
         <div class="space-y-4">
           <header class="space-y-1">
@@ -13,7 +33,7 @@
           </header>
           <OrganismsProfilesProfessionalFieldsExperienceSection
             title="Relevant Experience"
-            :items="record.relevant_experience || []"
+            :items="professional.relevant_experience || []"
             :onSave="onSaveRelevantExperience"
           />
         </div>
@@ -31,7 +51,7 @@
           </header>
           <OrganismsProfilesProfessionalFieldsExperienceSection
             title="Other Experience"
-            :items="record.other_experience || []"
+            :items="professional.other_experience || []"
             :onSave="onSaveOtherExperience"
           />
         </div>
@@ -48,8 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useProfessionalUpdate } from '../../../../composables/firestore/profiles/Professional/main/useProfessionalUpdate'
+import { useProfessionalUpdate } from '../../../../composables/firestore/profiles/Professional/main/useProfessionalUpdate.ts'
 import type {
   ProfessionalCoreProfile,
   RelevantExperienceItem,
@@ -60,16 +79,35 @@ const props = defineProps<{
   professional: ProfessionalCoreProfile | null
 }>()
 
-const record = computed(() => props.professional)
-
-const { setRelevantExperience, setOtherExperience } = useProfessionalUpdate()
+const { setRelevantExperience, setOtherExperience, updateSubtitle } =
+  useProfessionalUpdate()
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
 
+const onUpdateSubtitle = async (value: string) => {
+  try {
+    await updateSubtitle(value, { id: props.professional?.id ?? null })
+    toast?.add({
+      title: 'Subtitle updated',
+      icon: 'i-heroicons-check-circle',
+    })
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast?.add({
+      title: 'Failed to update subtitle',
+      description,
+      color: 'amber',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+    throw error
+  }
+}
+
 const onSaveRelevantExperience = async (items: RelevantExperienceItem[]) => {
   try {
-    await setRelevantExperience(items)
+    await setRelevantExperience(items, { id: props.professional?.id ?? null })
     toast?.add({
       title: 'Relevant experience updated',
       icon: 'i-heroicons-check-circle',
@@ -89,7 +127,7 @@ const onSaveRelevantExperience = async (items: RelevantExperienceItem[]) => {
 
 const onSaveOtherExperience = async (items: OtherExperienceItem[]) => {
   try {
-    await setOtherExperience(items)
+    await setOtherExperience(items, { id: props.professional?.id ?? null })
     toast?.add({
       title: 'Other experience updated',
       icon: 'i-heroicons-check-circle',

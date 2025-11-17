@@ -23,17 +23,7 @@ export function useSupplierInterface(
   const core = () => profile.coreProfile.value ?? null
   const appOverlay = () => profile.appProfile.value ?? null
 
-  const pill = computed<SupplierCard.Pill | null>(() => {
-    const value = user.value
-    if (!value) return null
-
-    return {
-      avatar: value.avatar ?? '',
-      title: value.display_name ?? '',
-      subtitle: value.handle ? `@${value.handle}` : '',
-      to: `/${supplierConfig.collectionName}/${value.id}`,
-    }
-  })
+  const pill = computed<SupplierCard.Pill | null>(() => pillProps())
 
   const derive = (target?: SupplierProfile | null) => {
     const overlay: Partial<SupplierProfile> | null =
@@ -47,7 +37,7 @@ export function useSupplierInterface(
 
     const id = pick((p) => p.id) ?? ''
     const fallbackTitle = user.value?.display_name ?? 'Supplier'
-    const fallbackSubtitle = user.value?.handle ?? 'supplier'
+    const fallbackSubtitle = ''
     const title = pick((p) => p.title) ?? fallbackTitle
     const subtitle = pick((p) => p.subtitle) ?? fallbackSubtitle
     const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''

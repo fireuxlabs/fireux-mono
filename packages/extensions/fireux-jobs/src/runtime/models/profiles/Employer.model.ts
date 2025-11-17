@@ -53,6 +53,8 @@ export namespace EmployerCard {
     domain?: Profile['domain']
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
+    title?: string | null
+    subtitle?: string | null
     bio_short?: string | null
     specialties?: string[]
     locations?: string[]

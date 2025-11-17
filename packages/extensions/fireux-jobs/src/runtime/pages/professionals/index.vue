@@ -12,13 +12,15 @@
         :app-profile="appProfile"
         :pill="pill"
       />
-      <OrganismsProfilesProfessionalSectionsCollection />
+      <OrganismsProfilesProfessionalSectionsGlobalCollection />
+      <OrganismsProfilesProfessionalSectionsLocalCollection v-if="isTenant" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useHead } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
 
 definePageMeta({
@@ -38,6 +40,7 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile, pill } = useProfessional()
+const { isTenant } = useFireUXConfig()
 
 useHead({ title: 'Professionals' })
 </script>

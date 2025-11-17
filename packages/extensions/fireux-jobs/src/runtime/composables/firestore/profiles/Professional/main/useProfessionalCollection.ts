@@ -1,3 +1,5 @@
+// FILE: packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Professional/main/useProfessionalCollection.ts
+
 import { useProfileCollection } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileCollection.ts'
 import {
   professionalConfig,
@@ -5,8 +7,17 @@ import {
 } from '../../../../../models/profiles/Professional.model.ts'
 
 export function useProfessionalCollection() {
-  const { profiles, global, local } =
-    useProfileCollection<ProfessionalProfile>(professionalConfig)
+  const {
+    globalProfiles,
+    localProfiles,
+    globalProfilesWithUser,
+    localProfilesWithUser,
+  } = useProfileCollection<ProfessionalProfile>(professionalConfig)
 
-  return { professionals: profiles, global, local }
+  return {
+    globalProfessionals: globalProfilesWithUser,
+    localProfessionals: localProfilesWithUser,
+    rawGlobalProfessionals: globalProfiles,
+    rawLocalProfessionals: localProfiles,
+  }
 }

@@ -23,17 +23,7 @@ export function useEmployerInterface(
   const core = () => profile.coreProfile.value ?? null
   const appOverlay = () => profile.appProfile.value ?? null
 
-  const pill = computed<EmployerCard.Pill | null>(() => {
-    const value = user.value
-    if (!value) return null
-
-    return {
-      avatar: value.avatar ?? '',
-      title: value.display_name ?? '',
-      subtitle: value.handle ? `@${value.handle}` : '',
-      to: `/${employerConfig.collectionName}/${value.id}`,
-    }
-  })
+  const pill = computed<EmployerCard.Pill | null>(() => pillProps())
 
   const derive = (target?: EmployerProfile | null) => {
     const overlay: Partial<EmployerProfile> | null =
@@ -49,7 +39,7 @@ export function useEmployerInterface(
     const fallbackTitle = user.value?.display_name ?? 'Employer'
     const title =
       pick((p) => p.title) ?? pick((p) => p.organization_name) ?? fallbackTitle
-    const subtitle = pick((p) => p.subtitle) ?? 'employer'
+    const subtitle = pick((p) => p.subtitle) ?? ''
     const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''
     const badgesCandidate = pick((p) => p.locations) ?? pick((p) => p.badges)
     const specialtiesCandidate = pick((p) => p.specialties)

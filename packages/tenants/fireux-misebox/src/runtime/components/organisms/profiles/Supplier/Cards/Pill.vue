@@ -1,9 +1,5 @@
 <template>
-  <NuxtLink
-    v-if="props.supplier?.to"
-    :to="props.supplier.to"
-    class="pill"
-  >
+  <NuxtLink v-if="props.supplier?.to" :to="props.supplier.to" class="pill">
     <UAvatar
       :src="props.supplier.avatar"
       :alt="props.supplier.title"

@@ -1,308 +1,400 @@
 <template>
-  <div v-if="professional" class="profile-card">
-    <!-- Profile Header -->
-    <div class="header">
-      <div class="avatar-section">
-        <UAvatar
-          :src="professional.avatarUrl"
-          :alt="professional.professional_name || professional.displayName"
-          size="2xl"
-          :text="
-            getInitials(
-              professional.professional_name || professional.displayName
-            )
-          "
-          class="avatar"
-        />
-        <div v-if="professional.verified" class="profile-badge verified">
-          <UIcon name="i-heroicons-check-badge" />
-          <span>Verified Professional</span>
-        </div>
-      </div>
+  <UCard
+    v-if="view"
+    :class="[
+      ui.surface.base,
+      ui.surface.padding.spacious,
+      'max-w-3xl',
+      'space-y-10',
+    ]"
+  >
+    <template>
+      <UPageCard
+        v-if="view"
 
-      <div class="info-section">
-        <h1 class="title">
-          {{ professional.professional_name || professional.displayName }}
-        </h1>
-        <p v-if="professional.title" class="subtitle">
-          {{ professional.title }}
-        </p>
-        <!-- Location Info -->
-        <div v-if="professional.locations?.length" class="location">
-          <UIcon name="i-heroicons-map-pin" />
-          <span>{{ formatLocation(professional.locations[0]) }}</span>
-          <span v-if="professional.locations[0].radius" class="text-muted">
-            ({{ professional.locations[0].radius }}km radius)
-          </span>
-        </div>
-      </div>
-    </div>
+    <script setup lang="ts">
+    import ProfileEducationSection from './Profile/EducationSection.vue'
+    import ProfileCertificationSection from './Profile/CertificationSection.vue'
+    import ProfileProjectSection from './Profile/ProjectSection.vue'
+    import ProfileVolunteerSection from './Profile/VolunteerSection.vue'
+    import { profileUi } from '../shared/profileUi'
+            ui.surface.base,
+            ui.surface.padding.spacious,
+            ui.layout.hero,
+          ]"
+        >
+          <UAvatar
+            :src="view.avatar"
+            :alt="view.name"
+            size="xl"
+            class="self-start shadow-sm"
+            :text="view.initials"
+          />
 
-    <!-- Profile Content -->
-    <div class="content">
-      <!-- Bio Section -->
-      <div
-        v-if="professional.bio_short || professional.bio_long"
-        class="profile-section"
+          <div :class="[ui.layout.infoStack, 'gap-3']">
+            <div class="space-y-2">
+              <h1 :class="ui.text.nameXl">{{ view.name }}</h1>
+
+              <div
+                v-if="view.verified"
+                class="inline-flex items-center gap-1 text-sm font-medium text-primary-600"
+              >
+                <UIcon name="i-heroicons-check-badge" class="h-5 w-5" />
+                <span>Verified Professional</span>
+              </div>
+
+              <p v-if="view.subtitle" class="text-base text-gray-600">
+                {{ view.subtitle }}
+              </p>
+
+              <div v-if="view.location" :class="ui.layout.metaRow">
+                <UIcon name="i-heroicons-map-pin" class="h-4 w-4 text-gray-400" />
+                <span>{{ view.location }}</span>
+              </div>
+            </div>
+
+            <div v-if="view.badges.length" :class="[ui.chip.group, 'pt-1']">
+              <UBadge
+                v-for="badge in view.badges"
+                :key="badge"
+                size="sm"
+                variant="soft"
+              >
+                {{ badge }}
+              </UBadge>
+            </div>
+
+            <dl
+              v-if="view.experienceCount || view.otherCount || view.educationCount"
+              class="grid gap-4 pt-4 text-sm text-gray-500 sm:grid-cols-3"
+            >
+              <div v-if="view.experienceCount" class="space-y-1">
+                <dt :class="ui.text.labelSm">Relevant Experience</dt>
+                <dd :class="ui.text.nameMd">{{ view.experienceCount }}</dd>
+              </div>
+              <div v-if="view.otherCount" class="space-y-1">
+                <dt :class="ui.text.labelSm">Other Experience</dt>
+                <dd :class="ui.text.nameMd">{{ view.otherCount }}</dd>
+              </div>
+              <div v-if="view.educationCount" class="space-y-1">
+                <dt :class="ui.text.labelSm">Education</dt>
+                <dd :class="ui.text.nameMd">{{ view.educationCount }}</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <div
+          v-if="view.bio || view.languages.length"
+          :class="[ui.surface.base, ui.surface.padding.comfy, 'space-y-6']"
+        >
+          <div v-if="view.bio" class="space-y-2">
+            <h2 :class="ui.text.nameMd">About</h2>
+            <p :class="ui.text.body">{{ view.bio }}</p>
+          </div>
+
+          <div v-if="view.languages.length" class="space-y-3">
+            <h2 :class="ui.text.nameMd">Languages</h2>
+            <div :class="ui.chip.group">
+              <UBadge
+                v-for="language in view.languages"
+                :key="language.label"
+                variant="outline"
+                size="sm"
+              >
+                {{ language.label }}
+              </UBadge>
+            </div>
+          </div>
+        </div>
+
+        <div
+          v-if="view.relevantExperience.length || view.otherExperience.length"
+          :class="[ui.surface.base, ui.surface.padding.comfy, 'space-y-6']"
+        >
+          <ProfileExperienceSection
+            v-if="view.relevantExperience.length"
+            title="Relevant Experience"
+            :items="view.relevantExperience"
+          />
+
+          <ProfileExperienceSection
+            v-if="view.otherExperience.length"
+            title="Other Experience"
+            :items="view.otherExperience"
+          />
+        </div>
+
+        <div
+          v-if="view.education.length || view.certifications.length"
+          :class="[ui.surface.base, ui.surface.padding.comfy, 'space-y-6']"
+        >
+          <ProfileEducationSection
+            v-if="view.education.length"
+            :items="view.education"
+          />
+
+          <ProfileCertificationSection
+            v-if="view.certifications.length"
+            :items="view.certifications"
+          />
+        </div>
+
+        <div
+          v-if="view.projects.length || view.volunteering.length"
+          :class="[ui.surface.base, ui.surface.padding.comfy, 'space-y-6']"
+        >
+          <ProfileProjectSection
+            v-if="view.projects.length"
+            :items="view.projects"
+          />
+
+          <ProfileVolunteerSection
+            v-if="view.volunteering.length"
+            :items="view.volunteering"
+          />
+        </div>
+      </UPageCard>
+
+      <UPageCard
+        v-else
+        variant="subtle"
+        class="w-full max-w-2xl"
+        :ui="{ container: 'flex flex-col items-center gap-3 py-16 text-sm text-gray-500' }"
       >
-        <h3 class="profile-section-title">
-          <UIcon name="i-heroicons-user" />
-          About
-        </h3>
-        <p class="profile-description">
-          {{ professional.bio_long || professional.bio_short }}
-        </p>
-      </div>
+        <UIcon name="i-lucide-user-round" class="h-10 w-10 text-gray-300" />
+        <h2 class="text-base font-semibold text-gray-700">
+          No professional profile found
+        </h2>
+        <p>This profile may have been removed or is not available.</p>
+      </UPageCard>
+    </template>
+import ProfileEducationSection from './Profile/EducationSection.vue'
+import ProfileCertificationSection from './Profile/CertificationSection.vue'
+import ProfileProjectSection from './Profile/ProjectSection.vue'
+import ProfileVolunteerSection from './Profile/VolunteerSection.vue'
+import { profileUi } from '../shared/profileUi'
 
-      <!-- Languages Section -->
-      <div
-        v-if="professional.languages?.length"
-        class="profile-content-section"
-      >
-        <h3 class="profile-content-title">Languages</h3>
-        <div class="languages-grid">
-          <div
-            v-for="language in professional.languages"
-            :key="language.language"
-            class="language-item"
-          >
-            <UBadge variant="outline" size="md">
-              {{ language.language }} ({{ language.proficiency }})
-            </UBadge>
-          </div>
-        </div>
-        <!-- Relevant Experience Section (neutral) -->
-        <div
-          v-if="professional.relevant_experience?.length"
-          class="profile-content-section"
-        >
-          <h3 class="profile-content-title">Relevant Experience</h3>
-          <div class="experience-timeline">
-            <div
-              v-for="experience in professional.relevant_experience"
-              :key="experience.name"
-              class="experience-item"
-            >
-              <div class="experience-header">
-                <img
-                  v-if="experience.image_url"
-                  :src="experience.image_url"
-                  :alt="experience.name"
-                  class="experience-logo"
-                />
-                <div class="experience-info">
-                  <h4 class="experience-role">{{ experience.role }}</h4>
-                  <p class="experience-company">{{ experience.name }}</p>
-                  <p class="experience-location">
-                    {{
-                      experience.short_address || experience.formatted_address
-                    }}
-                  </p>
-                  <p class="experience-duration">
-                    {{
-                      formatDuration(
-                        experience.from_month,
-                        experience.from_year,
-                        experience.to_month,
-                        experience.to_year,
-                        experience.ongoing
-                      )
-                    }}
-                  </p>
-                </div>
-              </div>
-              <p class="experience-description">
-                {{ experience.responsibilities }}
-              </p>
-            </div>
-          </div>
-        </div>
+const ui = profileUi
 
-        <!-- Education Section -->
-        <div
-          v-if="professional.education?.length"
-          class="profile-content-section"
-        >
-          <h3 class="profile-content-title">Education</h3>
-          <div class="education-grid">
-            <div
-              v-for="edu in professional.education"
-              :key="edu.institution"
-              class="education-item"
-            >
-              <div class="education-header">
-                <img
-                  v-if="edu.image_url"
-                  :src="edu.image_url"
-                  :alt="edu.institution"
-                  class="education-logo"
-                />
-                <div>
-                  <h4 class="education-degree">{{ edu.degree }}</h4>
-                  <p class="education-institution">{{ edu.institution }}</p>
-                  <p class="education-duration">
-                    {{ edu.start_year }} -
-                    {{ edu.ongoing ? 'Present' : edu.end_year }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+interface ProfessionalLanguage {
+  language: string
+  proficiency?: string
+}
 
-        <!-- Certifications Section -->
-        <div
-          v-if="professional.certifications?.length"
-          class="profile-content-section"
-        >
-          <h3 class="profile-content-title">Certifications</h3>
-          <div class="certifications-grid">
-            <div
-              v-for="cert in professional.certifications"
-              :key="cert.name"
-              class="certification-item"
-            >
-              <img
-                v-if="cert.image_url"
-                :src="cert.image_url"
-                :alt="cert.place_name"
-                class="certification-logo"
-              />
-              <div>
-                <h4 class="certification-name">{{ cert.name }}</h4>
-                <p class="certification-issuer">{{ cert.place_name }}</p>
-                <p class="certification-year">{{ cert.year }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+const sanitizeString = (input?: string | number | null) => {
+  if (input === null || input === undefined) return null
+  return String(input).trim() || null
+}
 
-        <!-- Projects Section -->
-        <div
-          v-if="professional.projects?.length"
-          class="profile-content-section"
-        >
-          <h3 class="profile-content-title">Projects</h3>
-          <div class="projects-grid">
-            <div
-              v-for="project in professional.projects"
-              :key="project.name"
-              class="project-item"
-            >
-              <h4 class="project-name">{{ project.name }}</h4>
-              <p class="project-role">{{ project.role }}</p>
-              <p class="project-duration">
-                {{ project.from_year }} -
-                {{ project.ongoing ? 'Present' : project.to_year }}
-              </p>
-              <p class="project-description">{{ project.responsibilities }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Other Employment Section -->
-        <div
-          v-if="professional.other_employment_experience?.length"
-          class="profile-content-section"
-        >
-          <h3 class="profile-content-title">Other Experience</h3>
-          <div class="other-employment-grid">
-            <div
-              v-for="job in professional.other_employment_experience"
-              :key="job.name"
-              class="employment-item"
-            >
-              <div class="employment-header">
-                <img
-                  v-if="job.image_url"
-                  :src="job.image_url"
-                  :alt="job.name"
-                  class="employment-logo"
-                />
-                <div>
-                  <h4 class="employment-role">{{ job.role }}</h4>
-                  <p class="employment-company">{{ job.name }}</p>
-                  <p class="employment-duration">
-                    {{
-                      formatDuration(
-                        job.from_month,
-                        job.from_year,
-                        job.to_month,
-                        job.to_year,
-                        job.ongoing
-                      )
-                    }}
-                  </p>
-                </div>
-              </div>
-              <p class="employment-description">{{ job.responsibilities }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Volunteering Section -->
-        <div
-          v-if="professional.volunteering?.length"
-          class="profile-content-section"
-        >
-          <h3 class="profile-content-title">Volunteer Work</h3>
-          <div class="volunteering-grid">
-            <div
-              v-for="volunteer in professional.volunteering"
-              :key="volunteer.organization"
-              class="volunteer-item"
-            >
-              <h4 class="volunteer-role">{{ volunteer.role }}</h4>
-              <p class="volunteer-organization">{{ volunteer.organization }}</p>
-              <p class="volunteer-duration">
-                {{ volunteer.from_year }} -
-                {{ volunteer.ongoing ? 'Present' : volunteer.to_year }}
-              </p>
-              <p class="volunteer-description">
-                {{ volunteer.responsibilities }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script setup lang="ts">
-// Accept any professional-like shape during migration
-defineProps<{
+const props = defineProps<{
   professional?: any
 }>()
 
-// Helper functions for template use only - no complex logic
-function getInitials(name?: string) {
-  if (!name) return 'P'
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-}
-
-function formatLocation(location?: any) {
-  if (!location?.locations?.length) return ''
-  return location.locations[0].formatted_address
-}
-
-function formatDuration(
-  fromMonth?: string,
-  fromYear?: string,
-  toMonth?: string,
-  toYear?: string,
+type DurationInput = {
+  fromMonth?: string | null
+  fromYear?: string | null
+  toMonth?: string | null
+  toYear?: string | null
   ongoing?: boolean
-) {
-  const start = fromMonth && fromYear ? `${fromMonth} ${fromYear}` : fromYear
-  let end = 'Present'
-  if (!ongoing) {
-    end = toMonth && toYear ? `${toMonth} ${toYear}` : toYear || ''
-  }
-  return `${start} - ${end}`
 }
+
+const formatDuration = ({
+  fromMonth,
+  fromYear,
+  toMonth,
+  toYear,
+  ongoing,
+}: DurationInput) => {
+  const startMonth = sanitizeString(fromMonth)
+  const startYear = sanitizeString(fromYear)
+  const endMonth = sanitizeString(toMonth)
+  const endYear = sanitizeString(toYear)
+
+  const start =
+    startMonth && startYear ? `${startMonth} ${startYear}` : startYear
+  if (!ongoing) {
+    const end = endMonth && endYear ? `${endMonth} ${endYear}` : endYear
+    if (start || end) return [start, end].filter(Boolean).join(' – ')
+    return null
+  }
+
+  if (start) return `${start} – Present`
+  return ongoing ? 'Present' : null
+}
+
+const view = computed(() => {
+  const model = props.professional || {}
+  if (!model || Object.keys(model).length === 0) return null
+
+  const displayName =
+    model.display_name || model.professional_name || model.name || null
+
+  const resolveExperience = (entries: any[] | undefined | null) => {
+    if (!Array.isArray(entries)) return []
+    return entries
+      .map((item) => ({
+        id: [item.place_id, item.role, item.name].filter(Boolean).join('|'),
+        role: sanitizeString(item.role),
+        name: sanitizeString(item.name),
+        location:
+          sanitizeString(item.short_address) ??
+          sanitizeString(item.formatted_address) ??
+          null,
+        description: sanitizeString(item.responsibilities),
+        ongoing: item.ongoing === true,
+        duration: formatDuration({
+          fromMonth: item.from_month,
+          fromYear: item.from_year,
+          toMonth: item.to_month,
+          toYear: item.to_year,
+          ongoing: item.ongoing === true,
+        }),
+        logo: sanitizeString(item.image_url),
+      }))
+      .filter((entry) => entry.role || entry.name)
+  }
+
+  const resolveEducation = (entries: any[] | undefined | null) => {
+    if (!Array.isArray(entries)) return []
+    return entries
+      .map((item) => ({
+        id: [item.institution, item.degree].filter(Boolean).join('|'),
+        degree: sanitizeString(item.degree),
+        institution: sanitizeString(item.institution),
+        duration: formatDuration({
+          fromYear: item.start_year,
+          toYear: item.end_year,
+          ongoing: item.ongoing === true,
+        }),
+        logo: sanitizeString(item.image_url),
+      }))
+      .filter((entry) => entry.degree || entry.institution)
+  }
+
+  const resolveCertifications = (entries: any[] | undefined | null) => {
+    if (!Array.isArray(entries)) return []
+    return entries
+      .map((item) => ({
+        id: [item.name, item.place_name].filter(Boolean).join('|'),
+        name: sanitizeString(item.name),
+        issuer: sanitizeString(item.place_name),
+        year: sanitizeString(item.year),
+        logo: sanitizeString(item.image_url),
+      }))
+      .filter((entry) => entry.name || entry.issuer)
+  }
+
+  const resolveProjects = (entries: any[] | undefined | null) => {
+    if (!Array.isArray(entries)) return []
+    return entries
+      .map((item) => ({
+        id: [item.name, item.role].filter(Boolean).join('|'),
+        name: sanitizeString(item.name),
+        role: sanitizeString(item.role),
+        description: sanitizeString(item.responsibilities),
+        duration: formatDuration({
+          fromYear: item.from_year,
+          toYear: item.to_year,
+          ongoing: item.ongoing === true,
+        }),
+      }))
+      .filter((entry) => entry.name || entry.role)
+  }
+
+  const resolveVolunteering = (entries: any[] | undefined | null) => {
+    if (!Array.isArray(entries)) return []
+    return entries
+      .map((item) => ({
+        id: [item.organization, item.role].filter(Boolean).join('|'),
+        organization: sanitizeString(item.organization),
+        role: sanitizeString(item.role),
+        description: sanitizeString(item.responsibilities),
+        duration: formatDuration({
+          fromYear: item.from_year,
+          toYear: item.to_year,
+          ongoing: item.ongoing === true,
+        }),
+      }))
+      .filter((entry) => entry.organization || entry.role)
+  }
+
+  const resolveLanguages = (
+    entries: ProfessionalLanguage[] | null | undefined
+  ) => {
+    if (!Array.isArray(entries)) return []
+    return entries
+      .map((language) => {
+        const label = [
+          sanitizeString(language.language),
+          sanitizeString(language.proficiency),
+        ]
+          .filter(Boolean)
+          .join(' — ')
+          .trim()
+        return label ? { label } : null
+      })
+      .filter((item): item is { label: string } => Boolean(item))
+  }
+
+  const rawRelevant = resolveExperience(model.relevant_experience)
+  const rawOther = resolveExperience(
+    model.other_experience ?? model.other_employment_experience
+  )
+  const education = resolveEducation(model.education)
+  const certifications = resolveCertifications(model.certifications)
+  const projects = resolveProjects(model.projects)
+  const volunteering = resolveVolunteering(model.volunteering)
+  const languages = resolveLanguages(model.languages)
+
+  let location: string | null = null
+  if (Array.isArray(model.locations) && model.locations.length > 0) {
+    const firstLocation = model.locations[0]
+    const formatted =
+      sanitizeString(firstLocation?.formatted_address) ??
+      sanitizeString(firstLocation?.short_address)
+    if (formatted) {
+      const radiusValue = Number(firstLocation?.radius)
+      const radius =
+        Number.isFinite(radiusValue) && radiusValue > 0
+          ? `${radiusValue}km radius`
+          : null
+      location = radius ? `${formatted} · ${radius}` : formatted
+    }
+  }
+
+  return {
+    name: displayName ?? 'Professional',
+    initials: displayName
+      ? displayName
+          .split(' ')
+          .map((segment: string) => segment[0])
+          .join('')
+          .toUpperCase()
+          .slice(0, 2)
+      : 'PR',
+    subtitle:
+      sanitizeString(model.subtitle) ?? sanitizeString(model.title) ?? null,
+    badges: Array.isArray(model.badges)
+      ? model.badges
+          .map((badge: unknown) => sanitizeString(badge as any))
+          .filter((badge): badge is string => Boolean(badge))
+      : [],
+    bio: sanitizeString(model.bio_long) ?? sanitizeString(model.bio_short),
+    avatar:
+      sanitizeString(model.avatar_url) ?? sanitizeString(model.avatar) ?? null,
+    location,
+    verified: model.verified === true,
+    languages,
+    relevantExperience: rawRelevant,
+    otherExperience: rawOther,
+    education,
+    certifications,
+    projects,
+    volunteering,
+    experienceCount: rawRelevant.length ? `${rawRelevant.length}` : null,
+    otherCount: rawOther.length ? `${rawOther.length}` : null,
+    educationCount: education.length ? `${education.length}` : null,
+  }
+})
 </script>

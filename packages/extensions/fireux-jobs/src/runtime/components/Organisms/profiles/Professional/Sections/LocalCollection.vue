@@ -1,0 +1,50 @@
+<template>
+  <UCard>
+    <template #header>
+      <div class="flex items-center justify-between gap-2">
+        <h2>App professionals</h2>
+        <UBadge variant="soft">{{ total }} total</UBadge>
+      </div>
+      <p class="text-sm opacity-70">
+        Professionals scoped to this tenant application.
+      </p>
+    </template>
+
+    <div v-if="pills.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <OrganismsProfilesProfessionalCardsPill
+        v-for="pill in pills"
+        :key="pillKey(pill)"
+        :professional="pill"
+      />
+    </div>
+
+    <p v-else class="text-sm opacity-70">
+      No tenant-scoped professionals found.
+    </p>
+  </UCard>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import type {
+  ProfessionalProfile,
+  ProfessionalCard,
+} from '../../../../../models/profiles/Professional.model.ts'
+import { useProfessionalCollection } from '../../../../../composables/firestore/profiles/Professional/main/useProfessionalCollection.ts'
+import {
+  resolveProfessionalPill,
+  resolveProfessionalPillKey,
+} from '../../../../../composables/firestore/profiles/Professional/main/useProfessionalInterface.ts'
+
+const { localProfessionals } = useProfessionalCollection()
+
+const total = computed(() => localProfessionals?.value?.length ?? 0)
+
+const pills = computed<ProfessionalCard.Pill[]>(() =>
+  (localProfessionals?.value ?? []).map((prof: ProfessionalProfile) =>
+    resolveProfessionalPill(prof)
+  )
+)
+
+const pillKey = resolveProfessionalPillKey
+</script>

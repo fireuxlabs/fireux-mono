@@ -19,8 +19,6 @@
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
-declare function definePageMeta(meta: any): void
-
 definePageMeta({
   layout: 'dashboard',
   nav: {

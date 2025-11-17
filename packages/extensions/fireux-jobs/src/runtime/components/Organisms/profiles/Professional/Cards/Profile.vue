@@ -1,81 +1,96 @@
 <template>
-  <UCard class="profile-card" @click="handleClick" style="cursor: pointer">
-    <div class="profile-header">
+  <UCard
+    :class="[
+      ui.surface.base,
+      ui.surface.padding.spacious,
+      ui.layout.stack,
+      ui.surface.interactive,
+      'cursor-pointer',
+    ]"
+    @click="handleClick"
+  >
+    <div :class="ui.layout.header">
       <UAvatar
         :src="(professional as any)?.avatar"
         :alt="(professional as any)?.display_name || 'Professional'"
         size="lg"
       />
-      <div class="profile-info">
-        <h4 v-if="(professional as any)?.display_name" class="profile-name">
+      <div :class="ui.layout.infoStack">
+        <h4 v-if="(professional as any)?.display_name" :class="ui.text.nameLg">
           {{ (professional as any)?.display_name }}
         </h4>
-        <p v-if="professional?.title" class="profile-subtitle">
+        <p v-if="professional?.title" :class="ui.text.subtitle">
           {{ professional.title }}
         </p>
         <div
           v-if="(professional as any)?.locations?.length"
-          class="profile-location"
+          :class="ui.layout.metaRow"
         >
-          <UIcon name="i-lucide-map-pin" />
+          <UIcon name="i-lucide-map-pin" class="h-4 w-4 text-gray-400" />
           <span>{{ getLocationText((professional as any).locations[0]) }}</span>
         </div>
-        <div v-if="experienceYears > 0" class="profile-meta">
+        <div v-if="experienceYears > 0" :class="ui.text.meta">
           {{ experienceYears }}+ years experience
         </div>
       </div>
     </div>
     <p
       v-if="(professional as any)?.bio_long || (professional as any)?.bio_short"
-      class="profile-bio"
+      :class="ui.text.body"
     >
       {{ (professional as any)?.bio_long || (professional as any)?.bio_short }}
     </p>
 
     <div
       v-if="(professional as any)?.cuisine_types?.length"
-      class="profile-tags"
+      :class="ui.chip.group"
     >
       <span
         v-for="cuisine in (professional as any).cuisine_types.slice(0, 3)"
         :key="cuisine"
-        class="tag"
+        :class="ui.chip.item"
       >
         {{ cuisine }}
       </span>
       <span
         v-if="(professional as any).cuisine_types.length > 3"
-        class="tag-more"
+        :class="ui.chip.more"
       >
         +{{ (professional as any).cuisine_types.length - 3 }} more
       </span>
     </div>
 
-    <div v-if="(professional as any)?.skills?.length" class="profile-section">
-      <strong class="section-label">Skills:</strong>
+    <div
+      v-if="(professional as any)?.skills?.length"
+      :class="['text-sm text-gray-500', ui.layout.split]"
+    >
+      <strong :class="ui.text.meta">Skills:</strong>
       <span
         v-for="skill in (professional as any).skills.slice(0, 2)"
         :key="skill"
-        class="tag"
+        :class="ui.chip.item"
       >
         {{ skill }}
       </span>
-      <span v-if="(professional as any).skills.length > 2" class="tag-more">
+      <span
+        v-if="(professional as any).skills.length > 2"
+        :class="ui.chip.more"
+      >
         +{{ (professional as any).skills.length - 2 }} more
       </span>
     </div>
 
-    <div class="profile-stats">
-      <div v-if="(professional as any)?.hourly_rate" class="profile-stat">
-        <UIcon name="i-lucide-dollar-sign" />
+    <div :class="['pt-3', ui.stats.row]">
+      <div v-if="(professional as any)?.hourly_rate" :class="ui.stats.item">
+        <UIcon name="i-lucide-dollar-sign" class="h-4 w-4 text-gray-400" />
         <span>${{ (professional as any).hourly_rate }}/hour</span>
       </div>
-      <div v-if="(professional as any)?.availability" class="profile-stat">
-        <UIcon name="i-lucide-clock" />
+      <div v-if="(professional as any)?.availability" :class="ui.stats.item">
+        <UIcon name="i-lucide-clock" class="h-4 w-4 text-gray-400" />
         <span>{{ (professional as any).availability }}</span>
       </div>
-      <div v-if="latestExp" class="profile-stat">
-        <UIcon name="i-lucide-building" />
+      <div v-if="latestExp" :class="ui.stats.item">
+        <UIcon name="i-lucide-building" class="h-4 w-4 text-gray-400" />
         <span>{{ latestExp.role }} at {{ latestExp.name }}</span>
       </div>
     </div>
@@ -83,11 +98,14 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import { profileUi } from '../../shared/profileUi'
 
 const props = defineProps<{
   professional?: any
   navigate?: (profile: any) => void
 }>()
+
+const ui = profileUi
 
 const handleClick = () => {
   if (props.navigate && props.professional) {

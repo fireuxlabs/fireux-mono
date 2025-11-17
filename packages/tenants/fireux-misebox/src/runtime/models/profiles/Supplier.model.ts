@@ -35,6 +35,8 @@ export namespace SupplierCard {
     domain?: Profile['domain']
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
+    title?: string | null
+    subtitle?: string | null
     badges?: string[]
     bio_long?: string | null
     avatar?: string | null
@@ -47,6 +49,8 @@ export namespace SupplierCard {
     domain?: Profile['domain']
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
+    title?: string | null
+    subtitle?: string | null
     badges?: string[]
     bio_long?: string | null
   }

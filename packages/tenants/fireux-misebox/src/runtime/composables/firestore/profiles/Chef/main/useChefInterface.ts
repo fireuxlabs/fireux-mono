@@ -27,17 +27,7 @@ export function useChefInterface(
   const core = () => profile.coreProfile.value ?? null
   const app = () => profile.appProfile.value ?? null
 
-  const pill = computed<ChefCard.Pill | null>(() => {
-    const value = user.value
-    if (!value) return null
-
-    return {
-      avatar: value.avatar ?? '',
-      title: value.display_name ?? '',
-      subtitle: value.handle ? `@${value.handle}` : '',
-      to: `/${chefConfig.collectionName}/${value.id}`,
-    }
-  })
+  const pill = computed<ChefCard.Pill | null>(() => pillProps())
 
   const derive = (target?: ChefProfile | null) => {
     const overlay: Partial<ChefProfile> | null = target ?? app() ?? null
@@ -54,7 +44,7 @@ export function useChefInterface(
     const id = pick((p) => p.id) ?? ''
     const fallbackTitle = user.value?.display_name ?? 'Chef'
     const title = pick((p) => p.title) ?? fallbackTitle
-    const subtitle = pick((p) => p.subtitle) ?? user.value?.handle ?? 'chef'
+    const subtitle = pick((p) => p.subtitle) ?? ''
     const avatar = pick((p) => p.avatar_url) ?? pick((p) => p.avatar) ?? ''
     const badgesCandidate = pick((p) => p.badges) ?? pick((p) => p.specialties)
     const specialtiesCandidate = pick((p) => p.specialties)

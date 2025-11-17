@@ -59,6 +59,8 @@ export namespace ProfessionalCard {
     domain?: Profile['domain']
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
+    title?: string | null
+    subtitle?: string | null
     bio_short?: string | null
     specialties?: string[]
   }
@@ -76,3 +78,7 @@ export type ProfessionalAppProfile = ProfessionalCard.ProfileApp
 
 // Re-export runtime config for convenience
 export { professionalConfig }
+export type {
+  RelevantExperienceItem,
+  OtherExperienceItem,
+} from './Professional/supporting'

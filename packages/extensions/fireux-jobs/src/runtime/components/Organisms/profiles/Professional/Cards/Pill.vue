@@ -1,27 +1,23 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Professional/Cards/Pill.vue -->
 <template>
-  <NuxtLink
-    v-if="props.professional?.to"
-    :to="props.professional.to"
-    class="pill"
-  >
+  <NuxtLink v-if="professional?.to" :to="professional.to" class="pill">
     <UAvatar
-      :src="props.professional.avatar"
-      :alt="props.professional.title"
+      :src="professional.avatar"
+      :alt="professional.title"
       size="sm"
       class="avatar"
     />
 
     <div class="content">
-      <span class="title">{{ props.professional.title }}</span>
+      <span class="title">{{ professional.title }}</span>
 
-      <span v-if="props.professional.subtitle" class="subtitle">
-        {{ props.professional.subtitle }}
+      <span v-if="professional.subtitle" class="subtitle">
+        {{ professional.subtitle }}
       </span>
 
-      <div v-if="props.professional.badges?.length" class="badges">
+      <div v-if="professional.badges?.length" class="badges">
         <UBadge
-          v-for="badge in props.professional.badges"
+          v-for="badge in professional.badges"
           :key="badge"
           size="xs"
           variant="soft"
@@ -34,22 +30,22 @@
 
   <div v-else class="pill">
     <UAvatar
-      :src="props.professional?.avatar"
-      :alt="props.professional?.title"
+      :src="professional?.avatar"
+      :alt="professional?.title"
       size="sm"
       class="avatar"
     />
 
     <div class="content">
-      <span class="title">{{ props.professional?.title }}</span>
+      <span class="title">{{ professional?.title }}</span>
 
-      <span v-if="props.professional?.subtitle" class="subtitle">
-        {{ props.professional.subtitle }}
+      <span v-if="professional?.subtitle" class="subtitle">
+        {{ professional.subtitle }}
       </span>
 
-      <div v-if="props.professional?.badges?.length" class="badges">
+      <div v-if="professional?.badges?.length" class="badges">
         <UBadge
-          v-for="badge in props.professional.badges"
+          v-for="badge in professional.badges"
           :key="badge"
           size="xs"
           variant="soft"
@@ -64,9 +60,13 @@
 <script setup lang="ts">
 import type { ProfessionalCard } from '../../../../../models/profiles/Professional.model.ts'
 
+import { computed } from 'vue'
+
 const props = defineProps<{
   professional: ProfessionalCard.Pill | null
 }>()
+
+const professional = computed(() => props.professional)
 </script>
 
 <style scoped>

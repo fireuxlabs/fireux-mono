@@ -4,83 +4,58 @@ import { computed } from 'vue'
 import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import {
-  professionalConfig,
   type ProfessionalProfile,
   type ProfessionalCard,
 } from '../../../../../models/profiles/Professional.model.ts'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
-/**
- * Super simple Professional interface (stub)
- * - user is REQUIRED (Ref<User | null>)
- * - core/app are wired but not used yet
- * - everything is driven by the core user
- */
 export function useProfessionalInterface(
   profile: ProfileRefs<ProfessionalProfile>,
   user: Ref<User | null>
 ) {
-  // placeholders for future use
-  const core = () => profile.coreProfile.value
-  const app = () => profile.appProfile.value
-  void core
-  void app
-
   const pill = computed<ProfessionalCard.Pill | null>(() => {
-    const value = user.value
-    if (!value) return null
+    const currentUser = user.value
+    if (!currentUser) return null
 
-    return {
-      avatar: value.avatar ?? '',
-      title: value.display_name ?? '',
-      subtitle: value.handle ? `@${value.handle}` : '',
-      to: `/${professionalConfig.collectionName}/${value.id}`,
-    }
+    const currentProfile =
+      profile.appProfile.value ?? profile.coreProfile.value ?? null
+
+    return resolveProfessionalPill(currentProfile, currentUser)
   })
 
-  const cell = computed<ProfessionalCard.Cell | null>(() => {
-    const value = user.value
-    if (!value) return null
+  return { pill }
+}
 
-    return {
-      id: value.id,
-      avatar: value.avatar ?? '',
-      title: value.display_name ?? '',
-      subtitle: value.handle ? `@${value.handle}` : '',
-      to: `/${professionalConfig.collectionName}/${value.id}`,
-    }
-  })
+export function resolveProfessionalPill(
+  profile?: Partial<ProfessionalProfile> | null,
+  userOverride?: Partial<User> | null
+): ProfessionalCard.Pill {
+  const mergedUser: Partial<User> = {
+    ...((profile?.user as Partial<User>) ?? {}),
+    ...(userOverride ?? {}),
+  }
 
-  const profileCore = computed<ProfessionalCard.ProfileCore | null>(() => {
-    const value = user.value
-    if (!value) return null
-
-    return {
-      id: value.id,
-      avatar: value.avatar ?? '',
-      title: value.display_name ?? '',
-      subtitle: value.handle ? `@${value.handle}` : '',
-      to: `/${professionalConfig.collectionName}/${value.id}`,
-    }
-  })
-
-  const profileApp = computed<ProfessionalCard.ProfileApp | null>(() => {
-    const value = user.value
-    if (!value) return null
-
-    return {
-      id: value.id,
-      avatar: value.avatar ?? '',
-      title: value.display_name ?? '',
-      subtitle: value.handle ? `@${value.handle}` : '',
-      to: `/${professionalConfig.collectionName}/${value.id}`,
-    }
-  })
+  const avatar =
+    profile?.avatar_url ?? profile?.avatar ?? mergedUser.avatar ?? ''
+  const title =
+    (profile?.display_name ?? '').trim() ||
+    (mergedUser.display_name ?? '').trim() ||
+    (profile?.title ?? '').trim() ||
+    'Professional'
+  const subtitle = profile?.subtitle ?? ''
+  const badges = profile?.badges ?? []
+  const rawId = profile?.id ?? mergedUser.id
+  const id = typeof rawId === 'string' ? rawId.trim() : ''
+  const to = profile?.to ?? (id ? `/professionals/${id}` : null)
 
   return {
-    pill,
-    cell,
-    profileCore,
-    profileApp,
+    avatar,
+    title,
+    subtitle,
+    badges,
+    to,
   }
 }
+
+export const resolveProfessionalPillKey = (pill: ProfessionalCard.Pill) =>
+  pill.title || 'professional'

@@ -5,8 +5,17 @@ import {
 } from '../../../../../models/profiles/Employer.model.ts'
 
 export function useEmployerCollection() {
-  const { profiles, global, local } =
-    useProfileCollection<EmployerProfile>(employerConfig)
+  const {
+    globalProfiles,
+    localProfiles,
+    globalProfilesWithUser,
+    localProfilesWithUser,
+  } = useProfileCollection<EmployerProfile>(employerConfig)
 
-  return { employers: profiles, global, local }
+  return {
+    globalEmployers: globalProfilesWithUser,
+    localEmployers: localProfilesWithUser,
+    rawGlobalEmployers: globalProfiles,
+    rawLocalEmployers: localProfiles,
+  }
 }
