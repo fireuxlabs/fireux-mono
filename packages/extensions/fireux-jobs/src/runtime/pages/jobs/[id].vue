@@ -79,8 +79,7 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { useJobFetch } from '../../../composables/firestore/jobs/main/useJobFetch.ts'
-import { useJob } from '../../../composables/firestore/jobs/useJob.ts'
+import { useJobRead, useJobEditor } from '../../../composables/useJob.ts'
 import type { JobStatus } from '../../../types/job.model.ts'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
 
@@ -92,8 +91,8 @@ const jobId = computed(() =>
     : paramId?.toString() ?? null
 )
 
-const { job } = useJobFetch(jobId)
-const { setTitle, setDescription, setPay, setStatus } = useJob(job)
+const { job } = useJobRead(jobId)
+const { setTitle, setDescription, setPay, setStatus } = useJobEditor(job)
 const { withToast } = useToastify()
 
 const jobTitle = computed(() => job.value?.title || 'Job Details')

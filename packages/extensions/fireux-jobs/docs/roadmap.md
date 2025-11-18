@@ -4,7 +4,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 ## ✅ Completed
 
-- Basic navigation/composable scaffolding (`useJobRoutes`, `useJobs` CRUD helpers)
+- Basic navigation/composable scaffolding (`useJobRoutes`, global `useJob*` CRUD helpers)
 - Employer and professional profile pages integrated with shared profile engine
 
 ## ⚙️ In Progress

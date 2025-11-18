@@ -8,6 +8,7 @@ type Ts = FirestoreTimestampOrString
 export interface Job {
   id: string
   created_by: string
+  tenant_id: string
   title: string
   description?: string | null
   pay?: string | number | null

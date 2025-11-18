@@ -1,0 +1,75 @@
+<template>
+  <UPage>
+    <UPageHeader
+      title="FireUX Jobs"
+      description="How the unified jobs workspace helps employers and professionals connect."
+    />
+
+    <UPageBody class="space-y-8">
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold">Why FireUX Jobs exists</h2>
+        <p class="text-sm text-gray-600">
+          FireUX Jobs centralises hiring across every tenant so teams can draft
+          roles once, share globally, and augment them with tenant-specific
+          context. Professionals reuse their profiles across Misebox, Cleanbox,
+          and future tenants.
+        </p>
+      </section>
+
+      <section class="space-y-3">
+        <h3 class="text-base font-semibold">Core capabilities today</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li>
+            <strong class="font-medium text-gray-900"
+              >Global job collection</strong
+            >
+            &nbsp;— all jobs live in a single Firestore collection keyed by the
+            Firestore auto ID. Tenant filters keep listings scoped when needed.
+          </li>
+          <li>
+            <strong class="font-medium text-gray-900"
+              >Employer-authored drafts</strong
+            >
+            &nbsp;— employers can create jobs once they establish their profile.
+            Drafts stay private until marked open.
+          </li>
+          <li>
+            <strong class="font-medium text-gray-900">Realtime editing</strong>
+            &nbsp;— title, description, pay, and status updates sync instantly
+            across tenants.
+          </li>
+        </ul>
+      </section>
+
+      <section class="space-y-3">
+        <h3 class="text-base font-semibold">Coming next</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li>Candidate applications and shortlist management.</li>
+          <li>Tenant-branded onboarding flows and job templates.</li>
+          <li>Automated notifications for updates, interviews, and offers.</li>
+        </ul>
+      </section>
+
+      <section class="space-y-3">
+        <h3 class="text-base font-semibold">Get involved</h3>
+        <p class="text-sm text-gray-600">
+          Employers can start by creating a draft job from the Jobs dashboard.
+          Professionals should keep their profiles complete so they appear in
+          recommendations when jobs go live.
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <UButton to="/jobs/create" color="primary">Create a job</UButton>
+          <UButton to="/profiles" variant="ghost">Review your profile</UButton>
+        </div>
+      </section>
+    </UPageBody>
+  </UPage>
+</template>
+
+<script setup lang="ts">
+definePageMeta({
+  layout: 'default',
+})
+
+useHead({ title: 'Learn more about FireUX Jobs' })
+</script>

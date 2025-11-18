@@ -1,0 +1,114 @@
+<template>
+  <UPage>
+    <UPageHeader
+      title="Cleanbox Jobs"
+      description="Manage cleaning gigs and discover upcoming opportunities."
+    >
+      <template #ctas>
+        <JobsCreateButton />
+      </template>
+    </UPageHeader>
+
+    <UPageBody class="space-y-4">
+      <UAlert
+        v-if="!appId"
+        color="amber"
+        variant="soft"
+        title="Tenant configuration missing"
+        description="Configure an appId in FireUXConfig to load Cleanbox jobs."
+      />
+
+      <template v-else>
+        <div v-if="pending" class="space-y-3">
+          <USkeleton class="h-20 rounded-xl" />
+          <USkeleton class="h-20 rounded-xl" />
+        </div>
+
+        <div v-else-if="jobList.length === 0" class="space-y-2 text-sm text-gray-500">
+          <p>No Cleanbox jobs yet. Post your first assignment to get started.</p>
+          <p v-if="!hasEmployerProfile" class="text-gray-400">
+            Create your Cleanbox employer profile to unlock job tools.
+          </p>
+        </div>
+
+        <UAlert
+          v-else-if="!hasEmployerProfile"
+          color="blue"
+          variant="soft"
+          title="Ready to hire cleaners?"
+          description="Complete your Cleanbox employer profile to publish roles."
+        />
+
+        <ul v-else class="grid gap-4 md:grid-cols-2">
+          <li v-for="job in jobList" :key="job.id">
+            <UCard>
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-semibold">{{ job.title }}</h3>
+                  <p class="text-sm text-gray-500 line-clamp-2">
+                    {{ job.description || 'No description yet' }}
+                  </p>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                  <UBadge
+                    size="xs"
+                    :color="badgeColor(job.status)"
+                    variant="soft"
+                  >
+                    {{ job.status || 'draft' }}
+                  </UBadge>
+                  <UButton
+                    variant="ghost"
+                    icon="i-lucide-arrow-right"
+                    :to="`/jobs/${job.id}`"
+                  />
+                </div>
+              </div>
+              <template #footer>
+                <div class="text-xs text-gray-500">
+                  {{ job.pay ? `Pay: ${job.pay}` : 'Pay: negotiable' }}
+                </div>
+              </template>
+            </UCard>
+          </li>
+        </ul>
+      </template>
+    </UPageBody>
+  </UPage>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import JobsCreateButton from '../../../../../../extensions/fireux-jobs/src/runtime/components/Organisms/Jobs/CreateButton.vue'
+import { useJobCollection } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/useJob.ts'
+import { useEmployer } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployer.ts'
+
+definePageMeta({
+  layout: 'default',
+  nav: {
+    key: 'cleanbox-jobs',
+    label: 'Jobs',
+    icon: 'i-lucide-briefcase',
+    order: 60,
+    desktop: true,
+    mobile: true,
+    layouts: ['default'],
+  },
+})
+
+useHead({ title: 'Cleanbox Jobs' })
+
+const { appId } = useFireUXConfig()
+const { jobs, pending } = useJobCollection()
+const { coreProfile, appProfile } = useEmployer()
+
+const jobList = computed(() => jobs.value ?? [])
+const hasEmployerProfile = computed(() => Boolean(coreProfile.value ?? appProfile.value))
+
+const badgeColor = (status?: string | null) => {
+  if (status === 'open') return 'success'
+  if (status === 'draft') return 'amber'
+  return 'neutral'
+}
+</script>

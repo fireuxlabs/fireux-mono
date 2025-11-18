@@ -81,13 +81,13 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useJobs } from '../../../composables/firestore/jobs/main/useJobs.ts'
+import { useJobCreate } from '../../../composables/useJob.ts'
 import { useEmployer } from '../../../composables/firestore/profiles/Employer/useEmployer.ts'
 import { useEmployerComputed } from '../../../composables/firestore/profiles/Employer/main/useEmployerComputed.ts'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
 
 const router = useRouter()
-const { createJob } = useJobs()
+const { createJob } = useJobCreate()
 const { success, error } = useToastify()
 
 const { profile } = useEmployer()

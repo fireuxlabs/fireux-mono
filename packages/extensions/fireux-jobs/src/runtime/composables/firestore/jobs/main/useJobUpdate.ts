@@ -1,56 +1,20 @@
-import { doc, serverTimestamp, updateDoc } from 'firebase/firestore'
-import { computed, type Ref } from 'vue'
-import { useFirestore } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import type { Job, JobStatus } from '../../../../types/job.model.ts'
+import type { Job } from '../../../../types/job.model.ts'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager.ts'
 
-export function useJobUpdate(jobRef: Ref<Job | null>) {
-  const db = useFirestore()
-  const { appId } = useFireUXConfig()
+export function useJobUpdate() {
+  const { updateDocument } = useFirestoreManager()
 
-  const ensureDoc = () => {
-    const id = jobRef.value?.id
-    if (!appId || !id) {
-      throw new Error('[useJobUpdate] Missing appId or job id')
+  const updateJob = async (
+    jobId: string,
+    patch: Partial<Omit<Job, 'id' | 'created_by' | 'tenant_id'>> &
+      Partial<Pick<Job, 'tenant_id' | 'created_by'>>
+  ) => {
+    const id = String(jobId ?? '').trim()
+    if (!id) {
+      throw new Error('[useJobUpdate] jobId is required')
     }
-    return doc(db, 'apps', appId, 'jobs', id)
+    await updateDocument<Job>('jobs', id, patch)
   }
 
-  const setTitle = async (title: string) => {
-    const target = ensureDoc()
-    await updateDoc(target, {
-      title: String(title ?? '').trim(),
-      updated_at: serverTimestamp(),
-    })
-  }
-
-  const setDescription = async (description: string | null) => {
-    const target = ensureDoc()
-    const value = String(description ?? '').trim()
-    await updateDoc(target, {
-      description: value.length ? value : null,
-      updated_at: serverTimestamp(),
-    })
-  }
-
-  const setPay = async (pay: string | number | null) => {
-    const target = ensureDoc()
-    const value = pay === '' ? null : pay
-    await updateDoc(target, {
-      pay: value ?? null,
-      updated_at: serverTimestamp(),
-    })
-  }
-
-  const setStatus = async (status: JobStatus) => {
-    const target = ensureDoc()
-    await updateDoc(target, {
-      status,
-      updated_at: serverTimestamp(),
-    })
-  }
-
-  const isInitialized = computed(() => jobRef.value !== undefined)
-
-  return { setTitle, setDescription, setPay, setStatus, isInitialized }
+  return { updateJob }
 }
