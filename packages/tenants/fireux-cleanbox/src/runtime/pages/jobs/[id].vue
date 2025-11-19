@@ -80,7 +80,10 @@
 import { computed, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
-import { useJobRead, useJobEditor } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/useJob.ts'
+import {
+  useJobRead,
+  useJobEditor,
+} from '../../../../../../extensions/fireux-jobs/src/runtime/composables/useJob.ts'
 import type { JobStatus } from '../../../../../../extensions/fireux-jobs/src/runtime/types/job.model.ts'
 
 definePageMeta({

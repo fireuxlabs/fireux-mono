@@ -54,12 +54,23 @@
         </div>
 
         <div class="flex items-center justify-between">
-          <span class="text-sm text-gray-500">Last updated {{ lastUpdated }}.</span>
+          <span class="text-sm text-gray-500"
+            >Last updated {{ lastUpdated }}.</span
+          >
           <div class="flex items-center gap-2">
-            <UButton variant="ghost" :disabled="saving || !isDirty" @click="onReset">
+            <UButton
+              variant="ghost"
+              :disabled="saving || !isDirty"
+              @click="onReset"
+            >
               Reset
             </UButton>
-            <UButton color="primary" :loading="saving" :disabled="!isDirty" type="submit">
+            <UButton
+              color="primary"
+              :loading="saving"
+              :disabled="!isDirty"
+              type="submit"
+            >
               Save changes
             </UButton>
           </div>
@@ -73,8 +84,14 @@
 import { computed, reactive, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
-import { useJobRead, useJobUpdate } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/useJob.ts'
-import type { Job, JobStatus } from '../../../../../../extensions/fireux-jobs/src/runtime/types/job.model.ts'
+import {
+  useJobRead,
+  useJobUpdate,
+} from '../../../../../../extensions/fireux-jobs/src/runtime/composables/useJob.ts'
+import type {
+  Job,
+  JobStatus,
+} from '../../../../../../extensions/fireux-jobs/src/runtime/types/job.model.ts'
 
 definePageMeta({
   layout: 'default',
@@ -88,7 +105,9 @@ const { updateJob } = useJobUpdate()
 
 const param = route.params.id
 const jobId = computed(() =>
-  Array.isArray(param) ? param[0]?.toString() ?? null : param?.toString() ?? null
+  Array.isArray(param)
+    ? param[0]?.toString() ?? null
+    : param?.toString() ?? null
 )
 
 const { job: jobRef, pending } = useJobRead(jobId)
@@ -193,7 +212,7 @@ const pageSubtitle = computed(() =>
   form.status === 'open'
     ? 'Published Misebox job'
     : form.status === 'closed'
-      ? 'Closed job'
-      : 'Draft job'
+    ? 'Closed job'
+    : 'Draft job'
 )
 </script>

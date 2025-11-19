@@ -9,7 +9,8 @@
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">Why Cleanbox uses FireUX Jobs</h2>
         <p class="text-sm text-gray-600">
-          The shared jobs layer lets Cleanbox teams source vetted cleaners rapidly while preserving tenant-specific branding and workflows.
+          The shared jobs layer lets Cleanbox teams source vetted cleaners
+          rapidly while preserving tenant-specific branding and workflows.
         </p>
       </section>
 
@@ -18,7 +19,9 @@
         <ul class="space-y-2 text-sm text-gray-600">
           <li>Create and manage drafting, open, and closed job states.</li>
           <li>Capture pay information and notes that sync across tenants.</li>
-          <li>Update content any time to keep crews informed before a shift.</li>
+          <li>
+            Update content any time to keep crews informed before a shift.
+          </li>
         </ul>
       </section>
 
@@ -34,10 +37,13 @@
       <section class="space-y-3">
         <h3 class="text-base font-semibold">Next steps</h3>
         <p class="text-sm text-gray-600">
-          Set up your Cleanbox employer profile, publish a draft, and keep clients updated with live status changes.
+          Set up your Cleanbox employer profile, publish a draft, and keep
+          clients updated with live status changes.
         </p>
         <div class="flex flex-wrap gap-2">
-          <UButton to="/jobs/create" color="primary">Create a Cleanbox job</UButton>
+          <UButton to="/jobs/create" color="primary"
+            >Create a Cleanbox job</UButton
+          >
           <UButton to="/profiles" variant="ghost">Review team profiles</UButton>
         </div>
       </section>

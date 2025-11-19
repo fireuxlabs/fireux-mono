@@ -24,8 +24,13 @@
           <USkeleton class="h-20 rounded-xl" />
         </div>
 
-        <div v-else-if="jobList.length === 0" class="space-y-2 text-sm text-gray-500">
-          <p>No Cleanbox jobs yet. Post your first assignment to get started.</p>
+        <div
+          v-else-if="jobList.length === 0"
+          class="space-y-2 text-sm text-gray-500"
+        >
+          <p>
+            No Cleanbox jobs yet. Post your first assignment to get started.
+          </p>
           <p v-if="!hasEmployerProfile" class="text-gray-400">
             Create your Cleanbox employer profile to unlock job tools.
           </p>
@@ -104,7 +109,9 @@ const { jobs, pending } = useJobCollection()
 const { coreProfile, appProfile } = useEmployer()
 
 const jobList = computed(() => jobs.value ?? [])
-const hasEmployerProfile = computed(() => Boolean(coreProfile.value ?? appProfile.value))
+const hasEmployerProfile = computed(() =>
+  Boolean(coreProfile.value ?? appProfile.value)
+)
 
 const badgeColor = (status?: string | null) => {
   if (status === 'open') return 'success'

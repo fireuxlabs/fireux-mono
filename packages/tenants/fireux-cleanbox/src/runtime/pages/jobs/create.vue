@@ -49,7 +49,12 @@
           <UButton variant="ghost" :disabled="submitting" @click="onReset">
             Clear
           </UButton>
-          <UButton color="primary" :loading="submitting" :disabled="!isValid" type="submit">
+          <UButton
+            color="primary"
+            :loading="submitting"
+            :disabled="!isValid"
+            type="submit"
+          >
             Publish draft
           </UButton>
         </div>
