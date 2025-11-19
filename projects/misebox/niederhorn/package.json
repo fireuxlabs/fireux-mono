@@ -16,6 +16,8 @@
     "@nuxt/ui": "^4.0.0-alpha.2",
     "dompurify": "^3.2.6",
     "firebase": "11.10.0",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.3.2",
     "fireux-core": "workspace:*",
     "fireux-jobs": "workspace:*",
     "fireux-misebox": "workspace:*",

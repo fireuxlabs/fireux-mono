@@ -17,6 +17,9 @@
     "@nuxt/ui": "^4.0.0-alpha.2",
     "dompurify": "^3.2.6",
     "firebase": "11.10.0",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.3.2",
+    "nuxt-vuefire": "^1.1.0",
     "fireux-core": "workspace:*",
     "fireux-jobs": "workspace:*",
     "fireux-misebox": "workspace:*",
@@ -29,7 +32,6 @@
     "@iconify-json/lucide": "^1.2.62",
     "@nuxt/content": "^3.6.3",
     "@vite-pwa/nuxt": "^1.0.4",
-    "nuxt-vuefire": "^1.1.0",
     "rimraf": "^6.0.1",
     "vuefire": "3.2.2"
   }

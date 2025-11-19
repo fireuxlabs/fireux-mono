@@ -20,11 +20,11 @@ const REQUIRED = new Set([
 ])
 
 const OPTIONAL_GENERATED = new Set(['.nuxt']) // allowed but not required
+const OPTIONAL_CONTENT = new Set(['docs'])
 const FORBIDDEN = new Set([
   'server',
   'types',
   'scripts',
-  'docs',
   '.data',
   'content.config.ts',
 ])
@@ -73,7 +73,11 @@ function checkApp(appDir) {
   }
 
   // Unknown extras (not strictly forbidden but outside our shape)
-  const allowed = new Set([...REQUIRED, ...OPTIONAL_GENERATED])
+  const allowed = new Set([
+    ...REQUIRED,
+    ...OPTIONAL_GENERATED,
+    ...OPTIONAL_CONTENT,
+  ])
   const extras = [...entries].filter((name) => !allowed.has(name))
   for (const x of extras) {
     // allow node_modules and .nuxt obviously; already whitelisted .nuxt
@@ -111,7 +115,11 @@ for (const appDir of apps) {
     for (const e of errs) console.error(`  • ${e}`)
     // Helpful suggestion
     console.error(
-      `  → Expected only: ${[...REQUIRED].filter((x) => x !== '.nuxt').join(', ')} (+ .nuxt, node_modules allowed${allowReadme ? ', README.md allowed' : ''})`
+      `  → Expected only: ${[...REQUIRED]
+        .filter((x) => x !== '.nuxt')
+        .join(', ')} (+ .nuxt, node_modules allowed${
+        allowReadme ? ', README.md allowed' : ''
+      })`
     )
     console.error(
       `  → Fix:\n    - Create missing: touch the missing files/dirs (see messages above)\n    - Remove forbidden: delete listed entries (server, types, scripts, docs, .data, content.config.ts)\n    - Remove unexpected extras (or run with --allow-readme to permit README.md)`
