@@ -83,14 +83,14 @@ export function useMiseboxRoutes() {
     'kitchens',
     'recipes',
     'jobs',
-    'employers',
+    'agents',
     'professionals',
   ])
   const MOBILE_IDS = new Set<string>([
     ...Array.from(MENU_IDS),
     'chef-profile',
     'supplier-profile',
-    'employer-profile',
+    'agent-profile',
     'professional-profile',
   ])
 

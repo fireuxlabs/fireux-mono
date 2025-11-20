@@ -6,7 +6,7 @@ created: 2025-10-16
 
 # Current Pages Inventory
 
-These `index.vue` files correspond to “current” entities — pages that reflect or allow selecting a **current profile, employer, or related object** tied to the active user.
+These `index.vue` files correspond to “current” entities — pages that reflect or allow selecting a **current profile, agent, or related object** tied to the active user.
 
 They all need the **Current Entity Block** pattern (show current if exists → otherwise prompt to create/select).
 
@@ -24,7 +24,7 @@ They all need the **Current Entity Block** pattern (show current if exists → o
 
 ## Extensions
 
-- packages/extensions/fireux-jobs/src/runtime/pages/employers/index.vue // current (current employer)
+- packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue // current (current agent)
 - packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue // current (current professional)
 
 ---
@@ -50,5 +50,5 @@ They all need the **Current Entity Block** pattern (show current if exists → o
 | Core     | `packages/core/fireux-core/src/runtime/pages/apps/index.vue`                | App          | One active app context        | Governs tenant scope          |
 | Misebox  | `packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue`         | Chef         | One active chef profile       | Links to professional profile |
 | Misebox  | `packages/tenants/fireux-misebox/src/runtime/pages/suppliers/index.vue`     | Supplier     | One active supplier profile   | Powers procurement tools      |
-| Jobs Ext | `packages/extensions/fireux-jobs/src/runtime/pages/employers/index.vue`     | Employer     | One active employer           | Controls job posting role     |
+| Jobs Ext | `packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue`     | Agent     | One active agent           | Controls job posting role     |
 | Jobs Ext | `packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue` | Professional | One active professional       | Represents job applicant role |

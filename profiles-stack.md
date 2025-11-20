@@ -339,7 +339,7 @@ export function useProfessionalInterface(
     if (profileValue) {
       return {
         title: 'Professional profile ready',
-        description: 'Keep your experience current so employers can reach out.',
+        description: 'Keep your experience current so agents can reach out.',
         actions: [
           {
             id: 'edit-professional',
@@ -353,7 +353,7 @@ export function useProfessionalInterface(
 
     return {
       title: 'Create your Professional profile to appear in listings.',
-      description: 'Share your experience so employers can learn about you.',
+      description: 'Share your experience so agents can learn about you.',
       actions: [
         {
           id: 'create-professional',
@@ -832,31 +832,31 @@ export function useProfessionalDelete(
 - Domain layers (professional/chef/supplier/etc.) own their computed + update logic.
 - Professional stack still exposes `useProfessionalComputed` for legacy consumers; migrate remaining callers to the lean `useProfessional()` signature.
 
-## Jobs extension – Employer profile composables (`packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/`)
+## Jobs extension – Agent profile composables (`packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/`)
 
 ### Top-level entry
 
-- `useEmployer.ts` – lightweight wrapper around `useProfile` that exposes raw `ProfileRefs` for employer documents using `employerConfig`.
+- `useAgent.ts` – lightweight wrapper around `useProfile` that exposes raw `ProfileRefs` for agent documents using `agentConfig`.
 
-### Main helpers (`.../Employer/main/`)
+### Main helpers (`.../Agent/main/`)
 
-- `useEmployerInterface.ts` – maps employer data into pill, cell, and profile card props for UI components.
-- `useEmployerComputed.ts` – merges core and app employer documents and exposes `activeProfile` plus existence flags.
-- `useEmployerCollection.ts` – delegates to `useProfileCollection` and returns `{ employers, global, local }` streams.
-- `useEmployerCreate.ts` – calls the shared ensure stub to create a tenant overlay and exposes a `createEmployer.state` ref.
-- `useEmployerUpdate.ts` – updates core or tenant employer documents and includes helpers for nested fields.
-- `useEmployerDelete.ts` – removes employer docs across scopes after resolving the active uid.
+- `useAgentInterface.ts` – maps agent data into pill, cell, and profile card props for UI components.
+- `useAgentComputed.ts` – merges core and app agent documents and exposes `activeProfile` plus existence flags.
+- `useAgentCollection.ts` – delegates to `useProfileCollection` and returns `{ agents, global, local }` streams.
+- `useAgentCreate.ts` – calls the shared ensure stub to create a tenant overlay and exposes a `createAgent.state` ref.
+- `useAgentUpdate.ts` – updates core or tenant agent documents and includes helpers for nested fields.
+- `useAgentDelete.ts` – removes agent docs across scopes after resolving the active uid.
 
 ### Utility helpers
 
-- `utils.ts` – employer-specific formatting helpers used by cards and edit flows.
+- `utils.ts` – agent-specific formatting helpers used by cards and edit flows.
 
 ### Key runtime consumers
 
-- `packages/extensions/fireux-jobs/src/runtime/pages/employers/index.vue` – pulls `useEmployer()`, `useEmployerInterface()`, collection helpers, and create handler to render the roster and CTA.
-- `packages/extensions/fireux-jobs/src/runtime/pages/employers/[id].vue` – loads employer config for detail routes.
-- `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/employer-profile.vue` – merges profile refs locally for the dashboard editor and shows an `error` fallback when missing.
-- `packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Employer/**/*` – cards, CTA, create, and edit components that consume `pillProps`, `cellProps`, `profileProps`, and update helpers.
+- `packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue` – pulls `useAgent()`, `useAgentInterface()`, collection helpers, and create handler to render the roster and CTA.
+- `packages/extensions/fireux-jobs/src/runtime/pages/agents/[id].vue` – loads agent config for detail routes.
+- `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent-profile.vue` – merges profile refs locally for the dashboard editor and shows an `error` fallback when missing.
+- `packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Agent/**/*` – cards, CTA, create, and edit components that consume `pillProps`, `cellProps`, `profileProps`, and update helpers.
 
 ## Misebox tenant – Chef profile composables (`packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/`)
 

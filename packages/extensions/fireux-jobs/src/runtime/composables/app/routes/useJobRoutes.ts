@@ -17,10 +17,10 @@ export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
       to: '/jobs',
     },
     {
-      id: 'employers',
-      label: 'Employers',
+      id: 'agents',
+      label: 'Agents',
       icon: 'i-lucide-building-2',
-      to: '/employers',
+      to: '/agents',
     },
     {
       id: 'professionals',
@@ -35,12 +35,12 @@ export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
   // Do not conditionally hide public routes; UI handles active state/UX.
   const jobMobileRoutes = jobRoutes
 
-  if (hasProfile('employer')) {
+  if (hasProfile('agent')) {
     jobProfileRoutes.push({
-      id: 'employer-profile',
-      label: 'Employer Profile',
+      id: 'agent-profile',
+      label: 'Agent Profile',
       icon: 'i-lucide-building-2',
-      to: '/dashboard/employer-profile',
+      to: '/dashboard/agent-profile',
     })
   }
 

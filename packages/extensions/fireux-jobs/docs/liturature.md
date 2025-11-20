@@ -13,7 +13,7 @@ App tenants and developers who need hiring or recruitment features within their 
 ## Purpose
 
 The Jobs Extension provides a reusable structure for listing positions, managing applicants, and processing temporary or long-term contracts.
-It connects employers and professionals across the FireUX ecosystem and ensures consistent workflows between industries.
+It connects agents and professionals across the FireUX ecosystem and ensures consistent workflows between industries.
 
 ---
 
@@ -23,7 +23,7 @@ It connects employers and professionals across the FireUX ecosystem and ensures 
 - Application management and candidate tracking
 - Contract generation and digital signing
 - Rating system (star-based, like Uber) for temporary work
-- Employer verification and profile linking
+- Agent verification and profile linking
 - Notifications for new applicants or job status updates
 - Support for both internal and public job boards
 
@@ -33,7 +33,7 @@ It connects employers and professionals across the FireUX ecosystem and ensures 
 
 - `/jobs` – list of open positions
 - `/jobs/[id]` – detailed job view
-- `/employers/[id]/jobs` – manage employer postings
+- `/agents/[id]/jobs` – manage agent postings
 - `/applications` – view submitted applications
 - `/contracts` – manage signed agreements
 
@@ -42,7 +42,7 @@ It connects employers and professionals across the FireUX ecosystem and ensures 
 ## Next Steps
 
 - Implement multi-tenant filtering (e.g., Cleanbox jobs vs Misebox jobs)
-- Add in-app chat between employer and applicant
+- Add in-app chat between agent and applicant
 - Integrate reference verification from Misebox
 - Expand ratings system to include reliability and skill metrics
 - Publish API endpoints for external job feeds
@@ -52,4 +52,4 @@ It connects employers and professionals across the FireUX ecosystem and ensures 
 ## Summary
 
 The FireUX Jobs Extension turns any app into a hiring platform.
-It connects professionals and employers directly within the ecosystem — reducing friction, duplication, and manual communication between industries.
+It connects professionals and agents directly within the ecosystem — reducing friction, duplication, and manual communication between industries.

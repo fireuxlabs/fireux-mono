@@ -1,6 +1,6 @@
 # Firestore Core – Current Fetch & Ensure Contract (2025-11)
 
-This page documents the minimal, stable surface we’re shipping for Firestore core composables. It’s intentionally small so domains (Chef, Supplier, Professional, Employer) can sit cleanly on top.
+This page documents the minimal, stable surface we’re shipping for Firestore core composables. It’s intentionally small so domains (Chef, Supplier, Professional, Agent) can sit cleanly on top.
 
 ---
 
@@ -9,7 +9,7 @@ This page documents the minimal, stable surface we’re shipping for Firestore c
 - **User**
   - `useUser()` → returns one reactive user (core-only).
   - Tenant overlay (`appUser`) is fetched by `useUserFetch` but not merged by `useUser()`.
-- **Profiles (Chef/Supplier/Professional/Employer)**
+- **Profiles (Chef/Supplier/Professional/Agent)**
   - `useProfile(config)` → returns one reactive profile.
   - If in tenant context, the profile includes app overlay as `profile.app` (no field merges into core).
   - No profile computed/update layers; `useProfileComputed.ts` and `useProfileUpdate.ts` are not part of the public surface.
@@ -63,7 +63,7 @@ Profiles are driven by a tiny `ProfileConfig`:
 ```ts
 // packages/core/fireux-core/src/runtime/models/core/profile.model.ts
 export interface ProfileConfig {
-  id: string // 'chef' | 'supplier' | 'professional' | 'employer'
+  id: string // 'chef' | 'supplier' | 'professional' | 'agent'
   collectionName: string // e.g. 'chefs'
   profileType: string // Human label: 'Chef'
   cta?: string

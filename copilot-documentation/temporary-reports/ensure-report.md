@@ -434,7 +434,7 @@ import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequ
 interface ProfileDoc {
   id: string
   ownerId: string
-  type: 'professional' | 'employer' | 'generic'
+  type: 'professional' | 'agent' | 'generic'
   displayName: string
   created_at: any
   updated_at: any
@@ -501,4 +501,4 @@ export function useProfileEnsure() {
 
 ## Summary
 
-All ensure composables follow a create-if-missing pattern with limited side-effects. Core runtime now centralises the behaviour through `ensureDoc`, with app, user, and profile composables layering their adapters on top. fireux-jobs’ employer/professional helpers shim to the core `useProfileEnsure` and add no extra logic. No additional `use*Ensure` modules remain in the mono-repo.
+All ensure composables follow a create-if-missing pattern with limited side-effects. Core runtime now centralises the behaviour through `ensureDoc`, with app, user, and profile composables layering their adapters on top. fireux-jobs’ agent/professional helpers shim to the core `useProfileEnsure` and add no extra logic. No additional `use*Ensure` modules remain in the mono-repo.

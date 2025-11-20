@@ -1,0 +1,16 @@
+import { useRouter } from 'vue-router'
+import { useProfileEnsure } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileEnsure.ts'
+import { agentConfig } from '../../../../../models/profiles/Agent.model.ts'
+
+export function useAgentCreate() {
+  const { ensure } = useProfileEnsure(agentConfig)
+  const router = useRouter()
+
+  const createAgent = async () => {
+    const result = await ensure()
+    if (import.meta.client) router.push('/dashboard/agent-profile')
+    return result
+  }
+
+  return { createAgent }
+}

@@ -78,7 +78,7 @@ declare function useSeoMeta(input: unknown): void
 
 /** Props */
 const props = defineProps<{
-  /** ProfileConfig for this domain (chef, professional, employer, supplier) */
+  /** ProfileConfig for this domain (chef, professional, agent, supplier) */
   config: ProfileConfig
   /** Route param name for id; default 'id' */
   idParamName?: string

@@ -15,7 +15,7 @@ A multi-tenant workforce platform for profiles, job matching, and future on-dema
 
 **Core Deliverables**
 
-- FireUX Profiles (Professional / Employer / Chef / Cleaner / Supplier, etc.)
+- FireUX Profiles (Professional / Agent / Chef / Cleaner / Supplier, etc.)
 - Global and tenant profile collections
 - Simple job model (title, description, pay range, location, created_by, timestamps)
 - Job index pages (global and tenant scoped)
@@ -39,14 +39,14 @@ A multi-tenant workforce platform for profiles, job matching, and future on-dema
 
 ## Phase 2 — Matching Intelligence (Q3–Q4 2025)
 
-**Goal:** Assist employers with smart matching and candidate recommendations.
+**Goal:** Assist agents with smart matching and candidate recommendations.
 
 **Deliverables**
 
 - Basic matching score
 - Job filters and search
 - Talent discovery pages
-- Employer shortlist feature
+- Agent shortlist feature
 - Candidate availability and preferences
 - AI-generated job descriptions
 - AI-generated candidate summaries (profile snapshot)
@@ -60,12 +60,12 @@ A multi-tenant workforce platform for profiles, job matching, and future on-dema
 
 ## Phase 3 — Marketplace Layer (2026)
 
-**Goal:** Enable hiring and job fulfilment through FireUX without acting as the employer.
+**Goal:** Enable hiring and job fulfilment through FireUX without acting as the agent.
 
 **Deliverables**
 
 - Stripe Connect (Platform) integration with flexible fee structure
-- Secure messaging between candidates and employers
+- Secure messaging between candidates and agents
 - Booking confirmation system
 - Shift timeline (start time, end time, breaks)
 
@@ -85,16 +85,16 @@ A multi-tenant workforce platform for profiles, job matching, and future on-dema
 
 ## Phase 4 — Light Compliance System (2027)
 
-**Goal:** Provide semi-automated HR and legal processes without becoming a full employer-of-record provider.
+**Goal:** Provide semi-automated HR and legal processes without becoming a full agent-of-record provider.
 
 **Deliverables**
 
 - Automated contract generation
 - Automated invoice generation
 - Tax summary export for workers
-- Verified identity and verified employer flows
+- Verified identity and verified agent flows
 - Worker ratings, attendance, reliability tracking
-- Employer ratings
+- Agent ratings
 - Dispute helper (AI-powered)
 
 **Tenant Extensions**
@@ -147,14 +147,14 @@ A multi-tenant workforce platform for profiles, job matching, and future on-dema
 
 ## Phase 7 — Payroll and Payment Automation (2029–2030)
 
-**Goal:** Approach full staffing workflows without assuming employer-of-record responsibility.
+**Goal:** Approach full staffing workflows without assuming agent-of-record responsibility.
 
 **Deliverables**
 
 - Time tracking
 - Automated pay calculation
 - Automated invoicing between parties
-- Split payments (employer → platform → worker)
+- Split payments (agent → platform → worker)
 - Expense tracking
 - Rate templates
 - End-of-shift verification

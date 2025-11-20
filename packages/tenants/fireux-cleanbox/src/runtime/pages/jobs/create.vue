@@ -10,8 +10,8 @@
         v-if="!canCreate"
         color="amber"
         variant="soft"
-        title="Create an employer profile"
-        description="Complete your Cleanbox employer profile to start posting jobs."
+        title="Create an agent profile"
+        description="Complete your Cleanbox agent profile to start posting jobs."
       />
 
       <form v-else class="space-y-4" @submit.prevent="onSubmit">
@@ -68,8 +68,8 @@ import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
 import { useJobCreate } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/useJob.ts'
-import { useEmployer } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployer.ts'
-import { useEmployerComputed } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/main/useEmployerComputed.ts'
+import { useAgent } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/useAgent.ts'
+import { useAgentComputed } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/main/useAgentComputed.ts'
 import type { JobStatus } from '../../../../../../extensions/fireux-jobs/src/runtime/types/job.model.ts'
 
 definePageMeta({
@@ -80,8 +80,8 @@ useHead({ title: 'Create Cleanbox Job' })
 
 const router = useRouter()
 const { createJob } = useJobCreate()
-const { profile } = useEmployer()
-const { activeProfile } = useEmployerComputed(profile)
+const { profile } = useAgent()
+const { activeProfile } = useAgentComputed(profile)
 const { withToast } = useToastify()
 
 const form = reactive({

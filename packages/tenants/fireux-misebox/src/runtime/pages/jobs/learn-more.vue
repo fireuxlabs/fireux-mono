@@ -48,7 +48,7 @@
       <section class="space-y-3">
         <h3 class="text-base font-semibold">Next steps</h3>
         <p class="text-sm text-gray-600">
-          Create your Misebox employer profile, draft your first job, and keep
+          Create your Misebox agent profile, draft your first job, and keep
           your team rostered ahead of service windows.
         </p>
         <div class="flex flex-wrap gap-2">

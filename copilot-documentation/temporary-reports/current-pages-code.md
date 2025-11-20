@@ -393,30 +393,30 @@ async function onEnsureSupplier() {
 </script>
 ```
 
-## packages/extensions/fireux-jobs/src/runtime/pages/employers/index.vue
+## packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue
 
 ```vue
 <template>
   <UPage>
     <UContainer class="py-8">
       <OrganismsProfileRoot
-        :config="employerConfig"
-        :onEnsure="onEnsureEmployer"
+        :config="agentConfig"
+        :onEnsure="onEnsureAgent"
       >
         <!-- Current profile (optional) -->
         <template #current-assets="{ profile }">
           <template v-if="profile">
-            <OrganismsProfilesEmployerCardsPill
-              :employer="profile"
+            <OrganismsProfilesAgentCardsPill
+              :agent="profile"
               class="mb-3"
             />
-            <OrganismsProfilesEmployerCardsCell :employer="profile" />
+            <OrganismsProfilesAgentCardsCell :agent="profile" />
           </template>
         </template>
 
         <!-- List items -->
         <template #item="{ profile }">
-          <OrganismsProfilesEmployerCardsCell :employer="profile" />
+          <OrganismsProfilesAgentCardsCell :agent="profile" />
         </template>
       </OrganismsProfileRoot>
     </UContainer>
@@ -424,12 +424,12 @@ async function onEnsureSupplier() {
 </template>
 
 <script setup lang="ts">
-import { employerConfig } from '../../models/profiles/Employer.model'
-import { useEmployerCreate } from '../../composables/firestore/profiles/Employer/useEmployerCreate'
+import { agentConfig } from '../../models/profiles/Agent.model'
+import { useAgentCreate } from '../../composables/firestore/profiles/Agent/useAgentCreate'
 
-const { createEmployer } = useEmployerCreate()
-async function onEnsureEmployer() {
-  await createEmployer()
+const { createAgent } = useAgentCreate()
+async function onEnsureAgent() {
+  await createAgent()
 }
 </script>
 ```

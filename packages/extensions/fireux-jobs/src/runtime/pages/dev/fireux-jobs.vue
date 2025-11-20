@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="FireUX Jobs Profiles"
-      description="Debug the active professional and employer profiles with no inferred fallbacks."
+      description="Debug the active professional and agent profiles with no inferred fallbacks."
     />
 
     <UPageBody class="space-y-10">
@@ -120,21 +120,21 @@
       <section class="space-y-4">
         <header>
           <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Employer
+            Agent
           </h2>
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            Reflects the active employer profile with the same surface used in
+            Reflects the active agent profile with the same surface used in
             the runtime app.
           </p>
         </header>
 
-        <OrganismsProfilesEmployerSectionsSingle
-          :core-profile="employerCoreProfile"
-          :app-profile="employerAppProfile"
-          :pill="employerPill"
+        <OrganismsProfilesAgentSectionsSingle
+          :core-profile="agentCoreProfile"
+          :app-profile="agentAppProfile"
+          :pill="agentPill"
         />
 
-        <DevJsonPanel v-if="employerJson" :data="employerJson" />
+        <DevJsonPanel v-if="agentJson" :data="agentJson" />
 
         <UCard>
           <template #header>
@@ -142,70 +142,70 @@
               <h3
                 class="text-base font-semibold text-gray-900 dark:text-gray-100"
               >
-                Global employers
+                Global agents
               </h3>
-              <UBadge variant="soft">{{ employerGlobalCount }} total</UBadge>
+              <UBadge variant="soft">{{ agentGlobalCount }} total</UBadge>
             </div>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              Employers available across the shared directory.
+              Agents available across the shared directory.
             </p>
           </template>
 
           <div
-            v-if="employerGlobalPills.length"
+            v-if="agentGlobalPills.length"
             class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
-            <OrganismsProfilesEmployerCardsPill
-              v-for="pill in employerGlobalPills"
-              :key="employerPillKey(pill)"
-              :employer="pill"
+            <OrganismsProfilesAgentCardsPill
+              v-for="pill in agentGlobalPills"
+              :key="agentPillKey(pill)"
+              :agent="pill"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            No global employers found.
+            No global agents found.
           </p>
 
           <template #footer>
             <DevJsonPanel
-              v-if="employerGlobalJson.length"
-              :data="employerGlobalJson"
+              v-if="agentGlobalJson.length"
+              :data="agentGlobalJson"
             />
           </template>
         </UCard>
 
-        <UCard v-if="isTenant && hasEmployerLocalCollection">
+        <UCard v-if="isTenant && hasAgentLocalCollection">
           <template #header>
             <div class="flex items-center justify-between gap-2">
               <h3
                 class="text-base font-semibold text-gray-900 dark:text-gray-100"
               >
-                Tenant employers
+                Tenant agents
               </h3>
-              <UBadge variant="soft">{{ employerLocalCount }} total</UBadge>
+              <UBadge variant="soft">{{ agentLocalCount }} total</UBadge>
             </div>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              Employer overrides scoped to the active tenant.
+              Agent overrides scoped to the active tenant.
             </p>
           </template>
 
           <div
-            v-if="employerLocalPills.length"
+            v-if="agentLocalPills.length"
             class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
-            <OrganismsProfilesEmployerCardsPill
-              v-for="pill in employerLocalPills"
-              :key="employerPillKey(pill)"
-              :employer="pill"
+            <OrganismsProfilesAgentCardsPill
+              v-for="pill in agentLocalPills"
+              :key="agentPillKey(pill)"
+              :agent="pill"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            No tenant-scoped employers found.
+            No tenant-scoped agents found.
           </p>
 
           <template #footer>
             <DevJsonPanel
-              v-if="employerLocalJson.length"
-              :data="employerLocalJson"
+              v-if="agentLocalJson.length"
+              :data="agentLocalJson"
             />
           </template>
         </UCard>
@@ -215,13 +215,13 @@
               <h3
                 class="text-base font-semibold text-gray-900 dark:text-gray-100"
               >
-                Tenant employers
+                Tenant agents
               </h3>
               <UBadge variant="soft">0 total</UBadge>
             </div>
           </template>
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            Tenant employer collection is not available in this runtime.
+            Tenant agent collection is not available in this runtime.
           </p>
         </UCard>
       </section>
@@ -233,9 +233,9 @@
 import { computed, unref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
-import { useEmployer } from '../../composables/firestore/profiles/Employer/useEmployer.ts'
+import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
 import { useProfessionalCollection } from '../../composables/firestore/profiles/Professional/main/useProfessionalCollection.ts'
-import { useEmployerCollection } from '../../composables/firestore/profiles/Employer/main/useEmployerCollection.ts'
+import { useAgentCollection } from '../../composables/firestore/profiles/Agent/main/useAgentCollection.ts'
 import {
   resolveProfessionalPill,
   resolveProfessionalPillKey,
@@ -245,9 +245,9 @@ import type {
   ProfessionalCard,
 } from '../../models/profiles/Professional.model.ts'
 import type {
-  EmployerProfile,
-  EmployerCard,
-} from '../../models/profiles/Employer.model.ts'
+  AgentProfile,
+  AgentCard,
+} from '../../models/profiles/Agent.model.ts'
 
 definePageMeta({
   layout: 'dev',
@@ -269,10 +269,10 @@ const {
 } = useProfessional()
 
 const {
-  coreProfile: employerCoreProfile,
-  appProfile: employerAppProfile,
-  pill: employerPill,
-} = useEmployer()
+  coreProfile: agentCoreProfile,
+  appProfile: agentAppProfile,
+  pill: agentPill,
+} = useAgent()
 
 const professionalJson = computed(() => {
   const core = unref(professionalCoreProfile)
@@ -284,9 +284,9 @@ const professionalJson = computed(() => {
   }
 })
 
-const employerJson = computed(() => {
-  const core = unref(employerCoreProfile)
-  const app = unref(employerAppProfile)
+const agentJson = computed(() => {
+  const core = unref(agentCoreProfile)
+  const app = unref(agentAppProfile)
   if (!core && !app) return null
   return {
     coreProfile: core,
@@ -341,22 +341,22 @@ const professionalLocalJson = computed(() =>
 const professionalPillKey = resolveProfessionalPillKey
 
 const {
-  globalEmployers,
-  localEmployers,
-  rawGlobalEmployers,
-  rawLocalEmployers,
-} = useEmployerCollection()
+  globalAgents,
+  localAgents,
+  rawGlobalAgents,
+  rawLocalAgents,
+} = useAgentCollection()
 
-const toEmployerPill = (
-  profile?: Partial<EmployerProfile> | null
-): EmployerCard.Pill => {
+const toAgentPill = (
+  profile?: Partial<AgentProfile> | null
+): AgentCard.Pill => {
   const title = (profile?.title || profile?.organization_name || '').trim()
-  const normalizedTitle = title || 'Employer'
+  const normalizedTitle = title || 'Agent'
   const subtitle = profile?.subtitle ?? ''
   const avatar = profile?.avatar_url || profile?.avatar || ''
   const rawBadges = profile?.badges
   const badges = Array.isArray(rawBadges) ? rawBadges : []
-  const to = profile?.id ? `/employers/${profile.id}` : null
+  const to = profile?.id ? `/agents/${profile.id}` : null
 
   return {
     avatar,
@@ -367,31 +367,31 @@ const toEmployerPill = (
   }
 }
 
-const employerGlobalPills = computed<EmployerCard.Pill[]>(() =>
-  (globalEmployers.value ?? []).map((profile: EmployerProfile) =>
-    toEmployerPill(profile)
+const agentGlobalPills = computed<AgentCard.Pill[]>(() =>
+  (globalAgents.value ?? []).map((profile: AgentProfile) =>
+    toAgentPill(profile)
   )
 )
 
-const employerGlobalCount = computed(() => employerGlobalPills.value.length)
+const agentGlobalCount = computed(() => agentGlobalPills.value.length)
 
-const employerGlobalJson = computed(() => rawGlobalEmployers.value ?? [])
+const agentGlobalJson = computed(() => rawGlobalAgents.value ?? [])
 
-const hasEmployerLocalCollection = computed(() => Boolean(localEmployers))
+const hasAgentLocalCollection = computed(() => Boolean(localAgents))
 
-const employerLocalPills = computed<EmployerCard.Pill[]>(() => {
-  if (!localEmployers) return []
-  return (localEmployers.value ?? []).map((profile: EmployerProfile) =>
-    toEmployerPill(profile)
+const agentLocalPills = computed<AgentCard.Pill[]>(() => {
+  if (!localAgents) return []
+  return (localAgents.value ?? []).map((profile: AgentProfile) =>
+    toAgentPill(profile)
   )
 })
 
-const employerLocalCount = computed(() => employerLocalPills.value.length)
+const agentLocalCount = computed(() => agentLocalPills.value.length)
 
-const employerLocalJson = computed(() =>
-  localEmployers && rawLocalEmployers ? rawLocalEmployers.value ?? [] : []
+const agentLocalJson = computed(() =>
+  localAgents && rawLocalAgents ? rawLocalAgents.value ?? [] : []
 )
 
-const employerPillKey = (pill: EmployerCard.Pill) =>
-  pill.to ?? pill.title ?? 'employer'
+const agentPillKey = (pill: AgentCard.Pill) =>
+  pill.to ?? pill.title ?? 'agent'
 </script>

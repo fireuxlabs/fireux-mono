@@ -27,7 +27,7 @@ Pass the grouped refs `{ coreUser, appUser }` from `useUser()` or `useUserFetch(
 - `setRelevantExperience(items: RelevantExperienceItem[])` – canonicalizes place ids, syncs `places` roster entries, overwrites `relevant_experience`.
 - `setOtherExperience(items: OtherExperienceItem[])` – canonicalizes optional place ids, overwrites `other_experience`.
 
-## Employer (`useEmployerUpdate`)
+## Agent (`useAgentUpdate`)
 
 All functions accept optional `scope: 'auto' | 'core' | 'app'` (default `auto`).
 

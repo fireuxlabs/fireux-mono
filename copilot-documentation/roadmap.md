@@ -26,7 +26,7 @@ Define shared schema, feature flags, and naming.
 
 - [ ] Models + CRUD composables
 - [ ] Job detail + application flows
-- [ ] Contracts + ratings + employer verification
+- [ ] Contracts + ratings + agent verification
 
 ---
 

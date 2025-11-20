@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="FireUX Jobs"
-      description="How the unified jobs workspace helps employers and professionals connect."
+      description="How the unified jobs workspace helps agents and professionals connect."
     />
 
     <UPageBody class="space-y-8">
@@ -28,9 +28,9 @@
           </li>
           <li>
             <strong class="font-medium text-gray-900"
-              >Employer-authored drafts</strong
+              >Agent-authored drafts</strong
             >
-            &nbsp;— employers can create jobs once they establish their profile.
+            &nbsp;— agents can create jobs once they establish their profile.
             Drafts stay private until marked open.
           </li>
           <li>
@@ -53,7 +53,7 @@
       <section class="space-y-3">
         <h3 class="text-base font-semibold">Get involved</h3>
         <p class="text-sm text-gray-600">
-          Employers can start by creating a draft job from the Jobs dashboard.
+          Agents can start by creating a draft job from the Jobs dashboard.
           Professionals should keep their profiles complete so they appear in
           recommendations when jobs go live.
         </p>

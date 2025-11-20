@@ -18,7 +18,7 @@
       <UPageCTA
         v-else
         title="Create your professional profile"
-        description="Add a professional profile to your FireUX portfolio so employers can discover you more easily."
+        description="Add a professional profile to your FireUX portfolio so agents can discover you more easily."
         variant="naked"
         :links="professionalCtaLinks"
       />

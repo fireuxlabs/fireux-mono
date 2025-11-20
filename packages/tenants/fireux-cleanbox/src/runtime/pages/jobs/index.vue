@@ -31,17 +31,17 @@
           <p>
             No Cleanbox jobs yet. Post your first assignment to get started.
           </p>
-          <p v-if="!hasEmployerProfile" class="text-gray-400">
-            Create your Cleanbox employer profile to unlock job tools.
+          <p v-if="!hasAgentProfile" class="text-gray-400">
+            Create your Cleanbox agent profile to unlock job tools.
           </p>
         </div>
 
         <UAlert
-          v-else-if="!hasEmployerProfile"
+          v-else-if="!hasAgentProfile"
           color="blue"
           variant="soft"
           title="Ready to hire cleaners?"
-          description="Complete your Cleanbox employer profile to publish roles."
+          description="Complete your Cleanbox agent profile to publish roles."
         />
 
         <ul v-else class="grid gap-4 md:grid-cols-2">
@@ -87,7 +87,7 @@ import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import JobsCreateButton from '../../../../../../extensions/fireux-jobs/src/runtime/components/Organisms/Jobs/CreateButton.vue'
 import { useJobCollection } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/useJob.ts'
-import { useEmployer } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployer.ts'
+import { useAgent } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/useAgent.ts'
 
 definePageMeta({
   layout: 'default',
@@ -106,10 +106,10 @@ useHead({ title: 'Cleanbox Jobs' })
 
 const { appId } = useFireUXConfig()
 const { jobs, pending } = useJobCollection()
-const { coreProfile, appProfile } = useEmployer()
+const { coreProfile, appProfile } = useAgent()
 
 const jobList = computed(() => jobs.value ?? [])
-const hasEmployerProfile = computed(() =>
+const hasAgentProfile = computed(() =>
   Boolean(coreProfile.value ?? appProfile.value)
 )
 

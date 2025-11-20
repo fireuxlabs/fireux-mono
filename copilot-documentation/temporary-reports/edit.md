@@ -413,21 +413,21 @@ const onSaveOtherExperience = (items: OtherExperienceItem[]) =>
 </script>
 ```
 
-## packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Employer/Edit.vue
+## packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Agent/Edit.vue
 
 ```vue
-<!-- employer edit -->
+<!-- agent edit -->
 <template>
   <ClientOnly>
     <UCard class="space-y-6">
       <MoleculesFormsFirestoreAvatarSelection
-        :user="{ ...employer, avatar_url: employer?.avatar }"
+        :user="{ ...agent, avatar_url: agent?.avatar }"
         @upload="onUploadAvatar"
       />
 
       <MoleculesFormsFirestoreField
         label="Display Name"
-        :firebase-value="employer?.display_name"
+        :firebase-value="agent?.display_name"
         placeholder="Enter your display name"
         :update-function="onSaveDisplayName"
       />
@@ -436,10 +436,10 @@ const onSaveOtherExperience = (items: OtherExperienceItem[]) =>
 </template>
 
 <script setup lang="ts">
-import type { Employer } from '../../../../models/profiles/Employer.model'
-import { useEmployer } from '../../../../composables/firestore/profiles/Employer/useEmployer'
+import type { Agent } from '../../../../models/profiles/Agent.model'
+import { useAgent } from '../../../../composables/firestore/profiles/Agent/useAgent'
 
-const props = defineProps<{ employer: Employer }>()
+const props = defineProps<{ agent: Agent }>()
 
 const {
   avatar,
@@ -448,7 +448,7 @@ const {
   updateAvatar,
   formatDisplayName,
   validateDisplayName,
-} = useEmployer()
+} = useAgent()
 // useImageStorage is auto-imported by fireux-core module
 const { uploadImage } = useImageStorage()
 const uploadCoreAvatar = (source: File | string, uid: string) =>
@@ -466,7 +466,7 @@ const onUploadAvatar = async (file: File) => {
 }
 </script>
 
-<!-- TODO: Legacy employer editor preserved below for reference. Do not remove until replacement is fully validated.
+<!-- TODO: Legacy agent editor preserved below for reference. Do not remove until replacement is fully validated.
 
 LEGACY EDITOR (preserved as comment)
 
@@ -476,15 +476,15 @@ LEGACY EDITOR (preserved as comment)
       [Avatar Upload]
       <FireMoleculesFormsFirestoreAvatarSelection
         :user="{
-          ...props.employer,
-          avatar_url: props.employer?.avatarUrl,
+          ...props.agent,
+          avatar_url: props.agent?.avatarUrl,
         }"
       />
 
       [Company Name Field (Primary Identifier)]
       <FireMoleculesFormsFirestoreField
         label="Company Name"
-        :firebase-value="props.employer?.company_name"
+        :firebase-value="props.agent?.company_name"
         placeholder="Enter your company name"
         :update-function="updateCompanyName"
       />
@@ -492,7 +492,7 @@ LEGACY EDITOR (preserved as comment)
       [Business Type Field]
       <FireMoleculesFormsFirestoreField
         label="Business Type"
-        :firebase-value="props.employer?.business_type"
+        :firebase-value="props.agent?.business_type"
         placeholder="e.g., Restaurant, Catering, Hotel, Food Manufacturer"
         :update-function="updateBusinessType"
       />
@@ -500,7 +500,7 @@ LEGACY EDITOR (preserved as comment)
       [Your Title]
       <FireMoleculesFormsFirestoreField
         label="Your Title"
-        :firebase-value="props.employer?.title"
+        :firebase-value="props.agent?.title"
         placeholder="e.g., Owner, HR Manager, Executive Chef"
         :update-function="updateTitle"
       />
@@ -508,7 +508,7 @@ LEGACY EDITOR (preserved as comment)
       [Company Overview]
       <FireMoleculesFormsFirestoreField
         label="Company Overview"
-        :firebase-value="props.employer?.bio_short"
+        :firebase-value="props.agent?.bio_short"
         placeholder="Brief description of your company..."
         type="textarea"
         :rows="3"
@@ -519,7 +519,7 @@ LEGACY EDITOR (preserved as comment)
       [Detailed Company Description]
       <FireMoleculesFormsFirestoreField
         label="Detailed Company Description"
-        :firebase-value="props.employer?.bio_long"
+        :firebase-value="props.agent?.bio_long"
         placeholder="Tell the story of your company in detail..."
         type="textarea"
         :rows="6"
@@ -530,7 +530,7 @@ LEGACY EDITOR (preserved as comment)
       [Cuisine Types Array]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Cuisine Types"
-        :firebase-value="props.employer?.cuisine_types || []"
+        :firebase-value="props.agent?.cuisine_types || []"
         item-placeholder="Cuisine type"
         new-item-placeholder="Add cuisine type (e.g., Italian, French, Asian, etc.)"
         :update-function="updateCuisineTypes"
@@ -539,7 +539,7 @@ LEGACY EDITOR (preserved as comment)
       [Services Offered Array]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Services Offered"
-        :firebase-value="props.employer?.services_offered || []"
+        :firebase-value="props.agent?.services_offered || []"
         item-placeholder="Service"
         new-item-placeholder="Add service (e.g., Fine Dining, Catering, Events, etc.)"
         :update-function="updateServicesOffered"
@@ -548,7 +548,7 @@ LEGACY EDITOR (preserved as comment)
       [Employee Benefits]
       <FireMoleculesFormsFirestoreArrayOfStrings
         label="Employee Benefits"
-        :firebase-value="props.employer?.benefits || []"
+        :firebase-value="props.agent?.benefits || []"
         item-placeholder="Benefit"
         new-item-placeholder="Add benefit (e.g., Health Insurance, Paid Time Off, etc.)"
         :update-function="updateBenefits"
@@ -557,7 +557,7 @@ LEGACY EDITOR (preserved as comment)
       [Years Established]
       <FireMoleculesFormsFirestoreField
         label="Years Established"
-        :firebase-value="props.employer?.years_established"
+        :firebase-value="props.agent?.years_established"
         placeholder="Enter year company was established"
         type="number"
         :update-function="updateYearsEstablished"
@@ -566,7 +566,7 @@ LEGACY EDITOR (preserved as comment)
       [Employee Count]
       <FireMoleculesFormsFirestoreField
         label="Employee Count"
-        :firebase-value="props.employer?.employee_count"
+        :firebase-value="props.agent?.employee_count"
         placeholder="Number of employees"
         type="number"
         :update-function="updateEmployeeCount"
@@ -575,7 +575,7 @@ LEGACY EDITOR (preserved as comment)
       [Business Email]
       <FireMoleculesFormsFirestoreField
         label="Business Email"
-        :firebase-value="props.employer?.email"
+        :firebase-value="props.agent?.email"
         placeholder="business@example.com"
         type="email"
         :update-function="updateEmail"
@@ -584,7 +584,7 @@ LEGACY EDITOR (preserved as comment)
       [Business Phone]
       <FireMoleculesFormsFirestoreField
         label="Business Phone"
-        :firebase-value="props.employer?.phone"
+        :firebase-value="props.agent?.phone"
         placeholder="(123) 456-7890"
         type="phone"
         :update-function="updatePhone"
@@ -593,7 +593,7 @@ LEGACY EDITOR (preserved as comment)
       [Company Website]
       <FireMoleculesFormsFirestoreField
         label="Company Website"
-        :firebase-value="props.employer?.website"
+        :firebase-value="props.agent?.website"
         placeholder="https://yourcompany.com"
         type="url"
         :update-function="updateWebsite"
@@ -602,7 +602,7 @@ LEGACY EDITOR (preserved as comment)
       [Primary Location]
       <FireMoleculesFormsFirestoreMultiField
         label="Primary Location"
-        :firebase-value="props.employer?.location || {}"
+        :firebase-value="props.agent?.location || {}"
         :placeholders="{
           city: 'City',
           state: 'State/Province',
@@ -615,7 +615,7 @@ LEGACY EDITOR (preserved as comment)
       [Operating Hours]
       <FireMoleculesFormsFirestoreField
         label="Operating Hours"
-        :firebase-value="props.employer?.operating_hours"
+        :firebase-value="props.agent?.operating_hours"
         placeholder="e.g., Mon-Fri 9AM-5PM, Weekend hours vary"
         :update-function="updateOperatingHours"
       />
@@ -623,7 +623,7 @@ LEGACY EDITOR (preserved as comment)
       [Company Size]
       <FireMoleculesFormsFirestoreSelect
         label="Company Size"
-        :firebase-value="props.employer?.company_size || 'small'"
+        :firebase-value="props.agent?.company_size || 'small'"
         :options="[
           { label: 'Startup (1-10 employees)', value: 'startup' },
           { label: 'Small (11-50 employees)', value: 'small' },
@@ -638,7 +638,7 @@ LEGACY EDITOR (preserved as comment)
       [Hiring Status]
       <FireMoleculesFormsFirestoreSelect
         label="Hiring Status"
-        :firebase-value="props.employer?.hiring_status || 'hiring'"
+        :firebase-value="props.agent?.hiring_status || 'hiring'"
         :options="[
           { label: 'Actively Hiring', value: 'hiring' },
           { label: 'Selective Hiring', value: 'selective' },
@@ -652,15 +652,15 @@ LEGACY EDITOR (preserved as comment)
       [Social Media]
       <FireMoleculesFormsFirestoreSocialLinks
         label="Social Media"
-        :firebase-value="props.employer?.social_links || {}"
+        :firebase-value="props.agent?.social_links || {}"
         :update-function="updateSocialLinks"
       />
 
       [Profile Verification]
       <FireMoleculesFormsFirestoreCheckbox
         label="Profile Verification"
-        :firebase-value="props.employer?.verified || false"
-        checkbox-label="Mark as verified employer profile"
+        :firebase-value="props.agent?.verified || false"
+        checkbox-label="Mark as verified agent profile"
         :update-function="updateVerified"
       />
 
@@ -668,7 +668,7 @@ LEGACY EDITOR (preserved as comment)
       <div class="read-only-field">
         <span class="read-only-label">Active Job Openings</span>
         <div class="value">
-          {{ props.employer?.active_jobs?.length || 0 }} open positions
+          {{ props.agent?.active_jobs?.length || 0 }} open positions
         </div>
       </div>
     </div>
@@ -676,58 +676,58 @@ LEGACY EDITOR (preserved as comment)
 </template>
 
 <script setup>
-import { employerConfig } from '../../../../models/profiles/Employer.model'
+import { agentConfig } from '../../../../models/profiles/Agent.model'
 
 // Define props
 const props = defineProps({
-  employer: {
+  agent: {
     type: Object,
     required: true,
   },
 })
 
 // Get generic profile update functions
-const { updateProfile } = useProfileUpdate(employerConfig)
+const { updateProfile } = useProfileUpdate(agentConfig)
 
 // Create field-specific update functions
 const updateCompanyName = (value) =>
-  updateProfile({ company_name: value }, props.employer.uid)
+  updateProfile({ company_name: value }, props.agent.uid)
 const updateBusinessType = (value) =>
-  updateProfile({ business_type: value }, props.employer.uid)
+  updateProfile({ business_type: value }, props.agent.uid)
 const updateTitle = (value) =>
-  updateProfile({ title: value }, props.employer.uid)
+  updateProfile({ title: value }, props.agent.uid)
 const updateBioShort = (value) =>
-  updateProfile({ bio_short: value }, props.employer.uid)
+  updateProfile({ bio_short: value }, props.agent.uid)
 const updateBioLong = (value) =>
-  updateProfile({ bio_long: value }, props.employer.uid)
+  updateProfile({ bio_long: value }, props.agent.uid)
 const updateCuisineTypes = (value) =>
-  updateProfile({ cuisine_types: value }, props.employer.uid)
+  updateProfile({ cuisine_types: value }, props.agent.uid)
 const updateServicesOffered = (value) =>
-  updateProfile({ services_offered: value }, props.employer.uid)
+  updateProfile({ services_offered: value }, props.agent.uid)
 const updateBenefits = (value) =>
-  updateProfile({ benefits: value }, props.employer.uid)
+  updateProfile({ benefits: value }, props.agent.uid)
 const updateYearsEstablished = (value) =>
-  updateProfile({ years_established: parseInt(value) || 0 }, props.employer.uid)
+  updateProfile({ years_established: parseInt(value) || 0 }, props.agent.uid)
 const updateEmployeeCount = (value) =>
-  updateProfile({ employee_count: parseInt(value) || 0 }, props.employer.uid)
+  updateProfile({ employee_count: parseInt(value) || 0 }, props.agent.uid)
 const updateEmail = (value) =>
-  updateProfile({ email: value }, props.employer.uid)
+  updateProfile({ email: value }, props.agent.uid)
 const updatePhone = (value) =>
-  updateProfile({ phone: value }, props.employer.uid)
+  updateProfile({ phone: value }, props.agent.uid)
 const updateWebsite = (value) =>
-  updateProfile({ website: value }, props.employer.uid)
+  updateProfile({ website: value }, props.agent.uid)
 const updateLocation = (value) =>
-  updateProfile({ location: value }, props.employer.uid)
+  updateProfile({ location: value }, props.agent.uid)
 const updateOperatingHours = (value) =>
-  updateProfile({ operating_hours: value }, props.employer.uid)
+  updateProfile({ operating_hours: value }, props.agent.uid)
 const updateCompanySize = (value) =>
-  updateProfile({ company_size: value }, props.employer.uid)
+  updateProfile({ company_size: value }, props.agent.uid)
 const updateHiringStatus = (value) =>
-  updateProfile({ hiring_status: value }, props.employer.uid)
+  updateProfile({ hiring_status: value }, props.agent.uid)
 const updateSocialLinks = (value) =>
-  updateProfile({ social_links: value }, props.employer.uid)
+  updateProfile({ social_links: value }, props.agent.uid)
 const updateVerified = (value) =>
-  updateProfile({ verified: value }, props.employer.uid)
+  updateProfile({ verified: value }, props.agent.uid)
 </script>
 -->
 ```

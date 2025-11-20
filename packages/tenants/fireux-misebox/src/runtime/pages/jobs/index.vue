@@ -29,17 +29,17 @@
           class="space-y-2 text-sm text-gray-500"
         >
           <p>No Misebox jobs yet. Post the first shift to kick things off.</p>
-          <p v-if="!hasEmployerProfile" class="text-gray-400">
-            Create your Misebox employer profile to unlock job posting tools.
+          <p v-if="!hasAgentProfile" class="text-gray-400">
+            Create your Misebox agent profile to unlock job posting tools.
           </p>
         </div>
 
         <UAlert
-          v-else-if="!hasEmployerProfile"
+          v-else-if="!hasAgentProfile"
           color="blue"
           variant="soft"
           title="Ready to hire for Misebox?"
-          description="Set up your Misebox employer profile from the dashboard to publish roles."
+          description="Set up your Misebox agent profile from the dashboard to publish roles."
         />
 
         <ul v-else class="grid gap-4 md:grid-cols-2">
@@ -85,7 +85,7 @@ import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import JobsCreateButton from '../../../../../../extensions/fireux-jobs/src/runtime/components/Organisms/Jobs/CreateButton.vue'
 import { useJobCollection } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/useJob.ts'
-import { useEmployer } from '../../composables/firestore/profiles/Employer/useEmployer.ts'
+import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
 
 definePageMeta({
   layout: 'default',
@@ -104,10 +104,10 @@ useHead({ title: 'Misebox Jobs' })
 
 const { appId } = useFireUXConfig()
 const { jobs, pending } = useJobCollection()
-const { coreProfile, appProfile } = useEmployer()
+const { coreProfile, appProfile } = useAgent()
 
 const jobList = computed(() => jobs.value ?? [])
-const hasEmployerProfile = computed(() =>
+const hasAgentProfile = computed(() =>
   Boolean(coreProfile.value ?? appProfile.value)
 )
 

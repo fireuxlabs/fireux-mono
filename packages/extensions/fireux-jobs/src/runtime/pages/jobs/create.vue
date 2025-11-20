@@ -10,8 +10,8 @@
         v-if="!canCreate"
         color="amber"
         variant="soft"
-        title="Create an employer profile first"
-        description="Jobs are tied to employer profiles. Finish creating your profile from the dashboard to continue."
+        title="Create an agent profile first"
+        description="Jobs are tied to agent profiles. Finish creating your profile from the dashboard to continue."
       />
 
       <form v-else class="space-y-4" @submit.prevent="onSubmit">
@@ -70,8 +70,8 @@
 import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useJobCreate } from '../../composables/useJob.ts'
-import { useEmployer } from '../../composables/firestore/profiles/Employer/useEmployer.ts'
-import { useEmployerComputed } from '../../composables/firestore/profiles/Employer/main/useEmployerComputed.ts'
+import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
+import { useAgentComputed } from '../../composables/firestore/profiles/Agent/main/useAgentComputed.ts'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
 import type { JobStatus } from '../../types/job.model.ts'
 
@@ -92,8 +92,8 @@ useHead({ title: 'Create Job' })
 
 const router = useRouter()
 const { createJob } = useJobCreate()
-const { profile } = useEmployer()
-const { activeProfile } = useEmployerComputed(profile)
+const { profile } = useAgent()
+const { activeProfile } = useAgentComputed(profile)
 const { withToast } = useToastify()
 
 const form = reactive({

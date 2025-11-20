@@ -37,7 +37,7 @@
       <section class="space-y-3">
         <h3 class="text-base font-semibold">Next steps</h3>
         <p class="text-sm text-gray-600">
-          Set up your Cleanbox employer profile, publish a draft, and keep
+          Set up your Cleanbox agent profile, publish a draft, and keep
           clients updated with live status changes.
         </p>
         <div class="flex flex-wrap gap-2">

@@ -29,18 +29,18 @@
           class="space-y-2 text-sm text-gray-500"
         >
           <p>No jobs yet. Check back soon.</p>
-          <p v-if="!hasEmployerProfile" class="text-gray-400">
-            Want to post one? Create your employer profile from the dashboard to
+          <p v-if="!hasAgentProfile" class="text-gray-400">
+            Want to post one? Create your agent profile from the dashboard to
             publish jobs.
           </p>
         </div>
 
         <UAlert
-          v-else-if="!hasEmployerProfile"
+          v-else-if="!hasAgentProfile"
           color="blue"
           variant="soft"
           title="Ready to hire?"
-          description="Set up your employer profile from the dashboard to create job postings."
+          description="Set up your agent profile from the dashboard to create job postings."
         />
 
         <ul v-else class="grid gap-4 md:grid-cols-2">
@@ -85,7 +85,7 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useJobCollection } from '../../composables/firestore/jobs/main/useJobCollection.ts'
-import { useEmployer } from '../../composables/firestore/profiles/Employer/useEmployer.ts'
+import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
 
 definePageMeta({
   layout: 'default',
@@ -104,10 +104,10 @@ useHead({ title: 'Jobs' })
 
 const { appId } = useFireUXConfig()
 const { jobs, pending } = useJobCollection()
-const { coreProfile, appProfile } = useEmployer()
+const { coreProfile, appProfile } = useAgent()
 
 const jobList = computed(() => jobs.value ?? [])
-const hasEmployerProfile = computed(() =>
+const hasAgentProfile = computed(() =>
   Boolean(coreProfile.value ?? appProfile.value)
 )
 

@@ -6,7 +6,7 @@ Track the temporary DevJsonPanel debug blocks across the aligned dashboard pages
 - [ ] TODO remove DevJsonPanel from `packages/core/fireux-core/src/runtime/pages/dashboard/app.vue`
 - [ ] TODO remove DevJsonPanel from `packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue`
 - [ ] TODO remove DevJsonPanel from `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional-profile.vue`
-- [ ] TODO remove DevJsonPanel from `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/employer-profile.vue`
+- [ ] TODO remove DevJsonPanel from `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent-profile.vue`
 - [ ] TODO remove DevJsonPanel from `packages/tenants/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue`
 - [ ] TODO remove DevJsonPanel from `packages/tenants/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue`
 

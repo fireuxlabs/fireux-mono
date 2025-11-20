@@ -2,7 +2,7 @@
   <div class="flex items-center gap-2">
     <UTooltip
       v-if="!canCreate"
-      text="Create an employer profile first to post jobs."
+      text="Create an agent profile first to post jobs."
       :open-delay="200"
     >
       <span>
@@ -82,16 +82,16 @@
 import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useJobCreate } from '../../../composables/useJob.ts'
-import { useEmployer } from '../../../composables/firestore/profiles/Employer/useEmployer.ts'
-import { useEmployerComputed } from '../../../composables/firestore/profiles/Employer/main/useEmployerComputed.ts'
+import { useAgent } from '../../../composables/firestore/profiles/Agent/useAgent.ts'
+import { useAgentComputed } from '../../../composables/firestore/profiles/Agent/main/useAgentComputed.ts'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
 
 const router = useRouter()
 const { createJob } = useJobCreate()
 const { success, error } = useToastify()
 
-const { profile } = useEmployer()
-const { activeProfile } = useEmployerComputed(profile)
+const { profile } = useAgent()
+const { activeProfile } = useAgentComputed(profile)
 const canCreate = computed(() => Boolean(activeProfile.value))
 
 const open = ref(false)

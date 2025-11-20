@@ -45,7 +45,7 @@ It brings together professional profiles, kitchen tools, and job systems to mode
 
 ## Next Steps
 
-- Launch verified references and employer confirmations
+- Launch verified references and agent confirmations
 - Add portfolio “snapshot” PDF export for traditional job applications
 - Improve public chef search for recruiters
 - Expand recipe module with nutritional and allergen data

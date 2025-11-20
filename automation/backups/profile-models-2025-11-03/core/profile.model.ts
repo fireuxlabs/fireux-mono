@@ -6,7 +6,7 @@ import type { User } from './user.model.ts'
 /**
  * Minimal shared Profile shape.
  * Each profile belongs to a user and represents a domain entity
- * like Chef, Supplier, Employer, or Professional.
+ * like Chef, Supplier, Agent, or Professional.
  */
 export interface Profile {
   /** Canonical Firestore id (== Firebase Auth UID) */
@@ -27,7 +27,7 @@ export interface Profile {
  * Config describing how a profile collection behaves.
  */
 export interface ProfileConfig {
-  /** Lowercase identifier like 'chef', 'supplier', 'employer', 'professional' */
+  /** Lowercase identifier like 'chef', 'supplier', 'agent', 'professional' */
   id: string
 
   /** Firestore collection name */

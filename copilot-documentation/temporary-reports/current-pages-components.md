@@ -79,7 +79,7 @@ All four pages follow the same pattern: `UPage` → `UContainer` → `OrganismsP
 | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue`         | Slots: `OrganismsProfilesChefCardsPill` for the current profile, `OrganismsProfilesChefCardsCell` for the list. Uses `useChefCreate()` for ensure. |
 | `packages/tenants/fireux-misebox/src/runtime/pages/suppliers/index.vue`     | Reuses Supplier pill/cell cards plus `useSupplierCreate()`.                                                                                        |
-| `packages/extensions/fireux-jobs/src/runtime/pages/employers/index.vue`     | Employer pill/cell cards with `useEmployerCreate()`.                                                                                               |
+| `packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue`     | Agent pill/cell cards with `useAgentCreate()`.                                                                                               |
 | `packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue` | Professional pill/cell cards with `useProfessionalCreate()`.                                                                                       |
 
 ### Sample Page Structure (suppliers)
@@ -158,7 +158,7 @@ Each profile type ships paired components for the current pill and list cell. Ex
 </template>
 ```
 
-Equivalent pill/cell components exist for Chef, Employer, and Professional profiles with matching APIs.
+Equivalent pill/cell components exist for Chef, Agent, and Professional profiles with matching APIs.
 
 ---
 

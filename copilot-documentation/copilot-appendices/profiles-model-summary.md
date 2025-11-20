@@ -100,25 +100,25 @@ interface ProfessionalAppProfile extends ProfileBase {
 type Professional = FlatProfile<ProfessionalCoreProfile, ProfessionalAppProfile>
 ```
 
-## Employer Profile
+## Agent Profile
 
 Models businesses/restaurants hiring and coordinating teams.
 
 ```ts
-// packages/core/fireux-core/src/runtime/models/profiles/employer.model.ts
-interface EmployerCoreProfile extends ProfileBase {
+// packages/core/fireux-core/src/runtime/models/profiles/agent.model.ts
+interface AgentCoreProfile extends ProfileBase {
   specialties?: string[]
   bio_short?: string | null
   kitchens?: string[]
 }
 
-interface EmployerAppProfile extends ProfileBase {
+interface AgentAppProfile extends ProfileBase {
   departments?: string[]
   notes?: string | null
   training_internal?: string[]
 }
 
-type Employer = FlatProfile<EmployerCoreProfile, EmployerAppProfile>
+type Agent = FlatProfile<AgentCoreProfile, AgentAppProfile>
 ```
 
 ## Firestore Layout
@@ -128,13 +128,13 @@ misebox-core/
   chefs/{uid}
   suppliers/{uid}
   professionals/{uid}
-  employers/{uid}
+  agents/{uid}
 
 apps/{appId}/
   chefs/{uid}
   suppliers/{uid}
   professionals/{uid}
-  employers/{uid}
+  agents/{uid}
 ```
 
 Each tenant document extends its global counterpart with contextual fields, enabling consistent overlays.

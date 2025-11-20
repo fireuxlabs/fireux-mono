@@ -59,25 +59,25 @@ packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Suppl
 packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierUpdate.ts
 packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/utils/useSupplierValidation.ts
 packages/tenants/fireux-misebox/src/runtime/models/profiles/Chef.model.ts
-packages/tenants/fireux-misebox/src/runtime/models/profiles/Employer.model.ts
+packages/tenants/fireux-misebox/src/runtime/models/profiles/Agent.model.ts
 packages/tenants/fireux-misebox/src/runtime/models/profiles/Professional.model.ts
 packages/tenants/fireux-misebox/src/runtime/models/profiles/Supplier.model.ts
 ```
 
-Only Chef and Supplier profile composables remain under the tenant ensure path. Employer and Professional ensure modules now live in the `fireux-jobs` extension (models are still present locally for typings).
+Only Chef and Supplier profile composables remain under the tenant ensure path. Agent and Professional ensure modules now live in the `fireux-jobs` extension (models are still present locally for typings).
 
 ## Extension: fireux-jobs profile surface
 
 ```
-packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployer.ts
-packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployerComputed.ts
-packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployerCreate.ts
-packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployerDelete.ts
-packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployerEnsure.ts
-packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployerFormattingAndValidation.ts
-packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/useEmployerUpdate.ts
-packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/utils/useEmployerFormatting.ts
-packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Employer/utils/useEmployerValidation.ts
+packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/useAgent.ts
+packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/useAgentComputed.ts
+packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/useAgentCreate.ts
+packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/useAgentDelete.ts
+packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/useAgentEnsure.ts
+packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/useAgentFormattingAndValidation.ts
+packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/useAgentUpdate.ts
+packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/utils/useAgentFormatting.ts
+packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/utils/useAgentValidation.ts
 packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Professional/useProfessional.ts
 packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Professional/useProfessionalComputed.ts
 packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Professional/useProfessionalCreate.ts
@@ -86,11 +86,11 @@ packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Profe
 packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Professional/useProfessionalFormattingAndValidation.ts
 packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Professional/useProfessionalUpdate.ts
 packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Professional/utils/useProfessionalFormatting.ts
-packages/extensions/fireux-jobs/src/runtime/models/profiles/Employer.model.ts
+packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent.model.ts
 packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional.model.ts
 ```
 
-`useEmployerEnsure` and `useProfessionalEnsure` mirror the tenant ensures: they pass `{ domain: '<type>' }` into the shared profile ensure flow.
+`useAgentEnsure` and `useProfessionalEnsure` mirror the tenant ensures: they pass `{ domain: '<type>' }` into the shared profile ensure flow.
 
 ## Alignment checklist
 

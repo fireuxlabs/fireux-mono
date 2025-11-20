@@ -11,7 +11,7 @@
 - **useUserFetch**: accepts `string | null | undefined`, spins core + app listeners, returns grouped refs `{ coreUser, appUser }` with no merge.
 - **useProfileFetch**: same grouped-ref contract, driven by collection config; attach/merge happens in a dedicated computed helper.
 - **useAppFetch**: single-doc listener guarded by nullable id; no extra computed layer.
-- Other fetchers (chef, supplier, employer, etc.) wrap `useProfileFetch` generics—benefit automatically once base stays lean.
+- Other fetchers (chef, supplier, agent, etc.) wrap `useProfileFetch` generics—benefit automatically once base stays lean.
 
 ## Bloat Smells To Watch
 

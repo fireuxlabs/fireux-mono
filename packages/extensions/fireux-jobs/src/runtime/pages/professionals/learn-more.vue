@@ -15,7 +15,7 @@
       <div>
         <h2 class="font-semibold">With a Professional Profile you can:</h2>
         <ul class="mt-2 list-disc space-y-1 pl-6">
-          <li>Appear in listings and searches used by employers.</li>
+          <li>Appear in listings and searches used by agents.</li>
           <li>Apply for jobs with a consistent, trusted identity.</li>
           <li>Be discovered by teams looking for your skills.</li>
           <li>Build your reputation across all FireUX apps.</li>

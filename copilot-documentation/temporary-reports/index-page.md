@@ -66,7 +66,7 @@ Data-driven list pages that should follow the shared Index Page pattern (consist
 **Extensions**
 
 - packages/extensions/fireux-jobs/src/runtime/pages/jobs/index.vue
-- packages/extensions/fireux-jobs/src/runtime/pages/employers/index.vue
+- packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue
 - packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue
 - packages/extensions/fireux-places/src/runtime/pages/places/index.vue
 
