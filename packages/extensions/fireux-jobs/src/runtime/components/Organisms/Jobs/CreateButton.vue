@@ -81,7 +81,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useJobCreate } from '../../../composables/useJob.ts'
 import { useAgent } from '../../../composables/firestore/profiles/Agent/useAgent.ts'
 import { useAgentComputed } from '../../../composables/firestore/profiles/Agent/main/useAgentComputed.ts'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'

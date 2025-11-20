@@ -84,7 +84,6 @@
 import { computed, reactive, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
-import { useJobRead, useJobUpdate } from '../../../composables/useJob.ts'
 import type { Job, JobStatus } from '../../../types/job.model.ts'
 
 definePageMeta({

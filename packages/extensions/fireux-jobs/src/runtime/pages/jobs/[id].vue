@@ -79,7 +79,6 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { useJobRead, useJobEditor } from '../../composables/useJob.ts'
 import type { JobStatus } from '../../../types/job.model.ts'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
 
