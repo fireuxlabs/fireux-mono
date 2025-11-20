@@ -104,8 +104,8 @@ const accountDisplayName = computed(() => {
   )
 })
 
-// Initialize agent create composable
-const { createAgent } = useAgentCreate()
+// Initialize agent composable helpers
+const { createAgent } = useAgent()
 
 // Form state
 const formData = ref({

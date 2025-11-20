@@ -17,8 +17,14 @@ export interface TenantRuntimeInput {
 export function resolveTenantRuntime(
   input: TenantRuntimeInput
 ): NonNullable<NuxtConfig['runtimeConfig']> {
-  const { basics, theme, modules, firebaseConfig, serviceAccountJson, devMode } =
-    input
+  const {
+    basics,
+    theme,
+    modules,
+    firebaseConfig,
+    serviceAccountJson,
+    devMode,
+  } = input
   const appId = requireEnv('APP_ID')
   const globalAppId = basics.ecosystem ? `${basics.ecosystem}-app` : undefined
 

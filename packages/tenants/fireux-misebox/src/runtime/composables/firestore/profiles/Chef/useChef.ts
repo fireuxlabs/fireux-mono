@@ -11,6 +11,7 @@ import {
 import { useChefComputed } from './main/useChefComputed.ts'
 import { useChefInterface } from './main/useChefInterface.ts'
 import { useChefUpdate } from './main/useChefUpdate.ts'
+import { useChefCreate } from './main/useChefCreate.ts'
 
 export type { ChefProfile, ChefCoreProfile, ChefCard }
 
@@ -27,12 +28,13 @@ export function useChef() {
   const { profile: refs, pending } = useProfile<ChefProfile>(chefConfig)
   const { coreProfile, appProfile } = refs
 
-  // canonical user
+  // canonical user for UI layer
   const { coreUser } = useUser()
 
   const computed = useChefComputed(refs, pending)
   const ui = useChefInterface(refs, coreUser)
   const update = useChefUpdate(refs)
+  const create = useChefCreate()
 
   return {
     profile: refs,
@@ -43,5 +45,6 @@ export function useChef() {
     ...computed,
     ...ui,
     ...update,
+    ...create,
   }
 }

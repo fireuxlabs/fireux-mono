@@ -13,6 +13,7 @@ import {
 import { useProfessionalComputed } from './main/useProfessionalComputed.ts'
 import { useProfessionalInterface } from './main/useProfessionalInterface.ts'
 import { useProfessionalUpdate } from './main/useProfessionalUpdate.ts'
+import { useProfessionalCreate } from './main/useProfessionalCreate.ts'
 
 export type { ProfessionalProfile, ProfessionalCoreProfile, ProfessionalCard }
 
@@ -31,12 +32,13 @@ export function useProfessional() {
 
   const { coreProfile, appProfile } = refs
 
-  // canonical user
+  // canonical user for UI layer
   const { coreUser } = useUser()
 
   const computed = useProfessionalComputed(refs, pending)
   const ui = useProfessionalInterface(refs, coreUser)
   const update = useProfessionalUpdate(refs)
+  const create = useProfessionalCreate()
 
   return {
     profile: refs,
@@ -47,5 +49,6 @@ export function useProfessional() {
     ...computed,
     ...ui,
     ...update,
+    ...create,
   }
 }

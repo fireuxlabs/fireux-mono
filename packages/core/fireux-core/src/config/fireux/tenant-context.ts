@@ -54,5 +54,6 @@ export function resolveFireuxNuxtSetup(opts: TenantConfig): FireuxNuxtSetup {
 function resolveCompatibilityDate(
   explicit?: string
 ): NuxtConfig['compatibilityDate'] {
-  return (explicit ?? DEFAULT_COMPATIBILITY_DATE) as NuxtConfig['compatibilityDate']
+  return (explicit ??
+    DEFAULT_COMPATIBILITY_DATE) as NuxtConfig['compatibilityDate']
 }

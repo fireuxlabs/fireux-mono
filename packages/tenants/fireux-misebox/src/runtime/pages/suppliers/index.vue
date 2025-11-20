@@ -15,13 +15,7 @@
         />
       </template>
 
-      <UPageCTA
-        v-else
-        title="Create your supplier profile"
-        description="Introduce your products to chefs and venues across the FireUX network."
-        variant="naked"
-        :links="supplierCtaLinks"
-      />
+      <OrganismsProfilesSupplierCTA v-else />
 
       <OrganismsProfilesSupplierSectionsGlobalCollection />
       <OrganismsProfilesSupplierSectionsLocalCollection v-if="isTenant" />
@@ -34,6 +28,7 @@ import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useSupplier } from '../../composables/firestore/profiles/Supplier/useSupplier.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import OrganismsProfilesSupplierCTA from '../../components/organisms/profiles/Supplier/CTA.vue'
 import OrganismsProfilesSupplierSectionsSingle from '../../components/organisms/profiles/Supplier/Sections/Single.vue'
 import OrganismsProfilesSupplierSectionsGlobalCollection from '../../components/organisms/profiles/Supplier/Sections/GlobalCollection.vue'
 import OrganismsProfilesSupplierSectionsLocalCollection from '../../components/organisms/profiles/Supplier/Sections/LocalCollection.vue'
@@ -55,20 +50,6 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile, pill } = useSupplier()
-const supplierCtaLinks = [
-  {
-    label: 'Get started',
-    color: 'neutral',
-    to: '/dashboard/supplier-profile',
-  },
-  {
-    label: 'Learn more',
-    color: 'neutral',
-    variant: 'subtle',
-    trailingIcon: 'i-lucide-arrow-right',
-    to: '/suppliers/learn-more',
-  },
-]
 const hasProfile = computed(() => Boolean(coreProfile.value))
 const { isTenant } = useFireUXConfig()
 

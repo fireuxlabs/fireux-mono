@@ -15,13 +15,7 @@
         />
       </template>
 
-      <UPageCTA
-        v-else
-        title="Create your professional profile"
-        description="Add a professional profile to your FireUX portfolio so agents can discover you more easily."
-        variant="naked"
-        :links="professionalCtaLinks"
-      />
+      <OrganismsProfilesProfessionalCTA v-else />
 
       <OrganismsProfilesProfessionalSectionsGlobalCollection />
       <OrganismsProfilesProfessionalSectionsLocalCollection v-if="isTenant" />
@@ -53,20 +47,6 @@ definePageMeta({
 
 const { coreProfile, appProfile, pill } = useProfessional()
 const { isTenant } = useFireUXConfig()
-const professionalCtaLinks = [
-  {
-    label: 'Get started',
-    color: 'neutral',
-    to: '/dashboard/professional-profile',
-  },
-  {
-    label: 'Learn more',
-    color: 'neutral',
-    variant: 'subtle',
-    trailingIcon: 'i-lucide-arrow-right',
-    to: '/professionals/learn-more',
-  },
-]
 const hasProfile = computed(() => Boolean(coreProfile.value))
 
 useHead({ title: 'Professionals' })

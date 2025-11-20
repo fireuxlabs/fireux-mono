@@ -15,13 +15,7 @@
         />
       </template>
 
-      <UPageCTA
-        v-else
-        title="Create your chef profile"
-        description="Showcase your culinary strengths so kitchens can match you to the right stations and menus."
-        variant="naked"
-        :links="chefCtaLinks"
-      />
+      <OrganismsProfilesChefCTA v-else />
 
       <OrganismsProfilesChefSectionsGlobalCollection />
       <OrganismsProfilesChefSectionsLocalCollection v-if="isTenant" />
@@ -34,6 +28,7 @@ import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useChef } from '../../composables/firestore/profiles/Chef/useChef.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import OrganismsProfilesChefCTA from '../../components/organisms/profiles/Chef/CTA.vue'
 import OrganismsProfilesChefSectionsSingle from '../../components/organisms/profiles/Chef/Sections/Single.vue'
 import OrganismsProfilesChefSectionsGlobalCollection from '../../components/organisms/profiles/Chef/Sections/GlobalCollection.vue'
 import OrganismsProfilesChefSectionsLocalCollection from '../../components/organisms/profiles/Chef/Sections/LocalCollection.vue'
@@ -55,20 +50,6 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile, pill } = useChef()
-const chefCtaLinks = [
-  {
-    label: 'Get started',
-    color: 'neutral',
-    to: '/dashboard/chef-profile',
-  },
-  {
-    label: 'Learn more',
-    color: 'neutral',
-    variant: 'subtle',
-    trailingIcon: 'i-lucide-arrow-right',
-    to: '/chefs/learn-more',
-  },
-]
 const hasProfile = computed(() => Boolean(coreProfile.value))
 const { isTenant } = useFireUXConfig()
 

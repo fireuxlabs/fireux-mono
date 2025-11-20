@@ -14,26 +14,7 @@
         />
       </template>
 
-      <UPageCTA
-        v-else
-        title="Create your agent profile"
-        description="Add an agent profile to your FireUX portfolio so talent knows who is hiring."
-        variant="naked"
-      >
-        <template #links>
-          <UButton
-            color="primary"
-            size="lg"
-            :loading="isCreating"
-            :disabled="isCreating"
-            @click="handleCreate"
-          >
-            {{ isCreating ? 'Creating...' : 'Create agent profile' }}
-          </UButton>
-        </template>
-      </UPageCTA>
-
-      <p v-if="createError" class="cta-error">{{ createError }}</p>
+      <OrganismsProfilesAgentCTA v-else />
 
       <OrganismsProfilesAgentSectionsGlobalCollection />
       <OrganismsProfilesAgentSectionsLocalCollection v-if="isTenant" />
@@ -42,14 +23,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
-import { useAgentCreate } from '../../composables/firestore/profiles/Agent/main/useAgentCreate.ts'
-import OrganismsProfilesAgentSectionsSingle from '../../components/Organisms/profiles/Agent/Sections/Single.vue'
-import OrganismsProfilesAgentSectionsGlobalCollection from '../../components/Organisms/profiles/Agent/Sections/GlobalCollection.vue'
-import OrganismsProfilesAgentSectionsLocalCollection from '../../components/Organisms/profiles/Agent/Sections/LocalCollection.vue'
 
 definePageMeta({
   nav: {
@@ -68,41 +45,10 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile, pill } = useAgent()
-const { createAgent } = useAgentCreate()
+
 const { isTenant } = useFireUXConfig()
 
-const isCreating = ref(false)
-const createError = ref<string | null>(null)
-
-const handleCreate = async () => {
-  if (isCreating.value) return
-
-  isCreating.value = true
-  createError.value = null
-
-  try {
-    await createAgent()
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : 'Unable to create agent profile. Please try again.'
-    createError.value = message
-  } finally {
-    if (createError.value) {
-      isCreating.value = false
-    }
-  }
-}
 const hasProfile = computed(() => Boolean(coreProfile.value))
 
 useHead({ title: 'Agents' })
 </script>
-
-<style scoped>
-.cta-error {
-  margin: 0;
-  font-size: 0.875rem;
-  color: #dc2626;
-}
-</style>

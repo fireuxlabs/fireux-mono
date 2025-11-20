@@ -1,4 +1,7 @@
-import { readServiceAccount, type ServiceAccountPayload } from './service-account'
+import {
+  readServiceAccount,
+  type ServiceAccountPayload,
+} from './service-account'
 import { createVuefireConfig } from './vuefire-config'
 import { createPwaConfig } from './pwa-config'
 import type { TenantConfig } from './tenant-config'

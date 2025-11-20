@@ -11,6 +11,7 @@ import {
 import { useSupplierComputed } from './main/useSupplierComputed.ts'
 import { useSupplierInterface } from './main/useSupplierInterface.ts'
 import { useSupplierUpdate } from './main/useSupplierUpdate.ts'
+import { useSupplierCreate } from './main/useSupplierCreate.ts'
 
 export type { SupplierProfile, SupplierCoreProfile, SupplierCard }
 
@@ -27,12 +28,13 @@ export function useSupplier() {
   const { profile: refs, pending } = useProfile<SupplierProfile>(supplierConfig)
   const { coreProfile, appProfile } = refs
 
-  // canonical user to feed UI layer
+  // canonical user for UI layer
   const { coreUser } = useUser()
 
   const computed = useSupplierComputed(refs, pending)
   const ui = useSupplierInterface(refs, coreUser)
   const update = useSupplierUpdate(refs)
+  const create = useSupplierCreate()
 
   return {
     profile: refs,
@@ -42,5 +44,6 @@ export function useSupplier() {
     ...computed,
     ...ui,
     ...update,
+    ...create,
   }
 }

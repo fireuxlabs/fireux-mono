@@ -1,4 +1,75 @@
-<template></template>
+<template>
+  <div>
+    <UPageCTA
+      title="Create your agent profile"
+      description="Add an agent profile to your FireUX portfolio so talent knows who is hiring."
+      variant="naked"
+    >
+      <template #links>
+        <UButton
+          color="primary"
+          size="lg"
+          :loading="isCreating"
+          :disabled="isCreating"
+          @click="handleCreate"
+        >
+          {{ isCreating ? 'Creating...' : 'Create agent profile' }}
+        </UButton>
+      </template>
+    </UPageCTA>
+
+    <p v-if="createError" class="cta-error">{{ createError }}</p>
+  </div>
+</template>
+
 <script setup lang="ts">
-// Deprecated Agent CTA stub. Use ProfileRoot + :onEnsure.
+import { ref } from 'vue'
+import { useAgentCreate } from '../../../../composables/firestore/profiles/Agent/main/useAgentCreate.ts'
+
+const props = defineProps<{
+  create?: () => Promise<unknown>
+}>()
+
+const emit = defineEmits<{
+  (e: 'created', payload: unknown): void
+  (e: 'error', error: unknown): void
+}>()
+
+const { createAgent: defaultCreateAgent } = useAgentCreate()
+
+const isCreating = ref(false)
+const createError = ref<string | null>(null)
+
+const handleCreate = async () => {
+  if (isCreating.value) return
+
+  isCreating.value = true
+  createError.value = null
+
+  const create = props.create ?? defaultCreateAgent
+
+  try {
+    const result = await create()
+    emit('created', result)
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Unable to create agent profile. Please try again.'
+    createError.value = message
+    emit('error', error)
+  } finally {
+    if (createError.value) {
+      isCreating.value = false
+    }
+  }
+}
 </script>
+
+<style scoped>
+.cta-error {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+</style>
