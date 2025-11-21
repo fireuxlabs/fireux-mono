@@ -1,7 +1,6 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional-profile.vue -->
 <template>
   <UPageCard v-if="hasProfessionalProfile" variant="subtle">
-
     <div v-if="coreProfile" class="space-y-6">
       <OrganismsProfilesProfessionalEditCore :professional="coreProfile" />
       <OrganismsProfilesProfessionalEditApp

@@ -1,7 +1,6 @@
 <!-- packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent-profile.vue -->
 <template>
   <UPageCard v-if="hasAgentProfile" variant="subtle">
-
     <div v-if="coreProfile" class="space-y-6">
       <OrganismsProfilesAgentEditCore :agent="coreProfile" />
       <OrganismsProfilesAgentEditApp v-if="isTenant" :agent="appProfile" />

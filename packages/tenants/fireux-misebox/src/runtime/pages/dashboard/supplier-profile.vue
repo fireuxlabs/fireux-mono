@@ -1,7 +1,6 @@
 <!-- packages/tenants/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue -->
 <template>
   <UPageCard v-if="hasSupplierProfile" variant="subtle">
-
     <div v-if="coreProfile" class="space-y-6">
       <OrganismsProfilesSupplierEditCore :supplier="coreProfile" />
       <OrganismsProfilesSupplierEditApp

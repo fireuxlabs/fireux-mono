@@ -1,7 +1,6 @@
 <!-- packages/tenants/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue -->
 <template>
   <UPageCard v-if="hasChefProfile" variant="subtle">
-
     <div v-if="coreProfile" class="space-y-6">
       <OrganismsProfilesChefEditCore :chef="coreProfile" />
       <OrganismsProfilesChefEditApp v-if="isTenant" :chef="appProfile" />
