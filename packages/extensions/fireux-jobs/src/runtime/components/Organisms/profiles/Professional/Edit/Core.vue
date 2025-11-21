@@ -65,8 +65,12 @@ const props = defineProps<{
   professional: ProfessionalCoreProfile | null
 }>()
 
-const { setRelevantExperience, setOtherExperience, updateTagline, updateBioShort } =
-  useProfessionalUpdate()
+const {
+  setRelevantExperience,
+  setOtherExperience,
+  updateTagline,
+  updateBioShort,
+} = useProfessionalUpdate()
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
@@ -78,9 +82,7 @@ const tagline = computed(
     ''
 )
 
-const bioShort = computed(
-  () => props.professional?.bio_short ?? ''
-)
+const bioShort = computed(() => props.professional?.bio_short ?? '')
 
 const onUpdateTagline = async (value: string) => {
   try {
