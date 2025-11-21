@@ -5,17 +5,10 @@
 
     <UPageBody class="space-y-6">
       <template v-if="hasProfile">
-        <OrganismsProfileSectionsSingle
-          :cell="cell"
-          :pill="pill"
-          :has-profile="hasProfile"
-          :header-title="currentProfileTitle"
-          empty-message="No chef profile loaded."
-          card-cell-component="OrganismsProfilesChefCardsCell"
-          card-cell-prop="chef"
-          card-pill-component="OrganismsProfilesChefCardsPill"
-          card-pill-prop="chef"
-        />
+        <OrganismsProfileSectionsSingle :title="currentProfileTitle">
+          <OrganismsProfilesChefCardsCell v-if="cell" :chef="cell" />
+          <OrganismsProfilesChefCardsPill v-if="pill" :chef="pill" />
+        </OrganismsProfileSectionsSingle>
       </template>
 
       <OrganismsProfilesChefCTA v-else />

@@ -24,7 +24,7 @@ export namespace ChefCard {
 
   /** Cell shape */
   export interface Cell extends Pill {
-    id: string
+    id?: string
     bio_short?: string | null
     specialties?: string[]
   }
@@ -36,7 +36,9 @@ export namespace ChefCard {
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
     title?: string | null
+    /** @deprecated use tagline */
     subtitle?: string | null
+    tagline?: string | null
     badges?: string[]
     bio_long?: string | null
     avatar?: string | null
@@ -52,7 +54,9 @@ export namespace ChefCard {
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
     title?: string | null
+    /** @deprecated use tagline */
     subtitle?: string | null
+    tagline?: string | null
     badges?: string[]
     bio_long?: string | null
     organization_name?: string | null
@@ -91,11 +95,15 @@ export const resolveChefCell = (
 
   const id = profile.id ?? user?.id ?? fallbackId
 
+  const tagline =
+    profile.tagline ?? (profile as { subtitle?: string | null })?.subtitle ?? ''
+
   return {
     id,
     avatar: user?.avatar ?? undefined,
     title: user?.display_name ?? profile.title ?? 'Chef',
-    subtitle: profile.subtitle ?? '',
+    subtitle: tagline,
+    tagline,
     badges: profile.badges ?? [],
     bio_short: profile.bio_short ?? null,
     specialties: profile.specialties ?? [],

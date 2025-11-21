@@ -26,7 +26,7 @@ export namespace AgentCard {
 
   /** Cell shape */
   export interface Cell extends Pill {
-    id: string
+    id?: string
     bio_short?: string | null
     specialties?: string[]
     locations?: string[]
@@ -39,7 +39,9 @@ export namespace AgentCard {
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
     title?: string | null
+    /** @deprecated use tagline */
     subtitle?: string | null
+    tagline?: string | null
     badges?: string[]
     bio_long?: string | null
     avatar?: string | null
@@ -54,7 +56,9 @@ export namespace AgentCard {
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
     title?: string | null
+    /** @deprecated use tagline */
     subtitle?: string | null
+    tagline?: string | null
     bio_short?: string | null
     specialties?: string[]
     locations?: string[]
@@ -92,11 +96,15 @@ export const resolveAgentCell = (
 
   const id = profile.id ?? user?.id ?? fallbackId
 
+  const tagline =
+    profile.tagline ?? (profile as { subtitle?: string | null })?.subtitle ?? ''
+
   return {
     id,
     avatar: user?.avatar ?? undefined,
     title: user?.display_name ?? profile.title ?? 'Agent',
-    subtitle: profile.subtitle ?? '',
+    subtitle: tagline,
+    tagline,
     badges: profile.badges ?? [],
     bio_short: profile.bio_short ?? null,
     specialties: profile.specialties ?? [],
@@ -110,7 +118,14 @@ export const resolveAgentPill = (
 ): AgentCard.Pill => ({
   avatar: profile?.user?.avatar ?? '',
   title: profile?.user?.display_name ?? '',
-  subtitle: profile?.subtitle ?? '',
+  subtitle:
+    profile?.tagline ??
+    (profile as { subtitle?: string | null } | null)?.subtitle ??
+    '',
+  tagline:
+    profile?.tagline ??
+    (profile as { subtitle?: string | null } | null)?.subtitle ??
+    '',
   badges: [],
   to: routeFor(profile?.id),
 })

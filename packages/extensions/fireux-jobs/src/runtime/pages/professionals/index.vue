@@ -5,17 +5,16 @@
 
     <UPageBody class="space-y-6">
       <template v-if="hasProfile">
-        <OrganismsProfileSectionsSingle
-          :cell="cell"
-          :pill="pill"
-          :has-profile="hasProfile"
-          :header-title="currentProfileTitle"
-          empty-message="No professional profile loaded."
-          card-cell-component="OrganismsProfilesProfessionalCardsCell"
-          card-cell-prop="professional"
-          card-pill-component="OrganismsProfilesProfessionalCardsPill"
-          card-pill-prop="professional"
-        />
+        <OrganismsProfileSectionsSingle :title="currentProfileTitle">
+          <OrganismsProfilesProfessionalCardsCell
+            v-if="cell"
+            :professional="cell"
+          />
+          <OrganismsProfilesProfessionalCardsPill
+            v-if="pill"
+            :professional="pill"
+          />
+        </OrganismsProfileSectionsSingle>
       </template>
 
       <OrganismsProfilesProfessionalCTA v-else />

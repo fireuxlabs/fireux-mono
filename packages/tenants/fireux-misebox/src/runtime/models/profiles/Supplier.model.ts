@@ -23,7 +23,7 @@ export namespace SupplierCard {
 
   /** Cell shape */
   export interface Cell extends Pill {
-    id: string
+    id?: string
     bio_short?: string | null
     specialties?: string[]
     categories?: string[]
@@ -36,7 +36,9 @@ export namespace SupplierCard {
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
     title?: string | null
+    /** @deprecated use tagline */
     subtitle?: string | null
+    tagline?: string | null
     badges?: string[]
     bio_long?: string | null
     avatar?: string | null
@@ -50,7 +52,9 @@ export namespace SupplierCard {
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
     title?: string | null
+    /** @deprecated use tagline */
     subtitle?: string | null
+    tagline?: string | null
     badges?: string[]
     bio_long?: string | null
   }
@@ -87,11 +91,15 @@ export const resolveSupplierCell = (
 
   const id = profile.id ?? user?.id ?? fallbackId
 
+  const tagline =
+    profile.tagline ?? (profile as { subtitle?: string | null })?.subtitle ?? ''
+
   return {
     id,
     avatar: user?.avatar ?? undefined,
     title: user?.display_name ?? profile.title ?? 'Supplier',
-    subtitle: profile.subtitle ?? '',
+    subtitle: tagline,
+    tagline,
     badges: profile.badges ?? [],
     bio_short: profile.bio_short ?? null,
     specialties: profile.specialties ?? [],

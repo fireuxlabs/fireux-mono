@@ -5,7 +5,7 @@
         <div class="space-y-4">
           <header class="space-y-1">
             <h3 class="text-base font-semibold text-gray-900">
-              Profile Subtitle
+              Profile Tagline
             </h3>
             <p class="text-sm text-gray-500">
               Show a concise descriptor below your name across listings.
@@ -13,10 +13,20 @@
           </header>
 
           <MoleculesFormsFirestoreSimpleField
-            label="Subtitle"
-            :firebase-value="professional.subtitle || ''"
+            label="Tagline"
+            :firebase-value="tagline"
             placeholder="Ex: Private chef, pastry specialist"
-            :update-function="onUpdateSubtitle"
+            :update-function="onUpdateTagline"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Short Bio"
+            type="textarea"
+            :rows="3"
+            :maxlength="200"
+            :firebase-value="professional.bio_short || ''"
+            placeholder="Brief overview shown in cells"
+            :update-function="onUpdateBioShort"
           />
         </div>
       </UCard>
@@ -68,6 +78,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useProfessionalUpdate } from '../../../../composables/firestore/profiles/Professional/main/useProfessionalUpdate.ts'
 import type {
   ProfessionalCoreProfile,
@@ -79,24 +90,54 @@ const props = defineProps<{
   professional: ProfessionalCoreProfile | null
 }>()
 
-const { setRelevantExperience, setOtherExperience, updateSubtitle } =
-  useProfessionalUpdate()
+const {
+  setRelevantExperience,
+  setOtherExperience,
+  updateTagline,
+  updateBioShort,
+} = useProfessionalUpdate()
+const tagline = computed(
+  () =>
+    props.professional?.tagline ??
+    (props.professional as { subtitle?: string | null } | null)?.subtitle ??
+    ''
+)
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
 
-const onUpdateSubtitle = async (value: string) => {
+const onUpdateTagline = async (value: string) => {
   try {
-    await updateSubtitle(value, { id: props.professional?.id ?? null })
+    await updateTagline(value, { id: props.professional?.id ?? null })
     toast?.add({
-      title: 'Subtitle updated',
+      title: 'Tagline updated',
       icon: 'i-heroicons-check-circle',
     })
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
     toast?.add({
-      title: 'Failed to update subtitle',
+      title: 'Failed to update tagline',
+      description,
+      color: 'amber',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+    throw error
+  }
+}
+
+const onUpdateBioShort = async (value: string) => {
+  try {
+    await updateBioShort(value, { id: props.professional?.id ?? null })
+    toast?.add({
+      title: 'Short bio updated',
+      icon: 'i-heroicons-check-circle',
+    })
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast?.add({
+      title: 'Failed to update short bio',
       description,
       color: 'amber',
       icon: 'i-heroicons-exclamation-triangle',

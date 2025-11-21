@@ -18,15 +18,21 @@
         </header>
 
         <OrganismsProfileSectionsSingle
-          :cell="professionalCell"
-          :pill="professionalPill"
-          :has-profile="professionalHasProfile"
-          empty-message="No professional profile loaded."
-          card-cell-component="OrganismsProfilesProfessionalCardsCell"
-          card-cell-prop="professional"
-          card-pill-component="OrganismsProfilesProfessionalCardsPill"
-          card-pill-prop="professional"
-        />
+          v-if="professionalHasProfile"
+          title="Professional profile"
+        >
+          <OrganismsProfilesProfessionalCardsCell
+            v-if="professionalCell"
+            :professional="professionalCell"
+          />
+          <OrganismsProfilesProfessionalCardsPill
+            v-if="professionalPill"
+            :professional="professionalPill"
+          />
+        </OrganismsProfileSectionsSingle>
+        <p v-else class="text-sm text-gray-500 dark:text-gray-400">
+          No professional profile loaded.
+        </p>
 
         <DevJsonPanel v-if="professionalJson" :data="professionalJson" />
 
@@ -134,15 +140,21 @@
         </header>
 
         <OrganismsProfileSectionsSingle
-          :cell="agentCell"
-          :pill="agentPill"
-          :has-profile="agentHasProfile"
-          empty-message="No agent profile loaded."
-          card-cell-component="OrganismsProfilesAgentCardsCell"
-          card-cell-prop="agent"
-          card-pill-component="OrganismsProfilesAgentCardsPill"
-          card-pill-prop="agent"
-        />
+          v-if="agentHasProfile"
+          title="Agent profile"
+        >
+          <OrganismsProfilesAgentCardsCell
+            v-if="agentCell"
+            :agent="agentCell"
+          />
+          <OrganismsProfilesAgentCardsPill
+            v-if="agentPill"
+            :agent="agentPill"
+          />
+        </OrganismsProfileSectionsSingle>
+        <p v-else class="text-sm text-gray-500 dark:text-gray-400">
+          No agent profile loaded.
+        </p>
 
         <DevJsonPanel v-if="agentJson" :data="agentJson" />
 
@@ -238,7 +250,6 @@
 
 <script setup lang="ts">
 import { computed, unref } from 'vue'
-import OrganismsProfileSectionsSingle from 'fireux-core/runtime/components/organisms/Profile/Sections/Single.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
 import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
@@ -364,7 +375,10 @@ const toAgentPill = (
 ): AgentCard.Pill => {
   const title = (profile?.title || profile?.organization_name || '').trim()
   const normalizedTitle = title || 'Agent'
-  const subtitle = profile?.subtitle ?? ''
+  const tagline =
+    profile?.tagline ??
+    (profile as { subtitle?: string | null })?.subtitle ??
+    ''
   const avatar = profile?.avatar_url || profile?.avatar || ''
   const rawBadges = profile?.badges
   const badges = Array.isArray(rawBadges) ? rawBadges : []
@@ -373,7 +387,8 @@ const toAgentPill = (
   return {
     avatar,
     title: normalizedTitle,
-    subtitle,
+    subtitle: tagline,
+    tagline,
     badges,
     to,
   }

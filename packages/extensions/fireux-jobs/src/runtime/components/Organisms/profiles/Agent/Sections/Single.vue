@@ -43,11 +43,15 @@ const cell = computed<AgentCard.Cell | null>(() => {
   const profile = props.coreProfile ?? null
   if (!profile) return null
 
+  const tagline =
+    profile.tagline ?? (profile as { subtitle?: string | null })?.subtitle ?? ''
+
   return {
     id: profile.id ?? profile.user?.id ?? 'agent-profile',
     avatar: profile.user?.avatar ?? undefined,
     title: profile.user?.display_name ?? profile.title ?? 'Agent',
-    subtitle: profile.subtitle ?? '',
+    subtitle: tagline,
+    tagline,
     badges: profile.badges ?? [],
     bio_short: profile.bio_short ?? null,
     specialties: profile.specialties ?? [],

@@ -201,13 +201,22 @@ export function useProfessionalUpdate(
     )
   }
 
-  const updateSubtitle = async (
-    subtitle: string,
+  const updateTagline = async (
+    tagline: string,
     options: UpdateOptions = {}
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
-    const value = (subtitle ?? '').trim()
-    await commitUpdate({ subtitle: value || null }, { ...options, id: uid })
+    const value = (tagline ?? '').trim()
+    await commitUpdate({ tagline: value || null }, { ...options, id: uid })
+  }
+
+  const updateBioShort = async (
+    bioShort: string,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const value = (bioShort ?? '').trim()
+    await commitUpdate({ bio_short: value || null }, { ...options, id: uid })
   }
 
   return {
@@ -216,6 +225,7 @@ export function useProfessionalUpdate(
     updateAppProfile,
     setRelevantExperience,
     setOtherExperience,
-    updateSubtitle,
+    updateTagline,
+    updateBioShort,
   }
 }

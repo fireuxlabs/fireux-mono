@@ -9,7 +9,9 @@ export namespace Pill {
     avatar: string
     initials?: string
     title: string
+    /** Prefer tagline; subtitle kept for legacy data sources. */
     subtitle?: string
+    tagline?: string
     badges?: string[]
     to?: RouteLocationRaw | null
     special?: boolean

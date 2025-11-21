@@ -11,7 +11,10 @@ import type { ChefProfile } from '../../../../../models/profiles/Chef.model.ts'
  * - accepts only refs (no user cascading)
  * - both implementations are stubs until Firestore integration
  */
-export function useChefUpdate(profile: ProfileRefs<ChefProfile>) {
+export function useChefUpdate(profile?: ProfileRefs<ChefProfile> | null) {
+  const coreProfile = () => profile?.coreProfile?.value ?? null
+  const appProfile = () => profile?.appProfile?.value ?? null
+
   /**
    * Update the CORE Chef profile
    * - global document (e.g. chefs/{uid})
@@ -23,7 +26,7 @@ export function useChefUpdate(profile: ProfileRefs<ChefProfile>) {
       '[useChefUpdate] updateCoreProfile stub called with:',
       patch,
       'current coreProfile:',
-      profile.coreProfile.value
+      coreProfile()
     )
   }
 
@@ -38,12 +41,27 @@ export function useChefUpdate(profile: ProfileRefs<ChefProfile>) {
       '[useChefUpdate] updateAppProfile stub called with:',
       patch,
       'current appProfile:',
-      profile.appProfile.value
+      appProfile()
     )
+  }
+
+  const cleanString = (value: string | null | undefined) => {
+    const normalized = typeof value === 'string' ? value.trim() : ''
+    return normalized.length ? normalized : null
+  }
+
+  const updateDisplayName = async (value: string) => {
+    console.warn('[useChefUpdate] updateDisplayName stub called with:', value)
+  }
+
+  const updateBioShort = async (value: string) => {
+    await updateCoreProfile({ bio_short: cleanString(value) })
   }
 
   return {
     updateCoreProfile,
     updateAppProfile,
+    updateDisplayName,
+    updateBioShort,
   }
 }

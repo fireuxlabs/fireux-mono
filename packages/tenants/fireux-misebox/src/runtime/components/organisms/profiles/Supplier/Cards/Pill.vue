@@ -1,22 +1,22 @@
 <template>
-  <NuxtLink v-if="props.supplier?.to" :to="props.supplier.to" class="pill">
+  <NuxtLink v-if="supplier?.to" :to="supplier.to" class="pill">
     <UAvatar
-      :src="props.supplier.avatar"
-      :alt="props.supplier.title"
+      :src="supplier.avatar"
+      :alt="supplier.title"
       size="sm"
       class="avatar"
     />
 
     <div class="content">
-      <span class="title">{{ props.supplier.title }}</span>
+      <span class="title">{{ supplier.title }}</span>
 
-      <span v-if="props.supplier.subtitle" class="subtitle">
-        {{ props.supplier.subtitle }}
+      <span v-if="supplier.tagline" class="tagline">
+        {{ supplier.tagline }}
       </span>
 
-      <div v-if="props.supplier.badges?.length" class="badges">
+      <div v-if="supplier.badges?.length" class="badges">
         <UBadge
-          v-for="badge in props.supplier.badges"
+          v-for="badge in supplier.badges"
           :key="badge"
           size="xs"
           variant="soft"
@@ -29,22 +29,22 @@
 
   <div v-else class="pill">
     <UAvatar
-      :src="props.supplier?.avatar"
-      :alt="props.supplier?.title"
+      :src="supplier?.avatar"
+      :alt="supplier?.title"
       size="sm"
       class="avatar"
     />
 
     <div class="content">
-      <span class="title">{{ props.supplier?.title }}</span>
+      <span class="title">{{ supplier?.title }}</span>
 
-      <span v-if="props.supplier?.subtitle" class="subtitle">
-        {{ props.supplier.subtitle }}
+      <span v-if="supplier?.tagline" class="tagline">
+        {{ supplier.tagline }}
       </span>
 
-      <div v-if="props.supplier?.badges?.length" class="badges">
+      <div v-if="supplier?.badges?.length" class="badges">
         <UBadge
-          v-for="badge in props.supplier.badges"
+          v-for="badge in supplier.badges"
           :key="badge"
           size="xs"
           variant="soft"
@@ -57,11 +57,22 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { SupplierCard } from '../../../../../models/profiles/Supplier.model.ts'
 
 const props = defineProps<{
   supplier: SupplierCard.Pill | null
 }>()
+
+const supplier = computed(() => {
+  const pill = props.supplier
+  if (!pill) return null
+
+  return {
+    ...pill,
+    tagline: pill.tagline ?? pill.subtitle ?? '',
+  }
+})
 </script>
 
 <style scoped>
@@ -93,7 +104,7 @@ const props = defineProps<{
   font-weight: 600;
 }
 
-.subtitle {
+.tagline {
   font-size: 0.8rem;
   color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
 }

@@ -23,8 +23,8 @@
             <span>Verified Professional</span>
           </div>
 
-          <p v-if="view.subtitle" class="text-base text-gray-600">
-            {{ view.subtitle }}
+          <p v-if="view.tagline" class="text-base text-gray-600">
+            {{ view.tagline }}
           </p>
 
           <div
@@ -381,8 +381,11 @@ const view = computed(() => {
           .toUpperCase()
           .slice(0, 2)
       : 'PR',
-    subtitle:
-      sanitizeString(model.subtitle) ?? sanitizeString(model.title) ?? null,
+    tagline:
+      sanitizeString(model.tagline) ??
+      sanitizeString((model as { subtitle?: string | null }).subtitle) ??
+      sanitizeString(model.title) ??
+      null,
     badges: Array.isArray(model.badges)
       ? model.badges
           .map((badge: unknown) => sanitizeString(badge as any))

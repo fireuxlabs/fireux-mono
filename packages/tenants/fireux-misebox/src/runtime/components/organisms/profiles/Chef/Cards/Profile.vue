@@ -5,8 +5,8 @@
       <UAvatar :src="props.chef.avatar" :alt="displayName" size="xl" />
       <div class="meta">
         <div class="name">{{ displayName }}</div>
-        <div v-if="props.chef.subtitle" class="subtitle">
-          {{ props.chef.subtitle }}
+        <div v-if="tagline" class="subtitle">
+          {{ tagline }}
         </div>
       </div>
     </div>
@@ -49,6 +49,13 @@ import type { ChefCard } from '../../../../../models/profiles/Chef.model'
 const props = defineProps<{ chef: ChefCard.Profile }>()
 
 const displayName = computed(() => props.chef?.title || 'Chef')
+
+const tagline = computed(
+  () =>
+    props.chef?.tagline ??
+    (props.chef as { subtitle?: string | null } | null)?.subtitle ??
+    ''
+)
 
 const bioText = computed(
   () => props.chef?.bio_long ?? props.chef?.bio_short ?? ''

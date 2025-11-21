@@ -43,11 +43,15 @@ const cell = computed<SupplierCard.Cell | null>(() => {
   const profile = props.coreProfile ?? null
   if (!profile) return null
 
+  const tagline =
+    profile.tagline ?? (profile as { subtitle?: string | null })?.subtitle ?? ''
+
   return {
     id: profile.id ?? profile.user?.id ?? 'supplier-profile',
     avatar: profile.user?.avatar ?? undefined,
     title: profile.user?.display_name ?? profile.title ?? 'Supplier',
-    subtitle: profile.subtitle ?? '',
+    subtitle: tagline,
+    tagline,
     badges: profile.badges ?? [],
     bio_short: profile.bio_short ?? null,
     specialties: profile.specialties ?? [],

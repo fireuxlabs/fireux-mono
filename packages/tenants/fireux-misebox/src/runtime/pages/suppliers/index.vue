@@ -5,17 +5,10 @@
 
     <UPageBody class="space-y-6">
       <template v-if="hasProfile">
-        <OrganismsProfileSectionsSingle
-          :cell="cell"
-          :pill="pill"
-          :has-profile="hasProfile"
-          :header-title="currentProfileTitle"
-          empty-message="No supplier profile loaded."
-          card-cell-component="OrganismsProfilesSupplierCardsCell"
-          card-cell-prop="supplier"
-          card-pill-component="OrganismsProfilesSupplierCardsPill"
-          card-pill-prop="supplier"
-        />
+        <OrganismsProfileSectionsSingle :title="currentProfileTitle">
+          <OrganismsProfilesSupplierCardsCell v-if="cell" :supplier="cell" />
+          <OrganismsProfilesSupplierCardsPill v-if="pill" :supplier="pill" />
+        </OrganismsProfileSectionsSingle>
       </template>
 
       <OrganismsProfilesSupplierCTA v-else />

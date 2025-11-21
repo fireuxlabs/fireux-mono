@@ -1,22 +1,17 @@
 <template>
-  <NuxtLink v-if="props.chef?.to" :to="props.chef.to" class="pill">
-    <UAvatar
-      :src="props.chef.avatar"
-      :alt="props.chef.title"
-      size="sm"
-      class="avatar"
-    />
+  <NuxtLink v-if="chef?.to" :to="chef.to" class="pill">
+    <UAvatar :src="chef.avatar" :alt="chef.title" size="sm" class="avatar" />
 
     <div class="content">
-      <span class="title">{{ props.chef.title }}</span>
+      <span class="title">{{ chef.title }}</span>
 
-      <span v-if="props.chef.subtitle" class="subtitle">
-        {{ props.chef.subtitle }}
+      <span v-if="chef.tagline" class="tagline">
+        {{ chef.tagline }}
       </span>
 
-      <div v-if="props.chef.badges?.length" class="badges">
+      <div v-if="chef.badges?.length" class="badges">
         <UBadge
-          v-for="badge in props.chef.badges"
+          v-for="badge in chef.badges"
           :key="badge"
           size="xs"
           variant="soft"
@@ -28,23 +23,18 @@
   </NuxtLink>
 
   <div v-else class="pill">
-    <UAvatar
-      :src="props.chef?.avatar"
-      :alt="props.chef?.title"
-      size="sm"
-      class="avatar"
-    />
+    <UAvatar :src="chef?.avatar" :alt="chef?.title" size="sm" class="avatar" />
 
     <div class="content">
-      <span class="title">{{ props.chef?.title }}</span>
+      <span class="title">{{ chef?.title }}</span>
 
-      <span v-if="props.chef?.subtitle" class="subtitle">
-        {{ props.chef.subtitle }}
+      <span v-if="chef?.tagline" class="tagline">
+        {{ chef.tagline }}
       </span>
 
-      <div v-if="props.chef?.badges?.length" class="badges">
+      <div v-if="chef?.badges?.length" class="badges">
         <UBadge
-          v-for="badge in props.chef.badges"
+          v-for="badge in chef.badges"
           :key="badge"
           size="xs"
           variant="soft"
@@ -57,11 +47,22 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { ChefCard } from '../../../../../models/profiles/Chef.model.ts'
 
 const props = defineProps<{
   chef: ChefCard.Pill | null
 }>()
+
+const chef = computed(() => {
+  const pill = props.chef
+  if (!pill) return null
+
+  return {
+    ...pill,
+    tagline: pill.tagline ?? pill.subtitle ?? '',
+  }
+})
 </script>
 
 <style scoped>
@@ -93,7 +94,7 @@ const props = defineProps<{
   font-weight: 600;
 }
 
-.subtitle {
+.tagline {
   font-size: 0.8rem;
   color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
 }

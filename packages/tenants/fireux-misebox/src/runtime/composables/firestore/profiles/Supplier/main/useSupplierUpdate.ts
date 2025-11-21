@@ -11,7 +11,12 @@ import type { SupplierProfile } from '../../../../../models/profiles/Supplier.mo
  * - accepts only refs (no user cascading)
  * - both implementations are stubs until Firestore integration
  */
-export function useSupplierUpdate(profile: ProfileRefs<SupplierProfile>) {
+export function useSupplierUpdate(
+  profile?: ProfileRefs<SupplierProfile> | null
+) {
+  const coreProfile = () => profile?.coreProfile?.value ?? null
+  const appProfile = () => profile?.appProfile?.value ?? null
+
   /**
    * Update the CORE Supplier profile
    * - global document (e.g. suppliers/{uid})
@@ -23,7 +28,7 @@ export function useSupplierUpdate(profile: ProfileRefs<SupplierProfile>) {
       '[useSupplierUpdate] updateCoreProfile stub called with:',
       patch,
       'current coreProfile:',
-      profile.coreProfile.value
+      coreProfile()
     )
   }
 
@@ -38,12 +43,30 @@ export function useSupplierUpdate(profile: ProfileRefs<SupplierProfile>) {
       '[useSupplierUpdate] updateAppProfile stub called with:',
       patch,
       'current appProfile:',
-      profile.appProfile.value
+      appProfile()
     )
+  }
+
+  const cleanString = (value: string | null | undefined) => {
+    const normalized = typeof value === 'string' ? value.trim() : ''
+    return normalized.length ? normalized : null
+  }
+
+  const updateDisplayName = async (value: string) => {
+    console.warn(
+      '[useSupplierUpdate] updateDisplayName stub called with:',
+      value
+    )
+  }
+
+  const updateBioShort = async (value: string) => {
+    await updateCoreProfile({ bio_short: cleanString(value) })
   }
 
   return {
     updateCoreProfile,
     updateAppProfile,
+    updateDisplayName,
+    updateBioShort,
   }
 }

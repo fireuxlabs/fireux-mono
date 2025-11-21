@@ -3,12 +3,24 @@
   <ClientOnly>
     <div v-if="chef" class="space-y-6">
       <UCard>
-        <MoleculesFormsFirestoreSimpleField
-          label="Display Name"
-          :firebase-value="chef.display_name || ''"
-          placeholder="Enter your display name"
-          :update-function="handleDisplayName"
-        />
+        <div class="space-y-4">
+          <MoleculesFormsFirestoreSimpleField
+            label="Display Name"
+            :firebase-value="chef.display_name || ''"
+            placeholder="Enter your display name"
+            :update-function="handleDisplayName"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Short Bio"
+            type="textarea"
+            :rows="3"
+            :maxlength="200"
+            :firebase-value="chef.bio_short || ''"
+            placeholder="Share a quick intro for listings"
+            :update-function="handleShortBio"
+          />
+        </div>
       </UCard>
     </div>
 
@@ -24,7 +36,7 @@ import { useChefUpdate } from '../../../../composables/firestore/profiles/Chef/m
 const props = defineProps<{ chef: Chef | null }>()
 const chef = computed(() => props.chef ?? null)
 
-const { updateDisplayName } = useChefUpdate(chef)
+const { updateDisplayName, updateBioShort } = useChefUpdate()
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
@@ -43,6 +55,28 @@ const handleDisplayName = async (value: string) => {
       error instanceof Error ? error.message : 'Please try again.'
     toast?.add({
       title: 'Failed to update display name',
+      description,
+      color: 'amber',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+    throw error
+  }
+}
+
+const handleShortBio = async (value: string) => {
+  if (!chef.value) return 'success'
+  try {
+    await updateBioShort(value)
+    toast?.add({
+      title: 'Short bio updated',
+      icon: 'i-heroicons-check-circle',
+    })
+    return 'success'
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast?.add({
+      title: 'Failed to update short bio',
       description,
       color: 'amber',
       icon: 'i-heroicons-exclamation-triangle',

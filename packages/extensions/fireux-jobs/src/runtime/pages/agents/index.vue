@@ -4,17 +4,10 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="space-y-6">
       <template v-if="hasProfile">
-        <OrganismsProfileSectionsSingle
-          :cell="cell"
-          :pill="pill"
-          :has-profile="hasProfile"
-          :header-title="currentProfileTitle"
-          empty-message="No agent profile loaded."
-          card-cell-component="OrganismsProfilesAgentCardsCell"
-          card-cell-prop="agent"
-          card-pill-component="OrganismsProfilesAgentCardsPill"
-          card-pill-prop="agent"
-        />
+        <OrganismsProfileSectionsSingle :title="currentProfileTitle">
+          <OrganismsProfilesAgentCardsCell v-if="cell" :agent="cell" />
+          <OrganismsProfilesAgentCardsPill v-if="pill" :agent="pill" />
+        </OrganismsProfileSectionsSingle>
       </template>
 
       <OrganismsProfilesAgentCTA v-else />

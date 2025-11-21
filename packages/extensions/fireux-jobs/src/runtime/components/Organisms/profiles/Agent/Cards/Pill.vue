@@ -1,22 +1,17 @@
 <template>
-  <NuxtLink v-if="props.agent?.to" :to="props.agent.to" class="pill">
-    <UAvatar
-      :src="props.agent.avatar"
-      :alt="props.agent.title"
-      size="sm"
-      class="avatar"
-    />
+  <NuxtLink v-if="agent?.to" :to="agent.to" class="pill">
+    <UAvatar :src="agent.avatar" :alt="agent.title" size="sm" class="avatar" />
 
     <div class="content">
-      <span class="title">{{ props.agent.title }}</span>
+      <span class="title">{{ agent.title }}</span>
 
-      <span v-if="props.agent.subtitle" class="subtitle">
-        {{ props.agent.subtitle }}
+      <span v-if="agent.tagline" class="tagline">
+        {{ agent.tagline }}
       </span>
 
-      <div v-if="props.agent.badges?.length" class="badges">
+      <div v-if="agent.badges?.length" class="badges">
         <UBadge
-          v-for="badge in props.agent.badges"
+          v-for="badge in agent.badges"
           :key="badge"
           size="xs"
           variant="soft"
@@ -29,22 +24,22 @@
 
   <div v-else class="pill">
     <UAvatar
-      :src="props.agent?.avatar"
-      :alt="props.agent?.title"
+      :src="agent?.avatar"
+      :alt="agent?.title"
       size="sm"
       class="avatar"
     />
 
     <div class="content">
-      <span class="title">{{ props.agent?.title }}</span>
+      <span class="title">{{ agent?.title }}</span>
 
-      <span v-if="props.agent?.subtitle" class="subtitle">
-        {{ props.agent.subtitle }}
+      <span v-if="agent?.tagline" class="tagline">
+        {{ agent.tagline }}
       </span>
 
-      <div v-if="props.agent?.badges?.length" class="badges">
+      <div v-if="agent?.badges?.length" class="badges">
         <UBadge
-          v-for="badge in props.agent.badges"
+          v-for="badge in agent.badges"
           :key="badge"
           size="xs"
           variant="soft"
@@ -57,11 +52,22 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { AgentCard } from '../../../../../models/profiles/Agent.model.ts'
 
 const props = defineProps<{
   agent: AgentCard.Pill | null
 }>()
+
+const agent = computed(() => {
+  const pill = props.agent
+  if (!pill) return null
+
+  return {
+    ...pill,
+    tagline: pill.tagline ?? pill.subtitle ?? '',
+  }
+})
 </script>
 
 <style scoped>
@@ -93,7 +99,7 @@ const props = defineProps<{
   font-weight: 600;
 }
 
-.subtitle {
+.tagline {
   font-size: 0.8rem;
   color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
 }

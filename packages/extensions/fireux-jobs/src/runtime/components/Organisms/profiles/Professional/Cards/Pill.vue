@@ -10,8 +10,8 @@
     <div class="content">
       <span class="title">{{ professional.title }}</span>
 
-      <span v-if="professional.subtitle" class="subtitle">
-        {{ professional.subtitle }}
+      <span v-if="professional.tagline" class="tagline">
+        {{ professional.tagline }}
       </span>
 
       <div v-if="professional.badges?.length" class="badges">
@@ -38,8 +38,8 @@
     <div class="content">
       <span class="title">{{ professional?.title }}</span>
 
-      <span v-if="professional?.subtitle" class="subtitle">
-        {{ professional.subtitle }}
+      <span v-if="professional?.tagline" class="tagline">
+        {{ professional.tagline }}
       </span>
 
       <div v-if="professional?.badges?.length" class="badges">
@@ -65,7 +65,15 @@ const props = defineProps<{
   professional: ProfessionalCard.Pill | null
 }>()
 
-const professional = computed(() => props.professional)
+const professional = computed(() => {
+  const pill = props.professional
+  if (!pill) return null
+
+  return {
+    ...pill,
+    tagline: pill.tagline ?? pill.subtitle ?? '',
+  }
+})
 </script>
 
 <style scoped>
@@ -97,7 +105,7 @@ const professional = computed(() => props.professional)
   font-weight: 600;
 }
 
-.subtitle {
+.tagline {
   font-size: 0.8rem;
   color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
 }

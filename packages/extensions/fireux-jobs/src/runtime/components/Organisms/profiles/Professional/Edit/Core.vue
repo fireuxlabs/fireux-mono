@@ -4,10 +4,10 @@
       <UCard>
         <div>
           <MoleculesFormsFirestoreSimpleField
-            label="Subtitle"
-            :firebase-value="professional.subtitle || ''"
+            label="Tagline"
+            :firebase-value="tagline"
             placeholder="Ex: Private chef, pastry specialist"
-            :update-function="onUpdateSubtitle"
+            :update-function="onUpdateTagline"
           />
         </div>
       </UCard>
@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useProfessionalUpdate } from '../../../../../composables/firestore/profiles/Professional/main/useProfessionalUpdate.ts'
 import type {
   ProfessionalCoreProfile,
@@ -54,24 +55,31 @@ const props = defineProps<{
   professional: ProfessionalCoreProfile | null
 }>()
 
-const { setRelevantExperience, setOtherExperience, updateSubtitle } =
+const { setRelevantExperience, setOtherExperience, updateTagline } =
   useProfessionalUpdate()
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
 
-const onUpdateSubtitle = async (value: string) => {
+const tagline = computed(
+  () =>
+    props.professional?.tagline ??
+    (props.professional as { subtitle?: string | null } | null)?.subtitle ??
+    ''
+)
+
+const onUpdateTagline = async (value: string) => {
   try {
-    await updateSubtitle(value, { id: props.professional?.id ?? null })
+    await updateTagline(value, { id: props.professional?.id ?? null })
     toast?.add({
-      title: 'Subtitle updated',
+      title: 'Tagline updated',
       icon: 'i-heroicons-check-circle',
     })
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
     toast?.add({
-      title: 'Failed to update subtitle',
+      title: 'Failed to update tagline',
       description,
       color: 'amber',
       icon: 'i-heroicons-exclamation-triangle',

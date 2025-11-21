@@ -23,7 +23,7 @@
       </div>
 
       <p>
-        Your avatar, display name, and subtitle form your core presence; your
+        Your avatar, display name, and tagline form your core presence; your
         experience fills in the story behind the card. Keep it current and it
         will work everywhere on your behalf.
       </p>
