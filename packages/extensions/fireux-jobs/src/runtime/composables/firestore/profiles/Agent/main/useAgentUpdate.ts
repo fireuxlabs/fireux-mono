@@ -11,7 +11,10 @@ import type { AgentProfile } from '../../../../../models/profiles/Agent.model.ts
  * - accepts only refs (no user cascading)
  * - both implementations are stubs until Firestore integration
  */
-export function useAgentUpdate(profile: ProfileRefs<AgentProfile>) {
+export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
+  const coreProfile = () => profile?.coreProfile?.value ?? null
+  const appProfile = () => profile?.appProfile?.value ?? null
+
   /**
    * Update the CORE Agent profile
    * - global document (e.g. agents/{uid})
@@ -23,7 +26,7 @@ export function useAgentUpdate(profile: ProfileRefs<AgentProfile>) {
       '[useAgentUpdate] updateCoreProfile stub called with:',
       patch,
       'current coreProfile:',
-      profile.coreProfile.value
+      coreProfile()
     )
   }
 
@@ -38,12 +41,50 @@ export function useAgentUpdate(profile: ProfileRefs<AgentProfile>) {
       '[useAgentUpdate] updateAppProfile stub called with:',
       patch,
       'current appProfile:',
-      profile.appProfile.value
+      appProfile()
     )
+  }
+
+  const updateCore = async (
+    patch: Partial<AgentProfile>,
+    _id?: string | null
+  ): Promise<'success'> => {
+    await updateCoreProfile(patch)
+    return 'success'
+  }
+
+  const updateApp = async (
+    patch: Partial<AgentProfile>,
+    _id?: string | null
+  ): Promise<'success'> => {
+    await updateAppProfile(patch)
+    return 'success'
+  }
+
+  const cleanString = (value: string | null | undefined) => {
+    const normalized = typeof value === 'string' ? value.trim() : ''
+    return normalized.length ? normalized : null
+  }
+
+  const updateDisplayName = async (value: string) => {
+    console.warn('[useAgentUpdate] updateDisplayName stub called with:', value)
+  }
+
+  const updateTagline = async (value: string) => {
+    await updateCoreProfile({ tagline: cleanString(value) })
+  }
+
+  const updateBioShort = async (value: string) => {
+    await updateCoreProfile({ bio_short: cleanString(value) })
   }
 
   return {
     updateCoreProfile,
     updateAppProfile,
+    updateCore,
+    updateApp,
+    updateDisplayName,
+    updateTagline,
+    updateBioShort,
   }
 }

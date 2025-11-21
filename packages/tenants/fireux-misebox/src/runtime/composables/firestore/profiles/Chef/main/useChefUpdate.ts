@@ -54,6 +54,10 @@ export function useChefUpdate(profile?: ProfileRefs<ChefProfile> | null) {
     console.warn('[useChefUpdate] updateDisplayName stub called with:', value)
   }
 
+  const updateTagline = async (value: string) => {
+    await updateCoreProfile({ tagline: cleanString(value) })
+  }
+
   const updateBioShort = async (value: string) => {
     await updateCoreProfile({ bio_short: cleanString(value) })
   }
@@ -62,6 +66,7 @@ export function useChefUpdate(profile?: ProfileRefs<ChefProfile> | null) {
     updateCoreProfile,
     updateAppProfile,
     updateDisplayName,
+    updateTagline,
     updateBioShort,
   }
 }

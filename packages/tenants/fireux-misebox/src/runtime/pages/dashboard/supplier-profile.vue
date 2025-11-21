@@ -1,13 +1,16 @@
 <!-- packages/tenants/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue -->
 <template>
-  <UPageCard v-if="coreProfile" variant="subtle">
-    <div class="space-y-6">
+  <UPageCard v-if="hasSupplierProfile" variant="subtle">
+
+    <div v-if="coreProfile" class="space-y-6">
       <OrganismsProfilesSupplierEditCore :supplier="coreProfile" />
       <OrganismsProfilesSupplierEditApp
         v-if="isTenant"
         :supplier="appProfile"
       />
     </div>
+
+    <div v-else class="fallback loading">Supplier profile data is loading.</div>
   </UPageCard>
 
   <UCard v-else>
@@ -16,10 +19,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useSupplier } from '../../composables/firestore/profiles/Supplier/useSupplier'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-
-declare function definePageMeta(meta: any): void
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
 definePageMeta({
   layout: 'dashboard',
@@ -38,6 +41,12 @@ definePageMeta({
 const { coreProfile, appProfile } = useSupplier()
 const { role, appId } = useFireUXConfig()
 const isTenant = role === 'tenant' && !!appId
+
+const { user } = useUser()
+const hasSupplierProfile = computed(() => {
+  const source = user.value?.profiles
+  return Array.isArray(source) && source.includes('supplier')
+})
 </script>
 
 <style scoped>
@@ -47,5 +56,12 @@ const isTenant = role === 'tenant' && !!appId
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.875rem;
+}
+
+.loading {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.875rem;
+  opacity: 0.7;
 }
 </style>

@@ -59,6 +59,10 @@ export function useSupplierUpdate(
     )
   }
 
+  const updateTagline = async (value: string) => {
+    await updateCoreProfile({ tagline: cleanString(value) })
+  }
+
   const updateBioShort = async (value: string) => {
     await updateCoreProfile({ bio_short: cleanString(value) })
   }
@@ -67,6 +71,7 @@ export function useSupplierUpdate(
     updateCoreProfile,
     updateAppProfile,
     updateDisplayName,
+    updateTagline,
     updateBioShort,
   }
 }
