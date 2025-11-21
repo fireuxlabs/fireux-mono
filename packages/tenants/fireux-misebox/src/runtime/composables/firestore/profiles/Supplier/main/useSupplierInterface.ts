@@ -4,6 +4,7 @@ import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import {
   supplierConfig,
+  resolveSupplierCell,
   type SupplierProfile,
   type SupplierCard,
 } from '../../../../../models/profiles/Supplier.model.ts'
@@ -34,7 +35,11 @@ export function useSupplierInterface(
     }
   })
 
-  return { pill }
+  const cell = computed<SupplierCard.Cell | null>(() =>
+    resolveSupplierCell(profile.coreProfile.value)
+  )
+
+  return { pill, cell }
 }
 
 export const resolveSupplierPill = (

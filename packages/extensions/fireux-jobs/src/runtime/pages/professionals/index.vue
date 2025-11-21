@@ -1,17 +1,20 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue -->
 <template>
   <UPage>
-    <UPageHeader
-      title="Professionals"
-      description="Inspect your professional profile and browse all professionals available to this runtime."
-    />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="space-y-6">
       <template v-if="hasProfile">
-        <OrganismsProfilesProfessionalSectionsSingle
-          :core-profile="coreProfile"
-          :app-profile="appProfile"
+        <OrganismsProfileSectionsSingle
+          :cell="cell"
           :pill="pill"
+          :has-profile="hasProfile"
+          :header-title="currentProfileTitle"
+          empty-message="No professional profile loaded."
+          card-cell-component="OrganismsProfilesProfessionalCardsCell"
+          card-cell-prop="professional"
+          card-pill-component="OrganismsProfilesProfessionalCardsPill"
+          card-pill-prop="professional"
         />
       </template>
 
@@ -27,6 +30,7 @@
 import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
 
 definePageMeta({
@@ -45,9 +49,15 @@ definePageMeta({
   name: 'ProfessionalsIndexPage',
 })
 
-const { coreProfile, appProfile, pill } = useProfessional()
+const { pill, cell } = useProfessional()
 const { isTenant } = useFireUXConfig()
-const hasProfile = computed(() => Boolean(coreProfile.value))
+const { hasProfile: userHasProfile } = useUser()
+const hasProfile = computed(() => userHasProfile('professional'))
 
-useHead({ title: 'Professionals' })
+const pageTitle = 'Professionals'
+const pageDescription =
+  'Inspect your professional profile and browse all professionals available to this runtime.'
+const currentProfileTitle = 'Your professional profile'
+
+useHead({ title: pageTitle })
 </script>

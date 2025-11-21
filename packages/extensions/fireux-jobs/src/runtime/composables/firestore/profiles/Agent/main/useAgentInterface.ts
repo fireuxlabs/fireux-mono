@@ -4,6 +4,7 @@ import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import {
   agentConfig,
+  resolveAgentCell,
   type AgentProfile,
   type AgentCard,
 } from '../../../../../models/profiles/Agent.model.ts'
@@ -34,7 +35,11 @@ export function useAgentInterface(
     }
   })
 
-  return { pill }
+  const cell = computed<AgentCard.Cell | null>(() =>
+    resolveAgentCell(profile.coreProfile.value)
+  )
+
+  return { pill, cell }
 }
 
 export const resolveAgentPill = (

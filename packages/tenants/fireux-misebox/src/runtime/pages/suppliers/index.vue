@@ -1,17 +1,20 @@
 <!-- FILE: packages/tenants/fireux-misebox/src/runtime/pages/suppliers/index.vue -->
 <template>
   <UPage>
-    <UPageHeader
-      title="Suppliers"
-      description="Inspect your supplier profile and browse suppliers resolved for this runtime."
-    />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="space-y-6">
       <template v-if="hasProfile">
-        <OrganismsProfilesSupplierSectionsSingle
-          :core-profile="coreProfile"
-          :app-profile="appProfile"
+        <OrganismsProfileSectionsSingle
+          :cell="cell"
           :pill="pill"
+          :has-profile="hasProfile"
+          :header-title="currentProfileTitle"
+          empty-message="No supplier profile loaded."
+          card-cell-component="OrganismsProfilesSupplierCardsCell"
+          card-cell-prop="supplier"
+          card-pill-component="OrganismsProfilesSupplierCardsPill"
+          card-pill-prop="supplier"
         />
       </template>
 
@@ -26,12 +29,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useHead } from '#imports'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { useSupplier } from '../../composables/firestore/profiles/Supplier/useSupplier.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import OrganismsProfilesSupplierCTA from '../../components/organisms/profiles/Supplier/CTA.vue'
-import OrganismsProfilesSupplierSectionsSingle from '../../components/organisms/profiles/Supplier/Sections/Single.vue'
-import OrganismsProfilesSupplierSectionsGlobalCollection from '../../components/organisms/profiles/Supplier/Sections/GlobalCollection.vue'
-import OrganismsProfilesSupplierSectionsLocalCollection from '../../components/organisms/profiles/Supplier/Sections/LocalCollection.vue'
 
 definePageMeta({
   nav: {
@@ -49,9 +49,15 @@ definePageMeta({
   name: 'SuppliersIndexPage',
 })
 
-const { coreProfile, appProfile, pill } = useSupplier()
-const hasProfile = computed(() => Boolean(coreProfile.value))
+const { pill, cell } = useSupplier()
 const { isTenant } = useFireUXConfig()
+const { hasProfile: userHasProfile } = useUser()
+const hasProfile = computed(() => userHasProfile('supplier'))
 
-useHead({ title: 'Suppliers' })
+const pageTitle = 'Suppliers'
+const pageDescription =
+  'Inspect your supplier profile and browse suppliers resolved for this runtime.'
+const currentProfileTitle = 'Your supplier profile'
+
+useHead({ title: pageTitle })
 </script>

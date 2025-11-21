@@ -71,9 +71,35 @@ export type ChefCoreProfile = ChefCard.ProfileCore
 export type ChefAppProfile = ChefCard.ProfileApp
 
 /** Config */
+const routeFor = (id?: string | null) =>
+  id ? `/${chefConfig.collectionName}/${id}` : undefined
+
 export const chefConfig: ProfileConfig = {
   id: 'chef',
   collectionName: 'chefs',
   profileType: 'Chef',
   cta: 'Create your Chef profile to appear in listings.',
 } as const
+
+export const resolveChefCell = (
+  profile?: ChefProfile | null,
+  fallbackId = 'chef-profile'
+): ChefCard.Cell | null => {
+  if (!profile) return null
+
+  const user = profile.user ?? undefined
+
+  const id = profile.id ?? user?.id ?? fallbackId
+
+  return {
+    id,
+    avatar: user?.avatar ?? undefined,
+    title: user?.display_name ?? profile.title ?? 'Chef',
+    subtitle: profile.subtitle ?? '',
+    badges: profile.badges ?? [],
+    bio_short: profile.bio_short ?? null,
+    specialties: profile.specialties ?? [],
+    locations: profile.locations ?? [],
+    to: routeFor(profile.id),
+  }
+}

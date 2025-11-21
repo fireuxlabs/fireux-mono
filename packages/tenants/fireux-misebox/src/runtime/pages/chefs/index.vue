@@ -1,17 +1,20 @@
 <!-- FILE: packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue -->
 <template>
   <UPage>
-    <UPageHeader
-      title="Chefs"
-      description="Inspect your chef profile and browse all chefs resolved for this runtime."
-    />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="space-y-6">
       <template v-if="hasProfile">
-        <OrganismsProfilesChefSectionsSingle
-          :core-profile="coreProfile"
-          :app-profile="appProfile"
+        <OrganismsProfileSectionsSingle
+          :cell="cell"
           :pill="pill"
+          :has-profile="hasProfile"
+          :header-title="currentProfileTitle"
+          empty-message="No chef profile loaded."
+          card-cell-component="OrganismsProfilesChefCardsCell"
+          card-cell-prop="chef"
+          card-pill-component="OrganismsProfilesChefCardsPill"
+          card-pill-prop="chef"
         />
       </template>
 
@@ -26,12 +29,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useHead } from '#imports'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { useChef } from '../../composables/firestore/profiles/Chef/useChef.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import OrganismsProfilesChefCTA from '../../components/organisms/profiles/Chef/CTA.vue'
-import OrganismsProfilesChefSectionsSingle from '../../components/organisms/profiles/Chef/Sections/Single.vue'
-import OrganismsProfilesChefSectionsGlobalCollection from '../../components/organisms/profiles/Chef/Sections/GlobalCollection.vue'
-import OrganismsProfilesChefSectionsLocalCollection from '../../components/organisms/profiles/Chef/Sections/LocalCollection.vue'
 
 definePageMeta({
   nav: {
@@ -49,9 +49,15 @@ definePageMeta({
   name: 'ChefsIndexPage',
 })
 
-const { coreProfile, appProfile, pill } = useChef()
-const hasProfile = computed(() => Boolean(coreProfile.value))
+const { pill, cell } = useChef()
 const { isTenant } = useFireUXConfig()
+const { hasProfile: userHasProfile } = useUser()
+const hasProfile = computed(() => userHasProfile('chef'))
 
-useHead({ title: 'Chefs' })
+const pageTitle = 'Chefs'
+const pageDescription =
+  'Inspect your chef profile and browse all chefs resolved for this runtime.'
+const currentProfileTitle = 'Your chef profile'
+
+useHead({ title: pageTitle })
 </script>

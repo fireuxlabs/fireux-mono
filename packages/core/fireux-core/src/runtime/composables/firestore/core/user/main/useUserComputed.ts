@@ -59,6 +59,16 @@ export function useUserComputed(user: UserRefs, pending?: Ref<boolean>) {
   const hasCoreProfile = computed(() => Boolean(coreUser.value))
   const hasAppProfile = computed(() => Boolean(appUser.value))
 
+  const profileKeys = computed(() => {
+    const core = coreUser.value
+    if (!core) return [] as string[]
+
+    const profiles = Array.isArray(core.profiles) ? core.profiles : []
+    return profiles.filter(
+      (key): key is string => typeof key === 'string' && key.length > 0
+    )
+  })
+
   const resolveCtaKey = computed<UserCtaKey>(() => {
     if (!isAuthenticated.value && !uid.value) return 'sign-in'
     if (!hasCoreProfile.value) return 'create-core-user'
@@ -81,12 +91,8 @@ export function useUserComputed(user: UserRefs, pending?: Ref<boolean>) {
 
   const cta = computed<UserCta>(() => CTA_CONFIG[resolveCtaKey.value])
 
-  const hasProfile = (profileType: string): boolean => {
-    const core = coreUser.value
-    if (!core) return false
-    const profiles = Array.isArray(core.profiles) ? core.profiles : []
-    return profiles.includes(profileType)
-  }
+  const hasProfile = (profileType: string): boolean =>
+    profileKeys.value.includes(profileType)
 
   return {
     currentUser,
@@ -95,6 +101,7 @@ export function useUserComputed(user: UserRefs, pending?: Ref<boolean>) {
     hasCoreProfile,
     isAdmin,
     cta,
+    profileKeys,
     hasProfile,
   }
 }

@@ -67,9 +67,35 @@ export type SupplierCoreProfile = SupplierCard.ProfileCore
 export type SupplierAppProfile = SupplierCard.ProfileApp
 
 /** Config */
+const routeFor = (id?: string | null) =>
+  id ? `/${supplierConfig.collectionName}/${id}` : undefined
+
 export const supplierConfig: ProfileConfig = {
   id: 'supplier',
   collectionName: 'suppliers',
   profileType: 'Supplier',
   cta: 'Create your Supplier profile to appear in listings.',
 } as const
+
+export const resolveSupplierCell = (
+  profile?: SupplierProfile | null,
+  fallbackId = 'supplier-profile'
+): SupplierCard.Cell | null => {
+  if (!profile) return null
+
+  const user = profile.user ?? undefined
+
+  const id = profile.id ?? user?.id ?? fallbackId
+
+  return {
+    id,
+    avatar: user?.avatar ?? undefined,
+    title: user?.display_name ?? profile.title ?? 'Supplier',
+    subtitle: profile.subtitle ?? '',
+    badges: profile.badges ?? [],
+    bio_short: profile.bio_short ?? null,
+    specialties: profile.specialties ?? [],
+    categories: profile.categories ?? [],
+    to: routeFor(profile.id),
+  }
+}

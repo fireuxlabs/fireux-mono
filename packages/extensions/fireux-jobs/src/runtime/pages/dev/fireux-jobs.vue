@@ -17,10 +17,15 @@
           </p>
         </header>
 
-        <OrganismsProfilesProfessionalSectionsSingle
-          :core-profile="professionalCoreProfile"
-          :app-profile="professionalAppProfile"
+        <OrganismsProfileSectionsSingle
+          :cell="professionalCell"
           :pill="professionalPill"
+          :has-profile="professionalHasProfile"
+          empty-message="No professional profile loaded."
+          card-cell-component="OrganismsProfilesProfessionalCardsCell"
+          card-cell-prop="professional"
+          card-pill-component="OrganismsProfilesProfessionalCardsPill"
+          card-pill-prop="professional"
         />
 
         <DevJsonPanel v-if="professionalJson" :data="professionalJson" />
@@ -123,15 +128,20 @@
             Agent
           </h2>
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            Reflects the active agent profile with the same surface used in
-            the runtime app.
+            Reflects the active agent profile with the same surface used in the
+            runtime app.
           </p>
         </header>
 
-        <OrganismsProfilesAgentSectionsSingle
-          :core-profile="agentCoreProfile"
-          :app-profile="agentAppProfile"
+        <OrganismsProfileSectionsSingle
+          :cell="agentCell"
           :pill="agentPill"
+          :has-profile="agentHasProfile"
+          empty-message="No agent profile loaded."
+          card-cell-component="OrganismsProfilesAgentCardsCell"
+          card-cell-prop="agent"
+          card-pill-component="OrganismsProfilesAgentCardsPill"
+          card-pill-prop="agent"
         />
 
         <DevJsonPanel v-if="agentJson" :data="agentJson" />
@@ -203,10 +213,7 @@
           </p>
 
           <template #footer>
-            <DevJsonPanel
-              v-if="agentLocalJson.length"
-              :data="agentLocalJson"
-            />
+            <DevJsonPanel v-if="agentLocalJson.length" :data="agentLocalJson" />
           </template>
         </UCard>
         <UCard v-else-if="isTenant">
@@ -231,6 +238,7 @@
 
 <script setup lang="ts">
 import { computed, unref } from 'vue'
+import OrganismsProfileSectionsSingle from 'fireux-core/runtime/components/organisms/Profile/Sections/Single.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
 import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
@@ -266,13 +274,21 @@ const {
   coreProfile: professionalCoreProfile,
   appProfile: professionalAppProfile,
   pill: professionalPill,
+  cell: professionalCell,
 } = useProfessional()
 
 const {
   coreProfile: agentCoreProfile,
   appProfile: agentAppProfile,
   pill: agentPill,
+  cell: agentCell,
 } = useAgent()
+
+const professionalHasProfile = computed(() =>
+  Boolean(unref(professionalCoreProfile))
+)
+
+const agentHasProfile = computed(() => Boolean(unref(agentCoreProfile)))
 
 const professionalJson = computed(() => {
   const core = unref(professionalCoreProfile)
@@ -340,12 +356,8 @@ const professionalLocalJson = computed(() =>
 
 const professionalPillKey = resolveProfessionalPillKey
 
-const {
-  globalAgents,
-  localAgents,
-  rawGlobalAgents,
-  rawLocalAgents,
-} = useAgentCollection()
+const { globalAgents, localAgents, rawGlobalAgents, rawLocalAgents } =
+  useAgentCollection()
 
 const toAgentPill = (
   profile?: Partial<AgentProfile> | null
@@ -392,6 +404,5 @@ const agentLocalJson = computed(() =>
   localAgents && rawLocalAgents ? rawLocalAgents.value ?? [] : []
 )
 
-const agentPillKey = (pill: AgentCard.Pill) =>
-  pill.to ?? pill.title ?? 'agent'
+const agentPillKey = (pill: AgentCard.Pill) => pill.to ?? pill.title ?? 'agent'
 </script>

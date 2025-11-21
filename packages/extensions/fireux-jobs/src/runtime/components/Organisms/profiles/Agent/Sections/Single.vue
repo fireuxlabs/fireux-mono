@@ -6,6 +6,11 @@
       </template>
 
       <div class="space-y-4">
+        <OrganismsProfilesAgentCardsCell
+          v-if="cell"
+          :agent="cell"
+          class="max-w-xl"
+        />
         <OrganismsProfilesAgentCardsPill
           v-if="pill"
           :agent="pill"
@@ -19,17 +24,35 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type {
   AgentProfile,
   AgentCard,
 } from '../../../../../models/profiles/Agent.model.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
-defineProps<{
+const props = defineProps<{
   coreProfile: AgentProfile | null | undefined
   appProfile?: Partial<AgentProfile> | null | undefined
   pill: AgentCard.Pill | null
 }>()
 
 const { coreUser } = useUser()
+
+const cell = computed<AgentCard.Cell | null>(() => {
+  const profile = props.coreProfile ?? null
+  if (!profile) return null
+
+  return {
+    id: profile.id ?? profile.user?.id ?? 'agent-profile',
+    avatar: profile.user?.avatar ?? undefined,
+    title: profile.user?.display_name ?? profile.title ?? 'Agent',
+    subtitle: profile.subtitle ?? '',
+    badges: profile.badges ?? [],
+    bio_short: profile.bio_short ?? null,
+    specialties: profile.specialties ?? [],
+    locations: profile.locations ?? [],
+    to: profile.id ? `/agents/${profile.id}` : undefined,
+  }
+})
 </script>

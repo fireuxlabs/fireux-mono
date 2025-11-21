@@ -26,16 +26,7 @@
 import { ref } from 'vue'
 import { useAgentCreate } from '../../../../composables/firestore/profiles/Agent/main/useAgentCreate.ts'
 
-const props = defineProps<{
-  create?: () => Promise<unknown>
-}>()
-
-const emit = defineEmits<{
-  (e: 'created', payload: unknown): void
-  (e: 'error', error: unknown): void
-}>()
-
-const { createAgent: defaultCreateAgent } = useAgentCreate()
+const { createAgent } = useAgentCreate()
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
@@ -46,22 +37,16 @@ const handleCreate = async () => {
   isCreating.value = true
   createError.value = null
 
-  const create = props.create ?? defaultCreateAgent
-
   try {
-    const result = await create()
-    emit('created', result)
+    await createAgent()
   } catch (error) {
     const message =
       error instanceof Error
         ? error.message
         : 'Unable to create agent profile. Please try again.'
     createError.value = message
-    emit('error', error)
   } finally {
-    if (createError.value) {
-      isCreating.value = false
-    }
+    isCreating.value = false
   }
 }
 </script>

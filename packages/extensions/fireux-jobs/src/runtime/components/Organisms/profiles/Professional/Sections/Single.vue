@@ -7,6 +7,11 @@
       </template>
 
       <div class="space-y-4">
+        <OrganismsProfilesProfessionalCardsCell
+          v-if="cell"
+          :professional="cell"
+          class="max-w-xl"
+        />
         <OrganismsProfilesProfessionalCardsPill
           v-if="pill"
           :professional="pill"
@@ -20,17 +25,35 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type {
   ProfessionalProfile,
   ProfessionalCard,
 } from '../../../../../models/profiles/Professional.model.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
-defineProps<{
+const props = defineProps<{
   coreProfile: ProfessionalProfile | null | undefined
   appProfile?: Partial<ProfessionalProfile> | null | undefined
   pill: ProfessionalCard.Pill | null
 }>()
 
 const { coreUser } = useUser()
+
+const cell = computed<ProfessionalCard.Cell | null>(() => {
+  const profile = props.coreProfile ?? null
+  if (!profile) return null
+
+  return {
+    id: profile.id ?? profile.user?.id ?? 'professional-profile',
+    avatar: profile.user?.avatar ?? undefined,
+    title: profile.user?.display_name ?? profile.title ?? 'Professional',
+    subtitle: profile.subtitle ?? '',
+    badges: profile.badges ?? [],
+    bio_short: profile.bio_short ?? null,
+    specialties: profile.specialties ?? [],
+    locations: profile.locations ?? [],
+    to: profile.id ? `/professionals/${profile.id}` : undefined,
+  }
+})
 </script>

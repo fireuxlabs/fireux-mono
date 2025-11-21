@@ -72,9 +72,48 @@ export type AgentCoreProfile = AgentCard.ProfileCore
 export type AgentAppProfile = AgentCard.ProfileApp
 
 /** Config */
+const routeFor = (id?: string | null) =>
+  id ? `/${agentConfig.collectionName}/${id}` : undefined
+
 export const agentConfig: ProfileConfig = {
   id: 'agent',
   collectionName: 'agents',
   profileType: 'Agent',
   cta: 'Create your Agent profile to appear in listings.',
 } as const
+
+export const resolveAgentCell = (
+  profile?: AgentProfile | null,
+  fallbackId = 'agent-profile'
+): AgentCard.Cell | null => {
+  if (!profile) return null
+
+  const user = profile.user ?? undefined
+
+  const id = profile.id ?? user?.id ?? fallbackId
+
+  return {
+    id,
+    avatar: user?.avatar ?? undefined,
+    title: user?.display_name ?? profile.title ?? 'Agent',
+    subtitle: profile.subtitle ?? '',
+    badges: profile.badges ?? [],
+    bio_short: profile.bio_short ?? null,
+    specialties: profile.specialties ?? [],
+    locations: profile.locations ?? [],
+    to: routeFor(profile.id),
+  }
+}
+
+export const resolveAgentPill = (
+  profile?: AgentProfile | null
+): AgentCard.Pill => ({
+  avatar: profile?.user?.avatar ?? '',
+  title: profile?.user?.display_name ?? '',
+  subtitle: profile?.subtitle ?? '',
+  badges: [],
+  to: routeFor(profile?.id),
+})
+
+export const resolveAgentPillKey = (pill: AgentCard.Pill) =>
+  pill.to ?? pill.title ?? 'agent'

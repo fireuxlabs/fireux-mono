@@ -6,6 +6,7 @@ import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import {
   professionalConfig,
+  resolveProfessionalCell,
   type ProfessionalProfile,
   type ProfessionalCard,
 } from '../../../../../models/profiles/Professional.model.ts'
@@ -39,7 +40,11 @@ export function useProfessionalInterface(
     }
   })
 
-  return { pill }
+  const cell = computed<ProfessionalCard.Cell | null>(() =>
+    resolveProfessionalCell(profile.coreProfile.value)
+  )
+
+  return { pill, cell }
 }
 
 export const resolveProfessionalPill = (

@@ -77,6 +77,33 @@ export type ProfessionalCoreProfile = ProfessionalCard.ProfileCore
 export type ProfessionalAppProfile = ProfessionalCard.ProfileApp
 
 // Re-export runtime config for convenience
+const routeFor = (id?: string | null) =>
+  id ? `/${professionalConfig.collectionName}/${id}` : undefined
+
+export const resolveProfessionalCell = (
+  profile?: ProfessionalProfile | null,
+  fallbackId = 'professional-profile'
+): ProfessionalCard.Cell | null => {
+  if (!profile) return null
+
+  const user = profile.user ?? undefined
+
+  const id = profile.id ?? user?.id ?? fallbackId
+
+  return {
+    id,
+    avatar: user?.avatar ?? undefined,
+    title: user?.display_name ?? profile.title ?? 'Professional',
+    subtitle: profile.subtitle ?? '',
+    badges: profile.badges ?? [],
+    bio_short: profile.bio_short ?? null,
+    specialties: profile.specialties ?? [],
+    // legacy support: some callers expect locations field even if not typed
+    locations: (profile as { locations?: string[] }).locations ?? [],
+    to: routeFor(profile.id),
+  } as ProfessionalCard.Cell
+}
+
 export { professionalConfig }
 export type {
   RelevantExperienceItem,

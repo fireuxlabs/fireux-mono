@@ -4,6 +4,7 @@ import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import {
   chefConfig,
+  resolveChefCell,
   type ChefProfile,
   type ChefCard,
 } from '../../../../../models/profiles/Chef.model.ts'
@@ -34,7 +35,11 @@ export function useChefInterface(
     }
   })
 
-  return { pill }
+  const cell = computed<ChefCard.Cell | null>(() =>
+    resolveChefCell(profile.coreProfile.value)
+  )
+
+  return { pill, cell }
 }
 
 export const resolveChefPill = (
