@@ -1,13 +1,26 @@
 {
-  "functions": {
-    "source": ".output/server",
-    "runtime": "nodejs22"
-  },
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "fireux-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "fireuxServer"
+    }
+  ],
   "hosting": {
     "site": "fireux",
     "public": ".output/public",
     "cleanUrls": true,
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [{ "source": "**", "function": "server" }]
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "fireuxServer",
+          "codebase": "fireux-ssr",
+          "region": "us-central1"
+        }
+      }
+    ]
   }
 }

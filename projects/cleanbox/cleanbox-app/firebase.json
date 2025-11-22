@@ -1,13 +1,26 @@
 {
-  "functions": {
-    "source": ".output/server",
-    "runtime": "nodejs22"
-  },
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "cleanbox-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "cleanboxServer"
+    }
+  ],
   "hosting": {
     "site": "cleanbox",
     "public": ".output/public",
     "cleanUrls": true,
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [{ "source": "**", "function": "server" }]
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "cleanboxServer",
+          "codebase": "cleanbox-ssr",
+          "region": "us-central1"
+        }
+      }
+    ]
   }
 }

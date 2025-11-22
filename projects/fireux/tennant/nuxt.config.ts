@@ -9,5 +9,10 @@ export default defineNuxtConfig(<NuxtConfig>{
     ecosystem: 'fireux',
     modules: ['fireux-fireux'],
     role: 'tenant',
+    nitro: {
+      firebase: {
+        serverFunctionName: 'tennantServer',
+      },
+    },
   }),
 })

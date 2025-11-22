@@ -1,13 +1,26 @@
 {
-  "functions": {
-    "source": ".output/server",
-    "runtime": "nodejs22"
-  },
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "misebox-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "miseboxServer"
+    }
+  ],
   "hosting": {
     "site": "misebox-78f9c",
     "public": ".output/public",
     "cleanUrls": true,
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [{ "source": "**", "function": "server" }]
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "miseboxServer",
+          "codebase": "misebox-ssr",
+          "region": "us-central1"
+        }
+      }
+    ]
   }
 }

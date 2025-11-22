@@ -1,13 +1,26 @@
 {
-  "functions": {
-    "source": ".output/server",
-    "runtime": "nodejs22"
-  },
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "tennant-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "tennantServer"
+    }
+  ],
   "hosting": {
     "site": "tennant",
     "public": ".output/public",
     "cleanUrls": true,
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [{ "source": "**", "function": "server" }]
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "tennantServer",
+          "codebase": "tennant-ssr",
+          "region": "us-central1"
+        }
+      }
+    ]
   }
 }

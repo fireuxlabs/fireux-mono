@@ -9,5 +9,10 @@ export default defineNuxtConfig(<NuxtConfig>{
     ecosystem: 'cleanbox',
     modules: ['fireux-cleanbox', 'fireux-jobs'],
     role: 'global',
+    nitro: {
+      firebase: {
+        serverFunctionName: 'cleanboxServer',
+      },
+    },
   }),
 })

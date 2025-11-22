@@ -9,5 +9,10 @@ export default defineNuxtConfig(<NuxtConfig>{
     ecosystem: 'misebox',
     modules: ['fireux-misebox'],
     role: 'tenant',
+    nitro: {
+      firebase: {
+        serverFunctionName: 'niederhornServer',
+      },
+    },
   }),
 })
