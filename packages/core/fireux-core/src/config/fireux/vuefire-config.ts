@@ -13,7 +13,7 @@ export function createVuefireConfig(
   const appCheckKey = env('FIREBASE_RECAPTCHA_V3_KEY')
 
   const base: Record<string, any> = {
-    auth: { sessionCookie: false },
+    auth: { enabled: true, sessionCookie: false },
     config: {
       apiKey: env('FIREBASE_API_KEY'),
       authDomain: env('FIREBASE_AUTH_DOMAIN'),
