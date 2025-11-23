@@ -298,7 +298,9 @@ async function getAppUsersCollection(db, projectName) {
   }
 
   console.log(
-    `⚠️  No App Users collection found, tried: ${possibleCollections.join(', ')}`
+    `⚠️  No App Users collection found, tried: ${possibleCollections.join(
+      ', '
+    )}`
   )
   return 'app-users' // fallback
 }

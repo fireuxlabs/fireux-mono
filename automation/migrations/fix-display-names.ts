@@ -62,9 +62,7 @@ function loadCredential() {
     }
     const fallbackPath = conventionalPaths.find((p) => fs.existsSync(p))
     if (fallbackPath) {
-      console.log(
-        `🔐 Using conventional service account path: ${fallbackPath}`
-      )
+      console.log(`🔐 Using conventional service account path: ${fallbackPath}`)
       return cert(JSON.parse(fs.readFileSync(fallbackPath, 'utf8')))
     }
     console.log(

@@ -62,9 +62,7 @@ function loadCredential() {
     }
     const fallbackPath = conventionalPaths.find((p) => fs.existsSync(p))
     if (fallbackPath) {
-      console.log(
-        `🔐 Using conventional service account path: ${fallbackPath}`
-      )
+      console.log(`🔐 Using conventional service account path: ${fallbackPath}`)
       return cert(JSON.parse(fs.readFileSync(fallbackPath, 'utf8')))
     }
     console.log(
@@ -137,7 +135,9 @@ async function run() {
     `Mode: ${DRY_RUN ? 'DRY RUN' : 'REAL RUN'}${DO_DELETE ? ' + DELETE' : ''}`
   )
   console.log(
-    `Chefs: ${INCLUDE_CHEFS ? 'ENABLED (--chefs)' : 'DISABLED (skipping chef profiles)'}\n`
+    `Chefs: ${
+      INCLUDE_CHEFS ? 'ENABLED (--chefs)' : 'DISABLED (skipping chef profiles)'
+    }\n`
   )
 
   const snap = await db.collection(TENANT_USERS_PATH).get()
@@ -157,7 +157,9 @@ async function run() {
   fs.mkdirSync(outDir, { recursive: true })
   const outFile = path.join(
     outDir,
-    `backup-${TENANT_APP_ID}-app-users-${new Date().toISOString().slice(0, 10)}.json`
+    `backup-${TENANT_APP_ID}-app-users-${new Date()
+      .toISOString()
+      .slice(0, 10)}.json`
   )
   fs.writeFileSync(outFile, JSON.stringify(exported, null, 2))
   console.log(`✅ Backup written: ${outFile}`)
@@ -174,7 +176,9 @@ async function run() {
   }))
   const slimFile = path.join(
     outDir,
-    `backup-${TENANT_APP_ID}-app-users-slim-${new Date().toISOString().slice(0, 10)}.json`
+    `backup-${TENANT_APP_ID}-app-users-slim-${new Date()
+      .toISOString()
+      .slice(0, 10)}.json`
   )
   fs.writeFileSync(
     slimFile,
@@ -234,7 +238,9 @@ async function run() {
 
     if (!DRY_RUN) await batch.commit()
     console.log(
-      `Processed ${Math.min(i + CHUNK, docs.length)} / ${docs.length} (core:${coreUpserts}, chefs:${chefUpserts}$${
+      `Processed ${Math.min(i + CHUNK, docs.length)} / ${
+        docs.length
+      } (core:${coreUpserts}, chefs:${chefUpserts}$${
         DO_DELETE ? `, deleted:${deletes}` : ''
       })`
     )

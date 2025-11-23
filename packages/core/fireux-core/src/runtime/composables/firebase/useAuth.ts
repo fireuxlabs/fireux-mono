@@ -1,5 +1,12 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firebase/useAuth.ts
-import { computed, ref, shallowRef, watch, type Ref, type WatchStopHandle } from 'vue'
+import {
+  computed,
+  ref,
+  shallowRef,
+  watch,
+  type Ref,
+  type WatchStopHandle,
+} from 'vue'
 import { onNuxtReady } from '#app'
 import { useFirebaseAuth, useCurrentUser } from 'vuefire'
 import {
@@ -21,9 +28,9 @@ type AuthUser = {
 
 export function useAuth() {
   let auth: ReturnType<typeof useFirebaseAuth> | null = null
-  const currentUser: Ref<AuthUser | null | undefined> = shallowRef<AuthUser | null | undefined>(
-    undefined
-  )
+  const currentUser: Ref<AuthUser | null | undefined> = shallowRef<
+    AuthUser | null | undefined
+  >(undefined)
   let stopCurrentUserWatcher: WatchStopHandle | null = null
 
   const bindVueFireAuth = () => {
@@ -31,7 +38,10 @@ export function useAuth() {
       auth = useFirebaseAuth()
     } catch (error) {
       if (import.meta.dev) {
-        console.warn('[fireux-core/useAuth] useFirebaseAuth() not ready yet', error)
+        console.warn(
+          '[fireux-core/useAuth] useFirebaseAuth() not ready yet',
+          error
+        )
       }
       auth = null
       return
@@ -42,7 +52,10 @@ export function useAuth() {
       source = useCurrentUser() as Ref<AuthUser | null | undefined>
     } catch (error) {
       if (import.meta.dev) {
-        console.warn('[fireux-core/useAuth] useCurrentUser() not ready yet', error)
+        console.warn(
+          '[fireux-core/useAuth] useCurrentUser() not ready yet',
+          error
+        )
       }
       auth = null
       return
