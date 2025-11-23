@@ -150,7 +150,7 @@ const fields = [
 ]
 
 const appLogo = '/img/brand/wordmark.png'
-const googleLogo = '/img/sign-in-light.svg'
+const googleLogo = '/img/auth/sign-in-light.svg'
 
 const pushDashboard = async () => {
   await router.push('/dashboard').catch(() => {})

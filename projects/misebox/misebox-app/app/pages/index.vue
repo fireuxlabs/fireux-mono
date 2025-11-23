@@ -12,6 +12,35 @@
       </template>
     </LandingShell>
 
+    <section class="debug-assets">
+      <article
+        v-for="group in debugGroups"
+        :key="group.title"
+        class="debug-card"
+      >
+        <h3 class="debug-heading">{{ group.title }}</h3>
+        <p class="debug-copy">{{ group.description }}</p>
+        <ul>
+          <li v-for="item in group.items" :key="item.label">
+            <div class="debug-row">
+              <div class="debug-preview">
+                <div class="debug-tile debug-tile--light">
+                  <img :src="item.path" :alt="item.label" />
+                </div>
+                <div class="debug-tile debug-tile--dark">
+                  <img :src="item.path" :alt="item.label" />
+                </div>
+              </div>
+              <div class="debug-text">
+                <code>{{ item.label }}</code>
+                <span class="debug-path">{{ item.path }}</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </article>
+    </section>
+
     <LandingSolutions
       :title="solutions.title"
       :subtitle="solutions.subtitle"
@@ -38,6 +67,40 @@ useSeoMeta({
   description:
     'Recipes, inventory, suppliers, and kitchen workflows in one connected platform.',
 })
+
+const coreStackDebug = [
+  { label: 'Stack · Nuxt (light)', path: '/img/stack/nuxt-black.png' },
+  { label: 'Stack · Nuxt (dark)', path: '/img/stack/nuxt-white.png' },
+  { label: 'Stack · Firebase (light)', path: '/img/stack/firebase-black.png' },
+  { label: 'Stack · Firebase (dark)', path: '/img/stack/firebase-white.png' },
+  { label: 'Stack · Stripe (light)', path: '/img/stack/stripe-black.png' },
+  { label: 'Stack · Stripe (dark)', path: '/img/stack/stripe-white.png' },
+  { label: 'Runtime · Logo Type (light)', path: '/logo-type-light.png' },
+]
+
+const brandDebug = [
+  { label: 'Brand · Avatar', path: '/img/brand/avatar.png' },
+  { label: 'Brand · Logo', path: '/img/brand/logo.png' },
+  { label: 'Brand · Logo (svg)', path: '/img/brand/logo.svg' },
+  { label: 'Brand · Wordmark (dark)', path: '/img/brand/wordmark-dark.svg' },
+  { label: 'Brand · Wordmark (light)', path: '/img/brand/wordmark-light.svg' },
+  { label: 'Brand · Wordmark', path: '/img/brand/wordmark.png' },
+]
+
+const debugGroups = [
+  {
+    title: 'Core Runtime — fireux-core',
+    description:
+      'packages/core/fireux-core/src/runtime/public/img/stack (served via /img/stack/*)',
+    items: coreStackDebug,
+  },
+  {
+    title: 'Misebox App — public/img/brand',
+    description:
+      'projects/misebox/misebox-app/public/img/brand (tenant-specific branding)',
+    items: brandDebug,
+  },
+]
 
 const solutions = {
   title: 'Solutions',
@@ -88,3 +151,92 @@ const solutions = {
   ],
 }
 </script>
+
+<style scoped>
+.debug-assets {
+  margin: 2rem auto;
+  display: grid;
+  gap: 1.5rem;
+  max-width: 720px;
+}
+
+.debug-card {
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--ui-bg-soft, rgba(148, 163, 184, 0.1));
+  border: 1px dashed rgba(148, 163, 184, 0.5);
+}
+
+.debug-heading {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.debug-copy {
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  color: rgba(100, 116, 139, 0.85);
+}
+
+.debug-card ul {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.debug-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.debug-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.debug-preview {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.debug-tile {
+  width: 56px;
+  height: 56px;
+  border-radius: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.debug-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.debug-tile--light {
+  background: white;
+}
+
+.debug-tile--dark {
+  background: #0f172a;
+}
+
+.debug-tile--dark img {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+}
+
+.debug-path {
+  font-family: ui-monospace, SFMono-Regular, SFMono, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.75rem;
+}
+</style>

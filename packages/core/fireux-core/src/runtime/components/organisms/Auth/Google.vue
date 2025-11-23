@@ -14,7 +14,7 @@ const { signInWithGoogle } = useAuth()
 const isDark = computed(() => useColorMode().value === 'dark')
 
 const logoSrc = computed(() =>
-  isDark.value ? '/img/sign-in-dark.svg' : '/img/sign-in-light.svg'
+  isDark.value ? '/img/auth/sign-in-dark.svg' : '/img/auth/sign-in-light.svg'
 )
 
 const handleGoogleSignIn = async () => {

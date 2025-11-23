@@ -59,8 +59,8 @@ const paragraph =
   'A low-code ecosystem for responsive, scalable, and data-driven applications built upon <span class="text-primary">Nuxt4</span> &amp; <span class="text-primary">Firebase</span>.'
 
 const badges = [
-  { src: '/img/nuxt-white.png', alt: 'Nuxt' },
-  { src: '/img/firebase-white.png', alt: 'Firebase' },
+  { src: '/img/stack/nuxt-white.png', alt: 'Nuxt' },
+  { src: '/img/stack/firebase-white.png', alt: 'Firebase' },
 ]
 
 const hero = {

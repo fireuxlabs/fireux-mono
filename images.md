@@ -1,0 +1,61 @@
+# Image Inventory
+
+Updated: 2025-11-22
+
+The list excludes dependency and build outputs (`node_modules`, `artifacts`, `.output`, `dist`, `.nuxt`, `.git`).
+
+- `packages/core/fireux-core/src/runtime/public/icon-192x192.png`
+- `packages/core/fireux-core/src/runtime/public/icon-512x512.png`
+- `packages/core/fireux-core/src/runtime/public/img/auth/sign-in-dark.svg`
+- `packages/core/fireux-core/src/runtime/public/img/auth/sign-in-light.svg`
+- `packages/core/fireux-core/src/runtime/public/img/auth/sign-up-dark.svg`
+- `packages/core/fireux-core/src/runtime/public/img/auth/sign-up-light.svg`
+- `packages/core/fireux-core/src/runtime/public/img/default-image.png`
+- `packages/core/fireux-core/src/runtime/public/img/logo-type-light.svg`
+- `packages/core/fireux-core/src/runtime/public/img/stack/firebase-black.png`
+- `packages/core/fireux-core/src/runtime/public/img/stack/firebase-white.png`
+- `packages/core/fireux-core/src/runtime/public/img/stack/github-black.png`
+- `packages/core/fireux-core/src/runtime/public/img/stack/github-white.png`
+- `packages/core/fireux-core/src/runtime/public/img/stack/nuxt-black.png`
+- `packages/core/fireux-core/src/runtime/public/img/stack/nuxt-white.png`
+- `packages/core/fireux-core/src/runtime/public/img/stack/pwa-black.png`
+- `packages/core/fireux-core/src/runtime/public/img/stack/pwa-white.png`
+- `packages/core/fireux-core/src/runtime/public/img/stack/stripe-black.png`
+- `packages/core/fireux-core/src/runtime/public/img/stack/stripe-white.png`
+- `packages/core/fireux-core/src/runtime/public/logo-type-dark.png`
+- `packages/core/fireux-core/src/runtime/public/logo-type-light.png`
+- `packages/core/fireux-core/src/runtime/public/logo.png`
+- `projects/cleanbox/cleanbox-app/public/icon-192x192.png`
+- `projects/cleanbox/cleanbox-app/public/icon-512x512.png`
+- `projects/cleanbox/cleanbox-app/public/img/brand/avatar.png`
+- `projects/cleanbox/cleanbox-app/public/img/brand/logo.png`
+- `projects/cleanbox/cleanbox-app/public/img/brand/wordmark.png`
+- `projects/cleanbox/richies-reinigung/public/icon-192x192.png`
+- `projects/cleanbox/richies-reinigung/public/icon-512x512.png`
+- `projects/cleanbox/richies-reinigung/public/img/brand/avatar.png`
+- `projects/cleanbox/richies-reinigung/public/img/brand/logo.png`
+- `projects/cleanbox/richies-reinigung/public/img/brand/wordmark.png`
+- `projects/fireux/fireux-app/public/img/brand/avatar.png`
+- `projects/fireux/fireux-app/public/img/brand/logo.png`
+- `projects/fireux/fireux-app/public/img/brand/wordmark-dark.svg`
+- `projects/fireux/fireux-app/public/img/brand/wordmark.png`
+- `projects/fireux/tennant/public/img/brand/avatar.png`
+- `projects/fireux/tennant/public/img/brand/logo.png`
+- `projects/fireux/tennant/public/img/brand/wordmark-dark.svg`
+- `projects/fireux/tennant/public/img/brand/wordmark.png`
+- `projects/misebox/misebox-app/public/icon-192x192.png`
+- `projects/misebox/misebox-app/public/icon-512x512.png`
+- `projects/misebox/misebox-app/public/img/brand/avatar.png`
+- `projects/misebox/misebox-app/public/img/brand/logo.png`
+- `projects/misebox/misebox-app/public/img/brand/logo.svg`
+- `projects/misebox/misebox-app/public/img/brand/wordmark-dark.svg`
+- `projects/misebox/misebox-app/public/img/brand/wordmark-light.svg`
+- `projects/misebox/misebox-app/public/img/brand/wordmark.png`
+- `projects/misebox/niederhorn/public/icon-192x192.png`
+- `projects/misebox/niederhorn/public/icon-512x512.png`
+- `projects/misebox/niederhorn/public/img/brand/avatar.png`
+- `projects/misebox/niederhorn/public/img/brand/logo.png`
+- `projects/misebox/niederhorn/public/img/brand/logo.svg`
+- `projects/misebox/niederhorn/public/img/brand/wordmark-dark.svg`
+- `projects/misebox/niederhorn/public/img/brand/wordmark-light.svg`
+- `projects/misebox/niederhorn/public/img/brand/wordmark.png`

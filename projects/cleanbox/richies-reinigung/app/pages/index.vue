@@ -62,7 +62,7 @@ const heroContent = {
     'Keep recurring cleans on schedule, balance crews across city zones, and automate every <span class="text-primary">follow-up</span>. It is the clean sweep for ops leads.',
   badges: [
     { src: '/img/cleanbox-logo.svg', alt: 'CleanBox' },
-    { src: '/img/firebase-white.png', alt: 'Firebase' },
+    { src: '/img/stack/firebase-white.png', alt: 'Firebase' },
   ],
   primary: { label: 'Open booking board', to: '/bookings' },
   secondary: { label: 'Manage clients', to: '/professionals' },

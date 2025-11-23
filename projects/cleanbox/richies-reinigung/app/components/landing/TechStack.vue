@@ -28,7 +28,7 @@ const techStack = {
   },
   payments: {
     name: 'Secure Payments',
-    logo: '/img/stripe-black.png',
+    logo: '/img/stack/stripe-black.png',
     description: 'Integrated payment processing with automated invoicing',
   },
   mobile: {

@@ -59,8 +59,8 @@ const paragraph =
   'A super-lean tenant for validating <span class="text-primary">auth</span>, <span class="text-primary">app init</span>, and <span class="text-primary">membership</span> — without extra domain objects.'
 
 const badges = [
-  { src: '/img/nuxt-white.png', alt: 'Nuxt' },
-  { src: '/img/firebase-white.png', alt: 'Firebase' },
+  { src: '/img/stack/nuxt-white.png', alt: 'Nuxt' },
+  { src: '/img/stack/firebase-white.png', alt: 'Firebase' },
 ]
 
 const hero = {
