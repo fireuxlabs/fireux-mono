@@ -1,5 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firebase/useAuth.ts
-import { computed, ref, shallowRef, watch, type Ref } from 'vue'
+import { computed, ref, shallowRef, watch, type Ref, type WatchStopHandle } from 'vue'
+import { onNuxtReady } from '#app'
 import { useFirebaseAuth, useCurrentUser } from 'vuefire'
 import {
   signInWithPopup,
@@ -19,10 +20,53 @@ type AuthUser = {
 }
 
 export function useAuth() {
-  const auth = import.meta.client ? useFirebaseAuth() : null
-  const currentUser: Ref<AuthUser | null | undefined> = import.meta.client
-    ? (useCurrentUser() as Ref<AuthUser | null | undefined>)
-    : shallowRef<AuthUser | null | undefined>(undefined)
+  let auth: ReturnType<typeof useFirebaseAuth> | null = null
+  const currentUser: Ref<AuthUser | null | undefined> = shallowRef<AuthUser | null | undefined>(
+    undefined
+  )
+  let stopCurrentUserWatcher: WatchStopHandle | null = null
+
+  const bindVueFireAuth = () => {
+    try {
+      auth = useFirebaseAuth()
+    } catch (error) {
+      if (import.meta.dev) {
+        console.warn('[fireux-core/useAuth] useFirebaseAuth() not ready yet', error)
+      }
+      auth = null
+      return
+    }
+
+    let source: Ref<AuthUser | null | undefined>
+    try {
+      source = useCurrentUser() as Ref<AuthUser | null | undefined>
+    } catch (error) {
+      if (import.meta.dev) {
+        console.warn('[fireux-core/useAuth] useCurrentUser() not ready yet', error)
+      }
+      auth = null
+      return
+    }
+
+    stopCurrentUserWatcher?.()
+    stopCurrentUserWatcher = watch(
+      source,
+      (value) => {
+        currentUser.value = value
+      },
+      { immediate: true }
+    )
+  }
+
+  if (import.meta.client) {
+    bindVueFireAuth()
+
+    if (!auth) {
+      onNuxtReady(() => {
+        if (!auth) bindVueFireAuth()
+      })
+    }
+  }
 
   const ensureUser = import.meta.client ? useUserEnsure().ensureUser : null
   const ensuring = ref(false)
