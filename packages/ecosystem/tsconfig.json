@@ -1,0 +1,10 @@
+//packages/ecosystem/tsconfig.json
+{
+  "files": [],
+  "references": [
+    { "path": "fireux-misebox" },
+    { "path": "fireux-cleanbox" },
+    { "path": "fireux-fireux" }
+  ],
+  "compilerOptions": { "skipLibCheck": true }
+}

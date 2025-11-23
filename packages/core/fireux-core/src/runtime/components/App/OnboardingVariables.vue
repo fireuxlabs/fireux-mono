@@ -352,8 +352,11 @@ const adminBadgeColor = computed(() =>
 )
 
 const assetPreviewSrc = (asset: { path: string }) => {
-  const segments = asset.path?.split('/') ?? []
-  return `/img/brand/${segments.at(-1) ?? ''}`
+  const sourcePath = asset.path ?? ''
+  const [, relative] = sourcePath.split('img/brand/')
+  return relative
+    ? `/img/brand/${relative}`
+    : '/img/brand/fireux/wordmark-light.png'
 }
 
 const summaryRequired = computed(

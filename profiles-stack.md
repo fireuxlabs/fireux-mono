@@ -858,7 +858,7 @@ export function useProfessionalDelete(
 - `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent-profile.vue` – merges profile refs locally for the dashboard editor and shows an `error` fallback when missing.
 - `packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Agent/**/*` – cards, CTA, create, and edit components that consume `pillProps`, `cellProps`, `profileProps`, and update helpers.
 
-## Misebox tenant – Chef profile composables (`packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/`)
+## Misebox tenant – Chef profile composables (`packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/`)
 
 ### Top-level entry
 
@@ -879,12 +879,12 @@ export function useProfessionalDelete(
 
 ### Key runtime consumers
 
-- `packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue` – uses the aggregated `useChef()` return to render directories, pills, and create actions.
-- `packages/tenants/fireux-misebox/src/runtime/pages/chefs/[id].vue` – config-backed detail route.
-- `packages/tenants/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue` – presents merged chef profile data with an `error` fallback when absent.
-- `packages/tenants/fireux-misebox/src/runtime/components/organisms/profiles/Chef/**/*` – cards, CTA, create, and edit modules wired to the chef interface helpers.
+- `packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/index.vue` – uses the aggregated `useChef()` return to render directories, pills, and create actions.
+- `packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/[id].vue` – config-backed detail route.
+- `packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue` – presents merged chef profile data with an `error` fallback when absent.
+- `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Chef/**/*` – cards, CTA, create, and edit modules wired to the chef interface helpers.
 
-## Misebox tenant – Supplier profile composables (`packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/`)
+## Misebox tenant – Supplier profile composables (`packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/`)
 
 ### Top-level entry
 
@@ -907,7 +907,7 @@ export function useProfessionalDelete(
 
 ### Key runtime consumers
 
-- `packages/tenants/fireux-misebox/src/runtime/pages/suppliers/index.vue` – stitches together supplier interface helpers, collection streams, and create handler.
-- `packages/tenants/fireux-misebox/src/runtime/pages/suppliers/[id].vue` – config-backed supplier detail view.
-- `packages/tenants/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue` – merges supplier refs for the dashboard editor with an `error` fallback state.
-- `packages/tenants/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/**/*` – cards, CTA, quick-create, and edit components consuming supplier interface helpers.
+- `packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/index.vue` – stitches together supplier interface helpers, collection streams, and create handler.
+- `packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/[id].vue` – config-backed supplier detail view.
+- `packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue` – merges supplier refs for the dashboard editor with an `error` fallback state.
+- `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/**/*` – cards, CTA, quick-create, and edit components consuming supplier interface helpers.

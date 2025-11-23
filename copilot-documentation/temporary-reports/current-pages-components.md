@@ -77,8 +77,8 @@ All four pages follow the same pattern: `UPage` → `UContainer` → `OrganismsP
 
 | Page                                                                        | Highlights                                                                                                                                         |
 | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue`         | Slots: `OrganismsProfilesChefCardsPill` for the current profile, `OrganismsProfilesChefCardsCell` for the list. Uses `useChefCreate()` for ensure. |
-| `packages/tenants/fireux-misebox/src/runtime/pages/suppliers/index.vue`     | Reuses Supplier pill/cell cards plus `useSupplierCreate()`.                                                                                        |
+| `packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/index.vue`         | Slots: `OrganismsProfilesChefCardsPill` for the current profile, `OrganismsProfilesChefCardsCell` for the list. Uses `useChefCreate()` for ensure. |
+| `packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/index.vue`     | Reuses Supplier pill/cell cards plus `useSupplierCreate()`.                                                                                        |
 | `packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue`     | Agent pill/cell cards with `useAgentCreate()`.                                                                                               |
 | `packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue` | Professional pill/cell cards with `useProfessionalCreate()`.                                                                                       |
 

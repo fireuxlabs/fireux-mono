@@ -113,16 +113,17 @@ function validateBrandDimensions(
 function checkBrandImage(
   name: string,
   relativePath: string,
+  resolveAssetPath: (relative: string) => string | null,
   requiredWidth?: number,
   requiredHeight?: number,
   minWidth?: number,
   minHeight?: number,
   minAspect?: number
 ): BrandAssetCheck {
-  const absPath = join(process.cwd(), 'public', relativePath)
+  const absPath = resolveAssetPath(relativePath)
   const result: BrandAssetCheck = { name, path: relativePath, ok: false }
 
-  if (!existsSync(absPath)) {
+  if (!absPath || !existsSync(absPath)) {
     result.reason = `Missing file: /public/${relativePath}`
     return result
   }
@@ -147,6 +148,51 @@ function checkBrandImage(
   }
 
   return result
+}
+
+function createBrandAssetResolver(repoRoot: string, ecosystem?: string) {
+  const candidates = new Set<string>()
+  candidates.add(join(process.cwd(), 'public'))
+  candidates.add(join(repoRoot, 'public'))
+  candidates.add(
+    join(
+      repoRoot,
+      'packages',
+      'core',
+      'fireux-core',
+      'src',
+      'runtime',
+      'public'
+    )
+  )
+
+  const scoped = (ecosystem || '').trim()
+  if (scoped) {
+    candidates.add(
+      join(
+        repoRoot,
+        'packages',
+        'ecosystem',
+        `fireux-${scoped}`,
+        'src',
+        'runtime',
+        'public'
+      )
+    )
+    candidates.add(
+      join(repoRoot, 'projects', scoped, `${scoped}-app`, 'public')
+    )
+  }
+
+  return (relativePath: string) => {
+    for (const base of candidates) {
+      const fullPath = join(base, relativePath)
+      if (existsSync(fullPath)) {
+        return fullPath
+      }
+    }
+    return null
+  }
 }
 
 /**
@@ -298,19 +344,74 @@ export default defineEventHandler<EnvCheckResponse>((event) => {
   const presentOptionalServer = optionalServer.filter((k) => !!env[k])
 
   // Brand asset checks
-  const brandAssets: BrandAssetCheck[] = [
-    checkBrandImage('avatar', 'img/brand/avatar.png', 512, 512),
-    checkBrandImage('logo', 'img/brand/logo.png', 512, 512),
+  const resolveBrandAsset = createBrandAssetResolver(repoRoot, ecosystem)
+  const brandNamespace = (ecosystem || 'fireux').trim()
+  const brandRequirements: Array<{
+    name: string
+    path: string
+    width?: number
+    height?: number
+    minWidth?: number
+    minHeight?: number
+    minAspect?: number
+  }> =
+    brandNamespace === 'fireux'
+      ? [
+          {
+            name: 'logo',
+            path: `img/brand/${brandNamespace}/logo.png`,
+            width: 512,
+            height: 512,
+          },
+          {
+            name: 'wordmark-light',
+            path: `img/brand/${brandNamespace}/wordmark-light.png`,
+            minWidth: 256,
+            minHeight: 64,
+            minAspect: 3,
+          },
+          {
+            name: 'wordmark-dark',
+            path: `img/brand/${brandNamespace}/wordmark-dark.png`,
+            minWidth: 256,
+            minHeight: 64,
+            minAspect: 3,
+          },
+        ]
+      : [
+          {
+            name: 'avatar',
+            path: `img/brand/${brandNamespace}/avatar.png`,
+            width: 512,
+            height: 512,
+          },
+          {
+            name: 'logo',
+            path: `img/brand/${brandNamespace}/logo.png`,
+            width: 512,
+            height: 512,
+          },
+          {
+            name: 'wordmark',
+            path: `img/brand/${brandNamespace}/wordmark.png`,
+            minWidth: 256,
+            minHeight: 64,
+            minAspect: 3,
+          },
+        ]
+
+  const brandAssets: BrandAssetCheck[] = brandRequirements.map((asset) =>
     checkBrandImage(
-      'wordmark',
-      'img/brand/wordmark.png',
-      undefined,
-      undefined,
-      256,
-      64,
-      3
-    ),
-  ]
+      asset.name,
+      asset.path,
+      resolveBrandAsset,
+      asset.width,
+      asset.height,
+      asset.minWidth,
+      asset.minHeight,
+      asset.minAspect
+    )
+  )
 
   const passedBrandCount = brandAssets.filter((b) => b.ok).length
 
@@ -375,11 +476,11 @@ export default defineEventHandler<EnvCheckResponse>((event) => {
     notes: [
       'Role is enforced by Nuxt config (createFireuxConfig) and is not checked here.',
       'Env vars are fixed and non-editable via UI.',
-      'Brand asset validation checks /public/img/brand for required files and dimensions.',
+      `Brand asset validation checks /img/brand/${brandNamespace} for required files and dimensions.`,
       ...(detectedServiceAccountPath
         ? [`Service account file detected at ${detectedServiceAccountPath}.`]
         : [
-            'Admin SDK detection checks FIREBASE_SERVICE_ACCOUNT(_FILE) or a service-account.json under packages/tenants/fireux-<ecosystem>/config/.',
+            'Admin SDK detection checks FIREBASE_SERVICE_ACCOUNT(_FILE) or a service-account.json under packages/ecosystem/fireux-<ecosystem>/config/.',
           ]),
     ],
 

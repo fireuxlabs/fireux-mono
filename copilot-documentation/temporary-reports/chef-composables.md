@@ -1,11 +1,11 @@
 # Chef Composables Snapshot
 
-Snapshot of all Chef-specific composables under `packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/` as of the latest workspace state.
+Snapshot of all Chef-specific composables under `packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/` as of the latest workspace state.
 
 ## useChefCreate.ts
 
 ```ts
-// packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefCreate.ts
+// packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefCreate.ts
 import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profiles/useProfile.ts'
 import { chefConfig } from '../../../../models/profiles/Chef.model'
 import type { ChefCoreProfile } from '../../../../models/profiles/Chef.model'

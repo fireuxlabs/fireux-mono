@@ -1,7 +1,7 @@
 packages:
   - 'packages/core/*'
   - 'packages/extensions/*'
-  - 'packages/tenants/*'
+  - 'packages/ecosystem/*'
   - 'projects/*/*'
   - 'tools/*'
   - 'test-*'

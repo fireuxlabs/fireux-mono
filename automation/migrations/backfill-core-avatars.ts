@@ -38,7 +38,7 @@ const PROJECTS = {
     name: 'MiseBox',
     serviceAccountPath: resolve(
       repoRoot,
-      'packages/tenants/fireux-misebox/config/service-account.json'
+      'packages/ecosystem/fireux-misebox/config/service-account.json'
     ),
     projectId: 'misebox-78f9c',
   },
@@ -46,7 +46,7 @@ const PROJECTS = {
     name: 'CleanBox',
     serviceAccountPath: resolve(
       repoRoot,
-      'packages/tenants/fireux-cleanbox/config/service-account.json'
+      'packages/ecosystem/fireux-cleanbox/config/service-account.json'
     ),
     projectId: 'cleanbox-f15bc',
   },

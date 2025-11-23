@@ -11,7 +11,7 @@ Captured below are the full contents of the "Has Current" `index.vue` pages for 
 ## packages/core/fireux-core/src/runtime/pages/users/index.vue
 
 ```vue
-<!-- packages/tenants/fireux-misebox/src/runtime/pages/users/index.vue -->
+<!-- packages/ecosystem/fireux-misebox/src/runtime/pages/users/index.vue -->
 <template>
   <UPage>
     <UPageBody class="space-y-6">
@@ -314,10 +314,10 @@ function displayName(app: AppDoc) {
 </script>
 ```
 
-## packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue
+## packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/index.vue
 
 ```vue
-<!-- packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue -->
+<!-- packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/index.vue -->
 <template>
   <UPage>
     <UContainer class="py-8">
@@ -352,7 +352,7 @@ async function onEnsureChef() {
 </script>
 ```
 
-## packages/tenants/fireux-misebox/src/runtime/pages/suppliers/index.vue
+## packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/index.vue
 
 ```vue
 <template>

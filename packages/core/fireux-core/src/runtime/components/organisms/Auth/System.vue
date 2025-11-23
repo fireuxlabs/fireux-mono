@@ -149,7 +149,7 @@ const fields = [
   { name: 'password', type: 'password', label: 'Password', required: true },
 ]
 
-const appLogo = '/img/brand/wordmark.png'
+const appLogo = '/img/brand/fireux/wordmark-light.png'
 const googleLogo = '/img/auth/sign-in-light.svg'
 
 const pushDashboard = async () => {

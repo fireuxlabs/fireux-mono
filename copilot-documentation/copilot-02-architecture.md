@@ -12,7 +12,7 @@ This chapter summarizes the runtime layers, data flow, and ownership boundaries 
 
 - **Core (`packages/core/fireux-core`)** provides shared UX primitives, runtime composables, configuration helpers, and auto-registered components.
 - **Extensions (`packages/extensions/*`)** add domain-specific capability (Jobs, Places, etc.). Each extension depends on `fireux-core`, exports its own Nuxt module, and owns the routes, stores, and assets for that feature slice.
-- **Tenants (`packages/tenants/*`)** compose extensions for an ecosystem (e.g. Misebox). They configure routing, theming, and tenant-specific pages while delegating shared logic to core/extensions.
+- **Tenants (`packages/ecosystem/*`)** compose extensions for an ecosystem (e.g. Misebox). They configure routing, theming, and tenant-specific pages while delegating shared logic to core/extensions.
 - **Apps (`projects/<ecosystem>/<app>`)** are Nuxt shells that call `createFireuxConfig` to install tenant modules, provide branding, and host deployment-specific configuration.
 
 ## Data & Auth Flow

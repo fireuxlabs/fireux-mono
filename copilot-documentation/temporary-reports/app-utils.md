@@ -194,7 +194,7 @@ export function useEditHandler(
 Each tenant now owns its own landing effect composable. The implementation is currently identical across tenants.
 
 ```typescript
-// FILE: /packages/tenants/fireux-cleanbox/src/runtime/composables/app/utils/effects/useLandingEffect.ts
+// FILE: /packages/ecosystem/fireux-cleanbox/src/runtime/composables/app/utils/effects/useLandingEffect.ts
 // Unified landing effect composable for this tenant
 export function useLandingEffect() {
   const initializeEffect = (
@@ -312,5 +312,5 @@ export function useLandingEffect() {
 
 > The exact same implementation has been duplicated to:
 >
-> - `packages/tenants/fireux-fireux/src/runtime/composables/app/utils/effects/useLandingEffect.ts`
-> - `packages/tenants/fireux-misebox/src/runtime/composables/app/utils/effects/useLandingEffect.ts`
+> - `packages/ecosystem/fireux-fireux/src/runtime/composables/app/utils/effects/useLandingEffect.ts`
+> - `packages/ecosystem/fireux-misebox/src/runtime/composables/app/utils/effects/useLandingEffect.ts`

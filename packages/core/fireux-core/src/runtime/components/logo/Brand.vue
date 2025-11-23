@@ -3,7 +3,7 @@
     <NuxtLink to="/" class="logo-link">
       <img
         :src="isDark ? logos.dark : logos.light"
-        alt="FIReUX Logo"
+        alt="FireUX logo"
         class="logo"
         :class="logoSizeClass"
       />
@@ -18,8 +18,8 @@ const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
 const logos = {
-  light: '/img/brand/wordmark.png',
-  dark: '/img/brand/wordmark.png',
+  light: '/img/brand/fireux/wordmark-light.png',
+  dark: '/img/brand/fireux/wordmark-dark.png',
 }
 
 const props = defineProps({

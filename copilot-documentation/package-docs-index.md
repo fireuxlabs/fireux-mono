@@ -22,7 +22,7 @@ Package and tenant-specific documentation lives beside the code that owns it. Us
 
 ## Tenants & Apps
 
-- `packages/tenants/*/docs/` — create on demand when tenant-specific guidance is required.
+- `packages/ecosystem/*/docs/` — create on demand when tenant-specific guidance is required.
 - `projects/<ecosystem>/<app>/docs/` — optional app-level notes (none at present).
 
 When adding a new package doc:

@@ -31,6 +31,6 @@ export function useUserState() {
 
 ### Tenant-owned effect composables
 
-- `packages/tenants/fireux-cleanbox/src/runtime/composables/app/utils/effects/useLandingEffect.ts`
-- `packages/tenants/fireux-fireux/src/runtime/composables/app/utils/effects/useLandingEffect.ts`
-- `packages/tenants/fireux-misebox/src/runtime/composables/app/utils/effects/useLandingEffect.ts`
+- `packages/ecosystem/fireux-cleanbox/src/runtime/composables/app/utils/effects/useLandingEffect.ts`
+- `packages/ecosystem/fireux-fireux/src/runtime/composables/app/utils/effects/useLandingEffect.ts`
+- `packages/ecosystem/fireux-misebox/src/runtime/composables/app/utils/effects/useLandingEffect.ts`

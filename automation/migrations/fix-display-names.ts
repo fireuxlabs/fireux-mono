@@ -39,10 +39,16 @@ const __dirname = path.dirname(__filename)
 
 const saJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON
 const saFile = process.env.FIREBASE_SERVICE_ACCOUNT_FILE
-const conventionalPath = path.resolve(
-  __dirname,
-  '../packages/tenants/fireux-misebox/config/service-account.json'
-)
+const conventionalPaths = [
+  path.resolve(
+    __dirname,
+    '../packages/ecosystem/fireux-misebox/config/service-account.json'
+  ),
+  path.resolve(
+    __dirname,
+    '../packages/ecosystem/fireux-misebox/config/service-account.json'
+  ),
+]
 
 function loadCredential() {
   try {
@@ -54,11 +60,12 @@ function loadCredential() {
       console.log(`🔐 Using FIREBASE_SERVICE_ACCOUNT_FILE: ${saFile}`)
       return cert(JSON.parse(fs.readFileSync(saFile, 'utf8')))
     }
-    if (fs.existsSync(conventionalPath)) {
+    const fallbackPath = conventionalPaths.find((p) => fs.existsSync(p))
+    if (fallbackPath) {
       console.log(
-        `🔐 Using conventional service account path: ${conventionalPath}`
+        `🔐 Using conventional service account path: ${fallbackPath}`
       )
-      return cert(JSON.parse(fs.readFileSync(conventionalPath, 'utf8')))
+      return cert(JSON.parse(fs.readFileSync(fallbackPath, 'utf8')))
     }
     console.log(
       '🛈 No service account provided; using Application Default Credentials (ADC)'

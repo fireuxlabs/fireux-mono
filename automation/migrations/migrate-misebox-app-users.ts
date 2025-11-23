@@ -36,17 +36,19 @@ const INCLUDE_CHEFS = args.has('--chefs')
 // Precedence:
 //  1. FIREBASE_SERVICE_ACCOUNT_JSON (inline JSON)
 //  2. FIREBASE_SERVICE_ACCOUNT_FILE (explicit path)
-//  3. Conventional repo path (packages/tenants/fireux-misebox/config/service-account.json)
+//  3. Conventional repo path (packages/ecosystem/fireux-misebox/config/service-account.json)
 //  4. Application Default Credentials (gcloud / workstation)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const saJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON
 const saFile = process.env.FIREBASE_SERVICE_ACCOUNT_FILE
-const conventionalPath = path.resolve(
-  __dirname,
-  '../packages/tenants/fireux-misebox/config/service-account.json'
-)
+const conventionalPaths = [
+  path.resolve(
+    __dirname,
+    '../packages/ecosystem/fireux-misebox/config/service-account.json'
+  ),
+]
 
 function loadCredential() {
   try {
@@ -58,11 +60,12 @@ function loadCredential() {
       console.log(`🔐 Using FIREBASE_SERVICE_ACCOUNT_FILE: ${saFile}`)
       return cert(JSON.parse(fs.readFileSync(saFile, 'utf8')))
     }
-    if (fs.existsSync(conventionalPath)) {
+    const fallbackPath = conventionalPaths.find((p) => fs.existsSync(p))
+    if (fallbackPath) {
       console.log(
-        `🔐 Using conventional service account path: ${conventionalPath}`
+        `🔐 Using conventional service account path: ${fallbackPath}`
       )
-      return cert(JSON.parse(fs.readFileSync(conventionalPath, 'utf8')))
+      return cert(JSON.parse(fs.readFileSync(fallbackPath, 'utf8')))
     }
     console.log(
       '🛈 No service account file/env found; attempting Application Default Credentials (ADC)...'
@@ -73,7 +76,7 @@ function loadCredential() {
       'Failed to load Firebase credentials. Provide one of:\n' +
         '  export FIREBASE_SERVICE_ACCOUNT_JSON="$(cat service-account.json)"\n' +
         '  export FIREBASE_SERVICE_ACCOUNT_FILE=./path/service-account.json\n' +
-        `  (or place file at ${conventionalPath})\n` +
+        `  (or place file at ${conventionalPaths[0]})\n` +
         '  or run: gcloud auth application-default login\n'
     )
     throw e

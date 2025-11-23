@@ -40,8 +40,8 @@ export default defineEventHandler(async (_event) => {
     // Assets
     assets: {
       icon: appIcon,
-      logo: '/img/brand/wordmark.png',
-      logoDark: '/img/brand/wordmark.png',
+      logo: '/img/brand/fireux/wordmark-light.png',
+      logoDark: '/img/brand/fireux/wordmark-dark.png',
       favicon: '/favicon.ico',
       ogImage: '/img/og-image.png',
     },

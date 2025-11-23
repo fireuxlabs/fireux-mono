@@ -5,7 +5,7 @@
  * Usage:
  *   tsx scripts/migrate-chefs-created-at.ts \
  *     --project misebox-78f9c \
- *     --sa packages/tenants/fireux-misebox/config/service-account.json \
+ *     --sa packages/ecosystem/fireux-misebox/config/service-account.json \
  *     [--appId misebox-app --mirror] [--dry] [--no-touch] [--backup]
  */
 import { cert, initializeApp } from 'firebase-admin/app'

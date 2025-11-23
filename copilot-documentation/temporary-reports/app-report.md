@@ -1081,5 +1081,5 @@ export function useAppEnsure() {
 ## Notes & Follow-ups
 
 - Sensitive configuration (Firebase secrets, etc.) still flow through environment variables; they stay out of this report by design.
-- Tenant modules (`packages/tenants/*`) attach additional runtime assets but rely on the same `createFireuxConfig` contract illustrated above.
+- Tenant modules (`packages/ecosystem/*`) attach additional runtime assets but rely on the same `createFireuxConfig` contract illustrated above.
 - If more runtime listings are required (e.g., specific layouts or plugins), call them out and they can be appended here.

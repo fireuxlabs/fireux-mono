@@ -13,9 +13,9 @@ Comprehensive map of every surface that should ship with a `docs/liturature.md` 
 
 ## Tenant Packages
 
-- **✅** `packages/tenants/fireux-cleanbox/docs/liturature.md`
-- **✅** `packages/tenants/fireux-fireux/docs/liturature.md`
-- **✅** `packages/tenants/fireux-misebox/docs/liturature.md`
+- **✅** `packages/ecosystem/fireux-cleanbox/docs/liturature.md`
+- **✅** `packages/ecosystem/fireux-fireux/docs/liturature.md`
+- **✅** `packages/ecosystem/fireux-misebox/docs/liturature.md`
 
 ## Ecosystem Projects
 

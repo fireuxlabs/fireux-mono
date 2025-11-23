@@ -18,9 +18,9 @@ const PACKAGES = [
   'packages/core/fireux-core',
   'packages/extensions/fireux-jobs',
   'packages/extensions/fireux-places',
-  'packages/tenants/fireux-misebox',
-  'packages/tenants/fireux-cleanbox',
-  'packages/tenants/fireux-fireux',
+  'packages/ecosystem/fireux-misebox',
+  'packages/ecosystem/fireux-cleanbox',
+  'packages/ecosystem/fireux-fireux',
 ]
 
 // helpers

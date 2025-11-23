@@ -1,6 +1,6 @@
 // @ts-nocheck
-// Snapshot of packages/tenants/fireux-misebox/src/runtime/models/profiles/Supplier.model.ts taken on 2025-11-03
-// packages/tenants/fireux-misebox/src/runtime/models/profiles/Supplier.model.ts
+// Snapshot of packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier.model.ts taken on 2025-11-03
+// packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier.model.ts
 import type {
   ProfileBase,
   ProfileConfig,

@@ -278,7 +278,7 @@ const adminStatus = computed(() => {
     color: 'warning' as const,
     label: 'missing',
     description:
-      'Add FIREBASE_SERVICE_ACCOUNT JSON, split keys, or service-account.json under packages/tenants/<ecosystem>/config/.',
+      'Add FIREBASE_SERVICE_ACCOUNT JSON, split keys, or service-account.json under packages/ecosystem/<ecosystem>/config/.',
   }
 })
 

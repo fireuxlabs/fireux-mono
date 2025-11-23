@@ -86,14 +86,14 @@ if [ -d "packages/fireux-places" ] && [ -d "packages/extensions/fireux-places" ]
     PHANTOMS_FOUND=true
 fi
 
-if [ -d "packages/fireux-misebox" ] && [ -d "packages/tenants/fireux-misebox" ]; then
-    echo -e "${RED}👻 Found phantom: packages/fireux-misebox (should be in packages/tenants/)${NC}"
+if [ -d "packages/fireux-misebox" ] && [ -d "packages/ecosystem/fireux-misebox" ]; then
+    echo -e "${RED}👻 Found phantom: packages/fireux-misebox (should be in packages/ecosystem/)${NC}"
     rm -rf packages/fireux-misebox
     PHANTOMS_FOUND=true
 fi
 
-if [ -d "packages/fireux-cleanbox" ] && [ -d "packages/tenants/fireux-cleanbox" ]; then
-    echo -e "${RED}👻 Found phantom: packages/fireux-cleanbox (should be in packages/tenants/)${NC}"
+if [ -d "packages/fireux-cleanbox" ] && [ -d "packages/ecosystem/fireux-cleanbox" ]; then
+    echo -e "${RED}👻 Found phantom: packages/fireux-cleanbox (should be in packages/ecosystem/)${NC}"
     rm -rf packages/fireux-cleanbox
     PHANTOMS_FOUND=true
 fi
@@ -128,14 +128,14 @@ fi
 
 # Step 3: Validate structure
 echo -e "\n${YELLOW}3️⃣  Validating package structure...${NC}"
-if [ -d "packages/core/fireux-core" ] && [ -d "packages/extensions/fireux-jobs" ] && [ -d "packages/tenants/fireux-misebox" ]; then
+if [ -d "packages/core/fireux-core" ] && [ -d "packages/extensions/fireux-jobs" ] && [ -d "packages/ecosystem/fireux-misebox" ]; then
     echo -e "${GREEN}✅ Nested package structure intact${NC}"
 else
     echo -e "${RED}❌ WARNING: Expected nested structure missing!${NC}"
     echo "Expected:"
     echo "  packages/core/fireux-core"
     echo "  packages/extensions/fireux-jobs"
-    echo "  packages/tenants/fireux-misebox"
+    echo "  packages/ecosystem/fireux-misebox"
 fi
 
 # Step 4: Final git status and Copilot guidance

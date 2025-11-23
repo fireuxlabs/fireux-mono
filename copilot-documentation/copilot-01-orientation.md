@@ -23,7 +23,7 @@ This handbook pairs with the GitHub Spec Kit workspace (`.specify/`, `.github/pr
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `packages/core/fireux-core`         | Shared components, composables, config helpers, auto-registered UI primitives.                             |
 | `packages/extensions/*`             | Optional feature slices (for example `fireux-places`, `fireux-jobs`) that layer on top of the core module. |
-| `packages/tenants/*`                | Ecosystem bundles that select extensions and contribute tenant-specific pages/configuration.               |
+| `packages/ecosystem/*`                | Ecosystem bundles that select extensions and contribute tenant-specific pages/configuration.               |
 | `projects/<ecosystem>/<app>`        | Deployable Nuxt apps that wrap tenant modules through `createFireuxConfig`.                                |
 | `scripts/`, `tools/`, `migrations/` | Automation, data backfills, and guard scripts for repo maintenance.                                        |
 | `copilot-documentation/`            | This handbook, appendices, ADRs, and links into package-level docs.                                        |

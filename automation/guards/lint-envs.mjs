@@ -10,6 +10,15 @@ const apps = [
   'projects/misebox/niederhorn',
 ]
 
+const brandNamespaces = new Map([
+  ['projects/fireux/fireux-app', 'fireux'],
+  ['projects/fireux/tennant', 'fireux'],
+  ['projects/misebox/misebox-app', 'misebox'],
+  ['projects/misebox/niederhorn', 'misebox'],
+  ['projects/cleanbox/cleanbox-app', 'cleanbox'],
+  ['projects/cleanbox/richies-reinigung', 'cleanbox'],
+])
+
 const required = [
   'APP_ID',
   'APP_NAME',
@@ -67,28 +76,82 @@ for (const app of apps) {
   const hasPathSA = env.has('GOOGLE_APPLICATION_CREDENTIALS')
   const saOk = hasInlineSA || hasPathSA
 
-  const brandDir = join(process.cwd(), app, 'public', 'img', 'brand')
+  const namespace = brandNamespaces.get(app) || 'fireux'
+  const brandRoots = [
+    join(
+      process.cwd(),
+      'packages',
+      'core',
+      'fireux-core',
+      'src',
+      'runtime',
+      'public',
+      'img',
+      'brand',
+      namespace
+    ),
+  ]
+  if (namespace !== 'fireux') {
+    brandRoots.push(
+      join(
+        process.cwd(),
+        'packages',
+        'ecosystem',
+        `fireux-${namespace}`,
+        'src',
+        'runtime',
+        'public',
+        'img',
+        'brand',
+        namespace
+      )
+    )
+  }
+  brandRoots.push(join(process.cwd(), app, 'public', 'img', 'brand', namespace))
+  brandRoots.push(join(process.cwd(), app, 'public', 'img', 'brand'))
+  const brandDir = brandRoots.find((dir) => existsSync(dir))
   const brandIssues = []
-  const avatarCandidates = ['avatar.png']
-  const logoCandidates = ['logo.svg', 'logo.png']
-  const wordmarkCandidates = ['wordmark.svg', 'wordmark.png']
-
-  if (!existsSync(brandDir)) {
-    brandIssues.push('brand directory (public/img/brand)')
+  if (!brandDir) {
+    brandIssues.push('brand directory (shared packages)')
   } else {
     const resolveFile = (candidates) =>
       candidates.some((file) => existsSync(join(brandDir, file)))
 
-    if (!resolveFile(avatarCandidates)) {
-      brandIssues.push('avatar asset (avatar.png)')
-    }
+    const brandChecks =
+      namespace === 'fireux'
+        ? [
+            {
+              label: 'logo asset (logo.png)',
+              candidates: ['logo.png'],
+            },
+            {
+              label: 'wordmark light (wordmark-light.png)',
+              candidates: ['wordmark-light.png'],
+            },
+            {
+              label: 'wordmark dark (wordmark-dark.png)',
+              candidates: ['wordmark-dark.png'],
+            },
+          ]
+        : [
+            {
+              label: 'avatar asset (avatar.png)',
+              candidates: ['avatar.png'],
+            },
+            {
+              label: 'logo asset (logo.svg|logo.png)',
+              candidates: ['logo.svg', 'logo.png'],
+            },
+            {
+              label: 'wordmark asset (wordmark.svg|wordmark.png)',
+              candidates: ['wordmark.svg', 'wordmark.png'],
+            },
+          ]
 
-    if (!resolveFile(logoCandidates)) {
-      brandIssues.push('logo asset (logo.svg|logo.png)')
-    }
-
-    if (!resolveFile(wordmarkCandidates)) {
-      brandIssues.push('wordmark asset (wordmark.svg|wordmark.png)')
+    for (const check of brandChecks) {
+      if (!resolveFile(check.candidates)) {
+        brandIssues.push(check.label)
+      }
     }
   }
 

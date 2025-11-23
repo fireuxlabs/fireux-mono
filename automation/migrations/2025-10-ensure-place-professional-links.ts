@@ -152,7 +152,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const defaultServiceAccountPath = resolve(
   __dirname,
-  '../packages/tenants/fireux-misebox/config/service-account.json'
+  '../packages/ecosystem/fireux-misebox/config/service-account.json'
 )
 
 function initFirebase() {

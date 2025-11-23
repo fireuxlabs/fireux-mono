@@ -15,15 +15,11 @@
 
       <div class="flex items-center gap-6 pt-2">
         <img
-          src="/logo-type-light.png"
-          alt="Flagship tenant"
+          :src="brand.wordmarkLight"
+          alt="Misebox wordmark"
           class="h-10 opacity-80"
         />
-        <img
-          src="/logo-type-light.png"
-          alt="Flagship tenant"
-          class="h-10 opacity-80"
-        />
+        <img :src="brand.logo" alt="Misebox emblem" class="h-10 opacity-80" />
       </div>
 
       <div class="flex flex-col sm:flex-row gap-4 pt-6">
@@ -66,6 +62,11 @@
 const hero = {
   primary: { label: 'Get Started', to: '/get-started' },
   secondary: { label: 'Explore Kitchens', to: '/kitchens' },
+}
+
+const brand = {
+  wordmarkLight: '/img/brand/misebox/wordmark-light.svg',
+  logo: '/img/brand/misebox/logo.svg',
 }
 </script>
 

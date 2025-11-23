@@ -39,4 +39,4 @@ Comparison between the promises in `liturature.md` and the current Misebox app c
 ## 4. Notes
 
 - The current app is purely a marketing landing experience. All operational functionality (profiles, recipes, suppliers, jobs, analytics) must be implemented, likely drawing on shared logic from `fireux-core`, `fireux-misebox`, and related extensions.
-- Before building tenant-specific UI here, shared data models and composables for recipes, suppliers, jobs, and analytics should live in `packages/tenants/fireux-misebox` or `packages/core/fireux-core` so other Misebox tenants can reuse them.
+- Before building tenant-specific UI here, shared data models and composables for recipes, suppliers, jobs, and analytics should live in `packages/ecosystem/fireux-misebox` or `packages/core/fireux-core` so other Misebox tenants can reuse them.

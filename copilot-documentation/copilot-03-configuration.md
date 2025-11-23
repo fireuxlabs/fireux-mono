@@ -51,7 +51,7 @@ export default defineNuxtConfig(
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
-      "fireux-misebox/*": ["../../../packages/tenants/fireux-misebox/src/*"]
+      "fireux-misebox/*": ["../../../packages/ecosystem/fireux-misebox/src/*"]
     },
     "types": ["nuxt", "vite/client", "@vite-pwa/nuxt"],
     "skipLibCheck": true

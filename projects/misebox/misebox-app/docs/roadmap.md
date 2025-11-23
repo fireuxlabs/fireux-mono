@@ -24,7 +24,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 ## 🧩 Planned / Cross-Package Dependencies
 
--- Shared Misebox data models (profiles, recipes, suppliers, prep plans) should originate in `packages/tenants/fireux-misebox` or `fireux-core` to support multiple tenants.
+-- Shared Misebox data models (profiles, recipes, suppliers, prep plans) should originate in `packages/ecosystem/fireux-misebox` or `fireux-core` to support multiple tenants.
 -- Job workflows may depend on `packages/extensions/fireux-jobs` once built out.
 -- Analytics foundation likely belongs in `fireux-core` (events, summaries) before tenant dashboards can consume it.
 

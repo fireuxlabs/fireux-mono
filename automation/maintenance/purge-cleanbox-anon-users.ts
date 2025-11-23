@@ -38,24 +38,29 @@ async function purgeUsers(options: {
   serviceAccountPath?: string
 }) {
   const repoRoot = resolve(__dirname, '..', '..')
-  const serviceAccountPath =
-    options.serviceAccountPath ??
-    (options.ecosystem
-      ? resolve(
-          repoRoot,
-          `packages/tenants/fireux-${options.ecosystem}/config/service-account.json`
-        )
-      : undefined)
+  const candidatePaths = []
+  if (options.serviceAccountPath) {
+    candidatePaths.push(options.serviceAccountPath)
+  } else if (options.ecosystem) {
+    candidatePaths.push(
+      resolve(
+        repoRoot,
+        `packages/ecosystem/fireux-${options.ecosystem}/config/service-account.json`
+      )
+    )
+    candidatePaths.push(
+      resolve(
+        repoRoot,
+        `packages/ecosystem/fireux-${options.ecosystem}/config/service-account.json`
+      )
+    )
+  }
+
+  const serviceAccountPath = candidatePaths.find((p) => existsSync(p))
 
   if (!serviceAccountPath) {
     throw new Error(
       'Usage: pnpm tsx automation/maintenance/purge-anon-users.ts <ecosystem> [--service-account=/path/to/service-account.json]'
-    )
-  }
-
-  if (!existsSync(serviceAccountPath)) {
-    throw new Error(
-      `[purge-anon-users] Service account file not found at ${serviceAccountPath}`
     )
   }
 

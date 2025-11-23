@@ -19,8 +19,8 @@ They all need the **Current Entity Block** pattern (show current if exists → o
 
 ## Tenant misebox runtime
 
-- packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue // current (current chef)
-- packages/tenants/fireux-misebox/src/runtime/pages/suppliers/index.vue // current (current supplier)
+- packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/index.vue // current (current chef)
+- packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/index.vue // current (current supplier)
 
 ## Extensions
 
@@ -48,7 +48,7 @@ They all need the **Current Entity Block** pattern (show current if exists → o
 | -------- | --------------------------------------------------------------------------- | ------------ | ----------------------------- | ----------------------------- |
 | Core     | `packages/core/fireux-core/src/runtime/pages/users/index.vue`               | User         | Always 1:1 with Firebase auth | Base current user             |
 | Core     | `packages/core/fireux-core/src/runtime/pages/apps/index.vue`                | App          | One active app context        | Governs tenant scope          |
-| Misebox  | `packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue`         | Chef         | One active chef profile       | Links to professional profile |
-| Misebox  | `packages/tenants/fireux-misebox/src/runtime/pages/suppliers/index.vue`     | Supplier     | One active supplier profile   | Powers procurement tools      |
+| Misebox  | `packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/index.vue`         | Chef         | One active chef profile       | Links to professional profile |
+| Misebox  | `packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/index.vue`     | Supplier     | One active supplier profile   | Powers procurement tools      |
 | Jobs Ext | `packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue`     | Agent     | One active agent           | Controls job posting role     |
 | Jobs Ext | `packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue` | Professional | One active professional       | Represents job applicant role |

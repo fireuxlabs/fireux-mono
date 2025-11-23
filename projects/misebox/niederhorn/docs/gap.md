@@ -35,4 +35,4 @@ Comparison between the promises in `liturature.md` and the current Niederhorn co
 ## 4. Notes
 
 - The Niederhorn app currently ships only a single landing page with CTAs pointing to nonexistent routes. Substantial feature work is needed across recipes, suppliers, prep planning, training, and analytics to meet the literature promises.
-- Shared foundations (data models, Firestore access, composables) likely belong in `packages/tenants/fireux-misebox` or `packages/core/fireux-core` before tenant-specific UI is layered here.
+- Shared foundations (data models, Firestore access, composables) likely belong in `packages/ecosystem/fireux-misebox` or `packages/core/fireux-core` before tenant-specific UI is layered here.

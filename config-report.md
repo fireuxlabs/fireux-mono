@@ -653,24 +653,18 @@ function serviceAccountCandidatePaths(ecosystem: string): string[] {
   addPath(fileEnv ?? '')
   addPath(gcloudCredentials ?? '')
 
-  paths.add(
-    pathResolve(
-      workspaceRoot,
-      `packages/tenants/${ecosystem}-${ecosystem}/config/service-account.json`
-    )
-  )
-  paths.add(
-    pathResolve(
-      workspaceRoot,
-      `packages/tenants/fireux-${ecosystem}/config/service-account.json`
-    )
-  )
-  paths.add(
-    pathResolve(
-      workspaceRoot,
-      `packages/tenants/${ecosystem}/config/service-account.json`
-    )
-  )
+  const relativeCandidates = [
+    `packages/ecosystem/${ecosystem}-${ecosystem}/config/service-account.json`,
+    `packages/ecosystem/fireux-${ecosystem}/config/service-account.json`,
+    `packages/ecosystem/${ecosystem}/config/service-account.json`,
+    `packages/ecosystem/${ecosystem}-${ecosystem}/config/service-account.json`,
+    `packages/ecosystem/fireux-${ecosystem}/config/service-account.json`,
+    `packages/ecosystem/${ecosystem}/config/service-account.json`,
+  ]
+
+  for (const relative of relativeCandidates) {
+    paths.add(pathResolve(workspaceRoot, relative))
+  }
 
   return Array.from(paths)
 }

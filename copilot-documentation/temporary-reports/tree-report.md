@@ -43,25 +43,25 @@ Key points:
 ## Tenant: fireux-misebox profile surface
 
 ```
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChef.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefCreate.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefEnsure.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefFilters.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefUpdate.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/utils/useChefFormattingAndValidation.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/utils/useChefValidation.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplier.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierCreate.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierEnsure.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierFilters.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierList.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierQuickCreate.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierUpdate.ts
-packages/tenants/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/utils/useSupplierValidation.ts
-packages/tenants/fireux-misebox/src/runtime/models/profiles/Chef.model.ts
-packages/tenants/fireux-misebox/src/runtime/models/profiles/Agent.model.ts
-packages/tenants/fireux-misebox/src/runtime/models/profiles/Professional.model.ts
-packages/tenants/fireux-misebox/src/runtime/models/profiles/Supplier.model.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChef.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefCreate.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefEnsure.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefFilters.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefUpdate.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/utils/useChefFormattingAndValidation.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/utils/useChefValidation.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplier.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierCreate.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierEnsure.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierFilters.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierList.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierQuickCreate.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/useSupplierUpdate.ts
+packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/utils/useSupplierValidation.ts
+packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef.model.ts
+packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Agent.model.ts
+packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Professional.model.ts
+packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier.model.ts
 ```
 
 Only Chef and Supplier profile composables remain under the tenant ensure path. Agent and Professional ensure modules now live in the `fireux-jobs` extension (models are still present locally for typings).

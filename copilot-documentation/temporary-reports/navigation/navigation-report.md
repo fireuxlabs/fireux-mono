@@ -1049,7 +1049,7 @@ definePageMeta({
 </style>
 ```
 
-### packages/tenants/fireux-misebox/src/runtime/pages/dev/index.vue
+### packages/ecosystem/fireux-misebox/src/runtime/pages/dev/index.vue
 
 ```vue
 <template>
@@ -1082,7 +1082,7 @@ definePageMeta({
 </script>
 ```
 
-### packages/tenants/fireux-misebox/src/runtime/pages/dev/fireux-misebox.vue
+### packages/ecosystem/fireux-misebox/src/runtime/pages/dev/fireux-misebox.vue
 
 ```vue
 <template>
@@ -1174,7 +1174,7 @@ const globalSuppliers = supplierProfile.collection?.fetchGlobal?.() ?? ref([])
 </script>
 ```
 
-### packages/tenants/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue
+### packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue
 
 ```vue
 <template>
@@ -1217,7 +1217,7 @@ definePageMeta({
 </script>
 ```
 
-### packages/tenants/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue
+### packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue
 
 ```vue
 <template>

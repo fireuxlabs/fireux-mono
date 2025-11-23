@@ -37,7 +37,7 @@ Keep these specialised entry points for designers and developers.
 Each tenant runtime keeps one `/dev` page for sandboxing. Retain one per tenant.
 
 - packages/core/fireux-core/src/runtime/pages/dev/index.vue
-- packages/tenants/fireux-misebox/src/runtime/pages/dev/index.vue
+- packages/ecosystem/fireux-misebox/src/runtime/pages/dev/index.vue
 
 > Optional: rename to `_dev` later to hide from production navigation.
 
@@ -56,12 +56,12 @@ Data-driven list pages that should follow the shared Index Page pattern (consist
 
 **Tenant misebox runtime**
 
-- packages/tenants/fireux-misebox/src/runtime/pages/chefs/index.vue
-- packages/tenants/fireux-misebox/src/runtime/pages/ingredients/index.vue
-- packages/tenants/fireux-misebox/src/runtime/pages/kitchens/index.vue
-- packages/tenants/fireux-misebox/src/runtime/pages/misebox-apps/index.vue
-- packages/tenants/fireux-misebox/src/runtime/pages/recipes/index.vue
-- packages/tenants/fireux-misebox/src/runtime/pages/suppliers/index.vue
+- packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/index.vue
+- packages/ecosystem/fireux-misebox/src/runtime/pages/ingredients/index.vue
+- packages/ecosystem/fireux-misebox/src/runtime/pages/kitchens/index.vue
+- packages/ecosystem/fireux-misebox/src/runtime/pages/misebox-apps/index.vue
+- packages/ecosystem/fireux-misebox/src/runtime/pages/recipes/index.vue
+- packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/index.vue
 
 **Extensions**
 

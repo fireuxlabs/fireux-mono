@@ -1,5 +1,5 @@
 // @ts-nocheck
-// Snapshot of packages/tenants/fireux-misebox/src/runtime/models/profiles/Chef.model.ts taken on 2025-11-03
+// Snapshot of packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef.model.ts taken on 2025-11-03
 import type {
   ProfileBase,
   ProfileConfig,

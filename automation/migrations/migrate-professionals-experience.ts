@@ -51,10 +51,12 @@ function parseArgs(): Cli {
 
 // ---------- Admin init (env-friendly) ----------
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const DEFAULT_SERVICE_ACCOUNT_PATH = resolve(
-  __dirname,
-  '../packages/tenants/fireux-misebox/config/service-account.json'
-)
+const DEFAULT_SERVICE_ACCOUNT_PATHS = [
+  resolve(
+    __dirname,
+    '../packages/ecosystem/fireux-misebox/config/service-account.json'
+  ),
+]
 
 function initAdmin() {
   if (getApps().length === 0) {
@@ -75,16 +77,19 @@ function initAdmin() {
         svc.private_key = svc.private_key.replace(/\\n/g, '\n')
       }
       initializeApp({ credential: cert(svc) as any })
-    } else if (existsSync(DEFAULT_SERVICE_ACCOUNT_PATH)) {
-      const svc = JSON.parse(
-        readFileSync(DEFAULT_SERVICE_ACCOUNT_PATH, 'utf-8')
-      )
-      if (typeof svc.private_key === 'string') {
-        svc.private_key = svc.private_key.replace(/\\n/g, '\n')
-      }
-      initializeApp({ credential: cert(svc) as any })
     } else {
-      initializeApp() // GOOGLE_APPLICATION_CREDENTIALS or emulator
+      const fallbackPath = DEFAULT_SERVICE_ACCOUNT_PATHS.find((p) =>
+        existsSync(p)
+      )
+      if (fallbackPath) {
+        const svc = JSON.parse(readFileSync(fallbackPath, 'utf-8'))
+        if (typeof svc.private_key === 'string') {
+          svc.private_key = svc.private_key.replace(/\\n/g, '\n')
+        }
+        initializeApp({ credential: cert(svc) as any })
+      } else {
+        initializeApp() // GOOGLE_APPLICATION_CREDENTIALS or emulator
+      }
     }
   }
   return getFirestore()

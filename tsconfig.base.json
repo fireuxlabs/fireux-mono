@@ -30,18 +30,18 @@
       "fireux-places/runtime/*": [
         "packages/extensions/fireux-places/src/runtime/*"
       ],
-      "fireux-misebox": ["packages/tenants/fireux-misebox/src/module.ts"],
-      "fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],
-      "fireux-cleanbox": ["packages/tenants/fireux-cleanbox/src/module.ts"],
-      "fireux-cleanbox/*": ["packages/tenants/fireux-cleanbox/src/*"],
-      "fireux-fireux": ["packages/tenants/fireux-fireux/src/module.ts"],
-      "fireux-fireux/*": ["packages/tenants/fireux-fireux/src/*"],
+      "fireux-misebox": ["packages/ecosystem/fireux-misebox/src/module.ts"],
+      "fireux-misebox/*": ["packages/ecosystem/fireux-misebox/src/*"],
+      "fireux-cleanbox": ["packages/ecosystem/fireux-cleanbox/src/module.ts"],
+      "fireux-cleanbox/*": ["packages/ecosystem/fireux-cleanbox/src/*"],
+      "fireux-fireux": ["packages/ecosystem/fireux-fireux/src/module.ts"],
+      "fireux-fireux/*": ["packages/ecosystem/fireux-fireux/src/*"],
       "@fireux-core/*": ["packages/core/fireux-core/src/*"],
       "@fireux-jobs/*": ["packages/extensions/fireux-jobs/src/*"],
       "@fireux-places/*": ["packages/extensions/fireux-places/src/*"],
-      "@fireux-misebox/*": ["packages/tenants/fireux-misebox/src/*"],
-      "@fireux-cleanbox/*": ["packages/tenants/fireux-cleanbox/src/*"],
-      "@fireux-fireux/*": ["packages/tenants/fireux-fireux/src/*"],
+      "@fireux-misebox/*": ["packages/ecosystem/fireux-misebox/src/*"],
+      "@fireux-cleanbox/*": ["packages/ecosystem/fireux-cleanbox/src/*"],
+      "@fireux-fireux/*": ["packages/ecosystem/fireux-fireux/src/*"],
       "#imports": ["types/nuxt-imports.d.ts"],
       "#pwa": ["types/pwa.d.ts"]
     }
