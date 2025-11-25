@@ -149,8 +149,8 @@ const fields = [
   { name: 'password', type: 'password', label: 'Password', required: true },
 ]
 
-const appLogo = '/img/brand/fireux/wordmark-light.png'
-const googleLogo = '/img/auth/sign-in-light.svg'
+const appLogo = '/img/core/brand/wordmark-light.png'
+const googleLogo = '/img/core/auth/sign-in-light.svg'
 
 const pushDashboard = async () => {
   await router.push('/dashboard').catch(() => {})

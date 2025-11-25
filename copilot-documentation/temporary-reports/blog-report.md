@@ -323,7 +323,8 @@ export function useBlogPostUtils() {
       display_name:
         user.value?.core?.display_name || user.value?.core?.email || '',
       handle: user.value?.core?.handle || '',
-      avatar: user.value?.core?.avatar || '/img/default-image.png',
+      avatar:
+        user.value?.core?.avatar || '/img/core/defaults/default-image.png',
       email: user.value?.core?.email || '',
     }
   }
@@ -331,8 +332,8 @@ export function useBlogPostUtils() {
   // Default images for a blog post
   function getDefaultImages(): Pick<BlogPost, 'featuredImage' | 'socialImage'> {
     return {
-      featuredImage: '/img/logo-type-dark.svg',
-      socialImage: '/img/logo.png',
+      featuredImage: '/img/core/brand/wordmark-dark.png',
+      socialImage: '/img/core/brand/logo.png',
     }
   }
 
@@ -537,7 +538,8 @@ export function useBlogFormatting() {
       display_name:
         user.value?.core?.display_name || user.value?.core?.email || '',
       handle: user.value?.core?.handle || '',
-      avatar: user.value?.core?.avatar || '/img/default-image.png',
+      avatar:
+        user.value?.core?.avatar || '/img/core/defaults/default-image.png',
       email: user.value?.core?.email || '',
     }
   }
@@ -547,8 +549,8 @@ export function useBlogFormatting() {
    */
   function getDefaultImages(): Pick<BlogPost, 'featuredImage' | 'socialImage'> {
     return {
-      featuredImage: '/img/logo-type-dark.svg',
-      socialImage: '/img/logo.png',
+      featuredImage: '/img/core/brand/wordmark-dark.png',
+      socialImage: '/img/core/brand/logo.png',
     }
   }
 

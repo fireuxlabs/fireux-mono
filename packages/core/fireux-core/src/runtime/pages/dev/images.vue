@@ -6,33 +6,41 @@
     />
 
     <UPageBody class="space-y-6">
-      <UCard>
+      <UCard v-for="group in assetGroups" :key="group.key">
         <template #header>
-          <h2 class="text-base font-semibold">fireux-core public assets</h2>
+          <div class="space-y-1">
+            <h2 class="text-base font-semibold">{{ group.title }}</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ group.description }}
+            </p>
+          </div>
         </template>
 
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          fireux-core only ships shared identity and UX assets. Update this
-          registry whenever files are added to
-          <code>packages/core/fireux-core/src/runtime/public</code>.
-        </p>
+        <template v-if="group.assets.length">
+          <ul class="space-y-4">
+            <li
+              v-for="asset in group.assets"
+              :key="asset.path"
+              class="dev-image-row"
+            >
+              <div :class="['dev-image-chip', previewToneClass(asset.tone)]">
+                <img :src="asset.path" :alt="asset.label" />
+              </div>
 
-        <ul class="space-y-4">
-          <li
-            v-for="asset in coreAssets"
-            :key="asset.path"
-            class="dev-image-row"
-          >
-            <div :class="['dev-image-chip', previewToneClass(asset.tone)]">
-              <img :src="asset.path" :alt="asset.label" />
-            </div>
-
-            <div class="space-y-1 text-sm">
-              <code class="block">{{ asset.path }}</code>
-              <p class="text-gray-500 dark:text-gray-400">{{ asset.label }}</p>
-            </div>
-          </li>
-        </ul>
+              <div class="space-y-1 text-sm">
+                <code class="block">{{ asset.path }}</code>
+                <p class="text-gray-500 dark:text-gray-400">
+                  {{ asset.label }}
+                </p>
+              </div>
+            </li>
+          </ul>
+        </template>
+        <template v-else>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            {{ group.emptyState }}
+          </p>
+        </template>
       </UCard>
     </UPageBody>
   </UPage>
@@ -41,51 +49,89 @@
 <script setup lang="ts">
 type PreviewTone = 'light' | 'dark' | 'checker'
 
-interface CoreAsset {
+interface Asset {
   path: string
   label: string
   tone?: PreviewTone
 }
 
+interface AssetGroup {
+  key: string
+  title: string
+  description: string
+  assets: Asset[]
+  emptyState: string
+}
+
 // Provide stable metadata for each preview tile.
-const coreAssets: CoreAsset[] = [
+const coreAssets: Asset[] = [
   {
-    path: '/img/default-image.png',
+    path: '/img/core/defaults/default-image.png',
     label: 'Fallback image placeholder',
     tone: 'checker',
   },
   {
-    path: '/img/auth/sign-in-dark.svg',
+    path: '/img/core/auth/sign-in-dark.svg',
     label: 'Auth illustration · sign-in dark',
   },
   {
-    path: '/img/auth/sign-in-light.svg',
+    path: '/img/core/auth/sign-in-light.svg',
     label: 'Auth illustration · sign-in light',
     tone: 'dark',
   },
   {
-    path: '/img/auth/sign-up-dark.svg',
+    path: '/img/core/auth/sign-up-dark.svg',
     label: 'Auth illustration · sign-up dark',
   },
   {
-    path: '/img/auth/sign-up-light.svg',
+    path: '/img/core/auth/sign-up-light.svg',
     label: 'Auth illustration · sign-up light',
     tone: 'dark',
   },
-  { path: '/img/brand/fireux/logo.png', label: 'FireUX logo mark' },
+  { path: '/img/core/brand/logo.png', label: 'FireUX logo mark' },
   {
-    path: '/img/brand/fireux/wordmark-dark.png',
+    path: '/img/core/brand/wordmark-dark.png',
     label: 'FireUX wordmark · dark',
   },
   {
-    path: '/img/brand/fireux/wordmark-light.png',
+    path: '/img/core/brand/wordmark-light.png',
     label: 'FireUX wordmark · light',
     tone: 'dark',
   },
   {
-    path: '/img/brand/fireux/wordmark-light.svg',
+    path: '/img/core/brand/wordmark-light.svg',
     label: 'FireUX wordmark · light (SVG)',
     tone: 'dark',
+  },
+]
+
+const assetGroups: AssetGroup[] = [
+  {
+    key: 'core',
+    title: 'fireux-core public assets',
+    description:
+      'Shared identity and UX assets exposed from packages/core/fireux-core.',
+    assets: coreAssets,
+    emptyState:
+      'No core assets registered. Add shared assets under /img/core before listing them here.',
+  },
+  {
+    key: 'ecosystem',
+    title: 'Ecosystem public assets',
+    description:
+      'Reserved for /img/ecosystem/<ecosystem-id>/* directories in ecosystem packages.',
+    assets: [],
+    emptyState:
+      'No ecosystem registries yet. Populate packages/ecosystem/*/public/img/ecosystem to surface them here.',
+  },
+  {
+    key: 'app',
+    title: 'App & tenant public assets',
+    description:
+      'Use /img/app/<app-or-tenant>/* within individual app public directories to register overrides.',
+    assets: [],
+    emptyState:
+      'No app-level assets registered. Add branding to projects/*/public/img/app to list them.',
   },
 ]
 

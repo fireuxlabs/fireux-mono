@@ -60,9 +60,9 @@ export default defineEventHandler(async (event) => {
 
     // App logos with absolute URLs
     logos: {
-      light: `${domain}/img/brand/fireux/wordmark-light.png`,
-      dark: `${domain}/img/brand/fireux/wordmark-dark.png`,
-      default: `${domain}/img/brand/fireux/wordmark-light.png`,
+      light: `${domain}/img/core/brand/wordmark-light.png`,
+      dark: `${domain}/img/core/brand/wordmark-dark.png`,
+      default: `${domain}/img/core/brand/wordmark-light.png`,
     },
 
     // Basic metadata

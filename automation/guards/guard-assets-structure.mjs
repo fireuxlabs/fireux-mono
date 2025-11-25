@@ -6,7 +6,7 @@ const ROOT = process.cwd()
 const APPS_GLOB_ROOT = path.join(ROOT, 'projects')
 const CORE_DEFAULT = path.join(
   ROOT,
-  'packages/core/fireux-core/src/runtime/public/img/default-image.png'
+  'packages/core/fireux-core/src/runtime/public/img/core/defaults/default-image.png'
 )
 
 const args = process.argv.slice(2)
@@ -45,7 +45,7 @@ function rmIfExists(file) {
           ROOT,
           file
         )} (run with --fix to remove)`
-      ) // eslint-disable-line no-console
+      )
     }
   }
   return false

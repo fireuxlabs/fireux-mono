@@ -41,12 +41,12 @@
 
 ## Shared Asset Targets (Post-Rename Plan)
 
-| Brand layer                         | Recommended shared path                                                      |
-| ----------------------------------- | ---------------------------------------------------------------------------- |
-| Platform (FireUX)                   | `packages/core/fireux-core/src/runtime/public/img/brand/fireux/*`            |
-| Ecosystem (Misebox)                 | `packages/ecosystem/fireux-misebox/src/runtime/public/img/brand/misebox/*`   |
-| Ecosystem (Cleanbox)                | `packages/ecosystem/fireux-cleanbox/src/runtime/public/img/brand/cleanbox/*` |
-| Individual tenant (e.g. Niederhorn) | `projects/misebox/niederhorn/public/img/brand/niederhorn/*`                  |
+| Brand layer                         | Recommended shared path                                                 |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| Platform (FireUX)                   | `packages/core/fireux-core/src/runtime/public/img/core/brand/*`         |
+| Ecosystem (Misebox)                 | `packages/ecosystem/fireux-misebox/src/runtime/public/img/ecosystem/*`  |
+| Ecosystem (Cleanbox)                | `packages/ecosystem/fireux-cleanbox/src/runtime/public/img/ecosystem/*` |
+| Individual tenant (e.g. Niederhorn) | `projects/misebox/niederhorn/public/img/app/*`                          |
 
 ---
 
@@ -54,7 +54,7 @@
 
 | File                              | Purpose of change                                                                                                    |
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `pnpm-workspace.yaml`             | Updated workspace glob from `packages/ecosystem/*` → `packages/ecosystem/*` so pnpm discovers ecosystem packages.      |
+| `pnpm-workspace.yaml`             | Updated workspace glob from `packages/ecosystem/*` → `packages/ecosystem/*` so pnpm discovers ecosystem packages.    |
 | `package.json` (workspaces array) | Same glob update for npm-style tooling.                                                                              |
 | `tsconfig.base.json`              | Redirected path aliases (`fireux-misebox`, `@fireux-misebox/*`, etc.) to the new `packages/ecosystem/...` locations. |
 | `.gitignore`                      | Adjusted ignore patterns to track generated d.ts/index files under the new folder.                                   |

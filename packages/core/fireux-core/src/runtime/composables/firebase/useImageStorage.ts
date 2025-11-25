@@ -9,7 +9,9 @@ import {
   getStorage,
 } from 'firebase/storage'
 
-function getDefaultImageUrl(path: string = '/img/default-image.png'): string {
+function getDefaultImageUrl(
+  path: string = '/img/core/defaults/default-image.png'
+): string {
   return path
 }
 

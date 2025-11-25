@@ -359,20 +359,20 @@ export default defineEventHandler<EnvCheckResponse>((event) => {
       ? [
           {
             name: 'logo',
-            path: `img/brand/${brandNamespace}/logo.png`,
+            path: 'img/core/brand/logo.png',
             width: 512,
             height: 512,
           },
           {
             name: 'wordmark-light',
-            path: `img/brand/${brandNamespace}/wordmark-light.png`,
+            path: 'img/core/brand/wordmark-light.png',
             minWidth: 256,
             minHeight: 64,
             minAspect: 3,
           },
           {
             name: 'wordmark-dark',
-            path: `img/brand/${brandNamespace}/wordmark-dark.png`,
+            path: 'img/core/brand/wordmark-dark.png',
             minWidth: 256,
             minHeight: 64,
             minAspect: 3,
@@ -381,19 +381,19 @@ export default defineEventHandler<EnvCheckResponse>((event) => {
       : [
           {
             name: 'avatar',
-            path: `img/brand/${brandNamespace}/avatar.png`,
+            path: 'img/ecosystem/avatar.png',
             width: 512,
             height: 512,
           },
           {
             name: 'logo',
-            path: `img/brand/${brandNamespace}/logo.png`,
+            path: 'img/ecosystem/logo.png',
             width: 512,
             height: 512,
           },
           {
             name: 'wordmark',
-            path: `img/brand/${brandNamespace}/wordmark.png`,
+            path: 'img/ecosystem/wordmark.png',
             minWidth: 256,
             minHeight: 64,
             minAspect: 3,

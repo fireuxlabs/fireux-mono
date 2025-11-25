@@ -18,8 +18,8 @@ const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
 const logos = {
-  light: '/img/brand/fireux/wordmark-light.png',
-  dark: '/img/brand/fireux/wordmark-dark.png',
+  light: '/img/core/brand/wordmark-light.png',
+  dark: '/img/core/brand/wordmark-dark.png',
 }
 
 const props = defineProps({

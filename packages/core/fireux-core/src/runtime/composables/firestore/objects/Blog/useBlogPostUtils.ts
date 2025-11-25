@@ -24,15 +24,15 @@ async function getAuthor(): Promise<Author> {
     id: user?.id || '',
     display_name: user?.display_name || user?.email || '',
     handle: user?.handle || '',
-    avatar: user?.avatar || '/img/default-image.png',
+    avatar: user?.avatar || '/img/core/defaults/default-image.png',
     email: user?.email || '',
   }
 }
 
 function getDefaultImages(): Pick<BlogPost, 'featuredImage' | 'socialImage'> {
   return {
-    featuredImage: '/img/logo-type-dark.svg',
-    socialImage: '/img/logo.png',
+    featuredImage: '/img/core/brand/wordmark-dark.png',
+    socialImage: '/img/core/brand/logo.png',
   }
 }
 
