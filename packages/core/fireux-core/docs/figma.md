@@ -11,9 +11,9 @@
 
 This document explains how the FireUX Design Kit works:
 
-- how brand images are created in Figma  
-- how they are exported  
-- how they land in the `figma-export/` staging folder  
+- how brand images are created in Figma
+- how they are exported
+- how they land in the `figma-export/` staging folder
 - how they map into the `/img` buckets used throughout the mono-repo
 
 Copilot must follow the rules described here when generating:

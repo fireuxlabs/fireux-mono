@@ -10,6 +10,8 @@ Package and tenant-specific documentation lives beside the code that owns it. Us
 
 ## Core Packages
 
+- `docs/10-core/figma.md` — ✅ canonical Figma export and staging workflow.
+- `docs/10-core/images.md` — ✅ canonical FireUX image system specification.
 - `packages/core/fireux-core/docs/`
   - `molecules-forms.md` — status and migration plan for the Molecules forms system.
 

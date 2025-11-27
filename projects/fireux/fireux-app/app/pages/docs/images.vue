@@ -3,7 +3,9 @@ import { computed } from 'vue'
 import { queryContent } from '#imports'
 
 const { data, pending, error } = await useAsyncData('fireux-image-spec', () =>
-  queryContent().where({ _source: 'core', _file: 'images.md' }).findOne()
+  queryContent()
+    .where({ _source: 'catalogue', _file: '10-core/images.md' })
+    .findOne()
 )
 
 const doc = computed(() => data.value ?? null)
@@ -28,7 +30,7 @@ useHead({
     </p>
 
     <p v-else-if="!doc" class="text-slate-500 dark:text-slate-400">
-      Spec source not found in fireux-core.
+      Spec source not found in documentation catalogue.
     </p>
 
     <ContentRendererMarkdown

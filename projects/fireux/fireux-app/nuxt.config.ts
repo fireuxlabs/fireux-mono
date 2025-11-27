@@ -23,6 +23,7 @@ const coreDocsDir = resolve(
   '../../..',
   'packages/core/fireux-core/docs'
 )
+const catalogueDocsDir = resolve(currentDir, '../../..', 'docs')
 
 export default defineNuxtConfig(<NuxtConfig>{
   ...baseConfig,
@@ -32,6 +33,10 @@ export default defineNuxtConfig(<NuxtConfig>{
       core: {
         driver: 'fs',
         base: coreDocsDir,
+      },
+      catalogue: {
+        driver: 'fs',
+        base: catalogueDocsDir,
       },
     },
   },

@@ -90,7 +90,7 @@ Every staged file name must match the promoted repo file exactly; no prefixes or
 - `automation/migrations/backfill-core-avatars.ts`
   - `/img/core/defaults/default-thumbnail.png`
 
-*(Remote logo discovery in `fireux-places` crawls external sites; it does not rely on repository image paths.)*
+_(Remote logo discovery in `fireux-places` crawls external sites; it does not rely on repository image paths.)_
 
 ---
 
