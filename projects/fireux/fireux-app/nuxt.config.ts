@@ -18,7 +18,11 @@ const baseConfig = createFireuxConfig({
 })
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
-const coreDocsDir = resolve(currentDir, '../../..', 'packages/core/fireux-core/docs')
+const coreDocsDir = resolve(
+  currentDir,
+  '../../..',
+  'packages/core/fireux-core/docs'
+)
 
 export default defineNuxtConfig(<NuxtConfig>{
   ...baseConfig,

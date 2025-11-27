@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { queryContent } from '#content'
+import { queryContent } from '#imports'
 
 const { data, pending, error } = await useAsyncData('fireux-image-spec', () =>
-  queryContent()
-    .where({ _source: 'core', _file: 'images.md' })
-    .findOne(),
+  queryContent().where({ _source: 'core', _file: 'images.md' }).findOne()
 )
 
 const doc = computed(() => data.value ?? null)

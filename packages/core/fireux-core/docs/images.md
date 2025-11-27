@@ -1,61 +1,87 @@
 # FireUX Image System — Specification
 
-**Version:** 1.0  
-**Last updated:** 2025-11-24  
+**Version:** 1.4  
+**Last Updated:** 2025-11-24  
 **Status:** Canonical Source of Truth
 
-This document defines the **image structure**, **naming rules**, **minimum required assets**,  
-and **Figma templates** for the entire FireUX mono-repo (core → ecosystem → app → tenant).
-
-All packages, ecosystems, and apps MUST follow this specification.
+This document defines the complete image architecture for the FireUX mono-repo: directory rules, required assets for core → ecosystem → app → tenant, PNG pixel sizes, SVG vector rules, Figma templates, fallback behaviour, the Figma export staging folder, and enforcement. All FireUX packages and apps MUST follow this specification.
 
 ---
 
-# 1. Directory Structure
+## 0. Overview of the Image System
 
-All images in the mono-repo must live under these 3 buckets:
+FireUX uses three strictly controlled image buckets:
 
 ```
-/img/core/…         ← provided by fireux-core (shared globally)
-/img/ecosystem/…    ← provided by each ecosystem package
-/img/app/…          ← provided by each app (project)
+/img/core/...         ← global FireUX system
+/img/ecosystem/...    ← each ecosystem (fireux-misebox, fireux-cleanbox, ...)
+/img/app/...          ← each app and tenant
 ```
 
-No package or project may place images outside these 3 buckets.
+No other directories are permitted. Apps fall back to ecosystem → core when an asset is missing.
+
+> Note: fresh exports land in the `figma-export/` staging folder first (see §9) before being copied into these canonical buckets.
 
 ---
 
-# 2. Core Image Requirements
+## 1. Directory Structure (Strict Rules)
+
+Every image MUST live in exactly one of:
+
+1. `/img/core/` — global branding and defaults provided by fireux-core
+2. `/img/ecosystem/<ecosystem>/` — branding for a specific ecosystem
+3. `/img/app/<app>/` — branding for individual apps and tenants
+
+Nothing outside these three buckets is allowed. Apps always resolve images using the fallback order defined in §6.
+
+> Staging reminder: export assets to `figma-export/` first, then promote them into these production paths after verification.
+
+---
+
+## 2. Core Image Requirements
 
 **Path:** `packages/core/fireux-core/src/runtime/public/img/core/`
 
-Core provides ONLY the universal, shared assets needed by all FireUX apps.
+Core provides foundational brand assets and global fallbacks.
 
-## 2.1 Required Files
-
-### Brand
+### 2.1 Core PNG Brand Assets (fixed pixel sizes)
 
 ```
-/img/core/brand/logo.png               (512×512 PNG)
-/img/core/brand/wordmark-dark.png      (768×192 PNG)
-/img/core/brand/wordmark-light.png     (768×192 PNG)
-/img/core/brand/wordmark-light.svg     (vector, no enforced size)
+/img/core/brand/logo.png               (512×512)
+/img/core/brand/wordmark-dark.png      (768×192)
+/img/core/brand/wordmark-light.png     (768×192)
 ```
 
-### Auth Buttons (Google official assets)
+### 2.2 Core SVG Brand Asset (vector, infinite scale)
 
 ```
-/img/core/auth/sign-in-light.svg       (175 × 40)
-/img/core/auth/sign-in-dark.svg        (175 × 40)
-/img/core/auth/sign-up-light.svg       (179 × 40)
-/img/core/auth/sign-up-dark.svg        (179 × 40)
+/img/core/brand/wordmark-light.svg     (vector, scalable — no pixel constraints)
 ```
 
-These must remain **pixel-perfect** and **unmodified**.
+Requirements:
 
-### Defaults
+- exported as pure vector
+- no raster layers
+- no background rectangles
+- no clipping masks
 
-These are used when an ecosystem or app does NOT provide its own.
+### 2.3 Google Auth Buttons (official, immutable)
+
+```
+/img/core/auth/sign-in-light.svg       (175×40)
+/img/core/auth/sign-in-dark.svg        (175×40)
+/img/core/auth/sign-up-light.svg       (179×40)
+/img/core/auth/sign-up-dark.svg        (179×40)
+```
+
+These are official Google assets and MUST remain unchanged:
+
+- no colour edits
+- no size changes
+- no renaming
+- no recompression
+
+### 2.4 Global Default Fallbacks
 
 ```
 /img/core/defaults/default-avatar.png      (512×512)
@@ -63,277 +89,259 @@ These are used when an ecosystem or app does NOT provide its own.
 /img/core/defaults/default-thumbnail.png   (256×256)
 ```
 
-Default background colour used for placeholders: **#EAB308**.
+Default FireUX fallback background colour: `#F5DFA8` (soft warm neutral).
 
 ---
 
-# 3. Ecosystem Image Requirements
+## 3. Ecosystem Image Requirements
 
 **Path:** `packages/ecosystem/<ecosystem-name>/src/runtime/public/img/ecosystem/`
 
-Every ecosystem MUST supply its own identity.
+Each ecosystem (FireUX, Misebox, Cleanbox, etc.) must supply its own identity layer.
 
-## 3.1 Required Files
-
-```
-/img/ecosystem/logo.png            (512×512 PNG)
-/img/ecosystem/avatar.png          (512×512 PNG)
-/img/ecosystem/wordmark.png        (≥256×64 PNG, aspect ≥3:1)
-```
-
-## 3.2 Optional Ecosystem Files
+### 3.1 Ecosystem PNG Assets (required)
 
 ```
-/img/ecosystem/logo.svg
-/img/ecosystem/wordmark-light.svg
-/img/ecosystem/wordmark-dark.svg
+/img/ecosystem/logo.png                (512×512)
+/img/ecosystem/avatar.png              (512×512)
+/img/ecosystem/wordmark-dark.png       (768×192)
+/img/ecosystem/wordmark-light.png      (768×192)
 ```
 
-These SVGs are allowed but not enforced.
+### 3.2 Ecosystem SVG Asset (vector)
+
+```
+/img/ecosystem/wordmark-light.svg      (vector, scalable — no pixel constraints)
+```
+
+Requirements:
+
+- no background rectangle
+- exported at natural vector size
+- can be scaled arbitrarily by the app
+
+No ecosystem-level defaults exist; if an ecosystem asset is missing, resolution will fall through to core defaults as described in §6.
 
 ---
 
-# 4. App Image Requirements
+## 4. App Image Requirements
 
-**Path:** `projects/<ecosystem>/<app-name>/public/img/app/`
+**Path:** `projects/<ecosystem>/<app>/public/img/app/`
 
-Every app (main app + each tenant app) MUST implement the following.
+Each app and tenant must supply its own brand layer.
 
-## 4.1 Required Files
-
-```
-/img/app/logo.png            (512×512 PNG)
-/img/app/wordmark.png        (≥256×64 PNG)
-/img/app/cover.png           (1280×720 PNG)
-/img/app/thumbnail.png       (256×256 PNG)
-```
-
-These may override ecosystem visuals, which may override core.
-
-## 4.2 PWA Icons
-
-PWA icons are **app-only**, never core or ecosystem.
+### 4.1 App PNG Brand Assets (required)
 
 ```
-/img/app/pwa/icon-192.png    (192×192 PNG)
-/img/app/pwa/icon-512.png    (512×512 PNG)
+/img/app/logo.png                (512×512)
+/img/app/wordmark-dark.png       (768×192)
+/img/app/wordmark-light.png      (768×192)
+/img/app/cover.png               (1280×720)
+/img/app/thumbnail.png           (256×256)
 ```
 
-These MUST be square.
-
-## 4.3 Optional Additional App Assets
-
-(Free choice per app)
+### 4.2 App SVG Brand Asset (vector)
 
 ```
-/img/app/stack/…           ← tech stack (fireux-app only)
-/img/app/restaurant/…      ← misebox-app only
-/img/app/cleaning/…        ← cleanbox-app only
+/img/app/wordmark-light.svg      (vector, scalable — no pixel constraints)
 ```
+
+As with core and ecosystem SVGs:
+
+- no backgrounds
+- no clipping masks
+- pure vector only
+
+### 4.3 App PWA Icons (strict squares)
+
+```
+/img/app/pwa/icon-192.png        (192×192)
+/img/app/pwa/icon-512.png        (512×512)
+```
+
+PWA icon requirements:
+
+- MUST be perfect squares
+- MUST be centred and legible at small sizes
+- SHOULD have transparent backgrounds when possible
+
+### 4.4 App Assets Bucket (unrestricted)
+
+```
+/img/app/assets/*
+```
+
+Use this bucket for:
+
+- tech stack panels
+- screenshots
+- marketing visuals
+- tenant/client imagery
+- any other non-mandatory imagery
+
+There are no enforced validation rules inside `assets/`. Only the brand assets, surfaces, and PWA icons are enforced.
 
 ---
 
-# 5. Figma Template Requirements
+## 5. Figma Templates
 
-Figma must contain the following frames, sizes, and naming conventions.
+All Figma layers and frames MUST use kebab-case naming.
 
-The naming MUST be **kebab-case**.
+Colour systems in Figma should:
 
----
+- use canonical brand colours (Tailwind/Nuxt UI-based)
+- ignore black and white as “primary” colours
+- avoid inventing extra, undocumented colour tokens
 
-# 5.1 Core Page (Figma Page 1)
+The templates below describe the expected structure of each page in the FireUX Figma files.
 
-### Frame: `core-brand`
+### 5.1 Core Template
 
 ```
-core-brand (FRAME)
-├── bg-logo-square (512×512, transparent)
-├── logo-512 (placed on bg-logo-square)
-├── bg-wordmark-dark (768×192, #0F172A)
+core-brand
+├── bg-logo-square (512×512)
+├── logo-512
+├── bg-wordmark-dark (768×192)
 ├── wordmark-dark-768
-├── bg-wordmark-light (768×192, #F8FAFC)
+├── bg-wordmark-light (768×192)
 ├── wordmark-light-768
-└── wordmark-light-svg (vector, ~350px width)
+└── wordmark-light-svg
+
+core-auth-buttons
+├── sign-in-light
+├── sign-in-dark
+├── sign-up-light
+└── sign-up-dark
+
+core-defaults
+├── default-avatar
+├── default-cover
+└── default-thumbnail
 ```
 
-### Frame: `core-auth-buttons`
+- `bg-*` layers are simple background rectangles for export framing.
+- `*-svg` layers are vector-only assets without backgrounds.
+
+### 5.2 Ecosystem Template
 
 ```
-core-auth-buttons (FRAME)
-├── sign-in-light (175×40)
-├── sign-in-dark (175×40)
-├── sign-up-light (179×40)
-└── sign-up-dark (179×40)
-```
-
-### Frame: `core-defaults`
-
-```
-core-defaults (FRAME)
-├── default-avatar (512×512, #EAB308)
-├── default-cover (1280×720, #EAB308)
-└── default-thumbnail (256×256, #EAB308)
-```
-
----
-
-# 5.2 Ecosystem Template Page (Figma Page 2)
-
-This page is duplicated for each ecosystem.
-
-### Frame: `ecosystem-brand`
-
-```
-ecosystem-brand (FRAME)
+ecosystem-brand
 ├── ecosystem-logo (512×512)
 ├── ecosystem-avatar (512×512)
-└── ecosystem-wordmark (≥256×64)
+├── ecosystem-wordmark-dark (768×192)
+├── ecosystem-wordmark-light (768×192)
+└── ecosystem-wordmark-light-svg
 ```
 
-### Frame: `ecosystem-defaults`
+Only these five layers should exist in the ecosystem brand frame. Additional ecosystem imagery belongs in that ecosystem’s app `assets/` buckets.
 
-(If ecosystem wants to override core)
-
-```
-ecosystem-default-avatar (optional)
-ecosystem-default-cover (optional)
-ecosystem-default-thumbnail (optional)
-```
-
----
-
-# 5.3 App Template Page (Figma Page 3)
-
-This page is duplicated for each app.
-
-### Frame: `app-brand`
+### 5.3 App Template
 
 ```
-app-brand (FRAME)
+app-brand
 ├── app-logo (512×512)
-├── app-wordmark (≥256×64)
+├── app-wordmark-dark (768×192)
+├── app-wordmark-light (768×192)
+└── app-wordmark-light-svg
+
+app-surfaces
 ├── app-cover (1280×720)
 └── app-thumbnail (256×256)
-```
 
-### Frame: `app-pwa`
-
-```
-app-pwa (FRAME)
+app-pwa
 ├── app-icon-192 (192×192)
 └── app-icon-512 (512×512)
 ```
 
-### Frame: `app-defaults`
-
-(Only if overriding ecosystem defaults)
-
-```
-app-default-avatar (optional)
-app-default-cover (optional)
-app-default-thumbnail (optional)
-```
+All additional app-specific imagery belongs under `/img/app/assets/*` and does not change the template above.
 
 ---
 
-# 6. Fallback Resolution Order
+## 6. Fallback Resolution Order
 
-When an app requests an image, the system resolves in this order:
+When FireUX code requests an image, resolution MUST follow this order:
 
-```
-1. app  →  /img/app/…
-2. ecosystem  →  /img/ecosystem/…
-3. core  →  /img/core/defaults/…
-```
+1. App-level: `/img/app/...`
+2. Ecosystem-level: `/img/ecosystem/...`
+3. Core-level defaults: `/img/core/defaults/...`
 
-This ensures:
+This guarantees:
 
-- apps can fully customize
-- ecosystems can standardize branding
-- core always guarantees a minimum spec
+- apps override ecosystems
+- ecosystems override core
+- core always provides a stable minimum
 
----
-
-# 7. Reference: Current App Implementations
-
-Use this snapshot to verify every shipped app supplies the required assets.
-
-## Cleanbox SaaS (`projects/cleanbox/cleanbox-app`)
-
-- **Missing:** `/public/img/app/logo.png`
-- **Missing:** `/public/img/app/wordmark.png`
-- **Missing:** `/public/img/app/cover.png`
-- **Missing:** `/public/img/app/thumbnail.png`
-- `/public/icon-192x192.png` (current bitmap 144×193 — needs 192×192)
-- `/public/icon-512x512.png` (current bitmap 144×193 — needs 512×512)
-
-## Cleanbox Tenant — Richies Reinigung (`projects/cleanbox/richies-reinigung`)
-
-- **Missing:** `/public/img/app/logo.png`
-- **Missing:** `/public/img/app/wordmark.png`
-- **Missing:** `/public/img/app/cover.png`
-- **Missing:** `/public/img/app/thumbnail.png`
-- `/public/icon-192x192.png` (current bitmap 144×193 — needs 192×192)
-- `/public/icon-512x512.png` (current bitmap 144×193 — needs 512×512)
-
-## Misebox SaaS (`projects/misebox/misebox-app`)
-
-- **Missing:** `/public/img/app/logo.png`
-- **Missing:** `/public/img/app/wordmark.png`
-- **Missing:** `/public/img/app/cover.png`
-- **Missing:** `/public/img/app/thumbnail.png`
-- `/public/icon-192x192.png` (current bitmap 144×193 — needs 192×192)
-- `/public/icon-512x512.png` (current bitmap 144×193 — needs 512×512)
-
-## Misebox Tenant — Niederhorn (`projects/misebox/niederhorn`)
-
-- **Missing:** `/public/img/app/logo.png`
-- **Missing:** `/public/img/app/wordmark.png`
-- **Missing:** `/public/img/app/cover.png`
-- **Missing:** `/public/img/app/thumbnail.png`
-- `/public/icon-192x192.png` (current bitmap 144×193 — needs 192×192)
-- `/public/icon-512x512.png` (current bitmap 144×193 — needs 512×512)
-
-## FireUX Marketing App (`projects/fireux/fireux-app`)
-
-- **Missing:** `/public/img/app/logo.png`
-- **Missing:** `/public/img/app/wordmark.png`
-- **Missing:** `/public/img/app/cover.png`
-- **Missing:** `/public/img/app/thumbnail.png`
-- **Missing:** `/public/icon-192x192.png`
-- **Missing:** `/public/icon-512x512.png`
-- `/public/img/app/stack/*` (marketing badges only; not part of the critical contract)
-
-> Keep this list in sync when new apps/tenants ship or when an app gains additional brand surfaces.
+If all three levels fail, the caller should handle the missing asset in code (for example, by rendering a solid background with text).
 
 ---
 
-# 8. Enforcement
+## 7. Enforcement Rules
 
-Future automation scripts:
+Automation MUST validate:
+
+- filenames match exactly the names in this spec
+- files are placed in the correct folder
+- PNG assets match their specified pixel sizes
+- only the whitelisted SVGs exist and they contain no raster content or backgrounds
+- PWA icons are perfect squares (192×192, 512×512)
+- Google Auth buttons are not modified in any way
+- path resolution logic follows the app → ecosystem → core order
+
+Relevant scripts:
 
 - `guard-assets-structure.mjs`
 - `env-check.ts`
 - `useImageStorage.ts`
 
-MUST validate that:
+---
 
-- dimensions match
-- filenames match the spec
-- no images live outside the 3 buckets
-- fallbacks follow the correct order
+## 8. Future Extensions
+
+Planned but not yet enforced:
+
+- multi-density assets (1×, 2×, 3×)
+- compression and optimisation rules
+- WebP alternatives
+- CDN proxying for all buckets
+- light/dark variants per ecosystem and app
 
 ---
 
-# 9. Future Extensions
+## 9. Figma Export Staging Folder (`figma-export/`)
 
-This spec will eventually expand with:
+Designers export assets into a staging area kept outside the canonical `/img/**` buckets. The expected structure:
 
-- multi-density icons (1×, 2×, 3×)
-- image compression rules
-- CDN proxying
-- optional WebP alternatives
+```
+figma-export/
+├── core/
+│   ├── brand/
+│   ├── auth/
+│   └── defaults/
+├── ecosystems/
+│   ├── fireux-fireux/
+│   ├── fireux-misebox/
+│   └── fireux-cleanbox/
+└── apps/
+	├── fireux-app/
+	├── misebox-app/
+	├── niederhorn-app/
+	├── cleanbox-app/
+	├── cleanbox-team-app/
+	└── cleanbox-tenant-app/
+```
+
+This folder may live beside the mono-repo (symlinked in), inside the repo but git-ignored, or added to the VS Code workspace as an external folder. Automation and Copilot must treat it as read-only staging.
+
+### 9.1 Mapping `figma-export/` → Production Buckets
+
+- `figma-export/core/brand/*` → `packages/core/fireux-core/src/runtime/public/img/core/brand/*`
+- `figma-export/core/auth/*` → `packages/core/fireux-core/src/runtime/public/img/core/auth/*`
+- `figma-export/core/defaults/*` → `packages/core/fireux-core/src/runtime/public/img/core/defaults/*`
+- `figma-export/ecosystems/<ecosystem>/*` → `packages/ecosystem/<ecosystem>/src/runtime/public/img/ecosystem/*`
+- `figma-export/apps/<app>/*` → `projects/<ecosystem>/<app>/public/img/app/*`
+
+Copilot should preserve filenames and subfolders during promotion and never invent alternate destinations.
 
 ---
 
-# END OF SPEC
+END OF SPEC (Version 1.4)

@@ -18,8 +18,9 @@ const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
 const logos = {
-  light: '/img/core/brand/wordmark-light.png',
-  dark: '/img/core/brand/wordmark-dark.png',
+  // App-level wordmarks live under each project's public/img/app directory
+  light: '/img/app/wordmark-light.png',
+  dark: '/img/app/wordmark-dark.png',
 }
 
 const props = defineProps({
