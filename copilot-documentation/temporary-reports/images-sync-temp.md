@@ -1,6 +1,7 @@
 # Images Sync (Temp)
 
 ## Repo Image Structure
+
 - `packages/core/fireux-core/src/runtime/public/img/core/brand/`
   - `logo.png`
   - `wordmark-dark.png`
@@ -46,6 +47,7 @@
   - `pwa/icon-512.png`
 
 ## Figma Export Staging
+
 - `figma-export/core/brand/`
   - Mirrors production brand set (wordmarks, marks).
 - `figma-export/core/defaults/`
@@ -58,6 +60,7 @@
   - Same filenames as `projects/fireux/tennant/public/img/app/*`.
 
 ## Runtime References (direct `/img/*` usage)
+
 - `packages/core/fireux-core/src/runtime/components/logo/Brand.vue`
   - `/img/app/wordmark-light.png`
   - `/img/app/wordmark-dark.png`
@@ -81,6 +84,7 @@
   - `/img/core/defaults/default-image.png`
 
 ## Fallback Images
+
 - Primary fallback source kept in repo at `packages/core/fireux-core/src/runtime/public/img/core/defaults/*` (mirrors staging under `figma-export/core/defaults/*`).
 - External archive for quick restores lives at `/Users/danielwatson/Desktop/Projects Assets/figma-export/core/defaults`.
 - Any component or API relying on `/img/core/defaults/default-image.png` assumes these files remain available; keep staging and repo copies in sync when exporting new defaults.
