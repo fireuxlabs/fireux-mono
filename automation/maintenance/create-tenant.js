@@ -543,7 +543,6 @@ export default defineNuxtConfig({
 
 function createEnvFile(config) {
   const colorHex = getColorHex(config.primaryColor)
-  const secondaryHex = getColorHex(config.secondaryColor)
 
   // Read Firebase config from parent app
   const parentEnvPath = `${config.parentPath}/.env`
@@ -612,7 +611,6 @@ APP_ID=${config.name}
 APP_SHORT_NAME=${config.name.slice(0, 4)}
 APP_PRIMARY_COLOR="${colorHex}"
 APP_NEUTRAL_COLOR="#64748B"
-APP_SECONDARY_COLOR="${secondaryHex}"
 AUTHOR_NAME=Daniel Watson (fireux)
 DOMAIN=https://${config.domain}
 

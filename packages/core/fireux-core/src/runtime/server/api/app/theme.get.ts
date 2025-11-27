@@ -22,22 +22,33 @@ export default defineEventHandler(async (event) => {
     return target.startsWith('#') ? target : `#${target}`
   }
 
-  const appPrimaryColor = normalizeHex(
-    process.env.APP_PRIMARY_COLOR || '',
-    '#FACC15'
-  )
+  const rawPrimary = process.env.APP_PRIMARY_COLOR || ''
+  const appPrimaryColor = normalizeHex(rawPrimary, '#FACC15')
   const appNeutralColor = normalizeHex(
     process.env.APP_NEUTRAL_COLOR || '',
     '#71717A'
   )
-  const appSecondaryColor = normalizeHex(
-    process.env.APP_SECONDARY_COLOR || '',
-    '#F97316'
-  )
+  const rawSecondary = process.env.APP_SECONDARY_COLOR?.trim()
+  const appSecondaryColor = rawSecondary
+    ? normalizeHex(rawSecondary, appPrimaryColor)
+    : undefined
   const projectName = process.env.PROJECT_NAME || 'FireUX'
   const appId = process.env.APP_ID || 'fireux-app'
   const appShortName = process.env.APP_SHORT_NAME || 'FireUX'
   const domain = process.env.APP_DOMAIN || 'https://fireux.app'
+
+  const theme: {
+    primary: string
+    neutral: string
+    secondary?: string
+  } = {
+    primary: appPrimaryColor,
+    neutral: appNeutralColor,
+  }
+
+  if (appSecondaryColor) {
+    theme.secondary = appSecondaryColor
+  }
 
   // Only return data that's actually available from environment variables
   const appTheme = {
@@ -49,11 +60,7 @@ export default defineEventHandler(async (event) => {
     domain: domain,
 
     // Theme colors (the main purpose of this endpoint)
-    theme: {
-      primary: appPrimaryColor,
-      neutral: appNeutralColor,
-      secondary: appSecondaryColor,
-    },
+    theme,
 
     // App icon from environment
     icon: process.env.APP_ICON || 'flame',

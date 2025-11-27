@@ -41,7 +41,7 @@ Example for `projects/misebox/misebox-app`:
     ui: {
       colors: {
         primary: 'misebox', // custom palette name
-        neutral: 'zinc',    // keep neutral aligned with core choice
+        neutral: 'zinc', // keep neutral aligned with core choice
       },
       safelistColors: ['misebox'],
     },
@@ -151,7 +151,7 @@ To theme a new app (for example, a new tenant):
    @layer base {
      :root {
        /* BrandX primary palette */
-       --ui-color-brandx-50:  #f5f9ff;
+       --ui-color-brandx-50: #f5f9ff;
        --ui-color-brandx-100: #e0edff;
        --ui-color-brandx-200: #bad4ff;
        --ui-color-brandx-300: #91b8ff;
@@ -178,7 +178,7 @@ To theme a new app (for example, a new tenant):
      ui: {
        colors: {
          primary: 'brandx', // must match the prefix in --ui-color-brandx-*
-         neutral: 'zinc',   // keep consistent with core unless you have a reason
+         neutral: 'zinc', // keep consistent with core unless you have a reason
        },
        safelistColors: ['brandx'],
      },

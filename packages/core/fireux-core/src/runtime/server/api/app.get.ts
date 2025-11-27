@@ -7,9 +7,9 @@ export default defineEventHandler(async (_event) => {
   const appShortName = process.env.APP_SHORT_NAME || 'FireUX'
   const appId = process.env.APP_ID || 'fireux-app'
   const domain = process.env.APP_DOMAIN || 'https://fireux.app'
-  const appPrimaryColor = process.env.APP_PRIMARY_COLOR || 'FACC15'
-  const appNeutralColor = process.env.APP_NEUTRAL_COLOR || '71717A'
-  const appSecondaryColor = process.env.APP_SECONDARY_COLOR || 'F97316'
+  const rawPrimary = process.env.APP_PRIMARY_COLOR || 'FACC15'
+  const rawNeutral = process.env.APP_NEUTRAL_COLOR || '71717A'
+  const rawSecondary = process.env.APP_SECONDARY_COLOR?.trim()
   const appIcon = process.env.APP_ICON || 'flame'
 
   // Ensure a single leading '#'
@@ -17,6 +17,19 @@ export default defineEventHandler(async (_event) => {
     const cleaned = (value || '').replace(/['"]/g, '').trim()
     if (!cleaned) return '#000000'
     return cleaned.startsWith('#') ? cleaned : `#${cleaned}`
+  }
+
+  const theme: {
+    primary: string
+    neutral: string
+    secondary?: string
+  } = {
+    primary: normalizeHex(rawPrimary),
+    neutral: normalizeHex(rawNeutral),
+  }
+
+  if (rawSecondary) {
+    theme.secondary = normalizeHex(rawSecondary)
   }
 
   // App info using environment variables
@@ -31,11 +44,7 @@ export default defineEventHandler(async (_event) => {
     url: domain,
 
     // Theme colors from env vars
-    theme: {
-      primary: normalizeHex(appPrimaryColor),
-      neutral: normalizeHex(appNeutralColor),
-      secondary: normalizeHex(appSecondaryColor),
-    },
+    theme,
 
     // Assets
     assets: {

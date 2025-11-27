@@ -301,7 +301,6 @@ export default defineNuxtConfig({
  */
 export function generateEnvFile(config: ValidationTenantConfig): string {
   const colorHex = getColorHex(config.primaryColor)
-  const secondaryHex = getColorHex(config.secondaryColor ?? 'orange')
 
   return `# Firebase Configuration (Server-side)
 NUXT_FIREBASE_API_KEY=your_api_key_here
@@ -323,7 +322,6 @@ APP_NAME=${config.appName}
 APP_SHORT_NAME=${config.appShortName}
 APP_PRIMARY_COLOR=${colorHex}
 APP_NEUTRAL_COLOR=64748B
-APP_SECONDARY_COLOR=${secondaryHex}
 APP_ICON=your_icon_name
 AUTHOR_NAME=Your Team Name
 
@@ -346,7 +344,6 @@ export function generateAppConfig(config: ValidationTenantConfig): string {
     colors: {
       primary: '${config.primaryColor}',
       neutral: '${config.neutralColor ?? 'zinc'}',
-      secondary: '${config.secondaryColor ?? 'orange'}',
     },
   },
 })`

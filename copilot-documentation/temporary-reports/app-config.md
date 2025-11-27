@@ -11,7 +11,7 @@ Collected `app.config.ts` contents for each app and the associated brand color p
 | CleanBox          | blue    | `#3B82F6`   | teal      | `#14B8A6`     | gray    | `#6B7280`   |
 | Richies Reinigung | blue    | `#3B82F6`   | cyan      | `#06B6D4`     | gray    | `#6B7280`   |
 
-All hex values now flow through each app’s `.env` file via `APP_PRIMARY_COLOR`, `APP_SECONDARY_COLOR`, and `APP_NEUTRAL_COLOR`, and resolve into runtime config for component theming.
+All hex values now flow through each app’s `.env` file via `APP_PRIMARY_COLOR` and `APP_NEUTRAL_COLOR`, and resolve into runtime config for component theming.
 
 ```typescript
 // projects/cleanbox/cleanbox-app/app/app.config.ts

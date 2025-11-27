@@ -243,7 +243,6 @@ export default defineEventHandler<EnvCheckResponse>((event) => {
     'APP_SHORT_NAME',
     'APP_PRIMARY_COLOR',
     'APP_NEUTRAL_COLOR',
-    'APP_SECONDARY_COLOR',
     'APP_ICON',
     'APP_DOMAIN',
   ]
@@ -252,6 +251,7 @@ export default defineEventHandler<EnvCheckResponse>((event) => {
     'FIREBASE_MEASUREMENT_ID',
     'FIREBASE_RECAPTCHA_V3_KEY',
     'GOOGLE_PLACES_API_KEY',
+    'APP_SECONDARY_COLOR',
   ]
 
   const optionalServer = [
