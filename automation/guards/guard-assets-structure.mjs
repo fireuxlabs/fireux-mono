@@ -6,7 +6,7 @@ const ROOT = process.cwd()
 const APPS_GLOB_ROOT = path.join(ROOT, 'projects')
 const CORE_DEFAULT = path.join(
   ROOT,
-  'packages/core/fireux-core/src/runtime/public/img/core/defaults/default-image.png'
+  'packages/core/fireux-core/src/runtime/public/img/core/defaults/default-thumbnail.png'
 )
 
 const args = process.argv.slice(2)
@@ -82,8 +82,8 @@ function main() {
       }
     }
 
-    // Remove per-app default-image.png (we use core default now)
-    const perAppDefault = path.join(imgDir, 'default-image.png')
+    // Remove per-app default-thumbnail copies (we use core default now)
+    const perAppDefault = path.join(imgDir, 'default-thumbnail.png')
     if (fs.existsSync(perAppDefault)) {
       const deleted = rmIfExists(perAppDefault)
       if (!deleted && !FIX) errors++

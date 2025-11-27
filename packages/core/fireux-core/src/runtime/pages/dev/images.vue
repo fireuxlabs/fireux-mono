@@ -66,7 +66,7 @@ interface AssetGroup {
 // Provide stable metadata for each preview tile.
 const coreAssets: Asset[] = [
   {
-    path: '/img/core/defaults/default-image.png',
+    path: '/img/core/defaults/default-thumbnail.png',
     label: 'Fallback image placeholder',
     tone: 'checker',
   },

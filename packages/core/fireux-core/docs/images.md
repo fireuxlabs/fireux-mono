@@ -1,7 +1,7 @@
 # FireUX Image System — Specification
 
 **Version:** 1.4  
-**Last Updated:** 2025-11-24  
+**Last Updated:** 2025-11-27  
 **Status:** Canonical Source of Truth
 
 This document defines the complete image architecture for the FireUX mono-repo: directory rules, required assets for core → ecosystem → app → tenant, PNG pixel sizes, SVG vector rules, Figma templates, fallback behaviour, the Figma export staging folder, and enforcement. All FireUX packages and apps MUST follow this specification.
@@ -90,6 +90,14 @@ These are official Google assets and MUST remain unchanged:
 ```
 
 Default FireUX fallback background colour: `#F5DFA8` (soft warm neutral).
+
+### 2.5 Social / OG Fallback
+
+```
+/img/og-image.png                     (1200×630)
+```
+
+Shared OG/social preview image used by core HTTP endpoints. Keep this file aligned with the current brand art and export it alongside other core assets.
 
 ---
 
@@ -193,7 +201,7 @@ Colour systems in Figma should:
 - ignore black and white as “primary” colours
 - avoid inventing extra, undocumented colour tokens
 
-The templates below describe the expected structure of each page in the FireUX Figma files.
+The templates below describe the expected structure of each page in the FireUX Figma files. See `figma.md` for the full workflow, export rules, and staging map.
 
 ### 5.1 Core Template
 

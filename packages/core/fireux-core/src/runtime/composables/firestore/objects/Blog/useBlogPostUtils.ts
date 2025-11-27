@@ -24,7 +24,7 @@ async function getAuthor(): Promise<Author> {
     id: user?.id || '',
     display_name: user?.display_name || user?.email || '',
     handle: user?.handle || '',
-    avatar: user?.avatar || '/img/core/defaults/default-image.png',
+    avatar: user?.avatar || '/img/core/defaults/default-thumbnail.png',
     email: user?.email || '',
   }
 }

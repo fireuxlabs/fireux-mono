@@ -10,7 +10,7 @@ import {
 } from 'firebase/storage'
 
 function getDefaultImageUrl(
-  path: string = '/img/core/defaults/default-image.png'
+  path: string = '/img/core/defaults/default-thumbnail.png'
 ): string {
   return path
 }

@@ -1,7 +1,7 @@
 # FIReUX Design System – Figma Workflow Guide for Copilot
 
-**Version:** 1.0  
-**Last Updated:** 2025-11-24  
+**Version:** 1.1  
+**Last Updated:** 2025-11-27  
 **Role:** Canonical instructions for how FIReUX uses Figma  
 **Audience:** GitHub Copilot + AI Assistants working in this repository
 
@@ -9,7 +9,12 @@
 
 ## 0. Purpose of This Document
 
-This document explains how the FireUX Design Kit works, how brand images are created in Figma, how they are exported, how they land in the `figma-export/` staging folder, and how they map into the `/img` buckets used throughout the mono-repo.
+This document explains how the FireUX Design Kit works:
+
+- how brand images are created in Figma  
+- how they are exported  
+- how they land in the `figma-export/` staging folder  
+- how they map into the `/img` buckets used throughout the mono-repo
 
 Copilot must follow the rules described here when generating:
 
@@ -20,7 +25,7 @@ Copilot must follow the rules described here when generating:
 - automated checks (for example, `guard-assets` scripts)
 - guidance for the user
 
-This keeps the FireUX ecosystem consistent and predictable.
+This keeps the FireUX ecosystem consistent and predictable. For storage, file locations, and runtime rules, Copilot must also follow `images.md` (FireUX Image System — Specification).
 
 ---
 
@@ -55,7 +60,7 @@ Variables are grouped roughly as:
 **Important rules:**
 
 - Treat **primary** and **neutral** families as the main building blocks.
-- **Black and white are NOT part of the primary/neutral palette** for branding decisions.
+- **Black and white are not part of the primary/neutral palette** for branding decisions.
 - Alpha variants (for example, `primary-alpha`, `neutral-alpha`) exist but are reserved for future refinement.
 
 #### 1.1.1 Nuxt UI Token Mapping
@@ -65,13 +70,13 @@ Nuxt UI uses high-level tokens which map to the local Figma variables:
 - `--ui-primary` → `primary-500` (light mode) / `primary-400` (dark mode)
 - `--ui-neutral` → `neutral-500`
 
-For FireUX:
+For FireUX (core brand):
 
 - The **primary** family has been changed from Nuxt UI’s default green to **yellow**.
 - The **neutral** family has been changed from `slate` to **`zinc`**.
 - Alpha families remain at their defaults for now (TODO in future).
 
-When the Nuxt app config sets:
+Example Nuxt app config that should conceptually match this page:
 
 ```ts
 export default defineAppConfig({
@@ -84,9 +89,9 @@ export default defineAppConfig({
 })
 ```
 
-it should conceptually match the palette defined in this Figma page.
+It should conceptually match the palette defined in this Figma page.
 
-This page does **not** contain:
+This page does not contain:
 
 - logos
 - brand images
@@ -113,6 +118,7 @@ Rules:
 - All names use kebab-case exactly as written.
 - Initial rectangles can be filled using `--ui-primary-400` (or the environment’s primary tone).
 - Designers replace the rectangles with real artwork before export.
+- Ecosystem wordmarks should export with transparent backgrounds. Any background plate happens at layout time.
 
 Each ecosystem gets its own file based on this template.
 
@@ -140,7 +146,8 @@ Rules:
 
 - These eight items are required for each app.
 - All names use kebab-case exactly as written.
-- Initial blocks may also be coloured with `--ui-primary-400` to preview branding.
+- Initial blocks may be coloured with `--ui-primary-400` to preview branding.
+- Logos and wordmarks should export with transparent backgrounds unless an intentional solid plate is required.
 - Any extra app imagery must be exported into `/img/app/assets/*` (no spec on names or sizes there).
 
 ---
@@ -162,6 +169,7 @@ Copilot MUST answer using:
 - exact kebab-case layer names
 - the pixel-perfect dimensions listed in `images.md`
 - the fallback rules from `images.md` (§6)
+- the staging flow described in this document (§3)
 
 Copilot must not invent:
 
@@ -174,7 +182,7 @@ If a user suggests a conflicting name or size, Copilot should correct them back 
 
 ---
 
-## 2. Figma → `figma-export/` → Repo Flow
+## 3. Figma → `figma-export/` → Repo Flow
 
 Designers export from Figma into a staging folder, not directly into `packages/` or `projects/`.
 
@@ -189,12 +197,12 @@ figma-export/
 │   ├── fireux-misebox/
 │   └── fireux-cleanbox/
 └── apps/
-  ├── fireux-app/
-  ├── misebox-app/
-  ├── niederhorn-app/
-  ├── cleanbox-app/
-  ├── cleanbox-team-app/
-  └── cleanbox-tenant-app/
+    ├── fireux-app/
+    ├── misebox-app/
+    ├── niederhorn-app/
+    ├── cleanbox-app/
+    ├── cleanbox-team-app/
+    └── cleanbox-tenant-app/
 ```
 
 Copilot’s responsibilities:
@@ -203,7 +211,7 @@ Copilot’s responsibilities:
 - reference this path when writing copy/move scripts or task lists
 - treat `figma-export/` as staging only; production assets live under `/img/**`
 
-### 2.1 Mapping Rules for Copilot
+### 3.1 Mapping Rules for Copilot (Staging → Production)
 
 - `figma-export/core/brand/*` → `packages/core/fireux-core/src/runtime/public/img/core/brand/*`
 - `figma-export/core/auth/*` → `packages/core/fireux-core/src/runtime/public/img/core/auth/*`
@@ -215,11 +223,11 @@ Copilot must preserve filenames and subfolder structure when proposing automatio
 
 ---
 
-## 3. Export Rules
+## 4. Export Rules
 
-Exports from Figma MUST match the required specs.
+Exports from Figma MUST match the required specs from `images.md`.
 
-### 3.1 PNG assets (fixed sizes)
+### 4.1 PNG assets (fixed sizes)
 
 - 512×512 — logos, avatars
 - 768×192 — wordmarks (dark and light)
@@ -228,7 +236,7 @@ Exports from Figma MUST match the required specs.
 - 192×192 — PWA icon (small)
 - 512×512 — PWA icon (large)
 
-### 3.2 SVG assets (vector, no background)
+### 4.2 SVG assets (vector, no background)
 
 Allowed SVGs:
 
@@ -245,9 +253,9 @@ Requirements:
 
 ---
 
-## 4. Mapping Figma → Repository Buckets
+## 5. Mapping Figma → Repository Buckets
 
-Copilot must always map exports to the correct buckets:
+When reasoning about final destinations, Copilot must always map exports to the correct buckets:
 
 - Core assets → `/img/core/*`
 - Ecosystem assets → `/img/ecosystem/<ecosystem>/*`
@@ -262,7 +270,7 @@ No other place in the repo is permitted for image storage.
 
 ---
 
-## 5. Rules Copilot Must Enforce
+## 6. Rules Copilot Must Enforce
 
 Whenever writing code or instructions involving images, Copilot must ensure:
 
@@ -279,7 +287,7 @@ If user instructions conflict with these rules, Copilot should gently correct th
 
 ---
 
-## 6. How Copilot Should Help with Real Work
+## 7. How Copilot Should Help with Real Work
 
 Copilot may be asked to:
 
