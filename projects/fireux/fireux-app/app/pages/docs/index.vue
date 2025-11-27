@@ -86,7 +86,12 @@ useHead({
                   </code>
                 </div>
 
-                <UBadge v-if="entry.canonical" color="emerald" variant="soft" size="xs">
+                <UBadge
+                  v-if="entry.canonical"
+                  color="emerald"
+                  variant="soft"
+                  size="xs"
+                >
                   Canonical
                 </UBadge>
               </div>

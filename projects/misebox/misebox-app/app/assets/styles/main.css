@@ -1,0 +1,20 @@
+@layer base {
+  :root {
+    /* Misebox primary palette */
+    --ui-color-misebox-50: #f2f4ec;
+    --ui-color-misebox-100: #e6e9da;
+    --ui-color-misebox-200: #d5dac1;
+    --ui-color-misebox-300: #c4cba9;
+    --ui-color-misebox-400: #b7c196;
+    --ui-color-misebox-500: #abb684;
+    --ui-color-misebox-600: #96a074;
+    --ui-color-misebox-700: #808863;
+    --ui-color-misebox-800: #666d4f;
+    --ui-color-misebox-900: #4d523b;
+
+    /* Bridge for Nuxt UI tokens */
+    --ui-primary: var(--ui-color-misebox-500);
+    --ui-primary-hover: var(--ui-color-misebox-600);
+    --ui-primary-active: var(--ui-color-misebox-700);
+  }
+}
