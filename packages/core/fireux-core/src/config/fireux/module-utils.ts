@@ -26,31 +26,19 @@ export function mergeNitroExternals(
 ): NitroOptions['externals'] {
   if (!additions.length) return externals
 
-  const additionSet = new Set(additions)
+  const next: Record<string, any> = Array.isArray(externals)
+    ? { external: externals }
+    : { ...(externals ?? {}) }
 
-  if (externals === false) {
-    return false
-  }
-
-  if (externals === undefined || externals === true) {
-    return { external: Array.from(additionSet) }
-  }
-
-  if (Array.isArray(externals)) {
-    for (const item of externals) additionSet.add(item)
-    return Array.from(additionSet)
-  }
-
-  const next = { ...externals }
   const current = Array.isArray(next.external)
     ? next.external
     : next.external
     ? [next.external]
     : []
 
-  for (const item of current) additionSet.add(item)
+  const merged = new Set<any>([...current, ...additions])
 
-  next.external = Array.from(additionSet)
+  next.external = Array.from(merged)
 
-  return next
+  return next as NitroOptions['externals']
 }

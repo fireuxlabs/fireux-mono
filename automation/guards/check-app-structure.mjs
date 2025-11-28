@@ -68,12 +68,12 @@ function checkApp(appDir) {
 
   // Unknown extras (not strictly forbidden but outside our shape)
   const allowed = new Set([
-      ...REQUIRED,
-      ...OPTIONAL_GENERATED,
-      ...OPTIONAL_CONTENT,
-      'server',
-      'content.config.ts',
-    ])
+    ...REQUIRED,
+    ...OPTIONAL_GENERATED,
+    ...OPTIONAL_CONTENT,
+    'server',
+    'content.config.ts',
+  ])
   const extras = [...entries].filter((name) => !allowed.has(name))
   for (const x of extras) {
     // allow node_modules and .nuxt obviously; already whitelisted .nuxt

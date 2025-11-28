@@ -7,7 +7,7 @@ import {
   type Ref,
   type WatchStopHandle,
 } from 'vue'
-import { onNuxtReady } from '#app'
+import { onNuxtReady } from '#imports'
 import { useFirebaseAuth, useCurrentUser } from 'vuefire'
 import {
   signInWithPopup,

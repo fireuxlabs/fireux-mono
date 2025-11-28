@@ -14,16 +14,18 @@ export function useProfileCollection<
   const db = useFirestore()
   const { isTenant, appId } = useFireUXConfig()
 
+  const idFieldOptions = { idField: 'id' } as Record<string, unknown>
+
   const globalProfiles = useCollection<TProfile>(
     collection(db, config.collectionName) as any,
-    { idField: 'id' }
+    idFieldOptions as any
   )
 
   const localProfiles =
     isTenant && appId
       ? useCollection<Partial<TProfile>>(
           collection(db, 'apps', appId, config.collectionName) as any,
-          { idField: 'id' }
+          idFieldOptions as any
         )
       : null
 

@@ -13,16 +13,13 @@
 
       <!-- Right side: auth funnel -->
       <template #right>
-        <!-- While auth is resolving, show a tiny shimmer -->
-        <USkeleton v-if="!isAuthResolved" class="rounded-full w-8 h-8" />
-
         <!-- CTA button for missing steps -->
         <UButton
-          v-else-if="hasCta"
+          v-if="hasCta"
           :to="cta.to"
           size="sm"
-          color="primary"
-          variant="ghost"
+          :color="ctaColor"
+          variant="solid"
         >
           {{ cta.label }}
         </UButton>
@@ -63,8 +60,7 @@ defineOptions({ name: 'LayoutsDefaultHeader' })
 const { desktop, mobile } = useDefaultNav()
 
 /** Auth + Core User */
-const { currentUser, signOutUser } = useAuth()
-const isAuthResolved = computed(() => currentUser.value !== undefined)
+const { signOutUser } = useAuth()
 
 const { currentUser: coreUser, cta, pillProps } = useUser()
 
@@ -73,6 +69,12 @@ const activeAvatar = computed(() => coreUser.value?.avatar || '')
 
 /** CTA + avatar data */
 const hasCta = computed(() => cta.value.key !== 'avatar')
+const ctaColor = computed(() => {
+  if (cta.value.key === 'create-core-user' || cta.value.key === 'join-app') {
+    return 'warning'
+  }
+  return 'primary'
+})
 const avatarSrc = computed(() => {
   const src = activeAvatar.value ?? ''
   const trimmed = typeof src === 'string' ? src.trim() : ''

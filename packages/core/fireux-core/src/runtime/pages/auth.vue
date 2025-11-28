@@ -1,9 +1,20 @@
 <template>
   <div class="page">
     <UContainer class="layout">
-      <header class="heading">
-        <h1 class="title">Welcome to {{ appName }}</h1>
-      </header>
+      <section class="brand-panel">
+        <div class="brand-stack" :aria-label="`${appName} brand`">
+          <img :src="brandIcon" :alt="`${appName} icon`" class="brand-icon" />
+          <img
+            :src="brandWordmark"
+            :alt="`${ecosystemLabel} wordmark`"
+            class="brand-wordmark"
+          />
+        </div>
+        <p class="brand-tagline">
+          Sign in with your {{ ecosystemLabel }} credentials to access
+          {{ appName }}.
+        </p>
+      </section>
 
       <OrganismsAuthSystem />
 
@@ -15,9 +26,21 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useFireUXConfig } from '../composables/FireUXConfig'
+import { useBrandAssets } from '../composables/brand/useBrandAssets'
 
-const { appName } = useFireUXConfig()
+const { appName, ecosystem } = useFireUXConfig()
+const {
+  iconSrc: brandIcon,
+  ecosystemWordmarkSrc,
+  wordmarkSrc: fallbackWordmark,
+} = useBrandAssets()
+
+const ecosystemLabel = computed(() => ecosystem || 'FireUX')
+const brandWordmark = computed(
+  () => ecosystemWordmarkSrc.value || fallbackWordmark.value
+)
 
 const useHeadFn = (globalThis as any).useHead as
   | undefined
@@ -45,20 +68,43 @@ definePageMeta({
 
 <style scoped>
 .layout {
-  max-width: 480px;
+  max-width: 520px;
   margin: 0 auto;
   padding: 3rem 1.5rem;
   display: grid;
-  gap: 2.5rem;
+  gap: 1.5rem;
 }
 
-.heading {
+.brand-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  gap: 0.75rem;
 }
 
-.title {
-  font-size: 1.75rem;
-  font-weight: 600;
+.brand-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-icon {
+  height: 56px;
+  width: 56px;
+  border-radius: 16px;
+  object-fit: contain;
+}
+
+.brand-wordmark {
+  height: 38px;
+  width: auto;
+}
+
+.brand-tagline {
+  font-size: 1rem;
+  color: var(--ui-text-600, #475569);
 }
 
 .footnote {

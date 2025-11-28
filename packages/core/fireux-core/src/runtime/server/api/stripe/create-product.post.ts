@@ -1,8 +1,8 @@
 // ~/server/api/stripe/create-product.post.ts
-import { defineEventHandler, readBody, createError } from 'h3'
+import { defineEventHandler, readBody, createError, type H3Event } from 'h3'
 import { STRIPE_API_VERSION } from '../stripe/version'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   try {
     // Quick guard: if no secret key, return 501 (not configured) instead of crashing
     const secret = process.env.STRIPE_SECRET_KEY

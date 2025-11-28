@@ -1,33 +1,57 @@
 import { computed } from 'vue'
-import { collection } from 'firebase/firestore'
-import { useFirestore, useCollection } from 'vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
 import type {
-  AppUser,
   User,
+  AppUser,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 
+/**
+ * Unified user collection accessor.
+ * - Always returns the global `users` collection
+ * - In tenant runtimes, also returns a local overlay merged with avatar data
+ */
 export function useUserCollection() {
-  const db = useFirestore()
+  const { firestoreFetchCollection } = useFirestoreRead()
   const { isTenant, appId } = useFireUXConfig()
 
-  const global = useCollection<User>(collection(db, 'users') as any, {
-    idField: 'id',
-  })
-  const local =
+  const globalUsers = firestoreFetchCollection<User>('users')
+
+  const localOverlay =
     isTenant && appId
-      ? useCollection<AppUser>(collection(db, 'apps', appId, 'users') as any, {
-          idField: 'id',
-        })
+      ? firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
       : null
 
-  const users = computed<User[]>(() => {
-    const base = global.value ?? []
-    return base.map((entry: any) => ({
-      ...entry,
-      id: typeof entry?.id === 'string' ? entry.id : '',
-    })) as User[]
-  })
+  const localUsers = localOverlay
+    ? computed<User[]>(() => {
+        const overlayList = localOverlay.value ?? []
+        if (!overlayList.length) return []
 
-  return { users, global, local }
+        const globalList = globalUsers.value ?? []
+        const globalById = new Map(globalList.map((entry) => [entry.id, entry]))
+
+        return overlayList
+          .map((localUser) => {
+            const base = globalById.get(localUser.id)
+            if (!base) return null
+
+            return {
+              ...base,
+              role: localUser.role ?? base.role,
+              appUser: localUser,
+            }
+          })
+          .filter((entry): entry is User => entry !== null)
+      })
+    : null
+
+  const scopedUsers = computed<User[]>(() =>
+    localUsers ? localUsers.value : globalUsers.value ?? []
+  )
+
+  return {
+    users: scopedUsers,
+    global: globalUsers,
+    local: localUsers,
+  }
 }

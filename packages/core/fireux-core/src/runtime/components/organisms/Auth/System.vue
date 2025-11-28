@@ -17,10 +17,6 @@
               :loading="loading"
               @submit="onSubmit"
             >
-              <template #leading>
-                <img :src="appLogo" :alt="`${appName} logo`" class="app-logo" />
-              </template>
-
               <template #providers>
                 <UButton
                   block
@@ -149,7 +145,6 @@ const fields = [
   { name: 'password', type: 'password', label: 'Password', required: true },
 ]
 
-const appLogo = '/img/core/brand/wordmark-light.png'
 const googleLogo = '/img/core/auth/sign-in-light.svg'
 
 const pushDashboard = async () => {
@@ -337,12 +332,6 @@ const logAuthError = (err: unknown, label: string) => {
 
 .auth-form {
   width: 100%;
-}
-
-.app-logo {
-  height: 34px;
-  width: auto;
-  margin: 0 auto;
 }
 
 .google-logo {

@@ -96,7 +96,11 @@ export async function ensureCoreUserDocument(
     const data = snapshot.data() as User | undefined
     const existingName =
       data?.display_name || options.displayName || buildFallbackDisplayName(uid)
-    return { created: false, snapshot, displayName: existingName }
+    return {
+      created: false,
+      snapshot: snapshot as DocumentSnapshot<User>,
+      displayName: existingName,
+    }
   }
 
   const displayName = options.displayName || buildFallbackDisplayName(uid)

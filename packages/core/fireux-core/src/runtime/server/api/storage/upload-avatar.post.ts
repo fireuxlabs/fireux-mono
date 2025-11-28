@@ -4,6 +4,7 @@ import {
   getQuery,
   createError,
   setResponseHeaders,
+  type H3Event,
 } from 'h3'
 import { getAdmin } from '../../utils/getAdmin'
 
@@ -11,7 +12,7 @@ import { getAdmin } from '../../utils/getAdmin'
 // Body options:
 // - { url: string } to fetch from remote URL (e.g., proxied Google avatar)
 // - raw binary (ArrayBuffer) for direct upload; set header content-type: image/*
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   const { uid } = getQuery(event)
   if (!uid || typeof uid !== 'string') {
     throw createError({ statusCode: 400, statusMessage: 'Missing uid' })

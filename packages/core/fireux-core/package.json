@@ -46,7 +46,8 @@
   },
   "dependencies": {
     "dompurify": "^3.2.6",
-    "@vueup/vue-quill": "^1.2.0"
+    "@vueup/vue-quill": "^1.2.0",
+    "h3": "^1.15.4"
   },
   "peerDependencies": {
     "nuxt": "^4.1.0",

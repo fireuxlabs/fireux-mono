@@ -1,6 +1,6 @@
-import { defineEventHandler, setHeader } from 'h3'
+import { defineEventHandler, setHeader, type H3Event } from 'h3'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   // Add CORS headers for cross-origin access between ecosystem apps
   setHeader(event, 'Access-Control-Allow-Origin', '*')
   setHeader(

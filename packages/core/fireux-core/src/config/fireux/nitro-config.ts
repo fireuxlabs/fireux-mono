@@ -22,8 +22,11 @@ export function createNitroConfig(
   nitro.preset = preset
 
   if (preset === 'firebase') {
-    const defaults = { gen: 2, nodeVersion: '22' }
-    nitro.firebase = { ...defaults, ...(nitro.firebase ?? {}) }
+    const defaults = { gen: 2, nodeVersion: '22' } as Record<string, any>
+    nitro.firebase = {
+      ...defaults,
+      ...(nitro.firebase ?? {}),
+    } as NitroOptions['firebase']
     nitro.externals = mergeNitroExternals(
       nitro.externals,
       firebaseNitroExternalPackages

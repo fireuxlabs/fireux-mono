@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/server/api/app/env-check.ts
-import { defineEventHandler } from 'h3'
+import { defineEventHandler, type H3Event } from 'h3'
 import {
   join,
   isAbsolute,
@@ -220,7 +220,7 @@ interface EnvCheckResponse {
   brandAssets: BrandAssetCheck[]
 }
 
-export default defineEventHandler<EnvCheckResponse>((event) => {
+export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
   const env = process.env as Record<string, string | undefined>
   const runtimeConfig = (
     event.context as {

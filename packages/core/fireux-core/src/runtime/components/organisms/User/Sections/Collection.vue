@@ -9,7 +9,17 @@
             <code>/users</code>.
           </p>
         </div>
-        <UBadge variant="soft">{{ totalUsers }} total</UBadge>
+        <div class="flex items-center gap-2">
+          <UBadge variant="soft">{{ totalUsers }} total</UBadge>
+          <UButton
+            v-if="isTenant"
+            size="xs"
+            variant="ghost"
+            @click="toggleGlobal()"
+          >
+            {{ showingGlobal ? 'Show tenant users' : 'Fetch global users' }}
+          </UButton>
+        </div>
       </div>
     </template>
 
@@ -26,18 +36,32 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
 import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserInterface.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
 
-const { users } = useUserCollection()
+const { users, global } = useUserCollection()
 const { pillProps } = useUserInterface()
+const { isTenant } = useFireUXConfig()
+const showingGlobal = ref(false)
+
+const visibleUsers = computed(() => {
+  if (isTenant && showingGlobal.value) {
+    return global.value ?? []
+  }
+  return users.value ?? []
+})
+
+const toggleGlobal = () => {
+  showingGlobal.value = !showingGlobal.value
+}
 
 type DirectoryEntry = { key: string; pill: UserCard.Pill }
 
 const directoryEntries = computed<DirectoryEntry[]>(() => {
-  const list = users.value ?? []
+  const list = visibleUsers.value
   if (!list.length) return []
 
   return list.map((entry: any) => {
@@ -56,5 +80,5 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
   })
 })
 
-const totalUsers = computed(() => directoryEntries.value.length)
+const totalUsers = computed(() => visibleUsers.value.length)
 </script>

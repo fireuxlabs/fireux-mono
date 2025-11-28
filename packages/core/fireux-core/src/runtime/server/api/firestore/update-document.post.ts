@@ -1,4 +1,4 @@
-import { defineEventHandler, readBody, createError } from 'h3'
+import { defineEventHandler, readBody, createError, type H3Event } from 'h3'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import { promises as fs } from 'fs'
@@ -124,12 +124,14 @@ async function initializeFirebaseAdmin() {
   } catch (error) {
     console.error('❌ [firestore] Failed to initialize Firebase Admin:', error)
     throw new Error(
-      `Firebase Admin initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Firebase Admin initialization failed: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
     )
   }
 }
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   try {
     console.log('🔧 [update-document] Starting request...')
     console.log('🔧 [update-document] Current Firebase apps:', getApps().length)

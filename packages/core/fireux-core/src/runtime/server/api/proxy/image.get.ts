@@ -4,9 +4,10 @@ import {
   setResponseHeaders,
   createError,
   send,
+  type H3Event,
 } from 'h3'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   const { url } = getQuery(event)
 
   if (!url || typeof url !== 'string') {

@@ -25,13 +25,13 @@ const CTA_CONFIG: Record<UserCtaKey, UserCta> = {
   },
   'create-core-user': {
     key: 'create-core-user',
-    label: 'Create Profile',
+    label: 'Complete sign up',
     to: '/auth',
   },
   'join-app': {
     key: 'join-app',
-    label: 'Join App',
-    to: '/join',
+    label: 'Finish tenant sign up',
+    to: '/auth',
   },
   avatar: {
     key: 'avatar',
