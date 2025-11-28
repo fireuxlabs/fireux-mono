@@ -26,16 +26,17 @@ Consistency across tenants depends on shared patterns for components, copy, and 
 
 Keep `.env` values and `app.config.ts` tokens aligned so Nuxt UI themes match deploy previews. Use the table below when provisioning new environments or validating colour changes.
 
-| App | Config Primary Token | `.env` `APP_PRIMARY_COLOR` | Config Neutral Token | `.env` `APP_NEUTRAL_COLOR` |
-| --- | --- | --- | --- | --- |
-| FireUX App | `yellow` | `#EAB308` | `zinc` | `#71717A` |
-| Misebox App | `misebox` | `#ABB684` | `slate` | `#64748B` |
-| Niederhorn | `violet` | `#8B5CF6` | `zinc` | `#71717A` |
-| Cleanbox App | `blue` | `#3B82F6` | `gray` | `#6B7280` |
-| Richies Reinigung | `blue` | `#3B82F6` | `gray` | `#6B7280` |
-| Tennant | `blue` | `#3B82F6` | `zinc` | `#71717A` |
+| App               | Config Primary Token | `.env` `APP_PRIMARY_COLOR` | Config Neutral Token | `.env` `APP_NEUTRAL_COLOR` |
+| ----------------- | -------------------- | -------------------------- | -------------------- | -------------------------- |
+| FireUX App        | `yellow`             | `#EAB308`                  | `zinc`               | `#71717A`                  |
+| Misebox App       | `misebox`            | `#ABB684`                  | `slate`              | `#64748B`                  |
+| Niederhorn        | `violet`             | `#8B5CF6`                  | `zinc`               | `#71717A`                  |
+| Cleanbox App      | `blue`               | `#3B82F6`                  | `gray`               | `#6B7280`                  |
+| Richies Reinigung | `blue`               | `#3B82F6`                  | `gray`               | `#6B7280`                  |
+| Tennant           | `blue`               | `#3B82F6`                  | `zinc`               | `#71717A`                  |
 
 Notes:
+
 - Misebox’s custom palette lives in `projects/misebox/misebox-app/app/assets/styles/main.css`; keep the `.env` value on the `500` shade unless product signs off on a new midpoint.
 - Nuxt UI defaults (see `fireux-core/src/config/fireux/config-validation.ts`) define the standard hex mapping; when new tokens are introduced, add them there first, then mirror the value in `.env`.
 

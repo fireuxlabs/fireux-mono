@@ -21,13 +21,7 @@ const REQUIRED = new Set([
 
 const OPTIONAL_GENERATED = new Set(['.nuxt']) // allowed but not required
 const OPTIONAL_CONTENT = new Set(['docs'])
-const FORBIDDEN = new Set([
-  'server',
-  'types',
-  'scripts',
-  '.data',
-  'content.config.ts',
-])
+const FORBIDDEN = new Set(['types', 'scripts', '.data'])
 
 // Options
 // README.md is allowed by default. Use --no-readme or DISALLOW_APP_README=1 to disallow.
@@ -74,10 +68,12 @@ function checkApp(appDir) {
 
   // Unknown extras (not strictly forbidden but outside our shape)
   const allowed = new Set([
-    ...REQUIRED,
-    ...OPTIONAL_GENERATED,
-    ...OPTIONAL_CONTENT,
-  ])
+      ...REQUIRED,
+      ...OPTIONAL_GENERATED,
+      ...OPTIONAL_CONTENT,
+      'server',
+      'content.config.ts',
+    ])
   const extras = [...entries].filter((name) => !allowed.has(name))
   for (const x of extras) {
     // allow node_modules and .nuxt obviously; already whitelisted .nuxt
