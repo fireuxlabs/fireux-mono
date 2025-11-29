@@ -94,23 +94,245 @@ return { profile }
 
 ````
 
-### `main/useProfileEnsure.ts`
+### `core/useProfileEnsure.ts`
 
 ```ts
+import { doc, getDoc } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
+import { requireUid } from '../../../utils/useEnsureCommon.ts'
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
+import { useUserUpdateForUid } from '../../user/mutations/useUserUpdate.ts'
 
-export function useProfileEnsure(_config: ProfileConfig) {
-  const ensure = async (_patch: Record<string, unknown> = {}) =>
-    ({ createdCore: false, createdApp: false } as const)
+export function useProfileEnsure(config: ProfileConfig) {
+  const db = useFirestore()
+  const { setDocument } = useFirestoreManager()
+  const { isTenant, appId } = useFireUXConfig()
+
+  const ensure = async () => {
+    const { uid } = await requireUid()
+
+    let createdCore = false
+    let createdApp = false
+
+    const coreRef = doc(db, config.collectionName, uid)
+    if (!(await getDoc(coreRef)).exists()) {
+      await setDocument(config.collectionName, uid, { id: uid })
+      createdCore = true
+    }
+
+    if (isTenant && appId) {
+      const appCollection = `apps/${appId}/${config.collectionName}`
+      const appRef = doc(db, 'apps', appId, config.collectionName, uid)
+      if (!(await getDoc(appRef)).exists()) {
+        await setDocument(appCollection, uid, { id: uid })
+        createdApp = true
+      }
+    }
+
+    if (config.id) {
+      const { addProfileTag } = useUserUpdateForUid(uid)
+      await addProfileTag(config.id)
+    }
+
+    return { createdCore, createdApp }
+  }
+
   return { ensure }
 }
 ````
 
-### `main/useProfileDelete.ts`
+### `mutations/useProfileUpdate.ts`
+
+```ts
+import { ref } from 'vue'
+import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import type {
+  Profile,
+  ProfileConfig,
+} from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { ProfileRefs } from '../main/useProfileFetch.ts'
+
+type UpdateScope = 'auto' | 'core' | 'app'
+
+export function useProfileUpdate<TProfile extends Profile = Profile>(
+  profileRefs: ProfileRefs<TProfile>,
+  config: ProfileConfig
+) {
+  const { updateDocument } = useFirestoreUpdate()
+  const { appId, role } = useFireUXConfig()
+
+  const updating = ref(false)
+  const updateError = ref<Error | null>(null)
+
+  const isTenant = role === 'tenant' && !!appId
+
+  const ensureId = (explicit?: string | null) => {
+    const trimmed = explicit?.trim()
+    if (trimmed) return trimmed
+    const coreId = profileRefs.coreProfile.value?.id
+    if (coreId) return coreId
+    const appIdCandidate = (
+      profileRefs.appProfile.value as { id?: string } | null | undefined
+    )?.id
+    if (appIdCandidate) return appIdCandidate
+    throw new Error(
+      `[useProfileUpdate] Missing profile id for ${config.collectionName}`
+    )
+  }
+
+  const updateCoreProfile = async (
+    partial: Partial<TProfile>,
+    explicitId?: string
+  ) => {
+    const id = ensureId(explicitId)
+    await updateDocument<TProfile>(config.collectionName, id, partial)
+  }
+
+  const updateAppProfile = async (
+    partial: Partial<TProfile>,
+    explicitId?: string
+  ) => {
+    if (!appId) {
+      throw new Error(
+        '[useProfileUpdate] Missing appId for tenant profile update'
+      )
+    }
+    const id = ensureId(explicitId)
+    const collection = `apps/${appId}/${config.collectionName}`
+    await updateDocument(collection, id, partial)
+  }
+
+  const updateProfile = async (
+    partial: Partial<TProfile>,
+    options: { scope?: UpdateScope; id?: string } = {}
+  ) => {
+    const { scope = 'auto', id } = options
+    updating.value = true
+    updateError.value = null
+
+    try {
+      if (scope === 'core') {
+        await updateCoreProfile(partial, id)
+      } else if (scope === 'app') {
+        await updateAppProfile(partial, id)
+      } else if (isTenant) {
+        await updateAppProfile(partial, id)
+      } else {
+        await updateCoreProfile(partial, id)
+      }
+      return 'success'
+    } finally {
+      updating.value = false
+    }
+  }
+
+  return { updateProfile, updateCoreProfile, updateAppProfile, updating }
+}
+```
+
+### `state/useProfileComputed.ts`
+
+```ts
+import { computed } from 'vue'
+import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { ProfileRefs } from '../main/useProfileFetch.ts'
+
+export function useProfileComputed<TProfile extends Profile = Profile>(
+  profileRefs: ProfileRefs<TProfile>
+) {
+  const profile = computed<TProfile | null>(() => {
+    const core = profileRefs.coreProfile.value
+    const overlay = profileRefs.appProfile.value
+    if (!core && !overlay) return null
+    const base = core ? { ...core } : ({} as Partial<TProfile>)
+    if (overlay) Object.assign(base, overlay)
+    return base as TProfile
+  })
+  return { profile }
+}
+```
+
+### `collection/useProfileCollection.ts`
+
+```ts
+import { computed } from 'vue'
+import { collection } from 'firebase/firestore'
+import { useFirestore, useCollection } from 'vuefire'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import type {
+  Profile,
+  ProfileConfig,
+} from 'fireux-core/runtime/models/core/profile.model.ts'
+import { useUserCollection } from '../../user/main/useUserCollection.ts'
+
+export function useProfileCollection<
+  TProfile extends Partial<Profile> = Profile
+>(config: ProfileConfig) {
+  const db = useFirestore()
+  const { isTenant, appId } = useFireUXConfig()
+
+  const idFieldOptions = { idField: 'id' } as Record<string, unknown>
+
+  const globalProfiles = useCollection<TProfile>(
+    collection(db, config.collectionName) as any,
+    idFieldOptions as any
+  )
+
+  const localProfiles =
+    isTenant && appId
+      ? useCollection<Partial<TProfile>>(
+          collection(db, 'apps', appId, config.collectionName) as any,
+          idFieldOptions as any
+        )
+      : null
+
+  const { users } = useUserCollection()
+  const userMap = computed(() => {
+    const map = new Map<string, Profile['user']>()
+    for (const user of users.value ?? []) {
+      if (user?.id) map.set(user.id, user)
+    }
+    return map
+  })
+
+  const attachUser = (entries: TProfile[] | null | undefined): TProfile[] => {
+    if (!entries?.length) return []
+    return entries.map((profile) => {
+      const owner = userMap.value.get(profile?.id ?? '')
+      if (!owner) return profile
+      return {
+        ...profile,
+        user: profile?.user ? { ...profile.user, ...owner } : owner,
+      }
+    })
+  }
+
+  const globalProfilesWithUser = computed<TProfile[]>(() =>
+    attachUser((globalProfiles.value ?? []) as TProfile[])
+  )
+
+  const localProfilesWithUser = localProfiles
+    ? computed<TProfile[]>(() =>
+        attachUser((localProfiles.value ?? []) as TProfile[])
+      )
+    : null
+
+  return {
+    globalProfiles,
+    localProfiles,
+    globalProfilesWithUser,
+    localProfilesWithUser,
+  }
+}
+```
+
+### `delete/useProfileDelete.ts`
 
 ```ts
 import { ref, type Ref } from 'vue'
-
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
 
 type ProfileDeleteResult = 'success'
@@ -132,73 +354,6 @@ export function useProfileDelete(
 }
 ```
 
-### `main/useProfileCollection.ts`
-
-```ts
-import { computed } from 'vue'
-import { collection } from 'firebase/firestore'
-import { useFirestore, useCollection } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import type {
-  Profile,
-  ProfileConfig,
-} from 'fireux-core/runtime/models/core/profile.model.ts'
-
-export function useProfileCollection<TProfile extends Profile = Profile>(
-  config: ProfileConfig
-) {
-  const db = useFirestore()
-  const { isTenant, appId } = useFireUXConfig()
-
-  const global = useCollection<TProfile>(
-    collection(db, config.collectionName) as any
-  )
-
-  const local =
-    isTenant && appId
-      ? useCollection<Partial<TProfile>>(
-          collection(db, 'apps', appId, config.collectionName) as any
-        )
-      : null
-
-  const profiles = computed<TProfile[]>(() => {
-    const coreList = (global.value ?? []) as TProfile[]
-    const overlayList = (local?.value ?? []) as Partial<TProfile>[]
-
-    if (!overlayList.length) return coreList
-
-    const overlayById = new Map<string, Partial<TProfile>>()
-    for (const overlay of overlayList) {
-      const id = (overlay as any)?.id ?? (overlay as any)?.uid
-      if (id) overlayById.set(id, overlay)
-    }
-
-    const merged = coreList.map((core) => {
-      const id = (core as any)?.id ?? (core as any)?.uid
-      const overlay = id ? overlayById.get(id) : undefined
-      if (overlay) {
-        overlayById.delete(id)
-        return { ...core, ...overlay } as TProfile
-      }
-      return core
-    })
-
-    if (!overlayById.size) return merged
-
-    const extras = Array.from(overlayById.entries()).map(
-      ([id, overlay]) => ({ id, ...(overlay as object) } as TProfile)
-    )
-
-    return [...merged, ...extras]
-  })
-
-  return { profiles, global, local }
-}
-```
-
-### Removed core helpers
-
-- `useProfileComputed.ts` and `useProfileUpdate.ts` were removed on 2025-11-14 because their behaviour was domain-specific.
 - Domain layers should expose their own computed/update helpers (see professional/chef/supplier stacks).
 
 ## Jobs extension – Professional profile composables (`packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Professional/`)
@@ -435,7 +590,7 @@ export function useProfessionalComputed(
 ### `main/useProfessionalCollection.ts`
 
 ```ts
-import { useProfileCollection } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileCollection.ts'
+import { useProfileCollection } from 'fireux-core/runtime/composables/firestore/core/profile/collection/useProfileCollection.ts'
 import {
   professionalConfig,
   type ProfessionalProfile,
@@ -453,7 +608,7 @@ export function useProfessionalCollection() {
 
 ```ts
 import { ref, type Ref } from 'vue'
-import { useProfileEnsure } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileEnsure.ts'
+import { useProfileEnsure } from 'fireux-core/runtime/composables/firestore/core/profile/core/useProfileEnsure.ts'
 import { professionalConfig } from '../../../../../models/profiles/Professional.model.ts'
 
 type CreateProfessionalHandler = ((
@@ -723,7 +878,7 @@ export function useProfessionalUpdate(
 ### `main/useProfessionalCollection.ts`
 
 ```ts
-import { useProfileCollection } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileCollection.ts'
+import { useProfileCollection } from 'fireux-core/runtime/composables/firestore/core/profile/collection/useProfileCollection.ts'
 import {
   professionalConfig,
   type ProfessionalProfile,

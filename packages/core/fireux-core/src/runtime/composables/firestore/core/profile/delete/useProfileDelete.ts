@@ -1,5 +1,4 @@
 import { ref, type Ref } from 'vue'
-
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
 
 type ProfileDeleteResult = 'success'

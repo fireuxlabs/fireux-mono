@@ -6,7 +6,7 @@ import type {
   Profile,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
-import { useUserCollection } from '../../../core/user/main/useUserCollection.ts'
+import { useUserCollection } from '../../user/main/useUserCollection.ts'
 
 export function useProfileCollection<
   TProfile extends Partial<Profile> = Profile

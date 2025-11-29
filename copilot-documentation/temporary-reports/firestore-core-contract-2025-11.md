@@ -10,11 +10,11 @@ This page documents the minimal, stable surface we’re shipping for Firestore c
   - `useUser()` → returns one reactive user (core-only).
   - Tenant overlay (`appUser`) is fetched by `useUserFetch` but not merged by `useUser()`.
 - **Profiles (Chef/Supplier/Professional/Agent)**
-  - `useProfile(config)` → returns one reactive profile.
-  - If in tenant context, the profile includes app overlay as `profile.app` (no field merges into core).
-  - No profile computed/update layers; `useProfileComputed.ts` and `useProfileUpdate.ts` are not part of the public surface.
+  - `useProfile(config)` → returns grouped refs `{ coreProfile, appProfile }` plus pending state.
+  - Overlays stay separate by default; `state/useProfileComputed.ts` can merge them when domains want one object.
+  - Shared mutations live in `mutations/useProfileUpdate.ts`; domains can import the helper instead of rolling their own patchers.
 - **Ensure**
-  - Core ensure lives at `profiles/main/useProfileEnsure.ts`.
+  - Core ensure lives at `profiles/core/useProfileEnsure.ts`.
   - Domains expose create facades that call ensure and (optionally) add domain flags/props.
 
 ---
@@ -113,69 +113,131 @@ export function useProfileFetch<TProfile extends Profile = Profile>(
 
 `useProfileComputed(profileRefs)`
 
-- Responsible for merging `{ coreProfile, appProfile }` when the core exists.
-- Attaches minimal current-user metadata (id/display_name/avatar/handle) to the merged object.
+- Optional helper that merges `{ coreProfile, appProfile }` into a single object.
+- No implicit user attachments; callers can still layer on pills/cards as needed.
 
 ```ts
-// packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileComputed.ts
+// packages/core/fireux-core/src/runtime/composables/firestore/core/profile/state/useProfileComputed.ts
 import { computed } from 'vue'
-import { useUser } from '../../user/useUser.ts'
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
-import type { ProfileRefs } from './useProfileFetch.ts'
+import type { ProfileRefs } from '../main/useProfileFetch.ts'
 
 export function useProfileComputed<TProfile extends Profile = Profile>(
   profileRefs: ProfileRefs<TProfile>
 ) {
-  const { user } = useUser()
-
   const profile = computed<TProfile | null>(() => {
     const core = profileRefs.coreProfile.value
-    if (!core) return null
+    const overlay = profileRefs.appProfile.value
+    if (!core && !overlay) return null
 
-    const overlay = profileRefs.appProfile.value ?? {}
-    const currentCore = user.coreUser?.value
-
-    const attachedUser = currentCore
-      ? {
-          id: currentCore.id,
-          display_name: currentCore.display_name,
-          avatar: currentCore.avatar,
-          handle: (currentCore as any)?.handle,
-        }
-      : {}
-
-    return { ...core, ...overlay, user: attachedUser } as TProfile
+    const base = core ? { ...core } : ({} as Partial<TProfile>)
+    if (overlay) Object.assign(base, overlay)
+    return base as TProfile
   })
 
   return { profile }
 }
 ```
 
+`useProfileUpdate(profileRefs, config)`
+
+- Shared mutation helper that writes either the core document or the tenant overlay.
+- Resolves the profile id from refs when one isn’t supplied, so domain buttons can stay lean.
+
+```ts
+// packages/core/fireux-core/src/runtime/composables/firestore/core/profile/mutations/useProfileUpdate.ts
+import { ref } from 'vue'
+import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import type {
+  Profile,
+  ProfileConfig,
+} from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { ProfileRefs } from '../main/useProfileFetch.ts'
+
+type UpdateScope = 'auto' | 'core' | 'app'
+
+export function useProfileUpdate<TProfile extends Profile = Profile>(
+  profileRefs: ProfileRefs<TProfile>,
+  config: ProfileConfig
+) {
+  const { updateDocument } = useFirestoreUpdate()
+  const { appId, role } = useFireUXConfig()
+
+  const updating = ref(false)
+  const updateError = ref<Error | null>(null)
+
+  const ensureId = (explicit?: string | null) => {
+    const trimmed = explicit?.trim()
+    if (trimmed) return trimmed
+    return (
+      profileRefs.coreProfile.value?.id ??
+      (profileRefs.appProfile.value as { id?: string } | null)?.id ??
+      (() => {
+        throw new Error(
+          `[useProfileUpdate] Missing profile id for ${config.collectionName}`
+        )
+      })()
+    )
+  }
+
+  const updateProfile = async (
+    partial: Partial<TProfile>,
+    options: { scope?: UpdateScope; id?: string } = {}
+  ) => {
+    const { scope = 'auto', id } = options
+    const resolvedId = ensureId(id)
+
+    updating.value = true
+    updateError.value = null
+
+    try {
+      if (scope === 'core' || (scope === 'auto' && role !== 'tenant')) {
+        await updateDocument(config.collectionName, resolvedId, partial)
+      } else {
+        if (!appId) {
+          throw new Error('[useProfileUpdate] Missing appId for tenant scope')
+        }
+        await updateDocument(
+          `apps/${appId}/${config.collectionName}`,
+          resolvedId,
+          partial
+        )
+      }
+      return 'success'
+    } catch (error) {
+      updateError.value = error as Error
+      throw error
+    } finally {
+      updating.value = false
+    }
+  }
+
+  return { updateProfile, updating, updateError }
+}
+```
+
 `useProfile(config)`
 
-- Public entry point for any profile domain.
-- Returns both grouped refs (`profileRefs`) and the merged profile computed.
+- Minimal public entry point.
+- Returns `{ profile, pending }`, where `profile` is the grouped refs object from `useProfileFetch`.
 
 ```ts
 // packages/core/fireux-core/src/runtime/composables/firestore/core/profile/useProfile.ts
 import { useAuth } from '../../../firebase/useAuth.ts'
 import { useProfileFetch } from './main/useProfileFetch.ts'
-import { useProfileComputed } from './main/useProfileComputed.ts'
 import type {
-  ProfileConfig,
   Profile,
+  ProfileConfig,
 } from '../../../../models/core/profile.model.ts'
 
 export function useProfile<TProfile extends Profile = Profile>(
   config: ProfileConfig
 ) {
   const { uid } = useAuth()
-  const { profile: profileRefs } = useProfileFetch<TProfile>(uid.value, {
-    collectionName: config.collectionName,
-  })
-  const { profile } = useProfileComputed(profileRefs)
+  const { profile, pending } = useProfileFetch<TProfile>(uid, config)
 
-  return { profileRefs, profile }
+  return { profile, pending }
 }
 ```
 
@@ -183,7 +245,7 @@ export function useProfile<TProfile extends Profile = Profile>(
 
 ## Ensure vs Create
 
-- **Core ensure** (`profiles/main/useProfileEnsure.ts`):
+- **Core ensure** (`profiles/core/useProfileEnsure.ts`):
   - Creates core doc if missing.
   - If in tenant context, creates overlay doc if missing.
   - Does not overwrite existing docs.

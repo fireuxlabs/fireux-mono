@@ -3,20 +3,20 @@
     <template #header>
       <div class="fx-section__header">
         <div class="fx-section__copy">
-          <h2 class="text-base font-semibold">Tenant Overlays</h2>
+          <h2 class="text-base font-semibold">Tenant App Users</h2>
           <p class="text-xs text-gray-500">
-            Users resolved from <code>/apps/{app}/users</code> merged onto core
-            accounts.
+            Users resolved from <code>/apps/{app}/users</code> alongside their
+            core accounts.
           </p>
         </div>
-        <UBadge variant="soft">{{ totalOverlays }} overlay(s)</UBadge>
+        <UBadge variant="soft">{{ totalAppUsers }} user(s)</UBadge>
       </div>
     </template>
 
-    <template v-if="overlays.length">
+    <template v-if="appUserEntries.length">
       <div class="fx-section__grid">
         <article
-          v-for="entry in overlays"
+          v-for="entry in appUserEntries"
           :key="entry.key"
           class="space-y-3 rounded-md border border-slate-200 p-3 text-sm dark:border-slate-800"
         >
@@ -48,7 +48,7 @@
     </template>
 
     <p v-else class="fx-section__empty">
-      No tenant overlays discovered for this runtime.
+      No tenant app users discovered for this runtime.
     </p>
   </UCard>
 
@@ -56,16 +56,16 @@
     <template #header>
       <div class="fx-section__header">
         <div class="fx-section__copy">
-          <h2 class="text-base font-semibold">Tenant Overlays</h2>
+          <h2 class="text-base font-semibold">Tenant App Users</h2>
           <p class="text-xs text-gray-500">
-            Overlays are only available within tenant runtimes.
+            App users only exist within tenant runtimes.
           </p>
         </div>
       </div>
     </template>
 
     <p class="fx-section__empty">
-      Switch to a tenant runtime to inspect overlay data.
+      Switch to a tenant runtime to inspect app user data.
     </p>
   </UCard>
 </template>
@@ -83,12 +83,12 @@ import type { RouteLocationRaw } from 'vue-router'
 
 type DetailItem = { label: string; value: string; mono?: boolean }
 
-type OverlayEntry = {
+type AppUserEntry = {
   key: string
   pill: UserCard.Pill
   roleLabel: string
   details: DetailItem[]
-  overlay: Record<string, unknown>
+  appUser: Record<string, unknown>
   user: User
   link: RouteLocationRaw | null
 }
@@ -110,7 +110,7 @@ const formatTimestamp = (value?: FirebaseTimestamp | null): string => {
   return JSON.stringify(value)
 }
 
-const overlays = computed<OverlayEntry[]>(() => {
+const appUserEntries = computed<AppUserEntry[]>(() => {
   if (!isTenant) return []
 
   const list = users.value ?? []
@@ -118,53 +118,53 @@ const overlays = computed<OverlayEntry[]>(() => {
 
   return list
     .map((user: any) => {
-      const overlay = user?.appUser
-      if (!overlay) return null
+      const appUser = user?.appUser
+      if (!appUser) return null
 
       const base = pillProps(user)
       const record = user as User
-      const roleLabel = overlay.role === 'admin' ? 'App Admin' : 'App Member'
+      const roleLabel = appUser.role === 'admin' ? 'App Admin' : 'App Member'
       let link: RouteLocationRaw | null = base.to ?? null
       if (!link) {
         if (record?.id) {
           link = `/users/${record.id}`
-        } else if (overlay.id) {
-          link = `/users/${overlay.id}`
+        } else if (appUser.id) {
+          link = `/users/${appUser.id}`
         }
       }
 
       const pill: UserCard.Pill = {
         ...base,
-        subtitle: base.subtitle || `Role: ${overlay.role ?? 'member'}`,
+        subtitle: base.subtitle || `Role: ${appUser.role ?? 'member'}`,
         to: link,
-        special: overlay.role === 'admin',
+        special: appUser.role === 'admin',
         specialIcon: 'i-lucide-star',
-        specialTooltip: overlay.role === 'admin' ? 'App Admin' : undefined,
+        specialTooltip: appUser.role === 'admin' ? 'App Admin' : undefined,
       }
 
       const details: DetailItem[] = [
-        { label: 'Role', value: overlay.role ?? 'member' },
-        { label: 'Creator', value: overlay.creator_id ?? '—', mono: true },
-        { label: 'Created', value: formatTimestamp(overlay.created_at) },
+        { label: 'Role', value: appUser.role ?? 'member' },
+        { label: 'Creator', value: appUser.creator_id ?? '—', mono: true },
+        { label: 'Created', value: formatTimestamp(appUser.created_at) },
         {
           label: 'Updated',
-          value: formatTimestamp(overlay.updated_at ?? null),
+          value: formatTimestamp(appUser.updated_at ?? null),
         },
-        { label: 'User ID', value: overlay.id ?? user?.id ?? '—', mono: true },
+        { label: 'User ID', value: appUser.id ?? user?.id ?? '—', mono: true },
       ]
 
       return {
-        key: overlay.id ?? user?.id ?? base.title,
+        key: appUser.id ?? user?.id ?? base.title,
         pill,
         roleLabel,
         details,
-        overlay,
+        appUser,
         user: record,
         link,
       }
     })
-    .filter((entry): entry is OverlayEntry => entry !== null)
+    .filter((entry): entry is AppUserEntry => entry !== null)
 })
 
-const totalOverlays = computed(() => overlays.value.length)
+const totalAppUsers = computed(() => appUserEntries.value.length)
 </script>

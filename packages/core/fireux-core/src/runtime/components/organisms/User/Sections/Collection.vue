@@ -15,9 +15,9 @@
             v-if="isTenant"
             size="xs"
             variant="ghost"
-            @click="toggleGlobal()"
+            @click="toggleScope()"
           >
-            {{ showingGlobal ? 'Show tenant users' : 'Fetch global users' }}
+            {{ showingCore ? 'Show app users' : 'Show core users' }}
           </UButton>
         </div>
       </div>
@@ -45,22 +45,22 @@ const { users, global, loadGlobalUsers } = useUserCollection()
 const { pillProps } = useUserInterface()
 const { isTenant } = useFireUXConfig()
 
-const showingGlobal = ref(!isTenant)
-if (showingGlobal.value) {
+const showingCore = ref(!isTenant)
+if (showingCore.value) {
   loadGlobalUsers()
 }
 
-const toggleGlobal = () => {
-  if (!showingGlobal.value) {
+const toggleScope = () => {
+  if (!showingCore.value) {
     loadGlobalUsers()
-    showingGlobal.value = true
+    showingCore.value = true
     return
   }
-  showingGlobal.value = false
+  showingCore.value = false
 }
 
 const visibleUsers = computed(() => {
-  if (isTenant && showingGlobal.value) {
+  if (isTenant && showingCore.value) {
     return global.value ?? []
   }
   return users.value ?? []
@@ -74,15 +74,15 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
 
   return list.map((entry: any) => {
     const base = pillProps(entry)
-    const overlayRole = entry?.appUser?.role
+    const appRole = entry?.appUser?.role
 
     return {
       key: entry?.id ?? `${base.title}-${base.subtitle || ''}`,
       pill: {
         ...base,
-        special: overlayRole === 'admin',
+        special: appRole === 'admin',
         specialIcon: 'i-lucide-star',
-        specialTooltip: overlayRole === 'admin' ? 'App Admin' : undefined,
+        specialTooltip: appRole === 'admin' ? 'App Admin' : undefined,
       },
     }
   })
