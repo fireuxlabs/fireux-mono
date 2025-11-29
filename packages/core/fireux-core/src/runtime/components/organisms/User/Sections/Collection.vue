@@ -24,13 +24,8 @@
     </template>
 
     <div v-if="directoryEntries.length" class="fx-section__grid">
-      <div
-        v-for="entry in directoryEntries"
-        :key="entry.key"
-        class="space-y-2"
-      >
+      <div v-for="entry in directoryEntries" :key="entry.key">
         <OrganismsUserCardsPill :user="entry.pill" />
-        <p class="text-xs font-mono text-gray-500">{{ entry.id }}</p>
       </div>
     </div>
 
@@ -70,7 +65,7 @@ const visibleUsers = computed(() => {
   return users.value ?? []
 })
 
-type DirectoryEntry = { key: string; id: string; pill: UserCard.Pill }
+type DirectoryEntry = { key: string; pill: UserCard.Pill }
 
 const directoryEntries = computed<DirectoryEntry[]>(() => {
   const list = visibleUsers.value ?? []
@@ -91,7 +86,6 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
 
       return {
         key: entry.id,
-        id: entry.id,
         pill: pillWithRole,
       }
     })

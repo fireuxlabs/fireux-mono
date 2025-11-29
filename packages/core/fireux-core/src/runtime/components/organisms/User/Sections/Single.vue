@@ -1,23 +1,32 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/Sections/Single.vue -->
 <template>
   <div class="space-y-6">
-    <UCard>
-      <template #header>
-        <h2>{{ headerTitle }}</h2>
-        <p>{{ headerDescription }}</p>
-      </template>
+    <template v-if="showUserCta">
+      <OrganismsUserCTA />
+    </template>
 
-      <div v-if="current" class="space-y-4">
-        <OrganismsUserCardsPill v-if="currentPill" :user="currentPill" />
-        <OrganismsUserCardsCell :user="current" :to="coreLink" />
-      </div>
+    <template v-else>
+      <UCard>
+        <template #header>
+          <h2>{{ headerTitle }}</h2>
+          <p>{{ headerDescription }}</p>
+        </template>
 
-      <p v-else>No user loaded.</p>
-    </UCard>
+        <div v-if="current" class="space-y-4">
+          <OrganismsUserCardsPill v-if="currentPill" :user="currentPill" />
+          <OrganismsUserCardsCell :user="current" :to="coreLink" />
+        </div>
 
-    <OrganismsUserCardsProfile v-if="showExtended && profile" :user="profile" />
+        <p v-else>No user loaded.</p>
+      </UCard>
 
-    <OrganismsUserSectionsSubcollection v-if="showExtended" />
+      <OrganismsUserCardsProfile
+        v-if="showExtended && profile"
+        :user="profile"
+      />
+
+      <OrganismsUserSectionsSubcollection v-if="showExtended" />
+    </template>
   </div>
 </template>
 
@@ -35,7 +44,7 @@ const props = withDefaults(
   { compact: true }
 )
 
-const { user: runtimeUser, pillProps } = useUser()
+const { user: runtimeUser, pillProps, cta } = useUser()
 
 const current = computed<User | null>(
   () => props.user ?? runtimeUser.value ?? null
@@ -61,4 +70,6 @@ const coreLink = computed<RouteLocationRaw | null>(() => {
 const profile = computed<User | null>(() => current.value)
 
 const showExtended = computed(() => !props.compact)
+
+const showUserCta = computed(() => (cta.value?.key ?? 'avatar') !== 'avatar')
 </script>

@@ -14,13 +14,8 @@
     </template>
 
     <div v-if="directoryEntries.length" class="fx-section__grid">
-      <article
-        v-for="entry in directoryEntries"
-        :key="entry.key"
-        class="space-y-2"
-      >
+      <article v-for="entry in directoryEntries" :key="entry.key">
         <OrganismsAppCardsPill :app="entry.pill" />
-        <p class="text-xs font-mono text-gray-500">{{ entry.id }}</p>
       </article>
     </div>
 
@@ -37,22 +32,18 @@ import type { App, AppCard } from 'fireux-core/runtime/models/core/app.model.ts'
 const { apps } = useAppCollection()
 const { pillProps } = useAppInterface()
 
-type DirectoryEntry = { key: string; id: string; pill: AppCard.Pill }
-
-const directoryEntries = computed<DirectoryEntry[]>(() => {
+const directoryEntries = computed(() => {
   const list = apps.value ?? []
   if (!list.length) return []
 
   return list.map((entry) => {
     const app = entry as App
     const pill = pillProps(app)
-    const id = entry?.id ?? ''
-    const key = id || `${pill.title}-${pill.subtitle || ''}`
+    const key = entry?.id ?? `${pill.title}-${pill.subtitle || ''}`
     return {
       key,
-      id,
       pill,
-    }
+    } satisfies { key: string; pill: AppCard.Pill }
   })
 })
 

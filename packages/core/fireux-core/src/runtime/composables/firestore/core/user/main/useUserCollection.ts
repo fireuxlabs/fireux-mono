@@ -49,7 +49,9 @@ export function useUserCollection() {
     loadGlobalUsers()
   }
 
-  const global = computed<EnrichedUser[]>(() => normalizeUsers(globalSource?.value))
+  const global = computed<EnrichedUser[]>(() =>
+    normalizeUsers(globalSource?.value)
+  )
 
   const users = computed<EnrichedUser[]>(() => {
     if (fulfilled) {

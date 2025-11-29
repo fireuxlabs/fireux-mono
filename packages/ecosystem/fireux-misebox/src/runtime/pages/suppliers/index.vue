@@ -4,14 +4,13 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="space-y-6">
-      <template v-if="hasProfile">
-        <OrganismsProfileSectionsSingle :title="currentProfileTitle">
+      <OrganismsProfileSectionsSingle :title="currentProfileTitle">
+        <template v-if="hasProfile">
           <OrganismsProfilesSupplierCardsCell v-if="cell" :supplier="cell" />
           <OrganismsProfilesSupplierCardsPill v-if="pill" :supplier="pill" />
-        </OrganismsProfileSectionsSingle>
-      </template>
-
-      <OrganismsProfilesSupplierCTA v-else />
+        </template>
+        <OrganismsProfilesSupplierCTA v-else />
+      </OrganismsProfileSectionsSingle>
 
       <OrganismsProfilesSupplierSectionsGlobalCollection />
       <OrganismsProfilesSupplierSectionsLocalCollection v-if="isTenant" />
