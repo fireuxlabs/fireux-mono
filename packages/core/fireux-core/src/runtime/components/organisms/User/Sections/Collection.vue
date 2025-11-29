@@ -24,11 +24,14 @@
     </template>
 
     <div v-if="directoryEntries.length" class="fx-section__grid">
-      <OrganismsUserCardsPill
+      <div
         v-for="entry in directoryEntries"
         :key="entry.key"
-        :user="entry.pill"
-      />
+        class="space-y-2"
+      >
+        <OrganismsUserCardsPill :user="entry.pill" />
+        <p class="text-xs font-mono text-gray-500">{{ entry.id }}</p>
+      </div>
     </div>
 
     <p v-else class="fx-section__empty">No users found.</p>
@@ -39,6 +42,7 @@
 import { computed, ref } from 'vue'
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/state/useUserInterface.ts'
 import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
 
 const { users, global, loadGlobalUsers } = useUserCollection()
@@ -66,26 +70,31 @@ const visibleUsers = computed(() => {
   return users.value ?? []
 })
 
-type DirectoryEntry = { key: string; pill: UserCard.Pill }
+type DirectoryEntry = { key: string; id: string; pill: UserCard.Pill }
 
 const directoryEntries = computed<DirectoryEntry[]>(() => {
-  const list = visibleUsers.value
+  const list = visibleUsers.value ?? []
   if (!list.length) return []
 
-  return list.map((entry: any) => {
-    const base = pillProps(entry)
-    const appRole = entry?.appUser?.role
-
-    return {
-      key: entry?.id ?? `${base.title}-${base.subtitle || ''}`,
-      pill: {
-        ...base,
+  return list
+    .filter((entry: any) => Boolean(entry?.id))
+    .map((entry: any) => {
+      const baseUser = entry?.coreUser ?? entry
+      const pill = pillProps(baseUser)
+      const appRole = entry?.appUser?.role
+      const pillWithRole: UserCard.Pill = {
+        ...pill,
         special: appRole === 'admin',
-        specialIcon: 'i-lucide-star',
+        specialIcon: appRole === 'admin' ? 'i-lucide-star' : undefined,
         specialTooltip: appRole === 'admin' ? 'App Admin' : undefined,
-      },
-    }
-  })
+      }
+
+      return {
+        key: entry.id,
+        id: entry.id,
+        pill: pillWithRole,
+      }
+    })
 })
 
 const totalUsers = computed(() => visibleUsers.value.length)

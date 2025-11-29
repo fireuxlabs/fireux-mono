@@ -28,7 +28,7 @@
 
       <!-- App Collection -->
       <section class="space-y-4">
-        <OrganismsAppSectionsCollection :show-cells="false" />
+        <OrganismsAppSectionsCollection />
         <DevJsonPanel
           title="Dev · App Collection"
           :data="appCollectionDev"

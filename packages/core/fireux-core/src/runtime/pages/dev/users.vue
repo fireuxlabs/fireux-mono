@@ -11,23 +11,9 @@
 
         <OrganismsUserCardsPill :user="pillFor(currentUser)" />
 
-        <!-- New: show tenant overlay status -->
-        <div class="flex items-center gap-2">
-          <span class="text-sm opacity-80">
-            App overlay:
-            <strong>{{ currentUser.appUser ? 'present' : 'none' }}</strong>
-          </span>
-          <UBadge
-            v-if="currentUser.appUser?.role"
-            color="primary"
-            variant="soft"
-            size="sm"
-          >
-            role: {{ currentUser.appUser.role }}
-          </UBadge>
-        </div>
-
-        <OrganismsUserCardsCell :user="currentUser" :to="currentUserLink" />
+        <p class="text-sm font-mono text-gray-600">
+          ID: <span class="text-black">{{ currentUser.id }}</span>
+        </p>
 
         <!-- This JSON now includes `appUser` because it's merged into `user` -->
         <DevJsonPanel v-if="currentUserJson" :data="currentUserJson" />
@@ -66,6 +52,7 @@ import { computed } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import { useUser } from '../../composables/firestore/core/user/useUser'
 import { useUserCollection } from '../../composables/firestore/core/user/main/useUserCollection'
+import { useUserInterface } from '../../composables/firestore/core/user/state/useUserInterface'
 
 definePageMeta({
   layout: 'dev',
@@ -80,17 +67,15 @@ definePageMeta({
   },
 })
 
-const { currentUser, pillProps, isLoading } = useUser()
+const { currentUser, isLoading } = useUser()
 const { users: usersCollection } = useUserCollection()
+const { pillProps: collectionPill } = useUserInterface()
 
-const pillFor = (target: User | null | undefined) =>
-  target ? pillProps(target) : null
-
-const currentUserLink = computed(() => {
-  const u = currentUser.value
-  const pill = u ? pillProps(u) : null
-  return pill?.to ?? null
-})
+const pillFor = (target: User | any | null | undefined) => {
+  if (!target) return null
+  const base = target?.coreUser ?? target
+  return collectionPill(base)
+}
 
 const currentUserJson = computed(() => currentUser.value ?? null)
 

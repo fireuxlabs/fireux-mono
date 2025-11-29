@@ -20,6 +20,7 @@
         class="space-y-2"
       >
         <OrganismsAppCardsPill :app="entry.pill" />
+        <p class="text-xs font-mono text-gray-500">{{ entry.id }}</p>
       </article>
     </div>
 
@@ -32,10 +33,11 @@ import { computed } from 'vue'
 import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
 import { useAppInterface } from 'fireux-core/runtime/composables/firestore/core/app/state/useAppInterface.ts'
 import type { App, AppCard } from 'fireux-core/runtime/models/core/app.model.ts'
+
 const { apps } = useAppCollection()
 const { pillProps } = useAppInterface()
 
-type DirectoryEntry = { key: string; pill: AppCard.Pill }
+type DirectoryEntry = { key: string; id: string; pill: AppCard.Pill }
 
 const directoryEntries = computed<DirectoryEntry[]>(() => {
   const list = apps.value ?? []
@@ -44,9 +46,11 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
   return list.map((entry) => {
     const app = entry as App
     const pill = pillProps(app)
-    const key = entry?.id ?? `${pill.title}-${pill.subtitle || ''}`
+    const id = entry?.id ?? ''
+    const key = id || `${pill.title}-${pill.subtitle || ''}`
     return {
       key,
+      id,
       pill,
     }
   })

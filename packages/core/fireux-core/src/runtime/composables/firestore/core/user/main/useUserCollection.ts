@@ -7,6 +7,17 @@ import type {
   AppUser,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 
+type EnrichedUser = {
+  id: string
+  display_name: string
+  avatar: string
+  handle?: string
+  email?: string
+  profiles?: string[]
+  appUser?: AppUser | null
+  coreUser?: User | null
+}
+
 type CollectionRef<T> = Ref<T[] | null> | Ref<T[] | undefined>
 
 /**
@@ -38,9 +49,9 @@ export function useUserCollection() {
     loadGlobalUsers()
   }
 
-  const global = computed(() => globalSource?.value ?? [])
+  const global = computed<EnrichedUser[]>(() => normalizeUsers(globalSource?.value))
 
-  const users = computed(() => {
+  const users = computed<EnrichedUser[]>(() => {
     if (fulfilled) {
       const scoped = fulfilled.value ?? []
       if (scoped.length) return scoped
@@ -84,32 +95,43 @@ function fulfillAppUsers(
     return userCache.get(id)!
   }
 
-  return computed(() => {
+  return computed<EnrichedUser[]>(() => {
     const members = local.value ?? []
     if (!members.length) return []
 
-    return members.map((member) => {
-      const coreUser = getCoreUser(member.id)
-      const coreSnapshot = coreUser.value ?? null
+    return members
+      .map((member) => {
+        const coreUser = getCoreUser(member.id)
+        const record = coreUser.value
+        if (!record?.id) return null
 
-      const fallbackUser: User = {
-        id: member.id,
-        display_name: member.id,
-        avatar: '',
-        created_at: member.created_at,
-        updated_at: member.updated_at,
-      } as User
-
-      const base = coreSnapshot ? { ...coreSnapshot } : fallbackUser
-
-      return {
-        ...base,
-        avatar: base.avatar || '',
-        display_name: base.display_name || member.id,
-        role: member.role ?? base.role,
-        appUser: member,
-        coreUser: coreSnapshot,
-      }
-    })
+        return {
+          id: record.id,
+          display_name: record.display_name ?? record.id,
+          avatar: record.avatar ?? '',
+          handle: record.handle,
+          email: record.email,
+          profiles: record.profiles ?? [],
+          appUser: member,
+          coreUser: record,
+        }
+      })
+      .filter((entry): entry is EnrichedUser => Boolean(entry?.id))
   })
+}
+
+function normalizeUsers(source?: User[] | null): EnrichedUser[] {
+  if (!source?.length) return []
+  return source
+    .filter((entry): entry is User => Boolean(entry?.id))
+    .map((entry) => ({
+      id: entry.id,
+      display_name: entry.display_name ?? entry.id,
+      avatar: entry.avatar ?? '',
+      handle: entry.handle,
+      email: entry.email,
+      profiles: entry.profiles ?? [],
+      coreUser: entry,
+      appUser: null,
+    }))
 }
