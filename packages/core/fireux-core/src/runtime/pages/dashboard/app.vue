@@ -54,7 +54,7 @@ import { computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useApp } from '../../composables/firestore/core/app/useApp.ts'
 import { useUser } from '../../composables/firestore/core/user/useUser.ts'
-import { useAppInterface } from '../../composables/firestore/core/app/main/useAppInterface.ts'
+import { useAppInterface } from '../../composables/firestore/core/app/state/useAppInterface.ts'
 
 const { app } = useApp()
 const { isAdmin } = useUser()

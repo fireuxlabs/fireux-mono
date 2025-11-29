@@ -1,8 +1,8 @@
 import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
-import type { Job } from '../../../../types/job.model.ts'
+import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 
-export function useJobCollection() {
+export function useAppCollection() {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const jobs = firestoreFetchCollection<Job>('jobs')
-  return { jobs }
+  const apps = firestoreFetchCollection<App>('apps')
+  return { apps }
 }

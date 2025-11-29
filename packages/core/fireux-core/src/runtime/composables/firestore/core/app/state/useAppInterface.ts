@@ -1,4 +1,3 @@
-// FILE: ~/composables/app/useAppInterface.ts
 import type { Ref } from 'vue'
 import type { App, AppCard } from 'fireux-core/runtime/models/core/app.model.ts'
 

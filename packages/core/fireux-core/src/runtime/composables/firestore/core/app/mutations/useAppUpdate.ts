@@ -1,4 +1,3 @@
-// FILE: ~/composables/app/useAppUpdate.ts
 import type { Ref } from 'vue'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 import type {
@@ -9,7 +8,7 @@ import { arrayRemove, arrayUnion } from 'firebase/firestore'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
-import { useAppEnsure } from './useAppEnsure.ts'
+import { useAppEnsure } from '../core/useAppEnsure.ts'
 
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const { updateDocument } = useFirestoreUpdate()

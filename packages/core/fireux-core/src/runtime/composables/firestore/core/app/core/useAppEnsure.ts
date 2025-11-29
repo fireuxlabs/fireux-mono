@@ -1,4 +1,3 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppEnsure.ts
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'

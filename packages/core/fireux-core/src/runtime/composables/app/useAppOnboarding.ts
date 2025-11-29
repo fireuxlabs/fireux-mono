@@ -2,7 +2,7 @@ import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useFireUXConfig } from '../FireUXConfig.ts'
 import { useUser } from '../firestore/core/user/useUser.ts'
-import { useAppEnsure } from '../firestore/core/app/main/useAppEnsure.ts'
+import { useAppEnsure } from '../firestore/core/app/core/useAppEnsure.ts'
 import type { EnvCheckResponse } from '../../types/app/onboarding.ts'
 import { useEnvCheck } from '../firestore/core/app/utils/useEnvCheck.ts'
 
