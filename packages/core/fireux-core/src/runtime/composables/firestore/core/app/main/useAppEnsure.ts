@@ -1,15 +1,14 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppEnsure.ts
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { arrayUnion, doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { requireUid } from '../../../utils/useEnsureCommon.ts'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
-import { ensureCoreUserDocument } from '../../user/main/useUserEnsure.ts'
+import {
+  ensureCoreUserDocument,
+  ensureUserAppMembership,
+} from '../../user/utils/ensureHelpers.ts'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import type {
-  AppUser,
-  User,
-} from 'fireux-core/runtime/models/core/user.model.ts'
 
 type EnsureAppDocResult = { created: boolean; id: string }
 type EnsureMembershipResult = { created: boolean }
@@ -59,43 +58,9 @@ export function useAppEnsure() {
     membershipRole: 'admin' | 'user' = 'user'
   ): Promise<EnsureMembershipResult> {
     if (!appId) return { created: false }
-
-    const ref = doc(db, 'apps', appId, 'users', uid)
-    const snapshot = await getDoc(ref)
-
-    let created = true
-    if (snapshot.exists()) {
-      created = false
-      const current = snapshot.data() as AppUser | undefined
-      if (current && current.role !== membershipRole) {
-        await updateDocument<AppUser>(`apps/${appId}/users`, uid, {
-          role: membershipRole,
-        })
-      }
-    } else {
-      const payload: AppUser = {
-        id: uid,
-        role: membershipRole,
-        creator_id: uid,
-      } as AppUser
-      await setDocument<AppUser>(`apps/${appId}/users`, uid, payload)
-    }
-
-    await ensureCoreUserDocument(uid)
-
-    const membershipUpdates: Partial<User> =
-      membershipRole === 'admin'
-        ? {
-            adminOf: arrayUnion(appId) as unknown as string[],
-            userOf: arrayUnion(appId) as unknown as string[],
-          }
-        : {
-            userOf: arrayUnion(appId) as unknown as string[],
-          }
-
-    await updateDocument<User>('users', uid, membershipUpdates)
-
-    return { created }
+    return ensureUserAppMembership(appId, uid, membershipRole, {
+      appName,
+    })
   }
 
   const ensureApp = () => ensureAppDoc()

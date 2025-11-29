@@ -1,11 +1,10 @@
-// FILE: ~/composables/user/useUserInterface.ts
 import type { Ref } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 import type {
   User,
   UserCard,
 } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
+import type { UserRefs } from '../main/useUserFetch.ts'
 
 export function useUserInterface(
   source?: Ref<User | null | undefined> | UserRefs

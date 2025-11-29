@@ -1,10 +1,10 @@
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 import { useUserFetch } from './main/useUserFetch.ts'
-import { useUserComputed } from './main/useUserComputed.ts'
-import { useUserEnsure } from './main/useUserEnsure.ts'
-import { useUserUpdate } from './main/useUserUpdate.ts'
-import { useUserDelete } from './main/useUserDelete.ts'
-import { useUserInterface } from './main/useUserInterface.ts'
+import { useUserComputed } from './state/useUserComputed.ts'
+import { useUserEnsure } from './app/useUserEnsure.ts'
+import { useUserUpdate } from './mutations/useUserUpdate.ts'
+import { useUserDelete } from './delete/useUserDelete.ts'
+import { useUserInterface } from './state/useUserInterface.ts'
 
 export type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 

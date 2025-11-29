@@ -16,7 +16,7 @@ import {
   signOut,
   GoogleAuthProvider,
 } from 'firebase/auth'
-import { useUserEnsure } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserEnsure.ts'
+import { useUserEnsure } from 'fireux-core/runtime/composables/firestore/core/user/app/useUserEnsure.ts'
 
 type AuthUser = {
   uid?: string | null

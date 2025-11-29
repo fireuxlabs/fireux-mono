@@ -4,7 +4,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts
 import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
 import { requireUid } from '../../../utils/useEnsureCommon.ts'
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
-import { useUserUpdateForUid } from '../../user/main/useUserUpdate.ts'
+import { useUserUpdateForUid } from '../../user/mutations/useUserUpdate.ts'
 
 type EnsureResult = {
   createdCore: boolean

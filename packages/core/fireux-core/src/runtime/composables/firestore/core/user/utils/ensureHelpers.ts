@@ -1,4 +1,3 @@
-import { useRouter } from 'vue-router'
 import {
   arrayUnion,
   doc,
@@ -6,82 +5,30 @@ import {
   type DocumentSnapshot,
 } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { requireUid } from '../../../utils/useEnsureCommon.ts'
+
 import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
-import type {
+import {
   AppUser,
   User,
+  type UserNotification,
+  type NotificationScope,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 
-type EnsureUserResult = {
-  createdCore: boolean
-  createdApp: boolean
-  id: string
-  displayName: string
-}
-
-export function useUserEnsure() {
-  const router = useRouter()
-  const { isTenant, appId } = useFireUXConfig()
-
-  const ensureCore = async (): Promise<{
-    created: boolean
-    id: string
-    displayName: string
-  }> => {
-    const { uid, auth } = await requireUid()
-    const displayName = auth?.displayName || 'New User'
-
-    const result = await ensureCoreUserDocument(uid, {
-      displayName,
-      email: auth?.email ?? '',
-    })
-
-    const existing = result.snapshot?.data() as Partial<User> | undefined
-    return {
-      created: result.created,
-      id: uid,
-      displayName: existing?.display_name || displayName,
-    }
-  }
-
-  const ensureApp = async (): Promise<{ created: boolean }> => {
-    if (!isTenant || !appId) return { created: false }
-    const { uid } = await requireUid()
-    const membership = await ensureUserAppMembership(appId, uid, 'user')
-    return { created: membership.created }
-  }
-
-  const ensureUser = async (): Promise<EnsureUserResult> => {
-    const core = await ensureCore()
-    const app = await ensureApp()
-
-    if ((core.created || app.created) && import.meta.client) {
-      router.push('/dashboard')
-    }
-
-    return {
-      createdCore: core.created,
-      createdApp: app.created,
-      id: core.id,
-      displayName: core.displayName,
-    }
-  }
-
-  return { ensureUser, ensureCore, ensureApp }
-}
-
-type EnsureCoreOptions = {
+export type EnsureCoreOptions = {
   displayName?: string
   email?: string
   avatar?: string | null
+  ecosystemName?: string
 }
 
-type EnsureCoreResult = {
+export type EnsureCoreResult = {
   created: boolean
   snapshot?: DocumentSnapshot<User>
   displayName: string
+}
+
+export type EnsureMembershipOptions = {
+  appName?: string
 }
 
 export async function ensureCoreUserDocument(
@@ -104,12 +51,19 @@ export async function ensureCoreUserDocument(
   }
 
   const displayName = options.displayName || buildFallbackDisplayName(uid)
+  const welcomeLabel = options.ecosystemName?.trim() || 'FireUX'
   const payload: User = {
     id: uid,
     display_name: displayName,
     avatar: options.avatar ?? '',
     email: options.email ?? '',
     handle: makeHandle(displayName, uid),
+    notifications: [
+      createUserNotification({
+        message: `Welcome to ${welcomeLabel}`,
+        scope: 'ecosystem',
+      }),
+    ],
   } as User
 
   const { setDocument } = useFirestoreManager()
@@ -118,15 +72,19 @@ export async function ensureCoreUserDocument(
   return { created: true, displayName }
 }
 
-async function ensureUserAppMembership(
+export type EnsureMembershipResult = { created: boolean }
+
+export async function ensureUserAppMembership(
   appId: string,
   uid: string,
-  membershipRole: 'admin' | 'user'
-) {
+  membershipRole: 'admin' | 'user',
+  options: EnsureMembershipOptions = {}
+): Promise<EnsureMembershipResult> {
   const db = useFirestore()
   const ref = doc(db, 'apps', appId, 'users', uid)
   const snapshot = await getDoc(ref)
   const { setDocument, updateDocument } = useFirestoreManager()
+  const appLabel = options.appName?.trim() || appId
 
   let created = true
   if (snapshot.exists()) {
@@ -142,13 +100,20 @@ async function ensureUserAppMembership(
       id: uid,
       role: membershipRole,
       creator_id: uid,
+      notifications: [
+        createUserNotification({
+          message: `Welcome to ${appLabel}`,
+          scope: 'app',
+          appId,
+        }),
+      ],
     } as AppUser
     await setDocument<AppUser>(`apps/${appId}/users`, uid, payload)
   }
 
   await ensureCoreUserDocument(uid)
 
-  const membershipUpdates: Partial<User> =
+  let membershipUpdates: Partial<User> =
     membershipRole === 'admin'
       ? {
           adminOf: arrayUnion(appId) as unknown as string[],
@@ -158,9 +123,41 @@ async function ensureUserAppMembership(
           userOf: arrayUnion(appId) as unknown as string[],
         }
 
+  if (created) {
+    membershipUpdates = {
+      ...membershipUpdates,
+      notifications: arrayUnion(
+        createUserNotification({
+          message: `You joined ${appLabel}`,
+          scope: 'app',
+          appId,
+        })
+      ) as unknown as UserNotification[],
+    }
+  }
+
   await updateDocument<User>('users', uid, membershipUpdates)
 
   return { created }
+}
+
+export type CreateNotificationInput = {
+  message: string
+  scope: NotificationScope
+  appId?: string
+}
+
+export function createUserNotification(
+  input: CreateNotificationInput
+): UserNotification {
+  return {
+    id: generateNotificationId(),
+    message: input.message,
+    scope: input.scope,
+    created_at: new Date().toISOString(),
+    read: false,
+    ...(input.appId ? { app_id: input.appId } : {}),
+  }
 }
 
 function makeHandle(displayName: string, uid: string) {
@@ -172,4 +169,11 @@ function makeHandle(displayName: string, uid: string) {
 function buildFallbackDisplayName(uid: string) {
   const suffix = uid.slice(-4) || uid
   return `Member ${suffix}`
+}
+
+function generateNotificationId() {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID()
+  }
+  return Math.random().toString(36).slice(2, 12)
 }

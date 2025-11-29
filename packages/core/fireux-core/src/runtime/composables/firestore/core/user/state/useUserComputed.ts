@@ -1,4 +1,3 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserComputed.ts
 import { computed } from 'vue'
 import type { Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
@@ -7,7 +6,7 @@ import type {
   User,
   AppUser,
 } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from './useUserFetch.ts'
+import type { UserRefs } from '../main/useUserFetch.ts'
 
 type UserCtaKey = 'sign-in' | 'create-core-user' | 'join-app' | 'avatar'
 

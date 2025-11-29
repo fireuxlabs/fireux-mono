@@ -1,374 +1,476 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/Auth/System.vue -->
 <template>
-  <UContainer class="center-content">
+  <section class="ecosystem-auth">
     <ClientOnly>
-      <Transition name="fade">
-        <div v-if="authState === 'AUTHENTICATED'">
-          <OrganismsAuthAuthenticated />
-        </div>
+      <div class="ecosystem-card">
+        <img
+          v-if="wordmarkSrc"
+          :src="wordmarkSrc"
+          :alt="`${ecosystemLabel} wordmark`"
+          class="ecosystem-wordmark"
+        />
+        <h2 class="ecosystem-heading">{{ formTitle }}</h2>
 
-        <div v-else>
-          <section class="auth-shell">
-            <UAuthForm
-              class="auth-form"
-              :title="title"
-              :fields="fields"
-              :submit="submitBtn"
-              :loading="loading"
-              @submit="onSubmit"
-            >
-              <template #providers>
-                <UButton
-                  block
-                  variant="ghost"
-                  :loading="providerLoading"
-                  @click="handleGoogle"
-                >
-                  <img
-                    :src="googleLogo"
-                    alt="Continue with Google"
-                    class="google-logo"
-                  />
-                </UButton>
-              </template>
+        <template v-if="isAuthenticated">
+          <template v-if="showAuthenticatedCard">
+            <p class="ecosystem-message">
+              You're signed in with your {{ ecosystemLabel }} account.
+            </p>
+            <div class="auth-actions">
+              <UButton block color="primary" @click="goToDashboard">
+                Go to dashboard
+              </UButton>
+              <UButton
+                block
+                variant="ghost"
+                :loading="signOutLoading"
+                @click="handleSignOut"
+              >
+                Sign out
+              </UButton>
+            </div>
+          </template>
+          <p v-else class="ecosystem-message">
+            You're signed in. Continue with the next steps above.
+          </p>
+        </template>
 
-              <template #validation>
-                <UAlert
-                  v-if="error"
-                  color="warning"
-                  variant="subtle"
-                  :title="error"
-                />
-              </template>
+        <template v-else>
+          <p class="ecosystem-message">
+            {{ formSubtitle }}
+          </p>
 
-              <template #footer>
-                <div class="footer-stack">
-                  <p class="ecosystem-hint">
-                    Use your {{ ecosystemLabel }} account across the FireUX
-                    network.
-                  </p>
+          <button
+            type="button"
+            class="provider-button"
+            :disabled="providerLoading"
+            :aria-busy="providerLoading"
+            aria-label="Continue with Google"
+            @click="handleGoogle"
+          >
+            <img :src="googleLogo" alt="Continue with Google" />
+            <span class="sr-only">Continue with Google</span>
+          </button>
 
-                  <USwitch v-model="isSignUp" :label="switchLabel" />
+          <div class="divider">
+            <span>or continue with email</span>
+          </div>
 
-                  <UAlert
-                    v-if="existingUserPill"
-                    color="info"
-                    variant="soft"
-                    :title="existingUserTitle"
-                    class="existing-user-alert"
-                  >
-                    <template #description>
-                      <p
-                        v-if="existingUserDescription"
-                        class="existing-user-copy"
-                      >
-                        {{ existingUserDescription }}
-                      </p>
-                      <OrganismsUserCardsPill
-                        v-if="existingUserPill"
-                        :user="existingUserPill"
-                        class="existing-user-pill"
-                      />
-                    </template>
-                  </UAlert>
-                </div>
-              </template>
-            </UAuthForm>
-          </section>
-        </div>
-      </Transition>
+          <UForm
+            :state="formState"
+            class="email-form"
+            @submit="handleEmailSubmit"
+          >
+            <UInput
+              v-model="formState.email"
+              type="email"
+              label="Email"
+              placeholder="name@example.com"
+              block
+            />
+            <UInput
+              v-model="formState.password"
+              type="password"
+              :label="passwordLabel"
+              :placeholder="passwordPlaceholder"
+              :autocomplete="passwordAutocomplete"
+              class="input-spacing"
+              block
+            />
+            <div v-if="!isTenant" class="switch-row">
+              <USwitch
+                v-model="isSignUp"
+                :label="isSignUp ? 'Signing up' : 'Signing in'"
+              />
+            </div>
+            <UButton type="submit" block :loading="formLoading">
+              {{ submitLabel }}
+            </UButton>
+          </UForm>
+
+          <UAlert
+            v-if="error"
+            class="mt-3"
+            color="amber"
+            variant="subtle"
+            :title="error.title"
+            :description="error.description"
+          />
+          <p v-if="error?.hint" class="hint">{{ error.hint }}</p>
+
+          <p class="ecosystem-footnote">
+            By signing in, you agree to our Terms of Service and Privacy Policy.
+          </p>
+          <p v-if="isTenant" class="ecosystem-extra">
+            Need access? Ask your {{ brandLabel }} administrator to invite you.
+          </p>
+          <p v-else-if="centralSignupUrl" class="ecosystem-extra">
+            Prefer the central signup?
+            <NuxtLink :to="centralSignupUrl" target="_blank"
+              >Open portal</NuxtLink
+            >.
+          </p>
+        </template>
+      </div>
     </ClientOnly>
-  </UContainer>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { FirebaseError } from 'firebase/app'
-import { collection, getDocs, limit, query, where } from 'firebase/firestore'
-
-import { useFirestore } from 'vuefire'
-
-import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
+import { useColorMode } from '#imports'
 import { useFireUXConfig } from '../../../composables/FireUXConfig.ts'
-import { useUserInterface } from '../../../composables/firestore/core/user/main/useUserInterface.ts'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 
+const props = withDefaults(
+  defineProps<{
+    redirectOnSuccess?: boolean
+    redirectTarget?: string
+    showAuthenticatedCard?: boolean
+  }>(),
+  {
+    redirectOnSuccess: true,
+    redirectTarget: '/',
+    showAuthenticatedCard: true,
+  }
+)
+
+const emit = defineEmits<{
+  (e: 'signed-in'): void
+}>()
+
+const colorMode = useColorMode()
 const router = useRouter()
+const { ecosystem, role, centralSignupUrl } = useFireUXConfig()
 const {
   authState,
+  signOutUser,
   signInWithGoogle,
   signInWithEmailPassword,
   signUpWithEmailPassword,
 } = useAuth()
-const { appName, ecosystem } = useFireUXConfig()
-const db = useFirestore()
 
+const isTenant = computed(() => role === 'tenant')
+const formatBrandLabel = (value?: string) => {
+  if (!value) return 'FireUX'
+  return value
+    .split(/[-_]/)
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(' ')
+}
+
+const brandLabel = computed(() => formatBrandLabel(ecosystem) || 'FireUX')
+const ecosystemLabel = brandLabel
+
+const wordmarkSrc = computed(() => {
+  if (isTenant.value) {
+    return colorMode.value === 'dark'
+      ? '/img/ecosystem/wordmark-dark.svg'
+      : '/img/ecosystem/wordmark-light.svg'
+  }
+  return colorMode.value === 'dark'
+    ? '/img/core/brand/wordmark-dark.png'
+    : '/img/core/brand/wordmark-light.png'
+})
+
+const googleLogo = computed(() =>
+  colorMode.value === 'dark'
+    ? '/img/core/auth/sign-in-dark.svg'
+    : '/img/core/auth/sign-in-light.svg'
+)
+
+const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const isSignUp = ref(false)
-const loading = ref(false)
+
+const formTitle = computed(() =>
+  !isTenant.value && isSignUp.value ? 'Create account' : 'Sign in'
+)
+const formSubtitle = computed(() => {
+  if (isTenant.value) {
+    return `Use your ${brandLabel.value} credentials to continue.`
+  }
+  return isSignUp.value
+    ? `Create a new ${brandLabel.value} account below.`
+    : `Use your ${brandLabel.value} credentials or create a new account.`
+})
+
+const formState = reactive({
+  email: '',
+  password: '',
+})
+
+watch(
+  () => isTenant.value,
+  (tenant) => {
+    if (tenant) {
+      isSignUp.value = false
+    }
+  },
+  { immediate: true }
+)
+
+const formLoading = ref(false)
 const providerLoading = ref(false)
-const error = ref<string | null>(null)
-const existingUser = ref<User | null>(null)
-const { pillProps: toExistingUserPill } = useUserInterface(existingUser)
+const signOutLoading = ref(false)
 
-const title = computed(() =>
-  isSignUp.value ? `Create your ${appName} account` : `Sign in to ${appName}`
+type AuthError = {
+  title: string
+  description: string
+  hint?: string
+} | null
+
+const error = ref<AuthError>(null)
+
+const submitLabel = computed(() =>
+  isTenant.value || !isSignUp.value ? 'Continue' : 'Create account'
+)
+const passwordLabel = computed(() =>
+  isTenant.value ? 'Password' : isSignUp.value ? 'Create password' : 'Password'
+)
+const passwordPlaceholder = computed(() =>
+  isSignUp.value ? 'At least 8 characters' : 'Enter your password'
+)
+const passwordAutocomplete = computed(() =>
+  isSignUp.value ? 'new-password' : 'current-password'
 )
 
-const submitBtn = computed(() => ({
-  label: isSignUp.value ? 'Create Account' : 'Continue',
-  block: true,
-}))
+const afterAuthSuccess = async () => {
+  if (props.redirectOnSuccess) {
+    await router.push(props.redirectTarget).catch(() => {})
+  } else {
+    emit('signed-in')
+  }
+}
 
-const switchLabel = computed(() =>
-  isSignUp.value ? 'Use existing account' : 'Create a new account'
-)
-
-const ecosystemLabel = computed(() => ecosystem || 'FireUX')
-
-const existingUserPill = computed(() =>
-  existingUser.value ? toExistingUserPill() : null
-)
-
-const existingUserTitle = computed(() =>
-  existingUser.value ? 'Account already exists' : ''
-)
-
-const existingUserDescription = computed(() =>
-  existingUser.value
-    ? `We found your ${ecosystemLabel.value} account. Sign in with it instead.`
-    : ''
-)
-
-const fields = [
-  { name: 'email', type: 'email', label: 'Email', required: true },
-  { name: 'password', type: 'password', label: 'Password', required: true },
-]
-
-const googleLogo = '/img/core/auth/sign-in-light.svg'
-
-const pushDashboard = async () => {
-  await router.push('/dashboard').catch(() => {})
+const setEmailError = (mode: 'sign-in' | 'sign-up') => {
+  const brand = brandLabel.value
+  error.value =
+    mode === 'sign-up'
+      ? {
+          title: 'Account may already exist',
+          description: `Looks like you might already have a ${brand} account with this email.`,
+          hint: 'Try signing in instead.',
+        }
+      : {
+          title: 'No account found',
+          description: `We could not find a ${brand} account with that email.`,
+          hint: isTenant.value
+            ? 'Ask your administrator to invite you or double-check your email.'
+            : 'Toggle "Create a new account" below to continue.',
+        }
 }
 
 const handleGoogle = async () => {
+  if (providerLoading.value) return
   providerLoading.value = true
   error.value = null
+  const user = await signInWithGoogle()
+  providerLoading.value = false
 
-  try {
-    const result = await signInWithGoogle()
-    providerLoading.value = false
-    if (result?.uid) {
-      await pushDashboard()
-      return
+  if (user?.uid) {
+    await afterAuthSuccess()
+  } else {
+    error.value = {
+      title: 'Google sign-in failed',
+      description: 'Please try again or continue with email.',
     }
-    error.value = 'Google sign-in failed. Please try again.'
-  } catch (err) {
-    providerLoading.value = false
-    error.value = resolveAuthError(err, 'provider')
-    logAuthError(err, 'google')
   }
 }
 
-const onSubmit = async ({ data }: { data?: Record<string, unknown> }) => {
-  const email = String(data?.email ?? '').trim()
-  const password = String(data?.password ?? '')
+const handleEmailSubmit = async (event?: Event) => {
+  event?.preventDefault()
+  if (formLoading.value) return
+  const email = formState.email.trim()
+  const password = formState.password
 
   if (!email || !password) {
-    error.value = 'Enter your email and password.'
+    error.value = {
+      title: 'Missing information',
+      description: 'Enter your email and password to continue.',
+    }
     return
   }
 
-  loading.value = true
   error.value = null
+  formLoading.value = true
 
+  const mode: 'sign-in' | 'sign-up' =
+    !isTenant.value && isSignUp.value ? 'sign-up' : 'sign-in'
+
+  const result =
+    mode === 'sign-up'
+      ? await signUpWithEmailPassword(email, password)
+      : await signInWithEmailPassword(email, password)
+
+  formLoading.value = false
+
+  if (result?.uid) {
+    await afterAuthSuccess()
+    return
+  }
+
+  setEmailError(mode)
+}
+
+const goToDashboard = async () => {
+  await router.push('/dashboard').catch(() => {})
+}
+
+const handleSignOut = async () => {
+  if (signOutLoading.value) return
+  signOutLoading.value = true
   try {
-    const handler = isSignUp.value
-      ? signUpWithEmailPassword
-      : signInWithEmailPassword
-    const result = await handler(email, password)
-    loading.value = false
-
-    if (result?.uid) {
-      existingUser.value = null
-      await pushDashboard()
-      return
-    }
-
-    error.value = 'Authentication failed.'
+    await signOutUser()
   } catch (err) {
-    loading.value = false
-    if (
-      err instanceof FirebaseError &&
-      err.code === 'auth/email-already-in-use'
-    ) {
-      const coreUser = await fetchExistingUserByEmail(email)
-      existingUser.value = coreUser
-      isSignUp.value = false
-      error.value = coreUser
-        ? 'Use your existing FireUX account to sign in.'
-        : 'This email is already registered. Please sign in instead.'
-      return
-    }
-
-    error.value = resolveAuthError(err, isSignUp.value ? 'signup' : 'signin')
-    logAuthError(err, isSignUp.value ? 'signup' : 'signin')
-  }
-}
-
-const fetchExistingUserByEmail = async (
-  email: string
-): Promise<User | null> => {
-  if (!email) return null
-
-  try {
-    const snapshot = await getDocs(
-      query(collection(db, 'users'), where('email', '==', email), limit(1))
-    )
-    if (snapshot.empty) return null
-
-    const docSnap = snapshot.docs[0]
-    const data = docSnap.data() as User | undefined
-    if (!data) return null
-
-    return {
-      ...data,
-      id: data.id || docSnap.id,
-    }
-  } catch (lookupError) {
     if (import.meta.dev) {
-      console.warn('[auth] Failed to lookup existing user', lookupError)
+      console.warn('[auth] sign-out failed', err)
     }
-    return null
   }
-}
-
-watch(isSignUp, (next) => {
-  if (next) {
-    existingUser.value = null
-  }
-})
-
-const resolveAuthError = (
-  err: unknown,
-  context: 'signin' | 'signup' | 'provider'
-): string => {
-  const code = extractAuthCode(err)
-
-  switch (code) {
-    case 'auth/user-not-found':
-      return 'No account found for that email. Try creating one first.'
-    case 'auth/wrong-password':
-    case 'auth/invalid-password':
-    case 'auth/invalid-credential':
-    case 'auth/invalid-login-credentials':
-      return 'Incorrect email or password. Please try again.'
-    case 'auth/email-already-in-use':
-      return 'This email is already registered. Please sign in instead.'
-    case 'auth/too-many-requests':
-      return 'Too many attempts. Please wait a moment and try again.'
-    case 'auth/network-request-failed':
-      return 'Network error. Check your connection and retry.'
-    case 'auth/popup-blocked':
-      return 'Your browser blocked the sign-in popup. Allow popups and retry.'
-    case 'auth/popup-closed-by-user':
-      return 'Sign-in was cancelled before completion.'
-    case 'auth/invalid-email':
-      return 'That email address is not valid. Double-check and retry.'
-    case 'auth/missing-email':
-      return 'Enter an email address to continue.'
-    default:
-      break
-  }
-
-  if (err instanceof Error && err.message) {
-    return err.message
-  }
-
-  return context === 'provider'
-    ? 'Google sign-in failed. Please try again.'
-    : 'Authentication failed. Please try again.'
-}
-
-const extractAuthCode = (err: unknown): string | null => {
-  if (err instanceof FirebaseError) return err.code
-
-  if (err && typeof err === 'object' && 'code' in err) {
-    const maybeCode = (err as Record<string, unknown>).code
-    if (typeof maybeCode === 'string') return maybeCode
-  }
-
-  if (err instanceof Error && typeof err.message === 'string') {
-    const match = err.message.match(/\((auth\/[a-z0-9-]+)\)/i)
-    if (match?.[1]) return match[1]
-  }
-
-  return null
-}
-
-const logAuthError = (err: unknown, label: string) => {
-  if (!import.meta.dev) return
-  console.warn(`[auth] ${label} error`, err)
+  signOutLoading.value = false
+  await router.push('/').catch(() => {})
 }
 </script>
 
 <style scoped>
-.center-content {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.auth-shell {
+.ecosystem-auth {
   width: 100%;
   max-width: 440px;
   margin: 0 auto;
+}
+
+.ecosystem-card {
   padding: var(--space-8, 2rem);
   border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: var(--radius-xl, 1rem);
   background-color: var(--ui-bg, #fff);
   box-shadow: var(--shadow-sm, 0 10px 30px rgba(15, 23, 42, 0.1));
-}
-
-.auth-form {
-  width: 100%;
-}
-
-.google-logo {
-  height: 28px;
-  width: auto;
-}
-
-.footer-stack {
+  text-align: center;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.ecosystem-hint {
-  font-size: 0.85rem;
-  color: var(--ui-text-500, rgba(100, 116, 139, 0.95));
+.ecosystem-wordmark {
+  height: 34px;
+  width: auto;
+  margin: 0 auto 0.25rem;
 }
 
-.existing-user-alert {
+.ecosystem-heading {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.ecosystem-message {
+  font-size: 0.95rem;
+  color: var(--ui-text-600, #475569);
+}
+
+.provider-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+}
+
+.provider-button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.provider-button img {
+  display: block;
+  width: auto;
+  height: auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.divider {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  margin: 1rem 0;
+  font-size: 0.8rem;
+  color: var(--ui-text-muted, #6b7280);
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: rgba(148, 163, 184, 0.5);
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+.divider span {
+  position: relative;
+  padding: 0 0.5rem;
+  background-color: var(--ui-bg, #fff);
+}
+
+.email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.input-spacing {
+  margin-top: 0.75rem;
+}
+
+.switch-row {
+  display: flex;
+  justify-content: center;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.hint {
+  font-size: 0.82rem;
+  color: var(--ui-text-muted, #6b7280);
+}
+
+.ecosystem-footnote {
+  font-size: 0.82rem;
+  color: var(--ui-text-muted, #6b7280);
   margin-top: 0.5rem;
 }
 
-.existing-user-copy {
-  margin-bottom: 0.5rem;
+.ecosystem-extra {
+  font-size: 0.82rem;
+  color: var(--ui-text-600, #475569);
 }
 
-.existing-user-pill {
-  max-width: 320px;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.4s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+.auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 </style>

@@ -1,6 +1,6 @@
 import { ref, type Ref } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from './useUserFetch.ts'
+import type { UserRefs } from '../main/useUserFetch.ts'
 
 type UserSource = Ref<User | null | undefined> | UserRefs | undefined
 

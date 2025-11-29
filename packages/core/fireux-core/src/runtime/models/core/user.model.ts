@@ -1,6 +1,17 @@
 import type { FirebaseTimestamp } from '../../types/firebase.ts'
 import type { Pill as PillModel } from '../../types/pill.model.ts'
 
+export type NotificationScope = 'ecosystem' | 'app'
+
+export interface UserNotification {
+  id: string
+  message: string
+  scope: NotificationScope
+  created_at: string
+  read?: boolean
+  app_id?: string
+}
+
 /** Core Firestore User document */
 export interface User {
   id: string
@@ -22,6 +33,7 @@ export interface User {
   // Optional overlay info (tenant)
   role?: 'user' | 'admin'
   appUser?: AppUser | null
+  notifications?: UserNotification[]
 }
 
 /** Minimal tenant overlay for user */
@@ -31,6 +43,7 @@ export interface AppUser {
   creator_id: string
   created_at: FirebaseTimestamp
   updated_at?: FirebaseTimestamp
+  notifications?: UserNotification[]
 }
 
 /* ---------------------------
