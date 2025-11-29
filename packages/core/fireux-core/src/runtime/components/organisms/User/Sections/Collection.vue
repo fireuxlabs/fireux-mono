@@ -38,14 +38,26 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
-import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserInterface.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
 
-const { users, global } = useUserCollection()
+const { users, global, loadGlobalUsers } = useUserCollection()
 const { pillProps } = useUserInterface()
 const { isTenant } = useFireUXConfig()
-const showingGlobal = ref(false)
+
+const showingGlobal = ref(!isTenant)
+if (showingGlobal.value) {
+  loadGlobalUsers()
+}
+
+const toggleGlobal = () => {
+  if (!showingGlobal.value) {
+    loadGlobalUsers()
+    showingGlobal.value = true
+    return
+  }
+  showingGlobal.value = false
+}
 
 const visibleUsers = computed(() => {
   if (isTenant && showingGlobal.value) {
@@ -53,10 +65,6 @@ const visibleUsers = computed(() => {
   }
   return users.value ?? []
 })
-
-const toggleGlobal = () => {
-  showingGlobal.value = !showingGlobal.value
-}
 
 type DirectoryEntry = { key: string; pill: UserCard.Pill }
 

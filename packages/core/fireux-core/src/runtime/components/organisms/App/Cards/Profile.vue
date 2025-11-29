@@ -119,7 +119,6 @@ import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
 import type { AppCard } from '../../../../models/core/app.model'
 import type { UserCard } from '../../../../models/core/user.model'
 import { useUserFetch } from '../../../../composables/firestore/core/user/main/useUserFetch'
-import { useUserInterface } from '../../../../composables/firestore/core/user/main/useUserInterface'
 
 type Props = { app: AppCard.Profile | null }
 const props = defineProps<Props>()

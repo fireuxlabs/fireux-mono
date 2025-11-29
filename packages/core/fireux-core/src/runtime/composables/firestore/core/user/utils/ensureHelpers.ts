@@ -7,11 +7,11 @@ import {
 import { useFirestore } from 'vuefire'
 
 import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
-import {
+import type {
   AppUser,
   User,
-  type UserNotification,
-  type NotificationScope,
+  UserNotification,
+  NotificationScope,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 
 export type EnsureCoreOptions = {

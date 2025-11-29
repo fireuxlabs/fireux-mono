@@ -2,7 +2,7 @@ import { computed, ref, unref, type MaybeRef } from 'vue'
 import { collection } from 'firebase/firestore'
 import { useFirestore, useCollection } from 'vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
+import { useUserFetch } from '../../user/main/useUserFetch.ts'
 import type {
   User,
   AppUser,
@@ -36,8 +36,19 @@ export function useAppUsers(targetAppId?: MaybeRef<string | null | undefined>) {
       const { coreUser } = ensureUserRefs(overlay.id)
       const core = (coreUser.value ?? undefined) as User | undefined
 
+      if (core) {
+        return {
+          ...core,
+          role: overlay.role ?? core.role,
+          appUser: overlay,
+        }
+      }
+
       return {
-        ...(core ?? { id: overlay.id }),
+        id: overlay.id,
+        display_name: overlay.id,
+        avatar: '',
+        role: overlay.role,
         appUser: overlay,
       }
     })

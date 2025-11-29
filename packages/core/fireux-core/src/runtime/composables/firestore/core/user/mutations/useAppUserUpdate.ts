@@ -4,7 +4,7 @@ import type {
   UserNotification,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from '../main/useUserFetch.ts'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/core/operations/useFirestoreUpdate.ts'
+import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { createUserNotification } from '../utils/ensureHelpers.ts'
 
