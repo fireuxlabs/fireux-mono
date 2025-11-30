@@ -8,7 +8,7 @@ export function useAgentCreate() {
 
   const createAgent = async () => {
     const result = await ensure()
-    if (import.meta.client) router.push('/dashboard/agent-profile')
+    if (import.meta.client) router.push('/dashboard/agent/profile')
     return result
   }
 

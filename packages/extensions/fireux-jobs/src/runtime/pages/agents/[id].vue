@@ -1,7 +1,7 @@
 <template>
   <OrganismsProfilePage
     :config="agentConfig"
-    edit-path="/dashboard/agent-profile"
+    edit-path="/dashboard/agent/profile"
     page-title="Agent Profile"
     page-description="View agent profile"
     :fallback-href="'/agents'"

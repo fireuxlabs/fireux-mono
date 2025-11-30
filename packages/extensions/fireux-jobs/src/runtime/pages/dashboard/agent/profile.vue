@@ -1,8 +1,8 @@
-<!-- packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue -->
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/profile.vue -->
 <template>
-  <UDashboardPanel id="dashboard-chef-profile">
+  <UDashboardPanel id="dashboard-agent-profile">
     <template #header>
-      <UDashboardNavbar title="Chef Profile">
+      <UDashboardNavbar :title="navTitle">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -10,48 +10,55 @@
     </template>
 
     <template #body>
-      <div v-if="hasChefProfile">
+      <div v-if="hasAgentProfile">
         <div v-if="coreProfile" class="space-y-6">
-          <OrganismsProfilesChefEditCore :chef="coreProfile" />
-          <OrganismsProfilesChefEditApp v-if="isTenant" :chef="appProfile" />
+          <OrganismsProfilesAgentEditCore :agent="coreProfile" />
+          <OrganismsProfilesAgentEditApp v-if="isTenant" :agent="appProfile" />
         </div>
 
-        <div v-else class="fallback loading">Chef profile data is loading.</div>
+        <div v-else class="fallback loading">
+          Agent profile data is loading.
+        </div>
       </div>
 
-      <div v-else class="fallback">Chef profile not found.</div>
+      <div v-else class="fallback">Agent profile not found.</div>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useChef } from '../../composables/firestore/profiles/Chef/useChef'
+import { useAgent } from '../../../composables/firestore/profiles/Agent/useAgent'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { agentConfig } from '../../../models/profiles/Agent.model'
+
+const navLabel = agentConfig.navLabel ?? `${agentConfig.profileType} Profile`
+const navIcon = agentConfig.navIcon ?? 'i-lucide-user'
+const navTitle = navLabel
 
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'dashboard-chef-profile',
-    label: 'Chef Profile',
-    icon: 'i-lucide-chef-hat',
+    key: 'dashboard-agent-profile',
+    label: navLabel,
+    icon: navIcon,
     desktop: true,
     layouts: ['dashboard'],
     group: 'profiles',
-    profileId: 'chef',
+    profileId: 'agent',
   },
   requiresAuth: true,
 })
 
-const { coreProfile, appProfile } = useChef()
+const { coreProfile, appProfile } = useAgent()
 const { role, appId } = useFireUXConfig()
 const isTenant = role === 'tenant' && !!appId
 
 const { user } = useUser()
-const hasChefProfile = computed(() => {
+const hasAgentProfile = computed(() => {
   const source = user.value?.profiles
-  return Array.isArray(source) && source.includes('chef')
+  return Array.isArray(source) && source.includes('agent')
 })
 </script>
 

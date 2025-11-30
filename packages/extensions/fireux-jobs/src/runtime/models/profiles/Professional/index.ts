@@ -5,7 +5,6 @@ import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
 import type {
   RelevantExperienceItem,
   OtherExperienceItem,
-} from './Professional/supporting'
 } from './supporting'
 import { professionalConfig } from './supporting'
 

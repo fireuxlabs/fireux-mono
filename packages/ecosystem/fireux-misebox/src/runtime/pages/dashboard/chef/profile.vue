@@ -1,8 +1,8 @@
-<!-- packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue -->
+<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/profile.vue -->
 <template>
-  <UDashboardPanel id="dashboard-supplier-profile">
+  <UDashboardPanel id="dashboard-chef-profile">
     <template #header>
-      <UDashboardNavbar title="Supplier Profile">
+      <UDashboardNavbar title="Chef Profile">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -10,53 +10,48 @@
     </template>
 
     <template #body>
-      <div v-if="hasSupplierProfile">
+      <div v-if="hasChefProfile">
         <div v-if="coreProfile" class="space-y-6">
-          <OrganismsProfilesSupplierEditCore :supplier="coreProfile" />
-          <OrganismsProfilesSupplierEditApp
-            v-if="isTenant"
-            :supplier="appProfile"
-          />
+          <OrganismsProfilesChefEditCore :chef="coreProfile" />
+          <OrganismsProfilesChefEditApp v-if="isTenant" :chef="appProfile" />
         </div>
 
-        <div v-else class="fallback loading">
-          Supplier profile data is loading.
-        </div>
+        <div v-else class="fallback loading">Chef profile data is loading.</div>
       </div>
 
-      <div v-else class="fallback">Supplier profile not found.</div>
+      <div v-else class="fallback">Chef profile not found.</div>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSupplier } from '../../composables/firestore/profiles/Supplier/useSupplier'
+import { useChef } from '../../../composables/firestore/profiles/Chef/useChef'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'dashboard-supplier-profile',
-    label: 'Supplier Profile',
-    icon: 'i-lucide-package',
+    key: 'dashboard-chef-profile',
+    label: 'Chef Profile',
+    icon: 'i-lucide-chef-hat',
     desktop: true,
     layouts: ['dashboard'],
     group: 'profiles',
-    profileId: 'supplier',
+    profileId: 'chef',
   },
   requiresAuth: true,
 })
 
-const { coreProfile, appProfile } = useSupplier()
+const { coreProfile, appProfile } = useChef()
 const { role, appId } = useFireUXConfig()
 const isTenant = role === 'tenant' && !!appId
 
 const { user } = useUser()
-const hasSupplierProfile = computed(() => {
+const hasChefProfile = computed(() => {
   const source = user.value?.profiles
-  return Array.isArray(source) && source.includes('supplier')
+  return Array.isArray(source) && source.includes('chef')
 })
 </script>
 

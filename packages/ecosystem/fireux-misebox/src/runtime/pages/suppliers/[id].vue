@@ -1,7 +1,7 @@
 <template>
   <OrganismsProfilePage
     :config="supplierConfig"
-    edit-path="/dashboard/supplier-profile"
+    edit-path="/dashboard/supplier/profile"
     page-title="Supplier Profile"
     page-description="View supplier profile"
     :fallback-href="'/suppliers'"

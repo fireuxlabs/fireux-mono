@@ -55,6 +55,15 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'dashboard',
+  nav: {
+    key: 'dashboard-professional-extra-2',
+    label: 'My Jobs',
+    icon: 'i-lucide-briefcase-business',
+    desktop: false,
+    mobile: false,
+    group: 'profiles',
+    profileId: 'professional',
+  },
   requiresAuth: true,
 })
 </script>

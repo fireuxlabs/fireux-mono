@@ -8,7 +8,7 @@ export function useSupplierCreate() {
 
   const createSupplier = async () => {
     const result = await ensure()
-    if (import.meta.client) router.push('/dashboard/supplier-profile')
+    if (import.meta.client) router.push('/dashboard/supplier/profile')
     return result
   }
 

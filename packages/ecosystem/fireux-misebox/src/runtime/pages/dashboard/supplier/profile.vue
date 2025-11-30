@@ -1,8 +1,8 @@
-<!-- packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent-profile.vue -->
+<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/profile.vue -->
 <template>
-  <UDashboardPanel id="dashboard-agent-profile">
+  <UDashboardPanel id="dashboard-supplier-profile">
     <template #header>
-      <UDashboardNavbar :title="navTitle">
+      <UDashboardNavbar title="Supplier Profile">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -10,55 +10,53 @@
     </template>
 
     <template #body>
-      <div v-if="hasAgentProfile">
+      <div v-if="hasSupplierProfile">
         <div v-if="coreProfile" class="space-y-6">
-          <OrganismsProfilesAgentEditCore :agent="coreProfile" />
-          <OrganismsProfilesAgentEditApp v-if="isTenant" :agent="appProfile" />
+          <OrganismsProfilesSupplierEditCore :supplier="coreProfile" />
+          <OrganismsProfilesSupplierEditApp
+            v-if="isTenant"
+            :supplier="appProfile"
+          />
         </div>
 
         <div v-else class="fallback loading">
-          Agent profile data is loading.
+          Supplier profile data is loading.
         </div>
       </div>
 
-      <div v-else class="fallback">Agent profile not found.</div>
+      <div v-else class="fallback">Supplier profile not found.</div>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent'
+import { useSupplier } from '../../../composables/firestore/profiles/Supplier/useSupplier'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
-import { agentConfig } from '../../models/profiles/Agent.model'
-
-const navLabel = agentConfig.navLabel ?? `${agentConfig.profileType} Profile`
-const navIcon = agentConfig.navIcon ?? 'i-lucide-user'
-const navTitle = navLabel
 
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'dashboard-agent-profile',
-    label: navLabel,
-    icon: navIcon,
+    key: 'dashboard-supplier-profile',
+    label: 'Supplier Profile',
+    icon: 'i-lucide-package',
     desktop: true,
     layouts: ['dashboard'],
     group: 'profiles',
-    profileId: 'agent',
+    profileId: 'supplier',
   },
   requiresAuth: true,
 })
 
-const { coreProfile, appProfile } = useAgent()
+const { coreProfile, appProfile } = useSupplier()
 const { role, appId } = useFireUXConfig()
 const isTenant = role === 'tenant' && !!appId
 
 const { user } = useUser()
-const hasAgentProfile = computed(() => {
+const hasSupplierProfile = computed(() => {
   const source = user.value?.profiles
-  return Array.isArray(source) && source.includes('agent')
+  return Array.isArray(source) && source.includes('supplier')
 })
 </script>
 

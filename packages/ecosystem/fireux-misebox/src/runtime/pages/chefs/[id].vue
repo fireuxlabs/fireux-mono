@@ -1,7 +1,7 @@
 <template>
   <OrganismsProfilePage
     :config="chefConfig"
-    edit-path="/dashboard/chef-profile"
+    edit-path="/dashboard/chef/profile"
     page-title="Chef Profile"
     page-description="View chef profile"
     :fallback-href="'/chefs'"

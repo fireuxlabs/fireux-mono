@@ -8,7 +8,7 @@ export function useChefCreate() {
 
   const createChef = async () => {
     const result = await ensure()
-    if (import.meta.client) router.push('/dashboard/chef-profile')
+    if (import.meta.client) router.push('/dashboard/chef/profile')
     return result
   }
 

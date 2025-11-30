@@ -12,7 +12,7 @@ export function getJobDashboardRoutes(
       id: 'agent-profile',
       label: 'Agent Profile',
       icon: 'i-lucide-building-2',
-      to: '/dashboard/agent-profile',
+      to: '/dashboard/agent/profile',
     })
   }
 

@@ -20,6 +20,15 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'dashboard',
+  nav: {
+    key: 'dashboard-professional-home',
+    label: 'Professional',
+    icon: 'i-lucide-user-star',
+    desktop: false,
+    mobile: false,
+    group: 'profiles',
+    profileId: 'professional',
+  },
   requiresAuth: true,
 })
 </script>
