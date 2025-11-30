@@ -7,7 +7,7 @@
     :fallback-href="'/suppliers'"
   >
     <template #profile="{ profile }">
-      <OrganismsProfilesSupplierCardsProfile :supplier="profile" />
+      <OrganismsProfilesSupplierProfile :supplier="profile" />
     </template>
   </OrganismsProfilePage>
 </template>

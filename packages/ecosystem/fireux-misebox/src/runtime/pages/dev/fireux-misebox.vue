@@ -17,11 +17,16 @@
           </p>
         </header>
 
-        <OrganismsProfilesChefSectionsSingle
-          :core-profile="chefCoreProfile"
-          :app-profile="chefAppProfile"
-          :pill="chefPill"
-        />
+        <OrganismsProfileSectionsSingle
+          v-if="chefHasProfile"
+          title="Chef profile"
+        >
+          <OrganismsProfilesChefCardsCell v-if="chefCell" :chef="chefCell" />
+          <OrganismsProfilesChefCardsPill v-if="chefPill" :chef="chefPill" />
+        </OrganismsProfileSectionsSingle>
+        <p v-else class="text-sm text-gray-500 dark:text-gray-400">
+          No chef profile loaded.
+        </p>
 
         <DevJsonPanel v-if="chefJson" :data="chefJson" />
 
@@ -120,11 +125,22 @@
           </p>
         </header>
 
-        <OrganismsProfilesSupplierSectionsSingle
-          :core-profile="supplierCoreProfile"
-          :app-profile="supplierAppProfile"
-          :pill="supplierPill"
-        />
+        <OrganismsProfileSectionsSingle
+          v-if="supplierHasProfile"
+          title="Supplier profile"
+        >
+          <OrganismsProfilesSupplierCardsCell
+            v-if="supplierCell"
+            :supplier="supplierCell"
+          />
+          <OrganismsProfilesSupplierCardsPill
+            v-if="supplierPill"
+            :supplier="supplierPill"
+          />
+        </OrganismsProfileSectionsSingle>
+        <p v-else class="text-sm text-gray-500 dark:text-gray-400">
+          No supplier profile loaded.
+        </p>
 
         <DevJsonPanel v-if="supplierJson" :data="supplierJson" />
 
@@ -259,13 +275,18 @@ const {
   coreProfile: chefCoreProfile,
   appProfile: chefAppProfile,
   pill: chefPill,
+  cell: chefCell,
 } = useChef()
 
 const {
   coreProfile: supplierCoreProfile,
   appProfile: supplierAppProfile,
   pill: supplierPill,
+  cell: supplierCell,
 } = useSupplier()
+
+const chefHasProfile = computed(() => Boolean(unref(chefCoreProfile)))
+const supplierHasProfile = computed(() => Boolean(unref(supplierCoreProfile)))
 
 const chefJson = computed(() => {
   const core = unref(chefCoreProfile)

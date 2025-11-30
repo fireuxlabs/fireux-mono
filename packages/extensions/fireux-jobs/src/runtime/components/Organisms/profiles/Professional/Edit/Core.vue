@@ -2,7 +2,6 @@
   <ClientOnly>
     <div v-if="professional" class="space-y-6">
       <UCard>
-        <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
             label="Tagline"
             :firebase-value="tagline"
@@ -19,19 +18,16 @@
             placeholder="Share a quick intro for listings"
             :update-function="onUpdateBioShort"
           />
-        </div>
       </UCard>
 
       <OrganismsProfilesProfessionalFieldsExperienceSection
         label="Relevant Experience"
-        description="Capture the roles that best represent your expertise."
         :items="professional.relevant_experience || []"
         :onSave="onSaveRelevantExperience"
       />
 
       <OrganismsProfilesProfessionalFieldsExperienceSection
         label="Other Experience"
-        description="Track supporting roles, projects, and contract work."
         :items="professional.other_experience || []"
         :onSave="onSaveOtherExperience"
       />

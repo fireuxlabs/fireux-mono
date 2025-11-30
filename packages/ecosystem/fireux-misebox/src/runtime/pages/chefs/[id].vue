@@ -6,9 +6,8 @@
     page-description="View chef profile"
     :fallback-href="'/chefs'"
   >
-    <!-- Custom renderer: reuse your rich card -->
     <template #profile="{ profile }">
-      <OrganismsProfilesChefCardsProfile :chef="profile" />
+      <OrganismsProfilesChefProfile :chef="profile" />
     </template>
   </OrganismsProfilePage>
 </template>
