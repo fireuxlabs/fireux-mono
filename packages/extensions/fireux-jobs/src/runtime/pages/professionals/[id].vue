@@ -1,7 +1,7 @@
 <template>
   <OrganismsProfilePage
     :config="professionalConfig"
-    edit-path="/dashboard/professional-profile"
+    edit-path="/dashboard/professional"
     page-title="Professional Profile"
     page-description="View professional profile"
     :fallback-href="'/professionals'"

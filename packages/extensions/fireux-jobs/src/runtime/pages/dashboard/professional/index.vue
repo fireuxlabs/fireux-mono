@@ -1,4 +1,4 @@
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional-profile.vue -->
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/index.vue -->
 <template>
   <UDashboardPanel id="dashboard-professional-profile">
     <template #header>
@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
+import { useProfessional } from '../../../composables/firestore/profiles/Professional/useProfessional.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 

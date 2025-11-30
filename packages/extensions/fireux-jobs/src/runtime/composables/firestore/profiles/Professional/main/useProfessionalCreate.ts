@@ -8,7 +8,7 @@ export function useProfessionalCreate() {
 
   const createProfessional = async () => {
     const result = await ensure()
-    if (import.meta.client) router.push('/dashboard/professional-profile')
+    if (import.meta.client) router.push('/dashboard/professional')
     return result
   }
 

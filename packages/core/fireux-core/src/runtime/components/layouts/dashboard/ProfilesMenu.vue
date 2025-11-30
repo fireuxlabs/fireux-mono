@@ -9,7 +9,7 @@
     }"
   >
     <UButton
-      :label="collapsed ? undefined : selected?.label"
+      :label="collapsed ? undefined : selected?.label || 'Profiles'"
       :icon="selected?.icon || 'i-lucide-users'"
       :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
       color="neutral"
@@ -27,6 +27,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useState } from '#imports'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { useDashboardNav } from '../../../composables/fireUX/nav/presets.ts'
 import { useUser } from '../../../composables/firestore/core/user/useUser.ts'
@@ -37,6 +38,10 @@ defineProps<{ collapsed?: boolean }>()
 const { desktop } = useDashboardNav()
 const { user } = useUser()
 const router = useRouter()
+const activeProfileState = useState<string | null>(
+  'fireux-dashboard-profile',
+  () => null
+)
 
 const profiles = computed(() =>
   desktop.value.filter((i) => i.group === 'profiles')
@@ -52,13 +57,33 @@ const menu = computed(() => {
 type MenuItem = { label: string; icon?: string; to: string; profileId?: string }
 const selected = ref<MenuItem | null>(null)
 
-watch(
-  menu,
-  (list) => {
-    selected.value = list[0] ?? null
-  },
-  { immediate: true }
-)
+const syncWithProfileState = () => {
+  if (!menu.value.length) {
+    selected.value = null
+    if (activeProfileState.value !== null) {
+      activeProfileState.value = null
+    }
+    return
+  }
+
+  if (activeProfileState.value) {
+    const match = menu.value.find(
+      (item) => item.profileId === activeProfileState.value
+    )
+    if (match) {
+      selected.value = match
+      return
+    }
+  }
+
+  const fallback = menu.value[0]
+  selected.value = fallback
+  if (fallback?.profileId && activeProfileState.value !== fallback.profileId) {
+    activeProfileState.value = fallback.profileId
+  }
+}
+
+watch([menu, activeProfileState], syncWithProfileState, { immediate: true })
 
 const dropdownItems = computed<DropdownMenuItem[][]>(() => [
   menu.value.map((p) => ({
@@ -66,6 +91,7 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
     icon: p.icon,
     onSelect: () => {
       selected.value = p
+      activeProfileState.value = p.profileId ?? null
       router.push(p.to)
     },
   })),

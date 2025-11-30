@@ -15,11 +15,34 @@
 
       <!-- Main nav -->
       <template #default="{ collapsed }">
-        <UNavigationMenu
-          :collapsed="collapsed"
-          :items="primary"
-          orientation="vertical"
-        />
+        <div class="flex flex-col gap-3">
+          <UNavigationMenu
+            v-if="topNav.length"
+            :collapsed="collapsed"
+            :items="topNav"
+            orientation="vertical"
+          />
+
+          <USeparator
+            v-if="topNav.length && (middleNav.length || bottomNav.length)"
+          />
+
+          <UNavigationMenu
+            v-if="middleNav.length"
+            :collapsed="collapsed"
+            :items="middleNav"
+            orientation="vertical"
+          />
+
+          <USeparator v-if="middleNav.length && bottomNav.length" />
+
+          <UNavigationMenu
+            v-if="bottomNav.length"
+            :collapsed="collapsed"
+            :items="bottomNav"
+            orientation="vertical"
+          />
+        </div>
       </template>
 
       <!-- Bottom: user menu -->
@@ -40,8 +63,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useState } from '#imports'
 import { useDashboardNav } from '../composables/fireUX/nav/presets'
 import { useUser } from '../composables/firestore/core/user/useUser'
 import type { UserCard } from '../models/core/user.model.ts'
@@ -74,14 +98,14 @@ const PROFILE_NAV_EXTRAS: Record<string, ProfileNavConfig[]> = {
   professional: [
     {
       key: 'dashboard-professional-extra-1',
-      label: 'Professional item 1',
-      to: '/dashboard/professional-profile#item-1',
+      label: 'My Jobs',
+      to: '/dashboard/professional/my-jobs',
       order: 220,
     },
     {
       key: 'dashboard-professional-extra-2',
-      label: 'Professional item 2',
-      to: '/dashboard/professional-profile#item-2',
+      label: 'Profile Settings',
+      to: '/dashboard/professional',
       order: 221,
     },
   ],
@@ -117,6 +141,10 @@ const PROFILE_NAV_EXTRAS: Record<string, ProfileNavConfig[]> = {
 
 const open = ref(false)
 const route = useRoute()
+const activeProfileState = useState<string | null>(
+  'fireux-dashboard-profile',
+  () => null
+)
 const { desktop } = useDashboardNav()
 const { isAdmin, user, pillProps } = useUser()
 
@@ -131,25 +159,60 @@ const pillUser = computed<UserCard.Pill | undefined>(() => {
   }
 })
 
+const sortNavItems = (items: NavItem[]) =>
+  items.slice().sort((a, b) => {
+    if (a.order !== b.order) return a.order - b.order
+    return a.label.localeCompare(b.label)
+  })
+
+const TOP_PRIORITY = [
+  { key: 'dashboard-app', to: '/dashboard/app' },
+  { key: 'dashboard-home', to: '/dashboard' },
+  { key: 'dashboard-user-profile', to: '/dashboard/user-profile' },
+]
+
+const isTopNavItem = (item: NavItem) =>
+  TOP_PRIORITY.some(
+    ({ key, to }) => (key && item.key === key) || item.to === to
+  )
+
+const topPosition = (item: NavItem) =>
+  TOP_PRIORITY.findIndex(
+    ({ key, to }) => (key && item.key === key) || item.to === to
+  )
+
 const baseNav = computed(() =>
-  desktop.value
-    .filter((i) => i.group !== 'profiles')
-    .filter((item) => {
-      if (item.key === 'dashboard-app' || item.to === '/dashboard/app') {
-        return isAdmin.value
-      }
-      return true
-    })
+  sortNavItems(
+    desktop.value
+      .filter((i) => i.group !== 'profiles')
+      .filter((item) => {
+        if (item.key === 'dashboard-app' || item.to === '/dashboard/app') {
+          return isAdmin.value
+        }
+        return true
+      })
+  )
 )
 
 const profileNavItems = computed(() =>
   desktop.value.filter((item) => item.group === 'profiles')
 )
 
-const activeProfileId = computed(() => {
-  const navMeta = (route.meta as { nav?: { profileId?: string } }).nav
-  return navMeta?.profileId ?? null
-})
+const routeProfileId = computed(
+  () => (route.meta as { nav?: { profileId?: string } }).nav?.profileId ?? null
+)
+
+watch(
+  routeProfileId,
+  (value) => {
+    if (value && activeProfileState.value !== value) {
+      activeProfileState.value = value
+    }
+  },
+  { immediate: true }
+)
+
+const activeProfileId = computed(() => activeProfileState.value)
 
 const activeProfileNav = computed(() =>
   profileNavItems.value.find((item) => item.profileId === activeProfileId.value)
@@ -174,12 +237,16 @@ const profileExtras = computed<NavItem[]>(() => {
   }))
 })
 
-// Show only non-profile items in the main nav plus any active profile extras.
-const primary = computed(() => {
-  const merged = [...baseNav.value, ...profileExtras.value]
-  return merged.sort((a, b) => {
-    if (a.order !== b.order) return a.order - b.order
-    return a.label.localeCompare(b.label)
-  })
-})
+const topNav = computed(() =>
+  baseNav.value
+    .filter(isTopNavItem)
+    .sort((a, b) => topPosition(a) - topPosition(b))
+    .filter((item) => topPosition(item) !== -1)
+)
+
+const bottomNav = computed(() =>
+  baseNav.value.filter((item) => !isTopNavItem(item))
+)
+
+const middleNav = computed(() => sortNavItems(profileExtras.value))
 </script>
