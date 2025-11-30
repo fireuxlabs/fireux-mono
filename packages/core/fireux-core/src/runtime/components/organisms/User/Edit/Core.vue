@@ -1,4 +1,4 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/EditCore.vue -->
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/Edit/Core.vue -->
 <template>
   <ClientOnly>
     <div v-if="user" class="space-y-6">
@@ -73,9 +73,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import { useUser } from '../../../composables/firestore/core/user/useUser.ts'
-import { useToastify } from '../../../composables/ui/useToastify.ts'
-import { useUserFormattingAndValidation } from '../../../composables/firestore/core/user/utils/forms/useUserFormatting.ts'
+import { useUser } from '../../../../composables/firestore/core/user/useUser.ts'
+import { useToastify } from '../../../../composables/ui/useToastify.ts'
+import { useUserFormattingAndValidation } from '../../../../composables/firestore/core/user/utils/forms/useUserFormatting.ts'
 
 const props = defineProps<{ user: User | null }>()
 

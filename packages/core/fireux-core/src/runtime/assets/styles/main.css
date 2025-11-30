@@ -27,3 +27,15 @@ body {
 .page > * + * {
   margin-top: clamp(1.5rem, 3vw, 3rem);
 }
+
+/* Shared fade slide for all toggle transitions */
+.fade-toggle-enter-active,
+.fade-toggle-leave-active {
+  transition: opacity 180ms ease, transform 200ms ease;
+}
+
+.fade-toggle-enter-from,
+.fade-toggle-leave-to {
+  opacity: 0;
+  transform: translateY(0.25rem);
+}

@@ -1,4 +1,4 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/EditApp.vue -->
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/Edit/App.vue -->
 <template>
   <ClientOnly>
     <div class="space-y-6">
@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import { useUser } from '../../../composables/firestore/core/user/useUser.ts'
+import { useUser } from '../../../../composables/firestore/core/user/useUser.ts'
 
 const props = defineProps<{ user: User | null }>()
 
