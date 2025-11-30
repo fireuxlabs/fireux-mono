@@ -49,7 +49,7 @@ export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
       id: 'professional-profile',
       label: 'Professional Profile',
       icon: 'i-lucide-users',
-      to: '/dashboard/professional',
+      to: '/dashboard/professional/profile',
     })
   }
 

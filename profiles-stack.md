@@ -499,7 +499,7 @@ export function useProfessionalInterface(
           {
             id: 'edit-professional',
             label: 'Open dashboard',
-            to: '/dashboard/professional',
+            to: '/dashboard/professional/profile',
             color: 'primary',
           },
         ],
@@ -513,7 +513,7 @@ export function useProfessionalInterface(
         {
           id: 'create-professional',
           label: 'Create Professional Profile',
-          to: '/dashboard/professional',
+          to: '/dashboard/professional/profile',
           color: 'primary',
         },
       ],

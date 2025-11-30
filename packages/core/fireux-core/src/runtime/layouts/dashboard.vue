@@ -105,7 +105,7 @@ const PROFILE_NAV_EXTRAS: Record<string, ProfileNavConfig[]> = {
     {
       key: 'dashboard-professional-extra-2',
       label: 'Profile Settings',
-      to: '/dashboard/professional',
+      to: '/dashboard/professional/profile',
       order: 221,
     },
   ],
