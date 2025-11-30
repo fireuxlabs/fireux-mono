@@ -31,41 +31,19 @@
         </div>
       </UCard>
 
-      <UCard>
-        <div class="space-y-4">
-          <header class="space-y-1">
-            <h3 class="text-base font-semibold text-gray-900">
-              Relevant Experience
-            </h3>
-            <p class="text-sm text-gray-500">
-              Capture the roles that best represent your expertise.
-            </p>
-          </header>
-          <OrganismsProfilesProfessionalFieldsExperienceSection
-            title="Relevant Experience"
-            :items="professional.relevant_experience || []"
-            :onSave="onSaveRelevantExperience"
-          />
-        </div>
-      </UCard>
+      <OrganismsProfilesProfessionalFieldsExperienceSection
+        label="Relevant Experience"
+        description="Capture the roles that best represent your expertise."
+        :items="professional.relevant_experience || []"
+        :onSave="onSaveRelevantExperience"
+      />
 
-      <UCard>
-        <div class="space-y-4">
-          <header class="space-y-1">
-            <h3 class="text-base font-semibold text-gray-900">
-              Other Experience
-            </h3>
-            <p class="text-sm text-gray-500">
-              Track supporting roles, projects, and contract work.
-            </p>
-          </header>
-          <OrganismsProfilesProfessionalFieldsExperienceSection
-            title="Other Experience"
-            :items="professional.other_experience || []"
-            :onSave="onSaveOtherExperience"
-          />
-        </div>
-      </UCard>
+      <OrganismsProfilesProfessionalFieldsExperienceSection
+        label="Other Experience"
+        description="Track supporting roles, projects, and contract work."
+        :items="professional.other_experience || []"
+        :onSave="onSaveOtherExperience"
+      />
     </div>
 
     <MoleculesNotFound

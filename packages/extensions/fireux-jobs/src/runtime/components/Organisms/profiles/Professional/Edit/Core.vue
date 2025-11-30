@@ -22,25 +22,19 @@
         </div>
       </UCard>
 
-      <UCard>
-        <div>
-          <OrganismsProfilesProfessionalFieldsExperienceSection
-            title="Relevant Experience"
-            :items="professional.relevant_experience || []"
-            :onSave="onSaveRelevantExperience"
-          />
-        </div>
-      </UCard>
+      <OrganismsProfilesProfessionalFieldsExperienceSection
+        label="Relevant Experience"
+        description="Capture the roles that best represent your expertise."
+        :items="professional.relevant_experience || []"
+        :onSave="onSaveRelevantExperience"
+      />
 
-      <UCard>
-        <div>
-          <OrganismsProfilesProfessionalFieldsExperienceSection
-            title="Other Experience"
-            :items="professional.other_experience || []"
-            :onSave="onSaveOtherExperience"
-          />
-        </div>
-      </UCard>
+      <OrganismsProfilesProfessionalFieldsExperienceSection
+        label="Other Experience"
+        description="Track supporting roles, projects, and contract work."
+        :items="professional.other_experience || []"
+        :onSave="onSaveOtherExperience"
+      />
     </div>
 
     <MoleculesNotFound

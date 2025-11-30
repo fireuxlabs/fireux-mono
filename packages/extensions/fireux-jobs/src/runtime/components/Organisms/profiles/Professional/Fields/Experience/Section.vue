@@ -1,58 +1,69 @@
 <template>
-  <section class="space-y-6">
-    <h3 class="text-base font-semibold">{{ title }}</h3>
-
-    <div class="space-y-6">
-      <MoleculesFormsFirestoreObjectArray
-        ref="listRef"
-        :label="title"
-        :firebase-value="items"
-        :update-function="onSave"
-      >
-        <template #display="{ item, index, startEditing }">
-          <OrganismsProfilesProfessionalFieldsExperienceField
-            :item="item"
-            :index="index"
-            mode="display"
-            @edit="startEditing?.()"
-          />
-        </template>
-
-        <template #edit="{ item, index, remove }">
-          <OrganismsProfilesProfessionalFieldsExperienceField
-            :item="item"
-            :index="index"
-            mode="edit"
-            :remove="remove"
-            @save="listRef?.saveItemEditing?.()"
-            @cancel="listRef?.cancelItemEditing?.()"
-            @remove="() => handleRemove(index, remove)"
-          />
-        </template>
-
-        <template #create="{ push }">
-          <OrganismsProfilesProfessionalFieldsExperienceCreate
-            :loading="isSavingNew"
-            @confirm="(payload: ExperienceItem) => handleCreateSave(payload, push as (i: ExperienceItem) => void)"
-            @clear="onCreateClear"
-          />
-        </template>
-      </MoleculesFormsFirestoreObjectArray>
+  <section class="space-y-4">
+    <div v-if="hasHeader" class="space-y-1">
+      <h3 v-if="label" class="text-base font-semibold text-gray-900">
+        {{ label }}
+      </h3>
+      <p v-if="description" class="text-sm text-gray-500">
+        {{ description }}
+      </p>
     </div>
+
+    <MoleculesFormsFirestoreObjectArray
+      ref="listRef"
+      :label="arrayLabel"
+      :firebase-value="items"
+      :update-function="onSave"
+    >
+      <template #display="{ item, index, startEditing }">
+        <OrganismsProfilesProfessionalFieldsExperienceField
+          :item="item"
+          :index="index"
+          mode="display"
+          @edit="startEditing?.()"
+        />
+      </template>
+
+      <template #edit="{ item, index, remove }">
+        <OrganismsProfilesProfessionalFieldsExperienceField
+          :item="item"
+          :index="index"
+          mode="edit"
+          :remove="remove"
+          @save="listRef?.saveItemEditing?.()"
+          @cancel="listRef?.cancelItemEditing?.()"
+          @remove="() => handleRemove(index, remove)"
+        />
+      </template>
+
+      <template #create="{ push }">
+        <OrganismsProfilesProfessionalFieldsExperienceCreate
+          :loading="isSavingNew"
+          @confirm="(payload: ExperienceItem) => handleCreateSave(payload, push as (i: ExperienceItem) => void)"
+          @clear="onCreateClear"
+        />
+      </template>
+    </MoleculesFormsFirestoreObjectArray>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import type { ExperienceItem } from '../../../../../../models/profiles/Professional.model'
 
 const props = defineProps<{
-  title: string
   items: ExperienceItem[]
   onSave: (items: ExperienceItem[]) => Promise<void> | void
+  label?: string
+  description?: string
+  listLabel?: string
 }>()
 
-const { title, items, onSave } = toRefs(props)
+const { items, onSave, label, description, listLabel } = toRefs(props)
+const hasHeader = computed(
+  () => Boolean(label?.value) || Boolean(description?.value)
+)
+const arrayLabel = computed(() => listLabel?.value ?? undefined)
 
 type ListRef = {
   saveItemEditing?: () => Promise<void> | void
