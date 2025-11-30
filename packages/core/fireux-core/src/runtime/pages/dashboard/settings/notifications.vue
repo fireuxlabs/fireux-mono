@@ -55,25 +55,43 @@ function onChange() {
 </script>
 
 <template>
-  <div v-for="(section, index) in sections" :key="index">
-    <UPageCard
-      :title="section.title"
-      :description="section.description"
-      variant="naked"
-      class="mb-4"
-    />
+  <UDashboardPanel id="dashboard-settings-notifications">
+    <template #header>
+      <UDashboardNavbar title="Notification settings">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-    <UPageCard variant="subtle" :ui="{ container: 'divide-y divide-default' }">
-      <UFormField
-        v-for="field in section.fields"
-        :key="field.name"
-        :name="field.name"
-        :label="field.label"
-        :description="field.description"
-        class="flex items-center justify-between not-last:pb-4 gap-2"
-      >
-        <USwitch v-model="state[field.name]" @update:model-value="onChange" />
-      </UFormField>
-    </UPageCard>
-  </div>
+    <template #body>
+      <div v-for="(section, index) in sections" :key="index">
+        <UPageCard
+          :title="section.title"
+          :description="section.description"
+          variant="naked"
+          class="mb-4"
+        />
+
+        <UPageCard
+          variant="subtle"
+          :ui="{ container: 'divide-y divide-default' }"
+        >
+          <UFormField
+            v-for="field in section.fields"
+            :key="field.name"
+            :name="field.name"
+            :label="field.label"
+            :description="field.description"
+            class="flex items-center justify-between not-last:pb-4 gap-2"
+          >
+            <USwitch
+              v-model="state[field.name]"
+              @update:model-value="onChange"
+            />
+          </UFormField>
+        </UPageCard>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

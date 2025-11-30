@@ -1,17 +1,27 @@
 <!-- packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue -->
 <template>
-  <UPageCard v-if="hasChefProfile" variant="subtle">
-    <div v-if="coreProfile" class="space-y-6">
-      <OrganismsProfilesChefEditCore :chef="coreProfile" />
-      <OrganismsProfilesChefEditApp v-if="isTenant" :chef="appProfile" />
-    </div>
+  <UDashboardPanel id="dashboard-chef-profile">
+    <template #header>
+      <UDashboardNavbar title="Chef Profile">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-    <div v-else class="fallback loading">Chef profile data is loading.</div>
-  </UPageCard>
+    <template #body>
+      <div v-if="hasChefProfile">
+        <div v-if="coreProfile" class="space-y-6">
+          <OrganismsProfilesChefEditCore :chef="coreProfile" />
+          <OrganismsProfilesChefEditApp v-if="isTenant" :chef="appProfile" />
+        </div>
 
-  <UCard v-else>
-    <p class="fallback">Chef profile not found.</p>
-  </UCard>
+        <div v-else class="fallback loading">Chef profile data is loading.</div>
+      </div>
+
+      <div v-else class="fallback">Chef profile not found.</div>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">

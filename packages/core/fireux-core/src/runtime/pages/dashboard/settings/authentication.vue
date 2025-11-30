@@ -27,36 +27,48 @@ const validate = (state: Partial<PasswordSchema>): FormError[] => {
 
 <template>
   <!-- Note: Consider a future 2FA section adjacent to password change if the product requires it. -->
-  <UPageCard
-    title="Password"
-    description="Confirm your current password before setting a new one."
-    variant="subtle"
-  >
-    <UForm
-      :schema="passwordSchema"
-      :state="password"
-      :validate="validate"
-      class="flex flex-col gap-4 max-w-xs"
-    >
-      <UFormField name="current">
-        <UInput
-          v-model="password.current"
-          type="password"
-          placeholder="Current password"
-          class="w-full"
-        />
-      </UFormField>
+  <UDashboardPanel id="dashboard-settings-authentication">
+    <template #header>
+      <UDashboardNavbar title="Authentication">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-      <UFormField name="new">
-        <UInput
-          v-model="password.new"
-          type="password"
-          placeholder="New password"
-          class="w-full"
-        />
-      </UFormField>
+    <template #body>
+      <UPageCard
+        title="Password"
+        description="Confirm your current password before setting a new one."
+        variant="subtle"
+      >
+        <UForm
+          :schema="passwordSchema"
+          :state="password"
+          :validate="validate"
+          class="flex flex-col gap-4 max-w-xs"
+        >
+          <UFormField name="current">
+            <UInput
+              v-model="password.current"
+              type="password"
+              placeholder="Current password"
+              class="w-full"
+            />
+          </UFormField>
 
-      <UButton label="Update" class="w-fit" type="submit" />
-    </UForm>
-  </UPageCard>
+          <UFormField name="new">
+            <UInput
+              v-model="password.new"
+              type="password"
+              placeholder="New password"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UButton label="Update" class="w-fit" type="submit" />
+        </UForm>
+      </UPageCard>
+    </template>
+  </UDashboardPanel>
 </template>

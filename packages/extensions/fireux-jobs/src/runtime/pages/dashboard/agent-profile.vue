@@ -1,17 +1,29 @@
 <!-- packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent-profile.vue -->
 <template>
-  <UPageCard v-if="hasAgentProfile" variant="subtle">
-    <div v-if="coreProfile" class="space-y-6">
-      <OrganismsProfilesAgentEditCore :agent="coreProfile" />
-      <OrganismsProfilesAgentEditApp v-if="isTenant" :agent="appProfile" />
-    </div>
+  <UDashboardPanel id="dashboard-agent-profile">
+    <template #header>
+      <UDashboardNavbar title="Agent Profile">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-    <div v-else class="fallback loading">Agent profile data is loading.</div>
-  </UPageCard>
+    <template #body>
+      <div v-if="hasAgentProfile">
+        <div v-if="coreProfile" class="space-y-6">
+          <OrganismsProfilesAgentEditCore :agent="coreProfile" />
+          <OrganismsProfilesAgentEditApp v-if="isTenant" :agent="appProfile" />
+        </div>
 
-  <UCard v-else>
-    <p class="fallback">Agent profile not found.</p>
-  </UCard>
+        <div v-else class="fallback loading">
+          Agent profile data is loading.
+        </div>
+      </div>
+
+      <div v-else class="fallback">Agent profile not found.</div>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">

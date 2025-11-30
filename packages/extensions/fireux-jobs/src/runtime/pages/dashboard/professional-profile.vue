@@ -1,22 +1,32 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional-profile.vue -->
 <template>
-  <UPageCard v-if="hasProfessionalProfile" variant="subtle">
-    <div v-if="coreProfile" class="space-y-6">
-      <OrganismsProfilesProfessionalEditCore :professional="coreProfile" />
-      <OrganismsProfilesProfessionalEditApp
-        v-if="isTenant"
-        :professional="appProfile"
-      />
-    </div>
+  <UDashboardPanel id="dashboard-professional-profile">
+    <template #header>
+      <UDashboardNavbar title="Professional Profile">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-    <div v-else class="fallback loading">
-      Professional profile data is loading.
-    </div>
-  </UPageCard>
+    <template #body>
+      <div v-if="hasProfessionalProfile">
+        <div v-if="coreProfile" class="space-y-6">
+          <OrganismsProfilesProfessionalEditCore :professional="coreProfile" />
+          <OrganismsProfilesProfessionalEditApp
+            v-if="isTenant"
+            :professional="appProfile"
+          />
+        </div>
 
-  <UCard v-else>
-    <p class="fallback">Professional profile not found.</p>
-  </UCard>
+        <div v-else class="fallback loading">
+          Professional profile data is loading.
+        </div>
+      </div>
+
+      <div v-else class="fallback">Professional profile not found.</div>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">

@@ -1,52 +1,64 @@
 <!-- packages/core/fireux-core/src/runtime/pages/dashboard/app.vue -->
 <template>
-  <div class="space-y-6">
-    <UPageCard v-if="isAdmin && currentApp" variant="subtle">
-      <div class="grid gap-6 lg:grid-cols-2">
-        <div class="space-y-4">
-          <div class="grid gap-4 sm:grid-cols-2">
-            <OrganismsAppCardsPill :app="currentAppPill" />
-            <OrganismsAppCardsCell :app="currentApp" :to="appLink" />
+  <UDashboardPanel id="dashboard-app">
+    <template #header>
+      <UDashboardNavbar title="App Settings">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
+      </UDashboardNavbar>
+    </template>
+
+    <template #body>
+      <div class="space-y-6">
+        <UCard v-if="isAdmin && currentApp" variant="subtle">
+          <div class="grid gap-6 lg:grid-cols-2">
+            <div class="space-y-4">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <OrganismsAppCardsPill :app="currentAppPill" />
+                <OrganismsAppCardsCell :app="currentApp" :to="appLink" />
+              </div>
+              <OrganismsAppCardsProfile :app="currentApp" />
+            </div>
+
+            <OrganismsAppEdit :app="currentApp" />
           </div>
-          <OrganismsAppCardsProfile :app="currentApp" />
-        </div>
+        </UCard>
 
-        <OrganismsAppEdit :app="currentApp" />
-      </div>
-    </UPageCard>
+        <UCard v-else-if="isAdmin && !isLoading">
+          <div class="py-8 text-center space-y-2">
+            <UIcon
+              name="i-heroicons-cog-8-tooth"
+              class="mx-auto h-12 w-12 text-gray-400"
+            />
+            <p class="text-sm text-gray-500">App settings not found.</p>
+          </div>
+        </UCard>
 
-    <UCard v-else-if="isAdmin && !isLoading">
-      <div class="py-8 text-center space-y-2">
-        <UIcon
-          name="i-heroicons-cog-8-tooth"
-          class="mx-auto h-12 w-12 text-gray-400"
-        />
-        <p class="text-sm text-gray-500">App settings not found.</p>
-      </div>
-    </UCard>
+        <UCard v-else-if="!isLoading && !isAdmin">
+          <div class="py-8 text-center space-y-2">
+            <UIcon
+              name="i-heroicons-lock-closed"
+              class="mx-auto h-12 w-12 text-gray-400"
+            />
+            <p class="text-sm text-gray-500">
+              You don’t have permission to edit this app.
+            </p>
+          </div>
+        </UCard>
 
-    <UCard v-else-if="!isLoading && !isAdmin">
-      <div class="py-8 text-center space-y-2">
-        <UIcon
-          name="i-heroicons-lock-closed"
-          class="mx-auto h-12 w-12 text-gray-400"
-        />
-        <p class="text-sm text-gray-500">
-          You don’t have permission to edit this app.
-        </p>
+        <UCard v-else>
+          <div class="py-8 text-center space-y-2">
+            <UIcon
+              name="i-heroicons-arrow-path"
+              class="mx-auto h-12 w-12 animate-spin text-gray-300"
+            />
+            <p class="text-sm text-gray-500">Loading app settings…</p>
+          </div>
+        </UCard>
       </div>
-    </UCard>
-
-    <UCard v-else>
-      <div class="py-8 text-center space-y-2">
-        <UIcon
-          name="i-heroicons-arrow-path"
-          class="mx-auto h-12 w-12 animate-spin text-gray-300"
-        />
-        <p class="text-sm text-gray-500">Loading app settings…</p>
-      </div>
-    </UCard>
-  </div>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">

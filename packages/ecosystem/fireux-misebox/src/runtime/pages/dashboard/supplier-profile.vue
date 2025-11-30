@@ -1,20 +1,32 @@
 <!-- packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier-profile.vue -->
 <template>
-  <UPageCard v-if="hasSupplierProfile" variant="subtle">
-    <div v-if="coreProfile" class="space-y-6">
-      <OrganismsProfilesSupplierEditCore :supplier="coreProfile" />
-      <OrganismsProfilesSupplierEditApp
-        v-if="isTenant"
-        :supplier="appProfile"
-      />
-    </div>
+  <UDashboardPanel id="dashboard-supplier-profile">
+    <template #header>
+      <UDashboardNavbar title="Supplier Profile">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-    <div v-else class="fallback loading">Supplier profile data is loading.</div>
-  </UPageCard>
+    <template #body>
+      <div v-if="hasSupplierProfile">
+        <div v-if="coreProfile" class="space-y-6">
+          <OrganismsProfilesSupplierEditCore :supplier="coreProfile" />
+          <OrganismsProfilesSupplierEditApp
+            v-if="isTenant"
+            :supplier="appProfile"
+          />
+        </div>
 
-  <UCard v-else>
-    <p class="fallback">Supplier profile not found.</p>
-  </UCard>
+        <div v-else class="fallback loading">
+          Supplier profile data is loading.
+        </div>
+      </div>
+
+      <div v-else class="fallback">Supplier profile not found.</div>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
