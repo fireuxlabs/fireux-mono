@@ -33,7 +33,9 @@
     </UDashboardSidebar>
 
     <!-- Page content -->
-    <div class="p-4 w-full h-screen overflow-y-auto">
+    <div
+      class="p-4 w-full h-screen overflow-y-auto bg-elevated/50"
+    >
       <NuxtPage />
     </div>
   </UDashboardGroup>

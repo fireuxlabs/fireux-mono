@@ -60,15 +60,18 @@
 import { computed } from 'vue'
 import { useJobCollection } from '../../../../composables/firestore/jobs/main/useJobCollection.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
 import type { Job } from '../../../../types/job.model.ts'
 
 const { jobs: allJobs, pending: isPending } = useJobCollection()
 const { coreUser } = useUser()
+const { uid: authUid } = useAuth()
 
 const jobs = computed<Job[]>(() => {
-  const uid = coreUser.value?.uid
-  if (!uid) return []
-  return (allJobs.value ?? []).filter((job) => job.created_by === uid)
+  const ownerId =
+    coreUser.value?.uid ?? coreUser.value?.id ?? authUid.value ?? null
+  if (!ownerId) return []
+  return (allJobs.value ?? []).filter((job) => job.created_by === ownerId)
 })
 
 const pending = computed<boolean>(() => isPending.value)
