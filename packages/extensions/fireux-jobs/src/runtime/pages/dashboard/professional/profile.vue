@@ -11,7 +11,10 @@
 
     <template #body>
       <div v-if="hasProfessionalProfile">
-        <div v-if="coreProfile" class="space-y-6">
+        <div
+          v-if="coreProfile"
+          class="space-y-6 px-0 py-0 sm:px-4 sm:py-4 lg:px-6"
+        >
           <OrganismsProfilesProfessionalEditCore :professional="coreProfile" />
           <OrganismsProfilesProfessionalEditApp
             v-if="isTenant"
@@ -19,12 +22,14 @@
           />
         </div>
 
-        <div v-else class="fallback loading">
+        <div v-else class="fallback loading px-0 py-0 sm:px-4 sm:py-4">
           Professional profile data is loading.
         </div>
       </div>
 
-      <div v-else class="fallback">Professional profile not found.</div>
+      <div class="fallback px-0 py-0 sm:px-4 sm:py-4" v-else>
+        Professional profile not found.
+      </div>
     </template>
   </UDashboardPanel>
 </template>
@@ -69,7 +74,6 @@ const hasProfessionalProfile = computed(() => {
 <style scoped>
 .fallback {
   margin: 0;
-  padding: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.875rem;

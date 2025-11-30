@@ -19,7 +19,8 @@
         />
         <UCard>
           <p class="text-sm text-muted">
-            Placeholder content. Replace with gig pipeline / analytics when ready.
+            Placeholder content. Replace with gig pipeline / analytics when
+            ready.
           </p>
         </UCard>
       </section>

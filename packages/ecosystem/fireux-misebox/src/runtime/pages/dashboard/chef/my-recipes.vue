@@ -19,7 +19,8 @@
         />
         <UCard>
           <p class="text-sm text-muted">
-            Placeholder content. Wire this card to your recipe store when available.
+            Placeholder content. Wire this card to your recipe store when
+            available.
           </p>
         </UCard>
       </section>

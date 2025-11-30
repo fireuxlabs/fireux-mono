@@ -19,7 +19,8 @@
         />
         <UCard>
           <p class="text-sm text-muted">
-            Placeholder content. Replace with supply chain data when the API is ready.
+            Placeholder content. Replace with supply chain data when the API is
+            ready.
           </p>
         </UCard>
       </section>
