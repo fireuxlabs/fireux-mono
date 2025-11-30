@@ -179,11 +179,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import ProfileExperienceSection from './Profile/ExperienceSection.vue'
-import ProfileEducationSection from './Profile/EducationSection.vue'
-import ProfileCertificationSection from './Profile/CertificationSection.vue'
-import ProfileProjectSection from './Profile/ProjectSection.vue'
-import ProfileVolunteerSection from './Profile/VolunteerSection.vue'
+import ProfileExperienceSection from '../shared/professional/ExperienceSection.vue'
+import ProfileEducationSection from '../shared/professional/EducationSection.vue'
+import ProfileCertificationSection from '../shared/professional/CertificationSection.vue'
+import ProfileProjectSection from '../shared/professional/ProjectSection.vue'
+import ProfileVolunteerSection from '../shared/professional/VolunteerSection.vue'
 
 interface ProfessionalLanguage {
   language: string

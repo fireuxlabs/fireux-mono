@@ -42,20 +42,16 @@
 import { ref } from 'vue'
 import { useSupplierQuickCreate } from '../../../../../composables/firestore/profiles/Supplier/main/useSupplierQuickCreate'
 
-// Emits
 const emit = defineEmits<{
   cancel: []
   created: [supplier: any]
 }>()
 
-// Composables
 const { createQuickSupplier, creating, createError, createdSupplier } =
   useSupplierQuickCreate()
 
-// Form data
 const supplierName = ref('')
 
-// Methods
 const handleSubmit = async () => {
   if (!supplierName.value.trim()) return
 
@@ -68,8 +64,6 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-/* Styles moved to supplier.scss in misebox package */
-/* This ensures domain-specific styling is properly scoped */
 .quick-form-content {
   display: flex;
   gap: 1rem;
