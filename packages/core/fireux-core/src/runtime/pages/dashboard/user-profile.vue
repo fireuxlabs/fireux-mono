@@ -17,11 +17,7 @@
             @click="toggleSection"
           >
             <span class="hidden sm:inline">
-              {{
-                activeSection === 'preview'
-                  ? 'Show editor'
-                  : 'Show preview'
-              }}
+              {{ activeSection === 'preview' ? 'Show editor' : 'Show preview' }}
             </span>
           </UButton>
         </template>
