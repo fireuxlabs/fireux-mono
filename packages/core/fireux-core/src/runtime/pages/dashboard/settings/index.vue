@@ -12,6 +12,7 @@ definePageMeta({
     key: 'dashboard-settings',
     label: 'Settings',
     icon: 'i-lucide-settings',
+    order: 1000,
     desktop: true,
     layouts: ['dashboard'],
   },

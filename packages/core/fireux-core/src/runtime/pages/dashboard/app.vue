@@ -91,10 +91,12 @@ definePageMeta({
     key: 'dashboard-app',
     label: 'App Settings',
     icon: 'i-lucide-badge-check',
+    order: 10,
     desktop: true,
     layouts: ['dashboard'],
   },
   requiresAuth: true,
+  roles: ['admin'],
 })
 
 if (import.meta.client) {

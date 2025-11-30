@@ -72,6 +72,7 @@ definePageMeta({
     key: 'dashboard-user-profile',
     label: 'User Profile',
     icon: 'i-lucide-user',
+    order: 30,
     desktop: true,
     layouts: ['dashboard'],
   },

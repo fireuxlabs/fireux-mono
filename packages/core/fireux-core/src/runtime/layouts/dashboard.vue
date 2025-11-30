@@ -41,13 +41,82 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useDashboardNav } from '../composables/fireUX/nav/presets'
 import { useUser } from '../composables/firestore/core/user/useUser'
 import type { UserCard } from '../models/core/user.model.ts'
+import type { NavItem } from '../types/nav'
 
 defineOptions({ name: 'CoreDashboard' })
 
+type ProfileNavConfig = {
+  key: string
+  label: string
+  to: string
+  order?: number
+}
+
+const PROFILE_NAV_EXTRAS: Record<string, ProfileNavConfig[]> = {
+  agent: [
+    {
+      key: 'dashboard-agent-extra-1',
+      label: 'Agent item 1',
+      to: '/dashboard/agent-profile#item-1',
+      order: 210,
+    },
+    {
+      key: 'dashboard-agent-extra-2',
+      label: 'Agent item 2',
+      to: '/dashboard/agent-profile#item-2',
+      order: 211,
+    },
+  ],
+  professional: [
+    {
+      key: 'dashboard-professional-extra-1',
+      label: 'Professional item 1',
+      to: '/dashboard/professional-profile#item-1',
+      order: 220,
+    },
+    {
+      key: 'dashboard-professional-extra-2',
+      label: 'Professional item 2',
+      to: '/dashboard/professional-profile#item-2',
+      order: 221,
+    },
+  ],
+  chef: [
+    {
+      key: 'dashboard-chef-extra-1',
+      label: 'Chef item 1',
+      to: '/dashboard/chef-profile#item-1',
+      order: 230,
+    },
+    {
+      key: 'dashboard-chef-extra-2',
+      label: 'Chef item 2',
+      to: '/dashboard/chef-profile#item-2',
+      order: 231,
+    },
+  ],
+  supplier: [
+    {
+      key: 'dashboard-supplier-extra-1',
+      label: 'Supplier item 1',
+      to: '/dashboard/supplier-profile#item-1',
+      order: 240,
+    },
+    {
+      key: 'dashboard-supplier-extra-2',
+      label: 'Supplier item 2',
+      to: '/dashboard/supplier-profile#item-2',
+      order: 241,
+    },
+  ],
+}
+
 const open = ref(false)
+const route = useRoute()
 const { desktop } = useDashboardNav()
 const { isAdmin, user, pillProps } = useUser()
 
@@ -62,8 +131,7 @@ const pillUser = computed<UserCard.Pill | undefined>(() => {
   }
 })
 
-// Show only non-profile items in the main nav; child manages profiles.
-const primary = computed(() =>
+const baseNav = computed(() =>
   desktop.value
     .filter((i) => i.group !== 'profiles')
     .filter((item) => {
@@ -73,4 +141,45 @@ const primary = computed(() =>
       return true
     })
 )
+
+const profileNavItems = computed(() =>
+  desktop.value.filter((item) => item.group === 'profiles')
+)
+
+const activeProfileId = computed(() => {
+  const navMeta = (route.meta as { nav?: { profileId?: string } }).nav
+  return navMeta?.profileId ?? null
+})
+
+const activeProfileNav = computed(() =>
+  profileNavItems.value.find((item) => item.profileId === activeProfileId.value)
+)
+
+const profileExtras = computed<NavItem[]>(() => {
+  const profileId = activeProfileId.value
+  if (!profileId) return []
+  const extras = PROFILE_NAV_EXTRAS[profileId] ?? []
+  const profileIcon = activeProfileNav.value?.icon ?? 'i-lucide-user'
+  return extras.map((item, index) => ({
+    key: item.key,
+    label: item.label,
+    icon: profileIcon,
+    to: item.to,
+    group: 'profile-extra',
+    profileId,
+    order: item.order ?? 300 + index,
+    desktop: true,
+    mobile: false,
+    layouts: ['dashboard'],
+  }))
+})
+
+// Show only non-profile items in the main nav plus any active profile extras.
+const primary = computed(() => {
+  const merged = [...baseNav.value, ...profileExtras.value]
+  return merged.sort((a, b) => {
+    if (a.order !== b.order) return a.order - b.order
+    return a.label.localeCompare(b.label)
+  })
+})
 </script>

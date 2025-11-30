@@ -124,6 +124,7 @@ definePageMeta({
     key: 'dashboard-home',
     label: 'Overview',
     icon: 'i-lucide-layout-dashboard',
+    order: 20,
     desktop: true,
     mobile: true,
     layouts: ['dashboard'],
