@@ -45,4 +45,10 @@ export interface ProfileConfig {
 
   /** Optional CTA text for UI when profile missing */
   cta?: string
+
+  /** Optional label override for nav/dropdown contexts */
+  navLabel?: string
+
+  /** Optional icon to reuse across nav/dropdown contexts */
+  navIcon?: string
 }

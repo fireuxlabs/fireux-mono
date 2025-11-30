@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="dashboard-professional-profile">
     <template #header>
-      <UDashboardNavbar title="Professional Profile">
+      <UDashboardNavbar :title="navTitle">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -34,13 +34,19 @@ import { computed } from 'vue'
 import { useProfessional } from '../../../composables/firestore/profiles/Professional/useProfessional.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { professionalConfig } from '../../../models/profiles/Professional/supporting'
+
+const navLabel =
+  professionalConfig.navLabel ?? `${professionalConfig.profileType} Profile`
+const navIcon = professionalConfig.navIcon ?? 'i-lucide-user'
+const navTitle = navLabel
 
 definePageMeta({
   layout: 'dashboard',
   nav: {
     key: 'dashboard-professional-profile',
-    label: 'Professional Profile',
-    icon: 'i-lucide-user-round-cog',
+    label: navLabel,
+    icon: navIcon,
     desktop: true,
     layouts: ['dashboard'],
     group: 'profiles',

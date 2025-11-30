@@ -59,4 +59,6 @@ export const professionalConfig: ProfileConfig = {
   collectionName: 'professionals',
   profileType: 'Professional',
   cta: 'Create your Professional profile to appear in listings.',
+  navLabel: 'Professional',
+  navIcon: 'i-lucide-user-star',
 } as const

@@ -78,6 +78,7 @@ type ProfileNavConfig = {
   label: string
   to: string
   order?: number
+  icon?: string
 }
 
 const PROFILE_NAV_EXTRAS: Record<string, ProfileNavConfig[]> = {
@@ -87,26 +88,37 @@ const PROFILE_NAV_EXTRAS: Record<string, ProfileNavConfig[]> = {
       label: 'Agent item 1',
       to: '/dashboard/agent-profile#item-1',
       order: 210,
+      icon: 'i-lucide-shield-user',
     },
     {
       key: 'dashboard-agent-extra-2',
       label: 'Agent item 2',
       to: '/dashboard/agent-profile#item-2',
       order: 211,
+      icon: 'i-lucide-shield-user',
     },
   ],
   professional: [
     {
-      key: 'dashboard-professional-extra-1',
-      label: 'My Jobs',
-      to: '/dashboard/professional/my-jobs',
+      key: 'dashboard-professional-home',
+      label: 'Professional',
+      to: '/dashboard/professional',
       order: 220,
+      icon: 'i-lucide-user-star',
+    },
+    {
+      key: 'dashboard-professional-extra-1',
+      label: 'Profile',
+      to: '/dashboard/professional/profile',
+      order: 221,
+      icon: 'i-lucide-file-user',
     },
     {
       key: 'dashboard-professional-extra-2',
-      label: 'Profile Settings',
-      to: '/dashboard/professional/profile',
-      order: 221,
+      label: 'My Jobs',
+      to: '/dashboard/professional/my-jobs',
+      order: 222,
+      icon: 'i-lucide-briefcase-business',
     },
   ],
   chef: [
@@ -226,7 +238,7 @@ const profileExtras = computed<NavItem[]>(() => {
   return extras.map((item, index) => ({
     key: item.key,
     label: item.label,
-    icon: profileIcon,
+    icon: item.icon ?? profileIcon,
     to: item.to,
     group: 'profile-extra',
     profileId,

@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="dashboard-agent-profile">
     <template #header>
-      <UDashboardNavbar title="Agent Profile">
+      <UDashboardNavbar :title="navTitle">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -31,13 +31,18 @@ import { computed } from 'vue'
 import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { agentConfig } from '../../models/profiles/Agent.model'
+
+const navLabel = agentConfig.navLabel ?? `${agentConfig.profileType} Profile`
+const navIcon = agentConfig.navIcon ?? 'i-lucide-user'
+const navTitle = navLabel
 
 definePageMeta({
   layout: 'dashboard',
   nav: {
     key: 'dashboard-agent-profile',
-    label: 'Agent Profile',
-    icon: 'i-lucide-briefcase-business',
+    label: navLabel,
+    icon: navIcon,
     desktop: true,
     layouts: ['dashboard'],
     group: 'profiles',
