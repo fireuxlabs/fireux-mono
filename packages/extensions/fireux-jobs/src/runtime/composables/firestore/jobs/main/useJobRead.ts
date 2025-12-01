@@ -1,7 +1,7 @@
 import { doc } from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'vuefire'
-import type { Job } from '../../../../types/job.model.ts'
+import type { Job } from '../../../../models/job.model.ts'
 
 export function useJobRead(
   id: string | null | undefined | Ref<string | null | undefined>

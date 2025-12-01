@@ -87,7 +87,7 @@ import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
 import type {
   Job,
   JobStatus,
-} from '../../../../../../extensions/fireux-jobs/src/runtime/types/job.model.ts'
+} from '../../../../../../extensions/fireux-jobs/src/runtime/models/job.model.ts'
 
 definePageMeta({
   layout: 'default',

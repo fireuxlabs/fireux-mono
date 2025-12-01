@@ -1,4 +1,4 @@
-import type { Job } from '../../../../types/job.model.ts'
+import type { Job } from '../../../../models/job.model.ts'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager.ts'
 
 export function useJobUpdate() {

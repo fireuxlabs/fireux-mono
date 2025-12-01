@@ -18,13 +18,20 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
         meta: [
           { name: 'theme-color', content: themeColor },
           { name: 'apple-mobile-web-app-capable', content: 'yes' },
-          { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+          {
+            name: 'apple-mobile-web-app-status-bar-style',
+            content: 'black-translucent',
+          },
           { name: 'mobile-web-app-capable', content: 'yes' },
         ],
         link: [
           { rel: 'manifest', href: '/manifest.webmanifest' },
           { rel: 'icon', href: '/favicon.ico' },
-          { rel: 'apple-touch-icon', sizes: '180x180', href: '/img/app/pwa/icon-192.png' },
+          {
+            rel: 'apple-touch-icon',
+            sizes: '180x180',
+            href: '/img/app/pwa/icon-192.png',
+          },
         ],
       },
     },

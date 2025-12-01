@@ -61,7 +61,7 @@ import { computed } from 'vue'
 import { useJobCollection } from '../../../../composables/firestore/jobs/main/useJobCollection.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
-import type { Job } from '../../../../types/job.model.ts'
+import type { Job } from '../../../../models/job.model.ts'
 
 const { jobs: allJobs, pending: isPending } = useJobCollection()
 const { coreUser } = useUser()

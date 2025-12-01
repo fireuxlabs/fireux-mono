@@ -20,7 +20,8 @@
       />
 
       <p id="richies-brand" class="lede">
-        Boutique cleaning loops across Zürich. Same cleaner, photo receipts, quick replies.
+        Boutique cleaning loops across Zürich. Same cleaner, photo receipts,
+        quick replies.
       </p>
 
       <div class="cta-actions">
@@ -53,7 +54,6 @@ useSeoMeta({
   description:
     'Independent Zürich cleaner for recurring apartments, offices, and pop-up projects. Upcoming availability and contact info.',
 })
-
 </script>
 
 <style scoped>
@@ -64,7 +64,11 @@ useSeoMeta({
   justify-content: center;
   align-items: center;
   padding: clamp(2rem, 6vw, 5rem);
-  background: radial-gradient(circle at top, rgba(37, 99, 235, 0.35), transparent 55%),
+  background: radial-gradient(
+      circle at top,
+      rgba(37, 99, 235, 0.35),
+      transparent 55%
+    ),
     linear-gradient(135deg, #020617, #0f172a 60%, #1e1b4b);
 }
 

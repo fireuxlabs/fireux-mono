@@ -8,8 +8,8 @@
             <h2>Create your showcase</h2>
           </div>
           <p class="lede">
-            Launch a discoverable profile with your experience, credentials,
-            and specialties. You can edit the details right after creating it.
+            Launch a discoverable profile with your experience, credentials, and
+            specialties. You can edit the details right after creating it.
           </p>
         </div>
       </template>
@@ -39,7 +39,9 @@
             :disabled="isCreating"
             @click="handleCreate"
           >
-            {{ isCreating ? 'Creating profile…' : 'Create professional profile' }}
+            {{
+              isCreating ? 'Creating profile…' : 'Create professional profile'
+            }}
           </UButton>
           <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
         </div>
