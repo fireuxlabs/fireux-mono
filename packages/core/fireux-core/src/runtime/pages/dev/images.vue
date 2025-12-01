@@ -105,6 +105,68 @@ const coreAssets: Asset[] = [
   },
 ]
 
+const ecosystemAssets: Asset[] = [
+  {
+    path: '/img/ecosystem/avatar.png',
+    label: 'Ecosystem avatar',
+  },
+  {
+    path: '/img/ecosystem/logo.png',
+    label: 'Ecosystem logo',
+  },
+  {
+    path: '/img/ecosystem/wordmark-dark.png',
+    label: 'Ecosystem wordmark · dark',
+  },
+  {
+    path: '/img/ecosystem/wordmark-light.png',
+    label: 'Ecosystem wordmark · light',
+    tone: 'dark',
+  },
+  {
+    path: '/img/ecosystem/wordmark-light.svg',
+    label: 'Ecosystem wordmark · light (SVG)',
+    tone: 'dark',
+  },
+]
+
+const appAssets: Asset[] = [
+  {
+    path: '/img/app/logo.png',
+    label: 'App logo',
+  },
+  {
+    path: '/img/app/wordmark-dark.png',
+    label: 'App wordmark · dark',
+  },
+  {
+    path: '/img/app/wordmark-light.png',
+    label: 'App wordmark · light',
+    tone: 'dark',
+  },
+  {
+    path: '/img/app/wordmark-light.svg',
+    label: 'App wordmark · light (SVG)',
+    tone: 'dark',
+  },
+  {
+    path: '/img/app/cover.png',
+    label: 'Marketing cover (1280×720)',
+  },
+  {
+    path: '/img/app/thumbnail.png',
+    label: 'Marketing thumbnail (256×256)',
+  },
+  {
+    path: '/img/app/pwa/icon-192.png',
+    label: 'PWA icon · 192×192',
+  },
+  {
+    path: '/img/app/pwa/icon-512.png',
+    label: 'PWA icon · 512×512',
+  },
+]
+
 const assetGroups: AssetGroup[] = [
   {
     key: 'core',
@@ -119,17 +181,17 @@ const assetGroups: AssetGroup[] = [
     key: 'ecosystem',
     title: 'Ecosystem public assets',
     description:
-      'Reserved for /img/ecosystem/<ecosystem-id>/* directories in ecosystem packages.',
-    assets: [],
+      'Reserved for /img/ecosystem/... buckets exposed by ecosystem packages.',
+    assets: ecosystemAssets,
     emptyState:
-      'No ecosystem registries yet. Populate packages/ecosystem/*/public/img/ecosystem to surface them here.',
+      'No ecosystem registries yet. Populate packages/ecosystem/*/src/runtime/public/img/ecosystem to surface them here.',
   },
   {
     key: 'app',
     title: 'App & tenant public assets',
     description:
-      'Use /img/app/<app-or-tenant>/* within individual app public directories to register overrides.',
-    assets: [],
+      'Use /img/app/... within individual app public directories to register overrides.',
+    assets: appAssets,
     emptyState:
       'No app-level assets registered. Add branding to projects/*/public/img/app to list them.',
   },

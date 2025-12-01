@@ -65,8 +65,8 @@ const hero = {
 }
 
 const brand = {
-  wordmarkLight: '/img/brand/misebox/wordmark-light.svg',
-  logo: '/img/brand/misebox/logo.svg',
+  wordmarkLight: '/img/app/wordmark-light.svg',
+  logo: '/img/app/logo.png',
 }
 </script>
 

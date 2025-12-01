@@ -110,7 +110,7 @@ _(Remote logo discovery in `fireux-places` crawls external sites; it does not re
 - Repo assets must match Figma exports in filename, dimensions, and directory placement.
 - Allowed directories:
   - Core → `/img/core/...`
-  - Ecosystem → `/img/ecosystem/<ecosystem-id>/...`
+  - Ecosystem → `/img/ecosystem/...`
   - App → `/img/app/...`
 - No additional buckets or legacy names (e.g., `default-image.png`) unless the spec is updated first.
 - When syncing, Copilot should:

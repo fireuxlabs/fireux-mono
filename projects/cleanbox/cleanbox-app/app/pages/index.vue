@@ -60,8 +60,8 @@ const hero = {
   paragraph:
     'Coordinate crews, quality checks, and billing from one dashboard. Cleanbox keeps every service <span class="text-primary">scheduled</span>, <span class="text-primary">verified</span>, and <span class="text-primary">client-ready</span>.',
   badges: [
-    { src: '/img/brand/cleanbox/wordmark.png', alt: 'Cleanbox wordmark' },
-    { src: '/img/brand/cleanbox/logo.png', alt: 'Cleanbox emblem' },
+    { src: '/img/app/wordmark-light.png', alt: 'Cleanbox wordmark' },
+    { src: '/img/app/logo.png', alt: 'Cleanbox emblem' },
   ],
   primary: { label: 'Get Started', to: '/get-started' },
   secondary: { label: 'Explore Crews', to: '/crews' },
