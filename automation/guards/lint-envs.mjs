@@ -76,9 +76,86 @@ for (const app of apps) {
   const saOk = hasInlineSA || hasPathSA
 
   const namespace = brandNamespaces.get(app) || 'fireux'
-  const brandRoots = [
+  const repoRoot = process.cwd()
+  const candidateDirs = []
+
+  if (namespace === 'fireux') {
+    candidateDirs.push(
+      join(
+        repoRoot,
+        'packages',
+        'core',
+        'fireux-core',
+        'src',
+        'runtime',
+        'public',
+        'img',
+        'core',
+        'brand'
+      ),
+      join(
+        repoRoot,
+        'packages',
+        'core',
+        'fireux-core',
+        'src',
+        'runtime',
+        'public',
+        'img',
+        'brand',
+        'fireux'
+      )
+    )
+  } else {
+    candidateDirs.push(
+      join(
+        repoRoot,
+        'packages',
+        'ecosystem',
+        `fireux-${namespace}`,
+        'src',
+        'runtime',
+        'public',
+        'img',
+        'brand',
+        namespace
+      ),
+      join(
+        repoRoot,
+        'packages',
+        'ecosystem',
+        `fireux-${namespace}`,
+        'src',
+        'runtime',
+        'public',
+        'img',
+        'ecosystem'
+      ),
+      join(
+        repoRoot,
+        'packages',
+        'ecosystem',
+        `fireux-${namespace}`,
+        'src',
+        'runtime',
+        'public',
+        'img',
+        'brand'
+      )
+    )
+  }
+
+  candidateDirs.push(
+    join(repoRoot, app, 'public', 'img', 'brand', namespace),
+    join(repoRoot, app, 'public', 'img', 'brand'),
+    join(repoRoot, app, 'public', 'img', 'app'),
+    join(repoRoot, app, 'public', 'img', 'ecosystem'),
+    join(repoRoot, app, 'public', 'img')
+  )
+
+  candidateDirs.push(
     join(
-      process.cwd(),
+      repoRoot,
       'packages',
       'core',
       'fireux-core',
@@ -89,26 +166,25 @@ for (const app of apps) {
       'brand',
       namespace
     ),
-  ]
-  if (namespace !== 'fireux') {
-    brandRoots.push(
-      join(
-        process.cwd(),
-        'packages',
-        'ecosystem',
-        `fireux-${namespace}`,
-        'src',
-        'runtime',
-        'public',
-        'img',
-        'brand',
-        namespace
-      )
+    join(
+      repoRoot,
+      'packages',
+      'core',
+      'fireux-core',
+      'src',
+      'runtime',
+      'public',
+      'img',
+      'brand'
     )
-  }
-  brandRoots.push(join(process.cwd(), app, 'public', 'img', 'brand', namespace))
-  brandRoots.push(join(process.cwd(), app, 'public', 'img', 'brand'))
-  const brandDir = brandRoots.find((dir) => existsSync(dir))
+  )
+
+  const seen = new Set()
+  const brandDir = candidateDirs.find((dir) => {
+    if (seen.has(dir)) return false
+    seen.add(dir)
+    return existsSync(dir)
+  })
   const brandIssues = []
   if (!brandDir) {
     brandIssues.push('brand directory (shared packages)')

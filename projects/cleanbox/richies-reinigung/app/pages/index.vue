@@ -1,42 +1,41 @@
 <template>
-  <div class="landing-page">
+  <div class="brand-landing">
     <EffectsBubbles />
 
-    <LandingShell>
-      <template #left>
-        <LandingHero
-          :title="heroContent.title"
-          :accent="heroContent.accent"
-          :paragraph="heroContent.paragraph"
-          :badges="heroContent.badges"
-          :primary="heroContent.primary"
-          :secondary="heroContent.secondary"
-          :bullets="heroContent.bullets"
-        />
-      </template>
+    <section class="brand-card" aria-labelledby="richies-brand">
+      <img
+        class="brand-avatar"
+        src="/img/app/logo.png"
+        alt="Richies Reinigung logo"
+        width="120"
+        height="120"
+      />
 
-      <template #right>
-        <LandingQuickPeek :items="quickPeek" :footer-badge="quickPeekFooter" />
-      </template>
-    </LandingShell>
+      <img
+        class="brand-wordmark"
+        src="/img/app/wordmark-light.svg"
+        alt="Richies Reinigung wordmark"
+        width="320"
+        height="80"
+      />
 
-    <LandingSolutions :cards="solutionCards" />
+      <p id="richies-brand" class="lede">
+        Boutique cleaning loops across Zürich. Same cleaner, photo receipts, quick replies.
+      </p>
 
-    <LandingFuel
-      :meters="fuelMeters"
-      @startTour="handleStartTour"
-      @downloadPlaybook="handleDownloadPlaybook"
-    />
-
-    <LandingFeatures :features="featureList" />
-
-    <LandingSkillsIcons :skills="skillTags" />
+      <div class="cta-actions">
+        <NuxtLink class="btn primary" to="mailto:hello@richiesreinigung.ch">
+          Hire Richie
+        </NuxtLink>
+        <NuxtLink class="btn outline" to="tel:+41791234567">
+          Text / Call +41 79 123 45 67
+        </NuxtLink>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-const router = useRouter()
-
 definePageMeta({
   layout: 'landing',
   nav: {
@@ -50,127 +49,106 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Richies Reinigung — CleanBox Tenant',
+  title: 'Richies Reinigung — Freelance cleaning partner',
   description:
-    'Book recurring cleans, coordinate crews, and surprise clients with spotless routes — powered by CleanBox.',
+    'Independent Zürich cleaner for recurring apartments, offices, and pop-up projects. Upcoming availability and contact info.',
 })
 
-const heroContent = {
-  title: 'Richies Reinigung',
-  accent: 'Sparkling spaces. Happy clients.',
-  paragraph:
-    'Keep recurring cleans on schedule, balance crews across city zones, and automate every <span class="text-primary">follow-up</span>. It is the clean sweep for ops leads.',
-  badges: [
-    { src: '/img/cleanbox-logo.svg', alt: 'CleanBox' },
-    { src: '/img/stack/firebase-white.png', alt: 'Firebase' },
-  ],
-  primary: { label: 'Open booking board', to: '/bookings' },
-  secondary: { label: 'Manage clients', to: '/professionals' },
-  bullets: [
-    {
-      icon: 'i-lucide-calendar-check-2',
-      text: 'Route-ready scheduling templates',
-    },
-    { icon: 'i-lucide-map', text: 'Zone-based crew assignments' },
-    { icon: 'i-lucide-message-circle', text: 'Automated client updates' },
-    { icon: 'i-lucide-droplets', text: 'Inventory tied to job kits' },
-  ],
-}
-
-const quickPeek = [
-  {
-    title: 'Routes dispatched',
-    copy: '15 stops across Kreis 1–4 · traffic buffer applied.',
-    icon: 'i-lucide-route',
-  },
-  {
-    title: 'Crew coverage',
-    copy: 'All hands confirmed · 2 floaters on standby.',
-    icon: 'i-lucide-users',
-  },
-  {
-    title: 'Client feedback',
-    copy: 'NPS 68 · 4 kudos waiting for replies.',
-    icon: 'i-lucide-heart-handshake',
-  },
-]
-
-const quickPeekFooter = 'CleanBox · Firestore · Twilio'
-
-const solutionCards = [
-  {
-    title: 'Booking board',
-    copy: 'Drag-and-drop jobs, lock teams, and keep routes balanced.',
-    href: '/bookings',
-    cta: 'View board',
-    icon: 'i-lucide-calendar-clock',
-  },
-  {
-    title: 'Client CRM',
-    copy: 'Track preferences, notes, and service agreements without spreadsheets.',
-    href: '/professionals',
-    cta: 'Open CRM',
-    icon: 'i-lucide-id-card',
-  },
-  {
-    title: 'Supplies & kits',
-    copy: 'Assign consumables to jobs and auto-reorder when bins run low.',
-    href: '/inventory',
-    cta: 'Manage kits',
-    icon: 'i-lucide-sprout',
-  },
-]
-
-const fuelMeters = [
-  { label: 'Route readiness', value: 88, icon: 'i-lucide-map' },
-  { label: 'Crew availability', value: 95, icon: 'i-lucide-smile' },
-  { label: 'Customer delight', value: 91, icon: 'i-lucide-stars' },
-]
-
-const featureList = [
-  {
-    title: 'Zone smart routing',
-    copy: 'Optimise travel blocks with postcode-level grouping and live traffic buffers.',
-  },
-  {
-    title: 'Checklist automation',
-    copy: 'Push tailored checklists to each crew member before arrival.',
-  },
-  {
-    title: 'Customer pulse',
-    copy: 'Get instant feedback and queue responses before the team drives away.',
-  },
-  {
-    title: 'Cleaner wallets',
-    copy: 'Handle payouts, tips, and reimbursements in one ledger.',
-  },
-]
-
-const skillTags = [
-  { label: 'Deep clean lead', icon: 'i-lucide-sparkles' },
-  { label: 'Window specialist', icon: 'i-lucide-scan' },
-  { label: 'Floor care pro', icon: 'i-lucide-squeegee' },
-  { label: 'Office route', icon: 'i-lucide-briefcase' },
-  { label: 'Move-out crew', icon: 'i-lucide-box' },
-  { label: 'Eco supplies', icon: 'i-lucide-leaf' },
-]
-
-const handleStartTour = () => {
-  router.push('/getting-started')
-}
-
-const handleDownloadPlaybook = () => {
-  router.push('/docs/cleaning-playbook')
-}
 </script>
 
 <style scoped>
-.landing-page {
+.brand-landing {
   position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(2rem, 6vw, 5rem);
+  background: radial-gradient(circle at top, rgba(37, 99, 235, 0.35), transparent 55%),
+    linear-gradient(135deg, #020617, #0f172a 60%, #1e1b4b);
+}
+
+.brand-card {
+  width: min(640px, 100%);
+  margin: 0 auto;
+  padding: clamp(2rem, 4vw, 3.5rem);
+  border-radius: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.7);
+  box-shadow: 0 30px 80px rgba(2, 6, 23, 0.7);
+  text-align: center;
+  color: #e2e8f0;
   display: flex;
   flex-direction: column;
-  gap: clamp(2.5rem, 6vw, 4rem);
-  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3rem)
-    clamp(4rem, 8vw, 6rem);
+  gap: 1.5rem;
+}
+
+.brand-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  margin: 0 auto;
+  background: #0f172a;
+}
+
+.brand-wordmark {
+  width: min(360px, 80vw);
+  margin: 0 auto;
+}
+
+.lede {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(248, 250, 252, 0.9);
+}
+
+.cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.8rem;
+  border-radius: 999px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.btn.primary {
+  background: #5b21b6;
+  border-color: #7c3aed;
+  color: white;
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.35);
+}
+
+.btn.primary:hover {
+  background: #7c3aed;
+}
+
+.btn.outline {
+  background: transparent;
+  border-color: rgba(226, 232, 240, 0.4);
+  color: #e2e8f0;
+}
+
+.btn.outline:hover {
+  border-color: rgba(255, 255, 255, 0.7);
+  color: white;
+}
+
+@media (max-width: 640px) {
+  .brand-card {
+    border-radius: 24px;
+  }
+  .brand-wordmark {
+    width: min(260px, 90vw);
+  }
 }
 </style>

@@ -11,6 +11,7 @@ import { resolveTenantVite } from './tenant-vite'
 
 interface FireuxNuxtSetup {
   appName: string
+  themeColor?: string
   modules: ModuleEntry[]
   runtimeConfig: NonNullable<NuxtConfig['runtimeConfig']>
   compatibilityDate: NuxtConfig['compatibilityDate']
@@ -43,6 +44,7 @@ export function resolveFireuxNuxtSetup(opts: TenantConfig): FireuxNuxtSetup {
 
   return {
     appName: basics.appName,
+    themeColor: theme.primaryColor,
     modules,
     runtimeConfig,
     compatibilityDate: resolveCompatibilityDate(opts.compatibilityDate),
