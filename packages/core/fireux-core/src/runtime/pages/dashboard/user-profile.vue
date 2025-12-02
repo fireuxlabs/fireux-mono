@@ -66,6 +66,10 @@ import { computed, ref } from 'vue'
 import { useBreakpoints, breakpointsTailwind } from '@vueuse/core'
 import { useUser } from '../../composables/firestore/core/user/useUser'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import type {
+  User,
+  UserCard,
+} from 'fireux-core/runtime/models/core/user.model.ts'
 
 definePageMeta({
   layout: 'dashboard',
@@ -85,7 +89,7 @@ const useHeadFn = (globalThis as any).useHead as
   | ((input: any) => void)
 useHeadFn?.({ title: 'Your Profile' })
 
-const { currentUser, pillProps, cellProps, isLoading } = useUser()
+const { currentUser, pillProps, isLoading } = useUser()
 const activeSection = ref<'preview' | 'edit'>('edit')
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
@@ -102,11 +106,28 @@ const toggleSection = () => {
   activeSection.value = activeSection.value === 'preview' ? 'edit' : 'preview'
 }
 
+const buildCell = (
+  user: User,
+  pill: UserCard.Pill | null
+): UserCard.Cell | null => {
+  if (!pill) return null
+  const role = (user.appUser?.role ?? user.role)?.trim().toLowerCase()
+  return {
+    ...pill,
+    id: user.id ?? '-',
+    profiles: [...(pill.badges ?? [])],
+    role: role || '-',
+    memberships: pill.memberships ?? [],
+  }
+}
+
 const currentUserPill = computed(() =>
   currentUser.value ? pillProps(currentUser.value) : null
 )
 const currentUserCell = computed(() =>
-  currentUser.value ? cellProps(currentUser.value) : null
+  currentUser.value
+    ? buildCell(currentUser.value, pillProps(currentUser.value))
+    : null
 )
 const userLink = computed(() =>
   currentUser.value?.id ? `/users/${currentUser.value.id}` : null

@@ -42,13 +42,15 @@ import type {
   UserCard,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
 const props = withDefaults(
   defineProps<{ user?: User | null; compact?: boolean }>(),
   { compact: true }
 )
 
-const { user: runtimeUser, pillProps, cellProps, cta } = useUser()
+const { user: runtimeUser, pillProps, cta } = useUser()
+const { isTenant } = useFireUXConfig()
 
 const current = computed<User | null>(
   () => props.user ?? runtimeUser.value ?? null
@@ -61,13 +63,26 @@ const headerDescription = computed(() => {
   return handle ? `@${handle}` : '@unknown'
 })
 
+const toCell = (user: User, pill: UserCard.Pill): UserCard.Cell => {
+  const role = (user.appUser?.role ?? user.role)?.trim().toLowerCase()
+  return {
+    ...pill,
+    id: user.id ?? '-',
+    profiles: [...(pill.badges ?? [])],
+    role: role || '-',
+    memberships: pill.memberships ?? [],
+  }
+}
+
 const currentPill = computed<UserCard.Pill | null>(() =>
   current.value ? { ...pillProps(current.value) } : null
 )
 
-const currentCell = computed<UserCard.Cell | null>(() =>
-  current.value ? { ...cellProps(current.value) } : null
-)
+const currentCell = computed<UserCard.Cell | null>(() => {
+  if (!current.value) return null
+  const pill = pillProps(current.value)
+  return pill ? toCell(current.value, pill) : null
+})
 
 const coreLink = computed<RouteLocationRaw | null>(() => {
   if (currentPill.value?.to) return currentPill.value.to

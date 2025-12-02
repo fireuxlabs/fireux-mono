@@ -9,14 +9,17 @@
           </div>
         </template>
 
-        <OrganismsUserCardsPill :user="pillFor(currentUser)" />
+        <div class="space-y-2">
+          <div class="text-xs text-gray-500">
+            Scenario Ref:
+            <code>{{ currentScenarioRef }}</code>
+          </div>
+          <OrganismsUserCardsPill :user="pillFor(currentUser)" />
+        </div>
 
         <p class="text-sm font-mono text-gray-600">
           ID: <span class="text-black">{{ currentUser.id }}</span>
         </p>
-
-        <!-- This JSON now includes `appUser` because it's merged into `user` -->
-        <DevJsonPanel v-if="currentUserJson" :data="currentUserJson" />
       </UCard>
       <MoleculesNotFound
         v-else
@@ -70,7 +73,6 @@
             </span>
           </div>
         </div>
-
         <div class="grid gap-4 md:grid-cols-2">
           <DevJsonPanel
             v-if="membershipsJson"
@@ -95,14 +97,19 @@
           </div>
         </template>
 
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <OrganismsUserCardsPill
-            v-for="u in users"
-            :key="u.id"
-            :user="pillFor(u)"
-          />
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            v-for="(u, index) in users"
+            :key="u.id || index"
+            class="space-y-2 rounded-lg border border-gray-200 p-3"
+          >
+            <div class="text-xs text-gray-500">
+              Scenario Ref:
+              <code>{{ scenarioRef(u, index) }}</code>
+            </div>
+            <OrganismsUserCardsPill :user="pillFor(u)" />
+          </div>
         </div>
-
         <DevJsonPanel v-if="usersJson" :data="usersJson" />
       </UCard>
       <MoleculesNotFound v-else kind="collection" entity="users" />
@@ -146,7 +153,13 @@ const pillFor = (target: User | any | null | undefined) => {
   return collectionPill(base)
 }
 
-const currentUserJson = computed(() => currentUser.value ?? null)
+const scenarioRef = (target: User | null | undefined, index = 0) => {
+  const id = target?.id?.trim()
+  if (id) return `USR-${id}`
+  return `USR-${String(index + 1).padStart(2, '0')}`
+}
+
+const currentScenarioRef = computed(() => scenarioRef(currentUser.value, 0))
 
 const users = computed(() => usersCollection.value ?? [])
 

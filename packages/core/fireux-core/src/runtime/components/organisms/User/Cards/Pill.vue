@@ -13,7 +13,7 @@
       class="avatar"
     />
 
-    <div class="content">
+    <div v-if="hasContent" class="content">
       <span class="title" :title="normalized.title">
         {{ normalized.title || 'User' }}
       </span>
@@ -126,6 +126,17 @@ const normalized = computed(() => {
     specialTooltip: base.specialTooltip ?? '',
     memberships,
   }
+})
+
+const hasContent = computed(() => {
+  const value = normalized.value
+  return (
+    Boolean(value.title?.trim()) ||
+    Boolean(value.subtitle?.trim()) ||
+    value.badges.length > 0 ||
+    value.memberships.length > 0 ||
+    value.special
+  )
 })
 
 const hasLink = computed(() => Boolean(normalized.value.to))

@@ -12,9 +12,11 @@
 
     <div v-if="isTenant && tenantEntries.length" class="fx-section__grid">
       <div v-for="entry in tenantEntries" :key="entry.key" class="space-y-2">
+        <div class="text-xs text-gray-500">
+          Scenario Ref:
+          <code>{{ entry.scenario }}</code>
+        </div>
         <OrganismsUserCardsPill :user="entry.pill" :show-memberships="false" />
-
-        <pre class="user-section__json">{{ formatJson(entry.raw) }}</pre>
       </div>
     </div>
 
@@ -33,7 +35,10 @@ import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
 import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/state/useUserInterface.ts'
-import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
+import type {
+  User,
+  UserCard,
+} from 'fireux-core/runtime/models/core/user.model.ts'
 
 const { isTenant, appName } = useFireUXConfig()
 const { users } = useUserCollection()
@@ -42,9 +47,15 @@ const { pillProps } = useUserInterface()
 type TenantEntry = {
   key: string
   pill: UserCard.Pill
-  raw: unknown
   role: string | null
+  raw: User
+  scenario: string
 }
+
+const scenarioPrefix = computed(() => {
+  const tenant = appName?.trim()
+  return tenant ? `${tenant.toLowerCase()}-tenant` : 'tenant'
+})
 
 const tenantEntries = computed((): TenantEntry[] => {
   if (!isTenant) return []
@@ -52,18 +63,23 @@ const tenantEntries = computed((): TenantEntry[] => {
   if (!list.length) return []
 
   return list
-    .map((entry: any) => {
+    .map((entry: any, index: number) => {
       if (!entry?.id) return null
       const source = entry?.coreUser ?? entry
-      const enriched = { ...source, appUser: entry?.appUser }
+      const enriched = { ...(source as User), appUser: entry?.appUser }
       const pill = pillProps(enriched as any)
 
       return {
         key: entry.id,
         pill: pill as UserCard.Pill,
-        raw: entry?.appUser ?? entry,
         role:
           typeof entry?.appUser?.role === 'string' ? entry.appUser.role : null,
+        raw: enriched as User,
+        scenario: formatScenarioRef(
+          `${scenarioPrefix.value}-subcollection`,
+          enriched as User,
+          index
+        ),
       }
     })
     .filter((entry): entry is TenantEntry => Boolean(entry))
@@ -87,5 +103,13 @@ const tenantBadgeLabel = computed(() => {
   return tenant ? `${count} ${suffix} · ${tenant}` : `${count} ${suffix}`
 })
 
-const formatJson = (value: unknown) => JSON.stringify(value ?? {}, null, 2)
+function formatScenarioRef(
+  prefix: string,
+  user: User | null | undefined,
+  index = 0
+) {
+  const id = user?.id?.trim()
+  if (id) return `${prefix}:${id}`
+  return `${prefix}:idx-${String(index + 1).padStart(2, '0')}`
+}
 </script>
