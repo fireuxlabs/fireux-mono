@@ -89,12 +89,6 @@ export async function ensureUserAppMembership(
   let created = true
   if (snapshot.exists()) {
     created = false
-    const current = snapshot.data() as AppUser | undefined
-    if (current && current.role !== membershipRole) {
-      await updateDocument<AppUser>(`apps/${appId}/users`, uid, {
-        role: membershipRole,
-      })
-    }
   } else {
     const payload: AppUser = {
       id: uid,
