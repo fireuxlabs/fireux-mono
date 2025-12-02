@@ -1,5 +1,4 @@
 import type { Ref } from 'vue'
-import type { RouteLocationRaw } from 'vue-router'
 import type {
   User,
   UserCard,
@@ -17,57 +16,67 @@ export function useUserInterface(
     return (source as Ref<User | null | undefined>).value ?? null
   }
 
-  const toPath = (id?: string | null) => (id ? `/users/${id}` : '')
-  const subtitle = (handle?: string | null) => (handle ? `@${handle}` : '')
-  const badgeList = (value?: unknown): string[] => {
-    if (!Array.isArray(value)) return []
-    const filtered = value
-      .map((entry) => (typeof entry === 'string' ? entry.trim() : ''))
-      .filter((entry) => entry.length > 0)
-    return Array.from(new Set(filtered))
-  }
-  const toInitials = (value?: string | null): string | undefined => {
-    const input = (value ?? '').trim()
-    if (!input) return undefined
-    return input
-      .split(/\s+/)
-      .map((token) => token[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
+  const toUser = (target?: User | null): User | null => target ?? resolve()
 
-  const roleLabel = (value?: string | null) => {
-    const normalized = (value ?? '').trim().toLowerCase()
-    if (!normalized) return undefined
-    return normalized.charAt(0).toUpperCase() + normalized.slice(1)
-  }
-
-  const pillProps = (target?: User | null): UserCard.Pill => {
-    const user = target ?? resolve()
-    const displayName =
-      user?.display_name?.trim() ||
-      user?.handle?.trim() ||
-      user?.id?.trim() ||
-      ''
-
-    const role = user?.appUser?.role ?? user?.role
-    const normalizedRole = roleLabel(role)
-    const isAdmin = normalizedRole === 'Admin'
-    const profileBadges = badgeList(user?.profiles)
-    const mergedBadges = Array.from(new Set([...profileBadges]))
+  const shapeShared = (user: User) => {
+    const name = user.display_name?.trim() || '-'
+    const handle = user.handle?.trim() || '-'
+    const badges = Array.isArray(user.profiles)
+      ? user.profiles
+          .map((value) => (typeof value === 'string' ? value.trim() : ''))
+          .filter(Boolean)
+      : []
+    const role = (user.appUser?.role ?? user.role)?.trim().toLowerCase()
+    const isAdmin = role === 'admin'
 
     return {
-      avatar: user?.avatar ?? '',
-      initials: toInitials(displayName),
-      title: displayName,
-      subtitle: subtitle(user?.handle),
-      badges: mergedBadges,
-      to: (toPath(user?.id) || null) as RouteLocationRaw,
+      avatar: user.avatar || '',
+      initials: name[0],
+      title: name,
+      subtitle: `@${handle}`,
+      badges,
+      to: user.id ? `/users/${user.id}` : null,
       special: isAdmin,
       specialTooltip: isAdmin ? 'Tenant admin' : undefined,
+      role: role ?? '-',
+      id: user.id ?? '-',
     }
   }
 
-  return { pillProps }
+  const pillProps = (target?: User | null): UserCard.Pill | null => {
+    const user = toUser(target)
+    if (!user) return null
+    const shared = shapeShared(user)
+    return {
+      avatar: shared.avatar,
+      initials: shared.initials,
+      title: shared.title,
+      subtitle: shared.subtitle,
+      badges: shared.badges,
+      to: shared.to,
+      special: shared.special,
+      specialTooltip: shared.specialTooltip,
+    }
+  }
+
+  const cellProps = (target?: User | null): UserCard.Cell | null => {
+    const user = toUser(target)
+    if (!user) return null
+    const shared = shapeShared(user)
+    return {
+      avatar: shared.avatar,
+      initials: shared.initials,
+      title: shared.title,
+      subtitle: shared.subtitle,
+      badges: shared.badges,
+      to: shared.to,
+      special: shared.special,
+      specialTooltip: shared.specialTooltip,
+      id: shared.id,
+      profiles: shared.badges,
+      role: shared.role,
+    }
+  }
+
+  return { pillProps, cellProps }
 }

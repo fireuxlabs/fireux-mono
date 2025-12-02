@@ -3,7 +3,7 @@
   <section class="space-y-4">
     <div v-if="hasCards" class="grid gap-4 sm:grid-cols-2">
       <OrganismsUserCardsPill v-if="pill" :user="pill" />
-      <OrganismsUserCardsCell v-if="user" :user="user" :to="link" />
+      <OrganismsUserCardsCell v-if="cell" :user="cell" :to="link" />
     </div>
 
     <OrganismsUserCardsProfile v-if="user" :user="user" />
@@ -20,12 +20,14 @@ import type {
 const props = defineProps<{
   user: User | null
   pill: UserCard.Pill | null
+  cell: UserCard.Cell | null
   link: string | null
 }>()
 
 const user = computed(() => props.user)
 const pill = computed(() => props.pill)
+const cell = computed(() => props.cell)
 const link = computed(() => props.link ?? undefined)
 
-const hasCards = computed(() => !!pill.value || !!user.value)
+const hasCards = computed(() => !!pill.value || !!cell.value)
 </script>

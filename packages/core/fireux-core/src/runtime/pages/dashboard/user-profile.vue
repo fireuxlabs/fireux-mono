@@ -32,6 +32,7 @@
               v-show="showPreview"
               :user="currentUser"
               :pill="currentUserPill"
+              :cell="currentUserCell"
               :link="userLink"
             />
           </Transition>
@@ -84,7 +85,7 @@ const useHeadFn = (globalThis as any).useHead as
   | ((input: any) => void)
 useHeadFn?.({ title: 'Your Profile' })
 
-const { currentUser, pillProps, isLoading } = useUser()
+const { currentUser, pillProps, cellProps, isLoading } = useUser()
 const activeSection = ref<'preview' | 'edit'>('edit')
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
@@ -103,6 +104,9 @@ const toggleSection = () => {
 
 const currentUserPill = computed(() =>
   currentUser.value ? pillProps(currentUser.value) : null
+)
+const currentUserCell = computed(() =>
+  currentUser.value ? cellProps(currentUser.value) : null
 )
 const userLink = computed(() =>
   currentUser.value?.id ? `/users/${currentUser.value.id}` : null

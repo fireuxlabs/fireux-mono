@@ -18,13 +18,43 @@
         {{ normalized.title || 'User' }}
       </span>
 
-      <span
-        v-if="normalized.subtitle"
-        class="subtitle"
-        :title="normalized.subtitle"
+      <div
+        v-if="normalized.subtitle || normalized.special"
+        class="subtitle-row"
       >
-        {{ normalized.subtitle }}
-      </span>
+        <span
+          v-if="normalized.subtitle"
+          class="subtitle"
+          :title="normalized.subtitle"
+        >
+          {{ normalized.subtitle }}
+        </span>
+        <UTooltip
+          v-if="normalized.special && normalized.specialTooltip"
+          :text="normalized.specialTooltip"
+          :popper="tooltipPopper"
+        >
+          <UBadge
+            color="primary"
+            variant="soft"
+            size="xs"
+            :title="specialAriaLabel"
+            class="admin-badge"
+          >
+            Admin
+          </UBadge>
+        </UTooltip>
+        <UBadge
+          v-else-if="normalized.special"
+          color="primary"
+          variant="soft"
+          size="xs"
+          :title="specialAriaLabel"
+          class="admin-badge"
+        >
+          Admin
+        </UBadge>
+      </div>
 
       <div v-if="normalized.badges.length" class="badges">
         <UBadge
@@ -38,34 +68,6 @@
           {{ badge }}
         </UBadge>
       </div>
-    </div>
-
-    <div v-if="normalized.special" class="meta">
-      <UTooltip
-        v-if="normalized.specialTooltip"
-        :text="normalized.specialTooltip"
-        :popper="tooltipPopper"
-      >
-        <UBadge
-          color="primary"
-          variant="soft"
-          size="xs"
-          :title="specialAriaLabel"
-          class="admin-badge"
-        >
-          Admin
-        </UBadge>
-      </UTooltip>
-      <UBadge
-        v-else
-        color="primary"
-        variant="soft"
-        size="xs"
-        :title="specialAriaLabel"
-        class="admin-badge"
-      >
-        Admin
-      </UBadge>
     </div>
   </component>
 </template>
@@ -164,6 +166,12 @@ const specialAriaLabel = computed(
   white-space: nowrap;
 }
 
+.subtitle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .badges {
   display: flex;
   flex-wrap: wrap;
@@ -171,11 +179,7 @@ const specialAriaLabel = computed(
   margin-top: 0.2rem;
 }
 
-.meta {
-  margin-left: auto;
-}
-
 .admin-badge {
-  text-transform: uppercase;
+  margin-left: 0.25rem;
 }
 </style>

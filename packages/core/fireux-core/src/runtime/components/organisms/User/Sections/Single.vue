@@ -14,7 +14,11 @@
 
         <div v-if="current" class="space-y-4">
           <OrganismsUserCardsPill v-if="currentPill" :user="currentPill" />
-          <OrganismsUserCardsCell :user="current" :to="coreLink" />
+          <OrganismsUserCardsCell
+            v-if="currentCell"
+            :user="currentCell"
+            :to="coreLink"
+          />
         </div>
 
         <p v-else>No user loaded.</p>
@@ -44,7 +48,7 @@ const props = withDefaults(
   { compact: true }
 )
 
-const { user: runtimeUser, pillProps, cta } = useUser()
+const { user: runtimeUser, pillProps, cellProps, cta } = useUser()
 
 const current = computed<User | null>(
   () => props.user ?? runtimeUser.value ?? null
@@ -59,6 +63,10 @@ const headerDescription = computed(() => {
 
 const currentPill = computed<UserCard.Pill | null>(() =>
   current.value ? { ...pillProps(current.value) } : null
+)
+
+const currentCell = computed<UserCard.Cell | null>(() =>
+  current.value ? { ...cellProps(current.value) } : null
 )
 
 const coreLink = computed<RouteLocationRaw | null>(() => {
