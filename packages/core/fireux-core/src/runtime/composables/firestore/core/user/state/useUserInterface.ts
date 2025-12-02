@@ -37,6 +37,12 @@ export function useUserInterface(
       .slice(0, 2)
   }
 
+  const roleLabel = (value?: string | null) => {
+    const normalized = (value ?? '').trim().toLowerCase()
+    if (!normalized) return undefined
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1)
+  }
+
   const pillProps = (target?: User | null): UserCard.Pill => {
     const user = target ?? resolve()
     const displayName =
@@ -45,6 +51,10 @@ export function useUserInterface(
       user?.id?.trim() ||
       ''
 
+    const role = user?.appUser?.role ?? user?.role
+    const normalizedRole = roleLabel(role)
+    const isAdmin = normalizedRole === 'Admin'
+
     return {
       avatar: user?.avatar ?? '',
       initials: toInitials(displayName),
@@ -52,6 +62,9 @@ export function useUserInterface(
       subtitle: subtitle(user?.handle),
       badges: badgeList(user?.profiles),
       to: (toPath(user?.id) || null) as RouteLocationRaw,
+      special: isAdmin,
+      specialIcon: isAdmin ? 'i-lucide-star' : undefined,
+      specialTooltip: isAdmin ? 'App Admin' : undefined,
     }
   }
 

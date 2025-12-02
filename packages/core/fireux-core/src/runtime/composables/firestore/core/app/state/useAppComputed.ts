@@ -19,5 +19,19 @@ export function useAppComputed(
     return Boolean(current?.admin_ids?.length)
   })
 
-  return { isInitialized }
+  const adminIds = computed(() => {
+    const ids = Array.isArray(app.value?.admin_ids)
+      ? (app.value.admin_ids as Array<string | null | undefined>)
+      : []
+
+    return Array.from(
+      new Set(
+        ids
+          .map((id) => (typeof id === 'string' ? id.trim() : ''))
+          .filter((id) => id.length > 0)
+      )
+    )
+  })
+
+  return { isInitialized, adminIds }
 }

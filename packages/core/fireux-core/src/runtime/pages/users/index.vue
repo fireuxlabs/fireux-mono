@@ -8,14 +8,29 @@
 
     <UPageBody class="space-y-6">
       <OrganismsUserSectionsSingle :user="currentUser" />
-      <OrganismsUserSectionsCollection />
+      <OrganismsUserSectionsSubcollection v-if="isTenant" />
+
+      <section v-if="isTenant">
+        <UButton
+          v-if="!showGlobalDirectory"
+          variant="ghost"
+          @click="showGlobalDirectory = true"
+        >
+          View global directory
+        </UButton>
+        <OrganismsUserSectionsCollection v-else />
+      </section>
+
+      <OrganismsUserSectionsCollection v-else />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useHead } from '#imports'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
 definePageMeta({
   nav: {
@@ -34,6 +49,8 @@ definePageMeta({
 })
 
 const { user: currentUser } = useUser()
+const { isTenant } = useFireUXConfig()
+const showGlobalDirectory = ref(!isTenant)
 
 useHead({ title: 'Users' })
 </script>

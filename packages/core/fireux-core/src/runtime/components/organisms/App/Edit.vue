@@ -118,7 +118,7 @@
 import { computed, ref } from 'vue'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 import { useAppUpdate } from 'fireux-core/runtime/composables/firestore/core/app/mutations/useAppUpdate.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/useAppUsers.ts'
+import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/users.ts'
 import { useAppJoinRequests } from 'fireux-core/runtime/composables/firestore/core/app/utils/useAppJoinRequests.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
@@ -134,7 +134,7 @@ const toast = useToastify()
 
 const { updateDescription, updateInstagram, uploadAvatar, handleJoinRequests } =
   useAppUpdate(appRef)
-const { appUsers } = useAppUsers(appIdRef)
+const { users } = useAppUsers()
 const { pillProps } = useUser()
 
 const avatarSrc = computed(
@@ -210,7 +210,7 @@ const {
 })
 
 const teamIds = computed(() =>
-  (appUsers.value ?? [])
+  (users.value ?? [])
     .map((entry) => (entry?.id ?? '').trim())
     .filter((id) => id.length > 0)
 )

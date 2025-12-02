@@ -27,7 +27,7 @@ export function useUser() {
     ...useUserComputed(refs, pending),
     ...useUserInterface(refs),
     ...useUserEnsure(),
-    ...useUserUpdate(refs),
+    // ...useUserUpdate(refs, 'useUser'),
     ...useUserDelete(refs),
   }
 }

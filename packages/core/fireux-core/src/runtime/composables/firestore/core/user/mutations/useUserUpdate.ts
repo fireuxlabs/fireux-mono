@@ -7,9 +7,19 @@ import type { UserRefs } from '../main/useUserFetch.ts'
 import { useCoreUserUpdate } from './useCoreUserUpdate.ts'
 import { useAppUserUpdate } from './useAppUserUpdate.ts'
 
-export function useUserUpdate(user: UserRefs) {
+export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
   const core = useCoreUserUpdate(user)
   const app = useAppUserUpdate(user)
+
+  const coreId =
+    user.coreUser?.value?.id ?? user.user?.value?.id ?? 'unknown-core'
+  const appId = user.appUser?.value?.id ?? 'unknown-app'
+
+  console.info('[useUserUpdate] initialized', {
+    coreId,
+    appId,
+    source: sourceLabel,
+  })
 
   return {
     core,
@@ -30,10 +40,13 @@ export function useUserUpdateForUid(uid: string) {
   const user = computed<User | null>(() => coreUser.value)
   const pending = computed(() => false)
 
-  return useUserUpdate({
-    user,
-    coreUser,
-    appUser,
-    pending,
-  } as UserRefs)
+  return useUserUpdate(
+    {
+      user,
+      coreUser,
+      appUser,
+      pending,
+    } as UserRefs,
+    'useUserUpdateForUid'
+  )
 }

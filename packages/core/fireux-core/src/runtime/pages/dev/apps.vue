@@ -43,7 +43,7 @@
 import { computed } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/useAppUsers.ts'
+import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/users.ts'
 
 definePageMeta({
   layout: 'dev',
@@ -61,12 +61,12 @@ definePageMeta({
 })
 
 const { app, isInitialized } = useApp()
-const { appUsers } = useAppUsers()
+const { users } = useAppUsers()
 const { apps } = useAppCollection()
 
 const isLoading = computed(() => app.value === undefined)
 const appSnapshot = computed(() => app.value ?? null)
-const appUsersList = computed(() => appUsers.value ?? [])
+const appUsersList = computed(() => users.value ?? [])
 const appsList = computed(() => apps.value ?? [])
 
 const currentAppDev = computed(() => ({

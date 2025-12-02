@@ -3,23 +3,13 @@
     <template #header>
       <div class="fx-section__header">
         <div class="fx-section__copy">
-          <h2 class="text-base font-semibold">User Directory</h2>
+          <h2 class="text-base font-semibold">{{ ecosystemName }} Users</h2>
           <p class="text-xs text-gray-500">
-            All users available to this runtime, resolved from
-            <code>/users</code>.
+            Streaming the canonical <code>/users</code> collection for this
+            runtime.
           </p>
         </div>
-        <div class="flex items-center gap-2">
-          <UBadge variant="soft">{{ totalUsers }} total</UBadge>
-          <UButton
-            v-if="isTenant"
-            size="xs"
-            variant="ghost"
-            @click="toggleScope()"
-          >
-            {{ showingCore ? 'Show app users' : 'Show core users' }}
-          </UButton>
-        </div>
+        <UBadge variant="soft">{{ globalBadgeLabel }}</UBadge>
       </div>
     </template>
 
@@ -34,62 +24,39 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
+import { computed } from 'vue'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/state/useUserInterface.ts'
-import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
+import type {
+  User,
+  UserCard,
+} from 'fireux-core/runtime/models/core/user.model.ts'
 
-const { users, global, loadGlobalUsers } = useUserCollection()
+const { firestoreFetchCollection } = useFirestoreRead()
+const { appName } = useFireUXConfig()
+const globalUsers = firestoreFetchCollection<User>('users')
 const { pillProps } = useUserInterface()
-const { isTenant } = useFireUXConfig()
-
-const showingCore = ref(!isTenant)
-if (showingCore.value) {
-  loadGlobalUsers()
-}
-
-const toggleScope = () => {
-  if (!showingCore.value) {
-    loadGlobalUsers()
-    showingCore.value = true
-    return
-  }
-  showingCore.value = false
-}
-
-const visibleUsers = computed(() => {
-  if (isTenant && showingCore.value) {
-    return global.value ?? []
-  }
-  return users.value ?? []
-})
 
 type DirectoryEntry = { key: string; pill: UserCard.Pill }
 
 const directoryEntries = computed<DirectoryEntry[]>(() => {
-  const list = visibleUsers.value ?? []
+  const list = globalUsers.value ?? []
   if (!list.length) return []
 
   return list
     .filter((entry: any) => Boolean(entry?.id))
-    .map((entry: any) => {
-      const baseUser = entry?.coreUser ?? entry
-      const pill = pillProps(baseUser)
-      const appRole = entry?.appUser?.role
-      const pillWithRole: UserCard.Pill = {
-        ...pill,
-        special: appRole === 'admin',
-        specialIcon: appRole === 'admin' ? 'i-lucide-star' : undefined,
-        specialTooltip: appRole === 'admin' ? 'App Admin' : undefined,
-      }
-
-      return {
-        key: entry.id,
-        pill: pillWithRole,
-      }
-    })
+    .map((entry: User) => ({
+      key: entry.id,
+      pill: pillProps(entry),
+    }))
 })
 
-const totalUsers = computed(() => visibleUsers.value.length)
+const totalUsers = computed(() => globalUsers.value?.length ?? 0)
+const ecosystemName = computed(() => appName?.trim() || 'Global')
+const globalBadgeLabel = computed(() => {
+  const count = totalUsers.value
+  const suffix = count === 1 ? 'user' : 'users'
+  return `${count} ${suffix} · ${ecosystemName.value}`
+})
 </script>

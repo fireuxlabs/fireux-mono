@@ -46,21 +46,26 @@
 
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/useAppUsers.ts'
+import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/users.ts'
+import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/state/useUserInterface.ts'
 
-const props = defineProps<{ appId?: string | null }>()
-
-const { isTenant, appId: configAppId } = useFireUXConfig()
-const targetAppId = props.appId ?? configAppId ?? null
-const { appUsers } = useAppUsers(targetAppId)
+const { isTenant } = useFireUXConfig()
+const { users } = useAppUsers()
 const { pillProps } = useUserInterface()
 
 // shape the subcollection entries into pill props
 const memberPills = computed(() => {
   if (!isTenant) return []
 
-  const entries = appUsers?.value ?? []
-  return entries.map((entry: any) => pillProps(entry))
+  const entries = users?.value ?? []
+  return entries.map((entry) =>
+    pillProps({
+      id: entry.id,
+      display_name: entry.id,
+      avatar: '',
+      appUser: entry,
+    } as any)
+  )
 })
 
 const subcollections = computed(() => {

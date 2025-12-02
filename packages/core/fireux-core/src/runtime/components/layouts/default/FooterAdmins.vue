@@ -6,8 +6,8 @@
   >
     <div class="footer-admins__header">
       <p id="footer-admins-title" class="footer-admins__label">Admin team</p>
-      <p v-if="appName" class="footer-admins__context">
-        Managing {{ appName }}
+      <p v-if="appName || app?.app_name" class="footer-admins__context">
+        Managing {{ appName || app?.app_name }}
       </p>
     </div>
 
@@ -30,85 +30,71 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
-import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
+import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/users.ts'
+import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
+import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/state/useUserInterface.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
 
 const { app } = useApp()
+const { users, pending } = useAppUsers()
+const { fulfilled } = useUserCollection()
+const { pillProps } = useUserInterface()
+const { appName } = useFireUXConfig()
 
-const uniqueAdminIds = computed(() => {
-  const ids = Array.isArray(app.value?.admin_ids)
-    ? (app.value?.admin_ids as Array<string | null | undefined>)
-    : []
-  return Array.from(
-    new Set(
-      ids
-        .map((id) => (typeof id === 'string' ? id.trim() : ''))
-        .filter((id) => id.length > 0)
-    )
-  )
-})
-
-const appName = computed(() => app.value?.app_name ?? null)
-
-const roleLabel = (value?: string | null) => {
-  const normalized = (value ?? 'admin').toLowerCase()
-  if (!normalized) return 'Admin'
-  return normalized.charAt(0).toUpperCase() + normalized.slice(1)
-}
-
-const toInitials = (value: string) =>
-  value
-    .trim()
+const toInitials = (value?: string | null) => {
+  const input = (value ?? '').trim()
+  if (!input) return 'A'
+  return input
     .split(/\s+/)
-    .map((token) => token[0]?.toUpperCase() ?? '')
+    .map((token) => token[0])
     .join('')
+    .toUpperCase()
     .slice(0, 2)
-
-const adminRefCache = new Map<string, ReturnType<typeof useUserFetch>>()
-
-const resolveRefs = (uid: string) => {
-  if (!adminRefCache.has(uid)) {
-    adminRefCache.set(uid, useUserFetch(uid))
-  }
-  return adminRefCache.get(uid)!
 }
 
-const adminRefs = computed(() =>
-  uniqueAdminIds.value.map((uid) => ({ uid, refs: resolveRefs(uid) }))
+const adminMemberships = computed(() =>
+  (users.value ?? []).filter(
+    (record) =>
+      typeof record?.role === 'string' &&
+      record.role.trim().toLowerCase() === 'admin'
+  )
 )
 
-const isLoading = computed(() =>
-  adminRefs.value.some(({ refs }) => refs.pending?.value)
+const adminEntries = computed(() =>
+  (fulfilled?.value ?? []).filter(
+    (entry) => entry.appUser?.role?.trim().toLowerCase() === 'admin'
+  )
 )
 
-const adminCards = computed(() => {
-  return adminRefs.value
-    .map(({ uid, refs }, index) => {
-      const record = refs.user.value || refs.coreUser.value
-      if (!record) return null
+const adminCards = computed(() =>
+  adminEntries.value.map((record, index) => {
+    const pill = pillProps(record as any)
+    const title =
+      pill.title ||
+      record.display_name?.trim() ||
+      record.handle?.trim() ||
+      record.id ||
+      `Admin ${index + 1}`
 
-      const title =
-        record.display_name?.trim() ||
-        record.handle?.trim() ||
-        uid ||
-        `Admin ${index + 1}`
-      const handle = record.handle?.trim()
-      const subtitle = handle ? `@${handle}` : ''
-      const pill: UserCard.Pill = {
-        avatar: record.avatar ?? '',
-        initials: title ? toInitials(title) : 'A',
-        title,
-        subtitle,
-        badges: [roleLabel(record.role)],
-        to: uid ? `/users/${uid}` : null,
-      }
+    const enriched: UserCard.Pill = {
+      ...pill,
+      title,
+      initials: pill.initials ?? toInitials(title),
+      badges: ['Admin', ...(pill.badges ?? []).filter((b) => b !== 'Admin')],
+      to: pill.to ?? (record.id ? `/users/${record.id}` : null),
+      special: true,
+      specialIcon: 'i-lucide-star',
+      specialTooltip: 'App Admin',
+    }
 
-      return { key: uid || `${index}`, pill }
-    })
-    .filter((entry): entry is { key: string; pill: UserCard.Pill } =>
-      Boolean(entry)
-    )
-})
+    return { key: record.id || `${index}`, pill: enriched }
+  })
+)
+
+const isLoading = computed(
+  () => Boolean(pending.value) && Boolean(adminMemberships.value.length)
+)
 
 const shouldRender = computed(
   () => isLoading.value || Boolean(adminCards.value.length)
