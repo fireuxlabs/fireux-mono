@@ -46,28 +46,26 @@
         :text="normalized.specialTooltip"
         :popper="tooltipPopper"
       >
-        <span
-          :class="['special-wrap', 'special-wrap--active']"
-          :aria-label="specialAriaLabel"
+        <UBadge
+          color="primary"
+          variant="soft"
+          size="xs"
+          :title="specialAriaLabel"
+          class="admin-badge"
         >
-          <UIcon
-            :name="normalized.specialIcon"
-            class="special-icon"
-            aria-hidden="true"
-          />
-        </span>
+          Admin
+        </UBadge>
       </UTooltip>
-      <span
+      <UBadge
         v-else
-        :class="['special-wrap', 'special-wrap--active']"
-        :aria-label="specialAriaLabel"
+        color="primary"
+        variant="soft"
+        size="xs"
+        :title="specialAriaLabel"
+        class="admin-badge"
       >
-        <UIcon
-          :name="normalized.specialIcon"
-          class="special-icon"
-          aria-hidden="true"
-        />
-      </span>
+        Admin
+      </UBadge>
     </div>
   </component>
 </template>
@@ -95,7 +93,6 @@ const normalized = computed(() => {
     badges,
     to: base.to ?? null,
     special: Boolean(base.special),
-    specialIcon: base.specialIcon || 'i-lucide-star',
     specialTooltip: base.specialTooltip ?? '',
   }
 })
@@ -118,7 +115,7 @@ const rootClass = computed(() => [
 ])
 
 const specialAriaLabel = computed(
-  () => normalized.value.specialTooltip || 'Special user indicator'
+  () => normalized.value.specialTooltip || 'Tenant admin'
 )
 </script>
 
@@ -178,25 +175,7 @@ const specialAriaLabel = computed(
   margin-left: auto;
 }
 
-.special-wrap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
-  padding: 0.25rem;
-  background: var(--ui-background-100, rgba(148, 163, 184, 0.12));
-  color: var(--ui-text-400, rgba(148, 163, 184, 0.9));
-}
-
-.special-wrap--active {
-  border-color: var(--ui-warning-300, rgba(253, 224, 71, 0.65));
-  background: var(--ui-warning-50, rgba(253, 224, 71, 0.18));
-  color: var(--ui-warning-600, rgba(217, 119, 6, 1));
-}
-
-.special-icon {
-  width: 1rem;
-  height: 1rem;
+.admin-badge {
+  text-transform: uppercase;
 }
 </style>

@@ -13,7 +13,6 @@
     <div v-if="isTenant && tenantEntries.length" class="fx-section__grid">
       <div v-for="entry in tenantEntries" :key="entry.key" class="space-y-2">
         <OrganismsUserCardsPill :user="entry.pill" />
-        <pre class="tenant-users__json">{{ formatJson(entry.raw) }}</pre>
       </div>
     </div>
 
@@ -49,30 +48,14 @@ const tenantEntries = computed(() => {
       const source = entry?.coreUser ?? entry
       const enriched = { ...source, appUser: entry?.appUser }
       const pill = pillProps(enriched as any)
-      const isAdmin =
-        (entry?.appUser?.role ?? '').trim().toLowerCase() === 'admin'
-      const sanitized = {
-        ...pill,
-        special: false,
-        specialIcon: undefined,
-        specialTooltip: undefined,
-      }
-      const baseBadges = (pill.badges ?? []).filter(
-        (badge) => badge?.toLowerCase() !== 'admin'
-      )
 
       return {
         key: entry.id,
-        pill: {
-          ...sanitized,
-          badges: isAdmin ? ['Admin', ...baseBadges] : baseBadges,
-        } as UserCard.Pill,
-        raw: entry?.appUser ?? {},
+        pill: pill as UserCard.Pill,
       }
     })
-    .filter(
-      (entry): entry is { key: string; pill: UserCard.Pill; raw: unknown } =>
-        Boolean(entry)
+    .filter((entry): entry is { key: string; pill: UserCard.Pill } =>
+      Boolean(entry)
     )
 })
 
@@ -93,6 +76,4 @@ const tenantBadgeLabel = computed(() => {
   const tenant = appName?.trim()
   return tenant ? `${count} ${suffix} · ${tenant}` : `${count} ${suffix}`
 })
-
-const formatJson = (value: unknown) => JSON.stringify(value ?? {}, null, 2)
 </script>

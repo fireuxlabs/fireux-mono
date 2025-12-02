@@ -81,11 +81,9 @@ const adminCards = computed(() =>
       ...pill,
       title,
       initials: pill.initials ?? toInitials(title),
-      badges: ['Admin', ...(pill.badges ?? []).filter((b) => b !== 'Admin')],
       to: pill.to ?? (record.id ? `/users/${record.id}` : null),
       special: true,
-      specialIcon: 'i-lucide-star',
-      specialTooltip: 'App Admin',
+      specialTooltip: 'Tenant admin',
     }
 
     return { key: record.id || `${index}`, pill: enriched }

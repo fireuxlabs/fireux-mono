@@ -54,17 +54,18 @@ export function useUserInterface(
     const role = user?.appUser?.role ?? user?.role
     const normalizedRole = roleLabel(role)
     const isAdmin = normalizedRole === 'Admin'
+    const profileBadges = badgeList(user?.profiles)
+    const mergedBadges = Array.from(new Set([...profileBadges]))
 
     return {
       avatar: user?.avatar ?? '',
       initials: toInitials(displayName),
       title: displayName,
       subtitle: subtitle(user?.handle),
-      badges: badgeList(user?.profiles),
+      badges: mergedBadges,
       to: (toPath(user?.id) || null) as RouteLocationRaw,
       special: isAdmin,
-      specialIcon: isAdmin ? 'i-lucide-star' : undefined,
-      specialTooltip: isAdmin ? 'App Admin' : undefined,
+      specialTooltip: isAdmin ? 'Tenant admin' : undefined,
     }
   }
 

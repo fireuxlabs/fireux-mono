@@ -14,8 +14,9 @@
     </template>
 
     <div v-if="directoryEntries.length" class="fx-section__grid">
-      <div v-for="entry in directoryEntries" :key="entry.key">
+      <div v-for="entry in directoryEntries" :key="entry.key" class="space-y-2">
         <OrganismsUserCardsPill :user="entry.pill" />
+        <pre class="user-section__json">{{ formatJson(entry.raw) }}</pre>
       </div>
     </div>
 
@@ -34,11 +35,21 @@ import type {
 } from 'fireux-core/runtime/models/core/user.model.ts'
 
 const { firestoreFetchCollection } = useFirestoreRead()
-const { appName } = useFireUXConfig()
+const { appName, appId } = useFireUXConfig()
 const globalUsers = firestoreFetchCollection<User>('users')
 const { pillProps } = useUserInterface()
 
-type DirectoryEntry = { key: string; pill: UserCard.Pill }
+type DirectoryEntry = { key: string; pill: UserCard.Pill; raw: User }
+
+const inferRole = (entry: User): 'admin' | 'user' | undefined => {
+  const explicit = (entry.role ?? entry.appUser?.role)?.trim().toLowerCase()
+  if (explicit === 'admin' || explicit === 'user') return explicit
+  const activeAppId = appId?.trim()
+  if (!activeAppId) return undefined
+  if (entry.adminOf?.some((id) => id === activeAppId)) return 'admin'
+  if (entry.userOf?.some((id) => id === activeAppId)) return 'user'
+  return undefined
+}
 
 const directoryEntries = computed<DirectoryEntry[]>(() => {
   const list = globalUsers.value ?? []
@@ -46,10 +57,15 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
 
   return list
     .filter((entry: any) => Boolean(entry?.id))
-    .map((entry: User) => ({
-      key: entry.id,
-      pill: pillProps(entry),
-    }))
+    .map((entry: User) => {
+      const role = inferRole(entry)
+      const enriched = role ? ({ ...entry, role } as User) : entry
+      return {
+        key: entry.id,
+        pill: pillProps(enriched),
+        raw: enriched,
+      }
+    })
 })
 
 const totalUsers = computed(() => globalUsers.value?.length ?? 0)
@@ -59,4 +75,6 @@ const globalBadgeLabel = computed(() => {
   const suffix = count === 1 ? 'user' : 'users'
   return `${count} ${suffix} · ${ecosystemName.value}`
 })
+
+const formatJson = (value: unknown) => JSON.stringify(value ?? {}, null, 2)
 </script>
