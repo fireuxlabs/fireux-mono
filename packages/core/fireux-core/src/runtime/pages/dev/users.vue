@@ -10,10 +10,6 @@
         </template>
 
         <div class="space-y-2">
-          <div class="text-xs text-gray-500">
-            Scenario Ref:
-            <code>{{ currentScenarioRef }}</code>
-          </div>
           <OrganismsUserCardsPill :user="pillFor(currentUser)" />
         </div>
 
@@ -103,10 +99,6 @@
             :key="u.id || index"
             class="space-y-2 rounded-lg border border-gray-200 p-3"
           >
-            <div class="text-xs text-gray-500">
-              Scenario Ref:
-              <code>{{ scenarioRef(u, index) }}</code>
-            </div>
             <OrganismsUserCardsPill :user="pillFor(u)" />
           </div>
         </div>
@@ -152,14 +144,6 @@ const pillFor = (target: User | any | null | undefined) => {
   const base = target?.coreUser ?? target
   return collectionPill(base)
 }
-
-const scenarioRef = (target: User | null | undefined, index = 0) => {
-  const id = target?.id?.trim()
-  if (id) return `USR-${id}`
-  return `USR-${String(index + 1).padStart(2, '0')}`
-}
-
-const currentScenarioRef = computed(() => scenarioRef(currentUser.value, 0))
 
 const users = computed(() => usersCollection.value ?? [])
 

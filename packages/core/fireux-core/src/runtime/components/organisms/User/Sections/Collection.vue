@@ -15,10 +15,6 @@
 
     <div v-if="directoryEntries.length" class="fx-section__grid">
       <div v-for="entry in directoryEntries" :key="entry.key" class="space-y-2">
-        <div class="text-xs text-gray-500">
-          Scenario Ref:
-          <code>{{ entry.scenario }}</code>
-        </div>
         <OrganismsUserCardsPill :user="entry.pill" />
       </div>
     </div>
@@ -46,14 +42,7 @@ type DirectoryEntry = {
   key: string
   pill: UserCard.Pill
   raw: User
-  scenario: string
 }
-
-const scenarioPrefix = computed(() => {
-  if (isTenant) return 'global-collection'
-  const runtime = appName?.trim()
-  return runtime ? `${runtime.toLowerCase()}-collection` : 'global-collection'
-})
 
 const inferRole = (entry: User): 'admin' | 'user' | undefined => {
   const explicit = (entry.role ?? entry.appUser?.role)?.trim().toLowerCase()
@@ -71,14 +60,13 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
 
   return list
     .filter((entry: any) => Boolean(entry?.id))
-    .map((entry: User, index: number) => {
+    .map((entry: User) => {
       const role = inferRole(entry)
       const enriched = role ? ({ ...entry, role } as User) : entry
       return {
         key: entry.id,
         pill: pillProps(enriched),
         raw: enriched,
-        scenario: formatScenarioRef(`${scenarioPrefix.value}`, enriched, index),
       }
     })
 })
@@ -96,14 +84,4 @@ const globalBadgeLabel = computed(() => {
   const suffix = count === 1 ? 'user' : 'users'
   return `${count} ${suffix} · ${badgeRuntimeLabel.value}`
 })
-
-function formatScenarioRef(
-  prefix: string,
-  user: User | null | undefined,
-  index = 0
-) {
-  const id = user?.id?.trim()
-  if (id) return `${prefix}:${id}`
-  return `${prefix}:idx-${String(index + 1).padStart(2, '0')}`
-}
 </script>

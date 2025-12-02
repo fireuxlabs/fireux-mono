@@ -4,7 +4,6 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="space-y-6">
       <OrganismsUserSectionsSingle :user="currentUser" :compact="false" />
-      <OrganismsUserSectionsCollection />
     </UPageBody>
   </UPage>
 </template>

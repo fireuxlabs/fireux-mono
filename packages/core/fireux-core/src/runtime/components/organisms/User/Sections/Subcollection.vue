@@ -1,31 +1,23 @@
 <template>
-  <UCard class="fx-section">
+  <UCard v-if="isTenant" class="fx-section">
     <template #header>
       <div class="fx-section__header">
         <div class="fx-section__copy">
           <h2 class="text-base font-semibold">{{ tenantTitle }}</h2>
           <p class="text-xs text-gray-500">{{ tenantDescription }}</p>
         </div>
-        <UBadge v-if="isTenant" variant="soft">{{ tenantBadgeLabel }}</UBadge>
+        <UBadge variant="soft">{{ tenantBadgeLabel }}</UBadge>
       </div>
     </template>
 
-    <div v-if="isTenant && tenantEntries.length" class="fx-section__grid">
+    <div v-if="tenantEntries.length" class="fx-section__grid">
       <div v-for="entry in tenantEntries" :key="entry.key" class="space-y-2">
-        <div class="text-xs text-gray-500">
-          Scenario Ref:
-          <code>{{ entry.scenario }}</code>
-        </div>
         <OrganismsUserCardsPill :user="entry.pill" :show-memberships="false" />
       </div>
     </div>
 
-    <p v-else-if="isTenant" class="fx-section__empty">
-      No tenant app users discovered for this runtime.
-    </p>
-
     <p v-else class="fx-section__empty">
-      Switch to a tenant runtime to inspect app user data.
+      No tenant app users discovered for this runtime.
     </p>
   </UCard>
 </template>
@@ -49,13 +41,7 @@ type TenantEntry = {
   pill: UserCard.Pill
   role: string | null
   raw: User
-  scenario: string
 }
-
-const scenarioPrefix = computed(() => {
-  const tenant = appName?.trim()
-  return tenant ? `${tenant.toLowerCase()}-tenant` : 'tenant'
-})
 
 const tenantEntries = computed((): TenantEntry[] => {
   if (!isTenant) return []
@@ -63,7 +49,7 @@ const tenantEntries = computed((): TenantEntry[] => {
   if (!list.length) return []
 
   return list
-    .map((entry: any, index: number) => {
+    .map((entry: any) => {
       if (!entry?.id) return null
       const source = entry?.coreUser ?? entry
       const enriched = { ...(source as User), appUser: entry?.appUser }
@@ -75,26 +61,19 @@ const tenantEntries = computed((): TenantEntry[] => {
         role:
           typeof entry?.appUser?.role === 'string' ? entry.appUser.role : null,
         raw: enriched as User,
-        scenario: formatScenarioRef(
-          `${scenarioPrefix.value}-subcollection`,
-          enriched as User,
-          index
-        ),
       }
     })
     .filter((entry): entry is TenantEntry => Boolean(entry))
 })
 
 const tenantTitle = computed(() => {
-  if (!isTenant) return 'Tenant Users'
   const name = appName?.trim()
   return name ? `${name} Users` : 'Tenant Users'
 })
 
-const tenantDescription = computed(() => {
-  if (!isTenant) return 'App users only exist for tenant runtimes.'
-  return 'Streaming /apps/{app}/users memberships with their core profiles.'
-})
+const tenantDescription = computed(
+  () => 'Streaming /apps/{app}/users memberships with their core profiles.'
+)
 
 const tenantBadgeLabel = computed(() => {
   const count = tenantEntries.value.length
@@ -102,14 +81,4 @@ const tenantBadgeLabel = computed(() => {
   const tenant = appName?.trim()
   return tenant ? `${count} ${suffix} · ${tenant}` : `${count} ${suffix}`
 })
-
-function formatScenarioRef(
-  prefix: string,
-  user: User | null | undefined,
-  index = 0
-) {
-  const id = user?.id?.trim()
-  if (id) return `${prefix}:${id}`
-  return `${prefix}:idx-${String(index + 1).padStart(2, '0')}`
-}
 </script>

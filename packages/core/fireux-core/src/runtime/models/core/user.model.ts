@@ -62,16 +62,27 @@ export namespace UserCard {
 
   /** Cell extends Pill props + adds 'to' and domain fields */
   export interface Cell extends Pill {
-    to: string
+    to?: string | null
     id: string
     profiles?: string[]
     role?: string
+    handle?: string
+    email?: string
     adminOf?: string[]
     userOf?: string[]
+    createdAt?: FirebaseTimestamp
+    updatedAt?: FirebaseTimestamp
+    appUser?: AppUser | null
+    runtime?: {
+      mode: 'global' | 'tenant'
+      appId?: string | null
+    }
   }
 
   /** Profile = Cell with extra descriptive metadata */
   export interface Profile extends Cell {
+    displayName?: string
+    display_name?: string
     email?: string
     bio?: string
     created_at?: FirebaseTimestamp

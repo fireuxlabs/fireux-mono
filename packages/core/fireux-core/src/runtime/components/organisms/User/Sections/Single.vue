@@ -8,25 +8,36 @@
     <template v-else>
       <UCard>
         <template #header>
-          <h2>{{ headerTitle }}</h2>
-          <p>{{ headerDescription }}</p>
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2>{{ headerTitle }}</h2>
+              <p>{{ headerDescription }}</p>
+            </div>
+            <UButton
+              v-if="current"
+              size="xs"
+              variant="ghost"
+              @click="toggleView"
+            >
+              {{ showCellView ? 'Show Pill' : 'Show Cell' }}
+            </UButton>
+          </div>
         </template>
 
         <div v-if="current" class="space-y-4">
-          <OrganismsUserCardsPill v-if="currentPill" :user="currentPill" />
-          <OrganismsUserCardsCell
-            v-if="currentCell"
-            :user="currentCell"
-            :to="coreLink"
+          <OrganismsUserCardsPill
+            v-if="!showCellView && currentPill"
+            :user="currentPill"
           />
+          <OrganismsUserCardsCell v-else-if="currentCell" :user="currentCell" />
         </div>
 
         <p v-else>No user loaded.</p>
       </UCard>
 
       <OrganismsUserCardsProfile
-        v-if="showExtended && profile"
-        :user="profile"
+        v-if="showExtended && currentProfile"
+        :user="currentProfile"
       />
 
       <OrganismsUserSectionsSubcollection v-if="showExtended" />
@@ -35,8 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { RouteLocationRaw } from 'vue-router'
+import { computed, ref } from 'vue'
 import type {
   User,
   UserCard,
@@ -49,7 +59,7 @@ const props = withDefaults(
   { compact: true }
 )
 
-const { user: runtimeUser, pillProps, cta } = useUser()
+const { user: runtimeUser, pillProps, cellProps, profileProps, cta } = useUser()
 const { isTenant } = useFireUXConfig()
 
 const current = computed<User | null>(
@@ -63,36 +73,26 @@ const headerDescription = computed(() => {
   return handle ? `@${handle}` : '@unknown'
 })
 
-const toCell = (user: User, pill: UserCard.Pill): UserCard.Cell => {
-  const role = (user.appUser?.role ?? user.role)?.trim().toLowerCase()
-  return {
-    ...pill,
-    id: user.id ?? '-',
-    profiles: [...(pill.badges ?? [])],
-    role: role || '-',
-    memberships: pill.memberships ?? [],
-  }
-}
-
 const currentPill = computed<UserCard.Pill | null>(() =>
   current.value ? { ...pillProps(current.value) } : null
 )
 
 const currentCell = computed<UserCard.Cell | null>(() => {
   if (!current.value) return null
-  const pill = pillProps(current.value)
-  return pill ? toCell(current.value, pill) : null
+  return cellProps(current.value)
 })
 
-const coreLink = computed<RouteLocationRaw | null>(() => {
-  if (currentPill.value?.to) return currentPill.value.to
-  const id = current.value?.id
-  return id ? `/users/${id}` : null
+const currentProfile = computed<UserCard.Profile | null>(() => {
+  if (!current.value) return null
+  return profileProps(current.value)
 })
-
-const profile = computed<User | null>(() => current.value)
 
 const showExtended = computed(() => !props.compact)
 
 const showUserCta = computed(() => (cta.value?.key ?? 'avatar') !== 'avatar')
+
+const showCellView = ref(false)
+const toggleView = () => {
+  showCellView.value = !showCellView.value
+}
 </script>
