@@ -10,15 +10,20 @@
       <OrganismsUserSectionsSingle :user="currentUser" />
       <OrganismsUserSectionsSubcollection v-if="isTenant" />
 
-      <section v-if="isTenant">
-        <UButton
-          v-if="!showGlobalDirectory"
-          variant="ghost"
-          @click="showGlobalDirectory = true"
-        >
-          View global directory
-        </UButton>
-        <OrganismsUserSectionsCollection v-else />
+      <section v-if="isTenant" class="space-y-2">
+        <div class="flex items-center justify-end">
+          <UButton
+            variant="ghost"
+            @click="showGlobalDirectory = !showGlobalDirectory"
+          >
+            {{
+              showGlobalDirectory
+                ? 'Hide global directory'
+                : 'View global directory'
+            }}
+          </UButton>
+        </div>
+        <OrganismsUserSectionsCollection v-if="showGlobalDirectory" />
       </section>
 
       <OrganismsUserSectionsCollection v-else />

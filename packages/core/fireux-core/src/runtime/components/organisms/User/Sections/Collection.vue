@@ -3,7 +3,7 @@
     <template #header>
       <div class="fx-section__header">
         <div class="fx-section__copy">
-          <h2 class="text-base font-semibold">{{ ecosystemName }} Users</h2>
+          <h2 class="text-base font-semibold">{{ collectionTitle }}</h2>
           <p class="text-xs text-gray-500">
             Streaming the canonical <code>/users</code> collection for this
             runtime.
@@ -16,7 +16,6 @@
     <div v-if="directoryEntries.length" class="fx-section__grid">
       <div v-for="entry in directoryEntries" :key="entry.key" class="space-y-2">
         <OrganismsUserCardsPill :user="entry.pill" />
-        <pre class="user-section__json">{{ formatJson(entry.raw) }}</pre>
       </div>
     </div>
 
@@ -35,7 +34,7 @@ import type {
 } from 'fireux-core/runtime/models/core/user.model.ts'
 
 const { firestoreFetchCollection } = useFirestoreRead()
-const { appName, appId } = useFireUXConfig()
+const { appName, appId, isTenant } = useFireUXConfig()
 const globalUsers = firestoreFetchCollection<User>('users')
 const { pillProps } = useUserInterface()
 
@@ -69,13 +68,16 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
 })
 
 const totalUsers = computed(() => globalUsers.value?.length ?? 0)
-const ecosystemName = computed(() => appName?.trim() || 'Global')
+const runtimeLabel = computed(() => appName?.trim() || 'Global')
+const collectionTitle = computed(() =>
+  isTenant ? 'Global Users' : `${runtimeLabel.value} Users`
+)
+const badgeRuntimeLabel = computed(() =>
+  isTenant ? 'Global' : runtimeLabel.value
+)
 const globalBadgeLabel = computed(() => {
   const count = totalUsers.value
   const suffix = count === 1 ? 'user' : 'users'
-  return `${count} ${suffix} · ${ecosystemName.value}`
+  return `${count} ${suffix} · ${badgeRuntimeLabel.value}`
 })
-
-const formatJson = (value: unknown) => JSON.stringify(value ?? {}, null, 2)
 </script>
-

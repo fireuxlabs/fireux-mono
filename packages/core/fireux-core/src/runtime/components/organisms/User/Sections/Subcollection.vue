@@ -12,7 +12,9 @@
 
     <div v-if="isTenant && tenantEntries.length" class="fx-section__grid">
       <div v-for="entry in tenantEntries" :key="entry.key" class="space-y-2">
-        <OrganismsUserCardsPill :user="entry.pill" />
+        <OrganismsUserCardsPill :user="entry.pill" :show-memberships="false" />
+
+        <pre class="user-section__json">{{ formatJson(entry.raw) }}</pre>
       </div>
     </div>
 
@@ -37,7 +39,14 @@ const { isTenant, appName } = useFireUXConfig()
 const { users } = useUserCollection()
 const { pillProps } = useUserInterface()
 
-const tenantEntries = computed(() => {
+type TenantEntry = {
+  key: string
+  pill: UserCard.Pill
+  raw: unknown
+  role: string | null
+}
+
+const tenantEntries = computed((): TenantEntry[] => {
   if (!isTenant) return []
   const list = users.value ?? []
   if (!list.length) return []
@@ -52,11 +61,12 @@ const tenantEntries = computed(() => {
       return {
         key: entry.id,
         pill: pill as UserCard.Pill,
+        raw: entry?.appUser ?? entry,
+        role:
+          typeof entry?.appUser?.role === 'string' ? entry.appUser.role : null,
       }
     })
-    .filter((entry): entry is { key: string; pill: UserCard.Pill } =>
-      Boolean(entry)
-    )
+    .filter((entry): entry is TenantEntry => Boolean(entry))
 })
 
 const tenantTitle = computed(() => {
@@ -76,4 +86,6 @@ const tenantBadgeLabel = computed(() => {
   const tenant = appName?.trim()
   return tenant ? `${count} ${suffix} · ${tenant}` : `${count} ${suffix}`
 })
+
+const formatJson = (value: unknown) => JSON.stringify(value ?? {}, null, 2)
 </script>

@@ -69,13 +69,15 @@
         </UBadge>
       </div>
 
-      <div v-if="normalized.memberships.length" class="memberships">
+      <div
+        v-if="normalized.memberships.length && showMemberships"
+        class="memberships"
+      >
         <UBadge
           v-for="membership in normalized.memberships"
           :key="membership.id"
           size="xs"
           :variant="membership.isAdmin ? 'soft' : 'outline'"
-          :color="membership.isAdmin ? 'primary' : 'gray'"
           class="membership-badge"
           :title="membership.label"
         >
@@ -91,7 +93,10 @@ import { computed, resolveComponent } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
 
-const props = defineProps<{ user?: UserCard.Pill | null }>()
+const props = withDefaults(
+  defineProps<{ user?: UserCard.Pill | null; showMemberships?: boolean }>(),
+  { showMemberships: true }
+)
 
 const tooltipPopper = { placement: 'top' as const }
 
@@ -126,6 +131,7 @@ const normalized = computed(() => {
 const hasLink = computed(() => Boolean(normalized.value.to))
 const nuxtLink = resolveComponent('NuxtLink')
 const wrapperComponent = computed(() => (hasLink.value ? nuxtLink : 'div'))
+const showMemberships = computed(() => Boolean(props.showMemberships))
 
 const wrapperBindings = computed(() => {
   if (!hasLink.value) return {}
