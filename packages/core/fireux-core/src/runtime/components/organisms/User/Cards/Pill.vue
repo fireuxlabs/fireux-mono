@@ -1,6 +1,6 @@
 <template>
   <component
-    :is="wrapperTag"
+    :is="wrapperComponent"
     v-bind="wrapperBindings"
     :class="rootClass"
     :aria-label="normalized.title || 'user pill'"
@@ -68,12 +68,26 @@
           {{ badge }}
         </UBadge>
       </div>
+
+      <div v-if="normalized.memberships.length" class="memberships">
+        <UBadge
+          v-for="membership in normalized.memberships"
+          :key="membership.id"
+          size="xs"
+          :variant="membership.isAdmin ? 'soft' : 'outline'"
+          :color="membership.isAdmin ? 'primary' : 'gray'"
+          class="membership-badge"
+          :title="membership.label"
+        >
+          {{ membership.label }}
+        </UBadge>
+      </div>
     </div>
   </component>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, resolveComponent } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
 
@@ -86,6 +100,15 @@ const normalized = computed(() => {
   const badges = Array.isArray(base.badges)
     ? (base.badges.filter(Boolean) as string[])
     : []
+  const memberships = Array.isArray(base.memberships)
+    ? base.memberships
+        .map((entry) => ({
+          id: entry?.id?.toString().trim() ?? '',
+          label: entry?.label?.trim() || entry?.id?.toString() || '',
+          isAdmin: Boolean(entry?.isAdmin),
+        }))
+        .filter((entry) => entry.id && entry.label)
+    : []
 
   return {
     avatar: base.avatar ?? '',
@@ -96,12 +119,13 @@ const normalized = computed(() => {
     to: base.to ?? null,
     special: Boolean(base.special),
     specialTooltip: base.specialTooltip ?? '',
+    memberships,
   }
 })
 
 const hasLink = computed(() => Boolean(normalized.value.to))
-
-const wrapperTag = computed(() => (hasLink.value ? 'NuxtLink' : 'div'))
+const nuxtLink = resolveComponent('NuxtLink')
+const wrapperComponent = computed(() => (hasLink.value ? nuxtLink : 'div'))
 
 const wrapperBindings = computed(() => {
   if (!hasLink.value) return {}
@@ -181,5 +205,16 @@ const specialAriaLabel = computed(
 
 .admin-badge {
   margin-left: 0.25rem;
+}
+
+.memberships {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.2rem;
+}
+
+.membership-badge {
+  text-transform: none;
 }
 </style>

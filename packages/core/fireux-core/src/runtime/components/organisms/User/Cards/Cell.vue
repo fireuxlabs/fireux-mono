@@ -24,6 +24,7 @@ const normalized = computed<UserCard.Pill | null>(() => {
     to: props.to ?? props.user.to ?? null,
     special: props.user.special,
     specialTooltip: props.user.specialTooltip,
+    memberships: props.user.memberships,
   }
 })
 </script>

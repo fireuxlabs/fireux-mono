@@ -28,6 +28,7 @@ export function useUserInterface(
       : []
     const role = (user.appUser?.role ?? user.role)?.trim().toLowerCase()
     const isAdmin = role === 'admin'
+    const memberships = formatMemberships(user)
 
     return {
       avatar: user.avatar || '',
@@ -40,6 +41,7 @@ export function useUserInterface(
       specialTooltip: isAdmin ? 'Tenant admin' : undefined,
       role: role ?? '-',
       id: user.id ?? '-',
+      memberships,
     }
   }
 
@@ -56,6 +58,7 @@ export function useUserInterface(
       to: shared.to,
       special: shared.special,
       specialTooltip: shared.specialTooltip,
+      memberships: shared.memberships,
     }
   }
 
@@ -75,8 +78,34 @@ export function useUserInterface(
       id: shared.id,
       profiles: shared.badges,
       role: shared.role,
+      memberships: shared.memberships,
     }
   }
+
+  const formatMemberships = (user: User): UserCard.MembershipBadge[] => {
+    const apps = Array.isArray(user.userOf) ? user.userOf : []
+    if (!apps.length) return []
+
+    const adminApps = new Set(
+      Array.isArray(user.adminOf) ? user.adminOf.filter(Boolean) : []
+    )
+
+    return apps
+      .map((app) => (typeof app === 'string' ? app.trim() : ''))
+      .filter((app): app is string => Boolean(app))
+      .map((app) => ({
+        id: app,
+        label: humanizeAppId(app),
+        isAdmin: adminApps.has(app),
+      }))
+  }
+
+  const humanizeAppId = (value: string): string =>
+    value
+      .split(/[-_]/)
+      .filter(Boolean)
+      .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+      .join(' ')
 
   return { pillProps, cellProps }
 }

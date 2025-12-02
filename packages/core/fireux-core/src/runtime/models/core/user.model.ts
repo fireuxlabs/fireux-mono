@@ -50,7 +50,15 @@ export interface AppUser {
  * UI View Models (purely structural)
  * --------------------------- */
 export namespace UserCard {
-  export interface Pill extends PillModel.Props {}
+  export interface MembershipBadge {
+    id: string
+    label: string
+    isAdmin: boolean
+  }
+
+  export interface Pill extends PillModel.Props {
+    memberships?: MembershipBadge[]
+  }
 
   /** Cell extends Pill props + adds 'to' and domain fields */
   export interface Cell extends Pill {
