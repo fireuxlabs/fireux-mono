@@ -50,6 +50,7 @@
         <OrganismsUserCardsPill
           v-if="pillUser"
           :user="pillUser"
+          :show-memberships="false"
           class="w-full"
         />
       </template>
@@ -188,10 +189,10 @@ const { isAdmin, user, pillProps } = useUser()
 const pillUser = computed<UserCard.Pill | undefined>(() => {
   const current = user.value
   if (!current) return undefined
-  const { badges: _badges, ...rest } = pillProps(current)
+  const base = pillProps(current)
+  if (!base) return undefined
   return {
-    ...rest,
-    badges: [],
+    ...base,
     to: '/dashboard/user-profile',
   }
 })

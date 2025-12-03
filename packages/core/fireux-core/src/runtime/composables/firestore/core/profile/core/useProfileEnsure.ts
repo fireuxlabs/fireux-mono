@@ -1,10 +1,9 @@
-import { doc, getDoc } from 'firebase/firestore'
+import { arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
 import { requireUid } from '../../../utils/useEnsureCommon.ts'
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
-import { useUserUpdateForUid } from '../../user/mutations/useUserUpdate.ts'
 
 type EnsureResult = {
   createdCore: boolean
@@ -18,7 +17,7 @@ type EnsureResult = {
  */
 export function useProfileEnsure(config: ProfileConfig) {
   const db = useFirestore()
-  const { setDocument } = useFirestoreManager()
+  const { setDocument, updateDocument } = useFirestoreManager()
   const { isTenant, appId } = useFireUXConfig()
 
   const ensure = async (): Promise<EnsureResult> => {
@@ -46,8 +45,9 @@ export function useProfileEnsure(config: ProfileConfig) {
 
     if (config.id) {
       try {
-        const { addProfileTag } = useUserUpdateForUid(uid)
-        await addProfileTag(config.id)
+        await updateDocument('users', uid, {
+          profiles: arrayUnion(config.id) as unknown as string[],
+        })
       } catch (error) {
         if (import.meta.dev) {
           console.warn('[useProfileEnsure] failed to tag user profile', {

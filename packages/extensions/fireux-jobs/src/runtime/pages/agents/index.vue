@@ -43,7 +43,8 @@ definePageMeta({
 const { pill, cell } = useAgent()
 
 const { isTenant } = useFireUXConfig()
-const hasProfile = computed(() => useUser().hasProfile('agent'))
+const user = useUser()
+const hasProfile = computed(() => user.hasProfile('agent'))
 
 const pageTitle = 'Agents'
 const pageDescription =
