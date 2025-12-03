@@ -13,7 +13,7 @@
       <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
         <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
           <template #preview>
-            <OrganismsAppEditPreview />
+            <OrganismsAppPreview />
           </template>
 
           <template #core>
@@ -34,6 +34,8 @@
 </template>
 
 <script setup lang="ts">
+import OrganismsAppPreview from 'fireux-core/runtime/components/organisms/App/Preview.vue'
+
 definePageMeta({
   layout: 'dashboard',
   nav: {

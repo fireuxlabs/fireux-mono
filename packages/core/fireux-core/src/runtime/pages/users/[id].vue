@@ -3,7 +3,7 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="space-y-6">
-      <OrganismsUserSectionsSingle :user="currentUser" :compact="false" />
+      <OrganismsUserPreview :user="currentUser" :compact="false" />
     </UPageBody>
   </UPage>
 </template>

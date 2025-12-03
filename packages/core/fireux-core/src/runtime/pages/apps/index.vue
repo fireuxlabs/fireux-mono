@@ -6,15 +6,14 @@
       description="Inspect the current app and browse all apps available to this runtime."
     />
     <UPageBody class="space-y-6">
-      <OrganismsAppSectionsSingle :app="currentApp" />
-      <OrganismsAppSectionsCollection />
+      <OrganismsAppPreview />
+      <OrganismsAppCollection />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 
 definePageMeta({
   nav: {
@@ -31,8 +30,6 @@ definePageMeta({
   layout: 'default',
   name: 'AppsIndexPage',
 })
-
-const { app: currentApp } = useApp()
 
 useHead({ title: 'Apps' })
 </script>

@@ -27,11 +27,17 @@
         <ClientOnly v-else>
           <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
             <template #preview>
-              <OrganismsUserEditPreview />
+              <ClientOnly>
+                <OrganismsUserPreview />
+              </ClientOnly>
             </template>
 
             <template #core>
-              <OrganismsUserEditUser :user="resolvedUser" />
+              <OrganismsUserEditCore :user="resolvedUser" />
+            </template>
+
+            <template #app>
+              <OrganismsUserEditApp :user="resolvedUser" />
             </template>
           </LayoutsDashboardProfileEdit>
         </ClientOnly>

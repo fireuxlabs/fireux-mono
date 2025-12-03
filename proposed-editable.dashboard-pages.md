@@ -129,17 +129,25 @@ const hasXProfile = computed(() => {
       <div v-if="currentUser" class="space-y-6">
         <div class="grid gap-6 lg:grid-cols-2">
           <Transition name="fade-toggle">
-            <OrganismsUserEditPreview
-              v-show="showPreview"
-              :user="currentUser"
-              :pill="currentUserPill"
-              :cell="currentUserCell"
-              :link="userLink"
-            />
+            <ClientOnly v-show="showPreview">
+              <OrganismsUserPreview
+                :user="currentUser"
+                :pill="currentUserPill"
+                :cell="currentUserCell"
+                :link="userLink"
+              />
+            </ClientOnly>
           </Transition>
 
           <Transition name="fade-toggle">
-            <OrganismsUserEditUser v-show="showEditor" :user="currentUser" />
+            <LayoutsDashboardProfileEdit v-show="showEditor">
+              <template #core>
+                <OrganismsUserEditCore :user="currentUser" />
+              </template>
+              <template #app>
+                <OrganismsUserEditApp :user="currentUser" />
+              </template>
+            </LayoutsDashboardProfileEdit>
           </Transition>
         </div>
       </div>
@@ -262,7 +270,9 @@ const userLink = computed(() =>
         <!-- Main app panel -->
         <UCard v-else-if="currentApp" variant="subtle">
           <div class="grid gap-6 lg:grid-cols-2">
-            <OrganismsAppEditPreview />
+            <ClientOnly>
+              <OrganismsAppPreview />
+            </ClientOnly>
 
             <OrganismsAppEdit :app="currentApp" />
           </div>

@@ -7,8 +7,7 @@
     />
 
     <UPageBody class="space-y-6">
-      <OrganismsUserSectionsSingle :user="currentUser" />
-      <OrganismsUserSectionsSubcollection v-if="isTenant" />
+      <OrganismsUserPreview :user="currentUser" />
 
       <section v-if="isTenant" class="space-y-2">
         <div class="flex items-center justify-end">
@@ -23,10 +22,10 @@
             }}
           </UButton>
         </div>
-        <OrganismsUserSectionsCollection v-if="showGlobalDirectory" />
+        <OrganismsUserCollection v-if="showGlobalDirectory" />
       </section>
 
-      <OrganismsUserSectionsCollection v-else />
+      <OrganismsUserCollection v-else />
     </UPageBody>
   </UPage>
 </template>
