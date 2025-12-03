@@ -17,7 +17,7 @@
           ID: <span class="text-black">{{ currentUser.id }}</span>
         </p>
       </UCard>
-      <MoleculesNotFound
+      <MoleculesStateCard
         v-else
         kind="document"
         entity="user"
@@ -104,7 +104,7 @@
         </div>
         <DevJsonPanel v-if="usersJson" :data="usersJson" />
       </UCard>
-      <MoleculesNotFound v-else kind="collection" entity="users" />
+      <MoleculesStateCard v-else kind="collection" entity="users" />
     </UPageBody>
   </UPage>
 </template>

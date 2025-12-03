@@ -10,30 +10,44 @@
     </template>
 
     <template #body>
-      <div v-if="hasAgentProfile">
-        <OrganismsProfileEditProfile v-if="coreProfile">
-          <template #core>
-            <OrganismsProfilesAgentEditCore :agent="coreProfile" />
-          </template>
+      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6 space-y-6">
+        <UCard v-if="!hasAgentProfile">
+          <div class="fallback">Agent profile not found.</div>
+        </UCard>
 
-          <template v-if="appProfile" #app>
-            <OrganismsProfilesAgentEditApp :agent="appProfile" />
-          </template>
-        </OrganismsProfileEditProfile>
+        <UCard v-else-if="isProfileLoading">
+          <div class="fallback loading">Agent profile data is loading.</div>
+        </UCard>
 
-        <div v-else class="fallback loading">
-          Agent profile data is loading.
-        </div>
+        <UCard v-else-if="!resolvedCoreProfile">
+          <div class="fallback">
+            Your agent profile hasn’t been created yet.
+          </div>
+        </UCard>
+
+        <ClientOnly v-else>
+          <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
+            <template #preview>
+              <OrganismsProfilesAgentEditPreview />
+            </template>
+
+            <template #core>
+              <OrganismsProfilesAgentEditCore :agent="resolvedCoreProfile" />
+            </template>
+
+            <template v-if="resolvedAppProfile" #app>
+              <OrganismsProfilesAgentEditApp :agent="resolvedAppProfile" />
+            </template>
+          </LayoutsDashboardProfileEdit>
+        </ClientOnly>
       </div>
-
-      <div v-else class="fallback">Agent profile not found.</div>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
+import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useAgent } from '../../../composables/firestore/profiles/Agent/useAgent'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { agentConfig } from '../../../models/profiles/Agent.model'
@@ -63,6 +77,10 @@ const hasAgentProfile = computed(() => {
   const source = user.value?.profiles
   return Array.isArray(source) && source.includes('agent')
 })
+
+const isProfileLoading = computed(() => coreProfile.value === undefined)
+const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
+const resolvedAppProfile = computed(() => appProfile.value ?? null)
 </script>
 
 <style scoped>

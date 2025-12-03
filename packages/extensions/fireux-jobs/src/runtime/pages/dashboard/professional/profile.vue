@@ -27,10 +27,12 @@
           </div>
         </UCard>
 
-        <div v-else class="grid gap-6 lg:grid-cols-2">
-          <OrganismsProfilesProfessionalEditPreview />
+        <ClientOnly v-else>
+          <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
+            <template #preview>
+              <OrganismsProfilesProfessionalEditPreview />
+            </template>
 
-          <OrganismsProfileEditProfile>
             <template #core>
               <OrganismsProfilesProfessionalEditCore
                 :professional="resolvedCoreProfile"
@@ -42,8 +44,8 @@
                 :professional="resolvedAppProfile"
               />
             </template>
-          </OrganismsProfileEditProfile>
-        </div>
+          </LayoutsDashboardProfileEdit>
+        </ClientOnly>
       </div>
     </template>
   </UDashboardPanel>
@@ -51,7 +53,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
+import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useProfessional } from '../../../composables/firestore/profiles/Professional/useProfessional.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { professionalConfig } from '../../../models/profiles/Professional/supporting'

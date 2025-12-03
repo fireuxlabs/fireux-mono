@@ -8,7 +8,7 @@
       </UCard>
     </div>
 
-    <MoleculesNotFound
+    <MoleculesStateCard
       v-else
       entity="chef app profile"
       kind="document"

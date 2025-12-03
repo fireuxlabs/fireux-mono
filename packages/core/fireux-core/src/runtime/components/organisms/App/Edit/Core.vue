@@ -110,7 +110,7 @@
       </UCard>
     </div>
 
-    <MoleculesNotFound v-else entity="app settings" kind="document" loading />
+    <MoleculesStateCard v-else entity="app settings" kind="document" loading />
   </ClientOnly>
 </template>
 

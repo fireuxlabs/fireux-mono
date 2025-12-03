@@ -35,7 +35,7 @@
 
     <!-- Blocker until app is initialized -->
     <!-- ClientOnly prevents SSR mismatch / initial flash.
-         isInitialized stays true during pending to avoid flicker. -->
+          isInitialized now flips false while the app payload loads. -->
     <ClientOnly>
       <UModal
         :open="!isInitialized"

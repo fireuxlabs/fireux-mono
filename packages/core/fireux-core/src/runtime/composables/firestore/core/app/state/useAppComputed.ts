@@ -1,37 +1,43 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
 export function useAppComputed(
   app: Ref<App | null | undefined>,
-  pending?: Ref<boolean>
+  pending?: Ref<boolean>,
+  currentUser?: Ref<User | null | undefined>
 ) {
   const isInitialized = computed(() => {
-    if (pending?.value) {
-      return true
-    }
-
-    const current = app.value
-    if (current === undefined) {
-      return true
-    }
-
-    return Boolean(current?.admin_ids?.length)
+    if (pending?.value) return false
+    const value = app.value
+    if (value === undefined) return false
+    return true
   })
 
   const adminIds = computed(() => {
-    const ids = Array.isArray(app.value?.admin_ids)
-      ? (app.value.admin_ids as Array<string | null | undefined>)
+    const raw = Array.isArray(app.value?.admin_ids)
+      ? (app.value?.admin_ids as Array<string | null | undefined>)
       : []
 
     return Array.from(
       new Set(
-        ids
+        raw
           .map((id) => (typeof id === 'string' ? id.trim() : ''))
           .filter((id) => id.length > 0)
       )
     )
   })
 
-  return { isInitialized, adminIds }
+  const isCurrentUserAdmin = computed(() => {
+    const uid = currentUser?.value?.id
+    if (!uid) return false
+    return adminIds.value.includes(uid)
+  })
+
+  return {
+    isInitialized,
+    adminIds,
+    isCurrentUserAdmin,
+  }
 }

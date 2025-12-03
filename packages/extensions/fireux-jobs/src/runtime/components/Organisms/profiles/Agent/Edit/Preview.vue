@@ -6,18 +6,31 @@
         <p class="fx-preview__fallback">Loading agent preview…</p>
       </UCard>
 
-      <UCard v-else-if="hasPreview" class="space-y-4">
+      <UCard v-else-if="hasPreview" class="space-y-6">
         <header class="fx-preview__header">
-          <p class="fx-preview__eyebrow">Directory preview</p>
-          <p class="fx-preview__copy">
-            Snapshot of how your agent profile renders inside FireUX.
-          </p>
+          <div class="fx-preview__header-content">
+            <p class="fx-preview__eyebrow">Directory preview</p>
+            <p class="fx-preview__copy">
+              Snapshot of how your agent profile renders inside FireUX.
+            </p>
+          </div>
+
+          <UButton
+            v-if="canToggle"
+            size="xs"
+            variant="ghost"
+            class="fx-preview__toggle"
+            @click="toggleView"
+          >
+            {{ showCellView ? 'Show Pill' : 'Show Cell' }}
+          </UButton>
         </header>
 
-        <div class="grid gap-4">
-          <OrganismsProfilesAgentCardsPill v-if="pill" :agent="pill" />
-          <OrganismsProfilesAgentCardsCell v-if="cell" :agent="cell" />
-        </div>
+        <OrganismsProfilesAgentCardsCell
+          v-if="showCellCard && cell"
+          :agent="cell"
+        />
+        <OrganismsProfilesAgentCardsPill v-else-if="pill" :agent="pill" />
       </UCard>
 
       <UCard v-else>
@@ -28,20 +41,43 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAgent } from '../../../../composables/firestore/profiles/Agent/useAgent.ts'
+import { computed, ref } from 'vue'
+import { useAgent } from '../../../../../composables/firestore/profiles/Agent/useAgent.ts'
 
-const { pill, cell, pending } = useAgent()
+const { pillProps, cellProps, pending } = useAgent()
 
+const pill = computed(() => pillProps())
+const cell = computed(() => cellProps())
 const isLoading = computed(() => Boolean(pending.value))
-const hasPreview = computed(() => Boolean(pill.value) || Boolean(cell.value))
+const hasPreview = computed(() => Boolean(pill.value || cell.value))
+
+const canToggle = computed(() => Boolean(cell.value))
+const showCellView = ref(false)
+const showCellCard = computed(() => canToggle.value && showCellView.value)
+
+const toggleView = () => {
+  if (!canToggle.value) return
+  showCellView.value = !showCellView.value
+}
 </script>
 
 <style scoped>
 .fx-preview__header {
   display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.fx-preview__header-content {
+  display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.fx-preview__toggle {
+  align-self: flex-start;
 }
 
 .fx-preview__eyebrow {
@@ -54,7 +90,7 @@ const hasPreview = computed(() => Boolean(pill.value) || Boolean(cell.value))
 .fx-preview__copy {
   font-size: 0.875rem;
   color: rgba(15, 23, 42, 0.85);
-  margin: 0;
+  margin: 0.25rem 0 0;
 }
 
 .fx-preview__fallback {

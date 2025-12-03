@@ -71,7 +71,7 @@
         </UCard>
       </div>
 
-      <MoleculesNotFound v-else entity="profile" kind="document" loading />
+      <MoleculesStateCard v-else entity="profile" kind="document" loading />
     </ClientOnly>
   </section>
 </template>

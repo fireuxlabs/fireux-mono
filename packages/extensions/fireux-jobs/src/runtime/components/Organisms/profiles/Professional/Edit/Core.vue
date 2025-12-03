@@ -2,22 +2,22 @@
   <ClientOnly>
     <div v-if="professional" class="space-y-6">
       <UCard>
-          <MoleculesFormsFirestoreSimpleField
-            label="Tagline"
-            :firebase-value="tagline"
-            placeholder="Ex: Private chef, pastry specialist"
-            :update-function="onUpdateTagline"
-          />
+        <MoleculesFormsFirestoreSimpleField
+          label="Tagline"
+          :firebase-value="tagline"
+          placeholder="Ex: Private chef, pastry specialist"
+          :update-function="onUpdateTagline"
+        />
 
-          <MoleculesFormsFirestoreSimpleField
-            label="Short Bio"
-            type="textarea"
-            :rows="3"
-            :maxlength="200"
-            :firebase-value="bioShort"
-            placeholder="Share a quick intro for listings"
-            :update-function="onUpdateBioShort"
-          />
+        <MoleculesFormsFirestoreSimpleField
+          label="Short Bio"
+          type="textarea"
+          :rows="3"
+          :maxlength="200"
+          :firebase-value="bioShort"
+          placeholder="Share a quick intro for listings"
+          :update-function="onUpdateBioShort"
+        />
       </UCard>
 
       <OrganismsProfilesProfessionalFieldsExperienceSection
@@ -33,7 +33,7 @@
       />
     </div>
 
-    <MoleculesNotFound
+    <MoleculesStateCard
       v-else
       entity="professional profile"
       kind="document"

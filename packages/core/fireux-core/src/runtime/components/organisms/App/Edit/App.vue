@@ -5,8 +5,8 @@
       <div class="fx-app-slot">
         <p class="fx-app-slot__label">Tenant overrides</p>
         <p class="fx-app-slot__copy">
-          This surface is reserved for per-tenant deltas once app-level
-          controls are defined.
+          This surface is reserved for per-tenant deltas once app-level controls
+          are defined.
         </p>
       </div>
     </UCard>

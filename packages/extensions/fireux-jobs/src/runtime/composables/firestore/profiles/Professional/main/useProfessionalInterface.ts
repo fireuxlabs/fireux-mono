@@ -22,44 +22,66 @@ export function useProfessionalInterface(
   profile: ProfileRefs<ProfessionalProfile>,
   user: Ref<User | null>
 ) {
+  const resolveProfile = (target?: ProfessionalProfile | null) =>
+    target ?? profile.coreProfile.value ?? null
+
+  const resolveUser = (target?: ProfessionalProfile | null) =>
+    target?.user ?? user.value ?? null
+
   const resolveTagline = (
-    payload: { tagline?: string | null } | null | undefined
+    payload: ProfessionalProfile | null | undefined
   ): string =>
-    payload?.tagline ??
-    (payload as { subtitle?: string | null })?.subtitle ??
+    payload?.tagline?.trim() ??
+    (payload as { subtitle?: string | null } | null)?.subtitle?.trim() ??
     ''
 
-  // Guardrail: keep the pill minimal—canonical user name/avatar + profile tagline only.
-  const pill = computed<ProfessionalCard.Pill | null>(() => {
-    const u = user.value
-    if (!u) return null
+  const resolveTitle = (u: User) =>
+    u.display_name?.trim() ||
+    u.email?.trim() ||
+    (u.handle ? `@${u.handle.trim()}` : '') ||
+    'Professional'
 
-    const displayName = u.display_name?.trim() || ''
-    const tagline = resolveTagline(profile.coreProfile.value)?.trim() || ''
+  const pillProps = (
+    target?: ProfessionalProfile | null
+  ): ProfessionalCard.Pill | null => {
+    const currentProfile = resolveProfile(target)
+    const currentUser = resolveUser(target)
+    if (!currentUser) return null
+
+    const tagline = resolveTagline(currentProfile)
+    const to = routeFor(currentProfile?.id ?? currentUser.id)
 
     return {
-      avatar: u.avatar ?? '',
-      title: displayName,
+      avatar: currentUser.avatar ?? '',
+      title: resolveTitle(currentUser),
       subtitle: tagline,
       tagline,
-      badges: [],
-      to: routeFor(u.id),
+      badges: currentProfile?.badges ?? [],
+      to,
     }
-  })
+  }
 
-  const cell = computed<ProfessionalCard.Cell | null>(() => {
-    const pillValue = pill.value
-    const core = profile.coreProfile.value
+  const cellProps = (
+    target?: ProfessionalProfile | null
+  ): ProfessionalCard.Cell | null => {
+    const base = pillProps(target)
+    if (!base) return null
 
-    if (!pillValue) return null
+    const currentProfile = resolveProfile(target)
+    const id = currentProfile?.id ?? resolveUser(target)?.id ?? undefined
 
     return {
-      ...pillValue,
-      bio_short: core?.bio_short ?? null,
+      ...base,
+      id,
+      bio_short: currentProfile?.bio_short ?? null,
+      specialties: currentProfile?.specialties ?? [],
     }
-  })
+  }
 
-  return { pill, cell }
+  const pill = computed(() => pillProps())
+  const cell = computed(() => cellProps())
+
+  return { pill, cell, pillProps, cellProps }
 }
 
 export const resolveProfessionalPill = (

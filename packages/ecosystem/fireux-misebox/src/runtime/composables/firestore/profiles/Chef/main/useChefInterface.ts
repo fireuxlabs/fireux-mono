@@ -20,43 +20,59 @@ export function useChefInterface(
   profile: ProfileRefs<ChefProfile>,
   user: Ref<User | null>
 ) {
-  const resolveTagline = (
-    payload: { tagline?: string | null } | null | undefined
-  ): string =>
-    payload?.tagline ??
-    (payload as { subtitle?: string | null } | null)?.subtitle ??
+  const resolveProfile = (target?: ChefProfile | null) =>
+    target ?? profile.coreProfile.value ?? null
+
+  const resolveUser = (target?: ChefProfile | null) =>
+    target?.user ?? user.value ?? null
+
+  const resolveTagline = (payload: ChefProfile | null | undefined): string =>
+    payload?.tagline?.trim() ??
+    (payload as { subtitle?: string | null } | null)?.subtitle?.trim() ??
     ''
 
-  // Guardrail: keep the pill minimal—canonical user name/avatar + profile tagline only.
-  const pill = computed<ChefCard.Pill | null>(() => {
-    const u = user.value
-    if (!u) return null
+  const resolveTitle = (u: User) =>
+    u.display_name?.trim() ||
+    u.email?.trim() ||
+    (u.handle ? `@${u.handle.trim()}` : '') ||
+    'Chef'
 
-    const tagline = resolveTagline(profile.coreProfile.value).trim()
+  const pillProps = (target?: ChefProfile | null): ChefCard.Pill | null => {
+    const currentProfile = resolveProfile(target)
+    const currentUser = resolveUser(target)
+    if (!currentUser) return null
+
+    const tagline = resolveTagline(currentProfile)
+    const to = routeFor(currentProfile?.id ?? currentUser.id)
 
     return {
-      avatar: u.avatar ?? '',
-      title: u.display_name ?? '',
+      avatar: currentUser.avatar ?? '',
+      title: resolveTitle(currentUser),
       subtitle: tagline,
       tagline,
-      badges: [],
-      to: routeFor(u.id),
+      badges: currentProfile?.badges ?? [],
+      to,
     }
-  })
+  }
 
-  const cell = computed<ChefCard.Cell | null>(() => {
-    const pillValue = pill.value
-    const core = profile.coreProfile.value
+  const cellProps = (target?: ChefProfile | null): ChefCard.Cell | null => {
+    const base = pillProps(target)
+    if (!base) return null
 
-    if (!pillValue) return null
+    const currentProfile = resolveProfile(target)
+    const id = currentProfile?.id ?? resolveUser(target)?.id ?? undefined
 
     return {
-      ...pillValue,
-      bio_short: core?.bio_short ?? null,
+      ...base,
+      id,
+      bio_short: currentProfile?.bio_short ?? null,
     }
-  })
+  }
 
-  return { pill, cell }
+  const pill = computed(() => pillProps())
+  const cell = computed(() => cellProps())
+
+  return { pill, cell, pillProps, cellProps }
 }
 
 export const resolveChefPill = (

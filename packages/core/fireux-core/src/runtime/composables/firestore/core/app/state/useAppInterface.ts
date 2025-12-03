@@ -2,7 +2,7 @@ import type { Ref } from 'vue'
 import type { App, AppCard } from 'fireux-core/runtime/models/core/app.model.ts'
 
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
-  const current = appRef?.value ?? null
+  const resolveApp = (target?: App | null) => target ?? appRef?.value ?? null
 
   const toPath = (id?: string | null) => (id ? `/apps/${id}` : '')
 
@@ -35,7 +35,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   }
 
   const pillProps = (target?: App | null): AppCard.Pill => {
-    const app = target ?? current
+    const app = resolveApp(target)
     return {
       avatar: app?.avatar_url ?? '',
       title: app?.app_name ?? '',
@@ -46,7 +46,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   }
 
   const cellProps = (target?: App | null): AppCard.Cell => {
-    const app = target ?? current
+    const app = resolveApp(target)
     const admins = uniqueStrings(app?.admin_ids)
     return {
       ...pillProps(app),
@@ -65,7 +65,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   }
 
   const profileProps = (target?: App | null): AppCard.Profile => {
-    const app = target ?? current
+    const app = resolveApp(target)
     const cell = cellProps(app)
     const joins = uniqueStrings(app?.join_requests)
 

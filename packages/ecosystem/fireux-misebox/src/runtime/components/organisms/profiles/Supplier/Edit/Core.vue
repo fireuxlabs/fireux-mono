@@ -23,7 +23,7 @@
       </UCard>
     </div>
 
-    <MoleculesNotFound
+    <MoleculesStateCard
       v-else
       entity="supplier profile"
       kind="document"

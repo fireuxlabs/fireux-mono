@@ -8,7 +8,7 @@
       </UCard>
     </div>
 
-    <MoleculesNotFound
+    <MoleculesStateCard
       v-else
       entity="agent app profile"
       kind="document"

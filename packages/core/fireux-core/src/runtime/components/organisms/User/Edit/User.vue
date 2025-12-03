@@ -1,6 +1,6 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/Edit/User.vue -->
 <template>
-  <OrganismsProfileEditProfile>
+  <LayoutsDashboardProfileEdit>
     <template #core>
       <OrganismsUserEditCore :user="props.user" />
     </template>
@@ -8,12 +8,12 @@
     <template #app>
       <OrganismsUserEditApp :user="props.user" />
     </template>
-  </OrganismsProfileEditProfile>
+  </LayoutsDashboardProfileEdit>
 </template>
 
 <script setup lang="ts">
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
+import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 
 const props = defineProps<{
   user: User | null

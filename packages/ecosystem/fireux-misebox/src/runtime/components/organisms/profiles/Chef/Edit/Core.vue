@@ -23,7 +23,7 @@
       </UCard>
     </div>
 
-    <MoleculesNotFound v-else entity="chef profile" kind="document" loading />
+    <MoleculesStateCard v-else entity="chef profile" kind="document" loading />
   </ClientOnly>
 </template>
 

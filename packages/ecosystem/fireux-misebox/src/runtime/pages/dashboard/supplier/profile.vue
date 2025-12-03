@@ -10,30 +10,48 @@
     </template>
 
     <template #body>
-      <div v-if="hasSupplierProfile">
-        <OrganismsProfileEditProfile v-if="coreProfile">
-          <template #core>
-            <OrganismsProfilesSupplierEditCore :supplier="coreProfile" />
-          </template>
+      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6 space-y-6">
+        <UCard v-if="!hasSupplierProfile">
+          <div class="fallback">Supplier profile not found.</div>
+        </UCard>
 
-          <template v-if="appProfile" #app>
-            <OrganismsProfilesSupplierEditApp :supplier="appProfile" />
-          </template>
-        </OrganismsProfileEditProfile>
+        <UCard v-else-if="isProfileLoading">
+          <div class="fallback loading">Supplier profile data is loading.</div>
+        </UCard>
 
-        <div v-else class="fallback loading">
-          Supplier profile data is loading.
-        </div>
+        <UCard v-else-if="!resolvedCoreProfile">
+          <div class="fallback">
+            Your supplier profile hasn’t been created yet.
+          </div>
+        </UCard>
+
+        <ClientOnly v-else>
+          <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
+            <template #preview>
+              <OrganismsProfilesSupplierEditPreview />
+            </template>
+
+            <template #core>
+              <OrganismsProfilesSupplierEditCore
+                :supplier="resolvedCoreProfile"
+              />
+            </template>
+
+            <template v-if="resolvedAppProfile" #app>
+              <OrganismsProfilesSupplierEditApp
+                :supplier="resolvedAppProfile"
+              />
+            </template>
+          </LayoutsDashboardProfileEdit>
+        </ClientOnly>
       </div>
-
-      <div v-else class="fallback">Supplier profile not found.</div>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
+import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useSupplier } from '../../../composables/firestore/profiles/Supplier/useSupplier'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
@@ -58,6 +76,10 @@ const hasSupplierProfile = computed(() => {
   const source = user.value?.profiles
   return Array.isArray(source) && source.includes('supplier')
 })
+
+const isProfileLoading = computed(() => coreProfile.value === undefined)
+const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
+const resolvedAppProfile = computed(() => appProfile.value ?? null)
 </script>
 
 <style scoped>

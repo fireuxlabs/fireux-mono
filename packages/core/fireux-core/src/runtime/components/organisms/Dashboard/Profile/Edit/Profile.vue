@@ -1,6 +1,6 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/Profile/Edit/Profile.vue -->
 <template>
   <section class="space-y-6">
+    <slot name="preview" />
     <slot name="core" />
     <slot v-if="isTenant" name="app" />
   </section>

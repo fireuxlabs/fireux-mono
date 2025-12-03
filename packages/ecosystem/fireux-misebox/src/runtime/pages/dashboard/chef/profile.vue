@@ -10,28 +10,42 @@
     </template>
 
     <template #body>
-      <div v-if="hasChefProfile">
-        <OrganismsProfileEditProfile v-if="coreProfile">
-          <template #core>
-            <OrganismsProfilesChefEditCore :chef="coreProfile" />
-          </template>
+      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6 space-y-6">
+        <UCard v-if="!hasChefProfile">
+          <div class="fallback">Chef profile not found.</div>
+        </UCard>
 
-          <template v-if="appProfile" #app>
-            <OrganismsProfilesChefEditApp :chef="appProfile" />
-          </template>
-        </OrganismsProfileEditProfile>
+        <UCard v-else-if="isProfileLoading">
+          <div class="fallback loading">Chef profile data is loading.</div>
+        </UCard>
 
-        <div v-else class="fallback loading">Chef profile data is loading.</div>
+        <UCard v-else-if="!resolvedCoreProfile">
+          <div class="fallback">Your chef profile hasn’t been created yet.</div>
+        </UCard>
+
+        <ClientOnly v-else>
+          <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
+            <template #preview>
+              <OrganismsProfilesChefEditPreview />
+            </template>
+
+            <template #core>
+              <OrganismsProfilesChefEditCore :chef="resolvedCoreProfile" />
+            </template>
+
+            <template v-if="resolvedAppProfile" #app>
+              <OrganismsProfilesChefEditApp :chef="resolvedAppProfile" />
+            </template>
+          </LayoutsDashboardProfileEdit>
+        </ClientOnly>
       </div>
-
-      <div v-else class="fallback">Chef profile not found.</div>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
+import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useChef } from '../../../composables/firestore/profiles/Chef/useChef'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
@@ -56,6 +70,10 @@ const hasChefProfile = computed(() => {
   const source = user.value?.profiles
   return Array.isArray(source) && source.includes('chef')
 })
+
+const isProfileLoading = computed(() => coreProfile.value === undefined)
+const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
+const resolvedAppProfile = computed(() => appProfile.value ?? null)
 </script>
 
 <style scoped>
