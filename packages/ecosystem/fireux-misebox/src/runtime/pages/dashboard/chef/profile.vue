@@ -11,10 +11,15 @@
 
     <template #body>
       <div v-if="hasChefProfile">
-        <div v-if="coreProfile" class="space-y-6">
-          <OrganismsProfilesChefEditCore :chef="coreProfile" />
-          <OrganismsProfilesChefEditApp v-if="isTenant" :chef="appProfile" />
-        </div>
+        <OrganismsProfileEditProfile v-if="coreProfile">
+          <template #core>
+            <OrganismsProfilesChefEditCore :chef="coreProfile" />
+          </template>
+
+          <template v-if="appProfile" #app>
+            <OrganismsProfilesChefEditApp :chef="appProfile" />
+          </template>
+        </OrganismsProfileEditProfile>
 
         <div v-else class="fallback loading">Chef profile data is loading.</div>
       </div>
@@ -26,8 +31,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
 import { useChef } from '../../../composables/firestore/profiles/Chef/useChef'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
 definePageMeta({
@@ -45,8 +50,6 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile } = useChef()
-const { role, appId } = useFireUXConfig()
-const isTenant = role === 'tenant' && !!appId
 
 const { user } = useUser()
 const hasChefProfile = computed(() => {

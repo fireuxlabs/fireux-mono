@@ -1,73 +1,79 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/Edit/Core.vue -->
 <template>
-  <ClientOnly>
-    <div v-if="user" class="space-y-6">
-      <UCard>
-        <div class="flex flex-col items-center gap-2">
-          <MoleculesFormsFirestoreAvatarPicker
-            :src="user.avatar"
-            :alt="user.display_name || user.handle || 'User'"
-            :initials="avatarInitials"
-            :update-function="handleAvatarUpload"
+  <section class="space-y-2">
+    <p class="text-xs font-semibold uppercase tracking-wide text-slate-600">
+      Core Properties
+    </p>
+
+    <ClientOnly>
+      <div v-if="user" class="space-y-6">
+        <UCard>
+          <div class="flex flex-col items-center gap-2">
+            <MoleculesFormsFirestoreAvatarPicker
+              :src="user.avatar"
+              :alt="user.display_name || user.handle || 'User'"
+              :initials="avatarInitials"
+              :update-function="handleAvatarUpload"
+            />
+            <p v-if="avatarUploading" class="text-xs text-gray-500">
+              Uploading avatar…
+            </p>
+          </div>
+        </UCard>
+
+        <UCard>
+          <MoleculesFormsFirestoreSimpleField
+            label="Display Name"
+            :firebase-value="user.display_name"
+            placeholder="Display name"
+            :maxlength="60"
+            :update-function="handleUpdateDisplayName"
+            :validation-function="DisplayName.validate"
+            :formatting-function="DisplayName.format"
           />
-          <p v-if="avatarUploading" class="text-xs text-gray-500">
-            Uploading avatar…
-          </p>
-        </div>
-      </UCard>
+        </UCard>
 
-      <UCard>
-        <MoleculesFormsFirestoreSimpleField
-          label="Display Name"
-          :firebase-value="user.display_name"
-          placeholder="Display name"
-          :maxlength="60"
-          :update-function="handleUpdateDisplayName"
-          :validation-function="DisplayName.validate"
-          :formatting-function="DisplayName.format"
-        />
-      </UCard>
+        <UCard>
+          <MoleculesFormsFirestoreSimpleField
+            label="Email"
+            type="email"
+            :firebase-value="user.email"
+            placeholder="user@example.com"
+            :update-function="handleUpdateEmail"
+            :validation-function="Email.validate"
+            :formatting-function="Email.format"
+          />
+        </UCard>
 
-      <UCard>
-        <MoleculesFormsFirestoreSimpleField
-          label="Email"
-          type="email"
-          :firebase-value="user.email"
-          placeholder="user@example.com"
-          :update-function="handleUpdateEmail"
-          :validation-function="Email.validate"
-          :formatting-function="Email.format"
-        />
-      </UCard>
+        <UCard>
+          <MoleculesFormsFirestoreSimpleField
+            label="Handle"
+            :firebase-value="user.handle"
+            placeholder="your-handle"
+            :update-function="handleUpdateHandle"
+            :validation-function="Handle.validate"
+            :formatting-function="Handle.format"
+          />
+        </UCard>
 
-      <UCard>
-        <MoleculesFormsFirestoreSimpleField
-          label="Handle"
-          :firebase-value="user.handle"
-          placeholder="your-handle"
-          :update-function="handleUpdateHandle"
-          :validation-function="Handle.validate"
-          :formatting-function="Handle.format"
-        />
-      </UCard>
+        <UCard>
+          <MoleculesFormsFirestoreSimpleField
+            label="Bio"
+            type="textarea"
+            :rows="4"
+            :maxlength="280"
+            :firebase-value="user.bio"
+            placeholder="A short bio about yourself..."
+            :update-function="handleUpdateBio"
+            :validation-function="Bio.validate"
+            :formatting-function="Bio.format"
+          />
+        </UCard>
+      </div>
 
-      <UCard>
-        <MoleculesFormsFirestoreSimpleField
-          label="Bio"
-          type="textarea"
-          :rows="4"
-          :maxlength="280"
-          :firebase-value="user.bio"
-          placeholder="A short bio about yourself..."
-          :update-function="handleUpdateBio"
-          :validation-function="Bio.validate"
-          :formatting-function="Bio.format"
-        />
-      </UCard>
-    </div>
-
-    <MoleculesNotFound v-else entity="profile" kind="document" loading />
-  </ClientOnly>
+      <MoleculesNotFound v-else entity="profile" kind="document" loading />
+    </ClientOnly>
+  </section>
 </template>
 
 <script setup lang="ts">

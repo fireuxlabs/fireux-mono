@@ -11,10 +11,15 @@
 
     <template #body>
       <div v-if="hasAgentProfile">
-        <div v-if="coreProfile" class="space-y-6">
-          <OrganismsProfilesAgentEditCore :agent="coreProfile" />
-          <OrganismsProfilesAgentEditApp v-if="isTenant" :agent="appProfile" />
-        </div>
+        <OrganismsProfileEditProfile v-if="coreProfile">
+          <template #core>
+            <OrganismsProfilesAgentEditCore :agent="coreProfile" />
+          </template>
+
+          <template v-if="appProfile" #app>
+            <OrganismsProfilesAgentEditApp :agent="appProfile" />
+          </template>
+        </OrganismsProfileEditProfile>
 
         <div v-else class="fallback loading">
           Agent profile data is loading.
@@ -28,8 +33,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
 import { useAgent } from '../../../composables/firestore/profiles/Agent/useAgent'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { agentConfig } from '../../../models/profiles/Agent.model'
 
@@ -52,8 +57,6 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile } = useAgent()
-const { role, appId } = useFireUXConfig()
-const isTenant = role === 'tenant' && !!appId
 
 const { user } = useUser()
 const hasAgentProfile = computed(() => {

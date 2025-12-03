@@ -38,11 +38,7 @@
           </Transition>
 
           <Transition name="fade-toggle">
-            <OrganismsUserEditUser
-              v-show="showEditor"
-              :user="currentUser"
-              :is-tenant="isTenant"
-            />
+            <OrganismsUserEditUser v-show="showEditor" :user="currentUser" />
           </Transition>
         </div>
       </div>
@@ -65,7 +61,6 @@
 import { computed, ref } from 'vue'
 import { useBreakpoints, breakpointsTailwind } from '@vueuse/core'
 import { useUser } from '../../composables/firestore/core/user/useUser'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type {
   User,
   UserCard,
@@ -131,13 +126,5 @@ const currentUserCell = computed(() =>
 )
 const userLink = computed(() =>
   currentUser.value?.id ? `/users/${currentUser.value.id}` : null
-)
-
-const config = useFireUXConfig()
-const isTenant = computed(
-  () =>
-    config.role === 'tenant' &&
-    typeof config.appId === 'string' &&
-    config.appId.length > 0
 )
 </script>

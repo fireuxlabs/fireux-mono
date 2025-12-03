@@ -1,4 +1,4 @@
-<!-- packages/core/fireux-core/src/runtime/pages/dashboard/app.vue -->
+<!-- FILE: packages/core/fireux-core/src/runtime/pages/dashboard/app.vue -->
 <template>
   <UDashboardPanel id="dashboard-app">
     <template #header>
@@ -10,51 +10,31 @@
     </template>
 
     <template #body>
-      <div class="space-y-6">
-        <UCard v-if="isAdmin && currentApp" variant="subtle">
+      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6 space-y-6">
+        <!-- Loading state -->
+        <UCard v-if="isLoading">
+          <div class="fallback loading">Loading app settings…</div>
+        </UCard>
+
+        <!-- Not admin -->
+        <UCard v-else-if="!isAdmin">
+          <div class="fallback">
+            You don’t have permission to edit this app.
+          </div>
+        </UCard>
+
+        <!-- Main app panel -->
+        <UCard v-else-if="currentApp" variant="subtle">
           <div class="grid gap-6 lg:grid-cols-2">
-            <div class="space-y-4">
-              <div class="grid gap-4 sm:grid-cols-2">
-                <OrganismsAppCardsPill :app="currentAppPill" />
-                <OrganismsAppCardsCell :app="currentApp" :to="appLink" />
-              </div>
-              <OrganismsAppCardsProfile :app="currentApp" />
-            </div>
+            <OrganismsAppEditPreview />
 
             <OrganismsAppEdit :app="currentApp" />
           </div>
         </UCard>
 
-        <UCard v-else-if="isAdmin && !isLoading">
-          <div class="py-8 text-center space-y-2">
-            <UIcon
-              name="i-heroicons-cog-8-tooth"
-              class="mx-auto h-12 w-12 text-gray-400"
-            />
-            <p class="text-sm text-gray-500">App settings not found.</p>
-          </div>
-        </UCard>
-
-        <UCard v-else-if="!isLoading && !isAdmin">
-          <div class="py-8 text-center space-y-2">
-            <UIcon
-              name="i-heroicons-lock-closed"
-              class="mx-auto h-12 w-12 text-gray-400"
-            />
-            <p class="text-sm text-gray-500">
-              You don’t have permission to edit this app.
-            </p>
-          </div>
-        </UCard>
-
+        <!-- Not found -->
         <UCard v-else>
-          <div class="py-8 text-center space-y-2">
-            <UIcon
-              name="i-heroicons-arrow-path"
-              class="mx-auto h-12 w-12 animate-spin text-gray-300"
-            />
-            <p class="text-sm text-gray-500">Loading app settings…</p>
-          </div>
+          <div class="fallback">App settings not found.</div>
         </UCard>
       </div>
     </template>
@@ -66,23 +46,14 @@ import { computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useApp } from '../../composables/firestore/core/app/useApp.ts'
 import { useUser } from '../../composables/firestore/core/user/useUser.ts'
-import { useAppInterface } from '../../composables/firestore/core/app/state/useAppInterface.ts'
 
 const { app } = useApp()
 const { isAdmin } = useUser()
-const { pillProps: appPillProps } = useAppInterface(app)
 const router = useRouter()
 
 const isLoading = computed(() => app.value === undefined)
 const currentApp = computed(() =>
   app.value === undefined ? null : app.value ?? null
-)
-const appLink = computed(() => {
-  const value = currentApp.value
-  return value?.id ? `/apps/${value.id}` : null
-})
-const currentAppPill = computed(() =>
-  currentApp.value ? appPillProps(currentApp.value) : null
 )
 
 definePageMeta({
@@ -111,3 +82,20 @@ if (import.meta.client) {
   )
 }
 </script>
+
+<style scoped>
+.fallback {
+  margin: 0;
+  padding: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.875rem;
+}
+
+.loading {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+</style>

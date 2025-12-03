@@ -11,13 +11,15 @@
 
     <template #body>
       <div v-if="hasSupplierProfile">
-        <div v-if="coreProfile" class="space-y-6">
-          <OrganismsProfilesSupplierEditCore :supplier="coreProfile" />
-          <OrganismsProfilesSupplierEditApp
-            v-if="isTenant"
-            :supplier="appProfile"
-          />
-        </div>
+        <OrganismsProfileEditProfile v-if="coreProfile">
+          <template #core>
+            <OrganismsProfilesSupplierEditCore :supplier="coreProfile" />
+          </template>
+
+          <template v-if="appProfile" #app>
+            <OrganismsProfilesSupplierEditApp :supplier="appProfile" />
+          </template>
+        </OrganismsProfileEditProfile>
 
         <div v-else class="fallback loading">
           Supplier profile data is loading.
@@ -31,8 +33,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
 import { useSupplier } from '../../../composables/firestore/profiles/Supplier/useSupplier'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
 definePageMeta({
@@ -50,8 +52,6 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile } = useSupplier()
-const { role, appId } = useFireUXConfig()
-const isTenant = role === 'tenant' && !!appId
 
 const { user } = useUser()
 const hasSupplierProfile = computed(() => {

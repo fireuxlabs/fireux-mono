@@ -10,25 +10,40 @@
     </template>
 
     <template #body>
-      <div v-if="hasProfessionalProfile">
-        <div
-          v-if="coreProfile"
-          class="space-y-6 px-0 py-0 sm:px-4 sm:py-4 lg:px-6"
-        >
-          <OrganismsProfilesProfessionalEditCore :professional="coreProfile" />
-          <OrganismsProfilesProfessionalEditApp
-            v-if="isTenant"
-            :professional="appProfile"
-          />
-        </div>
+      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6 space-y-6">
+        <UCard v-if="!hasProfessionalProfile">
+          <div class="fallback">Professional profile not found.</div>
+        </UCard>
 
-        <div v-else class="fallback loading px-0 py-0 sm:px-4 sm:py-4">
-          Professional profile data is loading.
-        </div>
-      </div>
+        <UCard v-else-if="isProfileLoading">
+          <div class="fallback loading">
+            Professional profile data is loading.
+          </div>
+        </UCard>
 
-      <div class="fallback px-0 py-0 sm:px-4 sm:py-4" v-else>
-        Professional profile not found.
+        <UCard v-else-if="!resolvedCoreProfile">
+          <div class="fallback">
+            Your professional profile hasn’t been created yet.
+          </div>
+        </UCard>
+
+        <div v-else class="grid gap-6 lg:grid-cols-2">
+          <OrganismsProfilesProfessionalEditPreview />
+
+          <OrganismsProfileEditProfile>
+            <template #core>
+              <OrganismsProfilesProfessionalEditCore
+                :professional="resolvedCoreProfile"
+              />
+            </template>
+
+            <template v-if="resolvedAppProfile" #app>
+              <OrganismsProfilesProfessionalEditApp
+                :professional="resolvedAppProfile"
+              />
+            </template>
+          </OrganismsProfileEditProfile>
+        </div>
       </div>
     </template>
   </UDashboardPanel>
@@ -36,11 +51,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
 import { useProfessional } from '../../../composables/firestore/profiles/Professional/useProfessional.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { professionalConfig } from '../../../models/profiles/Professional/supporting'
 
+const profileKey = professionalConfig.id ?? 'professional'
 const navLabel =
   professionalConfig.navLabel ?? `${professionalConfig.profileType} Profile`
 const navIcon = professionalConfig.navIcon ?? 'i-lucide-user'
@@ -55,25 +71,28 @@ definePageMeta({
     desktop: true,
     layouts: ['dashboard'],
     group: 'profiles',
-    profileId: 'professional',
+    profileId: profileKey,
   },
   requiresAuth: true,
 })
 
 const { coreProfile, appProfile } = useProfessional()
-const { role, appId } = useFireUXConfig()
-const isTenant = role === 'tenant' && !!appId
 
 const { user } = useUser()
 const hasProfessionalProfile = computed(() => {
   const source = user.value?.profiles
-  return Array.isArray(source) && source.includes('professional')
+  return Array.isArray(source) && source.includes(profileKey)
 })
+
+const isProfileLoading = computed(() => coreProfile.value === undefined)
+const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
+const resolvedAppProfile = computed(() => appProfile.value ?? null)
 </script>
 
 <style scoped>
 .fallback {
   margin: 0;
+  padding: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.875rem;
