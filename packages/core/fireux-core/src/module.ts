@@ -1,6 +1,7 @@
 import { defineNuxtModule, createResolver } from '@nuxt/kit'
 
 import { configureRuntime } from './config/runtime-config'
+import { configureDeployIgnore } from './config/deploy-ignore-config'
 import { configurePlugins } from './config/plugins-config'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
@@ -18,28 +19,31 @@ export default defineNuxtModule({
     // 1) runtime first
     configureRuntime(nuxt, 'core')
 
-    // 2) plugins (can read runtime)
+    // 2) apply deploy ignores before Nuxt starts scanning files
+    configureDeployIgnore(nuxt)
+
+    // 3) plugins (can read runtime)
     configurePlugins(resolver)
 
-    // 3) components
+    // 4) components
     configureComponents(resolver)
 
-    // 4) composables
+    // 5) composables
     configureComposables(resolver)
 
-    // 5) layouts
+    // 6) layouts
     configureLayouts(resolver, nuxt)
 
-    // 6) pages
+    // 7) pages
     configurePages(resolver, nuxt)
 
-    // 7) server (api/middleware)
+    // 8) server (api/middleware)
     configureServer(resolver)
 
-    // 8) assets
+    // 9) assets
     configureAssets(resolver, nuxt)
 
-    // 9) errors
+    // 10) errors
     configureErrors(resolver, nuxt)
   },
 })

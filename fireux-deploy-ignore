@@ -1,0 +1,32 @@
+# ------------------------------------------------------------------------------
+# fireux-deploy-ignore
+# ------------------------------------------------------------------------------
+# PURPOSE:
+#   This file lists directory patterns that FireUX must EXCLUDE from production
+#   builds. Any file matched here will be ignored by Nuxt during build via
+#   configureDeployIgnore(), meaning:
+#     - pages, layouts, components, and composables are NOT scanned
+#     - no server or client bundles are generated for them
+#     - Firebase hosting and Cloud Functions never receive the code
+#
+# DEFAULT BEHAVIOUR:
+#   - If this file exists, FireUX uses these patterns.
+#   - If it does not exist, FireUX defaults to ignoring '**/dev/**'.
+#
+# ENVIRONMENT OVERRIDES:
+#   FIREUX_DEPLOY_IGNORE=<comma-separated globs>
+#       Overrides this file entirely. Use sparingly.
+#
+#   FIREUX_DEPLOY_WITH_DEV=1
+#       Disables ALL ignores. Use only for deep debugging.
+#
+# RECOMMENDED BASELINE:
+#   Keep this simple. The entire FireUX dev system lives under /dev paths.
+#   This single rule excludes all dev tooling across all packages:
+
+**/dev/**
+
+# OPTIONAL EXTRAS (uncomment if needed):
+# **/__playground__/**
+# **/.storybook/**
+# ------------------------------------------------------------------------------

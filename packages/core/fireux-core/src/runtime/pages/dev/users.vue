@@ -105,6 +105,14 @@
         <DevJsonPanel v-if="usersJson" :data="usersJson" />
       </UCard>
       <MoleculesStateCard v-else kind="collection" entity="users" />
+
+      <DevHealthPanel
+        title="User health checks"
+        description="Compares user.adminOf, app admin lists, and tenant membership roles."
+        :checks="userHealthChecks"
+      />
+
+      <DevUserComponentGallery :user="previewUser" />
     </UPageBody>
   </UPage>
 </template>
@@ -117,6 +125,9 @@ import { useUserCollection } from '../../composables/firestore/core/user/main/us
 import { useUserInterface } from '../../composables/firestore/core/user/state/useUserInterface'
 import { useAppUsers } from '../../composables/firestore/core/app/subcollections/users'
 import { useFireUXConfig } from '../../composables/FireUXConfig'
+import { useDevHealth } from '../../composables/dev/health/useDevHealth'
+import DevHealthPanel from '../../components/dev/HealthPanel.vue'
+import DevUserComponentGallery from '../../components/dev/UserComponentGallery.vue'
 
 definePageMeta({
   layout: 'dev',
@@ -138,6 +149,7 @@ const { pillProps: collectionPill } = useUserInterface()
 const fireux = useFireUXConfig()
 
 const { users: appUsers, pending: appUsersPending } = useAppUsers()
+const { getChecksForScope } = useDevHealth()
 
 const pillFor = (target: User | any | null | undefined) => {
   if (!target) return null
@@ -161,5 +173,9 @@ const membershipsJson = computed(() =>
 )
 const scopedUsersJson = computed(() =>
   scopedUsers.value.length ? scopedUsers.value : null
+)
+const userHealthChecks = getChecksForScope('users')
+const previewUser = computed(
+  () => currentUser.value ?? users.value?.[0] ?? null
 )
 </script>
