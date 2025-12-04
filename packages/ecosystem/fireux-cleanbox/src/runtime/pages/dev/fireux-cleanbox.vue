@@ -66,9 +66,7 @@
             <p class="text-xs text-gray-500">Across /jobs</p>
           </div>
           <div class="rounded-lg border border-gray-200 p-3">
-            <p class="text-xs text-gray-500 uppercase tracking-wide">
-              Status
-            </p>
+            <p class="text-xs text-gray-500 uppercase tracking-wide">Status</p>
             <p class="text-2xl font-semibold">
               {{ pending ? 'Loading…' : 'Ready' }}
             </p>
@@ -131,5 +129,7 @@ const { jobs, tenantJobs, pending } = useJobCollection()
 const totalJobs = computed(() => jobs.value?.length ?? 0)
 const tenantTotal = computed(() => tenantJobs.value?.length ?? 0)
 const sampleJobs = computed(() => (tenantJobs.value ?? []).slice(0, 4))
-const jobJson = computed(() => (tenantJobs.value?.length ? tenantJobs.value : null))
+const jobJson = computed(() =>
+  tenantJobs.value?.length ? tenantJobs.value : null
+)
 </script>

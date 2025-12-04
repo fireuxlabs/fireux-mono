@@ -470,17 +470,15 @@ interface ProfileModelSpec {
   requireUser?: boolean
 }
 
-type MaybeProfileEntries<TProfile> =
-  | Ref<Array<Partial<TProfile>> | null | undefined>
-  | null
+type MaybeProfileEntries<TProfile> = Ref<
+  Array<Partial<TProfile>> | null | undefined
+> | null
 
 const resolveProfileId = (
-  profile?:
-    | Partial<{
-        id?: string | null
-        user?: { id?: string | null } | null
-      }>
-    | null
+  profile?: Partial<{
+    id?: string | null
+    user?: { id?: string | null } | null
+  }> | null
 ) => {
   if (!profile) return null
   const profileId = (profile as { id?: string | null }).id

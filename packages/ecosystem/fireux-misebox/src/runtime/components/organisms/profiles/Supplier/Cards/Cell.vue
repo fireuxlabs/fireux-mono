@@ -1,12 +1,22 @@
 <template>
   <NuxtLink v-if="card?.to" :to="card.to" class="pill">
-    <UAvatar :src="card.avatar" :alt="card.title" size="sm" class="avatar" />
+    <UAvatar
+      :src="card.company_avatar || card.avatar"
+      :alt="companyName(card)"
+      size="sm"
+      class="avatar"
+    />
 
     <div class="content">
-      <span class="title">{{ card.title }}</span>
+      <span class="company">{{ companyName(card) }}</span>
+      <span v-if="card.title" class="contact">{{ card.title }}</span>
 
       <span v-if="card.tagline" class="tagline">
         {{ card.tagline }}
+      </span>
+
+      <span v-if="card.bio_short" class="bio">
+        {{ card.bio_short }}
       </span>
 
       <div v-if="card.badges?.length" class="badges">
@@ -23,13 +33,23 @@
   </NuxtLink>
 
   <div v-else class="pill">
-    <UAvatar :src="card?.avatar" :alt="card?.title" size="sm" class="avatar" />
+    <UAvatar
+      :src="card?.company_avatar || card?.avatar"
+      :alt="companyName(card || null)"
+      size="sm"
+      class="avatar"
+    />
 
     <div class="content">
-      <span class="title">{{ card?.title }}</span>
+      <span class="company">{{ companyName(card || null) }}</span>
+      <span v-if="card?.title" class="contact">{{ card.title }}</span>
 
       <span v-if="card?.tagline" class="tagline">
         {{ card.tagline }}
+      </span>
+
+      <span v-if="card?.bio_short" class="bio">
+        {{ card.bio_short }}
       </span>
 
       <div v-if="card?.badges?.length" class="badges">
@@ -77,6 +97,9 @@ const card = computed(() => {
     tagline: source.tagline ?? source.subtitle ?? '',
   }
 })
+
+const companyName = (payload?: SupplierCard.Cell | null) =>
+  payload?.company_name || payload?.title || 'Supplier'
 </script>
 
 <style scoped>
@@ -104,13 +127,23 @@ const card = computed(() => {
   flex-direction: column;
 }
 
-.title {
+.company {
   font-weight: 600;
+}
+
+.contact {
+  font-size: 0.8rem;
+  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
 }
 
 .tagline {
   font-size: 0.8rem;
   color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
+}
+
+.bio {
+  font-size: 0.85rem;
+  color: var(--ui-text-600, rgba(71, 85, 105, 0.95));
 }
 
 .badges {

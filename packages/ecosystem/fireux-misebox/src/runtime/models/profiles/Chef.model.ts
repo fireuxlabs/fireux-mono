@@ -4,11 +4,11 @@ import { chefConfig } from './Chef/supporting'
 
 /** Unified Chef wrapper (core + app overlays) */
 export interface Chef {
-	id: string
-	display_name?: string
-	avatar?: string
-	core: ChefCoreProfile | null
-	app?: ChefAppProfile | null
+  id: string
+  display_name?: string
+  avatar?: string
+  core: ChefCoreProfile | null
+  app?: ChefAppProfile | null
 }
 
 /**
@@ -17,49 +17,49 @@ export interface Chef {
  * - Core/App remain delta-friendly
  */
 export namespace ChefCard {
-	/** Pill shape */
-	export interface Pill extends PillModel.Props {}
+  /** Pill shape */
+  export interface Pill extends PillModel.Props {}
 
-	/** Cell shape */
-	export interface Cell extends Pill {
-		id?: string
-		bio_short?: string | null
-		specialties?: string[]
-	}
+  /** Cell shape */
+  export interface Cell extends Pill {
+    id?: string
+    bio_short?: string | null
+    specialties?: string[]
+  }
 
-	/** Full CORE profile surface */
-	export interface ProfileCore extends Cell {
-		user?: Profile['user']
-		domain?: Profile['domain']
-		created_at?: Profile['created_at']
-		updated_at?: Profile['updated_at']
-		title?: string | null
-		/** @deprecated use tagline */
-		subtitle?: string | null
-		tagline?: string | null
-		badges?: string[]
-		bio_long?: string | null
-		avatar?: string | null
-		avatar_url?: string | null
-		organization_name?: string | null
-		locations?: string[]
-	}
+  /** Full CORE profile surface */
+  export interface ProfileCore extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
+    title?: string | null
+    /** @deprecated use tagline */
+    subtitle?: string | null
+    tagline?: string | null
+    badges?: string[]
+    bio_long?: string | null
+    avatar?: string | null
+    avatar_url?: string | null
+    organization_name?: string | null
+    locations?: string[]
+  }
 
-	/** Tenant APP overlay (delta space) */
-	export interface ProfileApp extends Cell {
-		user?: Profile['user']
-		domain?: Profile['domain']
-		created_at?: Profile['created_at']
-		updated_at?: Profile['updated_at']
-		title?: string | null
-		/** @deprecated use tagline */
-		subtitle?: string | null
-		tagline?: string | null
-		badges?: string[]
-		bio_long?: string | null
-		organization_name?: string | null
-		locations?: string[]
-	}
+  /** Tenant APP overlay (delta space) */
+  export interface ProfileApp extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
+    title?: string | null
+    /** @deprecated use tagline */
+    subtitle?: string | null
+    tagline?: string | null
+    badges?: string[]
+    bio_long?: string | null
+    organization_name?: string | null
+    locations?: string[]
+  }
 }
 
 /**
@@ -74,33 +74,33 @@ export type ChefAppProfile = ChefCard.ProfileApp
 
 /** Config */
 const routeFor = (id?: string | null) =>
-	id ? `/${chefConfig.collectionName}/${id}` : undefined
+  id ? `/${chefConfig.collectionName}/${id}` : undefined
 
 export const resolveChefCell = (
-	profile?: ChefProfile | null,
-	fallbackId = 'chef-profile'
+  profile?: ChefProfile | null,
+  fallbackId = 'chef-profile'
 ): ChefCard.Cell | null => {
-	if (!profile) return null
+  if (!profile) return null
 
-	const user = profile.user ?? undefined
+  const user = profile.user ?? undefined
 
-	const id = profile.id ?? user?.id ?? fallbackId
+  const id = profile.id ?? user?.id ?? fallbackId
 
-	const tagline =
-		profile.tagline ?? (profile as { subtitle?: string | null })?.subtitle ?? ''
+  const tagline =
+    profile.tagline ?? (profile as { subtitle?: string | null })?.subtitle ?? ''
 
-	return {
-		id,
-		avatar: user?.avatar ?? undefined,
-		title: user?.display_name ?? profile.title ?? 'Chef',
-		subtitle: tagline,
-		tagline,
-		badges: profile.badges ?? [],
-		bio_short: profile.bio_short ?? null,
-		specialties: profile.specialties ?? [],
-		locations: profile.locations ?? [],
-		to: routeFor(profile.id),
-	}
+  return {
+    id,
+    avatar: user?.avatar ?? undefined,
+    title: user?.display_name ?? profile.title ?? 'Chef',
+    subtitle: tagline,
+    tagline,
+    badges: profile.badges ?? [],
+    bio_short: profile.bio_short ?? null,
+    specialties: profile.specialties ?? [],
+    locations: profile.locations ?? [],
+    to: routeFor(profile.id),
+  }
 }
 
 export { chefConfig }

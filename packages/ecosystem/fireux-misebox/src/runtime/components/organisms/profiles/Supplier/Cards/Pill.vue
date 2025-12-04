@@ -1,14 +1,15 @@
 <template>
   <NuxtLink v-if="supplier?.to" :to="supplier.to" class="pill">
     <UAvatar
-      :src="supplier.avatar"
-      :alt="supplier.title"
+      :src="supplier.company_avatar || supplier.avatar"
+      :alt="companyName(supplier)"
       size="sm"
       class="avatar"
     />
 
     <div class="content">
-      <span class="title">{{ supplier.title }}</span>
+      <span class="company">{{ companyName(supplier) }}</span>
+      <span v-if="supplier.title" class="contact">{{ supplier.title }}</span>
 
       <span v-if="supplier.tagline" class="tagline">
         {{ supplier.tagline }}
@@ -29,14 +30,15 @@
 
   <div v-else class="pill">
     <UAvatar
-      :src="supplier?.avatar"
-      :alt="supplier?.title"
+      :src="supplier?.company_avatar || supplier?.avatar"
+      :alt="companyName(supplier || null)"
       size="sm"
       class="avatar"
     />
 
     <div class="content">
-      <span class="title">{{ supplier?.title }}</span>
+      <span class="company">{{ companyName(supplier || null) }}</span>
+      <span v-if="supplier?.title" class="contact">{{ supplier.title }}</span>
 
       <span v-if="supplier?.tagline" class="tagline">
         {{ supplier.tagline }}
@@ -73,6 +75,9 @@ const supplier = computed(() => {
     tagline: pill.tagline ?? pill.subtitle ?? '',
   }
 })
+
+const companyName = (payload?: SupplierCard.Pill | null) =>
+  payload?.company_name || payload?.title || 'Supplier'
 </script>
 
 <style scoped>
@@ -100,8 +105,13 @@ const supplier = computed(() => {
   flex-direction: column;
 }
 
-.title {
+.company {
   font-weight: 600;
+}
+
+.contact {
+  font-size: 0.8rem;
+  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
 }
 
 .tagline {

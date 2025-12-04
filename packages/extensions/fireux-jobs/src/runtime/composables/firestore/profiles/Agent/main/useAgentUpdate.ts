@@ -1,4 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import { useUserUpdateForUid } from 'fireux-core/runtime/composables/firestore/core/user/mutations/useUserUpdate.ts'
 import type { AgentProfile } from '../../../../../models/profiles/Agent.model.ts'
 
 /**
@@ -14,6 +15,24 @@ import type { AgentProfile } from '../../../../../models/profiles/Agent.model.ts
 export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
   const coreProfile = () => profile?.coreProfile?.value ?? null
   const appProfile = () => profile?.appProfile?.value ?? null
+  let cachedUserUpdater: ReturnType<typeof useUserUpdateForUid> | null = null
+  let cachedUserId: string | null = null
+
+  const resolveUserId = () =>
+    profile?.coreProfile?.value?.user?.id ??
+    profile?.appProfile?.value?.user?.id ??
+    null
+
+  const requireUserUpdater = () => {
+    const userId = resolveUserId()
+    if (!userId) return null
+    if (cachedUserId === userId && cachedUserUpdater) {
+      return cachedUserUpdater
+    }
+    cachedUserUpdater = useUserUpdateForUid(userId)
+    cachedUserId = userId
+    return cachedUserUpdater
+  }
 
   /**
    * Update the CORE Agent profile
@@ -66,6 +85,16 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
     return normalized.length ? normalized : null
   }
 
+  const updateCompanyName = async (value: string) => {
+    const updater = requireUserUpdater()
+    if (!updater) {
+      console.warn('[useAgentUpdate] Unable to resolve user for rename')
+      return
+    }
+    await updater.profile.rename(value)
+    await updateCoreProfile({ organization_name: cleanString(value) })
+  }
+
   const updateDisplayName = async (value: string) => {
     console.warn('[useAgentUpdate] updateDisplayName stub called with:', value)
   }
@@ -84,6 +113,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
     updateCore,
     updateApp,
     updateDisplayName,
+    updateCompanyName,
     updateTagline,
     updateBioShort,
   }

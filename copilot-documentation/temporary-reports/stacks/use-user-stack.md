@@ -333,7 +333,7 @@ export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
 
   return {
     core, // { profile, tags, notifications }
-    app,  // { membership, notifications }
+    app, // { membership, notifications }
     ...core,
     ...app,
   }

@@ -1,9 +1,15 @@
 <template>
   <NuxtLink v-if="agent?.to" :to="agent.to" class="pill">
-    <UAvatar :src="agent.avatar" :alt="agent.title" size="sm" class="avatar" />
+    <UAvatar
+      :src="agent.company_avatar || agent.avatar"
+      :alt="companyName(agent)"
+      size="sm"
+      class="avatar"
+    />
 
     <div class="content">
-      <span class="title">{{ agent.title }}</span>
+      <span class="company">{{ companyName(agent) }}</span>
+      <span v-if="agent.title" class="contact">{{ agent.title }}</span>
 
       <span v-if="agent.tagline" class="tagline">
         {{ agent.tagline }}
@@ -24,14 +30,15 @@
 
   <div v-else class="pill">
     <UAvatar
-      :src="agent?.avatar"
-      :alt="agent?.title"
+      :src="agent?.company_avatar || agent?.avatar"
+      :alt="companyName(agent || null)"
       size="sm"
       class="avatar"
     />
 
     <div class="content">
-      <span class="title">{{ agent?.title }}</span>
+      <span class="company">{{ companyName(agent || null) }}</span>
+      <span v-if="agent?.title" class="contact">{{ agent.title }}</span>
 
       <span v-if="agent?.tagline" class="tagline">
         {{ agent.tagline }}
@@ -68,6 +75,9 @@ const agent = computed(() => {
     tagline: pill.tagline ?? pill.subtitle ?? '',
   }
 })
+
+const companyName = (payload?: AgentCard.Pill | null) =>
+  payload?.company_name || payload?.title || 'Agent'
 </script>
 
 <style scoped>
@@ -95,8 +105,13 @@ const agent = computed(() => {
   flex-direction: column;
 }
 
-.title {
+.company {
   font-weight: 600;
+}
+
+.contact {
+  font-size: 0.8rem;
+  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
 }
 
 .tagline {

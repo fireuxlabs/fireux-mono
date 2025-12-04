@@ -13,6 +13,7 @@ type CoreProfileActions = {
   rename: (displayName: string) => Promise<void>
   setAvatarUrl: (url: string | null) => Promise<void>
   uploadAvatar: (source: File | Blob) => Promise<string>
+  setBio: (bio: string) => Promise<void>
 }
 
 type CoreTagActions = {
@@ -27,7 +28,7 @@ type CoreNotificationActions = {
 export function useCoreUserUpdate(user: UserRefs) {
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
-  const { DisplayName, AvatarUrl } = useUserFormattingAndValidation()
+  const { DisplayName, AvatarUrl, Bio } = useUserFormattingAndValidation()
 
   const core = user.coreUser as { value: User | undefined }
 
@@ -66,6 +67,15 @@ export function useCoreUserUpdate(user: UserRefs) {
       const url = await uploadImage(path, source)
       await updateDocument<User>('users', id, { avatar: url })
       return url
+    },
+    setBio: async (value) => {
+      const id = requireCoreId()
+      const formatted = Bio.format(value ?? '')
+      const validation = Bio.validate(formatted)
+      if (!validation.isValid) {
+        throw new Error(validation.message || 'Invalid bio')
+      }
+      await updateDocument<User>('users', id, { bio: formatted || '' })
     },
   }
 

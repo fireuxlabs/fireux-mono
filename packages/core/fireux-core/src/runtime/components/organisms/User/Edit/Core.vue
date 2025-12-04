@@ -126,10 +126,10 @@ const handleUpdateHandle = async () => {
   throw new Error('updateHandle not available')
 }
 
-const handleUpdateBio = async () => {
-  toast.warn('Bio updates are not available yet')
-  throw new Error('updateBio not available')
-}
+const handleUpdateBio = withToast(coreProfile.setBio, {
+  success: 'Bio updated',
+  failure: 'Failed to update bio',
+})
 
 const avatarUploading = ref(false)
 async function handleAvatarUpload(file: File) {
