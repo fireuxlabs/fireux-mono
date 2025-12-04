@@ -21,16 +21,14 @@
     </p>
 
     <div v-else class="space-y-4">
-      <UCard
-        v-for="check in checks"
-        :key="check.id"
-        class="space-y-3"
-      >
+      <UCard v-for="check in checks" :key="check.id" class="space-y-3">
         <template #header>
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="space-y-1">
               <div class="flex items-center gap-2">
-                <span class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                <span
+                  class="text-base font-semibold text-gray-900 dark:text-gray-100"
+                >
                   {{ check.label }}
                 </span>
                 <UBadge :color="resolveColor(check.status)" variant="soft">
@@ -64,7 +62,10 @@
                 {{ issueLabel(issue.severity) }}
               </UBadge>
             </div>
-            <p v-if="issue.hint" class="text-xs text-gray-500 dark:text-gray-400">
+            <p
+              v-if="issue.hint"
+              class="text-xs text-gray-500 dark:text-gray-400"
+            >
               {{ issue.hint }}
             </p>
           </article>
@@ -79,7 +80,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { DevHealthResult, DevHealthStatus } from '../../composables/dev/health/types'
+import type {
+  DevHealthResult,
+  DevHealthStatus,
+} from '../../composables/dev/health/types'
 
 defineOptions({ name: 'DevHealthPanel' })
 

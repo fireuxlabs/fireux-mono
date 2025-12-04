@@ -1,30 +1,37 @@
 # Dev Health Roadmap – 2025-12-04
 
 ## Goals
+
 - Unify `/dev/*` pages so every stack (apps, users, profiles) exposes the same primitives: live preview, raw/enriched JSON, health checks, and component showcases.
 - Use the health layer to compare Firestore collections against their view models (e.g., `apps.admin_ids` ↔ `users.adminOf`).
 - Keep tooling intentionally verbose (dev-only) but isolate it under `fireux-core/runtime/components/dev` and `.../composables/dev` so the runtime stays lean and now guard those paths behind deploy ignores so Firebase hosting never receives them.
 
 ## Architecture Sketch
+
 1. **Health Registry**
+
    - `DevHealthResult` struct encapsulates `status`, `summary`, `issues[]`, and `stats`.
    - `useDevHealth()` composes individual checks (admin matrix, membership drift, profile enrichment) and exposes helpers to filter by scope (`apps`, `users`, `profiles`).
    - Each check lives in `.../dev/health/checks/*` and only depends on public composables (`useAppCollection`, `useUserCollection`, etc.).
 
 2. **UI Surfaces**
+
    - `DevHealthPanel` renders a stack of cards with badges, issue lists, and copy buttons.
    - `DevProfileDiffList` (already shipped) and a new `DevUserComponentGallery` cover diffing + component previews, respectively.
    - Dev pages arrange sections in the same order: preview → health → JSON → component gallery.
 
 3. **Checks (MVP)**
+
    - **Admin Matrix**: ensures `users.adminOf`, `apps.admin_ids`, and tenant `apps/{appId}/users/{uid}.role` stay in sync; flags missing docs, mismatched IDs, and non-admin memberships.
    - Profiles pipeline will reuse the diff view to compare raw documents against enriched cards and flag legacy identity fields.
 
 4. **Component Library**
+
    - Start by showcasing user pill/cell variants via `useUserInterface` so designers/devs can confirm data states.
    - Extend later with profile/preview variants once their stacks stabilize.
 
 5. **Deployment Guardrails**
+
    - `fireux-deploy-ignore` in the repo root enumerates folder segments that should never ship (default: any `dev` directory), with overrides via `FIREUX_DEPLOY_IGNORE` and an escape hatch `FIREUX_DEPLOY_WITH_DEV=1` for debugging.
    - `configureDeployIgnore()` in `fireux-core` reads those rules, converts them to glob patterns (e.g., `**/dev/**`), and injects them into `nuxt.options.ignore` right after runtime setup so Nuxt skips scanning dev-only directories during build.
    - Because the ignore hook runs before component/composable/page discovery, `/dev/*` sources remain in Git for local tooling yet are excluded from Firebase hosting bundles and SSR output.
@@ -83,6 +90,7 @@
    - `packages/extensions/fireux-places/dist/runtime/pages/dev/fireux-places.vue`
 
 ## Next Steps
+
 1. Verify `fireux-deploy-ignore` covers any new dev subtrees (profiles, tenants) and document additional rules as we add tooling.
 2. Build `DevHealthPanel` + `useDevHealth()` scaffolding.
 3. Implement the Admin Matrix check and use it on `/dev/apps` and `/dev/users`.
@@ -90,6 +98,7 @@
 5. Iterate on additional checks (profile linkage, membership drift) as new stacks solidify.
 
 ## Status – 2025-12-04
+
 - ✅ Deploy ignore guard added: `fireux-deploy-ignore` + `configureDeployIgnore()` ensure dev-only layouts/components/composables are stripped from production bundles (configurable via env flags).
 - ✅ `DevHealthPanel` + `useDevHealth()` shipped under `fireux-core/runtime`.
 - ✅ Admin Matrix check live on `/dev/apps` and `/dev/users`, covering `apps.admin_ids`, `users.adminOf`, and tenant membership roles.

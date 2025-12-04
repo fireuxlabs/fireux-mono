@@ -52,7 +52,6 @@ import { computed } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
 import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/users.ts'
-import DevHealthPanel from 'fireux-core/runtime/components/dev/HealthPanel.vue'
 import { useDevHealth } from 'fireux-core/runtime/composables/dev/health/useDevHealth.ts'
 
 definePageMeta({
@@ -65,6 +64,7 @@ definePageMeta({
     desktop: true,
     group: 'core',
     layouts: ['dev'],
+    order: 20,
   },
   title: 'Dev · Apps',
   description: 'Developer view for Apps with section-level dev panels.',

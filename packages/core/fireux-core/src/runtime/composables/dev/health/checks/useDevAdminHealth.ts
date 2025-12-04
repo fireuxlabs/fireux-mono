@@ -5,7 +5,10 @@ import { useUserCollection } from 'fireux-core/runtime/composables/firestore/cor
 import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/users.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import type { User, AppUser } from 'fireux-core/runtime/models/core/user.model.ts'
+import type {
+  User,
+  AppUser,
+} from 'fireux-core/runtime/models/core/user.model.ts'
 import type { DevHealthIssue, DevHealthResult } from '../types'
 
 export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
@@ -22,15 +25,21 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
   }
 
   return computed<DevHealthResult>(() => {
-    const appList = (apps.value ?? []).filter((entry): entry is App => Boolean(entry?.id))
-    const userList = (users.value ?? []).filter((entry): entry is User => Boolean(entry?.id))
+    const appList = (apps.value ?? []).filter((entry): entry is App =>
+      Boolean(entry?.id)
+    )
+    const userList = (users.value ?? []).filter((entry): entry is User =>
+      Boolean(entry?.id)
+    )
     const runtimeMemberships = (appUsers.users.value ?? []).filter(
       (entry): entry is AppUser => Boolean(entry?.id)
     )
 
     const appMap = new Map(appList.map((app) => [app.id, app]))
     const userMap = new Map(userList.map((user) => [user.id, user]))
-    const membershipMap = new Map(runtimeMemberships.map((member) => [member.id, member]))
+    const membershipMap = new Map(
+      runtimeMemberships.map((member) => [member.id, member])
+    )
 
     const issues: DevHealthIssue[] = []
     let adminLinks = 0
@@ -61,7 +70,9 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
       if (duplicates.length) {
         ensureIssue(
           `app-${app.id}-dup-admins`,
-          `App ${app.app_name || app.id} lists duplicate admin ids: ${duplicates.join(', ')}`,
+          `App ${
+            app.app_name || app.id
+          } lists duplicate admin ids: ${duplicates.join(', ')}`,
           'warning',
           { appId: app.id, duplicates }
         )
@@ -72,7 +83,9 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
         if (!user) {
           ensureIssue(
             `app-${app.id}-missing-user-${uid}`,
-            `Admin id ${uid} on app ${app.app_name || app.id} has no matching user document`,
+            `Admin id ${uid} on app ${
+              app.app_name || app.id
+            } has no matching user document`,
             'error',
             { appId: app.id, userId: uid }
           )
@@ -83,7 +96,9 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
         if (!userAdminIds.has(app.id)) {
           ensureIssue(
             `app-${app.id}-user-missing-link-${uid}`,
-            `User ${user.display_name || uid} is listed on app ${app.app_name || app.id} but user.adminOf is missing ${app.id}`,
+            `User ${user.display_name || uid} is listed on app ${
+              app.app_name || app.id
+            } but user.adminOf is missing ${app.id}`,
             'warning',
             { appId: app.id, userId: uid }
           )
@@ -100,7 +115,9 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
         if (!app) {
           ensureIssue(
             `user-${user.id}-missing-app-${appId}`,
-            `User ${user.display_name || user.id} references adminOf ${appId} but the app document is missing`,
+            `User ${
+              user.display_name || user.id
+            } references adminOf ${appId} but the app document is missing`,
             'error',
             { userId: user.id, appId }
           )
@@ -111,7 +128,9 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
         if (!appAdminIds.has(user.id)) {
           ensureIssue(
             `user-${user.id}-app-missing-link-${appId}`,
-            `User ${user.display_name || user.id} lists adminOf ${appId} but the app is missing that user in admin_ids`,
+            `User ${
+              user.display_name || user.id
+            } lists adminOf ${appId} but the app is missing that user in admin_ids`,
             'warning',
             { userId: user.id, appId }
           )
@@ -128,7 +147,11 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
           if (!member) {
             ensureIssue(
               `app-${cfg.appId}-missing-membership-${uid}`,
-              `Tenant app ${runtimeApp.app_name || runtimeApp.id} lists ${uid} as admin but no membership doc exists under apps/${cfg.appId}/users`,
+              `Tenant app ${
+                runtimeApp.app_name || runtimeApp.id
+              } lists ${uid} as admin but no membership doc exists under apps/${
+                cfg.appId
+              }/users`,
               'error',
               { appId: cfg.appId, userId: uid }
             )
@@ -152,13 +175,15 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
     )
       ? 'fail'
       : issues.length
-        ? 'warn'
-        : 'pass'
+      ? 'warn'
+      : 'pass'
 
     const summary =
       status === 'pass'
         ? `All ${adminLinks} admin link(s) look healthy across ${appList.length} app(s).`
-        : `${issues.length} admin issue(s) detected across ${adminLinks || 0} link(s).`
+        : `${issues.length} admin issue(s) detected across ${
+            adminLinks || 0
+          } link(s).`
 
     return {
       id: 'admin-matrix',

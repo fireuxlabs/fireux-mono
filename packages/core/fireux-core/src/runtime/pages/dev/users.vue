@@ -126,7 +126,6 @@ import { useUserInterface } from '../../composables/firestore/core/user/state/us
 import { useAppUsers } from '../../composables/firestore/core/app/subcollections/users'
 import { useFireUXConfig } from '../../composables/FireUXConfig'
 import { useDevHealth } from '../../composables/dev/health/useDevHealth'
-import DevHealthPanel from '../../components/dev/HealthPanel.vue'
 import DevUserComponentGallery from '../../components/dev/UserComponentGallery.vue'
 
 definePageMeta({
@@ -139,6 +138,7 @@ definePageMeta({
     desktop: true,
     group: 'core',
     layouts: ['dev'],
+    order: 30,
   },
 })
 

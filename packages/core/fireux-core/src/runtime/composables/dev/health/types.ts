@@ -1,7 +1,12 @@
 import type { ComputedRef } from 'vue'
 
 export type DevHealthStatus = 'pass' | 'warn' | 'fail'
-export type DevHealthScope = 'runtime' | 'apps' | 'users' | 'profiles' | 'components'
+export type DevHealthScope =
+  | 'runtime'
+  | 'apps'
+  | 'users'
+  | 'profiles'
+  | 'components'
 export type DevHealthIssueSeverity = 'info' | 'warning' | 'error'
 
 export interface DevHealthIssue {

@@ -10,7 +10,9 @@ export function useDevHealth(): DevHealthApi {
     [adminMatrix.value].filter(Boolean)
   )
 
-  const getChecksForScope = (scope: DevHealthScope): ComputedRef<DevHealthResult[]> =>
+  const getChecksForScope = (
+    scope: DevHealthScope
+  ): ComputedRef<DevHealthResult[]> =>
     computed(() =>
       checks.value.filter((check) => {
         if (!check.scopes?.length) return true

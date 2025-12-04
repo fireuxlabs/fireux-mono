@@ -226,6 +226,7 @@ definePageMeta({
     desktop: true,
     group: 'core',
     layouts: ['dev'],
+    order: 10,
   },
 })
 

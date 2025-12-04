@@ -213,7 +213,7 @@ definePageMeta({
     desktop: true,
     group: 'core',
     layouts: ['dev'],
-    order: 45,
+    order: 40,
   },
   title: 'Dev · Images',
   description: 'Inspect platform assets inherited from fireux-core.',

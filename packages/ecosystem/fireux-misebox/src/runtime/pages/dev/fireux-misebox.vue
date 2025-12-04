@@ -260,10 +260,14 @@ import type {
 
 definePageMeta({
   layout: 'dev',
-  alias: ['/dev/fireux-misebox', '/dev/fireux-misebox-tennant'],
+  alias: [
+    '/dev/fireux-misebox',
+    '/dev/fireux-misebox-tenant',
+    '/dev/fireux-misebox-tennant',
+  ],
   nav: {
     key: 'dev-tenant-misebox',
-    label: 'Misebox (Tenant)',
+    label: 'Misebox',
     icon: 'i-lucide-utensils-crossed',
     desktop: true,
     group: 'misebox',
