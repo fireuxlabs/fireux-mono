@@ -68,10 +68,18 @@
           </p>
 
           <template #footer>
-            <DevJsonPanel
-              v-if="professionalGlobalJson.length"
-              :data="professionalGlobalJson"
-            />
+            <div class="space-y-4">
+              <DevProfileDiffList
+                :rows="professionalGlobalDiffRows"
+                title="Raw vs enriched (global)"
+                empty-text="Load global professionals to inspect the collection."
+              />
+              <DevJsonPanel
+                v-if="professionalGlobalJson.length"
+                :data="professionalGlobalJson"
+                title="Global professionals (raw)"
+              />
+            </div>
           </template>
         </UCard>
 
@@ -105,10 +113,18 @@
           </p>
 
           <template #footer>
-            <DevJsonPanel
-              v-if="professionalLocalJson.length"
-              :data="professionalLocalJson"
-            />
+            <div class="space-y-4">
+              <DevProfileDiffList
+                :rows="professionalLocalDiffRows"
+                title="Raw vs enriched (tenant)"
+                empty-text="No tenant-specific professionals detected."
+              />
+              <DevJsonPanel
+                v-if="professionalLocalJson.length"
+                :data="professionalLocalJson"
+                title="Tenant professionals (raw)"
+              />
+            </div>
           </template>
         </UCard>
         <UCard v-else-if="isTenant">
@@ -188,10 +204,18 @@
           </p>
 
           <template #footer>
-            <DevJsonPanel
-              v-if="agentGlobalJson.length"
-              :data="agentGlobalJson"
-            />
+            <div class="space-y-4">
+              <DevProfileDiffList
+                :rows="agentGlobalDiffRows"
+                title="Raw vs enriched (global)"
+                empty-text="Load global agents to inspect the collection."
+              />
+              <DevJsonPanel
+                v-if="agentGlobalJson.length"
+                :data="agentGlobalJson"
+                title="Global agents (raw)"
+              />
+            </div>
           </template>
         </UCard>
 
@@ -225,7 +249,18 @@
           </p>
 
           <template #footer>
-            <DevJsonPanel v-if="agentLocalJson.length" :data="agentLocalJson" />
+            <div class="space-y-4">
+              <DevProfileDiffList
+                :rows="agentLocalDiffRows"
+                title="Raw vs enriched (tenant)"
+                empty-text="No tenant-specific agents detected."
+              />
+              <DevJsonPanel
+                v-if="agentLocalJson.length"
+                :data="agentLocalJson"
+                title="Tenant agents (raw)"
+              />
+            </div>
           </template>
         </UCard>
         <UCard v-else-if="isTenant">
@@ -250,7 +285,9 @@
 
 <script setup lang="ts">
 import { computed, unref } from 'vue'
+import type { Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import DevProfileDiffList from 'fireux-core/runtime/components/dev/ProfileDiffList.vue'
 import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
 import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
 import { useProfessionalCollection } from '../../composables/firestore/profiles/Professional/main/useProfessionalCollection.ts'
@@ -420,4 +457,185 @@ const agentLocalJson = computed(() =>
 )
 
 const agentPillKey = (pill: AgentCard.Pill) => pill.to ?? pill.title ?? 'agent'
+
+type ProfileDiffRow<TProfile> = {
+  id: string
+  raw: Partial<TProfile> | null
+  enriched: Partial<TProfile> | null
+  issues: string[]
+}
+
+interface ProfileModelSpec {
+  typeLabel: string
+  requireUser?: boolean
+  legacyIdentityFields?: string[]
+}
+
+type MaybeProfileEntries<TProfile> =
+  | Ref<Array<Partial<TProfile>> | null | undefined>
+  | null
+
+const defaultLegacyIdentityFields = [
+  'display_name',
+  'first_name',
+  'last_name',
+  'full_name',
+  'email',
+  'handle',
+  'phone',
+  'phone_number',
+]
+
+const resolveProfileId = (
+  profile?:
+    | Partial<{
+        id?: string | null
+        user?: { id?: string | null } | null
+      }>
+    | null
+) => {
+  if (!profile) return null
+  const profileId = (profile as { id?: string | null }).id
+  if (profileId) return profileId
+  return (profile as { user?: { id?: string | null } }).user?.id ?? null
+}
+
+const collectProfileIssues = (
+  raw: Record<string, any> | null | undefined,
+  enriched: Record<string, any> | null | undefined,
+  spec: ProfileModelSpec
+) => {
+  const issues: string[] = []
+
+  if (!raw) {
+    issues.push(`${spec.typeLabel} document missing`)
+    return issues
+  }
+
+  const id = resolveProfileId(raw)
+  if (!id) {
+    issues.push('Missing profile id')
+  }
+
+  const requireUser = spec.requireUser !== false
+  const user = raw.user
+
+  if (requireUser) {
+    if (!user) {
+      issues.push('Missing linked user reference')
+    } else {
+      if (!user.id) {
+        issues.push('Missing linked user id')
+      }
+      if (raw.id && user.id && raw.id !== user.id) {
+        issues.push('Profile id and user id mismatch')
+      }
+    }
+  }
+
+  const legacyKeys = spec.legacyIdentityFields ?? defaultLegacyIdentityFields
+  for (const key of legacyKeys) {
+    if (
+      Object.prototype.hasOwnProperty.call(raw, key) &&
+      raw[key] !== undefined &&
+      raw[key] !== null &&
+      `${raw[key]}`.length
+    ) {
+      issues.push(`Legacy identity field "${key}" stored on profile`)
+    }
+  }
+
+  if (!enriched) {
+    issues.push('Profile missing from enriched collection')
+    return issues
+  }
+
+  if (requireUser) {
+    const enrichedUser = enriched.user
+    if (!enrichedUser) {
+      issues.push('Enriched payload missing user data')
+    } else {
+      if (!enrichedUser.display_name) {
+        issues.push('Enriched user missing display name')
+      }
+      if (!enrichedUser.avatar) {
+        issues.push('Enriched user missing avatar')
+      }
+    }
+  }
+
+  return issues
+}
+
+const toEntriesArray = <TProfile>(
+  source: MaybeProfileEntries<TProfile>
+): Partial<TProfile>[] => {
+  if (!source) return []
+  const value = source.value
+  return Array.isArray(value) ? (value as Partial<TProfile>[]) : []
+}
+
+const buildProfileDiffRows = <TProfile>(
+  rawSource: MaybeProfileEntries<TProfile>,
+  enrichedSource: MaybeProfileEntries<TProfile>,
+  spec: ProfileModelSpec
+) =>
+  computed<ProfileDiffRow<TProfile>[]>(() => {
+    const rawEntries = toEntriesArray(rawSource)
+    if (!rawEntries.length) return []
+
+    const enrichedEntries = toEntriesArray(enrichedSource)
+    const enrichedMap = new Map<string, Partial<TProfile>>()
+
+    for (const entry of enrichedEntries) {
+      const id = resolveProfileId(entry)
+      if (id) {
+        enrichedMap.set(id, entry)
+      }
+    }
+
+    return rawEntries.map((raw) => {
+      const id = resolveProfileId(raw) ?? 'unknown-profile'
+      const enriched = id ? enrichedMap.get(id) ?? null : null
+
+      return {
+        id,
+        raw: raw ?? null,
+        enriched,
+        issues: collectProfileIssues(raw as any, enriched as any, spec),
+      }
+    })
+  })
+
+const professionalModelSpec: ProfileModelSpec = {
+  typeLabel: 'Professional',
+}
+
+const agentModelSpec: ProfileModelSpec = {
+  typeLabel: 'Agent',
+}
+
+const professionalGlobalDiffRows = buildProfileDiffRows(
+  rawGlobalProfessionals,
+  globalProfessionals,
+  professionalModelSpec
+)
+
+const professionalLocalDiffRows = buildProfileDiffRows(
+  rawLocalProfessionals,
+  localProfessionals,
+  professionalModelSpec
+)
+
+const agentGlobalDiffRows = buildProfileDiffRows(
+  rawGlobalAgents,
+  globalAgents,
+  agentModelSpec
+)
+
+const agentLocalDiffRows = buildProfileDiffRows(
+  rawLocalAgents,
+  localAgents,
+  agentModelSpec
+)
 </script>

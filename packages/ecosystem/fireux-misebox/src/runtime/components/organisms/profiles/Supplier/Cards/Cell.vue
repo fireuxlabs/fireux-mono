@@ -48,16 +48,33 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { SupplierCard } from '../../../../../models/profiles/Supplier.model.ts'
+import type {
+  SupplierCard,
+  SupplierProfile,
+} from '../../../../../models/profiles/Supplier.model.ts'
+import { resolveSupplierCell } from '../../../../../models/profiles/Supplier.model.ts'
 
-const props = defineProps<{ supplier: SupplierCard.Cell }>()
+const props = defineProps<{
+  supplier?: SupplierCard.Cell | SupplierProfile | null
+}>()
 
 const card = computed(() => {
-  const pill = props.supplier
+  const source = props.supplier
+  if (!source) return null
+
+  if ('user' in source) {
+    const resolved = resolveSupplierCell(source)
+    if (resolved) {
+      return {
+        ...resolved,
+        tagline: resolved.tagline ?? resolved.subtitle ?? '',
+      }
+    }
+  }
 
   return {
-    ...pill,
-    tagline: pill.tagline ?? pill.subtitle ?? '',
+    ...source,
+    tagline: source.tagline ?? source.subtitle ?? '',
   }
 })
 </script>

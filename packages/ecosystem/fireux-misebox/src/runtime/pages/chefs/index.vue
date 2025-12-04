@@ -4,25 +4,33 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="space-y-6">
-      <OrganismsProfileSectionsSingle :title="currentProfileTitle">
-        <template v-if="hasProfile">
-          <OrganismsProfilesChefCardsCell v-if="cell" :chef="cell" />
-          <OrganismsProfilesChefCardsPill v-if="pill" :chef="pill" />
-        </template>
-        <OrganismsProfilesChefCTA v-else />
-      </OrganismsProfileSectionsSingle>
+      <OrganismsProfilesChefPreview />
 
-      <OrganismsProfilesChefSectionsGlobalCollection />
       <OrganismsProfilesChefSectionsLocalCollection v-if="isTenant" />
+
+      <section class="space-y-2">
+        <div v-if="isTenant" class="flex items-center justify-end">
+          <UButton
+            variant="ghost"
+            @click="showGlobalDirectory = !showGlobalDirectory"
+          >
+            {{
+              showGlobalDirectory ? 'Hide global chefs' : 'View global chefs'
+            }}
+          </UButton>
+        </div>
+
+        <OrganismsProfilesChefSectionsGlobalCollection
+          v-if="showGlobalDirectory || !isTenant"
+        />
+      </section>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref } from 'vue'
 import { useHead } from '#imports'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
-import { useChef } from '../../composables/firestore/profiles/Chef/useChef.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
 definePageMeta({
@@ -41,15 +49,12 @@ definePageMeta({
   name: 'ChefsIndexPage',
 })
 
-const { pill, cell } = useChef()
 const { isTenant } = useFireUXConfig()
-const { hasProfile: userHasProfile } = useUser()
-const hasProfile = computed(() => userHasProfile('chef'))
+const showGlobalDirectory = ref(!isTenant.value)
 
 const pageTitle = 'Chefs'
 const pageDescription =
   'Inspect your chef profile and browse all chefs resolved for this runtime.'
-const currentProfileTitle = 'Your chef profile'
 
 useHead({ title: pageTitle })
 </script>

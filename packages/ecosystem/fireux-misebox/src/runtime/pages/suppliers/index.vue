@@ -4,25 +4,35 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="space-y-6">
-      <OrganismsProfileSectionsSingle :title="currentProfileTitle">
-        <template v-if="hasProfile">
-          <OrganismsProfilesSupplierCardsCell v-if="cell" :supplier="cell" />
-          <OrganismsProfilesSupplierCardsPill v-if="pill" :supplier="pill" />
-        </template>
-        <OrganismsProfilesSupplierCTA v-else />
-      </OrganismsProfileSectionsSingle>
+      <OrganismsProfilesSupplierPreview />
 
-      <OrganismsProfilesSupplierSectionsGlobalCollection />
       <OrganismsProfilesSupplierSectionsLocalCollection v-if="isTenant" />
+
+      <section class="space-y-2">
+        <div v-if="isTenant" class="flex items-center justify-end">
+          <UButton
+            variant="ghost"
+            @click="showGlobalDirectory = !showGlobalDirectory"
+          >
+            {{
+              showGlobalDirectory
+                ? 'Hide global suppliers'
+                : 'View global suppliers'
+            }}
+          </UButton>
+        </div>
+
+        <OrganismsProfilesSupplierSectionsGlobalCollection
+          v-if="showGlobalDirectory || !isTenant"
+        />
+      </section>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref } from 'vue'
 import { useHead } from '#imports'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
-import { useSupplier } from '../../composables/firestore/profiles/Supplier/useSupplier.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 
 definePageMeta({
@@ -41,15 +51,12 @@ definePageMeta({
   name: 'SuppliersIndexPage',
 })
 
-const { pill, cell } = useSupplier()
 const { isTenant } = useFireUXConfig()
-const { hasProfile: userHasProfile } = useUser()
-const hasProfile = computed(() => userHasProfile('supplier'))
+const showGlobalDirectory = ref(!isTenant.value)
 
 const pageTitle = 'Suppliers'
 const pageDescription =
   'Inspect your supplier profile and browse suppliers resolved for this runtime.'
-const currentProfileTitle = 'Your supplier profile'
 
 useHead({ title: pageTitle })
 </script>

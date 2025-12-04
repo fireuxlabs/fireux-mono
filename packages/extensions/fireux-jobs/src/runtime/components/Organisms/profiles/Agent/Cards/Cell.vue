@@ -48,16 +48,31 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AgentCard } from '../../../../../models/profiles/Agent.model.ts'
+import type {
+  AgentCard,
+  AgentProfile,
+} from '../../../../../models/profiles/Agent.model.ts'
+import { resolveAgentCell } from '../../../../../models/profiles/Agent.model.ts'
 
-const props = defineProps<{ agent: AgentCard.Cell }>()
+const props = defineProps<{ agent?: AgentCard.Cell | AgentProfile | null }>()
 
 const card = computed(() => {
-  const pill = props.agent
+  const source = props.agent
+  if (!source) return null
+
+  if ('user' in source) {
+    const resolved = resolveAgentCell(source)
+    if (resolved) {
+      return {
+        ...resolved,
+        tagline: resolved.tagline ?? resolved.subtitle ?? '',
+      }
+    }
+  }
 
   return {
-    ...pill,
-    tagline: pill.tagline ?? pill.subtitle ?? '',
+    ...source,
+    tagline: source.tagline ?? source.subtitle ?? '',
   }
 })
 </script>

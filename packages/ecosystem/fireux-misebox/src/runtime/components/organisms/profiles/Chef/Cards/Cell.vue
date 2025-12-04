@@ -47,16 +47,31 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefCard } from '../../../../../models/profiles/Chef.model.ts'
+import type {
+  ChefCard,
+  ChefProfile,
+} from '../../../../../models/profiles/Chef.model.ts'
+import { resolveChefCell } from '../../../../../models/profiles/Chef.model.ts'
 
-const props = defineProps<{ chef: ChefCard.Cell }>()
+const props = defineProps<{ chef?: ChefCard.Cell | ChefProfile | null }>()
 
 const card = computed(() => {
-  const pill = props.chef
+  const source = props.chef
+  if (!source) return null
+
+  if ('user' in source) {
+    const resolved = resolveChefCell(source)
+    if (resolved) {
+      return {
+        ...resolved,
+        tagline: resolved.tagline ?? resolved.subtitle ?? '',
+      }
+    }
+  }
 
   return {
-    ...pill,
-    tagline: pill.tagline ?? pill.subtitle ?? '',
+    ...source,
+    tagline: source.tagline ?? source.subtitle ?? '',
   }
 })
 </script>

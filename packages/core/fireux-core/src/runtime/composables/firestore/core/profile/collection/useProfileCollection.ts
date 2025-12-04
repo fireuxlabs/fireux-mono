@@ -7,12 +7,16 @@ import type {
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
 import { useUserCollection } from '../../user/main/useUserCollection.ts'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
+import type { Ref } from 'vue'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 
 export function useProfileCollection<
   TProfile extends Partial<Profile> = Profile
 >(config: ProfileConfig) {
   const db = useFirestore()
   const { isTenant, appId } = useFireUXConfig()
+  const { firestoreFetchDoc } = useFirestoreRead()
 
   const idFieldOptions = { idField: 'id' } as Record<string, unknown>
 
@@ -30,23 +34,58 @@ export function useProfileCollection<
       : null
 
   const { users } = useUserCollection()
+  const coreUserRefs = new Map<string, Ref<User | undefined>>()
+
+  const ensureCoreUserRef = (id?: string | null) => {
+    if (!id) return undefined
+    if (!coreUserRefs.has(id)) {
+      coreUserRefs.set(id, firestoreFetchDoc<User>('users', id))
+    }
+    return coreUserRefs.get(id)
+  }
 
   const userMap = computed(() => {
     const map = new Map<string, Profile['user']>()
-    for (const user of users.value ?? []) {
-      if (user?.id) map.set(user.id, user)
+    for (const entry of users.value ?? []) {
+      if (!entry?.id) continue
+      map.set(entry.id, {
+        id: entry.id,
+        display_name: entry.display_name,
+        avatar: entry.avatar,
+        handle: entry.handle,
+        email: entry.email,
+      })
     }
     return map
   })
 
+  const resolveUserForProfile = (profile?: TProfile) => {
+    if (!profile) return profile?.user
+    const profileUser = profile.user
+    const id = profileUser?.id ?? profile.id
+    if (!id) return profileUser
+
+    const enriched = userMap.value.get(id)
+    if (enriched) {
+      return { ...(profileUser ?? {}), ...enriched }
+    }
+
+    const coreUser = ensureCoreUserRef(id)?.value
+    if (coreUser) {
+      return { ...(profileUser ?? {}), ...coreUser }
+    }
+
+    return profileUser
+  }
+
   const attachUser = (entries: TProfile[] | null | undefined): TProfile[] => {
     if (!entries?.length) return []
     return entries.map((profile) => {
-      const owner = userMap.value.get(profile?.id ?? '')
-      if (!owner) return profile
+      const resolvedUser = resolveUserForProfile(profile)
+      if (!resolvedUser) return profile
       return {
         ...profile,
-        user: profile?.user ? { ...profile.user, ...owner } : owner,
+        user: resolvedUser,
       }
     })
   }

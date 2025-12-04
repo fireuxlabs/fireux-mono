@@ -47,16 +47,33 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ProfessionalCard } from '../../../../../models/profiles/Professional.model.ts'
+import type {
+  ProfessionalCard,
+  ProfessionalProfile,
+} from '../../../../../models/profiles/Professional.model.ts'
+import { resolveProfessionalCell } from '../../../../../models/profiles/Professional.model.ts'
 
-const props = defineProps<{ professional: ProfessionalCard.Cell }>()
+const props = defineProps<{
+  professional?: ProfessionalCard.Cell | ProfessionalProfile | null
+}>()
 
 const card = computed(() => {
-  const pill = props.professional
+  const source = props.professional
+  if (!source) return null
+
+  if ('user' in source) {
+    const resolved = resolveProfessionalCell(source)
+    if (resolved) {
+      return {
+        ...resolved,
+        tagline: resolved.tagline ?? resolved.subtitle ?? '',
+      }
+    }
+  }
 
   return {
-    ...pill,
-    tagline: pill.tagline ?? pill.subtitle ?? '',
+    ...source,
+    tagline: source.tagline ?? source.subtitle ?? '',
   }
 })
 </script>

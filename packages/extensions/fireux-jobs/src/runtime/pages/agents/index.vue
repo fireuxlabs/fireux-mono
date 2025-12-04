@@ -3,26 +3,34 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="space-y-6">
-      <OrganismsProfileSectionsSingle :title="currentProfileTitle">
-        <template v-if="hasProfile">
-          <OrganismsProfilesAgentCardsCell v-if="cell" :agent="cell" />
-          <OrganismsProfilesAgentCardsPill v-if="pill" :agent="pill" />
-        </template>
-        <OrganismsProfilesAgentCTA v-else />
-      </OrganismsProfileSectionsSingle>
+      <OrganismsProfilesAgentPreview />
 
-      <OrganismsProfilesAgentSectionsGlobalCollection />
       <OrganismsProfilesAgentSectionsLocalCollection v-if="isTenant" />
+
+      <section class="space-y-2">
+        <div v-if="isTenant" class="flex items-center justify-end">
+          <UButton
+            variant="ghost"
+            @click="showGlobalDirectory = !showGlobalDirectory"
+          >
+            {{
+              showGlobalDirectory ? 'Hide global agents' : 'View global agents'
+            }}
+          </UButton>
+        </div>
+
+        <OrganismsProfilesAgentSectionsGlobalCollection
+          v-if="showGlobalDirectory || !isTenant"
+        />
+      </section>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref } from 'vue'
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
-import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
 
 definePageMeta({
   nav: {
@@ -40,16 +48,12 @@ definePageMeta({
   name: 'AgentsIndexPage',
 })
 
-const { pill, cell } = useAgent()
-
 const { isTenant } = useFireUXConfig()
-const user = useUser()
-const hasProfile = computed(() => user.hasProfile('agent'))
+const showGlobalDirectory = ref(!isTenant.value)
 
 const pageTitle = 'Agents'
 const pageDescription =
   'Inspect your agent profile and browse all agents resolved for this runtime.'
-const currentProfileTitle = 'Your agent profile'
 
 useHead({ title: pageTitle })
 </script>
