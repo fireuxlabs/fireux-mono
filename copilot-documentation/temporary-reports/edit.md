@@ -356,12 +356,12 @@ LEGACY EDITOR (preserved as comment)
         }"
       />
 
-      [Company Name Field (Primary Identifier)]
+      [Agency Name Field (Primary Identifier)]
       <FireMoleculesFormsFirestoreField
-        label="Company Name"
-        :firebase-value="props.agent?.company_name"
-        placeholder="Enter your company name"
-        :update-function="updateCompanyName"
+        label="Agency Name"
+        :firebase-value="props.agent?.agency_name"
+        placeholder="Enter your agency name"
+        :update-function="updateAgencyName"
       />
 
       [Business Type Field]
@@ -565,8 +565,8 @@ const props = defineProps({
 const { updateProfile } = useProfileUpdate(agentConfig)
 
 // Create field-specific update functions
-const updateCompanyName = (value) =>
-  updateProfile({ company_name: value }, props.agent.uid)
+const updateAgencyName = (value) =>
+  updateProfile({ agency_name: value }, props.agent.uid)
 const updateBusinessType = (value) =>
   updateProfile({ business_type: value }, props.agent.uid)
 const updateTitle = (value) =>

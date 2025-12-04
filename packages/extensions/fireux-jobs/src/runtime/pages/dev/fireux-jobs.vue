@@ -410,13 +410,19 @@ const { globalAgents, localAgents, rawGlobalAgents, rawLocalAgents } =
 const toAgentPill = (
   profile?: Partial<AgentProfile> | null
 ): AgentCard.Pill => {
-  const title = (profile?.title || profile?.organization_name || '').trim()
+  const title = (
+    profile?.title ||
+    profile?.user?.display_name ||
+    profile?.display_name ||
+    ''
+  ).trim()
   const normalizedTitle = title || 'Agent'
   const tagline =
     profile?.tagline ??
     (profile as { subtitle?: string | null })?.subtitle ??
     ''
-  const avatar = profile?.avatar_url || profile?.avatar || ''
+  const avatar =
+    profile?.avatar_url || profile?.avatar || profile?.user?.avatar || ''
   const rawBadges = profile?.badges
   const badges = Array.isArray(rawBadges) ? rawBadges : []
   const to = profile?.id ? `/agents/${profile.id}` : null

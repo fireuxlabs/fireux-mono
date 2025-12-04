@@ -85,14 +85,23 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
     return normalized.length ? normalized : null
   }
 
-  const updateCompanyName = async (value: string) => {
+  const updateAgencyName = async (value: string) => {
     const updater = requireUserUpdater()
-    if (!updater) {
-      console.warn('[useAgentUpdate] Unable to resolve user for rename')
+    const normalized = cleanString(value)
+    if (!normalized) {
+      console.warn('[useAgentUpdate] Empty agency name ignored')
       return
     }
-    await updater.profile.rename(value)
-    await updateCoreProfile({ organization_name: cleanString(value) })
+
+    if (updater) {
+      await updater.profile.rename(normalized)
+    } else {
+      console.warn('[useAgentUpdate] Unable to resolve user for rename')
+    }
+
+    await updateCoreProfile({
+      title: normalized,
+    })
   }
 
   const updateDisplayName = async (value: string) => {
@@ -100,11 +109,17 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
   }
 
   const updateTagline = async (value: string) => {
-    await updateCoreProfile({ tagline: cleanString(value) })
+    const normalized = cleanString(value)
+    await updateCoreProfile({ tagline: normalized ?? undefined })
   }
 
   const updateBioShort = async (value: string) => {
-    await updateCoreProfile({ bio_short: cleanString(value) })
+    const updater = requireUserUpdater()
+    if (!updater) {
+      console.warn('[useAgentUpdate] Unable to resolve user for bio update')
+      return
+    }
+    await updater.profile.setBio(value)
   }
 
   return {
@@ -113,7 +128,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
     updateCore,
     updateApp,
     updateDisplayName,
-    updateCompanyName,
+    updateAgencyName,
     updateTagline,
     updateBioShort,
   }

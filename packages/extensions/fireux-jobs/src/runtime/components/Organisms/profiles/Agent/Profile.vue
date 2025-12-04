@@ -12,9 +12,9 @@
       <div class="flex flex-col items-start gap-3">
         <UAvatar
           :src="agent.avatarUrl"
-          :alt="agent.company_name || agent.displayName"
+          :alt="agencyName"
           size="2xl"
-          :text="getInitials(agent.company_name || agent.displayName)"
+          :text="getInitials(agencyName)"
           class="self-start"
         />
         <div
@@ -28,7 +28,7 @@
 
       <div :class="[ui.layout.infoStack, 'gap-3']">
         <h1 :class="ui.text.nameXl">
-          {{ agent.company_name || agent.displayName }}
+          {{ agencyName }}
         </h1>
 
         <p v-if="agent.business_type" class="text-base text-gray-600">
@@ -303,6 +303,13 @@ const props = defineProps<{
 
 const statClasses =
   'bg-gray-50 border border-gray-200/70 rounded-xl p-4 flex items-center gap-3 text-sm text-gray-600'
+
+const agencyName = computed(() => {
+  const agent: any = props.agent
+  return (
+    agent?.title || agent?.displayName || agent?.user?.display_name || 'Agent'
+  )
+})
 
 // Helper functions for template use only - no complex logic
 const hasBusinessStats = computed(() => {

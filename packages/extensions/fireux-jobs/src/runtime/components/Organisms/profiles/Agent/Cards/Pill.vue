@@ -1,58 +1,32 @@
 <template>
   <NuxtLink v-if="agent?.to" :to="agent.to" class="pill">
-    <UAvatar
-      :src="agent.company_avatar || agent.avatar"
-      :alt="companyName(agent)"
-      size="sm"
-      class="avatar"
-    />
+    <div class="pill-content">
+      <UAvatar
+        :src="agent?.avatar || undefined"
+        :alt="agent?.title || 'Agent'"
+        size="sm"
+        class="avatar"
+      />
 
-    <div class="content">
-      <span class="company">{{ companyName(agent) }}</span>
-      <span v-if="agent.title" class="contact">{{ agent.title }}</span>
-
-      <span v-if="agent.tagline" class="tagline">
-        {{ agent.tagline }}
-      </span>
-
-      <div v-if="agent.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in agent.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
+      <div class="content">
+        <span class="company">{{ agent?.title || 'Agent' }}</span>
+        <span v-if="agent?.subtitle" class="contact">{{ agent.subtitle }}</span>
       </div>
     </div>
   </NuxtLink>
 
   <div v-else class="pill">
-    <UAvatar
-      :src="agent?.company_avatar || agent?.avatar"
-      :alt="companyName(agent || null)"
-      size="sm"
-      class="avatar"
-    />
+    <div class="pill-content">
+      <UAvatar
+        :src="agent?.avatar || undefined"
+        :alt="agent?.title || 'Agent'"
+        size="sm"
+        class="avatar"
+      />
 
-    <div class="content">
-      <span class="company">{{ companyName(agent || null) }}</span>
-      <span v-if="agent?.title" class="contact">{{ agent.title }}</span>
-
-      <span v-if="agent?.tagline" class="tagline">
-        {{ agent.tagline }}
-      </span>
-
-      <div v-if="agent?.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in agent.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
+      <div class="content">
+        <span class="company">{{ agent?.title || 'Agent' }}</span>
+        <span v-if="agent?.subtitle" class="contact">{{ agent.subtitle }}</span>
       </div>
     </div>
   </div>
@@ -66,18 +40,7 @@ const props = defineProps<{
   agent: AgentCard.Pill | null
 }>()
 
-const agent = computed(() => {
-  const pill = props.agent
-  if (!pill) return null
-
-  return {
-    ...pill,
-    tagline: pill.tagline ?? pill.subtitle ?? '',
-  }
-})
-
-const companyName = (payload?: AgentCard.Pill | null) =>
-  payload?.company_name || payload?.title || 'Agent'
+const agent = computed(() => props.agent ?? null)
 </script>
 
 <style scoped>
@@ -100,6 +63,12 @@ const companyName = (payload?: AgentCard.Pill | null) =>
   border-radius: 9999px;
 }
 
+.pill-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .content {
   display: flex;
   flex-direction: column;
@@ -112,16 +81,5 @@ const companyName = (payload?: AgentCard.Pill | null) =>
 .contact {
   font-size: 0.8rem;
   color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-
-.tagline {
-  font-size: 0.8rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-
-.badges {
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
 }
 </style>

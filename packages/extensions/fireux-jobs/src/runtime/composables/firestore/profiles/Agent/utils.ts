@@ -129,22 +129,22 @@ export function useAgentFormatting() {
 }
 
 export function useAgentValidation() {
-  const validateCompanyName = (
+  const validateAgencyName = (
     name: string
   ): { isValid: boolean; error?: string } => {
     if (!name || name.trim().length === 0) {
-      return { isValid: false, error: 'Company name is required' }
+      return { isValid: false, error: 'Agency name is required' }
     }
     if (name.trim().length < 2) {
       return {
         isValid: false,
-        error: 'Company name must be at least 2 characters long',
+        error: 'Agency name must be at least 2 characters long',
       }
     }
     if (name.length > 100) {
       return {
         isValid: false,
-        error: 'Company name must be less than 100 characters',
+        error: 'Agency name must be less than 100 characters',
       }
     }
     return { isValid: true }
@@ -277,7 +277,9 @@ export function useAgentValidation() {
     const errors: string[] = []
 
     const requiredValidations = [
-      validateCompanyName(data.company_name || ''),
+      validateAgencyName(
+        data.title || data.agency_name || data.company_name || ''
+      ),
       validateEmail(data.email || ''),
     ]
 
@@ -322,7 +324,7 @@ export function useAgentValidation() {
   }
 
   return {
-    validateCompanyName,
+    validateAgencyName,
     validateEmail,
     validateBusinessType,
     validateEmployeeCount,

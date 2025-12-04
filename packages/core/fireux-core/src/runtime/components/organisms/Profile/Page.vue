@@ -137,6 +137,8 @@ const canEdit = computed(
 const resolveName = (p: any) =>
   p?.display_name ||
   p?.name ||
+  p?.title ||
+  p?.agency_name ||
   p?.company_name ||
   p?.business_name ||
   p?.professional_name ||

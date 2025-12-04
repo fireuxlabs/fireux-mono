@@ -1,66 +1,60 @@
 <template>
   <NuxtLink v-if="card?.to" :to="card.to" class="pill">
-    <UAvatar
-      :src="card.company_avatar || card.avatar"
-      :alt="companyName(card)"
-      size="sm"
-      class="avatar"
-    />
+    <div class="pill-content">
+      <UAvatar
+        :src="card.avatar || undefined"
+        :alt="card.title || 'Agent'"
+        size="sm"
+        class="avatar"
+      />
 
-    <div class="content">
-      <span class="company">{{ companyName(card) }}</span>
-      <span v-if="card.title" class="contact">{{ card.title }}</span>
+      <div class="content">
+        <span class="company">{{ card.title || 'Agent' }}</span>
+        <span v-if="card.subtitle" class="contact">{{ card.subtitle }}</span>
+        <span v-if="card.tagline" class="tagline">
+          {{ card.tagline }}
+        </span>
 
-      <span v-if="card.tagline" class="tagline">
-        {{ card.tagline }}
-      </span>
-
-      <span v-if="card.bio_short" class="bio">
-        {{ card.bio_short }}
-      </span>
-
-      <div v-if="card.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in card.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
+        <div v-if="card.badges?.length" class="badges">
+          <UBadge
+            v-for="badge in card.badges"
+            :key="badge"
+            size="xs"
+            variant="soft"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
       </div>
     </div>
   </NuxtLink>
 
   <div v-else class="pill">
-    <UAvatar
-      :src="card?.company_avatar || card?.avatar"
-      :alt="companyName(card || null)"
-      size="sm"
-      class="avatar"
-    />
+    <div class="pill-content">
+      <UAvatar
+        :src="card?.avatar || undefined"
+        :alt="card?.title || 'Agent'"
+        size="sm"
+        class="avatar"
+      />
 
-    <div class="content">
-      <span class="company">{{ companyName(card || null) }}</span>
-      <span v-if="card?.title" class="contact">{{ card.title }}</span>
+      <div class="content">
+        <span class="company">{{ card?.title || 'Agent' }}</span>
+        <span v-if="card?.subtitle" class="contact">{{ card.subtitle }}</span>
+        <span v-if="card?.tagline" class="tagline">
+          {{ card.tagline }}
+        </span>
 
-      <span v-if="card?.tagline" class="tagline">
-        {{ card.tagline }}
-      </span>
-
-      <span v-if="card?.bio_short" class="bio">
-        {{ card.bio_short }}
-      </span>
-
-      <div v-if="card?.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in card.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
+        <div v-if="card?.badges?.length" class="badges">
+          <UBadge
+            v-for="badge in card.badges"
+            :key="badge"
+            size="xs"
+            variant="soft"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
       </div>
     </div>
   </div>
@@ -95,9 +89,6 @@ const card = computed(() => {
     tagline: source.tagline ?? source.subtitle ?? '',
   }
 })
-
-const companyName = (payload?: AgentCard.Cell | null) =>
-  payload?.company_name || payload?.title || 'Agent'
 </script>
 
 <style scoped>
@@ -139,14 +130,15 @@ const companyName = (payload?: AgentCard.Cell | null) =>
   color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
 }
 
-.bio {
-  font-size: 0.85rem;
-  color: var(--ui-text-600, rgba(71, 85, 105, 0.95));
-}
-
 .badges {
   display: flex;
   gap: 0.25rem;
   flex-wrap: wrap;
+}
+
+.pill-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 </style>

@@ -5,6 +5,7 @@ import { agentConfig } from './Agent/supporting'
 /** Unified Agent wrapper (core + app overlays) */
 export interface Agent {
   id: string
+  creator_id?: string
   display_name?: string
   avatar?: string
   core: AgentCoreProfile | null
@@ -18,50 +19,25 @@ export interface Agent {
  */
 export namespace AgentCard {
   /** Pill shape */
-  export interface Pill extends PillModel.Props {
-    company_name?: string | null
-    company_avatar?: string | null
-  }
+  export interface Pill extends PillModel.Props {}
 
   /** Cell shape */
   export interface Cell extends Pill {
     id?: string
-    bio_short?: string | null
-    specialties?: string[]
-    locations?: string[]
+    creator_id?: string | null
   }
 
   /** Full CORE profile surface */
   export interface ProfileCore extends Cell {
+    creator_id?: string | null
     user?: Profile['user']
     domain?: Profile['domain']
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
-    title?: string | null
-    /** @deprecated use tagline */
-    subtitle?: string | null
-    tagline?: string | null
-    badges?: string[]
-    bio_long?: string | null
-    avatar?: string | null
-    avatar_url?: string | null
-    organization_name?: string | null
   }
 
   /** Tenant APP overlay (delta space) */
-  export interface ProfileApp extends Cell {
-    user?: Profile['user']
-    domain?: Profile['domain']
-    created_at?: Profile['created_at']
-    updated_at?: Profile['updated_at']
-    title?: string | null
-    /** @deprecated use tagline */
-    subtitle?: string | null
-    tagline?: string | null
-    bio_short?: string | null
-    specialties?: string[]
-    locations?: string[]
-  }
+  export interface ProfileApp extends ProfileCore {}
 }
 
 /**
@@ -86,30 +62,24 @@ export const resolveAgentCell = (
 
   const user = profile.user ?? undefined
 
-  const id = profile.id ?? user?.id ?? fallbackId
+  const id = profile.id ?? profile.creator_id ?? user?.id ?? fallbackId
 
-  const companyAvatar =
-    profile.avatar ?? profile.avatar_url ?? user?.avatar ?? undefined
-
-  const companyName =
-    profile.organization_name ?? profile.title ?? user?.display_name ?? 'Agent'
+  const displayName = user?.display_name ?? 'Agent'
 
   const tagline =
-    profile.tagline ?? (profile as { subtitle?: string | null })?.subtitle ?? ''
+    (profile as { tagline?: string | null } | null)?.tagline ??
+    (profile as { subtitle?: string | null } | null)?.subtitle ??
+    ''
 
   return {
     id,
+    creator_id: profile.creator_id ?? null,
     avatar: user?.avatar ?? undefined,
-    title: user?.display_name ?? profile.title ?? 'Agent',
+    title: displayName,
     subtitle: tagline,
     tagline,
-    badges: profile.badges ?? [],
-    bio_short: profile.bio_short ?? null,
-    specialties: profile.specialties ?? [],
-    locations: profile.locations ?? [],
-    company_name: companyName,
-    company_avatar: companyAvatar,
-    to: routeFor(profile.id),
+    badges: [],
+    to: routeFor(id),
   }
 }
 
@@ -117,24 +87,11 @@ export const resolveAgentPill = (
   profile?: AgentProfile | null
 ): AgentCard.Pill => ({
   avatar: profile?.user?.avatar ?? '',
-  title: profile?.user?.display_name ?? '',
-  subtitle:
-    profile?.tagline ??
-    (profile as { subtitle?: string | null } | null)?.subtitle ??
-    '',
-  tagline:
-    profile?.tagline ??
-    (profile as { subtitle?: string | null } | null)?.subtitle ??
-    '',
+  title: profile?.user?.display_name ?? 'Agent',
+  subtitle: (profile as { subtitle?: string | null } | null)?.subtitle ?? '',
+  tagline: (profile as { tagline?: string | null } | null)?.tagline ?? '',
   badges: [],
-  company_name:
-    profile?.organization_name ??
-    profile?.title ??
-    profile?.user?.display_name ??
-    '',
-  company_avatar:
-    profile?.avatar ?? profile?.avatar_url ?? profile?.user?.avatar ?? '',
-  to: routeFor(profile?.id),
+  to: routeFor(profile?.id ?? profile?.creator_id ?? null),
 })
 
 export const resolveAgentPillKey = (pill: AgentCard.Pill) =>

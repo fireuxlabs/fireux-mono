@@ -61,11 +61,12 @@ export function useAgentInterface(
 
     const currentProfile = resolveProfile(target)
     const id = currentProfile?.id ?? resolveUser(target)?.id ?? undefined
+    const creatorId = currentProfile?.creator_id ?? null
 
     return {
       ...base,
       id,
-      bio_short: currentProfile?.bio_short ?? null,
+      creator_id: creatorId,
     }
   }
 

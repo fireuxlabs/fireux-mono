@@ -23,17 +23,17 @@
         </div>
 
         <div class="form-section">
-          <h3 class="section-title">Company Information</h3>
+          <h3 class="section-title">Agency Information</h3>
           <form @submit.prevent="onCreateAgent" class="create-form">
             <div class="form-grid">
               <UFormGroup
-                label="Company Name*"
+                label="Agency Name*"
                 required
                 class="form-group full-width"
               >
                 <UInput
                   v-model="formData.companyName"
-                  placeholder="Enter your company name"
+                  placeholder="Enter your agency name"
                   required
                 />
               </UFormGroup>
@@ -54,12 +54,12 @@
               </UFormGroup>
 
               <UFormGroup
-                label="Company Description"
+                label="Agency Description"
                 class="form-group full-width"
               >
                 <UTextarea
                   v-model="formData.description"
-                  placeholder="Tell us about your company..."
+                  placeholder="Tell us about your agency..."
                   :rows="4"
                 />
               </UFormGroup>

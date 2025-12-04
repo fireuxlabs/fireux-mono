@@ -4,11 +4,11 @@
       <UCard>
         <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
-            label="Company Name"
-            :firebase-value="companyName"
+            label="Agency Name"
+            :firebase-value="agencyName"
             placeholder="Agency name"
             :maxlength="60"
-            :update-function="handleCompanyName"
+            :update-function="handleAgencyName"
             :validation-function="DisplayName.validate"
             :formatting-function="DisplayName.format"
           />
@@ -25,7 +25,7 @@
             type="textarea"
             :rows="3"
             :maxlength="200"
-            :firebase-value="agent.bio_short || ''"
+            :firebase-value="bioShort"
             placeholder="Summarize your organization in a few sentences"
             :update-function="handleBioShort"
           />
@@ -46,15 +46,17 @@ import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/
 const props = defineProps<{ agent: AgentCoreProfile | null }>()
 
 const agent = computed(() => props.agent ?? null)
-const { updateCompanyName, updateTagline, updateBioShort } = useAgentUpdate()
+const { updateAgencyName, updateTagline, updateBioShort } = useAgentUpdate()
 const { DisplayName } = useUserFormattingAndValidation()
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
 
-const companyName = computed(
-  () => agent.value?.user?.display_name ?? agent.value?.organization_name ?? ''
+const agencyName = computed(
+  () => agent.value?.title ?? agent.value?.user?.display_name ?? ''
 )
+
+const bioShort = computed(() => agent.value?.user?.bio ?? '')
 
 const tagline = computed(
   () =>
@@ -63,12 +65,12 @@ const tagline = computed(
     ''
 )
 
-const handleCompanyName = async (value: string) => {
+const handleAgencyName = async (value: string) => {
   if (!agent.value) return 'success'
   try {
-    await updateCompanyName(value)
+    await updateAgencyName(value)
     toast?.add({
-      title: 'Company name updated',
+      title: 'Agency name updated',
       icon: 'i-heroicons-check-circle',
     })
     return 'success'
@@ -76,7 +78,7 @@ const handleCompanyName = async (value: string) => {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
     toast?.add({
-      title: 'Failed to update company name',
+      title: 'Failed to update agency name',
       description,
       color: 'amber',
       icon: 'i-heroicons-exclamation-triangle',
