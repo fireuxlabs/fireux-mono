@@ -1,7 +1,7 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
-import type { RelevantExperienceItem, OtherExperienceItem } from './supporting'
-import { professionalConfig } from './supporting'
+import type { RelevantExperienceItem, OtherExperienceItem } from './Professional/supporting'
+import { professionalConfig } from './Professional/supporting'
 
 /** Unified Professional wrapper (core + app overlays) */
 export interface Professional {
@@ -108,4 +108,4 @@ export const resolveProfessionalCell = (
 }
 
 export { professionalConfig }
-export type { RelevantExperienceItem, OtherExperienceItem } from './supporting'
+export type { RelevantExperienceItem, OtherExperienceItem } from './Professional/supporting'

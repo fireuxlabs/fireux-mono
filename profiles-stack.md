@@ -132,8 +132,8 @@ export function useProfileEnsure(config: ProfileConfig) {
     }
 
     if (config.id) {
-      const { addProfileTag } = useUserUpdateForUid(uid)
-      await addProfileTag(config.id)
+      const { core } = useUserUpdateForUid(uid)
+      await core.tags.add(config.id)
     }
 
     return { createdCore, createdApp }

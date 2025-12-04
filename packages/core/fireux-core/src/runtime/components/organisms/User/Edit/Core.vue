@@ -86,7 +86,9 @@ import { useUserFormattingAndValidation } from '../../../../composables/firestor
 const props = defineProps<{ user: User | null }>()
 
 const toast = useToastify()
-const { pillProps, updateDisplayName, uploadAvatar } = useUser()
+const userApi = useUser()
+const { pillProps } = userApi
+const coreProfile = userApi.core.profile
 
 const user = computed(() => props.user)
 const avatarInitials = computed(
@@ -109,7 +111,7 @@ const withToast =
     }
   }
 
-const handleUpdateDisplayName = withToast(updateDisplayName, {
+const handleUpdateDisplayName = withToast(coreProfile.rename, {
   success: 'Display name updated',
   failure: 'Failed to update display name',
 })
@@ -133,7 +135,7 @@ const avatarUploading = ref(false)
 async function handleAvatarUpload(file: File) {
   avatarUploading.value = true
   try {
-    await uploadAvatar(file)
+    await coreProfile.uploadAvatar(file)
     toast.success('Avatar updated')
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Please try again.'

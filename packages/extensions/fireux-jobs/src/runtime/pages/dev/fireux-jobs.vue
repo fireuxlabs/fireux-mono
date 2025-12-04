@@ -468,23 +468,11 @@ type ProfileDiffRow<TProfile> = {
 interface ProfileModelSpec {
   typeLabel: string
   requireUser?: boolean
-  legacyIdentityFields?: string[]
 }
 
 type MaybeProfileEntries<TProfile> =
   | Ref<Array<Partial<TProfile>> | null | undefined>
   | null
-
-const defaultLegacyIdentityFields = [
-  'display_name',
-  'first_name',
-  'last_name',
-  'full_name',
-  'email',
-  'handle',
-  'phone',
-  'phone_number',
-]
 
 const resolveProfileId = (
   profile?:
@@ -530,18 +518,6 @@ const collectProfileIssues = (
       if (raw.id && user.id && raw.id !== user.id) {
         issues.push('Profile id and user id mismatch')
       }
-    }
-  }
-
-  const legacyKeys = spec.legacyIdentityFields ?? defaultLegacyIdentityFields
-  for (const key of legacyKeys) {
-    if (
-      Object.prototype.hasOwnProperty.call(raw, key) &&
-      raw[key] !== undefined &&
-      raw[key] !== null &&
-      `${raw[key]}`.length
-    ) {
-      issues.push(`Legacy identity field "${key}" stored on profile`)
     }
   }
 

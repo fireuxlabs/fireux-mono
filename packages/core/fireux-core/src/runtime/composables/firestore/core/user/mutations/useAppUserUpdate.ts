@@ -56,8 +56,5 @@ export function useAppUserUpdate(user: UserRefs) {
   return {
     membership,
     notifications,
-    // Legacy flat API
-    updateAppRole: membership.setRole,
-    addAppNotification: notifications.push,
   }
 }

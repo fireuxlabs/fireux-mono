@@ -1,6 +1,6 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
-import { supplierConfig } from './supporting'
+import { supplierConfig } from './Supplier/supporting'
 
 /** Unified Supplier wrapper (core + app overlays) */
 export interface Supplier {

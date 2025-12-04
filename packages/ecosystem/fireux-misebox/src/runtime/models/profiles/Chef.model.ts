@@ -1,6 +1,6 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
-import { chefConfig } from './supporting'
+import { chefConfig } from './Chef/supporting'
 
 /** Unified Chef wrapper (core + app overlays) */
 export interface Chef {

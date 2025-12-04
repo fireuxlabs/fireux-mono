@@ -15,10 +15,15 @@ Canonical editors should resolve to a single prop (the object being edited) and 
 
 ## User (`useUserUpdate`)
 
-Pass the grouped refs `{ coreUser, appUser }` from `useUser()` or `useUserFetch()`.
+Call `useUserUpdate()` (or `useUser()`) and destructure the explicit action groups below.
 
-- `updateDisplayName(display_name: string)` – writes to `users/{id}`; throws when the core user ref lacks an id.
-- `updateAppRole(role: 'user' | 'admin')` – writes to `apps/{appId}/users/{id}`; throws when the app overlay or app id is unavailable.
+- `core.profile.rename(display_name: string)` – writes to `users/{id}` after formatting/validation.
+- `core.profile.setAvatarUrl(url: string | null)` – updates `users/{id}` with a cleaned avatar URL.
+- `core.profile.uploadAvatar(source: Blob | File)` – uploads to storage, stores the resulting URL.
+- `core.tags.add(tagId: string)` / `core.tags.remove(tagId: string)` – mutates the `profiles` array on the core user document.
+- `core.notifications.push(message: string)` – appends a new ecosystem-scoped notification entry.
+- `app.membership.setRole(role: 'user' | 'admin')` – updates the tenant overlay record; requires an active `appId` and overlay id.
+- `app.notifications.push(message: string)` – app-scoped notification helper writing to `apps/{appId}/users/{id}`.
 
 ## Professional (`useProfessionalUpdate`)
 

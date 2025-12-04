@@ -113,12 +113,5 @@ export function useCoreUserUpdate(user: UserRefs) {
     profile,
     tags,
     notifications,
-    // Legacy flat API (maintained for backwards compatibility)
-    updateDisplayName: profile.rename,
-    updateAvatarUrl: profile.setAvatarUrl,
-    uploadAvatar: profile.uploadAvatar,
-    addProfileTag: tags.add,
-    removeProfileTag: tags.remove,
-    addCoreNotification: notifications.push,
   }
 }

@@ -1,6 +1,6 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
-import { agentConfig } from './supporting'
+import { agentConfig } from './Agent/supporting'
 
 /** Unified Agent wrapper (core + app overlays) */
 export interface Agent {
