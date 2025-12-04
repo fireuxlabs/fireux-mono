@@ -1,6 +1,6 @@
 <template>
   <CoreDefault />
-  <!-- CoreDefault derives header nav from route meta via useNavDefault -->
+  <!-- CoreDefault derives header nav from route meta via useDefaultNav preset -->
 </template>
 
 <script setup lang="ts">

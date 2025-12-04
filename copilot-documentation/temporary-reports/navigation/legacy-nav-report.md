@@ -7,7 +7,17 @@ status: draft
 
 > Migrated from `nav-report.md` on 2025-11-10 during the markdown relocation effort.
 
+> **2025-11-17 update:** All modules documented below have been removed from `packages/core/fireux-core`. Modern navigation now flows through `useNav` and the presets in `packages/core/fireux-core/src/runtime/composables/fireUX/nav/presets.ts`. Keep this file strictly as historical context—do not revive these APIs.
+
 # Legacy fireUX/nav catalog
+
+## 2025-11-17 Cleanup Log
+
+- Verified no runtime files matching `useNavIndex`, `useNavDefault`, or `composables-old/fireUX/nav/*` remain in the repo.
+- Updated tenant layout comments to reference the `useDefaultNav` preset rather than the deleted `useNavDefault` helper.
+- Replaced lingering documentation mentions of the legacy `area` flag with the modern `layouts` metadata guidance.
+
+> Future contributors: if you find additional references to these APIs, remove them instead of restoring the code.
 
 ## FILE: fireUX/nav/defineNav.ts
 

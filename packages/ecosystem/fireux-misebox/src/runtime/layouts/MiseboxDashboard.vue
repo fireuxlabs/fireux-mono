@@ -5,5 +5,5 @@
 </template>
 
 <script setup lang="ts">
-// No tenant-specific dashboard route helpers; use page meta (area: 'dashboard').
+// No tenant-specific dashboard route helpers; use page meta (layouts: ['dashboard']).
 </script>
