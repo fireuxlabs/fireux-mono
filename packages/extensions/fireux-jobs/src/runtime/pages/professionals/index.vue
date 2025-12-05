@@ -86,7 +86,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import { useProfessionalCollection } from '../../composables/firestore/profiles/Professional/main/useProfessionalCollection.ts'
 import {
   resolveProfessionalCell,

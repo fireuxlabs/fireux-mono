@@ -1,4 +1,4 @@
-import { useImageStorage } from '../../../firebase/useImageStorage'
+import { useImageStorage } from '../../../core/firebase/useImageStorage'
 import { useFirestoreManager } from '../../operations/useFirestoreManager'
 
 export function useProductUtils() {

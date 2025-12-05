@@ -34,7 +34,7 @@ export interface RelevantExperienceItem extends ExperienceBase {
  * Self-contained. Useful when the place isn't in Firestore yet.
  */
 export interface OtherExperienceItem extends ExperienceBase {
-  place_id?: string
+  place_id?: string | null
   name: string
   formatted_address?: string
   short_address?: string

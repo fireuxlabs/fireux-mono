@@ -5,7 +5,7 @@ import type {
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from '../main/useUserFetch.ts'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
-import { useImageStorage } from 'fireux-core/runtime/composables/firebase/useImageStorage.ts'
+import { useImageStorage } from 'fireux-core/runtime/composables/core/firebase/useImageStorage.ts'
 import { useUserFormattingAndValidation } from '../utils/forms/useUserFormatting.ts'
 import { createUserNotification } from '../utils/ensureHelpers.ts'
 

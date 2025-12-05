@@ -12,7 +12,7 @@
         "../../core/fireux-core/src/runtime/composables/firestore/*"
       ],
       "#fireux-core-composables/firebase/*": [
-        "../../core/fireux-core/src/runtime/composables/firebase/*"
+        "../../core/fireux-core/src/runtime/composables/core/firebase/*"
       ],
       "#imports": ["types/nuxt-imports.d.ts"]
     },

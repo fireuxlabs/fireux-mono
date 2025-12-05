@@ -33,7 +33,7 @@ export function useSupplierInterface(
     (payload as { subtitle?: string | null } | null)?.subtitle?.trim() ??
     ''
 
-  const resolveTitle = (u: User) =>
+  const resolveTitle = (u: Partial<User>) =>
     u.display_name?.trim() ||
     u.email?.trim() ||
     (u.handle ? `@${u.handle.trim()}` : '') ||

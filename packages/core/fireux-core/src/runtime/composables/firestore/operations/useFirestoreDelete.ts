@@ -1,6 +1,6 @@
 import { deleteDoc, doc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useRequireUser } from '../../firebase/useRequireUser'
+import { useRequireUser } from '../../core/firebase/useRequireUser'
 
 export function useFirestoreDelete() {
   const db = useFirestore()

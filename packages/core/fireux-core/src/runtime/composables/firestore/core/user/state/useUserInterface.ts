@@ -4,7 +4,7 @@ import type {
   UserCard,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from '../main/useUserFetch.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 
 type RuntimeContext = {
   runtime?: 'global' | 'tenant'

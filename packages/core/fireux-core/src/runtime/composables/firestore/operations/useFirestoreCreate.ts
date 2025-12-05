@@ -6,7 +6,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useRequireUser } from '../../firebase/useRequireUser'
+import { useRequireUser } from '../../core/firebase/useRequireUser'
 
 type Stamped<T> = T & {
   created_at: ReturnType<typeof serverTimestamp>

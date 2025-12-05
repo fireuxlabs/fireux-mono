@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
 import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/data/users.ts'
@@ -26,12 +26,21 @@ export function useUserCollection() {
   const { users: appUsers, pending } = useAppUsers()
 
   const userCache = new Map<string, Ref<User | undefined>>()
-  const getCoreUser = (id: string) => {
+  const ensureCoreUser = (id?: string | null) => {
+    if (!id) return undefined
     if (!userCache.has(id)) {
       userCache.set(id, firestoreFetchDoc<User>('users', id))
     }
-    return userCache.get(id)!
+    return userCache.get(id)
   }
+
+  watch(
+    () => (appUsers.value ?? []).map((member) => member?.id).filter(Boolean),
+    (ids) => {
+      ids.forEach((id) => ensureCoreUser(id))
+    },
+    { immediate: true }
+  )
 
   const fulfilled = computed<EnrichedUser[]>(() => {
     const members = appUsers.value ?? []
@@ -39,7 +48,7 @@ export function useUserCollection() {
 
     const enriched: EnrichedUser[] = []
     for (const member of members) {
-      const record = getCoreUser(member.id).value
+      const record = ensureCoreUser(member.id)?.value
       if (!record?.id) continue
 
       enriched.push({

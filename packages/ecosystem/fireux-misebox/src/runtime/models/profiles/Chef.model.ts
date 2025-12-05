@@ -25,6 +25,7 @@ export namespace ChefCard {
     id?: string
     bio_short?: string | null
     specialties?: string[]
+    locations?: string[]
   }
 
   /** Full CORE profile surface */

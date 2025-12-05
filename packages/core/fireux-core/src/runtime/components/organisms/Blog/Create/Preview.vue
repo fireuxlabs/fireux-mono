@@ -137,7 +137,7 @@
 import { computed } from 'vue'
 import DOMPurify from 'dompurify'
 import { useCreateBlogPostState } from '../../../../composables/firestore/objects/Blog/useCreateBlogPostState'
-import { useFireUXConfig } from '../../../../composables/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 
 // Use the centralized state management
 const { blogPost, featuredImageData, socialImageData } =

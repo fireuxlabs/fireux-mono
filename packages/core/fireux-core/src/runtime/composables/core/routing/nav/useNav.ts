@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
-import type { NavItem, NavMeta } from '../../../types/nav'
+import type { NavItem, NavMeta } from '../../../../types/nav'
 
 const DEFAULT_LAYOUT = 'default'
 const DEFAULT_ORDER = 999

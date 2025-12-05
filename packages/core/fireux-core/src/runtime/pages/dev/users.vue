@@ -124,8 +124,8 @@ import { useUser } from '../../composables/firestore/core/user/useUser'
 import { useUserCollection } from '../../composables/firestore/core/user/main/useUserCollection'
 import { useUserInterface } from '../../composables/firestore/core/user/state/useUserInterface'
 import { useAppUsers } from '../../composables/firestore/core/app/data/users'
-import { useFireUXConfig } from '../../composables/FireUXConfig'
-import { useDevHealth } from '../../composables/dev/health/useDevHealth'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useDevHealth } from '../../composables/core/dev/health/useDevHealth'
 import DevUserComponentGallery from '../../components/dev/UserComponentGallery.vue'
 
 definePageMeta({

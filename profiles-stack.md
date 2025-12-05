@@ -99,7 +99,7 @@ return { profile }
 ```ts
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
 import { requireUid } from '../../../utils/useEnsureCommon.ts'
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
@@ -148,7 +148,7 @@ export function useProfileEnsure(config: ProfileConfig) {
 ```ts
 import { ref } from 'vue'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type {
   Profile,
   ProfileConfig,
@@ -261,7 +261,7 @@ export function useProfileComputed<TProfile extends Profile = Profile>(
 import { computed } from 'vue'
 import { collection } from 'firebase/firestore'
 import { useFirestore, useCollection } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type {
   Profile,
   ProfileConfig,
@@ -645,8 +645,8 @@ export function useProfessionalCreate() {
 ```ts
 import { useFirestore } from 'vuefire'
 import { deleteDoc, doc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/core/firebase/useRequireUser.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
 
@@ -709,8 +709,8 @@ export function useProfessionalDelete(
 
 ```ts
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreUpdate.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/core/firebase/useRequireUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import { usePlaceSave } from 'fireux-places/runtime/composables/usePlaceSave.ts'
 import { useFirestore } from 'vuefire'
 import { arrayRemove, arrayUnion, doc, getDoc } from 'firebase/firestore'
@@ -897,8 +897,8 @@ export function useProfessionalCollection() {
 ```ts
 import { useFirestore } from 'vuefire'
 import { deleteDoc, doc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/core/firebase/useRequireUser.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
 

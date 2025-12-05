@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
+import { useAuth } from 'fireux-core/runtime/composables/core/firebase/useAuth.ts'
 
 type AuthMode = 'sign-in' | 'sign-up'
 

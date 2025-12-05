@@ -6,7 +6,7 @@
 <script setup lang="ts">
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
 import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 
 definePageMeta({
   nav: {

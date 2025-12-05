@@ -1,7 +1,7 @@
 import { useFirestore } from 'vuefire'
 import { deleteDoc, doc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/core/firebase/useRequireUser.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
 import type { SupplierProfile } from '../../../../../models/profiles/Supplier.model.ts'
 

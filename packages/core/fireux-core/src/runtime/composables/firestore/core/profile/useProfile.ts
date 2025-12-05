@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/profile/useProfile.ts
-import { useAuth } from '../../../firebase/useAuth.ts'
+import { useAuth } from '../../../core/firebase/useAuth.ts'
 import { useProfileFetch } from './main/useProfileFetch.ts'
 import type {
   Profile,

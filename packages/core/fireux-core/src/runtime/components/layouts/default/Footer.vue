@@ -10,7 +10,9 @@
           </p>
         </div>
 
-        <LayoutsDefaultFooterAdmins class="w-full max-w-4xl" />
+        <ClientOnly>
+          <LayoutsDefaultFooterAdmins class="w-full max-w-4xl" />
+        </ClientOnly>
       </div>
     </UContainer>
   </UFooter>

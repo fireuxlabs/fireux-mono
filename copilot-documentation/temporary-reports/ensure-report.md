@@ -14,8 +14,8 @@ _Last updated: 2025-10-20_
 ````ts
 import { useFirestore } from 'vuefire'
 import { useCurrentApp } from 'fireux-core/runtime/composables/useCurrentApp.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/core/firebase/useRequireUser.ts'
 import type { FireUXApp } from 'fireux-core/runtime/typings/app.ts'
 import { getDeviceAvatar } from 'fireux-core/runtime/composables/useDeviceAvatar.ts'
 import { doc, getDoc } from 'firebase/firestore'
@@ -428,8 +428,8 @@ export async function useAppEnsure(input?: EnsureAppInput) {
 import { computed } from 'vue'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/firebase/useRequireUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/core/firebase/useRequireUser.ts'
 
 interface ProfileDoc {
   id: string

@@ -2,7 +2,7 @@ import type {
   FirebaseProduct,
   Price,
 } from '../../../../../models/objects/product.model'
-import { useImageStorage } from '../../../../firebase/useImageStorage'
+import { useImageStorage } from '../../../../core/firebase/useImageStorage'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'
 
 export function useProductFormatting() {

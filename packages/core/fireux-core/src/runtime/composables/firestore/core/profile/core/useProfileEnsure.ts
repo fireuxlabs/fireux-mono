@@ -1,6 +1,6 @@
 import { arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
 import { requireUid } from '../../../utils/useEnsureCommon.ts'
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'

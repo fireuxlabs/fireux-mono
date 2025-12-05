@@ -34,7 +34,7 @@
 import { ref } from 'vue'
 import { useHead } from '#imports'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 
 definePageMeta({
   nav: {

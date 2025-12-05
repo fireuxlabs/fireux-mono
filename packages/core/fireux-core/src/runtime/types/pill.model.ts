@@ -6,12 +6,12 @@ import type { RouteLocationRaw } from 'vue-router'
  *  ------------------------------------------------------------------ */
 export namespace Pill {
   export interface Props {
-    avatar: string
+    avatar?: string | null
     initials?: string
-    title: string
+    title?: string | null
     /** Prefer tagline; subtitle kept for legacy data sources. */
-    subtitle?: string
-    tagline?: string
+    subtitle?: string | null
+    tagline?: string | null
     badges?: string[]
     to?: RouteLocationRaw | null
     special?: boolean

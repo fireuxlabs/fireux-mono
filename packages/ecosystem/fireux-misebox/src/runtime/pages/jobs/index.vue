@@ -82,7 +82,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import JobsCreateButton from '../../../../../../extensions/fireux-jobs/src/runtime/components/Organisms/Jobs/CreateButton.vue'
 import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
 

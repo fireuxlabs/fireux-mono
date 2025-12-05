@@ -8,10 +8,10 @@ import type { User } from './user.model.ts'
  */
 export interface Profile {
   /** Canonical Firestore id (== Firebase Auth UID) */
-  id: string
+  id?: string
 
   /** Reference to the owning user (can be a full User or pill later) */
-  user: Partial<User>
+  user?: Partial<User>
 
   /** Optional domain (e.g. 'chef', 'supplier', etc.) */
   domain?: string
@@ -26,7 +26,7 @@ export interface Profile {
   badges?: string[]
 
   /** Creation and update timestamps */
-  created_at: FirebaseTimestamp
+  created_at?: FirebaseTimestamp
   updated_at?: FirebaseTimestamp
 }
 

@@ -83,7 +83,7 @@ import { computed } from 'vue'
 import type {
   DevHealthResult,
   DevHealthStatus,
-} from '../../composables/dev/health/types'
+} from '../../composables/core/dev/health/types'
 
 defineOptions({ name: 'DevHealthPanel' })
 

@@ -1,4 +1,4 @@
-import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
+import { useAuth } from 'fireux-core/runtime/composables/core/firebase/useAuth.ts'
 import { useUserFetch } from './main/useUserFetch.ts'
 import { useUserComputed } from './state/useUserComputed.ts'
 import { useUserEnsure } from './app/useUserEnsure.ts'

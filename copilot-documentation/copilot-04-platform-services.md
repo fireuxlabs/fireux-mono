@@ -36,7 +36,7 @@ import { useFirebaseApp, useFirestore, useCurrentUser } from 'vuefire'
 ## Media & Storage
 
 - Avatar uploads and other media use the shared `useImageStorage` helper in `fireux-core`. It automatically scopes paths to `core` or `apps/<appId>` collections and returns the hosted URL.
-- When adding new media types, reuse this helper or extend it in `packages/core/fireux-core/src/runtime/composables/firebase` so storage rules remain centralized.
+- When adding new media types, reuse this helper or extend it in `packages/core/fireux-core/src/runtime/composables/core/firebase` so storage rules remain centralized.
 
 ## Observability & Diagnostics
 

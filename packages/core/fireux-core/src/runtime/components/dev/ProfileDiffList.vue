@@ -11,13 +11,13 @@
       </div>
       <UBadge
         variant="soft"
-        :class="issueRows.length
-          ? 'bg-amber-100 text-amber-800 dark:bg-amber-400/10 dark:text-amber-200'
-          : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-200'"
+        :class="
+          issueRows.length
+            ? 'bg-amber-100 text-amber-800 dark:bg-amber-400/10 dark:text-amber-200'
+            : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-200'
+        "
       >
-        <span v-if="issueRows.length">
-          {{ issueRows.length }} flagged
-        </span>
+        <span v-if="issueRows.length"> {{ issueRows.length }} flagged </span>
         <span v-else>All clear</span>
       </UBadge>
     </div>
@@ -45,22 +45,23 @@
                 {{ issue }}
               </li>
             </ul>
-            <p
-              v-else
-              class="mt-1 text-xs text-gray-500 dark:text-gray-400"
-            >
+            <p v-else class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Matches current model
             </p>
           </div>
 
           <UBadge
             variant="soft"
-            :class="row.issues.length
-              ? 'bg-amber-100 text-amber-800 dark:bg-amber-400/10 dark:text-amber-200'
-              : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-200'"
+            :class="
+              row.issues.length
+                ? 'bg-amber-100 text-amber-800 dark:bg-amber-400/10 dark:text-amber-200'
+                : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-200'
+            "
           >
             <span v-if="row.issues.length">
-              {{ row.issues.length }} issue{{ row.issues.length === 1 ? '' : 's' }}
+              {{ row.issues.length }} issue{{
+                row.issues.length === 1 ? '' : 's'
+              }}
             </span>
             <span v-else>OK</span>
           </UBadge>
@@ -108,7 +109,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useDevClipboard } from '../../composables/dev/useDevClipboard'
+import { useDevClipboard } from '../../composables/core/dev/useDevClipboard'
 
 defineOptions({ name: 'DevProfileDiffList' })
 

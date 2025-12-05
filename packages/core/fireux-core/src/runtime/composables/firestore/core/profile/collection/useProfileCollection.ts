@@ -1,7 +1,7 @@
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { collection } from 'firebase/firestore'
 import { useFirestore, useCollection } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type {
   Profile,
   ProfileConfig,
@@ -44,6 +44,29 @@ export function useProfileCollection<
     return coreUserRefs.get(id)
   }
 
+  const collectProfileUserIds = () => {
+    const ids = new Set<string>()
+    const appendFrom = (entries?: Array<Partial<TProfile>>) => {
+      for (const profile of entries ?? []) {
+        if (!profile) continue
+        const id = (profile.user?.id ?? profile.id)?.toString().trim()
+        if (id) ids.add(id)
+      }
+    }
+    appendFrom(globalProfiles.value as Array<Partial<TProfile>> | undefined)
+    if (localProfiles) {
+      appendFrom(localProfiles.value as Array<Partial<TProfile>> | undefined)
+    }
+    return ids
+  }
+
+  watchEffect(() => {
+    const ids = collectProfileUserIds()
+    ids.forEach((id) => {
+      ensureCoreUserRef(id)
+    })
+  })
+
   const userMap = computed(() => {
     const map = new Map<string, Profile['user']>()
     for (const entry of users.value ?? []) {
@@ -70,7 +93,7 @@ export function useProfileCollection<
       return { ...(profileUser ?? {}), ...enriched }
     }
 
-    const coreUser = ensureCoreUserRef(id)?.value
+    const coreUser = coreUserRefs.get(id)?.value
     if (coreUser) {
       return { ...(profileUser ?? {}), ...coreUser }
     }

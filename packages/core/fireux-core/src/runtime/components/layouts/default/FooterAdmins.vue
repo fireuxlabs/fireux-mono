@@ -33,7 +33,7 @@ import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useAp
 import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/data/users.ts'
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
 import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/state/useUserInterface.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
 
 const { app } = useApp()

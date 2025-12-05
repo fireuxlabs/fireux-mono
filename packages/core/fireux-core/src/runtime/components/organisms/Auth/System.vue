@@ -51,8 +51,8 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useColorMode } from '#imports'
-import { useFireUXConfig } from '../../../composables/FireUXConfig.ts'
-import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useAuth } from 'fireux-core/runtime/composables/core/firebase/useAuth.ts'
 import { useUser } from '../../../composables/firestore/core/user/useUser'
 
 const router = useRouter()

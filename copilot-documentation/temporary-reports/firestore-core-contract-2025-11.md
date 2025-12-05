@@ -44,7 +44,7 @@ Example:
 
 ```ts
 // packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUser.ts
-import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
+import { useAuth } from 'fireux-core/runtime/composables/core/firebase/useAuth.ts'
 import { useUserFetch } from './main/useUserFetch.ts'
 
 export function useUser() {
@@ -80,7 +80,7 @@ export interface ProfileConfig {
 // packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileFetch.ts
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type { Ref } from 'vue'
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
 
@@ -148,7 +148,7 @@ export function useProfileComputed<TProfile extends Profile = Profile>(
 // packages/core/fireux-core/src/runtime/composables/firestore/core/profile/mutations/useProfileUpdate.ts
 import { ref } from 'vue'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type {
   Profile,
   ProfileConfig,

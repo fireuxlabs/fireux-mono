@@ -1,9 +1,9 @@
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
-import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/data/fetch.ts'
+import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
 import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/data/users.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 import type {
   User,
@@ -54,7 +54,23 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
       issues.push({ id, message, severity, context })
     }
 
+    const requireAppName = (app: App): string | null => {
+      const name = typeof app.app_name === 'string' ? app.app_name.trim() : ''
+      if (!name) {
+        ensureIssue(
+          `app-${app.id}-missing-name`,
+          `App ${app.id} is missing app_name; admin health cannot continue.`,
+          'error',
+          { appId: app.id }
+        )
+        return null
+      }
+      return name
+    }
+
     for (const app of appList) {
+      const appName = requireAppName(app)
+      if (!appName) continue
       const adminIds = normalizeIds(app.admin_ids)
       adminLinks += adminIds.length
 
@@ -71,9 +87,7 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
       if (duplicates.length) {
         ensureIssue(
           `app-${app.id}-dup-admins`,
-          `App ${
-            app.app_name || app.id
-          } lists duplicate admin ids: ${duplicates.join(', ')}`,
+          `App ${appName} lists duplicate admin ids: ${duplicates.join(', ')}`,
           'warning',
           { appId: app.id, duplicates }
         )
@@ -84,9 +98,7 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
         if (!user) {
           ensureIssue(
             `app-${app.id}-missing-user-${uid}`,
-            `Admin id ${uid} on app ${
-              app.app_name || app.id
-            } has no matching user document`,
+            `Admin id ${uid} on app ${appName} has no matching user document`,
             'error',
             { appId: app.id, userId: uid }
           )
@@ -97,9 +109,7 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
         if (!userAdminIds.has(app.id)) {
           ensureIssue(
             `app-${app.id}-user-missing-link-${uid}`,
-            `User ${user.display_name || uid} is listed on app ${
-              app.app_name || app.id
-            } but user.adminOf is missing ${app.id}`,
+            `User ${user.display_name || uid} is listed on app ${appName} but user.adminOf is missing ${app.id}`,
             'warning',
             { appId: app.id, userId: uid }
           )
@@ -125,13 +135,18 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
           return
         }
 
+        const appName = requireAppName(app)
+        if (!appName) {
+          return
+        }
+
         const appAdminIds = new Set(normalizeIds(app.admin_ids))
         if (!appAdminIds.has(user.id)) {
           ensureIssue(
             `user-${user.id}-app-missing-link-${appId}`,
             `User ${
               user.display_name || user.id
-            } lists adminOf ${appId} but the app is missing that user in admin_ids`,
+            } lists adminOf ${appName} but the app is missing that user in admin_ids`,
             'warning',
             { userId: user.id, appId }
           )
@@ -142,32 +157,31 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
     if (cfg.isTenant && cfg.appId) {
       const runtimeApp = appMap.get(cfg.appId)
       if (runtimeApp) {
-        const adminIds = new Set(normalizeIds(runtimeApp.admin_ids))
-        adminIds.forEach((uid) => {
-          const member = membershipMap.get(uid)
-          if (!member) {
-            ensureIssue(
-              `app-${cfg.appId}-missing-membership-${uid}`,
-              `Tenant app ${
-                runtimeApp.app_name || runtimeApp.id
-              } lists ${uid} as admin but no membership doc exists under apps/${
-                cfg.appId
-              }/users`,
-              'error',
-              { appId: cfg.appId, userId: uid }
-            )
-            return
-          }
+        const runtimeAppName = requireAppName(runtimeApp)
+        if (runtimeAppName) {
+          const adminIds = new Set(normalizeIds(runtimeApp.admin_ids))
+          adminIds.forEach((uid) => {
+            const member = membershipMap.get(uid)
+            if (!member) {
+              ensureIssue(
+                `app-${cfg.appId}-missing-membership-${uid}`,
+                `Tenant app ${runtimeAppName} lists ${uid} as admin but no membership doc exists under apps/${cfg.appId}/users`,
+                'error',
+                { appId: cfg.appId, userId: uid }
+              )
+              return
+            }
 
-          if (member.role !== 'admin') {
-            ensureIssue(
-              `app-${cfg.appId}-membership-role-${uid}`,
-              `Membership for ${uid} under apps/${cfg.appId}/users is ${member.role}, expected admin`,
-              'error',
-              { appId: cfg.appId, userId: uid, role: member.role }
-            )
-          }
-        })
+            if (member.role !== 'admin') {
+              ensureIssue(
+                `app-${cfg.appId}-membership-role-${uid}`,
+                `Membership for ${uid} under apps/${cfg.appId}/users is ${member.role}, expected admin`,
+                'error',
+                { appId: cfg.appId, userId: uid, role: member.role }
+              )
+            }
+          })
+        }
       }
     }
 

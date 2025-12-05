@@ -1,4 +1,4 @@
-import { useFireUXConfig } from '../../../FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import { useAppFetch } from './data/fetch'
 import { useAppComputed } from './state/computed'
 import { useAppInterface } from './state/interface'

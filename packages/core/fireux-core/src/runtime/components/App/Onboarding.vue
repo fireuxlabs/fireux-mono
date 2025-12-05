@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAppOnboarding } from '../../composables/app/useAppOnboarding.ts'
+import { useAppOnboarding } from '../../composables/core/app/useAppOnboarding.ts'
 
 const {
   coreUser,

@@ -1,8 +1,8 @@
 // Shared "ensure" helpers used by user/app/profile ensure flows.
 // Lives under firestore/utils (not firebase/) to avoid coupling higher levels to storage internals.
 
-import { useRequireUser } from '../../firebase/useRequireUser'
-import { useImageStorage } from '../../firebase/useImageStorage'
+import { useRequireUser } from '../../core/firebase/useRequireUser'
+import { useImageStorage } from '../../core/firebase/useImageStorage'
 
 export async function requireUid() {
   const auth = await useRequireUser()

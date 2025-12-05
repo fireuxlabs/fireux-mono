@@ -1,6 +1,6 @@
 import { updateDoc, doc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useRequireUser } from '../../firebase/useRequireUser'
+import { useRequireUser } from '../../core/firebase/useRequireUser'
 
 export function useFirestoreUpdate() {
   const db = useFirestore()

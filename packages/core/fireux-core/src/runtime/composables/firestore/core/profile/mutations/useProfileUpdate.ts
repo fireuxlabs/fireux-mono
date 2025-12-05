@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type {
   Profile,
   ProfileConfig,

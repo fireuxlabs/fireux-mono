@@ -129,7 +129,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
 ## packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppEnsure.ts
 
 ```ts
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import {
   ensureAppMembership as ensureAppMembershipDoc,
   ensureDoc,
@@ -285,7 +285,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 import { computed, ref } from 'vue'
 import { collection } from 'firebase/firestore'
 import { useFirestore, useCollection } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
 import type {
   User,

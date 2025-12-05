@@ -1,4 +1,4 @@
-import { createError } from 'h3'
+import { createError, defineEventHandler } from 'h3'
 // Legacy endpoint retained temporarily for compatibility.
 // Nuxt Content now serves the FireUX image specification directly,
 // so we respond with a clear error to prompt clients to update.

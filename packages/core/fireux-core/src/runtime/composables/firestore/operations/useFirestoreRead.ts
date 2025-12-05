@@ -37,16 +37,13 @@ export function useFirestoreRead() {
     ssrKey?: string
   ): Ref<T[] | undefined> => {
     const options = ssrKey ? { ssrKey } : undefined
-    const { data } = useCollection<T>(
-      q,
-      {
-        ...options,
-        transform: (docSnap: QueryDocumentSnapshot<T>) => {
-          const payload = docSnap.data() as T & Record<string, any>
-          return attachDocId(payload, docSnap.id) as T
-        },
-      } as any
-    )
+    const { data } = useCollection<T>(q, {
+      ...options,
+      transform: (docSnap: QueryDocumentSnapshot<T>) => {
+        const payload = docSnap.data() as T & Record<string, any>
+        return attachDocId(payload, docSnap.id) as T
+      },
+    } as any)
     return data as Ref<T[] | undefined>
   }
 

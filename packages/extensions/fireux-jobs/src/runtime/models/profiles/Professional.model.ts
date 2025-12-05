@@ -29,6 +29,7 @@ export namespace ProfessionalCard {
     id?: string
     bio_short?: string | null
     specialties?: string[]
+    locations?: string[]
   }
 
   /** Full CORE profile surface */

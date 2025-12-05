@@ -107,7 +107,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import { useJobCollection } from 'fireux-jobs/runtime/composables/firestore/jobs/main/useJobCollection.ts'
 
 definePageMeta({

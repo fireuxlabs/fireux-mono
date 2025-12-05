@@ -12,7 +12,7 @@ status: draft
 ## packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUser.ts
 
 ```ts
-import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
+import { useAuth } from 'fireux-core/runtime/composables/core/firebase/useAuth.ts'
 import { useUserFetch } from './main/useUserFetch.ts'
 import { useUserComputed } from './main/useUserComputed.ts'
 import { useUserEnsure } from './main/useUserEnsure.ts'
@@ -51,7 +51,7 @@ export function useUser() {
 import { computed } from 'vue'
 import { collection } from 'firebase/firestore'
 import { useFirestore, useCollection } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type {
   AppUser,
   User,
@@ -207,7 +207,7 @@ export function useUserDelete(userRef?: UserSource) {
 
 ```ts
 import { useRouter } from 'vue-router'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import { requireUid } from '../../../utils/useEnsureCommon.ts'
 import {
   ensureAppMembership as ensureAppMembershipDoc,
@@ -288,7 +288,7 @@ export function useUserEnsure(_user?: UserRefs) {
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 import type { Ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type {
   User,
   AppUser,

@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/firebase/useAuth.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
+import { useAuth } from 'fireux-core/runtime/composables/core/firebase/useAuth.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type {
   User,
   AppUser,
