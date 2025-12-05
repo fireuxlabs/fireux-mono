@@ -116,7 +116,7 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
-import type { AppCard } from '../../../../models/core/app.model'
+import type { AppCard } from '../../../../composables/firestore/core/app/state/interface'
 import type { UserCard } from '../../../../models/core/user.model'
 import { useUserFetch } from '../../../../composables/firestore/core/user/main/useUserFetch'
 

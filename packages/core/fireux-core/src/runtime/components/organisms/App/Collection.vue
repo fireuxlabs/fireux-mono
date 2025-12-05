@@ -27,7 +27,8 @@
 import { computed } from 'vue'
 import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
 import { useAppInterface } from 'fireux-core/runtime/composables/firestore/core/app/state/interface.ts'
-import type { App, AppCard } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { AppCard } from 'fireux-core/runtime/composables/firestore/core/app/state/interface.ts'
 
 const { apps } = useAppCollection()
 const { pillProps } = useAppInterface()

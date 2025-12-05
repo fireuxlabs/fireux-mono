@@ -1,5 +1,32 @@
 import type { Ref } from 'vue'
-import type { App, AppCard } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
+
+export namespace AppCard {
+  /** Single payload powering Pill/Cell/Profile views */
+  export interface Card extends PillModel.Props {
+    to: string | null
+    id?: string
+    app_name: string
+    role: App['role']
+    creator_id: string
+    admin_ids?: string[]
+    created_at?: App['created_at']
+    avatar_url?: string | null
+    logo_url?: string | null
+    wordmark_url?: string | null
+    ecosystem?: string
+    app_short_name?: string | null
+    slug?: string | null
+    description?: string | null
+    status?: App['status'] | null
+    social_links?: App['social_links']
+    join_requests?: string[]
+    joinRequestCount?: number
+    adminCount?: number
+    updated_at?: App['updated_at']
+  }
+}
 
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   const resolveApp = (target?: App | null) => target ?? appRef?.value ?? null
@@ -34,43 +61,28 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       : undefined
   }
 
-  const pillProps = (target?: App | null): AppCard.Pill => {
+  const cardProps = (target?: App | null): AppCard.Card => {
     const app = resolveApp(target)
+    const to = toPath(app?.id) || null
+    const admins = uniqueStrings(app?.admin_ids)
+    const joins = uniqueStrings(app?.join_requests)
+
     return {
-      avatar: app?.avatar_url ?? '',
+      avatar: app?.avatar_url ?? null,
       title: app?.app_name ?? '',
       subtitle: app?.ecosystem ?? '',
       badges: [app?.role, app?.status].filter(Boolean) as string[],
-      to: toPath(app?.id) || null,
-    }
-  }
-
-  const cellProps = (target?: App | null): AppCard.Cell => {
-    const app = resolveApp(target)
-    const admins = uniqueStrings(app?.admin_ids)
-    return {
-      ...pillProps(app),
-      to: toPath(app?.id),
-      id: app?.id ?? '',
+      to,
+      id: app?.id ?? undefined,
       app_name: app?.app_name ?? '',
       role: app?.role ?? 'tenant',
       creator_id: app?.creator_id ?? '',
       admin_ids: admins,
       created_at: app?.created_at,
-      avatar_url: app?.avatar_url ?? '',
-      logo_url: app?.logo_url ?? '',
-      wordmark_url: app?.wordmark_url ?? '',
+      avatar_url: app?.avatar_url ?? null,
+      logo_url: app?.logo_url ?? null,
+      wordmark_url: app?.wordmark_url ?? null,
       ecosystem: app?.ecosystem ?? undefined,
-    }
-  }
-
-  const profileProps = (target?: App | null): AppCard.Profile => {
-    const app = resolveApp(target)
-    const cell = cellProps(app)
-    const joins = uniqueStrings(app?.join_requests)
-
-    return {
-      ...cell,
       app_short_name: app?.app_short_name ?? null,
       slug: app?.slug ?? null,
       description: app?.description ?? null,
@@ -78,10 +90,14 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       social_links: sanitizeLinks(app?.social_links),
       join_requests: joins,
       joinRequestCount: joins.length,
-      adminCount: cell.admin_ids?.length ?? 0,
+      adminCount: admins.length,
       updated_at: app?.updated_at,
     }
   }
 
-  return { pillProps, cellProps, profileProps }
+  const pillProps = (target?: App | null): AppCard.Card => cardProps(target)
+  const cellProps = (target?: App | null): AppCard.Card => cardProps(target)
+  const profileProps = (target?: App | null): AppCard.Card => cardProps(target)
+
+  return { cardProps, pillProps, cellProps, profileProps }
 }
