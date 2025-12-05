@@ -24,10 +24,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type {
-  AgentProfile,
-  AgentCard,
-} from '../../../../../models/profiles/Agent.model.ts'
+import type { AgentProfile } from '../../../../../models/profiles/Agent.model.ts'
+import type { AgentCard } from '../../../../../composables/firestore/profiles/Agent/main/useAgentInterface.ts'
 import { useAgentCollection } from '../../../../../composables/firestore/profiles/Agent/main/useAgentCollection.ts'
 import {
   resolveAgentPill,

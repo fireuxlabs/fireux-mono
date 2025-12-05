@@ -6,10 +6,10 @@ import {
   agentConfig,
   type AgentProfile,
   type AgentCoreProfile,
-  type AgentCard,
 } from '../../../../models/profiles/Agent.model.ts'
 import { useAgentComputed } from './main/useAgentComputed.ts'
 import { useAgentInterface } from './main/useAgentInterface.ts'
+import type { AgentCard } from './main/useAgentInterface.ts'
 import { useAgentUpdate } from './main/useAgentUpdate.ts'
 import { useAgentCreate } from './main/useAgentCreate.ts'
 

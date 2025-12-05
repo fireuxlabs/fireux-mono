@@ -300,10 +300,8 @@ import type {
   ProfessionalProfile,
   ProfessionalCard,
 } from '../../models/profiles/Professional.model.ts'
-import type {
-  AgentProfile,
-  AgentCard,
-} from '../../models/profiles/Agent.model.ts'
+import type { AgentProfile } from '../../models/profiles/Agent.model.ts'
+import type { AgentCard } from '../../composables/firestore/profiles/Agent/main/useAgentInterface.ts'
 
 definePageMeta({
   layout: 'dev',

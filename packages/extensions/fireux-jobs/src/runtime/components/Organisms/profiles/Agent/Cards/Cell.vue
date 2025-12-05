@@ -62,11 +62,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type {
-  AgentCard,
-  AgentProfile,
-} from '../../../../../models/profiles/Agent.model.ts'
-import { resolveAgentCell } from '../../../../../models/profiles/Agent.model.ts'
+import type { AgentProfile } from '../../../../../models/profiles/Agent.model.ts'
+import type { AgentCard } from '../../../../../composables/firestore/profiles/Agent/main/useAgentInterface.ts'
+import { resolveAgentCell } from '../../../../../composables/firestore/profiles/Agent/main/useAgentInterface.ts'
 
 const props = defineProps<{ agent?: AgentCard.Cell | AgentProfile | null }>()
 
