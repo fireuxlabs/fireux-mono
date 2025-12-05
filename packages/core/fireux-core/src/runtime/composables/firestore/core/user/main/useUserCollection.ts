@@ -1,5 +1,6 @@
 import { computed, watch } from 'vue'
 import type { Ref } from 'vue'
+import { useNuxtApp } from '#imports'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
 import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/data/users.ts'
 import type {
@@ -25,11 +26,15 @@ export function useUserCollection() {
   const { firestoreFetchDoc } = useFirestoreRead()
   const { users: appUsers, pending } = useAppUsers()
 
+  const nuxtApp = useNuxtApp()
   const userCache = new Map<string, Ref<User | undefined>>()
   const ensureCoreUser = (id?: string | null) => {
     if (!id) return undefined
     if (!userCache.has(id)) {
-      userCache.set(id, firestoreFetchDoc<User>('users', id))
+      const ref = nuxtApp.runWithContext(() =>
+        firestoreFetchDoc<User>('users', id)
+      ) as Ref<User | undefined>
+      userCache.set(id, ref)
     }
     return userCache.get(id)
   }

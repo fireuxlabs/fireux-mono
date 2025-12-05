@@ -6,20 +6,30 @@ import type {
 import type { UserRefs } from '../main/useUserFetch.ts'
 import { useCoreUserUpdate } from './useCoreUserUpdate.ts'
 import { useAppUserUpdate } from './useAppUserUpdate.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 
 export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
   const core = useCoreUserUpdate(user)
   const app = useAppUserUpdate(user)
+  const cfg = useFireUXConfig()
 
-  const coreId =
-    user.coreUser?.value?.id ?? user.user?.value?.id ?? 'unknown-core'
-  const appId = user.appUser?.value?.id ?? 'unknown-app'
+  const coreId = user.coreUser?.value?.id ?? user.user?.value?.id ?? null
+  const appId =
+    user.appUser?.value?.id ??
+    (cfg.isTenant ? cfg.appId : cfg.globalAppId) ??
+    null
 
-  console.info('[useUserUpdate] initialized', {
+  const payload = {
     coreId,
     appId,
     source: sourceLabel,
-  })
+  }
+
+  if (!coreId || !appId) {
+    console.warn('[useUserUpdate] context incomplete', payload)
+  } else {
+    console.info('[useUserUpdate] initialized', payload)
+  }
 
   return {
     core,

@@ -107,6 +107,7 @@ useSeoMeta({
 /** Route + id */
 const route = useRoute()
 const raw = route.params[idParamName]
+// TODO(fallback-review): Verify that silently coercing a missing route param to '' is acceptable
 const docId = Array.isArray(raw) ? raw[0] : String(raw || '')
 
 /** Current app user (for edit visibility) */
@@ -162,7 +163,10 @@ useHead({
     {
       name: 'description',
       content: computed(
-        () => bioText.value || props.pageDescription || 'View profile'
+        () =>
+          bioText.value ||
+          props.pageDescription ||
+          'View profile' // TODO(fallback-review): Confirm whether this default hides missing metadata
       ),
     },
   ],

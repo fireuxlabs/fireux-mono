@@ -146,7 +146,7 @@
                 {{ asset.width }}×{{ asset.height }} detected.
               </template>
               <template v-else>
-                {{ asset.reason || 'Missing asset in /public/img/brand' }}
+                {{ asset.reason }}
               </template>
             </p>
             <img
@@ -279,7 +279,17 @@ const optionalClientVars = computed(() => {
   return envData.value.optional ?? []
 })
 const optionalServerVars = computed(() => envData.value?.server?.optional ?? [])
-const brandAssets = computed(() => envData.value?.brandAssets ?? [])
+const brandAssets = computed(() => {
+  const assets = envData.value?.brandAssets ?? []
+  for (const asset of assets) {
+    if (asset.ok === false && !asset.reason) {
+      throw new Error(
+        `Brand asset "${asset.name}" missing failure reason; update env-check`
+      )
+    }
+  }
+  return assets
+})
 
 const warnings = computed(() => envData.value?.warnings ?? [])
 const notes = computed(() => envData.value?.notes ?? [])

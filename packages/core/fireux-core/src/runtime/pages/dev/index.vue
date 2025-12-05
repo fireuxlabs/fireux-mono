@@ -55,9 +55,9 @@
       <ul class="space-y-2 text-sm">
         <li class="flex items-center justify-between gap-3">
           <span class="font-medium">ecosystem</span>
-          <span class="text-gray-500 dark:text-gray-400">{{
-            cfg.ecosystem || 'n/a'
-          }}</span>
+          <span class="text-gray-500 dark:text-gray-400">
+            {{ cfg.ecosystem }}
+          </span>
         </li>
         <li class="flex items-center justify-between gap-3">
           <span class="font-medium">role</span>
@@ -76,6 +76,7 @@
         <li class="flex items-center justify-between gap-3">
           <span class="font-medium">modules</span>
           <span class="text-gray-500 dark:text-gray-400">
+            <!-- TODO(fallback-review): Investigate whether empty module arrays should surface errors instead of showing 'none' -->
             {{ (cfg.modules || []).join(', ') || 'none' }}
           </span>
         </li>
@@ -231,6 +232,9 @@ definePageMeta({
 })
 
 const cfg = useFireUXConfig()
+if (!cfg.ecosystem || !cfg.ecosystem.trim()) {
+  throw new Error('[dev] FireUX config missing ecosystem name')
+}
 const showRuntimeJson = ref(false)
 
 const {

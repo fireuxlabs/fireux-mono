@@ -145,16 +145,18 @@ const userAvatar = computed(() => {
   const normalized = typeof raw === 'string' ? raw.trim() : ''
   return normalized || undefined
 })
-const userGreeting = computed(
-  () => user?.value?.display_name || user?.value?.handle || 'there'
-)
+// TODO(fallback-review): Confirm we really want to greet with "there" when identity metadata is missing
+const userGreeting = computed(() => user?.value?.display_name ?? '')
 const config = useRuntimeConfig()
 
 const appName = computed(() => (config as any)?.public?.appName ?? 'FireUX')
-const appEnv = computed(
-  () =>
-    (config as any)?.public?.appEnv ?? (import.meta.env.MODE || 'development')
-)
+const appEnv = computed(() => {
+  const value = (config as any)?.public?.appEnv
+  if (!value) {
+    throw new Error('[dashboard] runtimeConfig.public.appEnv missing')
+  }
+  return value
+})
 const appVersion = computed(
   () => (config as any)?.public?.appVersion ?? undefined
 )

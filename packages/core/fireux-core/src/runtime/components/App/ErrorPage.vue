@@ -4,7 +4,10 @@
       <UCard class="max-w-xl w-full">
         <template #header>
           <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-exclamation-triangle" class="text-red-500" />
+            <UIcon
+              name="i-heroicons-exclamation-triangle"
+              class="text-red-500"
+            />
             <h1 class="text-lg font-semibold">{{ title }}</h1>
           </div>
         </template>
@@ -22,11 +25,14 @@
   </UApp>
 </template>
 
-<script setup>import { computed } from 'vue'
+<script setup>
+import { computed } from 'vue'
 
 const error = useError()
 const title = computed(() => error?.value?.statusMessage || 'Unexpected error')
-const message = computed(() => error?.value?.message || 'An unexpected error occurred.')
+const message = computed(
+  () => error?.value?.message || 'An unexpected error occurred.'
+)
 
 const handleError = () => clearError({ redirect: '/' })
 </script>

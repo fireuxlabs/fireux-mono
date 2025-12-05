@@ -1,5 +1,6 @@
 import { computed, watchEffect } from 'vue'
 import { collection } from 'firebase/firestore'
+import { useNuxtApp } from '#imports'
 import { useFirestore, useCollection } from 'vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type {
@@ -15,6 +16,7 @@ export function useProfileCollection<
   TProfile extends Partial<Profile> = Profile
 >(config: ProfileConfig) {
   const db = useFirestore()
+  const nuxtApp = useNuxtApp()
   const { isTenant, appId } = useFireUXConfig()
   const { firestoreFetchDoc } = useFirestoreRead()
 
@@ -39,7 +41,10 @@ export function useProfileCollection<
   const ensureCoreUserRef = (id?: string | null) => {
     if (!id) return undefined
     if (!coreUserRefs.has(id)) {
-      coreUserRefs.set(id, firestoreFetchDoc<User>('users', id))
+      const ref = nuxtApp.runWithContext(() =>
+        firestoreFetchDoc<User>('users', id)
+      ) as Ref<User | undefined>
+      coreUserRefs.set(id, ref)
     }
     return coreUserRefs.get(id)
   }
