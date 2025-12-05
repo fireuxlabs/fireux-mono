@@ -1,9 +1,9 @@
 import { useFireUXConfig } from '../../../FireUXConfig'
-import { useAppFetch } from './main/useAppFetch'
-import { useAppComputed } from './state/useAppComputed'
-import { useAppInterface } from './state/useAppInterface'
-import { useAppEnsure } from './core/useAppEnsure'
-import { useAppUpdate } from './mutations/useAppUpdate'
+import { useAppFetch } from './data/fetch'
+import { useAppComputed } from './state/computed'
+import { useAppInterface } from './state/interface'
+import { useAppEnsure } from './data/ensure'
+import { useAppUpdate } from './actions/update'
 
 export type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 

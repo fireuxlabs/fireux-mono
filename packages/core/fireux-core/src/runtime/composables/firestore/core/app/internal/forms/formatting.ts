@@ -7,7 +7,7 @@
  * These ensure consistent data format across the application.
  */
 
-import type { AppSocialLinks } from './useAppValidation.ts'
+import type { AppSocialLinks } from './validation.ts'
 
 const HTTPS_PROTOCOL_REGEX = /^https?:\/\//
 

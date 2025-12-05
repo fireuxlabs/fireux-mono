@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/users.ts'
+import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/data/users.ts'
 import type {
   User,
   AppUser,
@@ -37,23 +37,23 @@ export function useUserCollection() {
     const members = appUsers.value ?? []
     if (!members.length) return []
 
-    return members
-      .map((member) => {
-        const record = getCoreUser(member.id).value
-        if (!record?.id) return null
+    const enriched: EnrichedUser[] = []
+    for (const member of members) {
+      const record = getCoreUser(member.id).value
+      if (!record?.id) continue
 
-        return {
-          id: record.id,
-          display_name: record.display_name ?? record.id,
-          avatar: record.avatar ?? '',
-          handle: record.handle,
-          email: record.email,
-          profiles: record.profiles ?? [],
-          appUser: member,
-          coreUser: record,
-        }
+      enriched.push({
+        id: record.id,
+        display_name: record.display_name ?? record.id,
+        avatar: record.avatar ?? '',
+        handle: record.handle,
+        email: record.email,
+        profiles: record.profiles ?? [],
+        appUser: member,
+        coreUser: record,
       })
-      .filter((entry): entry is EnrichedUser => Boolean(entry?.id))
+    }
+    return enriched
   })
 
   return {

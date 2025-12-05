@@ -60,7 +60,7 @@ export function useProfileCollection<
   })
 
   const resolveUserForProfile = (profile?: TProfile) => {
-    if (!profile) return profile?.user
+    if (!profile) return undefined
     const profileUser = profile.user
     const id = profileUser?.id ?? profile.id
     if (!id) return profileUser

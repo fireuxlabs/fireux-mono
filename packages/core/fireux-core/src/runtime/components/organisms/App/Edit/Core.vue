@@ -118,7 +118,7 @@
 import { computed, ref } from 'vue'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 import { useAppUpdate } from 'fireux-core/runtime/composables/firestore/core/app/mutations/useAppUpdate.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/users.ts'
+import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/data/users.ts'
 import { useAppJoinRequests } from 'fireux-core/runtime/composables/firestore/core/app/utils/useAppJoinRequests.ts'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'

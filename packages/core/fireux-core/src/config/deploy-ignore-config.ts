@@ -17,9 +17,15 @@ export function configureDeployIgnore(nuxt: Nuxt) {
   const rules = resolveIgnoreRules(nuxt)
   if (!rules.length) return
 
-  const ignorePatterns = new Set<string | RegExp>(
-    Array.isArray(nuxt.options.ignore) ? nuxt.options.ignore : []
+  const rawIgnore: Array<string | RegExp> = Array.isArray(nuxt.options.ignore)
+    ? (nuxt.options.ignore as Array<string | RegExp>)
+    : []
+
+  const currentIgnore = rawIgnore.map((pattern) =>
+    typeof pattern === 'string' ? pattern : pattern.source
   )
+
+  const ignorePatterns = new Set<string>(currentIgnore)
   for (const rule of rules) {
     for (const pattern of toGlobPatterns(rule)) {
       ignorePatterns.add(pattern)

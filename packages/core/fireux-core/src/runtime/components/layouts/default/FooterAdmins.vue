@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/users.ts'
+import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/data/users.ts'
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
 import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/state/useUserInterface.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'

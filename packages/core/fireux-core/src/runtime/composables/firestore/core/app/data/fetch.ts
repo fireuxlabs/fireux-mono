@@ -1,8 +1,8 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppFetch.ts
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 import { computed, isRef, type Ref } from 'vue'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
 
 /**
  * Fetch a single app document by id (accepts raw ids or refs).
@@ -24,4 +24,14 @@ export function useAppFetch(
 
   const { data: app, pending } = useDocument<App | undefined>(docRef as any)
   return { app, pending }
+}
+
+/**
+ * Fetch all app documents. Returns a simple computed list wrapper.
+ */
+export function useAppCollection() {
+  const { firestoreFetchCollection } = useFirestoreRead()
+  const source = firestoreFetchCollection<App>('apps')
+  const apps = computed(() => source.value ?? [])
+  return { apps }
 }

@@ -47,8 +47,12 @@ export function useUserInterface(
   }
 
   const composeCell = (user: User): UserCard.Cell => {
+    const pill = composePill(user)
+    const pillLink =
+      typeof pill.to === 'string' || pill.to == null ? pill.to ?? null : null
     return {
-      ...composePill(user),
+      ...pill,
+      to: pillLink,
       id: user.id ?? '-',
       handle: normalizeHandle(user.handle),
       email: normalizeEmail(user.email),

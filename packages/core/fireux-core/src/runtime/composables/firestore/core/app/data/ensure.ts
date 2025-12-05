@@ -3,10 +3,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { requireUid } from '../../../utils/useEnsureCommon.ts'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
-import {
-  ensureCoreUserDocument,
-  ensureUserAppMembership,
-} from '../../user/utils/ensureHelpers.ts'
+import { ensureUserAppMembership } from '../../user/utils/ensureHelpers.ts'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 
 type EnsureAppDocResult = { created: boolean; id: string }

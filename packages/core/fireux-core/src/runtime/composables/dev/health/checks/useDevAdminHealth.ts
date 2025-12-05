@@ -1,8 +1,8 @@
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
-import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
+import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/data/fetch.ts'
 import { useUserCollection } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserCollection.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/subcollections/users.ts'
+import { useAppUsers } from 'fireux-core/runtime/composables/firestore/core/app/data/users.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/FireUXConfig.ts'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 import type {
@@ -32,12 +32,13 @@ export function useDevAdminHealth(): ComputedRef<DevHealthResult> {
       Boolean(entry?.id)
     )
     const runtimeMemberships = (appUsers.users.value ?? []).filter(
-      (entry): entry is AppUser => Boolean(entry?.id)
+      (entry: AppUser | null | undefined): entry is AppUser =>
+        Boolean(entry?.id)
     )
 
     const appMap = new Map(appList.map((app) => [app.id, app]))
     const userMap = new Map(userList.map((user) => [user.id, user]))
-    const membershipMap = new Map(
+    const membershipMap = new Map<string, AppUser>(
       runtimeMemberships.map((member) => [member.id, member])
     )
 
