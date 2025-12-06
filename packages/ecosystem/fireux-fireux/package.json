@@ -9,6 +9,7 @@
   "exports": {
     ".": "./src/module.ts",
     "./runtime/*": "./src/runtime/*",
+    "./config/*": "./src/config/*",
     "./package.json": "./package.json"
   },
   "files": [

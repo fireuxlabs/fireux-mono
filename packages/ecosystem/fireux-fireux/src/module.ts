@@ -6,6 +6,8 @@ import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
 import { configureLayouts } from './config/layouts-config'
 import { configurePages } from './config/pages-config'
+import { primeFireuxFirebaseEnv } from './config/firebase-env'
+import { FIREUX_FIREBASE_PROJECT } from './config/firebase-project'
 
 export interface ModuleOptions {
   prefix?: string
@@ -21,9 +23,17 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
+    primeFireuxFirebaseEnv()
+
     // Core is provided by the app via createFireuxConfig; do not install here
 
     configureRuntime(nuxt, 'fireux')
+    configureRuntime(nuxt, 'firebase', {
+      projectId: FIREUX_FIREBASE_PROJECT.projectId,
+      authDomain: FIREUX_FIREBASE_PROJECT.authDomain,
+      storageBucket: FIREUX_FIREBASE_PROJECT.storageBucket,
+      registryDatabaseId: FIREUX_FIREBASE_PROJECT.registryDatabaseId,
+    })
     configurePlugins(resolver)
     configureComponents(resolver, options)
     configureComposables(resolver)

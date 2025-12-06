@@ -33,6 +33,16 @@ const required = [
   'FIREBASE_APP_ID',
 ]
 
+const firebaseKeys = new Set([
+  'FIREBASE_API_KEY',
+  'FIREBASE_AUTH_DOMAIN',
+  'FIREBASE_PROJECT_ID',
+  'FIREBASE_STORAGE_BUCKET',
+  'FIREBASE_MESSAGING_SENDER_ID',
+  'FIREBASE_APP_ID',
+  'FIREBASE_MEASUREMENT_ID',
+])
+
 const permissive = !!process.env.ALLOW_INCOMPLETE_ENVS
 // In permissive mode we only require the key to exist (allow empty) for secrets that
 // cannot be committed. Keep structural items (APP_* + project identifiers) strict.
@@ -43,7 +53,36 @@ const allowEmptyIfPermissive = new Set([
   'FIREBASE_MEASUREMENT_ID',
 ])
 
+const repoRoot = process.cwd()
 let failures = 0
+
+function hasManagedFirebaseConfig(namespace) {
+  const pkgName =
+    namespace === 'fireux' ? 'fireux-fireux' : `fireux-${namespace}`
+  const managedConfigPath = join(
+    repoRoot,
+    'packages',
+    'ecosystem',
+    pkgName,
+    'src',
+    'config',
+    'firebase-project.ts'
+  )
+  return existsSync(managedConfigPath)
+}
+
+function getManagedServiceAccountPath(namespace) {
+  const pkgName =
+    namespace === 'fireux' ? 'fireux-fireux' : `fireux-${namespace}`
+  return join(
+    repoRoot,
+    'packages',
+    'ecosystem',
+    pkgName,
+    'config',
+    'service-account.json'
+  )
+}
 
 function parseEnv(str) {
   const map = new Map()
@@ -55,7 +94,8 @@ function parseEnv(str) {
 }
 
 for (const app of apps) {
-  const envPath = join(process.cwd(), app, '.env')
+  const namespace = brandNamespaces.get(app) || 'fireux'
+  const envPath = join(repoRoot, app, '.env')
   if (!existsSync(envPath)) {
     console.warn(`⚠️  ${app}: missing .env`)
     failures++
@@ -63,7 +103,9 @@ for (const app of apps) {
   }
   const data = readFileSync(envPath, 'utf8')
   const env = parseEnv(data)
+  const ecosystemManagedFirebase = hasManagedFirebaseConfig(namespace)
   const missing = required.filter((k) => {
+    if (ecosystemManagedFirebase && firebaseKeys.has(k)) return false
     const has = env.has(k)
     if (!has) return true
     const val = env.get(k)
@@ -73,10 +115,9 @@ for (const app of apps) {
 
   const hasInlineSA = env.has('FIREBASE_SERVICE_ACCOUNT')
   const hasPathSA = env.has('GOOGLE_APPLICATION_CREDENTIALS')
-  const saOk = hasInlineSA || hasPathSA
-
-  const namespace = brandNamespaces.get(app) || 'fireux'
-  const repoRoot = process.cwd()
+  const managedSAPath = getManagedServiceAccountPath(namespace)
+  const hasManagedSA = ecosystemManagedFirebase && existsSync(managedSAPath)
+  const saOk = hasInlineSA || hasPathSA || hasManagedSA
   const candidateDirs = []
 
   if (namespace === 'fireux') {
