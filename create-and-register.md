@@ -14,13 +14,13 @@ A shared creation + registration workflow keeps every FireUX asset (apps, module
 We intentionally use the word “registry” for two layers of the workflow:
 
 1. **Local registry file** — A `registry.json` (kept next to the asset folder) that contains the full metadata payload. This file is versioned with the codebase and acts as the single source of truth for reviews.
-2. **Remote registry database** — The `fireux-fireux` Firestore project, specifically the `registry/<entityType>/<id>` collections, where the CLI publishes the same metadata so runtime tooling, dashboards, and guards can read it centrally.
+2. **Remote registry database** — The `fireux-fireux` Firestore project, specifically the `<entityType>/<id>` collections (`modules/fireux-core`, `apps/fireux-app`, etc.), where the CLI publishes the same metadata so runtime tooling, dashboards, and guards can read it centrally.
 
 The `pnpm registry:*` commands always read from the local file first and then sync to the remote database so the repo history and the database never drift silently.
 
 ## Entities & Metadata
 
-Each entity type shares a core envelope plus type-specific payloads. Store all records in Firestore under `registry/<entityType>/<id>` (or a similar path) so consumers can query by type or aggregate everything.
+Each entity type shares a core envelope plus type-specific payloads. Store all records in Firestore directly under `<entityType>/<id>` so consumers can query by type or aggregate everything (e.g., `modules/fireux-core`).
 
 | Field              | Description                                                                                         |
 | ------------------ | --------------------------------------------------------------------------------------------------- |
@@ -53,7 +53,7 @@ Type-specific additions:
 
 ## Registration Flow
 
-- **Command**: `pnpm registry:register <path>` reads the local metadata file, validates required fields, and writes to Firestore (currently `registry/<type>/records/<id>` using service-account creds).
+- **Command**: `pnpm registry:register <path>` reads the local metadata file, validates required fields, and writes to Firestore (currently `<type>/<id>` using service-account creds or the registry endpoint).
 - **Environment**: ensure either `FIREBASE_SERVICE_ACCOUNT` (JSON string) or `GOOGLE_APPLICATION_CREDENTIALS` (path) is set before running the command; the CLI reuses the same Firebase Admin bootstrap logic as server handlers.
 - **Idempotency**: writes are upserts; the tool tracks `registryVersion` to detect schema drift.
 - **Security**: use service account scoped to the registry collection; avoid broad admin keys on developer machines (invoke via existing admin helper + impersonation or a Cloud Function callable).

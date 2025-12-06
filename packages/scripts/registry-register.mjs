@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Push a local registry.json into the FireUX hello endpoint.
+ * Push a local registry.json into the FireUX registry endpoint.
  * Usage: pnpm registry:register <path/to/registry.json>
  */
 import { promises as fs } from 'node:fs'
@@ -27,33 +27,24 @@ async function readRegistryFile(filePath) {
   }
 }
 
-function buildRequestPayload(payload) {
-  if (!payload.type) {
+function buildRequestPayload(registryEntry) {
+  if (!registryEntry.type) {
     throw new Error('Registry entry must include a "type" field.')
   }
 
-  const name = payload.title || payload.name || payload.id
-  if (!name) {
-    throw new Error(
-      'Registry entry needs at least a "title" or "id" to derive a name.'
-    )
-  }
-
   return {
-    type: payload.type,
-    id: payload.id,
-    name,
-    data: payload,
+    type: registryEntry.type,
+    payload: registryEntry,
   }
 }
 
 function resolveEndpoint() {
   return (
-    process.env.FIREUX_REGISTRY_ENDPOINT || 'http://localhost:3000/api/hello'
+    process.env.FIREUX_REGISTRY_ENDPOINT || 'http://localhost:3000/api/registry'
   )
 }
 
-async function postToHello(body) {
+async function postToRegistry(body) {
   const endpoint = resolveEndpoint()
   const response = await fetch(endpoint, {
     method: 'POST',
@@ -64,7 +55,7 @@ async function postToHello(body) {
   if (!response.ok) {
     const text = await response.text()
     throw new Error(
-      `Hello endpoint ${endpoint} responded ${response.status}: ${text}`
+      `Registry endpoint ${endpoint} responded ${response.status}: ${text}`
     )
   }
 
@@ -78,10 +69,10 @@ async function main() {
   console.log(`📦 Loading ${targetPath}`)
   const payload = await readRegistryFile(targetPath)
   const requestBody = buildRequestPayload(payload)
-  const result = await postToHello(requestBody)
+  const result = await postToRegistry(requestBody)
 
   console.log(
-    `✅ Synced via hello endpoint (id: ${result?.id ?? 'unknown'}) path: ${
+    `✅ Synced via registry endpoint (id: ${result?.id ?? 'unknown'}) path: ${
       result?.path ?? 'n/a'
     }`
   )

@@ -40,7 +40,7 @@
 ## Execution Model
 
 - When a Nuxt app installs `fireux-core` or `fireux-places`, Nuxt auto-registers the exported server handlers, so any FireUX tenant automatically gains `/api/app/*`, `/api/firestore/*`, `/api/stripe/*`, and `/api/places/*` routes without copying files.
-- The FireUX app project currently hosts bespoke routes (`/api/hello`, `/api/docs/*`) that are only compiled into that project’s deployment. Other tenant apps can add their own `/server` directory following the same Nitro conventions.
+- The FireUX app project currently hosts bespoke routes (`/api/registry`, `/api/docs/*`) that are only compiled into that project’s deployment. Other tenant apps can add their own `/server` directory following the same Nitro conventions.
 - Firebase Admin bootstrap is intentionally duplicated: module consumers call `getAdmin()` from `fireux-core`, while the FireUX app’s local helpers exist to unblock routes before the shared package is published. Consider consolidating them later.
 
 ## Operational Notes

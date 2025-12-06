@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 /**
  * Scaffold a new FireUX module inside packages/extensions/<slug>.
- * Usage: pnpm create:module <slug> [--title "Display Name"] [--description "..."] [--owner "Team"]
+ * Prompts for team + module name, generates registry metadata, and attempts to
+ * sync it immediately via the registry endpoint.
  */
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import readline from 'node:readline/promises'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -32,33 +34,69 @@ function toTitle(slug) {
     .replace(/^$/, 'FireUX Module')
 }
 
-function parseArgs(rawArgs) {
-  const [maybeSlug, ...rest] = rawArgs
-  if (!maybeSlug)
-    return { error: 'Missing <slug>. Usage: pnpm create:module <slug>' }
-
-  const slug = toSlug(maybeSlug)
-  if (!slug) return { error: 'Slug cannot be empty after normalization.' }
-
-  const moduleSlug = slug.startsWith('fireux-') ? slug : `fireux-${slug}`
-
-  const options = {
-    title: toTitle(moduleSlug),
-    description: 'Describe what this module does.',
-    owner: 'Platform',
-  }
-
-  for (let i = 0; i < rest.length; i++) {
-    const token = rest[i]
+function parseOptions(rawArgs) {
+  const options = {}
+  for (let i = 0; i < rawArgs.length; i++) {
+    const token = rawArgs[i]
     if (!token.startsWith('--')) continue
     const key = token.slice(2)
-    const value = rest[i + 1] && !rest[i + 1].startsWith('--') ? rest[++i] : ''
-    if (key in options && value) {
+    const value =
+      rawArgs[i + 1] && !rawArgs[i + 1].startsWith('--') ? rawArgs[++i] : ''
+    if (value && (key === 'team' || key === 'name')) {
       options[key] = value
     }
   }
+  return options
+}
 
-  return { moduleSlug, options }
+async function collectModuleInfo(initialOptions) {
+  const answers = { ...initialOptions }
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  })
+
+  try {
+    if (!answers.team) {
+      answers.team = (await rl.question('Which team owns this module? ')).trim()
+    }
+
+    if (!answers.name) {
+      answers.name = (await rl.question('What is the module name? ')).trim()
+    }
+  } finally {
+    rl.close()
+  }
+
+  answers.team = (answers.team || '').trim()
+  answers.name = (answers.name || '').trim()
+
+  answers.team = answers.team.toLowerCase()
+  answers.name = answers.name.toLowerCase()
+
+  if (!answers.team) {
+    throw new Error('Team is required to scaffold a module.')
+  }
+
+  if (!answers.name) {
+    throw new Error('Module name is required to scaffold a module.')
+  }
+
+  return answers
+}
+
+function buildModuleSlug(teamName, moduleName) {
+  const teamSlug = toSlug(teamName)
+  const moduleSlug = toSlug(moduleName)
+
+  if (!moduleSlug) {
+    throw new Error('Module name must contain at least one alphanumeric value.')
+  }
+
+  let slug = moduleSlug
+  if (teamSlug) slug = `${teamSlug}-${slug}`
+  if (!slug.startsWith('fireux-')) slug = `fireux-${slug}`
+  return slug
 }
 
 async function ensureDir(dir) {
@@ -171,38 +209,25 @@ export default defineNuxtModule({
 `
 }
 
-function makeRegistryJson(name, options, relPath) {
-  const now = new Date().toISOString()
-  return JSON.stringify(
-    {
-      registryVersion: 1,
-      id: name,
-      type: 'module',
-      status: 'draft',
-      title: options.title,
-      description: options.description,
-      owner: options.owner,
-      sourcePath: relPath,
-      runtimeConfig: {
-        nuxtModule: name,
-      },
-      deployTargets: [],
-      capabilities: [],
-      createdAt: now,
-      createdBy: process.env.USER || 'unknown',
-      updatedAt: now,
-      updatedBy: process.env.USER || 'unknown',
-      notes: '',
-    },
-    null,
-    2
-  )
+function buildRegistryEntry(id, teamName, moduleName) {
+  return {
+    type: 'module',
+    id,
+    name: moduleName,
+    team: teamName,
+  }
 }
 
-function makeReadme(name, options) {
-  return `# ${options.title}
+function formatRegistryEntry(entry) {
+  return JSON.stringify(entry, null, 2)
+}
 
-${options.description}
+function makeReadme(name, title, teamName) {
+  return `# ${title}
+
+Owned by ${teamName}.
+
+Describe what this module ships, its guardrails, and how consumers should enable it.
 
 ## Quick start
 
@@ -212,7 +237,7 @@ ${options.description}
      modules: ['${name}'],
    })
    \`\`\`
-2. Update \`registry.json\` before committing (status, notes, capabilities).
+2. Update \`registry.json\` before committing (name, team, runtime notes).
 3. Publish to FireUX registry:
    \`\`\`bash
    pnpm registry:register packages/extensions/${name}/registry.json
@@ -225,29 +250,53 @@ async function writeFile(target, content) {
   console.log(`  • wrote ${target.replace(repoRoot + '/', '')}`)
 }
 
-async function main() {
-  const { moduleSlug, options, error } = parseArgs(process.argv.slice(2))
-  if (error) {
-    console.error(error)
-    process.exit(1)
+function resolveRegistryEndpoint() {
+  return (
+    process.env.FIREUX_REGISTRY_ENDPOINT || 'http://localhost:3000/api/registry'
+  )
+}
+
+async function syncRegistryEntry(entry) {
+  const endpoint = resolveRegistryEndpoint()
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ type: entry.type, payload: entry }),
+    })
+
+    if (!response.ok) {
+      const body = await response.text()
+      throw new Error(`${response.status} ${response.statusText}: ${body}`)
+    }
+
+    const result = await response.json()
+    console.log(
+      `✨ Registry synced via ${endpoint} (id: ${result?.id ?? entry.id})`
+    )
+  } catch (error) {
+    console.warn('⚠️  Unable to sync registry entry automatically:')
+    console.warn(`   ${error.message}`)
+    console.warn('   Run pnpm registry:register <registry.json> once the API is up.')
   }
+}
 
+async function main() {
+  const options = parseOptions(process.argv.slice(2))
+  const answers = await collectModuleInfo(options)
+  const moduleSlug = buildModuleSlug(answers.team, answers.name)
   const moduleDir = path.join(extensionsRoot, moduleSlug)
-  await assertDoesNotExist(moduleDir)
 
+  await assertDoesNotExist(moduleDir)
   await ensureDir(path.join(moduleDir, 'src/runtime/composables'))
+
+  const title = toTitle(moduleSlug)
+  const registryEntry = buildRegistryEntry(moduleSlug, answers.team, answers.name)
 
   const files = [
     [path.join(moduleDir, 'package.json'), makePackageJson(moduleSlug)],
-    [path.join(moduleDir, 'README.md'), makeReadme(moduleSlug, options)],
-    [
-      path.join(moduleDir, 'registry.json'),
-      makeRegistryJson(
-        moduleSlug,
-        options,
-        `packages/extensions/${moduleSlug}`
-      ),
-    ],
+    [path.join(moduleDir, 'README.md'), makeReadme(moduleSlug, title, answers.team)],
+    [path.join(moduleDir, 'registry.json'), formatRegistryEntry(registryEntry)],
     [
       path.join(moduleDir, 'tsconfig.json'),
       '{\n  "extends": "../../tsconfig.json",\n  "include": ["src"]\n}\n',
@@ -257,17 +306,16 @@ async function main() {
     [path.join(moduleDir, 'src/runtime/index.ts'), 'export {}\n'],
   ]
 
-  console.log(`Scaffolding ${moduleSlug}...`)
+  console.log(`Scaffolding ${moduleSlug} (team: ${answers.team})...`)
   for (const [target, content] of files) {
     await writeFile(target, content)
   }
 
+  await syncRegistryEntry(registryEntry)
+
   console.log('\nNext steps:')
-  console.log(
-    ` - Fill in README + registry.json details inside packages/extensions/${moduleSlug}`
-  )
-  console.log(' - Start developing using nuxt-module-build or link into an app')
-  console.log(' - Run pnpm registry:register when ready to sync Firestore')
+  console.log(` - Start building inside packages/extensions/${moduleSlug}`)
+  console.log(' - Update README + registry details as the module evolves')
 }
 
 main().catch((err) => {
