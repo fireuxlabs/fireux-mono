@@ -1,32 +1,77 @@
 <template>
-  <main class="dev-tools">
-    <header>
-      <p class="eyebrow">Dev Utilities</p>
-      <h1>Operational Data Tools</h1>
-      <p>
-        Internal-only utilities designed for engineers who need raw registry
-        payloads, seed data, or diagnostics without digging through Firestore.
-        These pages intentionally surface JSON blocks and copy helpers rather
-        than narrative docs.
-      </p>
-    </header>
+  <UPage>
+    <UPageHeader
+      title="Dev · Tools"
+      description="Clipboard-first utilities for registry data, diagnostics, and FireUX automation."
+    />
 
-    <section class="tools-grid">
-      <NuxtLink
-        v-for="tool in tools"
-        :key="tool.slug"
-        class="tool-card"
-        :to="`/dev/${tool.slug}`"
-      >
-        <span class="tool-icon" :class="tool.icon" aria-hidden="true" />
-        <div>
-          <p class="tool-label">{{ tool.label }}</p>
-          <p class="tool-description">{{ tool.description }}</p>
+    <UPageBody class="space-y-6">
+      <UCard>
+        <template #header>
+          <div class="flex flex-col gap-1">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">
+              Registry + diagnostics
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              These tools skip narration and expose raw payloads for seeding, parity checks, and incident response.
+            </p>
+          </div>
+        </template>
+
+        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+          <p>
+            Run through this stack whenever you need Firestore-aligned JSON without touching the console.
+            Everything here mirrors the nuxt dev layout used across FireUX core, ecosystems, and extensions.
+          </p>
+          <p>
+            Need onboarding context instead of payloads? Hop to
+            <NuxtLink class="text-primary-500 hover:underline" to="/developer/registry">
+              Developer · Registry Docs
+            </NuxtLink>
+            for human-readable workflows.
+          </p>
         </div>
-        <span class="chevron" aria-hidden="true">→</span>
-      </NuxtLink>
-    </section>
-  </main>
+      </UCard>
+
+      <section class="grid gap-4 md:grid-cols-2">
+        <NuxtLink
+          v-for="tool in tools"
+          :key="tool.slug"
+          :to="`/dev/${tool.slug}`"
+          class="group block"
+        >
+          <UCard class="h-full transition duration-200 group-hover:border-primary-500">
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center gap-3">
+                <span
+                  class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900/40 dark:text-primary-200"
+                  aria-hidden="true"
+                >
+                  <Icon :name="tool.icon" class="text-lg" />
+                </span>
+                <div>
+                  <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ tool.label }}
+                  </p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ tool.description }}
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <span>Open tool</span>
+                <Icon
+                  name="i-lucide-arrow-up-right"
+                  class="transition duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                />
+              </div>
+            </div>
+          </UCard>
+        </NuxtLink>
+      </section>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -38,13 +83,16 @@ interface DevToolLink {
 }
 
 definePageMeta({
+  layout: 'dev',
+  title: 'Dev · Tools',
   nav: {
-    key: 'dev-home',
-    label: 'Dev Tools',
+    key: 'dev-fireux-tools',
+    label: 'FireUX Tools',
     icon: 'i-lucide-terminal',
-    desktop: false,
-    mobile: false,
-    section: 'dev-tools',
+    desktop: true,
+    group: 'core',
+    order: 95,
+    layouts: ['dev'],
   },
 })
 
@@ -57,66 +105,9 @@ const tools: DevToolLink[] = [
   {
     slug: 'registry',
     label: 'Registry Snapshot',
-    description: 'Copy the full apps/modules/ecosystems payload as JSON.',
+    description: 'Copy all apps, modules, and ecosystems as JSON.',
     icon: 'i-lucide-database',
   },
 ]
 </script>
 
-<style scoped>
-.dev-tools {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 3rem 1.5rem 4rem;
-  display: grid;
-  gap: 2rem;
-}
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-header h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  margin-bottom: 0.5rem;
-}
-header p {
-  max-width: 65ch;
-}
-.tools-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem;
-}
-.tool-card {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  background: rgba(8, 10, 18, 0.85);
-  transition: border 0.2s ease, transform 0.2s ease;
-}
-.tool-card:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-}
-.tool-icon {
-  font-size: 1.5rem;
-  color: #a5b4fc;
-}
-.tool-label {
-  font-weight: 600;
-  color: #f8fafc;
-}
-.tool-description {
-  font-size: 0.9rem;
-  color: #cbd5f5;
-}
-.chevron {
-  margin-left: auto;
-  color: rgba(255, 255, 255, 0.6);
-}
-</style>
