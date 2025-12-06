@@ -1,19 +1,9 @@
-/**
- * Expose Cleanbox public assets (brand, marketing, etc.) to Nuxt.
- */
-export function configureAssets(resolver: any, nuxt: any) {
-  const resolvePath = (p: string) => resolver.resolve(p)
+import type { Resolver } from '@nuxt/kit'
+import type { Nuxt } from '@nuxt/schema'
+import { configureTenantAssets } from 'fireux-core/config/tenant-config'
 
-  nuxt.options ||= {}
-  nuxt.options.nitro ||= {}
-  nuxt.options.nitro.publicAssets ||= []
-  nuxt.options.nitro.publicAssets.push({
-    baseURL: '/',
-    dir: resolvePath('./runtime/public'),
-    maxAge: 60 * 60 * 24 * 7,
+export function configureAssets(resolver: Resolver, nuxt: Nuxt) {
+  configureTenantAssets(resolver, nuxt, {
+    alias: '#fireux-cleanbox-public',
   })
-
-  nuxt.options.alias ||= {}
-  nuxt.options.alias['#fireux-cleanbox-public'] =
-    resolvePath('./runtime/public')
 }

@@ -22,6 +22,11 @@ export function resolveTenantIntegrations(
 ): TenantIntegrations {
   const serviceAccount = readServiceAccount(basics.ecosystem)
 
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS && serviceAccount?.json) {
+    // Surface the service account early so nuxt-vuefire treats SSR as configured
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = serviceAccount.json
+  }
+
   const vuefireConfig = createVuefireConfig({
     overrides: opts.vuefire,
     serviceAccount: serviceAccount?.credentials,

@@ -22,6 +22,9 @@ const PACKAGES = [
   'packages/ecosystem/fireux-cleanbox',
   'packages/ecosystem/fireux-fireux',
 ]
+const ECOSYSTEM_PACKAGES = PACKAGES.filter((p) =>
+  p.startsWith('packages/ecosystem/')
+)
 
 // helpers
 const load = (p) =>
@@ -107,6 +110,37 @@ for (const p of PACKAGES) {
     err(p, `exports must point to "./src/module.ts"`)
 
   if (pkg.peerDependencies?.glob) err(p, `glob must NOT be a peerDependency`)
+}
+
+// 3b) ecosystem modules must keep src/{config,runtime} only
+const allowedModuleDirs = new Set(['config', 'runtime'])
+for (const pkgPath of ECOSYSTEM_PACKAGES) {
+  const srcDir = join(ROOT, pkgPath, 'src')
+  let entries
+  try {
+    entries = readdirSync(srcDir, { withFileTypes: true })
+  } catch (error) {
+    err(pkgPath, 'missing src directory for module layout check')
+    continue
+  }
+
+  const childDirs = entries
+    .filter((entry) => entry.isDirectory?.())
+    .map((entry) => entry.name)
+
+  for (const expected of allowedModuleDirs) {
+    if (!childDirs.includes(expected)) {
+      err(pkgPath, `src must include "${expected}/"`)
+    }
+  }
+
+  const extras = childDirs.filter((name) => !allowedModuleDirs.has(name))
+  if (extras.length) {
+    err(
+      pkgPath,
+      `src directories limited to config/ and runtime/ (found: ${extras.join(', ')})`
+    )
+  }
 }
 
 // 4) core-only libraries

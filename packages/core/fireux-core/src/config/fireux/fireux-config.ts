@@ -1,10 +1,12 @@
 import type { NuxtConfig } from 'nuxt/schema'
+import { primeEcosystemFirebaseEnv } from '../firebase-env'
 import { resolveFireuxNuxtSetup } from './tenant-context'
 import type { TenantConfig } from './tenant-config'
 
 const DEFAULT_THEME_COLOR = '#0f172a'
 
 export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
+  primeEcosystemFirebaseEnv(opts.ecosystem)
   const setup = resolveFireuxNuxtSetup(opts)
   const themeColor = setup.themeColor || DEFAULT_THEME_COLOR
 

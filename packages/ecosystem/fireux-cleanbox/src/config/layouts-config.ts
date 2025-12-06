@@ -1,20 +1,7 @@
-import { addComponentsDir } from '@nuxt/kit'
-import { existsSync } from 'node:fs'
+import type { Resolver } from '@nuxt/kit'
+import type { Nuxt } from '@nuxt/schema'
+import { configureTenantLayouts } from 'fireux-core/config/tenant-config'
 
-/**
- * Configure cleanbox layouts for the Nuxt application
- * @param resolver The resolver instance to resolve file paths
- * @param nuxt The Nuxt instance
- */
-export function configureLayouts(resolver: any, _nuxt: any) {
-  const layoutsDir = resolver.resolve('./runtime/layouts')
-  if (!existsSync(layoutsDir)) return
-
-  // Register layouts as components for direct use
-  addComponentsDir({
-    path: layoutsDir,
-    pattern: '*.vue',
-    global: true,
-    pathPrefix: false,
-  })
+export function configureLayouts(resolver: Resolver, nuxt: Nuxt) {
+  configureTenantLayouts(resolver, nuxt)
 }

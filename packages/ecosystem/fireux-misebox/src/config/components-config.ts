@@ -1,15 +1,12 @@
-import { addComponentsDir } from '@nuxt/kit'
 import type { Resolver } from '@nuxt/kit'
+import { configureTenantComponents } from 'fireux-core/config/tenant-config'
 
 export function configureComponents(
   resolver: Resolver,
   options: { prefix?: string } = {}
 ) {
-  // Consistent with core/jobs: domain-prefixed, non-global, no path prefix
-  addComponentsDir({
-    path: resolver.resolve('./runtime/components'),
+  configureTenantComponents(resolver, {
     prefix: options.prefix ?? 'Mise',
-    global: false,
     pathPrefix: true,
   })
 }
