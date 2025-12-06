@@ -1,0 +1,20 @@
+{
+  "registryVersion": 1,
+  "id": "fireux-test",
+  "type": "module",
+  "status": "draft",
+  "title": "Test",
+  "description": "Describe what this module does.",
+  "owner": "Platform",
+  "sourcePath": "packages/extensions/fireux-test",
+  "runtimeConfig": {
+    "nuxtModule": "fireux-test"
+  },
+  "deployTargets": [],
+  "capabilities": [],
+  "createdAt": "2025-12-06T10:31:42.555Z",
+  "createdBy": "danielwatson",
+  "updatedAt": "2025-12-06T10:31:42.555Z",
+  "updatedBy": "danielwatson",
+  "notes": ""
+}

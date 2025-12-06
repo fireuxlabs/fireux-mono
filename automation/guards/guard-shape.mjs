@@ -138,7 +138,9 @@ for (const pkgPath of ECOSYSTEM_PACKAGES) {
   if (extras.length) {
     err(
       pkgPath,
-      `src directories limited to config/ and runtime/ (found: ${extras.join(', ')})`
+      `src directories limited to config/ and runtime/ (found: ${extras.join(
+        ', '
+      )})`
     )
   }
 }

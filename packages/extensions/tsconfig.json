@@ -1,5 +1,9 @@
 {
   "files": [],
-  "references": [{ "path": "fireux-jobs" }, { "path": "fireux-places" }],
+  "references": [
+    { "path": "fireux-jobs" },
+    { "path": "fireux-places" },
+    { "path": "fireux-test" }
+  ],
   "compilerOptions": { "skipLibCheck": true }
 }

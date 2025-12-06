@@ -1,6 +1,6 @@
 // ~/server/api/stripe/create-product.post.ts
 import { defineEventHandler, readBody, createError, type H3Event } from 'h3'
-import { STRIPE_API_VERSION } from '../stripe/version'
+import { STRIPE_API_VERSION } from '../../stripe/version'
 
 export default defineEventHandler(async (event: H3Event) => {
   try {
