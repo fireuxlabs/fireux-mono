@@ -102,8 +102,19 @@
   </main>
 </template>
 
-<script setup>
-import { fireuxEcosystems } from 'fireux-core/src/runtime/models/core/module.model'
+<script setup lang="ts">
+import type { FireuxEcosystemRegistryDoc } from 'fireux-core/src/runtime/models/core/ecosystem.model'
+
+type EcosystemStage = 'active' | 'rolling'
+
+interface FireuxEcosystemRow extends FireuxEcosystemRegistryDoc {
+  id: string
+  slug: string
+  stage: EcosystemStage
+  modules: string[]
+  owner: string
+  notes?: string
+}
 
 definePageMeta({
   nav: {
@@ -120,5 +131,8 @@ useSeoMeta({
   description: 'Tenant ecosystem inventory with module selections.',
 })
 
-const ecosystems = fireuxEcosystems
+const ecosystems = useState<FireuxEcosystemRow[]>(
+  'fireux-ecosystems-directory',
+  () => []
+)
 </script>

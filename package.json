@@ -12,8 +12,11 @@
     "test-*"
   ],
   "scripts": {
+    "create:app": "node ./packages/scripts/create-app.mjs",
     "create:module": "node ./packages/scripts/create-module.mjs",
+    "create:ecosystem": "node ./packages/scripts/create-ecosystem.mjs",
     "registry:register": "node ./packages/scripts/registry-register.mjs",
+    "registry:backfill": "node ./packages/scripts/registry-backfill.mjs",
     "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
     "dev:fireux": "pnpm --filter ./projects/fireux/fireux-app dev",
     "dev:misebox": "pnpm --filter ./projects/misebox/misebox-app dev",

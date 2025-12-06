@@ -74,6 +74,11 @@
       <NuxtLink to="/developer/skills">explore all supporting skills</NuxtLink>
       in detail.
     </p>
+    <p class="dev-link">
+      Need raw JSON payloads instead of documentation? Head to the
+      <NuxtLink to="/dev">Dev Tools</NuxtLink> stack for clipboard-ready
+      registry snapshots.
+    </p>
   </div>
 </template>
 
@@ -106,5 +111,10 @@
 .more-info {
   margin-top: 2rem;
   font-size: 1.05rem;
+}
+.dev-link {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
 }
 </style>

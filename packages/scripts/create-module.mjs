@@ -277,7 +277,9 @@ async function syncRegistryEntry(entry) {
   } catch (error) {
     console.warn('⚠️  Unable to sync registry entry automatically:')
     console.warn(`   ${error.message}`)
-    console.warn('   Run pnpm registry:register <registry.json> once the API is up.')
+    console.warn(
+      '   Run pnpm registry:register <registry.json> once the API is up.'
+    )
   }
 }
 
@@ -291,11 +293,18 @@ async function main() {
   await ensureDir(path.join(moduleDir, 'src/runtime/composables'))
 
   const title = toTitle(moduleSlug)
-  const registryEntry = buildRegistryEntry(moduleSlug, answers.team, answers.name)
+  const registryEntry = buildRegistryEntry(
+    moduleSlug,
+    answers.team,
+    answers.name
+  )
 
   const files = [
     [path.join(moduleDir, 'package.json'), makePackageJson(moduleSlug)],
-    [path.join(moduleDir, 'README.md'), makeReadme(moduleSlug, title, answers.team)],
+    [
+      path.join(moduleDir, 'README.md'),
+      makeReadme(moduleSlug, title, answers.team),
+    ],
     [path.join(moduleDir, 'registry.json'), formatRegistryEntry(registryEntry)],
     [
       path.join(moduleDir, 'tsconfig.json'),

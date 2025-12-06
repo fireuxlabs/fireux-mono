@@ -69,7 +69,7 @@
   </main>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import type { FireuxModuleSummary } from 'fireux-core/src/runtime/models/core/module.model'
 
 definePageMeta({

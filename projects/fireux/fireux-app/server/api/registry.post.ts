@@ -1,4 +1,5 @@
 import { defineEventHandler, readBody, createError } from 'h3'
+import { FieldValue } from 'firebase-admin/firestore'
 import { getFirestoreDb } from './firebase-admin'
 
 type RegistryType = 'module' | 'app' | 'ecosystem'
@@ -14,6 +15,16 @@ type RegistryPayload = {
   name?: string
   team?: string
   type?: RegistryType
+  ecosystem?: string
+}
+
+function toSlug(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/-{2,}/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 export default defineEventHandler(async (event) => {
@@ -63,18 +74,55 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const requiresEcosystem = type === 'app'
+  if (requiresEcosystem && !payload.ecosystem) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'App payloads must include an "ecosystem" field.',
+    })
+  }
+
   const collection = COLLECTION_SEGMENTS[type]
   const normalizedId = id.toLowerCase()
   const normalizedName = name.toLowerCase()
   const normalizedTeam = team.toLowerCase()
 
+  const normalizedEcosystem = requiresEcosystem
+    ? toSlug(payload.ecosystem as string)
+    : undefined
+
+  if (requiresEcosystem && !normalizedEcosystem) {
+    throw createError({
+      statusCode: 400,
+      statusMessage:
+        'App payloads must provide a valid ecosystem slug (letters, numbers, dashes).',
+    })
+  }
+
   const path = `${collection}/${normalizedId}`
   const db = await getFirestoreDb('registry')
-  await db.doc(path).set({ name: normalizedName, team: normalizedTeam }, { merge: true })
+
+  const docData: Record<string, string> = {
+    name: normalizedName,
+    team: normalizedTeam,
+  }
+
+  if (normalizedEcosystem) {
+    docData.ecosystem = normalizedEcosystem
+  }
+
+  await db.doc(path).set(docData, { merge: true })
+
+  if (requiresEcosystem && normalizedEcosystem) {
+    await db
+      .doc(`${COLLECTION_SEGMENTS.ecosystem}/${normalizedEcosystem}`)
+      .set({ apps: FieldValue.arrayUnion(normalizedId) }, { merge: true })
+  }
 
   return {
     ok: true,
     path,
     id: normalizedId,
+    ecosystem: normalizedEcosystem,
   }
 })
