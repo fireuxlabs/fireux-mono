@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
+import { useFireUXConfig } from '../../config/FireUXConfig'
 import type { NavItem, NavMeta } from '../../../../types/nav'
 
 const DEFAULT_LAYOUT = 'default'
@@ -20,6 +21,12 @@ function toArray<T>(value: T | T[] | undefined): T[] {
   return Array.isArray(value) ? value : [value]
 }
 
+function ensureLayouts(targetLayouts: TargetLayouts): string[] {
+  const arr = toArray(targetLayouts)
+  if (arr.length === 0) return [DEFAULT_LAYOUT]
+  return arr
+}
+
 function isNavMeta(value: unknown): value is NavMeta {
   return typeof value === 'object' && value !== null
 }
@@ -35,14 +42,11 @@ function normaliseOrder(value: unknown): number {
 
 function resolveLayouts(nav: NavMeta): string[] {
   const declared = toArray(nav.layouts)
-  if (declared.length === 0) return [DEFAULT_LAYOUT]
-  return declared
+  return declared.length === 0 ? [DEFAULT_LAYOUT] : declared
 }
 
 function resolvePath(route: RouteRecordNormalized): string {
-  if (typeof route.path === 'string' && route.path.length > 0) {
-    return route.path
-  }
+  if (typeof route.path === 'string' && route.path.length > 0) return route.path
   return String(route.name ?? '')
 }
 
@@ -66,10 +70,9 @@ function resolveLabel(
 
 function normaliseRoles(value: unknown): string[] | undefined {
   if (value === undefined) return undefined
-  const roles = toArray(value as string | string[] | undefined).filter(
+  return toArray(value as string | string[] | undefined).filter(
     (role): role is string => typeof role === 'string' && role.length > 0
   )
-  return roles
 }
 
 function buildNavItem(
@@ -78,9 +81,7 @@ function buildNavItem(
   targetLayouts: string[]
 ): NavItem | null {
   const layouts = resolveLayouts(nav)
-  if (!layouts.some((layout) => targetLayouts.includes(layout))) {
-    return null
-  }
+  if (!layouts.some((layout) => targetLayouts.includes(layout))) return null
 
   const to = resolvePath(route)
   const label = resolveLabel(route, nav, to)
@@ -106,15 +107,17 @@ function buildNavItem(
   }
 }
 
-function ensureLayouts(targetLayouts: TargetLayouts): string[] {
-  const arr = toArray(targetLayouts)
-  if (arr.length === 0) return [DEFAULT_LAYOUT]
-  return arr
+function includeTenant(item: NavItem, fireux: ReturnType<typeof useFireUXConfig>) {
+  if (!item.tenant) return true
+  if (item.tenant === 'tenant') return fireux.isTenant
+  if (item.tenant === 'global') return fireux.isGlobal
+  return true
 }
 
 export function useNav(targetLayouts: TargetLayouts = [DEFAULT_LAYOUT]) {
   const router = useRouter()
   const wanted = ensureLayouts(targetLayouts)
+  const fireux = useFireUXConfig()
 
   const items = computed<NavItem[]>(() => {
     const seen = new Set<string>()
@@ -136,10 +139,12 @@ export function useNav(targetLayouts: TargetLayouts = [DEFAULT_LAYOUT]) {
       result.push(item)
     }
 
-    return result.sort((a, b) => {
-      if (a.order !== b.order) return a.order - b.order
-      return a.label.localeCompare(b.label)
-    })
+    return result
+      .filter((item) => includeTenant(item, fireux))
+      .sort((a, b) => {
+        if (a.order !== b.order) return a.order - b.order
+        return a.label.localeCompare(b.label)
+      })
   })
 
   const desktop = computed(() => items.value.filter((item) => item.desktop))

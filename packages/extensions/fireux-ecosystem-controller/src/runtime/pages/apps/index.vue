@@ -24,6 +24,7 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
+  tenant: 'global',
   title: 'Apps',
   description: 'FireUX apps resolved for this runtime.',
   layout: 'default',
