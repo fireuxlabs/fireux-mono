@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import { useFirestoreRead } from '../../operations/useFirestoreRead.ts'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
 import type { BlogPost } from '../../../../models/objects/blogPost.model.ts'
 import { useBlogCreate } from './useBlogCreate.ts'
 import { useBlogDelete } from './useBlogDelete.ts'

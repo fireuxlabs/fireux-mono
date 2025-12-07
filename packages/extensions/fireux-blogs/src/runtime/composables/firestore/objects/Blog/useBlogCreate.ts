@@ -1,4 +1,4 @@
-import { useFirestoreManager } from '../../operations/useFirestoreManager.ts'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager.ts'
 import type { BlogPost } from '../../../../models/objects/blogPost.model.ts'
 
 export function useBlogCreate() {

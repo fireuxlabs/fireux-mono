@@ -1,1 +1,12 @@
-export {}
+export * from './composables/firestore/objects/Product/useProducts'
+export * from './composables/firestore/objects/Product/useProductCreate'
+export * from './composables/firestore/objects/Product/useProductUpdate'
+export * from './composables/firestore/objects/Product/useProductDelete'
+export * from './composables/firestore/objects/Product/useProductUtils'
+export * from './composables/firestore/objects/Product/useCreateProductState'
+export * from './composables/firestore/objects/Product/Prices/useCreatePricesState'
+export * from './composables/firestore/objects/Product/utils/useProductFormatting'
+export * from './composables/firestore/objects/Product/utils/useProductValidation'
+
+export * from './models/objects/product.model'
+export * from './models/objects/product2.model'

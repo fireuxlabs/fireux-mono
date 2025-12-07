@@ -1,5 +1,5 @@
 import { serverTimestamp } from 'firebase/firestore'
-import { useFirestoreUpdate } from '../../operations/useFirestoreUpdate.ts'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreUpdate.ts'
 import type { BlogPost } from '../../../../models/objects/blogPost.model.ts'
 
 export function useBlogUpdate() {

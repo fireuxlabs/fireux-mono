@@ -33,8 +33,8 @@
 defineProps({
   post: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 })
 
 const truncateContent = (content: string): string => {

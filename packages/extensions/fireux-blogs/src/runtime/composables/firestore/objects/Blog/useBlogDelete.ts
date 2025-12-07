@@ -1,4 +1,4 @@
-import { useFirestoreManager } from '../../operations/useFirestoreManager.ts'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager.ts'
 
 export function useBlogDelete() {
   const { deleteDocument } = useFirestoreManager()

@@ -11,7 +11,7 @@
             :src="product.image"
             alt="Product Image"
             class="blog-card-thumbnail product-thumbnail"
-          >
+          />
         </div>
         <div class="blog-card-text">
           <div class="blog-card-title">{{ product.name }}</div>
@@ -30,8 +30,8 @@
 defineProps({
   product: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 })
 
 const truncateDescription = (description: string): string => {

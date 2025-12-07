@@ -1,5 +1,5 @@
 // Author identity comes from CoreUser (do not import from AppUser)
-import type { Sluggable } from './protocols'
+import type { Sluggable } from 'fireux-core/runtime/models/objects/protocols.ts'
 
 // ------------------------------------------------------------------
 // Author & full BlogPost

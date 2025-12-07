@@ -48,10 +48,8 @@ Data-driven list pages that should follow the shared Index Page pattern (consist
 **Core package**
 
 - packages/core/fireux-core/src/runtime/pages/apps/index.vue
-- packages/core/fireux-core/src/runtime/pages/blog/index.vue
 - packages/core/fireux-core/src/runtime/pages/dashboard/index.vue
 - packages/core/fireux-core/src/runtime/pages/dashboard/settings/index.vue
-- packages/core/fireux-core/src/runtime/pages/products/index.vue
 - packages/core/fireux-core/src/runtime/pages/users/index.vue
 
 **Tenant misebox runtime**
@@ -69,6 +67,8 @@ Data-driven list pages that should follow the shared Index Page pattern (consist
 - packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue
 - packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue
 - packages/extensions/fireux-places/src/runtime/pages/places/index.vue
+- packages/extensions/fireux-blogs/src/runtime/pages/blog/index.vue
+- packages/extensions/fireux-products/src/runtime/pages/products/index.vue
 
 ## Dist Folder Copies (Ignore)
 

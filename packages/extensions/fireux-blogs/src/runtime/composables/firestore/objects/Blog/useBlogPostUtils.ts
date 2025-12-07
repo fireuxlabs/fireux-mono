@@ -17,7 +17,9 @@ function computeReadingTime(content: string): string {
 }
 
 async function getAuthor(): Promise<Author> {
-  const { useUser } = await import('../../core/user/useUser')
+  const { useUser } = await import(
+    'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+  )
   const { currentUser } = useUser()
   const user = currentUser.value
   return {

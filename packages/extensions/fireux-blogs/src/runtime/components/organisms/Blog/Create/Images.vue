@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useImageStorage } from '../../../../composables/core/firebase/useImageStorage'
+import { useImageStorage } from 'fireux-core/runtime/composables/core/firebase/useImageStorage.ts'
 
 // Base keys for image slots
 const FEATURED_IMAGE_KEY = 'createBlogFeaturedImage'
