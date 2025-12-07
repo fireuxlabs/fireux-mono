@@ -1,0 +1,48 @@
+<template>
+  <UPage>
+    <UPageHeader
+      title="Create Blog Post"
+      description="Draft and publish a new post for this runtime."
+    />
+
+    <UPageBody class="space-y-6">
+      <div v-if="isLoadingUser" class="space-y-3">
+        <USkeleton v-for="n in 3" :key="n" class="h-20" />
+      </div>
+
+      <UAlert
+        v-else-if="!isAdmin"
+        color="amber"
+        title="Admins only"
+        description="Only admins can publish blog posts for this runtime."
+      />
+
+      <FireOrganismsBlogCreateSystem v-else />
+    </UPageBody>
+  </UPage>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useHead } from '#imports'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+
+definePageMeta({
+  layout: 'default',
+  nav: {
+    key: 'blog-create',
+    label: 'Create blog post',
+    icon: 'i-lucide-plus',
+    order: 31,
+    desktop: false,
+    mobile: false,
+    layouts: ['default'],
+  },
+  title: 'Create Blog Post',
+})
+
+const { isAdmin, isLoading } = useUser()
+const isLoadingUser = computed(() => Boolean(isLoading.value))
+
+useHead({ title: 'Create Blog Post' })
+</script>

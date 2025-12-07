@@ -12,6 +12,7 @@ const baseConfig = createFireuxConfig({
     'fireux-ecosystem-controller',
     'fireux-products',
     'fireux-blogs',
+    'fireux-jobs',
   ],
   role: 'global',
   nitro: {

@@ -10,18 +10,23 @@
         <USkeleton v-for="n in 3" :key="n" class="h-20" />
       </div>
 
-      <div v-else-if="!products.length" class="space-y-2 text-sm text-gray-500">
-        <p>No products found.</p>
-        <p>Add a product to populate the catalog.</p>
-      </div>
+      <template v-else>
+        <FireOrganismsProductCTA v-if="showCTA" />
 
-      <FireOrganismsProductCardsList v-else :products="products" />
+        <div v-if="!products.length" class="space-y-2 text-sm text-gray-500">
+          <p>No products found.</p>
+          <p>Add a product to populate the catalog.</p>
+        </div>
+
+        <FireOrganismsProductCardsList v-else :products="products" />
+      </template>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { useProducts } from '../../composables/firestore/objects/Product/useProducts'
 
 definePageMeta({
@@ -41,4 +46,6 @@ definePageMeta({
 const { productsCollection } = await useProducts()
 const pending = computed(() => productsCollection.value === undefined)
 const products = computed(() => productsCollection.value ?? [])
+const { isAdmin, isLoading } = useUser()
+const showCTA = computed(() => !isLoading.value && isAdmin.value)
 </script>

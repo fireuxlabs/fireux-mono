@@ -7,18 +7,23 @@
         <USkeleton v-for="n in 3" :key="n" class="h-20" />
       </div>
 
-      <div v-else-if="!posts.length" class="space-y-2 text-sm text-gray-500">
-        <p>No posts published yet.</p>
-        <p>Check back soon for new articles.</p>
-      </div>
+      <template v-else>
+        <FireOrganismsBlogCTA v-if="showCTA" />
 
-      <FireOrganismsBlogList v-else :posts="posts" />
+        <div v-if="!posts.length" class="space-y-2 text-sm text-gray-500">
+          <p>No posts published yet.</p>
+          <p>Check back soon for new articles.</p>
+        </div>
+
+        <FireOrganismsBlogList v-else :posts="posts" />
+      </template>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 import { useBlogPosts } from '../../composables/firestore/objects/Blog/useBlogPosts'
 
 definePageMeta({
@@ -38,4 +43,6 @@ definePageMeta({
 const { blogPostsCollection } = await useBlogPosts()
 const pending = computed(() => blogPostsCollection.value === undefined)
 const posts = computed(() => blogPostsCollection.value ?? [])
+const { isAdmin, isLoading } = useUser()
+const showCTA = computed(() => !isLoading.value && isAdmin.value)
 </script>
