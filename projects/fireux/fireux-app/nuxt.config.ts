@@ -9,7 +9,7 @@ const baseConfig = createFireuxConfig({
   appShortName: 'FireUX',
   appDescription: 'Core workspace for FireUX platform operations.',
   ecosystem: 'fireux',
-  modules: ['fireux-fireux'],
+  modules: ['fireux-fireux', 'fireux-products', 'fireux-blog'],
   role: 'global',
   nitro: {
     firebase: {
