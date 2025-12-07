@@ -44,5 +44,8 @@ const { blogPostsCollection } = await useBlogPosts()
 const pending = computed(() => blogPostsCollection.value === undefined)
 const posts = computed(() => blogPostsCollection.value ?? [])
 const { isAdmin, isLoading } = useUser()
-const showCTA = computed(() => !isLoading.value && isAdmin.value)
+// In dev, always surface the CTA to speed iteration; in prod, require admin.
+const showCTA = computed(
+  () => !isLoading.value && (isAdmin.value || import.meta.dev)
+)
 </script>

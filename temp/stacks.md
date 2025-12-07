@@ -13,7 +13,7 @@
   - Cards: Article, Cell, Page, Product (no Pill/Profile). CTA admin-gated.
 - **Product (fireux-products)**
   - Pages: products index/create/detail.
-  - Components: `organisms/Product/{CTA,Cards/*,Create/*,objects/Product/Create/System.vue}`.
+  - Components: `organisms/Product/{CTA,Cards/*,Create/*}`.
   - Cards: List, Prices, Product (no Cell/Pill/Profile). CTA admin-gated.
 - **Places (fireux-places)**
   - Pages: places index only.
@@ -27,6 +27,7 @@
   - Framework layer; no object create expectations.
 
 ## Common vs unique directories
+
 - Common (should standardize): `CTA.vue`, `Cards/`, `Create/`, optional `objects/<Object>/Create/System.vue`, `Sections/` (where lists split), `Cards/{Cell,Pill}`.
 - Unique/special:
   - Blog/Product have domain-specific cards (Article/Page/Product/Prices) instead of Cell/Pill/Profile.
@@ -35,12 +36,19 @@
   - Kitchen wizard is top-level, not under objects; Ingredient/Recipe are under objects.
 
 ## CTA patterns
+
 - Admin-gated: Blog CTA, Product CTA.
 - Profile-gated: Jobs CTA (needs agent profile), Chef/Supplier CTAs (per profile context).
 - Ungated/general: Core User CTA.
 - Missing CTA: Places, Kitchen.
 
+## Create-directory policy
+
+- Full create flows live where publishable artifacts must be complete before sending: Blog, Product, Jobs (and objectized flows like Ingredient/Recipe today).
+- Profile/App onboarding is lightweight; skip a `Create/` dir there and rely on onboarding + later edits for speed.
+
 ## Misalignments & notes
+
 - Cards naming/placement:
   - Product: no Cell/Pill/Profile; only List/Prices/Product.
   - Blog: has Cell but no Pill/Profile; domain-specific Article/Page/Product cards.
@@ -52,6 +60,7 @@
 - CTAs: inconsistent gates; some stacks missing CTA entirely (Places/Kitchen).
 
 ## Recommendations (proposed pattern)
+
 - Cards: require `Cards/{Cell.vue,Pill.vue}` per stack; optionally `Profile.vue`; allow extras (Article/Page/Product/Prices) alongside the base set.
 - CTA: each stack should surface a CTA at index; document gate (admin or profile) per stack. Add CTAs for Kitchen and Places or explicitly document exceptions.
 - Objects layer: if a stack has create flows, provide `objects/<Object>/Create/System.vue` wrapper; otherwise document why absent.
@@ -59,7 +68,8 @@
 - Casing: consider normalizing Jobs `Organisms` to lowercase `organisms` (optional, breaking change).
 
 ## Quick action list
-1) Add base cards where missing: Product (Cell/Pill/Profile), Jobs profiles (Profile), Recipe (Cell/Profile), Places (Cards dir with Cell/Pill/Profile wrappers).
-2) Add CTAs: Kitchen (and optionally Places) with clear gate rules; surface on page.
-3) Document gate policy: admin (Blog/Product), profile (Jobs Agent), domain-specific (Chef/Supplier), none (Places?)
-4) Decide on `Organisms` casing normalization (Jobs) or document exception.
+
+1. Add base cards where missing: Product (Cell/Pill/Profile), Jobs profiles (Profile), Recipe (Cell/Profile), Places (Cards dir with Cell/Pill/Profile wrappers).
+2. Add CTAs: Kitchen (and optionally Places) with clear gate rules; surface on page.
+3. Document gate policy: admin (Blog/Product), profile (Jobs Agent), domain-specific (Chef/Supplier), none (Places?)
+4. Decide on `Organisms` casing normalization (Jobs) or document exception.

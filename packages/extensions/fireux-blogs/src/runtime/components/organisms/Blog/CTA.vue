@@ -24,5 +24,8 @@ import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
 const { isAdmin, isLoading } = useUser()
-const showCTA = computed(() => !isLoading.value && isAdmin.value)
+// Mirror page-level gate: show for admins, and always in dev to unblock iteration.
+const showCTA = computed(
+  () => !isLoading.value && (isAdmin.value || import.meta.dev)
+)
 </script>
