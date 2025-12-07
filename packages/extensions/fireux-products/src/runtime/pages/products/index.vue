@@ -1,18 +1,27 @@
 <template>
-  <div class="page">
-    <h1>Products</h1>
-    <template v-if="productsCollection">
-      <FireOrganismsProductCardsList :products="productsCollection" />
-    </template>
-    <template v-else>
-      <div class="p-8 text-center text-gray-500 text-lg">
-        Loading products...
+  <UPage>
+    <UPageHeader
+      title="Products"
+      description="Catalog of products available across this runtime."
+    />
+
+    <UPageBody>
+      <div v-if="pending" class="space-y-3">
+        <USkeleton v-for="n in 3" :key="n" class="h-20" />
       </div>
-    </template>
-  </div>
+
+      <div v-else-if="!products.length" class="space-y-2 text-sm text-gray-500">
+        <p>No products found.</p>
+        <p>Add a product to populate the catalog.</p>
+      </div>
+
+      <FireOrganismsProductCardsList v-else :products="products" />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useProducts } from '../../composables/firestore/objects/Product/useProducts'
 // Nuxt macro: declare for TS in package runtime
 declare function definePageMeta(meta: any): void
@@ -32,8 +41,6 @@ definePageMeta({
 })
 
 const { productsCollection } = await useProducts()
+const pending = computed(() => productsCollection.value === undefined)
+const products = computed(() => productsCollection.value ?? [])
 </script>
-
-<style scoped>
-/* Let components handle their own spacing with Tailwind/NuxtUI utilities */
-</style>
