@@ -24,7 +24,9 @@ export function configureServer(resolver: any) {
   }
 
   // PWA manifest served dynamically to keep a single shared shape across apps
-  const manifest = resolver.resolve('./runtime/server/manifest.webmanifest.get.ts')
+  const manifest = resolver.resolve(
+    './runtime/server/manifest.webmanifest.get.ts'
+  )
   if (existsSync(manifest)) {
     addServerHandler({ route: '/manifest.webmanifest', handler: manifest })
   }

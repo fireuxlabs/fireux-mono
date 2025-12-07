@@ -1,4 +1,4 @@
-import { defineNuxtModule, createResolver, installModule } from '@nuxt/kit'
+import { defineNuxtModule, createResolver } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
 import { configureRuntime } from 'fireux-core/config/base/runtime-config'
 import { configurePlugins } from './config/plugins-config'
@@ -19,7 +19,6 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     name: 'fireux-misebox',
     version: '0.1.0',
     configKey: 'fireuxMisebox',
-    dependencies: ['fireux-jobs', 'fireux-places'],
   },
   defaults: {
     prefix: 'Mise',
@@ -29,10 +28,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
 
     primeMiseboxFirebaseEnv()
 
-    // Core is provided by the app via createFireuxConfig; dependencies install extensions
-
-    await installModule('fireux-jobs')
-    await installModule('fireux-places')
+    // Core and any extensions are provided by the app via createFireuxConfig
 
     configureRuntime(nuxt, 'misebox')
     configureRuntime(nuxt, 'firebase', {

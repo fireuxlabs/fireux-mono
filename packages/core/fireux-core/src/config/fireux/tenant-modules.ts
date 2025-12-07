@@ -15,6 +15,8 @@ export function resolveTenantModules(
     ...(includeCore ? (['fireux-core'] as ModuleEntry[]) : []),
   ]
 
+  // Placeholder: droply tenants should include 'fireux-drop' via app config; no ecosystem enforcement.
+
   const extras = sanitizeModuleIds(moduleIds)
 
   return dedupeKeepLast([...base, ...extras])

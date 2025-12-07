@@ -25,7 +25,10 @@ const groupManifestEntries = (entries: DocsEntry[]): DocsManifestGroup[] => {
     grouped.get(entry.heading)!.push(entry)
   }
 
-  return order.map((heading) => ({ heading, entries: grouped.get(heading) ?? [] }))
+  return order.map((heading) => ({
+    heading,
+    entries: grouped.get(heading) ?? [],
+  }))
 }
 
 const { data, pending, error } = await useAsyncData('docs-manifest', () =>

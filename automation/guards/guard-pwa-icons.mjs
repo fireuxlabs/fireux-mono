@@ -47,7 +47,9 @@ for (const dir of apps) {
 }
 
 if (errors.length) {
-  console.error('PWA icon guard failed:\n' + errors.map((e) => `- ${e}`).join('\n'))
+  console.error(
+    'PWA icon guard failed:\n' + errors.map((e) => `- ${e}`).join('\n')
+  )
   process.exit(1)
 }
 

@@ -8,7 +8,7 @@ export default defineNuxtConfig(<NuxtConfig>{
     appShortName: 'Cleanbox',
     appDescription: 'Operations console for Cleanbox partners and teams.',
     ecosystem: 'cleanbox',
-    modules: ['fireux-cleanbox', 'fireux-jobs'],
+    modules: ['fireux-cleanbox'],
     role: 'global',
     nitro: {
       firebase: {

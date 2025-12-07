@@ -1,4 +1,4 @@
-import { defineNuxtModule, installModule, createResolver } from '@nuxt/kit'
+import { defineNuxtModule, createResolver } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
 import { configureRuntime } from 'fireux-core/config/base/runtime-config'
 import { configurePlugins } from './config/plugins-config'
@@ -28,8 +28,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
 
     primeCleanboxFirebaseEnv()
 
-    // Core is provided by the app via createFireuxConfig; do not install here
-    await installModule('fireux-jobs')
+    // Core and any extensions are provided by the app via createFireuxConfig
 
     configureRuntime(nuxt, 'cleanbox')
     configureRuntime(nuxt, 'firebase', {

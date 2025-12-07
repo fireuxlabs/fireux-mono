@@ -12,7 +12,9 @@ export interface TenantBasics {
 export function resolveTenantBasics(opts: TenantConfig): TenantBasics {
   const role = requireTenantField('role', opts.role)
   if (role !== 'global' && role !== 'tenant') {
-    throw new Error('[fireux] createFireuxConfig requires role to be global or tenant.')
+    throw new Error(
+      '[fireux] createFireuxConfig requires role to be global or tenant.'
+    )
   }
 
   return {

@@ -6,10 +6,10 @@ export default defineNuxtConfig(<NuxtConfig>{
   ...createFireuxConfig({
     appName: 'Richies',
     appShortName: 'Richies',
-     appDescription:
-       'Freelance cleaning partner for Zürich apartments, studios, and office loops.',
+    appDescription:
+      'Freelance cleaning partner for Zürich apartments, studios, and office loops.',
     ecosystem: 'cleanbox',
-    modules: ['fireux-cleanbox', 'fireux-jobs'],
+    modules: ['fireux-cleanbox'],
     role: 'tenant',
     nitro: {
       firebase: {

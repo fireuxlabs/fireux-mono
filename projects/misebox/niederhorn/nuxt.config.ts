@@ -6,7 +6,7 @@ export default defineNuxtConfig(<NuxtConfig>{
   ...createFireuxConfig({
     appName: 'Niederhorn',
     appShortName: 'Niederhorn',
-     appDescription: 'Tenant experience for Niederhorn hospitality partners.',
+    appDescription: 'Tenant experience for Niederhorn hospitality partners.',
     ecosystem: 'misebox',
     modules: ['fireux-misebox'],
     role: 'tenant',
