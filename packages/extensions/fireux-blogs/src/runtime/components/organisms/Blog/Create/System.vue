@@ -13,10 +13,10 @@
         </div>
         <UTabs v-model="selectedTab" :items="tabItems">
           <template #write>
-            <FireOrganismsBlogCreateWrite />
+            <OrganismsBlogCreateWrite />
           </template>
           <template #preview>
-            <FireOrganismsBlogCreatePreview />
+            <OrganismsBlogCreatePreview />
           </template>
         </UTabs>
         <div class="actions">

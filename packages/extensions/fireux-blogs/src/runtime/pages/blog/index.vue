@@ -8,14 +8,14 @@
       </div>
 
       <template v-else>
-        <FireOrganismsBlogCTA v-if="showCTA" />
+        <OrganismsBlogCTA v-if="showCTA" />
 
         <div v-if="!posts.length" class="space-y-2 text-sm text-gray-500">
           <p>No posts published yet.</p>
           <p>Check back soon for new articles.</p>
         </div>
 
-        <FireOrganismsBlogList v-else :posts="posts" />
+        <OrganismsBlogList v-else :posts="posts" />
       </template>
     </UPageBody>
   </UPage>
@@ -43,9 +43,7 @@ definePageMeta({
 const { blogPostsCollection } = await useBlogPosts()
 const pending = computed(() => blogPostsCollection.value === undefined)
 const posts = computed(() => blogPostsCollection.value ?? [])
-const { isAdmin, isLoading } = useUser()
-// In dev, always surface the CTA to speed iteration; in prod, require admin.
-const showCTA = computed(
-  () => !isLoading.value && (isAdmin.value || import.meta.dev)
-)
+const { isAdmin } = useUser()
+// Show CTA for admins; in dev, always surface to speed iteration regardless of load state.
+const showCTA = computed(() => isAdmin.value || import.meta.dev)
 </script>

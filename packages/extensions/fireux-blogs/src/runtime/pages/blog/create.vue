@@ -11,13 +11,13 @@
       </div>
 
       <UAlert
-        v-else-if="!isAdmin"
+        v-else-if="!isAllowed"
         color="amber"
         title="Admins only"
         description="Only admins can publish blog posts for this runtime."
       />
 
-      <FireOrganismsBlogCreateSystem v-else />
+      <OrganismsBlogCreateSystem v-else />
     </UPageBody>
   </UPage>
 </template>
@@ -43,6 +43,8 @@ definePageMeta({
 
 const { isAdmin, isLoading } = useUser()
 const isLoadingUser = computed(() => Boolean(isLoading.value))
+// Allow admins, and always allow in dev to speed iteration.
+const isAllowed = computed(() => isAdmin.value || import.meta.dev)
 
 useHead({ title: 'Create Blog Post' })
 </script>

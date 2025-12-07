@@ -1,6 +1,6 @@
 <template>
   <UPageCTA
-    v-if="showCTA"
+    v-if="isAdmin"
     title="Publish a post"
     description="Share updates, releases, and stories for this runtime."
     variant="naked"
@@ -23,9 +23,7 @@
 import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
 
-const { isAdmin, isLoading } = useUser()
+const { isAdmin } = useUser()
 // Mirror page-level gate: show for admins, and always in dev to unblock iteration.
-const showCTA = computed(
-  () => !isLoading.value && (isAdmin.value || import.meta.dev)
-)
+const showCTA = computed(() => isAdmin.value || import.meta.dev)
 </script>

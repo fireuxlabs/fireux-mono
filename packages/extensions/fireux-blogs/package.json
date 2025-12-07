@@ -24,7 +24,9 @@
     "pnpm": ">=10"
   },
   "dependencies": {
-    "fireux-core": "workspace:*"
+    "fireux-core": "workspace:*",
+    "@tiptap/starter-kit": "^2.9.3",
+    "@tiptap/vue-3": "^2.9.3"
   },
   "peerDependencies": {
     "nuxt": "^4.1.0",

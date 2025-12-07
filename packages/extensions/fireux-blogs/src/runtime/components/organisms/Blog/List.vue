@@ -13,7 +13,7 @@
     </template>
 
     <div v-if="postsList.length" class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <FireOrganismsBlogCardsArticle
+        <OrganismsBlogCardsArticle
         v-for="post in postsList"
         :key="post.slug"
         :post="post"
