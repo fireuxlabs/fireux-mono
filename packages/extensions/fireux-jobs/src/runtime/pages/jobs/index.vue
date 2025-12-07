@@ -7,12 +7,18 @@
     />
 
     <UPageBody class="space-y-6">
-      <!-- Clean CTA block (can handle logic internally later) -->
-      <OrganismsJobsCTA />
-      <!-- Jobs managed by this agent (local to the current agent) -->
-      <OrganismsJobsSectionsAgentCollection v-if="hasAgentProfile" />
-      <!-- Global jobs resolved for this runtime (ecosystem-wide) -->
-      <OrganismsJobsSectionsGlobalCollection />
+      <div v-if="pending" class="space-y-3">
+        <USkeleton v-for="n in 3" :key="n" class="h-20" />
+      </div>
+
+      <template v-else>
+        <!-- Clean CTA block (can handle logic internally later) -->
+        <OrganismsJobsCTA />
+        <!-- Jobs managed by this agent (local to the current agent) -->
+        <OrganismsJobsSectionsAgentCollection v-if="hasAgentProfile" />
+        <!-- Global jobs resolved for this runtime (ecosystem-wide) -->
+        <OrganismsJobsSectionsGlobalCollection />
+      </template>
     </UPageBody>
   </UPage>
 </template>
@@ -40,6 +46,7 @@ definePageMeta({
 
 const { coreProfile } = useAgent()
 
+const pending = computed(() => coreProfile.value === undefined)
 const hasAgentProfile = computed(() => Boolean(coreProfile.value))
 
 useHead({ title: 'Jobs' })
