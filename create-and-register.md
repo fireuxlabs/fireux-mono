@@ -22,17 +22,17 @@ The `pnpm registry:*` commands always read from the local file first and then sy
 
 Each entity type shares a core envelope plus type-specific payloads. Store all records in Firestore directly under `<entityType>/<id>` so consumers can query by type or aggregate everything (e.g., `modules/fireux-core`).
 
-| Field              | Description                                                                                         |
-| ------------------ | --------------------------------------------------------------------------------------------------- |
+| Field              | Description                                                                                                                                        |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`               | Slug (kebab-case) derived from the folder name (modules/ecosystems) or the app’s `APP_ID` from `.env` so runtime config and registry stay aligned. |
-| `type`             | One of `app`, `module`, `ecosystem`.                                                                |
-| `status`           | `draft`, `active`, `deprecated`, `archived`. Guards enforce `active` before prod deploys.           |
-| `createdAt` / `by` | ISO timestamp + user identifier (GitHub handle, SSO ID).                                            |
-| `updatedAt` / `by` | Managed automatically whenever metadata changes.                                                    |
-| `sourcePath`       | Monorepo path (`projects/fireux`, `packages/core/fireux-core`, etc.).                               |
-| `runtimeConfig`    | Minimal runtime hints (Nuxt module name, needs Firebase, needs Stripe, etc.).                       |
-| `deployTargets`    | Array of environments or tenants this asset ships to.                                               |
-| `notes`            | Optional text for ADR linkage, feature flags, or pending migrations.                                |
+| `type`             | One of `app`, `module`, `ecosystem`.                                                                                                               |
+| `status`           | `draft`, `active`, `deprecated`, `archived`. Guards enforce `active` before prod deploys.                                                          |
+| `createdAt` / `by` | ISO timestamp + user identifier (GitHub handle, SSO ID).                                                                                           |
+| `updatedAt` / `by` | Managed automatically whenever metadata changes.                                                                                                   |
+| `sourcePath`       | Monorepo path (`projects/fireux`, `packages/core/fireux-core`, etc.).                                                                              |
+| `runtimeConfig`    | Minimal runtime hints (Nuxt module name, needs Firebase, needs Stripe, etc.).                                                                      |
+| `deployTargets`    | Array of environments or tenants this asset ships to.                                                                                              |
+| `notes`            | Optional text for ADR linkage, feature flags, or pending migrations.                                                                               |
 
 Lean TypeScript models that mirror the Firestore payloads live under `packages/core/fireux-core/src/runtime/models/core/` (`module.model.ts`, `ecosystem.model.ts`, `app.model.ts`). They intentionally expose only what the registry endpoint persists.
 

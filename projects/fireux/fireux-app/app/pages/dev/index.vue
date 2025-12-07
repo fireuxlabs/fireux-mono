@@ -9,23 +9,30 @@
       <UCard>
         <template #header>
           <div class="flex flex-col gap-1">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">
+            <h2
+              class="text-base font-semibold text-gray-900 dark:text-gray-100"
+            >
               Registry + diagnostics
             </h2>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              These tools skip narration and expose raw payloads for seeding, parity checks, and incident response.
+              These tools skip narration and expose raw payloads for seeding,
+              parity checks, and incident response.
             </p>
           </div>
         </template>
 
         <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
           <p>
-            Run through this stack whenever you need Firestore-aligned JSON without touching the console.
-            Everything here mirrors the nuxt dev layout used across FireUX core, ecosystems, and extensions.
+            Run through this stack whenever you need Firestore-aligned JSON
+            without touching the console. Everything here mirrors the nuxt dev
+            layout used across FireUX core, ecosystems, and extensions.
           </p>
           <p>
             Need onboarding context instead of payloads? Hop to
-            <NuxtLink class="text-primary-500 hover:underline" to="/developer/registry">
+            <NuxtLink
+              class="text-primary-500 hover:underline"
+              to="/developer/registry"
+            >
               Developer · Registry Docs
             </NuxtLink>
             for human-readable workflows.
@@ -40,7 +47,9 @@
           :to="`/dev/${tool.slug}`"
           class="group block"
         >
-          <UCard class="h-full transition duration-200 group-hover:border-primary-500">
+          <UCard
+            class="h-full transition duration-200 group-hover:border-primary-500"
+          >
             <div class="flex flex-col gap-3">
               <div class="flex items-center gap-3">
                 <span
@@ -50,7 +59,9 @@
                   <Icon :name="tool.icon" class="text-lg" />
                 </span>
                 <div>
-                  <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                  <p
+                    class="text-base font-semibold text-gray-900 dark:text-gray-100"
+                  >
                     {{ tool.label }}
                   </p>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -58,7 +69,9 @@
                   </p>
                 </div>
               </div>
-              <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <div
+                class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
+              >
                 <span>Open tool</span>
                 <Icon
                   name="i-lucide-arrow-up-right"
@@ -110,4 +123,3 @@ const tools: DevToolLink[] = [
   },
 ]
 </script>
-
