@@ -1,5 +1,5 @@
 import { useCurrentUser } from 'vuefire'
-import { useFirestoreManager } from '../../operations/useFirestoreManager'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager'
 
 export function useProductDelete() {
   const { deleteDocument, getCollectionPath } = useFirestoreManager()

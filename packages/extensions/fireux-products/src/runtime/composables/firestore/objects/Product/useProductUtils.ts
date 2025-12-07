@@ -1,5 +1,5 @@
 import { useImageStorage } from '../../../core/firebase/useImageStorage'
-import { useFirestoreManager } from '../../operations/useFirestoreManager'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager'
 
 export function useProductUtils() {
   const { uploadImage } = useImageStorage()

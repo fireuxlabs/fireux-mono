@@ -1,5 +1,5 @@
 import type { FirebaseProduct } from '../../../../models/objects/product.model'
-import { useFirestoreManager } from '../../operations/useFirestoreManager'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager'
 
 export function useProductUpdate() {
   const { updateDocument, getCollectionPath } = useFirestoreManager()

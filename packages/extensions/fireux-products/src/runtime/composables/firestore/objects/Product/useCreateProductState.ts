@@ -1,7 +1,7 @@
 import { useStorage } from '@vueuse/core'
 import { onMounted, ref, watch } from 'vue'
 import { useCurrentUser } from 'vuefire'
-import { useFirestoreManager } from '../../operations/useFirestoreManager'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreManager'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
 import type { FirebaseProduct } from '../../../../models/objects/product.model'
 
