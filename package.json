@@ -43,7 +43,7 @@
     "guard:assets:fix": "node ./automation/guards/guard-assets-structure.mjs --fix",
     "guard:apps:shape": "node ./automation/guards/check-app-structure.mjs && pnpm guard:assets && pnpm guard:shape && pnpm guard:ts",
     "precommit": "pnpm guard:apps:shape",
-    "typecheck": "pnpm -w typecheck && pnpm guard:apps:shape",
+    "typecheck": "pnpm typecheck:packages && pnpm typecheck:apps && pnpm guard:apps:shape",
     "migrate:misebox-users": "tsx automation/migrations/migrate-misebox-app-users.ts",
     "migrate:fix-display-names": "tsx automation/migrations/fix-display-names.ts",
     "migrate:chefs-created-at": "pnpm tsx automation/migrations/migrate-chefs-created-at.ts",

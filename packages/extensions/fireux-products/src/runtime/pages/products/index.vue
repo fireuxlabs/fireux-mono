@@ -23,8 +23,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useProducts } from '../../composables/firestore/objects/Product/useProducts'
-// Nuxt macro: declare for TS in package runtime
-declare function definePageMeta(meta: any): void
 
 definePageMeta({
   layout: 'default',
