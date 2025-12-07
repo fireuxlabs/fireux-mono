@@ -7,7 +7,12 @@ const baseConfig = createFireuxConfig({
   appShortName: 'Misebox',
   appDescription: 'Workhub for Misebox creative operations and collaborators.',
   ecosystem: 'misebox',
-  modules: ['fireux-misebox', 'fireux-products', 'fireux-blogs'],
+  modules: [
+    'fireux-misebox',
+    'fireux-ecosystem-controller',
+    'fireux-products',
+    'fireux-blogs',
+  ],
   role: 'global',
   nitro: {
     firebase: {
