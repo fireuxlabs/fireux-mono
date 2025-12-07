@@ -214,8 +214,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
-import { useEnvCheck } from '../../composables/firestore/core/app/internal/useEnvCheck.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useEnvCheck } from '../../composables/fireux/firestore/core/app/internal/useEnvCheck.ts'
 
 definePageMeta({
   title: 'Development Tools',

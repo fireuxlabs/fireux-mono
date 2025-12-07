@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useHead } from '#imports'
-import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
+import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 
 definePageMeta({
   nav: {

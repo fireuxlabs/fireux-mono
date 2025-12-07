@@ -4,9 +4,9 @@
 
 ```ts
 <script setup lang="ts">
-import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
-import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp.ts'
+import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/main/useAppCollection.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 
 definePageMeta({
   nav: {
@@ -45,8 +45,8 @@ function loadAllApps() {
 import { useHead } from 'nuxt/app'
 import { useRoute } from 'vue-router'
 import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
-import { useAppComputed } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppComputed.ts'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts'
+import { useAppComputed } from 'fireux-core/runtime/composables/fireux/firestore/core/app/main/useAppComputed.ts'
 
 const route = useRoute()
 const appId = Array.isArray(route.params.id)
@@ -75,8 +75,8 @@ useHead({
 
 ```ts
 <script setup lang="ts">
-import { useApp } from 'fireux-core/runtime/composables/firestore/core/app/useApp.ts'
-import { useAppCollection } from 'fireux-core/runtime/composables/firestore/core/app/main/useAppCollection.ts'
+import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp.ts'
+import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/main/useAppCollection.ts'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard.ts'
 
 definePageMeta({

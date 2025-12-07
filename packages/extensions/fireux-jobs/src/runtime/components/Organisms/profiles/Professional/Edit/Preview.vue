@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useProfessional } from '../../../../../composables/firestore/profiles/Professional/useProfessional.ts'
+import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 
 const { pillProps, cellProps, pending } = useProfessional()
 

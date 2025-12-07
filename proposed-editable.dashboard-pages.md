@@ -48,7 +48,7 @@ Reference snapshots for every dashboard parent involved in core/app edit surface
 <script setup lang="ts">
 import { computed } from 'vue'
 import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { useX } from '../../../composables/firestore/profiles/X/useX.ts'
 
 const profileKey = 'x'
@@ -385,7 +385,7 @@ if (import.meta.client) {
 <script setup lang="ts">
 import { computed } from 'vue'
 import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { useAgent } from '../../../composables/firestore/profiles/Agent/useAgent'
 import { agentConfig } from '../../../models/profiles/Agent.model'
 
@@ -490,7 +490,7 @@ const hasAgentProfile = computed(() => {
 <script setup lang="ts">
 import { computed } from 'vue'
 import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { useProfessional } from '../../../composables/firestore/profiles/Professional/useProfessional.ts'
 import { professionalConfig } from '../../../models/profiles/Professional/supporting'
 
@@ -581,7 +581,7 @@ const resolvedAppProfile = computed(() => appProfile.value ?? null)
 <script setup lang="ts">
 import { computed } from 'vue'
 import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { useChef } from '../../../composables/firestore/profiles/Chef/useChef'
 
 const profileKey = 'chef'
@@ -666,7 +666,7 @@ const hasChefProfile = computed(() => {
 <script setup lang="ts">
 import { computed } from 'vue'
 import OrganismsProfileEditProfile from 'fireux-core/runtime/components/organisms/Profile/Edit/Profile.vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { useSupplier } from '../../../composables/firestore/profiles/Supplier/useSupplier'
 
 const profileKey = 'supplier'

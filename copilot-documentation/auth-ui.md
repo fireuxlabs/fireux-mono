@@ -91,7 +91,7 @@ Accessibility & UX
 </template>
 
 <script setup>
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 
 const { coreUser, appUser, pending, ensureCore, ensureApp } = useUser()
 

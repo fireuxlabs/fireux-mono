@@ -26,8 +26,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
-import { useProducts } from '../../composables/firestore/objects/Product/useProducts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useProducts } from '../../composables/fireux/firestore/objects/Product/useProducts'
 
 definePageMeta({
   layout: 'default',

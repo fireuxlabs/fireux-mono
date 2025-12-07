@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useJobCollection } from '../../../../composables/firestore/jobs/main/useJobCollection.ts'
+import { useJobCollection } from '../../../../composables/fireux/firestore/jobs/main/useJobCollection.ts'
 import type { Job } from '../../../../models/job.model.ts'
 
 const { tenantJobs, pending: isPending } = useJobCollection()

@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
-import { useAgentComputed } from '../../composables/firestore/profiles/Agent/main/useAgentComputed.ts'
+import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
+import { useAgentComputed } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentComputed.ts'
 
 definePageMeta({
   layout: 'default',

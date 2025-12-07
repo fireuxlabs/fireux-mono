@@ -22,14 +22,14 @@ const localValue = ref(props.modelValue || '')
 
 watch(
   () => props.modelValue,
-  newVal => {
+  (newVal) => {
     if (newVal !== localValue.value) {
       localValue.value = newVal || ''
     }
   }
 )
 
-watch(localValue, val => {
+watch(localValue, (val) => {
   emit('update:modelValue', val)
 })
 </script>

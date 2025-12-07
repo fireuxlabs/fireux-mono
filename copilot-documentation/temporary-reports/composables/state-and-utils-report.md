@@ -12,7 +12,7 @@ status: draft
 ### Directory: /packages/core/fireux-core/src/runtime/composables/state
 
 ```ts
-// FILE: /packages/core/fireux-core/src/runtime/composables/state/useUserState.ts
+// FILE: /packages/core/fireux-core/src/runtime/composables/fireux/state/useUserState.ts
 import { useState } from 'nuxt/app'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 

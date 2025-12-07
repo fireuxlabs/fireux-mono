@@ -74,9 +74,9 @@ Every staged file name must match the promoted repo file exactly; no prefixes or
 - `packages/core/fireux-core/src/runtime/components/logo/Brand.vue`
   - `/img/app/wordmark-light.png`
   - `/img/app/wordmark-dark.png`
-- `packages/core/fireux-core/src/runtime/composables/core/firebase/useImageStorage.ts`
+- `packages/core/fireux-core/src/runtime/composables/fireux/firebase/useImageStorage.ts`
   - `/img/core/defaults/default-thumbnail.png`
-- `packages/extensions/fireux-blogs/src/runtime/composables/firestore/objects/Blog/useBlogPostUtils.ts`
+- `packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/Blog/useBlogPostUtils.ts`
   - `/img/core/defaults/default-thumbnail.png`
   - `/img/core/brand/wordmark-dark.png`
   - `/img/core/brand/logo.png`

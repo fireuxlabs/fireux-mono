@@ -1,6 +1,6 @@
 import { ref, watch } from 'vue'
 import type { BasePlace, PlaceCard } from '../models/place.model'
-import { useFirestoreSearch } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreSearch.ts'
+import { useFirestoreSearch } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreSearch.ts'
 import {
   canonicalPlaceId,
   fetchGoogle,

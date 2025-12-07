@@ -29,8 +29,8 @@ import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useState } from '#imports'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { useDashboardNav } from 'fireux-core/runtime/composables/core/routing/nav/presets.ts'
-import { useUser } from '../../../composables/firestore/core/user/useUser.ts'
+import { useDashboardNav } from 'fireux-core/runtime/composables/fireux/app/routing/nav/presets.ts'
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser.ts'
 
 defineOptions({ name: 'LayoutsDashboardProfilesMenu' })
 defineProps<{ collapsed?: boolean }>()

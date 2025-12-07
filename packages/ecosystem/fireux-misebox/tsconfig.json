@@ -22,7 +22,7 @@
     "dist",
     // Defer objects domain from package-level tsc per scope agreement
     "src/runtime/composables/objects/**",
-    "src/runtime/composables/firestore/objects/**",
+    "src/runtime/composables/fireux/firestore/objects/**",
     "src/runtime/models/objects/**"
   ]
 }

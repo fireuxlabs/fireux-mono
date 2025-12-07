@@ -63,8 +63,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AgentProfile } from '../../../../../models/profiles/Agent.model.ts'
-import type { AgentCard } from '../../../../../composables/firestore/profiles/Agent/main/useAgentInterface.ts'
-import { resolveAgentCell } from '../../../../../composables/firestore/profiles/Agent/main/useAgentInterface.ts'
+import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface.ts'
+import { resolveAgentCell } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface.ts'
 
 const props = defineProps<{ agent?: AgentCard.Cell | AgentProfile | null }>()
 

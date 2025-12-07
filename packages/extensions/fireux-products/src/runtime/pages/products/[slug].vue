@@ -12,6 +12,9 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#imports'
+import { useProducts } from '../../composables/fireux/firestore/objects/Product/useProducts'
+
 const route = useRoute()
 const {
   fetchProductBySlug,

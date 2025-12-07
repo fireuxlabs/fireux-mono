@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefCard } from '../../../../../models/profiles/Chef.model'
+import type { ChefCard } from '../../../../../models/profiles/Chef.model.ts'
 
 const props = defineProps<{ chef: ChefCard.Profile }>()
 

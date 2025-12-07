@@ -9,10 +9,10 @@
       "#fireux-places-models/*": ["./src/runtime/models/*"],
       "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
       "#fireux-core-composables/firestore/*": [
-        "../../core/fireux-core/src/runtime/composables/firestore/*"
+        "../../core/fireux-core/src/runtime/composables/fireux/firestore/*"
       ],
       "#fireux-core-composables/firebase/*": [
-        "../../core/fireux-core/src/runtime/composables/core/firebase/*"
+        "../../core/fireux-core/src/runtime/composables/fireux/firebase/*"
       ],
       "#imports": ["types/nuxt-imports.d.ts"]
     },

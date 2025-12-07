@@ -25,9 +25,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
-import { useUserInterface } from 'fireux-core/runtime/composables/firestore/core/user/state/useUserInterface.ts'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/state/useUserInterface.ts'
 import type {
   User,
   UserCard,

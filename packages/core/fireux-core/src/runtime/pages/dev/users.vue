@@ -120,12 +120,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import { useUser } from '../../composables/firestore/core/user/useUser'
-import { useUserCollection } from '../../composables/firestore/core/user/main/useUserCollection'
-import { useUserInterface } from '../../composables/firestore/core/user/state/useUserInterface'
-import { useAppUsers } from '../../composables/firestore/core/app/data/users'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
-import { useDevHealth } from '../../composables/core/dev/health/useDevHealth'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser.ts'
+import { useUserCollection } from '../../composables/fireux/firestore/core/user/main/useUserCollection'
+import { useUserInterface } from '../../composables/fireux/firestore/core/user/state/useUserInterface'
+import { useAppUsers } from '../../composables/fireux/firestore/core/app/data/users'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useDevHealth } from '../../composables/dev/health/useDevHealth'
 import DevUserComponentGallery from '../../components/dev/UserComponentGallery.vue'
 
 definePageMeta({

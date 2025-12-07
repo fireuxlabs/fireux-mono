@@ -67,8 +67,8 @@
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useState } from '#imports'
-import { useDashboardNav } from 'fireux-core/runtime/composables/core/routing/nav/presets.ts'
-import { useUser } from '../composables/firestore/core/user/useUser'
+import { useDashboardNav } from 'fireux-core/runtime/composables/fireux/app/routing/nav/presets.ts'
+import { useUser } from '../composables/fireux/firestore/core/user/useUser.ts'
 import type { UserCard } from '../models/core/user.model.ts'
 import type { NavItem } from '../types/nav'
 

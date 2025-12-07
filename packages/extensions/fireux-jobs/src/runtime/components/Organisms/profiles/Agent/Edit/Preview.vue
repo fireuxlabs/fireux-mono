@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useAgent } from '../../../../../composables/firestore/profiles/Agent/useAgent.ts'
+import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 
 const { pillProps, cellProps, pending } = useAgent()
 

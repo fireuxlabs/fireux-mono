@@ -7,7 +7,7 @@
 - `packages/core/fireux-core/src/runtime/models/core/app.model.ts`
   - `AppPillProps = PillModel.Props & { to: string }` (forces `to` to exist, still inherits required `avatar`/`initials`).
   - `AppCard.Pill` extends `AppPillProps` and adds app-specific fields.
-- `packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppInterface.ts`
+- `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/main/useAppInterface.ts`
   - Maps Firestore docs to UI shapes (`toPill`, `toCell`, `toProfile`).
 - `MoleculesPill` component expects something resembling `Pill.Props`; every caller now pipelines through these helpers.
 

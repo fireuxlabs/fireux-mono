@@ -43,8 +43,8 @@ Use the generic Pill component for UI. It accepts a small, shared prop shape (`a
 Example:
 
 ```ts
-// packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUser.ts
-import { useAuth } from 'fireux-core/runtime/composables/core/firebase/useAuth.ts'
+// packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/useUser.ts
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth.ts'
 import { useUserFetch } from './main/useUserFetch.ts'
 
 export function useUser() {
@@ -77,10 +77,10 @@ export interface ProfileConfig {
 - Returns grouped refs `{ coreProfile, appProfile }`; no merging at the fetch layer.
 
 ```ts
-// packages/core/fireux-core/src/runtime/composables/firestore/core/profile/main/useProfileFetch.ts
+// packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import type { Ref } from 'vue'
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
 
@@ -117,7 +117,7 @@ export function useProfileFetch<TProfile extends Profile = Profile>(
 - No implicit user attachments; callers can still layer on pills/cards as needed.
 
 ```ts
-// packages/core/fireux-core/src/runtime/composables/firestore/core/profile/state/useProfileComputed.ts
+// packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/state/useProfileComputed.ts
 import { computed } from 'vue'
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { ProfileRefs } from '../main/useProfileFetch.ts'
@@ -145,10 +145,10 @@ export function useProfileComputed<TProfile extends Profile = Profile>(
 - Resolves the profile id from refs when one isn’t supplied, so domain buttons can stay lean.
 
 ```ts
-// packages/core/fireux-core/src/runtime/composables/firestore/core/profile/mutations/useProfileUpdate.ts
+// packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdate.ts
 import { ref } from 'vue'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import type {
   Profile,
   ProfileConfig,
@@ -223,7 +223,7 @@ export function useProfileUpdate<TProfile extends Profile = Profile>(
 - Returns `{ profile, pending }`, where `profile` is the grouped refs object from `useProfileFetch`.
 
 ```ts
-// packages/core/fireux-core/src/runtime/composables/firestore/core/profile/useProfile.ts
+// packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/useProfile.ts
 import { useAuth } from '../../../firebase/useAuth.ts'
 import { useProfileFetch } from './main/useProfileFetch.ts'
 import type {

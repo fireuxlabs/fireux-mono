@@ -70,7 +70,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useIngredientCreate } from '../../../../../composables/firestore/objects/ingredients/useIngredientCreate'
-import { useSupplierList } from '../../../../../composables/firestore/profiles/Supplier/main/useSupplierList'
+import { useSupplierList } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierList'
 import SupplierCreateQuick from '../../../profiles/shared/SupplierQuickCreate.vue'
 
 const { createIngredient, creating, createError } = useIngredientCreate()

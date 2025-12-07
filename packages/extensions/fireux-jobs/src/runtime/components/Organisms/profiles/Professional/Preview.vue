@@ -42,8 +42,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
-import { useProfessional } from '../../../../composables/firestore/profiles/Professional/useProfessional.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 
 const { pill, cell } = useProfessional()
 const user = useUser()

@@ -9,10 +9,10 @@ status: draft
 
 # FireUX Core User Composable Stack
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUser.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/useUser.ts
 
 ```ts
-import { useAuth } from 'fireux-core/runtime/composables/core/firebase/useAuth.ts'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth.ts'
 import { useUserFetch } from './main/useUserFetch.ts'
 import { useUserComputed } from './main/useUserComputed.ts'
 import { useUserEnsure } from './main/useUserEnsure.ts'
@@ -45,13 +45,13 @@ export function useUser() {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserCollection.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/main/useUserCollection.ts
 
 ```ts
 import { computed } from 'vue'
 import { collection } from 'firebase/firestore'
 import { useFirestore, useCollection } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import type {
   AppUser,
   User,
@@ -82,10 +82,10 @@ export function useUserCollection() {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserComputed.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/main/useUserComputed.ts
 
 ```ts
-// FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserComputed.ts
+// FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/main/useUserComputed.ts
 import { computed } from 'vue'
 import type {
   User,
@@ -112,7 +112,7 @@ export function useUserComputed(user: UserRefs) {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserInterface.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/main/useUserInterface.ts
 
 ```ts
 import type { Ref } from 'vue'
@@ -155,7 +155,7 @@ export function useUserInterface(
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserDelete.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/main/useUserDelete.ts
 
 ```ts
 import { ref, type Ref } from 'vue'
@@ -203,11 +203,11 @@ export function useUserDelete(userRef?: UserSource) {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserEnsure.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/main/useUserEnsure.ts
 
 ```ts
 import { useRouter } from 'vue-router'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import { requireUid } from '../../../utils/useEnsureCommon.ts'
 import {
   ensureAppMembership as ensureAppMembershipDoc,
@@ -281,14 +281,14 @@ export function useUserEnsure(_user?: UserRefs) {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserFetch.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/main/useUserFetch.ts
 
 ```ts
-// FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/user/main/useUserFetch.ts
+// FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/main/useUserFetch.ts
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 import type { Ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import type {
   User,
   AppUser,
@@ -322,7 +322,7 @@ export function useUserFetch(id: string | null | undefined) {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/user/mutations/useUserUpdate.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/mutations/useUserUpdate.ts
 
 `useUserUpdate` now composes the dedicated core/app mutation modules and returns a structured object:
 
@@ -342,10 +342,10 @@ export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
 
 Callers should access the scoped helpers directly (e.g., `core.profile.rename`, `core.tags.add`, `app.membership.setRole`). Flat aliases have been removed to avoid drifting legacy patterns.
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/user/utils/forms/useUserFormatting.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/forms/useUserFormatting.ts
 
 ```ts
-// FILE: packages/core/fireux-core/src/runtime/composables/firestore/core/user/useUserFormattingAndValidation.ts
+// FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/useUserFormattingAndValidation.ts
 const MIN_DISPLAY_NAME_LENGTH = 2
 const MAX_DISPLAY_NAME_LENGTH = 60
 const MIN_HANDLE_LENGTH = 3
@@ -446,7 +446,7 @@ export function useUserFormattingAndValidation() {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/user/utils/forms/usUserValidation.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/forms/usUserValidation.ts
 
 _(file is empty)_
 

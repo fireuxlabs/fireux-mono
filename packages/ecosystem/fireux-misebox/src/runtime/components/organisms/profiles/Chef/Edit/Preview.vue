@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useChef } from '../../../../../composables/firestore/profiles/Chef/useChef.ts'
+import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef.ts'
 
 const { pillProps, cellProps, pending } = useChef()
 

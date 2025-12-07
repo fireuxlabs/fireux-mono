@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useHead } from '#imports'
-import { useApp } from '../../composables/firestore/core/app/useApp.ts'
+import { useApp } from '../../composables/fireux/firestore/core/app/useApp.ts'
 
 const isDev = import.meta.dev
 const router = useRouter()

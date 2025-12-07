@@ -286,22 +286,22 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import type { Ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import DevProfileDiffList from 'fireux-core/runtime/components/dev/ProfileDiffList.vue'
-import { useProfessional } from '../../composables/firestore/profiles/Professional/useProfessional.ts'
-import { useAgent } from '../../composables/firestore/profiles/Agent/useAgent.ts'
-import { useProfessionalCollection } from '../../composables/firestore/profiles/Professional/main/useProfessionalCollection.ts'
-import { useAgentCollection } from '../../composables/firestore/profiles/Agent/main/useAgentCollection.ts'
+import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
+import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
+import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
+import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection.ts'
 import {
   resolveProfessionalPill,
   resolveProfessionalPillKey,
-} from '../../composables/firestore/profiles/Professional/main/useProfessionalInterface.ts'
+} from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
 import type {
   ProfessionalProfile,
   ProfessionalCard,
 } from '../../models/profiles/Professional.model.ts'
 import type { AgentProfile } from '../../models/profiles/Agent.model.ts'
-import type { AgentCard } from '../../composables/firestore/profiles/Agent/main/useAgentInterface.ts'
+import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface.ts'
 
 definePageMeta({
   layout: 'dev',

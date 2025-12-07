@@ -58,9 +58,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useJobCollection } from '../../../../composables/firestore/jobs/main/useJobCollection.ts'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
-import { useAuth } from 'fireux-core/runtime/composables/core/firebase/useAuth.ts'
+import { useJobCollection } from '../../../../composables/fireux/firestore/jobs/main/useJobCollection.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth.ts'
 import type { Job } from '../../../../models/job.model.ts'
 
 const { jobs: allJobs, pending: isPending } = useJobCollection()

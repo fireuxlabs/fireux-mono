@@ -54,8 +54,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
-import { useProfessional } from '../../../composables/firestore/profiles/Professional/useProfessional.ts'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { professionalConfig } from '../../../models/profiles/Professional/supporting'
 
 const profileKey = professionalConfig.id ?? 'professional'

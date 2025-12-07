@@ -28,11 +28,11 @@ import type {
   SupplierProfile,
   SupplierCard,
 } from '../../../../../models/profiles/Supplier.model.ts'
-import { useSupplierCollection } from '../../../../../composables/firestore/profiles/Supplier/main/useSupplierCollection.ts'
+import { useSupplierCollection } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection.ts'
 import {
   resolveSupplierPill,
   resolveSupplierPillKey,
-} from '../../../../../composables/firestore/profiles/Supplier/main/useSupplierInterface.ts'
+} from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
 
 const { localSuppliers } = useSupplierCollection()
 

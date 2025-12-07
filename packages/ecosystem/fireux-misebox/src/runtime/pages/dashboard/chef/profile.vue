@@ -46,8 +46,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
-import { useChef } from '../../../composables/firestore/profiles/Chef/useChef'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 
 definePageMeta({
   layout: 'dashboard',

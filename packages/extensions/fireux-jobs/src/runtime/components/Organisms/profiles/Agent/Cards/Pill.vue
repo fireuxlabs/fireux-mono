@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AgentCard } from '../../../../../composables/firestore/profiles/Agent/main/useAgentInterface.ts'
+import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface.ts'
 
 const props = defineProps<{
   agent: AgentCard.Pill | null

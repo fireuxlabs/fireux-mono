@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAgentCreate } from '../../../../composables/firestore/profiles/Agent/main/useAgentCreate.ts'
+import { useAgentCreate } from '../../../../composables/fireux/firestore/profiles/Agent/main/useAgentCreate.ts'
 
 const { createAgent } = useAgentCreate()
 

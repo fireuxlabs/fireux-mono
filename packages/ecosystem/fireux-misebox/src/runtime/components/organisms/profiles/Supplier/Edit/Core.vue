@@ -34,8 +34,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { SupplierCoreProfile } from '../../../../../models/profiles/Supplier.model.ts'
-import { useSupplierUpdate } from '../../../../../composables/firestore/profiles/Supplier/main/useSupplierUpdate.ts'
+import type { SupplierCoreProfile } from '../../../../../../models/profiles/Supplier.model.ts'
+import { useSupplierUpdate } from '../../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierUpdate.ts'
 
 const props = defineProps<{ supplier: SupplierCoreProfile | null }>()
 

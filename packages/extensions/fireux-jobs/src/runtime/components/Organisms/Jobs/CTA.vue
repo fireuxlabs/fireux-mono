@@ -33,8 +33,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAgent } from '../../../composables/firestore/profiles/Agent/useAgent.ts'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 
 const router = useRouter()
 const { pill, cell } = useAgent()

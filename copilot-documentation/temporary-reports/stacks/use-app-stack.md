@@ -9,7 +9,7 @@ status: draft
 
 # FireUX Core App Composable Stack
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/app/useApp.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/useApp.ts
 
 ```ts
 import { useFireUXConfig } from '../../../FireUXConfig'
@@ -33,7 +33,7 @@ export function useApp() {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppFetch.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/main/useAppFetch.ts
 
 ```ts
 import { doc } from 'firebase/firestore'
@@ -52,7 +52,7 @@ export function useAppFetch(appId: string | null | undefined) {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppComputed.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/main/useAppComputed.ts
 
 ```ts
 import { computed } from 'vue'
@@ -77,7 +77,7 @@ export function useAppComputed(app: Ref<App | null | undefined>) {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppInterface.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/main/useAppInterface.ts
 
 ```ts
 import type { Ref } from 'vue'
@@ -126,10 +126,10 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppEnsure.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/main/useAppEnsure.ts
 
 ```ts
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import {
   ensureAppMembership as ensureAppMembershipDoc,
   ensureDoc,
@@ -179,7 +179,7 @@ export function useAppEnsure() {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/app/main/useAppUpdate.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/main/useAppUpdate.ts
 
 ```ts
 import type { Ref } from 'vue'
@@ -279,14 +279,14 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 }
 ```
 
-## packages/core/fireux-core/src/runtime/composables/firestore/core/app/subcollections/useAppUsers.ts
+## packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/subcollections/useAppUsers.ts
 
 ```ts
 import { computed, ref } from 'vue'
 import { collection } from 'firebase/firestore'
 import { useFirestore, useCollection } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
-import { useUserFetch } from 'fireux-core/runtime/composables/firestore/core/user/main/useUserFetch.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/main/useUserFetch.ts'
 import type {
   User,
   AppUser,

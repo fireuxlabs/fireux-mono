@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import { useUser } from '../../../../composables/firestore/core/user/useUser.ts'
+import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser.ts'
 
 const props = defineProps<{ user: User | null }>()
 

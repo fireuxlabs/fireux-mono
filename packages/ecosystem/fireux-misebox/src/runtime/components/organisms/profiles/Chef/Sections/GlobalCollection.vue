@@ -28,11 +28,11 @@ import type {
   ChefProfile,
   ChefCard,
 } from '../../../../../models/profiles/Chef.model.ts'
-import { useChefCollection } from '../../../../../composables/firestore/profiles/Chef/main/useChefCollection.ts'
+import { useChefCollection } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'
 import {
   resolveChefPill,
   resolveChefPillKey,
-} from '../../../../../composables/firestore/profiles/Chef/main/useChefInterface.ts'
+} from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
 
 const { globalChefs } = useChefCollection()
 

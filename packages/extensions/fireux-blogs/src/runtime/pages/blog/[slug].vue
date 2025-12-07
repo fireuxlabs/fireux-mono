@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useBlogPosts } from '../../composables/firestore/objects/Blog/useBlogPosts'
+import { useBlogPosts } from '../../composables/fireux/firestore/objects/Blog/useBlogPosts'
 
 const route = useRoute()
 const { fetchBlogPost } = await useBlogPosts()

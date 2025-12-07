@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Supplier } from '../../../../../models/profiles/Supplier.model'
+import type { Supplier } from '../../../../../../models/profiles/Supplier.model.ts'
 
 const props = defineProps<{
   supplier?: Partial<Supplier>

@@ -1,12 +1,12 @@
 # Chef Composables Snapshot
 
-Snapshot of all Chef-specific composables under `packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/` as of the latest workspace state.
+Snapshot of all Chef-specific composables under `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Chef/` as of the latest workspace state.
 
 ## useChefCreate.ts
 
 ```ts
-// packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/useChefCreate.ts
-import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profiles/useProfile.ts'
+// packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Chef/useChefCreate.ts
+import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profiles/useProfile.ts'
 import { chefConfig } from '../../../../models/profiles/Chef.model'
 import type { ChefCoreProfile } from '../../../../models/profiles/Chef.model'
 
@@ -363,7 +363,7 @@ export function useChefValidation() {
 ## useChefUpdate.ts
 
 ```ts
-// packages/core/fireux-core/src/runtime/composables/firestore/profiles/chef/useChefUpdate.ts
+// packages/core/fireux-core/src/runtime/composables/fireux/firestore/profiles/chef/useChefUpdate.ts
 import type { Ref } from 'vue'
 import { useCurrentUser } from 'vuefire'
 // Composables are auto-imported from core; avoid restricted subpath imports

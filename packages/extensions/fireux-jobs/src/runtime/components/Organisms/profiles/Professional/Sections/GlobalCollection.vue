@@ -29,11 +29,11 @@ import type {
   ProfessionalProfile,
   ProfessionalCard,
 } from '../../../../../models/profiles/Professional.model.ts'
-import { useProfessionalCollection } from '../../../../../composables/firestore/profiles/Professional/main/useProfessionalCollection.ts'
+import { useProfessionalCollection } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
 import {
   resolveProfessionalPill,
   resolveProfessionalPillKey,
-} from '../../../../../composables/firestore/profiles/Professional/main/useProfessionalInterface.ts'
+} from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
 
 const { globalProfessionals } = useProfessionalCollection()
 const total = computed(() => globalProfessionals.value?.length ?? 0)

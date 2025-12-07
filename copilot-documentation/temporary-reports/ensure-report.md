@@ -14,8 +14,8 @@ _Last updated: 2025-10-20_
 ````ts
 import { useFirestore } from 'vuefire'
 import { useCurrentApp } from 'fireux-core/runtime/composables/useCurrentApp.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/core/firebase/useRequireUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
 import type { FireUXApp } from 'fireux-core/runtime/typings/app.ts'
 import { getDeviceAvatar } from 'fireux-core/runtime/composables/useDeviceAvatar.ts'
 import { doc, getDoc } from 'firebase/firestore'
@@ -63,7 +63,7 @@ export async function useAppEnsure(input?: EnsureAppInput) {
 
     ### ensure / useEnsurer.ts
 
-  - **Path:** `packages/core/fireux-core/src/runtime/composables/firestore/ensure/useEnsurer.ts`
+  - **Path:** `packages/core/fireux-core/src/runtime/composables/fireux/firestore/ensure/useEnsurer.ts`
     - **Purpose:** Provide a reusable `ensureDoc` helper that wraps Firestore create-if-missing logic and optional Storage uploads.
     - **Key API:** `ensureDoc(adapter)`, `EnsureAdapter`, `EnsureResult`
     - **Notes:** Leaves creator/timestamp stamping to callers; image handling is opt-in via the adapter.
@@ -419,7 +419,7 @@ export async function useAppEnsure(input?: EnsureAppInput) {
 
 ### core/profiles / useProfileEnsure.ts
 
-- **Path:** `packages/core/fireux-core/src/runtime/composables/firestore/core/profiles/main/useProfileEnsure.ts`
+- **Path:** `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profiles/main/useProfileEnsure.ts`
 - **Purpose:** Create profile documents in both core scope and tenant overlay when missing.
 - **Key API:** `ensure(profile?)`
 - **Notes:** Non-destructive; skips existing docs and mirrors core profile fields into tenant collection.
@@ -428,8 +428,8 @@ export async function useAppEnsure(input?: EnsureAppInput) {
 import { computed } from 'vue'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/core/firebase/useRequireUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
 
 interface ProfileDoc {
   id: string

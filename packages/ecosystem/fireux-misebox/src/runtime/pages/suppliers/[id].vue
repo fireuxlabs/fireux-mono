@@ -13,5 +13,5 @@
 </template>
 
 <script setup lang="ts">
-import { supplierConfig } from '../../models/profiles/Supplier.model'
+import { supplierConfig } from '../../../models/profiles/Supplier.model.ts'
 </script>

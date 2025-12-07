@@ -84,7 +84,7 @@ import {
   shallowRef,
 } from 'vue'
 import { useCreateBlogPostState } from '../../../../composables/firestore/objects/Blog/useCreateBlogPostState'
-import { useBlogPosts } from '../../../../composables/firestore/objects/Blog/useBlogPosts'
+import { useBlogPosts } from '../../../../composables/fireux/firestore/objects/Blog/useBlogPosts'
 
 const EditorContent = defineAsyncComponent(async () => {
   const mod = await import('@tiptap/vue-3')

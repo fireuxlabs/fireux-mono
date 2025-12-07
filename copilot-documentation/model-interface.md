@@ -74,7 +74,7 @@ This guide consolidates the current FireUX data models that power app users, sha
 
 ### `AppCard.Card`
 
-- Defined alongside `useAppInterface` (`packages/core/fireux-core/src/runtime/composables/firestore/core/app/state/interface.ts`) so the model file stays schema-only.
+- Defined alongside `useAppInterface` (`packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/state/interface.ts`) so the model file stays schema-only.
 - Single payload used by every view (Pill, Cell, Profile) so UI helpers stop drifting.
 - Extends the shared `Pill` props and adds routing (`to`), identifiers, governance counts (`joinRequestCount`, `adminCount`), overlays (`app_short_name`, `slug`, `description`, `status`), and sanitized social links.
 - Returned by `cardProps()` inside `useAppInterface`. The helper still exports `pillProps`/`cellProps`/`profileProps`, but each simply returns the same `Card` payload for backwards compatibility.

@@ -31,16 +31,16 @@ const isDark = computed(() => colorMode?.value === 'dark')
 
 const logos = {
   nuxt: {
-    light: '/img/stack/nuxt-black.png',
-    dark: '/img/stack/nuxt-white.png',
+    light: '/img/app/stack/nuxt-black.png',
+    dark: '/img/app/stack/nuxt-white.png',
   },
   firebase: {
-    light: '/img/stack/firebase-black.png',
-    dark: '/img/stack/firebase-white.png',
+    light: '/img/app/stack/firebase-black.png',
+    dark: '/img/app/stack/firebase-white.png',
   },
   stripe: {
-    light: '/img/stack/stripe-black.png',
-    dark: '/img/stack/stripe-white.png',
+    light: '/img/app/stack/stripe-black.png',
+    dark: '/img/app/stack/stripe-white.png',
   },
 }
 

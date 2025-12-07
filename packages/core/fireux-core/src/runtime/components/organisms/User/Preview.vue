@@ -43,7 +43,7 @@ import type {
   User,
   UserCard,
 } from 'fireux-core/runtime/models/core/user.model.ts'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 
 const props = withDefaults(
   defineProps<{ user?: User | null; compact?: boolean }>(),

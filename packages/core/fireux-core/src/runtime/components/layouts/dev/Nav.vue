@@ -29,8 +29,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useDevNav } from 'fireux-core/runtime/composables/core/routing/nav/presets.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useDevNav } from 'fireux-core/runtime/composables/fireux/app/routing/nav/presets.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 const route = useRoute()
 
 // Collect all dev-layout nav items and group them by meta.group

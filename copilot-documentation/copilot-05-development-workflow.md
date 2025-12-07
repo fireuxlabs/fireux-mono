@@ -24,7 +24,7 @@ This chapter describes the standard local workflow, branching expectations, and 
 - Run `pnpm lint` and appropriate `pnpm typecheck:*` commands before pushing.
 - Add or update package docs in `packages/**/docs/` alongside code changes.
 - When introducing new composables or utilities, document usage briefly within the owning package and link from the handbook if cross-cutting.
-- Use `ensureDoc` (`packages/core/fireux-core/src/runtime/composables/firestore/ensure/useEnsurer.ts`) for new ensure flows; adapters decide targets, payloads, and optional image uploads so storage logic stays consistent.
+- Use `ensureDoc` (`packages/core/fireux-core/src/runtime/composables/fireux/firestore/ensure/useEnsurer.ts`) for new ensure flows; adapters decide targets, payloads, and optional image uploads so storage logic stays consistent.
 - For profile pills (professionals/agents), mirror the canonical user fields and the domain subtitle only. Avoid layering new fallbacks or computed decorations without updating this handbook entry.
 - Nuxt auto-registers components under `components/` and package `components/` folders; do not re-import them inside `<script setup>` unless a component lives outside the auto-import graph or you opt out intentionally.
 

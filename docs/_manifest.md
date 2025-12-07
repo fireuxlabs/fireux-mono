@@ -111,7 +111,7 @@
 - [packages/core/fireux-core/docs/mission.md](packages/core/fireux-core/docs/mission.md)
 - [packages/core/fireux-core/docs/molecules-forms.md](packages/core/fireux-core/docs/molecules-forms.md)
 - [packages/core/fireux-core/docs/roadmap.md](packages/core/fireux-core/docs/roadmap.md)
-- [packages/core/fireux-core/src/runtime/composables/firestore/core/user/STABLE_README.md](packages/core/fireux-core/src/runtime/composables/firestore/core/user/STABLE_README.md)
+- [packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/STABLE_README.md](packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/STABLE_README.md)
 - [packages/ecosystem/fireux-cleanbox/docs/gap.md](packages/ecosystem/fireux-cleanbox/docs/gap.md)
 - [packages/ecosystem/fireux-cleanbox/docs/liturature.md](packages/ecosystem/fireux-cleanbox/docs/liturature.md)
 - [packages/ecosystem/fireux-cleanbox/docs/mission.md](packages/ecosystem/fireux-cleanbox/docs/mission.md)

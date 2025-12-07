@@ -229,7 +229,7 @@ import { useHead } from '#imports'
 import { useRoute } from 'vue-router'
 import type { Place } from '../../models/place.model'
 import { usePlaces } from '../../composables/usePlaces'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 
 type UserDoc = Omit<User, 'appUser'>

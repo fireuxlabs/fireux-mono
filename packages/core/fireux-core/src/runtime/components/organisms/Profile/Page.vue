@@ -67,8 +67,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreRead.ts'
-import { useUser } from 'fireux-core/runtime/composables/firestore/core/user/useUser.ts'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
 
 declare function useRoute(): any

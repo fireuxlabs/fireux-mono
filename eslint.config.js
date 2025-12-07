@@ -25,22 +25,22 @@ export default [
             {
               name: '../../operations/useFirestoreManager',
               message:
-                'Import useFirestoreManager from fireux-core/runtime/composables/firestore/operations/useFirestoreManager',
+                'Import useFirestoreManager from fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager',
             },
             {
               name: '../../../operations/useFirestoreManager',
               message:
-                'Import useFirestoreManager from fireux-core/runtime/composables/firestore/operations/useFirestoreManager',
+                'Import useFirestoreManager from fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager',
             },
             {
               name: '../../operations/useFirestoreManager.ts',
               message:
-                'Import useFirestoreManager from fireux-core/runtime/composables/firestore/operations/useFirestoreManager',
+                'Import useFirestoreManager from fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager',
             },
             {
               name: '../../../operations/useFirestoreManager.ts',
               message:
-                'Import useFirestoreManager from fireux-core/runtime/composables/firestore/operations/useFirestoreManager',
+                'Import useFirestoreManager from fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager',
             },
           ],
         },

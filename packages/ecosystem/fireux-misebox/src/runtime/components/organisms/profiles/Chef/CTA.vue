@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useChefCreate } from '../../../../composables/firestore/profiles/Chef/main/useChefCreate.ts'
+import { useChefCreate } from '../../../../composables/fireux/firestore/profiles/Chef/main/useChefCreate.ts'
 
 const props = defineProps<{
   create?: () => Promise<unknown>

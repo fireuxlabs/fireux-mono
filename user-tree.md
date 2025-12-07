@@ -1,7 +1,7 @@
 # Firestore Core User Stack
 
 `````
-packages/core/fireux-core/src/runtime/composables/firestore/core/user/
+packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/
 ├─ useUser.ts                   # auth-aware orchestrator composing everything below
 ├─ main/
 │  ├─ useUserFetch.ts           # subscribes to /users/{uid} and /apps/{appId}/users/{uid}
@@ -11,7 +11,7 @@ packages/core/fireux-core/src/runtime/composables/firestore/core/user/
 
 `````
 
-packages/core/fireux-core/src/runtime/composables/firestore/core/user/
+packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/
 ├─ useUser.ts # auth-aware orchestrator composing everything below
 ├─ main/
 │ ├─ useUserFetch.ts # subscribes to /users/{uid} and /apps/{appId}/users/{uid}
@@ -46,7 +46,7 @@ packages/core/fireux-core/src/runtime/composables/firestore/core/user/
 
 ```
 
-packages/core/fireux-core/src/runtime/composables/firestore/core/app/
+packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/
 ├─ useApp.ts # orchestrator that composes fetch, state, ensures, mutations
 ├─ main/
 │ ├─ useAppFetch.ts # subscribes to /apps/{appId}

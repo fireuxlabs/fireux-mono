@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useSupplierCreate } from '../../../../composables/firestore/profiles/Supplier/main/useSupplierCreate.ts'
+import { useSupplierCreate } from '../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCreate.ts'
 
 const props = defineProps<{
   create?: () => Promise<unknown>

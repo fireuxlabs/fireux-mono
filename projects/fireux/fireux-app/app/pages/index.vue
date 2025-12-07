@@ -59,8 +59,8 @@ const paragraph =
   'A low-code ecosystem for responsive, scalable, and data-driven applications built upon <span class="text-primary">Nuxt4</span> &amp; <span class="text-primary">Firebase</span>.'
 
 const badges = [
-  { src: '/img/stack/nuxt-white.png', alt: 'Nuxt' },
-  { src: '/img/stack/firebase-white.png', alt: 'Firebase' },
+  { src: '/img/app/stack/nuxt-white.png', alt: 'Nuxt' },
+  { src: '/img/app/stack/firebase-white.png', alt: 'Firebase' },
 ]
 
 const hero = {
@@ -155,7 +155,7 @@ const products = [
     title: 'Cleanbox',
     description: 'Scheduling, QA, billing for crews.',
     to: '/cleanbox',
-    logo: '/img/cleanbox.png',
+    logo: '/img/app/logo.png',
     tag: 'Ops',
     tagColor: 'sky',
   },
@@ -163,7 +163,7 @@ const products = [
     title: 'Misebox',
     description: 'Recipes, inventory, suppliers.',
     to: '/misebox',
-    logo: '/img/misebox.png',
+    logo: '/img/app/logo.png',
     tag: 'Kitchen',
     tagColor: 'violet',
   },
@@ -171,7 +171,7 @@ const products = [
     title: 'FireUX',
     description: 'Nuxt + Firebase + Stripe core.',
     to: '/core',
-    logo: '/img/fireux.png',
+    logo: '/img/app/logo.png',
     tag: 'Core',
     tagColor: 'primary',
   },

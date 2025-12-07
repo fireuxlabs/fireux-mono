@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useProfessionalCreate } from '../../../../composables/firestore/profiles/Professional/main/useProfessionalCreate.ts'
+import { useProfessionalCreate } from '../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCreate.ts'
 
 const props = defineProps<{
   create?: () => Promise<unknown>

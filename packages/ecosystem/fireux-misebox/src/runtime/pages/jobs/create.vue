@@ -67,8 +67,8 @@
 import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
-import { useAgent } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/useAgent.ts'
-import { useAgentComputed } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/main/useAgentComputed.ts'
+import { useAgent } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/useAgent.ts'
+import { useAgentComputed } from '../../../../../../extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/main/useAgentComputed.ts'
 import type { JobStatus } from '../../../../../../extensions/fireux-jobs/src/runtime/models/job.model.ts'
 
 definePageMeta({

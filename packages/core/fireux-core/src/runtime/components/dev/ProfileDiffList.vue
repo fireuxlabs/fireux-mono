@@ -109,7 +109,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useDevClipboard } from '../../composables/core/dev/useDevClipboard'
+import { useDevClipboard } from '../../composables/dev/useDevClipboard'
 
 defineOptions({ name: 'DevProfileDiffList' })
 

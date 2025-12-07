@@ -1,6 +1,6 @@
 # Profiles Stack
 
--## Core profile composables (`packages/core/fireux-core/src/runtime/composables/firestore/core/profile/`)
+-## Core profile composables (`packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/`)
 
 ### `useProfile.ts`
 
@@ -12,7 +12,7 @@ import type {
   ```ts
   import { computed } from 'vue'
   import type { Ref } from 'vue'
-  import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+  import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
   import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
 
   export function useProfessionalComputed(
@@ -99,7 +99,7 @@ return { profile }
 ```ts
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
 import { requireUid } from '../../../utils/useEnsureCommon.ts'
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
@@ -148,7 +148,7 @@ export function useProfileEnsure(config: ProfileConfig) {
 ```ts
 import { ref } from 'vue'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import type {
   Profile,
   ProfileConfig,
@@ -261,7 +261,7 @@ export function useProfileComputed<TProfile extends Profile = Profile>(
 import { computed } from 'vue'
 import { collection } from 'firebase/firestore'
 import { useFirestore, useCollection } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import type {
   Profile,
   ProfileConfig,
@@ -356,12 +356,12 @@ export function useProfileDelete(
 
 - Domain layers should expose their own computed/update helpers (see professional/chef/supplier stacks).
 
-## Jobs extension – Professional profile composables (`packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Professional/`)
+## Jobs extension – Professional profile composables (`packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/`)
 
 ### `useProfessional.ts`
 
 ```ts
-import { useProfile } from 'fireux-core/runtime/composables/firestore/core/profile/useProfile.ts'
+import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile.ts'
 import {
   professionalConfig,
   type ProfessionalProfile,
@@ -386,7 +386,7 @@ export function useProfessional() {
 ### `main/useProfessionalInterface.ts`
 
 ```ts
-import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
 import type {
   ProfessionalProfile,
   ProfessionalCard,
@@ -529,7 +529,7 @@ export function useProfessionalInterface(
 ```ts
 import { computed } from 'vue'
 import type { Ref } from 'vue'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
 import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
 
 export function useProfessionalComputed(
@@ -590,7 +590,7 @@ export function useProfessionalComputed(
 ### `main/useProfessionalCollection.ts`
 
 ```ts
-import { useProfileCollection } from 'fireux-core/runtime/composables/firestore/core/profile/collection/useProfileCollection.ts'
+import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/collection/useProfileCollection.ts'
 import {
   professionalConfig,
   type ProfessionalProfile,
@@ -608,7 +608,7 @@ export function useProfessionalCollection() {
 
 ```ts
 import { ref, type Ref } from 'vue'
-import { useProfileEnsure } from 'fireux-core/runtime/composables/firestore/core/profile/core/useProfileEnsure.ts'
+import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/core/useProfileEnsure.ts'
 import { professionalConfig } from '../../../../../models/profiles/Professional.model.ts'
 
 type CreateProfessionalHandler = ((
@@ -645,9 +645,9 @@ export function useProfessionalCreate() {
 ```ts
 import { useFirestore } from 'vuefire'
 import { deleteDoc, doc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/core/firebase/useRequireUser.ts'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
 import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
@@ -708,14 +708,14 @@ export function useProfessionalDelete(
 ### `main/useProfessionalUpdate.ts`
 
 ```ts
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/firestore/operations/useFirestoreUpdate.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/core/firebase/useRequireUser.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import { usePlaceSave } from 'fireux-places/runtime/composables/usePlaceSave.ts'
 import { useFirestore } from 'vuefire'
 import { arrayRemove, arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/usePlacesGoogle.ts'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
 import type {
   RelevantExperienceItem,
   OtherExperienceItem,
@@ -878,7 +878,7 @@ export function useProfessionalUpdate(
 ### `main/useProfessionalCollection.ts`
 
 ```ts
-import { useProfileCollection } from 'fireux-core/runtime/composables/firestore/core/profile/collection/useProfileCollection.ts'
+import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/collection/useProfileCollection.ts'
 import {
   professionalConfig,
   type ProfessionalProfile,
@@ -897,9 +897,9 @@ export function useProfessionalCollection() {
 ```ts
 import { useFirestore } from 'vuefire'
 import { deleteDoc, doc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/core/config/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/core/firebase/useRequireUser.ts'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/firestore/core/profile/main/useProfileFetch.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
 import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
@@ -987,7 +987,7 @@ export function useProfessionalDelete(
 - Domain layers (professional/chef/supplier/etc.) own their computed + update logic.
 - Professional stack still exposes `useProfessionalComputed` for legacy consumers; migrate remaining callers to the lean `useProfessional()` signature.
 
-## Jobs extension – Agent profile composables (`packages/extensions/fireux-jobs/src/runtime/composables/firestore/profiles/Agent/`)
+## Jobs extension – Agent profile composables (`packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/`)
 
 ### Top-level entry
 
@@ -1013,7 +1013,7 @@ export function useProfessionalDelete(
 - `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent-profile.vue` – merges profile refs locally for the dashboard editor and shows an `error` fallback when missing.
 - `packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Agent/**/*` – cards, CTA, create, and edit components that consume `pillProps`, `cellProps`, `profileProps`, and update helpers.
 
-## Misebox tenant – Chef profile composables (`packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Chef/`)
+## Misebox tenant – Chef profile composables (`packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Chef/`)
 
 ### Top-level entry
 
@@ -1039,7 +1039,7 @@ export function useProfessionalDelete(
 - `packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef-profile.vue` – presents merged chef profile data with an `error` fallback when absent.
 - `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Chef/**/*` – cards, CTA, create, and edit modules wired to the chef interface helpers.
 
-## Misebox tenant – Supplier profile composables (`packages/ecosystem/fireux-misebox/src/runtime/composables/firestore/profiles/Supplier/`)
+## Misebox tenant – Supplier profile composables (`packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/`)
 
 ### Top-level entry
 

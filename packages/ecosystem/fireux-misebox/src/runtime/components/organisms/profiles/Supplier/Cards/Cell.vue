@@ -71,7 +71,7 @@ import { computed } from 'vue'
 import type {
   SupplierCard,
   SupplierProfile,
-} from '../../../../../models/profiles/Supplier.model.ts'
+} from '../../../../../../models/profiles/Supplier.model.ts'
 import { resolveSupplierCell } from '../../../../../models/profiles/Supplier.model.ts'
 
 const props = defineProps<{
