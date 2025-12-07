@@ -3,7 +3,7 @@ import type { TenantIntegrations } from './tenant-integrations'
 
 export function resolveTenantModules(
   includeCore: boolean,
-  extraModules: ModuleEntry[] | undefined,
+  moduleIds: string[] | undefined,
   integrations: TenantIntegrations
 ): ModuleEntry[] {
   const base: ModuleEntry[] = [
@@ -14,5 +14,12 @@ export function resolveTenantModules(
     ...(includeCore ? (['fireux-core'] as ModuleEntry[]) : []),
   ]
 
-  return dedupeKeepLast([...base, ...(extraModules ?? [])])
+  const extras = sanitizeModuleIds(moduleIds)
+
+  return dedupeKeepLast([...base, ...extras])
+}
+
+function sanitizeModuleIds(ids?: string[]): string[] {
+  if (!ids?.length) return []
+  return ids.map((id) => id?.trim()).filter((id): id is string => Boolean(id))
 }

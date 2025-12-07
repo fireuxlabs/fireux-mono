@@ -27,14 +27,13 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
 
 ```typescript
 import type { NuxtConfig } from 'nuxt/schema'
-import type { ModuleEntry } from './module-utils'
 
 export interface TenantConfig {
   ecosystem: string
   appName: string
   appShortName: string
   role: 'global' | 'tenant'
-  modules?: ModuleEntry[]
+  modules?: string[]
   includeCore?: boolean
   primaryColor?: string
   neutralColor?: string
@@ -161,7 +160,7 @@ import type { TenantIntegrations } from './tenant-integrations'
 
 export function resolveTenantModules(
   includeCore: boolean,
-  extraModules: ModuleEntry[] | undefined,
+  moduleIds: string[] | undefined,
   integrations: TenantIntegrations
 ): ModuleEntry[] {
   const base: ModuleEntry[] = [
@@ -172,7 +171,14 @@ export function resolveTenantModules(
     ...(includeCore ? (['fireux-core'] as ModuleEntry[]) : []),
   ]
 
-  return dedupeKeepLast([...base, ...(extraModules ?? [])])
+  const extras = sanitizeModuleIds(moduleIds)
+
+  return dedupeKeepLast([...base, ...extras])
+}
+
+function sanitizeModuleIds(ids?: string[]): string[] {
+  if (!ids?.length) return []
+  return ids.map((id) => id?.trim()).filter((id): id is string => Boolean(id))
 }
 ```
 

@@ -1,11 +1,11 @@
 import { defineNuxtModule, createResolver } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
-import { configureRuntime } from './config/runtime-config'
+import { configureRuntime } from 'fireux-core/config/base/runtime-config'
 import { configurePlugins } from './config/plugins-config'
 import { configureComponents } from './config/components-config'
-import { configureComposables } from './config/composables-config'
+import { configureComposables } from 'fireux-core/config/base/composables-config'
 import { configureLayouts } from './config/layouts-config'
-import { configurePages } from './config/pages-config'
+import { configurePages } from 'fireux-core/config/base/pages-config'
 import { primeFireuxFirebaseEnv } from './config/firebase-env'
 import { FIREUX_FIREBASE_PROJECT } from './config/firebase-project'
 
@@ -43,7 +43,6 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
 
     nuxt.hook('ready', () => {
       if (process.env.FIREUX_DEBUG_LAYERS) {
-        // eslint-disable-next-line no-console
         console.log('fireux-fireux: module configured')
       }
     })

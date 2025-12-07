@@ -100,7 +100,7 @@ export interface TenantConfig {
   ecosystem: string
   appName: string
   appShortName: string
-  modules?: ModuleEntry[]
+  modules?: string[]
   includeCore?: boolean // default true
   primaryColor?: string
   neutralColor?: string

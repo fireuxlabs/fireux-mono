@@ -1,5 +1,5 @@
 import type { NuxtConfig } from 'nuxt/schema'
-import { primeEcosystemFirebaseEnv } from '../firebase-env'
+import { primeEcosystemFirebaseEnv } from './firebase-env'
 import { resolveFireuxNuxtSetup } from './tenant-context'
 import type { TenantConfig } from './tenant-config'
 

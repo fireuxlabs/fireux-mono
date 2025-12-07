@@ -31,7 +31,8 @@ export default defineNuxtModule({
     const runtimeDir = resolver.resolve('./runtime')
 
     // Ensure runtime config buckets exist
-    nuxt.options.runtimeConfig.products = nuxt.options.runtimeConfig.products || {}
+    nuxt.options.runtimeConfig.products =
+      nuxt.options.runtimeConfig.products || {}
     nuxt.options.runtimeConfig.public.products =
       nuxt.options.runtimeConfig.public.products || {}
 

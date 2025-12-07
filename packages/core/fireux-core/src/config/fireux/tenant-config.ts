@@ -1,12 +1,10 @@
 import type { NuxtConfig } from 'nuxt/schema'
-import type { ModuleEntry } from './module-utils'
-
 export interface TenantConfig {
   ecosystem: string
   appName: string
   appShortName: string
   role: 'global' | 'tenant'
-  modules?: ModuleEntry[]
+  modules?: string[]
   includeCore?: boolean
   primaryColor?: string
   neutralColor?: string

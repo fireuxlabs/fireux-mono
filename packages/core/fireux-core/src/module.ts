@@ -1,15 +1,15 @@
 import { defineNuxtModule, createResolver } from '@nuxt/kit'
 
-import { configureRuntime } from './config/runtime-config'
-import { configureDeployIgnore } from './config/deploy-ignore-config'
-import { configurePlugins } from './config/plugins-config'
-import { configureComponents } from './config/components-config'
-import { configureComposables } from './config/composables-config'
-import { configureLayouts } from './config/layouts-config'
-import { configurePages } from './config/pages-config'
-import { configureServer } from './config/server-config'
-import { configureAssets } from './config/assets-config'
-import { configureErrors } from './config/errors-config'
+import { configureRuntime } from './config/base/runtime-config'
+import { configureDeployIgnore } from './config/base/deploy-ignore-config'
+import { configurePlugins } from './config/base/plugins-config'
+import { configureComponents } from './config/base/components-config'
+import { configureComposables } from './config/base/composables-config'
+import { configureLayouts } from './config/base/layouts-config'
+import { configurePages } from './config/base/pages-config'
+import { configureServer } from './config/base/server-config'
+import { configureAssets } from './config/base/assets-config'
+import { configureErrors } from './config/base/errors-config'
 
 export default defineNuxtModule({
   meta: { name: 'fireux-core', version: '1.0.0', configKey: 'fireuxCore' },

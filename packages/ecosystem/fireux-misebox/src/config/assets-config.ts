@@ -1,6 +1,6 @@
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
-import { configureTenantAssets } from 'fireux-core/config/tenant-config'
+import { configureTenantAssets } from 'fireux-core/config/base/tenant-layer'
 
 export function configureAssets(resolver: Resolver, nuxt: Nuxt) {
   configureTenantAssets(resolver, nuxt, {

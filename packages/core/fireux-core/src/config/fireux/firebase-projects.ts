@@ -1,4 +1,4 @@
-import type { FirebaseProjectConfig } from '../firebase-project'
+import type { FirebaseProjectConfig } from '../schemas/firebase-project'
 
 export const FIREUX_FIREBASE_PROJECT: FirebaseProjectConfig = {
   apiKey: 'AIzaSyBXQzbWwcOCMyBEVn1plDVJAofmalenLM4',

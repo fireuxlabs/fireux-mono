@@ -1,8 +1,8 @@
 import { existsSync } from 'node:fs'
 import { resolve as pathResolve } from 'node:path'
-import type { FirebaseProjectConfig } from './firebase-project'
-import { getFirebaseProjectConfig } from './fireux/firebase-projects'
-import { resolveWorkspaceRoot } from './fireux/env'
+import type { FirebaseProjectConfig } from '../schemas/firebase-project'
+import { getFirebaseProjectConfig } from './firebase-projects'
+import { resolveWorkspaceRoot } from './env'
 
 const BASE_ENV_MAP: Record<string, keyof FirebaseProjectConfig> = {
   FIREBASE_API_KEY: 'apiKey',

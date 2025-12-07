@@ -1,1 +1,1 @@
-export { configurePages } from 'fireux-core/config/pages-config'
+export { configurePages } from 'fireux-core/config/base/pages-config'

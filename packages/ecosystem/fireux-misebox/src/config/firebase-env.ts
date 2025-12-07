@@ -1,7 +1,7 @@
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { primeFirebaseEnv } from 'fireux-core/config/firebase-env'
-import type { FirebaseProjectConfig } from 'fireux-core/config/firebase-project'
+import { primeFirebaseEnv } from 'fireux-core/config/fireux/firebase-env'
+import type { FirebaseProjectConfig } from 'fireux-core/config/schemas/firebase-project'
 import { MISEBOX_FIREBASE_PROJECT } from './firebase-project'
 
 const DEFAULT_SERVICE_ACCOUNT_PATH = resolve(
