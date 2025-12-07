@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
+import { useRuntimeConfig } from '#app'
 import type { NavItem, NavMeta } from '../../../../types/nav'
 
 const DEFAULT_LAYOUT = 'default'
@@ -115,6 +116,7 @@ function ensureLayouts(targetLayouts: TargetLayouts): string[] {
 export function useNav(targetLayouts: TargetLayouts = [DEFAULT_LAYOUT]) {
   const router = useRouter()
   const wanted = ensureLayouts(targetLayouts)
+  const role = useRuntimeConfig().public?.role
 
   const items = computed<NavItem[]>(() => {
     const seen = new Set<string>()
@@ -125,6 +127,9 @@ export function useNav(targetLayouts: TargetLayouts = [DEFAULT_LAYOUT]) {
 
       const meta = route.meta as RouteMetaLike
       if (!isNavMeta(meta.nav)) continue
+
+      const routeRoles = normaliseRoles(meta.roles)
+      if (routeRoles && role && !routeRoles.includes(role)) continue
 
       const item = buildNavItem(route, meta.nav, wanted)
       if (!item) continue
