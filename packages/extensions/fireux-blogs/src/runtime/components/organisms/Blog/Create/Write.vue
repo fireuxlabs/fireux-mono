@@ -7,25 +7,60 @@
       <ClientOnly>
         <div v-if="editor" class="editor-shell">
           <div class="editor-toolbar">
-            <UButton size="xs" variant="ghost" @click="run('bold')" :pressed="isActive('bold')">
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('bold')"
+              :pressed="isActive('bold')"
+            >
               Bold
             </UButton>
-            <UButton size="xs" variant="ghost" @click="run('italic')" :pressed="isActive('italic')">
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('italic')"
+              :pressed="isActive('italic')"
+            >
               Italic
             </UButton>
-            <UButton size="xs" variant="ghost" @click="run('heading2')" :pressed="isActive('heading', { level: 2 })">
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('heading2')"
+              :pressed="isActive('heading', { level: 2 })"
+            >
               H2
             </UButton>
-            <UButton size="xs" variant="ghost" @click="run('bullet')" :pressed="isActive('bulletList')">
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('bullet')"
+              :pressed="isActive('bulletList')"
+            >
               • List
             </UButton>
-            <UButton size="xs" variant="ghost" @click="run('ordered')" :pressed="isActive('orderedList')">
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('ordered')"
+              :pressed="isActive('orderedList')"
+            >
               1. List
             </UButton>
-            <UButton size="xs" variant="ghost" @click="run('undo')" :disabled="!can('undo')">
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('undo')"
+              :disabled="!can('undo')"
+            >
               Undo
             </UButton>
-            <UButton size="xs" variant="ghost" @click="run('redo')" :disabled="!can('redo')">
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('redo')"
+              :disabled="!can('redo')"
+            >
               Redo
             </UButton>
           </div>
@@ -72,7 +107,9 @@ onMounted(async () => {
     extensions: [StarterKit],
     onUpdate: ({ editor }) => {
       blogPost.value.content = editor.getHTML()
-      blogPost.value.readingTime = computeReadingTime(blogPost.value.content || '')
+      blogPost.value.readingTime = computeReadingTime(
+        blogPost.value.content || ''
+      )
     },
   })
 })
@@ -97,7 +134,16 @@ watch(
   }
 )
 
-const run = (action: 'bold' | 'italic' | 'heading2' | 'bullet' | 'ordered' | 'undo' | 'redo') => {
+const run = (
+  action:
+    | 'bold'
+    | 'italic'
+    | 'heading2'
+    | 'bullet'
+    | 'ordered'
+    | 'undo'
+    | 'redo'
+) => {
   if (!editor.value) return
   const chain = editor.value.chain().focus()
   switch (action) {

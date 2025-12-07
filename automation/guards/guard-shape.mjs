@@ -145,20 +145,20 @@ for (const pkgPath of ECOSYSTEM_PACKAGES) {
   }
 }
 
-// 4) core-only libraries
+// 4) disallow @vueup/vue-quill everywhere (we migrated off Quill)
 {
-  const core = load('packages/core/fireux-core')
-  if (!core.dependencies?.['@vueup/vue-quill'])
-    err('fireux-core', 'must depend on @vueup/vue-quill')
-  for (const app of APPS) {
-    const pkg = load(app)
+  const forbid = (pkgPath) => {
+    const pkg = load(pkgPath)
     if (
       pkg.dependencies?.['@vueup/vue-quill'] ||
       pkg.devDependencies?.['@vueup/vue-quill']
     ) {
-      err(app, 'apps must not depend on @vueup/vue-quill (owned by core)')
+      err(pkgPath, 'must not depend on @vueup/vue-quill (Quill removed)')
     }
   }
+
+  forbid('packages/core/fireux-core')
+  for (const app of APPS) forbid(app)
 }
 
 // 5) root overrides presence

@@ -1,18 +1,16 @@
 <template>
-  <ClientOnly>
-    <div class="quill-wrapper">
-      <QuillEditor
-        v-model:content="localValue"
-        content-type="html"
-        theme="snow"
-      />
-    </div>
-  </ClientOnly>
+  <div class="richtext-wrapper">
+    <label class="sr-only" for="richtext-input">Rich text</label>
+    <textarea
+      id="richtext-input"
+      v-model="localValue"
+      class="richtext-input"
+      rows="6"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { QuillEditor } from '@vueup/vue-quill'
-import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { ref, watch } from 'vue'
 
 const props = defineProps<{ modelValue: string | undefined }>()
@@ -35,3 +33,36 @@ watch(localValue, val => {
   emit('update:modelValue', val)
 })
 </script>
+
+<style scoped>
+.richtext-wrapper {
+  display: block;
+}
+
+.richtext-input {
+  width: 100%;
+  min-height: 180px;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.richtext-input:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+</style>

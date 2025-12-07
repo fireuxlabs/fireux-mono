@@ -23,7 +23,6 @@ packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/
 ├─ CTA.vue
 ├─ List.vue
 ├─ Cards/{Article.vue,Cell.vue,Page.vue,Product.vue}
-├─ objects/Post/Create/System.vue
 └─ Create/{System.vue,Write.vue,Preview.vue,Advanced.vue,Images.vue}
 
 packages/extensions/fireux-products/src/runtime/components/organisms/Product/
@@ -38,7 +37,6 @@ packages/extensions/fireux-places/src/runtime/components/organisms/places/
 
 packages/extensions/fireux-jobs/src/runtime/components/Organisms/
 ├─ Jobs/{CTA.vue,Create.vue,Sections/{AgentCollection.vue,GlobalCollection.vue}}
-├─ objects/Job/Create/System.vue
 └─ profiles/
   ├─ Agent/
   │  ├─ Cards/{Cell.vue,Pill.vue}
@@ -96,7 +94,6 @@ packages/ecosystem/fireux-misebox/src/runtime/components/organisms/
   - CTA: `components/Organisms/Jobs/CTA.vue` (surface on index)
   - Listing: `components/Organisms/Jobs/Sections/{AgentCollection,GlobalCollection}.vue`
   - Create UI: `components/Organisms/Jobs/Create.vue`
-  - Object-level create system: `components/Organisms/objects/Job/Create/System.vue`
 
 - **Blog**
 
@@ -104,7 +101,6 @@ packages/ecosystem/fireux-misebox/src/runtime/components/organisms/
   - CTA: `components/organisms/Blog/CTA.vue` (surface on index, admin-gated like products)
   - Listing: `components/organisms/Blog/List.vue` (+ Cards)
   - Create system: `components/organisms/Blog/Create/System.vue`
-  - Object-level entry: `components/organisms/Blog/objects/Post/Create/System.vue`
 
 - **Product**
 
@@ -324,12 +320,6 @@ packages/extensions/fireux-jobs/src/runtime/
         - `AgentCollection.vue`
         - `GlobalCollection.vue`
 
-      **Objects**
-
-      `packages/extensions/fireux-jobs/src/runtime/components/Organisms/objects/Job/Create/System.vue`:
-
-      - Object-layer create system for Job.
-
       **Profiles**
 
       `packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/`:
@@ -351,7 +341,6 @@ packages/extensions/fireux-jobs/src/runtime/
 
       - Jobs (object stack):
         - ✅ Has `Create.vue` at the domain level.
-        - ✅ Has `objects/Job/Create/System.vue` for object logic.
         - ✅ Has root `Jobs/CTA.vue`.
       - Profiles (Agent/Professional) are **profile stacks**:
         - ✅ Minimal onboarding/creation allowed.
@@ -401,7 +390,6 @@ packages/extensions/fireux-jobs/src/runtime/
 
       - ✅ This is an object stack with a proper `Create/System.vue`.
       - ✅ Root CTA exists and is admin-gated.
-      - ⚠ Object-layer wrapper under `objects/Post/Create/System.vue` exists; keep using it where shared.
       - ⚠ Cards differ from canonical `Cell/Pill/Profile` triplet but have `Cell` and domain-specific variants.
 
       ---

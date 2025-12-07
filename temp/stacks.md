@@ -4,12 +4,12 @@
 
 - **Jobs (fireux-jobs)**
   - Pages: jobs index/create/detail/learn-more/edit.
-  - Components: `Organisms/Jobs/{CTA,Create,Sections/AgentCollection,Sections/GlobalCollection}`; object create `Organisms/objects/Job/Create/System.vue`.
+  - Components: `Organisms/Jobs/{CTA,Create,Sections/AgentCollection,Sections/GlobalCollection}`.
   - Cards live under profiles (Agent/Professional: Cards/{Cell,Pill}; no Profile card).
   - CTA gate: needs agent profile (not admin-based).
 - **Blog (fireux-blogs)**
   - Pages: blog index/create/detail.
-  - Components: `organisms/Blog/{CTA,List,Cards/*,Create/*,objects/Post/Create/System.vue}`.
+  - Components: `organisms/Blog/{CTA,List,Cards/*,Create/*}`.
   - Cards: Article, Cell, Page, Product (no Pill/Profile). CTA admin-gated.
 - **Product (fireux-products)**
   - Pages: products index/create/detail.
