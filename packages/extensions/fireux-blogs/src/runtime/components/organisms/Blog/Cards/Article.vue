@@ -1,45 +1,45 @@
 <template>
-  <NuxtLink
-    v-if="post && post.content"
-    :to="`/blog/${post.slug}`"
-    class="blog-card-link"
-  >
-    <UCard class="blog-card">
-      <div class="blog-card-header">
-        <div class="blog-card-text">
-          <div class="blog-card-title">{{ post.title }}</div>
-          <div class="blog-card-reading-time">
-            {{ post.readingTime.replace(' min', '') }} read
+  <NuxtLink :to="card.to" class="block">
+    <UCard class="h-full" variant="soft">
+      <div class="flex items-start gap-4">
+        <div class="flex-1 space-y-2">
+          <div class="flex items-center gap-2 text-xs text-gray-500">
+            <span class="font-semibold text-gray-800">{{ card.author }}</span>
+            <span v-if="card.readingTime" class="text-gray-500">
+              · {{ card.readingTime }} min
+            </span>
+            <span
+              v-if="card.badge"
+              class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-gray-100 text-gray-700"
+            >
+              {{ card.badge }}
+            </span>
           </div>
+          <h3 class="text-lg font-semibold leading-tight">{{ card.title }}</h3>
+          <p class="text-sm text-gray-600 line-clamp-3">{{ card.excerpt }}</p>
         </div>
-        <div v-if="post.featuredImage" class="blog-card-image">
+        <div
+          v-if="card.image"
+          class="shrink-0 w-28 h-20 overflow-hidden rounded-md bg-gray-100"
+        >
           <img
-            :src="post.featuredImage"
-            alt="Featured Image"
-            class="blog-card-thumbnail"
+            :src="card.image"
+            :alt="card.title"
+            class="h-full w-full object-cover"
           />
         </div>
       </div>
-
-      <div class="blog-card-content">
-        <div v-html="truncateContent(post.content)"></div>
-      </div>
     </UCard>
   </NuxtLink>
-  <p v-else>Loading...</p>
 </template>
 
 <script setup lang="ts">
-defineProps({
-  post: {
-    type: Object,
-    default: () => ({}),
-  },
-})
+import { computed } from 'vue'
+import type { BlogPost } from '../../../../models/objects/blogPost.model'
+import { useBlogInterface } from '../../../../composables/firestore/objects/Blog/state/useBlogInterface'
 
-const truncateContent = (content: string): string => {
-  if (!content) return ''
-  const plainText = content.replace(/<[^>]*>/g, '')
-  return plainText.length > 150 ? plainText.slice(0, 150) + '...' : plainText
-}
+const props = defineProps<{ post: BlogPost }>()
+
+const { teaserProps } = useBlogInterface()
+const card = computed(() => teaserProps(props.post))
 </script>

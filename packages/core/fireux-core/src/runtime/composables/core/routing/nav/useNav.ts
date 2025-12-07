@@ -107,7 +107,10 @@ function buildNavItem(
   }
 }
 
-function includeTenant(item: NavItem, fireux: ReturnType<typeof useFireUXConfig>) {
+function includeTenant(
+  item: NavItem,
+  fireux: ReturnType<typeof useFireUXConfig>
+) {
   if (!item.tenant) return true
   if (item.tenant === 'tenant') return fireux.isTenant
   if (item.tenant === 'global') return fireux.isGlobal

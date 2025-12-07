@@ -2,8 +2,12 @@ import { defineNuxtModule, createResolver, addImportsDir } from 'nuxt/kit'
 import { configurePages } from 'fireux-core/config/base/pages-config'
 
 declare module 'nuxt/schema' {
-  interface NuxtConfig { ecosystemController?: Partial<typeof defaults> }
-  interface NuxtOptions { ecosystemController?: Partial<typeof defaults> }
+  interface NuxtConfig {
+    ecosystemController?: Partial<typeof defaults>
+  }
+  interface NuxtOptions {
+    ecosystemController?: Partial<typeof defaults>
+  }
 }
 
 const defaults = {
@@ -21,7 +25,8 @@ export default defineNuxtModule({
     const resolver = createResolver(import.meta.url)
 
     // Ensure runtime config buckets exist
-    nuxt.options.runtimeConfig.ecosystemController = nuxt.options.runtimeConfig.ecosystemController || {}
+    nuxt.options.runtimeConfig.ecosystemController =
+      nuxt.options.runtimeConfig.ecosystemController || {}
     nuxt.options.runtimeConfig.public.ecosystemController =
       nuxt.options.runtimeConfig.public.ecosystemController || {}
 
@@ -34,7 +39,8 @@ export default defineNuxtModule({
     // Example: expose runtime directory via alias for server routes/plugins
     nuxt.hook('nitro:config', (nitroConfig) => {
       nitroConfig.alias = nitroConfig.alias || {}
-      nitroConfig.alias['#fireux-ecosystem-controller'] = resolver.resolve('./runtime')
+      nitroConfig.alias['#fireux-ecosystem-controller'] =
+        resolver.resolve('./runtime')
     })
   },
 })
