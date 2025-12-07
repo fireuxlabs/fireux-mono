@@ -5,27 +5,10 @@ import { createFireuxConfig } from 'fireux-core'
 const baseConfig = createFireuxConfig({
   appName: 'Misebox',
   appShortName: 'Misebox',
+  appDescription: 'Workhub for Misebox creative operations and collaborators.',
   ecosystem: 'misebox',
   modules: ['fireux-misebox'],
   role: 'global',
-  pwa: {
-    manifest: {
-      icons: [
-        {
-          src: '/img/app/pwa/misebox-icon-192.png',
-          sizes: '192x192',
-          type: 'image/png',
-          purpose: 'any maskable',
-        },
-        {
-          src: '/img/app/pwa/misebox-icon-512.png',
-          sizes: '512x512',
-          type: 'image/png',
-          purpose: 'any maskable',
-        },
-      ],
-    },
-  },
   nitro: {
     firebase: {
       serverFunctionName: 'miseboxServer',

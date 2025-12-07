@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { defineEventHandler, getQuery } from 'h3'
 
 const log = (...args: unknown[]) => console.info('[places-logo]', ...args)

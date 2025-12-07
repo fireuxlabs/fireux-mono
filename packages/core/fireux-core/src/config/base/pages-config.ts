@@ -5,6 +5,7 @@ import type { Resolver } from '@nuxt/kit'
 type LayerEntry = string | [string, { config?: Record<string, any> }]
 
 export function configurePages(resolver: Resolver, nuxt: Nuxt) {
+  // Core pages (dev/docs/canvas) are always layered so every tenant has the same baseline.
   // 1) Point to your module's runtime directory (must contain /pages)
   const runtimeDir = resolver.resolve('./runtime')
   if (!runtimeDir) return

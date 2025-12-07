@@ -103,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FireuxEcosystemRegistryDoc } from 'fireux-core/src/runtime/models/core/ecosystem.model'
+import type { FireuxEcosystemRegistryDoc } from 'fireux-core/runtime/models/core/ecosystem.model'
 
 type EcosystemStage = 'active' | 'rolling'
 

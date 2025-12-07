@@ -6,27 +6,10 @@ export default defineNuxtConfig(<NuxtConfig>{
   ...createFireuxConfig({
     appName: 'Niederhorn',
     appShortName: 'Niederhorn',
+     appDescription: 'Tenant experience for Niederhorn hospitality partners.',
     ecosystem: 'misebox',
     modules: ['fireux-misebox'],
     role: 'tenant',
-    pwa: {
-      manifest: {
-        icons: [
-          {
-            src: '/img/app/pwa/niederhorn-icon-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable',
-          },
-          {
-            src: '/img/app/pwa/niederhorn-icon-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable',
-          },
-        ],
-      },
-    },
     nitro: {
       firebase: {
         serverFunctionName: 'niederhornServer',

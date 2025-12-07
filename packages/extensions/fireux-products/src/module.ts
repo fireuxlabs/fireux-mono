@@ -5,6 +5,7 @@ import {
   addComponentsDir,
 } from 'nuxt/kit'
 import type { Nuxt } from 'nuxt/schema'
+import { configureServer } from './config/server-config'
 
 declare module 'nuxt/schema' {
   interface NuxtConfig {
@@ -55,6 +56,7 @@ export default defineNuxtModule({
       nitroConfig.alias['#fireux-products'] = runtimeDir
     })
 
+    configureServer(resolver)
     registerProductPages(nuxt, resolver, runtimeDir)
   },
 })

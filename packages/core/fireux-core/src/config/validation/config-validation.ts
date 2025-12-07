@@ -1,5 +1,8 @@
+import { DEFAULT_COMPATIBILITY_DATE } from '../fireux/tenant-context'
+
 // FireUX Configuration Validation Utility
-// This utility helps validate tenant configurations and provides helpful error messages
+// This utility helps validate tenant configurations and provides helpful error messages.
+// It mirrors the current TenantConfig shape (modules[], includeCore?, role required).
 
 export interface ConfigValidationResult {
   isValid: boolean
@@ -8,14 +11,20 @@ export interface ConfigValidationResult {
   suggestions: string[]
 }
 
+import { DEFAULT_COMPATIBILITY_DATE } from '../fireux/tenant-context'
+
 // Use a distinct name to avoid clashes with factory's TenantConfig
 export interface ValidationTenantConfig {
+  ecosystem: string
   appName: string
   appShortName: string
+  role: 'global' | 'tenant'
+  modules?: string[]
+  includeCore?: boolean
   primaryColor: string
   neutralColor?: string
   secondaryColor?: string
-  tenantModule: string
+  compatibilityDate?: string
   environmentVariables: Record<string, string>
 }
 
@@ -32,13 +41,13 @@ export function validateTenantConfig(
     suggestions: [],
   }
 
-  // Validate app configuration
+  // Validate required identifiers
   validateAppConfig(config, result)
 
   // Validate environment variables
   validateEnvironmentVariables(config.environmentVariables, result)
 
-  // Validate color configuration
+  // Validate color configuration (primary required)
   validateColorConfig(config.primaryColor, result)
   if (config.neutralColor) {
     validateColorConfig(config.neutralColor, result, 'Neutral color', false)
@@ -48,7 +57,7 @@ export function validateTenantConfig(
   }
 
   // Validate module configuration
-  validateModuleConfig(config.tenantModule, result)
+  validateModules(config.modules, config.includeCore, result)
 
   result.isValid = result.errors.length === 0
   return result
@@ -61,6 +70,10 @@ function validateAppConfig(
   config: ValidationTenantConfig,
   result: ConfigValidationResult
 ) {
+  if (!config.ecosystem || config.ecosystem.trim().length === 0) {
+    result.errors.push('ecosystem is required')
+  }
+
   if (!config.appName || config.appName.trim().length === 0) {
     result.errors.push('APP_NAME is required')
   }
@@ -77,6 +90,10 @@ function validateAppConfig(
     result.warnings.push(
       'APP_NAME is quite long - consider shortening for better UX'
     )
+  }
+
+  if (!config.role || (config.role !== 'global' && config.role !== 'tenant')) {
+    result.errors.push('role must be global or tenant')
   }
 }
 
@@ -186,24 +203,36 @@ function validateColorConfig(
 /**
  * Validates module configuration
  */
-function validateModuleConfig(
-  tenantModule: string,
+function validateModules(
+  modules: string[] | undefined,
+  includeCore: boolean | undefined,
   result: ConfigValidationResult
 ) {
-  const validModules = ['fireux-misebox', 'fireux-cleanbox', 'fireux-places']
-
-  if (!tenantModule || tenantModule.trim() === '') {
-    result.errors.push('Tenant module is required')
-  } else if (
-    !validModules.includes(tenantModule) &&
-    !tenantModule.startsWith('fireux-')
-  ) {
+  if (includeCore === false) {
     result.warnings.push(
-      `Module "${tenantModule}" is not a known FireUX module`
+      'includeCore is false; ensure your modules add required runtime pieces'
     )
-    result.suggestions.push(
-      'Ensure your custom module follows the fireux-* naming convention'
+  }
+
+  if (!modules || modules.length === 0) {
+    result.warnings.push('modules is empty; only core modules will load')
+    return
+  }
+
+  const trimmed = modules.map((id) => id?.trim()).filter(Boolean) as string[]
+  if (trimmed.length !== modules.length) {
+    result.warnings.push(
+      'Some modules were empty strings after trimming; remove blanks'
     )
+  }
+
+  for (const mod of trimmed) {
+    if (!mod.startsWith('fireux-')) {
+      result.warnings.push(`Module "${mod}" is not namespaced fireux-*`)
+      result.suggestions.push(
+        'Use fireux-* naming for custom modules to avoid collisions'
+      )
+    }
   }
 }
 
@@ -246,54 +275,33 @@ export function getColorHex(colorName: string): string {
  * Generates standard nuxt.config.ts template
  */
 export function generateNuxtConfig(config: ValidationTenantConfig): string {
-  return `import { defineNuxtConfig } from 'nuxt/config'
+  const modules = config.modules ?? ['fireux-products']
+  const modulesArray = modules.map((m) => `'${m}'`).join(', ')
+  const includeCore = config.includeCore !== false
+  const compatibility = config.compatibilityDate ?? DEFAULT_COMPATIBILITY_DATE
+  const neutralLine = config.neutralColor
+    ? `    neutralColor: '${config.neutralColor}',\n`
+    : ''
+  const secondaryLine = config.secondaryColor
+    ? `    secondaryColor: '${config.secondaryColor}',\n`
+    : ''
 
-export default defineNuxtConfig({
-  devtools: { enabled: true },
-  compatibilityDate: '2025-06-07',
-  srcDir: 'app',
-  imports: {
-    dirs: ['composables/**', 'models/**', 'utils/**'],
-  },
-  
-  // Explicitly configure SSR for consistency
-  ssr: true,
-  
-  modules: [
-  'fireux-core',
-    '${config.tenantModule}',
-    '@nuxt/ui',
-  '@nuxt/icon',
-    'nuxt-vuefire',
-  '@vite-pwa/nuxt',
-  ],
-  
-  nitro: {},
-  
-  vuefire: {
-    auth: {
-      enabled: true,
-      sessionCookie: true,
-    },
-    config: {
-      apiKey: process.env.NUXT_FIREBASE_API_KEY || '',
-      authDomain: process.env.NUXT_FIREBASE_AUTH_DOMAIN || '',
-      projectId: process.env.NUXT_FIREBASE_PROJECT_ID || '',
-      storageBucket: process.env.NUXT_FIREBASE_STORAGE_BUCKET || '',
-      messagingSenderId: process.env.NUXT_FIREBASE_MESSAGING_SENDER_ID || '',
-      appId: process.env.NUXT_FIREBASE_APP_ID || '',
-      measurementId: process.env.NUXT_FIREBASE_MEASUREMENT_ID || '',
-    },
-    appCheck: process.env.NUXT_FIREBASE_RECAPTCHA_V3_KEY ? {
-      provider: 'ReCaptchaV3',
-      key: process.env.NUXT_FIREBASE_RECAPTCHA_V3_KEY,
-      isTokenAutoRefreshEnabled: true,
-    } : undefined,
-    admin: {
-      serviceAccount: process.env.FIREBASE_SERVICE_ACCOUNT,
-    },
-  },
-})`
+  return `import { defineNuxtConfig } from 'nuxt/config'
+import { createFireuxConfig } from 'fireux-core'
+
+export default defineNuxtConfig(
+  createFireuxConfig({
+    ecosystem: '${config.ecosystem}',
+    appName: '${config.appName}',
+    appShortName: '${config.appShortName}',
+    role: '${config.role}',
+    modules: [${modulesArray}],
+    includeCore: ${includeCore},
+    primaryColor: '${config.primaryColor}',
+${neutralLine}${secondaryLine}    compatibilityDate: '${compatibility}',
+  })
+)
+`
 }
 
 /**

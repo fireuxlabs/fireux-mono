@@ -28,7 +28,6 @@ export default defineNuxtModule({
 
     nuxt.hook('ready', () => {
       if (process.env.FIREUX_DEBUG_LAYERS) {
-        // eslint-disable-next-line no-console
         console.info('fireux-test: ecosystem module configured')
       }
     })

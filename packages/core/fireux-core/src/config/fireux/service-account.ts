@@ -120,7 +120,6 @@ function serviceAccountCandidatePaths(ecosystem: string): string[] {
   addPath(gcloudCredentials ?? '')
 
   const relativeCandidates = [
-    `packages/ecosystem/${ecosystem}-${ecosystem}/config/service-account.json`,
     `packages/ecosystem/fireux-${ecosystem}/config/service-account.json`,
     `packages/ecosystem/${ecosystem}/config/service-account.json`,
   ]

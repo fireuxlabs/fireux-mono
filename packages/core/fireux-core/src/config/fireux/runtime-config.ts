@@ -6,6 +6,7 @@ export interface RuntimeConfigOptions {
   appId: string
   appName: string
   appShortName: string
+  appDescription: string
   role: 'global' | 'tenant'
   modules: ModuleEntry[]
   primaryColor?: string
@@ -20,12 +21,15 @@ export interface RuntimeConfigOptions {
   devMode: boolean
 }
 
+// Produces runtimeConfig where public.fireux includes ecosystem, appId, appName, appShortName,
+// role, modules[], colors, and globalAppId; no field is silently defaulted beyond env lookups.
 export function createRuntimeConfig(options: RuntimeConfigOptions) {
   const {
     ecosystem,
     appId,
     appName,
     appShortName,
+    appDescription,
     role,
     modules,
     primaryColor,
@@ -50,6 +54,7 @@ export function createRuntimeConfig(options: RuntimeConfigOptions) {
       appId,
       appName,
       appShortName,
+      appDescription,
       primaryColor,
       neutralColor,
       secondaryColor,
@@ -62,6 +67,7 @@ export function createRuntimeConfig(options: RuntimeConfigOptions) {
         ecosystem,
         appName,
         appShortName,
+        appDescription,
       },
       modules: modules.map((entry) =>
         Array.isArray(entry) ? entry[0] : entry

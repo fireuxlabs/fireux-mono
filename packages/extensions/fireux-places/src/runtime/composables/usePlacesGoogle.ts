@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import type { GooglePlace, Place, PlaceCard } from '../models/place.model'
 import { toStoredPlace } from '../models/place.model'
 

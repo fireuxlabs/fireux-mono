@@ -30,7 +30,6 @@
 </template>
 
 <script setup lang="ts">
-/* eslint-disable no-console */
 import { computed, ref } from 'vue'
 import {
   canonicalPlaceId,

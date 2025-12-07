@@ -33,6 +33,7 @@ export function resolveTenantRuntime(
     appId,
     appName: basics.appName,
     appShortName: basics.appShortName,
+    appDescription: basics.appDescription,
     role: basics.role,
     modules,
     primaryColor: theme.primaryColor,

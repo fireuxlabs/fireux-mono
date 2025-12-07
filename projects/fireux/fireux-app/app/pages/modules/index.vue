@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FireuxModuleSummary } from 'fireux-core/src/runtime/models/core/module.model'
+import type { FireuxModuleSummary } from 'fireux-core/runtime/models/core/module.model'
 
 definePageMeta({
   nav: {

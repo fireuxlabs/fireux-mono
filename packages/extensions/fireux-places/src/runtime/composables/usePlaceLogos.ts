@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
 import type { BasePlace, PlaceCard } from '../models/place.model'
 

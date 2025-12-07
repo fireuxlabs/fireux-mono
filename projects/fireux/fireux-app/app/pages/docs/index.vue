@@ -1,6 +1,32 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { groupManifestEntries, type DocsEntry } from '~/utils/docsManifest'
+
+type DocsEntry = {
+  heading: string
+  label: string
+  path: string
+  canonical: boolean
+}
+
+type DocsManifestGroup = {
+  heading: string
+  entries: DocsEntry[]
+}
+
+const groupManifestEntries = (entries: DocsEntry[]): DocsManifestGroup[] => {
+  const order: string[] = []
+  const grouped = new Map<string, DocsEntry[]>()
+
+  for (const entry of entries) {
+    if (!grouped.has(entry.heading)) {
+      grouped.set(entry.heading, [])
+      order.push(entry.heading)
+    }
+    grouped.get(entry.heading)!.push(entry)
+  }
+
+  return order.map((heading) => ({ heading, entries: grouped.get(heading) ?? [] }))
+}
 
 const { data, pending, error } = await useAsyncData('docs-manifest', () =>
   $fetch<DocsEntry[]>('/api/docs-manifest')

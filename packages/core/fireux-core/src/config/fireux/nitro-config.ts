@@ -14,6 +14,7 @@ type NitroOptions = NonNullable<NuxtConfig['nitro']>
 export function createNitroConfig(
   baseNitro: NuxtConfig['nitro'] | undefined
 ): NitroOptions {
+  // Setup-time only: invoked once during Nuxt config assembly, not per request.
   const nitro = { ...(baseNitro ?? {}) } as NitroOptions
   const preset = (nitro.preset ??
     env('FIREUX_NITRO_PRESET') ??

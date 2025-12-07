@@ -7,27 +7,10 @@ import { createFireuxConfig } from 'fireux-core'
 const baseConfig = createFireuxConfig({
   appName: 'FireUX',
   appShortName: 'FireUX',
+  appDescription: 'Core workspace for FireUX platform operations.',
   ecosystem: 'fireux',
   modules: ['fireux-fireux'],
   role: 'global',
-  pwa: {
-    manifest: {
-      icons: [
-        {
-          src: '/img/app/pwa/fireux-icon-192.png',
-          sizes: '192x192',
-          type: 'image/png',
-          purpose: 'any maskable',
-        },
-        {
-          src: '/img/app/pwa/fireux-icon-512.png',
-          sizes: '512x512',
-          type: 'image/png',
-          purpose: 'any maskable',
-        },
-      ],
-    },
-  },
   nitro: {
     firebase: {
       serverFunctionName: 'fireuxServer',

@@ -1,5 +1,6 @@
 import type { NuxtConfig } from 'nuxt/schema'
 
+// Setup-time helpers: executed during module/config assembly only (never per request).
 export type ModuleEntry = string | [string, Record<string, any>]
 
 type NitroOptions = NonNullable<NuxtConfig['nitro']>

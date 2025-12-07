@@ -2,7 +2,7 @@ import { env } from './env'
 import type { TenantConfig } from './tenant-config'
 
 export interface TenantTheme {
-  primaryColor?: string
+  primaryColor: string
   neutralColor?: string
   secondaryColor?: string
   centralSignupUrl?: string
@@ -11,8 +11,13 @@ export interface TenantTheme {
 }
 
 export function resolveTenantTheme(opts: TenantConfig): TenantTheme {
+  const primaryColor = opts.primaryColor ?? env('APP_PRIMARY_COLOR')
+  if (!primaryColor) {
+    throw new Error('[fireux] createFireuxConfig requires primaryColor (APP_PRIMARY_COLOR).')
+  }
+
   return {
-    primaryColor: opts.primaryColor ?? env('APP_PRIMARY_COLOR'),
+    primaryColor,
     neutralColor: opts.neutralColor ?? env('APP_NEUTRAL_COLOR'),
     secondaryColor: opts.secondaryColor ?? env('APP_SECONDARY_COLOR'),
     centralSignupUrl: env('CENTRAL_SIGNUP_URL'),

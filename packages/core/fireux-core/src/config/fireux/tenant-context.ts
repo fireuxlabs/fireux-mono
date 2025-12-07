@@ -11,7 +11,8 @@ import { resolveTenantVite } from './tenant-vite'
 
 interface FireuxNuxtSetup {
   appName: string
-  themeColor?: string
+  appDescription: string
+  themeColor: string
   modules: ModuleEntry[]
   runtimeConfig: NonNullable<NuxtConfig['runtimeConfig']>
   compatibilityDate: NuxtConfig['compatibilityDate']
@@ -19,9 +20,10 @@ interface FireuxNuxtSetup {
   nitro: NuxtConfig['nitro']
 }
 
-const DEFAULT_COMPATIBILITY_DATE = '2025-09-01'
+export const DEFAULT_COMPATIBILITY_DATE = '2025-09-01'
 
 export function resolveFireuxNuxtSetup(opts: TenantConfig): FireuxNuxtSetup {
+  // Constitution: fail fast on required tenant fields; avoid hidden compatibility layers.
   const basics = resolveTenantBasics(opts)
   const theme = resolveTenantTheme(opts)
   const integrations = resolveTenantIntegrations(basics, theme, opts)
@@ -44,6 +46,7 @@ export function resolveFireuxNuxtSetup(opts: TenantConfig): FireuxNuxtSetup {
 
   return {
     appName: basics.appName,
+    appDescription: basics.appDescription,
     themeColor: theme.primaryColor,
     modules,
     runtimeConfig,

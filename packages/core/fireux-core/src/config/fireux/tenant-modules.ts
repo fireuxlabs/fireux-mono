@@ -1,6 +1,7 @@
 import { dedupeKeepLast, type ModuleEntry } from './module-utils'
 import type { TenantIntegrations } from './tenant-integrations'
 
+// Core injects UI/PWA/firebase modules; callers append feature modules via modules: string[].
 export function resolveTenantModules(
   includeCore: boolean,
   moduleIds: string[] | undefined,
