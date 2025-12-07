@@ -14,6 +14,39 @@ export default [
       'coverage/**',
     ],
   },
+  // fireux-products: forbid relative Firestore manager imports; use fireux-core runtime path
+  {
+    files: ['packages/extensions/fireux-products/src/runtime/**/*.{ts,vue}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '../../operations/useFirestoreManager',
+              message:
+                'Import useFirestoreManager from fireux-core/runtime/composables/firestore/operations/useFirestoreManager',
+            },
+            {
+              name: '../../../operations/useFirestoreManager',
+              message:
+                'Import useFirestoreManager from fireux-core/runtime/composables/firestore/operations/useFirestoreManager',
+            },
+            {
+              name: '../../operations/useFirestoreManager.ts',
+              message:
+                'Import useFirestoreManager from fireux-core/runtime/composables/firestore/operations/useFirestoreManager',
+            },
+            {
+              name: '../../../operations/useFirestoreManager.ts',
+              message:
+                'Import useFirestoreManager from fireux-core/runtime/composables/firestore/operations/useFirestoreManager',
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Disallow auto-importing models via addImportsDir in config files
   {
     files: ['**/src/config/**/*.ts'],
