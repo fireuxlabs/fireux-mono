@@ -286,7 +286,7 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import type { Ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import DevProfileDiffList from 'fireux-core/runtime/components/dev/ProfileDiffList.vue'
 import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'

@@ -1,8 +1,8 @@
 import { useStorage } from '@vueuse/core'
 import { onMounted } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useBlogPostUtils } from './useBlogPostUtils.ts'
-import type { BlogPostEntry } from '../../../../models/objects/blogPost.model.ts'
+import { useBlogUtils } from '../firestore/objects/Blog/utils/useBlogUtils.ts'
+import type { BlogPostEntry } from '../../../models/objects/blogPost.model.ts'
 
 type BlogPostPayload = BlogPostEntry & {
   created_at: string
@@ -35,9 +35,9 @@ const defaultBlogPost: BlogPostEntry = {
 /**
  * Manages local draft state for the blog post authoring flow.
  */
-export function useCreateBlogPostState() {
+export function useBlogDraftState() {
   const { appId: tenantId } = useFireUXConfig()
-  const { getAuthor, getDefaultImages } = useBlogPostUtils()
+  const { getAuthor, getDefaultImages } = useBlogUtils()
 
   const blogPost = useStorage<BlogPostEntry>('createBlogPost', defaultBlogPost)
   const featuredImageData = useStorage<string>(

@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { BlogPost } from '../../../../models/objects/blogPost.model'
-import { useBlogInterface } from '../../../../composables/fireux/firestore/objects/Blog/state/useBlogInterface'
+import { useBlogInterface } from '../../../../composables/fireux/firestore/objects/Blog/utils/view/useBlogInterface'
 
 const props = defineProps<{ post: BlogPost }>()
 

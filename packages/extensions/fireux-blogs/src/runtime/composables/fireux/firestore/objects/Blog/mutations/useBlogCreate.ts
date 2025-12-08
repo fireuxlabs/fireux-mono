@@ -1,5 +1,5 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
-import type { BlogPost } from '../../../../models/objects/blogPost.model.ts'
+import type { BlogPost } from '../../../../../models/objects/blogPost.model.ts'
 
 export function useBlogCreate() {
   const { setDocument } = useFirestoreManager()

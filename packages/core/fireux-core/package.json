@@ -17,7 +17,7 @@
     },
     "./config/*": {
       "types": "./src/config/*",
-      "import": "./src/config/*"
+      "import": "./src/config/*.mjs"
     },
     "./package.json": "./package.json"
   },

@@ -44,7 +44,8 @@ import { ref } from 'vue'
 // Nuxt UI provides useToast via auto-import in app context; fall back if unavailable
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import { useCreateBlogPostState } from '../../../../composables/fireux/firestore/objects/Blog/useCreateBlogPostState'
+import { useBlogDraftState } from '../../../../composables/fireux/blog/useBlogDraftState'
+import { useBlog } from '../../../../composables/fireux/firestore/objects/Blog/useBlog'
 
 const selectedTab = ref<'write' | 'preview'>('write')
 const tabItems = [
@@ -52,7 +53,9 @@ const tabItems = [
   { label: 'Preview', icon: 'i-lucide-eye', value: 'preview', slot: 'preview' },
 ]
 
-const { resetCreateBlogPostState } = useCreateBlogPostState()
+const { blogPost, resetCreateBlogPostState, getBlogPostPayload } =
+  useBlogDraftState()
+const { createBlogPost, utils } = useBlog()
 const isCreating = ref(false)
 
 async function handleCreate() {
@@ -62,8 +65,13 @@ async function handleCreate() {
   console.log('⏳ Starting blog post creation...')
 
   try {
-    // Simplified blog creation logic
-    await new Promise((resolve) => setTimeout(resolve, 2000)) // Simulate API call
+    const payload = getBlogPostPayload()
+    const slug = payload.slug || utils.generateSlug(payload.title || '')
+    if (!slug) {
+      throw new Error('Slug is required to publish a blog post')
+    }
+
+    await createBlogPost(payload, slug)
 
     console.log('🎉 Blog post created successfully!')
     if (toast) {
@@ -94,6 +102,7 @@ async function handleCreate() {
 function handleClear() {
   if (confirm('Are you sure you want to clear the form?')) {
     resetCreateBlogPostState()
+    blogPost.value.slug = ''
     selectedTab.value = 'write'
   }
 }

@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
-import { useBlogPosts } from '../../composables/fireux/firestore/objects/Blog/useBlogPosts'
+import { useBlog } from '../../composables/fireux/firestore/objects/Blog/useBlog.ts'
 
 definePageMeta({
   layout: 'default',
@@ -40,9 +40,9 @@ definePageMeta({
   },
 })
 
-const { blogPostsCollection } = await useBlogPosts()
-const pending = computed(() => blogPostsCollection.value === undefined)
-const posts = computed(() => blogPostsCollection.value ?? [])
+const { items } = useBlog()
+const pending = computed(() => items.value === undefined)
+const posts = computed(() => items.value ?? [])
 const { isAdmin } = useUser()
 // Show CTA for admins; in dev, always surface to speed iteration regardless of load state.
 const showCTA = computed(() => isAdmin.value || import.meta.dev)

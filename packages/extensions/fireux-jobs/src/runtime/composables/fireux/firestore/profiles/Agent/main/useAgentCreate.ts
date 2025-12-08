@@ -1,5 +1,5 @@
 import { useRouter } from 'vue-router'
-import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/core/useProfileEnsure.ts'
+import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure.ts'
 import { agentConfig } from '../../../../../../models/profiles/Agent.model.ts'
 
 export function useAgentCreate() {

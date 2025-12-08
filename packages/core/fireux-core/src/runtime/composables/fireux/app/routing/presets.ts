@@ -1,4 +1,4 @@
-import { useNav } from './useNav'
+import { useNav } from '../ui/nav/useNav'
 
 export const useDefaultNav = () => useNav(['default'])
 export const useLandingNav = () => useNav(['landing'])

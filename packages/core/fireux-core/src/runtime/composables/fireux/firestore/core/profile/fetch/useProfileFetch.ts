@@ -1,4 +1,4 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts
+// FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 import { computed, isRef } from 'vue'

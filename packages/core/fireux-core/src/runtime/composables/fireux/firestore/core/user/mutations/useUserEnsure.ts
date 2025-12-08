@@ -27,6 +27,7 @@ type EnsureUserOptions = {
 type MembershipRole = 'admin' | 'user'
 const DEFAULT_REDIRECT = '/dashboard'
 
+// Ensures core user + app membership; used by auth and profile flows.
 export function useAppUserEnsure() {
   const router = useRouter()
   const { isTenant, appId, appName, ecosystem } = useFireUXConfig()
@@ -73,5 +74,4 @@ export function useAppUserEnsure() {
 
   return { ensureUser, ensureCore, ensureApp, getAuthContext }
 }
-
-export const useUserEnsure = useAppUserEnsure
+export { useAppUserEnsure as useUserEnsure }

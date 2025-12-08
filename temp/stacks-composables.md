@@ -276,14 +276,14 @@ If you want, next step we can pick one concrete stack (e.g. Blog) and map:
 
 When you introduce a new domain (e.g. Kitchen, Order, Booking, etc.), follow this sequence:
 
-1) Classify the stack
+1. Classify the stack
 
 - Is it Identity (needs ensure and overlays)?
 - Is it an Artifact (complete document, no ensure)?
 - Is it Query-only (search/list, no mutations)?
 - This decides whether you add ensure and whether you need an editor/draft layer.
 
-2) Create the composables root
+2. Create the composables root
 
 ```
 packages/<core|ecosystem|extension>/<pkg>/src/runtime/composables/fireux/
@@ -295,7 +295,7 @@ packages/<core|ecosystem|extension>/<pkg>/src/runtime/composables/fireux/
 
 Pick one of: core, objects, or profiles.
 
-3) Create the minimal canon for that domain
+3. Create the minimal canon for that domain
 
 ```
 firestore/<area>/<Domain>/
@@ -319,7 +319,7 @@ firestore/<area>/<Domain>/
 - Identity stacks: must have `use<Domain>Ensure.ts`.
 - Artifact stacks: never have ensure, but may have an editor.
 
-4) Add an editor/draft layer if needed
+4. Add an editor/draft layer if needed
 
 If the domain is “crafted content” (Blog, Recipe, Kitchen wizard):
 
@@ -332,7 +332,7 @@ composables/fireux/<domain>/
 - Draft state is local only (Pinia, `useState`, or localStorage).
 - Editor is allowed to be opinionated (steps, preview, etc.) and only calls mutations on publish.
 
-5) Expose one facade
+5. Expose one facade
 
 In `use<Domain>.ts`, always export a single, predictable surface:
 
@@ -358,7 +358,7 @@ export function useBlog() {
 
 Pages and components should only import the facade (`useBlog`, `useProducts`, `useJob`, `useAgent`, etc.) unless there’s a very specific reason.
 
-6) Wire the index page with CTA canon
+6. Wire the index page with CTA canon
 
 - Use the canonical layout (CTA + skeleton + empty + list).
 - Pick the gate source:

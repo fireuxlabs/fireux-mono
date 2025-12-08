@@ -50,8 +50,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp.ts'
-import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/main/useAppCollection.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/fireux/firestore/core/app/data/users.ts'
+import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection.ts'
+import { useAppUsers } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppUsers.ts'
 import { useDevHealth } from 'fireux-core/runtime/composables/dev/health/useDevHealth.ts'
 
 definePageMeta({

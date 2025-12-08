@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppCard } from 'fireux-core/runtime/composables/fireux/firestore/core/app/state/interface.ts'
+import type { AppCard } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts'
 
 const props = defineProps<{ app: AppCard.Pill }>()
 

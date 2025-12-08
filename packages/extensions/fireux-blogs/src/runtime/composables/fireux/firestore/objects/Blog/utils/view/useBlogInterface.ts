@@ -1,4 +1,4 @@
-import type { BlogPost } from '../../../../models/objects/blogPost.model'
+import type { BlogPost } from '../../../../../../models/objects/blogPost.model'
 
 export namespace BlogCard {
   export interface Base {

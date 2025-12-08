@@ -21,12 +21,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useBlogPosts } from '../../composables/fireux/firestore/objects/Blog/useBlogPosts'
+import { useBlog } from '../../composables/fireux/firestore/objects/Blog/useBlog.ts'
 
 const route = useRoute()
-const { fetchBlogPost } = await useBlogPosts()
+const { fetchBySlug } = useBlog()
 
-const postRef = await fetchBlogPost(String(route.params.slug ?? ''))
+const postRef = await fetchBySlug(String(route.params.slug ?? ''))
 const post = computed(() => postRef.value ?? undefined)
 const pending = computed(() => postRef.value === undefined)
 </script>

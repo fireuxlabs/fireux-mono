@@ -239,7 +239,7 @@
 
 <script setup lang="ts">
 import { computed, unref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef.ts'
 import { useSupplier } from '../../composables/fireux/firestore/profiles/Supplier/useSupplier.ts'
 import { useChefCollection } from '../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'

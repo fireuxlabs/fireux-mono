@@ -22,9 +22,7 @@ export function formatUrl(url: string): string {
 }
 
 /** Formats social links object for storage */
-export function formatSocialLinks(
-  socialLinks: AppSocialLinks
-): AppSocialLinks {
+export function formatSocialLinks(socialLinks: AppSocialLinks): AppSocialLinks {
   const formatted: AppSocialLinks = {}
   const platforms = [
     'website',

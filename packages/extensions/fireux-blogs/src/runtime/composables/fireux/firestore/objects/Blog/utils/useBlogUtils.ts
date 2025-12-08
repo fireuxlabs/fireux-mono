@@ -1,7 +1,7 @@
 import type {
-  BlogPost,
   Author,
-} from '../../../../models/objects/blogPost.model.ts'
+  BlogPost,
+} from '../../../../../models/objects/blogPost.model.ts'
 
 function generateSlug(title: string): string {
   let out = title.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')
@@ -41,7 +41,7 @@ function getDefaultImages(): Pick<BlogPost, 'featuredImage' | 'socialImage'> {
 /**
  * Helper utilities shared across blog authoring flows.
  */
-export function useBlogPostUtils() {
+export function useBlogUtils() {
   return {
     generateSlug,
     computeReadingTime,
