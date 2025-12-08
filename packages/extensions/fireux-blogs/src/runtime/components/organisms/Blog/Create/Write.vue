@@ -83,7 +83,7 @@ import {
   defineAsyncComponent,
   shallowRef,
 } from 'vue'
-import { useCreateBlogPostState } from '../../../../composables/firestore/objects/Blog/useCreateBlogPostState'
+import { useCreateBlogPostState } from '../../../../composables/fireux/firestore/objects/Blog/useCreateBlogPostState'
 import { useBlogPosts } from '../../../../composables/fireux/firestore/objects/Blog/useBlogPosts'
 
 const EditorContent = defineAsyncComponent(async () => {

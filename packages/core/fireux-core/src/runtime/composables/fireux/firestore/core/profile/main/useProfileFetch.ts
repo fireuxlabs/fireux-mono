@@ -2,7 +2,7 @@
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 import { computed, isRef } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import type { Ref } from 'vue'
 import type {
   Profile,

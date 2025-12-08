@@ -8,7 +8,7 @@ import { arrayRemove, arrayUnion } from 'firebase/firestore'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage.ts'
-import { useAppEnsure } from '../data/ensure.ts'
+import { useAppEnsure } from './useAppEnsure.ts'
 
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const { updateDocument } = useFirestoreUpdate()

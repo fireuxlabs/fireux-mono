@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useFireUXConfig } from '../../FireUXConfig'
 import type { NavItem, NavMeta } from '../../../../types/nav'
 
 const DEFAULT_LAYOUT = 'default'

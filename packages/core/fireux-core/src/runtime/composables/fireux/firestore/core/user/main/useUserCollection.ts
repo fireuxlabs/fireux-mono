@@ -2,7 +2,7 @@ import { computed, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useNuxtApp } from '#imports'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/fireux/firestore/core/app/data/users.ts'
+import { useAppUsers } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppUsers.ts'
 import type {
   User,
   AppUser,

@@ -1,7 +1,7 @@
 import { arrayRemove, arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
 import { usePlaceSave } from 'fireux-places/runtime/composables/usePlaceSave.ts'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/usePlacesGoogle.ts'

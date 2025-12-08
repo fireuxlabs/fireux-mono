@@ -1,9 +1,9 @@
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
-import { useAppFetch } from './data/fetch'
-import { useAppComputed } from './state/computed'
-import { useAppInterface } from './state/interface'
-import { useAppEnsure } from './data/ensure'
-import { useAppUpdate } from './actions/update'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { useAppFetch } from './fetch/useAppFetch'
+import { useAppComputed } from './utils/view/useAppComputed'
+import { useAppInterface } from './utils/view/useAppInterface'
+import { useAppEnsure } from './mutations/useAppEnsure'
+import { useAppUpdate } from './mutations/useAppUpdate'
 
 export type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 

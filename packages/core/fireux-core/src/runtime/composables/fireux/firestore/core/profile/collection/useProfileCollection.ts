@@ -2,7 +2,7 @@ import { computed, watchEffect } from 'vue'
 import { collection } from 'firebase/firestore'
 import { useNuxtApp } from '#imports'
 import { useFirestore, useCollection } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import type {
   Profile,
   ProfileConfig,

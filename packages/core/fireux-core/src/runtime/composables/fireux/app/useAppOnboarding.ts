@@ -1,10 +1,10 @@
 import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
-import { useFireUXConfig } from '../config/FireUXConfig.ts'
+import { useFireUXConfig } from './FireUXConfig'
 import { useUser } from '../firestore/core/user/useUser.ts'
-import { useAppEnsure } from '../firestore/core/app/data/ensure.ts'
+import { useAppEnsure } from '../firestore/core/app/mutations/useAppEnsure.ts'
 import type { EnvCheckResponse } from '../../../types/app/onboarding.ts'
-import { useEnvCheck } from '../firestore/core/app/internal/useEnvCheck.ts'
+import { useAppEnvCheck } from './useAppEnvCheck'
 
 export interface AppOnboardingState {
   coreUser: Ref<ReturnType<typeof useUser>['coreUser']['value'] | null>
@@ -65,7 +65,7 @@ export function useAppOnboarding(): AppOnboardingState {
     }
   })
 
-  const { data, pending, error, refresh: refreshEnv } = useEnvCheck()
+  const { data, pending, error, refresh: refreshEnv } = useAppEnvCheck()
 
   const env = computed(() => data.value ?? null)
   const envError = computed(() => {

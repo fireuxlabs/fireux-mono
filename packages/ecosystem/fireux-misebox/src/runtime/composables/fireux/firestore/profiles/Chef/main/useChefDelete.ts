@@ -1,6 +1,6 @@
 import { useFirestore } from 'vuefire'
 import { deleteDoc, doc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
 import type { ChefProfile } from '../../../../../../models/profiles/Chef.model.ts'

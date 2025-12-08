@@ -73,3 +73,12 @@
 2. Add CTAs: Kitchen (and optionally Places) with clear gate rules; surface on page.
 3. Document gate policy: admin (Blog/Product), profile (Jobs Agent), domain-specific (Chef/Supplier), none (Places?)
 4. Decide on `Organisms` casing normalization (Jobs) or document exception.
+
+## Proposed canonical shape (draft)
+
+- Directories: `organisms/<Stack>/{CTA.vue,Cards/,Create/,Sections/}`; objects go under `organisms/<Stack>/objects/<Object>/` when they have their own create/edit flows.
+- Cards: always ship `Cards/{Cell.vue,Pill.vue}`; add `Profile.vue` when profile-like; allow extras (Article/Page/Product/Prices) alongside the base set.
+- CTA gates: default to profile-gated where a user identity matters; admin-only for system-managed content (Blog/Product); document any ungated cases (e.g., Places) explicitly.
+- Create flows: profile/app onboarding stays lightweight (no Create dir); full Create dirs reserved for publishable artifacts (Blog/Product/Jobs and objectized flows like Ingredient/Recipe).
+- State conventions: Firestore-backed global mirrors live under `firestore/state/*` (e.g., user state); draft-only local buffers live beside their domain (e.g., blog draft state) and should be named `use<Domain>DraftState` to avoid implying live sync.
+- Naming/casing: prefer lowercase `organisms/`; keep Cards/Create/Sections at the same level; avoid single-file subfolders unless they group ≥2 files.

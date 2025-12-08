@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
 import type { AppUser } from 'fireux-core/runtime/models/core/user.model.ts'
 

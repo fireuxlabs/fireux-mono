@@ -2,7 +2,7 @@ import { useStorage } from '@vueuse/core'
 import { onMounted, ref, watch } from 'vue'
 import { useCurrentUser } from 'vuefire'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import type { FirebaseProduct } from '../../../../models/objects/product.model'
 
 type ProductDraft = Partial<FirebaseProduct> & {

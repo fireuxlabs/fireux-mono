@@ -1,5 +1,5 @@
 import { useRouter } from 'vue-router'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useCoreUserEnsure } from '../core/useCoreUserEnsure.ts'
 import {
   ensureUserAppMembership,

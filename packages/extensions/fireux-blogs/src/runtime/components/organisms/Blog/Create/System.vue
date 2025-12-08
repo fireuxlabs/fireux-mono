@@ -44,7 +44,7 @@ import { ref } from 'vue'
 // Nuxt UI provides useToast via auto-import in app context; fall back if unavailable
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import { useCreateBlogPostState } from '../../../../composables/firestore/objects/Blog/useCreateBlogPostState'
+import { useCreateBlogPostState } from '../../../../composables/fireux/firestore/objects/Blog/useCreateBlogPostState'
 
 const selectedTab = ref<'write' | 'preview'>('write')
 const tabItems = [

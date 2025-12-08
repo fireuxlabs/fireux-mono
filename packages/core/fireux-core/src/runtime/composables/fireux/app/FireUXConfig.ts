@@ -1,4 +1,3 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/FireUXConfig.ts
 import { useRuntimeConfig } from '#imports'
 import { getApps } from 'firebase/app'
 

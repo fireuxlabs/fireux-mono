@@ -1,4 +1,3 @@
-// FILE: /packages/core/fireux-core/src/runtime/composables/app/utils/useAvatarProxy.ts
 import { computed, toValue } from 'vue'
 import type { Ref, ComputedRef } from 'vue'
 

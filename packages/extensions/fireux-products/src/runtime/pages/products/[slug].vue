@@ -16,10 +16,7 @@ import { useRoute } from '#imports'
 import { useProducts } from '../../composables/fireux/firestore/objects/Product/useProducts'
 
 const route = useRoute()
-const {
-  fetchProductBySlug,
-  fetchProductPrices
-} = await useProducts()
+const { fetchProductBySlug, fetchProductPrices } = await useProducts()
 
 const product = await fetchProductBySlug(route.params.slug as string)
 

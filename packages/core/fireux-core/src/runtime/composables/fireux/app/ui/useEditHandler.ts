@@ -1,4 +1,3 @@
-// FILE: /packages/core/fireux-core/src/runtime/composables/app/utils/useEditHandler.ts
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 

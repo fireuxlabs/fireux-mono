@@ -1,51 +1,31 @@
-// ~/composables/app/utils/useAppFormatting.ts
-
-/**
- * APP FORMATTING UTILITIES
- *
- * Formatting functions for app-level fields before saving to Firestore.
- * These ensure consistent data format across the application.
- */
-
-import type { AppSocialLinks } from './validation.ts'
+import type { AppSocialLinks } from './useAppValidation.ts'
 
 const HTTPS_PROTOCOL_REGEX = /^https?:\/\//
 
-/**
- * Formats app description for storage
- */
+/** Formats app description for storage */
 export function formatAppDescription(value: string): string {
   return value.trim()
 }
 
-/**
- * Formats admin IDs array for storage
- */
+/** Formats admin IDs array for storage */
 export function formatAdminIds(adminIds: string[]): string[] {
-  return adminIds.map((id) => id.trim()).filter((id) => id.length > 0) // Remove empty strings
+  return adminIds.map((id) => id.trim()).filter((id) => id.length > 0)
 }
 
-/**
- * Formats a single URL for storage
- */
+/** Formats a single URL for storage */
 export function formatUrl(url: string): string {
   const trimmed = url.trim()
-
-  // Add https:// if no protocol is specified
   if (trimmed && !HTTPS_PROTOCOL_REGEX.exec(trimmed)) {
     return `https://${trimmed}`
   }
-
   return trimmed
 }
 
-/**
- * Formats social links object for storage
- */
-export function formatSocialLinks(socialLinks: AppSocialLinks): AppSocialLinks {
+/** Formats social links object for storage */
+export function formatSocialLinks(
+  socialLinks: AppSocialLinks
+): AppSocialLinks {
   const formatted: AppSocialLinks = {}
-
-  // Format each URL and only include non-empty ones
   const platforms = [
     'website',
     'twitter',
@@ -65,9 +45,7 @@ export function formatSocialLinks(socialLinks: AppSocialLinks): AppSocialLinks {
   return formatted
 }
 
-/**
- * Main formatting function that formats any app field
- */
+/** Main formatting function that formats any app field */
 export function formatAppField(field: string, value: any): any {
   switch (field) {
     case 'description':
@@ -77,6 +55,6 @@ export function formatAppField(field: string, value: any): any {
     case 'social_links':
       return formatSocialLinks(value)
     default:
-      return value // Return as-is for unknown fields
+      return value
   }
 }

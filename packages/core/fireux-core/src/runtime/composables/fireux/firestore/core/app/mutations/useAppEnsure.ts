@@ -1,4 +1,4 @@
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { requireUid } from '../../../utils/useEnsureCommon.ts'

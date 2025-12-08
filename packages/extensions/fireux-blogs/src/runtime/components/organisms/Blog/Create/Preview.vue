@@ -136,7 +136,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import DOMPurify from 'dompurify'
-import { useCreateBlogPostState } from '../../../../composables/firestore/objects/Blog/useCreateBlogPostState'
+import { useCreateBlogPostState } from '../../../../composables/fireux/firestore/objects/Blog/useCreateBlogPostState'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 
 // Use the centralized state management
