@@ -3,7 +3,7 @@ import type {
   User,
   AppUser,
 } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from '../main/useUserFetch.ts'
+import type { UserRefs } from '../fetch/useUserFetch.ts'
 import { useCoreUserUpdate } from './useCoreUserUpdate.ts'
 import { useAppUserUpdate } from './useAppUserUpdate.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'

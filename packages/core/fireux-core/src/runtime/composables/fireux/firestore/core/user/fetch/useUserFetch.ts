@@ -1,4 +1,3 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/main/useUserFetch.ts
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 import { computed, isRef } from 'vue'

@@ -6,7 +6,7 @@ import type {
   User,
   AppUser,
 } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from '../main/useUserFetch.ts'
+import type { UserRefs } from '../../fetch/useUserFetch.ts'
 
 type UserCtaKey = 'sign-in' | 'create-core-user' | 'join-app' | 'avatar'
 

@@ -1,5 +1,5 @@
 import { useFetch } from '#imports'
-import { useFireUXConfig } from './FireUXConfig'
+import { useFireUXConfig } from '../FireUXConfig'
 
 interface EnvCheckResponse {
   ok: boolean

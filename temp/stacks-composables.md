@@ -126,6 +126,19 @@ fireux-places/src/runtime/composables/
 - User: consider flattening tiny single-file subfolders (state/app/mutations/delete) or prefixing filenames to reduce depth while keeping separation.
 - Products/Jobs/Chef/Supplier: verify CRUD naming consistency and presence of an aggregated facade per stack.
 
+## Alignment plan (next passes)
+
+- Blogs (extension):
+  - Reshape `firestore/objects/Blog` to canon: `useBlog.ts` facade + `fetch/` (list/read), `mutations/` (create/update/delete), `utils/` (slug/reading time), `utils/view/` (interface). Move `useCreateBlogPostState` → `useBlogDraftState` outside Firestore (e.g., `fireux/blog/useBlogDraftState.ts`).
+  - Keep published-post helpers in fetch/mutations; draft stays local-storage only.
+
+- Products (extension):
+  - Canonize `Product`: add `useProduct.ts` facade; split into `fetch/` (list/read), `mutations/` (create/update/delete, price state), `utils/validation/` (format/validate), `utils/view/` (interface if needed). Remove or repurpose empty `operations/`.
+
+- Jobs (extension):
+  - Jobs object: move `jobs/main/*` into `jobs/fetch/` (collection/read) and `jobs/mutations/` (create/update/delete/editor). Add `jobs/utils/view/` for computed/interface; keep `useJob.ts` as facade.
+  - Profiles Agent/Professional: mirror profile canon—`fetch/` (collection/read), `mutations/` (create/update/delete), `utils/view/` (computed/interface), `utils/` for shared helpers; drop `.DS_Store`.
+
 ## Canonical checklist for a stack
 
 - [ ] Facade: `use<Domain>()` or `use<Domain>Collection()` returning refs, pending, CRUD, interface, utils.

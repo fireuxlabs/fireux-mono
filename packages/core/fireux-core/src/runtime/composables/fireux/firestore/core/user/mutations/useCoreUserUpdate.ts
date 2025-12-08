@@ -3,10 +3,10 @@ import type {
   User,
   UserNotification,
 } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from '../main/useUserFetch.ts'
+import type { UserRefs } from '../fetch/useUserFetch.ts'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage.ts'
-import { useUserFormattingAndValidation } from '../utils/forms/useUserFormatting.ts'
+import { useUserFormattingAndValidation } from '../utils/validation/useUserFormatting.ts'
 import { createUserNotification } from '../utils/ensureHelpers.ts'
 
 type CoreProfileActions = {

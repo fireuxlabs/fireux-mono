@@ -3,7 +3,7 @@ import type {
   AppUser,
   UserNotification,
 } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from '../main/useUserFetch.ts'
+import type { UserRefs } from '../fetch/useUserFetch.ts'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { createUserNotification } from '../utils/ensureHelpers.ts'

@@ -7,7 +7,7 @@ import type {
   Profile,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
-import { useUserCollection } from '../../user/main/useUserCollection.ts'
+import { useUserCollection } from '../../user/fetch/useUserCollection.ts'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
 import type { Ref } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'

@@ -5,7 +5,7 @@ import type {
   Profile,
   ProfileConfig,
 } from 'fireux-core/runtime/models/core/profile.model.ts'
-import type { ProfileRefs } from '../main/useProfileFetch.ts'
+import type { ProfileRefs } from '../fetch/useProfileFetch.ts'
 
 type UpdateResult = 'success'
 type UpdateScope = 'auto' | 'core' | 'app'

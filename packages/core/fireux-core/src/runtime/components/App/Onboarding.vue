@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAppOnboarding } from '../../composables/fireux/app/useAppOnboarding.ts'
+import { useAppOnboarding } from '../../composables/fireux/app/utils/useAppOnboarding.ts'
 
 const {
   coreUser,
