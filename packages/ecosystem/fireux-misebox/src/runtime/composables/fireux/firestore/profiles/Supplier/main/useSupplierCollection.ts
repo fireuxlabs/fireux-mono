@@ -1,4 +1,4 @@
-import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/collection/useProfileCollection.ts'
+import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection.ts'
 import {
   supplierConfig,
   type SupplierProfile,
