@@ -66,8 +66,6 @@
 - [copilot-documentation/package-docs-index.md](copilot-documentation/package-docs-index.md)
 - [copilot-documentation/roadmap.md](copilot-documentation/roadmap.md)
 
-> Temporary reports were archived to `packages/ecosystem/fireux-fireux/docs/90-appendices/archive/temporary-reports/` (2025-12-08). See `documentation.md` for the canonical doc location.
-
 ### docs — ✅ Canonical docs root
 
 - [docs/10-core/figma.md](docs/10-core/figma.md) — ✅ Canonical

@@ -80,7 +80,7 @@ async function main() {
     }
   }
 
-  const out = path.join(repoRoot, 'archive/reports/layout-keys-snapshot.md')
+  const out = path.join(repoRoot, 'docs/dev/reports/layout-keys-snapshot.md')
   await fs.mkdir(path.dirname(out), { recursive: true })
   await fs.writeFile(out, lines.join('\n'), 'utf8')
   console.log(`Wrote ${out}`)
