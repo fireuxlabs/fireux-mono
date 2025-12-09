@@ -4,7 +4,7 @@ interface EnvCheckResponse {
   message?: string
 }
 
-export async function useAppEnvCheck() {
+export function useAppEnvCheck() {
   return useFetch<EnvCheckResponse>('/api/app/env-check', {
     method: 'GET',
   })

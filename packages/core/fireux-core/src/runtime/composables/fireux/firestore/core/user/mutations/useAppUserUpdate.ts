@@ -1,6 +1,8 @@
-import { arrayUnion } from 'firebase/firestore'
+import { arrayUnion, arrayRemove } from 'firebase/firestore'
+import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
 import type {
   AppUser,
+  User,
   UserNotification,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from '../fetch/useUserFetch.ts'
@@ -10,6 +12,7 @@ import { createUserNotification } from '../utils/ensureHelpers.ts'
 
 type AppMembershipActions = {
   setRole: (role: 'user' | 'admin') => Promise<void>
+  setAdminCascaded: (makeAdmin: boolean) => Promise<void>
 }
 
 type AppNotificationActions = {
@@ -19,7 +22,6 @@ type AppNotificationActions = {
 export function useAppUserUpdate(user: UserRefs) {
   const { updateDocument } = useFirestoreUpdate()
   const { appId } = useFireUXConfig()
-
   const app = user.appUser as { value: AppUser | undefined }
 
   const requireAppContext = () => {
@@ -33,6 +35,28 @@ export function useAppUserUpdate(user: UserRefs) {
     setRole: async (role) => {
       const { appDocId, appId: activeAppId } = requireAppContext()
       await updateDocument(`apps/${activeAppId}/users`, appDocId, { role })
+    },
+    setAdminCascaded: async (makeAdmin) => {
+      const { appDocId, appId: activeAppId } = requireAppContext()
+
+      const role: AppUser['role'] = makeAdmin ? 'admin' : 'user'
+
+      // Update app-scoped user role
+      await updateDocument(`apps/${activeAppId}/users`, appDocId, { role })
+
+      // Update app admin_ids
+      await updateDocument<App>(`apps`, activeAppId, {
+        admin_ids: (makeAdmin
+          ? arrayUnion(appDocId)
+          : arrayRemove(appDocId)) as unknown as App['admin_ids'],
+      })
+
+      // Update core user adminOf mirror
+      await updateDocument<User>('users', appDocId, {
+        adminOf: (makeAdmin
+          ? arrayUnion(activeAppId)
+          : arrayRemove(activeAppId)) as unknown as string[],
+      })
     },
   }
 

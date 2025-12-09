@@ -23,8 +23,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from '#fireux-core-composables/fireux/firestore/core/user/useUser'
 import { useProducts } from '../../composables/fireux/firestore/objects/Product/useProducts'
+import { useProductPermissions } from '../../composables/useProductPermissions'
 
 definePageMeta({
   layout: 'default',
@@ -43,6 +43,6 @@ definePageMeta({
 const { productsCollection } = await useProducts()
 const pending = computed(() => productsCollection.value === undefined)
 const products = computed(() => productsCollection.value ?? [])
-const { isAdmin } = useUser()
-const showCTA = computed(() => isAdmin.value)
+const { canManageProducts } = useProductPermissions()
+const showCTA = computed(() => canManageProducts.value)
 </script>

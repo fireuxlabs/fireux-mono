@@ -150,7 +150,11 @@ function checkBrandImage(
   return result
 }
 
-function createBrandAssetResolver(repoRoot: string, ecosystem?: string) {
+function createBrandAssetResolver(
+  repoRoot: string,
+  ecosystem?: string,
+  appNamespace?: string
+) {
   const candidates = new Set<string>()
   candidates.add(join(process.cwd(), 'public'))
   candidates.add(join(repoRoot, 'public'))
@@ -182,6 +186,17 @@ function createBrandAssetResolver(repoRoot: string, ecosystem?: string) {
     candidates.add(
       join(repoRoot, 'projects', scoped, `${scoped}-app`, 'public')
     )
+  }
+
+  const appScoped = (appNamespace || '').trim()
+  if (appScoped) {
+    candidates.add(
+      join(repoRoot, 'projects', appScoped, `${appScoped}`, 'public')
+    )
+    candidates.add(
+      join(repoRoot, 'projects', appScoped, `${appScoped}-app`, 'public')
+    )
+    candidates.add(join(repoRoot, 'packages', 'apps', appScoped, 'public'))
   }
 
   return (relativePath: string) => {
@@ -228,6 +243,7 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
     }
   ).runtimeConfig
   const ecosystem = runtimeConfig?.public?.ecosystem as string | undefined
+  const appNamespace = (env.APP_ID || '').trim() || undefined
   const here = dirname(fileURLToPath(import.meta.url))
   const repoRoot = findRepoRoot(here)
 
@@ -344,8 +360,12 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
   const presentOptionalServer = optionalServer.filter((k) => !!env[k])
 
   // Brand asset checks
-  const resolveBrandAsset = createBrandAssetResolver(repoRoot, ecosystem)
-  const brandNamespace = (ecosystem || 'fireux').trim()
+  const resolveBrandAsset = createBrandAssetResolver(
+    repoRoot,
+    ecosystem,
+    appNamespace
+  )
+  const brandNamespace = (appNamespace || ecosystem || 'fireux').trim()
   const brandRequirements: Array<{
     name: string
     path: string
@@ -380,26 +400,66 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
         ]
       : [
           {
-            name: 'avatar',
-            path: 'img/ecosystem/avatar.png',
+            name: 'logo',
+            path: 'img/app/logo.png',
             width: 512,
             height: 512,
           },
           {
-            name: 'logo',
-            path: 'img/ecosystem/logo.png',
+            name: 'cover',
+            path: 'img/app/cover.png',
+          },
+          {
+            name: 'thumbnail',
+            path: 'img/app/thumbnail.png',
+          },
+          {
+            name: 'favicon',
+            path: 'img/app/favicon.ico',
+          },
+          {
+            name: 'pwa-icon-192',
+            path: 'img/app/pwa/icon-192.png',
+            width: 192,
+            height: 192,
+          },
+          {
+            name: 'pwa-icon-512',
+            path: 'img/app/pwa/icon-512.png',
             width: 512,
             height: 512,
           },
           {
             name: 'wordmark',
-            path: 'img/ecosystem/wordmark.png',
+            path: 'img/app/wordmark.png',
+            minWidth: 256,
+            minHeight: 64,
+            minAspect: 3,
+          },
+          {
+            name: 'wordmark',
+            path: 'img/app/wordmark-light.png',
+            minWidth: 256,
+            minHeight: 64,
+            minAspect: 3,
+          },
+          {
+            name: 'wordmark',
+            path: 'img/app/wordmark-light.svg',
+            minWidth: 256,
+            minHeight: 64,
+            minAspect: 3,
+          },
+          {
+            name: 'wordmark',
+            path: 'img/app/wordmark-dark.png',
             minWidth: 256,
             minHeight: 64,
             minAspect: 3,
           },
         ]
 
+  // Check brand assets at the app-level paths only (public/img/app/*) to match figma-export guidance.
   const brandAssets: BrandAssetCheck[] = brandRequirements.map((asset) =>
     checkBrandImage(
       asset.name,
@@ -422,11 +482,7 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
       'Firebase Admin not configured (FIREBASE_SERVICE_ACCOUNT or split keys). SSR/admin features will be limited.'
     )
   }
-  if (env.STRIPE_SECRET_KEY && !env.STRIPE_WEBHOOK_SECRET) {
-    warnings.push(
-      'STRIPE_SECRET_KEY is set but STRIPE_WEBHOOK_SECRET is missing. Webhook validation will be disabled.'
-    )
-  }
+  // Stripe warnings removed for core onboarding; handled in products module.
 
   // Helpers to render masked entries
   const mask = (k: string): EnvVarEntry => ({
@@ -476,7 +532,9 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
     notes: [
       'Role is enforced by Nuxt config (createFireuxConfig) and is not checked here.',
       'Env vars are fixed and non-editable via UI.',
-      `Brand asset validation checks /img/brand/${brandNamespace} for required files and dimensions.`,
+      brandNamespace === 'fireux'
+        ? 'Brand asset validation checks /img/core/brand/ for required files and dimensions.'
+        : 'Brand asset validation checks /img/app/ for required files and dimensions.',
       ...(detectedServiceAccountPath
         ? [`Service account file detected at ${detectedServiceAccountPath}.`]
         : [

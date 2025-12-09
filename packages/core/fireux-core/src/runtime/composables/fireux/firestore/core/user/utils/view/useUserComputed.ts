@@ -76,16 +76,8 @@ export function useUserComputed(user: UserRefs, pending?: Ref<boolean>) {
   })
 
   const isAdmin = computed(() => {
-    if (appUser.value?.role === 'admin') return true
-
-    const core = coreUser.value
-    if (!core) return false
-
-    const adminOf = Array.isArray(core.adminOf) ? core.adminOf : []
-    if (!adminOf.length) return false
-
-    if (!isTenant.value) return adminOf.length > 0
-    return appId ? adminOf.includes(appId) : adminOf.length > 0
+    if (isTenant.value) return appUser.value?.role === 'admin'
+    return coreUser.value?.role === 'admin'
   })
 
   const cta = computed<UserCta>(() => CTA_CONFIG[resolveCtaKey.value])

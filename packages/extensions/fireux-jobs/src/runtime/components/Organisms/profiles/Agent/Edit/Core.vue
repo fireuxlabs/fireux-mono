@@ -41,7 +41,7 @@
 import { computed } from 'vue'
 import type { AgentCoreProfile } from '../../../../../models/profiles/Agent.model.ts'
 import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentUpdate.ts'
-import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/forms/useUserFormatting.ts'
+import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting.ts'
 
 const props = defineProps<{ agent: AgentCoreProfile | null }>()
 

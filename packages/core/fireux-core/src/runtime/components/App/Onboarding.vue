@@ -69,6 +69,8 @@
 <script setup lang="ts">
 import { useAppOnboarding } from '../../composables/fireux/app/utils/useAppOnboarding.ts'
 
+const isDev = import.meta.dev
+
 const {
   coreUser,
   isUnlocked,

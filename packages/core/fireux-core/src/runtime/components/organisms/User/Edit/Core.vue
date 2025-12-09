@@ -8,6 +8,23 @@
     <ClientOnly>
       <div v-if="user" class="space-y-6">
         <UCard>
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-xs text-gray-600 space-y-1">
+              <p>app admins: {{ appAdmins.join(', ') || 'none' }}</p>
+              <p>appUser.role: {{ appUserRole }}</p>
+              <p>core adminOf: {{ user?.adminOf?.join(', ') || 'none' }}</p>
+            </div>
+            <USwitch
+              :model-value="isAppAdmin"
+              :loading="togglingAdmin"
+              :disabled="isOnlyAdmin && isAppAdmin"
+              label="App admin"
+              @update:model-value="handleToggleAdmin"
+            />
+          </div>
+        </UCard>
+
+        <UCard>
           <div class="flex flex-col items-center gap-2">
             <MoleculesFormsFirestoreAvatarPicker
               :src="user.avatar"
@@ -81,7 +98,8 @@ import { computed, ref } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser.ts'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify.ts'
-import { useUserFormattingAndValidation } from '../../../../composables/fireux/firestore/core/user/utils/forms/useUserFormatting.ts'
+import { useUserFormattingAndValidation } from '../../../../composables/fireux/firestore/core/user/utils/validation/useUserFormatting.ts'
+import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp.ts'
 
 const props = defineProps<{ user: User | null }>()
 
@@ -89,6 +107,42 @@ const toast = useToastify()
 const userApi = useUser()
 const { pillProps } = userApi
 const coreProfile = userApi.core.profile
+const { app, setAppUserAdmin } = useApp()
+
+const appAdmins = computed(() =>
+  Array.isArray(app.value?.admin_ids)
+    ? app.value?.admin_ids.filter(
+        (id): id is string => typeof id === 'string' && id.length > 0
+      )
+    : []
+)
+
+const appUserRole = computed(() => userApi.appUser?.value?.role ?? 'user')
+const isAppAdmin = computed(() => appUserRole.value === 'admin')
+const isOnlyAdmin = computed(() => isAppAdmin.value && appAdmins.value.length <= 1)
+const togglingAdmin = ref(false)
+
+const handleToggleAdmin = async (nextValue: boolean) => {
+  if (!props.user?.id) return
+  togglingAdmin.value = true
+  try {
+    console.log('1) toggle-start', {
+      makeAdmin: nextValue,
+      userId: props.user.id,
+    })
+    await setAppUserAdmin(props.user.id, nextValue)
+    console.log('2) app-user-role-updated')
+    console.log('3) app-admin-ids-updated', appAdmins.value)
+    console.log('4) core-user-adminOf-updated', userApi.coreUser.value?.adminOf)
+    toast.success(nextValue ? 'Granted admin' : 'Removed admin')
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Admin update failed: ${msg}`)
+    throw error
+  } finally {
+    togglingAdmin.value = false
+  }
+}
 
 const user = computed(() => props.user)
 const avatarInitials = computed(

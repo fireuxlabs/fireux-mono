@@ -23,8 +23,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from '#fireux-core-composables/fireux/firestore/core/user/useUser'
 import { useBlog } from '../../composables/fireux/firestore/objects/Blog/useBlog'
+import { useBlogPermissions } from '../../composables/useBlogPermissions'
 
 definePageMeta({
   layout: 'default',
@@ -43,7 +43,7 @@ definePageMeta({
 const { items } = useBlog()
 const pending = computed(() => items.value === undefined)
 const posts = computed(() => items.value ?? [])
-const { isAdmin } = useUser()
-// Show CTA only for admins.
-const showCTA = computed(() => isAdmin.value)
+const { canPublishBlog } = useBlogPermissions()
+// CTA gated by blog publish permission (admin today).
+const showCTA = computed(() => canPublishBlog.value)
 </script>

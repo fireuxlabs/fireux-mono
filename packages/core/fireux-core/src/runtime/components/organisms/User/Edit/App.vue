@@ -29,6 +29,22 @@
               </span>
             </div>
 
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-xs text-gray-600 space-y-1">
+                <p>app admins: {{ appAdmins.join(', ') || 'none' }}</p>
+                <p>appUser.role: {{ appUserRole }}</p>
+                <p>
+                  core adminOf: {{ props.user?.adminOf?.join(', ') || 'none' }}
+                </p>
+              </div>
+              <USwitch
+                :model-value="isAppAdmin"
+                :loading="togglingAdmin"
+                label="App admin"
+                @update:model-value="handleToggleAdmin"
+              />
+            </div>
+
             <div class="text-sm text-gray-600">
               <p>
                 App overlay updates are managed by tenant administrators.
@@ -61,14 +77,48 @@
 import { computed, ref } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser.ts'
+import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp.ts'
 
 const props = defineProps<{ user: User | null }>()
 
 const { appUser } = useUser()
+const { app, setAppUserAdmin } = useApp()
 
 const overlay = computed(() => appUser.value ?? null)
 const rolePreview = ref<'hello' | 'world'>('hello')
 const toggleRolePreview = () => {
   rolePreview.value = rolePreview.value === 'hello' ? 'world' : 'hello'
+}
+
+const appAdmins = computed(() =>
+  Array.isArray(app.value?.admin_ids)
+    ? app.value.admin_ids.filter(
+        (id): id is string => typeof id === 'string' && id.length > 0
+      )
+    : []
+)
+
+const appUserRole = computed(() => appUser.value?.role ?? 'user')
+const isAppAdmin = computed(() => appUserRole.value === 'admin')
+const togglingAdmin = ref(false)
+
+const handleToggleAdmin = async (nextValue: boolean) => {
+  if (!props.user?.id) return
+  togglingAdmin.value = true
+  try {
+    console.log('1) toggle-start', {
+      makeAdmin: nextValue,
+      userId: props.user.id,
+    })
+    await setAppUserAdmin(props.user.id, nextValue)
+    console.log('2) app-user-role-updated')
+    console.log('3) app-admin-ids-updated', appAdmins.value)
+    console.log('4) core-user-adminOf-updated', props.user.adminOf)
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Please try again.'
+    console.error('Admin toggle failed:', msg)
+  } finally {
+    togglingAdmin.value = false
+  }
 }
 </script>

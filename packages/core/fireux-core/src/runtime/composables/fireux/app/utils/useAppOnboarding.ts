@@ -12,6 +12,7 @@ export interface AppOnboardingState {
   pin: Ref<number[]>
   pinError: Ref<string | null>
   pinLength: Ref<number>
+  expectedPin: Ref<string>
   env: Ref<EnvCheckResponse | null>
   envError: Ref<string | null>
   pending: Ref<boolean>
@@ -24,6 +25,7 @@ export interface AppOnboardingState {
 
 export function useAppOnboarding(): AppOnboardingState {
   const { developerPin, devMode } = useFireUXConfig()
+  const isDev = import.meta.dev
 
   const expectedPin = computed(() => {
     const raw = typeof developerPin === 'string' ? developerPin.trim() : ''
@@ -48,6 +50,12 @@ export function useAppOnboarding(): AppOnboardingState {
 
   const checkPin = () => {
     const entry = pin.value.join('')
+    if (isDev) {
+      console.info('[onboarding] checkPin', {
+        entry,
+        expected: expectedPin.value,
+      })
+    }
     if (entry === expectedPin.value) {
       isUnlocked.value = true
       pinError.value = null
@@ -107,6 +115,7 @@ export function useAppOnboarding(): AppOnboardingState {
     pending: envPending,
     canProceed,
     bypassWarning,
+    expectedPin,
     checkPin,
     onRefreshEnv,
     onProceed,

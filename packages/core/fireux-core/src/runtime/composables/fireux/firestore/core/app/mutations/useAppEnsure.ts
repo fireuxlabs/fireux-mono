@@ -37,14 +37,30 @@ export function useAppEnsure() {
       const adminIds = Array.isArray(current?.admin_ids)
         ? current.admin_ids
         : []
+      console.info('[ensureAppDoc] existing app found', {
+        appId,
+        adminCount: adminIds.length,
+        adminIds,
+      })
       if (!adminIds.includes(uid)) {
         const nextAdminIds = [...adminIds, uid]
         await updateDocument<App>('apps', appId, { admin_ids: nextAdminIds })
+        console.info('[ensureAppDoc] added caller as admin', {
+          appId,
+          adminCount: nextAdminIds.length,
+          adminIds: nextAdminIds,
+        })
       }
+      await ensureAppMembership(uid, 'admin')
       return { created: false, id: appId }
     }
 
     await setDocument<App>('apps', appId, payload)
+    console.info('[ensureAppDoc] created app', {
+      appId,
+      adminCount: payload.admin_ids?.length ?? 0,
+      adminIds: payload.admin_ids,
+    })
     await ensureAppMembership(uid, 'admin')
     return { created: true, id: appId }
   }

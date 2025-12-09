@@ -8,13 +8,6 @@ export function useAppComputed(
   pending?: Ref<boolean>,
   currentUser?: Ref<User | null | undefined>
 ) {
-  const isInitialized = computed(() => {
-    if (pending?.value) return false
-    const value = app.value
-    if (value === undefined) return false
-    return true
-  })
-
   const adminIds = computed(() => {
     const raw = Array.isArray(app.value?.admin_ids)
       ? (app.value?.admin_ids as Array<string | null | undefined>)
@@ -27,6 +20,14 @@ export function useAppComputed(
           .filter((id) => id.length > 0)
       )
     )
+  })
+
+  const isInitialized = computed(() => {
+    if (pending?.value) return false
+    const value = app.value
+    if (value === undefined) return false
+    if (!adminIds.value.length) return false
+    return true
   })
 
   const isCurrentUserAdmin = computed(() => {
