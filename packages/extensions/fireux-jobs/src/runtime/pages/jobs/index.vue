@@ -1,10 +1,7 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/jobs/index.vue -->
 <template>
   <UPage>
-    <UPageHeader
-      title="Jobs"
-      description="Browse jobs available across this runtime."
-    />
+    <UPageHeader title="Jobs" description="Browse Misebox jobs." />
 
     <UPageBody class="space-y-6">
       <div v-if="pending" class="space-y-3">
@@ -12,8 +9,8 @@
       </div>
 
       <template v-else>
-        <!-- Clean CTA block (can handle logic internally later) -->
-        <OrganismsJobsCTA />
+        <!-- CTA only when agent profile exists -->
+        <OrganismsJobsCTA v-if="hasAgentProfile" />
         <!-- Jobs managed by this agent (local to the current agent) -->
         <OrganismsJobsSectionsAgentCollection v-if="hasAgentProfile" />
         <!-- Global jobs resolved for this runtime (ecosystem-wide) -->

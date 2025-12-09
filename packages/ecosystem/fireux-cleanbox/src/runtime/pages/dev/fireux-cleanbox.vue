@@ -41,74 +41,31 @@
         <template #header>
           <div class="flex items-center justify-between gap-3">
             <div class="flex flex-col">
-              <h2 class="text-base font-semibold">Job collections</h2>
+              <h2 class="text-base font-semibold">Jobs developer tools</h2>
               <p class="text-sm text-gray-500">
-                Mirrors fireux-jobs data using the same composables as runtime.
+                Use the jobs module dev page for streams and collections.
               </p>
             </div>
-            <UBadge variant="soft">{{ totalJobs }} total</UBadge>
+            <UButton
+              size="sm"
+              to="/dev/fireux-jobs"
+              icon="i-lucide-arrow-up-right"
+            >
+              Open jobs dev
+            </UButton>
           </div>
         </template>
-
-        <section class="grid gap-4 sm:grid-cols-3">
-          <div class="rounded-lg border border-gray-200 p-3">
-            <p class="text-xs text-gray-500 uppercase tracking-wide">
-              Tenant scope
-            </p>
-            <p class="text-2xl font-semibold">{{ tenantTotal }}</p>
-            <p class="text-xs text-gray-500">{{ cfg.appId || 'no appId' }}</p>
-          </div>
-          <div class="rounded-lg border border-gray-200 p-3">
-            <p class="text-xs text-gray-500 uppercase tracking-wide">
-              Global jobs
-            </p>
-            <p class="text-2xl font-semibold">{{ totalJobs }}</p>
-            <p class="text-xs text-gray-500">Across /jobs</p>
-          </div>
-          <div class="rounded-lg border border-gray-200 p-3">
-            <p class="text-xs text-gray-500 uppercase tracking-wide">Status</p>
-            <p class="text-2xl font-semibold">
-              {{ pending ? 'Loading…' : 'Ready' }}
-            </p>
-            <p class="text-xs text-gray-500">firestore stream</p>
-          </div>
-        </section>
-
-        <div v-if="sampleJobs.length" class="grid gap-3 md:grid-cols-2">
-          <UCard v-for="job in sampleJobs" :key="job.id">
-            <template #header>
-              <div class="flex items-center justify-between gap-2">
-                <h3 class="font-semibold">{{ job.title || 'Untitled job' }}</h3>
-                <UBadge size="xs" variant="soft">
-                  {{ job.status || 'draft' }}
-                </UBadge>
-              </div>
-              <p class="text-xs text-gray-500">{{ job.id }}</p>
-            </template>
-            <p class="text-sm text-gray-600 line-clamp-3">
-              {{ job.description || 'No description yet.' }}
-            </p>
-          </UCard>
-        </div>
-        <p v-else class="text-sm text-gray-500">
-          No jobs found for this runtime. Seed /jobs to populate the view.
+        <p class="text-sm text-gray-600">
+          Cleanbox dev view is now ecosystem-only. Job data inspection lives
+          under the fireux-jobs dev page.
         </p>
-
-        <DevJsonPanel
-          v-if="jobJson"
-          title="Job stream"
-          :data="jobJson"
-          :default-open="false"
-        />
       </UCard>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useJobCollection } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/main/useJobCollection.ts'
 
 definePageMeta({
   layout: 'dev',
@@ -124,12 +81,4 @@ definePageMeta({
 })
 
 const cfg = useFireUXConfig()
-const { jobs, tenantJobs, pending } = useJobCollection()
-
-const totalJobs = computed(() => jobs.value?.length ?? 0)
-const tenantTotal = computed(() => tenantJobs.value?.length ?? 0)
-const sampleJobs = computed(() => (tenantJobs.value ?? []).slice(0, 4))
-const jobJson = computed(() =>
-  tenantJobs.value?.length ? tenantJobs.value : null
-)
 </script>

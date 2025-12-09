@@ -80,7 +80,7 @@
 import { computed, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import type { JobStatus } from '../../../models/job.model.ts'
-import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify.ts'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
 
 const route = useRoute()
 const paramId = route.params.id

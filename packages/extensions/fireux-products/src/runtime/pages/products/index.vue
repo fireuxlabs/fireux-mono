@@ -1,9 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader
-      title="Products"
-      description="Catalog of products available across this runtime."
-    />
+    <UPageHeader title="Products" description="Misebox products catalog." />
 
     <UPageBody class="space-y-6">
       <div v-if="pending" class="space-y-3">
@@ -46,6 +43,6 @@ definePageMeta({
 const { productsCollection } = await useProducts()
 const pending = computed(() => productsCollection.value === undefined)
 const products = computed(() => productsCollection.value ?? [])
-const { isAdmin, isLoading } = useUser()
-const showCTA = computed(() => !isLoading.value && isAdmin.value)
+const { isAdmin } = useUser()
+const showCTA = computed(() => isAdmin.value)
 </script>

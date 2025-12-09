@@ -215,7 +215,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useEnvCheck } from '../../composables/fireux/firestore/core/app/internal/useEnvCheck.ts'
+import { useAppEnvCheck } from '../../composables/fireux/app/utils/useAppEnvCheck'
 
 definePageMeta({
   title: 'Development Tools',
@@ -241,7 +241,7 @@ const {
   data: envData,
   pending: envPending,
   refresh: refreshEnv,
-} = useEnvCheck()
+} = await useAppEnvCheck()
 
 const adminAuth = computed(() => envData.value?.server?.adminAuth ?? null)
 const adminConfigured = computed(() => adminAuth.value?.configured ?? false)

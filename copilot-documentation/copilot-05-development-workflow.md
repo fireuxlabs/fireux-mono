@@ -18,6 +18,13 @@ This chapter describes the standard local workflow, branching expectations, and 
    - `pnpm dev:all` for multi-app orchestration (long-running background task)
 4. Use `.env` values from the root `.env` file (symlinked into project folders). Do not create divergent env files per app.
 
+## Dev env panel
+
+- Location: `http://localhost:<port>/dev` (dev layout landing page). Works across ecosystems; Misebox/Cleanbox keep it job-agnostic.
+- Backed by `/api/app/env-check`: validates required client/server env vars, Firebase Admin credentials (JSON, split keys, or service-account file), and brand assets dimensions.
+- Panel sections: runtime summary (ecosystem/role/appId/modules), admin SDK status with notes, and optional runtime JSON toggle.
+- If status shows `missing`, add the required env keys or a service-account file under `projects/<ecosystem>/<ecosystem>-app/config/service-account.json` (or root env JSON). Run `Refresh` in the panel after fixes.
+
 ## Coding Practices
 
 - Keep changes small and scoped to a single feature or fix.

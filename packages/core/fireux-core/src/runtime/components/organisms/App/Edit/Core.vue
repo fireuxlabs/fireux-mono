@@ -122,7 +122,7 @@ import { useAppUsers } from 'fireux-core/runtime/composables/fireux/firestore/co
 import { useAppJoinRequests } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/useAppJoinRequests.ts'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch.ts'
-import { useToastify } from '../../../../composables/ui/useToastify.ts'
+import { useToastify } from '../../../../composables/fireux/app/ui/useToastify.ts'
 
 const props = defineProps<{ app: App }>()
 

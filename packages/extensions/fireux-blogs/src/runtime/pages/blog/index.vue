@@ -1,7 +1,7 @@
 <!-- fireux-blogs/pages/blog/index.vue -->
 <template>
   <UPage>
-    <UPageHeader title="Blog" description="Latest articles across FireUX." />
+    <UPageHeader title="Blog" description="Latest Misebox articles." />
     <UPageBody class="space-y-6">
       <div v-if="pending" class="space-y-3">
         <USkeleton v-for="n in 3" :key="n" class="h-20" />
@@ -44,6 +44,6 @@ const { items } = useBlog()
 const pending = computed(() => items.value === undefined)
 const posts = computed(() => items.value ?? [])
 const { isAdmin } = useUser()
-// Show CTA for admins; in dev, always surface to speed iteration regardless of load state.
-const showCTA = computed(() => isAdmin.value || import.meta.dev)
+// Show CTA only for admins.
+const showCTA = computed(() => isAdmin.value)
 </script>

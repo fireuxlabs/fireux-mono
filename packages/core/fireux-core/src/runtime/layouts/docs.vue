@@ -37,7 +37,8 @@
                 Build, ship, and operate FireUX
               </h1>
               <p class="text-sm text-gray-600 dark:text-gray-400">
-                One map for apps, profiles, tenants, and the platform primitives.
+                One map for apps, profiles, tenants, and the platform
+                primitives.
               </p>
             </div>
           </div>
