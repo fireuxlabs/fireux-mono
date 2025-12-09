@@ -1,18 +1,26 @@
 <!-- Blog Image Upload Component -->
 <template>
   <div class="images-system">
-    <div class="image-wrapper featured">
-      <FireMoleculesFormsStateImagePicker
+    <div class="image-card featured">
+      <div class="card-header">
+        <div class="card-title">Wordmark</div>
+        <div class="card-hint">Wide feature image</div>
+      </div>
+      <MoleculesFormsStateImagePicker
         ref="featuredImageRef"
-        label="Featured Image"
+        label="Wordmark"
         :state-key="FEATURED_IMAGE_KEY"
       />
     </div>
 
-    <div class="image-wrapper social">
-      <FireMoleculesFormsStateImagePicker
+    <div class="image-card social">
+      <div class="card-header">
+        <div class="card-title">Logo</div>
+        <div class="card-hint">Square social image</div>
+      </div>
+      <MoleculesFormsStateImagePicker
         ref="socialImageRef"
-        label="Social Image"
+        label="Logo"
         :state-key="SOCIAL_IMAGE_KEY"
       />
     </div>
@@ -132,35 +140,72 @@ defineExpose({
   }
 }
 
-.image-wrapper {
+.image-card {
   position: relative;
   width: 100%;
-  overflow: hidden;
   background: var(--ui-bg-elevated);
   border-radius: var(--radius-md);
   border: 1px solid var(--ui-border);
+  padding: var(--space-4);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
 }
 
-/* Featured = 2:1 ratio */
-.image-wrapper.featured {
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.card-hint {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.image-card :deep(.picker-label) {
+  display: none;
+}
+
+.image-card :deep(.image-container) {
+  width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.image-card.featured :deep(.image-container) {
   aspect-ratio: 2 / 1;
-  max-width: 600px;
+  max-width: 640px;
 }
 
-/* Social = ~1.9:1 ratio (1200×630) */
-.image-wrapper.social {
-  aspect-ratio: 1200 / 630;
-  max-width: 600px;
+.image-card.social :deep(.image-container) {
+  aspect-ratio: 1 / 1;
+  max-width: 360px;
 }
 
-.image-wrapper img {
+.image-card :deep(.image-container img) {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center center;
+}
+
+.image-card :deep(.actions) {
+  margin-top: var(--space-2);
+}
+
+.image-card :deep(.file-info) {
+  margin-top: var(--space-1);
+}
+
+.image-card :deep(.upload-controls) {
+  justify-content: flex-start;
 }
 
 /* Upload Progress Styles */

@@ -46,6 +46,7 @@ const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
 import { useBlogDraftState } from '../../../../composables/fireux/blog/useBlogDraftState'
 import { useBlog } from '../../../../composables/fireux/firestore/objects/Blog/useBlog'
+import { useRouter } from '#imports'
 
 const selectedTab = ref<'write' | 'preview'>('write')
 const tabItems = [
@@ -57,6 +58,7 @@ const { blogPost, resetCreateBlogPostState, getBlogPostPayload } =
   useBlogDraftState()
 const { createBlogPost, utils } = useBlog()
 const isCreating = ref(false)
+const router = useRouter()
 
 async function handleCreate() {
   console.log('📝 [handleCreate] Create blog post clicked')
@@ -84,6 +86,7 @@ async function handleCreate() {
     }
 
     handleClear()
+    await router.push('/blog')
   } catch (error: any) {
     console.error('❌ Blog post creation failed:', error)
     if (toast) {
@@ -100,11 +103,9 @@ async function handleCreate() {
 }
 
 function handleClear() {
-  if (confirm('Are you sure you want to clear the form?')) {
-    resetCreateBlogPostState()
-    blogPost.value.slug = ''
-    selectedTab.value = 'write'
-  }
+  resetCreateBlogPostState()
+  blogPost.value.slug = ''
+  selectedTab.value = 'write'
 }
 </script>
 

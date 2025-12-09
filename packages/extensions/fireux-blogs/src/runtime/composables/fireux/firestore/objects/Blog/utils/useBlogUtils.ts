@@ -5,8 +5,8 @@ import type {
 
 function generateSlug(title: string): string {
   let out = title.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')
-  out = out.replaceAll(/^-+/, '')
-  out = out.replaceAll(/-+$/, '')
+  out = out.replaceAll(/^-+/g, '')
+  out = out.replaceAll(/-+$/g, '')
   return out
 }
 
@@ -33,8 +33,8 @@ async function getAuthor(): Promise<Author> {
 
 function getDefaultImages(): Pick<BlogPost, 'featuredImage' | 'socialImage'> {
   return {
-    featuredImage: '/img/core/brand/wordmark-dark.png',
-    socialImage: '/img/core/brand/logo.png',
+    featuredImage: '/img/app/wordmark-dark.png',
+    socialImage: '/img/app/logo.png',
   }
 }
 

@@ -4,11 +4,8 @@
       <div class="fx-section__header">
         <div class="fx-section__copy">
           <h2 class="text-base font-semibold">Latest Posts</h2>
-          <p class="text-xs text-gray-500">
-            Fresh content across the ecosystem.
-          </p>
         </div>
-        <UBadge variant="soft">{{ cards.length }} posts</UBadge>
+        <UBadge variant="soft">{{ postsList.length }} posts</UBadge>
       </div>
     </template>
 

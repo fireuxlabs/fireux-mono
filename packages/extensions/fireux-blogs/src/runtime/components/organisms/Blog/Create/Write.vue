@@ -113,6 +113,11 @@ onMounted(async () => {
       )
     },
   })
+
+  // Ensure slug exists when a title was prefilled before mount.
+  if (!blogPost.value.slug && blogPost.value.title) {
+    blogPost.value.slug = generateSlug(blogPost.value.title)
+  }
 })
 
 onBeforeUnmount(() => {
@@ -191,10 +196,10 @@ const can = (action: 'undo' | 'redo') => {
 }
 
 .editor-shell {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--ui-border);
   border-radius: 0.5rem;
   padding: 0.75rem;
-  background: white;
+  background: var(--ui-bg-elevated);
 }
 
 .editor-toolbar {
@@ -211,5 +216,16 @@ const can = (action: 'undo' | 'redo') => {
 
 .tiptap-content :deep(.ProseMirror) {
   outline: none;
+}
+
+.tiptap-content :deep(img) {
+  max-width: 360px;
+  max-height: 360px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--ui-border);
+  margin: 0.75rem 0;
 }
 </style>

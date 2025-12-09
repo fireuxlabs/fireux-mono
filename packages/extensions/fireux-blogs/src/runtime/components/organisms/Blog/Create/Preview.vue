@@ -1,158 +1,279 @@
 <template>
-  <article class="preview-card">
-    {{ blogPost }}
-    <!-- TITLE -->
-    <h1>
-      <span v-if="blogPost.title">{{ blogPost.title }}</span>
-      <em v-else class="warning">Missing title</em>
-    </h1>
+  <div class="preview-shell">
+    <UIBlogPost
+      :title="blogPost.title || 'Untitled post'"
+      :description="blogPost.metaDescription || 'Add a short description'"
+      :image="featuredImageSrc || undefined"
+      :date="createdAtLabel"
+      :reading-time="blogPost.readingTime || undefined"
+      :tags="blogPost.tags"
+      :author="author"
+    >
+      <template #default>
+        <div class="author-pill">
+          <div class="avatar" v-if="author.value.avatar">
+            <img :src="author.value.avatar" alt="Author avatar" />
+          </div>
+          <div class="author-meta">
+            <div class="author-name">{{ author.value.name }}</div>
+            <div class="author-handle" v-if="author.value.handle">
+              {{ '@' + author.value.handle }}
+            </div>
+          </div>
+          <span class="author-role">Author</span>
+        </div>
 
-    <!-- SLUG -->
-    <p>
-      <strong>Slug:</strong>
-      <span v-if="blogPost.slug">{{ blogPost.slug }}</span>
-      <em v-else class="warning">Missing slug</em>
-    </p>
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <div class="preview-content" v-html="sanitizedContent" />
+        <p v-if="!blogPost.content" class="warning">Missing content</p>
+      </template>
 
-    <!-- CREATED AT -->
-    <p>
-      <strong>Created at:</strong>
-      <span v-if="createdAt">{{ createdAt }}</span>
-      <em v-else class="warning">Missing created_at</em>
-    </p>
-
-    <!-- UPDATED AT -->
-    <p>
-      <strong>Updated at:</strong>
-      <span v-if="updatedAt">{{ updatedAt }}</span>
-      <em v-else class="warning">Missing updated_at</em>
-    </p>
-
-    <!-- AUTHOR -->
-    <p>
-      <strong>Author:</strong>
-      <span v-if="blogPost.author?.display_name">
-        {{ blogPost.author.display_name }}
-      </span>
-      <em v-else class="warning">Missing author</em>
-    </p>
-
-    <!-- READING TIME -->
-    <p>
-      <strong>Reading time:</strong>
-      <span v-if="blogPost.readingTime">{{ blogPost.readingTime }}</span>
-      <em v-else class="warning">Missing readingTime</em>
-    </p>
-
-    <!-- FEATURED IMAGE -->
-    <div v-if="featuredImageData" class="preview-image">
-      <img :src="featuredImageData" alt="Featured image preview" />
-    </div>
-    <em v-else class="warning">Missing featured image</em>
-
-    <!-- SOCIAL IMAGE -->
-    <div v-if="socialImageData" class="preview-image">
-      <img :src="socialImageData" alt="Social image preview" />
-    </div>
-    <em v-else class="warning">Missing social image</em>
-
-    <!-- TYPE -->
-    <p>
-      <strong>Type:</strong>
-      <span v-if="blogPost.type">{{ blogPost.type }}</span>
-      <em v-else class="warning">Missing type</em>
-    </p>
-
-    <!-- TENANT ID -->
-    <p>
-      <strong>Tenant ID:</strong>
-      <span v-if="tenantId">{{ tenantId }}</span>
-      <em v-else class="warning">Missing tenantId</em>
-    </p>
-
-    <!-- META DESCRIPTION -->
-    <p>
-      <strong>Meta Description:</strong>
-      <span v-if="blogPost.metaDescription">{{
-        blogPost.metaDescription
-      }}</span>
-      <em v-else class="warning">Missing metaDescription</em>
-
-      <!-- CONTENT -->
-      <!-- eslint-disable-next-line vue/no-v-html -->
-    </p>
-
-    <section v-html="sanitizedContent" />
-    <em v-if="!blogPost.content" class="warning">Missing content</em>
-
-    <!-- KEYWORDS -->
-    <div>
-      <strong>Keywords:</strong>
-      <ul v-if="blogPost.keywords.length">
-        <li v-for="kw in blogPost.keywords" :key="kw">{{ kw }}</li>
-      </ul>
-      <em v-else class="warning">No keywords provided</em>
-    </div>
-
-    <!-- TAGS -->
-    <div>
-      <strong>Tags:</strong>
-      <ul v-if="blogPost.tags.length">
-        <li v-for="tag in blogPost.tags" :key="tag">{{ tag }}</li>
-      </ul>
-      <em v-else class="warning">No tags provided</em>
-    </div>
-
-    <!-- CANONICAL URL -->
-    <p>
-      <strong>Canonical URL:</strong>
-      <a
-        v-if="blogPost.canonicalUrl"
-        :href="blogPost.canonicalUrl"
-        target="_blank"
-        rel="noopener"
-      >
-        {{ blogPost.canonicalUrl }}
-      </a>
-      <em v-else class="warning">Missing canonicalUrl</em>
-    </p>
-
-    <!-- CALL TO ACTION LINK -->
-    <p>
-      <strong>CTA link:</strong>
-      <a
-        v-if="blogPost.cta_link"
-        :href="blogPost.cta_link"
-        target="_blank"
-        rel="noopener"
-      >
-        {{ blogPost.cta_link }}
-      </a>
-      <em v-else class="warning">Missing cta_link</em>
-    </p>
-  </article>
+      <template #footer>
+        <div class="footer-grid">
+          <div>
+            <div class="label">Slug</div>
+            <div>{{ blogPost.slug || 'Missing slug' }}</div>
+          </div>
+          <div>
+            <div class="label">Canonical URL</div>
+            <a
+              v-if="blogPost.canonicalUrl"
+              :href="blogPost.canonicalUrl"
+              target="_blank"
+              rel="noopener"
+            >
+              {{ blogPost.canonicalUrl }}
+            </a>
+            <span v-else class="warning">Missing canonicalUrl</span>
+          </div>
+          <div>
+            <div class="label">CTA</div>
+            <div v-if="blogPost.cta_link || blogPost.cta_text">
+              <div>{{ blogPost.cta_text || 'Button text' }}</div>
+              <div class="subdued">{{ blogPost.cta_link || 'https://example.com' }}</div>
+            </div>
+            <span v-else class="warning">Missing cta</span>
+          </div>
+          <div>
+            <div class="label">Social image</div>
+            <div v-if="socialImageSrc" class="thumb">
+              <img :src="socialImageSrc" alt="Social image preview" />
+            </div>
+            <span v-else class="warning">Missing social image</span>
+          </div>
+          <div>
+            <div class="label">Branding</div>
+            <div class="brand-grid">
+              <div class="brand-tile wordmark">
+                <div class="brand-label">Wordmark</div>
+                <img :src="featuredImageSrc || fallbackWordmark" alt="Wordmark" />
+              </div>
+              <div class="brand-tile logo">
+                <div class="brand-label">Logo</div>
+                <img :src="socialImageSrc || fallbackLogo" alt="Logo" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </UIBlogPost>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import DOMPurify from 'dompurify'
 import { useBlogDraftState } from '../../../../composables/fireux/blog/useBlogDraftState'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 
 // Use the centralized state management
 const { blogPost, featuredImageData, socialImageData } = useBlogDraftState()
 
-// Timestamps for display-only
-const now = new Date().toISOString()
-const createdAt = now
-const updatedAt = now
-
-// App ID from runtime config
-const config = useFireUXConfig()
-const tenantId = config.appId
-
-// Sanitize the HTML before injecting
-const sanitizedContent = computed(() =>
-  DOMPurify.sanitize(blogPost.value.content || '')
+// Avoid hydration drift by using a stable date label
+const createdAtLabel = computed(
+  () => blogPost.value.createdAt || blogPost.value.updatedAt || 'Draft'
 )
+
+// Sanitize the HTML before injecting (client-only to prevent SSR mismatch)
+const isClient = ref(false)
+onMounted(() => {
+  isClient.value = true
+})
+
+const sanitizedContent = computed(() => {
+  const html = blogPost.value.content || ''
+  return isClient.value ? DOMPurify.sanitize(html) : html
+})
+
+// Prefer uploaded previews, fall back to current blog post images.
+const featuredImageSrc = computed(
+  () => featuredImageData.value || blogPost.value.featuredImage || ''
+)
+const socialImageSrc = computed(
+  () => socialImageData.value || blogPost.value.socialImage || ''
+)
+
+const author = computed(() => ({
+  name:
+    blogPost.value.author?.display_name ||
+    blogPost.value.author?.handle ||
+    'Author',
+  avatar: blogPost.value.author?.avatar || undefined,
+  handle: blogPost.value.author?.handle || undefined,
+}))
+
+const fallbackWordmark = '/img/app/wordmark-dark.png'
+const fallbackLogo = '/img/app/logo.png'
 </script>
+
+<style scoped>
+.thumb img {
+  max-width: 220px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+}
+
+.subdued {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.warning {
+  color: #b91c1c;
+  font-style: normal;
+  font-size: 14px;
+}
+
+.preview-shell {
+  background: var(--ui-bg-elevated);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  color: var(--text-primary);
+}
+
+.author-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--ui-bg-muted);
+  border: 1px solid var(--ui-border);
+  margin-bottom: var(--space-3);
+}
+
+.avatar img {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.author-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.author-name {
+  font-weight: 600;
+}
+
+.author-handle {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.author-role {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.preview-content {
+  position: relative;
+}
+
+.preview-content :deep(img) {
+  max-width: 480px;
+  max-height: 320px;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  margin: var(--space-3) 0;
+  object-fit: contain;
+}
+
+.preview-shell :deep(.ui-blog-post__image img),
+.preview-shell :deep(.ui-blog-post-image img) {
+  max-height: 360px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+.preview-content :deep(p),
+.preview-content :deep(li),
+.preview-content :deep(h2),
+.preview-content :deep(h3) {
+  color: var(--text-primary);
+}
+
+.preview-content :deep(code) {
+  background: var(--ui-bg-muted);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.brand-tile {
+  background: var(--ui-bg-muted);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.brand-tile img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.brand-tile.logo img {
+  max-width: 160px;
+  aspect-ratio: 1 / 1;
+}
+
+.brand-tile.wordmark img {
+  max-width: 220px;
+  aspect-ratio: 2 / 1;
+}
+
+.brand-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+</style>

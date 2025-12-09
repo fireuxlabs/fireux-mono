@@ -20,12 +20,13 @@
         </div>
         <div
           v-if="card.image"
-          class="shrink-0 w-28 h-20 overflow-hidden rounded-md bg-gray-100"
+          class="thumb"
+          :style="thumbStyle"
         >
           <img
             :src="card.image"
             :alt="card.title"
-            class="h-full w-full object-cover"
+            class="thumb__img"
           />
         </div>
       </div>
@@ -42,4 +43,28 @@ const props = defineProps<{ post: BlogPost }>()
 
 const { teaserProps } = useBlogInterface()
 const card = computed(() => teaserProps(props.post))
+
+const thumbStyle = {
+  width: '7rem',
+  aspectRatio: '4 / 3',
+};
 </script>
+
+<style scoped>
+.thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-sm, 0.375rem);
+  background: transparent;
+}
+
+.thumb__img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  padding: 0;
+  display: block;
+}
+</style>

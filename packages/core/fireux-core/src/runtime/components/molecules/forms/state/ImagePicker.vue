@@ -15,37 +15,35 @@
     <!-- Preview -->
     <div class="image-container" v-if="dataRef">
       <img :src="dataRef" :alt="`${label} preview`" />
+    </div>
 
-      <!-- Floating action buttons on top of image -->
-      <div class="floating-actions">
-        <UButton
-          icon="i-lucide-image-up"
-          variant="solid"
-          color="primary"
-          size="sm"
-          @click="trigger"
-        >
-          Change
-        </UButton>
-        <UButton
-          icon="i-lucide-x"
-          variant="solid"
-          color="error"
-          size="sm"
-          @click="clearImage"
-        >
-          Clear
-        </UButton>
-      </div>
+    <div v-if="dataRef" class="actions">
+      <UButton
+        icon="i-lucide-image-up"
+        variant="solid"
+        color="primary"
+        size="sm"
+        @click="trigger"
+      >
+        Change
+      </UButton>
+      <UButton
+        icon="i-lucide-x"
+        variant="outline"
+        color="gray"
+        size="sm"
+        @click="clearImage"
+      >
+        Clear
+      </UButton>
+    </div>
 
-      <!-- File info overlay -->
-      <div class="file-info" v-if="fileInfoRef">
-        <span class="file-name">{{ fileInfoRef.name }}</span>
-        <span class="file-size">{{ fileSizeText }}</span>
-        <span v-if="!isValidImage" class="validation-error">
-          ⚠️ File too large or invalid type
-        </span>
-      </div>
+    <div class="file-info" v-if="fileInfoRef">
+      <span class="file-name">{{ fileInfoRef.name }}</span>
+      <span class="file-size">{{ fileSizeText }}</span>
+      <span v-if="!isValidImage" class="validation-error">
+        ⚠️ File too large or invalid type
+      </span>
     </div>
 
     <!-- Upload trigger - only show when no image -->
@@ -299,44 +297,26 @@ async function processImage(
   background: var(--ui-bg-elevated);
 }
 
-.floating-actions {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  gap: 8px;
-  z-index: 20;
-  opacity: 0.9;
-}
-
-.floating-actions:hover {
-  opacity: 1;
-}
-
-.image-container:hover .floating-actions {
-  opacity: 1;
-}
-
 .image-container img {
   width: 100%;
-  max-width: 400px;
+  max-width: 100%;
   height: auto;
   border-radius: var(--radius-sm);
   object-fit: cover;
   display: block;
 }
 
-.file-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-  color: white;
-  padding: var(--space-2);
+.actions {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-2);
+}
+
+.file-info {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
 }
 
 .file-name {

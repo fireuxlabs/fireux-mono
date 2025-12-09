@@ -23,14 +23,14 @@
         </UFormField>
 
         <!-- Keywords -->
-        <FireMoleculesFormsArrayOfStrings
+        <MoleculesFormsArrayOfStrings
           v-model="blogPost.keywords"
           label="Keywords"
           item-placeholder="Keyword"
           new-item-placeholder="Add new keyword"
         />
         <!-- Tags -->
-        <FireMoleculesFormsArrayOfStrings
+        <MoleculesFormsArrayOfStrings
           v-model="blogPost.tags"
           label="Tags"
           item-placeholder="Tag"

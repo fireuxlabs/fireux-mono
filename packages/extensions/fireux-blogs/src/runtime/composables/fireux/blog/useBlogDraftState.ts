@@ -51,10 +51,21 @@ export function useBlogDraftState() {
       blogPost.value.author = await getAuthor()
     }
 
-    if (!blogPost.value.featuredImage || !blogPost.value.socialImage) {
-      const defaults = getDefaultImages()
-      blogPost.value.featuredImage ||= defaults.featuredImage
-      blogPost.value.socialImage ||= defaults.socialImage
+    const defaults = getDefaultImages()
+    // Backfill stored images to app-branded defaults.
+    if (!blogPost.value.featuredImage) {
+      blogPost.value.featuredImage = defaults.featuredImage
+    }
+    if (!blogPost.value.socialImage) {
+      blogPost.value.socialImage = defaults.socialImage
+    }
+
+    // Ensure previews show defaults when nothing uploaded yet.
+    if (!featuredImageData.value) {
+      featuredImageData.value = defaults.featuredImage
+    }
+    if (!socialImageData.value) {
+      socialImageData.value = defaults.socialImage
     }
   })
 
