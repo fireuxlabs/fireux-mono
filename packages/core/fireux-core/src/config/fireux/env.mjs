@@ -2,7 +2,7 @@ import { resolve as pathResolve, dirname } from 'node:path'
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
-export const env = (key) => (process.env[key]?.trim() || undefined)
+export const env = (key) => process.env[key]?.trim() || undefined
 
 export const requireEnv = (key) => {
   const value = env(key)

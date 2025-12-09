@@ -6,7 +6,7 @@ import type { ContentNavigationItem } from '@nuxt/content'
 const navigation = inject<Ref<ContentNavigationItem[]> | undefined>(
   'navigation'
 )
-defineOptions({ name: 'CoreChangelog' })
+defineOptions({ name: 'changelog' })
 </script>
 
 <template>

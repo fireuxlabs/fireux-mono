@@ -24,25 +24,16 @@ const baseConfig = createFireuxConfig({
 })
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
-const coreDocsDir = resolve(
-  currentDir,
-  '../../..',
-  'packages/core/fireux-core/docs'
-)
-const catalogueDocsDir = resolve(currentDir, '../../..', 'docs')
+const docsDir = resolve(currentDir, '../../..', 'docs')
 
 export default defineNuxtConfig(<NuxtConfig>{
   ...baseConfig,
   modules: [...(baseConfig.modules ?? []), '@nuxt/content'],
   content: {
     sources: {
-      core: {
+      fireuxDocs: {
         driver: 'fs',
-        base: coreDocsDir,
-      },
-      catalogue: {
-        driver: 'fs',
-        base: catalogueDocsDir,
+        base: docsDir,
       },
     },
   },

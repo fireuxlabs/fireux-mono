@@ -15,5 +15,5 @@
 
 <script setup lang="ts">
 // Dev layout renders the DevNav and the current page; links are read inside DevNav
-defineOptions({ name: 'CoreDev' })
+defineOptions({ name: 'dev' })
 </script>

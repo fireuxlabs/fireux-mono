@@ -24,6 +24,12 @@ Prefer a single, explicit implementation over parallel helpers or shims; dedupli
 - If two functions/files do the same job, pick one, delete the other, and update call sites.
 - After v1, migration layers may be added deliberately with docs; before v1, legacy does not exist.
 
+### C2. Framework docs live at `/docs`
+
+- All public FireUX documentation lives in `/docs/` at the monorepo root.
+- Ecosystem, package, and app docs stay in their own `packages/**/docs/` or `projects/**/docs/` folders.
+- The `fireux-fireux` ecosystem is a template and must not host framework docs.
+
 ## Workflow
 
 - Copilot/agents must reference this constitution when proposing new helpers, fallbacks, or shims.
@@ -35,4 +41,4 @@ Prefer a single, explicit implementation over parallel helpers or shims; dedupli
 - This constitution supersedes other practices for FireUX pre-v1.
 - Amendments require documenting intent, scope, and migration plan.
 
-**Version**: 0.1.0 | **Ratified**: 2025-12-07 | **Last Amended**: 2025-12-07
+**Version**: 0.1.1 | **Ratified**: 2025-12-07 | **Last Amended**: 2025-12-09

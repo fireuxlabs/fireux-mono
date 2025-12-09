@@ -44,7 +44,10 @@ export function primeFirebaseEnv(baseProject, options = {}) {
 
   applyEnvMappings(project, options.runtimePrefixes || DEFAULT_RUNTIME_PREFIXES)
 
-  if (options.serviceAccountPath && !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  if (
+    options.serviceAccountPath &&
+    !process.env.GOOGLE_APPLICATION_CREDENTIALS
+  ) {
     process.env.GOOGLE_APPLICATION_CREDENTIALS = options.serviceAccountPath
   }
 

@@ -1,4 +1,4 @@
-<!-- packages/core/fireux-core/src/runtime/layouts/CoreDefault.vue -->
+<!-- packages/core/fireux-core/src/runtime/layouts/default.vue -->
 <template>
   <div class="layout-wrapper">
     <LayoutsDefaultHeader />
@@ -16,6 +16,8 @@
 <script setup lang="ts">
 import { watchEffect } from 'vue'
 import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav.ts'
+
+defineOptions({ name: 'default' })
 
 if (import.meta.dev) {
   const navDebug = useNav()

@@ -3,12 +3,13 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
+const docsDir = resolve(currentDir, '../../..', 'docs')
 
 export default defineContentConfig({
   sources: {
-    core: {
+    fireuxDocs: {
       driver: 'fs',
-      base: resolve(currentDir, '../../packages/core/fireux-core/docs'),
+      base: docsDir,
     },
   },
 })

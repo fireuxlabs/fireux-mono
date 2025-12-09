@@ -6,9 +6,11 @@ created: 2025-10-15
 
 # Orientation & Mission
 
-FireUX is a Nuxt 4 + Vue 3 mono-repo that powers multiple product experiences from a single platform. This chapter introduces the mission, guiding principles, and the high-level layout of the repository so new contributors can orient quickly before diving into deeper topics.
+FireUX is an opinionated layer on top of Nuxt 4 + Firebase. Drop in a few env vars, add your branding assets, and you have a working web app with profiles, dashboards, and common objects ready to extend.
 
-This handbook pairs with the GitHub Spec Kit workspace (`.specify/`, `.github/prompts/`). Spec Kit captures live specs, plans, and task flows; the handbook records durable conventions, architecture, and historical context. Keep both updated when work in one affects the other.
+We are indie and unknown by default, so this chapter explains what FireUX is, why it exists, and how the repo is laid out so you can get moving fast.
+
+This handbook pairs with the GitHub Spec Kit workspace (`.specify/`, `.github/prompts/`). Spec Kit holds live specs and plans; the handbook keeps the durable rules and architecture. When one changes, update the other.
 
 ## Mission & Pillars
 
@@ -23,7 +25,7 @@ This handbook pairs with the GitHub Spec Kit workspace (`.specify/`, `.github/pr
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `packages/core/fireux-core`         | Shared components, composables, config helpers, auto-registered UI primitives.                             |
 | `packages/extensions/*`             | Optional feature slices (for example `fireux-places`, `fireux-jobs`) that layer on top of the core module. |
-| `packages/ecosystem/*`                | Ecosystem bundles that select extensions and contribute tenant-specific pages/configuration.               |
+| `packages/ecosystem/*`              | Ecosystem bundles that select extensions and contribute tenant-specific pages/configuration.               |
 | `projects/<ecosystem>/<app>`        | Deployable Nuxt apps that wrap tenant modules through `createFireuxConfig`.                                |
 | `scripts/`, `tools/`, `migrations/` | Automation, data backfills, and guard scripts for repo maintenance.                                        |
 | `copilot-documentation/`            | This handbook, appendices, ADRs, and links into package-level docs.                                        |
@@ -32,16 +34,16 @@ For historical context, refer to the migration notes in repo history; the previo
 
 ## How to Use the Handbook
 
-1. Read the chapters in order: Orientation → Architecture → Configuration, etc. Each builds on context from the prior section.
-2. Use the appendices for quick references (commands, environment tables, runbooks) once they are populated.
-3. Package-specific details belong beside the code under `packages/**/docs/`; the [package documentation map](./package-docs-index.md) links to each location.
-4. When updating behaviour, update the relevant chapter and link any supporting ADR or package doc so decisions stay traceable.
+1. Start here, then read Architecture → Configuration → Workflow.
+2. Use appendices for quick references (commands, env tables, runbooks) once populated.
+3. Put package-specific details beside the code under `packages/**/docs/`; the [package documentation map](./package-docs-index.md) links to each location.
+4. When behaviour changes, update the matching chapter and link any ADR or package doc so decisions stay traceable.
 
 ## Working with GitHub Spec Kit
 
-- Run Spec Kit slash commands (for example `/speckit.constitution`, `/speckit.specify`) to capture live requirements inside `.specify/`.
-- Keep Spec Kit artifacts and handbook chapters cross-referenced when a spec graduates into a lasting convention or workflow.
-- Update `.github/prompts/` prompts if the command workflows change so agents receive the right guidance in-editor.
+- Run Spec Kit commands (for example `/speckit.constitution`, `/speckit.specify`) to capture live requirements inside `.specify/`.
+- Cross-link Spec Kit artifacts and handbook chapters when a spec becomes a lasting convention.
+- Update `.github/prompts/` if command workflows change so agents get the right guidance in-editor.
 
 ## Definition of “Done” for Changes
 

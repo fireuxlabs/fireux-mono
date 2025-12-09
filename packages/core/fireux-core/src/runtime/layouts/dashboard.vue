@@ -72,7 +72,7 @@ import { useUser } from '../composables/fireux/firestore/core/user/useUser.ts'
 import type { UserCard } from '../models/core/user.model.ts'
 import type { NavItem } from '../types/nav'
 
-defineOptions({ name: 'CoreDashboard' })
+defineOptions({ name: 'dashboard' })
 
 type ProfileNavConfig = {
   key: string

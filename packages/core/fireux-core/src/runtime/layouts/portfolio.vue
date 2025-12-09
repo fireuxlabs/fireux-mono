@@ -20,5 +20,5 @@ const nav = useDefaultNav()
 const menuBarLinks = computed(() => nav.desktop.value)
 const mobileLinks = computed(() => nav.mobile.value)
 
-defineOptions({ name: 'CorePortfolio' })
+defineOptions({ name: 'portfolio' })
 </script>
