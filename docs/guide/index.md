@@ -1,6 +1,8 @@
 ---
 title: Guides
 description: Task-focused walkthroughs for building with FireUX.
+navigation:
+	order: 3
 ---
 
 # Guides

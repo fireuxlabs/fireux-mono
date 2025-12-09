@@ -1,3 +1,8 @@
+---
+title: FireUX Documentation (root)
+navigation: false
+---
+
 # FireUX Documentation (root)
 
 Framework docs live here at `docs/`.

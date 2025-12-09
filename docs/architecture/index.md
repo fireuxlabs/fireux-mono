@@ -1,6 +1,8 @@
 ---
 title: Architecture
 description: How FireUX is put together—identity, data shapes, and composables canon.
+navigation:
+	order: 2
 ---
 
 # Architecture

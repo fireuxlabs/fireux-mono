@@ -13,7 +13,7 @@ definePageMeta({
     order: 5,
     desktop: true,
     mobile: true,
-    layouts: ['docs'],
+    layouts: ['default', 'docs'],
   },
 })
 

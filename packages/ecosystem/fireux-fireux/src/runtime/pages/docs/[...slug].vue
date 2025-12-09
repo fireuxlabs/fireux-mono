@@ -64,7 +64,7 @@ definePageMeta({
     order: 5,
     desktop: true,
     mobile: true,
-    layouts: ['docs'],
+    layouts: ['default', 'docs'],
   },
 })
 
@@ -108,10 +108,6 @@ useSeoMeta({
 const headline = computed(() =>
   findPageHeadline(navigation?.value, page.value?.path)
 )
-
-defineOgImageComponent('Docs', {
-  headline: headline.value,
-})
 
 const links = computed(() => {
   const nextLinks = [] as any[]
