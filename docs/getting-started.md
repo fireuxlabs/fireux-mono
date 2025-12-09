@@ -2,7 +2,7 @@
 title: Getting Started
 description: Install, run, and browse FireUX locally.
 navigation:
-	order: 1
+  order: 1
 ---
 
 # Getting Started

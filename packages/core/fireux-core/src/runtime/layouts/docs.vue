@@ -7,7 +7,7 @@
           <UContentNavigation
             highlight
             :navigation="navigation"
-            :default-open="[]"
+            :default-open="false"
           />
         </UPageAside>
       </template>
