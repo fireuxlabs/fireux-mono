@@ -5,9 +5,9 @@
         <UPageSidebar class="w-64 shrink-0">
           <LayoutsDevNav />
         </UPageSidebar>
-        <UPageMain class="flex-1 min-w-0">
+        <div class="flex-1 min-w-0">
           <NuxtPage />
-        </UPageMain>
+        </div>
       </UPageBody>
     </UPage>
   </ClientOnly>

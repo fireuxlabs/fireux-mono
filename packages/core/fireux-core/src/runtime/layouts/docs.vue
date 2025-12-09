@@ -4,25 +4,28 @@
       <!-- Left: docs navigation -->
       <template #left>
         <UPageAside class="w-64 shrink-0">
-          <UContentNavigation highlight :navigation="navigation" />
+          <UContentNavigation
+            highlight
+            :navigation="navigation"
+            :default-open="[]"
+          />
         </UPageAside>
       </template>
 
       <!-- Main: current docs page -->
-      <UPageBody>
-        <UPageMain class="min-w-0">
-          <NuxtPage />
-        </UPageMain>
+      <UPageBody class="min-w-0">
+        <NuxtPage />
       </UPageBody>
     </UPage>
   </UContainer>
 </template>
 
 <script setup lang="ts">
-import { inject, type Ref } from 'vue'
-import type { ContentNavigationItem } from '@nuxt/content'
-
-const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
+import { fetchContentNavigation } from '#imports'
 
 defineOptions({ name: 'docs' })
+
+const { data: navigation } = await useAsyncData('fireux-docs-navigation', () =>
+  fetchContentNavigation({ source: 'fireuxDocs' })
+)
 </script>

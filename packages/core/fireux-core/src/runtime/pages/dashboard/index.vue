@@ -39,7 +39,9 @@
           <div class="min-w-0 space-y-1">
             <p class="text-sm text-dimmed">Welcome back</p>
             <h2 class="text-lg font-medium truncate">{{ userGreeting }}</h2>
-            <p class="text-sm text-dimmed truncate" v-if="userHandle">@{{ userHandle }}</p>
+            <p class="text-sm text-dimmed truncate" v-if="userHandle">
+              @{{ userHandle }}
+            </p>
           </div>
           <div class="sm:ms-auto flex flex-wrap gap-2">
             <UButton
@@ -95,7 +97,9 @@
             </div>
             <UIcon :name="stat.icon" class="size-6 text-dimmed" />
           </div>
-          <p v-if="stat.hint" class="text-xs text-dimmed mt-2">{{ stat.hint }}</p>
+          <p v-if="stat.hint" class="text-xs text-dimmed mt-2">
+            {{ stat.hint }}
+          </p>
         </UPageCard>
       </div>
 
@@ -108,10 +112,16 @@
             </div>
           </template>
           <ul class="space-y-3">
-            <li v-for="item in today" :key="item.label" class="flex items-start gap-3">
+            <li
+              v-for="item in today"
+              :key="item.label"
+              class="flex items-start gap-3"
+            >
               <UIcon :name="item.icon" class="mt-0.5 text-dimmed" />
               <div class="min-w-0">
-                <p class="text-sm font-medium leading-tight">{{ item.label }}</p>
+                <p class="text-sm font-medium leading-tight">
+                  {{ item.label }}
+                </p>
                 <p class="text-xs text-dimmed">{{ item.detail }}</p>
               </div>
               <UBadge
@@ -131,10 +141,16 @@
             </div>
           </template>
           <ul class="space-y-3">
-            <li v-for="entry in recent" :key="entry.label" class="flex items-start gap-3">
+            <li
+              v-for="entry in recent"
+              :key="entry.label"
+              class="flex items-start gap-3"
+            >
               <UIcon :name="entry.icon" class="mt-0.5 text-dimmed" />
               <div class="min-w-0">
-                <p class="text-sm font-medium leading-tight">{{ entry.label }}</p>
+                <p class="text-sm font-medium leading-tight">
+                  {{ entry.label }}
+                </p>
                 <p class="text-xs text-dimmed">{{ entry.detail }}</p>
               </div>
               <span class="text-xs text-dimmed ms-auto">{{ entry.when }}</span>
@@ -197,10 +213,25 @@ const quickLinks = [
 ]
 
 const stats = [
-  { label: 'Open tasks', value: '3', icon: 'i-lucide-list-todo', hint: 'Finish today' },
+  {
+    label: 'Open tasks',
+    value: '3',
+    icon: 'i-lucide-list-todo',
+    hint: 'Finish today',
+  },
   { label: 'Messages', value: '5', icon: 'i-lucide-mail', hint: '2 unread' },
-  { label: 'Meetings', value: '1', icon: 'i-lucide-calendar-clock', hint: 'Next in 2h' },
-  { label: 'Checklist', value: '4/6', icon: 'i-lucide-clipboard-check', hint: 'Keep momentum' },
+  {
+    label: 'Meetings',
+    value: '1',
+    icon: 'i-lucide-calendar-clock',
+    hint: 'Next in 2h',
+  },
+  {
+    label: 'Checklist',
+    value: '4/6',
+    icon: 'i-lucide-clipboard-check',
+    hint: 'Keep momentum',
+  },
 ]
 
 const today = [
