@@ -4,6 +4,9 @@
       <div class="flex items-start gap-4">
         <div class="flex-1 space-y-2">
           <div class="flex items-center gap-2 text-xs text-gray-500">
+            <span v-if="card.avatar" class="inline-flex h-6 w-6 overflow-hidden rounded-full">
+              <img :src="card.avatar" :alt="card.author" class="h-full w-full object-cover" />
+            </span>
             <span class="font-semibold text-gray-800">{{ card.author }}</span>
             <span v-if="card.readingTime" class="text-gray-500">
               · {{ card.readingTime }} min
@@ -16,7 +19,7 @@
             </span>
           </div>
           <h3 class="text-lg font-semibold leading-tight">{{ card.title }}</h3>
-          <p class="text-sm text-gray-600 line-clamp-3">{{ card.excerpt }}</p>
+          <p class="text-sm text-gray-500 line-clamp-3">{{ card.excerpt }}</p>
         </div>
         <div
           v-if="card.image"

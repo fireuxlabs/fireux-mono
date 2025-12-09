@@ -6,6 +6,7 @@ export namespace BlogCard {
     title: string
     excerpt: string
     author: string
+    avatar?: string
     readingTime?: string
     date?: string
     image?: string
@@ -41,6 +42,7 @@ function baseProps(post: BlogPost): BlogCard.Base {
     title: post.title,
     excerpt: ellipsis(text, 180),
     author: post.author?.display_name || 'Unknown author',
+    avatar: post.author?.avatar,
     readingTime: post.readingTime?.replace(' min', '') || undefined,
     date: post.created_at,
     image: post.featuredImage || post.socialImage || undefined,
