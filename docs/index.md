@@ -28,4 +28,3 @@ The canonical, human-first documentation for FireUX. Use this page as your map.
 ## Meta
 
 - Dev notes and manifests: `dev/`
-- Archive of legacy notes: `archive/`

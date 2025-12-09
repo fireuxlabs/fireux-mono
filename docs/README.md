@@ -7,4 +7,3 @@ Framework docs live here at `docs/`.
 - Architecture: `architecture/`
 - Guides: `guide/`
 - Dev notes: `dev/`
-- Archive: `archive/`

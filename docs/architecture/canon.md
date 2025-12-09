@@ -15,4 +15,3 @@ description: Canonical patterns—identity, stacks, and module conventions.
 
 - Keep docs in `/docs`; keep ecosystem/app notes in their local `docs/`.
 - Prefer composables over ad-hoc helpers; keep inputs/outputs typed.
-- Archive old reports under `archive/` instead of leaving stale files around.
