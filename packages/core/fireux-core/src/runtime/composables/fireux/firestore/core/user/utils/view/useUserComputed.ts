@@ -76,8 +76,10 @@ export function useUserComputed(user: UserRefs, pending?: Ref<boolean>) {
   })
 
   const isAdmin = computed(() => {
-    if (isTenant.value) return appUser.value?.role === 'admin'
-    return coreUser.value?.role === 'admin'
+    if (isTenant.value && appUser.value?.role === 'admin') return true
+    if (coreUser.value?.role === 'admin') return true
+    // Fallback: respect app-level admin even if config says non-tenant (e.g., misconfigured appId).
+    return appUser.value?.role === 'admin'
   })
 
   const cta = computed<UserCta>(() => CTA_CONFIG[resolveCtaKey.value])

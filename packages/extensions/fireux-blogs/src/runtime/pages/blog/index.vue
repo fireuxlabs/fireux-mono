@@ -2,13 +2,14 @@
 <template>
   <UPage>
     <UPageHeader title="Blog" description="Latest Misebox articles." />
+    {{canPublishBlog}}
     <UPageBody class="space-y-6">
       <div v-if="pending" class="space-y-3">
         <USkeleton v-for="n in 3" :key="n" class="h-20" />
       </div>
 
       <template v-else>
-        <OrganismsBlogCTA v-if="showCTA" />
+        <OrganismsBlogCTA v-if="canPublishBlog" />
 
         <div v-if="!posts.length" class="space-y-2 text-sm text-gray-500">
           <p>No posts published yet.</p>
@@ -24,7 +25,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useBlog } from '../../composables/fireux/firestore/objects/Blog/useBlog'
-import { useBlogPermissions } from '../../composables/useBlogPermissions'
+import { useBlogPermissions } from '#fireux-blogs/composables/useBlogPermissions'
 
 definePageMeta({
   layout: 'default',
@@ -44,6 +45,4 @@ const { items } = useBlog()
 const pending = computed(() => items.value === undefined)
 const posts = computed(() => items.value ?? [])
 const { canPublishBlog } = useBlogPermissions()
-// CTA gated by blog publish permission (admin today).
-const showCTA = computed(() => canPublishBlog.value)
 </script>

@@ -1,6 +1,6 @@
 <template>
   <UPageCTA
-    v-if="isAdmin"
+    v-if="showCTA"
     title="Publish a post"
     description="Share updates, releases, and stories for this runtime."
     variant="naked"
@@ -21,9 +21,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useBlogPermissions } from '#fireux-blogs/composables/useBlogPermissions.ts'
 
-const { isAdmin } = useUser()
-// Mirror page-level gate: show for admins, and always in dev to unblock iteration.
-const showCTA = computed(() => isAdmin.value || import.meta.dev)
+const { canPublishBlog } = useBlogPermissions()
+
+// Allow admins or users explicitly permitted to publish, and always show in dev to unblock iteration.
+const showCTA = computed(() => canPublishBlog.value || import.meta.dev)
 </script>

@@ -119,7 +119,9 @@ const appAdmins = computed(() =>
 
 const appUserRole = computed(() => userApi.appUser?.value?.role ?? 'user')
 const isAppAdmin = computed(() => appUserRole.value === 'admin')
-const isOnlyAdmin = computed(() => isAppAdmin.value && appAdmins.value.length <= 1)
+const isOnlyAdmin = computed(
+  () => isAppAdmin.value && appAdmins.value.length <= 1
+)
 const togglingAdmin = ref(false)
 
 const handleToggleAdmin = async (nextValue: boolean) => {
