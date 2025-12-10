@@ -7,7 +7,7 @@
   >
     <template #default>
       <p class="text-sm text-gray-600">
-        Admins can publish products to keep the catalog current.
+        People with publish permissions can keep the catalog current.
       </p>
     </template>
 
@@ -21,8 +21,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useProductPermissions } from '../../../composables/useProductPermissions'
 
-const { isAdmin, isLoading } = useUser()
-const showCTA = computed(() => !isLoading.value && isAdmin.value)
+const { canPublishProduct, pending } = useProductPermissions()
+const showCTA = computed(() =>
+  pending?.value ? false : canPublishProduct.value || import.meta.dev
+)
 </script>

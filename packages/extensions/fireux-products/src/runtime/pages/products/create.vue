@@ -7,12 +7,12 @@
     />
 
     <UPageBody class="pagebody">
-      <div v-if="isChecking" class="space-y-3">
+      <div v-if="permissionsPending?.value" class="space-y-3">
         <USkeleton v-for="n in 3" :key="n" class="h-20" />
       </div>
 
       <UAlert
-        v-else-if="!isAllowed"
+        v-else-if="!canPublishProduct"
         color="amber"
         title="Admins only"
         description="Only admins can publish products for this runtime."
@@ -37,15 +37,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useHead } from '#imports'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useProductPermissions } from '../../composables/useProductPermissions'
 // Use Nuxt UI toast if available (auto-imported in app)
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import { useCreatePricesState } from '../../composables/fireux/firestore/objects/Product/Prices/useCreatePricesState'
-import { useCreateProductState } from '../../composables/fireux/firestore/products/product/state/useCreateProductState'
-import { useProductCreate } from '../../composables/fireux/firestore/objects/Product/useProductCreate'
+import {
+  useCreateProductState,
+  useCreatePricesState,
+  useProductCreateSubmit,
+} from '../../composables/fireux/firestore/products/product/useProduct'
 
 definePageMeta({
   layout: 'default',
@@ -61,56 +63,43 @@ definePageMeta({
   title: 'Create Product',
 })
 
-const { isAdmin, isLoading } = useUser()
-const isChecking = computed(() => Boolean(isLoading.value))
-const isAllowed = computed(() => isAdmin.value)
+const { canPublishProduct, pending: permissionsPending } =
+  useProductPermissions()
 
 useHead({ title: 'Create Product' })
 
 const isCreating = ref(false)
 const { product, resetCreateProductState } = await useCreateProductState()
 const { resetCreatePricesState } = useCreatePricesState()
-const { createProduct } = await useProductCreate()
+const { submit } = useProductCreateSubmit()
 
 async function handleCreate() {
-  // Validate required fields
-  if (!product.value?.name?.trim()) {
+  isCreating.value = true
+  try {
+    await submit()
+
     if (toast)
       toast.add({
-        title: 'Missing name',
-        description: 'Product name is required',
-        icon: 'i-heroicons-exclamation-circle',
-        color: 'amber',
+        title: 'Created',
+        description: 'Product created successfully',
+        icon: 'i-heroicons-check-circle',
+        color: 'green',
       })
-    return
-  }
-
-  isCreating.value = true
-
-  const response = await createProduct()
-
-  if (!response.success) {
+    resetCreateProductState()
+    resetCreatePricesState()
+  } catch (error) {
     if (toast)
       toast.add({
         title: 'Create failed',
-        description: String(response.error || 'Unknown error'),
+        description:
+          error instanceof Error ? error.message : 'Unable to create product',
         icon: 'i-heroicons-x-circle',
         color: 'red',
       })
-    isCreating.value = false
     return
+  } finally {
+    isCreating.value = false
   }
-
-  if (toast)
-    toast.add({
-      title: 'Created',
-      description: 'Product created successfully',
-      icon: 'i-heroicons-check-circle',
-      color: 'green',
-    })
-  resetCreateProductState()
-  resetCreatePricesState()
-  isCreating.value = false
 }
 
 function handleClear() {

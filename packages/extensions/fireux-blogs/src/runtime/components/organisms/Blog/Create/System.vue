@@ -19,13 +19,12 @@ import { ref } from 'vue'
 // Nuxt UI provides useToast via auto-import in app context; fall back if unavailable
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import { useBlogDraftState } from '../../../../composables/fireux/blog/useBlogDraftState'
-import { useBlog } from '../../../../composables/fireux/firestore/objects/Blog/useBlog'
 import { useRouter } from '#imports'
+import { useBlogDraftState } from '../../../../composables/fireux/blog/useBlogDraftState'
+import { useBlogCreateSubmit } from '../../../../composables/fireux/firestore/blogs/post/state/useBlogCreateSubmit'
 
-const { blogPost, resetCreateBlogPostState, getBlogPostPayload } =
-  useBlogDraftState()
-const { createBlogPost, utils } = useBlog()
+const { blogPost, resetCreateBlogPostState } = useBlogDraftState()
+const { submit } = useBlogCreateSubmit()
 const isCreating = ref(false)
 const router = useRouter()
 
@@ -33,13 +32,7 @@ async function handleCreate() {
   isCreating.value = true
 
   try {
-    const payload = getBlogPostPayload()
-    const slug = payload.slug || utils.generateSlug(payload.title || '')
-    if (!slug) {
-      throw new Error('Slug is required to publish a blog post')
-    }
-
-    await createBlogPost(payload, slug)
+    const slug = await submit()
 
     if (toast) {
       toast.add({

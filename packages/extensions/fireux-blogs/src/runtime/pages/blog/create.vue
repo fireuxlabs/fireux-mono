@@ -7,12 +7,8 @@
     />
 
     <UPageBody class="pagebody">
-      <div v-if="isChecking" class="space-y-3">
-        <USkeleton v-for="n in 3" :key="n" class="h-20" />
-      </div>
-
       <UAlert
-        v-else-if="!isAllowed"
+        v-if="!canPublishBlog"
         color="amber"
         title="Admins only"
         description="Only admins can publish blog posts for this runtime."
@@ -37,14 +33,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useHead, useRouter } from '#imports'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useBlogPermissions } from '#fireux-blogs/composables/useBlogPermissions'
 // Nuxt UI provides useToast via auto-import in app context; fall back if unavailable
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
 import { useBlogDraftState } from '../../composables/fireux/blog/useBlogDraftState'
-import { useBlog } from '../../composables/fireux/firestore/objects/Blog/useBlog'
+import { useBlogCreateSubmit } from '../../composables/fireux/firestore/blogs/post/state/useBlogCreateSubmit'
 
 definePageMeta({
   layout: 'default',
@@ -60,15 +56,12 @@ definePageMeta({
   title: 'Create Blog Post',
 })
 
-const { isAdmin, isLoading } = useUser()
-const isChecking = computed(() => Boolean(isLoading.value))
-const isAllowed = computed(() => isAdmin.value)
+const { canPublishBlog } = useBlogPermissions()
 
 useHead({ title: 'Create Blog Post' })
 
-const { blogPost, resetCreateBlogPostState, getBlogPostPayload } =
-  useBlogDraftState()
-const { createBlogPost, utils } = useBlog()
+const { blogPost, resetCreateBlogPostState } = useBlogDraftState()
+const { submit } = useBlogCreateSubmit()
 const isCreating = ref(false)
 const router = useRouter()
 
@@ -76,13 +69,7 @@ async function handleCreate() {
   isCreating.value = true
 
   try {
-    const payload = getBlogPostPayload()
-    const slug = payload.slug || utils.generateSlug(payload.title || '')
-    if (!slug) {
-      throw new Error('Slug is required to publish a blog post')
-    }
-
-    await createBlogPost(payload, slug)
+    const slug = await submit()
 
     if (toast) {
       toast.add({

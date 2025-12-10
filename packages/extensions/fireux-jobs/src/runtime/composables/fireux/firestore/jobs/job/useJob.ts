@@ -4,6 +4,7 @@ import { useJobComputed } from './utils/useJobComputed'
 import { useJobInterface } from './utils/useJobInterface'
 import { useJobCreateState } from './state/useJobCreateState'
 import { useJobCreate } from './mutations/useJobCreate'
+import { useJobCreateSubmit } from './mutations/useJobCreateSubmit'
 import { useJobUpdate } from './mutations/useJobUpdate'
 import { useJobDelete } from './mutations/useJobDelete'
 
@@ -32,7 +33,15 @@ export function useJob(jobId: string | Ref<string | null | undefined>) {
     ...useJobInterface(job),
     ...useJobCreateState(),
     ...useJobCreate(),
+    ...useJobCreateSubmit(),
     ...useJobUpdate(),
     ...useJobDelete(),
   }
 }
+
+export { useJobCreateState, useJobCreateSubmit }
+export {
+  jobStatusOptions,
+  toJobPayload,
+  validateJobDraft,
+} from './state/useJobCreateState'

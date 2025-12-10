@@ -1,5 +1,4 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/jobs/index.vue -->
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/jobs/index.vue -->
 <template>
   <UPage>
     <UPageHeader title="Jobs" description="Browse jobs." />

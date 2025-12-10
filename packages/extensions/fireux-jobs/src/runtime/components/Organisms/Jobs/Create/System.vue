@@ -13,84 +13,35 @@
     </template>
 
     <template #preview>
-      <div class="space-y-2 text-sm text-gray-600">
-        <p>
-          <strong>{{ form.title || 'Untitled job' }}</strong>
-        </p>
-        <p v-if="form.date">Date: {{ form.date }}</p>
-        <p v-if="form.start_time || form.end_time">
-          Time: {{ form.start_time || '—' }} - {{ form.end_time || '—' }}
-        </p>
-        <p v-if="form.location_id">Location: {{ form.location_id }}</p>
-        <p>Status: {{ form.status }}</p>
-        <p v-if="form.pay">Pay: {{ form.pay }}</p>
-        <p v-if="form.description">{{ form.description }}</p>
-        <p v-if="form.notes">Notes: {{ form.notes }}</p>
-      </div>
+      <OrganismsJobsCreatePreview :form="form" />
     </template>
   </OrganismsCreateShell>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
-import { useJobCreate } from '../../../../composables/fireux/firestore/jobs/job/mutations/useJobCreate.ts'
-import type { JobStatus } from '../../../../models/job.model.ts'
+import {
+  useJobCreateState,
+  jobStatusOptions,
+  validateJobDraft,
+} from '../../../../composables/fireux/firestore/jobs/job/state/useJobCreateState.ts'
+import { useJobCreateSubmit } from '../../../../composables/fireux/firestore/jobs/job/mutations/useJobCreateSubmit.ts'
 
 const router = useRouter()
-const { createJob } = useJobCreate()
 const { withToast } = useToastify()
+const { jobDraft: form, resetDraft } = useJobCreateState()
+const { submit } = useJobCreateSubmit()
 
-type JobForm = {
-  title: string
-  description: string
-  notes: string
-  pay: string
-  status: JobStatus
-  date: string
-  start_time: string
-  end_time: string
-  location_id?: string
-}
-
-const form = reactive<JobForm>({
-  title: '',
-  description: '',
-  notes: '',
-  pay: '',
-  status: 'draft',
-  date: '',
-  start_time: '',
-  end_time: '',
-  location_id: '',
-})
-
-const statusOptions = [
-  { label: 'Draft', value: 'draft' },
-  { label: 'Open', value: 'open' },
-  { label: 'Scheduled', value: 'scheduled' },
-  { label: 'In progress', value: 'in_progress' },
-  { label: 'Completed', value: 'completed' },
-  { label: 'Closed', value: 'closed' },
-  { label: 'Cancelled', value: 'cancelled' },
-] as const
+const statusOptions = jobStatusOptions
 
 const submitting = ref(false)
 const errorMessage = ref('')
-const isValid = computed(
-  () => form.title.trim().length > 0 && Boolean(form.status)
-)
+const isValid = computed(() => !validateJobDraft(form.value))
 
 function onReset() {
-  form.title = ''
-  form.description = ''
-  form.notes = ''
-  form.pay = ''
-  form.status = 'draft'
-  form.date = ''
-  form.start_time = ''
-  form.end_time = ''
+  resetDraft()
   errorMessage.value = ''
 }
 
@@ -101,16 +52,7 @@ const onSubmit = withToast(
     errorMessage.value = ''
 
     try {
-      const id = await createJob({
-        title: form.title.trim(),
-        description: form.description.trim() || null,
-        notes: form.notes.trim() || null,
-        pay: form.pay.trim() || null,
-        status: form.status,
-        date: form.date || null,
-        start_time: form.start_time || null,
-        end_time: form.end_time || null,
-      })
+      const id = await submit()
 
       onReset()
       router.push(`/jobs/${id}`)

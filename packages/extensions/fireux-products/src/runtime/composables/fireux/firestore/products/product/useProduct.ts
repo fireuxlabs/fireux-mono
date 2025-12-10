@@ -1,6 +1,7 @@
 // Canonical entrypoint for product composables
 export * from './state/useCreateProductState'
 export * from './state/prices/useCreatePricesState'
+export * from './state/useProductCreateSubmit'
 export * from '../../objects/Product/useProducts'
 export * from '../../objects/Product/useProductCreate'
 export * from '../../objects/Product/useProductUpdate'

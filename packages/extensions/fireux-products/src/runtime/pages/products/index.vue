@@ -37,5 +37,5 @@ definePageMeta({
 useHead({ title: `${appName} | Products` })
 
 const { productsCollection: products } = await useProducts()
-const { canManageProducts: showCTA } = useProductPermissions()
+const { canPublishProduct: showCTA } = useProductPermissions()
 </script>

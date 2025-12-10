@@ -1,4 +1,4 @@
-import { useImageStorage } from '../../../core/firebase/useImageStorage'
+import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 export function useProductUtils() {
