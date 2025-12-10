@@ -6,7 +6,9 @@
     />
 
     <UPageBody class="pagebody">
-      <USkeleton v-if="isChecking" class="h-40 rounded-2xl" />
+      <div v-if="isChecking" class="space-y-3">
+        <USkeleton v-for="n in 3" :key="n" class="h-20" />
+      </div>
       <OrganismsProfilesAgentCTA v-else-if="!canCreate" />
       <OrganismsJobsCreate v-else />
     </UPageBody>

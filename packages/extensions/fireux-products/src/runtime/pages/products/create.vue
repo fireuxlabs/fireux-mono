@@ -6,12 +6,12 @@
     />
 
     <UPageBody class="pagebody">
-      <div v-if="isLoadingUser" class="space-y-3">
+      <div v-if="isChecking" class="space-y-3">
         <USkeleton v-for="n in 3" :key="n" class="h-20" />
       </div>
 
       <UAlert
-        v-else-if="!isAdmin"
+        v-else-if="!isAllowed"
         color="amber"
         title="Admins only"
         description="Only admins can publish products for this runtime."
@@ -42,7 +42,8 @@ definePageMeta({
 })
 
 const { isAdmin, isLoading } = useUser()
-const isLoadingUser = computed(() => Boolean(isLoading.value))
+const isChecking = computed(() => Boolean(isLoading.value))
+const isAllowed = computed(() => isAdmin.value)
 
 useHead({ title: 'Create Product' })
 </script>
