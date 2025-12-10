@@ -18,15 +18,33 @@
         description="Only admins can publish blog posts for this runtime."
       />
 
-      <OrganismsBlogCreateSystem v-else />
+      <OrganismsCreateShell
+        v-else
+        :loading="isCreating"
+        submit-label="Publish"
+        @submit="handleCreate"
+        @clear="handleClear"
+      >
+        <template #write>
+          <OrganismsBlogCreateWrite />
+        </template>
+        <template #preview>
+          <OrganismsBlogCreatePreview />
+        </template>
+      </OrganismsCreateShell>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useHead } from '#imports'
+import { computed, ref } from 'vue'
+import { useHead, useRouter } from '#imports'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+// Nuxt UI provides useToast via auto-import in app context; fall back if unavailable
+const useToastFn = (globalThis as any).useToast as undefined | (() => any)
+const toast = useToastFn ? useToastFn() : undefined
+import { useBlogDraftState } from '../../composables/fireux/blog/useBlogDraftState'
+import { useBlog } from '../../composables/fireux/firestore/objects/Blog/useBlog'
 
 definePageMeta({
   layout: 'default',
@@ -44,8 +62,55 @@ definePageMeta({
 
 const { isAdmin, isLoading } = useUser()
 const isChecking = computed(() => Boolean(isLoading.value))
-// Allow admins, and always allow in dev to speed iteration.
-const isAllowed = computed(() => isAdmin.value || import.meta.dev)
+const isAllowed = computed(() => isAdmin.value)
 
 useHead({ title: 'Create Blog Post' })
+
+const { blogPost, resetCreateBlogPostState, getBlogPostPayload } =
+  useBlogDraftState()
+const { createBlogPost, utils } = useBlog()
+const isCreating = ref(false)
+const router = useRouter()
+
+async function handleCreate() {
+  isCreating.value = true
+
+  try {
+    const payload = getBlogPostPayload()
+    const slug = payload.slug || utils.generateSlug(payload.title || '')
+    if (!slug) {
+      throw new Error('Slug is required to publish a blog post')
+    }
+
+    await createBlogPost(payload, slug)
+
+    if (toast) {
+      toast.add({
+        title: 'Published',
+        description: 'Blog post published successfully',
+        icon: 'i-heroicons-check-circle',
+        color: 'green',
+      })
+    }
+
+    handleClear()
+    await router.push('/blog')
+  } catch (error: any) {
+    if (toast) {
+      toast.add({
+        title: 'Publish failed',
+        description: error?.message || 'Unknown error',
+        icon: 'i-heroicons-x-circle',
+        color: 'red',
+      })
+    }
+  } finally {
+    isCreating.value = false
+  }
+}
+
+function handleClear() {
+  resetCreateBlogPostState()
+  blogPost.value.slug = ''
+}
 </script>

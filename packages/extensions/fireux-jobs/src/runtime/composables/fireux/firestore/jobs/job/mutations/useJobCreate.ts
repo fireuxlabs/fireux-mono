@@ -8,8 +8,13 @@ import type { Job, JobStatus } from '../../../../../models/job.model.ts'
 type CreateJobInput = {
   title: string
   description?: string | null
+  notes?: string | null
   pay?: string | number | null
   status?: JobStatus
+  date?: string | null
+  start_time?: string | null
+  end_time?: string | null
+  location_id?: string | null
 }
 
 type JobDraft = Partial<Job> &
@@ -38,8 +43,13 @@ export function useJobCreate() {
       id: jobId,
       title,
       description: descriptionValue ? descriptionValue : null,
+      notes: sanitizeString(input.notes) || null,
       pay: input.pay ?? null,
       status: input.status ?? 'draft',
+      date: sanitizeString(input.date) || null,
+      start_time: sanitizeString(input.start_time) || null,
+      end_time: sanitizeString(input.end_time) || null,
+      location_id: sanitizeString(input.location_id) || null,
       tenant_id: tenantId,
       created_by: user.uid,
     }
