@@ -3,11 +3,8 @@
   <UPage>
     <UPageHeader title="Jobs" description="Browse jobs." />
     <UPageBody class="pagebody">
-      <!-- CTA only when agent profile exists -->
       <OrganismsJobsCTA v-if="coreProfile" />
-      <!-- Jobs managed by this agent (local to the current agent) -->
       <OrganismsJobsSectionsAgentCollection v-if="coreProfile" />
-      <!-- Global jobs resolved for this runtime (ecosystem-wide) -->
       <OrganismsJobsSectionsGlobalCollection />
     </UPageBody>
   </UPage>

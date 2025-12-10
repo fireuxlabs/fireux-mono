@@ -33,17 +33,20 @@ definePageMeta({
 
 useHead({ title: 'Create Job' })
 
-const { activeProfile, pending } = useAgent()
+const { activeProfile, hasCoreProfile, hasAppProfile, pending } = useAgent()
 const { profileKeys, hasProfile, pending: userPending } = useUser()
 
 const isChecking = computed(
   () => Boolean(pending?.value) || Boolean(userPending?.value)
 )
-const hasAgentProfile = computed(
-  () => hasProfile('agent') || profileKeys.value.includes('agent')
-)
 
-// Allow creation if we have a loaded agent profile or the user is tagged as an agent.
+const hasAgentProfile = computed(() => {
+  if (hasProfile('agent')) return true
+  if (profileKeys.value.includes('agent')) return true
+  return Boolean(hasCoreProfile?.value || hasAppProfile?.value)
+})
+
+// Allow creation if we have any agent profile presence or the user is tagged as agent.
 const canCreate = computed(
   () => Boolean(activeProfile?.value) || hasAgentProfile.value
 )
