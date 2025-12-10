@@ -13,10 +13,10 @@
         </div>
         <UTabs v-model="selectedTab" :items="tabItems">
           <template #write>
-            <FireOrganismsProductCreateWrite />
+            <OrganismsProductCreateWrite />
           </template>
           <template #preview>
-            <FireOrganismsProductCreatePreview />
+            <OrganismsProductCreatePreview />
           </template>
         </UTabs>
         <div class="actions">
@@ -43,9 +43,9 @@ import { ref } from 'vue'
 // Use Nuxt UI toast if available (auto-imported in app)
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import { useCreatePricesState } from '../../../../composables/firestore/objects/Product/Prices/useCreatePricesState'
-import { useCreateProductState } from '../../../../composables/firestore/objects/Product/useCreateProductState'
-import { useProductCreate } from '../../../../composables/firestore/objects/Product/useProductCreate'
+import { useCreatePricesState } from '../../../../composables/fireux/firestore/objects/Product/Prices/useCreatePricesState'
+import { useCreateProductState } from '../../../../composables/fireux/firestore/products/product/state/useCreateProductState'
+import { useProductCreate } from '../../../../composables/fireux/firestore/objects/Product/useProductCreate'
 
 const selectedTab = ref<'write' | 'preview'>('write')
 const tabItems = [

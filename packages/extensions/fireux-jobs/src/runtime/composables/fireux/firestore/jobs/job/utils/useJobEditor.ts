@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
-import type { Job, JobStatus } from '../../../../models/job.model.ts'
-import { useJobUpdate } from './useJobUpdate.ts'
+import type { Job, JobStatus } from '../../../../../models/job.model.ts'
+import { useJobUpdate } from '../mutations/useJobUpdate'
 
 const sanitizeString = (value: unknown) =>
   value == null ? '' : String(value).trim()

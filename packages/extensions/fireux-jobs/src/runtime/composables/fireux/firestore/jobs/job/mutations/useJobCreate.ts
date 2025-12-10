@@ -3,7 +3,7 @@ import { useFirestore } from 'vuefire'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
-import type { Job, JobStatus } from '../../../../models/job.model.ts'
+import type { Job, JobStatus } from '../../../../../models/job.model.ts'
 
 type CreateJobInput = {
   title: string

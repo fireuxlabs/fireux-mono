@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/blog/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader title="Blog" description="Latest articles." />
     <UPageBody class="pagebody">
       <OrganismsBlogCTA v-if="canPublishBlog" />
       <OrganismsBlogList :posts="posts ?? []" />
@@ -16,13 +16,11 @@ import { useBlog } from '../../composables/fireux/firestore/objects/Blog/useBlog
 import { useBlogPermissions } from '#fireux-blogs/composables/useBlogPermissions'
 
 const { appName } = useFireUXConfig()
-const pageTitle = 'Blog'
-const pageDescription = 'Latest articles.'
 
 definePageMeta({
   layout: 'default',
-  title: pageTitle,
-  description: pageDescription,
+  title: 'Blog',
+  description: 'Latest articles.',
   nav: {
     key: 'blog',
     label: 'Blog',
@@ -32,10 +30,10 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
-  head: { title: pageTitle },
+  head: { title: 'Blog' },
 })
 
-useHead({ title: `${appName} | ${pageTitle}` })
+useHead({ title: `${appName} | Blog` })
 
 const { items: posts } = useBlog()
 const { canPublishBlog } = useBlogPermissions()

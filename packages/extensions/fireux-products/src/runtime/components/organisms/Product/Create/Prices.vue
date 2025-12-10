@@ -1,6 +1,6 @@
 <template>
   <div class="prices-fields">
-    <FireOrganismsProductCreatePrice
+    <OrganismsProductCreatePrice
       v-for="(_, index) in prices"
       :key="index"
       :index="index"
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCreatePricesState } from '../../../../composables/firestore/objects/Product/Prices/useCreatePricesState'
+import { useCreatePricesState } from '../../../../composables/fireux/firestore/objects/Product/Prices/useCreatePricesState'
 
 const { prices, addPrice, removePrice } = useCreatePricesState()
 

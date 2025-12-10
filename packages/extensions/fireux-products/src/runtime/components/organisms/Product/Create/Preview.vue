@@ -1,25 +1,25 @@
 <template>
   <div class="preview-layout">
     <h1>Cell</h1>
-    <FireOrganismsProductCardsProduct
+    <OrganismsProductCardsProduct
       mode="preview"
       variant="cell"
       :product="previewProduct"
     />
     <h1>Customer</h1>
-    <FireOrganismsProductCardsProduct
+    <OrganismsProductCardsProduct
       mode="preview"
       variant="customer"
       :product="previewProduct"
     />
     <h1>Info</h1>
-    <FireOrganismsProductCardsProduct
+    <OrganismsProductCardsProduct
       mode="preview"
       variant="info"
       :product="previewProduct"
     />
     <h1>Page</h1>
-    <FireOrganismsProductCardsProduct
+    <OrganismsProductCardsProduct
       mode="preview"
       variant="page"
       :product="previewProduct"
@@ -35,8 +35,8 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
-import { useCreateProductState } from '../../../../composables/firestore/objects/Product/useCreateProductState'
-import { useCreatePricesState } from '../../../../composables/firestore/objects/Product/Prices/useCreatePricesState'
+import { useCreateProductState } from '../../../../composables/fireux/firestore/products/product/state/useCreateProductState'
+import { useCreatePricesState } from '../../../../composables/fireux/firestore/objects/Product/Prices/useCreatePricesState'
 import type { FirebaseProduct } from '../../../../models/objects/product.model'
 
 const { product } = await useCreateProductState()
@@ -54,7 +54,7 @@ const previewProduct = computed(
       // Use main_image field from FirebaseProduct model
       main_image: mainImageData.value || '/img/placeholder-product.png',
       default_price: defaultPrice.value,
-    }) as Partial<FirebaseProduct>
+    } as Partial<FirebaseProduct>)
 )
 </script>
 

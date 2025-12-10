@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/jobs/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader title="Jobs" description="Browse jobs." />
     <UPageBody class="pagebody">
       <!-- CTA only when agent profile exists -->
       <OrganismsJobsCTA v-if="coreProfile" />
@@ -19,13 +19,11 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const { appName } = useFireUXConfig()
-const pageTitle = 'Jobs'
-const pageDescription = 'Browse jobs.'
 
 definePageMeta({
   layout: 'default',
-  title: pageTitle,
-  description: pageDescription,
+  title: 'Jobs',
+  description: 'Browse jobs.',
   nav: {
     key: 'jobs',
     label: 'Jobs',
@@ -36,10 +34,10 @@ definePageMeta({
     layouts: ['default'],
   },
   name: 'JobsIndexPage',
-  head: { title: pageTitle },
+  head: { title: 'Jobs' },
 })
 
-useHead({ title: `${appName} | ${pageTitle}` })
+useHead({ title: `${appName} | Jobs` })
 
 const { coreProfile } = useAgent()
 </script>

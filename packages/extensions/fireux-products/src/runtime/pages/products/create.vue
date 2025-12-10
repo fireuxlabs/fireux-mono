@@ -17,7 +17,7 @@
         description="Only admins can publish products for this runtime."
       />
 
-      <FireOrganismsProductCreateSystem v-else />
+      <OrganismsProductCreateSystem v-else />
     </UPageBody>
   </UPage>
 </template>

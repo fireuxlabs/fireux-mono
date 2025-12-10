@@ -11,12 +11,12 @@
       placeholder="Description"
       class="unstyled-textarea"
     />
-    <FireMoleculesFormsStateRichText v-model="product.content" />
+    <MoleculesFormsStateRichText v-model="product.content" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useCreateProductState } from '../../../../composables/firestore/objects/Product/useCreateProductState'
+import { useCreateProductState } from '../../../../composables/fireux/firestore/products/product/state/useCreateProductState'
 
 // Shared creation state
 const { product, isSlugTaken } = await useCreateProductState()

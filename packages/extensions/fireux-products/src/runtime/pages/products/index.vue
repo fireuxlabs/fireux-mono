@@ -1,10 +1,10 @@
 <!-- FILE: packages/extensions/fireux-products/src/runtime/pages/products/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader title="Products" description="Products catalog." />
     <UPageBody class="pagebody">
-      <FireOrganismsProductCTA v-if="showCTA" />
-      <FireOrganismsProductCardsList :products="products ?? []" />
+      <OrganismsProductCTA v-if="showCTA" />
+      <OrganismsProductCardsList :products="products ?? []" />
     </UPageBody>
   </UPage>
 </template>
@@ -16,13 +16,11 @@ import { useProducts } from '../../composables/fireux/firestore/objects/Product/
 import { useProductPermissions } from '../../composables/useProductPermissions'
 
 const { appName } = useFireUXConfig()
-const pageTitle = 'Products'
-const pageDescription = 'Products catalog.'
 
 definePageMeta({
   layout: 'default',
-  title: pageTitle,
-  description: pageDescription,
+  title: 'Products',
+  description: 'Products catalog.',
   nav: {
     key: 'products',
     label: 'Products',
@@ -32,10 +30,10 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
-  head: { title: pageTitle },
+  head: { title: 'Products' },
 })
 
-useHead({ title: `${appName} | ${pageTitle}` })
+useHead({ title: `${appName} | Products` })
 
 const { productsCollection: products } = await useProducts()
 const { canManageProducts: showCTA } = useProductPermissions()

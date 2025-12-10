@@ -1,7 +1,7 @@
 <template>
   <div class="write-system">
     <!-- Basic Info -->
-    <FireOrganismsProductCreateBasic />
+    <OrganismsProductCreateBasic />
 
     <!-- Product Type -->
     <UFormField
@@ -75,17 +75,17 @@
     </UFormField>
 
     <!-- Pricing -->
-    <FireOrganismsProductCreatePrices />
+    <OrganismsProductCreatePrices />
 
     <!-- Stock & Capacity Management -->
-    <FireOrganismsProductCreateStock />
+    <OrganismsProductCreateStock />
 
     <!-- Shiping -->
-    <!-- <FireOrganismsProductCreateShipping /> -->
+    <!-- <OrganismsProductCreateShipping /> -->
 
     <!-- Main Product Image -->
     <div class="image-section">
-      <FireMoleculesFormsStateImagePicker
+      <MoleculesFormsStateImagePicker
         label="Main Product Image"
         state-key="createProductMainImage"
       />
@@ -94,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCreateProductState } from '../../../../composables/firestore/objects/Product/useCreateProductState'
+import { useCreateProductState } from '../../../../composables/fireux/firestore/products/product/state/useCreateProductState'
 
 const { product } = await useCreateProductState()
 

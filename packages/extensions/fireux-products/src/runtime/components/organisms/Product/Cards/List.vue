@@ -1,7 +1,7 @@
 <template>
   <div class="product-list">
     <template v-if="props.products.length">
-      <FireOrganismsProductCardsProduct
+      <OrganismsProductCardsProduct
         v-for="product in props.products"
         :key="product.slug"
         :product="product"

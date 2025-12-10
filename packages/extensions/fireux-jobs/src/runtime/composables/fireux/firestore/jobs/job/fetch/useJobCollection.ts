@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts'
-import type { Job } from '../../../../models/job.model.ts'
+import type { Job } from '../../../../../models/job.model.ts'
 
 export function useJobCollection() {
   const fireUXConfig = useFireUXConfig()

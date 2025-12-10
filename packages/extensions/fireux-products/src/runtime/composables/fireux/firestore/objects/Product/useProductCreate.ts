@@ -1,4 +1,4 @@
-import { useCreateProductState } from './useCreateProductState'
+import { useCreateProductState } from '../../products/product/state/useCreateProductState'
 
 type CreateProductResult = {
   success: boolean
