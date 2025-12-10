@@ -13,20 +13,26 @@
           </UBadge>
         </template>
 
-        <UFormGroup label="Job title" required>
-          <UInput
-            v-model="form.title"
-            placeholder="e.g. Sous Chef (Evenings)"
-          />
-        </UFormGroup>
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <p class="text-sm font-semibold">
+              Job title <span class="text-red-500">*</span>
+            </p>
+            <UInput
+              v-model="form.title"
+              placeholder="e.g. Sous Chef (Evenings)"
+            />
+          </div>
 
-        <UFormGroup label="Description">
-          <UTextarea
-            v-model="form.description"
-            placeholder="Responsibilities, requirements, schedule…"
-            :rows="6"
-          />
-        </UFormGroup>
+          <div class="space-y-2">
+            <p class="text-sm font-semibold">Description</p>
+            <UTextarea
+              v-model="form.description"
+              placeholder="Responsibilities, requirements, schedule…"
+              :rows="6"
+            />
+          </div>
+        </div>
       </UCard>
 
       <UCard>
@@ -36,28 +42,34 @@
           <p>Decide what the shift pays and who can find it in the network.</p>
         </template>
 
-        <UFormGroup label="Pay">
-          <UInput
-            v-model="form.pay"
-            placeholder="35 CHF/hour, negotiable"
-            icon="i-lucide-badge-dollar-sign"
-          />
-        </UFormGroup>
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <p class="text-sm font-semibold">Pay</p>
+            <UInput
+              v-model="form.pay"
+              placeholder="35 CHF/hour, negotiable"
+              icon="i-lucide-badge-dollar-sign"
+            />
+          </div>
 
-        <UFormGroup label="Status" required>
-          <USelect v-model="form.status" :options="statusOptions" />
-        </UFormGroup>
+          <div class="space-y-2">
+            <p class="text-sm font-semibold">
+              Status <span class="text-red-500">*</span>
+            </p>
+            <USelect v-model="form.status" :options="statusOptions" />
+          </div>
 
-        <div>
-          <p>{{ currentStatusMeta.label }}</p>
-          <p>{{ currentStatusMeta.copy }}</p>
+          <div>
+            <p class="text-sm font-semibold">{{ currentStatusMeta.label }}</p>
+            <p class="text-sm text-gray-600">{{ currentStatusMeta.copy }}</p>
 
-          <ul>
-            <li v-for="meta in statusMetaList" :key="meta.value">
-              <strong>{{ meta.label }}</strong>
-              <p>{{ meta.copy }}</p>
-            </li>
-          </ul>
+            <ul class="mt-3 space-y-2">
+              <li v-for="meta in statusMetaList" :key="meta.value">
+                <strong>{{ meta.label }}</strong>
+                <p class="text-sm text-gray-600">{{ meta.copy }}</p>
+              </li>
+            </ul>
+          </div>
         </div>
       </UCard>
 

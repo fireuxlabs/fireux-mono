@@ -27,30 +27,38 @@
         description="We could not find this job. Return to the jobs list and try again."
       />
 
-      <form v-else class="space-y-4" @submit.prevent="onSave">
-        <UFormGroup label="Job title" required>
+      <form v-else class="space-y-6" @submit.prevent="onSave">
+        <div class="space-y-2">
+          <p class="text-sm font-semibold">
+            Job title <span class="text-red-500">*</span>
+          </p>
           <UInput v-model="form.title" placeholder="e.g. Chef de Partie" />
-        </UFormGroup>
+        </div>
 
-        <UFormGroup label="Description">
+        <div class="space-y-2">
+          <p class="text-sm font-semibold">Description</p>
           <UTextarea
             v-model="form.description"
             placeholder="Describe responsibilities, requirements, and timing."
             :rows="6"
           />
-        </UFormGroup>
+        </div>
 
         <div class="grid gap-4 md:grid-cols-2">
-          <UFormGroup label="Pay">
+          <div class="space-y-2">
+            <p class="text-sm font-semibold">Pay</p>
             <UInput
               v-model="form.pay"
               placeholder="e.g. 35 CHF/hour"
               icon="i-lucide-badge-dollar-sign"
             />
-          </UFormGroup>
-          <UFormGroup label="Status" required>
+          </div>
+          <div class="space-y-2">
+            <p class="text-sm font-semibold">
+              Status <span class="text-red-500">*</span>
+            </p>
             <USelect v-model="form.status" :options="statusOptions" />
-          </UFormGroup>
+          </div>
         </div>
 
         <div class="flex items-center justify-between">

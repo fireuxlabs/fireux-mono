@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
 import type { AgentProfile } from '../../../../../models/profiles/Agent.model.ts'
@@ -13,8 +13,9 @@ export function useAgentComputed(
   refs: ProfileRefs<AgentProfile>,
   pending?: Ref<boolean>
 ) {
-  const coreProfile = refs.coreProfile
-  const appProfile = refs.appProfile
+  // Fallback to empty refs when callers pass partial data
+  const coreProfile = refs?.coreProfile ?? ref<AgentProfile | null>(null)
+  const appProfile = refs?.appProfile ?? ref<AgentProfile | null>(null)
 
   const activeProfile = computed<AgentProfile | null>(() => {
     const core = coreProfile.value ?? null

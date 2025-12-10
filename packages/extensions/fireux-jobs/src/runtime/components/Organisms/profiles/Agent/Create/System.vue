@@ -26,43 +26,42 @@
           <h3 class="section-title">Agency Information</h3>
           <form @submit.prevent="onCreateAgent" class="create-form">
             <div class="form-grid">
-              <UFormGroup
-                label="Agency Name*"
-                required
-                class="form-group full-width"
-              >
+              <div class="form-group full-width">
+                <p class="form-label">
+                  Agency Name <span class="form-required">*</span>
+                </p>
                 <UInput
                   v-model="formData.companyName"
                   placeholder="Enter your agency name"
                   required
                 />
-              </UFormGroup>
+              </div>
 
-              <UFormGroup label="Contact Email" class="form-group">
+              <div class="form-group">
+                <p class="form-label">Contact Email</p>
                 <UInput
                   v-model="formData.contactEmail"
                   type="email"
                   placeholder="Company contact email"
                 />
-              </UFormGroup>
+              </div>
 
-              <UFormGroup label="Website" class="form-group">
+              <div class="form-group">
+                <p class="form-label">Website</p>
                 <UInput
                   v-model="formData.website"
                   placeholder="yourcompany.com"
                 />
-              </UFormGroup>
+              </div>
 
-              <UFormGroup
-                label="Agency Description"
-                class="form-group full-width"
-              >
+              <div class="form-group full-width">
+                <p class="form-label">Agency Description</p>
                 <UTextarea
                   v-model="formData.description"
                   placeholder="Tell us about your agency..."
                   :rows="4"
                 />
-              </UFormGroup>
+              </div>
             </div>
 
             <div class="form-actions">
@@ -250,6 +249,15 @@ onMounted(() => {
 
 .form-group.full-width {
   grid-column: 1 / -1;
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+
+.form-required {
+  color: var(--error, #ef4444);
 }
 
 .form-actions {

@@ -6,7 +6,8 @@
     />
 
     <UPageBody class="pagebody">
-      <OrganismsProfilesAgentCTA v-if="!canCreate" />
+      <USkeleton v-if="isChecking" class="h-40 rounded-2xl" />
+      <OrganismsProfilesAgentCTA v-else-if="!canCreate" />
       <OrganismsJobsCreate v-else />
     </UPageBody>
   </UPage>
@@ -15,7 +16,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
-import { useAgentComputed } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentComputed.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 
 definePageMeta({
   layout: 'default',
@@ -32,7 +33,18 @@ definePageMeta({
 
 useHead({ title: 'Create Job' })
 
-const { profile } = useAgent()
-const { activeProfile } = useAgentComputed(profile)
-const canCreate = computed(() => Boolean(activeProfile.value))
+const { activeProfile, pending } = useAgent()
+const { profileKeys, hasProfile, pending: userPending } = useUser()
+
+const isChecking = computed(
+  () => Boolean(pending?.value) || Boolean(userPending?.value)
+)
+const hasAgentProfile = computed(
+  () => hasProfile('agent') || profileKeys.value.includes('agent')
+)
+
+// Allow creation if we have a loaded agent profile or the user is tagged as an agent.
+const canCreate = computed(
+  () => Boolean(activeProfile?.value) || hasAgentProfile.value
+)
 </script>

@@ -1,7 +1,7 @@
 import { useStorage } from '@vueuse/core'
 import { onMounted } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useBlogUtils } from '../firestore/objects/Blog/utils/useBlogUtils.ts'
+import { useBlogUtils } from '../../../objects/Blog/utils/useBlogUtils.ts'
 import type { BlogPostEntry } from '../../../models/objects/blogPost.model.ts'
 
 type BlogPostPayload = BlogPostEntry & {
