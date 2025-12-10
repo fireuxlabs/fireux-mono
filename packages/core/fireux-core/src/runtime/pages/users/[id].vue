@@ -2,7 +2,7 @@
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <OrganismsUserPreview :user="currentUser" :compact="false" />
     </UPageBody>
   </UPage>

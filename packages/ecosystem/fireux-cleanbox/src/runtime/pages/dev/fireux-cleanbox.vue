@@ -5,7 +5,7 @@
       description="Ops-facing inspection tools for workforce scheduling and job postings."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
         <template #header>
           <div class="flex flex-col gap-1">

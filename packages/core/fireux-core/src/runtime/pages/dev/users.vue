@@ -1,7 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/dev/users.vue -->
 <template>
   <UPage>
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <UCard v-if="currentUser" class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">

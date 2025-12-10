@@ -13,7 +13,7 @@
       </template>
     </UPageHeader>
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <div v-if="pending" class="space-y-3">
         <USkeleton class="h-14 rounded-xl" />
         <USkeleton class="h-40 rounded-xl" />

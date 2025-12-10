@@ -5,7 +5,7 @@
       description="Clipboard-first utilities for registry data, diagnostics, and FireUX automation."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
         <template #header>
           <div class="flex flex-col gap-1">

@@ -2,7 +2,7 @@
 <template>
   <UPage>
     <UPageHeader title="Blog" description="Latest Misebox articles." />
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <div v-if="pending" class="space-y-3">
         <USkeleton v-for="n in 3" :key="n" class="h-20" />
       </div>

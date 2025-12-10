@@ -6,7 +6,7 @@
       description="Inspect the current user and browse all users available to this runtime."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <OrganismsUserPreview :user="currentUser" />
 
       <section v-if="isTenant" class="space-y-2">

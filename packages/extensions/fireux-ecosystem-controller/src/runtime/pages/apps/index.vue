@@ -4,7 +4,7 @@
       title="Apps"
       description="Inspect the current app and browse all apps available to this runtime."
     />
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <OrganismsAppPreview />
       <OrganismsAppCollection />
     </UPageBody>

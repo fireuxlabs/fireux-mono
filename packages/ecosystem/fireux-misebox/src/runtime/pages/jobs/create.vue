@@ -5,7 +5,7 @@
       description="Post a Misebox gig to reach chefs already in the network."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <UAlert
         v-if="!canCreate"
         color="amber"

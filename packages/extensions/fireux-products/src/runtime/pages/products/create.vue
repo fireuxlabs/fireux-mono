@@ -5,7 +5,7 @@
       description="Add a new product to the catalog for this runtime."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <div v-if="isLoadingUser" class="space-y-3">
         <USkeleton v-for="n in 3" :key="n" class="h-20" />
       </div>

@@ -5,7 +5,7 @@
       description="Draft a cleaning assignment and share it with professionals."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <UAlert
         v-if="!canCreate"
         color="amber"

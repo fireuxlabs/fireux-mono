@@ -5,7 +5,7 @@
       description="Draft a new job posting to share with professionals."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <OrganismsProfilesAgentCTA v-if="!canCreate" />
       <OrganismsJobsCreate v-else />
     </UPageBody>

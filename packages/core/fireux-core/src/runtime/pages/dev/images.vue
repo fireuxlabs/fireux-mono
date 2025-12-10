@@ -5,7 +5,7 @@
       description="These image URLs ship with fireux-core and are available to every app by default."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <UCard v-for="group in assetGroups" :key="group.key">
         <template #header>
           <div class="space-y-1">

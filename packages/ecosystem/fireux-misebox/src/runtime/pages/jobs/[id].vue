@@ -14,7 +14,7 @@
       </template>
     </UPageHeader>
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <UAlert
         v-if="!job.value"
         title="Job not found"

@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <UPageHeader :title="title" :description="description" />
 
       <slot name="guard" />

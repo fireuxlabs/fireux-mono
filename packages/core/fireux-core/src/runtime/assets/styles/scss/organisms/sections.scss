@@ -1,5 +1,11 @@
 /* FireUX Section Layout Helpers */
 
+/* Shared page body spacing for consistent vertical rhythm */
+.pagebody {
+  display: grid;
+  gap: 1.5rem;
+}
+
 .fx-section {
   display: grid;
   gap: 1rem;
