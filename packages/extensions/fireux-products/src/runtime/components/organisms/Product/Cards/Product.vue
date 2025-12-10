@@ -8,7 +8,7 @@
 
     <template #default>
       <div v-if="variant === 'cell'" class="product-cell">
-        <div v-if="product?.main_image" class="cell-image">
+        <div v-if="product?.main_image" class="cell-thumb">
           <img :src="product.main_image" alt="Product image" />
         </div>
         <div class="cell-text">
@@ -119,8 +119,6 @@ const props = defineProps<{
 function display(value: unknown): string {
   return typeof value === 'string' && value.trim() !== '' ? value : '!'
 }
-
-console.log('🔍 ProductCard Props:', props)
 </script>
 
 <style scoped>
@@ -147,15 +145,22 @@ console.log('🔍 ProductCard Props:', props)
   text-align: left;
 }
 
-.cell-image {
-  max-width: 80px;
+.cell-thumb {
+  width: 7rem;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: transparent;
 }
 
-.cell-image img {
+.cell-thumb img {
   max-width: 100%;
-  height: auto;
-  border-radius: var(--radius-xs);
-  object-fit: cover;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .cell-text {
@@ -169,7 +174,7 @@ console.log('🔍 ProductCard Props:', props)
 }
 
 .cell-description {
-  color: var(--text-secondary);
+  color: #6b7280;
   font-size: 0.9rem;
   margin-top: 0.25rem;
 }

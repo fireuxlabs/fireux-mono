@@ -4,8 +4,15 @@
       <div class="flex items-start gap-4">
         <div class="flex-1 space-y-2">
           <div class="flex items-center gap-2 text-xs text-gray-500">
-            <span v-if="card.avatar" class="inline-flex h-6 w-6 overflow-hidden rounded-full">
-              <img :src="card.avatar" :alt="card.author" class="h-full w-full object-cover" />
+            <span
+              v-if="card.avatar"
+              class="inline-flex h-6 w-6 overflow-hidden rounded-full"
+            >
+              <img
+                :src="card.avatar"
+                :alt="card.author"
+                class="h-full w-full object-cover"
+              />
             </span>
             <span class="font-semibold text-gray-800">{{ card.author }}</span>
             <span v-if="card.readingTime" class="text-gray-500">
@@ -21,16 +28,8 @@
           <h3 class="text-lg font-semibold leading-tight">{{ card.title }}</h3>
           <p class="text-sm text-gray-500 line-clamp-3">{{ card.excerpt }}</p>
         </div>
-        <div
-          v-if="card.image"
-          class="thumb"
-          :style="thumbStyle"
-        >
-          <img
-            :src="card.image"
-            :alt="card.title"
-            class="thumb__img"
-          />
+        <div v-if="card.image" class="thumb" :style="thumbStyle">
+          <img :src="card.image" :alt="card.title" class="thumb__img" />
         </div>
       </div>
     </UCard>
@@ -50,7 +49,7 @@ const card = computed(() => teaserProps(props.post))
 const thumbStyle = {
   width: '7rem',
   aspectRatio: '4 / 3',
-};
+}
 </script>
 
 <style scoped>

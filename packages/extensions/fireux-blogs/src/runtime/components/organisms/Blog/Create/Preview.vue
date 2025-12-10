@@ -50,7 +50,9 @@
             <div class="label">CTA</div>
             <div v-if="blogPost.cta_link || blogPost.cta_text">
               <div>{{ blogPost.cta_text || 'Button text' }}</div>
-              <div class="subdued">{{ blogPost.cta_link || 'https://example.com' }}</div>
+              <div class="subdued">
+                {{ blogPost.cta_link || 'https://example.com' }}
+              </div>
             </div>
             <span v-else class="warning">Missing cta</span>
           </div>
@@ -66,7 +68,10 @@
             <div class="brand-grid">
               <div class="brand-tile wordmark">
                 <div class="brand-label">Wordmark</div>
-                <img :src="featuredImageSrc || fallbackWordmark" alt="Wordmark" />
+                <img
+                  :src="featuredImageSrc || fallbackWordmark"
+                  alt="Wordmark"
+                />
               </div>
               <div class="brand-tile logo">
                 <div class="brand-label">Logo</div>
