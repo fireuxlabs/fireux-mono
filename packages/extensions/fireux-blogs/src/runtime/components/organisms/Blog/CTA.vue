@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useBlogPermissions } from '#fireux-blogs/composables/useBlogPermissions.ts'
+import { useBlogPermissions } from '#fireux-blogs/composables/useBlogPermissions'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 
 const { canPublishBlog } = useBlogPermissions()
@@ -27,3 +27,4 @@ const ctaDescription = computed(
   () => `Share updates, releases, and stories for ${appName}.`
 )
 </script>
+please
