@@ -2,117 +2,120 @@
 	// VS Code Tasks to run each app
 	"version": "2.0.0",
 	"tasks": [
-		{
-			"label": "dev:fireux (3000)",
-			"type": "shell",
-			"command": "pnpm",
-			"args": [
-				"dev:fireux"
-			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"isBackground": true,
-			"problemMatcher": [
-				"$eslint-compact"
-			]
-		},
-		{
-			"label": "dev:misebox (3001)",
-			"type": "shell",
-			"command": "pnpm",
-			"args": [
-				"dev:misebox"
-			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"isBackground": true
-		},
-		{
-			"label": "dev:cleanbox (3002)",
-			"type": "shell",
-			"command": "pnpm",
-			"args": [
-				"dev:cleanbox"
-			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"isBackground": true
-		},
-		{
-			"label": "dev:all (3000+3001+3002)",
-			"type": "shell",
-			"command": "pnpm",
-			"args": [
-				"dev:all"
-			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"isBackground": true
-		},
-		{
-			"label": "dev:niederhorn (3003)",
-			"type": "shell",
-			"command": "pnpm",
-			"args": [
-				"dev:niederhorn"
-			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"isBackground": true
-		},
-		{
-			"label": "dev:tennant (3005)",
-			"type": "shell",
-			"command": "pnpm",
-			"args": [
-				"dev:tennant"
-			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"isBackground": true
-		},
-		{
-			"label": "dev:richies (3004)",
-			"type": "shell",
-			"command": "pnpm",
-			"args": [
-				"dev:richies"
-			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"isBackground": true
-		},
-		{
-			"label": "dev:all-extended (3000-3004)",
-			"type": "shell",
-			"command": "pnpm",
-			"args": [
-				"dev:all-extended"
-			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"isBackground": true
-		},
-		{
-			"label": "pnpm: build:packages",
-			"type": "shell",
-			"command": "pnpm",
-			"args": [
-				"build:packages"
-			],
-			"isBackground": false,
-			"problemMatcher": [
-				"$tsc"
-			],
-			"group": "build"
-		}
-	]
+    {
+      "label": "dev:fireux (3000)",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:fireux"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": [
+        "$eslint-compact"
+      ]
+    },
+    {
+      "label": "dev:misebox (3001)",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:misebox"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": [
+        "$eslint-compact"
+      ]
+    },
+    {
+      "label": "dev:cleanbox (3002)",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:cleanbox"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "dev:all (3000+3001+3002)",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:all"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "dev:niederhorn (3003)",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:niederhorn"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "dev:tennant (3005)",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:tennant"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "dev:richies (3004)",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:richies"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "dev:all-extended (3000-3004)",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:all-extended"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "pnpm: build:packages",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "build:packages"
+      ],
+      "isBackground": false,
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "group": "build"
+    }
+  ]
 }

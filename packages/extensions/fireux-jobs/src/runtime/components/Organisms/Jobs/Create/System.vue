@@ -69,27 +69,3 @@ const onSubmit = withToast(
 )
 </script>
 
-<style scoped>
-.card-header {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
-}
-
-.clear-button {
-  margin-left: auto;
-}
-
-.actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-</style>

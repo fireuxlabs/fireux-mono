@@ -13,22 +13,73 @@ export type JobDraft = {
   location_id: string
 }
 
-export const jobStatusOptions = [
-  { label: 'Draft', value: 'draft' },
-  { label: 'Open', value: 'open' },
-  { label: 'Scheduled', value: 'scheduled' },
-  { label: 'In progress', value: 'in_progress' },
-  { label: 'Completed', value: 'completed' },
-  { label: 'Closed', value: 'closed' },
-  { label: 'Cancelled', value: 'cancelled' },
-] as const
+export type JobStatusMeta = {
+  label: string
+  description: string
+  tone: 'neutral' | 'success' | 'warning' | 'info' | 'error'
+}
+
+export const defaultJobStatus: JobStatus = 'draft'
+
+export const jobStatusMeta = {
+  draft: {
+    label: 'Draft',
+    description: 'Keep iterating privately until the details look right.',
+    tone: 'warning',
+  },
+  open: {
+    label: 'Open',
+    description: 'Visible to professionals across FireUX and partner apps.',
+    tone: 'success',
+  },
+  scheduled: {
+    label: 'Scheduled',
+    description: 'A professional is pencilled in; confirm the plan with them.',
+    tone: 'info',
+  },
+  in_progress: {
+    label: 'In progress',
+    description: 'Shift is underway; keep an eye on updates from talent.',
+    tone: 'info',
+  },
+  completed: {
+    label: 'Completed',
+    description: 'Everything wrapped—record feedback and close out any tasks.',
+    tone: 'neutral',
+  },
+  closed: {
+    label: 'Closed',
+    description: 'Hidden from talent but kept in your internal history.',
+    tone: 'neutral',
+  },
+  cancelled: {
+    label: 'Cancelled',
+    description: 'Let talent know what changed so expectations stay clear.',
+    tone: 'error',
+  },
+} as const satisfies Record<JobStatus, JobStatusMeta>
+
+export const jobStatusOrder: JobStatus[] = [
+  'draft',
+  'open',
+  'scheduled',
+  'in_progress',
+  'completed',
+  'closed',
+  'cancelled',
+]
+
+export const jobStatusOptions = jobStatusOrder.map((value) => ({
+  label: jobStatusMeta[value].label,
+  value,
+})) as ReadonlyArray<{ label: string; value: JobStatus }>
 
 const createInitialDraft = (): JobDraft => ({
   title: '',
   description: '',
   notes: '',
   pay: '',
-  status: 'draft',
+  status: defaultJobStatus,
   date: '',
   start_time: '',
   end_time: '',
