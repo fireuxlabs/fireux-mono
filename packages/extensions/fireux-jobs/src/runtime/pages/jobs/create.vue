@@ -17,8 +17,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useHead } from '#imports'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 
 definePageMeta({
   layout: 'default',
@@ -35,21 +35,12 @@ definePageMeta({
 
 useHead({ title: 'Create Job' })
 
-const { activeProfile, hasCoreProfile, hasAppProfile, pending } = useAgent()
-const { profileKeys, hasProfile, pending: userPending } = useUser()
+// Keep this in sync with /jobs index: coreProfile gates job features.
+const { coreProfile, pending } = useAgent()
 
-const isChecking = computed(
-  () => Boolean(pending?.value) || Boolean(userPending?.value)
-)
+const isChecking = computed(() => Boolean(pending?.value))
 
-const hasAgentProfile = computed(() => {
-  if (hasProfile('agent')) return true
-  if (profileKeys.value.includes('agent')) return true
-  return Boolean(hasCoreProfile?.value || hasAppProfile?.value)
-})
-
-// Allow creation if we have any agent profile presence or the user is tagged as agent.
-const canCreate = computed(
-  () => Boolean(activeProfile?.value) || hasAgentProfile.value
-)
+// Allow creation if we have an Agent core profile.
+// Extend later to allow admins without an Agent profile if needed.
+const canCreate = computed(() => Boolean(coreProfile?.value))
 </script>
