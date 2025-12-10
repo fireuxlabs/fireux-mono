@@ -1,30 +1,31 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/jobs/index.vue -->
 <template>
   <UPage>
-    <UPageHeader title="Jobs" description="Browse Misebox jobs." />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <div v-if="pending" class="space-y-3">
-        <USkeleton v-for="n in 3" :key="n" class="h-20" />
-      </div>
-
-      <template v-else>
-        <!-- CTA only when agent profile exists -->
-        <OrganismsJobsCTA v-if="hasAgentProfile" />
-        <!-- Jobs managed by this agent (local to the current agent) -->
-        <OrganismsJobsSectionsAgentCollection v-if="hasAgentProfile" />
-        <!-- Global jobs resolved for this runtime (ecosystem-wide) -->
-        <OrganismsJobsSectionsGlobalCollection />
-      </template>
+      <!-- CTA only when agent profile exists -->
+      <OrganismsJobsCTA v-if="coreProfile" />
+      <!-- Jobs managed by this agent (local to the current agent) -->
+      <OrganismsJobsSectionsAgentCollection v-if="coreProfile" />
+      <!-- Global jobs resolved for this runtime (ecosystem-wide) -->
+      <OrganismsJobsSectionsGlobalCollection />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useHead } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 
+const { appName } = useFireUXConfig()
+const pageTitle = 'Jobs'
+const pageDescription = 'Browse jobs.'
+
 definePageMeta({
+  layout: 'default',
+  title: pageTitle,
+  description: pageDescription,
   nav: {
     key: 'jobs',
     label: 'Jobs',
@@ -34,16 +35,11 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
-  title: 'Jobs',
-  description: 'Jobs resolved for this runtime.',
-  layout: 'default',
   name: 'JobsIndexPage',
+  head: { title: pageTitle },
 })
 
+useHead({ title: `${appName} | ${pageTitle}` })
+
 const { coreProfile } = useAgent()
-
-const pending = computed(() => coreProfile.value === undefined)
-const hasAgentProfile = computed(() => Boolean(coreProfile.value))
-
-useHead({ title: 'Jobs' })
 </script>

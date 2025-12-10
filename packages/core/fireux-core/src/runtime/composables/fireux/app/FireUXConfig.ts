@@ -1,5 +1,4 @@
 import { useRuntimeConfig } from '#imports'
-import { getApps } from 'firebase/app'
 
 export type FireUXRole = 'global' | 'tenant'
 
@@ -22,8 +21,6 @@ export interface FireUXConfig {
   isTenant: boolean
   isGlobal: boolean
 }
-
-const FIREUX_CACHE_KEY = '__FIREUX_CONFIG'
 
 function reqString(src: Record<string, unknown>, key: string): string {
   const v = src[key]
@@ -73,20 +70,6 @@ function toStringArray(v: unknown): string[] {
  * - Returns a frozen object with derived flags
  */
 export function useFireUXConfig(): Readonly<FireUXConfig> {
-  const g = globalThis as Record<string, unknown>
-  const isBrowser = globalThis.window !== undefined
-
-  if (!getApps().length) {
-    throw new Error(
-      'Firebase must be initialized before calling useFireUXConfig().'
-    )
-  }
-
-  // prefer plugin-provided cache on client
-  if (isBrowser && g[FIREUX_CACHE_KEY]) {
-    return g[FIREUX_CACHE_KEY] as Readonly<FireUXConfig>
-  }
-
   // SSR or fallback: build from runtimeConfig
   const pub = (useRuntimeConfig().public ?? {}) as Record<string, unknown>
   const appSettings = (pub.appSettings ?? {}) as Record<string, unknown>
@@ -124,21 +107,5 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
     isGlobal: role === 'global',
   })
 
-  // seed cache client-side if needed
-  if (isBrowser) {
-    g[FIREUX_CACHE_KEY] = cfg
-  }
-
   return cfg
-}
-
-/** Guarded helper for code that REQUIRES tenant scope */
-export function requireTenantAppId(): string {
-  const { isTenant, appId } = useFireUXConfig()
-  if (!isTenant) {
-    throw new Error(
-      '[fireux] requireTenantAppId() called outside tenant scope.'
-    )
-  }
-  return appId
 }

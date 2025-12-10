@@ -1,34 +1,28 @@
-<!-- fireux-blogs/pages/blog/index.vue -->
+<!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/blog/index.vue -->
 <template>
   <UPage>
-    <UPageHeader title="Blog" description="Latest Misebox articles." />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <div v-if="pending" class="space-y-3">
-        <USkeleton v-for="n in 3" :key="n" class="h-20" />
-      </div>
-
-      <template v-else>
-        <OrganismsBlogCTA v-if="canPublishBlog" />
-
-        <div v-if="!posts.length" class="space-y-2 text-sm text-gray-500">
-          <p>No posts published yet.</p>
-          <p>Check back soon for new articles.</p>
-        </div>
-
-        <OrganismsBlogList v-else :posts="posts" />
-      </template>
+      <OrganismsBlogCTA v-if="canPublishBlog" />
+      <OrganismsBlogList :posts="posts ?? []" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { useHead } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useBlog } from '../../composables/fireux/firestore/objects/Blog/useBlog'
 import { useBlogPermissions } from '#fireux-blogs/composables/useBlogPermissions'
 
+const { appName } = useFireUXConfig()
+const pageTitle = 'Blog'
+const pageDescription = 'Latest articles.'
+
 definePageMeta({
   layout: 'default',
-  title: 'Blog',
+  title: pageTitle,
+  description: pageDescription,
   nav: {
     key: 'blog',
     label: 'Blog',
@@ -38,10 +32,11 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
+  head: { title: pageTitle },
 })
 
-const { items } = useBlog()
-const pending = computed(() => items.value === undefined)
-const posts = computed(() => items.value ?? [])
+useHead({ title: `${appName} | ${pageTitle}` })
+
+const { items: posts } = useBlog()
 const { canPublishBlog } = useBlogPermissions()
 </script>
