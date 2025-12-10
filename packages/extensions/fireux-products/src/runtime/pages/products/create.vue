@@ -1,3 +1,4 @@
+<!-- FILE: packages/extensions/fireux-products/src/runtime/pages/products/create.vue -->
 <template>
   <UPage>
     <UPageHeader

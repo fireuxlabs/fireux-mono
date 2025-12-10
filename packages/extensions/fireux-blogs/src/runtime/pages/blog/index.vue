@@ -1,4 +1,5 @@
 <!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/blog/index.vue -->
+<!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/blog/index.vue -->
 <template>
   <UPage>
     <UPageHeader title="Blog" description="Latest articles." />

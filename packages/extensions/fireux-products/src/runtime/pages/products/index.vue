@@ -1,4 +1,5 @@
 <!-- FILE: packages/extensions/fireux-products/src/runtime/pages/products/index.vue -->
+<!-- FILE: packages/extensions/fireux-products/src/runtime/pages/products/index.vue -->
 <template>
   <UPage>
     <UPageHeader title="Products" description="Products catalog." />

@@ -1,3 +1,4 @@
+<!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/blog/create.vue -->
 <template>
   <UPage>
     <UPageHeader
