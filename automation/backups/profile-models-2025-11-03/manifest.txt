@@ -2,9 +2,9 @@ Profile model snapshots captured on 2025-11-03.
 
 Source files:
 - packages/core/fireux-core/src/runtime/models/core/profile.model.ts
-- packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent.model.ts
-- packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional.model.ts
-- packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef.model.ts
+- packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
+- packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
+- packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts
 - packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier.model.ts
 
 Each snapshot adds a // @ts-nocheck directive to avoid type resolution in the backup location.

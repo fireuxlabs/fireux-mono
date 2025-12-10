@@ -8,7 +8,7 @@ import {
   type ProfessionalProfile,
   type ProfessionalCoreProfile,
   type ProfessionalCard,
-} from '../../../../../models/profiles/Professional.model.ts'
+} from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 import { useProfessionalComputed } from './main/useProfessionalComputed.ts'
 import { useProfessionalInterface } from './main/useProfessionalInterface.ts'

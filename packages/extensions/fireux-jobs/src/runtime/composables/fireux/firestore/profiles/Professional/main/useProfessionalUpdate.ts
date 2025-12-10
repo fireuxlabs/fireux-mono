@@ -10,7 +10,7 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   professionalConfig,
   type ProfessionalProfile,
-} from '../../../../../../models/profiles/Professional.model.ts'
+} from '../../../../../../models/profiles/Professional/Professional.model.ts'
 
 const COLLECTION = 'professionals'
 

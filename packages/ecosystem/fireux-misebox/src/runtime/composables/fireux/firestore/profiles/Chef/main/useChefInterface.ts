@@ -6,7 +6,7 @@ import {
   chefConfig,
   type ChefProfile,
   type ChefCard,
-} from '../../../../../../models/profiles/Chef.model.ts'
+} from '../../../../../../models/profiles/Chef/Chef.model.ts'
 
 const routeFor = (id?: string | null) =>
   id ? `/${chefConfig.collectionName}/${id}` : null

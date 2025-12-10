@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
+import type { ProfessionalProfile } from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 const props = defineProps<{
   professional: ProfessionalProfile | null

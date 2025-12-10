@@ -91,7 +91,7 @@ import { useProfessionalCollection } from '../../composables/fireux/firestore/pr
 import {
   resolveProfessionalCell,
   type ProfessionalProfile,
-} from '../../models/profiles/Professional.model.ts'
+} from '../../models/profiles/Professional/Professional.model.ts'
 import { useClipboard } from '@vueuse/core'
 
 definePageMeta({

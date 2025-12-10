@@ -7,7 +7,7 @@ import {
   type ChefProfile,
   type ChefCoreProfile,
   type ChefCard,
-} from '../../../../../models/profiles/Chef.model.ts'
+} from '../../../../../models/profiles/Chef/Chef.model.ts'
 import { useChefComputed } from './main/useChefComputed.ts'
 import { useChefInterface } from './main/useChefInterface.ts'
 import { useChefUpdate } from './main/useChefUpdate.ts'

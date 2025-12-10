@@ -2,7 +2,7 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import {
   agentConfig,
   type AgentProfile,
-} from '../../../../../../models/profiles/Agent.model.ts'
+} from '../../../../../../models/profiles/Agent/Agent.model.ts'
 
 export function useAgentCollection() {
   const {

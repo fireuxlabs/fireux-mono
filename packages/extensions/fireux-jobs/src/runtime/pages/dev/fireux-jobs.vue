@@ -299,8 +299,8 @@ import {
 import type {
   ProfessionalProfile,
   ProfessionalCard,
-} from '../../models/profiles/Professional.model.ts'
-import type { AgentProfile } from '../../models/profiles/Agent.model.ts'
+} from '../../models/profiles/Professional/Professional.model.ts'
+import type { AgentProfile } from '../../models/profiles/Agent/Agent.model.ts'
 import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface.ts'
 
 definePageMeta({

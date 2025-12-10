@@ -4,7 +4,7 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import {
   professionalConfig,
   type ProfessionalProfile,
-} from '../../../../../../models/profiles/Professional.model.ts'
+} from '../../../../../../models/profiles/Professional/Professional.model.ts'
 
 export function useProfessionalCollection() {
   const {

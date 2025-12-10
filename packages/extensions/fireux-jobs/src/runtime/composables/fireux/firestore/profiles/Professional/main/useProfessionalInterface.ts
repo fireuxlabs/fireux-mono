@@ -8,7 +8,7 @@ import {
   professionalConfig,
   type ProfessionalProfile,
   type ProfessionalCard,
-} from '../../../../../../models/profiles/Professional.model.ts'
+} from '../../../../../../models/profiles/Professional/Professional.model.ts'
 
 const routeFor = (id?: string | null) =>
   id ? `/${professionalConfig.collectionName}/${id}` : null

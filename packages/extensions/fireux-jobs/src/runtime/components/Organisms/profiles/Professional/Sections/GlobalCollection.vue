@@ -28,7 +28,7 @@ import { computed } from 'vue'
 import type {
   ProfessionalProfile,
   ProfessionalCard,
-} from '../../../../../models/profiles/Professional.model.ts'
+} from '../../../../../models/profiles/Professional/Professional.model.ts'
 import { useProfessionalCollection } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
 import {
   resolveProfessionalPill,

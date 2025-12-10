@@ -8,7 +8,7 @@ import {
   type Agent,
   type AgentCoreProfile,
   type AgentProfile,
-} from '../../../../../models/profiles/Agent.model.ts'
+} from '../../../../../models/profiles/Agent/Agent.model.ts'
 import { useAgentComputed } from './main/useAgentComputed.ts'
 import { useAgentInterface } from './main/useAgentInterface.ts'
 import type { AgentCard } from './main/useAgentInterface.ts'

@@ -1,5 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
-import type { ProfessionalProfile } from '../../../../../../models/profiles/Professional.model.ts'
+import type { ProfessionalProfile } from '../../../../../../models/profiles/Professional/Professional.model.ts'
 
 /**
  * useProfessionalComputed

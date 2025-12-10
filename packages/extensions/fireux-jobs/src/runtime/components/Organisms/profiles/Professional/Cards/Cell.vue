@@ -50,8 +50,8 @@ import { computed } from 'vue'
 import type {
   ProfessionalCard,
   ProfessionalProfile,
-} from '../../../../../models/profiles/Professional.model.ts'
-import { resolveProfessionalCell } from '../../../../../models/profiles/Professional.model.ts'
+} from '../../../../../models/profiles/Professional/Professional.model.ts'
+import { resolveProfessionalCell } from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 const props = defineProps<{
   professional?: ProfessionalCard.Cell | ProfessionalProfile | null

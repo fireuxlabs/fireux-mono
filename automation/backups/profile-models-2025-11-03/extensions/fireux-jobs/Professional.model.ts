@@ -1,5 +1,5 @@
 // @ts-nocheck
-// Snapshot of packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional.model.ts taken on 2025-11-03
+// Snapshot of packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts taken on 2025-11-03
 // Local minimal copies of core types to avoid restricted subpath imports
 // Keep in sync with fireux-core runtime models if fields evolve
 export interface ProfileBase {

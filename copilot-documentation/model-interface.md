@@ -36,7 +36,7 @@ This guide consolidates the current FireUX data models that power app users, sha
 - Keys: `id`, `collectionName`, `profileType`, plus optional CTA/nav labels/icons.
 - Passed to composables like `useProfile`, `useProfileCollection`, and ensure/update helpers.
 
-## Agent Domain Models (`packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent.model.ts`)
+## Agent Domain Models (`packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts`)
 
 ### `AgentCoreProfile`
 

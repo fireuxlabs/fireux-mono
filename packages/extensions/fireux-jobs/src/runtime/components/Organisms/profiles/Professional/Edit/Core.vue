@@ -49,7 +49,7 @@ import type {
   ProfessionalCoreProfile,
   RelevantExperienceItem,
   OtherExperienceItem,
-} from '../../../../../models/profiles/Professional.model.ts'
+} from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 const props = defineProps<{
   professional: ProfessionalCoreProfile | null

@@ -27,7 +27,7 @@ import { computed } from 'vue'
 import type {
   ChefProfile,
   ChefCard,
-} from '../../../../../models/profiles/Chef.model.ts'
+} from '../../../../../models/profiles/Chef/Chef.model.ts'
 import { useChefCollection } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'
 import {
   resolveChefPill,

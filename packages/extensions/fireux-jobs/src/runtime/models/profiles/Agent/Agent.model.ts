@@ -1,4 +1,5 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
+import { agentConfig } from './supporting'
 
 /**
  * Hydrated Agent shape used by composables.
@@ -50,5 +51,4 @@ export interface AgentAppProfile {
  */
 export type AgentProfile = AgentCoreProfile
 
-// Re-export config so existing imports keep working.
-export { agentConfig } from './Agent/supporting'
+export { agentConfig }

@@ -50,8 +50,8 @@ import { computed } from 'vue'
 import type {
   ChefCard,
   ChefProfile,
-} from '../../../../../models/profiles/Chef.model.ts'
-import { resolveChefCell } from '../../../../../models/profiles/Chef.model.ts'
+} from '../../../../../models/profiles/Chef/Chef.model.ts'
+import { resolveChefCell } from '../../../../../models/profiles/Chef/Chef.model.ts'
 
 const props = defineProps<{ chef?: ChefCard.Cell | ChefProfile | null }>()
 

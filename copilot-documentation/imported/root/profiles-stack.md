@@ -19,7 +19,7 @@ import type {
   import { computed } from 'vue'
   import type { Ref } from 'vue'
   import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
-  import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
+  import type { ProfessionalProfile } from '../../../../../models/profiles/Professional/Professional.model.ts'
 
   export function useProfessionalComputed(
     profile: ProfileRefs<ProfessionalProfile>,
@@ -371,7 +371,7 @@ import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/cor
 import {
   professionalConfig,
   type ProfessionalProfile,
-} from '../../../../models/profiles/Professional.model.ts'
+} from '../../../../models/profiles/Professional/Professional.model.ts'
 import { useProfessionalComputed } from './main/useProfessionalComputed.ts'
 
 export function useProfessional() {
@@ -396,7 +396,7 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import type {
   ProfessionalProfile,
   ProfessionalCard,
-} from '../../../../../models/profiles/Professional.model.ts'
+} from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 type CtaAction = {
   id: string
@@ -536,7 +536,7 @@ export function useProfessionalInterface(
 import { computed } from 'vue'
 import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
-import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
+import type { ProfessionalProfile } from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 export function useProfessionalComputed(
   profile: ProfileRefs<ProfessionalProfile>,
@@ -600,7 +600,7 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import {
   professionalConfig,
   type ProfessionalProfile,
-} from '../../../../../models/profiles/Professional.model.ts'
+} from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 export function useProfessionalCollection() {
   const { profiles, global, local } =
@@ -615,7 +615,7 @@ export function useProfessionalCollection() {
 ```ts
 import { ref, type Ref } from 'vue'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/core/useProfileEnsure.ts'
-import { professionalConfig } from '../../../../../models/profiles/Professional.model.ts'
+import { professionalConfig } from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 type CreateProfessionalHandler = ((
   patch?: Record<string, unknown>
@@ -654,7 +654,7 @@ import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
-import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
+import type { ProfessionalProfile } from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
@@ -726,7 +726,7 @@ import type {
   RelevantExperienceItem,
   OtherExperienceItem,
   ProfessionalProfile,
-} from '../../../../../models/profiles/Professional.model.ts'
+} from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 const COLLECTION = 'professionals'
 
@@ -888,7 +888,7 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import {
   professionalConfig,
   type ProfessionalProfile,
-} from '../../../../../models/profiles/Professional.model.ts'
+} from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 export function useProfessionalCollection() {
   const { profiles, global, local } =
@@ -906,7 +906,7 @@ import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/config/FireUXConfig.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
-import type { ProfessionalProfile } from '../../../../../models/profiles/Professional.model.ts'
+import type { ProfessionalProfile } from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 

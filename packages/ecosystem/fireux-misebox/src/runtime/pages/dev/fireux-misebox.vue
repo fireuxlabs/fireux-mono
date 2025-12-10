@@ -252,7 +252,7 @@ import {
   resolveSupplierPill,
   resolveSupplierPillKey,
 } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
-import type { ChefProfile, ChefCard } from '../../models/profiles/Chef.model.ts'
+import type { ChefProfile, ChefCard } from '../../models/profiles/Chef/Chef.model.ts'
 import type {
   SupplierProfile,
   SupplierCard,

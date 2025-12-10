@@ -50,7 +50,7 @@ import { computed } from 'vue'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
-import { agentConfig } from '../../../models/profiles/Agent.model.ts'
+import { agentConfig } from '../../../models/profiles/Agent/Agent.model.ts'
 
 const navLabel = agentConfig.navLabel ?? `${agentConfig.profileType} Profile`
 const navIcon = agentConfig.navIcon ?? 'i-lucide-user'

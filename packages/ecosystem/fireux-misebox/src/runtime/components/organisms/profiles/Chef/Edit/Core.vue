@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefCoreProfile } from '../../../../../models/profiles/Chef.model.ts'
+import type { ChefCoreProfile } from '../../../../../models/profiles/Chef/Chef.model.ts'
 import { useChefUpdate } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefUpdate.ts'
 
 const props = defineProps<{ chef: ChefCoreProfile | null }>()

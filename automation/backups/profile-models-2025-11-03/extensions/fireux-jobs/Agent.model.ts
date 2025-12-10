@@ -1,5 +1,5 @@
 // @ts-nocheck
-// Snapshot of packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent.model.ts taken on 2025-11-03
+// Snapshot of packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts taken on 2025-11-03
 import type {
   ProfileBase,
   ProfileConfig,

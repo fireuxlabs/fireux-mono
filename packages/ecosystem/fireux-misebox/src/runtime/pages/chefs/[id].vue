@@ -13,5 +13,5 @@
 </template>
 
 <script setup lang="ts">
-import { chefConfig } from '../../models/profiles/Chef.model.ts'
+import { chefConfig } from '../../models/profiles/Chef/Chef.model.ts'
 </script>

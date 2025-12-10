@@ -2,7 +2,7 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import {
   chefConfig,
   type ChefProfile,
-} from '../../../../../../models/profiles/Chef.model.ts'
+} from '../../../../../../models/profiles/Chef/Chef.model.ts'
 
 export function useChefCollection() {
   const {
