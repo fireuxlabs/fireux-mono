@@ -41,11 +41,11 @@ import { useHead, useRouter } from 'nuxt/app'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
 import {
-  useJobCreateState,
+  useJobState,
   jobStatusOptions,
   validateJobDraft,
   toJobPayload,
-} from '../../composables/fireux/firestore/jobs/utils/useJobCreateState.ts'
+} from '../../composables/fireux/firestore/jobs/state/useJobState.ts'
 import { useJobCreate } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
 
 definePageMeta({
@@ -72,7 +72,7 @@ const canCreate = computed(() => Boolean(coreProfile?.value))
 
 const router = useRouter()
 const { withToast } = useToastify()
-const { jobDraft: form, resetDraft } = useJobCreateState()
+const { jobDraft: form, resetDraft } = useJobState()
 const { createJob } = useJobCreate()
 
 const statusOptions = jobStatusOptions

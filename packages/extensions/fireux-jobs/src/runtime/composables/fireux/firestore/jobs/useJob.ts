@@ -2,7 +2,7 @@ import type { Ref } from 'vue'
 import { useJobFetch } from './fetch/useJobFetch.ts'
 import { useJobComputed } from './utils/view/useJobComputed'
 import { useJobInterface } from './utils/view/useJobInterface'
-import { useJobCreateState } from './utils/useJobCreateState'
+import { useJobState } from './state/useJobState'
 import { useJobCreate } from './mutations/useJobCreate'
 import { useJobUpdate } from './mutations/useJobUpdate'
 import { useJobDelete } from './mutations/useJobDelete'
@@ -20,7 +20,7 @@ export type { Job } from '#fireux-jobs-models/job.model'
  * - Computed: useJobComputed(job, pending) → derived flags (status, ownership, etc.)
  * - Interface: useJobInterface(job) → card/pill props for UI
  * - Mutations: useJobCreate / useJobUpdate / useJobDelete
- * - State: useJobCreateState() → local draft state for create/edit flows
+ * - State: useJobState() → local draft state for create/edit flows
  */
 export function useJob(jobId: string | Ref<string | null | undefined>) {
   const { job, pending } = useJobFetch(jobId)
@@ -30,7 +30,7 @@ export function useJob(jobId: string | Ref<string | null | undefined>) {
     pending,
     ...useJobComputed(job, pending),
     ...useJobInterface(job),
-    ...useJobCreateState(),
+    ...useJobState(),
     ...useJobCreate(),
     ...useJobUpdate(),
     ...useJobDelete(),

@@ -23,16 +23,16 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
 import {
-  useJobCreateState,
+  useJobState,
   jobStatusOptions,
   validateJobDraft,
   toJobPayload,
-} from '../../../../composables/fireux/firestore/jobs/utils/useJobCreateState.ts'
+} from '../../../../composables/fireux/firestore/jobs/state/useJobState.ts'
 import { useJobCreate } from '../../../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
 
 const router = useRouter()
 const { withToast } = useToastify()
-const { jobDraft: form, resetDraft } = useJobCreateState()
+const { jobDraft: form, resetDraft } = useJobState()
 const { createJob } = useJobCreate()
 
 const statusOptions = jobStatusOptions

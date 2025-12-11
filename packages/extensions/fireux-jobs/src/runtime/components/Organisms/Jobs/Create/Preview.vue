@@ -29,12 +29,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { JobDraft } from '../../../../composables/fireux/firestore/jobs/utils/useJobCreateState.ts'
+import type { JobDraft } from '../../../../composables/fireux/firestore/jobs/state/useJobState.ts'
 import {
   defaultJobStatus,
   jobStatusMeta,
   type JobStatusMeta,
-} from '../../../../composables/fireux/firestore/jobs/utils/useJobCreateState.ts'
+} from '../../../../composables/fireux/firestore/jobs/state/useJobState.ts'
 
 const props = defineProps<{ form: JobDraft }>()
 

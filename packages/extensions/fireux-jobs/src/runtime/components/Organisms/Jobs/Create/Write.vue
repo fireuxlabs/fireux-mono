@@ -55,13 +55,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { JobDraft } from '../../../../composables/fireux/firestore/jobs/utils/useJobCreateState.ts'
+import type { JobDraft } from '../../../../composables/fireux/firestore/jobs/state/useJobState.ts'
 import {
   defaultJobStatus,
   jobStatusMeta,
   jobStatusOptions,
   jobStatusOrder,
-} from '../../../../composables/fireux/firestore/jobs/utils/useJobCreateState.ts'
+} from '../../../../composables/fireux/firestore/jobs/state/useJobState.ts'
 import type { JobStatus } from '#fireux-jobs-models/job.model'
 
 const form = defineModel<JobDraft>('form', { required: true })
