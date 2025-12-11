@@ -13,6 +13,9 @@ export function createFireuxConfig(opts: TenantConfig): NuxtConfig {
     srcDir: 'app',
     imports: { dirs: ['composables/**', 'utils/**'] },
     modules: setup.modules,
+    fonts: {
+      provider: 'none', // Avoid @nuxt/fonts hitting bunny.net when we only use system fonts
+    },
     app: {
       head: {
         title: setup.appName,
