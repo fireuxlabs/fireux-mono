@@ -4,11 +4,9 @@ import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/fire
 export function useJobUpdate() {
   const { updateDocument } = useFirestoreManager()
 
-  const updateJob = async (
-    jobId: string,
-    patch: Partial<Omit<Job, 'id' | 'created_by' | 'tenant_id'>> &
-      Partial<Pick<Job, 'tenant_id' | 'created_by'>>
-  ) => {
+  type JobUpdateInput = Partial<Pick<Job, 'title' | 'status'>>
+
+  const updateJob = async (jobId: string, patch: JobUpdateInput) => {
     const id = String(jobId ?? '').trim()
     if (!id) {
       throw new Error('[useJobUpdate] jobId is required')

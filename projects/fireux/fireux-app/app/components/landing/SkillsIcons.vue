@@ -10,7 +10,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // Define your skills here:
 const skills = [
   { name: 'Nuxt.js', icon: 'skill-icons:nuxtjs-dark' },

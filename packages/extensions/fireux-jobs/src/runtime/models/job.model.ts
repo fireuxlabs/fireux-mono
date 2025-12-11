@@ -1,58 +1,21 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
 
-import type { FirestoreTimestampOrString } from 'fireux-core/runtime/types/firebase.ts'
-
-export type JobStatus =
-  | 'draft'
-  | 'open'
-  | 'scheduled'
-  | 'in_progress'
-  | 'completed'
-  | 'closed'
-  | 'cancelled'
-
-type Ts = FirestoreTimestampOrString
-
-export interface JobTaskCounts {
-  total?: number
-  done?: number
-  todo?: number
-}
+export type JobStatus = 'open' | 'closed'
 
 /**
- * Generic job document stored in jobs/{jobId}.
+ * Canonical job document for the minimal pipeline/preview flows.
  */
 export interface Job {
+  /** Firestore document ID */
   id: string
+
+  /** Tenant/app that owns the job */
   tenant_id: string
+
+  /** FireUX user who created the listing */
   created_by: string
 
-  // Context links (optional per domain)
-  agent_id?: string | null
-  professional_id?: string | null
-  location_id?: string | null
-  /** @deprecated use tenant_id */
-  app_id?: string | null
-  /** @deprecated use location_id */
-  kitchen_id?: string | null
-  /** @deprecated use created_by */
-  user_id?: string | null
-
-  // Core job content
+  /** Pipeline & preview surface */
   title: string
-  description?: string | null
-  notes?: string | null
-  pay?: string | number | null
-  status?: JobStatus
-
-  // Scheduling
-  date?: string | null
-  start_time?: string | null
-  end_time?: string | null
-
-  task_counts?: JobTaskCounts
-
-  // Metadata
-  created_at: Ts
-  updated_at?: Ts
+  status: JobStatus
 }

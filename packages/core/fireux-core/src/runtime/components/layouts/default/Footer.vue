@@ -18,6 +18,6 @@
   </UFooter>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // Footer uses UFooter + UContainer from Nuxt UI 4
 </script>

@@ -5,10 +5,10 @@ import type {
   User,
   UserNotification,
 } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from '../fetch/useUserFetch.ts'
-import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
+import type { UserRefs } from '../../fetch/useUserFetch.ts'
+import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { createUserNotification } from '../utils/ensureHelpers.ts'
+import { createUserNotification } from '../ensureHelpers.ts'
 
 type AppMembershipActions = {
   setRole: (role: 'user' | 'admin') => Promise<void>

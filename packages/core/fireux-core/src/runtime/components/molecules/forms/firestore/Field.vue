@@ -53,7 +53,7 @@
   </UFormField>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watchEffect } from 'vue'
 
 const props = defineProps({

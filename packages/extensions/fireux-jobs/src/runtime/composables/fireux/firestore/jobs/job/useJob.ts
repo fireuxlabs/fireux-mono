@@ -1,10 +1,9 @@
 import type { Ref } from 'vue'
 import { useJobFetch } from './fetch/useJobFetch'
-import { useJobComputed } from './utils/useJobComputed'
-import { useJobInterface } from './utils/useJobInterface'
-import { useJobCreateState } from './state/useJobCreateState'
+import { useJobComputed } from './utils/view/useJobComputed'
+import { useJobInterface } from './utils/view/useJobInterface'
+import { useJobCreateState } from './utils/useJobCreateState'
 import { useJobCreate } from './mutations/useJobCreate'
-import { useJobCreateSubmit } from './mutations/useJobCreateSubmit'
 import { useJobUpdate } from './mutations/useJobUpdate'
 import { useJobDelete } from './mutations/useJobDelete'
 
@@ -33,7 +32,6 @@ export function useJob(jobId: string | Ref<string | null | undefined>) {
     ...useJobInterface(job),
     ...useJobCreateState(),
     ...useJobCreate(),
-    ...useJobCreateSubmit(),
     ...useJobUpdate(),
     ...useJobDelete(),
   }

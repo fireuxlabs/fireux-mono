@@ -1,5 +1,5 @@
 <!-- Public design showcase (moved from /dev/design) -->
-<script setup>
+<script setup lang="ts">
 useHead({ title: 'Design System' })
 const sections = [
   {

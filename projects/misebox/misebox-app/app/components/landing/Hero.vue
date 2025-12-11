@@ -58,7 +58,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const hero = {
   primary: { label: 'Get Started', to: '/get-started' },
   secondary: { label: 'Explore Kitchens', to: '/kitchens' },

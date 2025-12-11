@@ -32,7 +32,7 @@
   </UCard>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const quickPeek = [
   {
     title: 'Recipe scaling',

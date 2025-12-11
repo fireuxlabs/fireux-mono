@@ -26,48 +26,38 @@
         <UCard>
           <template #header>
             <div class="flex items-center justify-between gap-3">
-              <h3 class="font-semibold">Basics</h3>
+              <h3 class="font-semibold">Job overview</h3>
               <UBadge size="xs" variant="soft" :color="statusColor">
-                {{ job.value?.status || 'draft' }}
+                {{ job.value?.status || 'open' }}
               </UBadge>
             </div>
           </template>
 
-          <div class="space-y-4">
-            <MoleculesFormsFirestoreSimpleField
-              label="Title"
-              :firebase-value="job.value?.title"
-              placeholder="e.g. Sous Chef (Evenings)"
-              :maxlength="80"
-              :update-function="setTitle"
-            />
-
-            <MoleculesFormsFirestoreSimpleField
-              label="Description"
-              type="textarea"
-              :rows="5"
-              :firebase-value="job.value?.description"
-              placeholder="Responsibilities, requirements, schedule…"
-              :update-function="setDescription"
-            />
-
-            <MoleculesFormsFirestoreSimpleField
-              label="Pay"
-              :firebase-value="job.value?.pay ? String(job.value?.pay) : ''"
-              placeholder="35 CHF/hour, negotiable"
-              :update-function="setPay"
-            />
-          </div>
-        </UCard>
-
-        <UCard>
-          <template #header>
-            <h3 class="font-semibold">System</h3>
-          </template>
-          <div class="space-y-1 text-sm text-gray-500">
-            <div><strong>Job ID:</strong> {{ job.value?.id }}</div>
-            <div>
-              <strong>Created by:</strong> {{ job.value?.created_by || '—' }}
+          <div class="space-y-4 text-sm text-gray-600">
+            <p class="text-base font-semibold text-gray-900">
+              {{ job.value?.title || 'Untitled job' }}
+            </p>
+            <div class="grid gap-2 sm:grid-cols-2">
+              <div>
+                <p class="text-xs uppercase tracking-wide text-gray-400">Job ID</p>
+                <p class="font-medium">{{ job.value?.id }}</p>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-wide text-gray-400">
+                  Created by
+                </p>
+                <p class="font-medium">
+                  {{ job.value?.created_by || '—' }}
+                </p>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-wide text-gray-400">
+                  Tenant
+                </p>
+                <p class="font-medium">
+                  {{ job.value?.tenant_id || '—' }}
+                </p>
+              </div>
             </div>
           </div>
         </UCard>
@@ -79,8 +69,11 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
+import { useHead } from '#imports'
 import type { JobStatus } from '../../../models/job.model.ts'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
+import { useJobFetch } from '../../composables/fireux/firestore/jobs/job/fetch/useJobFetch.ts'
+import { useJobEditor } from '../../composables/fireux/firestore/jobs/job/utils/useJobEditor.ts'
 
 const route = useRoute()
 const paramId = route.params.id
@@ -90,34 +83,32 @@ const jobId = computed(() =>
     : paramId?.toString() ?? null
 )
 
-const { job } = useJobRead(jobId)
-const { setTitle, setDescription, setPay, setStatus } = useJobEditor(job)
+const { job } = useJobFetch(jobId)
+const { setStatus } = useJobEditor(job)
 const { withToast } = useToastify()
 
 const jobTitle = computed(() => job.value?.title || 'Job Details')
 const jobSubtitle = computed(() =>
-  job.value?.status ? `Status: ${job.value.status}` : 'Draft job'
+  job.value?.status ? `Status: ${job.value.status}` : 'Job pipeline entry'
 )
-const statusColor = computed(() => {
-  if (job.value?.status === 'open') return 'success'
-  if (job.value?.status === 'draft') return 'amber'
-  return 'neutral'
-})
+const statusColor = computed(() =>
+  job.value?.status === 'open' ? 'success' : 'neutral'
+)
 
 const statusOptions = [
-  { label: 'Draft', value: 'draft' },
   { label: 'Open', value: 'open' },
   { label: 'Closed', value: 'closed' },
 ] as const
 
-const statusLocal = ref<JobStatus>('draft')
+const statusLocal = ref<JobStatus>('open')
 watchEffect(() => {
-  statusLocal.value = (job.value?.status as JobStatus) ?? 'draft'
+  statusLocal.value = (job.value?.status as JobStatus) ?? 'open'
 })
 
 const saving = ref(false)
 const saveStatus = withToast(
   async () => {
+    if (!job.value) return
     saving.value = true
     try {
       await setStatus(statusLocal.value)

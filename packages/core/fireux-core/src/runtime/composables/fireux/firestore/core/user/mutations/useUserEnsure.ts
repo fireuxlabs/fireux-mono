@@ -1,9 +1,11 @@
 import { useRouter } from 'vue-router'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useCoreUserEnsure } from './useCoreUserEnsure.ts'
+import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon.ts'
 import {
+  ensureCoreUserDocument,
   ensureUserAppMembership,
   type EnsureMembershipResult,
+  type EnsureCoreResult,
 } from '../utils/ensureHelpers.ts'
 
 type EnsureAppOutcome = EnsureMembershipResult
@@ -25,24 +27,49 @@ type EnsureUserOptions = {
 }
 
 type MembershipRole = 'admin' | 'user'
+
+type EnsureAuthContext = {
+  uid: string
+  email: string
+  displayName: string
+}
+
+type EnsureCoreOutcome = EnsureCoreResult & { id: string }
 const DEFAULT_REDIRECT = '/dashboard'
 
 // Ensures core user + app membership; used by auth and profile flows.
 export function useAppUserEnsure() {
   const router = useRouter()
   const { isTenant, appId, appName, ecosystem } = useFireUXConfig()
-  const { ensureCoreUser, getAuthContext } = useCoreUserEnsure({
-    ecosystemName: ecosystem,
-  })
+  let authContextPromise: Promise<EnsureAuthContext> | null = null
 
-  const ensureCore = () => ensureCoreUser()
+  const resolveAuthContext = async () => {
+    if (!authContextPromise) {
+      authContextPromise = requireUid().then(({ uid, auth }) => ({
+        uid,
+        email: auth?.email ?? '',
+        displayName: auth?.displayName || 'New User',
+      }))
+    }
+    return authContextPromise
+  }
+
+  const ensureCore = async (): Promise<EnsureCoreOutcome> => {
+    const context = await resolveAuthContext()
+    const result = await ensureCoreUserDocument(context.uid, {
+      displayName: context.displayName,
+      email: context.email,
+      ecosystemName: ecosystem,
+    })
+    return { ...result, id: context.uid }
+  }
 
   // App docs mirror the core UID under /apps/{appId}/users/{uid} to grant tenant membership.
   const ensureApp = async (
     membershipRole: MembershipRole = 'user'
   ): Promise<EnsureAppOutcome> => {
     if (!isTenant || !appId) return { created: false }
-    const { uid } = await getAuthContext()
+    const { uid } = await resolveAuthContext()
     return ensureUserAppMembership(appId, uid, membershipRole, {
       appName,
     })
@@ -72,6 +99,6 @@ export function useAppUserEnsure() {
     }
   }
 
-  return { ensureUser, ensureCore, ensureApp, getAuthContext }
+  return { ensureUser, ensureCore, ensureApp, getAuthContext: resolveAuthContext }
 }
 export { useAppUserEnsure as useUserEnsure }

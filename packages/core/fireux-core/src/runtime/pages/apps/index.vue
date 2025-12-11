@@ -30,7 +30,6 @@ definePageMeta({
   layout: 'default',
   name: 'AppsIndexPage',
   roles: ['global'],
-  middleware: ['global-only'],
 })
 
 useHead({ title: 'Apps' })

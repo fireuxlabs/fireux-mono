@@ -17,7 +17,7 @@
   </USlideover>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   menuState: {
     type: String,

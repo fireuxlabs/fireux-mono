@@ -6,8 +6,8 @@
       <UCard>
         <template #header>
           <p>Job basics</p>
-          <strong>Tell us about this role</strong>
-          <p>Keep the title and summary short—professionals skim quickly.</p>
+          <strong>Lock the pipeline tile</strong>
+          <p>Keep the title short so it fits neatly in the board.</p>
           <UBadge variant="soft" color="primary">
             {{ currentStatusMeta.label }}
           </UBadge>
@@ -23,35 +23,17 @@
               placeholder="e.g. Sous Chef (Evenings)"
             />
           </div>
-
-          <div class="space-y-2">
-            <p class="text-sm font-semibold">Description</p>
-            <UTextarea
-              v-model="form.description"
-              placeholder="Responsibilities, requirements, schedule…"
-              :rows="6"
-            />
-          </div>
         </div>
       </UCard>
 
       <UCard>
         <template #header>
-          <p>Publish controls</p>
-          <strong>Pay & visibility</strong>
-          <p>Decide what the shift pays and who can find it in the network.</p>
+          <p>Pipeline lane</p>
+          <strong>Status & visibility</strong>
+          <p>Pick the lane you want this job to live in.</p>
         </template>
 
         <div class="space-y-4">
-          <div class="space-y-2">
-            <p class="text-sm font-semibold">Pay</p>
-            <UInput
-              v-model="form.pay"
-              placeholder="35 CHF/hour, negotiable"
-              icon="i-lucide-badge-dollar-sign"
-            />
-          </div>
-
           <div class="space-y-2">
             <p class="text-sm font-semibold">
               Status <span class="text-red-500">*</span>
@@ -73,11 +55,11 @@
         </div>
       </UCard>
 
-      <p v-if="errorMessage">{{ errorMessage }}</p>
+      <p v-if="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
 
-      <footer>
-        <p>Jobs stay private until you switch the status to “Open”.</p>
-        <div>
+      <footer class="flex items-center justify-between">
+        <p>Jobs stay visible only to you until you set them to "Open".</p>
+        <div class="flex items-center gap-2">
           <UButton variant="ghost" :disabled="submitting" @click="onReset">
             Clear
           </UButton>
@@ -108,29 +90,22 @@ const { withToast } = useToastify()
 
 const form = reactive({
   title: '',
-  description: '',
-  pay: '',
-  status: 'draft' as JobStatus,
+  status: 'open' as JobStatus,
 })
 
 const statusOptions = [
-  { label: 'Draft', value: 'draft' },
   { label: 'Open', value: 'open' },
   { label: 'Closed', value: 'closed' },
 ] as const
 
 const statusMeta: Record<JobStatus, { label: string; copy: string }> = {
-  draft: {
-    label: 'Draft',
-    copy: 'Keep working on the posting privately until you are ready to share it.',
-  },
   open: {
     label: 'Open',
     copy: 'Visible to professionals across FireUX and eligible tenant apps.',
   },
   closed: {
     label: 'Closed',
-    copy: 'Hide the post from talent while keeping it for your own records.',
+    copy: 'Hidden from talent but kept in your internal history.',
   },
 }
 
@@ -141,17 +116,13 @@ const statusMetaList = Object.entries(statusMeta).map(([value, meta]) => ({
 
 const submitting = ref(false)
 const errorMessage = ref('')
-const isValid = computed(
-  () => form.title.trim().length > 0 && Boolean(form.status)
-)
+const isValid = computed(() => form.title.trim().length > 0)
 
 const currentStatusMeta = computed(() => statusMeta[form.status])
 
 function onReset() {
   form.title = ''
-  form.description = ''
-  form.pay = ''
-  form.status = 'draft'
+  form.status = 'open'
   errorMessage.value = ''
 }
 
@@ -164,8 +135,6 @@ const onSubmit = withToast(
     try {
       const id = await createJob({
         title: form.title.trim(),
-        description: form.description.trim() || null,
-        pay: form.pay.trim() || null,
         status: form.status,
       })
 

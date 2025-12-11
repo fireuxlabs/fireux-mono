@@ -10,7 +10,7 @@ export interface CleanboxLocationGeo {
  */
 export interface CleanboxLocation {
   id: string
-  tenant_id: string
+  app_id: string
   agent_id: string | null
   nickname?: string | null
   label: string

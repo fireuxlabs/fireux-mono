@@ -1,5 +1,5 @@
 <!-- COMMENT: app/pages/design/atoms/colors.vue -->
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
 definePageMeta({ layout: 'design' })

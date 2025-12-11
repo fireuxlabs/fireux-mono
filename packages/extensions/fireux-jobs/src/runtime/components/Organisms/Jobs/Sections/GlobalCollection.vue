@@ -22,8 +22,8 @@
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-1">
                 <h3 class="font-semibold leading-tight">{{ job.title }}</h3>
-                <p class="text-sm text-gray-500 line-clamp-2">
-                  {{ job.description || 'No description provided.' }}
+                <p class="text-xs uppercase tracking-wide text-gray-400">
+                  {{ job.tenant_id || 'Tenant unknown' }}
                 </p>
               </div>
               <div class="flex flex-col items-end gap-2">
@@ -32,7 +32,7 @@
                   :color="badgeColor(job.status)"
                   variant="soft"
                 >
-                  {{ job.status || 'draft' }}
+                  {{ job.status || 'open' }}
                 </UBadge>
                 <UButton
                   variant="ghost"
@@ -41,12 +41,6 @@
                 />
               </div>
             </div>
-
-            <template #footer>
-              <div class="text-xs text-gray-500">
-                {{ job.pay ? `Pay: ${job.pay}` : 'Pay: negotiable' }}
-              </div>
-            </template>
           </UCard>
         </li>
       </ul>
@@ -71,7 +65,6 @@ const total = computed(() => jobs.value.length)
 
 const badgeColor = (status?: Job['status']) => {
   if (status === 'open') return 'success'
-  if (status === 'draft') return 'amber'
   return 'neutral'
 }
 </script>

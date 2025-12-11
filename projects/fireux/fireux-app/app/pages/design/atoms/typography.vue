@@ -65,7 +65,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 definePageMeta({ layout: 'design' })
 
 const items = [

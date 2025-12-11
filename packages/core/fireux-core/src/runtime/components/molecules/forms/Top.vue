@@ -68,7 +68,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   label: { type: String, default: '' },
   isEditing: { type: Boolean, default: false },

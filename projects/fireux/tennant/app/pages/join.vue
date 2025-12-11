@@ -21,7 +21,7 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 useSeoMeta({
   title: 'Join Tenant',
   description: 'Instructions for joining the tenant runtime.',

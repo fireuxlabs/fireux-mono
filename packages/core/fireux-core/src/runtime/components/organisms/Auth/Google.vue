@@ -4,7 +4,7 @@
   </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth.ts'
 import { computed } from 'vue'

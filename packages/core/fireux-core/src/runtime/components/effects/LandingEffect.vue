@@ -14,7 +14,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
 // Use runtimeConfig so this works in server-render without importing #build/app.config

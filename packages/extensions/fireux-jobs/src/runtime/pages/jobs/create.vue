@@ -44,8 +44,9 @@ import {
   useJobCreateState,
   jobStatusOptions,
   validateJobDraft,
-} from '../../composables/fireux/firestore/jobs/job/state/useJobCreateState.ts'
-import { useJobCreateSubmit } from '../../composables/fireux/firestore/jobs/job/mutations/useJobCreateSubmit.ts'
+  toJobPayload,
+} from '../../composables/fireux/firestore/jobs/job/utils/useJobCreateState.ts'
+import { useJobCreate } from '../../composables/fireux/firestore/jobs/job/mutations/useJobCreate.ts'
 
 definePageMeta({
   layout: 'default',
@@ -72,7 +73,7 @@ const canCreate = computed(() => Boolean(coreProfile?.value))
 const router = useRouter()
 const { withToast } = useToastify()
 const { jobDraft: form, resetDraft } = useJobCreateState()
-const { submit } = useJobCreateSubmit()
+const { createJob } = useJobCreate()
 
 const statusOptions = jobStatusOptions
 
@@ -92,7 +93,8 @@ const onSubmit = withToast(
     errorMessage.value = ''
 
     try {
-      const id = await submit()
+      const payload = toJobPayload(form.value)
+      const id = await createJob(payload)
 
       onReset()
       router.push(`/jobs/${id}`)

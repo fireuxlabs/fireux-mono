@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 useSeoMeta({
   title: 'Tenant Onboarding',
   description: 'Initialize the tenant app and verify required configuration.',

@@ -18,7 +18,7 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const techStack = {
   recipes: {
     name: 'Digital Recipe Management',

@@ -20,7 +20,7 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // Cleaning industry integrations
 const integrations = [
   { name: 'Google Calendar', icon: 'logos:google-calendar' },

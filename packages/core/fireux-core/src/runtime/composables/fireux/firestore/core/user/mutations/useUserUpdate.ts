@@ -4,8 +4,8 @@ import type {
   AppUser,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { UserRefs } from '../fetch/useUserFetch.ts'
-import { useCoreUserUpdate } from './useCoreUserUpdate.ts'
-import { useAppUserUpdate } from './useAppUserUpdate.ts'
+import { useCoreUserUpdate } from '../utils/update/useCoreUserUpdate.ts'
+import { useAppUserUpdate } from '../utils/update/useAppUserUpdate.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 
 export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {

@@ -25,7 +25,7 @@
   </div>
 </template>
 
-<script setup>import { toRef } from 'vue'
+<script setup lang="ts">import { toRef } from 'vue'
 
 // Generic profile list component
 const props = defineProps({

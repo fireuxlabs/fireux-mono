@@ -15,7 +15,7 @@
 ## Jobs (composables only)
 
 - `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/job/useJob.ts` (entrypoint)
-- `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/job/state/useJobCreateState.ts`
+- `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/job/utils/useJobCreateState.ts`
 - `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/job/fetch/useJobFetch.ts`
 - `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/job/fetch/useJobCollection.ts`
 - `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/job/fetch/useJobRead.ts`

@@ -21,18 +21,6 @@ export function useJobEditor(job: Ref<Job | null>) {
     await updateJob(ensureId(), { title: value || 'Untitled Job' })
   }
 
-  const setDescription = async (description: string | null) => {
-    const value = sanitizeString(description)
-    await updateJob(ensureId(), { description: value ? value : null })
-  }
-
-  const setPay = async (pay: string | number | null) => {
-    const numeric = typeof pay === 'string' ? pay.trim() : pay
-    await updateJob(ensureId(), {
-      pay: numeric === '' ? null : numeric ?? null,
-    })
-  }
-
   const setStatus = async (status: JobStatus) => {
     await updateJob(ensureId(), { status })
   }
@@ -64,8 +52,6 @@ export function useJobEditor(job: Ref<Job | null>) {
     isInitialized,
     pillProps,
     setTitle,
-    setDescription,
-    setPay,
     setStatus,
   }
 }
