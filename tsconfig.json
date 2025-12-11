@@ -3,12 +3,14 @@
   "compilerOptions": {
     "types": [
       "nuxt",
-      "node",
-      "./types/nuxt-shims.d.ts",
-      "./types/nuxt-content.d.ts",
-      "./types/pwa.d.ts"
+      "node"
     ]
   },
+  "files": [
+    "./types/nuxt-shims.d.ts",
+    "./types/nuxt-content.d.ts",
+    "./types/pwa.d.ts"
+  ],
   "exclude": [
     "node_modules",
     "**/dist/**",
