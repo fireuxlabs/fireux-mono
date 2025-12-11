@@ -85,8 +85,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { useHead } from 'nuxt/app'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
 import {
   resolveProfessionalCell,
@@ -122,7 +122,7 @@ const globalEntries = computed(() => globalProfessionals?.value ?? [])
 const localHasProfiles = computed(() => (localEntries.value?.length ?? 0) > 0)
 
 const showLocalDirectory = computed(
-  () => isTenant.value && (localHasProfiles.value || !loadedLocal.value)
+  () => isTenant && (localHasProfiles.value || !loadedLocal.value)
 )
 
 const formatProfile = (profile: ProfessionalProfile | null, index: number) => {

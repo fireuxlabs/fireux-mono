@@ -1,20 +1,11 @@
 //packages/ecosystem/fireux-misebox/tsconfig.json
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
     "composite": false,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "paths": {
-      "#fireux-misebox-models/*": ["./src/runtime/models/*"],
-      "#fireux-places-models/*": [
-        "../../extensions/fireux-places/src/runtime/models/*"
-      ],
-      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
-      "#imports": ["types/nuxt-imports.d.ts"]
-    },
-    "types": ["nuxt", "nuxt/schema", "@nuxt/ui", "@types/node"]
+    "noUnusedParameters": true
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
   "exclude": [

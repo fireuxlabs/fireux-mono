@@ -3,14 +3,14 @@ import { useFirestore } from 'vuefire'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
-import type { Job, JobStatus } from '../../../../../models/job.model.ts'
+import type { Job, JobStatus } from '#fireux-jobs-models/job.model'
 
 type CreateJobInput = {
   title?: string | null
   status?: JobStatus
 }
 
-type JobDraft = Pick<Job, 'id' | 'title' | 'tenant_id' | 'created_by' | 'status'>
+type JobDraft = Pick<Job, 'id' | 'title' | 'app_id' | 'created_by' | 'status'>
 
 function sanitizeString(value: unknown): string {
   return value == null ? '' : String(value).trim()
@@ -23,7 +23,7 @@ export function useJobCreate() {
 
   const createJob = async (input: Partial<CreateJobInput>): Promise<string> => {
     const user = await useRequireUser()
-    const resolvedTenantId = appId || 'global'
+    const resolvedAppId = appId || 'global'
     const baseRef = doc(collection(db, 'jobs'))
     const jobId = baseRef.id
 
@@ -33,7 +33,7 @@ export function useJobCreate() {
       id: jobId,
       title,
       status: input.status ?? 'open',
-      tenant_id: resolvedTenantId,
+      app_id: resolvedAppId,
       created_by: user.uid,
     }
 

@@ -49,7 +49,7 @@ const routeFor = (id?: string | null) =>
   id ? `/${agentConfig.collectionName}/${id}` : null
 
 export function useAgentInterface(agent: Ref<Agent>) {
-  const pill = computed<AgentCard.Pill>(() => {
+  const pillProps = (): AgentCard.Pill => {
     const current = agent.value
     const user = current.user
     const core = current.core
@@ -66,9 +66,9 @@ export function useAgentInterface(agent: Ref<Agent>) {
       badges,
       to: routeFor(core?.id ?? user?.id ?? null),
     }
-  })
+  }
 
-  const cell = computed<AgentCard.Cell>(() => {
+  const cellProps = (): AgentCard.Cell => {
     const current = agent.value
     const user = current.user
     const core = current.core
@@ -87,7 +87,11 @@ export function useAgentInterface(agent: Ref<Agent>) {
       creator_id: null,
       to: routeFor(core?.id ?? user?.id ?? null),
     }
-  })
+  }
+
+  const pill = computed<AgentCard.Pill>(() => pillProps())
+
+  const cell = computed<AgentCard.Cell>(() => cellProps())
 
   const profile = computed<AgentCard.Profile>(() => {
     const current = agent.value
@@ -110,7 +114,7 @@ export function useAgentInterface(agent: Ref<Agent>) {
     }
   })
 
-  return { pill, cell, profile }
+  return { pill, cell, profile, pillProps, cellProps }
 }
 
 const resolveProfileTagline = (profile?: AgentProfileWithUser | null) =>

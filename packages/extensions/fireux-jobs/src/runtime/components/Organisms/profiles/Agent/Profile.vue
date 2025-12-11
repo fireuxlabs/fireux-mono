@@ -301,6 +301,33 @@ const props = defineProps<{
   agent?: any
 }>()
 
+const ui = {
+  surface: {
+    base: 'bg-white border border-gray-100 rounded-3xl shadow-sm',
+    padding: {
+      spacious: 'p-8 sm:p-10',
+      comfy: 'p-4 sm:p-5',
+      compact: 'p-3',
+    },
+  },
+  layout: {
+    hero: 'flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between',
+    infoStack: 'flex flex-col text-gray-800',
+    metaRow: 'flex items-center gap-2 text-sm text-gray-500',
+  },
+  text: {
+    nameXl: 'text-3xl font-semibold text-gray-900',
+    nameLg: 'text-2xl font-semibold text-gray-900',
+    nameMd: 'text-xl font-semibold text-gray-900',
+    meta: 'text-sm text-gray-500',
+    body: 'text-base leading-relaxed text-gray-600',
+    labelSm: 'text-xs uppercase tracking-wide text-gray-500',
+  },
+  chip: {
+    group: 'flex flex-wrap gap-2',
+  },
+}
+
 const statClasses =
   'bg-gray-50 border border-gray-200/70 rounded-xl p-4 flex items-center gap-3 text-sm text-gray-600'
 

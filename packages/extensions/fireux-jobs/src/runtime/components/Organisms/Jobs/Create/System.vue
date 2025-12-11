@@ -27,8 +27,8 @@ import {
   jobStatusOptions,
   validateJobDraft,
   toJobPayload,
-} from '../../../../composables/fireux/firestore/jobs/job/utils/useJobCreateState.ts'
-import { useJobCreate } from '../../../../composables/fireux/firestore/jobs/job/mutations/useJobCreate.ts'
+} from '../../../../composables/fireux/firestore/jobs/utils/useJobCreateState.ts'
+import { useJobCreate } from '../../../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
 
 const router = useRouter()
 const { withToast } = useToastify()

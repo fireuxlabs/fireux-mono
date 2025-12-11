@@ -1,9 +1,12 @@
 {
   "files": [],
   "references": [
+    { "path": "fireux-blogs" },
+    { "path": "fireux-drop" },
+    { "path": "fireux-ecosystem-controller" },
     { "path": "fireux-jobs" },
     { "path": "fireux-places" },
-    { "path": "fireux-test" }
+    { "path": "fireux-products" }
   ],
   "compilerOptions": { "skipLibCheck": true }
 }

@@ -84,10 +84,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, type Ref } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useAgent } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/useAgent.ts'
+
+type AccountUser = {
+  full_name?: string | null
+  displayName?: string | null
+  handle?: string | null
+  uid?: string | null
+  id?: string | null
+  email?: string | null
+}
 
 // Get current user data
-const { appUser } = useAppUser()
+const { currentUser } = useAuth()
+const appUser = currentUser as Ref<AccountUser | null | undefined>
 
 const accountDisplayName = computed(() => {
   const user = appUser.value

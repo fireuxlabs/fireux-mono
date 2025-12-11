@@ -6,11 +6,12 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 import { usePlaceSave } from 'fireux-places/runtime/composables/usePlaceSave.ts'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/usePlacesGoogle.ts'
 import type { Place } from 'fireux-places/runtime/models/place.model.ts'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
-import {
-  professionalConfig,
-  type ProfessionalProfile,
-} from '../../../../../../models/profiles/Professional/Professional.model.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
+import type {
+  ProfessionalProfile,
+  RelevantExperienceItem,
+  OtherExperienceItem,
+} from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model.ts'
 
 const COLLECTION = 'professionals'
 

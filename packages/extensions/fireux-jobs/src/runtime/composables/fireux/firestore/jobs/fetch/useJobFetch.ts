@@ -1,7 +1,7 @@
 import { doc } from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'vuefire'
-import type { Job } from '../../../../../models/job.model.ts'
+import type { Job } from '#fireux-jobs-models/job.model'
 
 export function useJobFetch(
   id: string | null | undefined | Ref<string | null | undefined>

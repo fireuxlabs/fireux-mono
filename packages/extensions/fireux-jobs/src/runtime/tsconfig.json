@@ -1,34 +1,10 @@
 {
-  "extends": "../../../../../tsconfig.base.json",
+  "extends": "../../../../../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
     "composite": false,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "paths": {
-      "#fireux-jobs-models/*": [
-        "packages/extensions/fireux-jobs/src/runtime/models/*"
-      ],
-      "#fireux-core-models/*": [
-        "packages/core/fireux-core/src/runtime/models/*"
-      ],
-      "#fireux-core-runtime/*": ["packages/core/fireux-core/src/runtime/*"],
-      "fireux-core/*": ["packages/core/fireux-core/src/*"],
-      "fireux-core/runtime/*": ["packages/core/fireux-core/src/runtime/*"],
-      "fireux-core/runtime/composables/*": [
-        "packages/core/fireux-core/src/runtime/composables/*"
-      ],
-      "fireux-core/runtime/models/*": [
-        "packages/core/fireux-core/src/runtime/models/*"
-      ],
-      "fireux-core/runtime/composables/fireux/firestore/useFirestoreManager": [
-        "packages/core/fireux-core/src/runtime/composables/fireux/firestore/useFirestoreManager.ts"
-      ],
-      "fireux-core/runtime/models/core/profile.model": [
-        "packages/core/fireux-core/src/runtime/models/core/profile.model.ts"
-      ]
-    },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "noUnusedParameters": true
   },
   "include": ["**/*.ts", "**/*.d.ts", "**/*.vue"],
   "exclude": ["node_modules", "dist"]

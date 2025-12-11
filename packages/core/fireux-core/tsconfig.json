@@ -1,16 +1,11 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
     "composite": false,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "paths": {
-      "#fireux-core-models/*": ["./src/runtime/models/*"],
-      "#imports": ["types/nuxt-imports.d.ts"]
-    },
-    "types": ["nuxt", "nuxt/schema", "vite/client", "node"]
+    "noUnusedParameters": true
   },
-  "include": ["src/**/*.ts", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
   "exclude": ["node_modules", "dist", ".nuxt", ".output"]
 }

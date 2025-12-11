@@ -1,5 +1,5 @@
-import { useState } from '#imports'
-import type { JobStatus } from '../../../../models/job.model.ts'
+import { useState } from 'nuxt/app'
+import type { JobStatus } from '#fireux-jobs-models/job.model'
 
 export type JobDraft = {
   title: string
@@ -14,7 +14,7 @@ export type JobStatusMeta = {
 
 export const defaultJobStatus: JobStatus = 'open'
 
-export const jobStatusMeta = {
+export const jobStatusMeta: Record<JobStatus, JobStatusMeta> = {
   open: {
     label: 'Open',
     description: 'Visible to professionals across FireUX and partner apps.',
@@ -25,7 +25,7 @@ export const jobStatusMeta = {
     description: 'Hidden from talent but kept in your internal history.',
     tone: 'neutral',
   },
-} as const satisfies Record<JobStatus, JobStatusMeta>
+}
 
 export const jobStatusOrder: JobStatus[] = ['open', 'closed']
 

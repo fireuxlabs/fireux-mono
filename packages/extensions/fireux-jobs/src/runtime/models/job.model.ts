@@ -9,8 +9,8 @@ export interface Job {
   /** Firestore document ID */
   id: string
 
-  /** Tenant/app that owns the job */
-  tenant_id: string
+  /** App that owns the job */
+  app_id: string
 
   /** FireUX user who created the listing */
   created_by: string

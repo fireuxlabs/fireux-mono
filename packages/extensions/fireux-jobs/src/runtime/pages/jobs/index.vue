@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
+import { useHead } from 'nuxt/app'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 

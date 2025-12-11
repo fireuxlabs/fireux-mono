@@ -19,8 +19,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useColorMode } from '#imports'
+import { useColorMode, definePageMeta } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+
+definePageMeta({
+  layout: 'auth'
+})
 
 const colorMode = useColorMode()
 const { appName, isTenant } = useFireUXConfig()

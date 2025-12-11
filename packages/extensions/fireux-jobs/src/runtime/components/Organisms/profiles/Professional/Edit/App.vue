@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import type { ProfessionalProfile } from '../../../../../models/profiles/Professional/Professional.model.ts'
 
-const props = defineProps<{
+defineProps<{
   professional: ProfessionalProfile | null
 }>()
 

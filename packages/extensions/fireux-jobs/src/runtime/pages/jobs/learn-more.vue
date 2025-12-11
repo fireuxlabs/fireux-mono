@@ -67,6 +67,7 @@
 </template>
 
 <script setup lang="ts">
+import { useHead } from 'nuxt/app'
 definePageMeta({
   layout: 'default',
 })

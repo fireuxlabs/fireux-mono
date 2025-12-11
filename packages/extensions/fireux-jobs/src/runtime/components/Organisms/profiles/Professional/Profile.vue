@@ -388,8 +388,8 @@ const view = computed(() => {
       null,
     badges: Array.isArray(model.badges)
       ? model.badges
-          .map((badge: unknown) => sanitizeString(badge as any))
-          .filter((badge): badge is string => Boolean(badge))
+          .map((badge: unknown) => sanitizeString(badge as string | null))
+          .filter((badge: string | null): badge is string => Boolean(badge))
       : [],
     bio: sanitizeString(model.bio_long) ?? sanitizeString(model.bio_short),
     avatar:

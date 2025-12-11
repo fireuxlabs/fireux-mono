@@ -81,8 +81,8 @@
 import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
-import { useJobCreate } from '../../../composables/fireux/firestore/jobs/job/mutations/useJobCreate.ts'
-import type { JobStatus } from '../../../models/job.model.ts'
+import { useJobCreate } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
+import type { JobStatus } from '#fireux-jobs-models/job.model'
 
 const router = useRouter()
 const { createJob } = useJobCreate()

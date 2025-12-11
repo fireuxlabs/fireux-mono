@@ -29,8 +29,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { useHead } from 'nuxt/app'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 
 definePageMeta({
   nav: {
@@ -49,7 +49,7 @@ definePageMeta({
 })
 
 const { isTenant } = useFireUXConfig()
-const showGlobalDirectory = ref(!isTenant.value)
+const showGlobalDirectory = ref(!isTenant)
 
 const pageTitle = 'Agents'
 const pageDescription =

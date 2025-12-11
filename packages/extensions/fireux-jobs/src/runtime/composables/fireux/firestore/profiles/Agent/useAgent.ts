@@ -8,7 +8,7 @@ import {
   type Agent,
   type AgentCoreProfile,
   type AgentProfile,
-} from '../../../../../models/profiles/Agent/Agent.model.ts'
+} from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model.ts'
 import { useAgentComputed } from './main/useAgentComputed.ts'
 import { useAgentInterface } from './main/useAgentInterface.ts'
 import type { AgentCard } from './main/useAgentInterface.ts'
@@ -31,7 +31,7 @@ export function useAgent() {
   }))
 
   const agentComputed = useAgentComputed(refs, pending)
-  const ui = useAgentInterface(agent)
+  const { profile: profileCard, ...ui } = useAgentInterface(agent)
   const update = useAgentUpdate(refs)
   const create = useAgentCreate()
 
@@ -40,6 +40,7 @@ export function useAgent() {
     coreProfile,
     appProfile,
     pending,
+    profileCard,
 
     ...agentComputed,
     ...ui,

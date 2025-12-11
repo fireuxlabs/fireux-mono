@@ -1,6 +1,6 @@
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
 import { useUserUpdateForUid } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserUpdate.ts'
-import type { AgentProfile } from '../../../../../models/profiles/Agent/Agent.model.ts'
+import type { AgentProfile } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model.ts'
 
 /**
  * useAgentUpdate

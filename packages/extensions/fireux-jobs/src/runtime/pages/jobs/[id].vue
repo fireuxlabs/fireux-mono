@@ -16,7 +16,7 @@
 
     <UPageBody class="pagebody">
       <UAlert
-        v-if="!job.value"
+        v-if="!job"
         title="Job not found"
         color="error"
         variant="soft"
@@ -28,34 +28,34 @@
             <div class="flex items-center justify-between gap-3">
               <h3 class="font-semibold">Job overview</h3>
               <UBadge size="xs" variant="soft" :color="statusColor">
-                {{ job.value?.status || 'open' }}
+                {{ job?.status || 'open' }}
               </UBadge>
             </div>
           </template>
 
           <div class="space-y-4 text-sm text-gray-600">
             <p class="text-base font-semibold text-gray-900">
-              {{ job.value?.title || 'Untitled job' }}
+              {{ job?.title || 'Untitled job' }}
             </p>
             <div class="grid gap-2 sm:grid-cols-2">
               <div>
                 <p class="text-xs uppercase tracking-wide text-gray-400">Job ID</p>
-                <p class="font-medium">{{ job.value?.id }}</p>
+                <p class="font-medium">{{ job?.id }}</p>
               </div>
               <div>
                 <p class="text-xs uppercase tracking-wide text-gray-400">
                   Created by
                 </p>
                 <p class="font-medium">
-                  {{ job.value?.created_by || '—' }}
+                  {{ job?.created_by || '—' }}
                 </p>
               </div>
               <div>
                 <p class="text-xs uppercase tracking-wide text-gray-400">
-                  Tenant
+                  App
                 </p>
                 <p class="font-medium">
-                  {{ job.value?.tenant_id || '—' }}
+                  {{ job?.app_id || '—' }}
                 </p>
               </div>
             </div>
@@ -69,11 +69,11 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { useHead } from '#imports'
-import type { JobStatus } from '../../../models/job.model.ts'
+import { useHead } from 'nuxt/app'
+import type { JobStatus } from '#fireux-jobs-models/job.model'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
-import { useJobFetch } from '../../composables/fireux/firestore/jobs/job/fetch/useJobFetch.ts'
-import { useJobEditor } from '../../composables/fireux/firestore/jobs/job/utils/useJobEditor.ts'
+import { useJobFetch } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/fetch/useJobFetch.ts'
+import { useJobEditor } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/utils/useJobEditor.ts'
 
 const route = useRoute()
 const paramId = route.params.id

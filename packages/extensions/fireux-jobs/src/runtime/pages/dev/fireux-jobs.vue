@@ -405,8 +405,15 @@ const professionalPillKey = resolveProfessionalPillKey
 const { globalAgents, localAgents, rawGlobalAgents, rawLocalAgents } =
   useAgentCollection()
 
+type AgentPreviewProfile = Partial<AgentProfile> & {
+  user?: { display_name?: string | null; avatar?: string | null } | null
+  display_name?: string | null
+  avatar_url?: string | null
+  avatar?: string | null
+}
+
 const toAgentPill = (
-  profile?: Partial<AgentProfile> | null
+  profile?: AgentPreviewProfile | null
 ): AgentCard.Pill => {
   const title = (
     profile?.title ||

@@ -13,5 +13,5 @@
 </template>
 
 <script setup lang="ts">
-import { professionalConfig } from '../../models/profiles/Professional.model'
+import { professionalConfig } from '../../models/profiles/Professional/Professional.model.ts'
 </script>

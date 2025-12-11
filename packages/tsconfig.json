@@ -3,13 +3,17 @@
   "files": [],
   "references": [
     { "path": "core/fireux-core" },
+    { "path": "extensions/fireux-blogs" },
+    { "path": "extensions/fireux-drop" },
+    { "path": "extensions/fireux-ecosystem-controller" },
     { "path": "extensions/fireux-jobs" },
     { "path": "extensions/fireux-places" },
-    { "path": "tenants/fireux-misebox" },
-    { "path": "tenants/fireux-cleanbox" }
+    { "path": "extensions/fireux-products" },
+    { "path": "ecosystem/fireux-cleanbox" },
+    { "path": "ecosystem/fireux-fireux" },
+    { "path": "ecosystem/fireux-misebox" }
   ],
   "compilerOptions": {
-    "skipLibCheck": true,
-    "types": ["nuxt"]
+    "skipLibCheck": true
   }
 }

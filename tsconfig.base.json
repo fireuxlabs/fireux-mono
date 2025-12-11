@@ -25,10 +25,16 @@
       "fireux-jobs/runtime/*": [
         "packages/extensions/fireux-jobs/src/runtime/*"
       ],
+      "#fireux-jobs-models/*": [
+        "packages/extensions/fireux-jobs/src/runtime/models/*"
+      ],
       "fireux-places": ["packages/extensions/fireux-places/src/module.ts"],
       "fireux-places/*": ["packages/extensions/fireux-places/src/*"],
       "fireux-places/runtime/*": [
         "packages/extensions/fireux-places/src/runtime/*"
+      ],
+      "#fireux-places-models/*": [
+        "packages/extensions/fireux-places/src/runtime/models/*"
       ],
       "fireux-misebox": ["packages/ecosystem/fireux-misebox/src/module.ts"],
       "fireux-misebox/*": ["packages/ecosystem/fireux-misebox/src/*"],
@@ -42,6 +48,26 @@
       "@fireux-misebox/*": ["packages/ecosystem/fireux-misebox/src/*"],
       "@fireux-cleanbox/*": ["packages/ecosystem/fireux-cleanbox/src/*"],
       "@fireux-fireux/*": ["packages/ecosystem/fireux-fireux/src/*"],
+      "#fireux-blogs/*": ["packages/extensions/fireux-blogs/src/runtime/*"],
+      "#fireux-products/*": ["packages/extensions/fireux-products/src/runtime/*"],
+      "#fireux-drop/*": ["packages/extensions/fireux-drop/src/runtime/*"],
+      "#fireux-ecosystem-controller/*": [
+        "packages/extensions/fireux-ecosystem-controller/src/runtime/*"
+      ],
+      "#fireux-core-models/*": ["packages/core/fireux-core/src/runtime/models/*"],
+      "#fireux-core-runtime/*": ["packages/core/fireux-core/src/runtime/*"],
+      "#fireux-core-composables/*": [
+        "packages/core/fireux-core/src/runtime/composables/*"
+      ],
+      "#fireux-cleanbox-models/*": [
+        "packages/ecosystem/fireux-cleanbox/src/runtime/models/*"
+      ],
+      "#fireux-misebox-models/*": [
+        "packages/ecosystem/fireux-misebox/src/runtime/models/*"
+      ],
+      "#fireux-fireux-models/*": [
+        "packages/ecosystem/fireux-fireux/src/runtime/models/*"
+      ],
       "~/*": [
         "projects/fireux/fireux-app/app/*",
         "projects/fireux/tennant/app/*",
@@ -74,7 +100,7 @@
         "projects/cleanbox/cleanbox-app/*",
         "projects/cleanbox/richies-reinigung/*"
       ],
-      "#imports": ["types/nuxt-imports.d.ts"],
+      "#imports": ["types/nuxt-shims.d.ts"],
       "#pwa": ["types/pwa.d.ts"]
     }
   }

@@ -1,4 +1,4 @@
-import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
 import { agentConfig } from './supporting'
 
 /**
@@ -17,7 +17,7 @@ export interface Agent {
  * - Global, ecosystem-wide
  * - One per user, regardless of app
  */
-export interface AgentCoreProfile {
+export interface AgentCoreProfile extends Profile {
   /** user id, same as profile id */
   id: string
 
@@ -30,7 +30,6 @@ export interface AgentCoreProfile {
    * (safe to expand later as the domain grows)
    */
   tagline?: string | null
-  badges?: string[]
 }
 
 /**

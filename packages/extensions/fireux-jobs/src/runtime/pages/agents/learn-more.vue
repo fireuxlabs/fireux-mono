@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
+import { useHead } from 'nuxt/app'
 
 useHead({ title: 'Agent Profile · Learn More' })
 </script>

@@ -6,9 +6,6 @@
     "baseUrl": ".",
     "moduleResolution": "Bundler",
     "paths": {
-      "#fireux-core-runtime/*": [
-        "../../../packages/core/fireux-core/src/runtime/*"
-      ],
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
       "#imports": [".nuxt/imports.d.ts"],
       "#build/*": [".nuxt/*"]

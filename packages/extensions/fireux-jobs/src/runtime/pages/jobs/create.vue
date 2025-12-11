@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useHead, useRouter } from '#imports'
+import { useHead, useRouter } from 'nuxt/app'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
 import {
@@ -45,8 +45,8 @@ import {
   jobStatusOptions,
   validateJobDraft,
   toJobPayload,
-} from '../../composables/fireux/firestore/jobs/job/utils/useJobCreateState.ts'
-import { useJobCreate } from '../../composables/fireux/firestore/jobs/job/mutations/useJobCreate.ts'
+} from '../../composables/fireux/firestore/jobs/utils/useJobCreateState.ts'
+import { useJobCreate } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
 
 definePageMeta({
   layout: 'default',

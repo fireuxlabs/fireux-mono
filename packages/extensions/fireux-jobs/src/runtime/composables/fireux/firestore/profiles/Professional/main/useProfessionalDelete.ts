@@ -2,8 +2,8 @@ import { useFirestore } from 'vuefire'
 import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/main/useProfileFetch.ts'
-import type { ProfessionalProfile } from '../../../../../../models/profiles/Professional/Professional.model.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
+import type { ProfessionalProfile } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model.ts'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 

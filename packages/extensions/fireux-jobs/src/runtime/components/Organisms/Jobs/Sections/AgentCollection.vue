@@ -21,7 +21,7 @@
               <div class="space-y-1">
                 <h3 class="font-semibold leading-tight">{{ job.title }}</h3>
                 <p class="text-xs uppercase tracking-wide text-gray-400">
-                  {{ job.tenant_id || 'Tenant unknown' }}
+                  {{ job.app_id || 'App unknown' }}
                 </p>
               </div>
               <div class="flex flex-col items-end gap-2">
@@ -52,18 +52,17 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useJobCollection } from '../../../../composables/fireux/firestore/jobs/job/fetch/useJobCollection.ts'
+import { useJobCollection } from '../../../../composables/fireux/firestore/jobs/fetch/useJobCollection.ts'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth.ts'
-import type { Job } from '../../../../models/job.model.ts'
+import type { Job } from '#fireux-jobs-models/job.model'
 
 const { jobs: allJobs, pending: isPending } = useJobCollection()
 const { coreUser } = useUser()
 const { uid: authUid } = useAuth()
 
 const jobs = computed<Job[]>(() => {
-  const ownerId =
-    coreUser.value?.uid ?? coreUser.value?.id ?? authUid.value ?? null
+  const ownerId = coreUser.value?.id ?? authUid.value ?? null
   if (!ownerId) return []
   return (allJobs.value ?? []).filter((job) => job.created_by === ownerId)
 })

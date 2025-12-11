@@ -1,23 +1,11 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
     "composite": false,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "paths": {
-      "#fireux-places-models/*": ["./src/runtime/models/*"],
-      "#fireux-core-models/*": ["../../core/fireux-core/src/runtime/models/*"],
-      "#fireux-core-composables/firestore/*": [
-        "../../core/fireux-core/src/runtime/composables/fireux/firestore/*"
-      ],
-      "#fireux-core-composables/firebase/*": [
-        "../../core/fireux-core/src/runtime/composables/fireux/firebase/*"
-      ],
-      "#imports": ["types/nuxt-imports.d.ts"]
-    },
-    "types": ["nuxt", "nuxt/schema", "@types/node"]
+    "noUnusedParameters": true
   },
-  "include": ["src/**/*.ts", "src/runtime/env.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
   "exclude": ["node_modules", "dist"]
 }

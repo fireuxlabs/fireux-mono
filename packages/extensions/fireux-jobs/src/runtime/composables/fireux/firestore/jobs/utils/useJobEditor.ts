@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { Job, JobStatus } from '../../../../../models/job.model.ts'
+import type { Job, JobStatus } from '#fireux-jobs-models/job.model'
 import { useJobUpdate } from '../mutations/useJobUpdate'
 
 const sanitizeString = (value: unknown) =>

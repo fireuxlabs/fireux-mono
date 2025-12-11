@@ -23,7 +23,7 @@
               <div class="space-y-1">
                 <h3 class="font-semibold leading-tight">{{ job.title }}</h3>
                 <p class="text-xs uppercase tracking-wide text-gray-400">
-                  {{ job.tenant_id || 'Tenant unknown' }}
+                  {{ job.app_id || 'App unknown' }}
                 </p>
               </div>
               <div class="flex flex-col items-end gap-2">
@@ -54,12 +54,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useJobCollection } from '../../../../composables/fireux/firestore/jobs/job/fetch/useJobCollection.ts'
-import type { Job } from '../../../../models/job.model.ts'
+import { useJobCollection } from '../../../../composables/fireux/firestore/jobs/fetch/useJobCollection.ts'
+import type { Job } from '#fireux-jobs-models/job.model'
 
-const { tenantJobs, pending: isPending } = useJobCollection()
+const { appJobs, pending: isPending } = useJobCollection()
 
-const jobs = computed<Job[]>(() => tenantJobs.value ?? [])
+const jobs = computed<Job[]>(() => appJobs.value ?? [])
 const pending = computed<boolean>(() => isPending.value)
 const total = computed(() => jobs.value.length)
 
