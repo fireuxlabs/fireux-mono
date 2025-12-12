@@ -1,3 +1,10 @@
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Organisms/Jobs/Create/Preview.vue -->
+<!-- NOTE for Copilot:
+     - This is the PREVIEW surface for job creation.
+     - It renders the SAME shape as useJobCreate().form: { title, description }.
+     - This card will later mirror the pipeline/job list UI.
+-->
+
 <template>
   <UCard>
     <template #header>
@@ -8,20 +15,19 @@
             {{ title }}
           </h3>
         </div>
-        <UBadge :color="statusColor" variant="soft">
-          {{ statusLabel }}
-        </UBadge>
       </div>
     </template>
 
     <div class="space-y-3 text-sm text-gray-600">
-      <p>
-        This is the exact card that appears in the pipeline and quick preview.
-      </p>
+      <p>This is how the job will look in a simple pipeline card.</p>
+
       <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-3">
-        <p class="text-xs uppercase tracking-wide text-gray-400">Status</p>
-        <p class="text-base font-semibold text-gray-900">{{ statusLabel }}</p>
-        <p class="text-sm text-gray-500">{{ statusDescription }}</p>
+        <p class="text-xs uppercase tracking-wide text-gray-400">
+          Description
+        </p>
+        <p class="whitespace-pre-line text-sm text-gray-700">
+          {{ description || 'No description yet.' }}
+        </p>
       </div>
     </div>
   </UCard>
@@ -29,29 +35,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { JobDraft } from '../../../../composables/fireux/firestore/jobs/state/useJobState.ts'
-import {
-  defaultJobStatus,
-  jobStatusMeta,
-  type JobStatusMeta,
-} from '../../../../composables/fireux/firestore/jobs/state/useJobState.ts'
 
-const props = defineProps<{ form: JobDraft }>()
-
-const toneMap: Record<JobStatusMeta['tone'], string> = {
-  neutral: 'gray',
-  success: 'success',
-  warning: 'warning',
-  info: 'info',
-  error: 'error',
+type JobCreateForm = {
+  title: string
+  description: string
 }
 
-const statusMeta = computed(
-  () => jobStatusMeta[props.form.status] ?? jobStatusMeta[defaultJobStatus]
-)
+const props = defineProps<{
+  form: JobCreateForm
+}>()
 
-const statusColor = computed(() => toneMap[statusMeta.value.tone])
-const statusLabel = computed(() => statusMeta.value.label)
-const statusDescription = computed(() => statusMeta.value.description)
 const title = computed(() => props.form.title.trim() || 'Untitled job')
+const description = computed(() => props.form.description.trim())
 </script>

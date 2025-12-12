@@ -1,4 +1,10 @@
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/jobs/create.vue -->
+// FILE: packages/extensions/fireux-jobs/src/runtime/pages/jobs/create.vue
+// NOTE for Copilot:
+// - This page is the ONLY entry point for creating jobs.
+// - It delegates ALL form state + submission to useJobCreate().
+// - The create flow is fake for now (no Firestore) but the UI and pipeline are real.
+// - When wiring persistence, update useJobCreate.submit() only.
+
 <template>
   <UPage>
     <UPageHeader
@@ -7,12 +13,14 @@
     />
 
     <UPageBody class="pagebody">
+      <!-- Gate on agent profile (must be an agent to create jobs) -->
       <div v-if="isChecking" class="space-y-3">
         <USkeleton v-for="n in 3" :key="n" class="h-20" />
       </div>
 
-      <OrganismsProfilesAgentCTA v-else-if="!canCreate" />
+      <OrganismsProfilesAgentCTA v-else-if="!canPostJob" />
 
+      <!-- Main create shell: write + preview -->
       <OrganismsCreateShell
         v-else
         :loading="submitting"
@@ -21,10 +29,7 @@
         @submit="onSubmit"
       >
         <template #write>
-          <OrganismsJobsCreateWrite
-            v-model:form="form"
-            :status-options="statusOptions"
-          />
+          <OrganismsJobsCreateWrite v-model:form="form" />
         </template>
 
         <template #preview>
@@ -39,14 +44,9 @@
 import { computed, ref } from 'vue'
 import { useHead, useRouter } from 'nuxt/app'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
+import { useJobPermissions } from '../../composables/useJobPermissions.ts'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
-import {
-  useJobState,
-  jobStatusOptions,
-  validateJobDraft,
-  toJobPayload,
-} from '../../composables/fireux/firestore/jobs/state/useJobState.ts'
-import { useJobCreate } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
+import { useJobCreate } from '../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
 
 definePageMeta({
   layout: 'default',
@@ -64,45 +64,38 @@ definePageMeta({
 
 useHead({ title: 'Create Job' })
 
-// Gate on agent core profile, matching /jobs index.
-const { coreProfile, pending } = useAgent()
-
+// Gate on agent profile (same rule as /jobs index)
+const { agent, pending } = useAgent()
+const { canPostJob } = useJobPermissions(agent)
 const isChecking = computed(() => Boolean(pending?.value))
-const canCreate = computed(() => Boolean(coreProfile?.value))
+
+// Create flow: state + fake submit
+const { form, reset, submit } = useJobCreate()
 
 const router = useRouter()
 const { withToast } = useToastify()
-const { jobDraft: form, resetDraft } = useJobState()
-const { createJob } = useJobCreate()
-
-const statusOptions = jobStatusOptions
-
 const submitting = ref(false)
 const errorMessage = ref('')
-const isValid = computed(() => !validateJobDraft(form.value))
 
 function onReset() {
-  resetDraft()
+  reset()
   errorMessage.value = ''
 }
 
 const onSubmit = withToast(
   async () => {
-    if (!isValid.value) return
     submitting.value = true
     errorMessage.value = ''
 
     try {
-      const payload = toJobPayload(form.value)
-      const id = await createJob(payload)
-
+      const id = await submit()
       onReset()
       router.push(`/jobs/${id}`)
-    } catch (error) {
-      if (error instanceof Error) {
-        errorMessage.value = error.message
+    } catch (err) {
+      if (err instanceof Error) {
+        errorMessage.value = err.message
       }
-      throw error
+      throw err
     } finally {
       submitting.value = false
     }

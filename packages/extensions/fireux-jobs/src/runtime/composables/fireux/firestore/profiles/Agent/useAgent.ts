@@ -39,6 +39,7 @@ export function useAgent() {
     profile: refs,
     coreProfile,
     appProfile,
+    agent,
     pending,
     profileCard,
 

@@ -1,3 +1,5 @@
+import { useToast } from '#imports'
+
 const TOAST_TIMEOUT = 3000
 
 type ToastApi = {
@@ -25,14 +27,23 @@ type Toastify = {
 }
 
 function resolveToast(): ToastApi | null {
-  const useToastFn = (globalThis as any)?.useToast
-  if (typeof useToastFn === 'function') {
+  if (typeof window !== 'undefined') {
     try {
-      return useToastFn()
+      return useToast()
     } catch (error) {
       console.warn('[useToastify] Failed to resolve useToast()', error)
     }
   }
+
+  const legacyUseToast = (globalThis as any)?.useToast
+  if (typeof legacyUseToast === 'function') {
+    try {
+      return legacyUseToast()
+    } catch (error) {
+      console.warn('[useToastify] Failed to resolve legacy useToast()', error)
+    }
+  }
+
   return null
 }
 

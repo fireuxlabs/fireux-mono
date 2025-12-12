@@ -1,20 +1,20 @@
 import { useState } from '#imports'
 
+export type JobDraft = {
+  title: string
+  description: string
+}
+
+const DEFAULT_DRAFT: JobDraft = {
+  title: 'Job Title',
+  description: 'Job Description',
+}
+
 export function useJobState() {
-  //
-  // 1. PREVIEW STATE
-  //    Holds the raw form values only.
-  //
-  const preview = useState('job-create-preview', () => ({
-    title: 'Job Title',
-    description: 'Job Description',
+  const preview = useState<JobDraft>('job-create-preview', () => ({
+    ...DEFAULT_DRAFT,
   }))
 
-  //
-  // 2. COMMIT
-  //    Returns the clean payload used by useJobCreate().
-  //    Does NOT write to Firestore — that is the mutation’s job.
-  //
   const commit = () => {
     const trim = (v: string) => v.trim()
     return {
@@ -23,14 +23,8 @@ export function useJobState() {
     }
   }
 
-  //
-  // 3. RESET back to defaults
-  //
   const reset = () => {
-    preview.value = {
-      title: '',
-      description: '',
-    }
+    preview.value = { ...DEFAULT_DRAFT }
   }
 
   return {

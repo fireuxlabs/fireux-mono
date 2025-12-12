@@ -18,4 +18,5 @@ export interface Job {
   /** Pipeline & preview surface */
   title: string
   status: JobStatus
+  description?: string | null
 }

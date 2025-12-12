@@ -73,7 +73,7 @@ import { useHead } from 'nuxt/app'
 import type { JobStatus } from '#fireux-jobs-models/job.model'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
 import { useJobFetch } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/fetch/useJobFetch.ts'
-import { useJobEditor } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/utils/useJobEditor.ts'
+import { useJobUpdate } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/mutations/useJobUpdate.ts'
 
 const route = useRoute()
 const paramId = route.params.id
@@ -84,7 +84,7 @@ const jobId = computed(() =>
 )
 
 const { job } = useJobFetch(jobId)
-const { setStatus } = useJobEditor(job)
+const { updateJob } = useJobUpdate()
 const { withToast } = useToastify()
 
 const jobTitle = computed(() => job.value?.title || 'Job Details')
@@ -108,10 +108,13 @@ watchEffect(() => {
 const saving = ref(false)
 const saveStatus = withToast(
   async () => {
-    if (!job.value) return
+    const current = job.value
+    if (!current?.id) {
+      throw new Error('Job not ready to update')
+    }
     saving.value = true
     try {
-      await setStatus(statusLocal.value)
+      await updateJob(current.id, { status: statusLocal.value })
     } finally {
       saving.value = false
     }

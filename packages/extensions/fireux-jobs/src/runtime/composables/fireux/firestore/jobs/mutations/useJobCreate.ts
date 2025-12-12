@@ -1,45 +1,51 @@
-import { collection, doc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
-import type { Job, JobStatus } from '#fireux-jobs-models/job.model'
+// FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/mutations/useJobCreate.ts
+// NOTE for Copilot:
+// - This composable OWNS job-create form state.
+// - It is a FAKE create for now: submit() logs and returns a fake ID.
+// - Only two fields exist for now: title + description.
+// - When adding Firestore, update submit() to write the payload.
 
-type CreateJobInput = {
-  title?: string | null
-  status?: JobStatus
-}
+import { useState } from '#imports'
+import type { Job } from '#fireux-jobs-models/job.model'
 
-type JobDraft = Pick<Job, 'id' | 'title' | 'app_id' | 'created_by' | 'status'>
-
-function sanitizeString(value: unknown): string {
-  return value == null ? '' : String(value).trim()
+export type JobCreateForm = {
+  title: string
+  description: string
 }
 
 export function useJobCreate() {
-  const db = useFirestore()
-  const { setDocument } = useFirestoreManager()
-  const { appId } = useFireUXConfig()
+  // Shared create form state (used by write + preview + submit)
+  const form = useState<JobCreateForm>('jobs-create-form', () => ({
+    title: '',
+    description: '',
+  }))
 
-  const createJob = async (input: Partial<CreateJobInput>): Promise<string> => {
-    const user = await useRequireUser()
-    const resolvedAppId = appId || 'global'
-    const baseRef = doc(collection(db, 'jobs'))
-    const jobId = baseRef.id
-
-    const title =
-      sanitizeString(input.title ?? 'Untitled Job') || 'Untitled Job'
-    const payload: JobDraft = {
-      id: jobId,
-      title,
-      status: input.status ?? 'open',
-      app_id: resolvedAppId,
-      created_by: user.uid,
+  const reset = () => {
+    form.value = {
+      title: '',
+      description: '',
     }
-
-    await setDocument<JobDraft>('jobs', jobId, payload)
-    return jobId
   }
 
-  return { createJob }
+  const submit = async (): Promise<string> => {
+    const trim = (v: string) => v.trim()
+
+    const payload: Partial<Job> = {
+      title: trim(form.value.title) || 'Hello world job',
+      description: trim(form.value.description),
+    }
+
+    // Fake pipeline step: log only
+    console.log('[jobs] FAKE createJob payload →', payload)
+
+    // Fake ID so the page can still navigate to /jobs/:id
+    const fakeId = `job-${Date.now()}`
+    return fakeId
+  }
+
+  return {
+    form,
+    reset,
+    submit,
+  }
 }
