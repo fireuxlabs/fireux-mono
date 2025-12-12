@@ -212,7 +212,7 @@ function createBrandAssetResolver(
 
 /**
  * NOTE:
- * - `role` is enforced via Nuxt config (createFireuxConfig), not env; we do NOT check it here.
+ * - `role` is enforced via Nuxt config, not env; we do NOT check it here.
  * - This route only validates process.env presence/shape and brand asset existence.
  */
 interface EnvCheckResponse {
@@ -243,17 +243,17 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
     }
   ).runtimeConfig
   const ecosystem = runtimeConfig?.public?.ecosystem as string | undefined
-  const appNamespace = (env.APP_ID || '').trim() || undefined
+  const appNamespace = env.APP_ID?.trim()
   const here = dirname(fileURLToPath(import.meta.url))
   const repoRoot = findRepoRoot(here)
 
   const requiredClient = [
-    'FIREBASE_API_KEY',
-    'FIREBASE_AUTH_DOMAIN',
-    'FIREBASE_PROJECT_ID',
-    'FIREBASE_STORAGE_BUCKET',
-    'FIREBASE_MESSAGING_SENDER_ID',
-    'FIREBASE_APP_ID',
+    'NUXT_FIREBASE_API_KEY',
+    'NUXT_FIREBASE_AUTH_DOMAIN',
+    'NUXT_FIREBASE_PROJECT_ID',
+    'NUXT_FIREBASE_STORAGE_BUCKET',
+    'NUXT_FIREBASE_MESSAGING_SENDER_ID',
+    'NUXT_FIREBASE_APP_ID',
     'APP_ID',
     'APP_NAME',
     'APP_SHORT_NAME',
@@ -264,8 +264,8 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
   ]
 
   const optionalClient = [
-    'FIREBASE_MEASUREMENT_ID',
-    'FIREBASE_RECAPTCHA_V3_KEY',
+    'NUXT_FIREBASE_MEASUREMENT_ID',
+    'NUXT_FIREBASE_RECAPTCHA_V3_KEY',
     'GOOGLE_PLACES_API_KEY',
     'APP_SECONDARY_COLOR',
   ]

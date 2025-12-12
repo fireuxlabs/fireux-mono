@@ -347,7 +347,7 @@ async function writeFile(target, content) {
 
 function resolveRegistryEndpoint() {
   return (
-    process.env.FIREUX_REGISTRY_ENDPOINT || 'http://localhost:3000/api/registry'
+    process.env.FIREUX_REGISTRY_ENDPOINT
   )
 }
 

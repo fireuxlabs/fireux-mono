@@ -15,19 +15,12 @@
       "types": "./src/runtime/*",
       "import": "./src/runtime/*"
     },
-    "./config/*": {
-      "types": "./src/config/*",
-      "import": "./src/config/*.mjs"
-    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
       "runtime/*": [
         "src/runtime/*"
-      ],
-      "config/*": [
-        "src/config/*"
       ]
     }
   },

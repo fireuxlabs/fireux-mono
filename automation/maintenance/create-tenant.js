@@ -503,34 +503,31 @@ export default defineNuxtConfig({
       enabled: true,
     },
     config: {
-      projectId: process.env.FIREBASE_PROJECT_ID || '',
-      appId: process.env.FIREBASE_APP_ID || '',
-      apiKey: process.env.FIREBASE_API_KEY || '',
-      authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
-      storageBucket: process.env.FIREBASE_STORAGE_BUCKET || '',
-      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
-      measurementId: process.env.FIREBASE_MEASUREMENT_ID || '',
+      projectId: process.env.NUXT_FIREBASE_PROJECT_ID,
+      appId: process.env.NUXT_FIREBASE_APP_ID,
+      apiKey: process.env.NUXT_FIREBASE_API_KEY,
+      authDomain: process.env.NUXT_FIREBASE_AUTH_DOMAIN,
+      storageBucket: process.env.NUXT_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.NUXT_FIREBASE_MESSAGING_SENDER_ID,
+      measurementId: process.env.NUXT_FIREBASE_MEASUREMENT_ID,
     },
   },
   
   runtimeConfig: {
     // Server-side runtime config
-    firebasePrivateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID || '',
-    firebasePrivateKey: (process.env.FIREBASE_PRIVATE_KEY || '').replace(
-      /\\\\n/g,
-      '\\n'
-    ),
-    firebaseClientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
+    firebasePrivateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID,
+    firebasePrivateKey: process.env.FIREBASE_PRIVATE_KEY,
+    firebaseClientEmail: process.env.FIREBASE_CLIENT_EMAIL,
     
     // Client-side runtime config (exposed to frontend)  
     public: {
-      firebaseProjectId: process.env.FIREBASE_PROJECT_ID || '',
-      firebaseAppId: process.env.FIREBASE_APP_ID || '',
-      firebaseApiKey: process.env.FIREBASE_API_KEY || '',
-      firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
-      firebaseStorageBucket: process.env.FIREBASE_STORAGE_BUCKET || '',
-      firebaseMessagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
-      firebaseMeasurementId: process.env.FIREBASE_MEASUREMENT_ID || '',
+      firebaseProjectId: process.env.NUXT_FIREBASE_PROJECT_ID,
+      firebaseAppId: process.env.NUXT_FIREBASE_APP_ID,
+      firebaseApiKey: process.env.NUXT_FIREBASE_API_KEY,
+      firebaseAuthDomain: process.env.NUXT_FIREBASE_AUTH_DOMAIN,
+      firebaseStorageBucket: process.env.NUXT_FIREBASE_STORAGE_BUCKET,
+      firebaseMessagingSenderId: process.env.NUXT_FIREBASE_MESSAGING_SENDER_ID,
+      firebaseMeasurementId: process.env.NUXT_FIREBASE_MEASUREMENT_ID,
       appName: '${capitalizeFirst(config.displayName)}',
       appShortName: '${config.name.slice(0, 4)}',
       primaryColor: '${getColorHex(config.primaryColor)}',
@@ -565,25 +562,25 @@ function createEnvFile(config) {
     const parentEnv = fs.readFileSync(parentEnvPath, 'utf8')
 
     // Extract Firebase config
-    firebaseConfig.apiKey = parentEnv.match(/FIREBASE_API_KEY=(.+)/)?.[1] || ''
+    firebaseConfig.apiKey = parentEnv.match(/NUXT_FIREBASE_API_KEY=(.+)/)?.[1]
     firebaseConfig.authDomain =
-      parentEnv.match(/FIREBASE_AUTH_DOMAIN=(.+)/)?.[1] || ''
+      parentEnv.match(/NUXT_FIREBASE_AUTH_DOMAIN=(.+)/)?.[1]
     firebaseConfig.projectId =
-      parentEnv.match(/FIREBASE_PROJECT_ID=(.+)/)?.[1] || ''
+      parentEnv.match(/NUXT_FIREBASE_PROJECT_ID=(.+)/)?.[1]
     firebaseConfig.storageBucket =
-      parentEnv.match(/FIREBASE_STORAGE_BUCKET=(.+)/)?.[1] || ''
+      parentEnv.match(/NUXT_FIREBASE_STORAGE_BUCKET=(.+)/)?.[1]
     firebaseConfig.messagingSenderId =
-      parentEnv.match(/FIREBASE_MESSAGING_SENDER_ID=(.+)/)?.[1] || ''
-    firebaseConfig.appId = parentEnv.match(/FIREBASE_APP_ID=(.+)/)?.[1] || ''
+      parentEnv.match(/NUXT_FIREBASE_MESSAGING_SENDER_ID=(.+)/)?.[1]
+    firebaseConfig.appId = parentEnv.match(/NUXT_FIREBASE_APP_ID=(.+)/)?.[1]
 
     // Extract Stripe config if requested
     if (config.copyStripeKeys) {
       stripeConfig.publishableKey =
-        parentEnv.match(/STRIPE_PUBLISHABLE_KEY=(.+)/)?.[1] || ''
+        parentEnv.match(/STRIPE_PUBLISHABLE_KEY=(.+)/)?.[1]
       stripeConfig.secretKey =
-        parentEnv.match(/STRIPE_SECRET_KEY=(.+)/)?.[1] || ''
+        parentEnv.match(/STRIPE_SECRET_KEY=(.+)/)?.[1]
       stripeConfig.webhookSecret =
-        parentEnv.match(/STRIPE_WEBHOOK_SECRET=(.+)/)?.[1] || ''
+        parentEnv.match(/STRIPE_WEBHOOK_SECRET=(.+)/)?.[1]
     }
   }
 
@@ -597,12 +594,12 @@ GOOGLE_APPLICATION_CREDENTIALS=/Users/danielwatson/Dev/fireux/projects/${
   }/${config.name}/config/service-account.json
 
 # Firebase Configuration (inherited from ${config.system}-app)
-FIREBASE_API_KEY=${firebaseConfig.apiKey}
-FIREBASE_AUTH_DOMAIN=${firebaseConfig.authDomain}
-FIREBASE_PROJECT_ID=${firebaseConfig.projectId}
-FIREBASE_STORAGE_BUCKET=${firebaseConfig.storageBucket}
-FIREBASE_MESSAGING_SENDER_ID=${firebaseConfig.messagingSenderId}
-FIREBASE_APP_ID=${firebaseConfig.appId}
+NUXT_FIREBASE_API_KEY=${firebaseConfig.apiKey}
+NUXT_FIREBASE_AUTH_DOMAIN=${firebaseConfig.authDomain}
+NUXT_FIREBASE_PROJECT_ID=${firebaseConfig.projectId}
+NUXT_FIREBASE_STORAGE_BUCKET=${firebaseConfig.storageBucket}
+NUXT_FIREBASE_MESSAGING_SENDER_ID=${firebaseConfig.messagingSenderId}
+NUXT_FIREBASE_APP_ID=${firebaseConfig.appId}
 
 # App Settings
 PROJECT_NAME=${capitalizeFirst(config.system)}

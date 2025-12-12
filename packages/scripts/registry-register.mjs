@@ -40,7 +40,7 @@ function buildRequestPayload(registryEntry) {
 
 function resolveEndpoint() {
   return (
-    process.env.FIREUX_REGISTRY_ENDPOINT || 'http://localhost:3000/api/registry'
+    process.env.FIREUX_REGISTRY_ENDPOINT
   )
 }
 
