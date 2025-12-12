@@ -280,7 +280,7 @@ interface FireuxNuxtSetup {
   nitro: NuxtConfig['nitro']
 }
 
-const DEFAULT_COMPATIBILITY_DATE = '2025-09-01'
+const DEFAULT_COMPATIBILITY_DATE = '2025-12-01'
 
 export function resolveFireuxNuxtSetup(opts: TenantConfig): FireuxNuxtSetup {
   const basics = resolveTenantBasics(opts)

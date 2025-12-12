@@ -20,7 +20,7 @@ interface FireuxNuxtSetup {
   nitro: NuxtConfig['nitro']
 }
 
-export const DEFAULT_COMPATIBILITY_DATE = '2025-09-01'
+export const DEFAULT_COMPATIBILITY_DATE = '2025-12-01'
 
 export function resolveFireuxNuxtSetup(opts: TenantConfig): FireuxNuxtSetup {
   // Constitution: fail fast on required tenant fields; avoid hidden compatibility layers.

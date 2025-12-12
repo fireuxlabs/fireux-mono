@@ -11,8 +11,6 @@ export interface ConfigValidationResult {
   suggestions: string[]
 }
 
-import { DEFAULT_COMPATIBILITY_DATE } from '../fireux/tenant-context'
-
 // Use a distinct name to avoid clashes with factory's TenantConfig
 export interface ValidationTenantConfig {
   ecosystem: string
