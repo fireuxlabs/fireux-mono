@@ -8,7 +8,18 @@
     "paths": {
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
       "#imports": [".nuxt/imports.d.ts"],
-      "#build/*": [".nuxt/*"]
+      "#build/*": [".nuxt/*"],
+
+      "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
+      "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"],
+      "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+
+      "fireux-fireux": ["../../../packages/ecosystem/fireux-fireux/src/module.ts"],
+      "fireux-fireux/*": ["../../../packages/ecosystem/fireux-fireux/src/*"],
+      "fireux-fireux/runtime/*": ["../../../packages/ecosystem/fireux-fireux/src/runtime/*"],
+      "@fireux-fireux/*": ["../../../packages/ecosystem/fireux-fireux/src/*"]
+
       // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
     "skipLibCheck": true,

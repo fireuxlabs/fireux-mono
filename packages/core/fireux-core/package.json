@@ -11,16 +11,23 @@
       "import": "./src/module.ts",
       "require": "./src/module.ts"
     },
+    "./config/*": {
+      "types": "./src/config/*.ts",
+      "import": "./src/config/*.ts"
+    },
     "./runtime/*": {
-      "types": "./src/runtime/*",
-      "import": "./src/runtime/*"
+      "types": "./src/runtime/*.ts",
+      "import": "./src/runtime/*.ts"
     },
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
+      "config/*": [
+        "src/config/*.ts"
+      ],
       "runtime/*": [
-        "src/runtime/*"
+        "src/runtime/*.ts"
       ]
     }
   },

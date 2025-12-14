@@ -26,26 +26,10 @@ function reqString(src: Record<string, unknown>, key: string): string {
   const v = src[key]
   if (typeof v !== 'string' || !v.trim()) {
     throw new Error(
-      `[fireux] runtimeConfig.public.${key} must be a non-empty string.`
+      `[fireux] runtimeConfig.public.fireux.${key} must be a non-empty string.`
     )
   }
   return v.trim()
-}
-function reqStringWithFallback(
-  src: Record<string, unknown>,
-  key: string,
-  fallbackObj?: Record<string, unknown>,
-  fallbackKey?: string
-): string {
-  const v = src[key]
-  if (typeof v === 'string' && v.trim()) return v.trim()
-  if (fallbackObj && fallbackKey) {
-    const f = fallbackObj[fallbackKey]
-    if (typeof f === 'string' && f.trim()) return f.trim()
-  }
-  throw new Error(
-    `[fireux] runtimeConfig.public.${key} must be a non-empty string.`
-  )
 }
 function optString(
   src: Record<string, unknown>,
@@ -70,15 +54,14 @@ function toStringArray(v: unknown): string[] {
  * - Returns a frozen object with derived flags
  */
 export function useFireUXConfig(): Readonly<FireUXConfig> {
-  // SSR or fallback: build from runtimeConfig
   const pub = (useRuntimeConfig().public ?? {}) as Record<string, unknown>
-  const appSettings = (pub.appSettings ?? {}) as Record<string, unknown>
+  const fireux = (pub.fireux ?? {}) as Record<string, unknown>
 
-  const devMode = Boolean(pub.devMode)
-  const rawRole = reqString(pub, 'role').toLowerCase()
+  const devMode = import.meta.dev
+  const rawRole = reqString(fireux, 'role').toLowerCase()
   if (rawRole !== 'global' && rawRole !== 'tenant') {
     throw new Error(
-      `[fireux] runtimeConfig.public.role must be "global" or "tenant".`
+      `[fireux] runtimeConfig.public.fireux.role must be "global" or "tenant".`
     )
   }
   const role = rawRole as FireUXRole
@@ -86,23 +69,18 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
   const cfg: Readonly<FireUXConfig> = Object.freeze({
     devMode,
     role,
-    ecosystem: reqString(pub, 'ecosystem'),
-    appId: reqStringWithFallback(pub, 'appId', appSettings, 'appId'),
-    appName: reqStringWithFallback(pub, 'appName', appSettings, 'appName'),
-    appShortName: reqStringWithFallback(
-      pub,
-      'appShortName',
-      appSettings,
-      'appShortName'
-    ),
-    modules: toStringArray(pub.modules),
-    appIcon: optString(pub, 'appIcon'),
-    primaryColor: optString(pub, 'primaryColor'),
-    neutralColor: optString(pub, 'neutralColor'),
-    secondaryColor: optString(pub, 'secondaryColor'),
-    centralSignupUrl: optString(pub, 'centralSignupUrl'),
-    globalAppId: optString(pub, 'globalAppId'),
-    developerPin: optString(pub, 'developerPin'),
+    ecosystem: reqString(fireux, 'ecosystem'),
+    appId: reqString(fireux, 'id'),
+    appName: reqString(fireux, 'name'),
+    appShortName: reqString(fireux, 'shortName'),
+    modules: toStringArray(fireux.modules),
+    appIcon: optString(fireux, 'appIcon'),
+    primaryColor: optString(fireux, 'primaryColor'),
+    neutralColor: optString(fireux, 'neutralColor'),
+    secondaryColor: optString(fireux, 'secondaryColor'),
+    centralSignupUrl: optString(fireux, 'centralSignupUrl'),
+    globalAppId: optString(fireux, 'globalAppId'),
+    developerPin: optString(fireux, 'developerPin'),
     isTenant: role === 'tenant',
     isGlobal: role === 'global',
   })
