@@ -23,7 +23,7 @@ pnpm install
 
 ## 4) Configure env
 
-- Create `.env.local` from `templates/env/.env.app.template` and fill values.
+- Create `.env.local` from `templates/.env.app.template` and fill values.
 
 ## 5) Run
 

@@ -35,6 +35,7 @@ pnpm-lock.yaml
 .env
 .env.*
 !.env.*.template # allow the canonical templates while ignoring real env files
+!templates/.env.app.template
 
 # Build output
 dist/

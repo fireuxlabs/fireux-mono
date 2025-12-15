@@ -7,8 +7,7 @@ import { fileURLToPath } from 'node:url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const repoRoot = path.resolve(__dirname, '..', '..')
-const templatesDir = path.join(repoRoot, 'templates', 'env')
-const appTemplate = path.join(templatesDir, '.env.app.template')
+const appTemplate = path.join(repoRoot, 'templates', '.env.app.template')
 
 /**
  * This script checks the current working directory for a .env file
