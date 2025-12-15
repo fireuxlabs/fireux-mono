@@ -23,7 +23,7 @@ pnpm install
 
 ## 4) Configure env
 
-- Copy `.env.example` → `.env.local` and fill Firebase + app IDs.
+- Create `.env.local` from `templates/env/.env.app.template` and fill values.
 
 ## 5) Run
 

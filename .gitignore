@@ -34,7 +34,7 @@ pnpm-lock.yaml
 # Environment variables
 .env
 .env.*
-!.env.example # allow the documented template while ignoring real env files
+!.env.*.template # allow the canonical templates while ignoring real env files
 
 # Build output
 dist/

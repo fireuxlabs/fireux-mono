@@ -6,12 +6,13 @@ import { fileURLToPath } from 'node:url'
 // Resolve repo root based on this script's location
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const repoRoot = path.resolve(__dirname, '..')
-const rootExample = path.join(repoRoot, '.env.example')
+const repoRoot = path.resolve(__dirname, '..', '..')
+const templatesDir = path.join(repoRoot, 'templates', 'env')
+const appTemplate = path.join(templatesDir, '.env.app.template')
 
 /**
  * This script checks the current working directory for a .env file
- * and compares its keys against the repo root .env.example.
+ * and compares its keys against the canonical env templates.
  *
  * Usage from an app folder: `node ../../scripts/check-env.mjs`
  */
@@ -31,8 +32,8 @@ function parseEnvFile(file) {
   return keys
 }
 
-function listExampleKeys(exampleFile) {
-  const content = fs.readFileSync(exampleFile, 'utf8')
+function listTemplateKeys(templateFile) {
+  const content = fs.readFileSync(templateFile, 'utf8')
   const keys = []
   for (const line of content.split(/\r?\n/)) {
     const t = line.trim()
@@ -44,14 +45,18 @@ function listExampleKeys(exampleFile) {
   return keys
 }
 
+function uniqueKeys(keys) {
+  return [...new Set(keys)].sort()
+}
+
 function main() {
-  if (!fs.existsSync(rootExample)) {
-    console.error('Root .env.example not found at', rootExample)
+  if (!fs.existsSync(appTemplate)) {
+    console.error('Env template not found at', appTemplate)
     process.exit(1)
   }
 
   const appEnv = parseEnvFile(path.join(process.cwd(), '.env'))
-  const expected = listExampleKeys(rootExample)
+  const expected = uniqueKeys([...listTemplateKeys(appTemplate)])
 
   const missing = expected.filter((k) => !(k in appEnv))
 
@@ -59,7 +64,7 @@ function main() {
     console.error('\n[env] Missing keys in .env for', process.cwd())
     for (const k of missing) console.error('  -', k)
     console.error(
-      '\nHint: copy keys from repo .env.example and fill in values.'
+      `\nHint: start from ${path.relative(repoRoot, appTemplate)} then fill in values.`
     )
     process.exit(2)
   }
