@@ -1,0 +1,20 @@
+{
+  "name": "core-sandbox",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi dev --port 3099",
+    "build": "nuxi build",
+    "preview": "nuxi preview",
+    "postinstall": "nuxi prepare",
+    "clean": "rimraf .nuxt dist"
+  },
+  "dependencies": {
+    "nuxt": "4.1.2",
+    "fireux-core": "workspace:*",
+    "fireux-sandbox": "workspace:*"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1"
+  }
+}

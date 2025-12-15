@@ -1,7 +1,16 @@
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
-import { configureTenantLayouts } from 'fireux-core/config/base/tenant-layer'
+import { addComponentsDir } from '@nuxt/kit'
+import { existsSync } from 'node:fs'
 
 export function configureLayouts(resolver: Resolver, nuxt: Nuxt) {
-  configureTenantLayouts(resolver, nuxt)
+  void nuxt
+  const dir = resolver.resolve('./runtime/layouts')
+  if (!existsSync(dir)) return
+  addComponentsDir({
+    path: dir,
+    pattern: '*.vue',
+    global: true,
+    pathPrefix: false,
+  })
 }

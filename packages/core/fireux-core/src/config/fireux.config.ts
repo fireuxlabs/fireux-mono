@@ -1,4 +1,3 @@
-// packages/core/fireux-core/src/config/defineFireuxConfig.ts
 import type { NuxtConfig } from 'nuxt/schema'
 
 import { configRuntime } from './runtime'
@@ -20,6 +19,7 @@ export type FireuxAppConfig = {
 export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const nuxt: NuxtConfig = {}
 
+  // Core invariants
   nuxt.srcDir = 'app'
   nuxt.imports = { dirs: ['composables/**', 'utils/**'] }
 
@@ -28,7 +28,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     '@nuxt/icon',
     '@nuxt/content',
     'fireux-core',
-    `fireux-${app.ecosystem}`,
+    `fireux-${app.ecosystem}`, // ecosystem module is mandatory
   ]
 
   if (app.modules?.length) nuxt.modules.push(...app.modules)
@@ -44,12 +44,13 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     modules: (nuxt.modules || []) as readonly string[],
   })
 
+  // PWA: DO NOT read colors from env. Use stable defaults until we add a resolver.
   configPwa(nuxt, {
     name: app.name,
     shortName: app.shortName,
     description: app.description,
-    themeColor: (process.env.APP_THEME_COLOR as string) || '#000000',
-    backgroundColor: (process.env.APP_BG_COLOR as string) || '#ffffff',
+    themeColor: '#000000',
+    backgroundColor: '#ffffff',
     lang: 'en',
   })
 

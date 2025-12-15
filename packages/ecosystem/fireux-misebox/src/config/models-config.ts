@@ -1,1 +1,5 @@
-export { configureModels } from 'fireux-core/config/base/models-config'
+import type { Resolver } from '@nuxt/kit'
+
+export function configureModels(_resolver: Resolver) {
+	// no-op: models are explicit imports; keep only if we emit global .d.ts later
+}

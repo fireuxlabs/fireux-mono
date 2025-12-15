@@ -11,18 +11,36 @@
       "import": "./src/module.ts",
       "require": "./src/module.ts"
     },
+    "./config/fireux/*": {
+      "types": "./src/config/fireux/*.ts",
+      "import": "./src/config/fireux/*.ts",
+      "require": "./src/config/fireux/*.ts"
+    },
+    "./config/schemas/*": {
+      "types": "./src/config/schemas/*.ts",
+      "import": "./src/config/schemas/*.ts",
+      "require": "./src/config/schemas/*.ts"
+    },
     "./config/*": {
       "types": "./src/config/*.ts",
-      "import": "./src/config/*.ts"
+      "import": "./src/config/*.ts",
+      "require": "./src/config/*.ts"
     },
     "./runtime/*": {
       "types": "./src/runtime/*.ts",
-      "import": "./src/runtime/*.ts"
+      "import": "./src/runtime/*.ts",
+      "require": "./src/runtime/*.ts"
     },
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
+      "config/fireux/*": [
+        "src/config/fireux/*.ts"
+      ],
+      "config/schemas/*": [
+        "src/config/schemas/*.ts"
+      ],
       "config/*": [
         "src/config/*.ts"
       ],
@@ -49,17 +67,17 @@
     "h3": "^1.15.4"
   },
   "peerDependencies": {
-    "nuxt": "^4.1.0",
     "@nuxt/kit": "^4.1.0",
     "@nuxt/schema": "^4.1.0",
-    "vue": "^3.5.20",
-    "vue-router": "^4.5.0",
-    "vuefire": "^3.2.2",
+    "@nuxt/ui": ">=3 <5",
+    "@vueuse/core": "*",
     "firebase": "^11.10.0",
     "firebase-admin": "*",
+    "nuxt": "^4.1.0",
     "stripe": "*",
-    "@vueuse/core": "*",
-    "@nuxt/ui": ">=3 <5"
+    "vue": "^3.5.20",
+    "vue-router": "^4.5.0",
+    "vuefire": "^3.2.2"
   },
   "peerDependenciesMeta": {
     "firebase-admin": {
@@ -71,9 +89,10 @@
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
+    "glob": "^11.0.3",
     "mkdist": "^1.5.3",
     "rimraf": "^6.0.1",
-    "glob": "^11.0.3"
+    "sass": "^1.96.0"
   },
   "type": "module"
 }

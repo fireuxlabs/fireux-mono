@@ -1,1 +1,3 @@
-export { FIREUX_FIREBASE_PROJECT } from 'fireux-core/config/fireux/firebase-projects'
+import { ecosystemConfig } from './ecosystem.config'
+
+export const FIREUX_FIREBASE_PROJECT = ecosystemConfig.firebase
