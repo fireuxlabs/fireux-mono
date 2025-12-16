@@ -32,8 +32,9 @@
     "typecheck:apps": "pnpm -r --filter './projects/*/*' exec nuxi typecheck",
     "typecheck:packages": "pnpm -r --filter './packages/*/*' exec tsc --noEmit",
     "gitsave": "bash ./gitsave.sh",
-    "guard:core-ecosystem-config": "node ./tools/guards/guard-no-core-ecosystem-config.mjs",
-    "lint": "pnpm guard:core-ecosystem-config && eslint . --ext .js,.ts,.vue",
+    "lint": "eslint . --ext .js,.ts,.vue",
+    "lint:envs": "node ./packages/scripts/lint-app-envs.mjs",
+    "guard": "node guard/guard.mjs",
     "format": "prettier --write .",
     "typecheck": "pnpm typecheck:packages && pnpm typecheck:apps"
   },

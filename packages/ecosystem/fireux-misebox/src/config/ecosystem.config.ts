@@ -1,4 +1,4 @@
-import type { FireuxEcosystemConfig } from 'fireux-core/config/ecosystem'
+import type { FireuxEcosystemConfig } from 'fireux-core/types/ecosystem'
 
 export const ecosystemConfig = {
   id: 'fireux-misebox',

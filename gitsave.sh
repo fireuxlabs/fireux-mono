@@ -21,6 +21,9 @@ if [[ "$current_branch" != "main" ]]; then
   echo "Switch to 'main' if you intend to keep a single-branch workflow." >&2
 fi
 
+# Guard must pass before we save.
+pnpm guard
+
 # Stage everything, including deletions.
 git add -A
 

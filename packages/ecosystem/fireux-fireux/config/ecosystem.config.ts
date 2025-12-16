@@ -1,9 +1,9 @@
-import type { FireuxEcosystemConfig } from 'fireux-core/config/ecosystem'
+import type { FireuxEcosystemConfig } from 'fireux-core/types/ecosystem'
 
-export const ecosystemConfig = {
+export const ecosystemConfig: FireuxEcosystemConfig = {
   id: 'fireux',
   name: 'FireUX',
-  description: 'FireUX core platform ecosystem',
+  description: 'Core FireUX ecosystem and Firebase project.',
 
   firebase: {
     apiKey: 'AIzaSyBXQzbWwcOCMyBEVn1plDVJAofmalenLM4',
@@ -12,4 +12,4 @@ export const ecosystemConfig = {
     storageBucket: 'fireux-2005.firebasestorage.app',
     messagingSenderId: '549102750204',
   },
-} as const satisfies FireuxEcosystemConfig
+}

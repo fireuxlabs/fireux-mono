@@ -7,7 +7,6 @@ import { configureAssets } from './config/assets-config'
 import { configureRuntime } from './config/runtime-config'
 import { configureComposables } from './config/composables-config'
 import { configurePages } from './config/pages-config'
-import { primeCleanboxFirebaseEnv } from './config/firebase-env'
 import { CLEANBOX_FIREBASE_PROJECT } from './config/firebase-project'
 
 export interface ModuleOptions {
@@ -25,8 +24,6 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-
-    primeCleanboxFirebaseEnv()
 
     // Core and any extensions are provided by the app via createFireuxConfig
 
