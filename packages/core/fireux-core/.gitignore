@@ -1,3 +1,0 @@
-# Prevent accidental JS artifacts in TS sources
-src/**/*.js
-src/**/*.js.map

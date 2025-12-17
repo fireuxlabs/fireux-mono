@@ -1,5 +1,5 @@
 import { defineNuxtConfig } from 'nuxt/config'
-import { defineFireuxConfig } from 'fireux-core/config/fireux.config'
+import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
 export default defineNuxtConfig(
   defineFireuxConfig({

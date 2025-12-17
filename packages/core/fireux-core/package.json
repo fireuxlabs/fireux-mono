@@ -16,15 +16,15 @@
       "import": "./src/types/*.ts",
       "require": "./src/types/*.ts"
     },
-    "./config/fireux/*": {
-      "types": "./src/config/fireux/*.ts",
-      "import": "./src/config/fireux/*.ts",
-      "require": "./src/config/fireux/*.ts"
+    "./config/app/*": {
+      "types": "./src/config/app/*.ts",
+      "import": "./src/config/app/*.ts",
+      "require": "./src/config/app/*.ts"
     },
-    "./config/*": {
-      "types": "./src/config/*.ts",
-      "import": "./src/config/*.ts",
-      "require": "./src/config/*.ts"
+    "./config/module/*": {
+      "types": "./src/config/module/*.ts",
+      "import": "./src/config/module/*.ts",
+      "require": "./src/config/module/*.ts"
     },
     "./runtime/*": {
       "types": "./src/runtime/*.ts",
@@ -38,11 +38,11 @@
       "types/*": [
         "src/types/*.ts"
       ],
-      "config/fireux/*": [
-        "src/config/fireux/*.ts"
+      "config/app/*": [
+        "src/config/app/*.ts"
       ],
-      "config/*": [
-        "src/config/*.ts"
+      "config/module/*": [
+        "src/config/module/*.ts"
       ],
       "runtime/*": [
         "src/runtime/*.ts"

@@ -1,6 +1,0 @@
-# Nuxt
-.nuxt/
-# Node
-node_modules/
-# Env
-.env

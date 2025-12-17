@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+// FILE: scripts/guard.mjs
+//
+// FireUX Guard — single entrypoint
+// Collects ALL violations across all guard groups, then exits once.
+//
+// IMPORTANT:
+// - Individual guards MUST NOT call process.exit(1).
+// - Individual guards SHOULD throw Error (with a helpful message) when they fail.
+// - This runner catches, aggregates, prints, then exits with code 1.
+
+console.log('[guard] 🔎 Running FireUX guard checks...')
+
+import process from 'node:process'
+
+import { run as runRoot } from './guards/root.mjs'
+import { run as runCore } from './guards/core.mjs'
+import { run as runEcosystem } from './guards/ecosystem.mjs'
+import { run as runExtensions } from './guards/extensions.mjs'
+import { run as runProjects } from './guards/projects.mjs'
+
+const repoRoot = process.cwd()
+
+const guards = [
+  { key: 'root', run: runRoot },
+  { key: 'core', run: runCore },
+  { key: 'ecosystem', run: runEcosystem },
+  { key: 'extensions', run: runExtensions },
+  { key: 'projects', run: runProjects },
+]
+
+const errors = []
+
+for (const g of guards) {
+  try {
+    await g.run({ repoRoot })
+  } catch (err) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : typeof err === 'string'
+          ? err
+          : JSON.stringify(err, null, 2)
+
+    errors.push({ guard: g.key, message })
+  }
+}
+
+if (errors.length) {
+  console.error('\n[guard] ❌ Guard violations detected:\n')
+
+  for (const e of errors) {
+    console.error(`--- ${e.guard.toUpperCase()} ---`)
+    console.error(e.message.trimEnd())
+    console.error('')
+  }
+
+  console.error(`[guard] Fix the violations above, then re-run:\n  pnpm guard\n`)
+  process.exit(1)
+}
+
+console.log('[guard] ✅ All guards passed')
+console.log('[guard] 🎯 Guard completed successfully')

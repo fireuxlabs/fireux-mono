@@ -1,9 +1,0 @@
-dist/
-node_modules/
-# Ignore secrets
-config/service-account.json
-
-# Prevent accidental JS artifacts in TS sources
-src/**/*.js
-src/**/*.js.map
-src/**/*.d.ts

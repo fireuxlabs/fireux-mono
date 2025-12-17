@@ -11,3 +11,9 @@ artifacts/
 # Ignore package manager caches and lock artifacts for scans
 **/.pnpm-store/
 **/.cache/
+
+# Guard system (must not be edited by Copilot)
+
+/scripts/guard.mjs
+/scripts/clean.mjs
+/scripts/gitsave.sh

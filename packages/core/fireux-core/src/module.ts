@@ -1,25 +1,36 @@
-import { defineNuxtModule } from '@nuxt/kit'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
 
-import { ecosystemConfig } from '../config/ecosystem.config'
+import { configureComponents } from './config/module/components-config'
+import { configureComposables } from './config/module/composables-config'
+import { configureLayouts } from './config/module/layouts-config'
+import { configurePages } from './config/module/pages-config'
+import { configurePlugins } from './config/module/plugins-config'
+import { configureRuntime } from './config/module/runtime-config'
+import { configureServer } from './config/module/server-config'
+import { configureModels } from './config/module/models-config'
 
 export default defineNuxtModule({
   meta: {
-    name: 'fireux-fireux',
+    name: 'fireux-core',
     version: '0.1.0',
-    configKey: 'fireuxFireux',
+    configKey: 'fireuxCore',
   },
 
   setup(_options, nuxt) {
-    // Token so you can see the ecosystem module definitely loaded
-    console.info('[fireux-fireux] hello')
+    console.info('[fireux-core] hello')
 
-    // The ecosystem module owns ecosystem-level config.
-    // Core reads this from `runtimeConfig.public.ecosystem`.
-    const rc = ((nuxt.options.runtimeConfig ||= {}) as any)
-    const pub = ((rc.public ||= {}) as any)
+    const resolver = createResolver(import.meta.url)
 
-    pub.ecosystem = ecosystemConfig
+    // Mount core runtime as a Nuxt layer and wire runtime conveniences.
+    configurePages(resolver, nuxt)
+    configureComponents(resolver)
+    configureComposables(resolver)
+    configureLayouts(resolver, nuxt)
+    configurePlugins(resolver)
+    configureServer(resolver)
+    configureModels(resolver)
 
-    console.info('[fireux-fireux] ecosystem.id =', ecosystemConfig.id)
+    // A small namespace marker (no ecosystem-specific config here).
+    configureRuntime(nuxt, 'core')
   },
 })

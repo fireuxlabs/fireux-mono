@@ -1,4 +1,0 @@
-dist/
-node_modules/
-# Ignore secrets
-config/service-account.json
