@@ -2,17 +2,29 @@
 set -euo pipefail
 
 usage() {
-  echo "Usage: gitsave [\"commit message\"]" >&2
+  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
-  echo "If no message is provided, one will be generated from changed files." >&2
+  echo "Defaults: --no-guard --no-clean" >&2
 }
 
-commit_message="$*"
+commit_message=""
+run_guard=false
+run_clean=false
 
-if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-  usage
-  exit 0
-fi
+# Parse args
+args=()
+for a in "$@"; do
+  case "$a" in
+    --guard) run_guard=true ;;
+    --no-guard) run_guard=false ;;
+    --clean) run_clean=true ;;
+    --no-clean) run_clean=false ;;
+    -h|--help) usage; exit 0 ;;
+    *) args+=("$a") ;;
+  esac
+done
+
+commit_message="${args[*]:-}"
 
 # Ensure we are inside a Git repository.
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -26,11 +38,17 @@ if [[ "$current_branch" != "main" ]]; then
   echo "Switch to 'main' if you intend to keep a single-branch workflow." >&2
 fi
 
-# Guard must pass before we save.
-# Root guard is the single entrypoint and may cascade into other guards.
-if ! pnpm -s guard; then
-  echo "Guard failed. Fix the issues above before saving." >&2
-  exit 1
+# Optional clean
+if $run_clean; then
+  pnpm -s clean || true
+fi
+
+# Optional guard
+if $run_guard; then
+  if ! pnpm -s guard; then
+    echo "Guard failed. Fix the issues above before saving (or run with --no-guard)." >&2
+    exit 1
+  fi
 fi
 
 # Stage everything, including deletions.
@@ -72,5 +90,4 @@ fi
 # Push to the matching branch on origin.
 git push origin "$current_branch"
 
-# Provide a friendly summary.
 echo "Saved: committed to $current_branch and pushed to origin."

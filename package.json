@@ -12,88 +12,47 @@
     "test-*"
   ],
   "scripts": {
-    "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
     "dev:fireux": "pnpm --filter ./projects/fireux/fireux-app dev",
     "dev:misebox": "pnpm --filter ./projects/misebox/misebox-app dev",
-    "dev:niederhorn": "pnpm --filter ./projects/misebox/niederhorn dev",
     "dev:cleanbox": "pnpm --filter ./projects/cleanbox/cleanbox-app dev",
+    "dev:niederhorn": "pnpm --filter ./projects/misebox/niederhorn dev",
     "dev:richies": "pnpm --filter ./projects/cleanbox/richies-reinigung dev",
     "dev:tennant": "pnpm --filter ./projects/fireux/tennant dev",
+    "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
     "dev:all-extended": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\" \"pnpm dev:niederhorn\" \"pnpm dev:richies\" \"pnpm dev:tennant\"",
+
     "build:all": "pnpm -r --parallel --filter './projects/*/*' build",
-    "build:packages": "pnpm -r --filter './packages/*/*' build",
-    "tsc:clean": "tsc -b --clean",
-    "tsc:check": "tsc -b --pretty",
     "typecheck:apps": "pnpm -r --filter './projects/*/*' exec nuxi typecheck",
     "typecheck:packages": "pnpm -r --filter './packages/*/*' exec tsc --noEmit",
-    "gitsave": "bash scripts/gitsave.sh",
-    "lint": "eslint . --ext .js,.ts,.vue",
+    "typecheck": "pnpm typecheck:packages && pnpm typecheck:apps",
+
+    "lint": "eslint .",
+    "format": "prettier --write .",
+
     "guard": "node scripts/guard.mjs",
     "clean": "node scripts/clean.mjs",
-    "format": "prettier --write .",
-    "typecheck": "pnpm typecheck:packages && pnpm typecheck:apps"
+    "gitsave": "bash scripts/gitsave.sh"
   },
   "engines": {
     "node": ">=20.11 <23",
     "pnpm": ">=10"
   },
   "devDependencies": {
-    "@nuxt/content": "^3.6.3",
-    "@nuxt/devtools": "^2.6.3",
-    "@nuxt/fonts": "^0.11.4",
-    "@nuxt/icon": "^2.0.0",
-    "@nuxt/kit": "4.1.2",
-    "@nuxt/module-builder": "^0.5.5",
-    "@nuxt/schema": "4.1.2",
-    "@nuxt/ui": "^4.0.0-alpha.2",
-    "@nuxtjs/color-mode": "^3.5.2",
-    "@tsconfig/nuxt": "^2.0.3",
-    "@types/node": "^20.19.13",
-    "@typescript-eslint/eslint-plugin": "^8.41.0",
-    "@typescript-eslint/parser": "^8.41.0",
-    "autoprefixer": "^10.4.20",
     "concurrently": "^9.2.0",
-    "esbuild-register": "^3.5.0",
     "eslint": "^9.28.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-vue": "^10.2.0",
-    "firebase-admin": "^12.6.0",
-    "glob": "^11.0.3",
-    "h3": "^1.15.4",
-    "image-size": "^1.1.1",
-    "mkdist": "^1.5.3",
-    "nuxt": "4.1.2",
-    "nuxt-vuefire": "^1.0.5",
-    "postcss": "^8.4.38",
-    "rimraf": "^6.0.1",
-    "sass-embedded": "^1.92.1",
-    "sharp": "^0.34.5",
-    "tailwindcss": "^4.1.12",
-    "tsx": "^4.19.1",
-    "typescript": "^5.9.2",
-    "vite": "7.1.5",
-    "vite-plugin-pwa": "^1.0.3",
-    "vue-eslint-parser": "^10.2.0",
-    "vue-tsc": "^3.0.6"
+    "prettier": "^3.0.0",
+    "typescript": "^5.9.2"
   },
   "pnpm": {
     "overrides": {
       "nuxt": "4.1.2",
       "@nuxt/kit": "4.1.2",
       "@nuxt/schema": "4.1.2",
-      "nitro": "2.12.6",
-      "@nuxt/ui": "^4.0.0-alpha.2",
       "vue": "3.5.20",
-      "vuefire": "3.2.2",
       "firebase": "11.10.0",
-      "@nuxt/icon": "2.0.0",
-      "@vite-pwa/nuxt": "1.0.4",
-      "nuxt-vuefire": "^1.1.0",
-      "tailwindcss": "^4.0.0",
-      "postcss": "^8.4.38",
-      "autoprefixer": "^10.4.20"
+      "vuefire": "3.2.2",
+      "nuxt-vuefire": "^1.1.0"
     }
   },
-  "simple-git-hooks": {},
   "packageManager": "pnpm@10.12.1"
 }

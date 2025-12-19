@@ -1,57 +1,33 @@
 {
   "name": "fireux-core",
   "version": "0.1.0",
-  "description": "FireUX Core - A comprehensive Nuxt 3 module for Firebase integration",
   "private": true,
+  "type": "module",
   "main": "./src/module.ts",
   "types": "./src/module.ts",
   "exports": {
-    ".": {
-      "types": "./src/module.ts",
-      "import": "./src/module.ts",
-      "require": "./src/module.ts"
-    },
-    "./types/*": {
-      "types": "./src/types/*.ts",
-      "import": "./src/types/*.ts",
-      "require": "./src/types/*.ts"
-    },
-    "./config/app/*": {
-      "types": "./src/config/app/*.ts",
-      "import": "./src/config/app/*.ts",
-      "require": "./src/config/app/*.ts"
-    },
-    "./config/module/*": {
-      "types": "./src/config/module/*.ts",
-      "import": "./src/config/module/*.ts",
-      "require": "./src/config/module/*.ts"
-    },
-    "./runtime/*": {
-      "types": "./src/runtime/*.ts",
-      "import": "./src/runtime/*.ts",
-      "require": "./src/runtime/*.ts"
-    },
+    ".": "./src/module.ts",
+
+    "./types/*": "./src/types/*.ts",
+    "./config/app/*": "./src/config/app/*.ts",
+    "./config/module/*": "./src/config/module/*.ts",
+
+    "./runtime": "./src/runtime/index.ts",
+    "./runtime/*": "./src/runtime/*",
+
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
-      "types/*": [
-        "src/types/*.ts"
-      ],
-      "config/app/*": [
-        "src/config/app/*.ts"
-      ],
-      "config/module/*": [
-        "src/config/module/*.ts"
-      ],
-      "runtime/*": [
-        "src/runtime/*.ts"
-      ]
+      "types/*": ["src/types/*.ts"],
+      "config/app/*": ["src/config/app/*.ts"],
+      "config/module/*": ["src/config/module/*.ts"],
+
+      "runtime": ["src/runtime/index.ts"],
+      "runtime/*": ["src/runtime/*"]
     }
   },
-  "files": [
-    "src/**/*"
-  ],
+  "files": ["src/**/*"],
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
@@ -80,12 +56,8 @@
     "vuefire": "^3.2.2"
   },
   "peerDependenciesMeta": {
-    "firebase-admin": {
-      "optional": true
-    },
-    "stripe": {
-      "optional": true
-    }
+    "firebase-admin": { "optional": true },
+    "stripe": { "optional": true }
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
@@ -93,6 +65,5 @@
     "mkdist": "^1.5.3",
     "rimraf": "^6.0.1",
     "sass": "^1.96.0"
-  },
-  "type": "module"
+  }
 }

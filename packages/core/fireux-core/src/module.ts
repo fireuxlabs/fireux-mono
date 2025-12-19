@@ -1,36 +1,33 @@
-import { createResolver, defineNuxtModule } from '@nuxt/kit'
+// FILE: packages/ecosystem/fireux-fireux/src/module.ts
+import { defineNuxtModule } from '@nuxt/kit'
 
-import { configureComponents } from './config/module/components-config'
-import { configureComposables } from './config/module/composables-config'
-import { configureLayouts } from './config/module/layouts-config'
-import { configurePages } from './config/module/pages-config'
-import { configurePlugins } from './config/module/plugins-config'
-import { configureRuntime } from './config/module/runtime-config'
-import { configureServer } from './config/module/server-config'
-import { configureModels } from './config/module/models-config'
+import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
+import { ecosystemConfig } from './config/firebase/ecosystem.config'
 
 export default defineNuxtModule({
   meta: {
-    name: 'fireux-core',
+    name: 'fireux-fireux',
     version: '0.1.0',
-    configKey: 'fireuxCore',
   },
 
   setup(_options, nuxt) {
-    console.info('[fireux-core] hello')
+    // ✅ log ecosystem config immediately (before anything else can crash later)
+    // eslint-disable-next-line no-console
+    console.log('[fireux-fireux] ecosystemConfig', ecosystemConfig)
 
-    const resolver = createResolver(import.meta.url)
+    // ✅ write into runtime using the NEW shape
+    setRuntimeFirebaseEcosystem(nuxt as any, {
+      id: ecosystemConfig.id,
+      name: ecosystemConfig.name,
+      description: ecosystemConfig.description,
+      firebase: ecosystemConfig.firebase,
+    })
 
-    // Mount core runtime as a Nuxt layer and wire runtime conveniences.
-    configurePages(resolver, nuxt)
-    configureComponents(resolver)
-    configureComposables(resolver)
-    configureLayouts(resolver, nuxt)
-    configurePlugins(resolver)
-    configureServer(resolver)
-    configureModels(resolver)
-
-    // A small namespace marker (no ecosystem-specific config here).
-    configureRuntime(nuxt, 'core')
+    // ✅ log what we actually wrote
+    // eslint-disable-next-line no-console
+    console.log(
+      '[fireux-fireux] runtime.public.firebaseEcosystem',
+      (nuxt.options.runtimeConfig as any)?.public?.firebaseEcosystem
+    )
   },
 })

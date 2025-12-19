@@ -1,25 +1,7 @@
 // FILE: scripts/guards/core.mjs
-// FireUX Core Package Guard
-//
-// Enforces the canonical Level-1 shape for packages/core/*
-//
-// Called only by scripts/guard.mjs.
-// MUST NOT be run directly by humans or tools.
-//
-// Policy (opinionated):
-// - Core is the reference shape.
-// - No “optional system”. If it exists at L1, it is either REQUIRED or it is a VIOLATION.
-// - Build outputs (dist) must never exist in-repo at guard time.
-// - node_modules and tsconfig.tsbuildinfo are tolerated because they appear locally,
-//   but they are not part of the authored structure (and are ignored by git).
-
 import { readdirSync, existsSync } from 'node:fs'
 import path from 'node:path'
 
-/**
- * Canonical Level-1 shape for core packages.
- * This is the authored structure we want everywhere.
- */
 const REQUIRED_L1 = [
   'package.json',
   'registry.json',
@@ -28,10 +10,6 @@ const REQUIRED_L1 = [
   'tsconfig.json',
 ]
 
-/**
- * Local-only noise we tolerate (not authored, never relied on).
- * IMPORTANT: dist is NOT allowed.
- */
 const ALLOWED_NOISE = ['node_modules', 'tsconfig.tsbuildinfo', '.DS_Store']
 
 export async function run(ctx) {
@@ -55,9 +33,7 @@ export async function run(ctx) {
     if (v) violations.push(v)
   }
 
-  if (violations.length) {
-    throw new Error(violations.join('\n\n'))
-  }
+  if (violations.length) throw new Error(violations.join('\n\n'))
 
   console.log('[guard] ✅ core packages valid')
 }

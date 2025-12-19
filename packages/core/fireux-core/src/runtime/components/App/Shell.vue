@@ -1,4 +1,4 @@
-<!-- packages/core/fireux-core/src/runtime/components/App/FireuxAppShell.vue -->
+<!-- FILE: packages/core/fireux-core/src/runtime/components/App/Shell.vue -->
 <template>
   <UApp>
     <!-- Toast target -->

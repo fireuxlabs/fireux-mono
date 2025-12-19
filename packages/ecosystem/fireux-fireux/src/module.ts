@@ -1,14 +1,20 @@
+// FILE: packages/ecosystem/fireux-fireux/src/module.ts
 import { defineNuxtModule } from '@nuxt/kit'
+import { ecosystemConfig } from './config/firebase/ecosystem.config'
+import { setRuntimePublicEcosystem } from 'fireux-core/config/app/runtime'
 
 export default defineNuxtModule({
   meta: {
     name: 'fireux-fireux',
     version: '0.1.0',
-    configKey: 'fireuxFireux',
   },
 
-  setup() {
-    // Token log so we can see the ecosystem module loaded
-    console.info('[fireux-fireux] hello')
+  setup(_options, nuxt) {
+    setRuntimePublicEcosystem(nuxt.options as any, {
+      id: ecosystemConfig.id,
+      name: ecosystemConfig.name,
+      description: ecosystemConfig.description,
+      firebase: ecosystemConfig.firebase,
+    })
   },
 })
