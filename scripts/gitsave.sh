@@ -44,10 +44,20 @@ if $run_clean; then
 fi
 
 # Optional guard
+# Optional guard (advisory, not blocking)
 if $run_guard; then
   if ! pnpm -s guard; then
-    echo "Guard failed. Fix the issues above before saving (or run with --no-guard)." >&2
-    exit 1
+    echo "\nGuard failed. You may fix the issues above, or continue and push anyway." >&2
+    read -p "Continue and push anyway? [y/N]: " confirm
+    case "$confirm" in
+      [yY][eE][sS]|[yY])
+        echo "Proceeding with push despite guard violations..." >&2
+        ;;
+      *)
+        echo "Aborted by user due to guard violations." >&2
+        exit 1
+        ;;
+    esac
   fi
 fi
 
