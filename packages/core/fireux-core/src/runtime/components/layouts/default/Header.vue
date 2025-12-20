@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { useDefaultNav } from 'fireux-core/runtime/composables/fireux/app/routing/presets.ts'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth.ts'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser.ts'
@@ -60,9 +60,20 @@ defineOptions({ name: 'LayoutsDefaultHeader' })
 const { desktop, mobile } = useDefaultNav()
 
 /** Auth + Core User */
-const { signOutUser } = useAuth()
+let signOutUser: () => unknown = () => undefined
 
-const { currentUser: coreUser, cta } = useUser()
+const coreUser = ref<any | null>(null)
+const cta = ref<any>({ key: 'avatar', to: '/', label: '' })
+
+if (import.meta.client) {
+  signOutUser = useAuth().signOutUser
+
+  const userState = useUser()
+  watchEffect(() => {
+    coreUser.value = userState.currentUser.value
+    cta.value = userState.cta.value
+  })
+}
 
 const activeDisplayName = computed(() => coreUser.value?.display_name || '')
 const activeAvatar = computed(() => coreUser.value?.avatar || '')

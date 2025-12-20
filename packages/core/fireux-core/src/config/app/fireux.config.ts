@@ -68,7 +68,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
   nuxt.css = [
     'fireux-core/runtime/assets/styles/main.css',
-    'fireux-core/runtime/assets/styles/main.scss',
   ]
 
   const envDomain = reqEnv('APP_DOMAIN')
@@ -103,7 +102,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       shortName: app.shortName,
       description: app.description,
       themeColor: '#000000',
-      backgroundColor: '#ffffff',
+      backgroundColor: '#000000',
       lang: 'en',
     })
   }
