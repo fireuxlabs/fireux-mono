@@ -1,21 +1,35 @@
-// FILE: packages/core/fireux-core/src/runtime/plugins/firebase.server.ts
+// FILE: packages/core/fireux-core/src/runtime/plugins/firebase.client.ts
 import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 import { getApps, initializeApp } from 'firebase/app'
 
 export default defineNuxtPlugin(() => {
-  const config = useRuntimeConfig() as any
+  const rc = useRuntimeConfig() as any
 
-  const ecosystem = config.public?.firebaseEcosystem?.firebase
-  const firebaseApp = config.public?.firebaseApp
+  const ecosystem = rc.public?.firebaseEcosystem?.firebase
+  const firebaseApp = rc.public?.firebaseApp
 
-  if (!ecosystem?.apiKey) return
-  if (!firebaseApp?.appId) return
+  const apiKey = ecosystem?.apiKey
+  const appId = firebaseApp?.appId
+
+  // If we can't build a valid config, do nothing.
+  if (!apiKey || !appId) return
+
+  // Already initialised
   if (getApps().length) return
 
-  // SSR needs DEFAULT app too (measurementId is harmless to include or omit)
   initializeApp({
-    ...ecosystem,
+    apiKey: ecosystem.apiKey,
+    authDomain: ecosystem.authDomain,
+    projectId: ecosystem.projectId,
+    storageBucket: ecosystem.storageBucket,
+    messagingSenderId: ecosystem.messagingSenderId,
     appId: firebaseApp.appId,
     measurementId: firebaseApp.measurementId,
   })
+
+  // Optional: confirm it ran (dev only)
+  if (import.meta.dev) {
+    // eslint-disable-next-line no-console
+    console.log('[fireux] firebase web app initialised', { appId })
+  }
 })

@@ -62,7 +62,7 @@ const { desktop, mobile } = useDefaultNav()
 /** Auth + Core User */
 const { signOutUser } = useAuth()
 
-const { currentUser: coreUser, cta, pillProps } = useUser()
+const { currentUser: coreUser, cta } = useUser()
 
 const activeDisplayName = computed(() => coreUser.value?.display_name || '')
 const activeAvatar = computed(() => coreUser.value?.avatar || '')
@@ -80,9 +80,7 @@ const avatarSrc = computed(() => {
   const trimmed = typeof src === 'string' ? src.trim() : ''
   return trimmed || undefined
 })
-const initials = computed(
-  () => pillProps(coreUser.value ?? null).initials ?? 'A'
-)
+const initials = computed(() => 'A')
 
 /** Avatar dropdown */
 const avatarMenuItems = computed(() => [
