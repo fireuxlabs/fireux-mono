@@ -9,7 +9,7 @@ import { configureAssets } from './config/assets-config'
 import { configureRuntime } from './config/runtime-config'
 import { configureComposables } from './config/composables-config'
 import { configurePages } from './config/pages-config'
-import { ecosystemConfig } from './config/ecosystem.config'
+import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { firebaseEcosystem } from './config/firebase-ecosystem'
 
 export interface ModuleOptions {
