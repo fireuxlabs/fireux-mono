@@ -1,13 +1,8 @@
 <template>
-  <pre v-if="users">{{ users }}</pre>
-  <pre v-else>Loading…</pre>
+  <AppShell />
+  <!-- Path-prefixed auto-import: components/App/Shell.vue -->
 </template>
 
 <script setup lang="ts">
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-
-const { firestoreFetchCollection } = useFirestoreRead()
-
-// 🔑 THIS is the test
-const users = firestoreFetchCollection<any>('users')
+// No local logic; all behavior lives in core shell
 </script>

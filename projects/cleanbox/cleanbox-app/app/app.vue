@@ -1,6 +1,6 @@
 <template>
-  <AppFireuxAppShell />
-  <!-- Path-prefixed auto-import: components/app/FireuxAppShell.vue -->
+  <AppShell />
+  <!-- Path-prefixed auto-import: components/App/Shell.vue -->
 </template>
 
 <script setup lang="ts">

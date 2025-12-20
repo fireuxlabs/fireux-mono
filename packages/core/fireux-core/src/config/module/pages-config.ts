@@ -19,6 +19,7 @@ export function configurePages(resolver: Resolver, nuxt: Nuxt) {
   const already = ext.some((entry) =>
     Array.isArray(entry) ? entry[0] === runtimeDir : entry === runtimeDir
   )
+
   if (!already) {
     ext.push([
       runtimeDir,

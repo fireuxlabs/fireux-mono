@@ -2,12 +2,9 @@
 import type { NuxtConfig } from 'nuxt/schema'
 
 import { setRuntime } from './runtime'
-import { configVuefire } from './vuefire'
-
-// ⛔️ commented out for this mission (env + runtime wiring only)
-// import { configPwa } from './pwa'
-// import { configNitroFirebase } from './nitro'
-// import { configViteWorkspace } from './vite'
+import { configPwa } from './pwa'
+import { configNitroFirebase } from './nitro'
+import { configViteWorkspace } from './vite'
 
 export type FireuxAppConfig = {
   ecosystem: string
@@ -19,41 +16,65 @@ export type FireuxAppConfig = {
   modules?: string[]
 }
 
+function reqEnv(name: string): string {
+  const value = process.env[name]
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new Error(`[fireux] Missing required env var: ${name}`)
+  }
+  return value.trim()
+}
+
+function optEnv(name: string): string | undefined {
+  const value = process.env[name]
+  if (typeof value !== 'string') return undefined
+  const trimmed = value.trim()
+  return trimmed ? trimmed : undefined
+}
+
+function boolEnv(name: string, fallback = false): boolean {
+  const v = optEnv(name)
+  if (!v) return fallback
+  return ['1', 'true', 'yes', 'on'].includes(v.toLowerCase())
+}
+
 export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const nuxt: NuxtConfig = {}
 
   nuxt.srcDir = 'app'
   nuxt.imports = { dirs: ['composables/**', 'utils/**'] }
 
+  const enablePwa = boolEnv('FIREUX_ENABLE_PWA', false)
+  const enableNitroFirebase = boolEnv('FIREUX_ENABLE_NITRO_FIREBASE', false)
+  const enableViteWorkspace = boolEnv('FIREUX_ENABLE_VITE_WORKSPACE', false)
+  const enableVuefire = boolEnv('FIREUX_ENABLE_VUEFIRE', true)
+
+  const hasFirebaseEcosystem =
+    !!optEnv('NUXT_FIREBASE_API_KEY') &&
+    !!optEnv('NUXT_FIREBASE_AUTH_DOMAIN') &&
+    !!optEnv('NUXT_FIREBASE_PROJECT_ID') &&
+    !!optEnv('NUXT_FIREBASE_STORAGE_BUCKET') &&
+    !!optEnv('NUXT_FIREBASE_MESSAGING_SENDER_ID')
+
   nuxt.modules = [
     '@nuxt/ui',
     '@nuxt/icon',
     '@nuxt/content',
-    'fireux-core',
     `fireux-${app.ecosystem}`,
+    'fireux-core',
+    ...(enableVuefire && hasFirebaseEcosystem ? ['nuxt-vuefire'] : []),
+    ...(enablePwa ? ['@vite-pwa/nuxt'] : []),
     ...(app.modules || []),
   ]
 
-  // ─────────────────────────────────────────────
-  // 🔎 MISSION: prove env is (or isn't) available here
-  // ─────────────────────────────────────────────
-  const envAppId = process.env.NUXT_FIREBASE_APP_ID
-  const envMeasurementId = process.env.NUXT_FIREBASE_MEASUREMENT_ID
-  const envDomain = process.env.APP_DOMAIN
-  const envPin = process.env.DEVELOPER_PIN
+  nuxt.css = [
+    'fireux-core/runtime/assets/styles/main.css',
+    'fireux-core/runtime/assets/styles/main.scss',
+  ]
 
-  console.log('[fireux/fireux.config] env.APP_DOMAIN', envDomain)
-  console.log('[fireux/fireux.config] env.NUXT_FIREBASE_APP_ID', envAppId)
-  console.log('[fireux/fireux.config] env.NUXT_FIREBASE_MEASUREMENT_ID', envMeasurementId)
-  console.log('[fireux/fireux.config] env.DEVELOPER_PIN', envPin)
-
-  // App-level firebase bits (from env)
-  const firebaseApp = {
-    appId: envAppId,
-    measurementId: envMeasurementId,
-  }
-
-  // Keep runtime wiring minimal for now (ignore ecosystem entirely)
+  const envDomain = reqEnv('APP_DOMAIN')
+  const envAppId = reqEnv('NUXT_FIREBASE_APP_ID')
+  const envMeasurementId = optEnv('NUXT_FIREBASE_MEASUREMENT_ID')
+  const envPin = optEnv('DEVELOPER_PIN')
   setRuntime(nuxt, {
     app: {
       id: app.id,
@@ -66,30 +87,37 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       modules: (nuxt.modules || []) as readonly string[],
     },
 
-    firebaseApp,
+    firebaseApp: {
+      appId: envAppId,
+      measurementId: envMeasurementId,
+    },
 
     private: {
       developerPin: envPin,
     },
   })
 
-  // ✅ derive vuefire config from runtime shape (single source of truth)  configVuefire(nuxt)
+  if (enablePwa) {
+    configPwa(nuxt, {
+      name: app.name,
+      shortName: app.shortName,
+      description: app.description,
+      themeColor: '#000000',
+      backgroundColor: '#ffffff',
+      lang: 'en',
+    })
+  }
 
+  if (enableNitroFirebase) {
+    configNitroFirebase(nuxt, {
+      serverFunctionName: app.id,
+      region: process.env.NITRO_FIREBASE_REGION || 'europe-west1',
+    })
+  }
 
-  // ⛔️ commented out for this mission
-  // configPwa(nuxt, {
-  //   name: app.name,
-  //   shortName: app.shortName,
-  //   description: app.description,
-  //   themeColor: '#000000',
-  //   backgroundColor: '#ffffff',
-  //   lang: 'en',
-  // })
-  // configNitroFirebase(nuxt, {
-  //   serverFunctionName: app.id,
-  //   region: process.env.NITRO_FIREBASE_REGION || 'europe-west1',
-  // })
-  // configViteWorkspace(nuxt)
+  if (enableViteWorkspace) {
+    configViteWorkspace(nuxt)
+  }
 
   return nuxt
 }

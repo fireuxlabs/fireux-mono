@@ -1,79 +1,61 @@
-// FILE: packages/core/fireux-core/src/config/app/vuefire.ts
+// FILE: packages/core/fireux-core/config/app/vuefire.ts
 import type { NuxtConfig } from 'nuxt/schema'
 
-export type RuntimeFirebaseEcosystemFirebase = {
-  apiKey: string
-  authDomain: string
-  projectId: string
-  storageBucket: string
-  messagingSenderId: string
+function pickRuntime(nuxt: any) {
+  const root = (nuxt?.options ?? nuxt) as any
+  const rc = (root.runtimeConfig || {}) as any
+  const pub = (rc.public || {}) as any
+  return { rc, pub }
 }
 
-export type RuntimeFirebaseApp = {
-  appId: string
-  measurementId?: string
+function hasString(value: unknown): value is string {
+  return typeof value === 'string' && !!value.trim()
 }
 
-export type FireUXFirebaseWebConfig = RuntimeFirebaseEcosystemFirebase &
-  RuntimeFirebaseApp
+export function configVuefire(nuxt: NuxtConfig | any) {
+  const { pub } = pickRuntime(nuxt)
 
-export type FireUXVuefireConfig = {
-  ecosystem: RuntimeFirebaseEcosystemFirebase
-  app: RuntimeFirebaseApp
-}
+  const eco = pub.firebaseEcosystem?.firebase || {}
+  const app = pub.firebaseApp || {}
 
-function reqString(label: string, v: unknown): string {
-  if (typeof v !== 'string' || !v.trim()) {
-    throw new Error(`[fireux] Missing firebase config: ${label}`)
-  }
-  return v.trim()
-}
+  const apiKey = hasString(eco.apiKey) ? eco.apiKey.trim() : undefined
+  const authDomain = hasString(eco.authDomain) ? eco.authDomain.trim() : undefined
+  const projectId = hasString(eco.projectId) ? eco.projectId.trim() : undefined
+  const storageBucket = hasString(eco.storageBucket)
+    ? eco.storageBucket.trim()
+    : undefined
+  const messagingSenderId = hasString(eco.messagingSenderId)
+    ? eco.messagingSenderId.trim()
+    : undefined
+  const appId = hasString(app.appId) ? app.appId.trim() : undefined
 
-export function configVuefire(nuxt: NuxtConfig, c: FireUXVuefireConfig) {
-  // ✅ log BEFORE any throw (this runs during nuxt.config evaluation)
-  // Keep it tight: only the props we care about.
-  console.log('[fireux/vuefire] input.ecosystem', {
-    apiKey: c?.ecosystem?.apiKey,
-    authDomain: c?.ecosystem?.authDomain,
-    projectId: c?.ecosystem?.projectId,
-    storageBucket: c?.ecosystem?.storageBucket,
-    messagingSenderId: c?.ecosystem?.messagingSenderId,
-  })
-  console.log('[fireux/vuefire] input.app', {
-    appId: c?.app?.appId,
-    measurementId: c?.app?.measurementId,
-  })
-
-  // Validate inputs (so failures are *here*, not later)
-  const firebase: FireUXFirebaseWebConfig = {
-    apiKey: reqString('apiKey', c?.ecosystem?.apiKey),
-    authDomain: reqString('authDomain', c?.ecosystem?.authDomain),
-    projectId: reqString('projectId', c?.ecosystem?.projectId),
-    storageBucket: reqString('storageBucket', c?.ecosystem?.storageBucket),
-    messagingSenderId: reqString(
-      'messagingSenderId',
-      c?.ecosystem?.messagingSenderId
-    ),
-    appId: reqString('appId', c?.app?.appId),
-    measurementId:
-      typeof c?.app?.measurementId === 'string'
-        ? c.app.measurementId.trim() || undefined
-        : undefined,
+  // Allow apps to run without Firebase (e.g. local styling/dev) when ecosystem
+  // credentials are not provided.
+  if (
+    !apiKey ||
+    !authDomain ||
+    !projectId ||
+    !storageBucket ||
+    !messagingSenderId ||
+    !appId
+  ) {
+    return
   }
 
-  // Populate public runtime for debugging + client plugin use
-  const rc = (nuxt.runtimeConfig ||= {} as any)
-  const pub = (rc.public ||= {} as any)
-  pub.vuefire ||= {}
-  pub.vuefire.config = firebase
+  const measurementId =
+    typeof app.measurementId === 'string' && app.measurementId.trim()
+      ? app.measurementId.trim()
+      : undefined
 
-  // Minimal nuxt-vuefire wiring
-  nuxt.modules ||= []
-  nuxt.modules.push([
-    'nuxt-vuefire',
-    {
-      auth: { enabled: false, sessionCookie: false },
-      config: firebase,
-    },
-  ])
+  const root = ((nuxt as any)?.options ?? nuxt) as any
+  root.vuefire = root.vuefire || {}
+  root.vuefire.config = {
+    apiKey,
+    authDomain,
+    projectId,
+    storageBucket,
+    messagingSenderId,
+    appId,
+    measurementId,
+  }
 }

@@ -55,11 +55,13 @@
 import { useRouter } from 'vue-router'
 import { useHead } from '#imports'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp.ts'
+import { getApps } from 'firebase/app'
 
 const isDev = import.meta.dev
 const router = useRouter()
 
-const { isInitialized } = useApp()
+const hasFirebaseApp = getApps().length > 0
+const isInitialized = hasFirebaseApp ? useApp().isInitialized : true
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],

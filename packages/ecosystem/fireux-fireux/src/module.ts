@@ -1,7 +1,8 @@
 // FILE: packages/ecosystem/fireux-fireux/src/module.ts
 import { defineNuxtModule } from '@nuxt/kit'
+
+import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
-import { setRuntimePublicEcosystem } from 'fireux-core/config/app/runtime'
 
 export default defineNuxtModule({
   meta: {
@@ -10,11 +11,28 @@ export default defineNuxtModule({
   },
 
   setup(_options, nuxt) {
-    setRuntimePublicEcosystem(nuxt.options as any, {
+    console.log(
+      '[fireux-fireux/module] loaded ecosystemConfig.id',
+      ecosystemConfig?.id
+    )
+    console.log(
+      '[fireux-fireux/module] loaded ecosystemConfig.firebase',
+      ecosystemConfig?.firebase
+    )
+
+    // 🔎 Make the runtime write-shape explicit
+    setRuntimeFirebaseEcosystem(nuxt as any, {
       id: ecosystemConfig.id,
       name: ecosystemConfig.name,
       description: ecosystemConfig.description,
       firebase: ecosystemConfig.firebase,
     })
+
+    // 🔎 Confirm it actually landed where we expect
+    const pub = (nuxt.options.runtimeConfig as any)?.public
+    console.log(
+      '[fireux-fireux/module] after setRuntimeFirebaseEcosystem public.firebaseEcosystem',
+      pub?.firebaseEcosystem
+    )
   },
 })

@@ -20,15 +20,12 @@
     "dev:tennant": "pnpm --filter ./projects/fireux/tennant dev",
     "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
     "dev:all-extended": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\" \"pnpm dev:niederhorn\" \"pnpm dev:richies\" \"pnpm dev:tennant\"",
-
     "build:all": "pnpm -r --parallel --filter './projects/*/*' build",
     "typecheck:apps": "pnpm -r --filter './projects/*/*' exec nuxi typecheck",
     "typecheck:packages": "pnpm -r --filter './packages/*/*' exec tsc --noEmit",
     "typecheck": "pnpm typecheck:packages && pnpm typecheck:apps",
-
     "lint": "eslint .",
     "format": "prettier --write .",
-
     "guard": "node scripts/guard.mjs",
     "clean": "node scripts/clean.mjs",
     "gitsave": "bash scripts/gitsave.sh"
@@ -38,9 +35,11 @@
     "pnpm": ">=10"
   },
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "concurrently": "^9.2.0",
     "eslint": "^9.28.0",
     "prettier": "^3.0.0",
+    "tailwindcss": "^4.1.18",
     "typescript": "^5.9.2"
   },
   "pnpm": {
@@ -54,5 +53,8 @@
       "nuxt-vuefire": "^1.1.0"
     }
   },
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.12.1",
+  "dependencies": {
+    "image-size": "^2.0.2"
+  }
 }

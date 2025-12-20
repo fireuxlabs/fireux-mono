@@ -1,5 +1,7 @@
 import { defineNuxtModule, createResolver } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
+import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
+
 import { configurePlugins } from './config/plugins-config'
 import { configureComponents } from './config/components-config'
 import { configureLayouts } from './config/layouts-config'
@@ -7,7 +9,8 @@ import { configureAssets } from './config/assets-config'
 import { configureRuntime } from './config/runtime-config'
 import { configureComposables } from './config/composables-config'
 import { configurePages } from './config/pages-config'
-import { MISEBOX_FIREBASE_PROJECT } from './config/firebase-project'
+import { ecosystemConfig } from './config/ecosystem.config'
+import { firebaseEcosystem } from './config/firebase-ecosystem'
 
 export interface ModuleOptions {
   prefix?: string
@@ -28,10 +31,12 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     // Core and any extensions are provided by the app via createFireuxConfig
 
     configureRuntime(nuxt, 'misebox')
-    configureRuntime(nuxt, 'firebase', {
-      projectId: MISEBOX_FIREBASE_PROJECT.projectId,
-      authDomain: MISEBOX_FIREBASE_PROJECT.authDomain,
-      storageBucket: MISEBOX_FIREBASE_PROJECT.storageBucket,
+
+    setRuntimeFirebaseEcosystem(nuxt as any, {
+      id: ecosystemConfig.id,
+      name: ecosystemConfig.name,
+      description: ecosystemConfig.description,
+      firebase: firebaseEcosystem,
     })
     configurePlugins(resolver)
     configureComponents(resolver, options)

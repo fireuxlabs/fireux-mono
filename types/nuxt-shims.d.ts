@@ -22,6 +22,11 @@ declare module '#imports' {
 
   // Explicit re-export so TS always sees the macro
   export const definePageMeta: typeof import('nuxt/app')['definePageMeta']
+
+  // Minimal shims for package-context runtime plugins.
+  // (In real apps these come from Nuxt-generated `#imports` types.)
+  export function defineNuxtPlugin(...args: any[]): any
+  export function useRuntimeConfig(...args: any[]): any
 }
 
 /**
