@@ -37,8 +37,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-declare function useRouter(): { getRoutes: () => any[] }
-declare function useUser(): { isAdmin?: any }
+import { useRouter } from '#imports'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 const router = useRouter()
 const routes = computed(() => router.getRoutes())
 const isAdmin = (useUser()?.isAdmin?.value ?? false) as boolean

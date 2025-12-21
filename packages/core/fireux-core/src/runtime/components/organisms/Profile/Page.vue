@@ -67,14 +67,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { navigateTo, useHead, useRoute, useSeoMeta } from '#imports'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
-
-declare function useRoute(): any
-declare function navigateTo(path: string): Promise<unknown>
-declare function useHead(input: unknown): void
-declare function useSeoMeta(input: unknown): void
 
 /** Props */
 const props = defineProps<{

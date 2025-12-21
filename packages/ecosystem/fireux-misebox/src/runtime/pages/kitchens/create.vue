@@ -131,16 +131,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useHead } from '#imports'
+import { useHead, useToast } from '#imports'
 import { useKitchenCreation } from '../../composables/firestore/objects/Kitchen/useKitchenCreation'
-
-declare function useToast(): {
-  add: (options: {
-    title: string
-    description?: string
-    color?: string
-  }) => void
-}
 
 const router = useRouter()
 const toast = typeof useToast === 'function' ? useToast() : undefined

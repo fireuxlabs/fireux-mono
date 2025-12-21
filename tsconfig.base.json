@@ -100,7 +100,8 @@
         "projects/cleanbox/richies-reinigung/*"
       ],
       "#imports": ["types/nuxt-shims.d.ts"],
-      "#pwa": ["types/pwa.d.ts"]
+      "#pwa": ["types/pwa.d.ts"],
+      "vuefire/server": ["types/vuefire-server.d.ts"]
     }
   }
 }

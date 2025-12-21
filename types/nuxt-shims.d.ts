@@ -27,6 +27,12 @@ declare module '#imports' {
   // (In real apps these come from Nuxt-generated `#imports` types.)
   export function defineNuxtPlugin(...args: any[]): any
   export function useRuntimeConfig(...args: any[]): any
+  export function useRequestEvent(...args: any[]): any
+}
+
+// Minimal shim for vuefire server utilities used in package runtime plugins.
+declare module 'vuefire/server' {
+  export function ensureAdminApp(options?: any): any
 }
 
 /**
