@@ -15,5 +15,5 @@ Describe what this module ships, its guardrails, and how consumers should enable
 2. Update `registry.json` before committing (name, team, runtime notes).
 3. Publish to FireUX registry:
    ```bash
-   pnpm registry:register packages/extensions/fireux-ecosystem-controller/registry.json
+   pnpm registry:register packages/core/fireux-ecosystem-controller/registry.json
    ```

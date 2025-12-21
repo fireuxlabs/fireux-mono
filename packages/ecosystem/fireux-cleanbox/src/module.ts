@@ -1,5 +1,6 @@
 import { defineNuxtModule, createResolver } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
+import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
 import { configurePlugins } from './config/plugins-config'
 import { configureComponents } from './config/components-config'
 import { configureLayouts } from './config/layouts-config'
@@ -8,6 +9,7 @@ import { configureRuntime } from './config/runtime-config'
 import { configureComposables } from './config/composables-config'
 import { configurePages } from './config/pages-config'
 import { CLEANBOX_FIREBASE_PROJECT } from './config/firebase-project'
+import { ecosystemConfig } from './config/firebase/ecosystem.config'
 
 export interface ModuleOptions {
   prefix?: string
@@ -29,9 +31,19 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
 
     configureRuntime(nuxt, 'cleanbox')
     configureRuntime(nuxt, 'firebase', {
+      apiKey: CLEANBOX_FIREBASE_PROJECT.apiKey,
       projectId: CLEANBOX_FIREBASE_PROJECT.projectId,
       authDomain: CLEANBOX_FIREBASE_PROJECT.authDomain,
       storageBucket: CLEANBOX_FIREBASE_PROJECT.storageBucket,
+      messagingSenderId: CLEANBOX_FIREBASE_PROJECT.messagingSenderId,
+    })
+
+    // Preferred runtime shape (used by fireux-nuxtfire / nuxt-vuefire config)
+    setRuntimeFirebaseEcosystem(nuxt as any, {
+      id: ecosystemConfig.id,
+      name: ecosystemConfig.name,
+      description: ecosystemConfig.description,
+      firebase: ecosystemConfig.firebase,
     })
     configurePlugins(resolver)
     configureComponents(resolver, options)

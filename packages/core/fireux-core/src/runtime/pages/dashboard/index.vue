@@ -171,6 +171,7 @@
 // Removed duplicate definePageMeta declaration
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed, ref } from 'vue'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser.ts'
 
 definePageMeta({
   nav: {
@@ -185,9 +186,6 @@ definePageMeta({
   requiresAuth: true,
   layout: 'dashboard',
 })
-
-// Nuxt app auto-imports are not visible to package TS, declare lightweight types
-declare function useUser(): { user: any }
 
 // Local notifications slideover state (was useDashboard)
 const isNotificationsSlideoverOpen = ref(false)

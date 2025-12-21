@@ -1,4 +1,4 @@
-// FILE: packages/core/fireux-core/src/runtime/plugins/firebase.client.ts
+// FILE: packages/core/fireux-nuxtfire/src/runtime/plugins/firebase.client.ts
 import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 import { getApps, initializeApp } from 'firebase/app'
 
@@ -13,11 +13,10 @@ export default defineNuxtPlugin(() => {
   const projectId = ecosystem?.projectId
   const appId = firebaseApp?.appId
 
-  // If we can't build a valid config, do nothing.
   // For auth, apiKey + authDomain + projectId are sufficient.
   if (!apiKey || !authDomain || !projectId) return
 
-  // Already initialised
+  // Already initialised.
   if (getApps().length) return
 
   initializeApp({
@@ -32,9 +31,8 @@ export default defineNuxtPlugin(() => {
     ...(firebaseApp?.measurementId ? { measurementId: firebaseApp.measurementId } : {}),
   })
 
-  // Optional: confirm it ran (dev only)
   if (import.meta.dev) {
     // eslint-disable-next-line no-console
-    console.log('[fireux] firebase web app initialised', { appId })
+    console.log('[fireux-nuxtfire] firebase web app initialised', { appId })
   }
 })

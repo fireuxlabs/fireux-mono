@@ -21,7 +21,8 @@ export type AuthUser = {
 }
 
 function tryBindVueFire() {
-  // These can throw if nuxt-vuefire hasn’t installed the auth module yet
+  // These can throw if VueFire Auth hasn't been installed yet.
+  // (In FireUX apps, `fireux-nuxtfire` should ensure this is ready.)
   const auth = useFirebaseAuth()
   const currentUser = useCurrentUser() as Ref<User | null>
   return { auth, currentUser }
@@ -118,6 +119,11 @@ export function useAuth() {
   // ─────────────────────────────────────────────
   // Ensure FireUX user document exists (client-only)
   // ─────────────────────────────────────────────
+  // IMPORTANT: composables like `useRouter()` / `useNuxtApp()` must be called
+  // while a component instance exists (i.e. during setup). We create the
+  // user-ensure composable once here, then call its methods later.
+  const userEnsure = import.meta.client ? useUserEnsure() : null
+
   const ensuring = ref(false)
   const lastEnsuredUid = ref<string | null>(null)
 
@@ -127,10 +133,11 @@ export function useAuth() {
     if (!isReady.value) return
     if (ensuring.value) return
     if (lastEnsuredUid.value === nextUid) return
+    if (!userEnsure) return
 
     ensuring.value = true
     try {
-      await useUserEnsure().ensureUser()
+      await userEnsure.ensureUser()
       lastEnsuredUid.value = nextUid
     } finally {
       ensuring.value = false

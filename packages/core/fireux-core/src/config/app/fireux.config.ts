@@ -5,7 +5,6 @@ import { setRuntime } from './runtime'
 import { configPwa } from './pwa'
 import { configNitroFirebase } from './nitro'
 import { configViteWorkspace } from './vite'
-import { configVuefire } from './vuefire'
 
 export type FireuxAppConfig = {
   ecosystem: string
@@ -41,6 +40,14 @@ function boolEnv(name: string, fallback = false): boolean {
 export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const nuxt: NuxtConfig = {}
 
+  // Align Nitro defaults with our current baseline.
+  // Prevents runtime fallback warnings during dev.
+  ;(nuxt as any).compatibilityDate = '2025-12-21'
+  ;(nuxt.nitro as any) = {
+    ...((nuxt.nitro as any) || {}),
+    compatibilityDate: '2025-12-21',
+  }
+
   nuxt.srcDir = 'app'
   nuxt.imports = { dirs: ['composables/**', 'utils/**'] }
 
@@ -49,20 +56,14 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const enableViteWorkspace = boolEnv('FIREUX_ENABLE_VITE_WORKSPACE', false)
   const enableVuefire = boolEnv('FIREUX_ENABLE_VUEFIRE', true)
 
-  const hasFirebaseEcosystem =
-    !!optEnv('NUXT_FIREBASE_API_KEY') &&
-    !!optEnv('NUXT_FIREBASE_AUTH_DOMAIN') &&
-    !!optEnv('NUXT_FIREBASE_PROJECT_ID')
-
   nuxt.modules = [
     '@nuxt/ui',
     '@nuxt/icon',
     '@nuxt/content',
     `fireux-${app.ecosystem}`,
+    // VueFire/Firebase wiring lives in fireux-nuxtfire.
+    ...(enableVuefire ? ['fireux-nuxtfire'] : []),
     'fireux-core',
-    // Always register nuxt-vuefire when enabled. Firebase credentials may be
-    // injected by ecosystem modules rather than present in process.env.
-    ...(enableVuefire ? ['nuxt-vuefire'] : []),
     ...(enablePwa ? ['@vite-pwa/nuxt'] : []),
     ...(app.modules || []),
   ]
@@ -73,8 +74,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   ]
 
   const envDomain = reqEnv('APP_DOMAIN')
-  const envAppId = reqEnv('NUXT_FIREBASE_APP_ID')
-  const envMeasurementId = optEnv('NUXT_FIREBASE_MEASUREMENT_ID')
   const envPin = optEnv('DEVELOPER_PIN')
   setRuntime(nuxt, {
     app: {
@@ -88,21 +87,10 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       modules: (nuxt.modules || []) as readonly string[],
     },
 
-    firebaseApp: {
-      appId: envAppId,
-      measurementId: envMeasurementId,
-    },
-
     private: {
       developerPin: envPin,
     },
   })
-
-  // Configure nuxt-vuefire module options early (during config assembly), so
-  // VueFire Auth is registered before any composables call useCurrentUser().
-  if (enableVuefire && hasFirebaseEcosystem) {
-    configVuefire(nuxt)
-  }
 
   if (enablePwa) {
     configPwa(nuxt, {

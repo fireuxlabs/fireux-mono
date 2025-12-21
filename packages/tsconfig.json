@@ -3,9 +3,9 @@
   "files": [],
   "references": [
     { "path": "core/fireux-core" },
+    { "path": "core/fireux-ecosystem-controller" },
     { "path": "extensions/fireux-blogs" },
     { "path": "extensions/fireux-drop" },
-    { "path": "extensions/fireux-ecosystem-controller" },
     { "path": "extensions/fireux-jobs" },
     { "path": "extensions/fireux-places" },
     { "path": "extensions/fireux-products" },

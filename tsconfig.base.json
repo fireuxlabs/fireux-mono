@@ -51,7 +51,7 @@
       "#fireux-products/*": ["packages/extensions/fireux-products/src/runtime/*"],
       "#fireux-drop/*": ["packages/extensions/fireux-drop/src/runtime/*"],
       "#fireux-ecosystem-controller/*": [
-        "packages/extensions/fireux-ecosystem-controller/src/runtime/*"
+        "packages/core/fireux-ecosystem-controller/src/runtime/*"
       ],
       "#fireux-core-models/*": ["packages/core/fireux-core/src/runtime/models/*"],
       "#fireux-core-runtime/*": ["packages/core/fireux-core/src/runtime/*"],

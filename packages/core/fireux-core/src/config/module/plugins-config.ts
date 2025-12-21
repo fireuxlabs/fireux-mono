@@ -4,8 +4,6 @@ import { existsSync } from 'node:fs'
 
 export function configurePlugins(resolver: Resolver) {
   const plugins = [
-    { src: resolver.resolve('./runtime/plugins/firebase.client.ts'), mode: 'client' as const },
-
     { src: resolver.resolve('./runtime/plugins/fireux-config.client.ts'), mode: 'client' as const },
     { src: resolver.resolve('./runtime/plugins/fireux-config.server.ts'), mode: 'server' as const },
 

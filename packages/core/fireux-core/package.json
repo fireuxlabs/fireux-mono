@@ -40,24 +40,24 @@
   },
   "dependencies": {
     "dompurify": "^3.2.6",
-    "h3": "^1.15.4"
+    "firebase": "^11.10.0",
+    "firebase-admin": "^12.7.0",
+    "h3": "^1.15.4",
+    "vuefire": "^3.2.2"
   },
   "peerDependencies": {
     "@nuxt/kit": "^4.1.0",
     "@nuxt/schema": "^4.1.0",
     "@nuxt/ui": ">=3 <5",
     "@vueuse/core": "*",
-    "firebase": "^11.10.0",
-    "firebase-admin": "*",
     "nuxt": "^4.1.0",
     "sass": "^1.96.0",
     "stripe": "*",
     "vue": "^3.5.20",
     "vue-router": "^4.5.0",
-    "vuefire": "^3.2.2"
+    "vue-router": "^4.5.0"
   },
   "peerDependenciesMeta": {
-    "firebase-admin": { "optional": true },
     "stripe": { "optional": true }
   },
   "devDependencies": {
