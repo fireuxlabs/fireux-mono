@@ -45,6 +45,22 @@ const FORBIDDEN_L1 = [
   '.firebaserc',
 ]
 
+// Public image library baseline expected in every app.
+// Extras are allowed (e.g. fireux-app has additional `img/app/stack/*`).
+const REQUIRED_PUBLIC_ASSETS = [
+  'img/app/cover.png',
+  'img/app/thumbnail.png',
+  'img/app/logo.png',
+  'img/app/favicon.ico',
+  'img/app/wordmark.png',
+  'img/app/wordmark.svg',
+  'img/app/wordmark-light.png',
+  'img/app/wordmark-light.svg',
+  'img/app/wordmark-dark.png',
+  'img/app/pwa/icon-192.png',
+  'img/app/pwa/icon-512.png',
+]
+
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   const projectsRoot = path.join(repoRoot, 'projects')
@@ -69,8 +85,14 @@ export async function run(ctx) {
 
     for (const appName of apps) {
       const appPath = path.join(ecoPath, appName)
-      const v = checkProjectApp(appPath)
-      if (v) violations.push(v)
+      const shapeViolation = checkProjectApp(appPath)
+      if (shapeViolation) {
+        violations.push(shapeViolation)
+        continue
+      }
+
+      const publicViolation = checkProjectPublicImageLibrary(appPath)
+      if (publicViolation) violations.push(publicViolation)
     }
   }
 
@@ -132,6 +154,38 @@ function checkProjectApp(appPath) {
     `- Delete build output (.nuxt/.output/dist/etc) before saving`,
     `- Move implementation details into /app or /server`,
     `- Do NOT commit Firebase CLI artifacts (.firebase) or app-level project selectors (.firebaserc)`
+  )
+
+  return lines.join('\n')
+}
+
+function checkProjectPublicImageLibrary(appPath) {
+  const publicDir = path.join(appPath, 'public')
+  const missing = []
+
+  for (const rel of REQUIRED_PUBLIC_ASSETS) {
+    const full = path.join(publicDir, rel)
+    if (!existsSync(full)) missing.push(rel)
+  }
+
+  if (!missing.length) return null
+
+  const lines = [
+    '[guard] ❌ project public image library violation:',
+    `  Path: ${appPath}`,
+    `  Missing required public assets:`
+  ]
+  missing
+    .slice()
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((m) => lines.push(`    - public/${m}`))
+
+  lines.push(
+    '',
+    '[guard] Fix:',
+    '- Ensure every app includes the canonical public image library tree:',
+    '  public/img/app/* and public/img/app/pwa/*',
+    '- Extras are allowed; missing baseline assets are not'
   )
 
   return lines.join('\n')
