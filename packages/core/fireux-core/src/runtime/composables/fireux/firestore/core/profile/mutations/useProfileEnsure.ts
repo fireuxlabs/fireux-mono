@@ -1,9 +1,9 @@
 import { arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
-import { requireUid } from '../../../utils/useEnsureCommon.ts'
-import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useFirestoreManager } from '../../../operations/useFirestoreManager'
+import { requireUid } from '../../../utils/useEnsureCommon'
+import type { ProfileConfig } from '../../../../../../models/core/profile.model'
 
 type EnsureResult = {
   createdCore: boolean

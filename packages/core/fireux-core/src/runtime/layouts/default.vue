@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { watchEffect } from 'vue'
-import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav.ts'
+import { useNav } from '../composables/fireux/app/ui/nav/useNav'
 
 defineOptions({ name: 'default' })
 

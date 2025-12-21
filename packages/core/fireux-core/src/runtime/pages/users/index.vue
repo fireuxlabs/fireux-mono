@@ -33,8 +33,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useHead } from '#imports'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 
 definePageMeta({
   nav: {

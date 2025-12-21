@@ -1,4 +1,4 @@
-import type { AppSocialLinks } from './useAppValidation.ts'
+import type { AppSocialLinks } from './useAppValidation'
 
 const HTTPS_PROTOCOL_REGEX = /^https?:\/\//
 

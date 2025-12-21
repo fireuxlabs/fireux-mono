@@ -2,12 +2,12 @@
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 import { computed, isRef } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type { Ref } from 'vue'
 import type {
   Profile,
   ProfileConfig,
-} from 'fireux-core/runtime/models/core/profile.model.ts'
+} from '../../../../../../models/core/profile.model'
 
 /**
  * Minimal profile fetch:

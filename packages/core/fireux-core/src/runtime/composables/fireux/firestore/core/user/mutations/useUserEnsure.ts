@@ -1,12 +1,12 @@
 import { useRouter } from 'vue-router'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon.ts'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { requireUid } from '../../../utils/useEnsureCommon'
 import {
   ensureCoreUserDocument,
   ensureUserAppMembership,
   type EnsureMembershipResult,
   type EnsureCoreResult,
-} from '../utils/ensureHelpers.ts'
+} from '../utils/ensureHelpers'
 
 type EnsureAppOutcome = EnsureMembershipResult
 

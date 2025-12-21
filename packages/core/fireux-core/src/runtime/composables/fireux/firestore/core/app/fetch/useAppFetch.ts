@@ -1,7 +1,7 @@
 import { doc } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 import { computed, isRef, ref, type Ref } from 'vue'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { App } from '../../../../../../models/core/app.model'
 
 /**
  * Fetch a single app document by id (accepts raw ids or refs).

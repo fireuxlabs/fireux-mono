@@ -1,11 +1,11 @@
 import { ref } from 'vue'
-import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type {
   Profile,
   ProfileConfig,
-} from 'fireux-core/runtime/models/core/profile.model.ts'
-import type { ProfileRefs } from '../fetch/useProfileFetch.ts'
+} from '../../../../../../models/core/profile.model'
+import type { ProfileRefs } from '../fetch/useProfileFetch'
 
 type UpdateResult = 'success'
 type UpdateScope = 'auto' | 'core' | 'app'

@@ -2,9 +2,9 @@ import type { Ref } from 'vue'
 import type {
   User,
   UserCard,
-} from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from '../../fetch/useUserFetch.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+} from '../../../../../../../models/core/user.model'
+import type { UserRefs } from '../../fetch/useUserFetch'
+import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 
 type RuntimeContext = {
   runtime?: 'global' | 'tenant'

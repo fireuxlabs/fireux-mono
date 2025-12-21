@@ -6,13 +6,13 @@ import {
 } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 
-import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
+import { useFirestoreManager } from '../../../operations/useFirestoreManager'
 import type {
   AppUser,
   User,
   UserNotification,
   NotificationScope,
-} from 'fireux-core/runtime/models/core/user.model.ts'
+} from '../../../../../../models/core/user.model'
 
 export type EnsureCoreOptions = {
   displayName?: string

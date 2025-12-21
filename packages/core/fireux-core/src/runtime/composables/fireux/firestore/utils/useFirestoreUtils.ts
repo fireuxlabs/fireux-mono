@@ -1,6 +1,6 @@
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFireUXConfig } from '../../app/FireUXConfig.ts'
+import { useFireUXConfig } from '../../app/FireUXConfig'
 
 /** Build a tenant-aware collection path. */
 const resolveCollectionPath = (

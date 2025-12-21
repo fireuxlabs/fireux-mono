@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
-import type { FirestoreTimestampOrString } from '../../types/firebase.ts'
+import type { FirestoreTimestampOrString } from '../../types/firebase'
 
 export type AppRole = 'global' | 'tenant' | 'sandbox'
 export type AppStatus = 'active' | 'archived'

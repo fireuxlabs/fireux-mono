@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
-import type { ProfileRefs } from '../../fetch/useProfileFetch.ts'
+import type { Profile } from '../../../../../../../models/core/profile.model'
+import type { ProfileRefs } from '../../fetch/useProfileFetch'
 
 export function useProfileComputed<TProfile extends Profile = Profile>(
   profileRefs: ProfileRefs<TProfile>

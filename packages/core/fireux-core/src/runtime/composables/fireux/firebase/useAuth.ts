@@ -10,7 +10,7 @@ import {
   type Auth,
   type User,
 } from 'firebase/auth'
-import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure.ts'
+import { useUserEnsure } from '../firestore/core/user/mutations/useUserEnsure'
 
 export type AuthUser = {
   uid?: string | null

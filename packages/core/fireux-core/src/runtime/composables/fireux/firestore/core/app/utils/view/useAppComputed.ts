@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import type { App } from '../../../../../../../models/core/app.model'
+import type { User } from '../../../../../../../models/core/user.model'
 
 export function useAppComputed(
   app: Ref<App | null | undefined>,

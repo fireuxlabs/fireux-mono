@@ -170,7 +170,7 @@
 <script setup lang="ts">
 import { definePageMeta } from '#imports'
 // Removed duplicate definePageMeta declaration
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser.ts'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
 definePageMeta({
   nav: {

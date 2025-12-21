@@ -2,15 +2,15 @@ import { computed, watchEffect } from 'vue'
 import { collection } from 'firebase/firestore'
 import { useNuxtApp } from '#imports'
 import { useFirestore, useCollection } from 'vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type {
   Profile,
   ProfileConfig,
-} from 'fireux-core/runtime/models/core/profile.model.ts'
-import { useUserCollection } from '../../user/fetch/useUserCollection.ts'
-import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
+} from '../../../../../../models/core/profile.model'
+import { useUserCollection } from '../../user/fetch/useUserCollection'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import type { Ref } from 'vue'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import type { User } from '../../../../../../models/core/user.model'
 
 export function useProfileCollection<
   TProfile extends Partial<Profile> = Profile

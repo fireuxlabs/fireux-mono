@@ -34,11 +34,12 @@
     </UMain>
 
     <!-- Blocker until app is initialized -->
-    <!-- ClientOnly prevents SSR mismatch / initial flash.
-          isInitialized now flips false while the app payload loads. -->
+    <!-- Render only after app doc resolves.
+         This avoids a brief modal flash while the app payload is still loading. -->
     <ClientOnly>
       <UModal
-        :open="!isInitialized"
+        v-if="showOnboardingModal"
+        :open="showOnboardingModal"
         prevent-close
         title="🚫 Blocked"
         description="This app needs to be initialized."
@@ -52,14 +53,24 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHead } from '#imports'
-import { useApp } from '../../composables/fireux/firestore/core/app/useApp.ts'
+import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 const isDev = import.meta.dev
 const router = useRouter()
 
-const isInitialized = import.meta.client ? useApp().isInitialized : true
+const { app, isInitialized } = import.meta.client
+  ? useApp()
+  : ({ app: computed(() => undefined), isInitialized: computed(() => true) } as const)
+
+const showOnboardingModal = computed(() => {
+  // While the app doc is unresolved (undefined), assume initialized.
+  // Only block once we definitively know initialization is missing.
+  if (app.value === undefined) return false
+  return !isInitialized.value
+})
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],

@@ -1,10 +1,10 @@
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { requireUid } from '../../../utils/useEnsureCommon.ts'
-import { useFirestoreManager } from '../../../operations/useFirestoreManager.ts'
-import { ensureUserAppMembership } from '../../user/utils/ensureHelpers.ts'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import { requireUid } from '../../../utils/useEnsureCommon'
+import { useFirestoreManager } from '../../../operations/useFirestoreManager'
+import { ensureUserAppMembership } from '../../user/utils/ensureHelpers'
+import type { App } from '../../../../../../models/core/app.model'
 
 type EnsureAppDocResult = { created: boolean; id: string }
 type EnsureMembershipResult = { created: boolean }

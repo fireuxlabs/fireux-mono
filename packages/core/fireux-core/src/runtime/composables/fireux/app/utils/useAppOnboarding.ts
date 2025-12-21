@@ -1,9 +1,9 @@
 import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useFireUXConfig } from '../FireUXConfig'
-import { useUser } from '../../firestore/core/user/useUser.ts'
-import { useAppEnsure } from '../../firestore/core/app/mutations/useAppEnsure.ts'
-import type { EnvCheckResponse } from '../../../../types/app/onboarding.ts'
+import { useUser } from '../../firestore/core/user/useUser'
+import { useAppEnsure } from '../../firestore/core/app/mutations/useAppEnsure'
+import type { EnvCheckResponse } from '../../../../types/app/onboarding'
 import { useAppEnvCheck } from './useAppEnvCheck'
 
 export interface AppOnboardingState {

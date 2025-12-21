@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
+import type { App } from '../../../../../../../models/core/app.model'
+import type { Pill as PillModel } from '../../../../../../../types/pill.model'
 
 export namespace AppCard {
   /** Single payload powering Pill/Cell/Profile views */

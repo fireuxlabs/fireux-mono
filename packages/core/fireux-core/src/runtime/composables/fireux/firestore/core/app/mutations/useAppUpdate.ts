@@ -1,14 +1,14 @@
 import type { Ref } from 'vue'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { App } from '../../../../../../models/core/app.model'
 import type {
   AppUser,
   User,
-} from 'fireux-core/runtime/models/core/user.model.ts'
+} from '../../../../../../models/core/user.model'
 import { arrayRemove, arrayUnion } from 'firebase/firestore'
-import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate.ts'
-import { useFirestoreCreate } from '../../../operations/useFirestoreCreate.ts'
-import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage.ts'
-import { useAppEnsure } from './useAppEnsure.ts'
+import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
+import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
+import { useImageStorage } from '../../../../firebase/useImageStorage'
+import { useAppEnsure } from './useAppEnsure'
 
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const { updateDocument } = useFirestoreUpdate()

@@ -1,4 +1,4 @@
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { App } from '../../../../../../models/core/app.model'
 
 /**
  * Placeholder for future cascading app delete flows.

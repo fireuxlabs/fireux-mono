@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { computed, onMounted, unref } from 'vue'
 import { useColorMode, definePageMeta, useRoute } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
 
 definePageMeta({
   layout: 'auth'

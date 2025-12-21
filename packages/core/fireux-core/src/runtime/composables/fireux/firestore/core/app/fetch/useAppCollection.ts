@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import type { App } from '../../../../../../models/core/app.model'
 
 export function useAppCollection() {
   const { firestoreFetchCollection } = useFirestoreRead()

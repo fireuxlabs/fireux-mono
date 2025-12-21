@@ -6,8 +6,8 @@ import {
   type DocumentReference,
   type Firestore,
 } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useFirestoreRead } from '../operations/useFirestoreRead.ts'
+import { useFireUXConfig } from '../../app/FireUXConfig'
+import { useFirestoreRead } from '../operations/useFirestoreRead'
 
 type PathBuilder = (appId: string) => string
 export type MaybeRef<T> = T | Ref<T>

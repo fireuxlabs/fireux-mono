@@ -13,7 +13,7 @@
 import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useRoute } from 'vue-router'
-import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch.ts'
+import { useAppFetch } from '../../composables/fireux/firestore/core/app/fetch/useAppFetch'
 
 const route = useRoute()
 

@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import type { DevHealthApi, DevHealthResult, DevHealthScope } from './types'
-import { useDevAdminHealth } from './checks/useDevAdminHealth.ts'
+import { useDevAdminHealth } from './checks/useDevAdminHealth'
 
 export function useDevHealth(): DevHealthApi {
   const adminMatrix = useDevAdminHealth()

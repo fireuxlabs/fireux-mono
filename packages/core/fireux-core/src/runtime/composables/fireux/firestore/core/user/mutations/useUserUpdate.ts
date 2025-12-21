@@ -2,11 +2,11 @@ import { computed } from 'vue'
 import type {
   User,
   AppUser,
-} from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from '../fetch/useUserFetch.ts'
-import { useCoreUserUpdate } from '../utils/update/useCoreUserUpdate.ts'
-import { useAppUserUpdate } from '../utils/update/useAppUserUpdate.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+} from '../../../../../../models/core/user.model'
+import type { UserRefs } from '../fetch/useUserFetch'
+import { useCoreUserUpdate } from '../utils/update/useCoreUserUpdate'
+import { useAppUserUpdate } from '../utils/update/useAppUserUpdate'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
 
 export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
   const core = useCoreUserUpdate(user)

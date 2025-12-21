@@ -2,12 +2,12 @@ import { arrayRemove, arrayUnion } from 'firebase/firestore'
 import type {
   User,
   UserNotification,
-} from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from '../../fetch/useUserFetch.ts'
-import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate.ts'
-import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage.ts'
-import { useUserFormattingAndValidation } from '../validation/useUserFormatting.ts'
-import { createUserNotification } from '../ensureHelpers.ts'
+} from '../../../../../../../models/core/user.model'
+import type { UserRefs } from '../../fetch/useUserFetch'
+import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
+import { useImageStorage } from '../../../../../firebase/useImageStorage'
+import { useUserFormattingAndValidation } from '../validation/useUserFormatting'
+import { createUserNotification } from '../ensureHelpers'
 
 type CoreProfileActions = {
   rename: (displayName: string) => Promise<void>

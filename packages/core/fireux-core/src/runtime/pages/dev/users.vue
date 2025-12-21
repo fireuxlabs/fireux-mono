@@ -119,12 +119,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser.ts'
-import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection.ts'
-import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface.ts'
-import { useAppUsers } from '../../composables/fireux/firestore/core/app/fetch/useAppUsers.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import type { User } from '../../models/core/user.model'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
+import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useAppUsers } from '../../composables/fireux/firestore/core/app/fetch/useAppUsers'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useDevHealth } from '../../composables/dev/health/useDevHealth'
 import DevUserComponentGallery from '../../components/dev/UserComponentGallery.vue'
 

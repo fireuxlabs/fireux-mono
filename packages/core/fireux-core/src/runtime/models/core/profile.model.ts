@@ -1,5 +1,5 @@
-import type { FirebaseTimestamp } from '../../types/firebase.ts'
-import type { User } from './user.model.ts'
+import type { FirebaseTimestamp } from '../../types/firebase'
+import type { User } from './user.model'
 
 /**
  * Minimal shared Profile shape.

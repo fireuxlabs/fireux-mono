@@ -1,12 +1,12 @@
 import { computed, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useNuxtApp } from '#imports'
-import { useFirestoreRead } from '../../../operations/useFirestoreRead.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppUsers.ts'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import { useAppUsers } from '../../app/fetch/useAppUsers'
 import type {
   User,
   AppUser,
-} from 'fireux-core/runtime/models/core/user.model.ts'
+} from '../../../../../../models/core/user.model'
 
 type EnrichedUser = {
   id: string

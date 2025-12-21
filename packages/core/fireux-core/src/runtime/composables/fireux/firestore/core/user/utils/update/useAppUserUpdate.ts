@@ -1,14 +1,14 @@
 import { arrayUnion, arrayRemove } from 'firebase/firestore'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { App } from '../../../../../../../models/core/app.model'
 import type {
   AppUser,
   User,
   UserNotification,
-} from 'fireux-core/runtime/models/core/user.model.ts'
-import type { UserRefs } from '../../fetch/useUserFetch.ts'
-import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { createUserNotification } from '../ensureHelpers.ts'
+} from '../../../../../../../models/core/user.model'
+import type { UserRefs } from '../../fetch/useUserFetch'
+import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
+import { useFireUXConfig } from '../../../../../app/FireUXConfig'
+import { createUserNotification } from '../ensureHelpers'
 
 type AppMembershipActions = {
   setRole: (role: 'user' | 'admin') => Promise<void>

@@ -49,10 +49,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp.ts'
-import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppUsers.ts'
-import { useDevHealth } from 'fireux-core/runtime/composables/dev/health/useDevHealth.ts'
+import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
+import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
+import { useAppUsers } from '../../composables/fireux/firestore/core/app/fetch/useAppUsers'
+import { useDevHealth } from '../../composables/dev/health/useDevHealth'
 
 definePageMeta({
   layout: 'dev',

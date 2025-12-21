@@ -1,4 +1,4 @@
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { App } from '../models/core/app.model'
 
 /**
  * Resolve the best-fit avatar asset for an app record, falling back through
