@@ -9,22 +9,27 @@ export default defineNuxtPlugin(() => {
   const firebaseApp = rc.public?.firebaseApp
 
   const apiKey = ecosystem?.apiKey
+  const authDomain = ecosystem?.authDomain
+  const projectId = ecosystem?.projectId
   const appId = firebaseApp?.appId
 
   // If we can't build a valid config, do nothing.
-  if (!apiKey || !appId) return
+  // For auth, apiKey + authDomain + projectId are sufficient.
+  if (!apiKey || !authDomain || !projectId) return
 
   // Already initialised
   if (getApps().length) return
 
   initializeApp({
-    apiKey: ecosystem.apiKey,
-    authDomain: ecosystem.authDomain,
-    projectId: ecosystem.projectId,
-    storageBucket: ecosystem.storageBucket,
-    messagingSenderId: ecosystem.messagingSenderId,
-    appId: firebaseApp.appId,
-    measurementId: firebaseApp.measurementId,
+    apiKey,
+    authDomain,
+    projectId,
+    ...(ecosystem?.storageBucket ? { storageBucket: ecosystem.storageBucket } : {}),
+    ...(ecosystem?.messagingSenderId
+      ? { messagingSenderId: ecosystem.messagingSenderId }
+      : {}),
+    ...(appId ? { appId } : {}),
+    ...(firebaseApp?.measurementId ? { measurementId: firebaseApp.measurementId } : {}),
   })
 
   // Optional: confirm it ran (dev only)

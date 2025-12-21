@@ -126,6 +126,11 @@ Important details:
   }
   ```
 
+- `baseConfig.css` also includes an additive SCSS entrypoint: `packages/core/fireux-core/src/runtime/assets/styles/main.scss`
+  - Use it for mixins/utility SCSS that should ship with the design system
+  - Keep it free of hard-coded colors; prefer existing CSS variables/tokens
+  - Requires `sass` available in the consuming workspace/app toolchain
+
 - The app then appends its own `@/assets/styles/main.css` with `css: [...(baseConfig.css ?? []), '@/assets/styles/main.css']`
 
 This means:

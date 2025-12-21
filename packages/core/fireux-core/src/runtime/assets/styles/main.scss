@@ -1,0 +1,27 @@
+// FireUX design-system SCSS entrypoint.
+// This is intentionally additive to main.css (Tailwind + Nuxt UI).
+
+// NOTE: @use statements must come first.
+@use './scss/atoms/tokens';
+@use './scss/organisms/cards';
+@use './scss/organisms/profile-cards';
+@use './scss/organisms/profiles';
+@use './scss/organisms/sections';
+
+@mixin fx-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin fx-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

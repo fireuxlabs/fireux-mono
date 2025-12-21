@@ -1,6 +1,6 @@
 // FILE: packages/core/fireux-core/src/module.ts
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configVuefire } from 'fireux-core/config/app/vuefire'
+import { configVuefire } from './config/app/vuefire'
 import { configurePlugins } from './config/module/plugins-config'
 import { configurePages } from './config/module/pages-config'
 import { configureLayouts } from './config/module/layouts-config'
@@ -34,9 +34,7 @@ export default defineNuxtModule({
     configureAliases(resolver, nuxt as any)
 
     // Configure vuefire after the ecosystem module has injected firebaseEcosystem.
-    // Only run when the consuming app enables `nuxt-vuefire`.
-    const modules = (nuxt.options.modules || []) as any[]
-    const hasVuefire = modules.includes('nuxt-vuefire')
-    if (hasVuefire) configVuefire(nuxt)
+    // Safe to call unconditionally: it only applies config when env/runtime values exist.
+    configVuefire(nuxt)
   },
 })

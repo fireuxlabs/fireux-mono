@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useColorMode } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
@@ -56,7 +56,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser.ts'
 
 const router = useRouter()
-const { authState, signOutUser, signInWithGoogle } = useAuth()
+const { authState, signOutUser, signInWithGoogle, isReady, lastBindError } = useAuth()
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const signOutLoading = ref(false)
 const providerLoading = ref(false)
@@ -78,6 +78,20 @@ const currentUserPill = computed(() =>
   currentUser.value ? pillProps(currentUser.value) : null
 )
 
+onMounted(() => {
+  if (!import.meta.dev) return
+  // eslint-disable-next-line no-console
+  console.log('[fireux][auth] system mounted', {
+    isReady: isReady.value,
+    authState: authState.value,
+    hasBindError: !!lastBindError.value,
+  })
+  if (lastBindError.value) {
+    // eslint-disable-next-line no-console
+    console.warn('[fireux][auth] vuefire bind error', lastBindError.value)
+  }
+})
+
 const goToDashboard = async () => {
   await router.push('/dashboard').catch(() => {})
 }
@@ -93,10 +107,27 @@ const handleSignOut = async () => {
 }
 
 const handleGoogle = async () => {
+  if (import.meta.dev) {
+    const href = typeof window !== 'undefined' ? window.location.href : undefined
+    // eslint-disable-next-line no-console
+    console.log('[fireux][auth] google click', {
+      providerLoading: providerLoading.value,
+      isReady: isReady.value,
+      authState: authState.value,
+      href,
+    })
+  }
   if (providerLoading.value) return
   providerLoading.value = true
   try {
     const user = await signInWithGoogle()
+    if (import.meta.dev) {
+      // eslint-disable-next-line no-console
+      console.log('[fireux][auth] google result', {
+        uid: user?.uid ?? null,
+        hasUser: !!user,
+      })
+    }
     if (user?.uid) {
       await router.push('/dashboard').catch(() => {})
     }

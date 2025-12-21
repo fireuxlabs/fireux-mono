@@ -5,6 +5,7 @@ import { setRuntime } from './runtime'
 import { configPwa } from './pwa'
 import { configNitroFirebase } from './nitro'
 import { configViteWorkspace } from './vite'
+import { configVuefire } from './vuefire'
 
 export type FireuxAppConfig = {
   ecosystem: string
@@ -51,9 +52,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const hasFirebaseEcosystem =
     !!optEnv('NUXT_FIREBASE_API_KEY') &&
     !!optEnv('NUXT_FIREBASE_AUTH_DOMAIN') &&
-    !!optEnv('NUXT_FIREBASE_PROJECT_ID') &&
-    !!optEnv('NUXT_FIREBASE_STORAGE_BUCKET') &&
-    !!optEnv('NUXT_FIREBASE_MESSAGING_SENDER_ID')
+    !!optEnv('NUXT_FIREBASE_PROJECT_ID')
 
   nuxt.modules = [
     '@nuxt/ui',
@@ -61,13 +60,16 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     '@nuxt/content',
     `fireux-${app.ecosystem}`,
     'fireux-core',
-    ...(enableVuefire && hasFirebaseEcosystem ? ['nuxt-vuefire'] : []),
+    // Always register nuxt-vuefire when enabled. Firebase credentials may be
+    // injected by ecosystem modules rather than present in process.env.
+    ...(enableVuefire ? ['nuxt-vuefire'] : []),
     ...(enablePwa ? ['@vite-pwa/nuxt'] : []),
     ...(app.modules || []),
   ]
 
   nuxt.css = [
     'fireux-core/runtime/assets/styles/main.css',
+    'fireux-core/runtime/assets/styles/main.scss',
   ]
 
   const envDomain = reqEnv('APP_DOMAIN')
@@ -95,6 +97,12 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       developerPin: envPin,
     },
   })
+
+  // Configure nuxt-vuefire module options early (during config assembly), so
+  // VueFire Auth is registered before any composables call useCurrentUser().
+  if (enableVuefire && hasFirebaseEcosystem) {
+    configVuefire(nuxt)
+  }
 
   if (enablePwa) {
     configPwa(nuxt, {
