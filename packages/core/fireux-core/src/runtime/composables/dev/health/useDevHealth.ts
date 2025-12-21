@@ -7,7 +7,7 @@ export function useDevHealth(): DevHealthApi {
   const adminMatrix = useDevAdminHealth()
 
   const checks = computed<DevHealthResult[]>(() =>
-    [adminMatrix.value].filter(Boolean)
+    [adminMatrix.value].filter((v): v is DevHealthResult => Boolean(v))
   )
 
   const getChecksForScope = (

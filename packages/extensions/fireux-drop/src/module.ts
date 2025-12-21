@@ -1,4 +1,5 @@
 import { defineNuxtModule, createResolver, addImportsDir } from 'nuxt/kit'
+import type {} from 'nuxt/schema'
 
 declare module 'nuxt/schema' {
   interface NuxtConfig { drop?: Partial<typeof defaults> }

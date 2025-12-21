@@ -1,4 +1,4 @@
-import type { FirebaseProduct } from '../../../../../models/objects/product.model'
+import type { FirebaseProduct } from '#fireux-products/models/objects/product.model.ts'
 
 export function useProductValidation() {
   function validateProduct(product: Partial<FirebaseProduct>) {

@@ -3,7 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useCurrentUser } from 'vuefire'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import type { FirebaseProduct } from '../../../../models/objects/product.model'
+import type { FirebaseProduct } from '#fireux-products/models/objects/product.model.ts'
 
 type ProductDraft = Partial<FirebaseProduct> & {
   main_image?: string

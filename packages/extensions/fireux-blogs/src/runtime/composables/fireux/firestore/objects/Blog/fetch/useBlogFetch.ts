@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts'
-import type { BlogPost } from '../../../../../models/objects/blogPost.model.ts'
+import type { BlogPost } from '#fireux-blogs/models/blog/post.model.ts'
 
 /**
  * Fetch helpers for blog posts (list + single).

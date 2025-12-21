@@ -9,8 +9,9 @@ import {
 } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
 import imageSize from 'image-size'
-import type { ISizeCalculationResult } from 'image-size/dist/types/interface'
 import { fileURLToPath } from 'node:url'
+
+type ISizeCalculationResult = ReturnType<typeof imageSize>
 
 /** Typed shape consumed by the client */
 interface EnvVarEntry {

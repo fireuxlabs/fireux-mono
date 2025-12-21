@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, unref } from 'vue'
 import { useColorMode, definePageMeta, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 
@@ -43,8 +43,8 @@ onMounted(() => {
   console.log('[fireux][auth] page mounted', {
     path: route.fullPath,
     colorMode: colorMode.value,
-    isTenant: isTenant.value,
-    appName: appName.value,
+    isTenant: unref(isTenant),
+    appName: unref(appName),
   })
 })
 </script>

@@ -1,4 +1,5 @@
 import { defineNuxtModule, createResolver, addImportsDir } from 'nuxt/kit'
+import type {} from 'nuxt/schema'
 
 // Nuxt 4 public "extends" entry type (string or [src, { config }])
 type LayerEntry = string | [string, { config?: Record<string, any> }]

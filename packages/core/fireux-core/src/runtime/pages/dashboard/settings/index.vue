@@ -3,7 +3,7 @@ import { ref, reactive } from 'vue'
 // @ts-ignore - zod types are not required at build-time for this demo
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
-import { useToast } from '#imports'
+import { definePageMeta, useToast } from '#imports'
 
 definePageMeta({
   layout: 'dashboard',

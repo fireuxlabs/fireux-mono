@@ -1,4 +1,4 @@
-import type { BlogPost } from '../../../../../../models/objects/blogPost.model'
+import type { BlogPost } from '#fireux-blogs/models/blog/post.model.ts'
 
 export namespace BlogCard {
   export interface Base {

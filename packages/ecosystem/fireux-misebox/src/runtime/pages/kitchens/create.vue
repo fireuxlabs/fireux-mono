@@ -132,7 +132,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHead, useToast } from '#imports'
-import { useKitchenCreation } from '../../composables/firestore/objects/Kitchen/useKitchenCreation'
+import { useKitchenCreation } from '../../composables/fireux/firestore/objects/Kitchen/useKitchenCreation'
 
 const router = useRouter()
 const toast = typeof useToast === 'function' ? useToast() : undefined

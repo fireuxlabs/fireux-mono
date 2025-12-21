@@ -4,7 +4,7 @@ import type {
   DefaultPrice,
   Price,
   StripePriceInput,
-} from '../../../../../models/objects/product.model'
+} from '#fireux-products/models/objects/product.model.ts'
 
 export function useCreatePricesState() {
   const prices = useStorage<Partial<Price>[]>('createProductPrices', [

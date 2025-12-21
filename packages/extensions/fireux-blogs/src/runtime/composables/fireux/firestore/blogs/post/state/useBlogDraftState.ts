@@ -2,7 +2,7 @@ import { useStorage } from '@vueuse/core'
 import { onMounted } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useBlogUtils } from '../../../objects/Blog/utils/useBlogUtils.ts'
-import type { BlogPostEntry } from '../../../models/objects/blogPost.model.ts'
+import type { BlogPostEntry } from '#fireux-blogs/models/blog/post.model.ts'
 
 type BlogPostPayload = BlogPostEntry & {
   created_at: string

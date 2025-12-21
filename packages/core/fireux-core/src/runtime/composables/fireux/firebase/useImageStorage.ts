@@ -1,7 +1,6 @@
 import { useFirebaseStorage } from 'vuefire'
 import type { RuntimeConfig } from 'nuxt/schema'
-
-declare function useRuntimeConfig(): RuntimeConfig
+import { useRuntimeConfig } from '#imports'
 import {
   ref as storageRef,
   uploadBytes,
@@ -22,10 +21,10 @@ function getDefaultImageUrl(
  * - Returns the download URL
  */
 export function useImageStorage() {
-  const runtimeConfig = useRuntimeConfig()
+  const runtimeConfig = useRuntimeConfig() as RuntimeConfig
   const storage = resolveStorageBucket(useFirebaseStorage(), runtimeConfig)
   const debug = (...args: unknown[]) => {
-    if (import.meta.env?.DEV ?? import.meta.dev) {
+    if (process.env.NODE_ENV !== 'production') {
       console.log('[useImageStorage]', ...args)
     }
   }

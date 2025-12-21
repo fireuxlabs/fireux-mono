@@ -1,7 +1,7 @@
 import type {
   FirebaseProduct,
   Price,
-} from '../../../../../models/objects/product.model'
+} from '#fireux-products/models/objects/product.model.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
@@ -94,7 +94,7 @@ export function useProductFormatting() {
       .map((price: Price | undefined) =>
         price ? price.unit_amount : undefined
       )
-      .filter((value): value is number => typeof value === 'number')
+      .filter((value: unknown): value is number => typeof value === 'number')
       .sort((a: number, b: number) => a - b)
 
     const minPrice = amounts[0]

@@ -1,7 +1,4 @@
-import type {
-  Author,
-  BlogPost,
-} from '../../../../../models/objects/blogPost.model.ts'
+import type { Author, BlogPost } from '#fireux-blogs/models/blog/post.model.ts'
 
 function generateSlug(title: string): string {
   let out = title.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')

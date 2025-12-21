@@ -1,4 +1,4 @@
-import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobRoutes'
+import { getJobRoutes } from 'fireux-jobs/runtime/composables/fireux/app/routes/useJobRoutes'
 interface RouteLink {
   id: string
   label: string

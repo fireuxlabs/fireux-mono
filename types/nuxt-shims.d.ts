@@ -23,6 +23,17 @@ declare module '#imports' {
   // Explicit re-export so TS always sees the macro
   export const definePageMeta: typeof import('nuxt/app')['definePageMeta']
 
+  // Common Nuxt composables/macros used across package runtime.
+  // Keep these as loose types; real types come from app-generated .nuxt d.ts.
+  export function useRoute(...args: any[]): any
+  export function useRouter(...args: any[]): any
+  export function navigateTo(...args: any[]): any
+  export function useHead(...args: any[]): any
+  export function useSeoMeta(...args: any[]): any
+  export function useToast(...args: any[]): any
+  export function useFetch<T = any>(...args: any[]): any
+  export function useNuxtApp(...args: any[]): any
+
   // Minimal shims for package-context runtime plugins.
   // (In real apps these come from Nuxt-generated `#imports` types.)
   export function defineNuxtPlugin(...args: any[]): any

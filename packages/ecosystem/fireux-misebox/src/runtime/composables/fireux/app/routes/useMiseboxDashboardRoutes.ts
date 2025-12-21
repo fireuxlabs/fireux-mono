@@ -1,4 +1,4 @@
-import { getJobDashboardRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobDashboardRoutes'
+import { getJobDashboardRoutes } from 'fireux-jobs/runtime/composables/fireux/app/routes/useJobDashboardRoutes'
 interface RouteLink {
   id: string
   label: string

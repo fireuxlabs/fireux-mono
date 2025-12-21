@@ -1,4 +1,4 @@
-import type { FirebaseProduct } from '../../../../models/objects/product.model'
+import type { FirebaseProduct } from '#fireux-products/models/objects/product.model.ts'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 /** Lookup a product by slug (server-side friendly). */

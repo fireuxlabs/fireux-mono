@@ -1,9 +1,7 @@
-// Declare minimal type for Nuxt runtime config to satisfy package-level tsc without Nuxt context
-declare function useRuntimeConfig(): { public?: { role?: string } }
+import { useRuntimeConfig } from '#imports'
 
 export function getMiseboxDevRoutes() {
-  const rc =
-    typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : undefined
+  const rc = useRuntimeConfig() as any
   const role = rc?.public?.role
 
   const routes = [

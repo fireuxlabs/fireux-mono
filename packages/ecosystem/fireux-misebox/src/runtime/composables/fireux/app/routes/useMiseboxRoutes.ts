@@ -1,9 +1,7 @@
 // packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/routes/useMiseboxRoutes.ts
 // Tenant-only navigation builder (no core links). Provides flat array and pre-filtered subsets.
 import { computed } from 'vue'
-// Avoid restricted deep imports: rely on Nuxt auto-import for useUser
-// and define a minimal local RouteLink type compatible with core.
-declare function useUser(): any
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 interface RouteLink {
   id: string
   label: string
@@ -11,7 +9,7 @@ interface RouteLink {
   to?: string
   children?: RouteLink[]
 }
-import { getJobRoutes } from '../../../../../../../extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobRoutes'
+import { getJobRoutes } from 'fireux-jobs/runtime/composables/fireux/app/routes/useJobRoutes'
 
 export function useMiseboxRoutes() {
   const { user } = useUser()
