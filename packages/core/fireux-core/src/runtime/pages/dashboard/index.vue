@@ -170,8 +170,6 @@
 <script setup lang="ts">
 import { definePageMeta } from '#imports'
 // Removed duplicate definePageMeta declaration
-import type { DropdownMenuItem } from '@nuxt/ui'
-import { computed, ref } from 'vue'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser.ts'
 
 definePageMeta({
