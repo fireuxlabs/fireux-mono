@@ -30,6 +30,8 @@ const NUKE_NAMES = new Set([
   '.nitro',
   '.cache',
   '.data',
+  '--port',
+  '--clear',
 ])
 
 const NUKE_FILES = new Set([
