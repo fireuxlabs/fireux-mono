@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { App } from '../../../../models/core/app.model'
 
 withDefaults(defineProps<{ app?: App | null }>(), { app: null })
 </script>

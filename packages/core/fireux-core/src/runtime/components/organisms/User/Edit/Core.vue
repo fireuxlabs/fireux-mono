@@ -95,11 +95,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser.ts'
-import { useToastify } from '../../../../composables/fireux/app/ui/useToastify.ts'
-import { useUserFormattingAndValidation } from '../../../../composables/fireux/firestore/core/user/utils/validation/useUserFormatting.ts'
-import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp.ts'
+import type { User } from '../../../../models/core/user.model'
+import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
+import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
+import { useUserFormattingAndValidation } from '../../../../composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
+import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 
 const props = defineProps<{ user: User | null }>()
 

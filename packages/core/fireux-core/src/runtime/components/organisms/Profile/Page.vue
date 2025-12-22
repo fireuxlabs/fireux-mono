@@ -68,9 +68,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { navigateTo, useHead, useRoute, useSeoMeta } from '#imports'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
-import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
+import { useFirestoreRead } from '../../../composables/fireux/firestore/operations/useFirestoreRead'
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
+import type { ProfileConfig } from '../../../models/core/profile.model'
 
 /** Props */
 const props = defineProps<{

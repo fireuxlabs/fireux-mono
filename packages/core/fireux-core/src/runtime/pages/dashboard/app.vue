@@ -13,19 +13,15 @@
       <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
         <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
           <template #preview>
-            <OrganismsAppPreview />
+            <OrganismsAppPreview :app="appSnapshot" :compact="false" />
           </template>
 
           <template #core>
-            <div class="rounded border border-dashed border-slate-300 p-6">
-              2
-            </div>
+            <OrganismsAppEditCore :app="appSnapshot" />
           </template>
 
           <template #app>
-            <div class="rounded border border-dashed border-slate-300 p-6">
-              3
-            </div>
+            <OrganismsAppEditApp :app="appSnapshot" />
           </template>
         </LayoutsDashboardProfileEdit>
       </div>
@@ -34,7 +30,19 @@
 </template>
 
 <script setup lang="ts">
-import OrganismsAppPreview from 'fireux-core/runtime/components/organisms/App/Preview.vue'
+import { computed } from 'vue'
+import { definePageMeta } from '#imports'
+import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
+import OrganismsAppPreview from '../../components/organisms/App/Preview.vue'
+import OrganismsAppEditCore from '../../components/organisms/App/Edit/Core.vue'
+import OrganismsAppEditApp from '../../components/organisms/App/Edit/App.vue'
+
+const { app, pending } = useApp()
+
+const appSnapshot = computed(() => {
+  if (pending.value) return null
+  return app.value ?? null
+})
 
 definePageMeta({
   layout: 'dashboard',

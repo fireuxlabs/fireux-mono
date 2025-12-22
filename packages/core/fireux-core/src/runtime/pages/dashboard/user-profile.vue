@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser.ts'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
 definePageMeta({
   layout: 'dashboard',

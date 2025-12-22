@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
-import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
+import type { UserCard } from '../../../../models/core/user.model'
 import OrganismsUserCardsPill from './Pill.vue'
 
 const props = defineProps<{

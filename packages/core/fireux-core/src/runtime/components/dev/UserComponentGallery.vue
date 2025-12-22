@@ -48,8 +48,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface.ts'
+import type { User } from '../../models/core/user.model'
+import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 defineOptions({ name: 'DevUserComponentGallery' })
 

@@ -49,6 +49,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { definePageMeta } from '#imports'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useAppUsers } from '../../composables/fireux/firestore/core/app/fetch/useAppUsers'
@@ -70,12 +71,12 @@ definePageMeta({
   description: 'Developer view for Apps with section-level dev panels.',
 })
 
-const { app, isInitialized } = useApp()
+const { app, pending, showOnboardingBlocker } = useApp()
 const { users } = useAppUsers()
 const { apps } = useAppCollection()
 const { getChecksForScope } = useDevHealth()
 
-const isLoading = computed(() => app.value === undefined)
+const isLoading = computed(() => app.value === undefined || pending.value)
 const appSnapshot = computed(() => app.value ?? null)
 const appUsersList = computed(() => users.value ?? [])
 const appsList = computed(() => apps.value ?? [])
@@ -83,7 +84,8 @@ const appsList = computed(() => apps.value ?? [])
 const currentAppDev = computed(() => ({
   flags: {
     isLoading: isLoading.value,
-    isInitialized: isInitialized.value,
+    showOnboardingBlocker: showOnboardingBlocker.value,
+    isInitialized: !showOnboardingBlocker.value && app.value !== undefined,
     hasApp: Boolean(appSnapshot.value),
   },
   app: appSnapshot.value,

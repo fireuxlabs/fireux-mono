@@ -1,5 +1,112 @@
 // FILE: packages/core/fireux-nuxtfire/src/module.ts
+import { existsSync } from 'node:fs'
+import { join, resolve } from 'node:path'
+
 import { addPlugin, createResolver, defineNuxtModule, installModule } from '@nuxt/kit'
+
+function findMonorepoRoot(startDir: string): string {
+  let dir = startDir
+  for (let i = 0; i < 12; i++) {
+    if (existsSync(join(dir, 'pnpm-workspace.yaml'))) return dir
+    const parent = resolve(dir, '..')
+    if (parent === dir) break
+    dir = parent
+  }
+  return startDir
+}
+
+function pickFirebaseEcosystemId(nuxt: any): string | undefined {
+  const runtime = (nuxt?.options?.runtimeConfig ?? {}) as any
+  const pub = (runtime.public ?? {}) as any
+  const id = pub?.firebaseEcosystem?.id
+  return typeof id === 'string' && id.trim() ? id.trim() : undefined
+}
+
+function pickEcoServiceAccountFilePath(nuxt: any): string | undefined {
+  const ecoId = pickFirebaseEcosystemId(nuxt)
+  if (!ecoId) return
+
+  const startDir =
+    (typeof nuxt?.options?.rootDir === 'string' && nuxt.options.rootDir) || process.cwd()
+  const root = findMonorepoRoot(startDir)
+
+  // Ecosystem packages are typically under `packages/ecosystem/` and may be named:
+  // - fireux-cleanbox (already prefixed)
+  // - fireux-fireux   (derived from eco id: fireux)
+  const candidates = [ecoId]
+  if (!ecoId.startsWith('fireux-')) candidates.push(`fireux-${ecoId}`)
+
+  for (const pkgName of candidates) {
+    const p = join(
+      root,
+      'packages',
+      'ecosystem',
+      pkgName,
+      'src',
+      'config',
+      'firebase',
+      'service-account.json'
+    )
+    if (existsSync(p)) return p
+  }
+}
+
+function ensureGoogleApplicationCredentialsEnv(nuxt: any): boolean {
+  // nuxt-vuefire uses GOOGLE_APPLICATION_CREDENTIALS to decide whether it can
+  // enable its SSR/admin plugins. In FireUX, our canonical contract is
+  // FIREBASE_SERVICE_ACCOUNT (JSON) or FIREBASE_SERVICE_ACCOUNT_FILE (path).
+  const existing = process.env.GOOGLE_APPLICATION_CREDENTIALS
+  if (typeof existing === 'string' && existing.trim()) return true
+
+  // First, try to load from the local ecosystem package (dev-friendly).
+  // This is intentionally server-only and avoids leaking any credential contents.
+  const ecoFile = pickEcoServiceAccountFilePath(nuxt)
+  if (ecoFile) {
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = ecoFile
+    return true
+  }
+
+  const file = process.env.FIREBASE_SERVICE_ACCOUNT_FILE
+  if (typeof file === 'string' && file.trim()) {
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = file.trim()
+    return true
+  }
+
+  const inline = process.env.FIREBASE_SERVICE_ACCOUNT
+  if (typeof inline === 'string' && inline.trim()) {
+    const raw = inline.trim()
+    if (raw.startsWith('{')) {
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = raw
+      return true
+    }
+
+    // Some environments provide the service account JSON base64-encoded.
+    try {
+      const decoded = Buffer.from(raw, 'base64').toString('utf8').trim()
+      if (decoded.startsWith('{')) {
+        process.env.GOOGLE_APPLICATION_CREDENTIALS = decoded
+        return true
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // Support split-key env format (canonical in parts of FireUX).
+  const projectId = process.env.FIREBASE_PROJECT_ID?.trim()
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim()
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.trim()
+  if (projectId && clientEmail && privateKey) {
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = JSON.stringify({
+      project_id: projectId,
+      client_email: clientEmail,
+      private_key: privateKey,
+    })
+    return true
+  }
+
+  return false
+}
 
 type FirebaseEcosystemConfig = {
   apiKey?: string
@@ -35,9 +142,8 @@ export default defineNuxtModule({
 
     const isDev = !!(nuxt.options as any).dev
 
-    const hasServiceAccount =
-      typeof process.env.GOOGLE_APPLICATION_CREDENTIALS === 'string' &&
-      process.env.GOOGLE_APPLICATION_CREDENTIALS.length > 0
+    // Ensure nuxt-vuefire can see the service account if FireUX has provided it.
+    const hasServiceAccount = ensureGoogleApplicationCredentialsEnv(nuxt)
 
     const { eco, app } = pickFirebaseRuntime(nuxt)
 
@@ -102,7 +208,9 @@ export default defineNuxtModule({
 
     if (isDev) {
       // eslint-disable-next-line no-console
-      console.info('[fireux-nuxtfire] vuefire configured: yes, auth enabled: yes')
+      console.info('[fireux-nuxtfire] vuefire configured: yes, auth enabled: yes', {
+        serviceAccount: hasServiceAccount ? 'yes' : 'no',
+      })
     }
 
     // Canonical Firebase Web SDK init (client only).

@@ -25,10 +25,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection.ts'
-import { useAppInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import type { AppCard } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts'
+import { useAppCollection } from '../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
+import { useAppInterface } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import type { App } from '../../../models/core/app.model'
+import type { AppCard } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
 const { apps } = useAppCollection()
 const { pillProps } = useAppInterface()

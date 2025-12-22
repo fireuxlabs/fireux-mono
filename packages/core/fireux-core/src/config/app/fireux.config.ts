@@ -31,42 +31,42 @@ function optEnv(name: string): string | undefined {
   return trimmed ? trimmed : undefined
 }
 
-function boolEnv(name: string, fallback = false): boolean {
-  const v = optEnv(name)
-  if (!v) return fallback
-  return ['1', 'true', 'yes', 'on'].includes(v.toLowerCase())
-}
-
 export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const nuxt: NuxtConfig = {}
 
   // Align Nitro defaults with our current baseline.
   // Prevents runtime fallback warnings during dev.
-  ;(nuxt as any).compatibilityDate = '2025-12-21'
+  ;(nuxt as any).compatibilityDate = '2025-12-22'
   ;(nuxt.nitro as any) = {
     ...((nuxt.nitro as any) || {}),
-    compatibilityDate: '2025-12-21',
+    compatibilityDate: '2025-12-22',
   }
 
   nuxt.srcDir = 'app'
   nuxt.imports = { dirs: ['composables/**', 'utils/**'] }
 
-  const enablePwa = boolEnv('FIREUX_ENABLE_PWA', false)
-  const enableNitroFirebase = boolEnv('FIREUX_ENABLE_NITRO_FIREBASE', false)
-  const enableViteWorkspace = boolEnv('FIREUX_ENABLE_VITE_WORKSPACE', false)
-  const enableVuefire = boolEnv('FIREUX_ENABLE_VUEFIRE', true)
-
   nuxt.modules = [
+    '@nuxt/eslint',
     '@nuxt/ui',
     '@nuxt/icon',
     '@nuxt/content',
     `fireux-${app.ecosystem}`,
     // VueFire/Firebase wiring lives in fireux-nuxtfire.
-    ...(enableVuefire ? ['fireux-nuxtfire'] : []),
+    'fireux-nuxtfire',
     'fireux-core',
-    ...(enablePwa ? ['@vite-pwa/nuxt'] : []),
+    '@vite-pwa/nuxt',
     ...(app.modules || []),
   ]
+
+  // Prefer Node's built-in SQLite (Node >= 22.5) to avoid native addon deps.
+  // Nuxt Content will otherwise default to better-sqlite3 in Node.
+  ;(nuxt as any).content = {
+    ...((nuxt as any).content || {}),
+    experimental: {
+      ...(((nuxt as any).content || {}).experimental || {}),
+      sqliteConnector: 'native',
+    },
+  }
 
   nuxt.css = [
     'fireux-core/runtime/assets/styles/main.css',
@@ -92,27 +92,21 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     },
   })
 
-  if (enablePwa) {
-    configPwa(nuxt, {
-      name: app.name,
-      shortName: app.shortName,
-      description: app.description,
-      themeColor: '#000000',
-      backgroundColor: '#000000',
-      lang: 'en',
-    })
-  }
+  configPwa(nuxt, {
+    name: app.name,
+    shortName: app.shortName,
+    description: app.description,
+    themeColor: '#000000',
+    backgroundColor: '#000000',
+    lang: 'en',
+  })
 
-  if (enableNitroFirebase) {
-    configNitroFirebase(nuxt, {
-      serverFunctionName: app.id,
-      region: process.env.NITRO_FIREBASE_REGION || 'europe-west1',
-    })
-  }
+  configNitroFirebase(nuxt, {
+    serverFunctionName: app.id,
+    region: process.env.NITRO_FIREBASE_REGION || 'europe-west1',
+  })
 
-  if (enableViteWorkspace) {
-    configViteWorkspace(nuxt)
-  }
+  configViteWorkspace(nuxt)
 
   return nuxt
 }

@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 const { devMode } = useFireUXConfig()
 </script>
 

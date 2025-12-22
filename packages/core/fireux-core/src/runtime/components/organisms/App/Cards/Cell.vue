@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
+import type { App } from '../../../../models/core/app.model'
 
 const props = defineProps<{
   app?: Partial<App> | null

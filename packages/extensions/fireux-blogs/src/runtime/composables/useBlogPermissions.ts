@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useUser } from '#fireux-core-composables/fireux/firestore/core/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 
 export function useBlogPermissions() {
   const { isAdmin, appUser } = useUser()

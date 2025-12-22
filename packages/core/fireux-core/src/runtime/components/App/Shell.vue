@@ -61,16 +61,11 @@ import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 const isDev = import.meta.dev
 const router = useRouter()
 
-const { app, isInitialized } = import.meta.client
+const { showOnboardingBlocker } = import.meta.client
   ? useApp()
-  : ({ app: computed(() => undefined), isInitialized: computed(() => true) } as const)
+  : ({ showOnboardingBlocker: computed(() => false) } as const)
 
-const showOnboardingModal = computed(() => {
-  // While the app doc is unresolved (undefined), assume initialized.
-  // Only block once we definitively know initialization is missing.
-  if (app.value === undefined) return false
-  return !isInitialized.value
-})
+const showOnboardingModal = computed(() => showOnboardingBlocker.value)
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],

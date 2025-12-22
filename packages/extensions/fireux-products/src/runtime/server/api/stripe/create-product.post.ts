@@ -1,5 +1,6 @@
 // ~/server/api/stripe/create-product.post.ts
 import { defineEventHandler, readBody, createError, type H3Event } from 'h3'
+import { createRequire } from 'node:module'
 import { STRIPE_API_VERSION } from '../../stripe/version'
 
 export default defineEventHandler(async (event: H3Event) => {
@@ -14,9 +15,15 @@ export default defineEventHandler(async (event: H3Event) => {
     }
 
     // Lazy import Stripe so dev without the package/env won’t crash at load time
-    const { default: Stripe } = await import('stripe').catch(() => ({
-      default: null as any,
-    }))
+    const require = createRequire(import.meta.url)
+    let Stripe: any = null
+    try {
+      Stripe = require('stripe')
+      if (Stripe?.default) Stripe = Stripe.default
+    } catch {
+      Stripe = null
+    }
+
     if (!Stripe) {
       throw createError({
         statusCode: 501,

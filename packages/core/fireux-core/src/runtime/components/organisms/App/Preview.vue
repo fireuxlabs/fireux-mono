@@ -27,9 +27,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import type { AppCard } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts'
-import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp.ts'
+import type { App } from '../../../models/core/app.model'
+import type { AppCard } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
 
 const props = withDefaults(
   defineProps<{ app?: App | null; compact?: boolean }>(),

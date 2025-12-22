@@ -116,10 +116,10 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
-import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface.ts'
+import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import type { UserCard } from '../../../../models/core/user.model'
-import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch.ts'
-import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface.ts'
+import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 type Props = { app: AppCard.Profile | null }
 const props = defineProps<Props>()

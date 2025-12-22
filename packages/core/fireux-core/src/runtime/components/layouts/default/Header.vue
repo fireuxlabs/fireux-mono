@@ -50,9 +50,9 @@
 
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
-import { useDefaultNav } from 'fireux-core/runtime/composables/fireux/app/routing/presets.ts'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth.ts'
-import { useUser } from '../../../composables/fireux/firestore/core/user/useUser.ts'
+import { useDefaultNav } from '../../../composables/fireux/app/routing/presets'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 defineOptions({ name: 'LayoutsDefaultHeader' })
 

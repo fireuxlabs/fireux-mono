@@ -22,8 +22,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 const { appName, ecosystem } = useFireUXConfig()
 const { cta, ensureCore, ensureApp } = useUser()

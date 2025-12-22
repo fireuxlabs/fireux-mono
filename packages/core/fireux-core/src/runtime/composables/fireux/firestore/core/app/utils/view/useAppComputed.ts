@@ -8,6 +8,11 @@ export function useAppComputed(
   pending?: Ref<boolean>,
   currentUser?: Ref<User | null | undefined>
 ) {
+  const isResolved = computed(() => {
+    if (pending?.value) return false
+    return app.value !== undefined
+  })
+
   const adminIds = computed(() => {
     const raw = Array.isArray(app.value?.admin_ids)
       ? (app.value?.admin_ids as Array<string | null | undefined>)
@@ -22,12 +27,11 @@ export function useAppComputed(
     )
   })
 
-  const isInitialized = computed(() => {
-    if (pending?.value) return false
-    const value = app.value
-    if (value === undefined) return false
-    if (!adminIds.value.length) return false
-    return true
+  const showOnboardingBlocker = computed(() => {
+    // Only block once the app doc has resolved.
+    // While loading/unresolved, we do not want a UI "flash".
+    if (!isResolved.value) return false
+    return adminIds.value.length === 0
   })
 
   const isCurrentUserAdmin = computed(() => {
@@ -37,7 +41,7 @@ export function useAppComputed(
   })
 
   return {
-    isInitialized,
+    showOnboardingBlocker,
     adminIds,
     isCurrentUserAdmin,
   }

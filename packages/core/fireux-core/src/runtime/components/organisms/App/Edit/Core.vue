@@ -116,18 +116,18 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { App } from 'fireux-core/runtime/models/core/app.model.ts'
-import { useAppUpdate } from 'fireux-core/runtime/composables/fireux/firestore/core/app/mutations/useAppUpdate.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppUsers.ts'
-import { useAppJoinRequests } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/useAppJoinRequests.ts'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
-import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch.ts'
-import { useToastify } from '../../../../composables/fireux/app/ui/useToastify.ts'
+import type { App } from '../../../../models/core/app.model'
+import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
+import { useAppUsers } from '../../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
+import { useAppJoinRequests } from '../../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
+import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
+import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
 
-const props = defineProps<{ app: App }>()
+const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
 
 const appRef = computed(() => props.app)
-const appIdRef = computed(() => props.app.id ?? null)
+const appIdRef = computed(() => props.app?.id ?? null)
 const app = appRef
 
 const toast = useToastify()

@@ -12,15 +12,13 @@
     "clean": "rimraf .nuxt dist"
   },
   "dependencies": {
-    "@nuxt/content": "^2.13.1",
+    "@nuxt/content": "^3.6.3",
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
-    "better-sqlite3": "^12.4.6",
     "firebase-admin": "^12.7.0",
     "firebase-functions": "^6.3.2",
     "fireux-core": "workspace:*",
     "fireux-fireux": "workspace:*",
-    "better-sqlite3": "^11.5.0",
     "nuxt": "4.1.2",
     "vue": "3.5.20",
     "vue-router": "4.5.1"

@@ -8,6 +8,8 @@ import { useCoreUserUpdate } from '../utils/update/useCoreUserUpdate'
 import { useAppUserUpdate } from '../utils/update/useAppUserUpdate'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 
+const loggedInitKeys = new Set<string>()
+
 export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
   const core = useCoreUserUpdate(user)
   const app = useAppUserUpdate(user)
@@ -25,10 +27,14 @@ export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
     source: sourceLabel,
   }
 
-  if (!coreId || !appId) {
-    console.warn('[useUserUpdate] context incomplete', payload)
-  } else {
-    console.info('[useUserUpdate] initialized', payload)
+  // During initial boot, it is normal for user/app context to be unavailable.
+  // Only log once when fully initialized, and only in dev.
+  if (cfg.devMode && coreId && appId) {
+    const key = `${sourceLabel}:${coreId}:${appId}`
+    if (!loggedInitKeys.has(key)) {
+      loggedInitKeys.add(key)
+      console.info('[useUserUpdate] initialized', payload)
+    }
   }
 
   return {

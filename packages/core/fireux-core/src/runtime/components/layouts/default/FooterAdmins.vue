@@ -29,12 +29,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp.ts'
-import { useAppUsers } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppUsers.ts'
-import { useUserCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserCollection.ts'
-import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import type { UserCard } from 'fireux-core/runtime/models/core/user.model.ts'
+import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
+import { useAppUsers } from '../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
+import { useUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
+import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import type { UserCard } from '../../../models/core/user.model'
 
 const { app } = useApp()
 const { users, pending } = useAppUsers()
