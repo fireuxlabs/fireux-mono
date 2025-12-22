@@ -295,13 +295,13 @@ import { useAgentCollection } from '../../composables/fireux/firestore/profiles/
 import {
   resolveProfessionalPill,
   resolveProfessionalPillKey,
-} from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
+} from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
 import type {
   ProfessionalProfile,
   ProfessionalCard,
-} from '../../models/profiles/Professional/Professional.model.ts'
-import type { AgentProfile } from '../../models/profiles/Agent/Agent.model.ts'
-import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface.ts'
+} from '../../models/profiles/Professional/Professional.model'
+import type { AgentProfile } from '../../models/profiles/Agent/Agent.model'
+import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
 
 definePageMeta({
   layout: 'dev',

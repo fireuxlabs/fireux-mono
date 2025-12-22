@@ -1,5 +1,5 @@
-import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
-import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
+import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
+import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model'
 import { chefConfig } from './supporting'
 
 /** Unified Chef wrapper (core + app overlays) */
@@ -35,7 +35,6 @@ export namespace ChefCard {
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
     title?: string | null
-    /** @deprecated use tagline */
     subtitle?: string | null
     tagline?: string | null
     badges?: string[]
@@ -53,7 +52,6 @@ export namespace ChefCard {
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
     title?: string | null
-    /** @deprecated use tagline */
     subtitle?: string | null
     tagline?: string | null
     badges?: string[]
@@ -87,14 +85,14 @@ export const resolveChefCell = (
 
   const id = profile.id ?? user?.id ?? fallbackId
 
-  const tagline =
-    profile.tagline ?? (profile as { subtitle?: string | null })?.subtitle ?? ''
+  const subtitle = profile.subtitle ?? null
+  const tagline = profile.tagline ?? null
 
   return {
     id,
     avatar: user?.avatar ?? undefined,
     title: user?.display_name ?? profile.title ?? 'Chef',
-    subtitle: tagline,
+    subtitle,
     tagline,
     badges: profile.badges ?? [],
     bio_short: profile.bio_short ?? null,

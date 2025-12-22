@@ -4,7 +4,7 @@ import {
   agentConfig,
   type Agent,
   type AgentProfile,
-} from '../../../../../../models/profiles/Agent/Agent.model.ts'
+} from '../../../../../../models/profiles/Agent/Agent.model'
 
 export namespace AgentCard {
   export interface Pill {

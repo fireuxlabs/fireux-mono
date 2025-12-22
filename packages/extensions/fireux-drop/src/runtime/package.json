@@ -1,0 +1,5 @@
+{
+  "name": "fireux-drop-runtime",
+  "private": true,
+  "type": "module"
+}

@@ -39,18 +39,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AgentCoreProfile } from '../../../../../models/profiles/Agent/Agent.model.ts'
-import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentUpdate.ts'
-import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting.ts'
+import { useToast } from '#imports'
+import type { AgentProfile } from '../../../../../models/profiles/Agent/Agent.model'
+import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentUpdate'
+import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
 
-const props = defineProps<{ agent: AgentCoreProfile | null }>()
+const props = defineProps<{ agent: AgentProfile | null }>()
 
 const agent = computed(() => props.agent ?? null)
 const { updateAgencyName, updateTagline, updateBioShort } = useAgentUpdate()
 const { DisplayName } = useUserFormattingAndValidation()
 
-const useToastFn = (globalThis as any).useToast as undefined | (() => any)
-const toast = useToastFn ? useToastFn() : undefined
+const toast = useToast()
 
 const agencyName = computed(
   () => agent.value?.title ?? agent.value?.user?.display_name ?? ''
@@ -58,12 +58,7 @@ const agencyName = computed(
 
 const bioShort = computed(() => agent.value?.user?.bio ?? '')
 
-const tagline = computed(
-  () =>
-    agent.value?.tagline ??
-    (agent.value as { subtitle?: string | null } | null)?.subtitle ??
-    ''
-)
+const tagline = computed(() => agent.value?.tagline ?? '')
 
 const handleAgencyName = async (value: string) => {
   if (!agent.value) return 'success'

@@ -6,6 +6,3 @@ export interface FireuxModuleRegistryDoc {
   name: string
   team: string
 }
-
-/** @deprecated Temporary alias used by the modules directory UI. */
-export type FireuxModuleSummary = FireuxModuleRegistryDoc

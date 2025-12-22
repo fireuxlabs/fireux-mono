@@ -10,7 +10,7 @@ export interface FirestoreTimestamp {
 }
 
 /**
- * Firestore timestamps returned by the SDK omit the tag; keep compatibility.
+ * Firestore timestamps returned by some SDK paths omit the tag.
  */
 export type FirebaseTimestamp = Omit<FirestoreTimestamp, 'type'>
 

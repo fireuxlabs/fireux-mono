@@ -1,5 +1,5 @@
-import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
-import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
+import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
+import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model'
 import type {
   RelevantExperienceItem,
   OtherExperienceItem,
@@ -40,7 +40,6 @@ export namespace ProfessionalCard {
     updated_at?: Profile['updated_at']
     // Domain profile fields (previously on ProfessionalProfile)
     title?: string | null
-    /** @deprecated use tagline */
     subtitle?: string | null
     tagline?: string | null
     badges?: string[]
@@ -61,7 +60,6 @@ export namespace ProfessionalCard {
     created_at?: Profile['created_at']
     updated_at?: Profile['updated_at']
     title?: string | null
-    /** @deprecated use tagline */
     subtitle?: string | null
     tagline?: string | null
     bio_short?: string | null
@@ -93,20 +91,19 @@ export const resolveProfessionalCell = (
 
   const id = profile.id ?? user?.id ?? fallbackId
 
-  const tagline =
-    profile.tagline ?? (profile as { subtitle?: string | null })?.subtitle ?? ''
+  const subtitle = profile.subtitle ?? null
+  const tagline = profile.tagline ?? null
 
   return {
     id,
     avatar: user?.avatar ?? undefined,
     title: user?.display_name ?? profile.title ?? 'Professional',
-    subtitle: tagline,
+    subtitle,
     tagline,
     badges: profile.badges ?? [],
     bio_short: profile.bio_short ?? null,
     specialties: profile.specialties ?? [],
-    // legacy support: some callers expect locations field even if not typed
-    locations: (profile as { locations?: string[] }).locations ?? [],
+    locations: profile.locations ?? [],
     to: routeFor(profile.id),
   } as ProfessionalCard.Cell
 }

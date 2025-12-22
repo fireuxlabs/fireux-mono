@@ -17,3 +17,8 @@ artifacts/
 /scripts/guard.mjs
 /scripts/clean.mjs
 /scripts/gitsave.sh
+
+# Ecosystem Firebase credentials (human-managed; may contain secrets)
+/packages/ecosystem/fireux-fireux/src/config/firebase/
+/packages/ecosystem/fireux-misebox/src/config/firebase/
+/packages/ecosystem/fireux-cleanbox/src/config/firebase/

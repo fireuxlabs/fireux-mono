@@ -35,15 +35,6 @@ function resolveToast(): ToastApi | null {
     }
   }
 
-  const legacyUseToast = (globalThis as any)?.useToast
-  if (typeof legacyUseToast === 'function') {
-    try {
-      return legacyUseToast()
-    } catch (error) {
-      console.warn('[useToastify] Failed to resolve legacy useToast()', error)
-    }
-  }
-
   return null
 }
 

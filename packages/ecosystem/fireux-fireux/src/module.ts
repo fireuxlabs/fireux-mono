@@ -11,14 +11,17 @@ export default defineNuxtModule({
   },
 
   setup(_options, nuxt) {
-    console.log(
-      '[fireux-fireux/module] loaded ecosystemConfig.id',
-      ecosystemConfig?.id
-    )
-    console.log(
-      '[fireux-fireux/module] loaded ecosystemConfig.firebase',
-      ecosystemConfig?.firebase
-    )
+    const debug = !!process.env.FIREUX_DEBUG_ECOSYSTEM
+    if (debug) {
+      console.log(
+        '[fireux-fireux/module] loaded ecosystemConfig.id',
+        ecosystemConfig?.id
+      )
+      console.log(
+        '[fireux-fireux/module] loaded ecosystemConfig.firebase',
+        ecosystemConfig?.firebase
+      )
+    }
 
     // 🔎 Make the runtime write-shape explicit
     setRuntimeFirebaseEcosystem(nuxt as any, {
@@ -30,9 +33,11 @@ export default defineNuxtModule({
 
     // 🔎 Confirm it actually landed where we expect
     const pub = (nuxt.options.runtimeConfig as any)?.public
-    console.log(
-      '[fireux-fireux/module] after setRuntimeFirebaseEcosystem public.firebaseEcosystem',
-      pub?.firebaseEcosystem
-    )
+    if (debug) {
+      console.log(
+        '[fireux-fireux/module] after setRuntimeFirebaseEcosystem public.firebaseEcosystem',
+        pub?.firebaseEcosystem
+      )
+    }
   },
 })

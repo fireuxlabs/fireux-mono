@@ -1,8 +1,8 @@
-import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection.ts'
+import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
 import {
   agentConfig,
   type AgentProfile,
-} from '../../../../../../models/profiles/Agent/Agent.model.ts'
+} from '../../../../../../models/profiles/Agent/Agent.model'
 
 export function useAgentCollection() {
   const {

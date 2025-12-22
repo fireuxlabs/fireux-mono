@@ -1,21 +1,20 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/useAgent.ts
 
 import { computed } from 'vue'
-import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile.ts'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import {
   agentConfig,
   type Agent,
-  type AgentCoreProfile,
   type AgentProfile,
-} from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model.ts'
-import { useAgentComputed } from './main/useAgentComputed.ts'
-import { useAgentInterface } from './main/useAgentInterface.ts'
-import type { AgentCard } from './main/useAgentInterface.ts'
-import { useAgentUpdate } from './main/useAgentUpdate.ts'
-import { useAgentCreate } from './main/useAgentCreate.ts'
+} from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
+import { useAgentComputed } from './main/useAgentComputed'
+import { useAgentInterface } from './main/useAgentInterface'
+import type { AgentCard } from './main/useAgentInterface'
+import { useAgentUpdate } from './main/useAgentUpdate'
+import { useAgentCreate } from './main/useAgentCreate'
 
-export type { AgentProfile, AgentCoreProfile, AgentCard }
+export type { AgentProfile, AgentCard }
 
 export function useAgent() {
   const { profile: refs, pending } = useProfile<AgentProfile>(agentConfig)

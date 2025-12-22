@@ -13,12 +13,10 @@
       "require": "./src/module.ts"
     },
     "./runtime/*": "./src/runtime/*",
-    "./config/*": "./config/*",
     "./package.json": "./package.json"
   },
   "files": [
-    "src/**/*",
-    "config/**/*"
+    "src/**/*"
   ],
   "scripts": {
     "build": "nuxt-module-build build",

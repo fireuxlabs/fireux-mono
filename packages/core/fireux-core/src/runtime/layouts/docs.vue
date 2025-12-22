@@ -64,13 +64,12 @@
 
 <script setup lang="ts">
 import { computed, provide } from 'vue'
-import { fetchContentNavigation } from '#imports'
 
 defineOptions({ name: 'docs' })
 
 const { data: navigationRaw } = await useAsyncData(
   'fireux-docs-navigation',
-  () => fetchContentNavigation({ source: 'fireuxDocs' })
+  () => queryCollectionNavigation('fireuxDocs')
 )
 
 function withDocsBase(items: any[] = []) {

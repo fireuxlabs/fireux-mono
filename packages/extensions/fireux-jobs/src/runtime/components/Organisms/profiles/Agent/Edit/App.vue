@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AgentProfile } from '../../../../../models/profiles/Agent/Agent.model.ts'
+import type { AgentProfile } from '../../../../../models/profiles/Agent/Agent.model'
 
 defineProps<{
   agent: Partial<AgentProfile> | null | undefined

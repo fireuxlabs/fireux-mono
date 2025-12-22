@@ -11,6 +11,7 @@
     "./types/*": "./src/types/*.ts",
     "./config/app/*": "./src/config/app/*.ts",
     "./config/module/*": "./src/config/module/*.ts",
+    "./config/nuxt/*": "./src/config/nuxt/*.ts",
 
     "./runtime": "./src/runtime/index.ts",
     "./runtime/*": "./src/runtime/*",
@@ -22,6 +23,7 @@
       "types/*": ["src/types/*.ts"],
       "config/app/*": ["src/config/app/*.ts"],
       "config/module/*": ["src/config/module/*.ts"],
+      "config/nuxt/*": ["src/config/nuxt/*.ts"],
 
       "runtime": ["src/runtime/index.ts"],
       "runtime/*": ["src/runtime/*"]

@@ -62,9 +62,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AgentProfile } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model.ts'
-import type { AgentCard } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/main/useAgentInterface.ts'
-import { resolveAgentCell } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/main/useAgentInterface.ts'
+import type { AgentProfile } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
+import type { AgentCard } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
+import { resolveAgentCell } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
 
 const props = defineProps<{ agent?: AgentCard.Cell | AgentProfile | null }>()
 
@@ -77,7 +77,7 @@ const card = computed<AgentCard.Cell | null>(() => {
     if (resolved) {
       return {
         ...resolved,
-        tagline: resolved.tagline ?? resolved.subtitle ?? '',
+        tagline: resolved.tagline ?? '',
       }
     }
   }

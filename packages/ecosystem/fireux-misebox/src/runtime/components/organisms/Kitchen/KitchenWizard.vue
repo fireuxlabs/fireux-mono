@@ -8,5 +8,4 @@
 </template>
 
 <script setup lang="ts">
-// Legacy component retained for backwards compatibility imports.
 </script>

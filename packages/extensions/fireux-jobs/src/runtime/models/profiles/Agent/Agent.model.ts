@@ -8,7 +8,7 @@ import { agentConfig } from './supporting'
  */
 export interface Agent {
   user: Profile['user'] | null
-  core: AgentCoreProfile | null
+  core: AgentProfile | null
   app: AgentAppProfile | null
 }
 
@@ -17,7 +17,7 @@ export interface Agent {
  * - Global, ecosystem-wide
  * - One per user, regardless of app
  */
-export interface AgentCoreProfile extends Profile {
+export interface AgentProfile extends Profile {
   /** user id, same as profile id */
   id: string
 
@@ -43,11 +43,5 @@ export interface AgentCoreProfile extends Profile {
 export interface AgentAppProfile {
   // tbc local props (e.g. app_id, local_tagline, local_badges, visibility)
 }
-
-/**
- * Backwards-compat alias while we refactor the stack.
- * Wherever possible, prefer `AgentCoreProfile` directly.
- */
-export type AgentProfile = AgentCoreProfile
 
 export { agentConfig }

@@ -1,6 +1,6 @@
 // FILE: packages/core/fireux-nuxtfire/src/module.ts
-import { existsSync } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+import { isAbsolute, join, resolve } from 'node:path'
 
 import { addPlugin, createResolver, defineNuxtModule, installModule } from '@nuxt/kit'
 
@@ -51,41 +51,115 @@ function pickEcoServiceAccountFilePath(nuxt: any): string | undefined {
   }
 }
 
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+function hasServiceAccountPrivateKey(payload: unknown): boolean {
+  if (!payload || typeof payload !== 'object') return false
+  const anyPayload = payload as any
+  return isNonEmptyString(anyPayload.private_key) || isNonEmptyString(anyPayload.privateKey)
+}
+
+function validateServiceAccountJsonString(value: string): boolean {
+  try {
+    const parsed = JSON.parse(value)
+    return hasServiceAccountPrivateKey(parsed)
+  } catch {
+    return false
+  }
+}
+
+function tryReadJsonFile(pathLike: string): string | null {
+  const candidatePaths = [pathLike]
+  if (!isAbsolute(pathLike)) {
+    candidatePaths.push(resolve(process.cwd(), pathLike))
+  }
+
+  for (const p of candidatePaths) {
+    if (!existsSync(p)) continue
+    try {
+      return readFileSync(p, 'utf8')
+    } catch {
+      return null
+    }
+  }
+
+  return null
+}
+
+function validateGoogleApplicationCredentials(value: string): boolean {
+  const trimmed = value.trim()
+  if (!trimmed) return false
+
+  // vuefire supports parsing GOOGLE_APPLICATION_CREDENTIALS as inline JSON.
+  if (trimmed.startsWith('{')) {
+    return validateServiceAccountJsonString(trimmed)
+  }
+
+  // Otherwise treat it as a file path.
+  const file = tryReadJsonFile(trimmed)
+  if (!file) return false
+  return validateServiceAccountJsonString(file)
+}
+
+function unsetGoogleApplicationCredentials(reason: string) {
+  // Avoid crashing nuxt-vuefire SSR plugin when the env var points to a non
+  // service-account JSON (e.g. OAuth client/user credentials without private_key).
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    // eslint-disable-next-line no-console
+    console.warn('[fireux-nuxtfire] Ignoring GOOGLE_APPLICATION_CREDENTIALS:', reason)
+    delete process.env.GOOGLE_APPLICATION_CREDENTIALS
+  }
+}
+
 function ensureGoogleApplicationCredentialsEnv(nuxt: any): boolean {
   // nuxt-vuefire uses GOOGLE_APPLICATION_CREDENTIALS to decide whether it can
   // enable its SSR/admin plugins. In FireUX, our canonical contract is
   // FIREBASE_SERVICE_ACCOUNT (JSON) or FIREBASE_SERVICE_ACCOUNT_FILE (path).
   const existing = process.env.GOOGLE_APPLICATION_CREDENTIALS
-  if (typeof existing === 'string' && existing.trim()) return true
+  if (typeof existing === 'string' && existing.trim()) {
+    if (validateGoogleApplicationCredentials(existing)) return true
+    unsetGoogleApplicationCredentials('value is not a Firebase service-account (missing private_key)')
+  }
 
   // First, try to load from the local ecosystem package (dev-friendly).
   // This is intentionally server-only and avoids leaking any credential contents.
   const ecoFile = pickEcoServiceAccountFilePath(nuxt)
   if (ecoFile) {
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = ecoFile
-    return true
+    if (validateGoogleApplicationCredentials(ecoFile)) {
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = ecoFile
+      return true
+    }
   }
 
   const file = process.env.FIREBASE_SERVICE_ACCOUNT_FILE
   if (typeof file === 'string' && file.trim()) {
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = file.trim()
-    return true
+    const trimmed = file.trim()
+    if (validateGoogleApplicationCredentials(trimmed)) {
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = trimmed
+      return true
+    }
   }
 
   const inline = process.env.FIREBASE_SERVICE_ACCOUNT
   if (typeof inline === 'string' && inline.trim()) {
     const raw = inline.trim()
     if (raw.startsWith('{')) {
-      process.env.GOOGLE_APPLICATION_CREDENTIALS = raw
-      return true
+      if (validateGoogleApplicationCredentials(raw)) {
+        process.env.GOOGLE_APPLICATION_CREDENTIALS = raw
+        return true
+      }
     }
 
     // Some environments provide the service account JSON base64-encoded.
     try {
       const decoded = Buffer.from(raw, 'base64').toString('utf8').trim()
       if (decoded.startsWith('{')) {
-        process.env.GOOGLE_APPLICATION_CREDENTIALS = decoded
-        return true
+        if (validateGoogleApplicationCredentials(decoded)) {
+          process.env.GOOGLE_APPLICATION_CREDENTIALS = decoded
+          return true
+        }
       }
     } catch {
       // ignore
@@ -97,12 +171,15 @@ function ensureGoogleApplicationCredentialsEnv(nuxt: any): boolean {
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim()
   const privateKey = process.env.FIREBASE_PRIVATE_KEY?.trim()
   if (projectId && clientEmail && privateKey) {
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = JSON.stringify({
+    const payload = JSON.stringify({
       project_id: projectId,
       client_email: clientEmail,
       private_key: privateKey,
     })
-    return true
+    if (validateGoogleApplicationCredentials(payload)) {
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = payload
+      return true
+    }
   }
 
   return false

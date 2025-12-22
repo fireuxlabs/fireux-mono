@@ -5,6 +5,11 @@ import {
   addComponentsDir,
 } from 'nuxt/kit'
 import type { Nuxt } from 'nuxt/schema'
+import {
+  ensureRuntimeConfigBuckets,
+  ensureRuntimeLayer,
+  exposeRuntimeAlias,
+} from 'fireux-core/config/nuxt/nuxt-runtime-layer'
 
 declare module 'nuxt/schema' {
   interface NuxtConfig {
@@ -30,10 +35,7 @@ export default defineNuxtModule({
     const resolver = createResolver(import.meta.url)
     const runtimeDir = resolver.resolve('./runtime')
 
-    // Ensure runtime config buckets exist
-    nuxt.options.runtimeConfig.blogs = nuxt.options.runtimeConfig.blogs || {}
-    nuxt.options.runtimeConfig.public.blogs =
-      nuxt.options.runtimeConfig.public.blogs || {}
+    ensureRuntimeConfigBuckets(nuxt, 'blogs')
 
     // Auto-import runtime composables directory (create files as needed)
     addImportsDir(resolver.resolve('./runtime/composables'))
@@ -45,14 +47,7 @@ export default defineNuxtModule({
       pathPrefix: true,
     })
 
-    // Expose runtime directory via alias for app + Nitro contexts
-    nuxt.options.alias = nuxt.options.alias || {}
-    nuxt.options.alias['#fireux-blogs'] = runtimeDir
-
-    nuxt.hook('nitro:config', (nitroConfig) => {
-      nitroConfig.alias = nitroConfig.alias || {}
-      nitroConfig.alias['#fireux-blogs'] = runtimeDir
-    })
+    exposeRuntimeAlias(nuxt, '#fireux-blogs', runtimeDir)
 
     registerBlogPages(nuxt, resolver, runtimeDir)
   },
@@ -82,51 +77,4 @@ function registerBlogPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
       }
     }
   })
-}
-
-function ensureRuntimeLayer(nuxt: Nuxt, runtimeDir: string) {
-  const current = nuxt.options.extends
-  if (!current) {
-    nuxt.options.extends = []
-  } else if (!Array.isArray(current)) {
-    nuxt.options.extends = [current]
-  }
-
-  const ext = nuxt.options.extends as Array<any>
-  const already = ext.some((entry) =>
-    Array.isArray(entry) ? entry[0] === runtimeDir : entry === runtimeDir
-  )
-
-  if (!already) {
-    ext.push([
-      runtimeDir,
-      {
-        config: {
-          srcDir: runtimeDir,
-        },
-      },
-    ])
-  }
-
-  const options = nuxt.options as Record<string, any>
-  const internalLayers: Array<
-    string | { cwd?: string; src?: string; config?: Record<string, any> }
-  > = (options._layers ||= [])
-
-  const hasInternal = internalLayers.some((entry) => {
-    if (typeof entry === 'string') return entry === runtimeDir
-    return entry?.cwd === runtimeDir || entry?.src === runtimeDir
-  })
-
-  if (!hasInternal) {
-    internalLayers.push({
-      cwd: runtimeDir,
-      src: runtimeDir,
-      config: {
-        rootDir: runtimeDir,
-        srcDir: runtimeDir,
-        dir: { pages: 'pages', layouts: 'layouts', middleware: 'middleware' },
-      },
-    })
-  }
 }

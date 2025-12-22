@@ -13,5 +13,5 @@
 </template>
 
 <script setup lang="ts">
-import { agentConfig } from '../../models/profiles/Agent/Agent.model.ts'
+import { agentConfig } from '../../models/profiles/Agent/Agent.model'
 </script>

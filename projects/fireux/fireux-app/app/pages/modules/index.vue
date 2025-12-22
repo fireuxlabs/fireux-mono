@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FireuxModuleSummary } from 'fireux-core/runtime/models/core/module.model'
+import type { FireuxModuleRegistryDoc } from 'fireux-core/runtime/models/core/module.model'
 
 definePageMeta({
   nav: {
@@ -87,7 +87,7 @@ useSeoMeta({
   description: 'Live inventory of FireUX modules and upcoming builds.',
 })
 
-const modules = useState<FireuxModuleSummary[]>(
+const modules = useState<FireuxModuleRegistryDoc[]>(
   'fireux-modules-directory',
   () => []
 )

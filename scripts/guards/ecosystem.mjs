@@ -16,8 +16,10 @@ const ALLOWED_NOISE = ['node_modules', 'tsconfig.tsbuildinfo', '.DS_Store']
 
 // Firebase config contract (inside each ecosystem package)
 const REQUIRED_FIREBASE_DIR = path.join('src', 'config', 'firebase')
-const REQUIRED_FIREBASE_FILES = ['ecosystem.config.ts', 'service-account.json']
-const FIREBASE_ALLOWED_NOISE = ['.DS_Store']
+// NOTE: service-account.json is intentionally ignored by git and should be
+// provided locally by developers. The repo only requires a safe template.
+const REQUIRED_FIREBASE_FILES = ['ecosystem.config.ts', 'service-account.example.json']
+const FIREBASE_ALLOWED_NOISE = ['.DS_Store', 'service-account.json']
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()

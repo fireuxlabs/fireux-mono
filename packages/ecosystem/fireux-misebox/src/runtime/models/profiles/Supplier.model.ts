@@ -1,5 +1,5 @@
-import type { Profile } from 'fireux-core/runtime/models/core/profile.model.ts'
-import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model.ts'
+import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
+import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model'
 import { supplierConfig } from './Supplier/supporting'
 
 /** Unified Supplier wrapper (core + app overlays) */
@@ -38,7 +38,6 @@ export namespace SupplierCard {
     updated_at?: Profile['updated_at']
     title?: string | null
     organization_name?: string | null
-    /** @deprecated use tagline */
     subtitle?: string | null
     tagline?: string | null
     badges?: string[]
@@ -55,7 +54,6 @@ export namespace SupplierCard {
     updated_at?: Profile['updated_at']
     title?: string | null
     organization_name?: string | null
-    /** @deprecated use tagline */
     subtitle?: string | null
     tagline?: string | null
     badges?: string[]
@@ -87,8 +85,8 @@ export const resolveSupplierCell = (
 
   const id = profile.id ?? user?.id ?? fallbackId
 
-  const tagline =
-    profile.tagline ?? (profile as { subtitle?: string | null })?.subtitle ?? ''
+  const subtitle = profile.subtitle ?? null
+  const tagline = profile.tagline ?? null
 
   const companyAvatar =
     profile.avatar ?? profile.avatar_url ?? user?.avatar ?? undefined
@@ -103,7 +101,7 @@ export const resolveSupplierCell = (
     id,
     avatar: user?.avatar ?? undefined,
     title: user?.display_name ?? profile.title ?? 'Supplier',
-    subtitle: tagline,
+    subtitle,
     tagline,
     badges: profile.badges ?? [],
     bio_short: profile.bio_short ?? null,

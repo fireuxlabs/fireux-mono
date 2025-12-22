@@ -9,7 +9,7 @@ export namespace Pill {
     avatar?: string | null
     initials?: string
     title?: string | null
-    /** Prefer tagline; subtitle kept for legacy data sources. */
+    /** Prefer tagline when available. */
     subtitle?: string | null
     tagline?: string | null
     badges?: string[]
