@@ -198,6 +198,11 @@ type FirebaseAppConfig = {
   measurementId?: string
 }
 
+function requireNonEmpty(value: unknown, label: string): string {
+  if (typeof value === 'string' && value.trim()) return value.trim()
+  throw new Error(`[fireux-nuxtfire] Missing required Firebase config: ${label}`)
+}
+
 function pickFirebaseRuntime(nuxt: any) {
   const runtime = (nuxt?.options?.runtimeConfig ?? {}) as any
   const pub = (runtime.public ?? {}) as any
@@ -224,19 +229,24 @@ export default defineNuxtModule({
 
     const { eco, app } = pickFirebaseRuntime(nuxt)
 
-    const apiKey = eco.apiKey
-    const authDomain = eco.authDomain
-    const projectId = eco.projectId
-
-    // Allow apps to run without Firebase (styling/dev). When enabled, these are
-    // the minimum keys needed for Firebase Auth.
-    if (!apiKey || !authDomain || !projectId) {
-      if (isDev) {
-        // eslint-disable-next-line no-console
-        console.info('[fireux-nuxtfire] vuefire configured: no (missing firebaseEcosystem.firebase)')
-      }
-      return
-    }
+    const apiKey = requireNonEmpty(eco.apiKey, 'public.firebaseEcosystem.firebase.apiKey')
+    const authDomain = requireNonEmpty(
+      eco.authDomain,
+      'public.firebaseEcosystem.firebase.authDomain'
+    )
+    const projectId = requireNonEmpty(
+      eco.projectId,
+      'public.firebaseEcosystem.firebase.projectId'
+    )
+    const storageBucket = requireNonEmpty(
+      eco.storageBucket,
+      'public.firebaseEcosystem.firebase.storageBucket'
+    )
+    const messagingSenderId = requireNonEmpty(
+      eco.messagingSenderId,
+      'public.firebaseEcosystem.firebase.messagingSenderId'
+    )
+    const appId = requireNonEmpty(app.appId, 'public.firebaseApp.appId (env: NUXT_FIREBASE_APP_ID)')
 
     ;(nuxt.options as any).vuefire = (nuxt.options as any).vuefire || {}
 
@@ -244,9 +254,9 @@ export default defineNuxtModule({
       apiKey,
       authDomain,
       projectId,
-      ...(eco.storageBucket ? { storageBucket: eco.storageBucket } : {}),
-      ...(eco.messagingSenderId ? { messagingSenderId: eco.messagingSenderId } : {}),
-      ...(app.appId ? { appId: app.appId } : {}),
+      storageBucket,
+      messagingSenderId,
+      appId,
       ...(app.measurementId ? { measurementId: app.measurementId } : {}),
     }
 

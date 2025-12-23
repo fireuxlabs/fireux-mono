@@ -105,6 +105,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
   const envDomain = reqEnv('APP_DOMAIN')
   const envPin = optEnv('DEVELOPER_PIN')
+  const envFirebaseAppId = reqEnv('NUXT_FIREBASE_APP_ID')
+  const envFirebaseMeasurementId = optEnv('NUXT_FIREBASE_MEASUREMENT_ID')
   setRuntime(nuxt, {
     app: {
       id: app.id,
@@ -115,6 +117,11 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       role: app.role,
       ecosystem: app.ecosystem,
       modules: (nuxt.modules || []) as readonly string[],
+    },
+
+    firebaseApp: {
+      appId: envFirebaseAppId,
+      ...(envFirebaseMeasurementId ? { measurementId: envFirebaseMeasurementId } : {}),
     },
 
     private: {
