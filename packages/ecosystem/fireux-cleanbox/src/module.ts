@@ -54,6 +54,15 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
         nitroConfig.alias ||= {}
         nitroConfig.alias['#fireux-cleanbox-public'] = publicDir
       })
+
+      // Dev tooling: expose ecosystem public dirs for /dev/images scanning
+      const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+      const fireuxDev = (rc.fireuxDev ||= {}) as Record<string, any>
+      const ecoDirs = (fireuxDev.ecosystemPublicDirs ||= []) as Array<any>
+      const alreadyDev = ecoDirs.some((e) => e?.dir === publicDir)
+      if (!alreadyDev) {
+        ecoDirs.push({ key: 'cleanbox', title: 'Cleanbox ecosystem images', dir: publicDir })
+      }
     }
 
     nuxt.hook('ready', () => {

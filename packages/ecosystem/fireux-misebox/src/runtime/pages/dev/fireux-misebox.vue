@@ -6,6 +6,83 @@
     />
 
     <UPageBody class="space-y-10">
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex flex-col gap-1">
+              <h2 class="text-base font-semibold">Images</h2>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Preview common assets (core/ecosystem/app) in the running
+                runtime.
+              </p>
+            </div>
+            <UButton
+              size="sm"
+              to="/dev/images"
+              icon="i-lucide-arrow-up-right"
+            >
+              Open images
+            </UButton>
+          </div>
+        </template>
+
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="space-y-2">
+            <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+              Ecosystem
+            </p>
+            <div class="flex items-center gap-3">
+              <img
+                class="h-10 w-10 rounded-lg border"
+                src="/img/ecosystem/logo.png"
+                alt="Ecosystem logo"
+              />
+              <img
+                class="h-10 w-10 rounded-lg border"
+                src="/img/ecosystem/avatar.png"
+                alt="Ecosystem avatar"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+              App
+            </p>
+            <div class="flex items-center gap-3">
+              <img
+                class="h-10 w-10 rounded-lg border"
+                src="/img/app/logo.png"
+                alt="App logo"
+              />
+              <img
+                class="h-10 w-10 rounded-lg border"
+                src="/img/app/pwa/icon-192.png"
+                alt="PWA icon 192"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+              Core
+            </p>
+            <div class="flex items-center gap-3">
+              <img
+                class="h-10 w-10 rounded-lg border"
+                src="/img/core/brand/logo.png"
+                alt="FireUX logo"
+              />
+              <img
+                class="h-10 w-10 rounded-lg border bg-slate-900 p-1"
+                src="/img/core/auth/sign-in-light.svg"
+                alt="Auth illustration"
+              />
+            </div>
+          </div>
+        </div>
+      </UCard>
+
       <section class="space-y-4">
         <header>
           <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">

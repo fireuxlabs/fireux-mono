@@ -25,6 +25,9 @@ const REQUIRED_FIREBASE_DIR = path.join('src', 'config', 'firebase')
 const REQUIRED_FIREBASE_FILES = ['ecosystem.config.ts', 'service-account.json']
 const FIREBASE_ALLOWED_NOISE = ['.DS_Store']
 
+// Ecosystem runtime contract
+const REQUIRED_RUNTIME_PUBLIC_DIR = path.join('src', 'runtime', 'public')
+
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -65,10 +68,12 @@ function checkEcosystemPackage(pkgPath) {
   const configViolations = checkConfigShape(pkgPath)
   const firebaseShapeViolations = checkFirebaseShape(pkgPath)
   const firebaseConfigViolations = checkFirebaseConfig(pkgPath)
+  const runtimePublicViolations = checkRuntimePublicShape(pkgPath)
 
   if (
     !missing.length &&
     !unexpected.length &&
+    !runtimePublicViolations &&
     !configViolations &&
     !firebaseShapeViolations &&
     !firebaseConfigViolations
@@ -97,6 +102,10 @@ function checkEcosystemPackage(pkgPath) {
     lines.push('', ...firebaseShapeViolations.split('\n'))
   }
 
+  if (runtimePublicViolations) {
+    lines.push('', ...runtimePublicViolations.split('\n'))
+  }
+
   if (configViolations) {
     lines.push('', ...configViolations.split('\n'))
   }
@@ -113,6 +122,7 @@ function checkEcosystemPackage(pkgPath) {
     '- Move implementation into /src (including ecosystem config + secrets wiring)',
     '- docs/ is required for ecosystems (this is where the canonical docs live)',
     '- .firebaserc is required for ecosystems (this is where Firebase project binding lives)',
+    `- Ecosystems MUST ship runtime public assets at /${REQUIRED_RUNTIME_PUBLIC_DIR}`,
     `- Config MUST live at /${REQUIRED_CONFIG_DIR} and only include /firebase`,
     `- Firebase MUST live at /${REQUIRED_FIREBASE_DIR} with exactly: ${REQUIRED_FIREBASE_FILES.join(
       ', '
@@ -120,6 +130,18 @@ function checkEcosystemPackage(pkgPath) {
   )
 
   return lines.join('\n')
+}
+
+function checkRuntimePublicShape(pkgPath) {
+  const publicDir = path.join(pkgPath, REQUIRED_RUNTIME_PUBLIC_DIR)
+  if (!existsSync(publicDir)) {
+    return [
+      '  Runtime public assets violation:',
+      `    Missing required directory: ${publicDir}`,
+    ].join('\n')
+  }
+
+  return null
 }
 
 function checkConfigShape(pkgPath) {

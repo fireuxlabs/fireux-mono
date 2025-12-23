@@ -61,7 +61,7 @@ const heroContent = {
   paragraph:
     'Run altitude-ready production, sync pantry replenishment, and keep every <span class="text-primary">service window</span> prepared before the gondola arrives.',
   badges: [
-    { src: '/img/misebox-logo.svg', alt: 'MiseBox' },
+    { src: '/img/ecosystem/wordmark-light.svg', alt: 'MiseBox' },
     { src: '/img/stack/firebase-white.png', alt: 'Firebase' },
   ],
   primary: { label: 'Open kitchen console', to: '/apps' },

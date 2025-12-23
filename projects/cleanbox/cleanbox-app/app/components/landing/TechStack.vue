@@ -22,7 +22,7 @@
 const techStack = {
   scheduling: {
     name: 'Smart Scheduling',
-    logo: '/img/cleanbox-scheduling.svg',
+    logo: '/img/stack/scheduling.svg',
     description:
       'AI-powered route optimization and automated booking management',
   },
@@ -33,12 +33,12 @@ const techStack = {
   },
   mobile: {
     name: 'Mobile-First',
-    logo: '/img/mobile-app.svg',
+    logo: '/img/stack/mobile.svg',
     description: 'Progressive web app accessible on any device, anywhere',
   },
   analytics: {
     name: 'Business Analytics',
-    logo: '/img/analytics.svg',
+    logo: '/img/stack/analytics.svg',
     description: 'Real-time insights into your cleaning business performance',
   },
 }

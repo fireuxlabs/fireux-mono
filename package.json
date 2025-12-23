@@ -29,6 +29,7 @@
     "format": "prettier --write .",
     "guard": "node scripts/guard.mjs",
     "clean": "node scripts/clean.mjs",
+    "clean:deep": "node scripts/clean.mjs --deep",
     "gitsave": "bash scripts/gitsave.sh"
   },
   "engines": {

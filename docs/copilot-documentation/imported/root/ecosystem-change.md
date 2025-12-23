@@ -74,7 +74,7 @@ note: moved from repo root during doc cleanup
   - Dev tooling UIs under `packages/core/fireux-core/src/runtime/...`.
   - Documentation (`config-report.md`, project docs).
 - After references are updated, rerun guard scripts (`pnpm guard:apps:shape`) to confirm the rename cascades cleanly.
-- Shared ecosystem brand assets now live under `packages/ecosystem/*/src/runtime/public/img/brand/`; use each app’s `/dev/img` route to sanity-check previews before deploying.
+- Shared ecosystem assets live under `packages/ecosystem/*/src/runtime/public/img/ecosystem/`; use each app’s `/dev/images` (or `/dev/img`) route to sanity-check previews before deploying.
 
 ---
 

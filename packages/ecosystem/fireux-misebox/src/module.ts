@@ -68,6 +68,15 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       if (!already) publicAssets.push({ dir: publicDir })
     }
 
+      // Dev tooling: expose ecosystem public dirs for /dev/images scanning
+      const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+      const fireuxDev = (rc.fireuxDev ||= {}) as Record<string, any>
+      const ecoDirs = (fireuxDev.ecosystemPublicDirs ||= []) as Array<any>
+      const alreadyDev = ecoDirs.some((e) => e?.dir === publicDir)
+      if (!alreadyDev) {
+        ecoDirs.push({ key: 'misebox', title: 'Misebox ecosystem images', dir: publicDir })
+      }
+
     nuxt.hook('ready', () => {
       if (process.env.FIREUX_DEBUG_LAYERS) {
         console.log('[fireux-misebox] layers', (nuxt.options as any)._layers)

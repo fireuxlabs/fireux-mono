@@ -33,7 +33,6 @@ function isAllowedDotfile(name) {
 }
 
 const FORBIDDEN_L1 = [
-  'node_modules',
   'dist',
   '.nuxt',
   '.output',
@@ -44,6 +43,10 @@ const FORBIDDEN_L1 = [
   '.firebase',
   '.firebaserc',
 ]
+
+// pnpm workspaces create per-app node_modules. We allow them locally,
+// but they should never be committed (gitignored).
+const ALLOWED_NOISE_L1 = ['node_modules']
 
 // Public image library baseline expected in every app.
 // Extras are allowed (e.g. fireux-app has additional `img/app/stack/*`).
@@ -115,6 +118,7 @@ function checkProjectApp(appPath) {
   const unexpected = entries.filter((e) => {
     if (FORBIDDEN_L1.includes(e)) return false
     if (allowed.has(e)) return false
+    if (ALLOWED_NOISE_L1.includes(e)) return false
     if (e.startsWith('.') && isAllowedDotfile(e)) return false
     return true
   })

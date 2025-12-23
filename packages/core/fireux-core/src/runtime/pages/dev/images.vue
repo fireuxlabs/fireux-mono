@@ -2,43 +2,41 @@
   <UPage>
     <UPageHeader
       title="Dev · Images"
-      description="These image URLs ship with fireux-core and are available to every app by default."
+      description="Lists all images found under public/img for the current runtime (app + core + active ecosystem)."
     />
 
     <UPageBody class="pagebody">
-      <UCard v-for="group in assetGroups" :key="group.key">
+      <UCard v-for="group in groups" :key="group.key">
         <template #header>
           <div class="space-y-1">
             <h2 class="text-base font-semibold">{{ group.title }}</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              {{ group.description }}
+              <span class="font-mono">{{ group.rootDir }}</span>
             </p>
           </div>
         </template>
 
-        <template v-if="group.assets.length">
+        <template v-if="group.images.length">
           <ul class="space-y-4">
             <li
-              v-for="asset in group.assets"
-              :key="asset.path"
+              v-for="img in group.images"
+              :key="img.urlPath"
               class="dev-image-row"
             >
-              <div :class="['dev-image-chip', previewToneClass(asset.tone)]">
-                <img :src="asset.path" :alt="asset.label" />
+              <div class="dev-image-chip dev-image-panel--checker">
+                <img :src="img.urlPath" :alt="img.urlPath" />
               </div>
 
               <div class="space-y-1 text-sm">
-                <code class="block">{{ asset.path }}</code>
-                <p class="text-gray-500 dark:text-gray-400">
-                  {{ asset.label }}
-                </p>
+                <code class="block">{{ img.urlPath }}</code>
+                <code class="block text-xs text-gray-500 dark:text-gray-400">{{ img.filePath }}</code>
               </div>
             </li>
           </ul>
         </template>
         <template v-else>
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            {{ group.emptyState }}
+            No images found under <span class="font-mono">{{ group.rootDir }}/img</span>.
           </p>
         </template>
       </UCard>
@@ -47,161 +45,20 @@
 </template>
 
 <script setup lang="ts">
-type PreviewTone = 'light' | 'dark' | 'checker'
-
-interface Asset {
-  path: string
-  label: string
-  tone?: PreviewTone
+type ImageEntry = {
+  urlPath: string
+  filePath: string
 }
 
-interface AssetGroup {
+type ImageGroup = {
   key: string
   title: string
-  description: string
-  assets: Asset[]
-  emptyState: string
+  rootDir: string
+  images: ImageEntry[]
 }
 
-// Provide stable metadata for each preview tile.
-const coreAssets: Asset[] = [
-  {
-    path: '/img/core/defaults/default-thumbnail.png',
-    label: 'Fallback image placeholder',
-    tone: 'checker',
-  },
-  {
-    path: '/img/core/auth/sign-in-dark.svg',
-    label: 'Auth illustration · sign-in dark',
-  },
-  {
-    path: '/img/core/auth/sign-in-light.svg',
-    label: 'Auth illustration · sign-in light',
-    tone: 'dark',
-  },
-  {
-    path: '/img/core/auth/sign-up-dark.svg',
-    label: 'Auth illustration · sign-up dark',
-  },
-  {
-    path: '/img/core/auth/sign-up-light.svg',
-    label: 'Auth illustration · sign-up light',
-    tone: 'dark',
-  },
-  { path: '/img/core/brand/logo.png', label: 'FireUX logo mark' },
-  {
-    path: '/img/core/brand/wordmark-dark.png',
-    label: 'FireUX wordmark · dark',
-  },
-  {
-    path: '/img/core/brand/wordmark-light.png',
-    label: 'FireUX wordmark · light',
-    tone: 'dark',
-  },
-  {
-    path: '/img/core/brand/wordmark-light.svg',
-    label: 'FireUX wordmark · light (SVG)',
-    tone: 'dark',
-  },
-]
-
-const ecosystemAssets: Asset[] = [
-  {
-    path: '/img/ecosystem/avatar.png',
-    label: 'Ecosystem avatar',
-  },
-  {
-    path: '/img/ecosystem/logo.png',
-    label: 'Ecosystem logo',
-  },
-  {
-    path: '/img/ecosystem/wordmark-dark.png',
-    label: 'Ecosystem wordmark · dark',
-  },
-  {
-    path: '/img/ecosystem/wordmark-light.png',
-    label: 'Ecosystem wordmark · light',
-    tone: 'dark',
-  },
-  {
-    path: '/img/ecosystem/wordmark-light.svg',
-    label: 'Ecosystem wordmark · light (SVG)',
-    tone: 'dark',
-  },
-]
-
-const appAssets: Asset[] = [
-  {
-    path: '/img/app/logo.png',
-    label: 'App logo',
-  },
-  {
-    path: '/img/app/wordmark-dark.png',
-    label: 'App wordmark · dark',
-  },
-  {
-    path: '/img/app/wordmark-light.png',
-    label: 'App wordmark · light',
-    tone: 'dark',
-  },
-  {
-    path: '/img/app/wordmark-light.svg',
-    label: 'App wordmark · light (SVG)',
-    tone: 'dark',
-  },
-  {
-    path: '/img/app/cover.png',
-    label: 'Marketing cover (1280×720)',
-  },
-  {
-    path: '/img/app/thumbnail.png',
-    label: 'Marketing thumbnail (256×256)',
-  },
-  {
-    path: '/img/app/pwa/icon-192.png',
-    label: 'PWA icon · 192×192',
-  },
-  {
-    path: '/img/app/pwa/icon-512.png',
-    label: 'PWA icon · 512×512',
-  },
-]
-
-const assetGroups: AssetGroup[] = [
-  {
-    key: 'core',
-    title: 'fireux-core public assets',
-    description:
-      'Shared identity and UX assets exposed from packages/core/fireux-core.',
-    assets: coreAssets,
-    emptyState:
-      'No core assets registered. Add shared assets under /img/core before listing them here.',
-  },
-  {
-    key: 'ecosystem',
-    title: 'Ecosystem public assets',
-    description:
-      'Reserved for /img/ecosystem/... buckets exposed by ecosystem packages.',
-    assets: ecosystemAssets,
-    emptyState:
-      'No ecosystem registries yet. Populate packages/ecosystem/*/src/runtime/public/img/ecosystem to surface them here.',
-  },
-  {
-    key: 'app',
-    title: 'App & tenant public assets',
-    description:
-      'Use /img/app/... within individual app public directories to register overrides.',
-    assets: appAssets,
-    emptyState:
-      'No app-level assets registered. Add branding to projects/*/public/img/app to list them.',
-  },
-]
-
-const previewToneClass = (tone: PreviewTone = 'light') => {
-  if (tone === 'dark') return 'dev-image-panel--dark'
-  if (tone === 'checker') return 'dev-image-panel--checker'
-  return 'dev-image-panel--light'
-}
+const { data } = await useFetch<{ groups: ImageGroup[] }>('/api/dev/images')
+const groups = computed(() => data.value?.groups ?? [])
 
 definePageMeta({
   layout: 'dev',

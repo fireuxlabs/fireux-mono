@@ -5,7 +5,7 @@
  * FireUX Clean Script
  *
  * Purpose:
- * - Remove ALL build artifacts and dependency trees
+ * - Remove build artifacts (dist/.nuxt/.output/.data/etc)
  * - Ensure repo is in a clean, guard-safe state
  * - Designed to be run before `pnpm guard` or `gitsave`
  *
@@ -18,13 +18,15 @@ import path from 'node:path'
 
 const repoRoot = process.cwd()
 
+const argv = new Set(process.argv.slice(2))
+const deep = argv.has('--deep') || argv.has('--all')
+
 /**
  * Exact directory/file names that are considered build noise
  * and should NEVER exist at commit time.
  */
 const NUKE_NAMES = new Set([
   'dist',
-  'node_modules',
   '.nuxt',
   '.output',
   '.nitro',
@@ -66,6 +68,17 @@ function walk(dir) {
       continue
     }
 
+    // node_modules is intentionally preserved by default (so dev keeps working)
+    // but can be removed via --deep when you truly want a full reset.
+    if (entry.isDirectory() && name === 'node_modules') {
+      if (deep) {
+        rmSync(fullPath, { recursive: true, force: true })
+        console.log(`[clean] 🧹 removed ${path.relative(repoRoot, fullPath)}`)
+        removedCount++
+      }
+      continue
+    }
+
     // Remove known junk files
     if (entry.isFile() && NUKE_FILES.has(name)) {
       rmSync(fullPath, { force: true })
@@ -81,7 +94,11 @@ function walk(dir) {
   }
 }
 
-console.log('[clean] 🔥 Cleaning build artifacts...')
+console.log(
+  deep
+    ? '[clean] 🔥 Cleaning build artifacts (deep, including node_modules)...'
+    : '[clean] 🔥 Cleaning build artifacts (preserving node_modules)...'
+)
 walk(repoRoot)
 
 if (removedCount === 0) {
