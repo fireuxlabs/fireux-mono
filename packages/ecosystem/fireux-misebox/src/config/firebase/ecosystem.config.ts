@@ -6,10 +6,10 @@ export const ecosystemConfig = {
   description: 'FireUX MiseBox - Cooking Marketplace Domain Package',
 
   firebase: {
-    apiKey: '',
-    authDomain: '',
+    apiKey: 'AIzaSyBkWm7VONGZRx74pg2vFbnFyDKjruEwg6M',
+    authDomain: 'misebox-78f9c.firebaseapp.com',
     projectId: 'misebox-78f9c',
-    storageBucket: '',
-    messagingSenderId: '',
+    storageBucket: 'misebox-78f9c.appspot.com',
+    messagingSenderId: '102749723716',
   },
 } as const satisfies FireuxEcosystemConfig

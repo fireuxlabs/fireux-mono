@@ -1,10 +1,7 @@
 // FILE: packages/ecosystem/fireux-fireux/src/config/firebase/ecosystem.config.ts
-import type { RuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
+import type { FireuxEcosystemConfig } from 'fireux-core/types/ecosystem'
 
-export const ecosystemConfig: Pick<
-  RuntimeFirebaseEcosystem,
-  'id' | 'name' | 'description' | 'firebase'
-> = {
+export const ecosystemConfig = {
   id: 'fireux',
   name: 'FireUX',
   description: 'Core FireUX ecosystem and Firebase project.',
@@ -15,4 +12,4 @@ export const ecosystemConfig: Pick<
     storageBucket: 'fireux-2005.firebasestorage.app',
     messagingSenderId: '549102750204',
   },
-}
+} as const satisfies FireuxEcosystemConfig

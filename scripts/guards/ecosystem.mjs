@@ -1,5 +1,5 @@
 // FILE: scripts/guards/ecosystem.mjs
-import { readdirSync, existsSync } from 'node:fs'
+import { readdirSync, existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const REQUIRED_L1 = [
@@ -14,12 +14,17 @@ const REQUIRED_L1 = [
 
 const ALLOWED_NOISE = ['node_modules', 'tsconfig.tsbuildinfo', '.DS_Store']
 
+// Ecosystem config contract (inside each ecosystem package)
+const REQUIRED_CONFIG_DIR = path.join('src', 'config')
+const REQUIRED_CONFIG_DIRS = ['firebase']
+const ALLOWED_CONFIG_FILES = []
+const CONFIG_ALLOWED_NOISE = ['.DS_Store']
+
 // Firebase config contract (inside each ecosystem package)
 const REQUIRED_FIREBASE_DIR = path.join('src', 'config', 'firebase')
-// NOTE: service-account.json is intentionally ignored by git and should be
-// provided locally by developers. The repo only requires a safe template.
-const REQUIRED_FIREBASE_FILES = ['ecosystem.config.ts', 'service-account.example.json']
-const FIREBASE_ALLOWED_NOISE = ['.DS_Store', 'service-account.json']
+const REQUIRED_FIREBASE_FILES = ['ecosystem.config.ts', 'service-account.json']
+const FIREBASE_ALLOWED_NOISE = ['.DS_Store']
+
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -57,9 +62,18 @@ function checkEcosystemPackage(pkgPath) {
     (e) => !REQUIRED_L1.includes(e) && !ALLOWED_NOISE.includes(e)
   )
 
-  const firebaseViolations = checkFirebaseShape(pkgPath)
+  const configViolations = checkConfigShape(pkgPath)
+  const firebaseShapeViolations = checkFirebaseShape(pkgPath)
+  const firebaseConfigViolations = checkFirebaseConfig(pkgPath)
 
-  if (!missing.length && !unexpected.length && !firebaseViolations) return null
+  if (
+    !missing.length &&
+    !unexpected.length &&
+    !configViolations &&
+    !firebaseShapeViolations &&
+    !firebaseConfigViolations
+  )
+    return null
 
   const lines = [
     '[guard] ❌ ecosystem package shape violation:',
@@ -79,8 +93,17 @@ function checkEcosystemPackage(pkgPath) {
       .forEach((u) => lines.push(`    - ${u}`))
   }
 
-  if (firebaseViolations) {
-    lines.push('', ...firebaseViolations.split('\n'))
+  if (firebaseShapeViolations) {
+    lines.push('', ...firebaseShapeViolations.split('\n'))
+  }
+
+  if (configViolations) {
+    lines.push('', ...configViolations.split('\n'))
+  }
+
+
+  if (firebaseConfigViolations) {
+    lines.push('', ...firebaseConfigViolations.split('\n'))
   }
 
   lines.push(
@@ -90,11 +113,104 @@ function checkEcosystemPackage(pkgPath) {
     '- Move implementation into /src (including ecosystem config + secrets wiring)',
     '- docs/ is required for ecosystems (this is where the canonical docs live)',
     '- .firebaserc is required for ecosystems (this is where Firebase project binding lives)',
+    `- Config MUST live at /${REQUIRED_CONFIG_DIR} and only include /firebase`,
     `- Firebase MUST live at /${REQUIRED_FIREBASE_DIR} with exactly: ${REQUIRED_FIREBASE_FILES.join(
       ', '
     )} (no index files)`
   )
 
+  return lines.join('\n')
+}
+
+function checkConfigShape(pkgPath) {
+  const configDir = path.join(pkgPath, REQUIRED_CONFIG_DIR)
+  if (!existsSync(configDir)) {
+    return [
+      '  Config shape violation:',
+      `    Missing required config directory: ${configDir}`,
+    ].join('\n')
+  }
+
+  const entries = readdirSync(configDir).filter((n) => n !== '.DS_Store')
+
+  const missingDirs = REQUIRED_CONFIG_DIRS.filter((d) => !entries.includes(d))
+
+  const allowedEntries = new Set([...ALLOWED_CONFIG_FILES, ...REQUIRED_CONFIG_DIRS])
+  const unexpected = entries.filter(
+    (e) => !allowedEntries.has(e) && !CONFIG_ALLOWED_NOISE.includes(e)
+  )
+
+  if (!missingDirs.length && !unexpected.length) return null
+
+  const lines = ['  Config shape violation:', `    Dir: ${configDir}`]
+  if (missingDirs.length) {
+    lines.push('    Missing required directories:')
+    missingDirs.forEach((d) => lines.push(`      - ${d}`))
+  }
+  if (unexpected.length) {
+    lines.push('    Unexpected config entries (only allow specific files/dirs):')
+    unexpected
+      .slice()
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((u) => lines.push(`      - ${u}`))
+  }
+  return lines.join('\n')
+}
+
+function checkFirebaseConfig(pkgPath) {
+  const firebaseDir = path.join(pkgPath, REQUIRED_FIREBASE_DIR)
+  const configPath = path.join(firebaseDir, 'ecosystem.config.ts')
+
+  if (!existsSync(configPath)) return null
+
+  let raw = ''
+  try {
+    raw = readFileSync(configPath, 'utf8')
+  } catch {
+    return [
+      '  Firebase config violation:',
+      `    File: ${configPath}`,
+      '    - Cannot read ecosystem.config.ts',
+    ].join('\n')
+  }
+
+  const requiredKeys = [
+    'apiKey',
+    'authDomain',
+    'projectId',
+    'storageBucket',
+    'messagingSenderId',
+  ]
+
+  const missingKeys = []
+  const emptyKeys = []
+
+  for (const key of requiredKeys) {
+    const keyPresent = new RegExp(`\\b${key}\\s*:`).test(raw)
+    if (!keyPresent) {
+      missingKeys.push(key)
+      continue
+    }
+
+    // Enforce non-empty string literals. This intentionally stays simple because
+    // ecosystem configs are expected to be static literals.
+    const emptyLiteral = new RegExp(`\\b${key}\\s*:\\s*(['"])\\s*\\1`).test(
+      raw
+    )
+    if (emptyLiteral) emptyKeys.push(key)
+  }
+
+  if (!missingKeys.length && !emptyKeys.length) return null
+
+  const lines = ['  Firebase config violation:', `    File: ${configPath}`]
+  if (missingKeys.length) {
+    lines.push('    Missing firebase keys:')
+    missingKeys.forEach((k) => lines.push(`      - ${k}`))
+  }
+  if (emptyKeys.length) {
+    lines.push('    Empty firebase values (must not be blank):')
+    emptyKeys.forEach((k) => lines.push(`      - ${k}`))
+  }
   return lines.join('\n')
 }
 

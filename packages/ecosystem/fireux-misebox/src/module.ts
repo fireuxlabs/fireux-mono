@@ -1,50 +1,72 @@
-import { defineNuxtModule, createResolver } from '@nuxt/kit'
-import type { NuxtModule } from '@nuxt/schema'
+import {
+  addComponentsDir,
+  addImportsDir,
+  createResolver,
+  defineNuxtModule,
+} from '@nuxt/kit'
+import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
-
-import { configurePlugins } from './config/plugins-config'
-import { configureComponents } from './config/components-config'
-import { configureLayouts } from './config/layouts-config'
-import { configureAssets } from './config/assets-config'
-import { configureRuntime } from './config/runtime-config'
-import { configureComposables } from './config/composables-config'
-import { configurePages } from './config/pages-config'
+import { configurePages } from 'fireux-core/config/module/pages-config'
+import { existsSync } from 'fs'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
-import { firebaseEcosystem } from './config/firebase-ecosystem'
 
-export interface ModuleOptions {
-  prefix?: string
-}
-
-const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
+const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   meta: {
     name: 'fireux-misebox',
     version: '0.1.0',
     configKey: 'fireuxMisebox',
   },
-  defaults: {
-    prefix: 'Mise',
-  },
-  async setup(options, nuxt) {
+  async setup(_options: Record<string, never>, nuxt: Nuxt) {
     const resolver = createResolver(import.meta.url)
 
     // Core and any extensions are provided by the app via createFireuxConfig
-
-    configureRuntime(nuxt, 'misebox')
 
     setRuntimeFirebaseEcosystem(nuxt as any, {
       id: ecosystemConfig.id,
       name: ecosystemConfig.name,
       description: ecosystemConfig.description,
-      firebase: firebaseEcosystem,
+      firebase: ecosystemConfig.firebase,
     })
-    configurePlugins(resolver)
-    configureComponents(resolver, options)
-    configureComposables(resolver)
-    configureLayouts(resolver, nuxt)
+
+    // Layer runtime pages/layouts/middleware
     configurePages(resolver, nuxt)
-    configureAssets(resolver, nuxt)
-    // configureServer(resolver) // toggle as needed
+
+    // Register runtime components WITHOUT a prefix
+    const componentsDir = resolver.resolve('./runtime/components')
+    if (existsSync(componentsDir)) {
+      addComponentsDir({
+        path: componentsDir,
+        pattern: '**/*.vue',
+        global: false,
+        // Keep path segments in component names to avoid collisions
+        // e.g. organisms/objects/Ingredient/Profile.vue -> OrganismsObjectsIngredientProfile
+        pathPrefix: true,
+      })
+    }
+
+    // Auto-import composables and models if present
+    const composablesDir = resolver.resolve('./runtime/composables')
+    if (existsSync(composablesDir)) {
+      addImportsDir(composablesDir)
+      addImportsDir(resolver.resolve('./runtime/composables/**'))
+    }
+
+    const modelsDir = resolver.resolve('./runtime/models')
+    if (existsSync(modelsDir)) addImportsDir(modelsDir)
+
+    // Serve runtime public assets via Nitro
+    const publicDir = resolver.resolve('./runtime/public')
+    if (existsSync(publicDir)) {
+      const nitro = ((nuxt.options as any).nitro ||= {}) as Record<string, any>
+      const publicAssets = (nitro.publicAssets ||= []) as Array<
+        string | { baseURL?: string; dir: string; maxAge?: number }
+      >
+
+      const already = publicAssets.some((entry) =>
+        typeof entry === 'string' ? entry === publicDir : entry?.dir === publicDir
+      )
+      if (!already) publicAssets.push({ dir: publicDir })
+    }
 
     nuxt.hook('ready', () => {
       if (process.env.FIREUX_DEBUG_LAYERS) {

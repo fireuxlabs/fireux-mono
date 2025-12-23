@@ -83,7 +83,7 @@
           @click="navigateToRecipe(recipe)"
           class="recipe-item"
         >
-          <MiseObjectsRecipeCardsPill :recipe="recipe" />
+          <ObjectsRecipeCardsPill :recipe="recipe" />
         </div>
       </div>
 
@@ -122,7 +122,7 @@
           </UButton>
         </div>
       </div>
-    </UModal>
+             <OrganismsObjectsRecipeCardsPill :recipe="recipe" />
   </div>
 </template>
 
