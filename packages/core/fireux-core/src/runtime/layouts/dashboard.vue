@@ -53,6 +53,17 @@
           :show-memberships="false"
           class="w-full"
         />
+
+        <UButton
+          v-if="isAuthenticated"
+          block
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-log-out"
+          label="Sign out"
+          :loading="signOutLoading"
+          @click="handleSignOut"
+        />
       </template>
     </UDashboardSidebar>
 
@@ -68,6 +79,7 @@ import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useState } from '#imports'
 import { useDashboardNav } from '../composables/fireux/app/routing/presets'
+import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useUser } from '../composables/fireux/firestore/core/user/useUser'
 import type { UserCard } from '../models/core/user.model'
 import type { NavItem } from '../types/nav'
@@ -185,6 +197,19 @@ const activeProfileState = useState<string | null>(
 )
 const { desktop } = useDashboardNav()
 const { isAdmin, user, pillProps } = useUser()
+
+const { isAuthenticated, signOutUser } = useAuth()
+const signOutLoading = ref(false)
+
+const handleSignOut = async () => {
+  if (signOutLoading.value) return
+  signOutLoading.value = true
+  try {
+    await signOutUser()
+  } finally {
+    signOutLoading.value = false
+  }
+}
 
 const pillUser = computed<UserCard.Pill | undefined>(() => {
   const current = user.value

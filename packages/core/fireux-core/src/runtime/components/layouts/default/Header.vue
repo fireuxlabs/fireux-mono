@@ -60,7 +60,7 @@ defineOptions({ name: 'LayoutsDefaultHeader' })
 const { desktop, mobile } = useDefaultNav()
 
 /** Auth + Core User */
-let signOutUser: () => unknown = () => undefined
+let signOutUser: () => Promise<void> = async () => undefined
 
 const coreUser = ref<any | null>(null)
 const cta = ref<any>({ key: 'avatar', to: '/', label: '' })
@@ -107,7 +107,7 @@ const avatarMenuItems = computed(() => [
     {
       label: 'Sign out',
       icon: 'i-lucide-log-out',
-      onSelect: () => signOutUser(),
+      onSelect: async () => await signOutUser(),
     },
   ],
 ])

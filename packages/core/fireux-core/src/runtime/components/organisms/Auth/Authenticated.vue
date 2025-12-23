@@ -18,7 +18,6 @@ const goDashboard = () => {
 
 const handleSignOut = async () => {
   await signOutUser()
-  await router.push('/auth').catch(() => {})
 }
 </script>
 

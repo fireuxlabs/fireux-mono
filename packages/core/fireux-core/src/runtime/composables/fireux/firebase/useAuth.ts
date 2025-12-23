@@ -1,11 +1,15 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firebase/useAuth.ts
 import { computed, onMounted, ref, watch, type Ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useFirebaseAuth, useCurrentUser } from 'vuefire'
+import { getApps } from 'firebase/app'
 import {
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
+  getAuth,
+  onAuthStateChanged,
   GoogleAuthProvider,
   type Auth,
   type User,
@@ -205,9 +209,44 @@ export function useAuth() {
   }
 
   const signOutUser = async () => {
-    if (!auth.value) return
-    await signOut(auth.value).catch(() => {})
+    if (!import.meta.client) return
+
+    const router = (() => {
+      try {
+        return useRouter()
+      } catch {
+        return null
+      }
+    })()
+
+    const authInstance: Auth | null =
+      auth.value || (getApps().length ? getAuth() : null)
+
+    // Always clear local state so the UI reacts immediately.
     lastEnsuredUid.value = null
+    ensuring.value = false
+    currentUser.value = null
+
+    if (!authInstance) {
+      await router?.replace('/auth').catch(() => {})
+      return
+    }
+
+    await signOut(authInstance).catch(() => {})
+
+    // Wait for Firebase to actually report signed-out before routing.
+    await new Promise<void>((resolve) => {
+      if (!authInstance.currentUser) return resolve()
+      const timer = globalThis.setTimeout(resolve, 2000)
+      const unsubscribe = onAuthStateChanged(authInstance, (u) => {
+        if (u) return
+        globalThis.clearTimeout(timer)
+        unsubscribe()
+        resolve()
+      })
+    })
+
+    await router?.replace('/auth').catch(() => {})
   }
 
   return {
