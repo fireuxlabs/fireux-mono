@@ -100,7 +100,7 @@ const handleSignOut = async () => {
   if (signOutLoading.value) return
   signOutLoading.value = true
   try {
-    await signOutUser()
+    await signOutUser('/auth')
   } finally {
     signOutLoading.value = false
   }

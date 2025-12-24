@@ -47,23 +47,40 @@
 
       <!-- Bottom: user menu -->
       <template #footer>
-        <OrganismsUserCardsPill
-          v-if="pillUser"
-          :user="pillUser"
-          :show-memberships="false"
-          class="w-full"
-        />
+        <div class="flex flex-col gap-2 w-full">
+          <div class="w-full flex justify-start">
+            <UButton
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-house"
+              :label="escapeLabel"
+              size="sm"
+              class="w-fit"
+              @click="goHome"
+            />
+          </div>
 
-        <UButton
-          v-if="isAuthenticated"
-          block
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-log-out"
-          label="Sign out"
-          :loading="signOutLoading"
-          @click="handleSignOut"
-        />
+          <div class="w-full flex justify-start">
+            <UButton
+              v-if="isAuthenticated"
+              color="neutral"
+              variant="ghost"
+              icon="i-lucide-log-out"
+              label="Sign out"
+              size="sm"
+              class="w-fit"
+              :loading="signOutLoading"
+              @click="handleSignOut"
+            />
+          </div>
+
+          <OrganismsUserCardsPill
+            v-if="pillUser"
+            :user="pillUser"
+            :show-memberships="false"
+            class="w-full"
+          />
+        </div>
       </template>
     </UDashboardSidebar>
 
@@ -76,8 +93,9 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useState } from '#imports'
+import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
 import { useDashboardNav } from '../composables/fireux/app/routing/presets'
 import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useUser } from '../composables/fireux/firestore/core/user/useUser'
@@ -191,6 +209,9 @@ const PROFILE_NAV_EXTRAS: Record<string, ProfileNavConfig[]> = {
 
 const open = ref(false)
 const route = useRoute()
+const router = useRouter()
+const fireuxConfig = useFireUXConfig()
+const escapeLabel = computed(() => `${fireuxConfig.appName}.app`)
 const activeProfileState = useState<string | null>(
   'fireux-dashboard-profile',
   () => null
@@ -198,7 +219,7 @@ const activeProfileState = useState<string | null>(
 const { desktop } = useDashboardNav()
 const { isAdmin, user, pillProps } = useUser()
 
-const { isAuthenticated, signOutUser } = useAuth()
+const { isAuthenticated, isReady, lastBindError, signOutUser } = useAuth()
 const signOutLoading = ref(false)
 
 const handleSignOut = async () => {
@@ -209,6 +230,26 @@ const handleSignOut = async () => {
   } finally {
     signOutLoading.value = false
   }
+}
+
+const goHome = async () => {
+  await router.replace('/').catch(() => {})
+}
+
+if (import.meta.client) {
+  watch(
+    [isReady, isAuthenticated, lastBindError],
+    ([ready, authed, bindError]: [boolean, boolean, unknown]) => {
+      if (!ready) return
+      if (authed) return
+      if (bindError) {
+        router.replace('/').catch(() => {})
+        return
+      }
+      router.replace('/').catch(() => {})
+    },
+    { immediate: true }
+  )
 }
 
 const pillUser = computed<UserCard.Pill | undefined>(() => {

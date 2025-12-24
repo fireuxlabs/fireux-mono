@@ -17,7 +17,7 @@ const goDashboard = () => {
 }
 
 const handleSignOut = async () => {
-  await signOutUser()
+  await signOutUser('/auth')
 }
 </script>
 

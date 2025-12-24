@@ -64,6 +64,16 @@ function optEnv(name: string): string | undefined {
 export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const nuxt: NuxtConfig = {}
 
+  // Ensure responsive breakpoints behave correctly on mobile.
+  // Without an explicit viewport meta tag, browsers may render using a
+  // desktop-sized viewport (making the dashboard sidebar appear "always on").
+  const head: any = ((nuxt as any).app ||= {}).head ||= {}
+  const meta: any[] = (head.meta ||= [])
+  const hasViewport = meta.some((m) => m?.name === 'viewport')
+  if (!hasViewport) {
+    meta.push({ name: 'viewport', content: 'width=device-width, initial-scale=1' })
+  }
+
   // Align Nitro defaults with our current baseline.
   // Prevents runtime fallback warnings during dev.
   ;(nuxt as any).compatibilityDate = '2025-12-22'

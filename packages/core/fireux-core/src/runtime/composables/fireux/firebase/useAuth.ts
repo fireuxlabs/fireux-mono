@@ -33,6 +33,15 @@ function tryBindVueFire() {
 }
 
 export function useAuth() {
+  const router = (() => {
+    if (!import.meta.client) return null
+    try {
+      return useRouter()
+    } catch {
+      return null
+    }
+  })()
+
   // “stable” refs we always return (never throw)
   const auth = ref<Auth | null>(null)
   const currentUser = ref<User | null>(null) as Ref<User | null>
@@ -56,7 +65,7 @@ export function useAuth() {
       // keep it live
       watch(
         bound.currentUser,
-        (v) => (currentUser.value = v),
+        (v: User | null) => (currentUser.value = v),
         { immediate: true }
       )
       isReady.value = true
@@ -107,7 +116,7 @@ export function useAuth() {
   if (import.meta.client) {
     watch(
       authState,
-      (next) => {
+      (next: string) => {
         if (!shouldDebug()) return
         // eslint-disable-next-line no-console
         console.log('[fireux][auth] state', {
@@ -149,7 +158,9 @@ export function useAuth() {
   }
 
   if (import.meta.client) {
-    watch(uid, (nextUid) => void ensureOnce(nextUid), { immediate: true })
+    watch(uid, (nextUid: string | null) => void ensureOnce(nextUid), {
+      immediate: true,
+    })
   }
 
   // ─────────────────────────────────────────────
@@ -208,16 +219,8 @@ export function useAuth() {
     return result?.user ?? null
   }
 
-  const signOutUser = async () => {
+  const signOutUser = async (redirectTo: string = '/') => {
     if (!import.meta.client) return
-
-    const router = (() => {
-      try {
-        return useRouter()
-      } catch {
-        return null
-      }
-    })()
 
     const authInstance: Auth | null =
       auth.value || (getApps().length ? getAuth() : null)
@@ -228,7 +231,7 @@ export function useAuth() {
     currentUser.value = null
 
     if (!authInstance) {
-      await router?.replace('/auth').catch(() => {})
+      await router?.replace(redirectTo).catch(() => {})
       return
     }
 
@@ -246,7 +249,7 @@ export function useAuth() {
       })
     })
 
-    await router?.replace('/auth').catch(() => {})
+    await router?.replace(redirectTo).catch(() => {})
   }
 
   return {
