@@ -35,12 +35,12 @@
           variant="subtle"
           :ui="{ container: 'flex flex-col sm:flex-row sm:items-center gap-4' }"
         >
-          <UAvatar :src="userAvatar" :alt="userGreeting" size="lg" />
+          <UAvatar :src="userAvatar()" :alt="userGreeting()" size="lg" />
           <div class="min-w-0 space-y-1">
             <p class="text-sm text-dimmed">Welcome back</p>
-            <h2 class="text-lg font-medium truncate">{{ userGreeting }}</h2>
-            <p class="text-sm text-dimmed truncate" v-if="userHandle">
-              @{{ userHandle }}
+            <h2 class="text-lg font-medium truncate">{{ userGreeting() }}</h2>
+            <p class="text-sm text-dimmed truncate" v-if="showHandle()">
+              @{{ userHandle() }}
             </p>
           </div>
           <div class="sm:ms-auto flex flex-wrap gap-2">
@@ -168,8 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import { definePageMeta } from '#imports'
-// Removed duplicate definePageMeta declaration
+import { definePageMeta, useState } from '#imports'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
 definePageMeta({
@@ -187,16 +186,25 @@ definePageMeta({
 })
 
 // Local notifications slideover state (was useDashboard)
-const isNotificationsSlideoverOpen = ref(false)
+const isNotificationsSlideoverOpen = useState<boolean>(
+  'fireux-core:dashboard:notifs-open',
+  () => false
+)
 const { user } = useUser()
-const userAvatar = computed(() => {
+
+const userAvatar = () => {
   const raw = user?.value?.avatar ?? ''
   const normalized = typeof raw === 'string' ? raw.trim() : ''
   return normalized || undefined
-})
-// TODO(fallback-review): Confirm we really want to greet with "there" when identity metadata is missing
-const userGreeting = computed(() => user?.value?.display_name ?? '')
-const userHandle = computed(() => user?.value?.handle ?? '')
+}
+
+const displayName = () => (user?.value?.display_name ?? '').trim()
+const userHandle = () => (user?.value?.handle ?? '').trim()
+const userGreeting = () => {
+  const name = displayName() || userHandle()
+  return name ? `Hello ${name}` : 'Hello'
+}
+const showHandle = () => Boolean(userHandle() && displayName())
 // Keep dashboard lightweight; avoid runtime config dependencies
 
 const quickLinks = [
@@ -275,15 +283,15 @@ const recent = [
 const items = [
   [
     {
-      label: 'New task',
+      label: 'New task (coming soon)',
       icon: 'i-lucide-plus',
-      to: '/dashboard/tasks',
+      disabled: true,
     },
     {
-      label: 'Support',
+      label: 'Support (coming soon)',
       icon: 'i-lucide-life-buoy',
-      to: '/support',
+      disabled: true,
     },
   ],
-] satisfies DropdownMenuItem[][]
+] as const
 </script>

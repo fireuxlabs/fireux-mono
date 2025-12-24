@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { definePageMeta } from '#imports'
+
 definePageMeta({
   layout: 'dashboard',
   nav: {
@@ -27,7 +29,6 @@ definePageMeta({
       <UPage>
         <UPageBody>
           <UPageHeader
-            title="Purchases"
             description="Products you have bought."
           />
           <UPageCard variant="subtle">

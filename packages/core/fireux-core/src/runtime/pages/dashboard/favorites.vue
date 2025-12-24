@@ -14,7 +14,6 @@
           <div class="dashboard-grid-section">
             <UCard>
               <template #default>
-                <h2>Favorites</h2>
                 <p>Placeholder for saved items or favorite products.</p>
               </template>
             </UCard>
@@ -26,6 +25,8 @@
 </template>
 
 <script setup lang="ts">
+import { definePageMeta } from '#imports'
+
 definePageMeta({
   layout: 'dashboard',
   nav: {

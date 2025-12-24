@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { definePageMeta, useState } from '#imports'
 
 // Note: This page can expand with invite/manage actions; see archived members mechanics for list + search patterns.
 definePageMeta({
@@ -14,16 +14,18 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const q = ref('')
-const members = ref([
+type Member = { id: number; name: string; username: string }
+
+const q = useState<string>('fireux-core:dashboard-followers:q', () => '')
+const members = useState<Member[]>('fireux-core:dashboard-followers:members', () => [
   { id: 1, name: 'Alice Example', username: 'alice' },
   { id: 2, name: 'Bob Example', username: 'bob' },
 ])
 
-const filtered = computed(() => {
+const filteredMembers = () => {
   const r = new RegExp(q.value, 'i')
   return members.value.filter((m) => r.test(m.name) || r.test(m.username))
-})
+}
 </script>
 
 <template>
@@ -40,7 +42,6 @@ const filtered = computed(() => {
       <UPage>
         <UPageBody>
           <UPageHeader
-            title="Followers"
             description="People who follow your updates."
           />
 
@@ -52,9 +53,10 @@ const filtered = computed(() => {
             class="mb-4"
           >
             <UButton
-              label="Invite people"
+              label="Invite people (coming soon)"
               color="neutral"
               class="w-fit lg:ms-auto"
+              disabled
             />
           </UPageCard>
 
@@ -77,9 +79,9 @@ const filtered = computed(() => {
             </template>
 
             <div class="p-4 flex flex-col gap-2">
-              <template v-if="filtered.length">
+              <template v-if="filteredMembers().length">
                 <div
-                  v-for="m in filtered"
+                  v-for="m in filteredMembers()"
                   :key="m.id"
                   class="flex items-center justify-between py-2"
                 >

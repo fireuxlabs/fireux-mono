@@ -23,6 +23,12 @@ declare module '#imports' {
   // Explicit re-export so TS always sees the macro
   export const definePageMeta: typeof import('nuxt/app')['definePageMeta']
 
+  // In some package contexts VS Code/tsserver may not resolve `vue` types.
+  // Provide loose shims for common Vue composables used in SFCs.
+  export function ref<T = any>(value?: T): any
+  export function computed<T = any>(getter: (...args: any[]) => T): any
+  export function reactive<T extends object>(value: T): T
+
   // Common Nuxt composables/macros used across package runtime.
   // Keep these as loose types; real types come from app-generated .nuxt d.ts.
   export function useRoute(...args: any[]): any

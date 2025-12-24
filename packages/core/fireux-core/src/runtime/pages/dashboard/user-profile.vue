@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="user-profile">
     <template #header>
-      <UDashboardNavbar title="User Profile">
+      <UDashboardNavbar title="Profile">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -54,7 +54,7 @@ definePageMeta({
   layout: 'dashboard',
   nav: {
     key: 'dashboard-user-profile',
-    label: 'User Profile',
+    label: 'Profile',
     icon: 'i-lucide-user',
     order: 30,
     desktop: true,
@@ -66,7 +66,7 @@ definePageMeta({
 const useHeadFn = (globalThis as any).useHead as
   | undefined
   | ((input: any) => void)
-useHeadFn?.({ title: 'Your Profile' })
+useHeadFn?.({ title: 'Profile' })
 
 const { currentUser, isLoading } = useUser()
 

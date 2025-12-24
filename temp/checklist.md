@@ -10,7 +10,7 @@ We work **chunk by chunk**. No jobs/roles until core is green.
 - ✅ Sign out reliability improved (canonical sign out + dashboard guard)
 - ✅ Dashboard has a visible Home escape hatch (one click → `/`)
 - ✅ Menu button wiring corrected (avoid duplicate burgers on mobile)
-- ⏳ Menu reliability still needs validation and likely fixes
+- ✅ Menu reliability validated (tests #1–#6 PASS)
 
 ### Definition of “PASS” (binary)
 For every test below:
