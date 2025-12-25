@@ -11,26 +11,49 @@
 
     <template #body>
       <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
-        <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
-          <template #preview>
-            <OrganismsAppPreview :app="appSnapshot" :compact="false" />
-          </template>
+        <UPage>
+          <UPageBody>
+            <UPageHeader
+              description="Admin-only app configuration."
+            />
 
-          <template #core>
-            <OrganismsAppEditCore :app="appSnapshot" />
-          </template>
+            <UPageCard v-if="pending" variant="subtle">
+              <p class="text-sm text-dimmed">Loading app…</p>
+            </UPageCard>
 
-          <template #app>
-            <OrganismsAppEditApp :app="appSnapshot" />
-          </template>
-        </LayoutsDashboardProfileEdit>
+            <UPageCard
+              v-else-if="!appSnapshot"
+              title="App not available"
+              description="No app data found for this environment."
+              variant="subtle"
+            >
+              <UButton to="/" label="Go to FireUX.app" variant="soft" class="w-fit" />
+            </UPageCard>
+
+            <LayoutsDashboardProfileEdit
+              v-else
+              class="grid gap-6 lg:grid-cols-2"
+            >
+              <template #preview>
+                <OrganismsAppPreview :app="appSnapshot" :compact="false" />
+              </template>
+
+              <template #core>
+                <OrganismsAppEditCore :app="appSnapshot" />
+              </template>
+
+              <template #app>
+                <OrganismsAppEditApp :app="appSnapshot" />
+              </template>
+            </LayoutsDashboardProfileEdit>
+          </UPageBody>
+        </UPage>
       </div>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { definePageMeta } from '#imports'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import OrganismsAppPreview from '../../components/organisms/App/Preview.vue'
@@ -39,10 +62,7 @@ import OrganismsAppEditApp from '../../components/organisms/App/Edit/App.vue'
 
 const { app, pending } = useApp()
 
-const appSnapshot = computed(() => {
-  if (pending.value) return null
-  return app.value ?? null
-})
+const appSnapshot = (pending.value ? null : app.value) ?? null
 
 definePageMeta({
   layout: 'dashboard',

@@ -15,6 +15,15 @@
             <UCard>
               <template #default>
                 <p>Placeholder for saved items or favorite products.</p>
+                <div class="mt-3">
+                  <UButton
+                    to="/"
+                    label="Explore"
+                    variant="soft"
+                    size="sm"
+                    class="w-fit"
+                  />
+                </div>
               </template>
             </UCard>
           </div>

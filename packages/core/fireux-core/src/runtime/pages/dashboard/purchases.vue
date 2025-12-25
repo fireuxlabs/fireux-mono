@@ -35,6 +35,15 @@ definePageMeta({
             <p class="text-sm text-dimmed">
               Placeholder: purchases list will appear here.
             </p>
+            <div class="mt-3">
+              <UButton
+                to="/"
+                label="Browse"
+                variant="soft"
+                size="sm"
+                class="w-fit"
+              />
+            </div>
           </UPageCard>
         </UPageBody>
       </UPage>

@@ -87,75 +87,40 @@
         </UPageCard>
       </div>
 
-      <!-- Health & progress -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-        <UPageCard v-for="stat in stats" :key="stat.label" variant="subtle">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-dimmed">{{ stat.label }}</p>
-              <p class="text-2xl font-semibold">{{ stat.value }}</p>
-            </div>
-            <UIcon :name="stat.icon" class="size-6 text-dimmed" />
-          </div>
-          <p v-if="stat.hint" class="text-xs text-dimmed mt-2">
-            {{ stat.hint }}
-          </p>
-        </UPageCard>
-      </div>
-
+      <!-- Next steps (core-only) -->
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <UPageCard class="xl:col-span-2" variant="subtle">
-          <template #header>
-            <div class="flex items-center justify-between">
-              <span class="font-medium">Today</span>
-              <UBadge label="In progress" variant="soft" />
-            </div>
-          </template>
-          <ul class="space-y-3">
-            <li
-              v-for="item in today"
-              :key="item.label"
-              class="flex items-start gap-3"
-            >
-              <UIcon :name="item.icon" class="mt-0.5 text-dimmed" />
-              <div class="min-w-0">
-                <p class="text-sm font-medium leading-tight">
-                  {{ item.label }}
-                </p>
-                <p class="text-xs text-dimmed">{{ item.detail }}</p>
-              </div>
-              <UBadge
-                v-if="item.badge"
-                :label="item.badge"
-                variant="outline"
-                class="ms-auto"
-              />
-            </li>
-          </ul>
+        <UPageCard
+          title="Complete your profile"
+          description="Set your public identity (name, handle, bio)."
+          variant="subtle"
+        >
+          <UButton
+            to="/dashboard/user-profile"
+            label="Edit profile"
+            color="neutral"
+            class="w-fit"
+          />
         </UPageCard>
 
-        <UPageCard variant="subtle">
-          <template #header>
-            <div class="flex items-center justify-between">
-              <span class="font-medium">Recent activity</span>
-            </div>
-          </template>
-          <ul class="space-y-3">
-            <li
-              v-for="entry in recent"
-              :key="entry.label"
-              class="flex items-start gap-3"
-            >
-              <UIcon :name="entry.icon" class="mt-0.5 text-dimmed" />
-              <div class="min-w-0">
-                <p class="text-sm font-medium leading-tight">
-                  {{ entry.label }}
-                </p>
-                <p class="text-xs text-dimmed">{{ entry.detail }}</p>
-              </div>
-              <span class="text-xs text-dimmed ms-auto">{{ entry.when }}</span>
-            </li>
-          </ul>
+        <UPageCard
+          title="Set preferences"
+          description="Language, theme, security alerts, analytics."
+          variant="subtle"
+        >
+          <UButton
+            to="/dashboard/settings"
+            label="Open settings"
+            color="neutral"
+            class="w-fit"
+          />
+        </UPageCard>
+
+        <UPageCard
+          title="Explore"
+          description="Return to the app home to browse what's available."
+          variant="subtle"
+        >
+          <UButton to="/" label="Go to FireUX.app" variant="soft" class="w-fit" />
         </UPageCard>
       </div>
     </template>
@@ -214,69 +179,6 @@ const quickLinks = [
     label: 'Purchases',
     icon: 'i-lucide-shopping-bag',
     to: '/dashboard/purchases',
-  },
-]
-
-const stats = [
-  {
-    label: 'Open tasks',
-    value: '3',
-    icon: 'i-lucide-list-todo',
-    hint: 'Finish today',
-  },
-  { label: 'Messages', value: '5', icon: 'i-lucide-mail', hint: '2 unread' },
-  {
-    label: 'Meetings',
-    value: '1',
-    icon: 'i-lucide-calendar-clock',
-    hint: 'Next in 2h',
-  },
-  {
-    label: 'Checklist',
-    value: '4/6',
-    icon: 'i-lucide-clipboard-check',
-    hint: 'Keep momentum',
-  },
-]
-
-const today = [
-  {
-    label: 'Complete onboarding checklist',
-    detail: 'Docs, profile, billing, notifications',
-    icon: 'i-lucide-rocket',
-    badge: 'Priority',
-  },
-  {
-    label: 'Review notifications',
-    detail: 'Respond to pending requests and approvals',
-    icon: 'i-lucide-bell',
-    badge: 'Today',
-  },
-  {
-    label: 'Update profile visibility',
-    detail: 'Add a short bio and headline',
-    icon: 'i-lucide-user-round',
-  },
-]
-
-const recent = [
-  {
-    label: 'Profile updated',
-    detail: 'Added avatar and headline',
-    icon: 'i-lucide-user-cog',
-    when: '2h ago',
-  },
-  {
-    label: 'New message',
-    detail: 'Support replied to your ticket',
-    icon: 'i-lucide-message-circle',
-    when: '5h ago',
-  },
-  {
-    label: 'Settings saved',
-    detail: 'Notification preferences refreshed',
-    icon: 'i-lucide-settings-2',
-    when: '1d ago',
   },
 ]
 
