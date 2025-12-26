@@ -88,7 +88,7 @@
       </div>
 
       <!-- Next steps (core-only) -->
-      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <UPageCard
           title="Complete your profile"
           description="Set your public identity (name, handle, bio)."
@@ -113,14 +113,6 @@
             color="neutral"
             class="w-fit"
           />
-        </UPageCard>
-
-        <UPageCard
-          title="Explore"
-          description="Return to the app home to browse what's available."
-          variant="subtle"
-        >
-          <UButton to="/" label="Go to FireUX.app" variant="soft" class="w-fit" />
         </UPageCard>
       </div>
     </template>
