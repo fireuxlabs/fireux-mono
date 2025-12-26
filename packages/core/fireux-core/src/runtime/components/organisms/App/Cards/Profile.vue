@@ -7,6 +7,7 @@
           <UAvatar
             :src="avatarSrc || undefined"
             :alt="app.app_name"
+            :text="avatarText"
             size="xl"
             class="avatar"
           />
@@ -120,19 +121,35 @@ import type { AppCard } from '../../../../composables/fireux/firestore/core/app/
 import type { UserCard } from '../../../../models/core/user.model'
 import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy'
 
 type Props = { app: AppCard.Profile | null }
 const props = defineProps<Props>()
 
 const app = computed(() => props.app)
 
-const avatarSrc = computed(
-  () =>
-    app.value?.avatar_url ||
-    app.value?.logo_url ||
-    app.value?.wordmark_url ||
-    ''
-)
+const { getProxiedAvatarUrl } = useAvatarProxy()
+
+const avatarSrc = computed(() => {
+  const raw =
+    app.value?.avatar_url || app.value?.logo_url || app.value?.wordmark_url || ''
+  const trimmed = typeof raw === 'string' ? raw.trim() : ''
+  return trimmed ? getProxiedAvatarUrl(trimmed) || trimmed : ''
+})
+
+const initials = (value: string) =>
+  value
+    .split(/\s+/g)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+
+const avatarText = computed(() => {
+  const label =
+    (app.value?.app_short_name ?? '').trim() || (app.value?.app_name ?? '').trim() || (app.value?.id ?? '').trim()
+  return label ? initials(label) : ''
+})
 
 const roleLabel = computed(() => {
   const r = app.value?.role

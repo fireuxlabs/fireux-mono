@@ -12,6 +12,10 @@ export type FireuxAppConfig = {
   name: string
   shortName: string
   description: string
+  /** Optional app icon path/URL (defaults to /img/app/logo.png). */
+  appIcon?: string
+  /** Optional app logo path/URL (preferred). Defaults to /img/app/logo.png. */
+  appLogo?: string
   role: 'global' | 'tenant'
   modules?: string[]
 }
@@ -123,6 +127,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       name: app.name,
       shortName: app.shortName,
       description: app.description,
+      appIcon: app.appIcon || app.appLogo || '/img/app/logo.png',
+      appLogo: app.appLogo || app.appIcon || '/img/app/logo.png',
       domain: envDomain,
       role: app.role,
       ecosystem: app.ecosystem,

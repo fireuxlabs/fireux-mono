@@ -9,7 +9,9 @@ export function useAvatarProxy() {
     if (!avatarUrl) return ''
     if (
       avatarUrl.includes('googleusercontent.com') ||
-      avatarUrl.includes('google.com/')
+      avatarUrl.includes('google.com/') ||
+      avatarUrl.includes('googleapis.com') ||
+      avatarUrl.includes('gstatic.com')
     ) {
       return `/api/proxy/image?url=${encodeURIComponent(avatarUrl)}`
     }

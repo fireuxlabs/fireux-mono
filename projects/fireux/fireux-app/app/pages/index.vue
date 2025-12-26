@@ -29,12 +29,60 @@
 
   <!-- Sections to ship now -->
   <LandingProducts :items="products" />
+
+  <UContainer>
+    <UPageSection class="py-12 lg:py-16">
+      <div class="flex items-end justify-between mb-6">
+        <div>
+          <h2 class="text-2xl lg:text-3xl font-bold">Our apps</h2>
+          <p class="text-[color:var(--ui-text-muted)] mt-1">
+            Avatars for every registered app.
+          </p>
+        </div>
+        <UBadge variant="soft" color="primary">{{ displayedApps.length }}</UBadge>
+      </div>
+
+      <div v-if="appsPending" class="flex flex-wrap gap-2">
+        <USkeleton class="h-10 w-10 rounded-full" />
+        <USkeleton class="h-10 w-10 rounded-full" />
+        <USkeleton class="h-10 w-10 rounded-full" />
+        <USkeleton class="h-10 w-10 rounded-full" />
+        <USkeleton class="h-10 w-10 rounded-full" />
+        <USkeleton class="h-10 w-10 rounded-full" />
+      </div>
+
+      <div v-else class="flex flex-wrap gap-2">
+        <UAvatar
+          v-for="app in displayedApps"
+          :key="app.key"
+          :src="app.src"
+          :alt="app.name"
+          :text="app.text"
+          size="md"
+        />
+      </div>
+    </UPageSection>
+  </UContainer>
+
   <LandingFuel />
   <LandingFeatures first />
   <LandingSkillsIcons />
 </template>
 
 <script setup lang="ts">
+import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy.ts'
+import { computed, onMounted, ref } from 'vue'
+import { useRuntimeConfig } from '#imports'
+
+type LandingProductItem = {
+  title: string
+  description: string
+  to: string
+  logo?: string
+  tag?: string
+  tagColor?: 'primary' | 'neutral' | 'sky' | 'violet' | 'amber'
+}
+
 definePageMeta({
   layout: 'landing',
   nav: {
@@ -52,6 +100,143 @@ useSeoMeta({
   description:
     'Build faster with FireUX Core and deploy streamlined, data-driven applications.',
 })
+
+const { getProxiedAvatarUrl } = useAvatarProxy()
+
+type AppInfoResponse = {
+  ok?: boolean
+  app?: {
+    id?: string
+    name?: string
+    shortName?: string
+    ecosystem?: string
+    role?: string
+    modules?: string[]
+    logo?: string
+    appIcon?: string
+  }
+  package?: {
+    name?: string
+    version?: string
+  }
+}
+
+type AppKey =
+  | 'fireux'
+  | 'misebox'
+  | 'cleanbox'
+  | 'niederhorn'
+  | 'richies'
+  | 'tennant'
+
+const CANONICAL_APPS: Array<{ key: AppKey; name: string }> = [
+  { key: 'fireux', name: 'FireUX' },
+  { key: 'misebox', name: 'Misebox' },
+  { key: 'cleanbox', name: 'Cleanbox' },
+  { key: 'niederhorn', name: 'Niederhorn' },
+  { key: 'richies', name: 'Richies' },
+  { key: 'tennant', name: 'Tennant' },
+]
+
+const runtimeConfig = useRuntimeConfig()
+const publicApps = (runtimeConfig.public as any)?.apps as
+  | Partial<Record<AppKey, string>>
+  | undefined
+
+const devBaseUrl = (key: AppKey) => {
+  const ports: Record<AppKey, number> = {
+    fireux: 3000,
+    misebox: 3001,
+    cleanbox: 3002,
+    niederhorn: 3003,
+    richies: 3004,
+    tennant: 3005,
+  }
+  return `http://localhost:${ports[key]}`
+}
+
+const baseUrlFor = (key: AppKey) => {
+  if (import.meta.dev) return devBaseUrl(key)
+  const raw = publicApps?.[key]
+  return typeof raw === 'string' && raw.trim() ? raw.trim().replace(/\/+$/, '') : ''
+}
+
+const infoByKey = ref<Partial<Record<AppKey, AppInfoResponse>>>({})
+const infoPending = ref(false)
+const appsPending = computed(() => infoPending.value)
+
+const initials = (name: string) =>
+  name
+    .split(/\s+/g)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+
+const resolveIconUrl = (base: string, icon: string) => {
+  const trimmed = icon.trim()
+  if (!trimmed) return ''
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  if (trimmed.startsWith('/') && base) return `${base}${trimmed}`
+  return trimmed
+}
+
+const DEFAULT_LOGO_PATH = '/img/app/logo.png'
+
+const fetchAllAppInfo = async () => {
+  if (typeof window === 'undefined') return
+  infoPending.value = true
+  try {
+    await Promise.all(
+      CANONICAL_APPS.map(async ({ key }) => {
+        const base = baseUrlFor(key)
+        if (!base) return
+        try {
+          const res = await fetch(`${base}/api/app/info`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+          })
+          if (!res.ok) {
+            if (import.meta.dev) {
+              console.warn(`[fireux] /api/app/info failed for ${key}: ${res.status}`)
+            }
+            return
+          }
+          const json = (await res.json()) as AppInfoResponse
+          infoByKey.value[key] = json
+        } catch (e) {
+          if (import.meta.dev) {
+            console.warn(`[fireux] /api/app/info threw for ${key}:`, e)
+          }
+        }
+      })
+    )
+  } finally {
+    infoPending.value = false
+  }
+}
+
+onMounted(() => {
+  void fetchAllAppInfo()
+})
+
+const displayedApps = computed(() =>
+  CANONICAL_APPS.map((app) => {
+    const base = baseUrlFor(app.key)
+    const info = infoByKey.value[app.key]
+    const logo = info?.app?.logo ?? info?.app?.appIcon ?? DEFAULT_LOGO_PATH
+    const resolved = resolveIconUrl(base, logo)
+    if (import.meta.dev && base && !resolved) {
+      console.warn(`[fireux] No logo resolved for ${app.key}.`) 
+    }
+    return {
+      key: app.key,
+      name: app.name,
+      src: getProxiedAvatarUrl(resolved),
+      text: initials(app.name),
+    }
+  })
+)
 
 const title = 'Ignite With'
 const accent = 'Powerful Applications'
@@ -175,5 +360,5 @@ const products = [
     tag: 'Core',
     tagColor: 'primary',
   },
-]
+] satisfies LandingProductItem[]
 </script>

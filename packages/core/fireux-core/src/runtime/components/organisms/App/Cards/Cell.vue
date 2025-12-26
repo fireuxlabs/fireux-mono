@@ -4,8 +4,9 @@
     <UCard class="cell">
       <div class="row">
         <UAvatar
-          :src="app?.avatar_url || app?.logo_url || app?.wordmark_url || ''"
+          :src="avatarSrc || undefined"
           :alt="app?.app_name || app?.id || '—'"
+          :text="avatarText"
           size="md"
           class="avatar"
         />
@@ -27,11 +28,39 @@
 import { computed } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 import type { App } from '../../../../models/core/app.model'
+import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy'
 
 const props = defineProps<{
   app?: Partial<App> | null
   to?: RouteLocationRaw | null
 }>()
+
+const { getProxiedAvatarUrl } = useAvatarProxy()
+
+const rawAvatar = computed(() =>
+  (props.app?.avatar_url || props.app?.logo_url || props.app?.wordmark_url || '').trim()
+)
+
+const avatarSrc = computed(() => {
+  const raw = rawAvatar.value
+  return raw ? getProxiedAvatarUrl(raw) || raw : ''
+})
+
+const initials = (value: string) =>
+  value
+    .split(/\s+/g)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+
+const avatarText = computed(() => {
+  const label =
+    (props.app?.app_short_name ?? '').trim() ||
+    (props.app?.app_name ?? '').trim() ||
+    (props.app?.id ?? '').trim()
+  return label ? initials(label) : ''
+})
 
 const wrapperTag = computed(() => (props.to ? 'NuxtLink' : 'div'))
 const wrapperBindings = computed(() => (props.to ? { to: props.to } : {}))

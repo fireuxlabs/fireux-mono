@@ -1,6 +1,7 @@
 import type { Ref } from 'vue'
 import type { App } from '../../../../../../../models/core/app.model'
 import type { Pill as PillModel } from '../../../../../../../../types/pill.model'
+import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
 
 export namespace AppCard {
   /** Single payload powering Pill/Cell/Profile views */
@@ -29,6 +30,8 @@ export namespace AppCard {
 }
 
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
+  const { getProxiedAvatarUrl } = useAvatarProxy()
+
   const resolveApp = (target?: App | null) => target ?? appRef?.value ?? null
 
   const toPath = (id?: string | null) => (id ? `/apps/${id}` : '')
@@ -61,14 +64,38 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       : undefined
   }
 
+  const pickAvatar = (app: App | null) => {
+    const raw =
+      (app?.avatar_url ?? '') || (app?.logo_url ?? '') || (app?.wordmark_url ?? '')
+    const trimmed = typeof raw === 'string' ? raw.trim() : ''
+    return trimmed || ''
+  }
+
+  const initialsFrom = (value: string) =>
+    value
+      .split(/\s+/g)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join('')
+
+  const appInitials = (app: App | null) => {
+    const label =
+      (app?.app_short_name ?? '').trim() || (app?.app_name ?? '').trim() || (app?.id ?? '').trim()
+    return label ? initialsFrom(label) : ''
+  }
+
   const cardProps = (target?: App | null): AppCard.Card => {
     const app = resolveApp(target)
     const to = toPath(app?.id) || null
     const admins = uniqueStrings(app?.admin_ids)
     const joins = uniqueStrings(app?.join_requests)
+    const rawAvatar = pickAvatar(app)
+    const avatar = rawAvatar ? getProxiedAvatarUrl(rawAvatar) || rawAvatar : null
 
     return {
-      avatar: app?.avatar_url ?? null,
+      avatar,
+      initials: appInitials(app),
       title: app?.app_name ?? '',
       subtitle: app?.ecosystem ?? '',
       badges: [app?.role, app?.status].filter(Boolean) as string[],

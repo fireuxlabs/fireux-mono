@@ -11,6 +11,7 @@ export interface FireUXConfig {
   appShortName: string
   modules: string[]
   appIcon?: string
+  appLogo?: string
   primaryColor?: string
   neutralColor?: string
   secondaryColor?: string
@@ -75,6 +76,7 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
     appShortName: reqString(fireux, 'shortName'),
     modules: toStringArray(fireux.modules),
     appIcon: optString(fireux, 'appIcon'),
+    appLogo: optString(fireux, 'appLogo'),
     primaryColor: optString(fireux, 'primaryColor'),
     neutralColor: optString(fireux, 'neutralColor'),
     secondaryColor: optString(fireux, 'secondaryColor'),
