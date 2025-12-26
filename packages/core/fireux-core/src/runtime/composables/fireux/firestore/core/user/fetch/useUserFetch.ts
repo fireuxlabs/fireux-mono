@@ -34,8 +34,16 @@ export function useUserFetch(
     AppUser | undefined
   >(appDoc as any)
 
-  const coreUser = computed(() => coreUserRef.value ?? null)
-  const appUser = computed(() => appUserRef.value ?? null)
+  const coreUser = computed<User | null | undefined>(() => {
+    if (corePending.value) return undefined
+    return coreUserRef.value ?? null
+  })
+
+  const appUser = computed<AppUser | null | undefined>(() => {
+    if (!appDoc.value) return null
+    if (appPending.value) return undefined
+    return appUserRef.value ?? null
+  })
 
   const user = computed<User | null>(() => {
     const core = coreUser.value

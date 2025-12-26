@@ -30,9 +30,10 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const currentUser = computed(() => coreUser.value ?? null)
   const hasCoreProfile = computed(() => Boolean(coreUser.value))
 
-  const profileComplete = computed(() => {
+  const profileComplete = computed<number | null>(() => {
     const current = coreUser.value
-    if (!current) return 0
+    if (current === undefined) return null
+    if (current === null) return 0
 
     const checks = [
       Boolean((current.display_name ?? '').trim()),

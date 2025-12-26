@@ -5,6 +5,7 @@ import type {
 } from '../../../../../../../models/core/user.model'
 import type { UserRefs } from '../../fetch/useUserFetch'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
+import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
 
 type RuntimeContext = {
   runtime?: 'global' | 'tenant'
@@ -15,6 +16,8 @@ export function useUserInterface(
   source?: Ref<User | null | undefined> | UserRefs,
   context?: RuntimeContext
 ) {
+  const { getProxiedAvatarUrl } = useAvatarProxy()
+
   const resolve = (): User | null => {
     if (!source) return null
     if ('coreUser' in (source as UserRefs)) {
@@ -32,12 +35,23 @@ export function useUserInterface(
   const toUser = (target?: User | null): User | null => target ?? resolve()
 
   const composePill = (user: User): UserCard.Pill => {
+    const title =
+      user.display_name?.trim() ||
+      user.handle?.trim() ||
+      user.id ||
+      'User'
+
+    const rawAvatar = (user.avatar || '').trim()
+    const proxiedAvatar = rawAvatar
+      ? getProxiedAvatarUrl(rawAvatar) || rawAvatar
+      : ''
+
     const memberships = membershipResolver(user)
     const isAdmin = isAdminForRuntime(user)
     return {
-      avatar: user.avatar || '',
-      initials: 'AA',
-      title: user.display_name?.trim() || 'User',
+      avatar: proxiedAvatar,
+      initials: toInitials(title),
+      title,
       subtitle: formatHandle(user.handle),
       special: isAdmin,
       specialTooltip: isAdmin ? adminTooltip(runtime) : undefined,
@@ -99,6 +113,17 @@ export function useUserInterface(
   }
 
   return { pillProps, cellProps, profileProps }
+}
+
+function toInitials(value?: string | null) {
+  const input = (value ?? '').trim()
+  if (!input) return 'A'
+  return input
+    .split(/\s+/)
+    .map((token) => token[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 }
 
 function resolveRuntime(input?: RuntimeContext) {

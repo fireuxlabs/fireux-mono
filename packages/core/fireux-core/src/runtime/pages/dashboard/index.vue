@@ -26,7 +26,6 @@
     <template #body>
       <!-- 1) Core (FireUX-wide) -->
       <DashboardCore />
-
       <!-- 2) Ecosystem (e.g. fireux-fireux) -->
       <DashboardEcosystem />
 

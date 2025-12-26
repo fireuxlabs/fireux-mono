@@ -6,13 +6,9 @@
       variant="subtle"
       :ui="{ container: 'flex flex-col sm:flex-row sm:items-center gap-4' }"
     >
-      <UAvatar :src="userAvatar()" :alt="userGreeting()" size="lg" />
-      <div class="min-w-0 space-y-1">
-        <p class="text-sm text-dimmed">Welcome back</p>
-        <h2 class="text-lg font-medium truncate">{{ userGreeting() }}</h2>
-        <p class="text-sm text-dimmed truncate" v-if="showHandle()">
-          @{{ userHandle() }}
-        </p>
+      <div class="flex-1 min-w-0">
+        <OrganismsUserCardsPill v-if="currentUserPill" :user="currentUserPill" />
+        <USkeleton v-else class="h-11 w-full" />
       </div>
       <div class="sm:ms-auto flex flex-wrap gap-2">
         <UButton
@@ -27,33 +23,6 @@
           variant="ghost"
           size="sm"
         />
-        <UButton
-          to="/docs/getting-started"
-          label="Docs"
-          variant="soft"
-          size="sm"
-        />
-      </div>
-    </UPageCard>
-
-    <UPageCard variant="subtle">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <span class="font-medium">Quick links</span>
-        </div>
-      </template>
-      <div class="flex flex-wrap gap-2">
-        <UButton
-          v-for="link in quickLinks"
-          :key="link.to"
-          :to="link.to"
-          :icon="link.icon"
-          color="neutral"
-          variant="soft"
-          size="sm"
-        >
-          {{ link.label }}
-        </UButton>
       </div>
     </UPageCard>
   </div>
@@ -61,7 +30,7 @@
   <!-- Next steps (core-only) -->
   <div class="grid grid-cols-1 gap-4">
     <UPageCard
-      v-if="profileComplete < 100"
+      v-if="!pending && profileCompleteValue != null && profileCompleteValue < 100"
       title="Complete your profile"
       variant="subtle"
     >
@@ -69,11 +38,11 @@
         <div class="flex items-center justify-between gap-3">
           <span class="text-sm text-dimmed">Profile completion</span>
           <UBadge color="neutral" variant="soft">
-            {{ profileComplete }}%
+            {{ profileCompleteValue }}%
           </UBadge>
         </div>
         <UProgress
-          :value="profileComplete"
+          :model-value="profileCompleteValue ?? 0"
           :max="100"
           :ui="{ indicator: 'transition-none duration-0' }"
         />
@@ -90,36 +59,17 @@
 </template>
 
 <script setup lang="ts">
-import { useAvatarProxy } from '../../composables/fireux/app/ui/useAvatarProxy'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { computed } from 'vue'
 
-const { user, profileComplete } = useUser()
-const { getProxiedAvatarUrl } = useAvatarProxy()
+const { user, profileComplete, pending, pillProps } = useUser()
 
-const userAvatar = () => {
-  const raw = user?.value?.avatar ?? ''
-  const normalized = typeof raw === 'string' ? raw.trim() : ''
-  const proxied = getProxiedAvatarUrl(normalized || undefined)
-  return proxied || undefined
-}
+const currentUserPill = computed(() => (user.value ? pillProps(user.value) : null))
 
-const displayName = () => (user?.value?.display_name ?? '').trim()
-const userHandle = () => (user?.value?.handle ?? '').trim()
-
-const userGreeting = () => {
-  const name = displayName() || userHandle()
-  return name ? `Hello ${name}` : 'Hello'
-}
-
-const showHandle = () => Boolean(userHandle() && displayName())
-
-const quickLinks = [
-  { label: 'Profile', icon: 'i-lucide-user', to: '/dashboard/user-profile' },
-  { label: 'Settings', icon: 'i-lucide-settings', to: '/dashboard/settings' },
-  {
-    label: 'Purchases',
-    icon: 'i-lucide-shopping-bag',
-    to: '/dashboard/purchases',
-  },
-]
+const profileCompleteValue = computed<number | null>(() => {
+  if (profileComplete.value == null) return null
+  const v = Number(profileComplete.value)
+  if (!Number.isFinite(v)) return null
+  return Math.max(0, Math.min(100, Math.round(v)))
+})
 </script>
