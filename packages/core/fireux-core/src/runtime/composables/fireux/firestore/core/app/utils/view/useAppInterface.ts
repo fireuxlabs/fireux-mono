@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { App } from '../../../../../../../models/core/app.model'
-import type { Pill as PillModel } from '../../../../../../../types/pill.model'
+import type { Pill as PillModel } from '../../../../../../../../types/pill.model'
 
 export namespace AppCard {
   /** Single payload powering Pill/Cell/Profile views */

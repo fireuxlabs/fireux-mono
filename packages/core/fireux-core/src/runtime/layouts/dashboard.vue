@@ -100,7 +100,7 @@ import { useDashboardNav } from '../composables/fireux/app/routing/presets'
 import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useUser } from '../composables/fireux/firestore/core/user/useUser'
 import type { UserCard } from '../models/core/user.model'
-import type { NavItem } from '../types/nav'
+import type { NavItem } from '../../types/nav'
 
 defineOptions({ name: 'dashboard' })
 

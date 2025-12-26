@@ -1,4 +1,4 @@
-import type { FirebaseTimestamp } from '../../types/firebase'
+import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { User } from './user.model'
 
 /**

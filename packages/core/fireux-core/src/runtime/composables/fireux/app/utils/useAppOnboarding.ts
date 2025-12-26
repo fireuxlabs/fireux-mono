@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useUser } from '../../firestore/core/user/useUser'
 import { useAppEnsure } from '../../firestore/core/app/mutations/useAppEnsure'
-import type { EnvCheckResponse } from '../../../../types/app/onboarding'
+import type { EnvCheckResponse } from '../../../../../types/app/onboarding'
 import { useAppEnvCheck } from './useAppEnvCheck'
 
 export interface AppOnboardingState {

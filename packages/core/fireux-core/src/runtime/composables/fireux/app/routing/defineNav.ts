@@ -1,4 +1,4 @@
-import type { NavMeta } from '../../../../types/nav'
+import type { NavMeta } from '../../../../../types/nav'
 
 // Macro is provided by Nuxt runtime; declare optional shape for package builds.
 declare const definePageMeta:

@@ -1,5 +1,5 @@
-import type { FirebaseTimestamp } from '../../types/firebase'
-import type { Pill as PillModel } from '../../types/pill.model'
+import type { FirebaseTimestamp } from '../../../types/firebase'
+import type { Pill as PillModel } from '../../../types/pill.model'
 
 export type NotificationScope = 'ecosystem' | 'app'
 
