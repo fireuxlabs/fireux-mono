@@ -54,15 +54,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useColorMode } from '#imports'
+import { computed, ref, useColorMode, useRouter } from '#imports'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 const router = useRouter()
-const { authState, signOutUser, signInWithGoogle, isReady, lastBindError } = useAuth()
+const { authState, signOutUser, signInWithGoogle, isReady } = useAuth()
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const signOutLoading = ref(false)
 const providerLoading = ref(false)
@@ -86,20 +84,6 @@ const { currentUser, pillProps } = useUser()
 const currentUserPill = computed(() =>
   currentUser.value ? pillProps(currentUser.value) : null
 )
-
-onMounted(() => {
-  if (!import.meta.dev) return
-  // eslint-disable-next-line no-console
-  console.log('[fireux][auth] system mounted', {
-    isReady: isReady.value,
-    authState: authState.value,
-    hasBindError: !!lastBindError.value,
-  })
-  if (lastBindError.value) {
-    // eslint-disable-next-line no-console
-    console.warn('[fireux][auth] vuefire bind error', lastBindError.value)
-  }
-})
 
 const goToDashboard = async () => {
   await router.push('/dashboard').catch(() => {})

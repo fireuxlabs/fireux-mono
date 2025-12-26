@@ -22,8 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, unref } from 'vue'
-import { useColorMode, definePageMeta, useRoute } from '#imports'
+import { computed, definePageMeta, useColorMode } from '#imports'
 import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
 
 definePageMeta({
@@ -31,7 +30,6 @@ definePageMeta({
 })
 
 const colorMode = useColorMode()
-const route = useRoute()
 const { appName, isTenant } = useFireUXConfig()
 
 const tenantIcon = '/img/app/logo.png'
@@ -41,16 +39,6 @@ const tenantWordmark = computed(() =>
     : '/img/app/wordmark-light.png'
 )
 
-onMounted(() => {
-  if (!import.meta.dev) return
-  // eslint-disable-next-line no-console
-  console.log('[fireux][auth] page mounted', {
-    path: route.fullPath,
-    colorMode: colorMode.value,
-    isTenant: unref(isTenant),
-    appName: unref(appName),
-  })
-})
 </script>
 
 <style scoped>
