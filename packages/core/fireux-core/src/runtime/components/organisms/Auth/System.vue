@@ -1,11 +1,15 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/Auth/System.vue -->
 <template>
-  <section class="auth-state" :class="{ 'auth-state--dark': isDarkMode }">
-    <div class="logo" aria-label="Ecosystem wordmark">
-      <img :src="ecosystemWordmark" :alt="`${ecosystemLabel} wordmark`" />
+  <section class="auth-card">
+    <div class="auth-logo" aria-label="Brand wordmark">
+      <img
+        :src="brandWordmark"
+        :alt="`${ecosystemLabel} wordmark`"
+        class="auth-logo__img"
+      />
     </div>
     <template v-if="isAuthenticated">
-      <div class="signed-in-panel">
+      <div class="signed-in">
         <p class="status">You're signed in.</p>
         <OrganismsUserCardsPill
           v-if="currentUserPill"
@@ -40,7 +44,9 @@
         <span class="sr-only">Continue with Google</span>
       </button>
       <div class="divider">
-        <span>or continue with email</span>
+        <span class="divider-line" />
+        <span class="divider-label">or continue with email</span>
+        <span class="divider-line" />
       </div>
       <OrganismsAuthEmailPanel :brand-label="ecosystemLabel" />
     </template>
@@ -63,7 +69,10 @@ const providerLoading = ref(false)
 
 const config = useFireUXConfig()
 const ecosystemLabel = config.ecosystem
-const ecosystemWordmark = '/img/ecosystem/wordmark-light.svg'
+
+const brandWordmark = computed(() =>
+  isDarkMode.value ? '/img/app/wordmark-dark.png' : '/img/app/wordmark-light.png'
+)
 
 const colorMode = useColorMode()
 const isDarkMode = computed(() => colorMode.value === 'dark')
@@ -138,34 +147,46 @@ const handleGoogle = async () => {
 </script>
 
 <style scoped>
-.auth-state {
-  padding: 1.5rem;
+.auth-card {
+  width: 100%;
   border-radius: 0.75rem;
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
+  background: var(--ui-bg, #fff);
+  padding: 1.25rem;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
   align-items: center;
-  background: var(--ui-bg, #fff);
+  gap: 1rem;
 }
 
-.logo {
-  margin: 0 auto 0.75rem;
-  display: inline-block;
+@media (min-width: 640px) {
+  .auth-card {
+    padding: 1.5rem;
+    gap: 1.25rem;
+  }
 }
 
-.logo img {
-  height: 36px;
+.auth-logo {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+
+.auth-logo__img {
+  height: clamp(56px, 12vw, 72px);
   width: auto;
+  max-width: 100%;
   object-fit: contain;
+  display: block;
 }
 
-.signed-in-panel {
+.signed-in {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: 100%;
 }
 
 .status {
@@ -177,13 +198,10 @@ const handleGoogle = async () => {
 }
 
 .auth-actions {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.auth-state--dark {
-  color: #e2e8f0;
 }
 
 .provider-button {
@@ -192,7 +210,7 @@ const handleGoogle = async () => {
   border-radius: 999px;
   padding: 0.35rem 0.5rem;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   margin: 0 auto;
@@ -204,26 +222,25 @@ const handleGoogle = async () => {
 }
 
 .divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
   margin: 1.25rem 0 0.75rem;
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
-  color: #94a3b8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  color: var(--ui-text-muted, #94a3b8);
 }
 
-.divider::before,
-.divider::after {
-  content: '';
+.divider-line {
   flex: 1;
   height: 1px;
-  background: rgba(148, 163, 184, 0.5);
+  background: var(--ui-border-200, rgba(148, 163, 184, 0.5));
 }
 
-.divider span {
+.divider-label {
   white-space: nowrap;
 }
 </style>

@@ -1,10 +1,6 @@
 <template>
   <ClientOnly>
-    <div class="h-screen flex items-center justify-center px-4">
-      <UPageCard variant="subtle" class="max-w-sm w-full">
-        <NuxtPage />
-      </UPageCard>
-    </div>
+    <NuxtPage />
   </ClientOnly>
 </template>
 
