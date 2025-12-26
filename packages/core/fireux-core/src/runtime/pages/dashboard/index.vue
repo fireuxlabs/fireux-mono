@@ -88,7 +88,7 @@
       </div>
 
       <!-- Next steps (core-only) -->
-      <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 gap-4">
         <UPageCard
           title="Complete your profile"
           description="Set your public identity (name, handle, bio)."
@@ -102,18 +102,6 @@
           />
         </UPageCard>
 
-        <UPageCard
-          title="Set preferences"
-          description="Language, theme, security alerts, analytics."
-          variant="subtle"
-        >
-          <UButton
-            to="/dashboard/settings"
-            label="Open settings"
-            color="neutral"
-            class="w-fit"
-          />
-        </UPageCard>
       </div>
     </template>
   </UDashboardPanel>
