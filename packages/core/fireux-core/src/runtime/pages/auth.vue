@@ -22,8 +22,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, definePageMeta, useColorMode } from '#imports'
+import { computed, definePageMeta } from '#imports'
 import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
+import { useColorMode } from '../composables/fireux/app/useColorMode'
 
 definePageMeta({
   layout: 'auth'

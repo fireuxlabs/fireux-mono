@@ -1,14 +1,12 @@
-import { computed } from 'vue'
-import type { Ref } from 'vue'
+import { computed } from '#imports'
 import { useAuth } from '../../../../../firebase/useAuth'
-import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import type {
   User,
   AppUser,
 } from '../../../../../../../models/core/user.model'
 import type { UserRefs } from '../../fetch/useUserFetch'
 
-type UserCtaKey = 'sign-in' | 'create-core-user' | 'join-app' | 'avatar'
+type UserCtaKey = 'sign-in' | 'avatar'
 
 type UserCta = {
   key: UserCtaKey
@@ -16,39 +14,14 @@ type UserCta = {
   to: string
 }
 
-const CTA_CONFIG: Record<UserCtaKey, UserCta> = {
-  'sign-in': {
-    key: 'sign-in',
-    label: 'Sign in',
-    to: '/auth',
-  },
-  'create-core-user': {
-    key: 'create-core-user',
-    label: 'Complete sign up',
-    to: '/auth',
-  },
-  'join-app': {
-    key: 'join-app',
-    label: 'Finish tenant sign up',
-    to: '/auth',
-  },
-  avatar: {
-    key: 'avatar',
-    label: '',
-    to: '',
-  },
-}
+const CTA_SIGN_IN: UserCta = { key: 'sign-in', label: 'Sign in', to: '/auth' }
+const CTA_AVATAR: UserCta = { key: 'avatar', label: '', to: '' }
 
-export function useUserComputed(user: UserRefs, pending?: Ref<boolean>) {
+export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const coreUser = user.coreUser as { value: User | null | undefined }
   const appUser = user.appUser as { value: AppUser | null | undefined }
 
   const { uid, isAuthenticated } = useAuth()
-  const { role, appId } = useFireUXConfig()
-
-  const isTenant = computed(
-    () => role === 'tenant' && typeof appId === 'string' && appId.length > 0
-  )
 
   const isPending = computed(() => Boolean(pending?.value))
   const isLoading = computed(
@@ -56,45 +29,39 @@ export function useUserComputed(user: UserRefs, pending?: Ref<boolean>) {
   )
   const currentUser = computed(() => coreUser.value ?? null)
   const hasCoreProfile = computed(() => Boolean(coreUser.value))
-  const hasAppProfile = computed(() => Boolean(appUser.value))
 
-  const profileKeys = computed(() => {
-    const core = coreUser.value
-    if (!core) return [] as string[]
+  const profileComplete = computed(() => {
+    const current = coreUser.value
+    if (!current) return 0
 
-    const profiles = Array.isArray(core.profiles) ? core.profiles : []
-    return profiles.filter(
-      (key): key is string => typeof key === 'string' && key.length > 0
-    )
-  })
+    const checks = [
+      Boolean((current.display_name ?? '').trim()),
+      Boolean((current.handle ?? '').trim()),
+      Boolean((current.bio ?? '').trim()),
+      Boolean((current.avatar ?? '').trim()),
+    ]
 
-  const resolveCtaKey = computed<UserCtaKey>(() => {
-    if (!isAuthenticated.value && !uid.value) return 'sign-in'
-    if (!hasCoreProfile.value) return 'create-core-user'
-    if (isTenant.value && !hasAppProfile.value) return 'join-app'
-    return 'avatar'
+    const total = checks.length
+    const done = checks.filter(Boolean).length
+    return Math.round((done / total) * 100)
   })
 
   const isAdmin = computed(() => {
-    if (isTenant.value && appUser.value?.role === 'admin') return true
     if (coreUser.value?.role === 'admin') return true
-    // Fallback: respect app-level admin even if config says non-tenant (e.g., misconfigured appId).
     return appUser.value?.role === 'admin'
   })
 
-  const cta = computed<UserCta>(() => CTA_CONFIG[resolveCtaKey.value])
-
-  const hasProfile = (profileType: string): boolean =>
-    profileKeys.value.includes(profileType)
+  const cta = computed((): UserCta =>
+    isAuthenticated.value && uid.value ? CTA_AVATAR : CTA_SIGN_IN
+  )
 
   return {
     currentUser,
     isLoading,
     isPending,
     hasCoreProfile,
+    profileComplete,
     isAdmin,
     cta,
-    profileKeys,
-    hasProfile,
   }
 }

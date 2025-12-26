@@ -54,8 +54,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useColorMode, useRouter } from '#imports'
+import { computed, ref, useRouter } from '#imports'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useColorMode } from '../../../composables/fireux/app/useColorMode'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 

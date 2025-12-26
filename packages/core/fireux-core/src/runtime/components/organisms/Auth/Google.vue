@@ -5,9 +5,9 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { computed, useRouter } from '#imports'
+import { useColorMode } from '../../../composables/fireux/app/useColorMode'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { computed } from 'vue'
 
 const router = useRouter()
 const { signInWithGoogle } = useAuth()

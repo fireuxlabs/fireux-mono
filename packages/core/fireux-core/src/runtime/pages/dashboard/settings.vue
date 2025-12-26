@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { definePageMeta, useColorMode, useState, useToast } from '#imports'
+import { definePageMeta, useState, useToast } from '#imports'
+import { useColorMode } from '../../composables/fireux/app/useColorMode'
 
 definePageMeta({
   layout: 'dashboard',

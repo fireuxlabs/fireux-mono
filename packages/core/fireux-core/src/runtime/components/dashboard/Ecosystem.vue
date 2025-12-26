@@ -1,0 +1,3 @@
+<template>
+  <DashboardEcosystemSection />
+</template>

@@ -12,7 +12,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from '#imports'
+import { useColorMode } from '../../composables/fireux/app/useColorMode'
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
