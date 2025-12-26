@@ -20,7 +20,7 @@
             description="No subscription features are installed for this app yet."
             variant="subtle"
           >
-            <UButton to="/" label="Go to FireUX.app" variant="soft" class="w-fit" />
+            <p class="text-sm text-dimmed">Nothing to manage yet.</p>
           </UPageCard>
         </UPageBody>
       </UPage>

@@ -1,3 +1,3 @@
 <template>
-  <DashboardAppSection />
+  <div />
 </template>

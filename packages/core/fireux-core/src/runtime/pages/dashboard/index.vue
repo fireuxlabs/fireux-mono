@@ -19,10 +19,6 @@
               </UChip>
             </UButton>
           </UTooltip>
-
-          <UDropdownMenu :items="items">
-            <UButton icon="i-lucide-plus" size="md" class="rounded-full" />
-          </UDropdownMenu>
         </template>
       </UDashboardNavbar>
     </template>
@@ -67,19 +63,4 @@ const isNotificationsSlideoverOpen = useState<boolean>(
   'fireux-core:dashboard:notifs-open',
   () => false
 )
-
-const items = [
-  [
-    {
-      label: 'New task (coming soon)',
-      icon: 'i-lucide-plus',
-      disabled: true,
-    },
-    {
-      label: 'Support (coming soon)',
-      icon: 'i-lucide-life-buoy',
-      disabled: true,
-    },
-  ],
-] as const
 </script>

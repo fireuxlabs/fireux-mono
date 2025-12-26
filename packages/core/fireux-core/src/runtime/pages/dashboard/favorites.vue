@@ -9,26 +9,14 @@
     </template>
 
     <template #body>
-      <client-only>
-        <div class="dashboard-page-grid">
-          <div class="dashboard-grid-section">
-            <UCard>
-              <template #default>
-                <p>Placeholder for saved items or favorite products.</p>
-                <div class="mt-3">
-                  <UButton
-                    to="/"
-                    label="Explore"
-                    variant="soft"
-                    size="sm"
-                    class="w-fit"
-                  />
-                </div>
-              </template>
-            </UCard>
-          </div>
-        </div>
-      </client-only>
+      <UPage>
+        <UPageBody>
+          <UPageHeader description="Saved items appear as you use the app." />
+          <UPageCard variant="subtle" title="No favorites yet">
+            <p class="text-sm text-dimmed">You haven’t saved anything yet.</p>
+          </UPageCard>
+        </UPageBody>
+      </UPage>
     </template>
   </UDashboardPanel>
 </template>

@@ -45,12 +45,6 @@ definePageMeta({
                 color="neutral"
                 class="w-fit"
               />
-              <UButton
-                to="/"
-                label="Go to FireUX.app"
-                variant="soft"
-                class="w-fit"
-              />
             </div>
           </UPageCard>
         </UPageBody>
