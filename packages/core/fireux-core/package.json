@@ -9,6 +9,7 @@
     ".": "./src/module.ts",
 
     "./types/*": "./src/types/*.ts",
+    "./types/app/*": "./src/types/app/*.ts",
     "./config/app/*": "./src/config/app/*.ts",
     "./config/module/*": "./src/config/module/*.ts",
     "./config/nuxt/*": "./src/config/nuxt/*.ts",
@@ -21,6 +22,7 @@
   "typesVersions": {
     "*": {
       "types/*": ["src/types/*.ts"],
+      "types/app/*": ["src/types/app/*.ts"],
       "config/app/*": ["src/config/app/*.ts"],
       "config/module/*": ["src/config/module/*.ts"],
       "config/nuxt/*": ["src/config/nuxt/*.ts"],

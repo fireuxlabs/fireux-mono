@@ -1,4 +1,4 @@
-import type { FirebaseTimestamp } from 'fireux-core/runtime/types/firebase.ts'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export interface CleanboxLocationGeo {
   lat: number

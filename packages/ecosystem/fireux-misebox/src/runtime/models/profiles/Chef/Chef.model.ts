@@ -1,5 +1,5 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
-import type { Pill as PillModel } from 'fireux-core/runtime/types/pill.model'
+import type { Pill as PillModel } from 'fireux-core/types/pill.model'
 import { chefConfig } from './supporting'
 
 /** Unified Chef wrapper (core + app overlays) */
