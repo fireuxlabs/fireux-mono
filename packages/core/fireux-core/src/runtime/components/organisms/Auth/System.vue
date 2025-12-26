@@ -70,7 +70,7 @@ const config = useFireUXConfig()
 const ecosystemLabel = config.ecosystem
 
 const brandWordmark = computed(() =>
-  isDarkMode.value ? '/img/app/wordmark-dark.png' : '/img/app/wordmark-light.png'
+  isDarkMode.value ? '/img/app/wordmark-light.png' : '/img/app/wordmark-dark.png'
 )
 
 const colorMode = useColorMode()

@@ -1,5 +1,5 @@
 // FILE: scripts/guards/core.mjs
-import { readdirSync, existsSync } from 'node:fs'
+import { readdirSync, existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const REQUIRED_L1 = [
@@ -46,7 +46,9 @@ function checkCorePackage(pkgPath) {
     (e) => !REQUIRED_L1.includes(e) && !ALLOWED_NOISE.includes(e)
   )
 
-  if (!missing.length && !unexpected.length) return null
+  const exportViolations = checkPackageExports(pkgPath)
+
+  if (!missing.length && !unexpected.length && !exportViolations.length) return null
 
   const lines = [
     '[guard] ❌ core package shape violation:',
@@ -66,6 +68,11 @@ function checkCorePackage(pkgPath) {
       .forEach((u) => lines.push(`    - ${u}`))
   }
 
+  if (exportViolations.length) {
+    lines.push('  Exports invalid:')
+    exportViolations.forEach((m) => lines.push(`    - ${m}`))
+  }
+
   lines.push(
     '',
     '[guard] Fix:',
@@ -75,4 +82,37 @@ function checkCorePackage(pkgPath) {
   )
 
   return lines.join('\n')
+}
+
+function checkPackageExports(pkgPath) {
+  const violations = []
+
+  const pkgJsonPath = path.join(pkgPath, 'package.json')
+  if (!existsSync(pkgJsonPath)) return violations
+
+  let pkgJson = null
+  try {
+    pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf8'))
+  } catch {
+    violations.push('package.json is not valid JSON')
+    return violations
+  }
+
+  const exportsMap = pkgJson?.exports
+  const runtimeExport = exportsMap?.['./runtime']
+
+  // Only validate the simple (string) case we actually use today.
+  if (typeof runtimeExport === 'string') {
+    const targetPath = path.join(pkgPath, runtimeExport)
+    if (!existsSync(targetPath)) {
+      violations.push(`exports['./runtime'] points to missing file: ${runtimeExport}`)
+    }
+
+    const runtimeDir = path.join(pkgPath, 'src', 'runtime')
+    if (!existsSync(runtimeDir)) {
+      violations.push('exports ./runtime present but src/runtime directory is missing')
+    }
+  }
+
+  return violations
 }

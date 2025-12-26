@@ -40,6 +40,8 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
         pattern: '**/*.vue',
         global: false,
         pathPrefix: true,
+        // Ensure ecosystem components override core defaults
+        priority: 1,
       })
     }
 

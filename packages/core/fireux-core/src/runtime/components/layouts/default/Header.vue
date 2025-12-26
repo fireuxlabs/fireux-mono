@@ -72,8 +72,10 @@
 
 <script setup lang="ts">
 import { computed, onErrorCaptured, ref } from '#imports'
+import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useDefaultNav } from '../../../composables/fireux/app/routing/presets'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 defineOptions({ name: 'LayoutsDefaultHeader' })
 
@@ -107,8 +109,33 @@ const signOut = async () => {
   await auth.signOutUser()
 }
 
-const avatarSrc = computed(() => undefined)
-const initials = computed(() => 'A')
+const { getProxiedAvatarUrl } = useAvatarProxy()
+
+// `LayoutsDefaultHeader` runs on server too (even though template is wrapped in <ClientOnly>).
+// Guard user access to client only to avoid pulling Firebase on SSR.
+const userApi = import.meta.client ? useUser() : null
+const userRef = userApi?.user ?? computed(() => null)
+
+const avatarSrc = computed(() => {
+  const raw = userRef.value?.avatar
+  const normalized = typeof raw === 'string' ? raw.trim() : ''
+  const proxied = getProxiedAvatarUrl(normalized || undefined)
+  return proxied || undefined
+})
+
+const initials = computed(() => {
+  const displayName = (userRef.value?.display_name ?? '').trim()
+  const handle = (userRef.value?.handle ?? '').trim()
+  const base = displayName || handle
+  if (!base) return 'A'
+
+  const parts = base.split(/\s+/).filter(Boolean)
+  if (parts.length >= 2) {
+    return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase() || 'A'
+  }
+
+  return base.slice(0, 2).toUpperCase() || 'A'
+})
 
 const accountMenuItems = computed(() => [
   [

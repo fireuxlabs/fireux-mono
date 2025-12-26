@@ -219,7 +219,8 @@ const activeProfileState = useState<string | null>(
 const { desktop } = useDashboardNav()
 const { isAdmin, user, pillProps } = useUser()
 
-const { isAuthenticated, isReady, lastBindError, signOutUser } = useAuth()
+const { isAuthenticated, isReady, hasAuthState, lastBindError, signOutUser } =
+  useAuth()
 const signOutLoading = ref(false)
 
 const handleSignOut = async () => {
@@ -238,15 +239,16 @@ const goHome = async () => {
 
 if (import.meta.client) {
   watch(
-    [isReady, isAuthenticated, lastBindError],
-    ([ready, authed, bindError]: [boolean, boolean, unknown]) => {
+    [isReady, hasAuthState, isAuthenticated, lastBindError],
+    ([ready, resolved, authed, bindError]: [boolean, boolean, boolean, unknown]) => {
       if (!ready) return
+      if (!resolved) return
       if (authed) return
       if (bindError) {
         router.replace('/').catch(() => {})
         return
       }
-      router.replace('/').catch(() => {})
+      router.replace('/auth').catch(() => {})
     },
     { immediate: true }
   )

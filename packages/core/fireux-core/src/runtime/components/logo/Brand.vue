@@ -2,7 +2,7 @@
   <ClientOnly>
     <NuxtLink to="/" class="logo-link">
       <img
-        :src="isDark ? logos.dark : logos.light"
+        :src="isDark ? logos.light : logos.dark"
         alt="FireUX logo"
         class="logo"
         :class="logoSizeClass"

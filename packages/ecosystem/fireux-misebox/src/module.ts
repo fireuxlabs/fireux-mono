@@ -41,6 +41,8 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
         // Keep path segments in component names to avoid collisions
         // e.g. organisms/objects/Ingredient/Profile.vue -> OrganismsObjectsIngredientProfile
         pathPrefix: true,
+        // Ensure ecosystem components override core defaults
+        priority: 1,
       })
     }
 

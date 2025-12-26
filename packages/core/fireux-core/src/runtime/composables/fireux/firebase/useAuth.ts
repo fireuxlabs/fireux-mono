@@ -46,7 +46,37 @@ export function useAuth() {
   const auth = ref<Auth | null>(null)
   const currentUser = ref<User | null>(null) as Ref<User | null>
   const isReady = ref(false)
+  const hasAuthState = ref(false)
   const lastBindError = ref<unknown>(null)
+
+  let authStateUnsubscribe: (() => void) | null = null
+
+  const armAuthStateResolution = () => {
+    if (!import.meta.client) return
+    if (hasAuthState.value) return
+    if (authStateUnsubscribe) return
+
+    const authInstance: Auth | null = auth.value || (getApps().length ? getAuth() : null)
+    if (!authInstance) return
+
+    // Resolve exactly once: this flips true when Firebase has finished
+    // determining the initial auth state (signed-in or signed-out).
+    authStateUnsubscribe = onAuthStateChanged(
+      authInstance,
+      (u) => {
+        currentUser.value = u
+        hasAuthState.value = true
+        authStateUnsubscribe?.()
+        authStateUnsubscribe = null
+      },
+      (e) => {
+        lastBindError.value = e
+        hasAuthState.value = true
+        authStateUnsubscribe?.()
+        authStateUnsubscribe = null
+      }
+    )
+  }
 
   const shouldDebug = () => {
     if (!import.meta.dev || !import.meta.client) return false
@@ -69,6 +99,7 @@ export function useAuth() {
         { immediate: true }
       )
       isReady.value = true
+      armAuthStateResolution()
       lastBindError.value = null
 
       if (shouldDebug()) {
@@ -84,6 +115,7 @@ export function useAuth() {
       auth.value = null
       currentUser.value = null
       isReady.value = false
+      hasAuthState.value = false
       lastBindError.value = e
 
       if (shouldDebug()) {
@@ -102,6 +134,7 @@ export function useAuth() {
   if (import.meta.client) {
     onMounted(() => {
       if (!isReady.value) bind()
+      armAuthStateResolution()
     })
   }
 
@@ -263,6 +296,7 @@ export function useAuth() {
 
     // readiness
     isReady,
+    hasAuthState,
     lastBindError,
 
     signInWithGoogle,

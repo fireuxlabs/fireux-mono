@@ -90,14 +90,17 @@
 </template>
 
 <script setup lang="ts">
+import { useAvatarProxy } from '../../composables/fireux/app/ui/useAvatarProxy'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
 const { user, profileComplete } = useUser()
+const { getProxiedAvatarUrl } = useAvatarProxy()
 
 const userAvatar = () => {
   const raw = user?.value?.avatar ?? ''
   const normalized = typeof raw === 'string' ? raw.trim() : ''
-  return normalized || undefined
+  const proxied = getProxiedAvatarUrl(normalized || undefined)
+  return proxied || undefined
 }
 
 const displayName = () => (user?.value?.display_name ?? '').trim()

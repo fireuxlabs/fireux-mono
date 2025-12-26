@@ -36,8 +36,8 @@ const { appName, isTenant } = useFireUXConfig()
 const tenantIcon = '/img/app/logo.png'
 const tenantWordmark = computed(() =>
   colorMode.value === 'dark'
-    ? '/img/app/wordmark-dark.png'
-    : '/img/app/wordmark-light.png'
+    ? '/img/app/wordmark-light.png'
+    : '/img/app/wordmark-dark.png'
 )
 
 </script>
