@@ -27,7 +27,12 @@
     </ul>
 
     <template #footer>
-      <UBadge variant="soft" color="primary">{{ footerBadge }}</UBadge>
+      <div class="space-y-3">
+        <UButton to="/auth" block color="primary">
+          Sign in
+        </UButton>
+        <UBadge variant="soft" color="primary">{{ footerBadge }}</UBadge>
+      </div>
     </template>
   </UCard>
 </template>

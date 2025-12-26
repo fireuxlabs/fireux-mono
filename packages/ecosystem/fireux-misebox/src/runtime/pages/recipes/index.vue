@@ -122,12 +122,12 @@
           </UButton>
         </div>
       </div>
-             <OrganismsObjectsRecipeCardsPill :recipe="recipe" />
+    </UModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from '#imports'
 
 // Data and state
 const searchQuery = ref('')
@@ -140,11 +140,70 @@ const filters = ref({
 })
 
 // Temporary stub - replace with proper recipe composable later
-const allAvailableRecipes = ref([])
+type RecipeStub = {
+  slug?: string
+  title?: string
+  name?: string
+  difficulty?: string
+  cookTimeMinutes?: number
+  prepTimeMinutes?: number
+  totalTimeMinutes?: number
+  cuisine?: string
+  cuisines?: string[]
+  ingredients?: string[]
+}
+
+const allAvailableRecipes = ref<RecipeStub[]>([])
 const loading = ref(false)
-const error = ref(null)
-const searchRecipes = (query: string) => []
-const filterRecipes = (filters: any) => []
+const error = ref<{ message?: string } | null>(null)
+
+const searchRecipes = (query: string) => {
+  const q = query.trim().toLowerCase()
+  if (!q) return allAvailableRecipes.value
+
+  return allAvailableRecipes.value.filter((recipe: RecipeStub) => {
+    const haystack = [
+      recipe.title,
+      recipe.name,
+      recipe.slug,
+      recipe.cuisine,
+      ...(recipe.cuisines ?? []),
+      ...(recipe.ingredients ?? []),
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+
+    return haystack.includes(q)
+  })
+}
+
+const filterRecipes = (activeFilters: {
+  difficulty?: string
+  maxTime?: number
+  cuisine?: string[]
+}) => {
+  return allAvailableRecipes.value.filter((recipe: RecipeStub) => {
+    if (activeFilters.difficulty && recipe.difficulty !== activeFilters.difficulty) {
+      return false
+    }
+
+    if (typeof activeFilters.maxTime === 'number') {
+      const time =
+        recipe.totalTimeMinutes ?? recipe.cookTimeMinutes ?? recipe.prepTimeMinutes
+      if (typeof time === 'number' && time > activeFilters.maxTime) return false
+    }
+
+    if (activeFilters.cuisine?.length) {
+      const recipeCuisines = new Set(
+        [recipe.cuisine, ...(recipe.cuisines ?? [])].filter(Boolean) as string[]
+      )
+      if (!activeFilters.cuisine.some((c) => recipeCuisines.has(c))) return false
+    }
+
+    return true
+  })
+}
 
 // Filter options
 const difficultyOptions = [

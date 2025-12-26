@@ -1,18 +1,17 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
-export default defineNuxtConfig(
-  defineFireuxConfig({
-    ecosystem: 'misebox',
-    id: 'misebox-app',
-    name: 'Misebox',
-    shortName: 'Misebox',
-    description: 'Workhub for Misebox creative operations and collaborators.',
-    role: 'global',
-    modules: [
-      'fireux-jobs',
-      'fireux-products',
-      'fireux-blogs',
-    ],
-  })
-)
+const fireuxConfig = defineFireuxConfig({
+  ecosystem: 'misebox',
+  id: 'misebox-app',
+  name: 'Misebox',
+  shortName: 'Misebox',
+  description: 'Workhub for Misebox creative operations and collaborators.',
+  role: 'global',
+  modules: ['fireux-jobs', 'fireux-products', 'fireux-blogs'],
+})
+
+export default defineNuxtConfig({
+  ...fireuxConfig,
+  css: [...(fireuxConfig.css ?? []), '@/assets/styles/main.css'],
+})

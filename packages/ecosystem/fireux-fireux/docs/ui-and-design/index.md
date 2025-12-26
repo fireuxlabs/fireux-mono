@@ -1,10 +1,12 @@
 ---
 title: UI and Design
-description: Placeholder description
+description: UI building blocks and theming conventions for FireUX apps.
 navigation:
   order: 5
 ---
 
 # UI and Design
 
-Short description placeholder — content will be filled later.
+This section covers shared UI patterns (Nuxt UI usage) and per-app theming.
+
+- Theming: `/ui-and-design/theming`

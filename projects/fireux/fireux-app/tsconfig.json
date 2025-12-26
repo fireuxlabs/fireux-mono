@@ -27,8 +27,7 @@
   },
   "include": [
     "./.nuxt/nuxt.d.ts",
-    "./**/*.ts",
-    "./**/*.d.ts",
+    "./**/*",
     "../../../types/**/*.d.ts"
   ],
   "exclude": [

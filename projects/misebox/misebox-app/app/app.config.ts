@@ -3,9 +3,9 @@ import { defineAppConfig } from '#imports'
 export default defineAppConfig({
   ui: {
     colors: {
-      primary: 'misebox',
+      primary: 'theme',
       neutral: 'slate',
     },
-    safelistColors: ['misebox'],
+    safelistColors: ['theme'],
   },
 })

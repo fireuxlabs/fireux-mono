@@ -25,6 +25,13 @@ This chapter describes the standard local workflow, branching expectations, and 
 - Panel sections: runtime summary (ecosystem/role/appId/modules), admin SDK status with notes, and optional runtime JSON toggle.
 - If status shows `missing`, add the required env keys or a service-account file under `projects/<ecosystem>/<ecosystem>-app/config/service-account.json` (or root env JSON). Run `Refresh` in the panel after fixes.
 
+## Temporary debug panels (clipboard-first)
+
+- Prefer the shared JSON debug component `fireux-core/runtime/components/dev/JsonPanel.vue` ("DevJsonPanel") instead of ad-hoc `<pre>` blocks.
+- This panel includes a `Copy JSON` action and an expand/collapse toggle.
+- For short-lived debugging, place the panel near the top of the page template for faster access while diagnosing UI state.
+- Gate it behind `import.meta.dev` and render it inside `<ClientOnly>`.
+
 ## Coding Practices
 
 - Keep changes small and scoped to a single feature or fix.

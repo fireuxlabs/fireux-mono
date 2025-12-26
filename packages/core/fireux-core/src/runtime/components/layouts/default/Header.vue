@@ -2,101 +2,118 @@
 <template>
   <ClientOnly>
     <!-- Single-source mobile toggle via UHeader -->
-    <UHeader mode="slideover">
+    <UHeader
+      mode="slideover"
+      data-fireux-header-root
+    >
       <!-- Brand -->
       <template #title>
-        <LogoBrand size="large" />
+        <NuxtLink to="/" aria-label="Home">
+          <LogoBrand size="large" />
+        </NuxtLink>
       </template>
 
       <!-- Desktop nav (hidden on mobile by Nuxt UI) -->
-      <UNavigationMenu orientation="horizontal" :items="desktop" />
+      <div data-fireux-header-center>
+        <UNavigationMenu
+          v-if="!navDisabled && desktopItems.length"
+          orientation="horizontal"
+          :items="desktopItems"
+        />
+      </div>
 
       <!-- Right side: auth funnel -->
       <template #right>
-        <!-- CTA button for missing steps -->
-        <UButton
-          v-if="hasCta"
-          :to="cta.to"
-          size="sm"
-          :color="ctaColor"
-          variant="solid"
+        <div
+          data-fireux-header-right
+          class="flex items-center justify-end gap-1.5"
         >
-          {{ cta.label }}
-        </UButton>
-
-        <!-- Avatar when fully onboarded -->
-        <UDropdown v-else :items="avatarMenuItems">
+          <!-- Signed out => Sign in -->
           <UButton
-            to="/dashboard"
-            variant="ghost"
-            color="neutral"
-            aria-label="Account menu"
+            v-if="!isAuthenticated"
+            to="/auth"
+            size="sm"
+            color="primary"
+            variant="solid"
+            data-fireux-header-cta
           >
-            <UAvatar :src="avatarSrc" :text="initials" size="sm" />
+            Sign in
           </UButton>
-          <template #item-leading="{ item }">
-            <UIcon v-if="item.icon" :name="item.icon" />
-          </template>
-        </UDropdown>
+
+          <!-- Signed in => account menu -->
+          <UDropdown v-else :items="accountMenuItems">
+            <UButton
+              to="/dashboard"
+              variant="ghost"
+              color="neutral"
+              aria-label="Account menu"
+              data-fireux-header-avatar
+            >
+              <UAvatar :src="avatarSrc" :text="initials" size="sm" />
+            </UButton>
+            <template #item-leading="{ item }">
+              <UIcon v-if="item.icon" :name="item.icon" />
+            </template>
+          </UDropdown>
+        </div>
       </template>
 
       <!-- Mobile panel content -->
       <template #body>
-        <UNavigationMenu orientation="vertical" :items="mobile" />
+        <UNavigationMenu
+          v-if="!navDisabled && mobileItems.length"
+          orientation="vertical"
+          :items="mobileItems"
+        />
       </template>
     </UHeader>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
+import { computed, onErrorCaptured, ref } from '#imports'
 import { useDefaultNav } from '../../../composables/fireux/app/routing/presets'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 defineOptions({ name: 'LayoutsDefaultHeader' })
 
 /** Nav (meta-driven, scoped to default layout) */
 const { desktop, mobile } = useDefaultNav()
 
-/** Auth + Core User */
-let signOutUser: () => Promise<void> = async () => undefined
+const desktopItems = computed(() =>
+  Array.isArray(desktop.value) ? desktop.value.filter(Boolean) : []
+)
+const mobileItems = computed(() =>
+  Array.isArray(mobile.value) ? mobile.value.filter(Boolean) : []
+)
 
-const coreUser = ref<any | null>(null)
-const cta = ref<any>({ key: 'avatar', to: '/', label: '' })
+const navDisabled = ref(false)
 
-if (import.meta.client) {
-  signOutUser = useAuth().signOutUser
+onErrorCaptured((error: unknown) => {
+  if (!import.meta.dev) return false
+  const msg = error instanceof Error ? error.message : String(error)
+  navDisabled.value = true
+  console.warn('[fireux] Header render failed; disabling nav:', msg)
+  return false
+})
 
-  const userState = useUser()
-  watchEffect(() => {
-    coreUser.value = userState.currentUser.value
-    cta.value = userState.cta.value
-  })
+/** Auth (degrade gracefully: default to signed out) */
+const auth = import.meta.client ? useAuth() : null
+
+const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)
+
+const signOut = async () => {
+  if (!auth?.signOutUser) return
+  await auth.signOutUser()
 }
 
-const activeDisplayName = computed(() => coreUser.value?.display_name || '')
-const activeAvatar = computed(() => coreUser.value?.avatar || '')
-
-/** CTA + avatar data */
-const hasCta = computed(() => cta.value.key !== 'avatar')
-const ctaColor = computed(() => {
-  if (cta.value.key === 'create-core-user' || cta.value.key === 'join-app') {
-    return 'warning'
-  }
-  return 'primary'
-})
-const avatarSrc = computed(() => {
-  const src = activeAvatar.value ?? ''
-  const trimmed = typeof src === 'string' ? src.trim() : ''
-  return trimmed || undefined
-})
+const avatarSrc = computed(() => undefined)
 const initials = computed(() => 'A')
 
-/** Avatar dropdown */
-const avatarMenuItems = computed(() => [
+const accountMenuItems = computed(() => [
   [
     {
-      label: activeDisplayName.value || 'Account',
+      label: 'Account',
       icon: 'i-lucide-user',
       to: '/users',
     },
@@ -106,7 +123,7 @@ const avatarMenuItems = computed(() => [
     {
       label: 'Sign out',
       icon: 'i-lucide-log-out',
-      onSelect: async () => await signOutUser(),
+      onSelect: async () => await signOut(),
     },
   ],
 ])

@@ -10,7 +10,7 @@
           :disabled="copying"
           @click="onCopy"
         >
-          Copy JSON
+          {{ copyLabel }}
         </UButton>
         <UButton
           :icon="
@@ -46,14 +46,33 @@ const props = withDefaults(defineProps<JsonPanelProps>(), {
 })
 
 const expanded = ref(props.defaultOpen)
-const jsonString = computed(() => JSON.stringify(props.data, null, 2))
+const jsonString = computed(() => {
+  try {
+    return JSON.stringify(props.data, null, 2)
+  } catch {
+    return '[DevJsonPanel] Unable to stringify data'
+  }
+})
+
+const lastCopyResult = ref<'idle' | 'copied' | 'failed'>('idle')
+const copyLabel = computed(() => {
+  if (copying.value) return 'Copying…'
+  if (lastCopyResult.value === 'copied') return 'Copied'
+  if (lastCopyResult.value === 'failed') return 'Copy failed'
+  return 'Copy JSON'
+})
 
 const { copyJSON, copying } = useDevClipboard()
 
 const onCopy = async () => {
-  await copyJSON(props.data, {
+  const ok = await copyJSON(props.data, {
     label: props.title,
   })
+
+  lastCopyResult.value = ok ? 'copied' : 'failed'
+  window.setTimeout(() => {
+    lastCopyResult.value = 'idle'
+  }, 1200)
 }
 </script>
 

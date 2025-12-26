@@ -6,9 +6,6 @@ declare module '#imports' {
   // Re-export everything Nuxt normally auto-imports
   export * from 'nuxt/app'
 
-  // Also make Vue exports available for SFC script setup convenience
-  export * from 'vue'
-
   /**
    * Optional: color mode composable used in your core runtime.
    * This is a light-weight type so TS is happy in packages.
@@ -28,6 +25,9 @@ declare module '#imports' {
   export function ref<T = any>(value?: T): any
   export function computed<T = any>(getter: (...args: any[]) => T): any
   export function reactive<T extends object>(value: T): T
+  export function watch(...args: any[]): any
+  export function watchEffect(...args: any[]): any
+  export function onErrorCaptured(...args: any[]): any
 
   // Common Nuxt composables/macros used across package runtime.
   // Keep these as loose types; real types come from app-generated .nuxt d.ts.

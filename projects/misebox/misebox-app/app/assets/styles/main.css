@@ -1,0 +1,20 @@
+@layer base {
+  :root {
+    /* Primary palette (required when ui.colors.primary = 'theme') */
+    --ui-color-theme-50: #f2f4ec;
+    --ui-color-theme-100: #e6e9da;
+    --ui-color-theme-200: #d5dac1;
+    --ui-color-theme-300: #c4cba9;
+    --ui-color-theme-400: #b7c196;
+    --ui-color-theme-500: #abb684;
+    --ui-color-theme-600: #96a074;
+    --ui-color-theme-700: #808863;
+    --ui-color-theme-800: #666d4f;
+    --ui-color-theme-900: #4d523b;
+
+    /* Optional bridges for Nuxt UI tokens */
+    --ui-primary: var(--ui-color-theme-500);
+    --ui-primary-hover: var(--ui-color-theme-600);
+    --ui-primary-active: var(--ui-color-theme-700);
+  }
+}
