@@ -11,16 +11,25 @@
 
     <template #body>
       <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6 space-y-6">
-        <UCard v-if="!hasChefProfile">
-          <div class="fallback">Chef profile not found.</div>
-        </UCard>
-
-        <UCard v-else-if="isProfileLoading">
+        <UCard v-if="isProfileLoading">
           <div class="fallback loading">Chef profile data is loading.</div>
         </UCard>
 
         <UCard v-else-if="!resolvedCoreProfile">
-          <div class="fallback">Your chef profile hasn’t been created yet.</div>
+          <div class="fallback">
+            <p class="mb-4">Your chef profile hasn’t been created yet.</p>
+
+            <UButton
+              :label="chefConfig.cta || 'Create Chef profile'"
+              color="neutral"
+              :loading="isCreating"
+              @click="createProfile"
+            />
+
+            <p v-if="createError" class="mt-3 text-sm text-dimmed">
+              {{ createError }}
+            </p>
+          </div>
         </UCard>
 
         <ClientOnly v-else>
@@ -44,10 +53,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { chefConfig } from '../../../models/profiles/Chef/Chef.model'
 
 definePageMeta({
   layout: 'dashboard',
@@ -65,11 +75,23 @@ definePageMeta({
 
 const { coreProfile, appProfile } = useChef()
 
-const { user } = useUser()
-const hasChefProfile = computed(() => {
-  const source = user.value?.profiles
-  return Array.isArray(source) && source.includes('chef')
-})
+const { ensure } = useProfileEnsure(chefConfig)
+const isCreating = ref(false)
+const createError = ref<string | null>(null)
+
+const createProfile = async () => {
+  if (isCreating.value) return
+  isCreating.value = true
+  createError.value = null
+
+  try {
+    await ensure()
+  } catch (error) {
+    createError.value = (error as Error)?.message || 'Failed to create profile.'
+  } finally {
+    isCreating.value = false
+  }
+}
 
 const isProfileLoading = computed(() => coreProfile.value === undefined)
 const resolvedCoreProfile = computed(() => coreProfile.value ?? null)

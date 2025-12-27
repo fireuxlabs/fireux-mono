@@ -30,6 +30,14 @@ export interface AgentProfile extends Profile {
    * (safe to expand later as the domain grows)
    */
   tagline?: string | null
+
+  /** Short org/person bio shown on listings */
+  bio_short?: string | null
+
+  /** Public contact details for job posting identity */
+  contact_email?: string |null
+  contact_phone?: string | null
+  website_url?: string | null
 }
 
 /**

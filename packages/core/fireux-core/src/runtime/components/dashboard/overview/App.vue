@@ -2,6 +2,7 @@
   <UPageCard variant="subtle">
     <div class="space-y-4">
       <div class="flex items-center justify-between gap-3">
+        if profiles pick profiles
         <div class="flex items-center gap-3 min-w-0">
           <UAvatar
             :src="appLogo"

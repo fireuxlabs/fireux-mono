@@ -1,5 +1,7 @@
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useUserUpdateForUid } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserUpdate'
 import type { AgentProfile } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
 
 /**
@@ -13,25 +15,30 @@ import type { AgentProfile } from 'fireux-jobs/runtime/models/profiles/Agent/Age
  * - both implementations are stubs until Firestore integration
  */
 export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
+  const { updateDocument } = useFirestoreUpdate()
+  const { appId, role } = useFireUXConfig()
+  const isTenant = role === 'tenant' && Boolean(appId)
+
   const coreProfile = () => profile?.coreProfile?.value ?? null
   const appProfile = () => profile?.appProfile?.value ?? null
-  let cachedUserUpdater: ReturnType<typeof useUserUpdateForUid> | null = null
-  let cachedUserId: string | null = null
 
-  const resolveUserId = () =>
-    profile?.coreProfile?.value?.user?.id ??
-    profile?.appProfile?.value?.user?.id ??
-    null
+  const resolveUid = async (): Promise<string> => {
+    const fromRefs =
+      profile?.coreProfile?.value?.id ?? profile?.appProfile?.value?.id ?? null
+    if (fromRefs?.trim()) return fromRefs.trim()
 
-  const requireUserUpdater = () => {
-    const userId = resolveUserId()
-    if (!userId) return null
-    if (cachedUserId === userId && cachedUserUpdater) {
-      return cachedUserUpdater
+    const user = await useRequireUser()
+    if (!user?.uid) {
+      throw new Error('[useAgentUpdate] Unable to resolve agent id')
     }
-    cachedUserUpdater = useUserUpdateForUid(userId)
-    cachedUserId = userId
-    return cachedUserUpdater
+    return user.uid
+  }
+
+  const pruneUndefined = <T extends Record<string, any>>(payload: T) => {
+    const entries = Object.entries(payload).filter(
+      ([, value]) => value !== undefined
+    )
+    return Object.fromEntries(entries) as Partial<T>
   }
 
   /**
@@ -41,12 +48,8 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
   const updateCoreProfile = async (
     patch: Partial<AgentProfile>
   ): Promise<void> => {
-    console.warn(
-      '[useAgentUpdate] updateCoreProfile stub called with:',
-      patch,
-      'current coreProfile:',
-      coreProfile()
-    )
+    const uid = await resolveUid()
+    await updateDocument<AgentProfile>('agents', uid, pruneUndefined(patch))
   }
 
   /**
@@ -56,11 +59,17 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
   const updateAppProfile = async (
     patch: Partial<AgentProfile>
   ): Promise<void> => {
-    console.warn(
-      '[useAgentUpdate] updateAppProfile stub called with:',
-      patch,
-      'current appProfile:',
-      appProfile()
+    if (!isTenant || !appId) {
+      throw new Error(
+        '[useAgentUpdate] Tenant context required for app profile updates'
+      )
+    }
+
+    const uid = await resolveUid()
+    await updateDocument<AgentProfile>(
+      `apps/${appId}/agents`,
+      uid,
+      pruneUndefined(patch)
     )
   }
 
@@ -86,17 +95,10 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
   }
 
   const updateAgencyName = async (value: string) => {
-    const updater = requireUserUpdater()
     const normalized = cleanString(value)
     if (!normalized) {
       console.warn('[useAgentUpdate] Empty agency name ignored')
       return
-    }
-
-    if (updater) {
-      await updater.profile.rename(normalized)
-    } else {
-      console.warn('[useAgentUpdate] Unable to resolve user for rename')
     }
 
     await updateCoreProfile({
@@ -114,12 +116,23 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
   }
 
   const updateBioShort = async (value: string) => {
-    const updater = requireUserUpdater()
-    if (!updater) {
-      console.warn('[useAgentUpdate] Unable to resolve user for bio update')
-      return
-    }
-    await updater.profile.setBio(value)
+    const normalized = cleanString(value)
+    await updateCoreProfile({ bio_short: normalized ?? undefined })
+  }
+
+  const updateContactEmail = async (value: string) => {
+    const normalized = cleanString(value)
+    await updateCoreProfile({ contact_email: normalized ?? undefined })
+  }
+
+  const updateContactPhone = async (value: string) => {
+    const normalized = cleanString(value)
+    await updateCoreProfile({ contact_phone: normalized ?? undefined })
+  }
+
+  const updateWebsiteUrl = async (value: string) => {
+    const normalized = cleanString(value)
+    await updateCoreProfile({ website_url: normalized ?? undefined })
   }
 
   return {
@@ -131,5 +144,8 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
     updateAgencyName,
     updateTagline,
     updateBioShort,
+    updateContactEmail,
+    updateContactPhone,
+    updateWebsiteUrl,
   }
 }
