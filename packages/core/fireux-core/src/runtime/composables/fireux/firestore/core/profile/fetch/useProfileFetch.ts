@@ -32,6 +32,15 @@ export function useProfileFetch<TProfile extends Profile = Profile>(
     uid.value ? (doc(db, config.collectionName, uid.value) as any) : null
   )
 
+  /**
+   * Canon: Tenant profile overlay (domain deltas)
+   * - Path: `apps/{appId}/{domainCollection}/{uid}` (e.g. `apps/niederhorn/chefs/{uid}`)
+   * - This IS a tenant delta layer for domain profiles (Chef/Agent/Supplier/Professional).
+   * - We only read/write it when `isTenant === true` to avoid operator apps (e.g. `misebox-app`)
+   *   accidentally behaving like a tenant.
+   * - If you need to admin-fetch a specific tenant’s overlay while in ecosystem mode,
+   *   do it via an explicit targetAppId/path (not via “current app hydration”).
+   */
   const appDoc = computed(() =>
     uid.value && isTenant && appId
       ? (doc(db, 'apps', appId, config.collectionName, uid.value) as any)

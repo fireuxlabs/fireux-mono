@@ -20,6 +20,14 @@ export function useUserFetch(
     uid.value ? (doc(db, 'users', uid.value) as any) : null
   )
 
+  /**
+   * Canon: AppUser membership overlay
+   * - Path: `apps/{appId}/users/{uid}`
+   * - This is NOT a “tenant profile overlay”. It exists to hold app-scoped role,
+   *   permissions, onboarding state, and app-scoped notifications.
+   * - Therefore it is valid for any app context (including operator apps like `misebox-app`)
+   *   whenever `appId` exists.
+   */
   const appDoc = computed(() =>
     uid.value && appId
       ? (doc(db, 'apps', appId, 'users', uid.value) as any)

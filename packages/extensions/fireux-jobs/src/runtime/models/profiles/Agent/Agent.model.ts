@@ -1,4 +1,5 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
+import type { Pill as PillModel } from 'fireux-core/types/pill.model'
 import { agentConfig } from './supporting'
 
 /**
@@ -13,43 +14,60 @@ export interface Agent {
 }
 
 /**
- * Core Agent profile
- * - Global, ecosystem-wide
- * - One per user, regardless of app
+ * Card + domain shapes (mirrors Chef/Supplier/Professional)
+ * - ProfileCore/App host the domain fields for delta-friendly overlays
  */
-export interface AgentProfile extends Profile {
-  /** user id, same as profile id */
-  id: string
+export namespace AgentCard {
+  /** Pill shape */
+  export interface Pill extends PillModel.Props {}
 
-  /** required profile timestamps */
-  created_at: Profile['created_at']
-  updated_at: Profile['updated_at']
+  /** Cell shape */
+  export interface Cell extends Pill {
+    id?: string
+  }
 
-  /**
-   * Global Agent fields
-   * (safe to expand later as the domain grows)
-   */
-  tagline?: string | null
+  /** Full CORE profile surface */
+  export interface ProfileCore extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
+    title?: string | null
+    subtitle?: string | null
+    tagline?: string | null
+    badges?: string[]
 
-  /** Short org/person bio shown on listings */
-  bio_short?: string | null
+    bio_short?: string | null
+    contact_email?: string | null
+    contact_phone?: string | null
+    website_url?: string | null
+  }
 
-  /** Public contact details for job posting identity */
-  contact_email?: string |null
-  contact_phone?: string | null
-  website_url?: string | null
+  /** Tenant APP overlay (delta space) */
+  export interface ProfileApp extends Cell {
+    user?: Profile['user']
+    domain?: Profile['domain']
+    created_at?: Profile['created_at']
+    updated_at?: Profile['updated_at']
+    title?: string | null
+    subtitle?: string | null
+    tagline?: string | null
+    badges?: string[]
+
+    bio_short?: string | null
+    contact_email?: string | null
+    contact_phone?: string | null
+    website_url?: string | null
+  }
 }
 
 /**
- * App Agent profile
- * - Tenant-specific object
- * - One per (appId, userId) when a user is an agent in that app
- *
- * Intentionally left minimal for now; we’ll add fields as the
- * app-level Agent domain grows.
+ * Firestore-facing profile types
+ * - Core profile == UI ProfileCore
+ * - App profile == UI ProfileApp
  */
-export interface AgentAppProfile {
-  // tbc local props (e.g. app_id, local_tagline, local_badges, visibility)
-}
+export type AgentProfile = AgentCard.ProfileCore
+export type AgentCoreProfile = AgentCard.ProfileCore
+export type AgentAppProfile = AgentCard.ProfileApp
 
 export { agentConfig }

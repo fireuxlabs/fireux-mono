@@ -1,14 +1,10 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
-import type { Pill as PillModel } from 'fireux-core/types/pill.model'
+import type { DomainProfile } from 'fireux-core/runtime/models/core/profile.model'
 import { chefConfig } from './supporting'
 
 /** Unified Chef wrapper (core + app overlays) */
-export interface Chef {
+export interface Chef extends DomainProfile<ChefCoreProfile, ChefAppProfile> {
   id: string
-  display_name?: string
-  avatar?: string
-  core: ChefCoreProfile | null
-  app?: ChefAppProfile | null
 }
 
 /**
@@ -18,7 +14,14 @@ export interface Chef {
  */
 export namespace ChefCard {
   /** Pill shape */
-  export interface Pill extends PillModel.Props {}
+  export interface Pill {
+    avatar?: string
+    title?: string
+    subtitle?: string | null
+    tagline?: string | null
+    badges?: string[]
+    to?: string
+  }
 
   /** Cell shape */
   export interface Cell extends Pill {
@@ -29,15 +32,8 @@ export namespace ChefCard {
   }
 
   /** Full CORE profile surface */
-  export interface ProfileCore extends Cell {
-    user?: Profile['user']
-    domain?: Profile['domain']
-    created_at?: Profile['created_at']
-    updated_at?: Profile['updated_at']
-    title?: string | null
-    subtitle?: string | null
+  export interface ProfileCore extends Profile, Cell {
     tagline?: string | null
-    badges?: string[]
     bio_long?: string | null
     avatar?: string | null
     avatar_url?: string | null
@@ -46,15 +42,8 @@ export namespace ChefCard {
   }
 
   /** Tenant APP overlay (delta space) */
-  export interface ProfileApp extends Cell {
-    user?: Profile['user']
-    domain?: Profile['domain']
-    created_at?: Profile['created_at']
-    updated_at?: Profile['updated_at']
-    title?: string | null
-    subtitle?: string | null
+  export interface ProfileApp extends Profile, Cell {
     tagline?: string | null
-    badges?: string[]
     bio_long?: string | null
     organization_name?: string | null
     locations?: string[]

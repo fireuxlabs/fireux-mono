@@ -31,6 +31,22 @@ export interface Profile {
 }
 
 /**
+ * Generic wrapper shape used by system-domain composables.
+ *
+ * Notes:
+ * - This is *shape only* (no domain props).
+ * - UI card/pill/profile view models are produced by `useXInterface` composables.
+ * - `core` and `app` are the Firestore-backed documents (core + optional tenant overlay).
+ */
+export interface DomainProfile<TCore extends Profile, TApp extends Profile> {
+  id: string
+  display_name?: string
+  avatar?: string
+  core: TCore | null
+  app?: TApp | null
+}
+
+/**
  * Config describing how a profile collection behaves.
  */
 export interface ProfileConfig {

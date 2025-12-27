@@ -1,14 +1,11 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
-import type { Pill as PillModel } from 'fireux-core/types/pill.model'
+import type { DomainProfile } from 'fireux-core/runtime/models/core/profile.model'
 import { supplierConfig } from './Supplier/supporting'
 
 /** Unified Supplier wrapper (core + app overlays) */
-export interface Supplier {
+export interface Supplier
+  extends DomainProfile<SupplierCoreProfile, SupplierAppProfile> {
   id: string
-  display_name?: string
-  avatar?: string
-  core: SupplierCoreProfile | null
-  app?: SupplierAppProfile | null
 }
 
 /**
@@ -17,7 +14,13 @@ export interface Supplier {
  */
 export namespace SupplierCard {
   /** Pill shape */
-  export interface Pill extends PillModel.Props {
+  export interface Pill {
+    avatar?: string
+    title?: string
+    subtitle?: string | null
+    tagline?: string | null
+    badges?: string[]
+    to?: string
     company_name?: string | null
     company_avatar?: string | null
   }
@@ -31,32 +34,16 @@ export namespace SupplierCard {
   }
 
   /** Full CORE profile surface */
-  export interface ProfileCore extends Cell {
-    user?: Profile['user']
-    domain?: Profile['domain']
-    created_at?: Profile['created_at']
-    updated_at?: Profile['updated_at']
-    title?: string | null
+  export interface ProfileCore extends Profile, Cell {
     organization_name?: string | null
-    subtitle?: string | null
-    tagline?: string | null
-    badges?: string[]
     bio_long?: string | null
     avatar?: string | null
     avatar_url?: string | null
   }
 
   /** Tenant APP overlay (delta space) */
-  export interface ProfileApp extends Cell {
-    user?: Profile['user']
-    domain?: Profile['domain']
-    created_at?: Profile['created_at']
-    updated_at?: Profile['updated_at']
-    title?: string | null
+  export interface ProfileApp extends Profile, Cell {
     organization_name?: string | null
-    subtitle?: string | null
-    tagline?: string | null
-    badges?: string[]
     bio_long?: string | null
   }
 }

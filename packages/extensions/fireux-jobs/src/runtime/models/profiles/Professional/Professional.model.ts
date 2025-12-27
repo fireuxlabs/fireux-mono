@@ -1,5 +1,5 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
-import type { Pill as PillModel } from 'fireux-core/types/pill.model'
+import type { DomainProfile } from 'fireux-core/runtime/models/core/profile.model'
 import type {
   RelevantExperienceItem,
   OtherExperienceItem,
@@ -7,12 +7,9 @@ import type {
 import { professionalConfig } from './supporting'
 
 /** Unified Professional wrapper (core + app overlays) */
-export interface Professional {
+export interface Professional
+  extends DomainProfile<ProfessionalCoreProfile, ProfessionalAppProfile> {
   id: string
-  display_name?: string
-  avatar?: string
-  core: ProfessionalCoreProfile | null
-  app?: ProfessionalAppProfile | null
 }
 
 /**
@@ -22,7 +19,14 @@ export interface Professional {
  */
 export namespace ProfessionalCard {
   /** Pill model (UI header chip) */
-  export interface Pill extends PillModel.Props {}
+  export interface Pill {
+    avatar?: string
+    title?: string
+    subtitle?: string | null
+    tagline?: string | null
+    badges?: string[]
+    to?: string
+  }
 
   /** Cell model (directory list item) */
   export interface Cell extends Pill {
@@ -33,16 +37,9 @@ export namespace ProfessionalCard {
   }
 
   /** Full CORE profile surface */
-  export interface ProfileCore extends Cell {
-    user?: Profile['user']
-    domain?: Profile['domain']
-    created_at?: Profile['created_at']
-    updated_at?: Profile['updated_at']
-    // Domain profile fields (previously on ProfessionalProfile)
-    title?: string | null
-    subtitle?: string | null
+  export interface ProfileCore extends Profile, Cell {
+    // Domain profile fields
     tagline?: string | null
-    badges?: string[]
     health_certifications?: string[]
     bio_short?: string | null
     bio_long?: string | null
@@ -54,13 +51,7 @@ export namespace ProfessionalCard {
   }
 
   /** Tenant APP overlay (delta space) */
-  export interface ProfileApp extends Cell {
-    user?: Profile['user']
-    domain?: Profile['domain']
-    created_at?: Profile['created_at']
-    updated_at?: Profile['updated_at']
-    title?: string | null
-    subtitle?: string | null
+  export interface ProfileApp extends Profile, Cell {
     tagline?: string | null
     bio_short?: string | null
     specialties?: string[]
