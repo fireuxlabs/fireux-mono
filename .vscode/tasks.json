@@ -69,11 +69,11 @@
       "isBackground": true
     },
     {
-      "label": "dev:tennant (3005)",
+      "label": "dev:tenant (3005)",
       "type": "shell",
       "command": "pnpm",
       "args": [
-        "dev:tennant"
+        "dev:tenant"
       ],
       "options": {
         "cwd": "${workspaceFolder}"

@@ -81,8 +81,8 @@ Dev pages inventory (grouped, meta-driven)
   - packages/ecosystem/fireux-misebox/src/runtime/pages/dev/index.vue
     meta: { layout: 'dev', nav: { key: 'dev-tenant-index', label: 'Tenant Overview', icon: 'i-lucide-wrench', desktop: true, group: 'misebox', layouts: ['dev'] } }
   - packages/ecosystem/fireux-misebox/src/runtime/pages/dev/fireux-misebox.vue
-    meta: { layout: 'dev', alias: ['/dev/fireux-misebox-tennant'], nav: { key: 'dev-tenant-misebox-global', label: 'Misebox Global', icon: 'i-lucide-globe-2', desktop: true, group: 'misebox', layouts: ['dev'] } }
-  - packages/ecosystem/fireux-misebox/src/runtime/pages/dev/fireux-misebox-tennant.vue
+    meta: { layout: 'dev', alias: ['/dev/fireux-misebox-tenant'], nav: { key: 'dev-tenant-misebox-global', label: 'Misebox Global', icon: 'i-lucide-globe-2', desktop: true, group: 'misebox', layouts: ['dev'] } }
+  - packages/ecosystem/fireux-misebox/src/runtime/pages/dev/fireux-misebox-tenant.vue
     meta: { layout: 'dev', nav: { key: 'dev-tenant-misebox-app', label: 'Misebox App', icon: 'i-lucide-badge-check', desktop: true, group: 'misebox', layouts: ['dev'] } } [deleted]
 
 - app

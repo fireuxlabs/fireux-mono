@@ -340,7 +340,6 @@ definePageMeta({
   alias: [
     '/dev/fireux-misebox',
     '/dev/fireux-misebox-tenant',
-    '/dev/fireux-misebox-tennant',
   ],
   nav: {
     key: 'dev-tenant-misebox',

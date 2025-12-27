@@ -1,4 +1,4 @@
-<!-- FILE: projects/fireux-tenant/app/pages/index.vue -->
+<!-- FILE: projects/fireux/tenant/app/pages/index.vue -->
 <template>
   <!-- Background effect -->
   <EffectsStars />

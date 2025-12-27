@@ -1,5 +1,5 @@
 {
-  // tsconfig for Tennant app — do not override Nuxt aliases (~, @, ~~)
+  // tsconfig for Tenant app — do not override Nuxt aliases (~, @, ~~)
   "extends": "../tsconfig.app.base.json",
   "compilerOptions": {
     "composite": false,

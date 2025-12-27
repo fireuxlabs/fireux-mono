@@ -2,13 +2,13 @@
   "functions": [
     {
       "source": ".output/server",
-      "codebase": "tennant-ssr",
+      "codebase": "tenant-ssr",
       "runtime": "nodejs22",
-      "entryPoint": "tennantServer"
+      "entryPoint": "tenantServer"
     }
   ],
   "hosting": {
-    "site": "tennant",
+    "site": "tenant",
     "public": ".output/public",
     "cleanUrls": true,
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
@@ -16,9 +16,9 @@
       {
         "source": "**",
         "function": {
-          "functionId": "tennantServer",
-          "codebase": "tennant-ssr",
-          "region": "us-central1"
+          "functionId": "tenantServer",
+          "codebase": "tenant-ssr",
+          "region": "europe-west1"
         }
       }
     ]

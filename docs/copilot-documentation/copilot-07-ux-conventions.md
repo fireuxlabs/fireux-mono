@@ -33,7 +33,7 @@ Keep `.env` values and `app.config.ts` tokens aligned so Nuxt UI themes match de
 | Niederhorn        | `violet`             | `#8B5CF6`                  | `zinc`               | `#71717A`                  |
 | Cleanbox App      | `blue`               | `#3B82F6`                  | `gray`               | `#6B7280`                  |
 | Richies Reinigung | `blue`               | `#3B82F6`                  | `gray`               | `#6B7280`                  |
-| Tennant           | `blue`               | `#3B82F6`                  | `zinc`               | `#71717A`                  |
+| Tenant            | `blue`               | `#3B82F6`                  | `zinc`               | `#71717A`                  |
 
 Notes:
 

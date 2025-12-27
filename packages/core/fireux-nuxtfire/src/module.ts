@@ -260,6 +260,16 @@ export default defineNuxtModule({
       ...(app.measurementId ? { measurementId: app.measurementId } : {}),
     }
 
+    // nuxt-vuefire's SSR plugin reads from runtimeConfig.public.vuefire.config.
+    // Populate it here to avoid SSR 500s if nuxt-vuefire doesn't inject it
+    // (or if injection order varies across Nuxt versions).
+    ;(nuxt.options as any).runtimeConfig = (nuxt.options as any).runtimeConfig || {}
+    ;(nuxt.options as any).runtimeConfig.public = (nuxt.options as any).runtimeConfig.public || {}
+    ;(nuxt.options as any).runtimeConfig.public.vuefire =
+      (nuxt.options as any).runtimeConfig.public.vuefire || {}
+    ;(nuxt.options as any).runtimeConfig.public.vuefire.config =
+      (nuxt.options as any).vuefire.config
+
     // Ensure VueFire Auth module is installed.
     const existingAuth = ((nuxt.options as any).vuefire.auth ?? {}) as any
     ;(nuxt.options as any).vuefire.auth = {

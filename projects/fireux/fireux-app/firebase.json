@@ -18,7 +18,7 @@
         "function": {
           "functionId": "fireuxServer",
           "codebase": "fireux-ssr",
-          "region": "us-central1"
+          "region": "europe-west1"
         }
       }
     ]

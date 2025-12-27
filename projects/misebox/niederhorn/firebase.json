@@ -18,7 +18,7 @@
         "function": {
           "functionId": "niederhornServer",
           "codebase": "niederhorn-ssr",
-          "region": "us-central1"
+          "region": "europe-west6"
         }
       }
     ]

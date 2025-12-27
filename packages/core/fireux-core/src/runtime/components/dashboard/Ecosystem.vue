@@ -118,6 +118,59 @@ const apps = computed<App[]>(() => {
     .sort((a, b) => (a.app_name || '').localeCompare(b.app_name || ''))
 })
 
+type UserAppsValue = Record<string, unknown> | Array<unknown> | null
+
+const userApps = computed<UserAppsValue>(() => {
+  const anyUser = user.value as unknown as Record<string, unknown> | null
+  const raw = anyUser?.['apps']
+
+  if (!raw) return null
+  if (Array.isArray(raw)) return raw
+  if (typeof raw === 'object') return raw as Record<string, unknown>
+  return null
+})
+
+const userAppLogoUrl = (app: App): string => {
+  const appsValue = userApps.value
+  if (!appsValue) return ''
+
+  const appId = (app.id ?? '').toString().trim()
+  if (!appId) return ''
+
+  let entry: any = null
+  if (Array.isArray(appsValue)) {
+    entry = (appsValue as any[]).find((candidate) => {
+      const id =
+        candidate?.id ??
+        candidate?.app_id ??
+        candidate?.appId ??
+        candidate?.appID ??
+        ''
+      return (id ?? '').toString().trim() === appId
+    })
+  } else {
+    entry = (appsValue as Record<string, any>)[appId]
+  }
+
+  const rawUrl =
+    (typeof entry?.avatar_url === 'string' && entry.avatar_url) ||
+    (typeof entry?.logo_url === 'string' && entry.logo_url) ||
+    (typeof entry?.wordmark_url === 'string' && entry.wordmark_url) ||
+    (typeof entry?.icon_url === 'string' && entry.icon_url) ||
+    (typeof entry?.avatarUrl === 'string' && entry.avatarUrl) ||
+    (typeof entry?.logoUrl === 'string' && entry.logoUrl) ||
+    (typeof entry?.wordmarkUrl === 'string' && entry.wordmarkUrl) ||
+    (typeof entry?.iconUrl === 'string' && entry.iconUrl) ||
+    (typeof entry?.avatar === 'string' && entry.avatar) ||
+    (typeof entry?.logo === 'string' && entry.logo) ||
+    (typeof entry?.wordmark === 'string' && entry.wordmark) ||
+    (typeof entry?.icon === 'string' && entry.icon) ||
+    ''
+
+  const trimmed = rawUrl.trim()
+  return trimmed
+}
+
 const expandedApp = computed(() =>
   expandedAppId.value
     ? apps.value.find((app) => app.id === expandedAppId.value) ?? null
@@ -173,7 +226,7 @@ const devLocalBaseUrl = (app: App): string | null => {
     niederhorn: 3003,
     richies: 3004,
     'richies-reinigung': 3004,
-    tennant: 3005,
+    tenant: 3005,
   }
 
   for (const key of keyCandidates) {
@@ -187,7 +240,7 @@ const devLocalBaseUrl = (app: App): string | null => {
   if (joined.includes('cleanbox')) return 'http://localhost:3002'
   if (joined.includes('niederhorn')) return 'http://localhost:3003'
   if (joined.includes('richies')) return 'http://localhost:3004'
-  if (joined.includes('tennant')) return 'http://localhost:3005'
+  if (joined.includes('tenant')) return 'http://localhost:3005'
 
   return null
 }
@@ -213,8 +266,15 @@ const appBaseUrl = (app: App): string | null => {
   return normalizeBaseUrl(trimmed)
 }
 
-const avatarSrc = (app: App) =>
-  getProxiedAvatarUrl(app.avatar_url || app.logo_url || app.wordmark_url || '')
+const avatarSrc = (app: App) => {
+  const raw =
+    userAppLogoUrl(app) ||
+    app.avatar_url ||
+    app.logo_url ||
+    app.wordmark_url ||
+    ''
+  return getProxiedAvatarUrl(raw)
+}
 
 const ensureInfo = async (app: App) => {
   const id = app.id

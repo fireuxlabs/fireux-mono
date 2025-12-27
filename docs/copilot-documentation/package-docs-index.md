@@ -26,7 +26,7 @@ Package and tenant-specific documentation lives beside the code that owns it. Us
 
 - `packages/ecosystem/*/docs/` — create on demand when tenant-specific guidance is required.
 - `projects/<ecosystem>/<app>/docs/` — optional app-level notes (none at present).
-- `packages/ecosystem/fireux-fireux/docs/` — base FireUX ecosystem docs (shared by `fireux-app` and `tennant`).
+- `packages/ecosystem/fireux-fireux/docs/` — base FireUX ecosystem docs (shared by `fireux-app` and `tenant`).
 
 When adding a new package doc:
 

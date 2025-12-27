@@ -127,7 +127,7 @@ type AppKey =
   | 'cleanbox'
   | 'niederhorn'
   | 'richies'
-  | 'tennant'
+  | 'tenant'
 
 const CANONICAL_APPS: Array<{ key: AppKey; name: string }> = [
   { key: 'fireux', name: 'FireUX' },
@@ -135,7 +135,7 @@ const CANONICAL_APPS: Array<{ key: AppKey; name: string }> = [
   { key: 'cleanbox', name: 'Cleanbox' },
   { key: 'niederhorn', name: 'Niederhorn' },
   { key: 'richies', name: 'Richies' },
-  { key: 'tennant', name: 'Tennant' },
+  { key: 'tenant', name: 'Tenant' },
 ]
 
 const runtimeConfig = useRuntimeConfig()
@@ -150,7 +150,7 @@ const devBaseUrl = (key: AppKey) => {
     cleanbox: 3002,
     niederhorn: 3003,
     richies: 3004,
-    tennant: 3005,
+    tenant: 3005,
   }
   return `http://localhost:${ports[key]}`
 }

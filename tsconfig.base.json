@@ -71,7 +71,7 @@
       ],
       "~/*": [
         "projects/fireux/fireux-app/app/*",
-        "projects/fireux/tennant/app/*",
+        "projects/fireux/tenant/app/*",
         "projects/misebox/misebox-app/app/*",
         "projects/misebox/niederhorn/app/*",
         "projects/cleanbox/cleanbox-app/app/*",
@@ -79,7 +79,7 @@
       ],
       "@/*": [
         "projects/fireux/fireux-app/app/*",
-        "projects/fireux/tennant/app/*",
+        "projects/fireux/tenant/app/*",
         "projects/misebox/misebox-app/app/*",
         "projects/misebox/niederhorn/app/*",
         "projects/cleanbox/cleanbox-app/app/*",
@@ -87,7 +87,7 @@
       ],
       "~~/*": [
         "projects/fireux/fireux-app/*",
-        "projects/fireux/tennant/*",
+        "projects/fireux/tenant/*",
         "projects/misebox/misebox-app/*",
         "projects/misebox/niederhorn/*",
         "projects/cleanbox/cleanbox-app/*",
@@ -95,7 +95,7 @@
       ],
       "@@/*": [
         "projects/fireux/fireux-app/*",
-        "projects/fireux/tennant/*",
+        "projects/fireux/tenant/*",
         "projects/misebox/misebox-app/*",
         "projects/misebox/niederhorn/*",
         "projects/cleanbox/cleanbox-app/*",

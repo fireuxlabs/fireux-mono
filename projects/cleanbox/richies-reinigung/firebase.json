@@ -18,7 +18,7 @@
         "function": {
           "functionId": "richiesReinigungServer",
           "codebase": "richies-reinigung-ssr",
-          "region": "us-central1"
+          "region": "europe-west1"
         }
       }
     ]
