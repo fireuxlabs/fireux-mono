@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nuxi dev --port 3000",
+    "dev": "nuxi prepare && nuxi dev --port 3000",
     "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview",

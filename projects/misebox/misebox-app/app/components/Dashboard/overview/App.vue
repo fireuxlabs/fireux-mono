@@ -1,9 +1,0 @@
-<template>
-  <div class="grid grid-cols-1 gap-4">
-    <UPageCard variant="subtle">
-      <p class="text-xs text-dimmed mb-2">Component: DashboardOverviewApp (misebox-app)</p>
-      <h1 class="text-xl font-semibold">Misebox App Stuff</h1>
-      <p class="text-sm text-dimmed mt-2">hello misebox app</p>
-    </UPageCard>
-  </div>
-</template>
