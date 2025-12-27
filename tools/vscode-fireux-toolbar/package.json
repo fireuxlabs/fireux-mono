@@ -164,6 +164,28 @@
         "when": "workspaceFolderCount > 0"
       }
     ],
+    "configuration": {
+      "title": "FireUX Toolbar",
+      "properties": {
+        "fireuxToolbar.reuseBrowserTab": {
+          "type": "boolean",
+          "default": true,
+          "description": "On macOS, try to focus an existing browser tab for the target dev server instead of always opening a new one (falls back to normal openExternal if unsupported)."
+        },
+        "fireuxToolbar.reuseBrowser": {
+          "type": "string",
+          "enum": ["chrome", "safari", "default"],
+          "default": "chrome",
+          "description": "Which browser to target for tab reuse on macOS. 'default' disables the special reuse logic and uses VS Code openExternal."
+        },
+        "fireuxToolbar.reuseMatch": {
+          "type": "string",
+          "enum": ["origin", "exact"],
+          "default": "origin",
+          "description": "How to match an existing tab: 'origin' matches host+port (recommended), 'exact' matches the full URL string."
+        }
+      }
+    },
     "configurationDefaults": {
       "window.commandCenter": true
     }

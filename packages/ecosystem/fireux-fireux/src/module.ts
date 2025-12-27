@@ -46,6 +46,10 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     // Register runtime components WITHOUT a prefix
     const componentsDir = resolver.resolve('./runtime/components')
     if (existsSync(componentsDir)) {
+      ;(nuxt.options.alias ||= {}) as Record<string, string>
+      ;(nuxt.options.alias as Record<string, string>)['#fireux-fireux-components'] =
+        componentsDir
+
       addComponentsDir({
         path: componentsDir,
         pattern: '**/*.vue',

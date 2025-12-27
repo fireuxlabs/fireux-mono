@@ -1,6 +1,7 @@
 <template>
   <div class="grid grid-cols-1 gap-4">
     <UPageCard variant="subtle">
+      <p class="text-xs text-dimmed mb-2">Component: DashboardEcosystem (fireux-fireux)</p>
       <h1 class="text-xl font-semibold">FireUX Stuff</h1>
 
       <div class="mt-3 space-y-3">

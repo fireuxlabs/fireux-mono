@@ -1,4 +1,88 @@
 const vscode = require('vscode')
+const cp = require('node:child_process')
+
+function execFileAsync(cmd, args) {
+  return new Promise((resolve, reject) => {
+    cp.execFile(cmd, args, { maxBuffer: 1024 * 1024 }, (err, stdout, stderr) => {
+      if (err) {
+        err.stdout = stdout
+        err.stderr = stderr
+        reject(err)
+        return
+      }
+      resolve({ stdout, stderr })
+    })
+  })
+}
+
+function safeOrigin(url) {
+  try {
+    return new URL(url).origin
+  } catch {
+    return ''
+  }
+}
+
+async function tryReuseTabMacOS({ browser, matchPrefix, targetUrl }) {
+  if (!matchPrefix || !targetUrl) return false
+
+  const appName =
+    browser === 'safari'
+      ? 'Safari'
+      : browser === 'chrome'
+        ? 'Google Chrome'
+        : null
+  if (!appName) return false
+
+  // - If a tab starts with matchPrefix, focus it.
+  // - Otherwise, open a new tab at targetUrl.
+  // This gives “no new tab” on subsequent clicks.
+  const appleScript = `
+on run argv
+  set matchPrefix to item 1 of argv
+  set targetUrl to item 2 of argv
+  tell application "${appName}"
+    activate
+    try
+      repeat with w in windows
+        repeat with t in tabs of w
+          try
+            set u to (URL of t) as string
+            if u starts with matchPrefix then
+              set index of w to 1
+              ${appName === 'Safari' ? 'set current tab of w to t' : 'set active tab index of w to (index of t)'}
+              return "found"
+            end if
+          end try
+        end repeat
+      end repeat
+    end try
+
+    try
+      ${appName === 'Safari'
+        ? 'tell window 1 to set current tab to (make new tab with properties {URL: targetUrl})'
+        : 'tell window 1 to make new tab with properties {URL: targetUrl}'}
+      return "opened"
+    on error
+      return "failed"
+    end try
+  end tell
+end run
+`
+
+  try {
+    const res = await execFileAsync('osascript', [
+      '-e',
+      appleScript,
+      matchPrefix,
+      targetUrl,
+    ])
+    const out = String(res.stdout || '').trim().toLowerCase()
+    return out === 'found' || out === 'opened'
+  } catch {
+    return false
+  }
+}
 
 function activate(context) {
   const ws =
@@ -35,6 +119,22 @@ function activate(context) {
   }
 
   const openAppUrl = async (url) => {
+    const cfg = vscode.workspace.getConfiguration('fireuxToolbar')
+    const reuse = cfg.get('reuseBrowserTab', true)
+    const browser = cfg.get('reuseBrowser', 'chrome')
+    const matchMode = cfg.get('reuseMatch', 'origin')
+
+    if (reuse && process.platform === 'darwin') {
+      const matchPrefix =
+        matchMode === 'origin' ? safeOrigin(url) : String(url || '').trim()
+      const ok = await tryReuseTabMacOS({
+        browser,
+        matchPrefix,
+        targetUrl: url,
+      })
+      if (ok) return
+    }
+
     try {
       await vscode.env.openExternal(vscode.Uri.parse(url))
     } catch {

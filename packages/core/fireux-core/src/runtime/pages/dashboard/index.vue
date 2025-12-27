@@ -24,13 +24,14 @@
     </template>
 
     <template #body>
-      <!-- 1) Core (FireUX-wide) -->
-      <DashboardCore />
-      <!-- 2) Ecosystem (e.g. fireux-fireux) -->
-      <DashboardEcosystem />
+      <div class="space-y-6">
+        <DashboardOverviewCore />
+        <DashboardOverviewEcosystem />
+        <DashboardOverviewApp />
 
-      <!-- 3) App (e.g. fireux-app) -->
-      <DashboardApp />
+        <DashboardOverviewDomainEcosystem />
+        <DashboardOverviewDomainApp />
+      </div>
     </template>
   </UDashboardPanel>
 
