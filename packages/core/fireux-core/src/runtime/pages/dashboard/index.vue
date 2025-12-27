@@ -6,12 +6,16 @@
 
     <template #body>
       <div class="space-y-6">
-        <DashboardOverviewCore />
-        <DashboardOverviewEcosystem />
-        <DashboardOverviewApp />
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <DashboardOverviewCore />
+          <DashboardOverviewEcosystem />
+          <DashboardOverviewApp />
+        </div>
 
-        <DashboardOverviewDomainEcosystem />
-        <DashboardOverviewDomainApp />
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <DashboardOverviewDomainEcosystem />
+          <DashboardOverviewDomainApp />
+        </div>
       </div>
     </template>
   </UDashboardPanel>

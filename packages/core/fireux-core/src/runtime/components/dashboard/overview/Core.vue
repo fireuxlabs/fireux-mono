@@ -6,8 +6,10 @@
       </div>
 
       <div class="space-y-2">
-        <OrganismsUserCardsPill v-if="pill" :user="pill" />
-        <USkeleton v-else class="h-11 w-full" />
+        <div class="w-fit max-w-full">
+          <OrganismsUserCardsPill v-if="pill" :user="pill" />
+          <USkeleton v-else class="h-11 w-64 max-w-full" />
+        </div>
       </div>
 
       <div class="space-y-2">
