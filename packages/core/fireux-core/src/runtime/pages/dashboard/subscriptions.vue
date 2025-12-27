@@ -1,11 +1,7 @@
 <template>
   <UDashboardPanel id="dashboard-subscriptions">
     <template #header>
-      <UDashboardNavbar title="Subscriptions">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="Subscriptions" />
     </template>
 
     <template #body>

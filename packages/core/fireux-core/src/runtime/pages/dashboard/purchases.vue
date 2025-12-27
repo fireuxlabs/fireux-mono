@@ -18,11 +18,7 @@ definePageMeta({
   <!-- Note: If billing/subscription details are reintroduced, mirror archived cards from dash-old/dashboard/subscriptions.vue. -->
   <UDashboardPanel id="dashboard-purchases">
     <template #header>
-      <UDashboardNavbar title="Purchases">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="Purchases" />
     </template>
 
     <template #body>

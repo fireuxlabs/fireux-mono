@@ -2,11 +2,7 @@
 <template>
   <UDashboardPanel id="dashboard-app">
     <template #header>
-      <UDashboardNavbar title="App Settings">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="App Settings" />
     </template>
 
     <template #body>

@@ -1,11 +1,7 @@
 <template>
   <UDashboardPanel id="dashboard-favorites">
     <template #header>
-      <UDashboardNavbar title="Favorites">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="Favorites" />
     </template>
 
     <template #body>

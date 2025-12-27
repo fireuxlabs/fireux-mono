@@ -1,26 +1,7 @@
 <template>
   <UDashboardPanel id="home">
     <template #header>
-      <UDashboardNavbar title="Overview" :ui="{ right: 'gap-3' }">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-
-        <template #right>
-          <UTooltip text="Notifications" :shortcuts="['N']">
-            <UButton
-              color="neutral"
-              variant="ghost"
-              square
-              @click="isNotificationsSlideoverOpen = true"
-            >
-              <UChip color="error" inset>
-                <UIcon name="i-lucide-bell" class="size-5 shrink-0" />
-              </UChip>
-            </UButton>
-          </UTooltip>
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="Overview" :ui="{ right: 'gap-3' }" />
     </template>
 
     <template #body>
@@ -34,15 +15,10 @@
       </div>
     </template>
   </UDashboardPanel>
-
-  <!-- Notifications slideover controlled by local ref -->
-  <LayoutsDashboardNotificationsSlideover
-    v-model:open="isNotificationsSlideoverOpen"
-  />
 </template>
 
 <script setup lang="ts">
-import { definePageMeta, useState } from '#imports'
+import { definePageMeta } from '#imports'
 
 definePageMeta({
   nav: {
@@ -58,9 +34,4 @@ definePageMeta({
   layout: 'dashboard',
 })
 
-// Local notifications slideover state (was useDashboard)
-const isNotificationsSlideoverOpen = useState<boolean>(
-  'fireux-core:dashboard:notifs-open',
-  () => false
-)
 </script>

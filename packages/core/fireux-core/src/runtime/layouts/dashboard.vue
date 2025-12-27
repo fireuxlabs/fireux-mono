@@ -42,43 +42,28 @@
             :items="bottomNav"
             orientation="vertical"
           />
+
+          <!-- Mobile-only footer controls (shown inside the slideover) -->
+          <div class="lg:hidden">
+            <USeparator
+              v-if="topNav.length || middleNav.length || bottomNav.length"
+            />
+
+            <div class="pt-3">
+              <LayoutsDashboardSidebarFooterActions
+                :collapsed="collapsed"
+              />
+            </div>
+          </div>
         </div>
       </template>
 
       <!-- Bottom: user menu -->
-      <template #footer>
-        <div class="flex flex-col gap-2 w-full">
-          <div class="w-full flex justify-start">
-            <UButton
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-house"
-              :label="escapeLabel"
-              size="sm"
-              class="w-fit"
-              @click="goHome"
-            />
-          </div>
-
-          <div class="w-full flex justify-start">
-            <UButton
-              v-if="isAuthenticated"
-              color="neutral"
-              variant="ghost"
-              icon="i-lucide-log-out"
-              label="Sign out"
-              size="sm"
-              class="w-fit"
-              :loading="signOutLoading"
-              @click="handleSignOut"
-            />
-          </div>
-
-          <OrganismsUserCardsPill
-            v-if="pillUser"
-            :user="pillUser"
-            :show-memberships="false"
-            class="w-full"
+      <template #footer="{ collapsed }">
+        <div class="hidden lg:flex">
+          <LayoutsDashboardSidebarFooterActions
+            :collapsed="collapsed"
+            compact-profile
           />
         </div>
       </template>
@@ -89,17 +74,21 @@
       <NuxtPage />
     </div>
   </UDashboardGroup>
+
+  <!-- Notifications slideover controlled by shared state -->
+  <LayoutsDashboardNotificationsSlideover
+    v-model:open="isNotificationsSlideoverOpen"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useState } from '#imports'
-import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
 import { useDashboardNav } from '../composables/fireux/app/routing/presets'
+import { useDashboardNotifications } from '../composables/fireux/app/ui/useDashboardNotifications'
 import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useUser } from '../composables/fireux/firestore/core/user/useUser'
-import type { UserCard } from '../models/core/user.model'
 import type { NavItem } from '../../types/nav'
 
 defineOptions({ name: 'dashboard' })
@@ -210,32 +199,16 @@ const PROFILE_NAV_EXTRAS: Record<string, ProfileNavConfig[]> = {
 const open = ref(false)
 const route = useRoute()
 const router = useRouter()
-const fireuxConfig = useFireUXConfig()
-const escapeLabel = computed(() => `${fireuxConfig.appName}.app`)
 const activeProfileState = useState<string | null>(
   'fireux-dashboard-profile',
   () => null
 )
+
+const { isOpen: isNotificationsSlideoverOpen } = useDashboardNotifications()
 const { desktop } = useDashboardNav()
-const { isAdmin, user, pillProps } = useUser()
+const { isAdmin } = useUser()
 
-const { isAuthenticated, isReady, hasAuthState, lastBindError, signOutUser } =
-  useAuth()
-const signOutLoading = ref(false)
-
-const handleSignOut = async () => {
-  if (signOutLoading.value) return
-  signOutLoading.value = true
-  try {
-    await signOutUser()
-  } finally {
-    signOutLoading.value = false
-  }
-}
-
-const goHome = async () => {
-  await router.replace('/').catch(() => {})
-}
+const { isAuthenticated, isReady, hasAuthState, lastBindError } = useAuth()
 
 if (import.meta.client) {
   watch(
@@ -253,17 +226,6 @@ if (import.meta.client) {
     { immediate: true }
   )
 }
-
-const pillUser = computed<UserCard.Pill | undefined>(() => {
-  const current = user.value
-  if (!current) return undefined
-  const base = pillProps(current)
-  if (!base) return undefined
-  return {
-    ...base,
-    to: '/dashboard/user-profile',
-  }
-})
 
 const sortNavItems = (items: NavItem[]) =>
   items.slice().sort((a, b) => {

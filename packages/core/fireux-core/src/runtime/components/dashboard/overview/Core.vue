@@ -3,7 +3,6 @@
     <div class="space-y-4">
       <div class="space-y-1">
         <p class="text-sm font-medium">Welcome back</p>
-        <p class="text-sm text-dimmed">Core overview</p>
       </div>
 
       <div class="space-y-2">
@@ -12,20 +11,22 @@
       </div>
 
       <div class="space-y-2">
-        <div class="flex items-center justify-between gap-3">
-          <span class="text-sm text-dimmed">Profile completeness</span>
-          <UBadge color="neutral" variant="soft">
-            {{ profileLabel }}
-          </UBadge>
+        <div v-if="showProfileCompletedness" class="space-y-2">
+          <div class="flex items-center justify-between gap-3">
+            <span class="text-sm text-dimmed">Profile completedness</span>
+            <UBadge color="neutral" variant="soft">
+              {{ profileLabel }}
+            </UBadge>
+          </div>
+
+          <UProgress
+            :model-value="profileComplete ?? 0"
+            :max="100"
+            :ui="{ indicator: 'transition-none duration-0' }"
+          />
         </div>
 
-        <UProgress
-          :model-value="profileComplete ?? 0"
-          :max="100"
-          :ui="{ indicator: 'transition-none duration-0' }"
-        />
-
-        <div v-if="showEditProfile" class="flex">
+        <div class="flex">
           <UButton
             to="/dashboard/user-profile"
             label="Edit profile"
@@ -51,13 +52,12 @@ const pill = computed(() => {
   return pillProps(user)
 })
 
+const showProfileCompletedness = computed(() => {
+  return profileComplete.value == null || profileComplete.value < 100
+})
+
 const profileLabel = computed(() => {
   if (profileComplete.value == null) return '—'
   return `${profileComplete.value}%`
-})
-
-const showEditProfile = computed(() => {
-  if (profileComplete.value == null) return false
-  return profileComplete.value < 100
 })
 </script>

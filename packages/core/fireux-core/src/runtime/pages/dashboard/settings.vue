@@ -52,11 +52,7 @@ const savePreferences = async () => {
 <template>
   <UDashboardPanel id="dashboard-settings">
     <template #header>
-      <UDashboardNavbar title="Settings">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="Settings" />
     </template>
 
     <template #body>
