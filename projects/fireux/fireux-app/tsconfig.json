@@ -22,8 +22,7 @@
 
       // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
-    "skipLibCheck": true,
-    "types": ["nuxt", "@vite-pwa/nuxt", "@nuxt/content"]
+    "skipLibCheck": true
   },
   "include": [
     "./.nuxt/nuxt.d.ts",

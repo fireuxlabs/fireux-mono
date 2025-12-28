@@ -5,7 +5,7 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import { agentConfig, type AgentProfile } from '../../../../../../models/profiles/Agent/Agent.model'
 
 export namespace AgentCard {
-  export interface Pill {
+  export interface AgentPill {
     avatar: string | null
     title: string
     subtitle?: string | null
@@ -14,7 +14,7 @@ export namespace AgentCard {
     to?: string | null
   }
 
-  export interface Cell {
+  export interface AgentCell {
     id?: string
     creator_id?: string | null
     avatar: string | null
@@ -25,7 +25,7 @@ export namespace AgentCard {
     to?: string | null
   }
 
-  export interface Profile {
+  export interface AgentProfileCard {
     id?: string
     creator_id?: string | null
     avatar: string | null
@@ -67,7 +67,9 @@ export function useAgentInterface(
     (u.handle ? `@${u.handle.trim()}` : '') ||
     'Agent'
 
-  const pillProps = (target?: AgentProfile | null): AgentCard.Pill | null => {
+  const pillProps = (
+    target?: AgentProfile | null
+  ): AgentCard.AgentPill | null => {
     const currentProfile = resolveProfile(target)
     const currentUser = resolveUser(target)
     if (!currentUser) return null
@@ -85,7 +87,9 @@ export function useAgentInterface(
     }
   }
 
-  const cellProps = (target?: AgentProfile | null): AgentCard.Cell | null => {
+  const cellProps = (
+    target?: AgentProfile | null
+  ): AgentCard.AgentCell | null => {
     const base = pillProps(target)
     if (!base) return null
 
@@ -102,7 +106,7 @@ export function useAgentInterface(
 
   const profileCardProps = (
     target?: AgentProfile | null
-  ): AgentCard.Profile | null => {
+  ): AgentCard.AgentProfileCard | null => {
     const base = pillProps(target)
     if (!base) return null
 
@@ -136,7 +140,7 @@ const resolveProfileTagline = (profile?: AgentProfileWithUser | null) =>
 
 export const resolveAgentPill = (
   profile?: AgentProfile | null
-): AgentCard.Pill => {
+): AgentCard.AgentPill => {
   const payload = (profile ?? null) as AgentProfileWithUser | null
   const user = payload?.user ?? null
   const tagline = resolveProfileTagline(payload)
@@ -152,12 +156,12 @@ export const resolveAgentPill = (
   }
 }
 
-export const resolveAgentPillKey = (pill: AgentCard.Pill) =>
+export const resolveAgentPillKey = (pill: AgentCard.AgentPill) =>
   pill.to ?? pill.title ?? 'agent'
 
 export const resolveAgentCell = (
   profile?: AgentProfile | null
-): AgentCard.Cell | null => {
+): AgentCard.AgentCell | null => {
   const payload = (profile ?? null) as AgentProfileWithUser | null
   const user = payload?.user ?? null
   if (!payload || !user) return null

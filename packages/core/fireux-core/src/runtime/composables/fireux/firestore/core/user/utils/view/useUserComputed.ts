@@ -56,6 +56,16 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
     isAuthenticated.value && uid.value ? CTA_AVATAR : CTA_SIGN_IN
   )
 
+  const hasProfile = (profileType: string) => {
+    const key = (profileType ?? '').trim()
+    if (!key) return false
+
+    const profiles = coreUser.value?.profiles
+    if (!Array.isArray(profiles)) return false
+
+    return profiles.includes(key)
+  }
+
   return {
     currentUser,
     isLoading,
@@ -64,5 +74,6 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
     profileComplete,
     isAdmin,
     cta,
+    hasProfile,
   }
 }

@@ -11,8 +11,7 @@
       "#build/*": [".nuxt/*"]
       // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
-    "skipLibCheck": true,
-    "types": ["nuxt", "@vite-pwa/nuxt"]
+    "skipLibCheck": true
   },
   "include": ["./.nuxt/nuxt.d.ts", "./**/*", "../../../types/**/*.d.ts"],
   "exclude": [

@@ -39,10 +39,10 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { useChef } from '../../../../composables/fireux/firestore/profiles/Chef/useChef.ts'
 
 const { pill, cell } = useChef()
-const user = useUser()
+const { hasProfile } = useUser()
 
-const hasProfile = computed(() => user.hasProfile('chef'))
-const showProfileCta = computed(() => !hasProfile.value)
+const hasChefProfile = computed(() => hasProfile('chef'))
+const showProfileCta = computed(() => !hasChefProfile.value)
 
 const canToggle = computed(() => Boolean(cell.value))
 const showCellView = ref(false)

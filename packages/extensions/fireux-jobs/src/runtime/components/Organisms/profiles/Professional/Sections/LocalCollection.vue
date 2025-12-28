@@ -38,7 +38,7 @@ const { localProfessionals } = useProfessionalCollection()
 
 const total = computed(() => localProfessionals?.value?.length ?? 0)
 
-const pills = computed<ProfessionalCard.Pill[]>(() =>
+const pills = computed<ProfessionalCard.ProfessionalPill[]>(() =>
   (localProfessionals?.value ?? []).map((prof: ProfessionalProfile) =>
     resolveProfessionalPill(prof)
   )

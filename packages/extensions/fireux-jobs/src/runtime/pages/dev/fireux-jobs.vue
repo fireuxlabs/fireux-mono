@@ -284,8 +284,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
-import type { Ref } from 'vue'
+import { computed } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import DevProfileDiffList from 'fireux-core/runtime/components/dev/ProfileDiffList.vue'
 import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
@@ -300,6 +299,8 @@ import type { ProfessionalProfile } from '../../models/profiles/Professional/Pro
 import type { ProfessionalCard } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
 import type { AgentProfile } from '../../models/profiles/Agent/Agent.model'
 import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
+
+type Ref<T> = { value: T }
 
 definePageMeta({
   layout: 'dev',
@@ -328,15 +329,15 @@ const {
   cell: agentCell,
 } = useAgent()
 
-const professionalHasProfile = computed(() =>
-  Boolean(unref(professionalCoreProfile))
+const professionalHasProfile = computed(
+  () => Boolean(professionalCoreProfile.value)
 )
 
-const agentHasProfile = computed(() => Boolean(unref(agentCoreProfile)))
+const agentHasProfile = computed(() => Boolean(agentCoreProfile.value))
 
 const professionalJson = computed(() => {
-  const core = unref(professionalCoreProfile)
-  const app = unref(professionalAppProfile)
+  const core = professionalCoreProfile.value
+  const app = professionalAppProfile.value
   if (!core && !app) return null
   return {
     coreProfile: core,
@@ -345,8 +346,8 @@ const professionalJson = computed(() => {
 })
 
 const agentJson = computed(() => {
-  const core = unref(agentCoreProfile)
-  const app = unref(agentAppProfile)
+  const core = agentCoreProfile.value
+  const app = agentAppProfile.value
   if (!core && !app) return null
   return {
     coreProfile: core,
@@ -363,7 +364,7 @@ const {
   rawLocalProfessionals,
 } = useProfessionalCollection()
 
-const professionalGlobalPills = computed<ProfessionalCard.Pill[]>(() =>
+const professionalGlobalPills = computed<ProfessionalCard.ProfessionalPill[]>(() =>
   (globalProfessionals.value ?? []).map((profile: ProfessionalProfile) =>
     resolveProfessionalPill(profile)
   )
@@ -381,7 +382,7 @@ const hasProfessionalLocalCollection = computed(() =>
   Boolean(localProfessionals)
 )
 
-const professionalLocalPills = computed<ProfessionalCard.Pill[]>(() => {
+const professionalLocalPills = computed<ProfessionalCard.ProfessionalPill[]>(() => {
   if (!localProfessionals) return []
   return (localProfessionals.value ?? []).map((profile: ProfessionalProfile) =>
     resolveProfessionalPill(profile)
@@ -412,7 +413,7 @@ type AgentPreviewProfile = Partial<AgentProfile> & {
 
 const toAgentPill = (
   profile?: AgentPreviewProfile | null
-): AgentCard.Pill => {
+): AgentCard.AgentPill => {
   const title = (
     profile?.title ||
     profile?.user?.display_name ||
@@ -440,7 +441,7 @@ const toAgentPill = (
   }
 }
 
-const agentGlobalPills = computed<AgentCard.Pill[]>(() =>
+const agentGlobalPills = computed<AgentCard.AgentPill[]>(() =>
   (globalAgents.value ?? []).map((profile: AgentProfile) =>
     toAgentPill(profile)
   )
@@ -452,7 +453,7 @@ const agentGlobalJson = computed(() => rawGlobalAgents.value ?? [])
 
 const hasAgentLocalCollection = computed(() => Boolean(localAgents))
 
-const agentLocalPills = computed<AgentCard.Pill[]>(() => {
+const agentLocalPills = computed<AgentCard.AgentPill[]>(() => {
   if (!localAgents) return []
   return (localAgents.value ?? []).map((profile: AgentProfile) =>
     toAgentPill(profile)
@@ -465,7 +466,7 @@ const agentLocalJson = computed(() =>
   localAgents && rawLocalAgents ? rawLocalAgents.value ?? [] : []
 )
 
-const agentPillKey = (pill: AgentCard.Pill) => pill.to ?? pill.title ?? 'agent'
+const agentPillKey = (pill: AgentCard.AgentPill) => pill.to ?? pill.title ?? 'agent'
 
 type ProfileDiffRow<TProfile> = {
   id: string

@@ -36,7 +36,7 @@ const { localAgents } = useAgentCollection()
 
 const total = computed(() => localAgents?.value?.length ?? 0)
 
-const pills = computed<AgentCard.Pill[]>(() =>
+const pills = computed<AgentCard.AgentPill[]>(() =>
   (localAgents?.value ?? []).map((agent: AgentProfile) =>
     resolveAgentPill(agent)
   )

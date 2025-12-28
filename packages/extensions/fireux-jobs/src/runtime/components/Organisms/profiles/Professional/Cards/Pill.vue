@@ -62,7 +62,7 @@ import type { ProfessionalCard } from '../../../../../composables/fireux/firesto
 import { computed } from 'vue'
 
 const props = defineProps<{
-  professional: ProfessionalCard.Pill | null
+  professional: ProfessionalCard.ProfessionalPill | null
 }>()
 
 const professional = computed(() => {

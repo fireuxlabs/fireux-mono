@@ -54,7 +54,7 @@ import type { ProfessionalCard } from '../../../../../composables/fireux/firesto
 import { resolveProfessionalCell } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
 
 const props = defineProps<{
-  professional?: ProfessionalCard.Cell | ProfessionalProfile | null
+  professional?: ProfessionalCard.ProfessionalCell | ProfessionalProfile | null
 }>()
 
 const card = computed(() => {

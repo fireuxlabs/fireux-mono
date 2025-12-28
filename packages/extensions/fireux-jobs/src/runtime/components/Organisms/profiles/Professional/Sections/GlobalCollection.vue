@@ -36,7 +36,7 @@ import {
 const { globalProfessionals } = useProfessionalCollection()
 const total = computed(() => globalProfessionals.value?.length ?? 0)
 
-const pills = computed<ProfessionalCard.Pill[]>(() =>
+const pills = computed<ProfessionalCard.ProfessionalPill[]>(() =>
   (globalProfessionals.value ?? []).map((prof: ProfessionalProfile) =>
     resolveProfessionalPill(prof)
   )

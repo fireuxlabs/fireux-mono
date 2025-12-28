@@ -66,9 +66,9 @@ import type { AgentProfile } from 'fireux-jobs/runtime/models/profiles/Agent/Age
 import type { AgentCard } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
 import { resolveAgentCell } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
 
-const props = defineProps<{ agent?: AgentCard.Cell | AgentProfile | null }>()
+const props = defineProps<{ agent?: AgentCard.AgentCell | AgentProfile | null }>()
 
-const card = computed<AgentCard.Cell | null>(() => {
+const card = computed<AgentCard.AgentCell | null>(() => {
   const source = props.agent
   if (!source) return null
 
@@ -83,7 +83,7 @@ const card = computed<AgentCard.Cell | null>(() => {
   }
 
   return {
-    ...(source as AgentCard.Cell),
+    ...(source as AgentCard.AgentCell),
     tagline: source.tagline ?? source.subtitle ?? '',
   }
 })

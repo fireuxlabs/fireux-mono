@@ -10,7 +10,6 @@
     { "path": "misebox/niederhorn" }
   ],
   "compilerOptions": {
-    "skipLibCheck": true,
-    "types": ["nuxt"]
+    "skipLibCheck": true
   }
 }

@@ -53,6 +53,14 @@
             :maxlength="200"
             :update-function="handleWebsiteUrl"
           />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Badges"
+            :firebase-value="badges"
+            placeholder="Ex: hospitality, recruiting, premium"
+            :maxlength="200"
+            :update-function="handleBadges"
+          />
         </div>
       </UCard>
     </div>
@@ -78,6 +86,7 @@ const {
   updateContactEmail,
   updateContactPhone,
   updateWebsiteUrl,
+  updateBadges,
 } = useAgentUpdate()
 const { DisplayName } = useUserFormattingAndValidation()
 
@@ -94,6 +103,7 @@ const tagline = computed(() => agent.value?.tagline ?? '')
 const contactEmail = computed(() => agent.value?.contact_email ?? '')
 const contactPhone = computed(() => agent.value?.contact_phone ?? '')
 const websiteUrl = computed(() => agent.value?.website_url ?? '')
+const badges = computed(() => (agent.value?.badges ?? []).join(', '))
 
 const handleAgencyName = async (value: string) => {
   if (!agent.value) return 'success'
@@ -219,6 +229,28 @@ const handleWebsiteUrl = async (value: string) => {
       error instanceof Error ? error.message : 'Please try again.'
     toast?.add({
       title: 'Failed to update website',
+      description,
+      color: 'amber',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+    throw error
+  }
+}
+
+const handleBadges = async (value: string) => {
+  if (!agent.value) return 'success'
+  try {
+    await updateBadges(value)
+    toast?.add({
+      title: 'Badges updated',
+      icon: 'i-heroicons-check-circle',
+    })
+    return 'success'
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast?.add({
+      title: 'Failed to update badges',
       description,
       color: 'amber',
       icon: 'i-heroicons-exclamation-triangle',

@@ -34,15 +34,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch } from '#imports'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 
 const { pill, cell } = useAgent()
-const user = useUser()
+const { hasProfile } = useUser()
 
-const hasProfile = computed(() => user.hasProfile('agent'))
-const showProfileCta = computed(() => !hasProfile.value)
+const hasAgentProfile = computed(() => hasProfile('agent'))
+const showProfileCta = computed(() => !hasAgentProfile.value)
 
 const canToggle = computed(() => Boolean(cell.value))
 const showCellView = ref(false)
@@ -52,7 +52,7 @@ const toggleView = () => {
   showCellView.value = !showCellView.value
 }
 
-watch(canToggle, (enabled) => {
+watch(canToggle, (enabled: boolean) => {
   if (!enabled) showCellView.value = false
 })
 </script>

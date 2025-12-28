@@ -46,10 +46,10 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 
 const { pill, cell } = useProfessional()
-const user = useUser()
+const { hasProfile } = useUser()
 
-const hasProfile = computed(() => user.hasProfile('professional'))
-const showProfileCta = computed(() => !hasProfile.value)
+const hasProfessionalProfile = computed(() => hasProfile('professional'))
+const showProfileCta = computed(() => !hasProfessionalProfile.value)
 
 const canToggle = computed(() => Boolean(cell.value))
 const showCellView = ref(false)

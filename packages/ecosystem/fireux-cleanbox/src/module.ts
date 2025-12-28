@@ -53,11 +53,11 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     const composablesDir = resolver.resolve('./runtime/composables')
     if (existsSync(composablesDir)) {
       addImportsDir(composablesDir)
-      addImportsDir(resolver.resolve('./runtime/composables/**'))
     }
 
-    const modelsDir = resolver.resolve('./runtime/models')
-    if (existsSync(modelsDir)) addImportsDir(modelsDir)
+    // NOTE: Do NOT auto-import models.
+    // - It creates collisions for common type names (e.g. Pill/Cell/Profile)
+    // - Models should be imported explicitly by consumers
 
     // Serve runtime public assets via Nitro
     const publicDir = resolver.resolve('./runtime/public')

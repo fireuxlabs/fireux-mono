@@ -15,7 +15,7 @@ import {
  */
 export namespace ProfessionalCard {
   /** Pill model (UI header chip) */
-  export interface Pill {
+  export interface ProfessionalPill {
     avatar?: string
     title?: string
     subtitle?: string | null
@@ -25,7 +25,7 @@ export namespace ProfessionalCard {
   }
 
   /** Cell model (directory list item) */
-  export interface Cell extends Pill {
+  export interface ProfessionalCell extends ProfessionalPill {
     id?: string
     bio_short?: string | null
     specialties?: string[]
@@ -33,7 +33,7 @@ export namespace ProfessionalCard {
   }
 
   /** Full profile surface for display components */
-  export type Profile = ProfessionalProfile
+  export type ProfessionalProfileCard = ProfessionalProfile
 }
 
 const routeFor = (id?: string | null): string | undefined =>
@@ -69,7 +69,7 @@ export function useProfessionalInterface(
 
   const pillProps = (
     target?: ProfessionalProfile | null
-  ): ProfessionalCard.Pill | null => {
+  ): ProfessionalCard.ProfessionalPill | null => {
     const currentProfile = resolveProfile(target)
     const currentUser = resolveUser(target)
     if (!currentUser) return null
@@ -89,7 +89,7 @@ export function useProfessionalInterface(
 
   const cellProps = (
     target?: ProfessionalProfile | null
-  ): ProfessionalCard.Cell | null => {
+  ): ProfessionalCard.ProfessionalCell | null => {
     const base = pillProps(target)
     if (!base) return null
 
@@ -113,7 +113,7 @@ export function useProfessionalInterface(
 export const resolveProfessionalCell = (
   profile?: ProfessionalProfile | null,
   fallbackId = 'professional-profile'
-): ProfessionalCard.Cell | null => {
+): ProfessionalCard.ProfessionalCell | null => {
   if (!profile) return null
 
   const user = profile.user ?? undefined
@@ -139,7 +139,7 @@ export const resolveProfessionalCell = (
 
 export const resolveProfessionalPill = (
   profile?: ProfessionalProfile | null
-): ProfessionalCard.Pill => ({
+): ProfessionalCard.ProfessionalPill => ({
   avatar: profile?.user?.avatar ?? '',
   title: profile?.user?.display_name?.trim() || '',
   subtitle:
@@ -154,5 +154,5 @@ export const resolveProfessionalPill = (
   to: routeFor(profile?.id),
 })
 
-export const resolveProfessionalPillKey = (pill: ProfessionalCard.Pill) =>
+export const resolveProfessionalPillKey = (pill: ProfessionalCard.ProfessionalPill) =>
   pill.to ?? pill.title ?? 'professional'
