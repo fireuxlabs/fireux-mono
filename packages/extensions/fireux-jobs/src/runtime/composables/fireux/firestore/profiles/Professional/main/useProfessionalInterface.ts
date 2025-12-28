@@ -7,11 +7,37 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   professionalConfig,
   type ProfessionalProfile,
-  type ProfessionalCard,
 } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model.ts'
 
-const routeFor = (id?: string | null) =>
-  id ? `/${professionalConfig.collectionName}/${id}` : null
+/**
+ * UI-only view models for Professional profiles.
+ * Keep these out of the Firestore model file.
+ */
+export namespace ProfessionalCard {
+  /** Pill model (UI header chip) */
+  export interface Pill {
+    avatar?: string
+    title?: string
+    subtitle?: string | null
+    tagline?: string | null
+    badges?: string[]
+    to?: string | null
+  }
+
+  /** Cell model (directory list item) */
+  export interface Cell extends Pill {
+    id?: string
+    bio_short?: string | null
+    specialties?: string[]
+    locations?: string[]
+  }
+
+  /** Full profile surface for display components */
+  export type Profile = ProfessionalProfile
+}
+
+const routeFor = (id?: string | null): string | undefined =>
+  id ? `/${professionalConfig.collectionName}/${id}` : undefined
 
 /**
  * Minimal professional interface.
@@ -82,6 +108,33 @@ export function useProfessionalInterface(
   const cell = computed(() => cellProps())
 
   return { pill, cell, pillProps, cellProps }
+}
+
+export const resolveProfessionalCell = (
+  profile?: ProfessionalProfile | null,
+  fallbackId = 'professional-profile'
+): ProfessionalCard.Cell | null => {
+  if (!profile) return null
+
+  const user = profile.user ?? undefined
+
+  const id = profile.id ?? user?.id ?? fallbackId
+
+  const subtitle = profile.subtitle ?? null
+  const tagline = (profile as { tagline?: string | null } | null)?.tagline ?? null
+
+  return {
+    id,
+    avatar: user?.avatar ?? undefined,
+    title: user?.display_name ?? profile.title ?? 'Professional',
+    subtitle,
+    tagline,
+    badges: profile.badges ?? [],
+    bio_short: (profile as { bio_short?: string | null } | null)?.bio_short ?? null,
+    specialties: (profile as { specialties?: string[] } | null)?.specialties ?? [],
+    locations: (profile as { locations?: string[] } | null)?.locations ?? [],
+    to: routeFor(profile.id),
+  }
 }
 
 export const resolveProfessionalPill = (

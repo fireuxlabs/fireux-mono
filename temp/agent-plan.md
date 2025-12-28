@@ -10,6 +10,11 @@ Date: 2025-12-27
   - **domain profiles** (global truth + optional tenant deltas)
 - Ensure the Agent can be created/edited by the user via `/dashboard/agent/profile`, and used as a browseable “directory entity” (pill/cell/profile view models).
 
+Agent is a **posting identity**, so “richness” should support:
+- trust (“who is this agent?”)
+- contact
+- scope (“what kind of roles / regions?”)
+
 ## Canon data model (do not mix concepts)
 
 ### A) App membership overlay (always app-scoped)
@@ -21,9 +26,11 @@ Date: 2025-12-27
 
 ### B) Domain profile (global truth)
 
-- Path: `agents/{uid}`
+- Path: `agents/{uid}` (canonical; keep it aligned with other profiles)
 - Type: `AgentProfile` (core doc)
 - Purpose: canonical Agent identity and domain data.
+
+Note: avoid introducing `agents/{agentId}` until we actually need multi-agent org constructs.
 
 ### C) Tenant profile overlay (tenant deltas)
 
@@ -65,10 +72,9 @@ Date: 2025-12-27
 
 ### Phase 2 (richness without overfitting)
 
-- Add structured, reusable “blocks” consistent with other profiles:
+- Add structured, reusable fields consistent with other profiles:
   - `specialties: string[]`
   - `locations: string[]`
-  - `availability` (simple enum/flags)
   - `languages: string[]`
   - `links` (structured social links)
   - `portfolio` (lightweight array of items)
@@ -79,12 +85,13 @@ Principle: prefer arrays + simple objects, avoid deep nesting until needed.
 
 ### Required
 
-- `useAgent()` orchestrator
-  - composes core `useProfile(agentConfig)` + `useUser()`
-  - exposes refs: `coreProfile`, `appProfile`, `pending`
-  - exposes view models from `useAgentInterface(agent)`
-  - exposes mutations from `useAgentUpdate(refs)`
-  - exposes creation flow from `useAgentCreate()` / `useProfileEnsure(agentConfig)`
+- `useAgent()` orchestrator (keep it thin)
+  - hydrates and exposes: `agent` (wrapper), raw refs, `pending`
+  - delegates view models to `useAgentInterface`
+  - delegates writes to `useAgentUpdate`
+  - delegates creation/ensure to `useAgentCreate` / `useProfileEnsure`
+
+Guardrail: one job per composable.
 
 ### Mutations
 
@@ -123,3 +130,24 @@ Principle: prefer arrays + simple objects, avoid deep nesting until needed.
 2. Ensure the Agent editor writes to the right document(s) via `useAgentUpdate`.
 3. Add an explicit admin overlay fetch helper (target app id) if operator tooling needs it.
 4. Add one directory/list view that uses `resolveAgentCell`/`pillProps` (via `useAgentInterface`) as the canonical mapping.
+
+## Guardrails (paste into future Copilot prompts)
+
+You are editing FireUX. Follow canon strictly:
+
+- Do NOT mix AppUser membership overlay with domain profile overlays.
+  - AppUser: apps/{appId}/users/{uid} is membership/roles/notifications only.
+  - Domain profile: agents/{uid} is canonical truth.
+  - Tenant delta: apps/{tenantAppId}/agents/{uid} only read/write when isTenant === true unless explicitly admin-fetched by targetAppId.
+
+- Keep model files SHAPE-FIRST:
+  - Domain wrapper { user, core, app }
+  - Card namespace (ProfileCore/ProfileApp) if used elsewhere
+  - NO UI props in model files.
+
+- View models only in useAgentInterface (pill/cell/profile).
+- Writes only in useAgentUpdate.
+- Creation/ensure only in useAgentCreate or useProfileEnsure.
+
+- Do not add extra entities, deep nesting, or new collections unless required.
+- Keep changes minimal and consistent with Chef/Supplier/Professional patterns.

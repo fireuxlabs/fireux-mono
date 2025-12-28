@@ -24,10 +24,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type {
-  SupplierProfile,
-  SupplierCard,
-} from '../../../../../models/profiles/Supplier.model.ts'
+import type { SupplierProfile } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
 import { useSupplierCollection } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection.ts'
 import {
   resolveSupplierPill,

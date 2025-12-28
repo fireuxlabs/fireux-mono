@@ -6,98 +6,55 @@ import type {
 } from './supporting'
 import { professionalConfig } from './supporting'
 
-/** Unified Professional wrapper (core + app overlays) */
+/**
+ * Hydrated Professional shape used by composables.
+ * - `user` is the canonical user surface (avatar / display_name).
+ * - `core` is the global Professional profile document.
+ * - `app` is the optional tenant overlay document.
+ */
 export interface Professional
-  extends DomainProfile<ProfessionalCoreProfile, ProfessionalAppProfile> {
+  extends DomainProfile<ProfessionalProfile, ProfessionalAppProfile> {
   id: string
 }
 
 /**
- * Card + domain shapes
- * - All “profile fields” live inside ProfileCore / ProfileApp
- * - Core/App are clearly separated for future delta usage
+ * Professional domain shapes
+ * Shape-only, no UI concerns.
  */
-export namespace ProfessionalCard {
-  /** Pill model (UI header chip) */
-  export interface Pill {
-    avatar?: string
-    title?: string
-    subtitle?: string | null
-    tagline?: string | null
-    badges?: string[]
-    to?: string
-  }
-
-  /** Cell model (directory list item) */
-  export interface Cell extends Pill {
-    id?: string
-    bio_short?: string | null
-    specialties?: string[]
-    locations?: string[]
-  }
-
-  /** Full CORE profile surface */
-  export interface ProfileCore extends Profile, Cell {
-    // Domain profile fields
+export namespace Professional {
+  /**
+   * Core Professional profile (global truth)
+   * Firestore: professionals/{uid}
+   */
+  export interface ProfileCore extends Profile {
     tagline?: string | null
     health_certifications?: string[]
     bio_short?: string | null
     bio_long?: string | null
     specialties?: string[]
+    locations?: string[]
     avatar?: string | null
     avatar_url?: string | null
     relevant_experience?: RelevantExperienceItem[]
     other_experience?: OtherExperienceItem[]
   }
 
-  /** Tenant APP overlay (delta space) */
-  export interface ProfileApp extends Profile, Cell {
-    tagline?: string | null
-    bio_short?: string | null
-    specialties?: string[]
-  }
+  /**
+   * Tenant Professional overlay (delta-only)
+   * Firestore: apps/{appId}/professionals/{uid}
+   *
+   * Intentionally empty for now.
+   * Add fields only when a true tenant-specific delta is required.
+   */
+  export interface ProfileApp extends Profile {}
 }
 
 /**
- * Firestore-facing profile types
- * - For now, core profile == UI ProfileCore
- * - App profile == UI ProfileApp (delta)
- * - ProfessionalProfile used where a generic profile type is needed
+ * Firestore-facing aliases
  */
-export type ProfessionalProfile = ProfessionalCard.ProfileCore
-export type ProfessionalCoreProfile = ProfessionalCard.ProfileCore
-export type ProfessionalAppProfile = ProfessionalCard.ProfileApp
-
-// Re-export runtime config for convenience
-const routeFor = (id?: string | null) =>
-  id ? `/${professionalConfig.collectionName}/${id}` : undefined
-
-export const resolveProfessionalCell = (
-  profile?: ProfessionalProfile | null,
-  fallbackId = 'professional-profile'
-): ProfessionalCard.Cell | null => {
-  if (!profile) return null
-
-  const user = profile.user ?? undefined
-
-  const id = profile.id ?? user?.id ?? fallbackId
-
-  const subtitle = profile.subtitle ?? null
-  const tagline = profile.tagline ?? null
-
-  return {
-    id,
-    avatar: user?.avatar ?? undefined,
-    title: user?.display_name ?? profile.title ?? 'Professional',
-    subtitle,
-    tagline,
-    badges: profile.badges ?? [],
-    bio_short: profile.bio_short ?? null,
-    specialties: profile.specialties ?? [],
-    locations: profile.locations ?? [],
-    to: routeFor(profile.id),
-  } as ProfessionalCard.Cell
-}
+export type ProfessionalProfile = Professional.ProfileCore
+export type ProfessionalCoreProfile = Professional.ProfileCore
+export type ProfessionalAppProfile = Professional.ProfileApp
 
 export { professionalConfig }
 export type {

@@ -329,11 +329,10 @@ import {
   resolveSupplierPill,
   resolveSupplierPillKey,
 } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
-import type { ChefProfile, ChefCard } from '../../models/profiles/Chef/Chef.model.ts'
-import type {
-  SupplierProfile,
-  SupplierCard,
-} from '../../models/profiles/Supplier.model.ts'
+import type { ChefProfile } from '../../models/profiles/Chef/Chef.model.ts'
+import type { ChefCard } from '../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
+import type { SupplierProfile } from '../../models/profiles/Supplier/Supplier.model.ts'
+import type { SupplierCard } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
 
 definePageMeta({
   layout: 'dev',

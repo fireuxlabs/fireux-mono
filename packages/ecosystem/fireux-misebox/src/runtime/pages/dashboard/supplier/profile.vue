@@ -61,7 +61,7 @@ import { computed, ref } from 'vue'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useSupplier } from '../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
-import { supplierConfig } from '../../../models/profiles/Supplier.model'
+import { supplierConfig } from '../../../models/profiles/Supplier/Supplier.model'
 
 definePageMeta({
   layout: 'dashboard',

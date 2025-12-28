@@ -48,10 +48,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type {
-  ProfessionalCard,
   ProfessionalProfile,
 } from '../../../../../models/profiles/Professional/Professional.model.ts'
-import { resolveProfessionalCell } from '../../../../../models/profiles/Professional/Professional.model.ts'
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
+import { resolveProfessionalCell } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
 
 const props = defineProps<{
   professional?: ProfessionalCard.Cell | ProfessionalProfile | null

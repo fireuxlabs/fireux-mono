@@ -1,5 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
-import type { SupplierProfile } from '../../../../../../models/profiles/Supplier.model.ts'
+import type { SupplierProfile } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
 
 /**
  * useSupplierUpdate

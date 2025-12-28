@@ -5,11 +5,39 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   supplierConfig,
   type SupplierProfile,
-  type SupplierCard,
-} from '../../../../../../models/profiles/Supplier.model.ts'
+} from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
 
-const routeFor = (id?: string | null) =>
-  id ? `/${supplierConfig.collectionName}/${id}` : null
+/**
+ * UI-only view models for Supplier profiles.
+ * Keep these out of the Firestore model file.
+ */
+export namespace SupplierCard {
+  /** Pill shape */
+  export interface Pill {
+    avatar?: string
+    title?: string
+    subtitle?: string | null
+    tagline?: string | null
+    badges?: string[]
+    to?: string | null
+    company_name?: string | null
+    company_avatar?: string | null
+  }
+
+  /** Cell shape */
+  export interface Cell extends Pill {
+    id?: string
+    bio_short?: string | null
+    specialties?: string[]
+    categories?: string[]
+  }
+
+  /** Full profile surface for display components */
+  export type Profile = SupplierProfile
+}
+
+const routeFor = (id?: string | null): string | undefined =>
+  id ? `/${supplierConfig.collectionName}/${id}` : undefined
 
 /**
  * Minimal supplier interface.
@@ -79,6 +107,49 @@ export function useSupplierInterface(
   const cell = computed(() => cellProps())
 
   return { pill, cell, pillProps, cellProps }
+}
+
+export const resolveSupplierCell = (
+  profile?: SupplierProfile | null,
+  fallbackId = 'supplier-profile'
+): SupplierCard.Cell | null => {
+  if (!profile) return null
+
+  const user = profile.user ?? undefined
+  const id = profile.id ?? user?.id ?? fallbackId
+
+  const subtitle = profile.subtitle ?? null
+  const tagline = (profile as { tagline?: string | null } | null)?.tagline ?? null
+
+  const companyAvatar =
+    (profile as { avatar?: string | null; avatar_url?: string | null } | null)
+      ?.avatar ??
+    (profile as { avatar?: string | null; avatar_url?: string | null } | null)
+      ?.avatar_url ??
+    user?.avatar ??
+    undefined
+
+  const companyName =
+    (profile as { organization_name?: string | null } | null)
+      ?.organization_name ??
+    profile.title ??
+    user?.display_name ??
+    'Supplier'
+
+  return {
+    id,
+    avatar: user?.avatar ?? undefined,
+    title: user?.display_name ?? profile.title ?? 'Supplier',
+    subtitle,
+    tagline,
+    badges: profile.badges ?? [],
+    bio_short: (profile as { bio_short?: string | null } | null)?.bio_short ?? null,
+    specialties: (profile as { specialties?: string[] } | null)?.specialties ?? [],
+    categories: (profile as { categories?: string[] } | null)?.categories ?? [],
+    company_name: companyName,
+    company_avatar: companyAvatar,
+    to: routeFor(profile.id),
+  }
 }
 
 export const resolveSupplierPill = (

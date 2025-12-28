@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { SupplierCard } from '../../../../../../models/profiles/Supplier.model.ts'
+import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
 
 const props = defineProps<{
   supplier: SupplierCard.Pill | null

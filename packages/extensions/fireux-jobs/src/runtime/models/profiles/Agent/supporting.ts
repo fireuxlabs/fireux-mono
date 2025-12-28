@@ -2,8 +2,8 @@
 
 /**
  * Domain-level supporting structures for Agent profiles.
- * Keep runtime metadata separate from the AgentCard namespace
- * so UI surfaces only import what they need.
+ * Keep runtime metadata separate from UI view models
+ * so model imports stay Firestore-shape-only.
  */
 
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'

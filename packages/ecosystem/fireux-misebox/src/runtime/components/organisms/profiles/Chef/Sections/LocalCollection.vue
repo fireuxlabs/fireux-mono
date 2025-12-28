@@ -22,10 +22,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type {
-  ChefProfile,
-  ChefCard,
-} from '../../../../../models/profiles/Chef/Chef.model.ts'
+import type { ChefProfile } from '../../../../../models/profiles/Chef/Chef.model.ts'
+import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
 import { useChefCollection } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'
 import {
   resolveChefPill,

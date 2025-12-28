@@ -68,11 +68,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type {
-  SupplierCard,
-  SupplierProfile,
-} from '../../../../../../models/profiles/Supplier.model.ts'
-import { resolveSupplierCell } from '../../../../../models/profiles/Supplier.model.ts'
+import type { SupplierProfile } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
+import { resolveSupplierCell } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
 
 const props = defineProps<{
   supplier?: SupplierCard.Cell | SupplierProfile | null

@@ -2,7 +2,7 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import {
   supplierConfig,
   type SupplierProfile,
-} from '../../../../../../models/profiles/Supplier.model.ts'
+} from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
 
 export function useSupplierCollection() {
   const {

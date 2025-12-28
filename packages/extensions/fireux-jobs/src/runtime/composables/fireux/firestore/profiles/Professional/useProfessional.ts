@@ -7,8 +7,8 @@ import {
   professionalConfig,
   type ProfessionalProfile,
   type ProfessionalCoreProfile,
-  type ProfessionalCard,
 } from '../../../../../models/profiles/Professional/Professional.model.ts'
+import type { ProfessionalCard } from './main/useProfessionalInterface.ts'
 
 import { useProfessionalComputed } from './main/useProfessionalComputed.ts'
 import { useProfessionalInterface } from './main/useProfessionalInterface.ts'

@@ -1,10 +1,8 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
-import {
-  agentConfig,
-  type Agent,
-  type AgentProfile,
-} from '../../../../../../models/profiles/Agent/Agent.model'
+import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { agentConfig, type AgentProfile } from '../../../../../../models/profiles/Agent/Agent.model'
 
 export namespace AgentCard {
   export interface Pill {
@@ -40,7 +38,7 @@ export namespace AgentCard {
 }
 
 type AgentProfileWithUser = AgentProfile & {
-  user?: Agent['user']
+  user?: User | null
   creator_id?: string | null
   subtitle?: string | null
 }
@@ -48,73 +46,89 @@ type AgentProfileWithUser = AgentProfile & {
 const routeFor = (id?: string | null) =>
   id ? `/${agentConfig.collectionName}/${id}` : null
 
-export function useAgentInterface(agent: Ref<Agent>) {
-  const pillProps = (): AgentCard.Pill => {
-    const current = agent.value
-    const user = current.user
-    const core = current.core
-    const avatar = user?.avatar ?? null
-    const title = user?.display_name ?? ''
-    const tagline = core?.tagline ?? null
-    const badges = core?.badges ?? null
+export function useAgentInterface(
+  profile: ProfileRefs<AgentProfile>,
+  user: Ref<User | null>
+) {
+  const resolveProfile = (target?: AgentProfile | null) =>
+    target ?? profile.coreProfile.value ?? null
+
+  const resolveUser = (target?: AgentProfile | null) =>
+    target?.user ?? user.value ?? null
+
+  const resolveTagline = (payload: AgentProfile | null | undefined): string | null =>
+    payload?.tagline?.trim() ??
+    (payload as { subtitle?: string | null } | null)?.subtitle?.trim() ??
+    null
+
+  const resolveTitle = (u: Partial<User>) =>
+    u.display_name?.trim() ||
+    u.email?.trim() ||
+    (u.handle ? `@${u.handle.trim()}` : '') ||
+    'Agent'
+
+  const pillProps = (target?: AgentProfile | null): AgentCard.Pill | null => {
+    const currentProfile = resolveProfile(target)
+    const currentUser = resolveUser(target)
+    if (!currentUser) return null
+
+    const tagline = resolveTagline(currentProfile)
+    const to = routeFor(currentProfile?.id ?? currentUser.id)
 
     return {
-      avatar,
-      title,
+      avatar: currentUser.avatar ?? null,
+      title: resolveTitle(currentUser),
       subtitle: tagline,
       tagline,
-      badges,
-      to: routeFor(core?.id ?? user?.id ?? null),
+      badges: currentProfile?.badges ?? null,
+      to,
     }
   }
 
-  const cellProps = (): AgentCard.Cell => {
-    const current = agent.value
-    const user = current.user
-    const core = current.core
-    const avatar = user?.avatar ?? null
-    const title = user?.display_name ?? ''
-    const tagline = core?.tagline ?? null
-    const badges = core?.badges ?? null
+  const cellProps = (target?: AgentProfile | null): AgentCard.Cell | null => {
+    const base = pillProps(target)
+    if (!base) return null
+
+    const currentProfile = resolveProfile(target)
+    const id = currentProfile?.id ?? resolveUser(target)?.id ?? undefined
 
     return {
-      avatar,
-      title,
-      subtitle: tagline,
-      tagline,
-      badges,
-      id: core?.id ?? user?.id ?? undefined,
+      ...base,
+      id,
       creator_id: null,
-      to: routeFor(core?.id ?? user?.id ?? null),
+      to: routeFor(id ?? null),
     }
   }
 
-  const pill = computed<AgentCard.Pill>(() => pillProps())
+  const profileCardProps = (
+    target?: AgentProfile | null
+  ): AgentCard.Profile | null => {
+    const base = pillProps(target)
+    if (!base) return null
 
-  const cell = computed<AgentCard.Cell>(() => cellProps())
-
-  const profile = computed<AgentCard.Profile>(() => {
-    const current = agent.value
-    const user = current.user
-    const core = current.core
-    const avatar = user?.avatar ?? null
-    const title = user?.display_name ?? ''
-    const tagline = core?.tagline ?? null
-    const badges = core?.badges ?? null
+    const currentProfile = resolveProfile(target)
+    const id = currentProfile?.id ?? resolveUser(target)?.id ?? undefined
 
     return {
-      avatar,
-      title,
-      subtitle: tagline,
-      tagline,
-      badges,
-      id: core?.id ?? user?.id ?? undefined,
+      ...base,
+      id,
       creator_id: null,
-      to: routeFor(core?.id ?? user?.id ?? null),
+      to: routeFor(id ?? null),
     }
-  })
+  }
 
-  return { pill, cell, profile, pillProps, cellProps }
+  const pill = computed(() => pillProps())
+  const cell = computed(() => cellProps())
+  const profileCard = computed(() => profileCardProps())
+
+  return {
+    pill,
+    cell,
+    profile: profileCard,
+    pillProps,
+    cellProps,
+    profileCardProps,
+  }
 }
 
 const resolveProfileTagline = (profile?: AgentProfileWithUser | null) =>

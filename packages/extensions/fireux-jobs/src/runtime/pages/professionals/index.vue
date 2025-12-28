@@ -89,9 +89,9 @@ import { useHead } from 'nuxt/app'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
 import {
-  resolveProfessionalCell,
   type ProfessionalProfile,
 } from '../../models/profiles/Professional/Professional.model.ts'
+import { resolveProfessionalCell } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
 import { useClipboard } from '@vueuse/core'
 
 definePageMeta({

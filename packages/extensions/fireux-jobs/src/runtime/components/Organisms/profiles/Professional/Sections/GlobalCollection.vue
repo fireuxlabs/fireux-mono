@@ -25,10 +25,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type {
-  ProfessionalProfile,
-  ProfessionalCard,
-} from '../../../../../models/profiles/Professional/Professional.model.ts'
+import type { ProfessionalProfile } from '../../../../../models/profiles/Professional/Professional.model.ts'
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
 import { useProfessionalCollection } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
 import {
   resolveProfessionalPill,

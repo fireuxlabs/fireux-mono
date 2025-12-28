@@ -135,6 +135,25 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
     await updateCoreProfile({ website_url: normalized ?? undefined })
   }
 
+  const updateBadges = async (value: string) => {
+    const normalized = (value || '').trim()
+    if (!normalized.length) {
+      await updateCoreProfile({ badges: [] })
+      return
+    }
+
+    const badges = Array.from(
+      new Set(
+        normalized
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+      )
+    )
+
+    await updateCoreProfile({ badges })
+  }
+
   return {
     updateCoreProfile,
     updateAppProfile,
@@ -147,5 +166,6 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
     updateContactEmail,
     updateContactPhone,
     updateWebsiteUrl,
+    updateBadges,
   }
 }

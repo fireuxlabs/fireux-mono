@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProfessionalCard } from '../../../../../models/profiles/Professional/Professional.model.ts'
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
 
 import { computed } from 'vue'
 

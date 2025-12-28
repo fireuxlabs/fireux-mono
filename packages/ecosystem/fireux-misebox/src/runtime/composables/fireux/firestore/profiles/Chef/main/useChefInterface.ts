@@ -5,11 +5,37 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   chefConfig,
   type ChefProfile,
-  type ChefCard,
 } from '../../../../../../models/profiles/Chef/Chef.model.ts'
 
-const routeFor = (id?: string | null) =>
-  id ? `/${chefConfig.collectionName}/${id}` : null
+/**
+ * UI-only view models for Chef profiles.
+ * Keep these out of the Firestore model file.
+ */
+export namespace ChefCard {
+  /** Pill shape */
+  export interface Pill {
+    avatar?: string
+    title?: string
+    subtitle?: string | null
+    tagline?: string | null
+    badges?: string[]
+    to?: string | null
+  }
+
+  /** Cell shape */
+  export interface Cell extends Pill {
+    id?: string
+    bio_short?: string | null
+    specialties?: string[]
+    locations?: string[]
+  }
+
+  /** Full profile surface for display components */
+  export type Profile = ChefProfile
+}
+
+const routeFor = (id?: string | null): string | undefined =>
+  id ? `/${chefConfig.collectionName}/${id}` : undefined
 
 /**
  * Minimal chef interface.
@@ -73,6 +99,32 @@ export function useChefInterface(
   const cell = computed(() => cellProps())
 
   return { pill, cell, pillProps, cellProps }
+}
+
+export const resolveChefCell = (
+  profile?: ChefProfile | null,
+  fallbackId = 'chef-profile'
+): ChefCard.Cell | null => {
+  if (!profile) return null
+
+  const user = profile.user ?? undefined
+  const id = profile.id ?? user?.id ?? fallbackId
+
+  const subtitle = profile.subtitle ?? null
+  const tagline = (profile as { tagline?: string | null } | null)?.tagline ?? null
+
+  return {
+    id,
+    avatar: user?.avatar ?? undefined,
+    title: user?.display_name ?? profile.title ?? 'Chef',
+    subtitle,
+    tagline,
+    badges: profile.badges ?? [],
+    bio_short: (profile as { bio_short?: string | null } | null)?.bio_short ?? null,
+    specialties: (profile as { specialties?: string[] } | null)?.specialties ?? [],
+    locations: (profile as { locations?: string[] } | null)?.locations ?? [],
+    to: routeFor(profile.id),
+  }
 }
 
 export const resolveChefPill = (

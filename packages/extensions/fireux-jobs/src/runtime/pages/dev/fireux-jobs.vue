@@ -296,10 +296,8 @@ import {
   resolveProfessionalPill,
   resolveProfessionalPillKey,
 } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
-import type {
-  ProfessionalProfile,
-  ProfessionalCard,
-} from '../../models/profiles/Professional/Professional.model'
+import type { ProfessionalProfile } from '../../models/profiles/Professional/Professional.model'
+import type { ProfessionalCard } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
 import type { AgentProfile } from '../../models/profiles/Agent/Agent.model'
 import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
 
