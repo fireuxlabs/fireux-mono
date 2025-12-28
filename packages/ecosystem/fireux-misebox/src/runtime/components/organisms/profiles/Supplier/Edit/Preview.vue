@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useSupplier } from '../../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier.ts'
+import { useSupplier } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
 
 const { pillProps, cellProps, pending } = useSupplier()
 

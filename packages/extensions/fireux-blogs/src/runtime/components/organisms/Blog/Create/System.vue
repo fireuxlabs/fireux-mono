@@ -20,7 +20,7 @@ import { ref } from 'vue'
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
 import { useRouter } from '#imports'
-import { useBlogDraftState } from '../../../../composables/fireux/blog/useBlogDraftState'
+import { useBlogDraftState } from '../../../../composables/fireux/firestore/blogs/post/state/useBlogDraftState'
 import { useBlogCreateSubmit } from '../../../../composables/fireux/firestore/blogs/post/state/useBlogCreateSubmit'
 
 const { blogPost, resetCreateBlogPostState } = useBlogDraftState()

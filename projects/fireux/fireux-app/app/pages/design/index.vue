@@ -8,7 +8,7 @@ const sections = [
     pages: ['colors', 'img', 'tokens', 'typography'],
   },
 ]
-const getPagePath = (section, page) =>
+const getPagePath = (section: string, page: string) =>
   `/design/${section.toLowerCase()}/${page}`
 </script>
 

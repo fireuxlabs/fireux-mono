@@ -48,7 +48,7 @@ const routeFor = (id?: string | null) =>
 
 export function useAgentInterface(
   profile: ProfileRefs<AgentProfile>,
-  user: Ref<User | null>
+  user: Ref<User | null | undefined>
 ) {
   const resolveProfile = (target?: AgentProfile | null) =>
     target ?? profile.coreProfile.value ?? null

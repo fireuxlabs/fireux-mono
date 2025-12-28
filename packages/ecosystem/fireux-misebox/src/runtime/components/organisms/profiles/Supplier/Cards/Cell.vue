@@ -68,32 +68,33 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { SupplierProfile } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
-import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
-import { resolveSupplierCell } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
+import type { SupplierProfile } from '../../../../../models/profiles/Supplier/Supplier.model'
+import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface'
+import { resolveSupplierCell } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface'
 
 const props = defineProps<{
   supplier?: SupplierCard.Cell | SupplierProfile | null
 }>()
 
-const card = computed(() => {
+const isSupplierCell = (
+  payload: SupplierCard.Cell | SupplierProfile
+): payload is SupplierCard.Cell => 'to' in payload || 'company_name' in payload
+
+const card = computed<SupplierCard.Cell | null>(() => {
   const source = props.supplier
   if (!source) return null
 
-  if ('user' in source) {
-    const resolved = resolveSupplierCell(source)
-    if (resolved) {
-      return {
-        ...resolved,
-        tagline: resolved.tagline ?? resolved.subtitle ?? '',
-      }
+  if (isSupplierCell(source)) {
+    return {
+      ...source,
+      avatar: source.avatar ?? undefined,
+      company_avatar: source.company_avatar ?? undefined,
+      to: source.to ?? undefined,
+      tagline: source.tagline ?? source.subtitle ?? '',
     }
   }
 
-  return {
-    ...source,
-    tagline: source.tagline ?? source.subtitle ?? '',
-  }
+  return resolveSupplierCell(source)
 })
 
 const companyName = (payload?: SupplierCard.Cell | null) =>

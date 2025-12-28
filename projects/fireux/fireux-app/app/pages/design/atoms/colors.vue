@@ -17,13 +17,15 @@ const colorGroups = {
   ],
 }
 
-const colorValues = ref([])
+type ColorItem = { group: string; name: string }
+
+const colorValues = ref<ColorItem[]>([])
 
 onMounted(() => {
-  const colors = []
+  const colors: ColorItem[] = []
 
   Object.entries(colorGroups).forEach(([group, vars]) => {
-    vars.forEach((varName) => {
+    ;(vars as string[]).forEach((varName: string) => {
       colors.push({ group, name: varName })
     })
   })

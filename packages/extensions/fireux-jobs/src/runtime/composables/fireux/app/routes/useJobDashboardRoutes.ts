@@ -1,4 +1,4 @@
-import type { RouteLink } from './useJobRoutes.ts'
+import type { RouteLink } from './useJobRoutes'
 
 // Dashboard-only job profile routes (no public discovery links)
 

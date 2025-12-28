@@ -29,8 +29,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { Price } from '#fireux-products/models/objects/product.model.ts'
-import { useProducts } from '#fireux-products/composables/fireux/firestore/objects/Product/useProducts'
+import type { Price } from '../../../../models/objects/product.model'
+import { useProducts } from '../../../../composables/fireux/firestore/objects/product/useProducts'
 const props = defineProps<{ productId: string }>()
 const prices = ref<Price[]>([])
 const { formatPrice, fetchProductPrices } = await useProducts()

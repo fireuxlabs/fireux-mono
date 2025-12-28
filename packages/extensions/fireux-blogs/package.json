@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "fireux-core": "workspace:*",
+    "dompurify": "^3.2.7",
     "@tiptap/starter-kit": "^2.9.3",
     "@tiptap/vue-3": "^2.9.3"
   },

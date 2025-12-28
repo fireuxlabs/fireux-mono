@@ -34,7 +34,7 @@
     <UAlert
       v-if="error"
       class="mt-3"
-      color="amber"
+      color="warning"
       variant="subtle"
       :title="error.title"
       :description="error.description"

@@ -7,7 +7,7 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   professionalConfig,
   type ProfessionalProfile,
-} from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model.ts'
+} from '../../../../../../models/profiles/Professional/Professional.model'
 
 /**
  * UI-only view models for Professional profiles.
@@ -46,7 +46,7 @@ const routeFor = (id?: string | null): string | undefined =>
  */
 export function useProfessionalInterface(
   profile: ProfileRefs<ProfessionalProfile>,
-  user: Ref<User | null>
+  user: Ref<User | null | undefined>
 ) {
   const resolveProfile = (target?: ProfessionalProfile | null) =>
     target ?? profile.coreProfile.value ?? null

@@ -19,8 +19,6 @@ import { computed, onMounted } from 'vue'
 
 // Use runtimeConfig so this works in server-render without importing #build/app.config
 const runtimeConfig = useRuntimeConfig()
-// Tenant modules are responsible for providing useLandingEffect via auto-import.
-const { initializeEffect } = useLandingEffect()
 
 // Map effect type based on primary color
 const effectType = computed(() => {
@@ -97,7 +95,7 @@ const getRandomSymbol = () =>
   codeSymbols[Math.floor(Math.random() * codeSymbols.length)]
 
 onMounted(() => {
-  initializeEffect(effectType.value)
+  // Effects are purely cosmetic; no extra runtime hooks required.
 })
 </script>
 

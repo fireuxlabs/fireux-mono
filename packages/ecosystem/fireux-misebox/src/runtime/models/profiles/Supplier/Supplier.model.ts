@@ -8,10 +8,10 @@ import { supplierConfig } from '../Supplier/supporting'
  * - `core` is the global Supplier profile document.
  * - `app` is the optional tenant overlay document.
  */
-export interface Supplier
-  extends DomainProfile<SupplierProfile, SupplierAppProfile> {
-  id: string
-}
+export type Supplier = DomainProfile<SupplierProfile, SupplierAppProfile> &
+  SupplierProfile & {
+    id: string
+  }
 
 /**
  * Supplier domain shapes
@@ -31,6 +31,14 @@ export namespace Supplier {
     avatar?: string | null
     avatar_url?: string | null
     organization_name?: string | null
+
+    business_type?: string | null
+    locations?: Array<{ city?: string | null; country?: string | null }>
+    years_in_business?: number | null
+    products_offered?: string[]
+    employee_count?: number | null
+    certifications?: string[]
+    delivery_range?: number | null
   }
 
   /**

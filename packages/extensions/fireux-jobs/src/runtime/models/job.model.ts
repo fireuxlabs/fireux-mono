@@ -15,6 +15,13 @@ export interface Job {
   /** FireUX user who created the listing */
   created_by: string
 
+  /** Phase-1 graph links (horizontal MVP) */
+  posted_by_agent_id?: string | null
+  company_id?: string | null
+  place_id?: string | null
+  kitchen_id?: string | null
+  source?: string | null
+
   /** Pipeline & preview surface */
   title: string
   status: JobStatus

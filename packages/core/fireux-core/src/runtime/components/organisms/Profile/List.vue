@@ -25,20 +25,16 @@
   </div>
 </template>
 
-<script setup lang="ts">import { toRef } from 'vue'
+<script setup lang="ts">
+import { toRef } from 'vue'
+
+type ProfileLike = { uid: string } & Record<string, unknown>
 
 // Generic profile list component
-const props = defineProps({
-  profiles: {
-    type: Array,
-    default: () => [],
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  // filterComposable removed in simplified version
-})
+const props = withDefaults(
+  defineProps<{ profiles?: ProfileLike[]; loading?: boolean }>(),
+  { profiles: () => [], loading: false }
+)
 
 // Simplified: no external filters, use provided list as-is
 const filteredProfiles = toRef(props, 'profiles')

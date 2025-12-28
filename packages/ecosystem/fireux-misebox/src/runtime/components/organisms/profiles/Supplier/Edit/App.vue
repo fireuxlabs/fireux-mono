@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierProfile } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { SupplierProfile } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
 
 defineProps<{
   supplier: Partial<SupplierProfile> | null | undefined

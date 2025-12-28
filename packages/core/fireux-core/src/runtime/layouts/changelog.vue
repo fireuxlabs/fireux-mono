@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { inject, type Ref } from 'vue'
-import type { ContentNavigationItem } from '@nuxt/content'
 
 // Optional content navigation for changelog pages
-const navigation = inject<Ref<ContentNavigationItem[]> | undefined>(
-  'navigation'
-)
+const navigation = inject<Ref<any[]> | undefined>('navigation')
 defineOptions({ name: 'changelog' })
 </script>
 

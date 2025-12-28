@@ -47,7 +47,7 @@ import {
   useCreateProductState,
   useCreatePricesState,
   useProductCreateSubmit,
-} from '../../composables/fireux/firestore/products/product/useProduct'
+} from '../../composables/fireux/firestore/objects/product/useProduct'
 
 definePageMeta({
   layout: 'default',

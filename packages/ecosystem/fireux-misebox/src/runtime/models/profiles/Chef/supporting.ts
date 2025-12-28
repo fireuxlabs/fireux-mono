@@ -5,7 +5,7 @@
  * can import a single config source of truth.
  */
 
-import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model'
 
 export const chefConfig: ProfileConfig = {
   id: 'chef',

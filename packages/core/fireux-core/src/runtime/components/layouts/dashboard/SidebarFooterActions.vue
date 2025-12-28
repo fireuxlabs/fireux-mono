@@ -13,7 +13,7 @@
       aria-label="View profile"
     >
       <UAvatar
-        :src="pillUser.avatar"
+        :src="pillUser.avatar ?? undefined"
         :alt="pillUser.title || 'User'"
         :text="pillUser.initials || 'A'"
         size="sm"

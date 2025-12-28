@@ -49,32 +49,32 @@
 import { computed } from 'vue'
 import type {
   ProfessionalProfile,
-} from '../../../../../models/profiles/Professional/Professional.model.ts'
-import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
-import { resolveProfessionalCell } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
+} from '../../../../../models/profiles/Professional/Professional.model'
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
+import { resolveProfessionalCell } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
 
 const props = defineProps<{
   professional?: ProfessionalCard.ProfessionalCell | ProfessionalProfile | null
 }>()
 
-const card = computed(() => {
+const isProfessionalCell = (
+  payload: ProfessionalCard.ProfessionalCell | ProfessionalProfile
+): payload is ProfessionalCard.ProfessionalCell => 'to' in payload
+
+const card = computed<ProfessionalCard.ProfessionalCell | null>(() => {
   const source = props.professional
   if (!source) return null
 
-  if ('user' in source) {
-    const resolved = resolveProfessionalCell(source)
-    if (resolved) {
-      return {
-        ...resolved,
-        tagline: resolved.tagline ?? resolved.subtitle ?? '',
-      }
+  if (isProfessionalCell(source)) {
+    return {
+      ...source,
+      avatar: source.avatar ?? undefined,
+      to: source.to ?? undefined,
+      tagline: source.tagline ?? source.subtitle ?? '',
     }
   }
 
-  return {
-    ...source,
-    tagline: source.tagline ?? source.subtitle ?? '',
-  }
+  return resolveProfessionalCell(source)
 })
 </script>
 

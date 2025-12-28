@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { Job, JobStatus } from '#fireux-jobs-models/job.model'
+import type { Job, JobStatus } from '../../../../../../models/job.model'
 
 export interface JobCardProps {
   id: string

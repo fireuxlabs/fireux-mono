@@ -69,4 +69,16 @@ declare module '#build' {
   export default _default
 }
 
+declare global {
+  const definePageMeta: typeof import('nuxt/app')['definePageMeta']
+  function useRoute(...args: any[]): any
+  function useRouter(...args: any[]): any
+  function navigateTo(...args: any[]): any
+  function useHead(...args: any[]): any
+  function useSeoMeta(...args: any[]): any
+  function useFetch<T = any>(...args: any[]): any
+  function useAsyncData<T = any>(...args: any[]): any
+  function useNuxtApp(...args: any[]): any
+}
+
 export {}

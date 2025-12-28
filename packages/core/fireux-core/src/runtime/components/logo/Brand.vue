@@ -24,12 +24,9 @@ const logos = {
   dark: '/img/app/wordmark-dark.png',
 }
 
-const props = defineProps({
-  size: {
-    type: String,
-    default: 'medium',
-    validator: (value) => ['small', 'medium', 'large', 'hero'].includes(value),
-  },
+type BrandSize = 'small' | 'medium' | 'large' | 'hero'
+const props = withDefaults(defineProps<{ size?: BrandSize }>(), {
+  size: 'medium',
 })
 
 // Compute class based on size

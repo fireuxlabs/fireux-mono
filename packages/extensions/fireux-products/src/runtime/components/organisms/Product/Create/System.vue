@@ -18,9 +18,9 @@ import { ref } from 'vue'
 // Use Nuxt UI toast if available (auto-imported in app)
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import { useCreatePricesState } from '../../../../composables/fireux/firestore/objects/Product/Prices/useCreatePricesState'
-import { useCreateProductState } from '../../../../composables/fireux/firestore/products/product/state/useCreateProductState'
-import { useProductCreate } from '../../../../composables/fireux/firestore/objects/Product/useProductCreate'
+import { useCreatePricesState } from '../../../../composables/fireux/firestore/objects/product/Prices/useCreatePricesState'
+import { useCreateProductState } from '../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
+import { useProductCreate } from '../../../../composables/fireux/firestore/objects/product/useProductCreate'
 
 const { product, resetCreateProductState } = await useCreateProductState()
 
@@ -69,7 +69,6 @@ async function handleCreate() {
     })
   resetCreateProductState()
   resetCreatePricesState()
-  selectedTab.value = 'write'
   isCreating.value = false
 }
 

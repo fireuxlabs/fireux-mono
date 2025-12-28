@@ -18,7 +18,7 @@
         <div class="flex flex-col gap-3">
           <UNavigationMenu
             v-if="topNav.length"
-            :collapsed="collapsed"
+            :collapsed="collapsed ?? false"
             :items="topNav"
             orientation="vertical"
           />
@@ -29,7 +29,7 @@
 
           <UNavigationMenu
             v-if="middleNav.length"
-            :collapsed="collapsed"
+            :collapsed="collapsed ?? false"
             :items="middleNav"
             orientation="vertical"
           />
@@ -38,7 +38,7 @@
 
           <UNavigationMenu
             v-if="bottomNav.length"
-            :collapsed="collapsed"
+            :collapsed="collapsed ?? false"
             :items="bottomNav"
             orientation="vertical"
           />
@@ -51,7 +51,7 @@
 
             <div class="pt-3">
               <LayoutsDashboardSidebarFooterActions
-                :collapsed="collapsed"
+                :collapsed="collapsed ?? false"
               />
             </div>
           </div>
@@ -62,7 +62,7 @@
       <template #footer="{ collapsed }">
         <div class="hidden lg:flex">
           <LayoutsDashboardSidebarFooterActions
-            :collapsed="collapsed"
+            :collapsed="collapsed ?? false"
             compact-profile
           />
         </div>
@@ -272,7 +272,7 @@ const routeProfileId = computed(
 
 watch(
   routeProfileId,
-  (value) => {
+  (value: string | null) => {
     if (value && activeProfileState.value !== value) {
       activeProfileState.value = value
     }

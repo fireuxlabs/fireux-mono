@@ -41,8 +41,8 @@ export function useUserCollection() {
 
   watch(
     () => (appUsers.value ?? []).map((member) => member?.id).filter(Boolean),
-    (ids) => {
-      ids.forEach((id) => ensureCoreUser(id))
+    (ids: string[]) => {
+      ids.forEach((id: string) => ensureCoreUser(id))
     },
     { immediate: true }
   )

@@ -1,17 +1,17 @@
 import { arrayRemove, arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate.ts'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { usePlaceSave } from 'fireux-places/runtime/composables/usePlaceSave.ts'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/usePlacesGoogle.ts'
 import type { Place } from 'fireux-places/runtime/models/place.model.ts'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import type {
   ProfessionalProfile,
   RelevantExperienceItem,
   OtherExperienceItem,
-} from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model.ts'
+} from '../../../../../../models/profiles/Professional/Professional.model'
 
 const COLLECTION = 'professionals'
 

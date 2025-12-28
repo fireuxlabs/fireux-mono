@@ -174,8 +174,8 @@ const formData = ref({
   years_experience: null,
   bio_short: '',
   bio_long: '',
-  specialties: [],
-  cuisine_expertise: [],
+  specialties: [] as string[],
+  cuisine_expertise: [] as string[],
   available_for_hire: false,
   hourly_rate: null,
 })
@@ -188,16 +188,16 @@ const updateSpecialties = () => {
   if (specialtiesInput.value.trim()) {
     const newSpecialties = specialtiesInput.value
       .split(',')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0)
-      .filter((s) => !formData.value.specialties.includes(s))
+      .map((s: string) => s.trim())
+      .filter((s: string) => s.length > 0)
+      .filter((s: string) => !formData.value.specialties.includes(s))
 
     formData.value.specialties.push(...newSpecialties)
     specialtiesInput.value = ''
   }
 }
 
-const removeSpecialty = (specialty) => {
+const removeSpecialty = (specialty: string) => {
   const index = formData.value.specialties.indexOf(specialty)
   if (index > -1) {
     formData.value.specialties.splice(index, 1)
@@ -208,16 +208,16 @@ const updateCuisineExpertise = () => {
   if (cuisineInput.value.trim()) {
     const newCuisines = cuisineInput.value
       .split(',')
-      .map((c) => c.trim())
-      .filter((c) => c.length > 0)
-      .filter((c) => !formData.value.cuisine_expertise.includes(c))
+      .map((c: string) => c.trim())
+      .filter((c: string) => c.length > 0)
+      .filter((c: string) => !formData.value.cuisine_expertise.includes(c))
 
     formData.value.cuisine_expertise.push(...newCuisines)
     cuisineInput.value = ''
   }
 }
 
-const removeCuisineExpertise = (cuisine) => {
+const removeCuisineExpertise = (cuisine: string) => {
   const index = formData.value.cuisine_expertise.indexOf(cuisine)
   if (index > -1) {
     formData.value.cuisine_expertise.splice(index, 1)

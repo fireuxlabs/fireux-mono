@@ -35,11 +35,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useHead, useRouter } from '#imports'
-import { useBlogPermissions } from '#fireux-blogs/composables/useBlogPermissions'
+import { useBlogPermissions } from '../../composables/useBlogPermissions'
 // Nuxt UI provides useToast via auto-import in app context; fall back if unavailable
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import { useBlogDraftState } from '../../composables/fireux/blog/useBlogDraftState'
+import { useBlogDraftState } from '../../composables/fireux/firestore/blogs/post/state/useBlogDraftState'
 import { useBlogCreateSubmit } from '../../composables/fireux/firestore/blogs/post/state/useBlogCreateSubmit'
 
 definePageMeta({

@@ -180,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRecipes } from '../../composables/firestore/objects/Recipe/useRecipes'
+import { useRecipes } from '../../composables/fireux/firestore/objects/recipe/useRecipes'
 import { computed, watchEffect } from 'vue'
 
 definePageMeta({
@@ -191,7 +191,7 @@ const route = useRoute()
 const recipeSlug = route.params.slug as string
 
 // Get recipes data
-const { data: recipes, loading, error } = await useRecipes()
+const { all: recipes, pending: loading, error } = useRecipes()
 
 // Find the specific recipe
 const recipe = computed(() => {

@@ -94,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCreateProductState } from '../../../../composables/fireux/firestore/products/product/state/useCreateProductState'
+import { useCreateProductState } from '../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
 
 const { product } = await useCreateProductState()
 

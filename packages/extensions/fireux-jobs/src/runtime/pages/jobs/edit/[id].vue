@@ -65,10 +65,10 @@
 import { computed, reactive, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHead } from 'nuxt/app'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
-import type { Job, JobStatus } from '#fireux-jobs-models/job.model'
-import { useJobFetch } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/fetch/useJobFetch.ts'
-import { useJobUpdate } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/mutations/useJobUpdate.ts'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import type { Job, JobStatus } from '../../../models/job.model'
+import { useJobFetch } from '../../../composables/fireux/firestore/jobs/fetch/useJobFetch'
+import { useJobUpdate } from '../../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
 
 definePageMeta({
   layout: 'default',

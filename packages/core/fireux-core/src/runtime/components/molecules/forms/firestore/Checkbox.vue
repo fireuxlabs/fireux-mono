@@ -78,7 +78,7 @@ const displayValue = computed(() => {
 // Watch for prop changes
 watch(
   () => props.firebaseValue,
-  (newValue) => {
+  (newValue: boolean | null) => {
     if (!isEditing.value) {
       localValue.value = newValue || false
     }

@@ -19,13 +19,7 @@
           {{ value
           }}<span v-if="key !== Object.keys(localValue).slice(-1)[0]">, </span>
         </span>
-        <span v-else>
-          {{
-            Object.values(localValue)
-              .filter((v) => v && v.trim())
-              .join(' ')
-          }}
-        </span>
+        <span v-else>{{ joinedValue }}</span>
       </span>
       <span v-else class="text-gray-700">{{ placeholder || 'Not set' }}</span>
     </div>
@@ -50,27 +44,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import type { PropType } from 'vue'
+
+type StringMap = Record<string, string>
 
 const props = defineProps({
   label: { type: String, default: '' },
-  firebaseValue: { type: Object, default: () => ({}) },
+  firebaseValue: { type: Object as PropType<StringMap>, default: () => ({}) },
   placeholder: { type: String, default: '' },
   updateFunction: { type: Function, required: true },
   deleteFunction: { type: Function, default: () => {} },
-  placeholders: { type: Object, required: true },
+  placeholders: { type: Object as PropType<StringMap>, required: true },
   commas: { type: Boolean, default: true },
 })
 
 // Local reactive state
 const isEditing = ref(false)
-const localValue = ref({})
+const localValue = ref<StringMap>({})
 const errorMessage = ref('')
+
+const joinedValue = computed(() =>
+  Object.values(localValue.value)
+    .filter((v) => typeof v === 'string' && v.trim().length > 0)
+    .join(' ')
+)
 
 // Watch for prop changes to update local value
 watch(
   () => props.firebaseValue,
-  (newValue) => {
+  (newValue: StringMap) => {
     if (!isEditing.value) {
       localValue.value = newValue ? { ...newValue } : {}
     }

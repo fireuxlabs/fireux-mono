@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import { useJobFetch } from './fetch/useJobFetch.ts'
+import { useJobFetch } from './fetch/useJobFetch'
 import { useJobComputed } from './utils/view/useJobComputed'
 import { useJobInterface } from './utils/view/useJobInterface'
 import { useJobState } from './state/useJobState'
@@ -7,7 +7,7 @@ import { useJobCreate } from './mutations/useJobCreate'
 import { useJobUpdate } from './mutations/useJobUpdate'
 import { useJobDelete } from './mutations/useJobDelete'
 
-export type { Job } from '#fireux-jobs-models/job.model'
+export type { Job } from '../../../../models/job.model'
 
 /**
  * useJob (canon)

@@ -1,13 +1,13 @@
-import { cert, getApps, initializeApp, type App } from 'firebase-admin/app'
+import {
+  cert,
+  getApps,
+  initializeApp,
+  type App,
+  type ServiceAccount,
+} from 'firebase-admin/app'
 import { getFirestore, type Firestore } from 'firebase-admin/firestore'
 import { promises as fs } from 'node:fs'
 import { isAbsolute, resolve } from 'node:path'
-
-type ServiceAccount = {
-  project_id: string
-  client_email: string
-  private_key: string
-}
 
 let cachedApp: App | null = null
 
@@ -47,5 +47,5 @@ export async function getFirebaseAdminApp(): Promise<App> {
 
 export async function getFirestoreDb(databaseId?: string): Promise<Firestore> {
   const app = await getFirebaseAdminApp()
-  return getFirestore(app, databaseId)
+  return databaseId ? getFirestore(app, databaseId) : getFirestore(app)
 }

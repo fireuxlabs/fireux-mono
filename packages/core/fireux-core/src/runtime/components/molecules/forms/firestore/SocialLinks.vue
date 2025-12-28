@@ -58,15 +58,27 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import type { PropType } from 'vue'
+
+type SocialPlatform =
+  | 'website'
+  | 'twitter'
+  | 'linkedin'
+  | 'github'
+  | 'instagram'
+  | 'facebook'
+  | 'youtube'
+
+type SocialLinks = Partial<Record<SocialPlatform, string>>
 
 const props = defineProps({
-  firebaseValue: { type: Object, default: () => ({}) },
+  firebaseValue: { type: Object as PropType<SocialLinks>, default: () => ({}) },
   updateFunction: { type: Function, required: true },
 })
 
 // Local reactive state
 const isEditing = ref(false)
-const localValue = ref({})
+const localValue = ref<SocialLinks>({})
 const errorMessage = ref('')
 
 // Social platforms to support
@@ -78,18 +90,19 @@ const socialPlatforms = [
   'instagram',
   'facebook',
   'youtube',
-]
+] as const
 
 // Computed properties
 const hasData = computed(() => {
-  return Object.keys(props.firebaseValue || {}).some((key) =>
-    props.firebaseValue[key]?.trim()
+  const value = props.firebaseValue || {}
+  return Object.values(value).some(
+    (url) => typeof url === 'string' && url.trim().length > 0
   )
 })
 
 // Helper functions
-function getSocialIcon(platform) {
-  const icons = {
+function getSocialIcon(platform: SocialPlatform) {
+  const icons: Record<SocialPlatform, string> = {
     website: 'i-heroicons-globe-alt',
     twitter: 'i-simple-icons-twitter',
     linkedin: 'i-simple-icons-linkedin',
@@ -101,8 +114,8 @@ function getSocialIcon(platform) {
   return icons[platform] || 'i-heroicons-link'
 }
 
-function getSocialPlaceholder(platform) {
-  const placeholders = {
+function getSocialPlaceholder(platform: SocialPlatform) {
+  const placeholders: Record<SocialPlatform, string> = {
     website: 'https://example.com',
     twitter: 'https://twitter.com/username',
     linkedin: 'https://linkedin.com/in/username',
@@ -117,7 +130,7 @@ function getSocialPlaceholder(platform) {
 // Watch for prop changes
 watch(
   () => props.firebaseValue,
-  (newValue) => {
+  (newValue: SocialLinks) => {
     if (!isEditing.value) {
       localValue.value = newValue ? { ...newValue } : {}
     }
@@ -141,10 +154,10 @@ function cancelEditing() {
 async function saveChanges() {
   try {
     // Filter out empty values and validate URLs
-    const validatedLinks = {}
+    const validatedLinks: SocialLinks = {}
 
     for (const [platform, url] of Object.entries(localValue.value)) {
-      if (url && url.trim()) {
+      if (typeof url === 'string' && url.trim()) {
         const trimmedUrl = url.trim()
 
         // Basic URL validation
@@ -158,7 +171,7 @@ async function saveChanges() {
 
         try {
           new URL(trimmedUrl) // Validate URL format
-          validatedLinks[platform] = trimmedUrl
+          validatedLinks[platform as SocialPlatform] = trimmedUrl
         } catch {
           errorMessage.value = `${platform} URL is not a valid URL`
           return
@@ -171,7 +184,8 @@ async function saveChanges() {
     isEditing.value = false
   } catch (error) {
     console.error('Error saving social links:', error)
-    errorMessage.value = error.message || 'Failed to save social links'
+    errorMessage.value =
+      error instanceof Error ? error.message : 'Failed to save social links'
   }
 }
 
@@ -183,7 +197,8 @@ async function deleteValue() {
     isEditing.value = false
   } catch (error) {
     console.error('Error deleting social links:', error)
-    errorMessage.value = error.message || 'Failed to delete social links'
+    errorMessage.value =
+      error instanceof Error ? error.message : 'Failed to delete social links'
   }
 }
 </script>

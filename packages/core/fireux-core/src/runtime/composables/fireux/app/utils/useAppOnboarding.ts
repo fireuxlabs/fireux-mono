@@ -65,7 +65,7 @@ export function useAppOnboarding(): AppOnboardingState {
     resetPin()
   }
 
-  watch(coreUser, (value) => {
+  watch(coreUser, (value: typeof coreUser.value) => {
     if (!value) {
       isUnlocked.value = false
       pinError.value = null

@@ -86,7 +86,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useAgent } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/useAgent.ts'
+import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 type AccountUser = {
   full_name?: string | null

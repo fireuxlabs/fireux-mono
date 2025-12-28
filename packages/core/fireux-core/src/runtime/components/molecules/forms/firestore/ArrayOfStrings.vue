@@ -49,17 +49,18 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import type { PropType } from 'vue'
 
 const props = defineProps({
   label: { type: String, default: '' },
-  firebaseValue: { type: Array, default: () => [] },
+  firebaseValue: { type: Array as PropType<string[]>, default: () => [] },
   itemPlaceholder: { type: String, default: 'Item' },
   newItemPlaceholder: { type: String, default: 'Add new item' },
   updateFunction: { type: Function, default: () => {} },
 })
 
 const isEditing = ref(false)
-const localValue = ref([...props.firebaseValue])
+const localValue = ref<string[]>([...props.firebaseValue])
 const newItem = ref('')
 const errorMessage = ref('')
 
@@ -68,7 +69,7 @@ const formattedValue = computed(() => localValue.value.join(' | '))
 
 watch(
   () => props.firebaseValue,
-  (newVal) => {
+  (newVal: string[]) => {
     localValue.value = [...newVal]
   },
   { immediate: true }
@@ -107,8 +108,8 @@ function addItem() {
   newItem.value = ''
 }
 
-function removeItem(index) {
-  localValue.value.splice(index, 1)
+function removeItem(index: number | string) {
+  localValue.value.splice(Number(index), 1)
 }
 
 async function deleteButtonClicked() {

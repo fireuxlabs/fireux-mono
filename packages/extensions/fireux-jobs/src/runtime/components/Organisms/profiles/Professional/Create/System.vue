@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useProfessionalCreate } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/main/useProfessionalCreate.ts'
+import { useProfessionalCreate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCreate'
 
 const props = defineProps<{ create?: () => Promise<unknown> }>()
 

@@ -8,9 +8,10 @@ import { chefConfig } from './supporting'
  * - `core` is the global Chef profile document.
  * - `app` is the optional tenant overlay document.
  */
-export interface Chef extends DomainProfile<ChefProfile, ChefAppProfile> {
-  id: string
-}
+export type Chef = DomainProfile<ChefProfile, ChefAppProfile> &
+  ChefProfile & {
+    id: string
+  }
 
 /**
  * Chef domain shapes

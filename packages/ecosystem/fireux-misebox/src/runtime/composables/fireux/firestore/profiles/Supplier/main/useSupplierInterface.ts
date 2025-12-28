@@ -1,11 +1,11 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
-import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import {
   supplierConfig,
   type SupplierProfile,
-} from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
+} from '../../../../../../models/profiles/Supplier/Supplier.model'
 
 /**
  * UI-only view models for Supplier profiles.
@@ -16,12 +16,12 @@ export namespace SupplierCard {
   export interface Pill {
     avatar?: string
     title?: string
-    subtitle?: string | null
-    tagline?: string | null
+    subtitle?: string
+    tagline?: string
     badges?: string[]
-    to?: string | null
-    company_name?: string | null
-    company_avatar?: string | null
+    to?: string
+    company_name?: string
+    company_avatar?: string
   }
 
   /** Cell shape */
@@ -46,7 +46,7 @@ const routeFor = (id?: string | null): string | undefined =>
  */
 export function useSupplierInterface(
   profile: ProfileRefs<SupplierProfile>,
-  user: Ref<User | null>
+  user: Ref<User | null | undefined>
 ) {
   const resolveProfile = (target?: SupplierProfile | null) =>
     target ?? profile.coreProfile.value ?? null
@@ -118,8 +118,9 @@ export const resolveSupplierCell = (
   const user = profile.user ?? undefined
   const id = profile.id ?? user?.id ?? fallbackId
 
-  const subtitle = profile.subtitle ?? null
-  const tagline = (profile as { tagline?: string | null } | null)?.tagline ?? null
+  const subtitle = profile.subtitle ?? undefined
+  const tagline =
+    (profile as { tagline?: string | null } | null)?.tagline ?? undefined
 
   const companyAvatar =
     (profile as { avatar?: string | null; avatar_url?: string | null } | null)
@@ -147,7 +148,7 @@ export const resolveSupplierCell = (
     specialties: (profile as { specialties?: string[] } | null)?.specialties ?? [],
     categories: (profile as { categories?: string[] } | null)?.categories ?? [],
     company_name: companyName,
-    company_avatar: companyAvatar,
+    company_avatar: companyAvatar ?? undefined,
     to: routeFor(profile.id),
   }
 }
@@ -158,12 +159,12 @@ export const resolveSupplierPill = (
   avatar: profile?.user?.avatar ?? '',
   title: profile?.user?.display_name ?? '',
   subtitle:
-    profile?.tagline ??
-    (profile as { subtitle?: string | null } | null)?.subtitle ??
+    profile?.tagline?.trim() ??
+    (profile as { subtitle?: string | null } | null)?.subtitle?.trim() ??
     '',
   tagline:
-    profile?.tagline ??
-    (profile as { subtitle?: string | null } | null)?.subtitle ??
+    profile?.tagline?.trim() ??
+    (profile as { subtitle?: string | null } | null)?.subtitle?.trim() ??
     '',
   badges: [],
   to: routeFor(profile?.id),

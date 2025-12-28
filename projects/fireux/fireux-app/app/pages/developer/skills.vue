@@ -75,7 +75,7 @@ const skills = [
   }
 ]
 
-const anchorId = (name) => name.toLowerCase().replace(/\W+/g, '-');
+const anchorId = (name: string) => name.toLowerCase().replace(/\W+/g, '-')
 </script>
 
 <style scoped>

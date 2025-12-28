@@ -188,7 +188,7 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHead } from '#imports'
-import { useKitchens } from '../../composables/firestore/objects/Kitchen/useKitchens'
+import { useKitchens } from '../../composables/fireux/firestore/objects/kitchen/useKitchens'
 import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp.ts'
 import { usePlaces } from 'fireux-places/runtime/composables/usePlaces.ts'
 

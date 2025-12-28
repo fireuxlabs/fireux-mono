@@ -47,29 +47,32 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefProfile } from '../../../../../models/profiles/Chef/Chef.model.ts'
-import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
-import { resolveChefCell } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
+import type { ChefProfile } from '../../../../../models/profiles/Chef/Chef.model'
+import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface'
+import { resolveChefCell } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface'
 
 const props = defineProps<{ chef?: ChefCard.Cell | ChefProfile | null }>()
 
-const card = computed(() => {
+const card = computed<ChefCard.Cell | null>(() => {
   const source = props.chef
   if (!source) return null
 
-  if ('user' in source) {
-    const resolved = resolveChefCell(source)
-    if (resolved) {
-      return {
-        ...resolved,
-        tagline: resolved.tagline ?? resolved.subtitle ?? '',
-      }
+  if ('to' in source) {
+    return {
+      ...source,
+      avatar: source.avatar ?? undefined,
+      to: source.to ?? undefined,
+      tagline: source.tagline ?? source.subtitle ?? '',
     }
   }
 
+  const resolved = resolveChefCell(source)
+  if (!resolved) return null
   return {
-    ...source,
-    tagline: source.tagline ?? source.subtitle ?? '',
+    ...resolved,
+    avatar: resolved.avatar ?? undefined,
+    to: resolved.to ?? undefined,
+    tagline: resolved.tagline ?? resolved.subtitle ?? '',
   }
 })
 </script>

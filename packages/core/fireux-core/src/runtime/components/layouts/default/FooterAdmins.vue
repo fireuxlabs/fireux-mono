@@ -71,17 +71,24 @@ const adminCards = computed(() =>
   adminEntries.value.map((record, index) => {
     const pill = pillProps(record as any)
     const title =
-      pill.title ||
+      pill?.title ||
       record.display_name?.trim() ||
       record.handle?.trim() ||
       record.id ||
       `Admin ${index + 1}`
 
     const enriched: UserCard.Pill = {
-      ...pill,
+      ...(pill ?? {
+        title: '',
+        subtitle: '',
+        initials: '',
+        avatar: '',
+        badges: [],
+        to: null,
+      }),
       title,
-      initials: pill.initials ?? toInitials(title),
-      to: pill.to ?? (record.id ? `/users/${record.id}` : null),
+      initials: pill?.initials ?? toInitials(title),
+      to: pill?.to ?? (record.id ? `/users/${record.id}` : null),
       special: true,
       specialTooltip: 'Tenant admin',
     }

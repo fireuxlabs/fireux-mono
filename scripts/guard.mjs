@@ -14,6 +14,7 @@ console.log('[guard] 🔎 Running FireUX guard checks...')
 import process from 'node:process'
 
 import { run as runRoot } from './guards/root.mjs'
+import { run as runCanon } from './guards/canon.mjs'
 import { run as runCore } from './guards/core.mjs'
 import { run as runEcosystem } from './guards/ecosystem.mjs'
 import { run as runExtensions } from './guards/extensions.mjs'
@@ -23,6 +24,7 @@ const repoRoot = process.cwd()
 
 const guards = [
   { key: 'root', run: runRoot },
+  { key: 'canon', run: runCanon },
   { key: 'core', run: runCore },
   { key: 'ecosystem', run: runEcosystem },
   { key: 'extensions', run: runExtensions },

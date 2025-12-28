@@ -18,7 +18,9 @@ type HandleJoinRequests = (uid: string, approve: boolean) => Promise<unknown>
 
 type UserRef = ComputedRef<User | null>
 
-type PillBuilder = ComputedRef<(target?: User | null) => UserCard.Pill>
+type PillBuilder = ComputedRef<
+  (target?: User | null | undefined) => UserCard.Pill | null
+>
 
 type Options = {
   app: Ref<App | null | undefined>
@@ -67,6 +69,20 @@ export function useAppJoinRequests({
     if (!profile) return { id: uid, title: uid }
 
     const pill = pillProps.value(profile)
+    if (!pill) {
+      const fallbackTitle = profile.display_name || profile.handle || uid
+      return {
+        id: uid,
+        title: fallbackTitle,
+        subtitle: profile.handle || undefined,
+        initials: fallbackTitle
+          .split(/\s+/g)
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((part) => part[0]?.toUpperCase())
+          .join(''),
+      }
+    }
     return {
       id: uid,
       avatar: pill.avatar ?? undefined,
@@ -103,7 +119,9 @@ export function useAppJoinRequests({
 
   const removeLocal = (uid: string) => {
     hidden.add(uid)
-    itemsRef.value = itemsRef.value.filter((item) => item.id !== uid)
+    itemsRef.value = itemsRef.value.filter(
+      (item: JoinRequestItem) => item.id !== uid
+    )
   }
 
   const approve = async (uid: string) => {

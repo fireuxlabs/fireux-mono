@@ -1,10 +1,15 @@
-import type { Job } from '#fireux-jobs-models/job.model'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
+import type { Job } from '../../../../../models/job.model'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 export function useJobUpdate() {
   const { updateDocument } = useFirestoreManager()
 
-  type JobUpdateInput = Partial<Pick<Job, 'title' | 'status'>>
+  type JobUpdateInput = Partial<
+    Pick<
+      Job,
+      'title' | 'status' | 'company_id' | 'place_id' | 'kitchen_id' | 'source'
+    >
+  >
 
   const updateJob = async (jobId: string, patch: JobUpdateInput) => {
     const id = String(jobId ?? '').trim()

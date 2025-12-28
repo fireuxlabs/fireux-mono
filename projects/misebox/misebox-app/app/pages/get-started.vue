@@ -21,7 +21,7 @@
             <UButton to="/contact" color="primary" size="lg">
               Book an onboarding call
             </UButton>
-            <UButton to="/demo" color="gray" variant="ghost" size="lg">
+            <UButton to="/demo" color="neutral" variant="ghost" size="lg">
               Explore the product tour
             </UButton>
           </div>

@@ -1,5 +1,5 @@
 import { useBlogDraftState } from './useBlogDraftState'
-import { useBlog } from '../../../objects/Blog/useBlog'
+import { useBlog } from '../../../objects/blog/useBlog'
 
 export function useBlogCreateSubmit() {
   const { getBlogPostPayload } = useBlogDraftState()

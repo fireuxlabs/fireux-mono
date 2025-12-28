@@ -28,10 +28,11 @@
 import { computed } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 import type { App } from '../../../../models/core/app.model'
+import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy'
 
 const props = defineProps<{
-  app?: Partial<App> | null
+  app?: AppCard.Card | Partial<App> | null
   to?: RouteLocationRaw | null
 }>()
 

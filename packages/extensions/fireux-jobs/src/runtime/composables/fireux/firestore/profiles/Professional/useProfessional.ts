@@ -8,12 +8,12 @@ import {
   type ProfessionalProfile,
   type ProfessionalCoreProfile,
 } from '../../../../../models/profiles/Professional/Professional.model.ts'
-import type { ProfessionalCard } from './main/useProfessionalInterface.ts'
+import type { ProfessionalCard } from './main/useProfessionalInterface'
 
-import { useProfessionalComputed } from './main/useProfessionalComputed.ts'
-import { useProfessionalInterface } from './main/useProfessionalInterface.ts'
-import { useProfessionalUpdate } from './main/useProfessionalUpdate.ts'
-import { useProfessionalCreate } from './main/useProfessionalCreate.ts'
+import { useProfessionalComputed } from './main/useProfessionalComputed'
+import { useProfessionalInterface } from './main/useProfessionalInterface'
+import { useProfessionalUpdate } from './main/useProfessionalUpdate'
+import { useProfessionalCreate } from './main/useProfessionalCreate'
 
 export type { ProfessionalProfile, ProfessionalCoreProfile, ProfessionalCard }
 

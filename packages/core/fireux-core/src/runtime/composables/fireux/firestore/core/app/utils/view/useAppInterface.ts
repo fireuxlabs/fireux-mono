@@ -27,6 +27,10 @@ export namespace AppCard {
     adminCount?: number
     updated_at?: App['updated_at']
   }
+
+  export type Pill = Card
+  export type Cell = Card
+  export type Profile = Card
 }
 
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {

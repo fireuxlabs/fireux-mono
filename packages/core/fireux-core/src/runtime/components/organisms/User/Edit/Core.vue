@@ -147,9 +147,10 @@ const handleToggleAdmin = async (nextValue: boolean) => {
 }
 
 const user = computed(() => props.user)
-const avatarInitials = computed(
-  () => pillProps(user.value ?? null).initials ?? 'A'
-)
+const avatarInitials = computed(() => {
+  const pill = pillProps(user.value ?? null)
+  return pill?.initials ?? 'A'
+})
 
 const { DisplayName, Handle, Email, Bio } = useUserFormattingAndValidation()
 

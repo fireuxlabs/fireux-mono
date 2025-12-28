@@ -7,7 +7,7 @@ import {
   agentConfig,
   type Agent,
   type AgentProfile,
-} from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
+} from '../../../../../models/profiles/Agent/Agent.model'
 import { useAgentComputed } from './main/useAgentComputed'
 import { useAgentInterface } from './main/useAgentInterface'
 import type { AgentCard } from './main/useAgentInterface'

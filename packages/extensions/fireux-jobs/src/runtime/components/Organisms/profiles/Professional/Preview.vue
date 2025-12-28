@@ -42,8 +42,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
-import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
 const { pill, cell } = useProfessional()
 const { hasProfile } = useUser()
@@ -59,7 +59,7 @@ const toggleView = () => {
   showCellView.value = !showCellView.value
 }
 
-watch(canToggle, (enabled) => {
+watch(canToggle, (enabled: boolean) => {
   if (!enabled) showCellView.value = false
 })
 </script>

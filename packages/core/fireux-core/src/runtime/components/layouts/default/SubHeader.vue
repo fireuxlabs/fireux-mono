@@ -6,13 +6,7 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-  iconTitle: {
-    type: Object,
-    required: true,
-    validator: (val) => typeof val.label === 'string' && typeof val.icon === 'string'
-  }
-})
+defineProps<{ iconTitle: { label: string; icon: string } }>()
 </script>
 
 <style scoped>

@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { useIngredient } from '../../composables/firestore/objects/ingredients/useIngredient'
+import { useIngredient } from '../../composables/fireux/firestore/objects/ingredient/useIngredient'
 
 const route = useRoute()
 const ingredientId = route.params.id as string

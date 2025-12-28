@@ -140,7 +140,8 @@ const deleteValue = async () => {
     localValue.value = ''
     errorMessage.value = ''
   } catch (error) {
-    errorMessage.value = error.message || 'Error deleting value'
+    errorMessage.value =
+      error instanceof Error ? error.message : 'Error deleting value'
   }
 }
 
@@ -167,7 +168,8 @@ const saveChanges = async () => {
     isEditing.value = false
     errorMessage.value = ''
   } catch (error) {
-    errorMessage.value = error.message || 'Error saving changes'
+    errorMessage.value =
+      error instanceof Error ? error.message : 'Error saving changes'
   }
 }
 </script>

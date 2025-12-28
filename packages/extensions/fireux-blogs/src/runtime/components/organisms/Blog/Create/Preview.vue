@@ -11,13 +11,13 @@
     >
       <template #default>
         <div class="author-pill">
-          <div class="avatar" v-if="author.value.avatar">
-            <img :src="author.value.avatar" alt="Author avatar" />
+          <div class="avatar" v-if="author.avatar">
+            <img :src="author.avatar" alt="Author avatar" />
           </div>
           <div class="author-meta">
-            <div class="author-name">{{ author.value.name }}</div>
-            <div class="author-handle" v-if="author.value.handle">
-              {{ '@' + author.value.handle }}
+            <div class="author-name">{{ author.name }}</div>
+            <div class="author-handle" v-if="author.handle">
+              {{ '@' + author.handle }}
             </div>
           </div>
           <span class="author-role">Author</span>
@@ -88,15 +88,20 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import DOMPurify from 'dompurify'
-import { useBlogDraftState } from '../../../../composables/fireux/blog/useBlogDraftState'
+import { useBlogDraftState } from '../../../../composables/fireux/firestore/blogs/post/state/useBlogDraftState'
 
 // Use the centralized state management
 const { blogPost, featuredImageData, socialImageData } = useBlogDraftState()
 
 // Avoid hydration drift by using a stable date label
-const createdAtLabel = computed(
-  () => blogPost.value.createdAt || blogPost.value.updatedAt || 'Draft'
-)
+const createdAtLabel = computed(() => {
+  const timestamps = blogPost.value as unknown as Partial<{
+    created_at: string
+    updated_at: string
+  }>
+
+  return timestamps.created_at || timestamps.updated_at || 'Draft'
+})
 
 // Sanitize the HTML before injecting (client-only to prevent SSR mismatch)
 const isClient = ref(false)

@@ -70,14 +70,14 @@
 
 <script setup lang="ts">
 import { watch } from 'vue'
-import { useCreateProductState } from '../../../../composables/fireux/firestore/products/product/state/useCreateProductState'
+import { useCreateProductState } from '../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
 
 const { product } = await useCreateProductState()
 
 // Automatically handle stock tracking based on product type
 watch(
   () => product.value.product_type,
-  (newType) => {
+  (newType: typeof product.value.product_type) => {
     if (newType === 'physical') {
       // Physical products always track stock
       product.value.track_stock = true
@@ -97,7 +97,7 @@ watch(
 // When track_stock is disabled, reset stock to null
 watch(
   () => product.value.track_stock,
-  (tracking) => {
+  (tracking: boolean | undefined) => {
     if (!tracking && product.value.product_type !== 'physical') {
       product.value.stock = null
     }

@@ -11,9 +11,9 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useBlog } from '../../composables/fireux/firestore/objects/Blog/useBlog'
-import { useBlogPermissions } from '#fireux-blogs/composables/useBlogPermissions'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useBlog } from '../../composables/fireux/firestore/objects/blog/useBlog'
+import { useBlogPermissions } from '../../composables/useBlogPermissions'
 
 const { appName } = useFireUXConfig()
 

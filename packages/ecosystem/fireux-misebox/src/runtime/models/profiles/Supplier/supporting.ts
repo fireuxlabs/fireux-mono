@@ -5,7 +5,7 @@
  * and gives dashboard surfaces a single config import path.
  */
 
-import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model'
 
 export const supplierConfig: ProfileConfig = {
   id: 'supplier',

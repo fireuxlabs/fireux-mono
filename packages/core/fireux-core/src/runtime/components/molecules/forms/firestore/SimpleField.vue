@@ -155,7 +155,7 @@ const inputType = computed(() => {
 
 watch(
   () => props.firebaseValue,
-  (next) => {
+  (next: typeof props.firebaseValue) => {
     if (!isEditing.value) {
       draft.value = toStringValue(next)
     }

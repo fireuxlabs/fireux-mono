@@ -33,6 +33,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
+type SelectOption = string | { label: string; value: string }
+
 // Props
 const props = defineProps({
   label: {
@@ -44,16 +46,8 @@ const props = defineProps({
     default: '',
   },
   options: {
-    type: Array,
+    type: Array as any,
     required: true,
-    validator: (value) => {
-      // Options can be strings or objects with label/value
-      return value.every(
-        (option) =>
-          typeof option === 'string' ||
-          (typeof option === 'object' && option.label && option.value)
-      )
-    },
   },
   updateFunction: {
     type: Function,
@@ -85,7 +79,7 @@ const displayValue = computed(() => {
   }
 
   // Find the display label for the current value
-  const option = props.options.find((opt) => {
+  const option = (props.options as SelectOption[]).find((opt) => {
     if (typeof opt === 'string') {
       return opt === props.firebaseValue
     }
@@ -102,7 +96,7 @@ const displayValue = computed(() => {
 // Watch for prop changes
 watch(
   () => props.firebaseValue,
-  (newValue) => {
+  (newValue: string) => {
     if (!isEditing.value) {
       localValue.value = newValue || ''
     }

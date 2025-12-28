@@ -44,7 +44,7 @@ const routeFor = (id?: string | null): string | undefined =>
  */
 export function useChefInterface(
   profile: ProfileRefs<ChefProfile>,
-  user: Ref<User | null>
+  user: Ref<User | null | undefined>
 ) {
   const resolveProfile = (target?: ChefProfile | null) =>
     target ?? profile.coreProfile.value ?? null

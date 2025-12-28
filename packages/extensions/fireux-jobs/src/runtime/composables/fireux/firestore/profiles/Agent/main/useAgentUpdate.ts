@@ -2,7 +2,7 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { AgentProfile } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
+import type { AgentProfile } from '../../../../../../models/profiles/Agent/Agent.model'
 
 /**
  * useAgentUpdate
@@ -18,9 +18,6 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
   const { updateDocument } = useFirestoreUpdate()
   const { appId, role } = useFireUXConfig()
   const isTenant = role === 'tenant' && Boolean(appId)
-
-  const coreProfile = () => profile?.coreProfile?.value ?? null
-  const appProfile = () => profile?.appProfile?.value ?? null
 
   const resolveUid = async (): Promise<string> => {
     const fromRefs =

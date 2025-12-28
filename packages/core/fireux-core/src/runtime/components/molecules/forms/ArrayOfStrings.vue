@@ -74,7 +74,7 @@ const formattedValue = computed(() => localValue.value.join(' | '))
 
 watch(
   () => props.modelValue,
-  (v) => {
+  (v: string[]) => {
     localValue.value = [...v]
   },
   { immediate: true }
@@ -116,8 +116,8 @@ function addItem() {
   newItem.value = ''
 }
 
-function removeItem(index: number) {
-  localValue.value.splice(index, 1)
+function removeItem(index: number | string) {
+  localValue.value.splice(Number(index), 1)
 }
 </script>
 

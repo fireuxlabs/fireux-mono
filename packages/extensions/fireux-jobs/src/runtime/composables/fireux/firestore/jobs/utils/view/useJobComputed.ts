@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { Job } from '#fireux-jobs-models/job.model'
+import type { Job } from '../../../../../../models/job.model'
 
 export function useJobComputed(job: Ref<Job | null>, pending: Ref<boolean>) {
   const status = computed(() => job.value?.status ?? 'open')

@@ -52,7 +52,7 @@ const toggleView = () => {
   showCellView.value = !showCellView.value
 }
 
-watch(canToggle, (enabled) => {
+watch(canToggle, (enabled: boolean) => {
   if (!enabled) showCellView.value = false
 })
 </script>

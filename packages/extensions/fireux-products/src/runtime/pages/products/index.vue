@@ -12,8 +12,8 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useProducts } from '../../composables/fireux/firestore/objects/Product/useProducts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useProducts } from '../../composables/fireux/firestore/objects/product/useProducts'
 import { useProductPermissions } from '../../composables/useProductPermissions'
 
 const { appName } = useFireUXConfig()

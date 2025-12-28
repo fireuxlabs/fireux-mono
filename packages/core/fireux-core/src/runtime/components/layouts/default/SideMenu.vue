@@ -18,17 +18,13 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-  menuState: {
-    type: String,
-    required: true,
-    validator: (value) => ['icons', 'full'].includes(value)
-  },
-  links: {
-    type: Array,
-    required: true
-  }
-})
+type MenuState = 'icons' | 'full'
+type SideMenuLink = { to: string; icon: string; label: string }
+
+defineProps<{
+  menuState: MenuState
+  links: SideMenuLink[]
+}>()
 </script>
 
 <style scoped>

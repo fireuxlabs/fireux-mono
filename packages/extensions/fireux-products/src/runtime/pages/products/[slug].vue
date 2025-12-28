@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { useRoute } from '#imports'
-import { useProducts } from '../../composables/fireux/firestore/objects/Product/useProducts'
+import { useProducts } from '../../composables/fireux/firestore/objects/product/useProducts'
 
 const route = useRoute()
 const { fetchProductBySlug, fetchProductPrices } = await useProducts()

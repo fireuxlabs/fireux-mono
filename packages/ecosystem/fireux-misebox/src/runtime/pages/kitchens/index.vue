@@ -121,7 +121,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useHead } from '#imports'
-import { useKitchens } from '../../composables/fireux/firestore/objects/Kitchen/useKitchens'
+import { useKitchens } from '../../composables/fireux/firestore/objects/kitchen/useKitchens'
 import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp.ts'
 
 const { kitchens, isLoaded } = useKitchens()

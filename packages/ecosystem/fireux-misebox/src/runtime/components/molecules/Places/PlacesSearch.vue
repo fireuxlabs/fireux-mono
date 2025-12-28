@@ -72,12 +72,12 @@ const emit = defineEmits<{
 const searchQuery = ref('')
 const debouncedSearchQuery = ref('')
 const isSearching = ref(false)
-const googleResults = ref([])
-const firestoreResults = ref([])
+const googleResults = ref<any[]>([])
+const firestoreResults = ref<any[]>([])
 
 // Debounce search query
-let debounceTimeout: NodeJS.Timeout
-watch(searchQuery, (newQuery) => {
+let debounceTimeout: ReturnType<typeof setTimeout>
+watch(searchQuery, (newQuery: string) => {
   clearTimeout(debounceTimeout)
   debounceTimeout = setTimeout(() => {
     debouncedSearchQuery.value = newQuery

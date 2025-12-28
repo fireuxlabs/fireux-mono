@@ -59,16 +59,19 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
   if (!list.length) return []
 
   return list
-    .filter((entry: any) => Boolean(entry?.id))
+    .filter((entry: unknown): entry is User => Boolean((entry as User | undefined)?.id))
     .map((entry: User) => {
       const role = inferRole(entry)
       const enriched = role ? ({ ...entry, role } as User) : entry
+      const pill = pillProps(enriched)
+      if (!pill) return null
       return {
         key: entry.id,
-        pill: pillProps(enriched),
+        pill,
         raw: enriched,
       }
     })
+    .filter((entry): entry is DirectoryEntry => Boolean(entry))
 })
 
 const totalUsers = computed(() => globalUsers.value?.length ?? 0)

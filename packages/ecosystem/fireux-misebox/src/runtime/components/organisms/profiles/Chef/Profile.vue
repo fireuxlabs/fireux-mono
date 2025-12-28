@@ -1,7 +1,7 @@
 <template>
   <UCard class="profile">
     <div class="profile-header">
-      <UAvatar :src="chef?.avatar" :alt="displayName" size="xl" />
+      <UAvatar :src="chef?.avatar ?? undefined" :alt="displayName" size="xl" />
       <div class="meta">
         <div class="name">{{ displayName }}</div>
         <div v-if="tagline" class="subtitle">
@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
+import type { ChefCard } from '../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface'
 
 const props = defineProps<{ chef: ChefCard.Profile }>()
 

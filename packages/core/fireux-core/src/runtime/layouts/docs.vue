@@ -69,10 +69,10 @@ defineOptions({ name: 'docs' })
 
 const { data: navigationRaw } = await useAsyncData(
   'fireux-docs-navigation',
-  () => queryCollectionNavigation('fireuxDocs')
+  () => queryCollectionNavigation('fireuxDocs' as never)
 )
 
-function withDocsBase(items: any[] = []) {
+function withDocsBase(items: any[] = []): any[] {
   return items.map((item) => {
     const path = item._path || item.path || '/'
     const prefixed = path === '/' ? '/docs' : `/docs${path}`

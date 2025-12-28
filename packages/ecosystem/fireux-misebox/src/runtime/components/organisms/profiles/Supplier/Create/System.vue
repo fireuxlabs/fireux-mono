@@ -217,16 +217,16 @@ const updateSpecialties = () => {
   if (specialtiesInput.value.trim()) {
     const newSpecialties = specialtiesInput.value
       .split(',')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0)
-      .filter((s) => !formData.value.specialties.includes(s))
+      .map((s: string) => s.trim())
+      .filter((s: string) => s.length > 0)
+      .filter((s: string) => !formData.value.specialties.includes(s))
 
     formData.value.specialties.push(...newSpecialties)
     specialtiesInput.value = ''
   }
 }
 
-const removeSpecialty = (specialty) => {
+const removeSpecialty = (specialty: string) => {
   const index = formData.value.specialties.indexOf(specialty)
   if (index > -1) {
     formData.value.specialties.splice(index, 1)
@@ -294,9 +294,10 @@ const handleSubmit = async () => {
 
     emit('success')
     emit('submit', submitData)
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('Error creating supplier profile:', err)
-    error.value = err.message || 'Failed to create profile. Please try again.'
+    const message = err instanceof Error ? err.message : null
+    error.value = message || 'Failed to create profile. Please try again.'
   } finally {
     isSubmitting.value = false
   }

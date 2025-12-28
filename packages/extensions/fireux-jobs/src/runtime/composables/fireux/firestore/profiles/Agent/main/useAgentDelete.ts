@@ -3,7 +3,7 @@ import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { AgentProfile } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
+import type { AgentProfile } from '../../../../../../models/profiles/Agent/Agent.model'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 

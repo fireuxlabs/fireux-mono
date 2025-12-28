@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@nuxt/icon": "2.x",
+    "@nuxt/content": "^3.6.3",
     "@nuxt/ui": "^4.0.0-alpha.2",
     "firebase-functions": "^6.3.2",
     "fireux-core": "workspace:*",

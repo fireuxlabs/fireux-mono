@@ -21,7 +21,7 @@
       <UAlert
         v-if="errorMessage"
         class="mt-2"
-        color="amber"
+        color="warning"
         variant="subtle"
         :title="errorTitle"
         :description="errorMessage"
@@ -39,6 +39,8 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { ref, computed, reactive } from 'vue'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 
 const router = useRouter()
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()

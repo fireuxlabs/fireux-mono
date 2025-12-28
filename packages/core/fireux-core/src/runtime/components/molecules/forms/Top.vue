@@ -36,7 +36,7 @@
           <UTooltip text="Cancel" :popper="{ placement: 'top' }">
             <UButton
               aria-label="Cancel"
-              color="gray"
+              color="neutral"
               variant="ghost"
               size="xs"
               :icon="'i-lucide-undo-2'"

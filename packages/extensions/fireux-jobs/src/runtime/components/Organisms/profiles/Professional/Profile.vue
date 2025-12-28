@@ -393,7 +393,7 @@ const view = computed(() => {
       : [],
     bio: sanitizeString(model.bio_long) ?? sanitizeString(model.bio_short),
     avatar:
-      sanitizeString(model.avatar_url) ?? sanitizeString(model.avatar) ?? null,
+      sanitizeString(model.avatar_url) ?? sanitizeString(model.avatar) ?? undefined,
     location,
     verified: model.verified === true,
     languages,
