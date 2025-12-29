@@ -1,5 +1,12 @@
 <template>
-  <UCard class="fx-section">
+  <slot
+    v-if="hasDefaultSlot"
+    :directory-entries="directoryEntries"
+    :collection-title="collectionTitle"
+    :global-badge-label="globalBadgeLabel"
+  />
+
+  <UCard v-else class="fx-section">
     <template #header>
       <div class="fx-section__header">
         <div class="fx-section__copy">
@@ -9,32 +16,48 @@
             runtime.
           </p>
         </div>
-        <UBadge variant="soft">{{ globalBadgeLabel }}</UBadge>
+
+        <div class="flex items-center gap-2">
+          <UButton
+            v-if="isTenant"
+            size="xs"
+            variant="ghost"
+            @click="showGlobalDirectory = !showGlobalDirectory"
+          >
+            {{ showGlobalDirectory ? 'Hide global directory' : 'View global directory' }}
+          </UButton>
+          <UBadge variant="soft">{{ globalBadgeLabel }}</UBadge>
+        </div>
       </div>
     </template>
 
-    <div v-if="directoryEntries.length" class="fx-section__grid">
-      <div v-for="entry in directoryEntries" :key="entry.key" class="space-y-2">
-        <OrganismsUserCardsPill :user="entry.pill" />
+    <template v-if="!isTenant || showGlobalDirectory">
+      <div v-if="directoryEntries.length" class="fx-section__grid">
+        <article v-for="entry in directoryEntries" :key="entry.key">
+          <OrganismsUserCardsPill :user="entry.pill" />
+        </article>
       </div>
-    </div>
 
-    <p v-else class="fx-section__empty">No users found.</p>
+      <p v-else class="fx-section__empty">No users found.</p>
+    </template>
+
+    <p v-else class="fx-section__empty">Global directory hidden.</p>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useFirestoreRead } from '../../../composables/fireux/firestore/operations/useFirestoreRead'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import type {
-  User,
-  UserCard,
-} from '../../../models/core/user.model'
+import { computed, ref, useSlots } from 'vue'
+import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
+import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import type { User, UserCard } from '../../../../models/core/user.model'
+
+const slots = useSlots()
+const hasDefaultSlot = computed(() => Boolean(slots.default))
 
 const { firestoreFetchCollection } = useFirestoreRead()
 const { appName, appId, isTenant } = useFireUXConfig()
+const showGlobalDirectory = ref(!isTenant)
 const globalUsers = firestoreFetchCollection<User>('users')
 const { pillProps } = useUserInterface(undefined, { runtime: 'global' })
 

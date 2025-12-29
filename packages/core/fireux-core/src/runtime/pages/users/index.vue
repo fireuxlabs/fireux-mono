@@ -7,34 +7,14 @@
     />
 
     <UPageBody class="pagebody">
-      <OrganismsUserPreview :user="currentUser" />
-
-      <section v-if="isTenant" class="space-y-2">
-        <div class="flex items-center justify-end">
-          <UButton
-            variant="ghost"
-            @click="showGlobalDirectory = !showGlobalDirectory"
-          >
-            {{
-              showGlobalDirectory
-                ? 'Hide global directory'
-                : 'View global directory'
-            }}
-          </UButton>
-        </div>
-        <OrganismsUserCollection v-if="showGlobalDirectory" />
-      </section>
-
-      <OrganismsUserCollection v-else />
+      <OrganismsUserCTA />
+      <OrganismsUserCollectionManager />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useHead } from '#imports'
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 
 definePageMeta({
   nav: {
@@ -51,10 +31,6 @@ definePageMeta({
   layout: 'default',
   name: 'UsersIndexPage',
 })
-
-const { user: currentUser } = useUser()
-const { isTenant } = useFireUXConfig()
-const showGlobalDirectory = ref(!isTenant)
 
 useHead({ title: 'Users' })
 </script>

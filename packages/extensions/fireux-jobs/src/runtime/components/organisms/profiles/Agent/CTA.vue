@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="shouldRender">
     <UPageCTA
       title="Create your agent profile"
       description="Add an agent profile to your FireUX portfolio so talent knows who is hiring."
@@ -23,10 +23,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useAgentCreate } from '../../../../composables/fireux/firestore/profiles/Agent/main/useAgentCreate.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 
 const { createAgent } = useAgentCreate()
+const { hasProfile } = useUser()
+
+const shouldRender = computed(() => !hasProfile('agent'))
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)

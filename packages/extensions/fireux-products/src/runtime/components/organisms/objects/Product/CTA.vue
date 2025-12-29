@@ -23,8 +23,6 @@
 import { computed } from 'vue'
 import { useProductPermissions } from '../../../../composables/useProductPermissions'
 
-const { canPublishProduct, pending } = useProductPermissions()
-const showCTA = computed(() =>
-  pending?.value ? false : canPublishProduct.value || import.meta.dev
-)
+const { canPublishProduct } = useProductPermissions()
+const showCTA = computed(() => canPublishProduct.value)
 </script>

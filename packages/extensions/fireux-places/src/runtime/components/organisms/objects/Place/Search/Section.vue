@@ -1,6 +1,6 @@
 <template>
   <section class="space-y-4">
-    <UCard class="shadow-sm" :ui="{ body: 'space-y-4' }">
+    <UCard :ui="{ body: 'space-y-4' }">
       <!-- Search input -->
       <OrganismsObjectsPlaceSearchBar v-model="query" />
 
@@ -21,8 +21,8 @@
       />
 
       <!-- Status messages -->
-      <p v-if="isSearching" class="text-xs text-gray-500">Searching…</p>
-      <p v-else-if="showEmpty" class="text-xs text-gray-500">
+      <p v-if="isSearching" class="text-xs text-muted">Searching…</p>
+      <p v-else-if="showEmpty" class="text-xs text-muted">
         No results yet—try another name.
       </p>
     </UCard>
@@ -40,6 +40,14 @@ import { usePlaceSave } from '../../../../../composables/fireux/firestore/object
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import type { BasePlace, Place } from '../../../../../models/objects/place.model'
 
+interface Props {
+  type?: string | null
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  type: null,
+})
+
 const emit = defineEmits<{
   (e: 'confirmed', payload: { placeId: string; place: Place }): void
 }>()
@@ -47,7 +55,7 @@ const emit = defineEmits<{
 const { query, results, selected, isSearching, select, clear } =
   usePlacesSearch()
 
-const { ensurePlaceExists } = usePlaceSave()
+const { ensurePlaceExists } = usePlaceSave({ type: props.type })
 // useImageStorage is auto-imported by fireux-core module
 const { uploadFromUrl } = useImageStorage()
 

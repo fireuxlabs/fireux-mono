@@ -3,8 +3,8 @@
   <UPage>
     <UPageHeader title="Blog" description="Latest articles." />
     <UPageBody class="pagebody">
-      <OrganismsObjectsBlogCTA v-if="canPublishBlog" />
-      <OrganismsObjectsBlogList :posts="posts ?? []" />
+      <OrganismsObjectsBlogCTA />
+      <OrganismsObjectsBlogCollectionView />
     </UPageBody>
   </UPage>
 </template>
@@ -12,8 +12,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useBlog } from '../../composables/fireux/firestore/objects/blog/useBlog'
-import { useBlogPermissions } from '../../composables/useBlogPermissions'
 
 const { appName } = useFireUXConfig()
 
@@ -34,7 +32,4 @@ definePageMeta({
 })
 
 useHead({ title: `${appName} | Blog` })
-
-const { items: posts } = useBlog()
-const { canPublishBlog } = useBlogPermissions()
 </script>

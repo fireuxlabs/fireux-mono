@@ -3,9 +3,8 @@
   <UPage>
     <UPageHeader title="Jobs" description="Browse jobs." />
     <UPageBody class="pagebody">
-      <OrganismsObjectsJobCTA v-if="coreProfile" />
-      <OrganismsObjectsJobSectionsAgentCollection v-if="coreProfile" />
-      <OrganismsObjectsJobSectionsGlobalCollection />
+      <OrganismsObjectsJobCTA />
+      <OrganismsObjectsJobCollectionView />
     </UPageBody>
   </UPage>
 </template>
@@ -13,7 +12,6 @@
 <script setup lang="ts">
 import { useHead } from 'nuxt/app'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const { appName } = useFireUXConfig()
 
@@ -35,6 +33,5 @@ definePageMeta({
 })
 
 useHead({ title: `${appName} | Jobs` })
-
-const { coreProfile } = useAgent()
 </script>
+

@@ -70,8 +70,8 @@
       </ClientOnly>
     </div>
 
-    <OrganismsObjectsBlogCreateAdvanced />
-    <OrganismsObjectsBlogCreateImages />
+    <OrganismsObjectsBlogCreateUtilsAdvanced />
+    <OrganismsObjectsBlogCreateUtilsImages />
   </div>
 </template>
 

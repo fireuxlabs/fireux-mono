@@ -1,11 +1,11 @@
 <template>
   <UCard
     v-if="visibleCells.length"
-    class="shadow-sm w-full max-w-md"
+    class="w-full"
     :ui="{ body: 'p-0' }"
   >
     <template #header>
-      <div class="flex items-center gap-2 text-sm font-medium text-gray-700">
+      <div class="flex items-center gap-2 text-sm font-medium">
         <UIcon name="i-lucide-list-tree" />
         <span>Suggestions</span>
         <UBadge color="primary" variant="soft" size="xs">{{
@@ -14,24 +14,24 @@
       </div>
     </template>
 
-    <ul class="divide-y divide-gray-100 dark:divide-gray-800">
-      <li v-for="cell in visibleCells" :key="cell.place_id">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          class="w-full justify-start px-4 py-3"
-          @click="emit('select', cell)"
-        >
-          <OrganismsObjectsPlaceCell :place="cell" />
-        </UButton>
-      </li>
-    </ul>
+    <div class="space-y-1 p-2">
+      <UButton
+        v-for="cell in visibleCells"
+        :key="cell.place_id"
+        color="neutral"
+        variant="ghost"
+        class="w-full justify-start"
+        @click="emit('select', cell)"
+      >
+        <OrganismsObjectsPlaceCell :place="cell" />
+      </UButton>
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed, toRefs } from 'vue'
-import type { PlaceCard } from '../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
 const SHORTLIST_LIMIT = 4
 

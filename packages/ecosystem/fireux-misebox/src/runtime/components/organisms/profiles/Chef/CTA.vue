@@ -1,32 +1,21 @@
 <!-- packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Chef/CTA.vue -->
 <template>
-  <div>
+  <div v-if="shouldRender">
     <UPageCTA
       title="Create your chef profile"
       description="Showcase your culinary strengths so kitchens can match you to the right stations and menus."
       variant="naked"
     >
       <template #links>
-        <div class="cta-links">
-          <UButton
-            color="primary"
-            size="lg"
-            :loading="isCreating"
-            :disabled="isCreating"
-            @click="handleCreate"
-          >
-            {{ isCreating ? 'Creating...' : 'Create chef profile' }}
-          </UButton>
-
-          <UButton
-            color="neutral"
-            variant="subtle"
-            trailing-icon="i-lucide-arrow-right"
-            to="/chefs/learn-more"
-          >
-            Learn more
-          </UButton>
-        </div>
+        <UButton
+          color="primary"
+          size="lg"
+          :loading="isCreating"
+          :disabled="isCreating"
+          @click="handleCreate"
+        >
+          {{ isCreating ? 'Creating...' : 'Create chef profile' }}
+        </UButton>
       </template>
     </UPageCTA>
 
@@ -35,8 +24,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useChefCreate } from '../../../../composables/fireux/firestore/profiles/Chef/main/useChefCreate.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 
 const props = defineProps<{
   create?: () => Promise<unknown>
@@ -48,6 +38,9 @@ const emit = defineEmits<{
 }>()
 
 const { createChef: defaultCreateChef } = useChefCreate()
+const { hasProfile } = useUser()
+
+const shouldRender = computed(() => !hasProfile('chef'))
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
@@ -71,9 +64,7 @@ const handleCreate = async () => {
     createError.value = message
     emit('error', error)
   } finally {
-    if (createError.value) {
-      isCreating.value = false
-    }
+    isCreating.value = false
   }
 }
 </script>
@@ -85,10 +76,4 @@ const handleCreate = async () => {
   color: #dc2626;
 }
 
-.cta-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-}
 </style>

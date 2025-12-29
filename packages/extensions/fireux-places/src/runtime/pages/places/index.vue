@@ -1,25 +1,21 @@
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader title="Places" description="System Places" />
     <UPageBody class="pagebody">
-      <ul v-if="places.length" class="space-y-2">
-        <li v-for="(place, index) in places" :key="placeKey(place, index)">
-          <p class="text-sm font-medium">
-            {{ placeLabel(place, index) }}
-          </p>
-        </li>
-      </ul>
+      <OrganismsObjectsPlaceSearchSection
+        :type="null"
+        @confirmed="onPlaceCreated"
+      />
 
-      <p v-else class="text-sm text-slate-500">No places found.</p>
+      <OrganismsObjectsPlaceCollectionView :keyword="keyword" :title="pageTitle" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useHead, useRoute } from '#imports'
+import { useHead, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
 
 definePageMeta({
   layout: 'default',
@@ -41,6 +37,7 @@ const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | Places` })
 
 const route = useRoute()
+const router = useRouter()
 
 const keyword = computed<string | null>(() => {
   const raw = route.query.word
@@ -48,38 +45,14 @@ const keyword = computed<string | null>(() => {
   return value ? value : null
 })
 
-const { collection } = usePlaces<Record<string, any>>({ keyword })
-
-const places = computed(() => collection.value ?? [])
-
 const pageTitle = computed(() => {
   if (!keyword.value) return 'Places'
   return `Places: ${keyword.value}`
 })
 
-const pageDescription = computed(() => {
-  if (!keyword.value) return 'Saved places.'
-  return `Saved places for “${keyword.value}”.`
-})
-
-function placeKey(place: Record<string, any>, index: number) {
-  return (
-    place?.id ??
-    place?.place_id ??
-    place?.google_place_id ??
-    place?.slug ??
-    index
-  )
-}
-
-function placeLabel(place: Record<string, any>, index: number) {
-  return (
-    place?.name ??
-    place?.title ??
-    place?.label ??
-    place?.place_id ??
-    place?.id ??
-    `Place ${index + 1}`
-  )
+async function onPlaceCreated() {
+  // Nudge the route so the list refreshes immediately in dev.
+  await router.replace({ query: { ...route.query } })
 }
 </script>
+

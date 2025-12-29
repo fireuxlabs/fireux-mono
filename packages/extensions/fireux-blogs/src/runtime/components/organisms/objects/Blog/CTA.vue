@@ -21,10 +21,8 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 const { canPublishBlog } = useBlogPermissions()
 const { appName } = useFireUXConfig()
 
-// Allow admins or users explicitly permitted to publish, and always show in dev to unblock iteration.
-const showCTA = computed(() => canPublishBlog.value || import.meta.dev)
+const showCTA = computed(() => canPublishBlog.value)
 const ctaDescription = computed(
   () => `Share updates, releases, and stories for ${appName}.`
 )
 </script>
-please

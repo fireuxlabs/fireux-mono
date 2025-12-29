@@ -3,7 +3,7 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsUserPreview :user="currentUser" :compact="false" />
+      <OrganismsUserCardsProfile :user="userProfile" />
     </UPageBody>
   </UPage>
 </template>
@@ -13,6 +13,7 @@ import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useRoute } from 'vue-router'
 import { useUserFetch } from '../../composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const route = useRoute()
 
@@ -24,6 +25,9 @@ const userId = computed(() => {
 })
 
 const { user: currentUser } = useUserFetch(userId)
+
+const { profileProps } = useUserInterface(currentUser)
+const userProfile = computed(() => profileProps())
 
 const displayName = computed(() => currentUser.value?.display_name ?? null)
 const pageTitle = computed(() => displayName.value ?? 'User Details')

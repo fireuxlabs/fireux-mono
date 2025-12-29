@@ -3,8 +3,7 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsAppPreview :compact="false" />
-      <OrganismsAppCollection />
+      <OrganismsAppCardsProfile :app="appProfile" />
     </UPageBody>
   </UPage>
 </template>
@@ -14,6 +13,7 @@ import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useRoute } from 'vue-router'
 import { useAppFetch } from '../../composables/fireux/firestore/core/app/fetch/useAppFetch'
+import { useAppInterface } from '../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
 const route = useRoute()
 
@@ -25,6 +25,12 @@ const appId = computed(() => {
 })
 
 const { app: currentApp } = useAppFetch(appId)
+
+const { profileProps } = useAppInterface()
+
+const appProfile = computed(() =>
+  currentApp.value ? profileProps(currentApp.value) : null
+)
 
 const appName = computed(() => currentApp.value?.app_name ?? null)
 const pageTitle = computed(() => appName.value ?? 'App Details')

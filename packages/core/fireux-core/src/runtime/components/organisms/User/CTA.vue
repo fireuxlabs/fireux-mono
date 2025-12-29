@@ -1,22 +1,26 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/CTA.vue -->
 <template>
-  <div v-if="shouldRender" class="space-y-3">
-    <UPageCTA :title="title" :description="description" variant="naked">
-      <template #links>
-        <UButton
-          color="primary"
-          size="lg"
-          :to="linkTarget || undefined"
-          :loading="isEnsuring"
-          :disabled="isEnsuring || (!linkTarget && !canTriggerAction)"
-          @click="handleAction"
-        >
-          {{ buttonLabel }}
-        </UButton>
-      </template>
-    </UPageCTA>
+  <div class="space-y-6">
+    <OrganismsUserCardsPreview />
 
-    <p v-if="actionError" class="cta-error">{{ actionError }}</p>
+    <div v-if="shouldRender" class="space-y-3">
+      <UPageCTA :title="title" :description="description" variant="naked">
+        <template #links>
+          <UButton
+            color="primary"
+            size="lg"
+            :to="linkTarget || undefined"
+            :loading="isEnsuring"
+            :disabled="isEnsuring || (!linkTarget && !canTriggerAction)"
+            @click="handleAction"
+          >
+            {{ buttonLabel }}
+          </UButton>
+        </template>
+      </UPageCTA>
+
+      <p v-if="actionError" class="cta-error">{{ actionError }}</p>
+    </div>
   </div>
 </template>
 

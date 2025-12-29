@@ -6,8 +6,8 @@
       description="Inspect the current app and browse all apps available to this runtime."
     />
     <UPageBody class="pagebody">
-      <OrganismsAppPreview />
-      <OrganismsAppCollection />
+      <OrganismsAppCTA />
+      <OrganismsAppCollectionManager />
     </UPageBody>
   </UPage>
 </template>

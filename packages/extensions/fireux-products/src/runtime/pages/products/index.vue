@@ -4,8 +4,8 @@
   <UPage>
     <UPageHeader title="Products" description="Products catalog." />
     <UPageBody class="pagebody">
-      <OrganismsObjectsProductCTA v-if="showCTA" />
-      <OrganismsObjectsProductCardsList :products="products ?? []" />
+      <OrganismsObjectsProductCTA />
+      <OrganismsObjectsProductCollectionView />
     </UPageBody>
   </UPage>
 </template>
@@ -13,8 +13,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useProducts } from '../../composables/fireux/firestore/objects/product/useProducts'
-import { useProductPermissions } from '../../composables/useProductPermissions'
 
 const { appName } = useFireUXConfig()
 
@@ -35,7 +33,5 @@ definePageMeta({
 })
 
 useHead({ title: `${appName} | Products` })
-
-const { productsCollection: products } = await useProducts()
-const { canPublishProduct: showCTA } = useProductPermissions()
 </script>
+

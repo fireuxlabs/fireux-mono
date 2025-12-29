@@ -24,7 +24,7 @@
           <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
             <template #preview>
               <ClientOnly>
-                <OrganismsUserPreview />
+                <OrganismsUserCardsPreview :compact="false" />
               </ClientOnly>
             </template>
 

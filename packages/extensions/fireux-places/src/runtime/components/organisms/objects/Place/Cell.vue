@@ -9,7 +9,7 @@
       />
       <div
         v-if="showSpinner"
-        class="absolute inset-0 flex items-center justify-center rounded-full bg-white/70"
+        class="absolute inset-0 flex items-center justify-center rounded-full bg-black/10 dark:bg-white/10"
       >
         <UIcon
           name="i-lucide-loader-2"
@@ -19,10 +19,10 @@
     </div>
 
     <div class="min-w-0 flex-1 text-left">
-      <p class="truncate text-sm font-medium text-gray-900">
+      <p class="truncate text-sm font-medium">
         {{ place.name }}
       </p>
-      <p v-if="place.formatted_address" class="truncate text-xs text-gray-500">
+      <p v-if="place.formatted_address" class="truncate text-xs text-dimmed">
         {{ place.formatted_address }}
       </p>
     </div>

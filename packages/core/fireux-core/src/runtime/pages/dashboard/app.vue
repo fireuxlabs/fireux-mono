@@ -31,7 +31,7 @@
               class="grid gap-6 lg:grid-cols-2"
             >
               <template #preview>
-                <OrganismsAppPreview :app="appSnapshot" :compact="false" />
+                <OrganismsAppCardsPreview :app="appSnapshot" :compact="false" />
               </template>
 
               <template #core>
@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { definePageMeta } from '#imports'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
-import OrganismsAppPreview from '../../components/organisms/App/Preview.vue'
+import OrganismsAppCardsPreview from '../../components/organisms/App/Cards/Preview.vue'
 import OrganismsAppEditCore from '../../components/organisms/App/Edit/Core.vue'
 import OrganismsAppEditApp from '../../components/organisms/App/Edit/App.vue'
 

@@ -2,6 +2,10 @@
 
 This doc defines the **repo-wide canon** for FireUX “objects/entities” stored in Firestore.
 
+See also:
+
+- Entity organism (components) canon: `docs/architecture/canon.md`
+
 ## 1) Canon paths
 
 - **Model (shape-only):**

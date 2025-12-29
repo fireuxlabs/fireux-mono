@@ -324,6 +324,25 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
+  packages/extensions/fireux-kitchens:
+    dependencies:
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../core/fireux-core
+    devDependencies:
+      '@nuxt/module-builder':
+        specifier: ^0.5.5
+        version: 0.5.5(@nuxt/kit@4.1.2(magicast@0.3.5))(sass@1.96.0)(typescript@5.9.2)
+      glob:
+        specifier: ^11.0.3
+        version: 11.0.3
+      mkdist:
+        specifier: ^1.5.3
+        version: 1.6.0(sass@1.96.0)(typescript@5.9.2)
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
   packages/extensions/fireux-places:
     dependencies:
       fireux-core:
@@ -560,6 +579,9 @@ importers:
       fireux-jobs:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-jobs
+      fireux-kitchens:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-kitchens
       fireux-misebox:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-misebox

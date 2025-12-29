@@ -1,7 +1,7 @@
 <template>
   <div class="write-system">
     <!-- Basic Info -->
-    <OrganismsObjectsProductCreateBasic />
+    <OrganismsObjectsProductCreateUtilsBasic />
 
     <!-- Product Type -->
     <UFormField
@@ -75,10 +75,10 @@
     </UFormField>
 
     <!-- Pricing -->
-    <OrganismsObjectsProductCreatePrices />
+    <OrganismsObjectsProductCreateUtilsPrices />
 
     <!-- Stock & Capacity Management -->
-    <OrganismsObjectsProductCreateStock />
+    <OrganismsObjectsProductCreateUtilsStock />
 
     <!-- Shiping -->
     <!-- <OrganismsObjectsProductCreateShipping /> -->

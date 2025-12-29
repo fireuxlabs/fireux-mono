@@ -31,6 +31,8 @@
     "clean": "node scripts/clean.mjs",
     "clean:deep": "node scripts/clean.mjs --deep",
     "gitsave": "bash scripts/gitsave.sh"
+    ,
+    "gen:cta-trees": "node scripts/generate-cta-parent-trees.mjs"
   },
   "engines": {
     "node": ">=20.11 <23",

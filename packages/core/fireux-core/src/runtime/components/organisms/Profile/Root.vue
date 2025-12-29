@@ -5,7 +5,7 @@
 
     <div v-if="shouldShowCta">
       <UPageSection>
-        <UPageCTA :title="cta" variant="soft">
+        <UPageCTA :title="cta" variant="naked">
           <template #links>
             <slot name="cta">
               <UButton

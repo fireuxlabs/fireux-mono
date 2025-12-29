@@ -1,31 +1,20 @@
 <template>
-  <div>
+  <div v-if="shouldRender">
     <UPageCTA
       title="Create your supplier profile"
       description="Introduce your products to chefs and venues across the FireUX network."
       variant="naked"
     >
       <template #links>
-        <div class="cta-links">
-          <UButton
-            color="primary"
-            size="lg"
-            :loading="isCreating"
-            :disabled="isCreating"
-            @click="handleCreate"
-          >
-            {{ isCreating ? 'Creating...' : 'Create supplier profile' }}
-          </UButton>
-
-          <UButton
-            color="neutral"
-            variant="subtle"
-            trailing-icon="i-lucide-arrow-right"
-            to="/suppliers/learn-more"
-          >
-            Learn more
-          </UButton>
-        </div>
+        <UButton
+          color="primary"
+          size="lg"
+          :loading="isCreating"
+          :disabled="isCreating"
+          @click="handleCreate"
+        >
+          {{ isCreating ? 'Creating...' : 'Create supplier profile' }}
+        </UButton>
       </template>
     </UPageCTA>
 
@@ -34,8 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useSupplierCreate } from '../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCreate.ts'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 
 const props = defineProps<{
   create?: () => Promise<unknown>
@@ -47,6 +37,9 @@ const emit = defineEmits<{
 }>()
 
 const { createSupplier: defaultCreateSupplier } = useSupplierCreate()
+const { hasProfile } = useUser()
+
+const shouldRender = computed(() => !hasProfile('supplier'))
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
@@ -70,9 +63,7 @@ const handleCreate = async () => {
     createError.value = message
     emit('error', error)
   } finally {
-    if (createError.value) {
-      isCreating.value = false
-    }
+    isCreating.value = false
   }
 }
 </script>
@@ -84,10 +75,4 @@ const handleCreate = async () => {
   color: #dc2626;
 }
 
-.cta-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-}
 </style>

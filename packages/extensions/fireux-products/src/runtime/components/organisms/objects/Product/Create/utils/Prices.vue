@@ -1,6 +1,6 @@
 <template>
   <div class="prices-fields">
-    <OrganismsObjectsProductCreatePrice
+    <OrganismsObjectsProductCreateUtilsPrice
       v-for="(_, index) in prices"
       :key="index"
       :index="index"

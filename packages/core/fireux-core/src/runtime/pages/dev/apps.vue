@@ -8,7 +8,7 @@
     <UPageBody class="space-y-10">
       <!-- Current App -->
       <section class="space-y-4">
-        <OrganismsAppPreview />
+        <OrganismsAppCardsPreview />
         <DevJsonPanel
           title="Dev · Current App"
           :data="currentAppDev"
@@ -36,7 +36,7 @@
 
       <!-- App Collection -->
       <section class="space-y-4">
-        <OrganismsAppCollection />
+        <OrganismsAppCollectionManager />
         <DevJsonPanel
           title="Dev · App Collection"
           :data="appCollectionDev"

@@ -1,4 +1,4 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Preview.vue -->
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Preview.vue -->
 <template>
   <div class="space-y-6">
     <section class="space-y-4">
@@ -27,9 +27,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { App } from '../../../models/core/app.model'
-import type { AppCard } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
+import type { App } from '../../../../models/core/app.model'
+import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 
 const props = withDefaults(
   defineProps<{ app?: App | null; compact?: boolean }>(),

@@ -1,5 +1,11 @@
 <template>
-  <UCard class="fx-section">
+  <slot
+    v-if="hasDefaultSlot"
+    :directory-entries="directoryEntries"
+    :total-apps="totalApps"
+  />
+
+  <UCard v-else class="fx-section">
     <template #header>
       <div class="fx-section__header">
         <div class="fx-section__copy">
@@ -24,11 +30,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAppCollection } from '../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
-import { useAppInterface } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import type { App } from '../../../models/core/app.model'
-import type { AppCard } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { computed, useSlots } from 'vue'
+import { useAppCollection } from '../../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
+import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import type { App } from '../../../../models/core/app.model'
+import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+
+const slots = useSlots()
+const hasDefaultSlot = computed(() => Boolean(slots.default))
 
 const { apps } = useAppCollection()
 const { pillProps } = useAppInterface()

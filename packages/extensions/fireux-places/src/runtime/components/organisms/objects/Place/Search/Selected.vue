@@ -1,5 +1,5 @@
 <template>
-  <UCard class="shadow-sm" :ui="{ body: 'space-y-3' }">
+  <UCard :ui="{ body: 'space-y-3' }">
     <div class="flex items-start gap-3">
       <div class="relative">
         <UAvatar
@@ -10,7 +10,7 @@
         />
         <div
           v-if="confirming"
-          class="absolute inset-0 flex items-center justify-center rounded-full bg-white/70"
+          class="absolute inset-0 flex items-center justify-center rounded-full bg-black/10 dark:bg-white/10"
         >
           <UIcon
             name="i-lucide-loader-2"
@@ -19,10 +19,10 @@
         </div>
       </div>
       <div class="flex-1 min-w-0">
-        <p class="truncate text-sm font-semibold text-gray-900">
+        <p class="truncate text-sm font-semibold">
           {{ place.name }}
         </p>
-        <p class="truncate text-sm text-gray-500">
+        <p class="truncate text-sm text-dimmed">
           {{ place.formatted_address || '—' }}
         </p>
       </div>
@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PlaceBase as BasePlace } from '../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import type { PlaceBase as BasePlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
 const emit = defineEmits<{
   (e: 'clear'): void
