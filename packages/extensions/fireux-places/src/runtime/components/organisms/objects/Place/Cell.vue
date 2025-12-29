@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount } from 'vue'
-import type { PlaceCard } from 'fireux-places/runtime/models/place.model'
+import type { PlaceCard } from '../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import {
   DEFAULT_LOGO_TIMEOUT_MS,
   usePlaceLogoState,

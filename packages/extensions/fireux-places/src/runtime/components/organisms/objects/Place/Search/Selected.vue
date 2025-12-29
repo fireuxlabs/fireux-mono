@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BasePlace } from 'fireux-places/runtime/models/place.model'
+import type { PlaceBase as BasePlace } from '../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
 const emit = defineEmits<{
   (e: 'clear'): void

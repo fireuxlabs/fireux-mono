@@ -1,9 +1,5 @@
-import type {
-  GooglePlace,
-  Place,
-  PlaceCard,
-} from '../../../../../../../models/place.model'
-import { toStoredPlace } from '../../../../../../../models/place.model'
+import type { GooglePlace, Place } from '../../../../../../../models/objects/place.model'
+import type { PlaceCard } from '../../utils/view/usePlacesInterface'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
 
@@ -106,6 +102,22 @@ export async function fetchGoogle(
     return []
   }
 }
+
+function toStoredPlace(g: GooglePlace): Place {
+  const search_term = `${g.name} ${g.formatted_address}`.toLowerCase()
+  return {
+    place_id: g.place_id,
+    name: g.name,
+    formatted_address: g.formatted_address,
+    lat: g.lat,
+    lng: g.lng,
+    source: 'firestore',
+    avatar: g.avatar ?? null,
+    search_term,
+    created_at: new Date(),
+  }
+}
+
 
 export function mapDetailsToGooglePlace(
   id: string,

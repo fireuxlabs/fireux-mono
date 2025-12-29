@@ -1,7 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
 import { useFirestore } from 'vuefire'
-import type { Place } from '../../../../../../models/place.model'
+import type { Place } from '../../../../../../models/objects/place.model'
 import { canonicalPlaceId } from '../fetch/google/usePlacesGoogle'
 
 export function usePlaceSave() {
@@ -40,3 +40,4 @@ export function usePlaceSave() {
 
   return { ensurePlaceExists }
 }
+

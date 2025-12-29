@@ -38,7 +38,7 @@ import {
 } from '../../../../../composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
-import type { BasePlace, Place } from '../../../../../models/place.model'
+import type { BasePlace, Place } from '../../../../../models/objects/place.model'
 
 const emit = defineEmits<{
   (e: 'confirmed', payload: { placeId: string; place: Place }): void

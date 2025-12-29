@@ -10,6 +10,7 @@ const fireuxConfig = defineFireuxConfig({
   role: 'global',
   modules: [
     ['fireux-places', { types: ['kitchen', 'company'] }],
+    'fireux-kitchens',
     'fireux-jobs',
     'fireux-products',
     'fireux-blogs',

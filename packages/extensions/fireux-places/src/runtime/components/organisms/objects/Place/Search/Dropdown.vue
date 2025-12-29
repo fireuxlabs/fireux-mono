@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { computed, toRefs } from 'vue'
-import type { PlaceCard } from '../../../../models/place.model'
+import type { PlaceCard } from '../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
 const SHORTLIST_LIMIT = 4
 
@@ -46,3 +46,4 @@ const visibleCells = computed(() =>
   (cells.value ?? []).slice(0, SHORTLIST_LIMIT)
 )
 </script>
+

@@ -39,12 +39,17 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePlaces } from '../../../../composables/fireux/firestore/objects/place/system/usePlaces'
-import { toCell } from 'fireux-places/runtime/models/place.model'
+import { usePlaces } from '../../../../composables/fireux/firestore/objects/place/usePlaces'
+import {
+  usePlacesInterface,
+  type PlaceEntity,
+} from '../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
-const { collection } = usePlaces()
+const { toCell } = usePlacesInterface()
+
+const { collection } = usePlaces<PlaceEntity>()
 const cells = computed(() =>
-  (collection.value ?? []).map((place) =>
+  (collection.value ?? []).map((place: PlaceEntity) =>
     toCell({ ...place, avatar: place.avatar ?? null })
   )
 )

@@ -19,7 +19,7 @@
 import { computed } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { usePlaces } from '../../composables/fireux/firestore/objects/place/system/usePlaces'
+import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
 
 definePageMeta({
   layout: 'default',
