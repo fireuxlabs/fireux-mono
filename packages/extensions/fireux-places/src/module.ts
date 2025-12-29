@@ -8,6 +8,7 @@ import { configureServer } from './config/server-config'
 
 export interface ModuleOptions {
   prefix?: string
+  types?: string[]
 }
 
 const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
@@ -18,11 +19,15 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   },
   defaults: {
     prefix: 'Fire',
+    types: [],
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    configureRuntime(nuxt, 'places')
+    configureRuntime(nuxt, 'places', {
+      enabled: true,
+      types: options.types || [],
+    })
     configureComponents(resolver, options)
     configureComposables(resolver, options)
     configurePages(resolver, nuxt)

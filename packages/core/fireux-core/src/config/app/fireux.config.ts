@@ -17,7 +17,13 @@ export type FireuxAppConfig = {
   /** Optional app logo path/URL (preferred). Defaults to /img/app/logo.png. */
   appLogo?: string
   role: 'global' | 'tenant'
-  modules?: string[]
+  modules?: NonNullable<NuxtConfig['modules']>
+}
+
+function moduleName(entry: unknown): string | undefined {
+  if (typeof entry === 'string') return entry
+  if (Array.isArray(entry) && typeof entry[0] === 'string') return entry[0]
+  return undefined
 }
 
 function isValidJsIdentifier(value: string): boolean {
@@ -143,7 +149,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       domain: envDomain,
       role: app.role,
       ecosystem: app.ecosystem,
-      modules: (nuxt.modules || []) as readonly string[],
+      modules: (nuxt.modules || []).map(moduleName).filter(Boolean) as readonly string[],
     },
 
     firebaseApp: {
