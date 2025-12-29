@@ -184,7 +184,7 @@ async function handleSubmit() {
     })
 
     resetForm()
-    await router.push(`/kitchens/${safeId}`)
+    await router.push(`/places/${safeId}`)
   } catch (error: any) {
     toast?.add({
       title: 'Kitchen link failed',

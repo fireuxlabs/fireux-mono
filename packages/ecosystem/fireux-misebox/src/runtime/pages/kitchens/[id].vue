@@ -20,7 +20,7 @@
             color="gray"
             icon="i-lucide-arrow-left"
             variant="ghost"
-            to="/kitchens"
+            to="/places"
           >
             Back to kitchens
           </UButton>

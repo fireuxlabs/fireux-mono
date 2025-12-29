@@ -3,8 +3,8 @@
   <UPage>
     <UPageHeader title="Blog" description="Latest articles." />
     <UPageBody class="pagebody">
-      <OrganismsBlogCTA v-if="canPublishBlog" />
-      <OrganismsBlogList :posts="posts ?? []" />
+      <OrganismsObjectsBlogCTA v-if="canPublishBlog" />
+      <OrganismsObjectsBlogList :posts="posts ?? []" />
     </UPageBody>
   </UPage>
 </template>

@@ -34,7 +34,7 @@ export function useCreateProductState() {
 
   watch(
     () => product.value.name,
-    async (newName: string) => {
+    async (newName: string | undefined) => {
       if (!newName) {
         product.value.slug = ''
         isSlugTaken.value = false

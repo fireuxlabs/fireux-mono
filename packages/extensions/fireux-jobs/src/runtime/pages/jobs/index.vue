@@ -3,9 +3,9 @@
   <UPage>
     <UPageHeader title="Jobs" description="Browse jobs." />
     <UPageBody class="pagebody">
-      <OrganismsJobsCTA v-if="coreProfile" />
-      <OrganismsJobsSectionsAgentCollection v-if="coreProfile" />
-      <OrganismsJobsSectionsGlobalCollection />
+      <OrganismsObjectsJobCTA v-if="coreProfile" />
+      <OrganismsObjectsJobSectionsAgentCollection v-if="coreProfile" />
+      <OrganismsObjectsJobSectionsGlobalCollection />
     </UPageBody>
   </UPage>
 </template>

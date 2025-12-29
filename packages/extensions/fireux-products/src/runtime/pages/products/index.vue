@@ -4,8 +4,8 @@
   <UPage>
     <UPageHeader title="Products" description="Products catalog." />
     <UPageBody class="pagebody">
-      <OrganismsProductCTA v-if="showCTA" />
-      <OrganismsProductCardsList :products="products ?? []" />
+      <OrganismsObjectsProductCTA v-if="showCTA" />
+      <OrganismsObjectsProductCardsList :products="products ?? []" />
     </UPageBody>
   </UPage>
 </template>

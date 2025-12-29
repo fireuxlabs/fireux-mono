@@ -28,12 +28,6 @@ export function getMiseboxDefaultRoutes(
       to: '/suppliers',
     },
     {
-      id: 'kitchens',
-      label: 'Kitchens',
-      icon: 'i-lucide-cooking-pot',
-      to: '/kitchens',
-    },
-    {
       id: 'recipes',
       label: 'Recipes',
       icon: 'i-lucide-book-open',

@@ -30,12 +30,6 @@ export function useMiseboxRoutes() {
       to: '/suppliers',
     },
     {
-      id: 'kitchens',
-      label: 'Kitchens',
-      icon: 'i-lucide-cooking-pot',
-      to: '/kitchens',
-    },
-    {
       id: 'recipes',
       label: 'Recipes',
       icon: 'i-lucide-book-open',
@@ -78,7 +72,6 @@ export function useMiseboxRoutes() {
   const MENU_IDS = new Set<string>([
     'chefs',
     'suppliers',
-    'kitchens',
     'recipes',
     'jobs',
     'agents',

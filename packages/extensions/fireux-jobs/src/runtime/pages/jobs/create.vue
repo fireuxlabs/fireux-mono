@@ -29,11 +29,11 @@
         @submit="onSubmit"
       >
         <template #write>
-          <OrganismsJobsCreateWrite v-model:form="form" />
+          <OrganismsObjectsJobCreateWrite v-model:form="form" />
         </template>
 
         <template #preview>
-          <OrganismsJobsCreatePreview :form="form" />
+          <OrganismsObjectsJobCreatePreview :form="form" />
         </template>
       </OrganismsCreateShell>
     </UPageBody>
