@@ -2,7 +2,7 @@
   <div class="places-search">
     <UInput
       v-model="searchQuery"
-      placeholder="Search for kitchens, restaurants..."
+      placeholder="Search for places…"
       icon="i-heroicons-magnifying-glass"
       size="lg"
       @input="performSearch"
@@ -38,7 +38,7 @@
     <div v-else-if="searchQuery && !isSearching" class="no-results mt-4">
       <UCard>
         <div class="text-center py-4">
-          <p class="text-gray-500">No kitchens found for "{{ searchQuery }}"</p>
+          <p class="text-gray-500">No places found for "{{ searchQuery }}"</p>
         </div>
       </UCard>
     </div>

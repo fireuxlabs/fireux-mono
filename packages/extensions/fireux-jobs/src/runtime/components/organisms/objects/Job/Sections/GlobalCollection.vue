@@ -54,8 +54,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useJobCollection } from '../../../../composables/fireux/firestore/jobs/fetch/useJobCollection'
-import type { Job } from '../../../../models/job.model'
+import { useJobCollection } from '../../../../../composables/fireux/firestore/jobs/fetch/useJobCollection.ts'
+import type { Job } from '../../../../../models/job.model'
 
 const { appJobs, pending: isPending } = useJobCollection()
 

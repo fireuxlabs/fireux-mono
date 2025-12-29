@@ -8,7 +8,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Misebox',
   description: 'Workhub for Misebox creative operations and collaborators.',
   role: 'global',
-  modules: ['fireux-jobs', 'fireux-products', 'fireux-blogs'],
+  modules: ['fireux-places', 'fireux-jobs', 'fireux-products', 'fireux-blogs'],
 })
 
 export default defineNuxtConfig({

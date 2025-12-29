@@ -31,13 +31,14 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage.ts'
 import {
   canonicalPlaceId,
   fetchPlaceDetails,
-} from '../../../../composables/usePlacesGoogle'
-import { usePlaceSave } from '../../../../composables/usePlaceSave'
-import { usePlacesSearch } from '../../../../composables/usePlacesSearch'
-import type { BasePlace, Place } from '../../../../models/place.model'
+} from '../../../../../composables/usePlacesGoogle'
+import { usePlaceSave } from '../../../../../composables/usePlaceSave'
+import { usePlacesSearch } from '../../../../../composables/usePlacesSearch'
+import type { BasePlace, Place } from '../../../../../models/place.model'
 
 const emit = defineEmits<{
   (e: 'confirmed', payload: { placeId: string; place: Place }): void

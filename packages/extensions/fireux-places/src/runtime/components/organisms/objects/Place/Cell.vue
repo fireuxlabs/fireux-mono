@@ -35,7 +35,7 @@ import type { PlaceCard } from 'fireux-places/runtime/models/place.model'
 import {
   DEFAULT_LOGO_TIMEOUT_MS,
   usePlaceLogoState,
-} from '../../../composables/usePlaceLogos'
+} from '../../../../composables/usePlaceLogos'
 
 interface CellProps {
   place: PlaceCard.Cell

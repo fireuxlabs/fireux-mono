@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePlaces } from '../../../composables/usePlaces'
+import { usePlaces } from '../../../../composables/usePlaces'
 import { toCell } from 'fireux-places/runtime/models/place.model'
 
 const { collection } = usePlaces()

@@ -5,7 +5,5 @@ export interface MiseboxApp {
   professionals?: string[] // Array of professional IDs
   agents?: string[] // Array of agent IDs
   suppliers?: string[] // Array of supplier IDs
-//Key Ojects
-  kitchens?: string[] // Array of kitchen IDs
 }
 
