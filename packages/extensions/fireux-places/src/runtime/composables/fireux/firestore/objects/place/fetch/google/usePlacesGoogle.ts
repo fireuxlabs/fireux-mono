@@ -1,5 +1,9 @@
-import type { GooglePlace, Place, PlaceCard } from '../models/place.model'
-import { toStoredPlace } from '../models/place.model'
+import type {
+  GooglePlace,
+  Place,
+  PlaceCard,
+} from '../../../../../../../models/place.model'
+import { toStoredPlace } from '../../../../../../../models/place.model'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
 

@@ -35,9 +35,9 @@ import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase
 import {
   canonicalPlaceId,
   fetchPlaceDetails,
-} from '../../../../../composables/usePlacesGoogle'
-import { usePlaceSave } from '../../../../../composables/usePlaceSave'
-import { usePlacesSearch } from '../../../../../composables/usePlacesSearch'
+} from '../../../../../composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
+import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
+import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import type { BasePlace, Place } from '../../../../../models/place.model'
 
 const emit = defineEmits<{

@@ -1,5 +1,5 @@
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
-import type { BasePlace, PlaceCard } from '../models/place.model'
+import type { BasePlace, PlaceCard } from '../../../../../../../models/place.model'
 
 const LOGO_ENDPOINT = '/api/places/logo'
 const DETAILS_ENDPOINT = '/api/places/details'

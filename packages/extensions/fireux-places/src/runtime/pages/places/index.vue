@@ -1,83 +1,85 @@
 <template>
-  <main>
-    <p>Hello {{ word }}</p>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageBody class="pagebody">
+      <ul v-if="places.length" class="space-y-2">
+        <li v-for="(place, index) in places" :key="placeKey(place, index)">
+          <p class="text-sm font-medium">
+            {{ placeLabel(place, index) }}
+          </p>
+        </li>
+      </ul>
 
-    <p v-if="collectionPath">Collection: {{ collectionPath }}</p>
-    <p v-if="error">{{ error }}</p>
-    <p v-else-if="collectionPath">Count: {{ count }}</p>
-  </main>
+      <p v-else class="text-sm text-slate-500">No places found.</p>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, shallowRef, watch } from 'vue'
-import { useRoute, useRuntimeConfig } from '#imports'
-import type { Ref } from 'vue'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
+import { computed } from 'vue'
+import { useHead, useRoute } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { usePlaces } from '../../composables/fireux/firestore/objects/place/system/usePlaces'
+
+definePageMeta({
+  layout: 'default',
+  title: 'Places',
+  description: 'Saved places.',
+  nav: {
+    key: 'places',
+    label: 'Places',
+    icon: 'i-lucide-map-pin',
+    order: 25,
+    desktop: true,
+    mobile: true,
+    layouts: ['default'],
+  },
+  head: { title: 'Places' },
+})
+
+const { appName } = useFireUXConfig()
+useHead({ title: `${appName} | Places` })
 
 const route = useRoute()
-const runtimeConfig = useRuntimeConfig()
 
-const placesTypes = computed<string[]>(() => {
-  const types = (runtimeConfig.public as any)?.fireux?.places?.types
-  return Array.isArray(types) ? (types as string[]) : []
-})
-
-const word = computed(() => {
+const keyword = computed<string | null>(() => {
   const raw = route.query.word
   const value = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
-  return value || 'world'
+  return value ? value : null
 })
 
-const selectedType = computed<string | null>(() => {
-  const candidate = word.value
-  if (placesTypes.value.includes(candidate)) return candidate
-  return placesTypes.value[0] ?? null
+const { collection } = usePlaces<Record<string, any>>({ keyword })
+
+const places = computed(() => collection.value ?? [])
+
+const pageTitle = computed(() => {
+  if (!keyword.value) return 'Places'
+  return `Places: ${keyword.value}`
 })
 
-const collectionPath = computed<string | null>(() => {
-  const type = selectedType.value
-  if (!type) return null
-  if (type === 'company') return 'companies'
-  return `${type}s`
+const pageDescription = computed(() => {
+  if (!keyword.value) return 'Saved places.'
+  return `Saved places for “${keyword.value}”.`
 })
 
-const { firestoreFetchCollection, createDocument } = useFirestoreManager()
+function placeKey(place: Record<string, any>, index: number) {
+  return (
+    place?.id ??
+    place?.place_id ??
+    place?.google_place_id ??
+    place?.slug ??
+    index
+  )
+}
 
-const error = ref<string | null>(null)
-const collectionRef = shallowRef<Ref<Record<string, any>[] | undefined> | null>(null)
-
-watch(
-  collectionPath,
-  (path) => {
-    if (!path) {
-      collectionRef.value = null
-      return
-    }
-    collectionRef.value = firestoreFetchCollection<Record<string, any>>(path)
-  },
-  { immediate: true }
-)
-
-const docs = computed(() => collectionRef.value?.value ?? [])
-const count = computed(() => docs.value.length)
-
-const shouldCreate = computed(() => {
-  const value = route.query.create
-  return value === '1' || value === 'true'
-})
-
-onMounted(async () => {
-  if (!shouldCreate.value) return
-  if (!collectionPath.value) return
-
-  try {
-    error.value = null
-    await createDocument(collectionPath.value, {
-      name: `Hello ${word.value}`,
-      type: selectedType.value,
-    })
-  } catch (e: any) {
-    error.value = e?.message ? String(e.message) : 'Failed to create document'
-  }
-})
+function placeLabel(place: Record<string, any>, index: number) {
+  return (
+    place?.name ??
+    place?.title ??
+    place?.label ??
+    place?.place_id ??
+    place?.id ??
+    `Place ${index + 1}`
+  )
+}
 </script>

@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePlaces } from '../../composables/usePlaces'
+import { usePlaces } from '../../composables/fireux/firestore/objects/place/system/usePlaces'
 
 definePageMeta({
   layout: 'dev',

@@ -1,12 +1,12 @@
 import { ref, watch } from 'vue'
-import type { BasePlace, PlaceCard } from '../models/place.model'
+import type { BasePlace, PlaceCard } from '../../../../../../../models/place.model'
 import { useFirestoreSearch } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreSearch.ts'
 import {
   canonicalPlaceId,
   fetchGoogle,
   fetchPlaceDetails,
   type PlaceDetailsResult,
-} from './usePlacesGoogle'
+} from '../google/usePlacesGoogle'
 
 const sanitize = (url?: string | null) =>
   url && !/mapfiles\/place_api\/icons/i.test(url) ? url : null
