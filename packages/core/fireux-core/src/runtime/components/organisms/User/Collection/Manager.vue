@@ -34,7 +34,7 @@
     <template v-if="!isTenant || showGlobalDirectory">
       <div v-if="directoryEntries.length" class="fx-section__grid">
         <article v-for="entry in directoryEntries" :key="entry.key">
-          <OrganismsUserCardsPill :user="entry.pill" />
+          <OrganismsUserCardsPill :card="entry.card" />
         </article>
       </div>
 
@@ -59,11 +59,11 @@ const { firestoreFetchCollection } = useFirestoreRead()
 const { appName, appId, isTenant } = useFireUXConfig()
 const showGlobalDirectory = ref(!isTenant)
 const globalUsers = firestoreFetchCollection<User>('users')
-const { pillProps } = useUserInterface(undefined, { runtime: 'global' })
+const { card } = useUserInterface()
 
 type DirectoryEntry = {
   key: string
-  pill: UserCard.Pill
+  card: UserCard.Card
   raw: User
 }
 
@@ -86,11 +86,13 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
     .map((entry: User) => {
       const role = inferRole(entry)
       const enriched = role ? ({ ...entry, role } as User) : entry
-      const pill = pillProps(enriched)
-      if (!pill) return null
+
+      const payload = card(enriched)
+      const badges = role === 'admin' ? ['Admin'] : []
+
       return {
         key: entry.id,
-        pill,
+        card: { ...payload, badges },
         raw: enriched,
       }
     })

@@ -1,6 +1,6 @@
 <template>
   <div class="py-12">
-    <AppOnboarding />
+    <OrganismsAppCreateSystem />
   </div>
 </template>
 

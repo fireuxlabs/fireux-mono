@@ -33,7 +33,11 @@
           <UButton size="xs" variant="soft" @click="onRefreshEnv">Refresh</UButton>
         </header>
 
-        <AppOnboardingVariables :env-data="env" :pending="pending" :error="envError" />
+        <OrganismsAppCreateOnboardingVariables
+          :env-data="env"
+          :pending="pending"
+          :error="envError"
+        />
 
         <div class="pt-2">
           <UButton block size="lg" :disabled="!canProceed" @click="onProceed">

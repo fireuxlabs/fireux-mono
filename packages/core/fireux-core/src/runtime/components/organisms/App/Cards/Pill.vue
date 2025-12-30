@@ -7,9 +7,8 @@
     :aria-label="ariaLabel"
   >
     <UAvatar
-      :src="avatar"
+      :src="image || undefined"
       :alt="ariaLabel"
-      :text="initials"
       size="sm"
       class="fireux-pill__avatar"
     />
@@ -31,18 +30,6 @@
       </div>
     </div>
 
-    <UTooltip v-if="showTooltip" :text="specialTooltip">
-      <span class="fireux-pill__special" :aria-label="specialA11y">
-        <UIcon :name="specialIcon" class="fireux-pill__special-icon" />
-      </span>
-    </UTooltip>
-    <span
-      v-else-if="special"
-      class="fireux-pill__special"
-      :aria-label="specialA11y"
-    >
-      <UIcon :name="specialIcon" class="fireux-pill__special-icon" />
-    </span>
   </component>
 </template>
 
@@ -50,7 +37,7 @@
 import { computed } from 'vue'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
-const props = defineProps<{ app: AppCard.Pill }>()
+const props = defineProps<{ card: AppCard.Card }>()
 
 const sanitizeString = (input?: unknown) => {
   if (typeof input === 'string') return input.trim()
@@ -58,24 +45,12 @@ const sanitizeString = (input?: unknown) => {
   return String(input).trim()
 }
 
-const title = computed(() => sanitizeString(props.app.title))
-const subtitle = computed(() => sanitizeString(props.app.subtitle))
-const avatar = computed(() => sanitizeString(props.app.avatar))
-const initials = computed(() => {
-  const value = props.app.initials?.trim()
-  if (value) return value
-  const name = title.value
-  if (!name) return 'A'
-  return name
-    .split(/\s+/)
-    .map((token) => token[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-})
+const title = computed(() => sanitizeString(props.card.title))
+const subtitle = computed(() => sanitizeString(props.card.subtitle))
+const image = computed(() => sanitizeString(props.card.image))
 
 const badges = computed(() => {
-  const list = Array.isArray(props.app.badges) ? props.app.badges : []
+  const list = Array.isArray(props.card.badges) ? props.card.badges : []
   const unique = new Set<string>()
 
   for (const entry of list) {
@@ -90,20 +65,18 @@ const badges = computed(() => {
 
 const hasBadges = computed(() => badges.value.length > 0)
 
-const to = computed(() => props.app.to ?? null)
-const componentTag = computed(() => (to.value ? 'NuxtLink' : 'div'))
+const href = computed(() => sanitizeString(props.card.href))
+const componentTag = computed(() => (href.value ? 'NuxtLink' : 'div'))
 const componentAttrs = computed<Record<string, unknown>>(() =>
-  to.value ? { to: to.value } : {}
+  href.value ? { to: href.value } : {}
 )
 
 const componentClass = computed(() => {
   const classes = [
     'fireux-pill',
-    to.value ? 'fireux-pill--link' : 'fireux-pill--static',
+    href.value ? 'fireux-pill--link' : 'fireux-pill--static',
     hasBadges.value ? 'fireux-pill--has-badges' : 'fireux-pill--compact',
   ]
-
-  if (props.app.special) classes.push('fireux-pill--special')
   return classes
 })
 
@@ -120,16 +93,6 @@ const ariaLabel = computed(() => {
   if (hasBadges.value) parts.push(badges.value.join(', '))
   return parts.filter(Boolean).join(' – ')
 })
-
-const special = computed(() => Boolean(props.app.special))
-const specialIcon = computed(
-  () => props.app.specialIcon?.trim() || 'i-lucide-alert-triangle'
-)
-const specialTooltip = computed(() => props.app.specialTooltip?.trim() ?? '')
-const showTooltip = computed(
-  () => special.value && specialTooltip.value.length > 0
-)
-const specialA11y = computed(() => specialTooltip.value || 'Special indicator')
 </script>
 
 <style scoped>

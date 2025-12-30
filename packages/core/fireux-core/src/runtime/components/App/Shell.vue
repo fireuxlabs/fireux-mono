@@ -45,7 +45,7 @@
         description="This app needs to be initialized."
       >
         <template #body>
-          <AppOnboarding />
+          <OrganismsAppCreateSystem />
         </template>
       </UModal>
     </ClientOnly>

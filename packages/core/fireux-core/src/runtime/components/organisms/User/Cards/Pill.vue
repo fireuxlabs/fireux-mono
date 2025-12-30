@@ -1,87 +1,29 @@
 <template>
   <component
-    :is="wrapperComponent"
-    v-bind="wrapperBindings"
-    :class="rootClass"
-    :aria-label="normalized.title || 'user pill'"
+    :is="componentTag"
+    v-bind="componentAttrs"
+    :class="componentClass"
+    :aria-label="ariaLabel"
   >
     <UAvatar
-      :src="normalized.avatar"
-      :alt="normalized.title || 'User'"
-      :text="normalized.initials || 'A'"
+      :src="image || undefined"
+      :alt="ariaLabel"
       size="sm"
       class="avatar"
     />
 
-    <div v-if="hasContent" class="content">
-      <span class="title" :title="normalized.title">
-        {{ normalized.title || 'User' }}
+    <div class="content">
+      <span class="title" :title="title">
+        {{ title || 'User' }}
       </span>
 
-      <div
-        v-if="normalized.subtitle || normalized.special"
-        class="subtitle-row"
-      >
-        <span
-          v-if="normalized.subtitle"
-          class="subtitle"
-          :title="normalized.subtitle"
-        >
-          {{ normalized.subtitle }}
-        </span>
-        <UTooltip
-          v-if="normalized.special && normalized.specialTooltip"
-          :text="normalized.specialTooltip"
-          :popper="tooltipPopper"
-        >
-          <UBadge
-            color="primary"
-            variant="soft"
-            size="xs"
-            :title="specialAriaLabel"
-            class="admin-badge"
-          >
-            Admin
-          </UBadge>
-        </UTooltip>
-        <UBadge
-          v-else-if="normalized.special"
-          color="primary"
-          variant="soft"
-          size="xs"
-          :title="specialAriaLabel"
-          class="admin-badge"
-        >
-          Admin
-        </UBadge>
-      </div>
+      <span v-if="subtitle" class="subtitle" :title="subtitle">
+        {{ subtitle }}
+      </span>
 
-      <div v-if="normalized.badges.length" class="badges">
-        <UBadge
-          v-for="badge in normalized.badges"
-          :key="badge"
-          color="primary"
-          variant="soft"
-          size="xs"
-          :title="badge"
-        >
+      <div v-if="hasBadges" class="badges">
+        <UBadge v-for="badge in badges" :key="badge" size="xs" variant="soft">
           {{ badge }}
-        </UBadge>
-      </div>
-
-      <div
-        v-if="normalized.memberships.length && showMemberships"
-        class="memberships"
-      >
-        <UBadge
-          v-for="membership in normalized.memberships"
-          :key="membership.id"
-          size="xs"
-          :variant="membership.isAdmin ? 'soft' : 'outline'"
-          class="membership-badge"
-          :title="membership.label"
-        >
-          {{ membership.label }}
         </UBadge>
       </div>
     </div>
@@ -89,77 +31,56 @@
 </template>
 
 <script setup lang="ts">
-import { computed, resolveComponent } from 'vue'
-import type { RouteLocationRaw } from 'vue-router'
+import { computed } from 'vue'
 import type { UserCard } from '../../../../models/core/user.model'
 
-const props = withDefaults(
-  defineProps<{ user?: UserCard.Pill | null; showMemberships?: boolean }>(),
-  { showMemberships: true }
+const props = defineProps<{ card: UserCard.Card }>()
+
+const sanitizeString = (input?: unknown) => {
+  if (typeof input === 'string') return input.trim()
+  if (input == null) return ''
+  return String(input).trim()
+}
+
+const title = computed(() => sanitizeString(props.card.title))
+const subtitle = computed(() => sanitizeString(props.card.subtitle))
+const image = computed(() => sanitizeString(props.card.image))
+
+const badges = computed(() => {
+  const list = Array.isArray(props.card.badges) ? props.card.badges : []
+  const unique = new Set<string>()
+
+  for (const entry of list) {
+    if (typeof entry !== 'string') continue
+    const trimmed = entry.trim()
+    if (!trimmed) continue
+    unique.add(trimmed)
+  }
+
+  return Array.from(unique)
+})
+
+const hasBadges = computed(() => badges.value.length > 0)
+
+const href = computed(() => sanitizeString(props.card.href))
+const componentTag = computed(() => (href.value ? 'NuxtLink' : 'div'))
+const componentAttrs = computed<Record<string, unknown>>(() =>
+  href.value ? { to: href.value } : {}
 )
 
-const tooltipPopper = { placement: 'top' as const }
-
-const normalized = computed(() => {
-  const base = props.user ?? ({} as UserCard.Pill)
-  const badges = Array.isArray(base.badges)
-    ? (base.badges.filter(Boolean) as string[])
-    : []
-  const memberships = Array.isArray(base.memberships)
-    ? base.memberships
-        .map((entry) => ({
-          id: entry?.id?.toString().trim() ?? '',
-          label: entry?.label?.trim() || entry?.id?.toString() || '',
-          isAdmin: Boolean(entry?.isAdmin),
-        }))
-        .filter((entry) => entry.id && entry.label)
-    : []
-
-  return {
-    avatar: base.avatar ?? '',
-    initials: base.initials ?? 'A',
-    title: base.title ?? '',
-    subtitle: base.subtitle ?? '',
-    badges,
-    to: base.to ?? null,
-    special: Boolean(base.special),
-    specialTooltip: base.specialTooltip ?? '',
-    memberships,
-  }
-})
-
-const hasContent = computed(() => {
-  const value = normalized.value
-  return (
-    Boolean(value.title?.trim()) ||
-    Boolean(value.subtitle?.trim()) ||
-    value.badges.length > 0 ||
-    value.memberships.length > 0 ||
-    value.special
-  )
-})
-
-const hasLink = computed(() => Boolean(normalized.value.to))
-const nuxtLink = resolveComponent('NuxtLink')
-const wrapperComponent = computed(() => (hasLink.value ? nuxtLink : 'div'))
-const showMemberships = computed(() => Boolean(props.showMemberships))
-
-const wrapperBindings = computed(() => {
-  if (!hasLink.value) return {}
-  const target = normalized.value.to as RouteLocationRaw
-  return { to: target }
-})
-
-const rootClass = computed(() => [
+const componentClass = computed(() => [
   'pill flex items-center gap-3 rounded-xl px-3 py-2 shadow-sm',
-  hasLink.value
+  href.value
     ? 'cursor-pointer no-underline text-inherit focus:outline-none focus:ring-2 focus:ring-offset-2'
     : 'cursor-default',
 ])
 
-const specialAriaLabel = computed(
-  () => normalized.value.specialTooltip || 'Tenant admin'
-)
+const ariaLabel = computed(() => {
+  const parts = [title.value]
+  if (subtitle.value) parts.push(subtitle.value)
+  if (hasBadges.value) parts.push(badges.value.join(', '))
+  return parts.filter(Boolean).join(' – ') || 'User'
+})
 </script>
 
 <style scoped>
@@ -218,20 +139,5 @@ const specialAriaLabel = computed(
   flex-wrap: wrap;
   gap: 0.25rem;
   margin-top: 0.2rem;
-}
-
-.admin-badge {
-  margin-left: 0.25rem;
-}
-
-.memberships {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  margin-top: 0.2rem;
-}
-
-.membership-badge {
-  text-transform: none;
 }
 </style>

@@ -7,7 +7,7 @@
 
       <div class="space-y-2">
         <div class="w-fit max-w-full">
-          <OrganismsUserCardsPill v-if="pill" :user="pill" />
+          <OrganismsUserCardsPill v-if="pill" :card="pill" />
           <USkeleton v-else class="h-11 w-64 max-w-full" />
         </div>
       </div>
@@ -45,13 +45,13 @@
 import { computed } from 'vue'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
-const { currentUser, profileComplete, pillProps, isLoading } = useUser()
+const { currentUser, profileComplete, card, isLoading } = useUser()
 
 const pill = computed(() => {
   if (isLoading.value) return null
   const user = currentUser.value
   if (!user) return null
-  return pillProps(user)
+  return card(user)
 })
 
 const showProfileCompletedness = computed(() => {

@@ -25,7 +25,7 @@
             Pill
           </h3>
         </template>
-        <OrganismsUserCardsPill v-if="pill" :user="pill" />
+        <OrganismsUserCardsPill v-if="card" :card="card" />
         <p class="text-xs text-gray-500 dark:text-gray-400">
           Derived pill props showing badges + runtime admin state.
         </p>
@@ -37,7 +37,7 @@
             Cell
           </h3>
         </template>
-        <OrganismsUserCardsCell v-if="cell" :user="cell" />
+        <OrganismsUserCardsCell v-if="card" :card="card" />
         <p class="text-xs text-gray-500 dark:text-gray-400">
           Cell variant surfaces handles, emails, and membership metadata.
         </p>
@@ -61,9 +61,8 @@ const props = withDefaults(defineProps<Props>(), {
   user: null,
 })
 
-const { pillProps, cellProps } = useUserInterface()
+const { card: userCard } = useUserInterface()
 
 const hasUser = computed(() => Boolean(props.user))
-const pill = computed(() => (props.user ? pillProps(props.user) : null))
-const cell = computed(() => (props.user ? cellProps(props.user) : null))
+const card = computed(() => (props.user ? userCard(props.user) : null))
 </script>

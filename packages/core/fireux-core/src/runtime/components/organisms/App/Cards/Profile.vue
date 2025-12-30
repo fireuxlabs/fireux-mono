@@ -1,109 +1,29 @@
 <template>
   <UCard class="profile-card">
-    <div v-if="app" class="profile">
-      <!-- Header -->
+    <div v-if="card" class="profile">
       <div class="profile-header">
         <div class="avatar-wrap">
           <UAvatar
-            :src="avatarSrc || undefined"
-            :alt="app.app_name"
-            :text="avatarText"
+            :src="card.image || undefined"
+            :alt="card.title || 'App'"
             size="xl"
             class="avatar"
           />
         </div>
 
         <div class="identity">
-          <h2 class="name">{{ app.app_name }}</h2>
+          <h2 class="name">{{ card.title || 'App' }}</h2>
 
-          <div class="identity-meta">
-            <UBadge
-              v-if="app.ecosystem"
-              size="sm"
-              variant="solid"
-              color="primary"
-            >
-              <UIcon name="i-lucide-building" class="icon" />
-              {{ app.ecosystem }}
-            </UBadge>
-
-            <UBadge v-if="roleLabel" size="sm" variant="soft" color="neutral">
-              {{ roleLabel }}
-            </UBadge>
-
-            <span class="mono id-chip" title="App ID">{{ app.id }}</span>
-          </div>
-
-          <p v-if="app.description" class="about">
-            {{ app.description }}
+          <p v-if="card.subtitle" class="about">
+            {{ card.subtitle }}
           </p>
+
+          <div v-if="card.badges.length" class="badge-row">
+            <UBadge v-for="badge in card.badges" :key="badge" size="sm" variant="soft">
+              {{ badge }}
+            </UBadge>
+          </div>
         </div>
-      </div>
-
-      <USeparator v-if="hasAnyDetail" />
-
-      <!-- Details Grid -->
-      <div v-if="hasAnyDetail" class="section-grid">
-        <!-- Admins -->
-        <section v-if="adminCount > 0" class="section-card">
-          <h3 class="section-title">Administrators</h3>
-          <div class="admin-grid">
-            <OrganismsUserCardsPill
-              v-for="entry in adminEntries"
-              :key="`admin-${entry.id}`"
-              :user="entry.pill"
-            />
-          </div>
-        </section>
-
-        <!-- Social -->
-        <section v-if="instagram" class="section-card">
-          <h3 class="section-title">Social</h3>
-          <div class="kv">
-            <span class="kv-key">
-              <UIcon name="i-lucide-instagram" class="icon" /> Instagram
-            </span>
-            <a
-              class="kv-val link"
-              :href="instagram"
-              target="_blank"
-              rel="noopener"
-            >
-              {{ prettyUrl(instagram) }}
-            </a>
-          </div>
-        </section>
-
-        <!-- System -->
-        <section class="section-card">
-          <h3 class="section-title">System</h3>
-          <div class="kv" v-if="createdAt">
-            <span class="kv-key">
-              <UIcon name="i-lucide-clock" class="icon" /> Created
-            </span>
-            <span class="kv-val">{{ createdAt }}</span>
-          </div>
-          <div class="kv" v-if="updatedAt">
-            <span class="kv-key">
-              <UIcon name="i-lucide-refresh-cw" class="icon" /> Updated
-            </span>
-            <span class="kv-val">{{ updatedAt }}</span>
-          </div>
-          <div class="kv" v-if="hasAssets">
-            <span class="kv-key">
-              <UIcon name="i-lucide-image" class="icon" /> Assets
-            </span>
-            <div class="chip-group">
-              <UBadge v-if="app.avatar_url" size="xs" variant="soft"
-                >Avatar</UBadge
-              >
-              <UBadge v-if="app.logo_url" size="xs" variant="soft">Logo</UBadge>
-              <UBadge v-if="app.wordmark_url" size="xs" variant="soft"
-                >Wordmark</UBadge
-              >
-            </div>
-          </div>
-        </section>
       </div>
     </div>
 
@@ -115,156 +35,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
-import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
+import { computed } from 'vue'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import type { UserCard } from '../../../../models/core/user.model'
-import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
-import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy'
 
-type Props = { app: AppCard.Profile | null }
+type Props = { card: AppCard.Card | null }
 const props = defineProps<Props>()
 
-const app = computed(() => props.app)
-
-const { getProxiedAvatarUrl } = useAvatarProxy()
-
-const avatarSrc = computed(() => {
-  const raw =
-    app.value?.avatar_url || app.value?.logo_url || app.value?.wordmark_url || ''
-  const trimmed = typeof raw === 'string' ? raw.trim() : ''
-  return trimmed ? getProxiedAvatarUrl(trimmed) || trimmed : ''
-})
-
-const initials = (value: string) =>
-  value
-    .split(/\s+/g)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('')
-
-const avatarText = computed(() => {
-  const label =
-    (app.value?.app_short_name ?? '').trim() || (app.value?.app_name ?? '').trim() || (app.value?.id ?? '').trim()
-  return label ? initials(label) : ''
-})
-
-const roleLabel = computed(() => {
-  const r = app.value?.role
-  if (!r) return ''
-  if (r === 'tenant') return 'Tenant'
-  if (r === 'global') return 'Global'
-  return r.charAt(0).toUpperCase() + r.slice(1)
-})
-
-const adminIds = computed(() => {
-  const ids = Array.isArray(app.value?.admin_ids)
-    ? app.value?.admin_ids ?? []
-    : []
-
-  if (!ids.length) return []
-
-  const trimmed = ids
-    .map((id) => (id ?? '').trim())
-    .filter((id): id is string => id.length > 0)
-
-  return trimmed.length ? Array.from(new Set(trimmed)) : []
-})
-
-const adminCount = computed(() => adminIds.value.length)
-const instagram = computed(() => app.value?.social_links?.instagram || '')
-
-const createdAt = computed(
-  () => formatFirestoreTimestamp(app.value?.created_at) ?? ''
-)
-const updatedAt = computed(
-  () => formatFirestoreTimestamp(app.value?.updated_at) ?? ''
-)
-
-const hasAssets = computed(() =>
-  Boolean(
-    app.value?.avatar_url || app.value?.logo_url || app.value?.wordmark_url
-  )
-)
-
-const hasAnyDetail = computed(
-  () =>
-    adminCount.value > 0 ||
-    !!instagram.value ||
-    !!createdAt.value ||
-    !!updatedAt.value ||
-    hasAssets.value
-)
-
-const adminLookup: Record<string, ReturnType<typeof useUserFetch>> = {}
-const { pillProps: userPillProps } = useUserInterface()
-
-const ensureAdminFetcher = (uid: string) => {
-  const key = uid.trim()
-  if (!key) return null
-  if (!adminLookup[key]) {
-    adminLookup[key] = useUserFetch(key)
-  }
-  return adminLookup[key]
-}
-
-const placeholderPill = (id: string, pending: boolean): UserCard.Pill => {
-  const initials = (
-    id.replace(/[^a-z0-9]/gi, '').slice(0, 2) || 'ID'
-  ).toUpperCase()
-
-  return {
-    avatar: '',
-    initials,
-    title: pending ? 'Loading user' : 'User unavailable',
-    subtitle: id,
-    badges: pending ? ['Pending'] : [],
-    to: null,
-    special: !pending,
-    specialIcon: 'i-lucide-alert-triangle',
-    specialTooltip: pending
-      ? 'Fetching user details'
-      : 'No user profile found for this administrator ID.',
-  }
-}
-
-const adminEntries = computed(() =>
-  adminIds.value.map((id) => {
-    const fetcher = ensureAdminFetcher(id)
-
-    if (!fetcher) {
-      return {
-        id,
-        pill: placeholderPill(id, false),
-      }
-    }
-
-    const user = fetcher.user.value
-    const pending = fetcher.pending.value
-
-    return {
-      id,
-      pill: user ? userPillProps(user) : placeholderPill(id, pending),
-    }
-  })
-)
-
-watchEffect(() => {
-  for (const id of adminIds.value) {
-    ensureAdminFetcher(id)
-  }
-})
-
-function prettyUrl(u: string) {
-  try {
-    const url = new URL(u)
-    return url.hostname.replace(/^www\./, '') + url.pathname.replace(/\/$/, '')
-  } catch {
-    return u
-  }
-}
+const card = computed(() => props.card)
 </script>
 
 <style scoped>

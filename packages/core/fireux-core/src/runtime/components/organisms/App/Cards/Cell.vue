@@ -4,20 +4,15 @@
     <UCard class="cell">
       <div class="row">
         <UAvatar
-          :src="avatarSrc || undefined"
-          :alt="app?.app_name || app?.id || '—'"
-          :text="avatarText"
+          :src="card?.image || undefined"
+          :alt="card?.title || '—'"
           size="md"
           class="avatar"
         />
 
         <div class="main">
-          <h3 class="title">{{ app?.app_name || app?.id }}</h3>
-          <p class="subtitle">
-            <span v-if="app?.id">{{ app.id }}</span>
-            <span v-if="app?.role">• {{ app.role }}</span>
-            <span v-if="app?.ecosystem">• {{ app.ecosystem }}</span>
-          </p>
+          <h3 class="title">{{ card?.title || '—' }}</h3>
+          <p v-if="card?.subtitle" class="subtitle">{{ card.subtitle }}</p>
         </div>
       </div>
     </UCard>
@@ -26,48 +21,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { RouteLocationRaw } from 'vue-router'
-import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy'
 
 const props = defineProps<{
-  app?: AppCard.Card | Partial<App> | null
-  to?: RouteLocationRaw | null
+  card?: AppCard.Card | null
 }>()
 
-const { getProxiedAvatarUrl } = useAvatarProxy()
-
-const rawAvatar = computed(() =>
-  (props.app?.avatar_url || props.app?.logo_url || props.app?.wordmark_url || '').trim()
+const wrapperTag = computed(() => (props.card?.href ? 'NuxtLink' : 'div'))
+const wrapperBindings = computed(() =>
+  props.card?.href ? { to: props.card.href } : {}
 )
-
-const avatarSrc = computed(() => {
-  const raw = rawAvatar.value
-  return raw ? getProxiedAvatarUrl(raw) || raw : ''
-})
-
-const initials = (value: string) =>
-  value
-    .split(/\s+/g)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('')
-
-const avatarText = computed(() => {
-  const label =
-    (props.app?.app_short_name ?? '').trim() ||
-    (props.app?.app_name ?? '').trim() ||
-    (props.app?.id ?? '').trim()
-  return label ? initials(label) : ''
-})
-
-const wrapperTag = computed(() => (props.to ? 'NuxtLink' : 'div'))
-const wrapperBindings = computed(() => (props.to ? { to: props.to } : {}))
 const wrapperClass = computed(() =>
-  props.to ? 'block no-underline text-inherit' : undefined
+  props.card?.href ? 'block no-underline text-inherit' : undefined
 )
+
+const card = computed(() => props.card ?? null)
 </script>
 
 <style scoped>

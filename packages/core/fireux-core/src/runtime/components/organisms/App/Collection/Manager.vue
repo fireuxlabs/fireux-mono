@@ -21,7 +21,7 @@
 
     <div v-if="directoryEntries.length" class="fx-section__grid">
       <article v-for="entry in directoryEntries" :key="entry.key">
-        <OrganismsAppCardsPill :app="entry.pill" />
+        <OrganismsAppCardsPill :card="entry.card" />
       </article>
     </div>
 
@@ -40,7 +40,7 @@ const slots = useSlots()
 const hasDefaultSlot = computed(() => Boolean(slots.default))
 
 const { apps } = useAppCollection()
-const { pillProps } = useAppInterface()
+const { card } = useAppInterface()
 
 const directoryEntries = computed(() => {
   const list = apps.value ?? []
@@ -48,12 +48,12 @@ const directoryEntries = computed(() => {
 
   return list.map((entry) => {
     const app = entry as App
-    const pill = pillProps(app)
-    const key = entry?.id ?? `${pill.title}-${pill.subtitle || ''}`
+    const payload = card(app)
+    const key = entry?.id ?? `${payload.title}-${payload.subtitle || ''}`
     return {
       key,
-      pill,
-    } satisfies { key: string; pill: AppCard.Pill }
+      card: payload,
+    } satisfies { key: string; card: AppCard.Card }
   })
 })
 

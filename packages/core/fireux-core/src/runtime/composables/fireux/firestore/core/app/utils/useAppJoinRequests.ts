@@ -9,24 +9,22 @@ import type {
 type JoinRequestItem = {
   id: string
   title: string
-  subtitle?: string
-  avatar?: string
-  initials?: string
+  subtitle: string
+  image: string
+  href: string
 }
 
 type HandleJoinRequests = (uid: string, approve: boolean) => Promise<unknown>
 
 type UserRef = ComputedRef<User | null>
 
-type PillBuilder = ComputedRef<
-  (target?: User | null | undefined) => UserCard.Pill | null
->
+type CardBuilder = ComputedRef<(target?: User | null | undefined) => UserCard.Card>
 
 type Options = {
   app: Ref<App | null | undefined>
   handleJoinRequests: HandleJoinRequests
   fetchedUser: (uid: string) => { user: UserRef }
-  pillProps: PillBuilder
+  card: CardBuilder
 }
 
 /**
@@ -36,7 +34,7 @@ export function useAppJoinRequests({
   app,
   handleJoinRequests,
   fetchedUser,
-  pillProps,
+  card,
 }: Options): {
   items: ComputedRef<JoinRequestItem[]>
   approve: (uid: string) => Promise<unknown>
@@ -66,29 +64,17 @@ export function useAppJoinRequests({
   const buildItem = (uid: string): JoinRequestItem => {
     const ref = ensureUserRef(uid)
     const profile = ref.value
-    if (!profile) return { id: uid, title: uid }
-
-    const pill = pillProps.value(profile)
-    if (!pill) {
-      const fallbackTitle = profile.display_name || profile.handle || uid
-      return {
-        id: uid,
-        title: fallbackTitle,
-        subtitle: profile.handle || undefined,
-        initials: fallbackTitle
-          .split(/\s+/g)
-          .filter(Boolean)
-          .slice(0, 2)
-          .map((part) => part[0]?.toUpperCase())
-          .join(''),
-      }
+    if (!profile) {
+      return { id: uid, title: uid, subtitle: '', image: '', href: '' }
     }
+
+    const payload = card.value(profile)
     return {
       id: uid,
-      avatar: pill.avatar ?? undefined,
-      initials: pill.initials ?? 'A',
-      title: pill.title || profile.display_name || profile.handle || uid,
-      subtitle: pill.subtitle || profile.handle || undefined,
+      title: payload.title,
+      subtitle: payload.subtitle,
+      image: payload.image,
+      href: payload.href,
     }
   }
 

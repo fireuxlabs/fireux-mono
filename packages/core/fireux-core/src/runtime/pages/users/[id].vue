@@ -3,7 +3,7 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsUserCardsProfile :user="userProfile" />
+      <OrganismsUserCardsProfile :card="userCard" />
     </UPageBody>
   </UPage>
 </template>
@@ -26,8 +26,8 @@ const userId = computed(() => {
 
 const { user: currentUser } = useUserFetch(userId)
 
-const { profileProps } = useUserInterface(currentUser)
-const userProfile = computed(() => profileProps())
+const { card } = useUserInterface(currentUser)
+const userCard = computed(() => (currentUser.value ? card(currentUser.value) : null))
 
 const displayName = computed(() => currentUser.value?.display_name ?? null)
 const pageTitle = computed(() => displayName.value ?? 'User Details')

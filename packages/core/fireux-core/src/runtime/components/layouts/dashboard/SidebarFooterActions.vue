@@ -13,17 +13,16 @@
       aria-label="View profile"
     >
       <UAvatar
-        :src="pillUser.avatar ?? undefined"
+        :src="pillUser.image || undefined"
         :alt="pillUser.title || 'User'"
-        :text="pillUser.initials || 'A'"
+        :text="avatarFallback"
         size="sm"
       />
     </NuxtLink>
 
     <OrganismsUserCardsPill
       v-else-if="pillUser"
-      :user="pillUser"
-      :show-memberships="false"
+      :card="pillUser"
       class="w-full"
     />
   </div>
@@ -48,15 +47,27 @@ const props = withDefaults(
 
 const fireux = useFireUXConfig()
 const { isAuthenticated, signOutUser } = useAuth()
-const { currentUser, pillProps, isLoading } = useUser()
+const { currentUser, card, isLoading } = useUser()
 
 const signOutLoading = ref(false)
 
-const pillUser = computed((): UserCard.Pill | undefined => {
+const pillUser = computed((): UserCard.Card | undefined => {
   if (isLoading.value) return undefined
   const user = currentUser.value
   if (!user) return undefined
-  return (pillProps(user) || undefined) as UserCard.Pill | undefined
+  return card(user)
+})
+
+const avatarFallback = computed(() => {
+  const title = pillUser.value?.title ?? ''
+  const trimmed = typeof title === 'string' ? title.trim() : ''
+  if (!trimmed) return 'U'
+  return trimmed
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
 })
 
 const handleSignOut = async () => {

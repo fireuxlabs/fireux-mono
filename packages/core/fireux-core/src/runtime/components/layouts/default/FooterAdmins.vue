@@ -19,7 +19,7 @@
       <OrganismsUserCardsPill
         v-for="admin in adminCards"
         :key="admin.key"
-        :user="admin.pill"
+        :card="admin.card"
       />
     </div>
 
@@ -39,19 +39,8 @@ import type { UserCard } from '../../../models/core/user.model'
 const { app } = useApp()
 const { users, pending } = useAppUsers()
 const { fulfilled } = useUserCollection()
-const { pillProps } = useUserInterface()
+const { card } = useUserInterface()
 const { appName } = useFireUXConfig()
-
-const toInitials = (value?: string | null) => {
-  const input = (value ?? '').trim()
-  if (!input) return 'A'
-  return input
-    .split(/\s+/)
-    .map((token) => token[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-}
 
 const adminMemberships = computed(() =>
   (users.value ?? []).filter(
@@ -69,31 +58,21 @@ const adminEntries = computed(() =>
 
 const adminCards = computed(() =>
   adminEntries.value.map((record, index) => {
-    const pill = pillProps(record as any)
+    const payload = card(record as any)
     const title =
-      pill?.title ||
+      payload.title ||
       record.display_name?.trim() ||
       record.handle?.trim() ||
       record.id ||
       `Admin ${index + 1}`
 
-    const enriched: UserCard.Pill = {
-      ...(pill ?? {
-        title: '',
-        subtitle: '',
-        initials: '',
-        avatar: '',
-        badges: [],
-        to: null,
-      }),
+    const enriched: UserCard.Card = {
+      ...payload,
       title,
-      initials: pill?.initials ?? toInitials(title),
-      to: pill?.to ?? (record.id ? `/users/${record.id}` : null),
-      special: true,
-      specialTooltip: 'Tenant admin',
+      badges: ['Admin'],
     }
 
-    return { key: record.id || `${index}`, pill: enriched }
+    return { key: record.id || `${index}`, card: enriched }
   })
 )
 

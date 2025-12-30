@@ -105,7 +105,6 @@ const props = defineProps<{ user: User | null }>()
 
 const toast = useToastify()
 const userApi = useUser()
-const { pillProps } = userApi
 const coreProfile = userApi.core.profile
 const { app, setAppUserAdmin } = useApp()
 
@@ -148,8 +147,15 @@ const handleToggleAdmin = async (nextValue: boolean) => {
 
 const user = computed(() => props.user)
 const avatarInitials = computed(() => {
-  const pill = pillProps(user.value ?? null)
-  return pill?.initials ?? 'A'
+  const name = user.value?.display_name || user.value?.handle || user.value?.id || 'U'
+  const trimmed = name.trim()
+  if (!trimmed) return 'U'
+  return trimmed
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
 })
 
 const { DisplayName, Handle, Email, Bio } = useUserFormattingAndValidation()

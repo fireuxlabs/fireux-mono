@@ -11,17 +11,17 @@
 
         <div class="space-y-4">
           <OrganismsAppCardsPill
-            v-if="!showCellView && currentPill"
-            :app="currentPill"
+            v-if="!showCellView && currentCard"
+            :card="currentCard"
           />
-          <OrganismsAppCardsCell v-else-if="currentCell" :app="currentCell" />
+          <OrganismsAppCardsCell v-else-if="currentCard" :card="currentCard" />
         </div>
       </template>
 
       <p v-else class="text-sm text-slate-500">No app loaded.</p>
     </section>
 
-    <OrganismsAppCardsProfile v-if="showExtended && profile" :app="profile" />
+    <OrganismsAppCardsProfile v-if="showExtended && currentCard" :card="currentCard" />
   </div>
 </template>
 
@@ -36,22 +36,14 @@ const props = withDefaults(
   { compact: true }
 )
 
-const { app: runtimeApp, pillProps, cellProps, profileProps } = useApp()
+const { app: runtimeApp, card } = useApp()
 
 const current = computed<App | null>(
   () => props.app ?? runtimeApp.value ?? null
 )
 
-const currentPill = computed<AppCard.Pill | null>(() =>
-  current.value ? pillProps(current.value) : null
-)
-
-const currentCell = computed<AppCard.Cell | null>(() =>
-  current.value ? cellProps(current.value) : null
-)
-
-const profile = computed<AppCard.Profile | null>(() =>
-  current.value ? profileProps(current.value) : null
+const currentCard = computed<AppCard.Card | null>(() =>
+  current.value ? card(current.value) : null
 )
 
 const showExtended = computed(() => !props.compact)

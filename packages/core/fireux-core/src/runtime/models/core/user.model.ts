@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { Pill as PillModel } from '../../../types/pill.model'
+import type { CardPayload } from '../../types/card-payload'
 
 export type NotificationScope = 'ecosystem' | 'app'
 
@@ -50,42 +50,6 @@ export interface AppUser {
  * UI View Models (purely structural)
  * --------------------------- */
 export namespace UserCard {
-  export interface MembershipBadge {
-    id: string
-    label: string
-    isAdmin: boolean
-  }
-
-  export interface Pill extends PillModel.Props {
-    memberships?: MembershipBadge[]
-  }
-
-  /** Cell extends Pill props + adds 'to' and domain fields */
-  export interface Cell extends Pill {
-    to?: string | null
-    id: string
-    profiles?: string[]
-    role?: string
-    handle?: string
-    email?: string
-    adminOf?: string[]
-    userOf?: string[]
-    createdAt?: FirebaseTimestamp
-    updatedAt?: FirebaseTimestamp
-    appUser?: AppUser | null
-    runtime?: {
-      mode: 'global' | 'tenant'
-      appId?: string | null
-    }
-  }
-
-  /** Profile = Cell with extra descriptive metadata */
-  export interface Profile extends Cell {
-    displayName?: string
-    display_name?: string
-    email?: string
-    bio?: string
-    created_at?: FirebaseTimestamp
-    updated_at?: FirebaseTimestamp
-  }
+  /** Single payload powering all views (Pill/Cell/Preview/Profile). */
+  export type Card = CardPayload
 }

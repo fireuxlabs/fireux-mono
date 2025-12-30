@@ -1,207 +1,50 @@
 <template>
   <UCard class="profile-card">
-    <div class="profile">
+    <div v-if="card" class="profile">
       <div class="profile-header">
         <div class="avatar-wrap">
           <UAvatar
-            :src="user?.avatar || ''"
-            :alt="avatarAlt"
+            :src="card.image || undefined"
+            :alt="card.title || 'User'"
             size="xl"
             class="avatar"
           />
         </div>
+
         <div class="identity">
-          <h2 class="name">{{ displayName }}</h2>
-          <div v-if="handle" class="identity-meta">
-            <span class="handle">@{{ handle }}</span>
+          <h2 class="name">{{ card.title || 'User' }}</h2>
+          <p v-if="card.subtitle" class="about">{{ card.subtitle }}</p>
+
+          <div v-if="card.badges.length" class="status-chips">
+            <UBadge v-for="badge in card.badges" :key="badge" size="sm" variant="soft">
+              {{ badge }}
+            </UBadge>
           </div>
-          <div
-            v-if="
-              user?.role ||
-              user?.appId ||
-              user?.created_in ||
-              user?.coreStatus ||
-              user?.appStatus
-            "
-            class="status-chips"
+
+          <NuxtLink
+            v-if="card.href"
+            :to="card.href"
+            class="text-xs text-gray-500 no-underline"
           >
-            <UBadge v-if="user?.role" size="sm" variant="soft" color="primary">
-              {{ user.role }}
-            </UBadge>
-            <UBadge
-              v-if="user?.appId"
-              size="sm"
-              variant="subtle"
-              color="neutral"
-            >
-              App · {{ user.appId }}
-            </UBadge>
-            <UBadge
-              v-if="user?.created_in"
-              size="sm"
-              variant="subtle"
-              color="neutral"
-            >
-              Created · {{ user.created_in }}
-            </UBadge>
-            <UBadge
-              v-if="user?.coreStatus"
-              size="sm"
-              variant="soft"
-              color="primary"
-            >
-              Core · {{ user.coreStatus }}
-            </UBadge>
-            <UBadge
-              v-if="user?.appStatus"
-              size="sm"
-              variant="soft"
-              color="neutral"
-            >
-              App · {{ user.appStatus }}
-            </UBadge>
-          </div>
+            {{ card.href }}
+          </NuxtLink>
         </div>
       </div>
+    </div>
 
-      <div v-if="user?.bio" class="bio">
-        <p>{{ user.bio }}</p>
-      </div>
-
-      <USeparator />
-
-      <div v-if="hasSectionContent" class="section-grid">
-        <section v-if="profileBadges.length" class="section-card">
-          <div class="section-card__header">
-            <h3 class="section-title">Profiles</h3>
-            <span class="section-count">{{ profileBadges.length }}</span>
-          </div>
-          <div class="chip-group">
-            <UBadge
-              v-for="profile in profileBadges"
-              :key="`profile-${profile}`"
-              size="xs"
-              variant="soft"
-            >
-              {{ profile }}
-            </UBadge>
-          </div>
-        </section>
-        <section
-          v-if="adminMemberships.length || memberMemberships.length"
-          class="section-card"
-        >
-          <div class="section-card__header">
-            <h3 class="section-title">{{ membershipTitle }}</h3>
-            <span class="section-count">{{ membershipTotal }}</span>
-          </div>
-
-          <div v-if="adminMemberships.length" class="chip-subtitle">
-            Administrates
-          </div>
-          <div v-if="adminMemberships.length" class="chip-group">
-            <UBadge
-              v-for="app in adminMemberships"
-              :key="`admin-${app}`"
-              size="xs"
-              variant="soft"
-            >
-              {{ app }}
-            </UBadge>
-          </div>
-
-          <div
-            v-if="memberMemberships.length"
-            :class="[
-              'chip-group',
-              adminMemberships.length ? 'with-border' : '',
-            ]"
-          >
-            <UBadge
-              v-for="membership in memberMemberships"
-              :key="`member-${membership}`"
-              size="xs"
-              variant="soft"
-            >
-              {{ membership }}
-            </UBadge>
-          </div>
-        </section>
-      </div>
-
-      <USeparator />
-
-      <div class="detail-grid">
-        <div class="detail-row">
-          <span class="detail-label">User ID</span>
-          <span class="detail-value mono">{{ user?.id || '—' }}</span>
-        </div>
-        <div v-if="createdAt" class="detail-row">
-          <span class="detail-label">Created</span>
-          <span class="detail-value">
-            <UIcon name="i-lucide-clock" class="icon" />
-            {{ createdAt }}
-          </span>
-        </div>
-        <div v-if="updatedAt" class="detail-row">
-          <span class="detail-label">Updated</span>
-          <span class="detail-value">
-            <UIcon name="i-lucide-refresh-cw" class="icon" />
-            {{ updatedAt }}
-          </span>
-        </div>
-      </div>
+    <div v-else class="empty">
+      <p>No user loaded.</p>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
+import type { UserCard } from '../../../../models/core/user.model'
 
-const props = defineProps<{ user: any }>()
+const props = defineProps<{ card: UserCard.Card | null }>()
 
-const user = computed(() => props.user ?? null)
-
-const listUniqueStrings = (value?: unknown): string[] => {
-  if (!Array.isArray(value)) return []
-  return Array.from(new Set(value)).filter(
-    (entry): entry is string => typeof entry === 'string' && entry.length > 0
-  )
-}
-
-const displayName = computed(
-  () =>
-    user.value?.display_name?.trim() ||
-    user.value?.handle?.trim() ||
-    user.value?.id ||
-    'User'
-)
-const handle = computed(() => user.value?.handle?.trim() || '')
-const avatarAlt = computed(() =>
-  handle.value ? `${displayName.value} (@${handle.value})` : displayName.value
-)
-
-const profileBadges = computed(() => listUniqueStrings(user.value?.profiles))
-const adminMemberships = computed(() => listUniqueStrings(user.value?.adminOf))
-const memberMemberships = computed(() => listUniqueStrings(user.value?.userOf))
-
-const membershipTotal = computed(
-  () => adminMemberships.value.length + memberMemberships.value.length
-)
-
-const membershipTitle = computed(() => 'User Of')
-
-const hasSectionContent = computed(
-  () => profileBadges.value.length || membershipTotal.value > 0
-)
-
-const createdAt = computed(
-  () => formatFirestoreTimestamp(user.value?.created_at) ?? ''
-)
-const updatedAt = computed(
-  () => formatFirestoreTimestamp(user.value?.updated_at) ?? ''
-)
+const card = computed(() => props.card)
 </script>
 
 <style scoped>

@@ -13,7 +13,7 @@
         <p class="status">You're signed in.</p>
         <OrganismsUserCardsPill
           v-if="currentUserPill"
-          :user="currentUserPill"
+          :card="currentUserPill"
           class="user-pill"
         />
         <div class="auth-actions">
@@ -81,9 +81,9 @@ const googleLogo = computed(() =>
     : '/img/core/auth/sign-in-light.svg'
 )
 
-const { currentUser, pillProps } = useUser()
+const { currentUser, card } = useUser()
 const currentUserPill = computed(() =>
-  currentUser.value ? pillProps(currentUser.value) : null
+  currentUser.value ? card(currentUser.value) : null
 )
 
 const goToDashboard = async () => {

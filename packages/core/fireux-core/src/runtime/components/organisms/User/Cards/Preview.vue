@@ -10,10 +10,10 @@
 
         <div class="space-y-4">
           <OrganismsUserCardsPill
-            v-if="!showCellView && currentPill"
-            :user="currentPill"
+            v-if="!showCellView && currentCard"
+            :card="currentCard"
           />
-          <OrganismsUserCardsCell v-else-if="currentCell" :user="currentCell" />
+          <OrganismsUserCardsCell v-else-if="currentCard" :card="currentCard" />
         </div>
       </template>
 
@@ -21,8 +21,8 @@
     </section>
 
     <OrganismsUserCardsProfile
-      v-if="showExtended && currentProfile"
-      :user="currentProfile"
+      v-if="showExtended && currentCard"
+      :card="currentCard"
     />
   </div>
 </template>
@@ -37,25 +37,13 @@ const props = withDefaults(
   { compact: true }
 )
 
-const { user: runtimeUser, pillProps, cellProps, profileProps } = useUser()
+const { user: runtimeUser, card } = useUser()
 
 const current = computed<User | null>(() => props.user ?? runtimeUser.value ?? null)
 
-const currentPill = computed<UserCard.Pill | null>(() => {
-  if (!current.value) return null
-  const pill = pillProps(current.value)
-  return pill ? { ...pill } : null
-})
-
-const currentCell = computed<UserCard.Cell | null>(() => {
-  if (!current.value) return null
-  return cellProps(current.value)
-})
-
-const currentProfile = computed<UserCard.Profile | null>(() => {
-  if (!current.value) return null
-  return profileProps(current.value)
-})
+const currentCard = computed<UserCard.Card | null>(() =>
+  current.value ? card(current.value) : null
+)
 
 const showExtended = computed(() => !props.compact)
 

@@ -35,11 +35,7 @@
               </template>
 
               <template #core>
-                <OrganismsAppEditCore :app="appSnapshot" />
-              </template>
-
-              <template #app>
-                <OrganismsAppEditApp :app="appSnapshot" />
+                <OrganismsAppEdit :app="appSnapshot" />
               </template>
             </LayoutsDashboardProfileEdit>
           </UPageBody>
@@ -53,8 +49,7 @@
 import { definePageMeta } from '#imports'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import OrganismsAppCardsPreview from '../../components/organisms/App/Cards/Preview.vue'
-import OrganismsAppEditCore from '../../components/organisms/App/Edit/Core.vue'
-import OrganismsAppEditApp from '../../components/organisms/App/Edit/App.vue'
+import OrganismsAppEdit from '../../components/organisms/App/Edit.vue'
 
 const { app, pending } = useApp()
 

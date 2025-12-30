@@ -1,4 +1,3 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Edit/Core.vue -->
 <template>
   <ClientOnly>
     <div v-if="app" class="space-y-6">
@@ -108,6 +107,16 @@
         </div>
         <p v-else class="fx-section__empty">No members yet.</p>
       </UCard>
+
+      <UCard>
+        <div class="fx-app-slot">
+          <p class="fx-app-slot__label">Tenant overrides</p>
+          <p class="fx-app-slot__copy">
+            This surface is reserved for per-tenant deltas once app-level
+            controls are defined.
+          </p>
+        </div>
+      </UCard>
     </div>
 
     <MoleculesStateCard v-else entity="app settings" kind="document" loading />
@@ -116,18 +125,17 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { App } from '../../../../models/core/app.model'
-import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
-import { useAppUsers } from '../../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
-import { useAppJoinRequests } from '../../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
-import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
-import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
-import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
+import type { App } from '../../../models/core/app.model'
+import { useAppUpdate } from '../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
+import { useAppUsers } from '../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
+import { useAppJoinRequests } from '../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
+import { useUserFetch } from '../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
 
 const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
 
 const appRef = computed(() => props.app)
-const appIdRef = computed(() => props.app?.id ?? null)
 const app = appRef
 
 const toast = useToastify()
@@ -135,7 +143,7 @@ const toast = useToastify()
 const { updateDescription, updateInstagram, uploadAvatar, handleJoinRequests } =
   useAppUpdate(appRef)
 const { users } = useAppUsers()
-const { pillProps } = useUser()
+const { card } = useUser()
 
 const avatarSrc = computed(
   () =>
@@ -157,8 +165,7 @@ const withToast =
       await operation(value)
       toast.success(ok)
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Please try again.'
+      const message = error instanceof Error ? error.message : 'Please try again.'
       toast.error(`${fail}: ${message}`)
       throw error
     }
@@ -196,7 +203,7 @@ const fetchedUser = (uid: string) => {
   return { user: computed(() => coreUser.value ?? null) }
 }
 
-const pillPropsRef = computed(() => pillProps)
+const cardRef = computed(() => card)
 
 const {
   items: joinRequestItems,
@@ -206,7 +213,7 @@ const {
   app: appRef,
   handleJoinRequests,
   fetchedUser,
-  pillProps: pillPropsRef,
+  card: cardRef,
 })
 
 const teamIds = computed(() =>
@@ -227,3 +234,24 @@ const onRemove = withToast(
   'Failed to remove request'
 )
 </script>
+
+<style scoped>
+.fx-app-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fx-app-slot__label {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.fx-app-slot__copy {
+  margin: 0;
+  font-size: 0.875rem;
+  color: rgba(15, 23, 42, 0.8);
+}
+</style>

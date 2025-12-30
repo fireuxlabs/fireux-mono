@@ -3,7 +3,7 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsAppCardsProfile :app="appProfile" />
+      <OrganismsAppCardsProfile :card="appProfile" />
     </UPageBody>
   </UPage>
 </template>
@@ -26,11 +26,9 @@ const appId = computed(() => {
 
 const { app: currentApp } = useAppFetch(appId)
 
-const { profileProps } = useAppInterface()
+const { card } = useAppInterface()
 
-const appProfile = computed(() =>
-  currentApp.value ? profileProps(currentApp.value) : null
-)
+const appProfile = computed(() => (currentApp.value ? card(currentApp.value) : null))
 
 const appName = computed(() => currentApp.value?.app_name ?? null)
 const pageTitle = computed(() => appName.value ?? 'App Details')
