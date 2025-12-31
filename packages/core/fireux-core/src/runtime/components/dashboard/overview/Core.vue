@@ -45,7 +45,25 @@
 import { computed } from 'vue'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
-const { currentUser, profileComplete, card, isLoading } = useUser()
+const { currentUser, card, isLoading } = useUser()
+
+const profileComplete = computed<number | null>(() => {
+  if (isLoading.value) return null
+
+  const current = currentUser.value
+  if (!current) return 0
+
+  const checks = [
+    Boolean((current.display_name ?? '').trim()),
+    Boolean((current.handle ?? '').trim()),
+    Boolean((current.bio ?? '').trim()),
+    Boolean((current.avatar ?? '').trim()),
+  ]
+
+  const total = checks.length
+  const done = checks.filter(Boolean).length
+  return Math.round((done / total) * 100)
+})
 
 const pill = computed(() => {
   if (isLoading.value) return null

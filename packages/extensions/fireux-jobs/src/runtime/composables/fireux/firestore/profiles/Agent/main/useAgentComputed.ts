@@ -1,5 +1,3 @@
-import { computed, ref } from 'vue'
-import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import type { AgentProfile } from '../../../../../../models/profiles/Agent/Agent.model'
 
@@ -11,31 +9,11 @@ import type { AgentProfile } from '../../../../../../models/profiles/Agent/Agent
  */
 export function useAgentComputed(
   refs: ProfileRefs<AgentProfile>,
-  pending?: Ref<boolean>
+  pending?: unknown
 ) {
-  // Fallback to empty refs when callers pass partial data
-  const coreProfile = refs?.coreProfile ?? ref<AgentProfile | null>(null)
-  const appProfile = refs?.appProfile ?? ref<AgentProfile | null>(null)
+  // Stub: keep args for future use, avoid TS “unused” warnings
+  void refs
+  void pending
 
-  const activeProfile = computed<AgentProfile | null>(() => {
-    const core = coreProfile.value ?? null
-    const scoped = appProfile.value ?? null
-
-    if (!core && !scoped) return null
-    return {
-      ...(core ?? {}),
-      ...(scoped ?? {}),
-    } as AgentProfile
-  })
-
-  const isPending = computed(() => Boolean(pending?.value))
-  const hasCoreProfile = computed(() => Boolean(coreProfile.value))
-  const hasAppProfile = computed(() => Boolean(appProfile.value))
-
-  return {
-    activeProfile,
-    isPending,
-    hasCoreProfile,
-    hasAppProfile,
-  }
+  return {}
 }

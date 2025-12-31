@@ -149,8 +149,7 @@ function findCtaVueFiles() {
   return abs
 }
 
-function buildMarkdown({ ctaFiles, rootFile }) {
-  const rootRel = toRepoRelative(rootFile)
+function buildMarkdown({ ctaFiles }) {
 
   const lines = []
   lines.push('# CTA Innards (Runtime)')
@@ -158,7 +157,6 @@ function buildMarkdown({ ctaFiles, rootFile }) {
   lines.push('Repo-truth snapshot (runtime only). Auto-generated.')
   lines.push('')
   lines.push(`- Included \`CTA.vue\` files: ${ctaFiles.length}`)
-  lines.push(`- Included CTA-like root: \`${rootRel}\``)
   lines.push('')
   lines.push('---')
 
@@ -176,18 +174,6 @@ function buildMarkdown({ ctaFiles, rootFile }) {
     lines.push('```')
   }
 
-  lines.push('')
-  lines.push('---')
-  lines.push('')
-  lines.push('## Core — Profile Root (CTA-like)')
-  lines.push('')
-  lines.push(`Path: \`${rootRel}\``)
-  lines.push('')
-  lines.push('```vue')
-  lines.push(readText(rootFile).trimEnd())
-  lines.push('```')
-  lines.push('')
-
   return lines.join('\n')
 }
 
@@ -195,13 +181,8 @@ function main() {
   const outDir = path.join(repoRoot, 'temp')
   const outFile = path.join(outDir, 'temp-cta.md')
 
-  const rootFile = path.join(
-    repoRoot,
-    'packages/core/fireux-core/src/runtime/components/organisms/Profile/Root.vue'
-  )
-
   const ctaFiles = findCtaVueFiles()
-  const md = buildMarkdown({ ctaFiles, rootFile })
+  const md = buildMarkdown({ ctaFiles })
 
   mkdirSync(outDir, { recursive: true })
   writeFileSync(outFile, md, 'utf8')

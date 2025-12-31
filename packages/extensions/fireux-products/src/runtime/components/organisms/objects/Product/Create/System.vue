@@ -1,5 +1,5 @@
 <template>
-  <OrganismsCreateShell
+  <MoleculesCreateShell
     :loading="isCreating"
     submit-label="Create"
     @submit="handleCreate"
@@ -11,7 +11,7 @@
     <template #preview>
       <OrganismsObjectsProductCreatePreview />
     </template>
-  </OrganismsCreateShell>
+  </MoleculesCreateShell>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'

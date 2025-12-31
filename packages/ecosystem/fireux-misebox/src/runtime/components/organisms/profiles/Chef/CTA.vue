@@ -1,49 +1,52 @@
 <!-- packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Chef/CTA.vue -->
 <template>
-	<OrganismsProfileCreateSystem
-		profile-key="chef"
-		:config="chefConfig"
-		title="Create your chef profile"
+	<UPageCTA
+		title="Chef profile"
 		description="Showcase your culinary strengths so kitchens can match you to the right stations and menus."
-		v-slot="slotProps"
+		variant="naked"
 	>
-		<div v-if="slotProps.shouldRender">
-			<UPageCTA
-				:title="slotProps.title"
-				:description="slotProps.description"
-				variant="naked"
-			>
-				<template #links>
-					<UButton
-						v-if="slotProps.primary.kind === 'link'"
-						color="primary"
-						size="lg"
-						:to="slotProps.primary.to"
-					>
-						{{ slotProps.primary.label }}
-					</UButton>
+		<template #default>
+			<div v-if="!hasChefProfile" class="space-y-2">
+				<OrganismsProfilesChefCreateSystem />
+			</div>
 
-					<UButton
-						v-else
-						color="primary"
-						size="lg"
-						:loading="slotProps.primary.loading"
-						:disabled="slotProps.primary.disabled"
-						@click="slotProps.primary.onClick"
-					>
-						{{ slotProps.primary.label }}
+			<div v-else class="space-y-4">
+				<div class="flex justify-end">
+					<UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
+						{{ showCellView ? 'Show pill' : 'Show cell' }}
 					</UButton>
-				</template>
-			</UPageCTA>
+				</div>
 
-			<p v-if="slotProps.error" class="text-sm text-red-600">
-				{{ slotProps.error }}
-			</p>
-		</div>
-	</OrganismsProfileCreateSystem>
+				<div class="space-y-4">
+					<OrganismsProfilesChefCardsCell v-if="showCellCard && cell" :chef="cell" />
+					<OrganismsProfilesChefCardsPill v-else-if="pill" :chef="pill" />
+					<p v-else class="text-sm text-slate-500">No chef profile loaded.</p>
+				</div>
+			</div>
+		</template>
+	</UPageCTA>
 </template>
 
 <script setup lang="ts">
-import { chefConfig } from '../../../../models/profiles/Chef/Chef.model'
+import { computed, ref, watch } from 'vue'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useChef } from '../../../../composables/fireux/firestore/profiles/Chef/useChef'
+
+const { pill, cell } = useChef()
+const { hasProfile } = useUser()
+
+const hasChefProfile = computed(() => hasProfile('chef'))
+
+const canToggle = computed(() => Boolean(cell.value))
+const showCellView = ref(false)
+const showCellCard = computed(() => canToggle.value && showCellView.value)
+const toggleView = () => {
+	if (!canToggle.value) return
+	showCellView.value = !showCellView.value
+}
+
+watch(canToggle, (enabled: boolean) => {
+	if (!enabled) showCellView.value = false
+})
 </script>
 

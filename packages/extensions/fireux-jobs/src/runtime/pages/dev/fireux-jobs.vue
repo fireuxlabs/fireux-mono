@@ -17,19 +17,24 @@
           </p>
         </header>
 
-        <OrganismsProfileSectionsSingle
-          v-if="professionalHasProfile"
-          title="Professional profile"
-        >
-          <OrganismsProfilesProfessionalCardsCell
-            v-if="professionalCell"
-            :professional="professionalCell"
-          />
-          <OrganismsProfilesProfessionalCardsPill
-            v-if="professionalPill"
-            :professional="professionalPill"
-          />
-        </OrganismsProfileSectionsSingle>
+        <div v-if="professionalHasProfile" class="space-y-6">
+          <UCard>
+            <template #header>
+              <h2>Professional profile</h2>
+            </template>
+
+            <div class="space-y-4">
+              <OrganismsProfilesProfessionalCardsCell
+                v-if="professionalCell"
+                :professional="professionalCell"
+              />
+              <OrganismsProfilesProfessionalCardsPill
+                v-if="professionalPill"
+                :professional="professionalPill"
+              />
+            </div>
+          </UCard>
+        </div>
         <p v-else class="text-sm text-gray-500 dark:text-gray-400">
           No professional profile loaded.
         </p>
@@ -155,19 +160,18 @@
           </p>
         </header>
 
-        <OrganismsProfileSectionsSingle
-          v-if="agentHasProfile"
-          title="Agent profile"
-        >
-          <OrganismsProfilesAgentCardsCell
-            v-if="agentCell"
-            :agent="agentCell"
-          />
-          <OrganismsProfilesAgentCardsPill
-            v-if="agentPill"
-            :agent="agentPill"
-          />
-        </OrganismsProfileSectionsSingle>
+        <div v-if="agentHasProfile" class="space-y-6">
+          <UCard>
+            <template #header>
+              <h2>Agent profile</h2>
+            </template>
+
+            <div class="space-y-4">
+              <OrganismsProfilesAgentCardsCell v-if="agentCell" :agent="agentCell" />
+              <OrganismsProfilesAgentCardsPill v-if="agentPill" :agent="agentPill" />
+            </div>
+          </UCard>
+        </div>
         <p v-else class="text-sm text-gray-500 dark:text-gray-400">
           No agent profile loaded.
         </p>

@@ -4,7 +4,7 @@
     <UPageHeader title="Jobs" description="Browse jobs." />
     <UPageBody class="pagebody">
       <OrganismsObjectsJobCTA />
-      <OrganismsObjectsJobCollectionView />
+      <OrganismsObjectsJobCollectionManager />
     </UPageBody>
   </UPage>
 </template>

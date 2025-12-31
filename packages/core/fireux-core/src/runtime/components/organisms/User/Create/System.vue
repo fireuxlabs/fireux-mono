@@ -1,11 +1,42 @@
 <template>
-  <slot
-    :should-render="shouldRender"
-    :title="title"
-    :description="description"
-    :primary="primary"
-    :error="error"
-  />
+  <UContainer>
+    <div class="space-y-4 py-4">
+      <div class="space-y-1">
+        <h2 class="text-base font-semibold">{{ title }}</h2>
+        <p class="text-sm text-gray-500">{{ description }}</p>
+      </div>
+
+      <div class="flex">
+        <UButton
+          v-if="primary.kind === 'link'"
+          color="primary"
+          size="lg"
+          :to="primary.to"
+        >
+          {{ primary.label }}
+        </UButton>
+
+        <UButton
+          v-else-if="primary.kind === 'action'"
+          color="primary"
+          size="lg"
+          :loading="primary.loading"
+          :disabled="primary.disabled"
+          @click="primary.onClick"
+        >
+          {{ primary.label }}
+        </UButton>
+
+        <UButton v-else color="neutral" size="lg" disabled>
+          {{ primary.label }}
+        </UButton>
+      </div>
+
+      <p v-if="error" class="text-sm text-red-600">
+        {{ error }}
+      </p>
+    </div>
+  </UContainer>
 </template>
 
 <script setup lang="ts">
@@ -36,7 +67,7 @@ type PrimaryAction =
     }
 
 const { appName, ecosystem } = useFireUXConfig()
-const { cta, ensureCore, ensureApp } = useUser()
+const { cta, ensureCore, ensureApp, isLoading } = useUser()
 
 const error = ref<string | null>(null)
 const isEnsuring = ref(false)
@@ -52,6 +83,7 @@ const appLabel = computed(() => appName ?? 'this workspace')
 const ecosystemLabel = computed(() => ecosystem ?? 'FireUX')
 
 const title = computed(() => {
+  if (isLoading.value) return 'Loading user'
   if (isSignIn.value) return 'Sign in to continue'
   if (requiresCore.value) return 'Create your core user'
   if (requiresApp.value) return `Join ${appLabel.value}`
@@ -59,6 +91,7 @@ const title = computed(() => {
 })
 
 const description = computed(() => {
+  if (isLoading.value) return 'Resolving your user record and memberships.'
   if (isSignIn.value)
     return 'Authenticate to load your user details and continue setup.'
   if (requiresCore.value)
@@ -97,6 +130,15 @@ const handleEnsure = async () => {
 }
 
 const primary = computed<PrimaryAction>(() => {
+  if (isLoading.value) {
+    return {
+      kind: 'none',
+      label: 'Loading…',
+      loading: false,
+      disabled: true,
+    }
+  }
+
   if (!shouldRender.value) {
     return {
       kind: 'none',

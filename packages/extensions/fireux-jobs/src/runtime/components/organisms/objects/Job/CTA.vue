@@ -7,14 +7,22 @@
     variant="naked"
   >
     <template #default>
-      <OrganismsProfileSectionsSingle :title="currentProfileTitle">
-        <OrganismsProfilesAgentCardsCell
-          v-if="cell"
-          :agent="cell"
-          class="cta-agent-cell"
-        />
-        <OrganismsProfilesAgentCardsPill v-if="pill" :agent="pill" />
-      </OrganismsProfileSectionsSingle>
+      <div class="space-y-6">
+        <UCard>
+          <template #header>
+            <h2>{{ currentProfileTitle }}</h2>
+          </template>
+
+          <div class="space-y-4">
+            <OrganismsProfilesAgentCardsCell
+              v-if="cell"
+              :agent="cell"
+              class="cta-agent-cell"
+            />
+            <OrganismsProfilesAgentCardsPill v-if="pill" :agent="pill" />
+          </div>
+        </UCard>
+      </div>
     </template>
 
     <template #links>

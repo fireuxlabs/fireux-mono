@@ -35,14 +35,10 @@ Note: `fireux-core` App currently has no `CTA.vue` (accepted).
 - packages/core/fireux-core/src/runtime/components/organisms/App/Edit/Core.vue
 
 ### A3) Profile shell
-- packages/core/fireux-core/src/runtime/components/organisms/Profile/List.vue
-- packages/core/fireux-core/src/runtime/components/organisms/Profile/Page.vue
-- packages/core/fireux-core/src/runtime/components/organisms/Profile/Root.vue
-- packages/core/fireux-core/src/runtime/components/organisms/Profile/Sections/Single.vue
-- packages/core/fireux-core/src/runtime/components/organisms/Dashboard/Profile/Edit/Profile.vue
+_Removed: core Profile organism layer was deleted._
 
 ### A4) Shared create shell
-- packages/core/fireux-core/src/runtime/components/organisms/Create/Shell.vue
+- packages/core/fireux-core/src/runtime/components/molecules/Create/Shell.vue
 
 ---
 

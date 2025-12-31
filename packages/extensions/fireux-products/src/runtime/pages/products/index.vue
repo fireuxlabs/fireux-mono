@@ -5,7 +5,7 @@
     <UPageHeader title="Products" description="Products catalog." />
     <UPageBody class="pagebody">
       <OrganismsObjectsProductCTA />
-      <OrganismsObjectsProductCollectionView />
+      <OrganismsObjectsProductCollectionManager />
     </UPageBody>
   </UPage>
 </template>

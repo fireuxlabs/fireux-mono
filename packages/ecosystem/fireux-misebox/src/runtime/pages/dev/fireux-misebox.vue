@@ -94,13 +94,18 @@
           </p>
         </header>
 
-        <OrganismsProfileSectionsSingle
-          v-if="chefHasProfile"
-          title="Chef profile"
-        >
-          <OrganismsProfilesChefCardsCell v-if="chefCell" :chef="chefCell" />
-          <OrganismsProfilesChefCardsPill v-if="chefPill" :chef="chefPill" />
-        </OrganismsProfileSectionsSingle>
+        <div v-if="chefHasProfile" class="space-y-6">
+          <UCard>
+            <template #header>
+              <h2>Chef profile</h2>
+            </template>
+
+            <div class="space-y-4">
+              <OrganismsProfilesChefCardsCell v-if="chefCell" :chef="chefCell" />
+              <OrganismsProfilesChefCardsPill v-if="chefPill" :chef="chefPill" />
+            </div>
+          </UCard>
+        </div>
         <p v-else class="text-sm text-gray-500 dark:text-gray-400">
           No chef profile loaded.
         </p>
@@ -202,19 +207,24 @@
           </p>
         </header>
 
-        <OrganismsProfileSectionsSingle
-          v-if="supplierHasProfile"
-          title="Supplier profile"
-        >
-          <OrganismsProfilesSupplierCardsCell
-            v-if="supplierCell"
-            :supplier="supplierCell"
-          />
-          <OrganismsProfilesSupplierCardsPill
-            v-if="supplierPill"
-            :supplier="supplierPill"
-          />
-        </OrganismsProfileSectionsSingle>
+        <div v-if="supplierHasProfile" class="space-y-6">
+          <UCard>
+            <template #header>
+              <h2>Supplier profile</h2>
+            </template>
+
+            <div class="space-y-4">
+              <OrganismsProfilesSupplierCardsCell
+                v-if="supplierCell"
+                :supplier="supplierCell"
+              />
+              <OrganismsProfilesSupplierCardsPill
+                v-if="supplierPill"
+                :supplier="supplierPill"
+              />
+            </div>
+          </UCard>
+        </div>
         <p v-else class="text-sm text-gray-500 dark:text-gray-400">
           No supplier profile loaded.
         </p>

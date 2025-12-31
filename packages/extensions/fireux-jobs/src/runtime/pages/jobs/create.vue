@@ -21,7 +21,7 @@
       <OrganismsProfilesAgentCTA v-else-if="!canPostJob" />
 
       <!-- Main create shell: write + preview -->
-      <OrganismsCreateShell
+      <MoleculesCreateShell
         v-else
         :loading="submitting"
         submit-label="Create"
@@ -35,7 +35,7 @@
         <template #preview>
           <OrganismsObjectsJobCreatePreview :form="form" />
         </template>
-      </OrganismsCreateShell>
+      </MoleculesCreateShell>
     </UPageBody>
   </UPage>
 </template>

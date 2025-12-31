@@ -4,34 +4,14 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <OrganismsProfilesChefPreview />
-
-      <OrganismsProfilesChefSectionsLocalCollection v-if="isTenant" />
-
-      <section class="space-y-2">
-        <div v-if="isTenant" class="flex items-center justify-end">
-          <UButton
-            variant="ghost"
-            @click="showGlobalDirectory = !showGlobalDirectory"
-          >
-            {{
-              showGlobalDirectory ? 'Hide global chefs' : 'View global chefs'
-            }}
-          </UButton>
-        </div>
-
-        <OrganismsProfilesChefSectionsGlobalCollection
-          v-if="showGlobalDirectory || !isTenant"
-        />
-      </section>
+      <OrganismsProfilesChefCTA />
+      <OrganismsProfilesChefCollectionManager />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 
 definePageMeta({
   nav: {
@@ -48,9 +28,6 @@ definePageMeta({
   layout: 'default',
   name: 'ChefsIndexPage',
 })
-
-const { isTenant } = useFireUXConfig()
-const showGlobalDirectory = ref(!isTenant.value)
 
 const pageTitle = 'Chefs'
 const pageDescription =

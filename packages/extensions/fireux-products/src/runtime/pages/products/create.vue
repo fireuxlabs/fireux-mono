@@ -18,7 +18,7 @@
         description="Only admins can publish products for this runtime."
       />
 
-      <OrganismsCreateShell
+      <MoleculesCreateShell
         v-else
         :loading="isCreating"
         submit-label="Create"
@@ -31,7 +31,7 @@
         <template #preview>
           <OrganismsObjectsProductCreatePreview />
         </template>
-      </OrganismsCreateShell>
+      </MoleculesCreateShell>
     </UPageBody>
   </UPage>
 </template>

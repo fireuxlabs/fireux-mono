@@ -1,5 +1,5 @@
 <template>
-  <OrganismsCreateShell
+  <MoleculesCreateShell
     :loading="submitting"
     submit-label="Create"
     @clear="onReset"
@@ -12,7 +12,7 @@
     <template #preview>
       <OrganismsObjectsJobCreatePreview :form="form" />
     </template>
-  </OrganismsCreateShell>
+  </MoleculesCreateShell>
 </template>
 
 <script setup lang="ts">

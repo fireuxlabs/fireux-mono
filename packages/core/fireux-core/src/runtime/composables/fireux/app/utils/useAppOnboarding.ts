@@ -35,10 +35,8 @@ export function useAppOnboarding(): AppOnboardingState {
 
   const pinLength = computed(() => expectedPin.value.length)
 
-  const { coreUser: coreUserRef, hasCoreProfile } = useUser()
-  const coreUser = computed(() =>
-    hasCoreProfile.value ? coreUserRef.value : null
-  )
+  const { coreUser: coreUserRef } = useUser()
+  const coreUser = computed(() => coreUserRef.value ?? null)
 
   const pin = ref<number[]>([])
   const pinError = ref<string | null>(null)

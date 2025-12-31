@@ -3,34 +3,14 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsProfilesAgentPreview />
-
-      <OrganismsProfilesAgentSectionsLocalCollection v-if="isTenant" />
-
-      <section class="space-y-2">
-        <div v-if="isTenant" class="flex items-center justify-end">
-          <UButton
-            variant="ghost"
-            @click="showGlobalDirectory = !showGlobalDirectory"
-          >
-            {{
-              showGlobalDirectory ? 'Hide global agents' : 'View global agents'
-            }}
-          </UButton>
-        </div>
-
-        <OrganismsProfilesAgentSectionsGlobalCollection
-          v-if="showGlobalDirectory || !isTenant"
-        />
-      </section>
+      <OrganismsProfilesAgentCTA />
+      <OrganismsProfilesAgentCollectionManager />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useHead } from 'nuxt/app'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 
 definePageMeta({
   nav: {
@@ -47,9 +27,6 @@ definePageMeta({
   layout: 'default',
   name: 'AgentsIndexPage',
 })
-
-const { isTenant } = useFireUXConfig()
-const showGlobalDirectory = ref(!isTenant)
 
 const pageTitle = 'Agents'
 const pageDescription =

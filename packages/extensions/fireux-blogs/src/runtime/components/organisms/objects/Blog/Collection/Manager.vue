@@ -1,14 +1,30 @@
 <template>
-  <slot :posts="posts" :total="total" />
+  <OrganismsObjectsBlogCollectionProvider v-slot="slotProps">
+    <slot v-bind="slotProps">
+      <UCard class="fx-section">
+        <template #header>
+          <div class="fx-section__header">
+            <div class="fx-section__copy">
+              <h2 class="text-base font-semibold">Latest Posts</h2>
+            </div>
+            <UBadge variant="soft">{{ slotProps.total }} posts</UBadge>
+          </div>
+        </template>
+
+        <div
+          v-if="slotProps.posts.length"
+          class="grid grid-cols-1 gap-4 lg:grid-cols-2"
+        >
+          <OrganismsObjectsBlogCardsArticle
+            v-for="post in slotProps.posts"
+            :key="post.slug"
+            :post="post"
+          />
+        </div>
+
+        <p v-else class="text-sm text-gray-500">No posts published yet.</p>
+      </UCard>
+    </slot>
+  </OrganismsObjectsBlogCollectionProvider>
 </template>
 
-<script setup lang="ts">
-import { computed } from 'vue'
-import { useBlog } from '../../../../../composables/fireux/firestore/objects/blog/useBlog'
-import type { BlogPost } from '../../../../../models/objects/blogPost.model'
-
-const { items } = useBlog()
-
-const posts = computed<BlogPost[]>(() => (items.value ?? []) as BlogPost[])
-const total = computed(() => posts.value.length)
-</script>

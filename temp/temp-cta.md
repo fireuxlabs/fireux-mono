@@ -1,109 +1,275 @@
-# CTA Innards (Runtime)
+# CTA Inventory (Runtime)
 
-Repo-truth snapshot (runtime only). Auto-generated.
+Repo-truth snapshot (runtime only) focused on the **CTA surface** (`UPageCTA`).
 
 - Included `CTA.vue` files: 9
-- Included CTA-like root: `packages/core/fireux-core/src/runtime/components/organisms/Profile/Root.vue`
+- Last updated: 2025-12-31
+
+This file has two goals:
+1) **Current state**: what each CTA renders today.
+2) **Desired state**: the lean/clean canon we want across entities and objects.
 
 ---
 
-## Core — App CTA
+## Current state
+
+### Core — App CTA
 
 Path: `packages/core/fireux-core/src/runtime/components/organisms/App/CTA.vue`
 
+Pattern: **Ensure/Create CTA** (preview only when ready)
+
 ```vue
-<template>
-  <div class="space-y-4">
-    <OrganismsAppCardsPreview />
+<UPageCTA
+  title="Current app"
+  description="The app currently resolved for this runtime."
+  variant="naked"
+>
+  <template #default>
+    <OrganismsAppCardsPreview v-if="isResolved && isInitialized" />
+    <OrganismsAppCreateSystem v-else />
+    <UButton variant="ghost" size="sm" to="/learn-more">Learn more</UButton>
+  </template>
+</UPageCTA>
 
-    <UPageCTA title="Manage apps" :description="ctaDescription" variant="naked">
-      <template #links>
-        <UButton color="primary" size="lg" :to="detailsLink">
-          {{ detailsLabel }}
-        </UButton>
-      </template>
-    </UPageCTA>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import type { App } from '../../../models/core/app.model'
-import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
-
-const { app: runtimeApp } = useApp()
-
-const current = computed<App | null>(() => runtimeApp.value ?? null)
-
-const ctaDescription = computed(() =>
-  current.value
-    ? 'Inspect the current app or browse all apps available to this runtime.'
-    : 'No app loaded. Browse all apps available to this runtime.'
-)
-
-const detailsLink = computed(() => {
-  const id = current.value?.id
-  return id ? `/apps/${id}` : '/apps'
-})
-
-const detailsLabel = computed(() =>
-  current.value?.id ? 'View app details' : 'Browse apps'
-)
-</script>
+// state: const { isResolved, isInitialized } = useApp()
 ```
 
-## Core — User CTA
+Notes:
+- Preview is **inside** the CTA surface.
+- Preview is **pessimistic** (requires `isResolved && isInitialized`).
+- Create/System owns the flow.
+
+### Core — User CTA
 
 Path: `packages/core/fireux-core/src/runtime/components/organisms/User/CTA.vue`
 
+Pattern: **Ensure/Create CTA** (preview only when ready)
+
 ```vue
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/CTA.vue -->
-<template>
-  <div class="space-y-6">
-    <OrganismsUserCardsPreview />
+<UPageCTA title="Current user" description="..." variant="naked">
+  <OrganismsUserCardsPreview v-if="isResolved && isInitialized" />
+  <OrganismsUserCreateSystem v-else />
+</UPageCTA>
 
-    <OrganismsUserCreateSystem v-slot="slotProps">
-      <div v-if="slotProps.shouldRender" class="space-y-3">
-        <UPageCTA
-          :title="slotProps.title"
-          :description="slotProps.description"
-          variant="naked"
-        >
-          <template #links>
-            <UButton
-              v-if="slotProps.primary.kind === 'link'"
-              color="primary"
-              size="lg"
-              :to="slotProps.primary.to"
-            >
-              {{ slotProps.primary.label }}
-            </UButton>
-
-            <UButton
-              v-else-if="slotProps.primary.kind === 'action'"
-              color="primary"
-              size="lg"
-              :loading="slotProps.primary.loading"
-              :disabled="slotProps.primary.disabled"
-              @click="slotProps.primary.onClick"
-            >
-              {{ slotProps.primary.label }}
-            </UButton>
-          </template>
-        </UPageCTA>
-
-        <p v-if="slotProps.error" class="text-sm text-red-600">
-          {{ slotProps.error }}
-        </p>
-      </div>
-    </OrganismsUserCreateSystem>
-  </div>
-</template>
-
-<script setup lang="ts">
-// CTA logic lives in OrganismsUserCreateSystem.
-</script>
+// state: const { isResolved, isInitialized } = useUser()
 ```
+
+Notes:
+- CTA is intentionally “dumb”: it only chooses Preview vs System.
+
+### Extensions — Blog CTA
+
+Path: `packages/extensions/fireux-blogs/src/runtime/components/organisms/objects/Blog/CTA.vue`
+
+Pattern: **Navigate CTA** (permission-gated)
+
+```vue
+<UPageCTA v-if="canPublishBlog" title="Publish a post" :description="..." variant="naked">
+  <template #links>
+    <UButton color="primary" size="lg" to="/blog/create">Draft a post</UButton>
+  </template>
+</UPageCTA>
+```
+
+Notes:
+- This is a classic “link CTA”. No create-system needed.
+
+### Extensions — Product CTA
+
+Path: `packages/extensions/fireux-products/src/runtime/components/organisms/objects/Product/CTA.vue`
+
+Pattern: **Navigate CTA** (permission-gated)
+
+```vue
+<UPageCTA v-if="canPublishProduct" title="Add a product" description="..." variant="naked">
+  <template #default>
+    <p class="text-sm ...">...</p>
+  </template>
+  <template #links>
+    <UButton color="primary" size="lg" to="/products/create">Create product</UButton>
+  </template>
+</UPageCTA>
+```
+
+### Extensions — Job CTA
+
+Path: `packages/extensions/fireux-jobs/src/runtime/components/organisms/objects/Job/CTA.vue`
+
+Pattern: **Hybrid** (depends on having an Agent profile)
+
+```vue
+<OrganismsProfilesAgentCTA v-if="!hasAgentProfile" />
+
+<UPageCTA v-else title="Post a job" description="..." variant="naked">
+  <template #default>
+    <!-- shows current Agent profile cell/pill -->
+  </template>
+  <template #links>
+    <UButton color="primary" size="lg" to="/jobs/create">Create job posting</UButton>
+  </template>
+</UPageCTA>
+```
+
+Notes:
+- Agent-ness is treated as a prerequisite, and the CTA delegates to the Agent CTA when missing.
+
+### Extensions — Agent CTA
+
+Path: `packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Agent/CTA.vue`
+
+Pattern: **Ensure/Create CTA** (CTA chooses CreateSystem vs preview)
+
+```vue
+<UPageCTA title="Agent profile" description="..." variant="naked">
+  <template #default>
+    <div v-if="!hasAgentProfile">
+      <OrganismsProfilesAgentCreateSystem />
+    </div>
+
+    <div v-else>
+      <UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
+        {{ showCellView ? 'Show pill' : 'Show cell' }}
+      </UButton>
+
+      <OrganismsProfilesAgentCardsCell v-if="showCellCard && cell" :agent="cell" />
+      <OrganismsProfilesAgentCardsPill v-else-if="pill" :agent="pill" />
+    </div>
+  </template>
+</UPageCTA>
+
+// state: const { pill, cell } = useAgent(); const hasAgentProfile = computed(() => hasProfile('agent'))
+```
+
+Notes:
+- This is currently a “fat CTA” (pill/cell toggle + preview selection live here).
+- It does correctly treat `Create/System.vue` as the system (no `CtaSystem` files).
+
+### Extensions — Professional CTA
+
+Path: `packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Professional/CTA.vue`
+
+Pattern: **Ensure/Create CTA** (CTA chooses CreateSystem vs preview)
+
+```vue
+<UPageCTA title="Professional profile" description="..." variant="naked">
+  <template #default>
+    <div v-if="!hasProfessionalProfile">
+      <OrganismsProfilesProfessionalCreateSystem />
+    </div>
+
+    <div v-else>
+      <UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
+        {{ showCellView ? 'Show pill' : 'Show cell' }}
+      </UButton>
+
+      <OrganismsProfilesProfessionalCardsCell v-if="showCellCard && cell" :professional="cell" />
+      <OrganismsProfilesProfessionalCardsPill v-else-if="pill" :professional="pill" />
+    </div>
+  </template>
+</UPageCTA>
+```
+
+### Ecosystem — Chef CTA
+
+Path: `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Chef/CTA.vue`
+
+Pattern: **Ensure/Create CTA** (CTA chooses CreateSystem vs preview)
+
+```vue
+<UPageCTA title="Chef profile" description="..." variant="naked">
+  <template #default>
+    <div v-if="!hasChefProfile">
+      <OrganismsProfilesChefCreateSystem />
+    </div>
+
+    <div v-else>
+      <UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
+        {{ showCellView ? 'Show pill' : 'Show cell' }}
+      </UButton>
+
+      <OrganismsProfilesChefCardsCell v-if="showCellCard && cell" :chef="cell" />
+      <OrganismsProfilesChefCardsPill v-else-if="pill" :chef="pill" />
+    </div>
+  </template>
+</UPageCTA>
+```
+
+### Ecosystem — Supplier CTA
+
+Path: `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/CTA.vue`
+
+Pattern: **Ensure/Create CTA** (CTA chooses CreateSystem vs preview)
+
+```vue
+<UPageCTA title="Supplier profile" description="..." variant="naked">
+  <template #default>
+    <div v-if="!hasSupplierProfile">
+      <OrganismsProfilesSupplierCreateSystem />
+    </div>
+
+    <div v-else>
+      <UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
+        {{ showCellView ? 'Show pill' : 'Show cell' }}
+      </UButton>
+
+      <OrganismsProfilesSupplierCardsCell v-if="showCellCard && cell" :supplier="cell" />
+      <OrganismsProfilesSupplierCardsPill v-else-if="pill" :supplier="pill" />
+    </div>
+  </template>
+</UPageCTA>
+```
+
+---
+
+## Desired state (lean + clean)
+
+### Canon: two CTA families
+
+1) **Navigate / Link CTA**
+   - Presentational CTA that points somewhere (`to="..."`).
+   - Can be gated by a single boolean (permissions) but should avoid embedding multi-step ensure logic.
+
+2) **Ensure / Create CTA**
+   - Presentational CTA that only chooses between:
+     - a Preview (when ready), and
+     - a self-contained `Create/System` component (when not ready).
+   - All auth/ensure/loading/error logic lives in the System component.
+
+### Canon: the “App-style” lean CTA shape
+
+```vue
+<UPageCTA title="…" description="…" variant="naked">
+  <Preview v-if="isResolved && isInitialized" />
+  <CreateSystem v-else />
+</UPageCTA>
+```
+
+Rules:
+- **Preview must be inside the CTA** (no content above the CTA that looks like “preview”).
+- **CTA is pessimistic**: don’t show Preview until ready (`isResolved && isInitialized`).
+- **No slot-props system contract** for new work. Prefer a self-rendering System component.
+- **No “fat CTA”**: CTA should not compute multi-step state machines.
+- Secondary actions (like “Learn more”) are okay, but should be consistent and not carry ensure logic.
+
+### Where CTA logic should live (computed guidance)
+
+- Each entity/object should have a *single canonical* computed source for CTA gating and labels.
+- Prefer `.../utils/view/use*Computed.ts` for cross-cutting view state (e.g. `isResolved`, `isInitialized`, `cta`).
+- Avoid duplicating “base profile CTA state” across per-profile computed composables.
+
+Concrete desired direction for profiles:
+- **No generic Profile Create/System**. “Profile” is shared plumbing; creation UX should be a delta.
+- Each domain profile gets its own System component (delta point): `ChefCreateSystem`, `SupplierCreateSystem`, `AgentCreateSystem`, `ProfessionalCreateSystem`.
+- Shared profile *readiness* signals should centralize in `useProfileComputed` (merge core+tenant overlay, resolved/initialized flags).
+- `useChefComputed` / `useSupplierComputed` / `useAgentComputed` / `useProfessionalComputed` should only add *domain-specific* derived data (fields, validations, display helpers), not re-implement CTA state machines.
+
+### Target refactor candidates (when we start cleaning)
+
+- Stop using the generic slot-props `OrganismsProfileCreateSystem` from the CTA layer.
+- For each profile (Chef/Supplier/Agent/Professional):
+  - Add a profile-specific, self-rendering CTA System component (delta point).
+  - Update the profile CTA to the lean “Preview vs System” toggle.
 
 ## Ecosystem — Chef CTA
 
@@ -112,51 +278,54 @@ Path: `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profil
 ```vue
 <!-- packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Chef/CTA.vue -->
 <template>
-	<OrganismsProfileCreateSystem
-		profile-key="chef"
-		:config="chefConfig"
-		title="Create your chef profile"
-		description="Showcase your culinary strengths so kitchens can match you to the right stations and menus."
-		v-slot="slotProps"
-	>
-		<div v-if="slotProps.shouldRender">
-			<UPageCTA
-				:title="slotProps.title"
-				:description="slotProps.description"
-				variant="naked"
-			>
-				<template #links>
-					<UButton
-						v-if="slotProps.primary.kind === 'link'"
-						color="primary"
-						size="lg"
-						:to="slotProps.primary.to"
-					>
-						{{ slotProps.primary.label }}
-					</UButton>
+  <UPageCTA
+    title="Chef profile"
+    description="Showcase your culinary strengths so kitchens can match you to the right stations and menus."
+    variant="naked"
+  >
+    <template #default>
+      <div v-if="!hasChefProfile" class="space-y-2">
+        <OrganismsProfilesChefCreateSystem />
+      </div>
 
-					<UButton
-						v-else
-						color="primary"
-						size="lg"
-						:loading="slotProps.primary.loading"
-						:disabled="slotProps.primary.disabled"
-						@click="slotProps.primary.onClick"
-					>
-						{{ slotProps.primary.label }}
-					</UButton>
-				</template>
-			</UPageCTA>
+      <div v-else class="space-y-4">
+        <div class="flex justify-end">
+          <UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
+            {{ showCellView ? 'Show pill' : 'Show cell' }}
+          </UButton>
+        </div>
 
-			<p v-if="slotProps.error" class="text-sm text-red-600">
-				{{ slotProps.error }}
-			</p>
-		</div>
-	</OrganismsProfileCreateSystem>
+        <div class="space-y-4">
+          <OrganismsProfilesChefCardsCell v-if="showCellCard && cell" :chef="cell" />
+          <OrganismsProfilesChefCardsPill v-else-if="pill" :chef="pill" />
+          <p v-else class="text-sm text-slate-500">No chef profile loaded.</p>
+        </div>
+      </div>
+    </template>
+  </UPageCTA>
 </template>
 
 <script setup lang="ts">
-import { chefConfig } from '../../../../models/profiles/Chef/Chef.model'
+import { computed, ref, watch } from 'vue'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useChef } from '../../../../composables/fireux/firestore/profiles/Chef/useChef'
+
+const { pill, cell } = useChef()
+const { hasProfile } = useUser()
+
+const hasChefProfile = computed(() => hasProfile('chef'))
+
+const canToggle = computed(() => Boolean(cell.value))
+const showCellView = ref(false)
+const showCellCard = computed(() => canToggle.value && showCellView.value)
+const toggleView = () => {
+  if (!canToggle.value) return
+  showCellView.value = !showCellView.value
+}
+
+watch(canToggle, (enabled: boolean) => {
+  if (!enabled) showCellView.value = false
+})
 </script>
 ```
 
@@ -166,51 +335,57 @@ Path: `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profil
 
 ```vue
 <template>
-	<OrganismsProfileCreateSystem
-		profile-key="supplier"
-		:config="supplierConfig"
-		title="Create your supplier profile"
-		description="Introduce your products to chefs and venues across the FireUX network."
-		v-slot="slotProps"
-	>
-		<div v-if="slotProps.shouldRender">
-			<UPageCTA
-				:title="slotProps.title"
-				:description="slotProps.description"
-				variant="naked"
-			>
-				<template #links>
-					<UButton
-						v-if="slotProps.primary.kind === 'link'"
-						color="primary"
-						size="lg"
-						:to="slotProps.primary.to"
-					>
-						{{ slotProps.primary.label }}
-					</UButton>
+  <UPageCTA
+    title="Supplier profile"
+    description="Introduce your products to chefs and venues across the FireUX network."
+    variant="naked"
+  >
+    <template #default>
+      <div v-if="!hasSupplierProfile" class="space-y-2">
+        <OrganismsProfilesSupplierCreateSystem />
+      </div>
 
-					<UButton
-						v-else
-						color="primary"
-						size="lg"
-						:loading="slotProps.primary.loading"
-						:disabled="slotProps.primary.disabled"
-						@click="slotProps.primary.onClick"
-					>
-						{{ slotProps.primary.label }}
-					</UButton>
-				</template>
-			</UPageCTA>
+      <div v-else class="space-y-4">
+        <div class="flex justify-end">
+          <UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
+            {{ showCellView ? 'Show pill' : 'Show cell' }}
+          </UButton>
+        </div>
 
-			<p v-if="slotProps.error" class="text-sm text-red-600">
-				{{ slotProps.error }}
-			</p>
-		</div>
-	</OrganismsProfileCreateSystem>
+        <div class="space-y-4">
+          <OrganismsProfilesSupplierCardsCell
+            v-if="showCellCard && cell"
+            :supplier="cell"
+          />
+          <OrganismsProfilesSupplierCardsPill v-else-if="pill" :supplier="pill" />
+          <p v-else class="text-sm text-slate-500">No supplier profile loaded.</p>
+        </div>
+      </div>
+    </template>
+  </UPageCTA>
 </template>
 
 <script setup lang="ts">
-import { supplierConfig } from '../../../../models/profiles/Supplier/Supplier.model'
+import { computed, ref, watch } from 'vue'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useSupplier } from '../../../../composables/fireux/firestore/profiles/Supplier/useSupplier.ts'
+
+const { pill, cell } = useSupplier()
+const { hasProfile } = useUser()
+
+const hasSupplierProfile = computed(() => hasProfile('supplier'))
+
+const canToggle = computed(() => Boolean(cell.value))
+const showCellView = ref(false)
+const showCellCard = computed(() => canToggle.value && showCellView.value)
+const toggleView = () => {
+  if (!canToggle.value) return
+  showCellView.value = !showCellView.value
+}
+
+watch(canToggle, (enabled: boolean) => {
+  if (!enabled) showCellView.value = false
+})
 </script>
 ```
 
@@ -263,14 +438,22 @@ Path: `packages/extensions/fireux-jobs/src/runtime/components/organisms/objects/
     variant="naked"
   >
     <template #default>
-      <OrganismsProfileSectionsSingle :title="currentProfileTitle">
-        <OrganismsProfilesAgentCardsCell
-          v-if="cell"
-          :agent="cell"
-          class="cta-agent-cell"
-        />
-        <OrganismsProfilesAgentCardsPill v-if="pill" :agent="pill" />
-      </OrganismsProfileSectionsSingle>
+      <div class="space-y-6">
+        <UCard>
+          <template #header>
+            <h2>{{ currentProfileTitle }}</h2>
+          </template>
+
+          <div class="space-y-4">
+            <OrganismsProfilesAgentCardsCell
+              v-if="cell"
+              :agent="cell"
+              class="cta-agent-cell"
+            />
+            <OrganismsProfilesAgentCardsPill v-if="pill" :agent="pill" />
+          </div>
+        </UCard>
+      </div>
     </template>
 
     <template #links>
@@ -298,200 +481,40 @@ const currentProfileTitle = 'Your agent profile'
 </script>
 
 <style scoped>
-.cta-agent-cell {
-  margin-bottom: 1.5rem;
-}
-</style>
-```
 
-## Extensions — Agent CTA
+            v-else-if="pill"
+            :professional="pill"
+          />
+          <p v-else class="text-sm text-slate-500">
+            No professional profile loaded.
+          </p>
+        </div>
+              <div class="space-y-6">
+                <UCard>
+                  <template #header>
+                    <h2>{{ currentProfileTitle }}</h2>
+                  </template>
 
-Path: `packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Agent/CTA.vue`
+                  <div class="space-y-4">
+                    <OrganismsProfilesAgentCardsCell
+                      v-if="cell"
+                      :agent="cell"
+                      class="cta-agent-cell"
+                    />
+                    <OrganismsProfilesAgentCardsPill v-if="pill" :agent="pill" />
+                  </div>
+                </UCard>
+              </div>
+import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
-```vue
-<template>
-	<OrganismsProfileCreateSystem
-		profile-key="agent"
-		:config="agentConfig"
-		title="Create your agent profile"
-		description="Add an agent profile to your FireUX portfolio so talent knows who is hiring."
-		v-slot="slotProps"
-	>
-		<div v-if="slotProps.shouldRender">
-			<UPageCTA
-				:title="slotProps.title"
-				:description="slotProps.description"
-				variant="naked"
-			>
-				<template #links>
-					<UButton
-						v-if="slotProps.primary.kind === 'link'"
-						color="primary"
-						size="lg"
-						:to="slotProps.primary.to"
-					>
-						{{ slotProps.primary.label }}
-					</UButton>
+const { pill, cell } = useProfessional()
+const { hasProfile } = useUser()
 
-					<UButton
-						v-else
-						color="primary"
-						size="lg"
-						:loading="slotProps.primary.loading"
-						:disabled="slotProps.primary.disabled"
-						@click="slotProps.primary.onClick"
-					>
-						{{ slotProps.primary.label }}
-					</UButton>
-				</template>
-			</UPageCTA>
+const hasProfessionalProfile = computed(() => hasProfile('professional'))
 
-			<p v-if="slotProps.error" class="text-sm text-red-600">
-				{{ slotProps.error }}
-			</p>
-		</div>
-	</OrganismsProfileCreateSystem>
-</template>
+const canToggle = computed(() => Boolean(cell.value))
+const showCellView = ref(false)
 
-<script setup lang="ts">
-import { agentConfig } from '../../../../models/profiles/Agent/Agent.model'
-</script>
-```
-
-## Extensions — Professional CTA
-
-Path: `packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Professional/CTA.vue`
-
-```vue
-<template>
-	<OrganismsProfileCreateSystem
-		profile-key="professional"
-		:config="professionalConfig"
-		title="Create your professional profile"
-		description="Add a professional profile to your FireUX portfolio so agents can discover you more easily."
-		v-slot="slotProps"
-	>
-		<div v-if="slotProps.shouldRender">
-			<UPageCTA
-				:title="slotProps.title"
-				:description="slotProps.description"
-				variant="naked"
-			>
-				<template #links>
-					<UButton
-						v-if="slotProps.primary.kind === 'link'"
-						color="primary"
-						size="lg"
-						:to="slotProps.primary.to"
-					>
-						{{ slotProps.primary.label }}
-					</UButton>
-
-					<UButton
-						v-else
-						color="primary"
-						size="lg"
-						:loading="slotProps.primary.loading"
-						:disabled="slotProps.primary.disabled"
-						@click="slotProps.primary.onClick"
-					>
-						{{ slotProps.primary.label }}
-					</UButton>
-				</template>
-			</UPageCTA>
-
-			<p v-if="slotProps.error" class="text-sm text-red-600">
-				{{ slotProps.error }}
-			</p>
-		</div>
-	</OrganismsProfileCreateSystem>
-</template>
-
-<script setup lang="ts">
-import { professionalConfig } from '../../../../models/profiles/Professional/supporting'
-</script>
-```
-
-## Extensions — Product CTA
-
-Path: `packages/extensions/fireux-products/src/runtime/components/organisms/objects/Product/CTA.vue`
-
-```vue
-<template>
-  <UPageCTA
-    v-if="showCTA"
-    title="Add a product"
-    description="List new offerings or updates for this runtime."
-    variant="naked"
-  >
-    <template #default>
-      <p class="text-sm text-gray-600">
-        People with publish permissions can keep the catalog current.
-      </p>
-    </template>
-
-    <template #links>
-      <UButton color="primary" size="lg" to="/products/create">
-        Create product
-      </UButton>
-    </template>
-  </UPageCTA>
-</template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import { useProductPermissions } from '../../../../composables/useProductPermissions'
-
-const { canPublishProduct } = useProductPermissions()
-const showCTA = computed(() => canPublishProduct.value)
-</script>
-```
-
----
-
-## Core — Profile Root (CTA-like)
-
-Path: `packages/core/fireux-core/src/runtime/components/organisms/Profile/Root.vue`
-
-```vue
-<!-- packages/core/fireux-core/src/runtime/components/organisms/Profile/Root.vue -->
-<template>
-  <div class="space-y-6">
-    <slot name="current" :profile="current" />
-
-    <div v-if="shouldShowCta">
-      <UPageSection>
-        <UPageCTA :title="cta" variant="naked">
-          <template #links>
-            <slot name="cta">
-              <UButton
-                size="lg"
-                color="primary"
-                :label="ctaLabel"
-                @click="$emit('ensure')"
-              />
-            </slot>
-          </template>
-        </UPageCTA>
-      </UPageSection>
-    </div>
-
-    <UPageSection>
-      <div class="flex items-center gap-2 mb-3">
-        <slot name="list-header" />
-        <UButton
-          v-if="more"
-          size="xs"
-          variant="ghost"
-          @click="$emit('load-more')"
-        >
-          {{ moreLabel }}
-        </UButton>
-      </div>
-
-      <div
-        v-if="items?.length"
-        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
       >
         <slot
           v-for="it in items"

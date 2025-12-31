@@ -1,12 +1,10 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
 import type { App } from '../../../../../../../models/core/app.model'
-import type { User } from '../../../../../../../models/core/user.model'
 
 export function useAppComputed(
   app: Ref<App | null | undefined>,
-  pending?: Ref<boolean>,
-  currentUser?: Ref<User | null | undefined>
+  pending?: Ref<boolean>
 ) {
   const isResolved = computed(() => {
     if (pending?.value) return false
@@ -32,16 +30,8 @@ export function useAppComputed(
     return adminIds.value.length > 0
   })
 
-  const isCurrentUserAdmin = computed(() => {
-    const uid = currentUser?.value?.id
-    if (!uid) return false
-    return adminIds.value.includes(uid)
-  })
-
   return {
     isResolved,
     isInitialized,
-    adminIds,
-    isCurrentUserAdmin,
   }
 }

@@ -14,7 +14,7 @@
         description="Only admins can publish blog posts for this runtime."
       />
 
-      <OrganismsCreateShell
+      <MoleculesCreateShell
         v-else
         :loading="isCreating"
         submit-label="Publish"
@@ -27,7 +27,7 @@
         <template #preview>
           <OrganismsObjectsBlogCreatePreview />
         </template>
-      </OrganismsCreateShell>
+      </MoleculesCreateShell>
     </UPageBody>
   </UPage>
 </template>

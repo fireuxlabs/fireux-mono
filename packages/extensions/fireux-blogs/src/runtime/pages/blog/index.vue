@@ -4,7 +4,7 @@
     <UPageHeader title="Blog" description="Latest articles." />
     <UPageBody class="pagebody">
       <OrganismsObjectsBlogCTA />
-      <OrganismsObjectsBlogCollectionView />
+      <OrganismsObjectsBlogCollectionManager />
     </UPageBody>
   </UPage>
 </template>
