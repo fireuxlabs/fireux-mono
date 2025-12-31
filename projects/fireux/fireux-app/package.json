@@ -8,7 +8,7 @@
     "generate": "nuxi generate",
     "preview": "nuxi preview",
     "check:env": "node ../../../scripts/check-env.mjs",
-    "postinstall": "nuxi prepare",
+    "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit'});\"",
     "clean": "rimraf .nuxt dist"
   },
   "dependencies": {
@@ -29,3 +29,4 @@
     "tailwindcss": "^4.1.12"
   }
 }
+
