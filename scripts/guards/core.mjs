@@ -99,19 +99,16 @@ function checkPackageExports(pkgPath) {
   }
 
   const exportsMap = pkgJson?.exports
-  const runtimeExport = exportsMap?.['./runtime']
 
-  // Only validate the simple (string) case we actually use today.
-  if (typeof runtimeExport === 'string') {
-    const targetPath = path.join(pkgPath, runtimeExport)
-    if (!existsSync(targetPath)) {
-      violations.push(`exports['./runtime'] points to missing file: ${runtimeExport}`)
-    }
+  // Core packages should not expose a synthetic ./runtime index.
+  // Prefer subpath exports via ./runtime/* and direct file imports.
+  if (exportsMap && Object.prototype.hasOwnProperty.call(exportsMap, './runtime')) {
+    violations.push("exports['./runtime'] is forbidden (use './runtime/*' subpath exports only)")
+  }
 
-    const runtimeDir = path.join(pkgPath, 'src', 'runtime')
-    if (!existsSync(runtimeDir)) {
-      violations.push('exports ./runtime present but src/runtime directory is missing')
-    }
+  const runtimeIndexPath = path.join(pkgPath, 'src', 'runtime', 'index.ts')
+  if (existsSync(runtimeIndexPath)) {
+    violations.push('src/runtime/index.ts is forbidden in core packages')
   }
 
   return violations
