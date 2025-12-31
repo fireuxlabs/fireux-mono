@@ -53,8 +53,8 @@ export function useAgentInterface(
   const resolveProfile = (target?: AgentCore | null) =>
     target ?? profile.coreProfile.value ?? null
 
-  const resolveUser = (target?: AgentCore | null) =>
-    target?.user ?? user.value ?? null
+  const resolveUser = (target?: AgentProfileWithUser | AgentCore | null) =>
+    (target as AgentProfileWithUser | null)?.user ?? user.value ?? null
 
   const resolveTagline = (payload: AgentCore | null | undefined): string | null =>
     payload?.tagline?.trim() ??
@@ -68,7 +68,7 @@ export function useAgentInterface(
     'Agent'
 
   const pillProps = (
-    target?: AgentCore | null
+    target?: AgentProfileWithUser | AgentCore | null
   ): AgentCard.AgentPill | null => {
     const currentProfile = resolveProfile(target)
     const currentUser = resolveUser(target)
@@ -88,7 +88,7 @@ export function useAgentInterface(
   }
 
   const cellProps = (
-    target?: AgentCore | null
+    target?: AgentProfileWithUser | AgentCore | null
   ): AgentCard.AgentCell | null => {
     const base = pillProps(target)
     if (!base) return null
@@ -105,7 +105,7 @@ export function useAgentInterface(
   }
 
   const profileCardProps = (
-    target?: AgentCore | null
+    target?: AgentProfileWithUser | AgentCore | null
   ): AgentCard.AgentProfileCard | null => {
     const base = pillProps(target)
     if (!base) return null

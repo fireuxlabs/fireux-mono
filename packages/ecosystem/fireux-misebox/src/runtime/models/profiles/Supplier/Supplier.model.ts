@@ -1,4 +1,7 @@
-import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
+import type {
+  AppProfileBase,
+  CoreProfileBase,
+} from 'fireux-core/runtime/models/core/profile.model'
 import { supplierConfig } from './supporting'
 
 /**
@@ -8,7 +11,7 @@ import { supplierConfig } from './supporting'
  * App doc:   apps/{appId}/suppliers/{uid}
  */
 
-export interface SupplierCore extends Profile {
+export interface SupplierCore extends CoreProfileBase {
   tagline: string
   bio_short: string
   bio_long: string
@@ -31,6 +34,7 @@ export interface SupplierCore extends Profile {
  * Tenant overlay (delta-only).
  * Keep empty until you truly need tenant-specific fields.
  */
-export interface SupplierApp extends Profile {}
+export interface SupplierApp extends AppProfileBase {}
 
 export { supplierConfig }
+

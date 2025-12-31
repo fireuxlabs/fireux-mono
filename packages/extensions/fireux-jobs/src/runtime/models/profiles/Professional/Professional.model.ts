@@ -1,4 +1,7 @@
-import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
+import type {
+  AppProfileBase,
+  CoreProfileBase,
+} from 'fireux-core/runtime/models/core/profile.model'
 import {
   professionalConfig,
   type OtherExperienceItem,
@@ -11,7 +14,7 @@ import {
  * Core doc:  professionals/{uid}
  * App doc:   apps/{appId}/professionals/{uid}
  */
-export interface ProfessionalCore extends Profile {
+export interface ProfessionalCore extends CoreProfileBase {
   tagline: string
   health_certifications: string[]
   bio_short: string
@@ -28,6 +31,6 @@ export interface ProfessionalCore extends Profile {
  * Tenant overlay (delta-only).
  * Keep empty until you truly need tenant-specific fields.
  */
-export interface ProfessionalApp extends Profile {}
+export interface ProfessionalApp extends AppProfileBase {}
 
 export { professionalConfig }

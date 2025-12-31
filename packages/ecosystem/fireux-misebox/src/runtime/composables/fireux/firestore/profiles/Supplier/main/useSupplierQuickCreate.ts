@@ -14,8 +14,6 @@ export function useSupplierQuickCreate() {
       // Simulate create and return minimal supplier object
       const supplier: SupplierCore = {
         id: 'supplier-mock-id',
-        user: {},
-        domain: 'supplier',
         title: name,
         subtitle: '',
         badges: [],

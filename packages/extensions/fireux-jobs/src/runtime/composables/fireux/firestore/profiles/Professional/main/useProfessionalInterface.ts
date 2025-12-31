@@ -48,11 +48,15 @@ export function useProfessionalInterface(
   profile: ProfileRefs<ProfessionalCore>,
   user: Ref<User | null | undefined>
 ) {
+  type ProfessionalProfileWithUser = ProfessionalCore & {
+    user?: User | null
+  }
+
   const resolveProfile = (target?: ProfessionalCore | null) =>
     target ?? profile.coreProfile.value ?? null
 
-  const resolveUser = (target?: ProfessionalCore | null) =>
-    target?.user ?? user.value ?? null
+  const resolveUser = (target?: ProfessionalProfileWithUser | ProfessionalCore | null) =>
+    (target as ProfessionalProfileWithUser | null)?.user ?? user.value ?? null
 
   const resolveTagline = (
     payload: ProfessionalCore | null | undefined
@@ -68,7 +72,7 @@ export function useProfessionalInterface(
     'Professional'
 
   const pillProps = (
-    target?: ProfessionalCore | null
+    target?: ProfessionalProfileWithUser | ProfessionalCore | null
   ): ProfessionalCard.ProfessionalPill | null => {
     const currentProfile = resolveProfile(target)
     const currentUser = resolveUser(target)
@@ -88,7 +92,7 @@ export function useProfessionalInterface(
   }
 
   const cellProps = (
-    target?: ProfessionalCore | null
+    target?: ProfessionalProfileWithUser | ProfessionalCore | null
   ): ProfessionalCard.ProfessionalCell | null => {
     const base = pillProps(target)
     if (!base) return null
@@ -111,7 +115,7 @@ export function useProfessionalInterface(
 }
 
 export const resolveProfessionalCell = (
-  profile?: ProfessionalCore | null,
+  profile?: (ProfessionalCore & { user?: Partial<User> | null }) | null,
   fallbackId = 'professional-profile'
 ): ProfessionalCard.ProfessionalCell | null => {
   if (!profile) return null
@@ -138,7 +142,7 @@ export const resolveProfessionalCell = (
 }
 
 export const resolveProfessionalPill = (
-  profile?: ProfessionalCore | null
+  profile?: (ProfessionalCore & { user?: Partial<User> | null }) | null
 ): ProfessionalCard.ProfessionalPill => ({
   avatar: profile?.user?.avatar ?? '',
   title: profile?.user?.display_name?.trim() || '',

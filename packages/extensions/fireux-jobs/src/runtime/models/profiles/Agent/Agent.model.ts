@@ -1,4 +1,7 @@
-import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
+import type {
+  AppProfileBase,
+  CoreProfileBase,
+} from 'fireux-core/runtime/models/core/profile.model'
 import { agentConfig } from './supporting'
 
 /**
@@ -7,7 +10,7 @@ import { agentConfig } from './supporting'
  * Core doc:  agents/{uid}
  * App doc:   apps/{appId}/agents/{uid}
  */
-export interface AgentCore extends Profile {
+export interface AgentCore extends CoreProfileBase {
   tagline: string
   bio_short: string
   contact_email: string
@@ -19,6 +22,7 @@ export interface AgentCore extends Profile {
  * Tenant overlay (delta-only).
  * Keep empty until you truly need tenant-specific fields.
  */
-export interface AgentApp extends Profile {}
+export interface AgentApp extends AppProfileBase {}
 
 export { agentConfig }
+

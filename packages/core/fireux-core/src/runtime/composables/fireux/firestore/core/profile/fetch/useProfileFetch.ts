@@ -5,7 +5,8 @@ import { computed, isRef } from 'vue'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type { Ref } from 'vue'
 import type {
-  Profile,
+  AppProfileBase,
+  CoreProfileBase,
   ProfileConfig,
 } from '../../../../../../models/core/profile.model'
 
@@ -14,12 +15,24 @@ import type {
  * - Fires global + app listeners (when path pieces exist)
  * - Returns refs directly (no computed merge)
  */
-export type ProfileRefs<TProfile extends Profile = Profile> = {
-  coreProfile: Ref<TProfile | undefined | null>
-  appProfile: Ref<Partial<TProfile> | undefined | null>
+export type ProfileRefs2<
+  TCore extends CoreProfileBase = CoreProfileBase,
+  TApp extends AppProfileBase = AppProfileBase,
+> = {
+  coreProfile: Ref<TCore | undefined | null>
+  appProfile: Ref<Partial<TApp> | undefined | null>
 }
 
-export function useProfileFetch<TProfile extends Profile = Profile>(
+// Back-compat alias (most call sites only provide the core doc type)
+export type ProfileRefs<
+  TCore extends CoreProfileBase = CoreProfileBase,
+  TApp extends AppProfileBase = AppProfileBase,
+> = ProfileRefs2<TCore, TApp>
+
+export function useProfileFetch<
+  TCore extends CoreProfileBase = CoreProfileBase,
+  TApp extends AppProfileBase = AppProfileBase,
+>(
   id: string | null | undefined | Ref<string | null | undefined>,
   config: ProfileConfig
 ) {
@@ -48,17 +61,18 @@ export function useProfileFetch<TProfile extends Profile = Profile>(
   )
 
   const { data: coreProfile, pending: corePending } = useDocument<
-    TProfile | undefined
+    TCore | undefined
   >(coreDoc as any)
 
   const { data: appProfile, pending: appPending } = useDocument<
-    Partial<TProfile> | undefined
+    Partial<TApp> | undefined
   >(appDoc as any)
 
-  const profile: ProfileRefs<TProfile> = { coreProfile, appProfile }
+  const profile: ProfileRefs<TCore, TApp> = { coreProfile, appProfile }
   const pending = computed(
     () => Boolean(corePending.value) || Boolean(appPending?.value)
   )
 
   return { profile, pending }
 }
+

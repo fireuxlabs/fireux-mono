@@ -46,11 +46,13 @@ export function useChefInterface(
   profile: ProfileRefs<ChefCore>,
   user: Ref<User | null | undefined>
 ) {
+  type ChefProfileWithUser = ChefCore & { user?: User | null }
+
   const resolveProfile = (target?: ChefCore | null) =>
     target ?? profile.coreProfile.value ?? null
 
-  const resolveUser = (target?: ChefCore | null) =>
-    target?.user ?? user.value ?? null
+  const resolveUser = (target?: ChefProfileWithUser | ChefCore | null) =>
+    (target as ChefProfileWithUser | null)?.user ?? user.value ?? null
 
   const resolveTagline = (payload: ChefCore | null | undefined): string =>
     payload?.tagline?.trim() ??
@@ -63,7 +65,9 @@ export function useChefInterface(
     (u.handle ? `@${u.handle.trim()}` : '') ||
     'Chef'
 
-  const pillProps = (target?: ChefCore | null): ChefCard.Pill | null => {
+  const pillProps = (
+    target?: ChefProfileWithUser | ChefCore | null
+  ): ChefCard.Pill | null => {
     const currentProfile = resolveProfile(target)
     const currentUser = resolveUser(target)
     if (!currentUser) return null
@@ -81,7 +85,9 @@ export function useChefInterface(
     }
   }
 
-  const cellProps = (target?: ChefCore | null): ChefCard.Cell | null => {
+  const cellProps = (
+    target?: ChefProfileWithUser | ChefCore | null
+  ): ChefCard.Cell | null => {
     const base = pillProps(target)
     if (!base) return null
 
@@ -102,7 +108,7 @@ export function useChefInterface(
 }
 
 export const resolveChefCell = (
-  profile?: ChefCore | null,
+  profile?: (ChefCore & { user?: Partial<User> | null }) | null,
   fallbackId = 'chef-profile'
 ): ChefCard.Cell | null => {
   if (!profile) return null
@@ -128,7 +134,7 @@ export const resolveChefCell = (
 }
 
 export const resolveChefPill = (
-  profile?: ChefCore | null
+  profile?: (ChefCore & { user?: Partial<User> | null }) | null
 ): ChefCard.Pill => ({
   avatar: profile?.user?.avatar ?? '',
   title: profile?.user?.display_name ?? '',

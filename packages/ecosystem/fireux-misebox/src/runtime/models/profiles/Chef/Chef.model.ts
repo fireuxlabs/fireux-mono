@@ -1,4 +1,7 @@
-import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
+import type {
+  AppProfileBase,
+  CoreProfileBase,
+} from 'fireux-core/runtime/models/core/profile.model'
 import { chefConfig } from './supporting'
 
 /**
@@ -8,7 +11,7 @@ import { chefConfig } from './supporting'
  * App doc:   apps/{appId}/chefs/{uid}
  */
 
-export interface ChefCore extends Profile {
+export interface ChefCore extends CoreProfileBase {
   tagline: string
   bio_short: string
   bio_long: string
@@ -23,6 +26,7 @@ export interface ChefCore extends Profile {
  * Tenant overlay (delta-only).
  * Keep empty until you truly need tenant-specific fields.
  */
-export interface ChefApp extends Profile {}
+export interface ChefApp extends AppProfileBase {}
 
 export { chefConfig }
+

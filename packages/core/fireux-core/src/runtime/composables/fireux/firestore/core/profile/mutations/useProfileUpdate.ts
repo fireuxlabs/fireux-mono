@@ -2,7 +2,8 @@ import { ref } from 'vue'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type {
-  Profile,
+  AppProfileBase,
+  CoreProfileBase,
   ProfileConfig,
 } from '../../../../../../models/core/profile.model'
 import type { ProfileRefs } from '../fetch/useProfileFetch'
@@ -10,10 +11,10 @@ import type { ProfileRefs } from '../fetch/useProfileFetch'
 type UpdateResult = 'success'
 type UpdateScope = 'auto' | 'core' | 'app'
 
-export function useProfileUpdate<TProfile extends Profile = Profile>(
-  profileRefs: ProfileRefs<TProfile>,
-  config: ProfileConfig
-) {
+export function useProfileUpdate<
+  TCore extends CoreProfileBase = CoreProfileBase,
+  TApp extends AppProfileBase = AppProfileBase,
+>(profileRefs: ProfileRefs<TCore, TApp>, config: ProfileConfig) {
   const { updateDocument } = useFirestoreUpdate()
   const { appId, role } = useFireUXConfig()
 
@@ -40,15 +41,15 @@ export function useProfileUpdate<TProfile extends Profile = Profile>(
   }
 
   const updateCoreProfile = async (
-    partial: Partial<TProfile>,
+    partial: Partial<TCore>,
     explicitId?: string
   ) => {
     const id = ensureId(explicitId)
-    await updateDocument<TProfile>(config.collectionName, id, partial)
+    await updateDocument(config.collectionName, id, partial)
   }
 
   const updateAppProfile = async (
-    partial: Partial<TProfile>,
+    partial: Partial<TApp>,
     explicitId?: string
   ) => {
     if (!appId) {
@@ -58,11 +59,11 @@ export function useProfileUpdate<TProfile extends Profile = Profile>(
     }
     const id = ensureId(explicitId)
     const collection = `apps/${appId}/${config.collectionName}`
-    await updateDocument<Partial<TProfile>>(collection, id, partial)
+    await updateDocument(collection, id, partial)
   }
 
   const updateProfile = async (
-    partial: Partial<TProfile>,
+    partial: any,
     options: { scope?: UpdateScope; id?: string } = {}
   ): Promise<UpdateResult> => {
     const { scope = 'auto', id } = options

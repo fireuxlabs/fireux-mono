@@ -1,24 +1,15 @@
-import type { User } from './user.model'
-
 /**
- * Minimal shared Profile shape.
- * Each profile belongs to a user and represents a domain entity
- * like Chef, Supplier, Agent, or Professional.
+ * Core profile doc base shape (global truth)
+ * Example path: /chefs/<uid>, /agents/<uid>, /professionals/<uid>, etc.
  */
-export interface Profile {
+export interface CoreProfileBase {
   /** Canonical Firestore id (== Firebase Auth UID) */
   id: string
 
-  /** Reference to the owning user (minimal core surface) */
-  user: Partial<User>
-
-  /** Domain id (e.g. 'chef', 'supplier', etc.) */
-  domain: string
-
-  /** Main title for pill or card (e.g. 'Freelance Chef', 'Catering Agency') */
+  /** Main title for pill/cell/etc */
   title: string
 
-  /** Secondary subtitle for pill or card (e.g. 'Zürich, Switzerland') */
+  /** Secondary subtitle for pill/cell/etc */
   subtitle: string
 
   /** Badges (skills, tags, specialties, etc.) */
@@ -26,19 +17,14 @@ export interface Profile {
 }
 
 /**
- * Generic wrapper shape used by system-domain composables.
+ * App profile overlay base shape (tenant truth)
+ * Example path: /apps/<appId>/<collection>/<uid>
  *
- * Notes:
- * - This is *shape only* (no domain props).
- * - UI card/pill/profile view models are produced by `useXInterface` composables.
- * - `core` and `app` are the Firestore-backed documents (core + optional tenant overlay).
+ * Delta-only by design.
+ * Keep it minimal until you truly need overlay fields.
  */
-export interface DomainProfile<TCore extends Profile, TApp extends Profile> {
+export interface AppProfileBase {
   id: string
-  display_name: string
-  avatar: string
-  core: TCore
-  app: TApp
 }
 
 /**

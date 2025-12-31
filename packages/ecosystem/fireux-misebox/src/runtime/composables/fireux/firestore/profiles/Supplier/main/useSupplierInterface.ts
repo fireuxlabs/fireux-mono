@@ -48,11 +48,13 @@ export function useSupplierInterface(
   profile: ProfileRefs<SupplierCore>,
   user: Ref<User | null | undefined>
 ) {
+  type SupplierProfileWithUser = SupplierCore & { user?: User | null }
+
   const resolveProfile = (target?: SupplierCore | null) =>
     target ?? profile.coreProfile.value ?? null
 
-  const resolveUser = (target?: SupplierCore | null) =>
-    target?.user ?? user.value ?? null
+  const resolveUser = (target?: SupplierProfileWithUser | SupplierCore | null) =>
+    (target as SupplierProfileWithUser | null)?.user ?? user.value ?? null
 
   const resolveTagline = (
     payload: SupplierCore | null | undefined
@@ -68,7 +70,7 @@ export function useSupplierInterface(
     'Supplier'
 
   const pillProps = (
-    target?: SupplierCore | null
+    target?: SupplierProfileWithUser | SupplierCore | null
   ): SupplierCard.Pill | null => {
     const currentProfile = resolveProfile(target)
     const currentUser = resolveUser(target)
@@ -88,7 +90,7 @@ export function useSupplierInterface(
   }
 
   const cellProps = (
-    target?: SupplierCore | null
+    target?: SupplierProfileWithUser | SupplierCore | null
   ): SupplierCard.Cell | null => {
     const base = pillProps(target)
     if (!base) return null
@@ -110,7 +112,7 @@ export function useSupplierInterface(
 }
 
 export const resolveSupplierCell = (
-  profile?: SupplierCore | null,
+  profile?: (SupplierCore & { user?: Partial<User> | null }) | null,
   fallbackId = 'supplier-profile'
 ): SupplierCard.Cell | null => {
   if (!profile) return null
@@ -154,7 +156,7 @@ export const resolveSupplierCell = (
 }
 
 export const resolveSupplierPill = (
-  profile?: SupplierCore | null
+  profile?: (SupplierCore & { user?: Partial<User> | null }) | null
 ): SupplierCard.Pill => ({
   avatar: profile?.user?.avatar ?? '',
   title: profile?.user?.display_name ?? '',

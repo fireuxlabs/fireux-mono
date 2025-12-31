@@ -2,7 +2,8 @@
 import { useAuth } from '../../../firebase/useAuth'
 import { useProfileFetch } from './fetch/useProfileFetch'
 import type {
-  Profile,
+  AppProfileBase,
+  CoreProfileBase,
   ProfileConfig,
 } from '../../../../../models/core/profile.model'
 
@@ -11,11 +12,14 @@ import type {
  * - Returns grouped profile refs (core/app)
  * - No computed, no ensure/update/delete (handled by domain facades)
  */
-export function useProfile<TProfile extends Profile = Profile>(
-  config: ProfileConfig
-) {
+export function useProfile<
+  TCore extends CoreProfileBase = CoreProfileBase,
+  TApp extends AppProfileBase = AppProfileBase,
+>(config: ProfileConfig) {
   const { uid } = useAuth()
-  const { profile, pending } = useProfileFetch<TProfile>(uid, config)
+  const { profile, pending } = useProfileFetch<TCore, TApp>(uid, config)
 
   return { profile, pending }
 }
+
+

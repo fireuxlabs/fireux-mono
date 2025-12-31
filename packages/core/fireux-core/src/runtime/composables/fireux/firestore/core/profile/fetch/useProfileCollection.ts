@@ -4,7 +4,7 @@ import { useNuxtApp } from '#imports'
 import { useFirestore, useCollection } from 'vuefire'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type {
-  Profile,
+  CoreProfileBase,
   ProfileConfig,
 } from '../../../../../../models/core/profile.model'
 import { useUserCollection } from '../../user/fetch/useUserCollection'
@@ -12,8 +12,11 @@ import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import type { Ref } from 'vue'
 import type { User } from '../../../../../../models/core/user.model'
 
+type UserSummary = Pick<User, 'id' | 'display_name' | 'avatar'> &
+  Partial<Pick<User, 'handle' | 'email'>>
+
 export function useProfileCollection<
-  TProfile extends Partial<Profile> = Profile
+  TProfile extends CoreProfileBase = CoreProfileBase
 >(config: ProfileConfig) {
   const db = useFirestore()
   const nuxtApp = useNuxtApp()
@@ -54,7 +57,7 @@ export function useProfileCollection<
     const appendFrom = (entries?: Array<Partial<TProfile>>) => {
       for (const profile of entries ?? []) {
         if (!profile) continue
-        const id = (profile.user?.id ?? profile.id)?.toString().trim()
+        const id = profile.id?.toString().trim()
         if (id) ids.add(id)
       }
     }
@@ -73,7 +76,7 @@ export function useProfileCollection<
   })
 
   const userMap = computed(() => {
-    const map = new Map<string, Profile['user']>()
+    const map = new Map<string, UserSummary>()
     for (const entry of users.value ?? []) {
       if (!entry?.id) continue
       map.set(entry.id, {
@@ -89,41 +92,44 @@ export function useProfileCollection<
 
   const resolveUserForProfile = (profile?: TProfile) => {
     if (!profile) return undefined
-    const profileUser = profile.user
-    const id = profileUser?.id ?? profile.id
-    if (!id) return profileUser
+    const id = profile.id
+    if (!id) return undefined
 
     const enriched = userMap.value.get(id)
     if (enriched) {
-      return { ...(profileUser ?? {}), ...enriched }
+      return { ...enriched }
     }
 
     const coreUser = coreUserRefs.get(id)?.value
     if (coreUser) {
-      return { ...(profileUser ?? {}), ...coreUser }
+      return { ...coreUser }
     }
 
-    return profileUser
+    return undefined
   }
 
-  const attachUser = (entries: TProfile[] | null | undefined): TProfile[] => {
+  const attachUser = (
+    entries: TProfile[] | null | undefined
+  ): Array<TProfile & { user?: User | UserSummary }> => {
     if (!entries?.length) return []
     return entries.map((profile) => {
       const resolvedUser = resolveUserForProfile(profile)
       if (!resolvedUser) return profile
       return {
         ...profile,
-        user: resolvedUser,
-      }
+        user: resolvedUser as any,
+      } as TProfile & { user?: User | UserSummary }
     })
   }
 
-  const globalProfilesWithUser = computed<TProfile[]>(() =>
+  const globalProfilesWithUser = computed<
+    Array<TProfile & { user?: User | UserSummary }>
+  >(() =>
     attachUser((globalProfiles.value ?? []) as TProfile[])
   )
 
   const localProfilesWithUser = localProfiles
-    ? computed<TProfile[]>(() =>
+    ? computed<Array<TProfile & { user?: User | UserSummary }>>(() =>
         attachUser((localProfiles.value ?? []) as TProfile[])
       )
     : null
@@ -135,3 +141,4 @@ export function useProfileCollection<
     localProfilesWithUser,
   }
 }
+
