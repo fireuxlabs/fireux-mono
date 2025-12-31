@@ -15,7 +15,7 @@
           v-if="slotProps.posts.length"
           class="grid grid-cols-1 gap-4 lg:grid-cols-2"
         >
-          <OrganismsObjectsBlogCardsArticle
+          <OrganismsObjectsBlogViewArticle
             v-for="post in slotProps.posts"
             :key="post.slug"
             :post="post"

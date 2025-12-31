@@ -29,7 +29,7 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const appUser = user.appUser as { value: AppUser | null | undefined }
 
   const { uid, isAuthenticated } = useAuth()
-  const { isTenant } = useFireUXConfig()
+  const { isTenant, appId } = useFireUXConfig()
 
   const isPending = computed(() => Boolean(pending?.value))
   const isLoading = computed(
@@ -56,8 +56,10 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const currentUser = computed(() => coreUser.value ?? null)
 
   const isAdmin = computed(() => {
-    if (coreUser.value?.role === 'admin') return true
-    return appUser.value?.role === 'admin'
+    if (appUser.value?.role === 'admin') return true
+    const activeAppId = appId?.trim()
+    if (!activeAppId) return false
+    return Boolean(coreUser.value?.adminOf?.some((id) => id === activeAppId))
   })
 
   const cta = computed((): UserCta => {

@@ -14,7 +14,7 @@ export function useKitchenCollection<
   >
   watch(
     path,
-    (nextPath) => {
+    (nextPath: string) => {
       collectionRef.value = firestoreFetchCollection<T>(nextPath)
     },
     { immediate: true }

@@ -11,7 +11,7 @@
       </template>
 
       <div v-if="posts.length" class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <OrganismsObjectsBlogCardsArticle
+        <OrganismsObjectsBlogViewArticle
           v-for="post in posts"
           :key="post.slug"
           :post="post"

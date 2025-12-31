@@ -1,7 +1,7 @@
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection.ts'
 import {
   chefConfig,
-  type ChefProfile,
+  type ChefCore,
 } from '../../../../../../models/profiles/Chef/Chef.model.ts'
 
 export function useChefCollection() {
@@ -11,6 +11,7 @@ export function useChefCollection() {
     globalProfilesWithUser,
     localProfilesWithUser,
   } = useProfileCollection<ChefProfile>(chefConfig)
+  } = useProfileCollection<ChefCore>(chefConfig)
 
   return {
     globalChefs: globalProfilesWithUser,

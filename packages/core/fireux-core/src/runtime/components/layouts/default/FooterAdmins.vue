@@ -34,7 +34,7 @@ import { useAppUsers } from '../../../composables/fireux/firestore/core/app/fetc
 import { useUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import type { UserCard } from '../../../models/core/user.model'
+import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const { app } = useApp()
 const { users, pending } = useAppUsers()

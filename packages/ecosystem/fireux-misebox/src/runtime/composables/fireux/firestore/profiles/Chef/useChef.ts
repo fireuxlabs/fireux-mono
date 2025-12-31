@@ -4,8 +4,7 @@ import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/cor
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import {
   chefConfig,
-  type ChefProfile,
-  type ChefCoreProfile,
+  type ChefCore,
 } from '../../../../../models/profiles/Chef/Chef.model.ts'
 import type { ChefCard } from './main/useChefInterface.ts'
 import { useChefComputed } from './main/useChefComputed.ts'
@@ -13,7 +12,7 @@ import { useChefInterface } from './main/useChefInterface.ts'
 import { useChefUpdate } from './main/useChefUpdate.ts'
 import { useChefCreate } from './main/useChefCreate.ts'
 
-export type { ChefProfile, ChefCoreProfile, ChefCard }
+export type { ChefCore, ChefCard }
 
 /**
  * useChef
@@ -25,7 +24,7 @@ export type { ChefProfile, ChefCoreProfile, ChefCard }
  *   - update helpers
  */
 export function useChef() {
-  const { profile: refs, pending } = useProfile<ChefProfile>(chefConfig)
+  const { profile: refs, pending } = useProfile<ChefCore>(chefConfig)
   const { coreProfile, appProfile } = refs
 
   // canonical user for UI layer

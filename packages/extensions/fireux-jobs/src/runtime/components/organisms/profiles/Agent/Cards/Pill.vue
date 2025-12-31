@@ -1,85 +1,42 @@
 <template>
-  <NuxtLink v-if="agent?.to" :to="agent.to" class="pill">
-    <div class="pill-content">
-      <UAvatar
-        :src="agent?.avatar || undefined"
-        :alt="agent?.title || 'Agent'"
-        size="sm"
-        class="avatar"
-      />
-
-      <div class="content">
-        <span class="company">{{ agent?.title || 'Agent' }}</span>
-        <span v-if="agent?.subtitle" class="contact">{{ agent.subtitle }}</span>
+  <UCard>
+    <div class="flex items-center gap-3">
+      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <div class="min-w-0 flex-1">
+        <div class="truncate font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
       </div>
     </div>
-  </NuxtLink>
-
-  <div v-else class="pill">
-    <div class="pill-content">
-      <UAvatar
-        :src="agent?.avatar || undefined"
-        :alt="agent?.title || 'Agent'"
-        size="sm"
-        class="avatar"
-      />
-
-      <div class="content">
-        <span class="company">{{ agent?.title || 'Agent' }}</span>
-        <span v-if="agent?.subtitle" class="contact">{{ agent.subtitle }}</span>
-      </div>
-    </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface.ts'
+import type { AgentProfile } from '../../../../../models/profiles/Agent/Agent.model'
+import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
+import { resolveAgentPill } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
 
 const props = defineProps<{
-  agent: AgentCard.AgentPill | null
+  title?: string
+  subtitle?: string
+  avatar?: string | null
+  agent?: AgentCard.AgentPill | AgentProfile | null
 }>()
 
-const agent = computed(() => props.agent ?? null)
+const resolved = computed<AgentCard.AgentPill | null>(() => {
+  const source = props.agent
+  if (!source) return null
+  if ('user' in source) return resolveAgentPill(source)
+  return source as AgentCard.AgentPill
+})
+
+const resolvedTitle = computed(() => resolved.value?.title ?? 'Agent')
+const resolvedSubtitle = computed(
+  () => (resolved.value?.subtitle ?? undefined) || undefined
+)
+const resolvedAvatar = computed(() => resolved.value?.avatar ?? null)
+
+const vmTitle = computed(() => props.title ?? resolvedTitle.value)
+const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
+const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
 </script>
-
-<style scoped>
-.pill {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  background: var(--ui-background-200, rgba(148, 163, 184, 0.08));
-  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.pill:hover {
-  border-color: var(--ui-primary-500, rgba(79, 70, 229, 0.6));
-}
-
-.avatar {
-  border-radius: 9999px;
-}
-
-.pill-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-}
-
-.company {
-  font-weight: 600;
-}
-
-.contact {
-  font-size: 0.8rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-</style>

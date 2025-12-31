@@ -1,10 +1,17 @@
 import type { Ref } from 'vue'
-import type {
-  User,
-  UserCard,
-} from '../../../../../../../models/core/user.model'
+import type { User } from '../../../../../../../models/core/user.model'
 import type { UserRefs } from '../../fetch/useUserFetch'
 import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
+
+export namespace UserCard {
+  export type Card = {
+    title: string
+    subtitle?: string
+    avatar: string
+    to: string
+    badges: string[]
+  }
+}
 
 export function useUserInterface(
   source?: Ref<User | null | undefined> | UserRefs
@@ -26,7 +33,7 @@ export function useUserInterface(
   const card = (target?: User | null): UserCard.Card => {
     const user = toUser(target)
     const id = (user?.id ?? '').trim()
-    const href = toPath(id)
+    const to = toPath(id)
 
     const title =
       (user?.display_name ?? '').trim() ||
@@ -38,11 +45,11 @@ export function useUserInterface(
     const subtitle = handle ? `@${handle}` : ''
 
     const rawAvatar = (user?.avatar ?? '').trim()
-    const image = rawAvatar
+    const avatar = rawAvatar
       ? getProxiedAvatarUrl(rawAvatar) || rawAvatar
       : ''
 
-    return { title, subtitle, image, href, badges: [] }
+    return { title, subtitle, avatar, to, badges: [] }
   }
 
   return { card }

@@ -22,7 +22,7 @@
           </UButton>
         </div>
 
-        <OrganismsProfilesAgentProfile :agent="profile" />
+        <OrganismsProfilesAgentCardsProfile :agent="profile" />
       </div>
     </div>
 

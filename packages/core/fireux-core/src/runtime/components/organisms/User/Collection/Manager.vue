@@ -50,7 +50,8 @@ import { computed, ref, useSlots } from 'vue'
 import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import type { User, UserCard } from '../../../../models/core/user.model'
+import type { User } from '../../../../models/core/user.model'
+import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const slots = useSlots()
 const hasDefaultSlot = computed(() => Boolean(slots.default))
@@ -68,8 +69,6 @@ type DirectoryEntry = {
 }
 
 const inferRole = (entry: User): 'admin' | 'user' | undefined => {
-  const explicit = (entry.role ?? entry.appUser?.role)?.trim().toLowerCase()
-  if (explicit === 'admin' || explicit === 'user') return explicit
   const activeAppId = appId?.trim()
   if (!activeAppId) return undefined
   if (entry.adminOf?.some((id) => id === activeAppId)) return 'admin'
@@ -85,15 +84,14 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
     .filter((entry: unknown): entry is User => Boolean((entry as User | undefined)?.id))
     .map((entry: User) => {
       const role = inferRole(entry)
-      const enriched = role ? ({ ...entry, role } as User) : entry
 
-      const payload = card(enriched)
+      const payload = card(entry)
       const badges = role === 'admin' ? ['Admin'] : []
 
       return {
         key: entry.id,
         card: { ...payload, badges },
-        raw: enriched,
+        raw: entry,
       }
     })
     .filter((entry): entry is DirectoryEntry => Boolean(entry))

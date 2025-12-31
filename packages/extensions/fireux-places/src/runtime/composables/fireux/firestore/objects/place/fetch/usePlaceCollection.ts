@@ -1,5 +1,5 @@
 import { computed, shallowRef, watch } from 'vue'
-import type { Ref } from 'vue'
+import type { Ref, ShallowRef } from 'vue'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
 import { toPlaceCollectionPath, usePlaceTypesConfig } from '../utils/placeCollections'
 
@@ -31,10 +31,10 @@ export function usePlaceCollection<T extends Record<string, any> = Record<string
     toPlaceCollectionPath(keyword.value, types.value)
   )
 
-  const collectionRef = shallowRef<Ref<T[] | undefined> | null>(null)
+  const collectionRef = shallowRef(null) as ShallowRef<Ref<T[] | undefined> | null>
   watch(
     collectionPath,
-    (path) => {
+    (path: string) => {
       collectionRef.value = firestoreFetchCollection<T>(path)
     },
     { immediate: true }

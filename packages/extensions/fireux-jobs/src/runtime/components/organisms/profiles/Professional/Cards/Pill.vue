@@ -1,118 +1,42 @@
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Professional/Cards/Pill.vue -->
 <template>
-  <NuxtLink v-if="professional?.to" :to="professional.to" class="pill">
-    <UAvatar
-      :src="professional.avatar"
-      :alt="professional.title"
-      size="sm"
-      class="avatar"
-    />
-    <div class="content">
-      <span class="title">{{ professional.title }}</span>
-
-      <span v-if="professional.tagline" class="tagline">
-        {{ professional.tagline }}
-      </span>
-
-      <div v-if="professional.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in professional.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
+  <UCard>
+    <div class="flex items-center gap-3">
+      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <div class="min-w-0 flex-1">
+        <div class="truncate font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
       </div>
     </div>
-  </NuxtLink>
-
-  <div v-else class="pill">
-    <UAvatar
-      :src="professional?.avatar"
-      :alt="professional?.title"
-      size="sm"
-      class="avatar"
-    />
-
-    <div class="content">
-      <span class="title">{{ professional?.title }}</span>
-
-      <span v-if="professional?.tagline" class="tagline">
-        {{ professional.tagline }}
-      </span>
-
-      <div v-if="professional?.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in professional.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
-      </div>
-    </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts'
-
 import { computed } from 'vue'
+import type { ProfessionalProfile } from '../../../../../models/profiles/Professional/Professional.model'
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
+import { resolveProfessionalPill } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
 
 const props = defineProps<{
-  professional: ProfessionalCard.ProfessionalPill | null
+  title?: string
+  subtitle?: string
+  avatar?: string | null
+  professional?: ProfessionalCard.ProfessionalPill | ProfessionalProfile | null
 }>()
 
-const professional = computed(() => {
-  const pill = props.professional
-  if (!pill) return null
-
-  return {
-    ...pill,
-    tagline: pill.tagline ?? pill.subtitle ?? '',
-  }
+const resolved = computed<ProfessionalCard.ProfessionalPill | null>(() => {
+  const source = props.professional
+  if (!source) return null
+  if ('user' in source) return resolveProfessionalPill(source)
+  return source as ProfessionalCard.ProfessionalPill
 })
+
+const resolvedTitle = computed(() => resolved.value?.title ?? 'Professional')
+const resolvedSubtitle = computed(
+  () => resolved.value?.tagline ?? resolved.value?.subtitle ?? undefined
+)
+const resolvedAvatar = computed(() => resolved.value?.avatar ?? null)
+
+const vmTitle = computed(() => props.title ?? resolvedTitle.value)
+const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
+const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
 </script>
-
-<style scoped>
-.pill {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  background: var(--ui-background-200, rgba(148, 163, 184, 0.08));
-  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.pill:hover {
-  border-color: var(--ui-primary-500, rgba(79, 70, 229, 0.6));
-}
-
-.avatar {
-  border-radius: 9999px;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-}
-
-.title {
-  font-weight: 600;
-}
-
-.tagline {
-  font-size: 0.8rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-
-.badges {
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-}
-</style>

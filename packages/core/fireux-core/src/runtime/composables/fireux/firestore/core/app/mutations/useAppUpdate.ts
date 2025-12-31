@@ -29,7 +29,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   const sanitizeInstagram = (raw: string | null | undefined) => {
     const value = String(raw ?? '').trim()
-    if (!value) return null
+    if (!value) return ''
 
     const normalised = (() => {
       if (value.startsWith('@'))
@@ -48,7 +48,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   const sanitizeAvatarUrl = (raw: string | null | undefined) => {
     const value = String(raw ?? '').trim()
-    if (!value) return null
+    if (!value) return ''
     try {
       const url = new URL(value)
       if (!['http:', 'https:'].includes(url.protocol)) {

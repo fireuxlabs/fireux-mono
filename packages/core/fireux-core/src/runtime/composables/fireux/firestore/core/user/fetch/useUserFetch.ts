@@ -53,19 +53,7 @@ export function useUserFetch(
     return appUserRef.value ?? null
   })
 
-  const user = computed<User | null>(() => {
-    const core = coreUser.value
-    const app = appUser.value
-
-    if (!core) return null
-    if (!app) return core
-
-    return {
-      ...core,
-      role: app.role ?? core.role,
-      appUser: app,
-    }
-  })
+  const user = computed<User | null>(() => coreUser.value ?? null)
 
   const pending = computed(
     () => Boolean(corePending.value) || Boolean(appPending?.value)

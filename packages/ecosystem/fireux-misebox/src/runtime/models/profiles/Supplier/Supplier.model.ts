@@ -1,61 +1,36 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
-import type { DomainProfile } from 'fireux-core/runtime/models/core/profile.model'
-import { supplierConfig } from '../Supplier/supporting'
+import { supplierConfig } from './supporting'
 
 /**
- * Hydrated Supplier shape used by composables.
- * - `user` is the canonical user surface (avatar / display_name).
- * - `core` is the global Supplier profile document.
- * - `app` is the optional tenant overlay document.
+ * Firestore shapes only. No UI. No composable wiring. No generics.
+ *
+ * Core doc:  suppliers/{uid}
+ * App doc:   apps/{appId}/suppliers/{uid}
  */
-export type Supplier = DomainProfile<SupplierProfile, SupplierAppProfile> &
-  SupplierProfile & {
-    id: string
-  }
 
-/**
- * Supplier domain shapes
- * Shape-only, no UI concerns.
- */
-export namespace Supplier {
-  /**
-   * Core Supplier profile (global truth)
-   * Firestore: suppliers/{uid}
-   */
-  export interface ProfileCore extends Profile {
-    tagline?: string | null
-    bio_short?: string | null
-    bio_long?: string | null
-    specialties?: string[]
-    categories?: string[]
-    avatar?: string | null
-    avatar_url?: string | null
-    organization_name?: string | null
+export interface SupplierCore extends Profile {
+  tagline: string
+  bio_short: string
+  bio_long: string
+  specialties: string[]
+  categories: string[]
+  avatar: string
+  avatar_url: string
+  organization_name: string
 
-    business_type?: string | null
-    locations?: Array<{ city?: string | null; country?: string | null }>
-    years_in_business?: number | null
-    products_offered?: string[]
-    employee_count?: number | null
-    certifications?: string[]
-    delivery_range?: number | null
-  }
-
-  /**
-   * Tenant Supplier overlay (delta-only)
-   * Firestore: apps/{appId}/suppliers/{uid}
-   *
-   * Intentionally empty for now.
-   * Add fields only when a true tenant-specific delta is required.
-   */
-  export interface ProfileApp extends Profile {}
+  business_type: string
+  locations: Array<{ city: string; country: string }>
+  years_in_business: number
+  products_offered: string[]
+  employee_count: number
+  certifications: string[]
+  delivery_range: number
 }
 
 /**
- * Firestore-facing aliases
+ * Tenant overlay (delta-only).
+ * Keep empty until you truly need tenant-specific fields.
  */
-export type SupplierProfile = Supplier.ProfileCore
-export type SupplierCoreProfile = Supplier.ProfileCore
-export type SupplierAppProfile = Supplier.ProfileApp
+export interface SupplierApp extends Profile {}
 
 export { supplierConfig }

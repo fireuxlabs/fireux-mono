@@ -23,7 +23,7 @@
         class="w-full justify-start"
         @click="emit('select', cell)"
       >
-        <OrganismsObjectsPlaceCell :place="cell" />
+        <OrganismsObjectsPlaceCardsCell :place="cell" />
       </UButton>
     </div>
   </UCard>

@@ -1,120 +1,46 @@
 <template>
-  <NuxtLink v-if="card?.to" :to="card.to" class="pill">
-    <UAvatar :src="card.avatar" :alt="card.title" size="sm" class="avatar" />
-    <div class="content">
-      <span class="title">{{ card.title }}</span>
-
-      <span v-if="card.tagline" class="tagline">
-        {{ card.tagline }}
-      </span>
-
-      <div v-if="card.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in card.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
+  <UCard>
+    <div class="flex items-center gap-3">
+      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <div class="min-w-0 flex-1">
+        <div class="truncate font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
+        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
       </div>
     </div>
-  </NuxtLink>
-
-  <div v-else class="pill">
-    <UAvatar :src="card?.avatar" :alt="card?.title" size="sm" class="avatar" />
-
-    <div class="content">
-      <span class="title">{{ card?.title }}</span>
-
-      <span v-if="card?.tagline" class="tagline">
-        {{ card.tagline }}
-      </span>
-
-      <div v-if="card?.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in card.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
-      </div>
-    </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type {
-  ProfessionalProfile,
-} from '../../../../../models/profiles/Professional/Professional.model'
+import type { ProfessionalProfile } from '../../../../../models/profiles/Professional/Professional.model'
 import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
 import { resolveProfessionalCell } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
 
 const props = defineProps<{
+  title?: string
+  subtitle?: string
+  avatar?: string | null
   professional?: ProfessionalCard.ProfessionalCell | ProfessionalProfile | null
+  prop?: string
 }>()
 
-const isProfessionalCell = (
-  payload: ProfessionalCard.ProfessionalCell | ProfessionalProfile
-): payload is ProfessionalCard.ProfessionalCell => 'to' in payload
-
-const card = computed<ProfessionalCard.ProfessionalCell | null>(() => {
+const resolved = computed<ProfessionalCard.ProfessionalCell | null>(() => {
   const source = props.professional
   if (!source) return null
-
-  if (isProfessionalCell(source)) {
-    return {
-      ...source,
-      avatar: source.avatar ?? undefined,
-      to: source.to ?? undefined,
-      tagline: source.tagline ?? source.subtitle ?? '',
-    }
+  if ('bio_short' in source || 'specialties' in source || 'locations' in source) {
+    return source as ProfessionalCard.ProfessionalCell
   }
-
-  return resolveProfessionalCell(source)
+  return resolveProfessionalCell(source as ProfessionalProfile)
 })
+
+const resolvedTitle = computed(() => resolved.value?.title ?? 'Professional')
+const resolvedSubtitle = computed(
+  () => resolved.value?.tagline ?? resolved.value?.subtitle ?? undefined
+)
+const resolvedAvatar = computed(() => resolved.value?.avatar ?? null)
+
+const vmTitle = computed(() => props.title ?? resolvedTitle.value)
+const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
+const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
 </script>
-
-<style scoped>
-.pill {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  background: var(--ui-background-200, rgba(148, 163, 184, 0.08));
-  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.pill:hover {
-  border-color: var(--ui-primary-500, rgba(79, 70, 229, 0.6));
-}
-
-.avatar {
-  border-radius: 9999px;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-}
-
-.title {
-  font-weight: 600;
-}
-
-.tagline {
-  font-size: 0.8rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-
-.badges {
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-}
-</style>

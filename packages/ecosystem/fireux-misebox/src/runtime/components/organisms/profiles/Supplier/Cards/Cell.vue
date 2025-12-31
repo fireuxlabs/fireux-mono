@@ -1,69 +1,14 @@
 <template>
-  <NuxtLink v-if="card?.to" :to="card.to" class="pill">
-    <UAvatar
-      :src="card.company_avatar || card.avatar"
-      :alt="companyName(card)"
-      size="sm"
-      class="avatar"
-    />
-
-    <div class="content">
-      <span class="company">{{ companyName(card) }}</span>
-      <span v-if="card.title" class="contact">{{ card.title }}</span>
-
-      <span v-if="card.tagline" class="tagline">
-        {{ card.tagline }}
-      </span>
-
-      <span v-if="card.bio_short" class="bio">
-        {{ card.bio_short }}
-      </span>
-
-      <div v-if="card.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in card.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
+  <UCard>
+    <div class="flex items-center gap-3">
+      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <div class="min-w-0 flex-1">
+        <div class="truncate font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
+        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
       </div>
     </div>
-  </NuxtLink>
-
-  <div v-else class="pill">
-    <UAvatar
-      :src="card?.company_avatar || card?.avatar"
-      :alt="companyName(card || null)"
-      size="sm"
-      class="avatar"
-    />
-
-    <div class="content">
-      <span class="company">{{ companyName(card || null) }}</span>
-      <span v-if="card?.title" class="contact">{{ card.title }}</span>
-
-      <span v-if="card?.tagline" class="tagline">
-        {{ card.tagline }}
-      </span>
-
-      <span v-if="card?.bio_short" class="bio">
-        {{ card.bio_short }}
-      </span>
-
-      <div v-if="card?.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in card.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
-      </div>
-    </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -73,81 +18,31 @@ import type { SupplierCard } from '../../../../../composables/fireux/firestore/p
 import { resolveSupplierCell } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface'
 
 const props = defineProps<{
+  title?: string
+  subtitle?: string
+  avatar?: string | null
   supplier?: SupplierCard.Cell | SupplierProfile | null
+  prop?: string
 }>()
 
-const isSupplierCell = (
-  payload: SupplierCard.Cell | SupplierProfile
-): payload is SupplierCard.Cell => 'to' in payload || 'company_name' in payload
-
-const card = computed<SupplierCard.Cell | null>(() => {
+const resolved = computed<SupplierCard.Cell | null>(() => {
   const source = props.supplier
   if (!source) return null
-
-  if (isSupplierCell(source)) {
-    return {
-      ...source,
-      avatar: source.avatar ?? undefined,
-      company_avatar: source.company_avatar ?? undefined,
-      to: source.to ?? undefined,
-      tagline: source.tagline ?? source.subtitle ?? '',
-    }
-  }
-
-  return resolveSupplierCell(source)
+  if ('user' in source) return resolveSupplierCell(source)
+  return source as SupplierCard.Cell
 })
 
-const companyName = (payload?: SupplierCard.Cell | null) =>
-  payload?.company_name || payload?.title || 'Supplier'
+const resolvedTitle = computed(
+  () => resolved.value?.company_name ?? resolved.value?.title ?? 'Supplier'
+)
+const resolvedSubtitle = computed(
+  () => resolved.value?.tagline ?? resolved.value?.subtitle ?? undefined
+)
+const resolvedAvatar = computed(
+  () => resolved.value?.company_avatar ?? resolved.value?.avatar ?? null
+)
+
+const vmTitle = computed(() => props.title ?? resolvedTitle.value)
+const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
+const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
 </script>
-
-<style scoped>
-.pill {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  background: var(--ui-background-200, rgba(148, 163, 184, 0.08));
-  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.pill:hover {
-  border-color: var(--ui-primary-500, rgba(79, 70, 229, 0.6));
-}
-
-.avatar {
-  border-radius: 9999px;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-}
-
-.company {
-  font-weight: 600;
-}
-
-.contact {
-  font-size: 0.8rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-
-.tagline {
-  font-size: 0.8rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-
-.bio {
-  font-size: 0.85rem;
-  color: var(--ui-text-600, rgba(71, 85, 105, 0.95));
-}
-
-.badges {
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-}
-</style>

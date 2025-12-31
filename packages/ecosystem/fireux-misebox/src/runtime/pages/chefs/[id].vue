@@ -22,7 +22,7 @@
           </UButton>
         </div>
 
-        <OrganismsProfilesChefProfile :chef="profile" />
+        <OrganismsProfilesChefCardsProfile :chef="profile" />
       </div>
     </div>
 

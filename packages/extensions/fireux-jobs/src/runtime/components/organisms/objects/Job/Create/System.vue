@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useJobCreate } from '../../../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
+import { useJobCreate } from '../../../../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
 
 const router = useRouter()
 const { form, reset, submit } = useJobCreate()

@@ -13,7 +13,7 @@
       aria-label="View profile"
     >
       <UAvatar
-        :src="pillUser.image || undefined"
+        :src="pillUser.avatar || undefined"
         :alt="pillUser.title || 'User'"
         :text="avatarFallback"
         size="sm"
@@ -33,7 +33,7 @@ import { computed, ref } from 'vue'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
-import type { UserCard } from '../../../models/core/user.model'
+import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const props = withDefaults(
   defineProps<{

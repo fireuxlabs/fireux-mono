@@ -1,4 +1,3 @@
-import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { User } from './user.model'
 
 /**
@@ -8,26 +7,22 @@ import type { User } from './user.model'
  */
 export interface Profile {
   /** Canonical Firestore id (== Firebase Auth UID) */
-  id?: string
+  id: string
 
-  /** Reference to the owning user (can be a full User or pill later) */
-  user?: Partial<User>
+  /** Reference to the owning user (minimal core surface) */
+  user: Partial<User>
 
-  /** Optional domain (e.g. 'chef', 'supplier', etc.) */
-  domain?: string
+  /** Domain id (e.g. 'chef', 'supplier', etc.) */
+  domain: string
 
   /** Main title for pill or card (e.g. 'Freelance Chef', 'Catering Agency') */
-  title?: string | null
+  title: string
 
   /** Secondary subtitle for pill or card (e.g. 'Zürich, Switzerland') */
-  subtitle?: string | null
+  subtitle: string
 
-  /** Optional badges (skills, tags, specialties, etc.) */
-  badges?: string[]
-
-  /** Creation and update timestamps */
-  created_at?: FirebaseTimestamp
-  updated_at?: FirebaseTimestamp
+  /** Badges (skills, tags, specialties, etc.) */
+  badges: string[]
 }
 
 /**
@@ -40,10 +35,10 @@ export interface Profile {
  */
 export interface DomainProfile<TCore extends Profile, TApp extends Profile> {
   id: string
-  display_name?: string
-  avatar?: string
-  core: TCore | null
-  app?: TApp | null
+  display_name: string
+  avatar: string
+  core: TCore
+  app: TApp
 }
 
 /**
@@ -59,12 +54,12 @@ export interface ProfileConfig {
   /** Human-readable label */
   profileType: string
 
-  /** Optional CTA text for UI when profile missing */
-  cta?: string
+  /** CTA text for UI when profile missing */
+  cta: string
 
-  /** Optional label override for nav/dropdown contexts */
-  navLabel?: string
+  /** Label override for nav/dropdown contexts */
+  navLabel: string
 
-  /** Optional icon to reuse across nav/dropdown contexts */
-  navIcon?: string
+  /** Icon to reuse across nav/dropdown contexts */
+  navIcon: string
 }

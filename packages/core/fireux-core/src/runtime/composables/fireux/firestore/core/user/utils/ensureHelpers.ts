@@ -56,15 +56,19 @@ export async function ensureCoreUserDocument(
     id: uid,
     display_name: displayName,
     avatar: options.avatar ?? '',
-    email: options.email ?? '',
     handle: makeHandle(displayName, uid),
+    email: options.email ?? '',
+    bio: '',
+    profiles: [],
+    userOf: [],
+    adminOf: [],
     notifications: [
       createUserNotification({
         message: `Welcome to ${welcomeLabel}`,
         scope: 'ecosystem',
       }),
     ],
-  } as User
+  }
 
   const { setDocument } = useFirestoreManager()
   await setDocument<User>('users', uid, payload)
@@ -156,7 +160,7 @@ export function createUserNotification(
     scope: input.scope,
     created_at: new Date().toISOString(),
     read: false,
-    ...(input.appId ? { app_id: input.appId } : {}),
+    app_id: input.appId ?? '',
   }
 }
 

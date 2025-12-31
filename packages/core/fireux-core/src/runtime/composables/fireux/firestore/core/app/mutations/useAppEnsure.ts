@@ -25,8 +25,19 @@ export function useAppEnsure() {
       ecosystem,
       role,
       app_name: appName || appId,
+      app_short_name: '',
       creator_id: uid,
+      created_by: uid,
       admin_ids: [uid],
+      join_requests: [],
+      status: 'active',
+      description: '',
+      social_links: { instagram: '' },
+      avatar_url: '',
+      logo_url: '',
+      wordmark_url: '',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     } as App
 
     const ref = doc(db, 'apps', appId)

@@ -23,7 +23,7 @@
           variant="ghost"
           class="w-full justify-start px-3 py-3"
         >
-          <OrganismsObjectsPlaceCell :place="cell" />
+          <OrganismsObjectsPlaceCardsCell :place="cell" />
         </UButton>
       </div>
 

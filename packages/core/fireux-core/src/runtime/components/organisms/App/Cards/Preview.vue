@@ -1,55 +1,46 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Preview.vue -->
 <template>
-  <div class="space-y-6">
-    <section class="space-y-4">
-      <template v-if="current">
-        <div class="flex justify-end">
-          <UButton size="xs" variant="ghost" @click="toggleView">
-            {{ showCellView ? 'Show Pill' : 'Show Cell' }}
-          </UButton>
+  <UCard>
+    <div class="flex items-center gap-3">
+      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <div class="min-w-0 flex-1">
+        <div class="truncate font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">
+          {{ vmSubtitle }}
         </div>
-
-        <div class="space-y-4">
-          <OrganismsAppCardsPill
-            v-if="!showCellView && currentCard"
-            :card="currentCard"
-          />
-          <OrganismsAppCardsCell v-else-if="currentCard" :card="currentCard" />
-        </div>
-      </template>
-
-      <p v-else class="text-sm text-slate-500">No app loaded.</p>
-    </section>
-
-    <OrganismsAppCardsProfile v-if="showExtended && currentCard" :card="currentCard" />
-  </div>
+        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
+      </div>
+    </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 
-const props = withDefaults(
-  defineProps<{ app?: App | null; compact?: boolean }>(),
-  { compact: true }
-)
+const props = defineProps<{
+  title?: string
+  subtitle?: string
+  avatar?: string | null
+  app?: App | null
+  card?: AppCard.Card | null
+  prop?: string
+}>()
 
-const { app: runtimeApp, card } = useApp()
+const { app: runtimeApp, card: toCard } = useApp()
 
-const current = computed<App | null>(
-  () => props.app ?? runtimeApp.value ?? null
-)
+const resolvedCard = computed<AppCard.Card | null>(() => {
+  if (props.card) return props.card
+  const source = props.app ?? runtimeApp.value ?? null
+  return source ? toCard(source) : null
+})
 
-const currentCard = computed<AppCard.Card | null>(() =>
-  current.value ? card(current.value) : null
-)
+const resolvedTitle = computed(() => resolvedCard.value?.title ?? 'App')
+const resolvedSubtitle = computed(() => resolvedCard.value?.subtitle ?? undefined)
+const resolvedAvatar = computed(() => resolvedCard.value?.avatar ?? null)
 
-const showExtended = computed(() => !props.compact)
-
-const showCellView = ref(false)
-const toggleView = () => {
-  showCellView.value = !showCellView.value
-}
+const vmTitle = computed(() => props.title ?? resolvedTitle.value)
+const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
+const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
 </script>

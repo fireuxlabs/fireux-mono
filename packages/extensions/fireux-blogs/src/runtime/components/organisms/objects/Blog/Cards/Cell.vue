@@ -1,38 +1,16 @@
 <template>
-  <NuxtLink :to="card.to" class="block h-full">
-    <UCard class="h-full" variant="outline">
-      <div class="flex flex-col gap-3 h-full">
-        <div class="flex items-start gap-3">
-          <div class="flex-1">
-            <p class="text-xs text-gray-500">{{ card.author }}</p>
-            <h3 class="text-base font-semibold leading-tight">
-              {{ card.title }}
-            </h3>
-            <p class="text-sm text-gray-600 line-clamp-2">{{ card.excerpt }}</p>
-          </div>
-          <div
-            v-if="card.image"
-            class="shrink-0 w-16 h-16 overflow-hidden rounded-md bg-gray-100"
-          >
-            <img
-              :src="card.image"
-              :alt="card.title"
-              class="h-full w-full object-cover"
-            />
-          </div>
+  <UCard>
+    <div class="flex items-center gap-3">
+      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <div class="min-w-0 flex-1">
+        <div class="truncate font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">
+          {{ vmSubtitle }}
         </div>
-        <div class="mt-auto flex items-center gap-2 text-xs text-gray-500">
-          <span v-if="card.readingTime">{{ card.readingTime }} min</span>
-          <span
-            v-if="card.badge"
-            class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 font-semibold text-[11px]"
-          >
-            {{ card.badge }}
-          </span>
-        </div>
+        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
       </div>
-    </UCard>
-  </NuxtLink>
+    </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -40,8 +18,20 @@ import { computed } from 'vue'
 import type { BlogPost } from '../../../../../models/objects/blogPost.model'
 import { useBlogInterface } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface'
 
-const props = defineProps<{ post: BlogPost }>()
-
+const props = defineProps<{
+  title?: string
+  subtitle?: string
+  avatar?: string | null
+  post?: BlogPost | null
+  prop?: string
+}>()
 const { cellProps } = useBlogInterface()
-const card = computed(() => cellProps(props.post))
+
+const resolved = computed(() => (props.post ? cellProps(props.post) : null))
+
+const vmTitle = computed(() => props.title ?? resolved.value?.title ?? 'Blog')
+const vmSubtitle = computed(
+  () => props.subtitle ?? resolved.value?.author ?? undefined
+)
+const vmAvatar = computed(() => props.avatar ?? resolved.value?.avatar ?? null)
 </script>

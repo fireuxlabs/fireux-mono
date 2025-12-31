@@ -1,48 +1,14 @@
 <template>
-  <NuxtLink v-if="card?.to" :to="card.to" class="pill">
-    <UAvatar :src="card.avatar" :alt="card.title" size="sm" class="avatar" />
-    <div class="content">
-      <span class="title">{{ card.title }}</span>
-
-      <span v-if="card.tagline" class="tagline">
-        {{ card.tagline }}
-      </span>
-
-      <div v-if="card.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in card.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
+  <UCard>
+    <div class="flex items-center gap-3">
+      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <div class="min-w-0 flex-1">
+        <div class="truncate font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
+        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
       </div>
     </div>
-  </NuxtLink>
-
-  <div v-else class="pill">
-    <UAvatar :src="card?.avatar" :alt="card?.title" size="sm" class="avatar" />
-
-    <div class="content">
-      <span class="title">{{ card?.title }}</span>
-
-      <span v-if="card?.tagline" class="tagline">
-        {{ card.tagline }}
-      </span>
-
-      <div v-if="card?.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in card.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
-      </div>
-    </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -51,69 +17,28 @@ import type { ChefProfile } from '../../../../../models/profiles/Chef/Chef.model
 import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface'
 import { resolveChefCell } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface'
 
-const props = defineProps<{ chef?: ChefCard.Cell | ChefProfile | null }>()
+const props = defineProps<{
+  title?: string
+  subtitle?: string
+  avatar?: string | null
+  chef?: ChefCard.Cell | ChefProfile | null
+  prop?: string
+}>()
 
-const card = computed<ChefCard.Cell | null>(() => {
+const resolved = computed<ChefCard.Cell | null>(() => {
   const source = props.chef
   if (!source) return null
-
-  if ('to' in source) {
-    return {
-      ...source,
-      avatar: source.avatar ?? undefined,
-      to: source.to ?? undefined,
-      tagline: source.tagline ?? source.subtitle ?? '',
-    }
-  }
-
-  const resolved = resolveChefCell(source)
-  if (!resolved) return null
-  return {
-    ...resolved,
-    avatar: resolved.avatar ?? undefined,
-    to: resolved.to ?? undefined,
-    tagline: resolved.tagline ?? resolved.subtitle ?? '',
-  }
+  if ('user' in source) return resolveChefCell(source)
+  return source as ChefCard.Cell
 })
+
+const resolvedTitle = computed(() => resolved.value?.title ?? 'Chef')
+const resolvedSubtitle = computed(
+  () => resolved.value?.tagline ?? resolved.value?.subtitle ?? undefined
+)
+const resolvedAvatar = computed(() => resolved.value?.avatar ?? null)
+
+const vmTitle = computed(() => props.title ?? resolvedTitle.value)
+const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
+const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
 </script>
-
-<style scoped>
-.pill {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  background: var(--ui-background-200, rgba(148, 163, 184, 0.08));
-  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.pill:hover {
-  border-color: var(--ui-primary-500, rgba(79, 70, 229, 0.6));
-}
-
-.avatar {
-  border-radius: 9999px;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-}
-
-.title {
-  font-weight: 600;
-}
-
-.tagline {
-  font-size: 0.8rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-
-.badges {
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-}
-</style>

@@ -5,50 +5,37 @@ export type AppRole = 'global' | 'tenant' | 'sandbox'
 export type AppStatus = 'active' | 'archived'
 type Ts = FirestoreTimestampOrString
 
-/**
- * Minimal registry payload stored at `apps/<appId>`.
- * Additional Firestore metadata (status, creator, etc.) lives in the App document below.
- */
-export interface FireuxAppRegistryDoc {
-  name: string
-  team: string
-  /** Slug of the ecosystem this app belongs to. */
-  ecosystem: string
-}
-
 /** Core Firestore App document */
 export interface App {
   id: string
 
   // Display
   app_name: string
-  app_short_name?: string
-  slug?: string
+  app_short_name: string
 
   // Scope + lineage
   role: AppRole
   ecosystem: string
 
   // Governance
-  join_requests?: string[]
-  admin_ids?: string[]
+  join_requests: string[]
+  admin_ids: string[]
   creator_id: string
+  created_by: string
 
   // Ops
-  status?: AppStatus
+  status: AppStatus
 
   // Optional metadata
-  description?: string | null
-  social_links?: Partial<
-    Record<'site' | 'instagram' | 'facebook' | 'x' | 'linkedin', string | null>
-  >
+  description: string
+  social_links: { instagram: string }
 
   // System metadata
   created_at: Ts
-  updated_at?: Ts
+  updated_at: Ts
 
   // Brand/media URLs (flat)
-  avatar_url?: string | null
-  logo_url?: string | null
-  wordmark_url?: string | null
+  avatar_url: string
+  logo_url: string
+  wordmark_url: string
 }

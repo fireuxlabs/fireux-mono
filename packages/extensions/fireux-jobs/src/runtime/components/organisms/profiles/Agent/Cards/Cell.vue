@@ -1,63 +1,14 @@
 <template>
-  <NuxtLink v-if="card?.to" :to="card.to" class="pill">
-    <div class="pill-content">
-      <UAvatar
-        :src="card.avatar || undefined"
-        :alt="card.title || 'Agent'"
-        size="sm"
-        class="avatar"
-      />
-
-      <div class="content">
-        <span class="company">{{ card.title || 'Agent' }}</span>
-        <span v-if="card.subtitle" class="contact">{{ card.subtitle }}</span>
-        <span v-if="card.tagline" class="tagline">
-          {{ card.tagline }}
-        </span>
-
-        <div v-if="card.badges?.length" class="badges">
-          <UBadge
-            v-for="badge in card.badges"
-            :key="badge"
-            size="xs"
-            variant="soft"
-          >
-            {{ badge }}
-          </UBadge>
-        </div>
+  <UCard>
+    <div class="flex items-center gap-3">
+      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <div class="min-w-0 flex-1">
+        <div class="truncate font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
+        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
       </div>
     </div>
-  </NuxtLink>
-
-  <div v-else class="pill">
-    <div class="pill-content">
-      <UAvatar
-        :src="card?.avatar || undefined"
-        :alt="card?.title || 'Agent'"
-        size="sm"
-        class="avatar"
-      />
-
-      <div class="content">
-        <span class="company">{{ card?.title || 'Agent' }}</span>
-        <span v-if="card?.subtitle" class="contact">{{ card.subtitle }}</span>
-        <span v-if="card?.tagline" class="tagline">
-          {{ card.tagline }}
-        </span>
-
-        <div v-if="card?.badges?.length" class="badges">
-          <UBadge
-            v-for="badge in card.badges"
-            :key="badge"
-            size="xs"
-            variant="soft"
-          >
-            {{ badge }}
-          </UBadge>
-        </div>
-      </div>
-    </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -66,77 +17,28 @@ import type { AgentProfile } from '../../../../../models/profiles/Agent/Agent.mo
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
 import { resolveAgentCell } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
 
-const props = defineProps<{ agent?: AgentCard.AgentCell | AgentProfile | null }>()
+const props = defineProps<{
+  title?: string
+  subtitle?: string
+  avatar?: string | null
+  agent?: AgentCard.AgentCell | AgentProfile | null
+  prop?: string
+}>()
 
-const card = computed<AgentCard.AgentCell | null>(() => {
+const resolved = computed<AgentCard.AgentCell | null>(() => {
   const source = props.agent
   if (!source) return null
-
-  if ('user' in source) {
-    const resolved = resolveAgentCell(source)
-    if (resolved) {
-      return {
-        ...resolved,
-        tagline: resolved.tagline ?? '',
-      }
-    }
-  }
-
-  return {
-    ...(source as AgentCard.AgentCell),
-    tagline: source.tagline ?? source.subtitle ?? '',
-  }
+  if ('avatar' in source) return source
+  return resolveAgentCell(source as AgentProfile)
 })
+
+const resolvedTitle = computed(() => resolved.value?.title ?? 'Agent')
+const resolvedSubtitle = computed(
+  () => resolved.value?.tagline ?? resolved.value?.subtitle ?? undefined
+)
+const resolvedAvatar = computed(() => resolved.value?.avatar ?? null)
+
+const vmTitle = computed(() => props.title ?? resolvedTitle.value)
+const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
+const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
 </script>
-
-<style scoped>
-.pill {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  background: var(--ui-background-200, rgba(148, 163, 184, 0.08));
-  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.pill:hover {
-  border-color: var(--ui-primary-500, rgba(79, 70, 229, 0.6));
-}
-
-.avatar {
-  border-radius: 9999px;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-}
-
-.company {
-  font-weight: 600;
-}
-
-.contact {
-  font-size: 0.8rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-
-.tagline {
-  font-size: 0.8rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-
-.badges {
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-}
-
-.pill-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-</style>

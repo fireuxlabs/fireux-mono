@@ -1,25 +1,25 @@
 <template>
   <div class="preview-layout">
     <h1>Cell</h1>
-    <OrganismsObjectsProductCardsProduct
+    <OrganismsObjectsProductViewProduct
       mode="preview"
       variant="cell"
       :product="previewProduct"
     />
     <h1>Customer</h1>
-    <OrganismsObjectsProductCardsProduct
+    <OrganismsObjectsProductViewProduct
       mode="preview"
       variant="customer"
       :product="previewProduct"
     />
     <h1>Info</h1>
-    <OrganismsObjectsProductCardsProduct
+    <OrganismsObjectsProductViewProduct
       mode="preview"
       variant="info"
       :product="previewProduct"
     />
     <h1>Page</h1>
-    <OrganismsObjectsProductCardsProduct
+    <OrganismsObjectsProductViewProduct
       mode="preview"
       variant="page"
       :product="previewProduct"

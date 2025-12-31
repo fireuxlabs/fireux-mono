@@ -1,6 +1,6 @@
 <template>
   <div v-if="product" class="page">
-    <OrganismsObjectsProductCardsProduct
+    <OrganismsObjectsProductViewProduct
       mode="fetch"
       variant="page"
       :product="product"

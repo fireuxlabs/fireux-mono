@@ -4,7 +4,7 @@ import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
 import {
   chefConfig,
-  type ChefProfile,
+  type ChefCore,
 } from '../../../../../../models/profiles/Chef/Chef.model.ts'
 
 /**
@@ -31,7 +31,7 @@ export namespace ChefCard {
   }
 
   /** Full profile surface for display components */
-  export type Profile = ChefProfile
+  export type Profile = ChefCore
 }
 
 const routeFor = (id?: string | null): string | undefined =>
@@ -43,16 +43,16 @@ const routeFor = (id?: string | null): string | undefined =>
  * Pill = user.avatar + user.display_name + profile tagline.
  */
 export function useChefInterface(
-  profile: ProfileRefs<ChefProfile>,
+  profile: ProfileRefs<ChefCore>,
   user: Ref<User | null | undefined>
 ) {
-  const resolveProfile = (target?: ChefProfile | null) =>
+  const resolveProfile = (target?: ChefCore | null) =>
     target ?? profile.coreProfile.value ?? null
 
-  const resolveUser = (target?: ChefProfile | null) =>
+  const resolveUser = (target?: ChefCore | null) =>
     target?.user ?? user.value ?? null
 
-  const resolveTagline = (payload: ChefProfile | null | undefined): string =>
+  const resolveTagline = (payload: ChefCore | null | undefined): string =>
     payload?.tagline?.trim() ??
     (payload as { subtitle?: string | null } | null)?.subtitle?.trim() ??
     ''
@@ -63,7 +63,7 @@ export function useChefInterface(
     (u.handle ? `@${u.handle.trim()}` : '') ||
     'Chef'
 
-  const pillProps = (target?: ChefProfile | null): ChefCard.Pill | null => {
+  const pillProps = (target?: ChefCore | null): ChefCard.Pill | null => {
     const currentProfile = resolveProfile(target)
     const currentUser = resolveUser(target)
     if (!currentUser) return null
@@ -81,7 +81,7 @@ export function useChefInterface(
     }
   }
 
-  const cellProps = (target?: ChefProfile | null): ChefCard.Cell | null => {
+  const cellProps = (target?: ChefCore | null): ChefCard.Cell | null => {
     const base = pillProps(target)
     if (!base) return null
 
@@ -102,7 +102,7 @@ export function useChefInterface(
 }
 
 export const resolveChefCell = (
-  profile?: ChefProfile | null,
+  profile?: ChefCore | null,
   fallbackId = 'chef-profile'
 ): ChefCard.Cell | null => {
   if (!profile) return null
@@ -128,7 +128,7 @@ export const resolveChefCell = (
 }
 
 export const resolveChefPill = (
-  profile?: ChefProfile | null
+  profile?: ChefCore | null
 ): ChefCard.Pill => ({
   avatar: profile?.user?.avatar ?? '',
   title: profile?.user?.display_name ?? '',

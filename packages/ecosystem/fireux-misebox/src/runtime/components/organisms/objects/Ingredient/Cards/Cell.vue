@@ -1,61 +1,35 @@
 <template>
-  <UCard class="objects cards cell">
-    <div class="header">
-      <div class="icon">🥬</div>
-      <div class="info">
-        <h3 v-if="ingredient?.name" class="title">
-          {{ ingredient.name }}
-        </h3>
-        <p v-if="ingredient?.category" class="subtitle">
-          {{ ingredient.category }}
-        </p>
+  <UCard>
+    <div class="flex items-center gap-3">
+      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <div class="min-w-0 flex-1">
+        <div class="truncate font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
+        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
       </div>
-    </div>
-
-    <div v-if="ingredient?.supplierInfo" class="supplier-badge">
-      <span class="supplier-label">Supplied by:</span>
-      <span class="supplier-name">{{
-        ingredient.supplierInfo.business_name
-      }}</span>
-      <span v-if="ingredient.supplierInfo.verified" class="verified-badge"
-        >✓</span
-      >
-    </div>
-
-    <div v-if="ingredient?.tags?.length" class="tags">
-      <template v-for="(tag, index) in ingredient.tags.slice(0, 3)" :key="tag">
-        <span class="tag">{{ tag }}</span>
-      </template>
-      <span v-if="ingredient.tags.length > 3" class="tag-more">
-        +{{ ingredient.tags.length - 3 }} more
-      </span>
-    </div>
-
-    <div v-if="ingredient?.createdAt || ingredient?.updatedAt" class="meta">
-      <span v-if="ingredient.createdAt" class="meta-item">
-        Created: {{ formatDate(ingredient.createdAt) }}
-      </span>
-      <span v-if="ingredient.updatedAt" class="meta-item">
-        Updated: {{ formatDate(ingredient.updatedAt) }}
-      </span>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Ingredient } from '../../../../../models/objects/Ingredient.model'
+import { useIngredientInterface } from '../../../../../composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface'
 
-defineProps<{
-  ingredient?: Partial<Ingredient>
+const props = defineProps<{
+  title?: string
+  subtitle?: string
+  avatar?: string | null
+  ingredient?: Ingredient | null
+  prop?: string
 }>()
+const { cellProps } = useIngredientInterface()
 
-// Consistent date formatting to prevent hydration mismatches
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
-}
+const resolved = computed(() => cellProps(props.ingredient ?? null))
+
+const vmTitle = computed(() => props.title ?? resolved.value.title)
+const vmSubtitle = computed(
+  () => props.subtitle ?? resolved.value.category ?? resolved.value.subtitle ?? undefined
+)
+const vmAvatar = computed(() => props.avatar ?? null)
 </script>

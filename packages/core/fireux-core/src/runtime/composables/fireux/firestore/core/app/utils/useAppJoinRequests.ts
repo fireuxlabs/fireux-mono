@@ -1,17 +1,15 @@
 import { computed, ref, watchEffect, type ComputedRef, type Ref } from 'vue'
 
 import type { App } from '../../../../../../models/core/app.model'
-import type {
-  User,
-  UserCard,
-} from '../../../../../../models/core/user.model'
+import type { User } from '../../../../../../models/core/user.model'
+import type { UserCard } from '../../user/utils/view/useUserInterface'
 
 type JoinRequestItem = {
   id: string
   title: string
-  subtitle: string
-  image: string
-  href: string
+  subtitle?: string
+  avatar: string
+  to: string
 }
 
 type HandleJoinRequests = (uid: string, approve: boolean) => Promise<unknown>
@@ -65,7 +63,7 @@ export function useAppJoinRequests({
     const ref = ensureUserRef(uid)
     const profile = ref.value
     if (!profile) {
-      return { id: uid, title: uid, subtitle: '', image: '', href: '' }
+      return { id: uid, title: uid, subtitle: '', avatar: '', to: '' }
     }
 
     const payload = card.value(profile)
@@ -73,8 +71,8 @@ export function useAppJoinRequests({
       id: uid,
       title: payload.title,
       subtitle: payload.subtitle,
-      image: payload.image,
-      href: payload.href,
+      avatar: payload.avatar,
+      to: payload.to,
     }
   }
 

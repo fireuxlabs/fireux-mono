@@ -7,7 +7,7 @@
         <USkeleton class="h-64" />
       </div>
 
-      <OrganismsObjectsBlogCardsPage v-else-if="post" :post="post" />
+      <OrganismsObjectsBlogViewPage v-else-if="post" :post="post" />
 
       <div v-else class="space-y-2">
         <h1 class="text-xl font-semibold">404 – Blog post not found</h1>

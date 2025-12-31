@@ -89,7 +89,7 @@ export function usePlaceLogoState(
 
   watch(
     place,
-    (next) => {
+    (next: PlaceLogoTarget | null) => {
       requestToken += 1
       isLoading.value = false
       error.value = null

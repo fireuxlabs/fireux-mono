@@ -1,107 +1,42 @@
 <template>
-  <NuxtLink v-if="chef?.to" :to="chef.to" class="pill">
-    <UAvatar :src="chef.avatar" :alt="chef.title" size="sm" class="avatar" />
-
-    <div class="content">
-      <span class="title">{{ chef.title }}</span>
-
-      <span v-if="chef.tagline" class="tagline">
-        {{ chef.tagline }}
-      </span>
-
-      <div v-if="chef.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in chef.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
+  <UCard>
+    <div class="flex items-center gap-3">
+      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <div class="min-w-0 flex-1">
+        <div class="truncate font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
       </div>
     </div>
-  </NuxtLink>
-
-  <div v-else class="pill">
-    <UAvatar :src="chef?.avatar" :alt="chef?.title" size="sm" class="avatar" />
-
-    <div class="content">
-      <span class="title">{{ chef?.title }}</span>
-
-      <span v-if="chef?.tagline" class="tagline">
-        {{ chef.tagline }}
-      </span>
-
-      <div v-if="chef?.badges?.length" class="badges">
-        <UBadge
-          v-for="badge in chef.badges"
-          :key="badge"
-          size="xs"
-          variant="soft"
-        >
-          {{ badge }}
-        </UBadge>
-      </div>
-    </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
+import type { ChefProfile } from '../../../../../models/profiles/Chef/Chef.model'
+import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface'
+import { resolveChefPill } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface'
 
 const props = defineProps<{
-  chef: ChefCard.Pill | null
+  title?: string
+  subtitle?: string
+  avatar?: string | null
+  chef?: ChefCard.Pill | ChefProfile | null
 }>()
 
-const chef = computed(() => {
-  const pill = props.chef
-  if (!pill) return null
-
-  return {
-    ...pill,
-    tagline: pill.tagline ?? pill.subtitle ?? '',
-  }
+const resolved = computed<ChefCard.Pill | null>(() => {
+  const source = props.chef
+  if (!source) return null
+  if ('user' in source) return resolveChefPill(source)
+  return source as ChefCard.Pill
 })
+
+const resolvedTitle = computed(() => resolved.value?.title ?? 'Chef')
+const resolvedSubtitle = computed(
+  () => resolved.value?.tagline ?? resolved.value?.subtitle ?? undefined
+)
+const resolvedAvatar = computed(() => resolved.value?.avatar ?? null)
+
+const vmTitle = computed(() => props.title ?? resolvedTitle.value)
+const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
+const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
 </script>
-
-<style scoped>
-.pill {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  background: var(--ui-background-200, rgba(148, 163, 184, 0.08));
-  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.pill:hover {
-  border-color: var(--ui-primary-500, rgba(79, 70, 229, 0.6));
-}
-
-.avatar {
-  border-radius: 9999px;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-}
-
-.title {
-  font-weight: 600;
-}
-
-.tagline {
-  font-size: 0.8rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-
-.badges {
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-}
-</style>

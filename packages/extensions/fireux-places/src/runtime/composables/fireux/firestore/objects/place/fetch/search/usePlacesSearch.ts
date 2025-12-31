@@ -109,12 +109,12 @@ export function usePlacesSearch() {
     }
   }
 
-  watch(query, (q) => void searchPlaces(q))
+  watch(query, (q: string) => void searchPlaces(q))
 
   // 🔎 whenever shortlist changes, lazily hydrate missing Google logos
   watch(
     results,
-    (cells) => {
+    (cells: PlaceCard.Cell[]) => {
       if (!globalThis.window) {
         return
       }
@@ -138,7 +138,7 @@ export function usePlacesSearch() {
             logoCache.set(id, url ?? null)
 
             const idx = results.value.findIndex(
-              (row) => canonicalPlaceId(row.place_id) === id
+              (row: PlaceCard.Cell) => canonicalPlaceId(row.place_id) === id
             )
             if (idx !== -1) {
               const current = results.value[idx]

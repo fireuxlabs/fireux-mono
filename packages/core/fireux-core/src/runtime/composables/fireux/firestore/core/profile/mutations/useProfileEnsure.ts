@@ -29,7 +29,14 @@ export function useProfileEnsure(config: ProfileConfig) {
     const coreRef = doc(db, config.collectionName, uid)
     const coreSnapshot = await getDoc(coreRef)
     if (!coreSnapshot.exists()) {
-      await setDocument(config.collectionName, uid, { id: uid })
+      await setDocument(config.collectionName, uid, {
+        id: uid,
+        user: {},
+        domain: config.id ?? '',
+        title: '',
+        subtitle: '',
+        badges: [],
+      })
       createdCore = true
     }
 
@@ -38,7 +45,14 @@ export function useProfileEnsure(config: ProfileConfig) {
       const appRef = doc(db, 'apps', appId, config.collectionName, uid)
       const appSnapshot = await getDoc(appRef)
       if (!appSnapshot.exists()) {
-        await setDocument(appCollection, uid, { id: uid })
+        await setDocument(appCollection, uid, {
+          id: uid,
+          user: {},
+          domain: config.id ?? '',
+          title: '',
+          subtitle: '',
+          badges: [],
+        })
         createdApp = true
       }
     }

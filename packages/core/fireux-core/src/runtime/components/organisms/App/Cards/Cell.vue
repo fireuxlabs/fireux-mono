@@ -1,79 +1,46 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Cell.vue -->
 <template>
-  <component :is="wrapperTag" v-bind="wrapperBindings" :class="wrapperClass">
-    <UCard class="cell">
-      <div class="row">
-        <UAvatar
-          :src="card?.image || undefined"
-          :alt="card?.title || '—'"
-          size="md"
-          class="avatar"
-        />
-
-        <div class="main">
-          <h3 class="title">{{ card?.title || '—' }}</h3>
-          <p v-if="card?.subtitle" class="subtitle">{{ card.subtitle }}</p>
+  <UCard>
+    <div class="flex items-center gap-3">
+      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <div class="min-w-0 flex-1">
+        <div class="truncate font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">
+          {{ vmSubtitle }}
         </div>
+        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
       </div>
-    </UCard>
-  </component>
+    </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 
 const props = defineProps<{
+  title?: string
+  subtitle?: string
+  avatar?: string | null
+  app?: App | null
   card?: AppCard.Card | null
+  prop?: string
 }>()
 
-const wrapperTag = computed(() => (props.card?.href ? 'NuxtLink' : 'div'))
-const wrapperBindings = computed(() =>
-  props.card?.href ? { to: props.card.href } : {}
-)
-const wrapperClass = computed(() =>
-  props.card?.href ? 'block no-underline text-inherit' : undefined
-)
+const { app: runtimeApp, card: toCard } = useApp()
 
-const card = computed(() => props.card ?? null)
+const resolvedCard = computed<AppCard.Card | null>(() => {
+  if (props.card) return props.card
+  const source = props.app ?? runtimeApp.value ?? null
+  return source ? toCard(source) : null
+})
+
+const resolvedTitle = computed(() => resolvedCard.value?.title ?? 'App')
+const resolvedSubtitle = computed(() => resolvedCard.value?.subtitle ?? undefined)
+const resolvedAvatar = computed(() => resolvedCard.value?.avatar ?? null)
+
+const vmTitle = computed(() => props.title ?? resolvedTitle.value)
+const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
+const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
 </script>
-
-<style scoped>
-.cell {
-  background: var(--ui-background-200, rgba(148, 163, 184, 0.08));
-  border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
-  transition: border-color 0.15s ease;
-}
-
-.cell:hover {
-  border-color: var(--ui-primary-500, rgba(79, 70, 229, 0.6));
-}
-
-.row {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.avatar {
-  border-radius: 9999px;
-  box-shadow: 0 0 0 1px var(--ui-border-200, rgba(148, 163, 184, 0.45)) inset;
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.title {
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.subtitle {
-  font-size: 0.8rem;
-  color: var(--ui-text-500, rgba(148, 163, 184, 0.9));
-}
-</style>
