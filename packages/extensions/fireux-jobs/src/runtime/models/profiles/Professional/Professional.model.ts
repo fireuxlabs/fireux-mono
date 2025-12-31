@@ -1,5 +1,9 @@
 import type { Profile } from 'fireux-core/runtime/models/core/profile.model'
-import { professionalConfig } from './supporting'
+import {
+  professionalConfig,
+  type OtherExperienceItem,
+  type RelevantExperienceItem,
+} from './supporting'
 
 /**
  * Firestore shapes only. No UI. No composable wiring. No generics.
@@ -16,8 +20,8 @@ export interface ProfessionalCore extends Profile {
   locations: string[]
   avatar: string
   avatar_url: string
-  relevant_experience: unknown[]
-  other_experience: unknown[]
+  relevant_experience: RelevantExperienceItem[]
+  other_experience: OtherExperienceItem[]
 }
 
 /**
