@@ -10,7 +10,6 @@ export function useChefCollection() {
     localProfiles,
     globalProfilesWithUser,
     localProfilesWithUser,
-  } = useProfileCollection<ChefProfile>(chefConfig)
   } = useProfileCollection<ChefCore>(chefConfig)
 
   return {

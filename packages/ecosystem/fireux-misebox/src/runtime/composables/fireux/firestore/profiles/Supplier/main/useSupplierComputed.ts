@@ -1,5 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
-import type { SupplierProfile } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { SupplierCore } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
 
 /**
  * useSupplierComputed
@@ -8,7 +8,7 @@ import type { SupplierProfile } from '../../../../../../models/profiles/Supplier
  * - Safe to spread into useSupplier() return
  */
 export function useSupplierComputed(
-  refs: ProfileRefs<SupplierProfile>,
+  refs: ProfileRefs<SupplierCore>,
   pending: unknown
 ) {
   // Stub: keep args for future use, avoid TS “unused” warnings

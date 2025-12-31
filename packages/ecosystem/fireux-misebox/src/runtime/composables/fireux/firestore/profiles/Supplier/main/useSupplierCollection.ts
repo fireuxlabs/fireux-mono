@@ -1,7 +1,7 @@
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection.ts'
 import {
   supplierConfig,
-  type SupplierProfile,
+  type SupplierCore,
 } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
 
 export function useSupplierCollection() {
@@ -10,7 +10,7 @@ export function useSupplierCollection() {
     localProfiles,
     globalProfilesWithUser,
     localProfilesWithUser,
-  } = useProfileCollection<SupplierProfile>(supplierConfig)
+  } = useProfileCollection<SupplierCore>(supplierConfig)
 
   return {
     globalSuppliers: globalProfilesWithUser,

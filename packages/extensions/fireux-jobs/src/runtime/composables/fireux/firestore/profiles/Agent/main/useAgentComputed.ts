@@ -1,5 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { AgentProfile } from '../../../../../../models/profiles/Agent/Agent.model'
+import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
 
 /**
  * useAgentComputed
@@ -8,7 +8,7 @@ import type { AgentProfile } from '../../../../../../models/profiles/Agent/Agent
  * - Safe to spread into useAgent() return
  */
 export function useAgentComputed(
-  refs: ProfileRefs<AgentProfile>,
+  refs: ProfileRefs<AgentCore>,
   pending?: unknown
 ) {
   // Stub: keep args for future use, avoid TS “unused” warnings

@@ -3,11 +3,11 @@ import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
-import type { SupplierProfile } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { SupplierCore } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
-export function useSupplierDelete(_profile: ProfileRefs<SupplierProfile>) {
+export function useSupplierDelete(_profile: ProfileRefs<SupplierCore>) {
   const db = useFirestore()
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant' && !!appId

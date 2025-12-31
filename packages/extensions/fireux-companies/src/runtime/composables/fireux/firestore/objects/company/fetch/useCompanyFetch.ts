@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { Company } from '../../../../../../models/objects/company.model'
+import type { Company } from '../../../../../../models/objects/company.model.ts'
 
 const COLLECTION_PATH = 'companies'
 

@@ -70,6 +70,18 @@ function defaultNitroFirebaseRegion(ecosystem: string): string {
 function reqEnv(name: string): string {
   const value = process.env[name]
   if (typeof value !== 'string' || !value.trim()) {
+    const isCi =
+      process.env.CI === 'true' ||
+      process.env.CI === '1' ||
+      process.env.GITHUB_ACTIONS === 'true'
+
+    // During CI (especially on `pnpm install` → `postinstall` → `nuxi prepare`),
+    // we don't require full runtime envs yet.
+    if (isCi) {
+      if (name === 'APP_DOMAIN') return 'localhost'
+      if (name === 'NUXT_FIREBASE_APP_ID') return 'ci'
+    }
+
     throw new Error(`[fireux] Missing required env var: ${name}`)
   }
   return value.trim()

@@ -1,6 +1,5 @@
 import type {
-  Chef,
-  ChefProfile,
+  ChefCore,
 } from '../../../../../models/profiles/Chef/Chef.model.ts'
 
 export function useChefValidation() {
@@ -210,7 +209,7 @@ export function useChefValidation() {
 
   // Comprehensive chef data validation
   const validateChefData = (
-    chefData: Partial<Chef> & Partial<ChefProfile>
+    chefData: Partial<ChefCore>
   ): { isValid: boolean; errors: string[] } => {
     const errors: string[] = []
 
@@ -220,8 +219,13 @@ export function useChefValidation() {
     }
 
     // Optional field validations
-    if (chefData.display_name) {
-      addErrorIfInvalid(validateChefName(chefData.display_name))
+    const name =
+      (chefData as any).organization_name ??
+      (chefData as any).title ??
+      (chefData as any).display_name
+
+    if (typeof name === 'string' && name.trim()) {
+      addErrorIfInvalid(validateChefName(name))
     }
 
     if (chefData.specialties) {

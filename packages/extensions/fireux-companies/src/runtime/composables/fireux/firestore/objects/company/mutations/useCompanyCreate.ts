@@ -1,5 +1,5 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import type { Company, CompanyCreateInput } from '../../../../../../models/objects/company.model'
+import type { Company, CompanyCreateInput } from '../../../../../../models/objects/company.model.ts'
 
 const COLLECTION_PATH = 'companies'
 

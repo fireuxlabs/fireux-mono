@@ -4,7 +4,7 @@ import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import {
   supplierConfig,
-  type SupplierProfile,
+  type SupplierCore,
 } from '../../../../../../models/profiles/Supplier/Supplier.model'
 
 /**
@@ -33,7 +33,7 @@ export namespace SupplierCard {
   }
 
   /** Full profile surface for display components */
-  export type Profile = SupplierProfile
+  export type Profile = SupplierCore
 }
 
 const routeFor = (id?: string | null): string | undefined =>
@@ -45,17 +45,17 @@ const routeFor = (id?: string | null): string | undefined =>
  * Pill = user.avatar + user.display_name + profile tagline.
  */
 export function useSupplierInterface(
-  profile: ProfileRefs<SupplierProfile>,
+  profile: ProfileRefs<SupplierCore>,
   user: Ref<User | null | undefined>
 ) {
-  const resolveProfile = (target?: SupplierProfile | null) =>
+  const resolveProfile = (target?: SupplierCore | null) =>
     target ?? profile.coreProfile.value ?? null
 
-  const resolveUser = (target?: SupplierProfile | null) =>
+  const resolveUser = (target?: SupplierCore | null) =>
     target?.user ?? user.value ?? null
 
   const resolveTagline = (
-    payload: SupplierProfile | null | undefined
+    payload: SupplierCore | null | undefined
   ): string =>
     payload?.tagline?.trim() ??
     (payload as { subtitle?: string | null } | null)?.subtitle?.trim() ??
@@ -68,7 +68,7 @@ export function useSupplierInterface(
     'Supplier'
 
   const pillProps = (
-    target?: SupplierProfile | null
+    target?: SupplierCore | null
   ): SupplierCard.Pill | null => {
     const currentProfile = resolveProfile(target)
     const currentUser = resolveUser(target)
@@ -88,7 +88,7 @@ export function useSupplierInterface(
   }
 
   const cellProps = (
-    target?: SupplierProfile | null
+    target?: SupplierCore | null
   ): SupplierCard.Cell | null => {
     const base = pillProps(target)
     if (!base) return null
@@ -110,7 +110,7 @@ export function useSupplierInterface(
 }
 
 export const resolveSupplierCell = (
-  profile?: SupplierProfile | null,
+  profile?: SupplierCore | null,
   fallbackId = 'supplier-profile'
 ): SupplierCard.Cell | null => {
   if (!profile) return null
@@ -154,7 +154,7 @@ export const resolveSupplierCell = (
 }
 
 export const resolveSupplierPill = (
-  profile?: SupplierProfile | null
+  profile?: SupplierCore | null
 ): SupplierCard.Pill => ({
   avatar: profile?.user?.avatar ?? '',
   title: profile?.user?.display_name ?? '',

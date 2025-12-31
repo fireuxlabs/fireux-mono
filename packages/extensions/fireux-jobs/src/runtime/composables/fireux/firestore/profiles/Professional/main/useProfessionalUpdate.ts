@@ -7,11 +7,11 @@ import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle.ts'
 import type { Place } from 'fireux-places/runtime/models/objects/place.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 import type {
-  ProfessionalProfile,
   RelevantExperienceItem,
   OtherExperienceItem,
-} from '../../../../../../models/profiles/Professional/Professional.model'
+} from '../../../../../../models/profiles/Professional/supporting'
 
 const COLLECTION = 'professionals'
 
@@ -25,7 +25,7 @@ const pruneUndefined = <T extends Record<string, any>>(payload: T) => {
 }
 
 export function useProfessionalUpdate(
-  profile?: ProfileRefs<ProfessionalProfile>
+  profile?: ProfileRefs<ProfessionalCore>
 ) {
   const { updateDocument } = useFirestoreUpdate()
   const { ensurePlaceExists } = usePlaceSave()
@@ -34,7 +34,7 @@ export function useProfessionalUpdate(
   const isTenant = role === 'tenant' && Boolean(appId)
 
   const commitUpdate = async (
-    patch: Partial<ProfessionalProfile>,
+    patch: Partial<ProfessionalCore>,
     options: UpdateOptions = {}
   ): Promise<void> => {
     const scope = options.scope ?? 'core'
@@ -65,11 +65,11 @@ export function useProfessionalUpdate(
   }
 
   const updateCoreProfile = async (
-    patch: Partial<ProfessionalProfile>,
+    patch: Partial<ProfessionalCore>,
     options: UpdateOptions = {}
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
-    await updateDocument<ProfessionalProfile>(
+    await updateDocument<ProfessionalCore>(
       COLLECTION,
       uid,
       pruneUndefined(patch)
@@ -77,7 +77,7 @@ export function useProfessionalUpdate(
   }
 
   const updateAppProfile = async (
-    patch: Partial<ProfessionalProfile>,
+    patch: Partial<ProfessionalCore>,
     options: UpdateOptions = {}
   ): Promise<void> => {
     if (!isTenant || !appId) {
@@ -87,7 +87,7 @@ export function useProfessionalUpdate(
     }
 
     const uid = await resolveUid(options.id)
-    await updateDocument<ProfessionalProfile>(
+    await updateDocument<ProfessionalCore>(
       `apps/${appId}/${COLLECTION}`,
       uid,
       pruneUndefined(patch)
@@ -207,7 +207,7 @@ export function useProfessionalUpdate(
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
     const value = (tagline ?? '').trim()
-    await commitUpdate({ tagline: value || null }, { ...options, id: uid })
+    await commitUpdate({ tagline: value }, { ...options, id: uid })
   }
 
   const updateBioShort = async (
@@ -216,7 +216,7 @@ export function useProfessionalUpdate(
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
     const value = (bioShort ?? '').trim()
-    await commitUpdate({ bio_short: value || null }, { ...options, id: uid })
+    await commitUpdate({ bio_short: value }, { ...options, id: uid })
   }
 
   return {

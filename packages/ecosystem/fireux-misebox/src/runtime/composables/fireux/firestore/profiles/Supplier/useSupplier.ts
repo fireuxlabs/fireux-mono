@@ -4,8 +4,7 @@ import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/cor
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import {
   supplierConfig,
-  type SupplierProfile,
-  type SupplierCoreProfile,
+  type SupplierCore,
 } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
 import type { SupplierCard } from './main/useSupplierInterface.ts'
 import { useSupplierComputed } from './main/useSupplierComputed.ts'
@@ -13,7 +12,7 @@ import { useSupplierInterface } from './main/useSupplierInterface.ts'
 import { useSupplierUpdate } from './main/useSupplierUpdate.ts'
 import { useSupplierCreate } from './main/useSupplierCreate.ts'
 
-export type { SupplierProfile, SupplierCoreProfile, SupplierCard }
+export type { SupplierCore as SupplierProfile, SupplierCard }
 
 /**
  * useSupplier
@@ -25,7 +24,7 @@ export type { SupplierProfile, SupplierCoreProfile, SupplierCard }
  *   - update helpers
  */
 export function useSupplier() {
-  const { profile: refs, pending } = useProfile<SupplierProfile>(supplierConfig)
+  const { profile: refs, pending } = useProfile<SupplierCore>(supplierConfig)
   const { coreProfile, appProfile } = refs
 
   // canonical user for UI layer

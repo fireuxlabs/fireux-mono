@@ -1,10 +1,10 @@
 import { ref } from 'vue'
-import type { Supplier } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { SupplierCore } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
 
 export function useSupplierQuickCreate() {
   const creating = ref(false)
   const createError = ref<Error | null>(null)
-  const createdSupplier = ref<Supplier | null>(null)
+  const createdSupplier = ref<SupplierCore | null>(null)
 
   const createQuickSupplier = async (name: string) => {
     if (!name) throw new Error('name required')
@@ -12,13 +12,29 @@ export function useSupplierQuickCreate() {
     createError.value = null
     try {
       // Simulate create and return minimal supplier object
-      const supplier: Supplier = {
+      const supplier: SupplierCore = {
         id: 'supplier-mock-id',
-        display_name: name,
+        user: {},
+        domain: 'supplier',
+        title: name,
+        subtitle: '',
+        badges: [],
+        tagline: '',
+        bio_short: '',
+        bio_long: '',
+        specialties: [],
+        categories: [],
         avatar: '',
-        core: null,
-        app: null,
-      } as any
+        avatar_url: '',
+        organization_name: name,
+        business_type: '',
+        locations: [],
+        years_in_business: 0,
+        products_offered: [],
+        employee_count: 0,
+        certifications: [],
+        delivery_range: 0,
+      }
       createdSupplier.value = supplier
       return supplier
     } catch (e: any) {

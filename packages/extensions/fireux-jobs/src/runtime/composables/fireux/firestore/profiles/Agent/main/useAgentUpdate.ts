@@ -2,7 +2,7 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { AgentProfile } from '../../../../../../models/profiles/Agent/Agent.model'
+import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
 
 /**
  * useAgentUpdate
@@ -14,7 +14,7 @@ import type { AgentProfile } from '../../../../../../models/profiles/Agent/Agent
  * - accepts only refs (no user cascading)
  * - both implementations are stubs until Firestore integration
  */
-export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
+export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
   const { updateDocument } = useFirestoreUpdate()
   const { appId, role } = useFireUXConfig()
   const isTenant = role === 'tenant' && Boolean(appId)
@@ -43,10 +43,10 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
    * - global document (e.g. agents/{uid})
    */
   const updateCoreProfile = async (
-    patch: Partial<AgentProfile>
+    patch: Partial<AgentCore>
   ): Promise<void> => {
     const uid = await resolveUid()
-    await updateDocument<AgentProfile>('agents', uid, pruneUndefined(patch))
+    await updateDocument<AgentCore>('agents', uid, pruneUndefined(patch))
   }
 
   /**
@@ -54,7 +54,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
    * - app-specific document (e.g. apps/{appId}/agents/{uid})
    */
   const updateAppProfile = async (
-    patch: Partial<AgentProfile>
+    patch: Partial<AgentCore>
   ): Promise<void> => {
     if (!isTenant || !appId) {
       throw new Error(
@@ -63,7 +63,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
     }
 
     const uid = await resolveUid()
-    await updateDocument<AgentProfile>(
+    await updateDocument<AgentCore>(
       `apps/${appId}/agents`,
       uid,
       pruneUndefined(patch)
@@ -71,7 +71,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
   }
 
   const updateCore = async (
-    patch: Partial<AgentProfile>,
+    patch: Partial<AgentCore>,
     _id?: string | null
   ): Promise<'success'> => {
     await updateCoreProfile(patch)
@@ -79,7 +79,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentProfile> | null) {
   }
 
   const updateApp = async (
-    patch: Partial<AgentProfile>,
+    patch: Partial<AgentCore>,
     _id?: string | null
   ): Promise<'success'> => {
     await updateAppProfile(patch)

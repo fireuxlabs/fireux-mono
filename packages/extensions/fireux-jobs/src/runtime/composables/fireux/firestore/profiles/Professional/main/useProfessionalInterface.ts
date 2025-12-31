@@ -6,7 +6,7 @@ import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
 import {
   professionalConfig,
-  type ProfessionalProfile,
+  type ProfessionalCore,
 } from '../../../../../../models/profiles/Professional/Professional.model'
 
 /**
@@ -33,7 +33,7 @@ export namespace ProfessionalCard {
   }
 
   /** Full profile surface for display components */
-  export type ProfessionalProfileCard = ProfessionalProfile
+  export type ProfessionalProfileCard = ProfessionalCore
 }
 
 const routeFor = (id?: string | null): string | undefined =>
@@ -45,17 +45,17 @@ const routeFor = (id?: string | null): string | undefined =>
  * Pill = user.avatar + user.display_name + profile tagline.
  */
 export function useProfessionalInterface(
-  profile: ProfileRefs<ProfessionalProfile>,
+  profile: ProfileRefs<ProfessionalCore>,
   user: Ref<User | null | undefined>
 ) {
-  const resolveProfile = (target?: ProfessionalProfile | null) =>
+  const resolveProfile = (target?: ProfessionalCore | null) =>
     target ?? profile.coreProfile.value ?? null
 
-  const resolveUser = (target?: ProfessionalProfile | null) =>
+  const resolveUser = (target?: ProfessionalCore | null) =>
     target?.user ?? user.value ?? null
 
   const resolveTagline = (
-    payload: ProfessionalProfile | null | undefined
+    payload: ProfessionalCore | null | undefined
   ): string =>
     payload?.tagline?.trim() ??
     (payload as { subtitle?: string | null } | null)?.subtitle?.trim() ??
@@ -68,7 +68,7 @@ export function useProfessionalInterface(
     'Professional'
 
   const pillProps = (
-    target?: ProfessionalProfile | null
+    target?: ProfessionalCore | null
   ): ProfessionalCard.ProfessionalPill | null => {
     const currentProfile = resolveProfile(target)
     const currentUser = resolveUser(target)
@@ -88,7 +88,7 @@ export function useProfessionalInterface(
   }
 
   const cellProps = (
-    target?: ProfessionalProfile | null
+    target?: ProfessionalCore | null
   ): ProfessionalCard.ProfessionalCell | null => {
     const base = pillProps(target)
     if (!base) return null
@@ -111,7 +111,7 @@ export function useProfessionalInterface(
 }
 
 export const resolveProfessionalCell = (
-  profile?: ProfessionalProfile | null,
+  profile?: ProfessionalCore | null,
   fallbackId = 'professional-profile'
 ): ProfessionalCard.ProfessionalCell | null => {
   if (!profile) return null
@@ -138,7 +138,7 @@ export const resolveProfessionalCell = (
 }
 
 export const resolveProfessionalPill = (
-  profile?: ProfessionalProfile | null
+  profile?: ProfessionalCore | null
 ): ProfessionalCard.ProfessionalPill => ({
   avatar: profile?.user?.avatar ?? '',
   title: profile?.user?.display_name?.trim() || '',

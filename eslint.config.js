@@ -13,11 +13,6 @@ const baseRestrictedImportPatterns = [
       'Do not import internal source files from fireux-core; use exported runtime modules instead.',
   },
   {
-    group: ['**/*.ts'],
-    message:
-      'Do not import with a .ts suffix; drop the extension (works better across tooling).',
-  },
-  {
     group: [
       // Outside a package, never deep-relative into other packages; use the package name.
       '../**/packages/*/*/*',

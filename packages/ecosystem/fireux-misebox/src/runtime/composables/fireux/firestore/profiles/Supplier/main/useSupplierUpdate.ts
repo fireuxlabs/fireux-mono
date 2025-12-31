@@ -1,5 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
-import type { SupplierProfile } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { SupplierCore } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
 
 /**
  * useSupplierUpdate
@@ -12,7 +12,7 @@ import type { SupplierProfile } from '../../../../../../models/profiles/Supplier
  * - both implementations are stubs until Firestore integration
  */
 export function useSupplierUpdate(
-  profile?: ProfileRefs<SupplierProfile> | null
+  profile?: ProfileRefs<SupplierCore> | null
 ) {
   const coreProfile = () => profile?.coreProfile?.value ?? null
   const appProfile = () => profile?.appProfile?.value ?? null
@@ -22,7 +22,7 @@ export function useSupplierUpdate(
    * - global document (e.g. suppliers/{uid})
    */
   const updateCoreProfile = async (
-    patch: Partial<SupplierProfile>
+    patch: Partial<SupplierCore>
   ): Promise<void> => {
     console.warn(
       '[useSupplierUpdate] updateCoreProfile stub called with:',
@@ -37,7 +37,7 @@ export function useSupplierUpdate(
    * - app-specific document (e.g. apps/{appId}/suppliers/{uid})
    */
   const updateAppProfile = async (
-    patch: Partial<SupplierProfile>
+    patch: Partial<SupplierCore>
   ): Promise<void> => {
     console.warn(
       '[useSupplierUpdate] updateAppProfile stub called with:',
@@ -49,7 +49,7 @@ export function useSupplierUpdate(
 
   const cleanString = (value: string | null | undefined) => {
     const normalized = typeof value === 'string' ? value.trim() : ''
-    return normalized.length ? normalized : null
+    return normalized
   }
 
   const updateDisplayName = async (value: string) => {

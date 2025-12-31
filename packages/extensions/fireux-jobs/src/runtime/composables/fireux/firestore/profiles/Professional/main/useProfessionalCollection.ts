@@ -3,7 +3,7 @@
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection.ts'
 import {
   professionalConfig,
-  type ProfessionalProfile,
+  type ProfessionalCore,
 } from '../../../../../../models/profiles/Professional/Professional.model.ts'
 
 export function useProfessionalCollection() {
@@ -12,7 +12,7 @@ export function useProfessionalCollection() {
     localProfiles,
     globalProfilesWithUser,
     localProfilesWithUser,
-  } = useProfileCollection<ProfessionalProfile>(professionalConfig)
+  } = useProfileCollection<ProfessionalCore>(professionalConfig)
 
   return {
     globalProfessionals: globalProfilesWithUser,

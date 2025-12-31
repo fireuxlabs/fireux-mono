@@ -5,8 +5,7 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 
 import {
   professionalConfig,
-  type ProfessionalProfile,
-  type ProfessionalCoreProfile,
+  type ProfessionalCore,
 } from '../../../../../models/profiles/Professional/Professional.model.ts'
 import type { ProfessionalCard } from './main/useProfessionalInterface'
 
@@ -15,7 +14,7 @@ import { useProfessionalInterface } from './main/useProfessionalInterface'
 import { useProfessionalUpdate } from './main/useProfessionalUpdate'
 import { useProfessionalCreate } from './main/useProfessionalCreate'
 
-export type { ProfessionalProfile, ProfessionalCoreProfile, ProfessionalCard }
+export type { ProfessionalCore as ProfessionalProfile, ProfessionalCard }
 
 /**
  * useProfessional
@@ -28,7 +27,7 @@ export type { ProfessionalProfile, ProfessionalCoreProfile, ProfessionalCard }
  */
 export function useProfessional() {
   const { profile: refs, pending } =
-    useProfile<ProfessionalProfile>(professionalConfig)
+    useProfile<ProfessionalCore>(professionalConfig)
 
   const { coreProfile, appProfile } = refs
 

@@ -1,12 +1,17 @@
-import type { Supplier } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
 
 export function useSupplierValidation() {
   /** Validate supplier data */
-  function validateSupplier(supplier: Partial<Supplier>) {
+  function validateSupplier(supplier: Partial<SupplierCore>) {
     const errors: string[] = []
 
-    if (!supplier.display_name?.trim()) {
-      errors.push('Display name is required')
+    const name =
+      (supplier as any).organization_name?.trim?.() ||
+      (supplier as any).title?.trim?.() ||
+      ''
+
+    if (!name) {
+      errors.push('Organization name is required')
     }
 
     return {

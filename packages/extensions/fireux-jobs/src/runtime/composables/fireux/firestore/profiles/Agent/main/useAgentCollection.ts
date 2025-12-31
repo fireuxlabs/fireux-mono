@@ -1,7 +1,7 @@
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
 import {
   agentConfig,
-  type AgentProfile,
+  type AgentCore,
 } from '../../../../../../models/profiles/Agent/Agent.model'
 
 export function useAgentCollection() {
@@ -10,7 +10,7 @@ export function useAgentCollection() {
     localProfiles,
     globalProfilesWithUser,
     localProfilesWithUser,
-  } = useProfileCollection<AgentProfile>(agentConfig)
+  } = useProfileCollection<AgentCore>(agentConfig)
 
   return {
     globalAgents: globalProfilesWithUser,

@@ -1,4 +1,4 @@
-import type { Company } from '../../../../../../models/objects/company.model'
+import type { Company } from '../../../../../../../models/objects/company.model.ts'
 
 export namespace CompanyCard {
   export interface Pill {
