@@ -61,11 +61,16 @@ import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 const isDev = import.meta.dev
 const router = useRouter()
 
-const { showOnboardingBlocker } = import.meta.client
+const { isResolved, isInitialized } = import.meta.client
   ? useApp()
-  : ({ showOnboardingBlocker: computed(() => false) } as const)
+  : ({
+      isResolved: computed(() => false),
+      isInitialized: computed(() => true),
+    } as const)
 
-const showOnboardingModal = computed(() => showOnboardingBlocker.value)
+const showOnboardingModal = computed(
+  () => isResolved.value && !isInitialized.value
+)
 
 useHead({
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],

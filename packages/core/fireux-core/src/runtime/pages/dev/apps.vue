@@ -71,7 +71,7 @@ definePageMeta({
   description: 'Developer view for Apps with section-level dev panels.',
 })
 
-const { app, pending, showOnboardingBlocker } = useApp()
+const { app, pending, isResolved, isInitialized } = useApp()
 const { users } = useAppUsers()
 const { apps } = useAppCollection()
 const { getChecksForScope } = useDevHealth()
@@ -81,11 +81,15 @@ const appSnapshot = computed(() => app.value ?? null)
 const appUsersList = computed(() => users.value ?? [])
 const appsList = computed(() => apps.value ?? [])
 
+const showOnboardingBlocker = computed(
+  () => isResolved.value && !isInitialized.value
+)
+
 const currentAppDev = computed(() => ({
   flags: {
     isLoading: isLoading.value,
     showOnboardingBlocker: showOnboardingBlocker.value,
-    isInitialized: !showOnboardingBlocker.value && app.value !== undefined,
+    isInitialized: isInitialized.value,
     hasApp: Boolean(appSnapshot.value),
   },
   app: appSnapshot.value,

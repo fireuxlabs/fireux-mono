@@ -10,7 +10,7 @@
         </template>
 
         <div class="space-y-2">
-          <OrganismsUserCardsPill :user="pillFor(currentUser)" />
+          <OrganismsUserCardsPill :card="cardFor(currentUser)" />
         </div>
 
         <p class="text-sm font-mono text-gray-600">
@@ -99,7 +99,7 @@
             :key="u.id || index"
             class="space-y-2 rounded-lg border border-gray-200 p-3"
           >
-            <OrganismsUserCardsPill :user="pillFor(u)" />
+            <OrganismsUserCardsPill :card="cardFor(u)" />
           </div>
         </div>
         <DevJsonPanel v-if="usersJson" :data="usersJson" />
@@ -145,16 +145,16 @@ definePageMeta({
 const { currentUser, isLoading } = useUser()
 const userCollections = useUserCollection()
 const { users: usersCollection, fulfilled: hydratedAppUsers } = userCollections
-const { pillProps: collectionPill } = useUserInterface()
+const { card: toUserCard } = useUserInterface()
 const fireux = useFireUXConfig()
 
 const { users: appUsers, pending: appUsersPending } = useAppUsers()
 const { getChecksForScope } = useDevHealth()
 
-const pillFor = (target: User | any | null | undefined) => {
+const cardFor = (target: User | any | null | undefined) => {
   if (!target) return null
   const base = target?.coreUser ?? target
-  return collectionPill(base)
+  return toUserCard(base)
 }
 
 const users = computed(() => usersCollection.value ?? [])

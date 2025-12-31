@@ -27,11 +27,9 @@ export function useAppComputed(
     )
   })
 
-  const showOnboardingBlocker = computed(() => {
-    // Only block once the app doc has resolved.
-    // While loading/unresolved, we do not want a UI "flash".
+  const isInitialized = computed(() => {
     if (!isResolved.value) return false
-    return adminIds.value.length === 0
+    return adminIds.value.length > 0
   })
 
   const isCurrentUserAdmin = computed(() => {
@@ -41,7 +39,8 @@ export function useAppComputed(
   })
 
   return {
-    showOnboardingBlocker,
+    isResolved,
+    isInitialized,
     adminIds,
     isCurrentUserAdmin,
   }

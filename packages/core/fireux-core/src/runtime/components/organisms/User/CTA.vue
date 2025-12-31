@@ -1,101 +1,46 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/CTA.vue -->
 <template>
   <div class="space-y-6">
-    <OrganismsUserCardsPreview />
+    <OrganismsUserCreateSystem v-slot="slotProps">
+      <div v-if="slotProps.shouldRender" class="space-y-3">
+        <UPageCTA
+          :title="slotProps.title"
+          :description="slotProps.description"
+          variant="naked"
+        >
+          <OrganismsUserCardsPreview />
 
-    <div v-if="shouldRender" class="space-y-3">
-      <UPageCTA :title="title" :description="description" variant="naked">
-        <template #links>
-          <UButton
-            color="primary"
-            size="lg"
-            :to="linkTarget || undefined"
-            :loading="isEnsuring"
-            :disabled="isEnsuring || (!linkTarget && !canTriggerAction)"
-            @click="handleAction"
-          >
-            {{ buttonLabel }}
-          </UButton>
-        </template>
-      </UPageCTA>
+          <template #links>
+            <UButton
+              v-if="slotProps.primary.kind === 'link'"
+              color="primary"
+              size="lg"
+              :to="slotProps.primary.to"
+            >
+              {{ slotProps.primary.label }}
+            </UButton>
 
-      <p v-if="actionError" class="cta-error">{{ actionError }}</p>
-    </div>
+            <UButton
+              v-else-if="slotProps.primary.kind === 'action'"
+              color="primary"
+              size="lg"
+              :loading="slotProps.primary.loading"
+              :disabled="slotProps.primary.disabled"
+              @click="slotProps.primary.onClick"
+            >
+              {{ slotProps.primary.label }}
+            </UButton>
+          </template>
+        </UPageCTA>
+
+        <p v-if="slotProps.error" class="text-sm text-red-600">
+          {{ slotProps.error }}
+        </p>
+      </div>
+    </OrganismsUserCreateSystem>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
-
-const { appName, ecosystem } = useFireUXConfig()
-const { cta, ensureCore, ensureApp } = useUser()
-
-const actionError = ref<string | null>(null)
-const isEnsuring = ref(false)
-
-const ctaKey = computed(() => cta.value?.key ?? 'avatar')
-const shouldRender = computed(() => ctaKey.value !== 'avatar')
-const isSignIn = computed(() => ctaKey.value === 'sign-in')
-const requiresCore = computed(() => ctaKey.value === 'create-core-user')
-const requiresApp = computed(() => ctaKey.value === 'join-app')
-
-const appLabel = computed(() => appName ?? 'this workspace')
-const ecosystemLabel = computed(() => ecosystem ?? 'FireUX')
-
-const title = computed(() => {
-  if (isSignIn.value) return 'Sign in to continue'
-  if (requiresCore.value) return 'Create your core user'
-  if (requiresApp.value) return `Join ${appLabel.value}`
-  return 'Update your profile'
-})
-
-const description = computed(() => {
-  if (isSignIn.value)
-    return 'Authenticate to load your user details and continue setup.'
-  if (requiresCore.value)
-    return `Provision your ${ecosystemLabel.value} profile so apps can recognize you.`
-  if (requiresApp.value)
-    return `Mirror your profile inside ${appLabel.value} to unlock tenant features.`
-  return 'Update your profile to keep your information in sync.'
-})
-
-const buttonLabel = computed(() => cta.value?.label ?? 'Continue')
-const linkTarget = computed(() =>
-  isSignIn.value ? cta.value?.to ?? '/auth' : null
-)
-const canTriggerAction = computed(() => requiresCore.value || requiresApp.value)
-
-const handleAction = async () => {
-  if (linkTarget.value) return
-  if (!canTriggerAction.value || isEnsuring.value) return
-
-  actionError.value = null
-  isEnsuring.value = true
-
-  try {
-    if (requiresCore.value) {
-      await ensureCore()
-    } else if (requiresApp.value) {
-      await ensureApp()
-    }
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : 'Unable to update your profile. Please try again.'
-    actionError.value = message
-  } finally {
-    isEnsuring.value = false
-  }
-}
+// CTA logic lives in OrganismsUserCreateSystem.
 </script>
-
-<style scoped>
-.cta-error {
-  margin: 0;
-  font-size: 0.875rem;
-  color: #dc2626;
-}
-</style>

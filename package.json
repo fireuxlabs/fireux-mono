@@ -30,8 +30,8 @@
     "guard": "node scripts/guard.mjs",
     "clean": "node scripts/clean.mjs",
     "clean:deep": "node scripts/clean.mjs --deep",
-    "gitsave": "bash scripts/gitsave.sh"
-    ,
+    "gitsave": "bash scripts/gitsave.sh",
+    "gen:cta-innards": "node scripts/generate-cta-innards.mjs",
     "gen:cta-trees": "node scripts/generate-cta-parent-trees.mjs"
   },
   "engines": {

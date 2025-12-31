@@ -1,64 +1,48 @@
 <template>
-  <div v-if="shouldRender">
-    <UPageCTA
-      title="Create your agent profile"
-      description="Add an agent profile to your FireUX portfolio so talent knows who is hiring."
-      variant="naked"
-    >
-      <template #links>
-        <UButton
-          color="primary"
-          size="lg"
-          :loading="isCreating"
-          :disabled="isCreating"
-          @click="handleCreate"
-        >
-          {{ isCreating ? 'Creating...' : 'Create agent profile' }}
-        </UButton>
-      </template>
-    </UPageCTA>
+	<OrganismsProfileCreateSystem
+		profile-key="agent"
+		:config="agentConfig"
+		title="Create your agent profile"
+		description="Add an agent profile to your FireUX portfolio so talent knows who is hiring."
+		v-slot="slotProps"
+	>
+		<div v-if="slotProps.shouldRender">
+			<UPageCTA
+				:title="slotProps.title"
+				:description="slotProps.description"
+				variant="naked"
+			>
+				<template #links>
+					<UButton
+						v-if="slotProps.primary.kind === 'link'"
+						color="primary"
+						size="lg"
+						:to="slotProps.primary.to"
+					>
+						{{ slotProps.primary.label }}
+					</UButton>
 
-    <p v-if="createError" class="cta-error">{{ createError }}</p>
-  </div>
+					<UButton
+						v-else
+						color="primary"
+						size="lg"
+						:loading="slotProps.primary.loading"
+						:disabled="slotProps.primary.disabled"
+						@click="slotProps.primary.onClick"
+					>
+						{{ slotProps.primary.label }}
+					</UButton>
+				</template>
+			</UPageCTA>
+
+			<p v-if="slotProps.error" class="text-sm text-red-600">
+				{{ slotProps.error }}
+			</p>
+		</div>
+	</OrganismsProfileCreateSystem>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useAgentCreate } from '../../../../composables/fireux/firestore/profiles/Agent/main/useAgentCreate.ts'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
-
-const { createAgent } = useAgentCreate()
-const { hasProfile } = useUser()
-
-const shouldRender = computed(() => !hasProfile('agent'))
-
-const isCreating = ref(false)
-const createError = ref<string | null>(null)
-
-const handleCreate = async () => {
-  if (isCreating.value) return
-
-  isCreating.value = true
-  createError.value = null
-
-  try {
-    await createAgent()
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : 'Unable to create agent profile. Please try again.'
-    createError.value = message
-  } finally {
-    isCreating.value = false
-  }
-}
+import { agentConfig } from '../../../../models/profiles/Agent/Agent.model'
 </script>
 
-<style scoped>
-.cta-error {
-  margin: 0;
-  font-size: 0.875rem;
-  color: #dc2626;
-}
-</style>

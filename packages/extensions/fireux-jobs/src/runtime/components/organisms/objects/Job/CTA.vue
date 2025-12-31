@@ -22,7 +22,6 @@
         color="primary"
         size="lg"
         to="/jobs/create"
-        @click="handleCreateJob"
       >
         Create job posting
       </UButton>
@@ -32,20 +31,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 
-const router = useRouter()
 const { pill, cell } = useAgent()
 const { hasProfile } = useUser()
 
 const hasAgentProfile = computed(() => hasProfile('agent'))
 const currentProfileTitle = 'Your agent profile'
-
-const handleCreateJob = () => {
-  router.push('/jobs/create').catch(() => undefined)
-}
 </script>
 
 <style scoped>

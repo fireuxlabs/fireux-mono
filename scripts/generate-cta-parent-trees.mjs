@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // FILE: scripts/generate-cta-parent-trees.mjs
 //
-// Generates: temp/temp-cta.md
+// Generates: temp/temp-cta-trees.md
 // Repo-truth snapshot (runtime only): CTA parent trees (full recursion).
 
 import { readdirSync, readFileSync, statSync, writeFileSync, mkdirSync } from 'node:fs'
@@ -271,7 +271,7 @@ function buildMarkdown(ctaLikeFiles) {
 
 function main() {
   const outDir = path.join(repoRoot, 'temp')
-  const outFile = path.join(outDir, 'temp-cta.md')
+  const outFile = path.join(outDir, 'temp-cta-trees.md')
 
   const ctaLikeFiles = findCtaLikeFiles()
   const md = buildMarkdown(ctaLikeFiles)
