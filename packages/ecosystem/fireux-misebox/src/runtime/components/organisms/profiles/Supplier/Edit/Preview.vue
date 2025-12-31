@@ -27,10 +27,10 @@
         </header>
 
         <OrganismsProfilesSupplierCardsCell
-          v-if="showCellCard && cell"
-          :supplier="cell"
+          v-if="showCellCard && previewCard"
+          :supplier="previewCard"
         />
-        <OrganismsProfilesSupplierCardsPill v-else-if="pill" :supplier="pill" />
+        <OrganismsProfilesSupplierCardsPill v-else-if="previewCard" :supplier="previewCard" />
       </UCard>
 
       <UCard v-else>
@@ -44,14 +44,13 @@
 import { computed, ref } from 'vue'
 import { useSupplier } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
 
-const { pillProps, cellProps, pending } = useSupplier()
+const { coreProfile, pending, card } = useSupplier()
 
-const pill = computed(() => pillProps())
-const cell = computed(() => cellProps())
+const previewCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
 const isLoading = computed(() => Boolean(pending.value))
-const hasPreview = computed(() => Boolean(pill.value || cell.value))
+const hasPreview = computed(() => Boolean(previewCard.value))
 
-const canToggle = computed(() => Boolean(cell.value))
+const canToggle = computed(() => Boolean(previewCard.value))
 const showCellView = ref(false)
 const showCellCard = computed(() => canToggle.value && showCellView.value)
 

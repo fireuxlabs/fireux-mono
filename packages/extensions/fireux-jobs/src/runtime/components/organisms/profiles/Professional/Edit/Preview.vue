@@ -27,12 +27,12 @@
         </header>
 
         <OrganismsProfilesProfessionalCardsCell
-          v-if="showCellCard && cell"
-          :professional="cell"
+          v-if="showCellCard && previewCard"
+          :professional="previewCard"
         />
         <OrganismsProfilesProfessionalCardsPill
-          v-else-if="pill"
-          :professional="pill"
+          v-else-if="previewCard"
+          :professional="previewCard"
         />
       </UCard>
 
@@ -47,14 +47,13 @@
 import { computed, ref } from 'vue'
 import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 
-const { pillProps, cellProps, pending } = useProfessional()
+const { coreProfile, pending, card } = useProfessional()
 
-const pill = computed(() => pillProps())
-const cell = computed(() => cellProps())
+const previewCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
 const isLoading = computed(() => Boolean(pending.value))
-const hasPreview = computed(() => Boolean(pill.value || cell.value))
+const hasPreview = computed(() => Boolean(previewCard.value))
 
-const canToggle = computed(() => Boolean(cell.value))
+const canToggle = computed(() => Boolean(previewCard.value))
 const showCellView = ref(false)
 const showCellCard = computed(() => canToggle.value && showCellView.value)
 

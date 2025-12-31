@@ -13,30 +13,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefProfile } from '../../../../../models/profiles/Chef/Chef.model'
 import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface'
-import { resolveChefCell } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface'
 
 const props = defineProps<{
   title?: string
   subtitle?: string
   avatar?: string | null
-  chef?: ChefCard.Cell | ChefProfile | null
+  chef?: ChefCard.Card | null
   prop?: string
 }>()
 
-const resolved = computed<ChefCard.Cell | null>(() => {
-  const source = props.chef
-  if (!source) return null
-  if ('user' in source) return resolveChefCell(source)
-  return source as ChefCard.Cell
-})
+const resolved = computed<ChefCard.Card | null>(() => props.chef ?? null)
 
 const resolvedTitle = computed(() => resolved.value?.title ?? 'Chef')
-const resolvedSubtitle = computed(
-  () => resolved.value?.tagline ?? resolved.value?.subtitle ?? undefined
-)
-const resolvedAvatar = computed(() => resolved.value?.avatar ?? null)
+const resolvedSubtitle = computed(() => resolved.value?.subtitle || undefined)
+const resolvedAvatar = computed(() => resolved.value?.avatar || null)
 
 const vmTitle = computed(() => props.title ?? resolvedTitle.value)
 const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)

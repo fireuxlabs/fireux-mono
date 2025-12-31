@@ -10,11 +10,11 @@
       </p>
     </template>
 
-    <div v-if="pills.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-if="cards.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <OrganismsProfilesChefCardsPill
-        v-for="pill in pills"
-        :key="pillKey(pill)"
-        :chef="pill"
+        v-for="card in cards"
+        :key="cardKey(card)"
+        :chef="card"
       />
     </div>
 
@@ -24,21 +24,19 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefProfile } from '../../../../../models/profiles/Chef/Chef.model.ts'
+import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model.ts'
 import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
 import { useChefCollection } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'
-import {
-  resolveChefPill,
-  resolveChefPillKey,
-} from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
+import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef.ts'
 
 const { globalChefs } = useChefCollection()
+const { card } = useChef()
 
 const total = computed(() => globalChefs.value?.length ?? 0)
 
-const pills = computed<ChefCard.Pill[]>(() =>
-  (globalChefs.value ?? []).map((chef: ChefProfile) => resolveChefPill(chef))
+const cards = computed<ChefCard.Card[]>(() =>
+  (globalChefs.value ?? []).map((chef: ChefCore) => card(chef))
 )
 
-const pillKey = resolveChefPillKey
+const cardKey = (payload: ChefCard.Card) => payload.id || payload.to || payload.title
 </script>

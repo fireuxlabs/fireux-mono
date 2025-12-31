@@ -10,11 +10,11 @@
       </p>
     </template>
 
-    <div v-if="pills.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-if="cards.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <OrganismsProfilesAgentCardsPill
-        v-for="pill in pills"
-        :key="pillKey(pill)"
-        :agent="pill"
+        v-for="card in cards"
+        :key="cardKey(card)"
+        :agent="card"
       />
     </div>
 
@@ -24,23 +24,19 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AgentProfile } from '../../../../../models/profiles/Agent/Agent.model'
+import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
 import { useAgentCollection } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
-import {
-  resolveAgentPill,
-  resolveAgentPillKey,
-} from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
+import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const { localAgents } = useAgentCollection()
+const { card } = useAgent()
 
 const total = computed(() => localAgents?.value?.length ?? 0)
 
-const pills = computed<AgentCard.AgentPill[]>(() =>
-  (localAgents?.value ?? []).map((agent: AgentProfile) =>
-    resolveAgentPill(agent)
-  )
+const cards = computed<AgentCard.Card[]>(() =>
+  (localAgents?.value ?? []).map((agent: AgentCore) => card(agent))
 )
 
-const pillKey = resolveAgentPillKey
+const cardKey = (payload: AgentCard.Card) => payload.id || payload.to || payload.title
 </script>

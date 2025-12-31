@@ -27,10 +27,10 @@
         </header>
 
         <OrganismsProfilesAgentCardsCell
-          v-if="showCellCard && cell"
-          :agent="cell"
+          v-if="showCellCard && previewCard"
+          :agent="previewCard"
         />
-        <OrganismsProfilesAgentCardsPill v-else-if="pill" :agent="pill" />
+        <OrganismsProfilesAgentCardsPill v-else-if="previewCard" :agent="previewCard" />
       </UCard>
 
       <UCard v-else>
@@ -44,14 +44,13 @@
 import { computed, ref } from 'vue'
 import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 
-const { pillProps, cellProps, pending } = useAgent()
+const { coreProfile, pending, card } = useAgent()
 
-const pill = computed(() => pillProps())
-const cell = computed(() => cellProps())
+const previewCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
 const isLoading = computed(() => Boolean(pending.value))
-const hasPreview = computed(() => Boolean(pill.value || cell.value))
+const hasPreview = computed(() => Boolean(previewCard.value))
 
-const canToggle = computed(() => Boolean(cell.value))
+const canToggle = computed(() => Boolean(previewCard.value))
 const showCellView = ref(false)
 const showCellCard = computed(() => canToggle.value && showCellView.value)
 

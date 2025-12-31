@@ -10,11 +10,11 @@
       </p>
     </template>
 
-    <div v-if="pills.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-if="cards.length" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <OrganismsProfilesSupplierCardsPill
-        v-for="pill in pills"
-        :key="pillKey(pill)"
-        :supplier="pill"
+        v-for="card in cards"
+        :key="cardKey(card)"
+        :supplier="card"
       />
     </div>
 
@@ -24,23 +24,19 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { SupplierProfile } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
 import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
 import { useSupplierCollection } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection.ts'
-import {
-  resolveSupplierPill,
-  resolveSupplierPillKey,
-} from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
+import { useSupplier } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
 
 const { localSuppliers } = useSupplierCollection()
+const { card } = useSupplier()
 
 const total = computed(() => localSuppliers?.value?.length ?? 0)
 
-const pills = computed<SupplierCard.Pill[]>(() =>
-  (localSuppliers?.value ?? []).map((supplier: SupplierProfile) =>
-    resolveSupplierPill(supplier)
-  )
+const cards = computed<SupplierCard.Card[]>(() =>
+  (localSuppliers?.value ?? []).map((supplier: SupplierCore) => card(supplier))
 )
 
-const pillKey = resolveSupplierPillKey
+const cardKey = (payload: SupplierCard.Card) => payload.id || payload.to || payload.title
 </script>

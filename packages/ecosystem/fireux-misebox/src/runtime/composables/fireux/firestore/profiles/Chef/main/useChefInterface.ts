@@ -1,154 +1,69 @@
-import { computed } from 'vue'
+// FILE: packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts
+
 import type { Ref } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
-import {
-  chefConfig,
-  type ChefCore,
-} from '../../../../../../models/profiles/Chef/Chef.model.ts'
+import { chefConfig, type ChefCore } from '../../../../../../models/profiles/Chef/Chef.model.ts'
 
-/**
- * UI-only view models for Chef profiles.
- * Keep these out of the Firestore model file.
- */
 export namespace ChefCard {
-  /** Pill shape */
-  export interface Pill {
-    avatar?: string
-    title?: string
-    subtitle?: string | null
-    tagline?: string | null
-    badges?: string[]
-    to?: string | null
+  export type Card = {
+    id: string
+    to: string
+    avatar: string
+    title: string
+    subtitle: string
+    badges: string[]
+    line1: string
+    line2: string
+    line3: string
   }
-
-  /** Cell shape */
-  export interface Cell extends Pill {
-    id?: string
-    bio_short?: string | null
-    specialties?: string[]
-    locations?: string[]
-  }
-
-  /** Full profile surface for display components */
-  export type Profile = ChefCore
 }
 
-const routeFor = (id?: string | null): string | undefined =>
-  id ? `/${chefConfig.collectionName}/${id}` : undefined
+export function useChefInterface(profile: ProfileRefs<ChefCore>, user: Ref<User | null | undefined>) {
+  const resolveProfile = (target?: ChefCore) => target || profile.coreProfile.value || undefined
+  const resolveUser = (target?: (ChefCore & { user?: User | null }) | ChefCore) =>
+    (target as any)?.user || user.value || undefined
 
-/**
- * Minimal chef interface.
- * No merging, no overrides.
- * Pill = user.avatar + user.display_name + profile tagline.
- */
-export function useChefInterface(
-  profile: ProfileRefs<ChefCore>,
-  user: Ref<User | null | undefined>
-) {
-  type ChefProfileWithUser = ChefCore & { user?: User | null }
-
-  const resolveProfile = (target?: ChefCore | null) =>
-    target ?? profile.coreProfile.value ?? null
-
-  const resolveUser = (target?: ChefProfileWithUser | ChefCore | null) =>
-    (target as ChefProfileWithUser | null)?.user ?? user.value ?? null
-
-  const resolveTagline = (payload: ChefCore | null | undefined): string =>
-    payload?.tagline?.trim() ??
-    (payload as { subtitle?: string | null } | null)?.subtitle?.trim() ??
-    ''
-
-  const resolveTitle = (u: Partial<User>) =>
-    u.display_name?.trim() ||
-    u.email?.trim() ||
-    (u.handle ? `@${u.handle.trim()}` : '') ||
-    'Chef'
-
-  const pillProps = (
-    target?: ChefProfileWithUser | ChefCore | null
-  ): ChefCard.Pill | null => {
+  const card = (target?: ChefCore): ChefCard.Card => {
     const currentProfile = resolveProfile(target)
     const currentUser = resolveUser(target)
-    if (!currentUser) return null
 
-    const tagline = resolveTagline(currentProfile)
-    const to = routeFor(currentProfile?.id ?? currentUser.id)
+    const id = String(currentProfile?.id || currentUser?.id || '').trim()
+    const to = id ? `/${chefConfig.collectionName}/${id}` : ''
+
+    const avatar = String(currentUser?.avatar || '').trim()
+    const title = String(currentUser?.display_name || currentUser?.email || 'Chef').trim() || 'Chef'
+
+    const tagline = String((currentProfile as any)?.tagline || (currentProfile as any)?.subtitle || '').trim()
+    const subtitle = tagline
+
+    const rawBadges = Array.isArray((currentProfile as any)?.badges)
+      ? ((currentProfile as any).badges as unknown[])
+      : []
+    const badges = rawBadges.map((b) => String(b).trim()).filter(Boolean)
+
+    const line1 = String((currentProfile as any)?.bio_short || '').trim()
+    const specialties = Array.isArray((currentProfile as any)?.specialties)
+      ? ((currentProfile as any).specialties as unknown[]).map((s) => String(s).trim()).filter(Boolean)
+      : []
+    const line2 = specialties.length ? specialties.join(', ') : ''
+    const locations = Array.isArray((currentProfile as any)?.locations)
+      ? ((currentProfile as any).locations as unknown[]).map((s) => String(s).trim()).filter(Boolean)
+      : []
+    const line3 = locations.length ? locations.join(', ') : ''
 
     return {
-      avatar: currentUser.avatar ?? '',
-      title: resolveTitle(currentUser),
-      subtitle: tagline,
-      tagline,
-      badges: currentProfile?.badges ?? [],
-      to,
-    }
-  }
-
-  const cellProps = (
-    target?: ChefProfileWithUser | ChefCore | null
-  ): ChefCard.Cell | null => {
-    const base = pillProps(target)
-    if (!base) return null
-
-    const currentProfile = resolveProfile(target)
-    const id = currentProfile?.id ?? resolveUser(target)?.id ?? undefined
-
-    return {
-      ...base,
       id,
-      bio_short: currentProfile?.bio_short ?? null,
+      to,
+      avatar,
+      title,
+      subtitle,
+      badges,
+      line1,
+      line2,
+      line3,
     }
   }
 
-  const pill = computed(() => pillProps())
-  const cell = computed(() => cellProps())
-
-  return { pill, cell, pillProps, cellProps }
+  return { card }
 }
-
-export const resolveChefCell = (
-  profile?: (ChefCore & { user?: Partial<User> | null }) | null,
-  fallbackId = 'chef-profile'
-): ChefCard.Cell | null => {
-  if (!profile) return null
-
-  const user = profile.user ?? undefined
-  const id = profile.id ?? user?.id ?? fallbackId
-
-  const subtitle = profile.subtitle ?? null
-  const tagline = (profile as { tagline?: string | null } | null)?.tagline ?? null
-
-  return {
-    id,
-    avatar: user?.avatar ?? undefined,
-    title: user?.display_name ?? profile.title ?? 'Chef',
-    subtitle,
-    tagline,
-    badges: profile.badges ?? [],
-    bio_short: (profile as { bio_short?: string | null } | null)?.bio_short ?? null,
-    specialties: (profile as { specialties?: string[] } | null)?.specialties ?? [],
-    locations: (profile as { locations?: string[] } | null)?.locations ?? [],
-    to: routeFor(profile.id),
-  }
-}
-
-export const resolveChefPill = (
-  profile?: (ChefCore & { user?: Partial<User> | null }) | null
-): ChefCard.Pill => ({
-  avatar: profile?.user?.avatar ?? '',
-  title: profile?.user?.display_name ?? '',
-  subtitle:
-    profile?.tagline ??
-    (profile as { subtitle?: string | null } | null)?.subtitle ??
-    '',
-  tagline:
-    profile?.tagline ??
-    (profile as { subtitle?: string | null } | null)?.subtitle ??
-    '',
-  badges: [],
-  to: routeFor(profile?.id),
-})
-
-export const resolveChefPillKey = (pill: ChefCard.Pill) =>
-  pill.to ?? pill.title ?? 'chef'

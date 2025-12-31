@@ -101,8 +101,8 @@
             </template>
 
             <div class="space-y-4">
-              <OrganismsProfilesChefCardsCell v-if="chefCell" :chef="chefCell" />
-              <OrganismsProfilesChefCardsPill v-if="chefPill" :chef="chefPill" />
+              <OrganismsProfilesChefCardsCell v-if="chefCard" :chef="chefCard" />
+              <OrganismsProfilesChefCardsPill v-if="chefCard" :chef="chefCard" />
             </div>
           </UCard>
         </div>
@@ -132,9 +132,9 @@
             class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             <OrganismsProfilesChefCardsPill
-              v-for="pill in chefGlobalPills"
-              :key="chefPillKey(pill)"
-              :chef="pill"
+              v-for="card in chefGlobalPills"
+              :key="chefPillKey(card)"
+              :chef="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -166,9 +166,9 @@
             class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             <OrganismsProfilesChefCardsPill
-              v-for="pill in chefLocalPills"
-              :key="chefPillKey(pill)"
-              :chef="pill"
+              v-for="card in chefLocalPills"
+              :key="chefPillKey(card)"
+              :chef="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -215,12 +215,12 @@
 
             <div class="space-y-4">
               <OrganismsProfilesSupplierCardsCell
-                v-if="supplierCell"
-                :supplier="supplierCell"
+                v-if="supplierCard"
+                :supplier="supplierCard"
               />
               <OrganismsProfilesSupplierCardsPill
-                v-if="supplierPill"
-                :supplier="supplierPill"
+                v-if="supplierCard"
+                :supplier="supplierCard"
               />
             </div>
           </UCard>
@@ -251,9 +251,9 @@
             class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             <OrganismsProfilesSupplierCardsPill
-              v-for="pill in supplierGlobalPills"
-              :key="supplierPillKey(pill)"
-              :supplier="pill"
+              v-for="card in supplierGlobalPills"
+              :key="supplierPillKey(card)"
+              :supplier="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -288,9 +288,9 @@
             class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             <OrganismsProfilesSupplierCardsPill
-              v-for="pill in supplierLocalPills"
-              :key="supplierPillKey(pill)"
-              :supplier="pill"
+              v-for="card in supplierLocalPills"
+              :key="supplierPillKey(card)"
+              :supplier="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -331,17 +331,7 @@ import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChe
 import { useSupplier } from '../../composables/fireux/firestore/profiles/Supplier/useSupplier.ts'
 import { useChefCollection } from '../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'
 import { useSupplierCollection } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection.ts'
-import {
-  resolveChefPill,
-  resolveChefPillKey,
-} from '../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
-import {
-  resolveSupplierPill,
-  resolveSupplierPillKey,
-} from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
-import type { ChefProfile } from '../../models/profiles/Chef/Chef.model.ts'
 import type { ChefCard } from '../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
-import type { SupplierProfile } from '../../models/profiles/Supplier/Supplier.model.ts'
 import type { SupplierCard } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
 
 definePageMeta({
@@ -363,16 +353,24 @@ definePageMeta({
 const {
   coreProfile: chefCoreProfile,
   appProfile: chefAppProfile,
-  pill: chefPill,
-  cell: chefCell,
+  card: resolveChefCard,
 } = useChef()
 
 const {
   coreProfile: supplierCoreProfile,
   appProfile: supplierAppProfile,
-  pill: supplierPill,
-  cell: supplierCell,
+  card: resolveSupplierCard,
 } = useSupplier()
+
+const chefCard = computed<ChefCard.Card | null>(() => {
+  const core = unref(chefCoreProfile)
+  return core ? resolveChefCard(core as any) : null
+})
+
+const supplierCard = computed<SupplierCard.Card | null>(() => {
+  const core = unref(supplierCoreProfile)
+  return core ? resolveSupplierCard(core as any) : null
+})
 
 const chefHasProfile = computed(() => Boolean(unref(chefCoreProfile)))
 const supplierHasProfile = computed(() => Boolean(unref(supplierCoreProfile)))
@@ -402,10 +400,8 @@ const { isTenant } = useFireUXConfig()
 const { globalChefs, localChefs, rawGlobalChefs, rawLocalChefs } =
   useChefCollection()
 
-const chefGlobalPills = computed<ChefCard.Pill[]>(() =>
-  (globalChefs.value ?? []).map((profile: ChefProfile) =>
-    resolveChefPill(profile)
-  )
+const chefGlobalPills = computed<ChefCard.Card[]>(() =>
+  (globalChefs.value ?? []).map((profile) => resolveChefCard(profile as any))
 )
 
 const chefGlobalCount = computed(() => chefGlobalPills.value.length)
@@ -414,11 +410,9 @@ const chefGlobalJson = computed(() => rawGlobalChefs.value ?? [])
 
 const hasChefLocalCollection = computed(() => Boolean(localChefs))
 
-const chefLocalPills = computed<ChefCard.Pill[]>(() => {
+const chefLocalPills = computed<ChefCard.Card[]>(() => {
   if (!localChefs) return []
-  return (localChefs.value ?? []).map((profile: ChefProfile) =>
-    resolveChefPill(profile)
-  )
+  return (localChefs.value ?? []).map((profile) => resolveChefCard(profile as any))
 })
 
 const chefLocalCount = computed(() => chefLocalPills.value.length)
@@ -427,7 +421,8 @@ const chefLocalJson = computed(() =>
   localChefs && rawLocalChefs ? rawLocalChefs.value ?? [] : []
 )
 
-const chefPillKey = resolveChefPillKey
+const chefPillKey = (card: ChefCard.Card) =>
+  card.id || card.to || card.title || 'chef'
 
 const {
   globalSuppliers,
@@ -436,9 +431,9 @@ const {
   rawLocalSuppliers,
 } = useSupplierCollection()
 
-const supplierGlobalPills = computed<SupplierCard.Pill[]>(() =>
-  (globalSuppliers.value ?? []).map((profile: SupplierProfile) =>
-    resolveSupplierPill(profile)
+const supplierGlobalPills = computed<SupplierCard.Card[]>(() =>
+  (globalSuppliers.value ?? []).map((profile) =>
+    resolveSupplierCard(profile as any)
   )
 )
 
@@ -448,10 +443,10 @@ const supplierGlobalJson = computed(() => rawGlobalSuppliers.value ?? [])
 
 const hasSupplierLocalCollection = computed(() => Boolean(localSuppliers))
 
-const supplierLocalPills = computed<SupplierCard.Pill[]>(() => {
+const supplierLocalPills = computed<SupplierCard.Card[]>(() => {
   if (!localSuppliers) return []
-  return (localSuppliers.value ?? []).map((profile: SupplierProfile) =>
-    resolveSupplierPill(profile)
+  return (localSuppliers.value ?? []).map((profile) =>
+    resolveSupplierCard(profile as any)
   )
 })
 
@@ -461,5 +456,6 @@ const supplierLocalJson = computed(() =>
   localSuppliers && rawLocalSuppliers ? rawLocalSuppliers.value ?? [] : []
 )
 
-const supplierPillKey = resolveSupplierPillKey
+const supplierPillKey = (card: SupplierCard.Card) =>
+  card.id || card.to || card.title || 'supplier'
 </script>

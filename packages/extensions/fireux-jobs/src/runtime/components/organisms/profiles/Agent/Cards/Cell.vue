@@ -13,30 +13,23 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AgentProfile } from '../../../../../models/profiles/Agent/Agent.model'
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
-import { resolveAgentCell } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
 
 const props = defineProps<{
   title?: string
   subtitle?: string
   avatar?: string | null
-  agent?: AgentCard.AgentCell | AgentProfile | null
+  agent?: AgentCard.Card | null
   prop?: string
 }>()
 
-const resolved = computed<AgentCard.AgentCell | null>(() => {
-  const source = props.agent
-  if (!source) return null
-  if ('avatar' in source) return source
-  return resolveAgentCell(source as AgentProfile)
-})
+const resolved = computed<AgentCard.Card | null>(() => props.agent ?? null)
 
 const resolvedTitle = computed(() => resolved.value?.title ?? 'Agent')
 const resolvedSubtitle = computed(
-  () => resolved.value?.tagline ?? resolved.value?.subtitle ?? undefined
+  () => resolved.value?.subtitle || undefined
 )
-const resolvedAvatar = computed(() => resolved.value?.avatar ?? null)
+const resolvedAvatar = computed(() => resolved.value?.avatar || null)
 
 const vmTitle = computed(() => props.title ?? resolvedTitle.value)
 const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)

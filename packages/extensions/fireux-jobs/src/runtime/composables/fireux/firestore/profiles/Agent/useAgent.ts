@@ -35,7 +35,7 @@ export function useAgent() {
   }))
 
   const agentComputed = useAgentComputed(refs, pending)
-  const { profile: profileCard, ...ui } = useAgentInterface(refs, coreUser)
+  const ui = useAgentInterface(refs, coreUser)
   const update = useAgentUpdate(refs)
   const create = useAgentCreate()
 
@@ -45,7 +45,6 @@ export function useAgent() {
     appProfile,
     agent,
     pending,
-    profileCard,
 
     ...agentComputed,
     ...ui,

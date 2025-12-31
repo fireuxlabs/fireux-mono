@@ -25,12 +25,12 @@
 
             <div class="space-y-4">
               <OrganismsProfilesProfessionalCardsCell
-                v-if="professionalCell"
-                :professional="professionalCell"
+                v-if="professionalCard"
+                :professional="professionalCard"
               />
               <OrganismsProfilesProfessionalCardsPill
-                v-if="professionalPill"
-                :professional="professionalPill"
+                v-if="professionalCard"
+                :professional="professionalCard"
               />
             </div>
           </UCard>
@@ -63,9 +63,9 @@
             class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             <OrganismsProfilesProfessionalCardsPill
-              v-for="pill in professionalGlobalPills"
-              :key="professionalPillKey(pill)"
-              :professional="pill"
+              v-for="card in professionalGlobalPills"
+              :key="professionalPillKey(card)"
+              :professional="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -108,9 +108,9 @@
             class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             <OrganismsProfilesProfessionalCardsPill
-              v-for="pill in professionalLocalPills"
-              :key="professionalPillKey(pill)"
-              :professional="pill"
+              v-for="card in professionalLocalPills"
+              :key="professionalPillKey(card)"
+              :professional="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -167,8 +167,8 @@
             </template>
 
             <div class="space-y-4">
-              <OrganismsProfilesAgentCardsCell v-if="agentCell" :agent="agentCell" />
-              <OrganismsProfilesAgentCardsPill v-if="agentPill" :agent="agentPill" />
+              <OrganismsProfilesAgentCardsCell v-if="agentCard" :agent="agentCard" />
+              <OrganismsProfilesAgentCardsPill v-if="agentCard" :agent="agentCard" />
             </div>
           </UCard>
         </div>
@@ -198,9 +198,9 @@
             class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             <OrganismsProfilesAgentCardsPill
-              v-for="pill in agentGlobalPills"
-              :key="agentPillKey(pill)"
-              :agent="pill"
+              v-for="card in agentGlobalPills"
+              :key="agentPillKey(card)"
+              :agent="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -243,9 +243,9 @@
             class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             <OrganismsProfilesAgentCardsPill
-              v-for="pill in agentLocalPills"
-              :key="agentPillKey(pill)"
-              :agent="pill"
+              v-for="card in agentLocalPills"
+              :key="agentPillKey(card)"
+              :agent="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -295,13 +295,7 @@ import { useProfessional } from '../../composables/fireux/firestore/profiles/Pro
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
 import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection.ts'
-import {
-  resolveProfessionalPill,
-  resolveProfessionalPillKey,
-} from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
-import type { ProfessionalProfile } from '../../models/profiles/Professional/Professional.model'
 import type { ProfessionalCard } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
-import type { AgentProfile } from '../../models/profiles/Agent/Agent.model'
 import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
 
 type Ref<T> = { value: T }
@@ -322,16 +316,24 @@ definePageMeta({
 const {
   coreProfile: professionalCoreProfile,
   appProfile: professionalAppProfile,
-  pill: professionalPill,
-  cell: professionalCell,
+  card: resolveProfessionalCard,
 } = useProfessional()
 
 const {
   coreProfile: agentCoreProfile,
   appProfile: agentAppProfile,
-  pill: agentPill,
-  cell: agentCell,
+  card: resolveAgentCard,
 } = useAgent()
+
+const professionalCard = computed<ProfessionalCard.Card | null>(() => {
+  const core = professionalCoreProfile.value
+  return core ? resolveProfessionalCard(core as any) : null
+})
+
+const agentCard = computed<AgentCard.Card | null>(() => {
+  const core = agentCoreProfile.value
+  return core ? resolveAgentCard(core as any) : null
+})
 
 const professionalHasProfile = computed(
   () => Boolean(professionalCoreProfile.value)
@@ -368,9 +370,9 @@ const {
   rawLocalProfessionals,
 } = useProfessionalCollection()
 
-const professionalGlobalPills = computed<ProfessionalCard.ProfessionalPill[]>(() =>
-  (globalProfessionals.value ?? []).map((profile: ProfessionalProfile) =>
-    resolveProfessionalPill(profile)
+const professionalGlobalPills = computed<ProfessionalCard.Card[]>(() =>
+  (globalProfessionals.value ?? []).map((profile) =>
+    resolveProfessionalCard(profile as any)
   )
 )
 
@@ -386,10 +388,10 @@ const hasProfessionalLocalCollection = computed(() =>
   Boolean(localProfessionals)
 )
 
-const professionalLocalPills = computed<ProfessionalCard.ProfessionalPill[]>(() => {
+const professionalLocalPills = computed<ProfessionalCard.Card[]>(() => {
   if (!localProfessionals) return []
-  return (localProfessionals.value ?? []).map((profile: ProfessionalProfile) =>
-    resolveProfessionalPill(profile)
+  return (localProfessionals.value ?? []).map((profile) =>
+    resolveProfessionalCard(profile as any)
   )
 })
 
@@ -403,52 +405,14 @@ const professionalLocalJson = computed(() =>
     : []
 )
 
-const professionalPillKey = resolveProfessionalPillKey
+const professionalPillKey = (card: ProfessionalCard.Card) =>
+  card.id || card.to || card.title || 'professional'
 
 const { globalAgents, localAgents, rawGlobalAgents, rawLocalAgents } =
   useAgentCollection()
 
-type AgentPreviewProfile = Partial<AgentProfile> & {
-  user?: { display_name?: string | null; avatar?: string | null } | null
-  display_name?: string | null
-  avatar_url?: string | null
-  avatar?: string | null
-}
-
-const toAgentPill = (
-  profile?: AgentPreviewProfile | null
-): AgentCard.AgentPill => {
-  const title = (
-    profile?.title ||
-    profile?.user?.display_name ||
-    profile?.display_name ||
-    ''
-  ).trim()
-  const normalizedTitle = title || 'Agent'
-  const tagline =
-    profile?.tagline ??
-    (profile as { subtitle?: string | null })?.subtitle ??
-    ''
-  const avatar =
-    profile?.avatar_url || profile?.avatar || profile?.user?.avatar || ''
-  const rawBadges = profile?.badges
-  const badges = Array.isArray(rawBadges) ? rawBadges : []
-  const to = profile?.id ? `/agents/${profile.id}` : null
-
-  return {
-    avatar,
-    title: normalizedTitle,
-    subtitle: tagline,
-    tagline,
-    badges,
-    to,
-  }
-}
-
-const agentGlobalPills = computed<AgentCard.AgentPill[]>(() =>
-  (globalAgents.value ?? []).map((profile: AgentProfile) =>
-    toAgentPill(profile)
-  )
+const agentGlobalPills = computed<AgentCard.Card[]>(() =>
+  (globalAgents.value ?? []).map((profile) => resolveAgentCard(profile as any))
 )
 
 const agentGlobalCount = computed(() => agentGlobalPills.value.length)
@@ -457,11 +421,9 @@ const agentGlobalJson = computed(() => rawGlobalAgents.value ?? [])
 
 const hasAgentLocalCollection = computed(() => Boolean(localAgents))
 
-const agentLocalPills = computed<AgentCard.AgentPill[]>(() => {
+const agentLocalPills = computed<AgentCard.Card[]>(() => {
   if (!localAgents) return []
-  return (localAgents.value ?? []).map((profile: AgentProfile) =>
-    toAgentPill(profile)
-  )
+  return (localAgents.value ?? []).map((profile) => resolveAgentCard(profile as any))
 })
 
 const agentLocalCount = computed(() => agentLocalPills.value.length)
@@ -470,7 +432,8 @@ const agentLocalJson = computed(() =>
   localAgents && rawLocalAgents ? rawLocalAgents.value ?? [] : []
 )
 
-const agentPillKey = (pill: AgentCard.AgentPill) => pill.to ?? pill.title ?? 'agent'
+const agentPillKey = (card: AgentCard.Card) =>
+  card.id || card.to || card.title || 'agent'
 
 type ProfileDiffRow<TProfile> = {
   id: string

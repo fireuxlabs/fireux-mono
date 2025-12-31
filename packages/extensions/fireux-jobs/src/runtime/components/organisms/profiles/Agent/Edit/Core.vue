@@ -72,11 +72,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useToast } from '#imports'
-import type { AgentProfile } from '../../../../../models/profiles/Agent/Agent.model'
+import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
 import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentUpdate'
 import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
 
-const props = defineProps<{ agent: AgentProfile | null }>()
+const props = defineProps<{ agent: AgentCore | null }>()
 
 const agent = computed(() => props.agent ?? null)
 const {

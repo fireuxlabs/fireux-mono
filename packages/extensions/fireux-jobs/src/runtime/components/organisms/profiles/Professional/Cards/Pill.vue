@@ -12,29 +12,22 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ProfessionalProfile } from '../../../../../models/profiles/Professional/Professional.model'
 import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
-import { resolveProfessionalPill } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
 
 const props = defineProps<{
   title?: string
   subtitle?: string
   avatar?: string | null
-  professional?: ProfessionalCard.ProfessionalPill | ProfessionalProfile | null
+  professional?: ProfessionalCard.Card | null
 }>()
 
-const resolved = computed<ProfessionalCard.ProfessionalPill | null>(() => {
-  const source = props.professional
-  if (!source) return null
-  if ('user' in source) return resolveProfessionalPill(source)
-  return source as ProfessionalCard.ProfessionalPill
-})
+const resolved = computed<ProfessionalCard.Card | null>(() => props.professional ?? null)
 
 const resolvedTitle = computed(() => resolved.value?.title ?? 'Professional')
 const resolvedSubtitle = computed(
-  () => resolved.value?.tagline ?? resolved.value?.subtitle ?? undefined
+  () => resolved.value?.subtitle || undefined
 )
-const resolvedAvatar = computed(() => resolved.value?.avatar ?? null)
+const resolvedAvatar = computed(() => resolved.value?.avatar || null)
 
 const vmTitle = computed(() => props.title ?? resolvedTitle.value)
 const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)

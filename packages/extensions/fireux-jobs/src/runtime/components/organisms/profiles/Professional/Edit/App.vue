@@ -19,10 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ProfessionalProfile } from '../../../../../models/profiles/Professional/Professional.model.ts'
+import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 defineProps<{
-  professional: ProfessionalProfile | null
+  professional: ProfessionalCore | null
 }>()
 
 // Placeholder component, ready for future tenant-specific overrides.
