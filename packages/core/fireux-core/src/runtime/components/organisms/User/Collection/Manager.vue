@@ -86,7 +86,7 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
       const role = inferRole(entry)
 
       const payload = card(entry)
-      const badges = role === 'admin' ? ['Admin'] : []
+      const badges = role === 'admin' ? ['Admin'] : role === 'user' ? ['Member'] : []
 
       return {
         key: entry.id,

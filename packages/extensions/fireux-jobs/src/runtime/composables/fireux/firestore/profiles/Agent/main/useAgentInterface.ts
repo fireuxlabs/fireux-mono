@@ -20,42 +20,36 @@ export namespace AgentCard {
 }
 
 export function useAgentInterface(profile: ProfileRefs<AgentCore>, user: Ref<User | null | undefined>) {
-  const resolveProfile = (target?: AgentCore) => target || profile.coreProfile.value || undefined
-  const resolveUser = (target?: (AgentCore & { user?: User | null }) | AgentCore) =>
-    (target as any)?.user || user.value || undefined
+  const resolveProfile = (target?: AgentCore): AgentCore => {
+    const current = target ?? profile.coreProfile.value
+    if (!current) {
+      throw new Error('[useAgentInterface] Agent profile is required')
+    }
+    return current
+  }
+
+  const resolveUser = (): User => {
+    const current = user.value
+    if (!current) {
+      throw new Error('[useAgentInterface] User is required')
+    }
+    return current
+  }
 
   const card = (target?: AgentCore): AgentCard.Card => {
     const currentProfile = resolveProfile(target)
-    const currentUser = resolveUser(target)
-
-    const id = String(currentProfile?.id || currentUser?.id || '').trim()
-    const to = id ? `/${agentConfig.collectionName}/${id}` : ''
-
-    const avatar = String(currentUser?.avatar || '').trim()
-    const title = String(currentUser?.display_name || currentUser?.email || 'Agent').trim() || 'Agent'
-
-    const tagline = String((currentProfile as any)?.tagline || (currentProfile as any)?.subtitle || '').trim()
-    const subtitle = tagline
-
-    const rawBadges = Array.isArray((currentProfile as any)?.badges)
-      ? ((currentProfile as any).badges as unknown[])
-      : []
-    const badges = rawBadges.map((b) => String(b).trim()).filter(Boolean)
-
-    const line1 = ''
-    const line2 = ''
-    const line3 = ''
+    const currentUser = resolveUser()
 
     return {
-      id,
-      to,
-      avatar,
-      title,
-      subtitle,
-      badges,
-      line1,
-      line2,
-      line3,
+      id: currentProfile.id,
+      to: `/${agentConfig.collectionName}/${currentProfile.id}`,
+      avatar: currentUser.avatar,
+      title: currentProfile.title,
+      subtitle: currentProfile.tagline,
+      badges: [],
+      line1: currentProfile.bio_short,
+      line2: currentProfile.contact_email,
+      line3: currentProfile.website_url,
     }
   }
 

@@ -1,7 +1,6 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Chef/useChef.ts
 
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile.ts'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import {
   chefConfig,
   type ChefCore,
@@ -27,11 +26,8 @@ export function useChef() {
   const { profile: refs, pending } = useProfile<ChefCore>(chefConfig)
   const { coreProfile, appProfile } = refs
 
-  // canonical user for UI layer
-  const { coreUser } = useUser()
-
   const computed = useChefComputed(refs, pending)
-  const ui = useChefInterface(refs, coreUser)
+  const ui = useChefInterface(refs)
   const update = useChefUpdate(refs)
   const create = useChefCreate()
 

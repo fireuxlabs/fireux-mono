@@ -5,8 +5,35 @@
       title="Apps"
       description="Inspect the current app and browse all apps available to this runtime."
     />
+
     <UPageBody class="pagebody">
       <OrganismsAppCTA />
+
+      <!-- TEST: each card type -->
+      <section class="card-test">
+        <h3>Testing</h3>
+
+        <div class="card-test-block">
+          <h4>Pill</h4>
+          <OrganismsAppCardsPill />
+        </div>
+
+        <div class="card-test-block">
+          <h4>Cell</h4>
+          <OrganismsAppCardsCell />
+        </div>
+
+        <div class="card-test-block">
+          <h4>Preview</h4>
+          <OrganismsAppCardsPreview />
+        </div>
+
+        <div class="card-test-block">
+          <h4>Profile</h4>
+          <OrganismsAppCardsProfile />
+        </div>
+      </section>
+
       <OrganismsAppCollectionManager />
     </UPageBody>
   </UPage>
@@ -34,3 +61,6 @@ definePageMeta({
 
 useHead({ title: 'Apps' })
 </script>
+
+<style scoped></style>
+

@@ -92,9 +92,7 @@ const { DisplayName } = useUserFormattingAndValidation()
 
 const toast = useToast()
 
-const agencyName = computed(
-  () => agent.value?.title ?? agent.value?.user?.display_name ?? ''
-)
+const agencyName = computed(() => agent.value?.title ?? '')
 
 const bioShort = computed(() => agent.value?.bio_short ?? '')
 

@@ -22,46 +22,33 @@ export namespace UserCard {
 export function useUserInterface(source?: Ref<User | null | undefined> | UserRefs) {
   const { getProxiedAvatarUrl } = useAvatarProxy()
 
-  const resolve = (): User | undefined => {
-    if (!source) return undefined
-    if ('coreUser' in (source as UserRefs)) {
-      return (source as UserRefs).coreUser.value || undefined
+  const isUserRefs = (value: unknown): value is UserRefs =>
+    Boolean(value) && typeof value === 'object' && 'coreUser' in (value as UserRefs)
+
+  const resolveUser = (target?: User): User => {
+    const user = target ?? (isUserRefs(source) ? source.coreUser.value : source?.value)
+    if (!user) {
+      throw new Error('[useUserInterface] User is required')
     }
-    return (source as Ref<User | null | undefined>).value || undefined
+    return user
   }
 
-  const toUser = (target?: User): User | undefined => target || resolve()
-
   const card = (target?: User): UserCard.Card => {
-    const user = toUser(target)
+    const user = resolveUser(target)
 
-    const id = String(user?.id || '').trim()
-    const to = id ? `/users/${id}` : ''
-
-    const rawAvatar = String(user?.avatar || '').trim()
-    const avatar = rawAvatar ? getProxiedAvatarUrl(rawAvatar) || rawAvatar : ''
-
-    const title = String(user?.display_name || user?.handle || id || 'User').trim() || 'User'
-    const handle = String(user?.handle || '').trim()
-    const subtitle = handle ? `@${handle}` : ''
-
-    const line1 = String(user?.email || '').trim()
-    const line2 = String((user as any)?.bio || '').trim()
-    const profiles = Array.isArray((user as any)?.profiles)
-      ? ((user as any).profiles as unknown[]).map((p) => String(p).trim()).filter(Boolean)
-      : []
-    const line3 = profiles.length ? profiles.join(', ') : ''
+    const proxiedAvatar = getProxiedAvatarUrl(user.avatar)
+    const avatar = proxiedAvatar || user.avatar
 
     return {
-      id,
-      to,
+      id: user.id,
+      to: `/users/${user.id}`,
       avatar,
-      title,
-      subtitle,
+      title: user.display_name,
+      subtitle: user.handle ? `@${user.handle}` : '',
       badges: [],
-      line1,
-      line2,
-      line3,
+      line1: user.email,
+      line2: user.bio,
+      line3: user.profiles.join(', '),
     }
   }
 

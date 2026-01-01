@@ -27,6 +27,27 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
       .trim()
       .slice(0, 500)
 
+  const sanitizeAppName = (raw: string | null | undefined) =>
+    String(raw ?? '')
+      .trim()
+      .slice(0, 60)
+
+  const sanitizeAppShortName = (raw: string | null | undefined) =>
+    String(raw ?? '')
+      .trim()
+      .slice(0, 40)
+
+  const sanitizeEcosystem = (raw: string | null | undefined) =>
+    String(raw ?? '')
+      .trim()
+      .slice(0, 60)
+
+  const sanitizeStatus = (raw: string | null | undefined): App['status'] => {
+    const value = String(raw ?? '').trim()
+    if (value === 'active' || value === 'archived') return value
+    throw new Error('Status must be active or archived')
+  }
+
   const sanitizeInstagram = (raw: string | null | undefined) => {
     const value = String(raw ?? '').trim()
     if (!value) return ''
@@ -68,6 +89,30 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const id = ensureAppId()
     const value = sanitizeDescription(description)
     await updateDocument<App>('apps', id, { description: value })
+  }
+
+  async function updateAppName(name: string) {
+    const id = ensureAppId()
+    const value = sanitizeAppName(name)
+    await updateDocument<App>('apps', id, { app_name: value })
+  }
+
+  async function updateAppShortName(name: string) {
+    const id = ensureAppId()
+    const value = sanitizeAppShortName(name)
+    await updateDocument<App>('apps', id, { app_short_name: value })
+  }
+
+  async function updateEcosystem(ecosystem: string) {
+    const id = ensureAppId()
+    const value = sanitizeEcosystem(ecosystem)
+    await updateDocument<App>('apps', id, { ecosystem: value })
+  }
+
+  async function updateStatus(status: string) {
+    const id = ensureAppId()
+    const value = sanitizeStatus(status)
+    await updateDocument<App>('apps', id, { status: value })
   }
 
   async function updateInstagram(url: string | null) {
@@ -149,6 +194,10 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   return {
     updateDescription,
+    updateAppName,
+    updateAppShortName,
+    updateEcosystem,
+    updateStatus,
     updateInstagram,
     updateAvatarUrl,
     uploadAvatar,

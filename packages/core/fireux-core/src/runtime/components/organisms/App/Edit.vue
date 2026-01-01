@@ -20,6 +20,59 @@
         <template #header>
           <div class="fx-section__header">
             <div class="fx-section__copy">
+              <h3 class="text-base font-semibold">Identity</h3>
+              <p class="text-xs text-gray-500">
+                Fields used by app cards across the UI.
+              </p>
+            </div>
+          </div>
+        </template>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
+            label="App name"
+            :firebase-value="app.app_name"
+            placeholder="FireUX"
+            :maxlength="60"
+            :update-function="handleAppNameUpdate"
+          />
+        </div>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
+            label="Short name"
+            :firebase-value="app.app_short_name"
+            placeholder="fireux"
+            :maxlength="40"
+            :update-function="handleAppShortNameUpdate"
+          />
+        </div>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
+            label="Ecosystem"
+            :firebase-value="app.ecosystem"
+            placeholder="misebox"
+            :maxlength="60"
+            :update-function="handleEcosystemUpdate"
+          />
+        </div>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
+            label="Status"
+            :firebase-value="app.status"
+            placeholder="active"
+            :maxlength="12"
+            :update-function="handleStatusUpdate"
+          />
+        </div>
+      </UCard>
+
+      <UCard class="fx-section">
+        <template #header>
+          <div class="fx-section__header">
+            <div class="fx-section__copy">
               <h3 class="text-base font-semibold">About</h3>
               <p class="text-xs text-gray-500">
                 Keep the human-facing description up to date.
@@ -140,8 +193,16 @@ const app = appRef
 
 const toast = useToastify()
 
-const { updateDescription, updateInstagram, uploadAvatar, handleJoinRequests } =
-  useAppUpdate(appRef)
+const {
+  updateDescription,
+  updateAppName,
+  updateAppShortName,
+  updateEcosystem,
+  updateStatus,
+  updateInstagram,
+  uploadAvatar,
+  handleJoinRequests,
+} = useAppUpdate(appRef)
 const { users } = useAppUsers()
 const { card } = useUser()
 
@@ -175,6 +236,30 @@ const handleDescriptionUpdate = withToast(
   updateDescription,
   'App description updated',
   'Failed to update description'
+)
+
+const handleAppNameUpdate = withToast(
+  updateAppName,
+  'App name updated',
+  'Failed to update app name'
+)
+
+const handleAppShortNameUpdate = withToast(
+  updateAppShortName,
+  'Short name updated',
+  'Failed to update short name'
+)
+
+const handleEcosystemUpdate = withToast(
+  updateEcosystem,
+  'Ecosystem updated',
+  'Failed to update ecosystem'
+)
+
+const handleStatusUpdate = withToast(
+  updateStatus,
+  'Status updated',
+  'Failed to update status'
 )
 
 const handleUpdateInstagram = withToast(

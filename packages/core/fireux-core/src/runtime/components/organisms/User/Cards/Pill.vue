@@ -7,6 +7,17 @@
         <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">
           {{ vmSubtitle }}
         </div>
+        <div v-if="vmBadges.length" class="mt-1 flex flex-wrap gap-1">
+          <UBadge
+            v-for="badge in vmBadges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
       </div>
     </div>
   </UCard>
@@ -37,8 +48,10 @@ const resolvedCard = computed<UserCard.Card | null>(() => {
 const resolvedTitle = computed(() => resolvedCard.value?.title ?? 'User')
 const resolvedSubtitle = computed(() => resolvedCard.value?.subtitle ?? undefined)
 const resolvedAvatar = computed(() => resolvedCard.value?.avatar ?? null)
+const resolvedBadges = computed(() => resolvedCard.value?.badges ?? [])
 
 const vmTitle = computed(() => props.title ?? resolvedTitle.value)
 const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
 const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
+const vmBadges = computed(() => resolvedBadges.value)
 </script>

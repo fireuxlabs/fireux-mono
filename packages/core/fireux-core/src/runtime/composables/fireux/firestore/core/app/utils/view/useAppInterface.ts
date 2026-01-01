@@ -3,8 +3,8 @@
 import type { Ref } from 'vue'
 import type { App } from '../../../../../../../models/core/app.model'
 
-export namespace AppCard {
-  export type Card = {
+export namespace AppInterface {
+  export type Interface = {
     id: string
     to: string
     avatar: string
@@ -26,7 +26,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     return app
   }
 
-  const card = (target?: App): AppCard.Card => {
+  const card = (target?: App): AppInterface.Interface => {
     const app = resolveApp(target)
 
     return {

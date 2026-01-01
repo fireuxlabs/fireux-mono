@@ -1,7 +1,6 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/useProfessional.ts
 
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile.ts'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 
 import {
   professionalConfig,
@@ -31,11 +30,8 @@ export function useProfessional() {
 
   const { coreProfile, appProfile } = refs
 
-  // canonical user for UI layer
-  const { coreUser } = useUser()
-
   const computed = useProfessionalComputed(refs, pending)
-  const ui = useProfessionalInterface(refs, coreUser)
+  const ui = useProfessionalInterface(refs)
   const update = useProfessionalUpdate(refs)
   const create = useProfessionalCreate()
 

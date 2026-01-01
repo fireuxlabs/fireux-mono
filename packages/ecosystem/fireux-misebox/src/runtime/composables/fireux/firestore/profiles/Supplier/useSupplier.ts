@@ -1,7 +1,6 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/useSupplier.ts
 
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile.ts'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import {
   supplierConfig,
   type SupplierCore,
@@ -27,11 +26,8 @@ export function useSupplier() {
   const { profile: refs, pending } = useProfile<SupplierCore>(supplierConfig)
   const { coreProfile, appProfile } = refs
 
-  // canonical user for UI layer
-  const { coreUser } = useUser()
-
   const computed = useSupplierComputed(refs, pending)
-  const ui = useSupplierInterface(refs, coreUser)
+  const ui = useSupplierInterface(refs)
   const update = useSupplierUpdate(refs)
   const create = useSupplierCreate()
 
