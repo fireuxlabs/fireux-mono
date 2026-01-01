@@ -20,7 +20,8 @@ This guide consolidates the current FireUX data models that power app users, sha
 ### `UserCard` namespace
 
 - UI projections used by dashboard components.
-- `MembershipBadge`, `Pill`, `Cell`, and `Profile` extend a shared pill model (`types/pill.model.ts`) and add FireUX-specific metadata (memberships, runtime context, etc.).
+- `UserCard.Card` is the canonical UI payload produced by `useUserInterface().card()`.
+- Cards are presentational-only; business logic (CTA, badge decoration, permissions) lives in callers.
 
 ## Shared Profile Contract (`packages/core/fireux-core/src/runtime/models/core/profile.model.ts`)
 
@@ -60,8 +61,8 @@ This guide consolidates the current FireUX data models that power app users, sha
 
 ### `AgentCard` namespace (`useAgentInterface.ts`)
 
-- UI-facing projections (`Pill`, `Cell`, `Profile`) emitted by the agent interface composable.
-- Each structure includes `avatar`, `title`, `subtitle`, `tagline`, `badges`, routing metadata (`to`), and IDs when applicable.
+- UI-facing `AgentCard.Card` payload emitted by `useAgentInterface().card()`.
+- Follows the same canonical card DTO shape used by App/User.
 
 ## Core App Model (`packages/core/fireux-core/src/runtime/models/core/app.model.ts`)
 
@@ -74,16 +75,18 @@ This guide consolidates the current FireUX data models that power app users, sha
 
 ### `AppCard.Card`
 
-- Defined alongside `useAppInterface` (`packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/state/interface.ts`) so the model file stays schema-only.
-- Single payload used by every view (Pill, Cell, Profile) so UI helpers stop drifting.
-- Extends the shared `Pill` props and adds routing (`to`), identifiers, governance counts (`joinRequestCount`, `adminCount`), overlays (`app_short_name`, `slug`, `description`, `status`), and sanitized social links.
-- Returned by `cardProps()` inside `useAppInterface`. The helper still exports `pillProps`/`cellProps`/`profileProps`, but each simply returns the same `Card` payload for backwards compatibility.
+- Produced by `useAppInterface().card()` in:
+	`packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts`
+- Model files remain Firestore schema-only; projection/mapping happens in the interface composable.
+- Canonical card DTO shape:
+	`id`, `to`, `avatar`, `title`, `subtitle`, `badges`, `line1`, `line2`, `line3`
+- Badges are caller-owned: interfaces default to `badges: []`.
 
 ### `useAppInterface`
 
 - Accepts an `App` ref (or lazy target) and builds the `AppCard.Card` payload.
-- Normalizes array/string fields (`admin_ids`, `join_requests`, `social_links`) so the card is deduplicated and trim-cleaned before a component renders.
-- This composable is the only place that should own link sanitizing + badge derivation for apps; model files remain interface-only per the current guardrails.
+- Strict: throws when required inputs are missing.
+- No badge decisions: returns `badges: []` and lets the caller decorate based on context.
 
 ## How They Fit Together
 
@@ -98,7 +101,7 @@ Keep this file updated as new domains or fields land so everyone knows where the
 
 To keep the stack maintainable while Agent and other profile domains are still forming, adopt the following interim rules:
 
-1. **Unify UI projections** – For every domain, expose a single `Card` shape that powers Pill/Cell/Profile views. Components can derive layout-specific bits locally (`<Pill>` only shows `title`+`tagline`, `<Cell>` may add badges). This mirrors the current Agent approach where all three computeds share the same payload.
+1. **Unify UI projections** – For every domain, expose a single `XCard.Card` payload (same DTO fields) that powers Pill/Cell/Preview/Profile views. Components control density; interfaces control mapping.
 
 2. **No interface logic in model files** – Model files should declare TypeScript interfaces/types only. Helper logic (resolvers, formatters, route builders) must live inside composables (e.g., `useAgentInterface.ts`). This keeps data contracts and UI behavior separate and makes future schema changes easier.
 

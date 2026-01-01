@@ -3,8 +3,8 @@
 import type { Ref } from 'vue'
 import type { App } from '../../../../../../../models/core/app.model'
 
-export namespace AppInterface {
-  export type Interface = {
+export namespace AppCard {
+  export type Card = {
     id: string
     to: string
     avatar: string
@@ -17,6 +17,11 @@ export namespace AppInterface {
   }
 }
 
+// Backwards-compat alias (older code imported AppInterface.Interface)
+export namespace AppInterface {
+  export type Interface = AppCard.Card
+}
+
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   const resolveApp = (target?: App): App => {
     const app = target ?? appRef?.value
@@ -26,7 +31,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     return app
   }
 
-  const card = (target?: App): AppInterface.Interface => {
+  const card = (target?: App): AppCard.Card => {
     const app = resolveApp(target)
 
     return {

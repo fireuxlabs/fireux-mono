@@ -1,27 +1,29 @@
 <template>
   <NuxtLink
     :to="vmTo"
-    class="block rounded-lg border border-[var(--ui-border)] px-3 py-2 transition-colors hover:bg-[var(--ui-bg-muted)]"
+    class="inline-flex max-w-full items-center gap-2 rounded-full bg-[var(--ui-bg-muted)] px-3 py-1.5 transition-opacity hover:opacity-90"
   >
-    <div class="flex items-center gap-3">
-      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
-      <div class="min-w-0 flex-1">
-        <div class="truncate font-medium">{{ vmTitle }}</div>
-        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">
+    <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="xs" />
+
+    <div class="min-w-0 flex-1">
+      <div class="flex min-w-0 items-baseline gap-2">
+        <div class="min-w-0 truncate text-sm font-medium">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="min-w-0 truncate text-xs text-dimmed">
           {{ vmSubtitle }}
         </div>
-        <div v-if="vmBadges.length" class="mt-1 flex flex-wrap gap-1">
-          <UBadge
-            v-for="badge in vmBadges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
-        </div>
       </div>
+    </div>
+
+    <div v-if="vmBadges.length" class="ml-2 flex shrink-0 items-center gap-1">
+      <UBadge
+        v-for="badge in vmBadges"
+        :key="badge"
+        variant="soft"
+        color="neutral"
+        size="xs"
+      >
+        {{ badge }}
+      </UBadge>
     </div>
   </NuxtLink>
 </template>
@@ -29,7 +31,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { App } from '../../../../models/core/app.model'
-import type { AppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 
 const props = defineProps<{
@@ -37,12 +39,12 @@ const props = defineProps<{
   subtitle?: string
   avatar?: string | null
   app?: App | null
-  card?: AppInterface.Interface | null
+  card?: AppCard.Card | null
 }>()
 
 const { app: runtimeApp, card: toCard } = useApp()
 
-const resolvedCard = computed<AppInterface.Interface | null>(() => {
+const resolvedCard = computed<AppCard.Card | null>(() => {
   if (props.card) return props.card
   const source = props.app ?? runtimeApp.value ?? null
   return source ? toCard(source) : null

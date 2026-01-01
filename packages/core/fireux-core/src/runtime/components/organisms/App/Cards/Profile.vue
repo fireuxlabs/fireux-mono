@@ -152,7 +152,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { App } from '../../../../models/core/app.model'
-import type { AppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 
 const props = defineProps<{
@@ -160,7 +160,7 @@ const props = defineProps<{
   subtitle?: string
   avatar?: string | null
   app?: App | null
-  card?: AppInterface.Interface | null
+  card?: AppCard.Card | null
   prop?: string
 }>()
 
@@ -168,7 +168,7 @@ const { app: runtimeApp, card: toCard } = useApp()
 
 const resolvedApp = computed<App | null>(() => props.app ?? runtimeApp.value ?? null)
 
-const resolvedCard = computed<AppInterface.Interface | null>(() => {
+const resolvedCard = computed<AppCard.Card | null>(() => {
   if (props.card) return props.card
   const source = resolvedApp.value
   return source ? toCard(source) : null

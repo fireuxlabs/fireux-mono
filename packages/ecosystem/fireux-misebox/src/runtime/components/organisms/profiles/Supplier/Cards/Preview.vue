@@ -1,11 +1,38 @@
 <template>
-  <UCard>
-    <div class="flex items-center gap-3">
+  <UCard class="space-y-4">
+    <div class="flex items-start gap-3">
       <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
-      <div class="min-w-0 flex-1">
-        <div class="truncate font-medium">{{ vmTitle }}</div>
-        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
-        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
+
+      <div class="min-w-0 flex-1 space-y-1">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="truncate font-medium">{{ vmTitle }}</div>
+            <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
+          </div>
+
+          <div v-if="vmBadges.length" class="flex flex-wrap justify-end gap-1">
+            <UBadge
+              v-for="badge in vmBadges"
+              :key="badge"
+              variant="soft"
+              color="neutral"
+              size="xs"
+            >
+              {{ badge }}
+            </UBadge>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <div class="text-sm">
+            <span v-if="vmLine1">{{ vmLine1 }}</span>
+            <span v-else class="text-dimmed italic">missing</span>
+          </div>
+          <div class="text-sm text-dimmed">
+            <span v-if="vmLine2">{{ vmLine2 }}</span>
+            <span v-else class="italic">missing</span>
+          </div>
+        </div>
       </div>
     </div>
   </UCard>
@@ -28,8 +55,18 @@ const resolved = computed<SupplierCard.Card | null>(() => props.supplier ?? null
 const resolvedTitle = computed(() => resolved.value?.title ?? 'Supplier')
 const resolvedSubtitle = computed(() => resolved.value?.subtitle || undefined)
 const resolvedAvatar = computed(() => resolved.value?.avatar || null)
+const resolvedBadges = computed(() => resolved.value?.badges ?? [])
+
+const resolvedLine1 = computed(() => {
+  if (typeof props.prop === 'string') return props.prop
+  return resolved.value?.line1 ?? ''
+})
+const resolvedLine2 = computed(() => resolved.value?.line2 ?? '')
 
 const vmTitle = computed(() => props.title ?? resolvedTitle.value)
 const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
 const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
+const vmBadges = computed(() => resolvedBadges.value)
+const vmLine1 = computed(() => String(resolvedLine1.value ?? '').trim())
+const vmLine2 = computed(() => String(resolvedLine2.value ?? '').trim())
 </script>
