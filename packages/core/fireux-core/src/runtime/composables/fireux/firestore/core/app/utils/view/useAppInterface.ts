@@ -37,8 +37,8 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       subtitle: app.ecosystem,
       badges: [],
       line1: app.description,
-      line2: '',
-      line3: '',
+      line2: app.role,
+      line3: app.app_short_name,
     }
   }
 
