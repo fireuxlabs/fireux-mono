@@ -179,6 +179,28 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     return next
   }
 
+  async function overwriteImageFromLocal(kind: AppImageKind, localPath: string) {
+    if (!localPath || !localPath.startsWith('/')) {
+      throw new Error('Local image path must start with /')
+    }
+
+    const id = ensureAppId()
+    const path = imageStoragePath(id, kind)
+    const url = await uploadImage(path, localPath)
+    const next = cacheBust(url)
+
+    if (kind === 'avatar') {
+      await updateDocument<App>('apps', id, { avatar_url: next })
+      return next
+    }
+    if (kind === 'logo') {
+      await updateDocument<App>('apps', id, { logo_url: next })
+      return next
+    }
+    await updateDocument<App>('apps', id, { wordmark_url: next })
+    return next
+  }
+
   /**
    * Handles an app join request.
    * - Always removes user from `join_requests[]`
@@ -240,6 +262,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     updateAvatarUrl,
     uploadAvatar,
     refreshImageFromBucket,
+    overwriteImageFromLocal,
     handleJoinRequests,
     setAppUserAdmin,
   }

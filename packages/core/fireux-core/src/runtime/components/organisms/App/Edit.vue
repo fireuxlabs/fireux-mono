@@ -2,52 +2,7 @@
   <ClientOnly>
     <div v-if="app" class="space-y-6">
       <!-- Images -->
-      <UCard>
-        <div class="flex flex-col items-center gap-2">
-          <UAvatar
-            :src="avatarSrc"
-            :alt="app.app_name || app.id || 'App'"
-            :text="avatarInitials"
-            size="3xl"
-          />
-
-          <div class="flex flex-wrap items-center justify-center gap-2">
-            <UButton
-              size="sm"
-              variant="soft"
-              icon="i-lucide-refresh-cw"
-              :loading="imageRefreshing === 'avatar'"
-              :disabled="Boolean(imageRefreshing)"
-              label="Refresh avatar from bucket"
-              @click="refreshAvatar"
-            />
-
-            <UButton
-              size="sm"
-              variant="soft"
-              icon="i-lucide-refresh-cw"
-              :loading="imageRefreshing === 'logo'"
-              :disabled="Boolean(imageRefreshing)"
-              label="Refresh logo from bucket"
-              @click="refreshLogo"
-            />
-
-            <UButton
-              size="sm"
-              variant="soft"
-              icon="i-lucide-refresh-cw"
-              :loading="imageRefreshing === 'wordmark'"
-              :disabled="Boolean(imageRefreshing)"
-              label="Refresh wordmark from bucket"
-              @click="refreshWordmark"
-            />
-          </div>
-
-          <p class="text-xs text-gray-500">
-            Update the image in the public bucket, then refresh here.
-          </p>
-        </div>
-      </UCard>
+      <MoleculesFormsFirestoreAppImages :app="app" />
 
       <UCard class="fx-section">
         <template #header>
@@ -240,7 +195,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { App } from '../../../models/core/app.model'
 import type { User } from '../../../models/core/user.model'
 import { useAppUpdate } from '../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
@@ -274,24 +229,12 @@ const {
   updateEcosystem,
   updateStatus,
   updateInstagram,
-  refreshImageFromBucket,
   handleJoinRequests,
 } = useAppUpdate(appRef)
 const { users } = useAppUsers()
 const { card } = useUser()
 
-const avatarSrc = computed(
-  () =>
-    app.value?.avatar_url ||
-    app.value?.logo_url ||
-    app.value?.wordmark_url ||
-    ''
-)
-
-const avatarInitials = computed(() => {
-  const name = app.value?.app_name || app.value?.id || 'A'
-  return name.slice(0, 2).toUpperCase()
-})
+// Images are handled by MoleculesFormsFirestoreAppImages
 
 const withToast =
   <T>(operation: (value: T) => Promise<unknown>, ok: string, fail: string) =>
@@ -342,49 +285,6 @@ const handleUpdateInstagram = withToast(
   'Failed to update Instagram link'
 )
 
-type AppImageKind = 'avatar' | 'logo' | 'wordmark'
-const imageRefreshing = ref<AppImageKind | null>(null)
-const refreshAvatar = async () => {
-  imageRefreshing.value = 'avatar'
-  try {
-    await refreshImageFromBucket('avatar')
-    toast.success('Avatar refreshed')
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Failed to refresh avatar: ${message}`)
-    throw error
-  } finally {
-    imageRefreshing.value = null
-  }
-}
-
-const refreshLogo = async () => {
-  imageRefreshing.value = 'logo'
-  try {
-    await refreshImageFromBucket('logo')
-    toast.success('Logo refreshed')
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Failed to refresh logo: ${message}`)
-    throw error
-  } finally {
-    imageRefreshing.value = null
-  }
-}
-
-const refreshWordmark = async () => {
-  imageRefreshing.value = 'wordmark'
-  try {
-    await refreshImageFromBucket('wordmark')
-    toast.success('Wordmark refreshed')
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Failed to refresh wordmark: ${message}`)
-    throw error
-  } finally {
-    imageRefreshing.value = null
-  }
-}
 
 const fetchedUser = (uid: string) => {
   const { coreUser } = useUserFetch(uid)
