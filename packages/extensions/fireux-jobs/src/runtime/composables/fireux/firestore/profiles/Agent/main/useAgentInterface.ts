@@ -4,20 +4,7 @@ import type { Ref } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model.ts'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { agentConfig, type AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
-
-export namespace AgentCard {
-  export type Card = {
-    id: string
-    to: string
-    avatar: string
-    title: string
-    subtitle: string
-    badges: string[]
-    line1: string
-    line2: string
-    line3: string
-  }
-}
+import type { AgentCard } from '../../../../../../types/profiles/AgentCard'
 
 export function useAgentInterface(profile: ProfileRefs<AgentCore>, user: Ref<User | null | undefined>) {
   const resolveProfile = (target?: AgentCore): AgentCore => {

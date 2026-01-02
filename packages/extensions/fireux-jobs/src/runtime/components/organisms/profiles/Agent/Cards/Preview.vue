@@ -40,33 +40,55 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
+import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import type { AgentCard, AgentProfile } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const props = defineProps<{
   title?: string
   subtitle?: string
   avatar?: string | null
-  agent?: AgentCard.Card | null
+  agent?: AgentProfile | AgentCard.Card | null
+  card?: AgentCard.Card | null
   prop?: string
 }>()
 
-const resolved = computed<AgentCard.Card | null>(() => props.agent ?? null)
+const { coreProfile, card: toCard } = useAgent()
 
-const resolvedTitle = computed(() => resolved.value?.title ?? 'Agent')
-const resolvedSubtitle = computed(() => resolved.value?.subtitle || undefined)
-const resolvedAvatar = computed(() => resolved.value?.avatar || null)
-const resolvedBadges = computed(() => resolved.value?.badges ?? [])
+const isAgentCard = (value: unknown): value is AgentCard.Card => {
+  if (!value || typeof value !== 'object') return false
+  return 'to' in value && 'title' in value && 'badges' in value && 'line1' in value
+}
 
-const resolvedLine1 = computed(() => {
-  if (typeof props.prop === 'string') return props.prop
-  return resolved.value?.line1 ?? ''
+const resolvedCard = computed<AgentCard.Card | null>(() => {
+  if (props.card) return props.card
+
+  const supplied = props.agent ?? null
+  if (supplied) {
+    return isAgentCard(supplied) ? supplied : toCard(supplied)
+  }
+
+  return coreProfile.value ? toCard(coreProfile.value) : null
 })
-const resolvedLine2 = computed(() => resolved.value?.line2 ?? '')
 
-const vmTitle = computed(() => props.title ?? resolvedTitle.value)
-const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
-const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
-const vmBadges = computed(() => resolvedBadges.value)
-const vmLine1 = computed(() => String(resolvedLine1.value ?? '').trim())
-const vmLine2 = computed(() => String(resolvedLine2.value ?? '').trim())
+const vm = computed(() => {
+  const card = resolvedCard.value
+
+  const title = props.title ?? card?.title ?? 'Agent'
+  const subtitle = props.subtitle ?? (card?.subtitle || undefined)
+  const avatar = props.avatar ?? (card?.avatar || null)
+  const badges = card?.badges ?? []
+
+  const line1Source = typeof props.prop === 'string' ? props.prop : card?.line1 ?? ''
+  const line1 = String(line1Source ?? '').trim()
+  const line2 = String(card?.line2 ?? '').trim()
+
+  return { title, subtitle, avatar, badges, line1, line2 }
+})
+
+const vmTitle = computed(() => vm.value.title)
+const vmSubtitle = computed(() => vm.value.subtitle)
+const vmAvatar = computed(() => vm.value.avatar)
+const vmBadges = computed(() => vm.value.badges)
+const vmLine1 = computed(() => vm.value.line1)
+const vmLine2 = computed(() => vm.value.line2)
 </script>

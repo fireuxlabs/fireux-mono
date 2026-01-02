@@ -9,7 +9,7 @@ import {
 } from '../../../../../models/profiles/Agent/Agent.model'
 import { useAgentComputed } from './main/useAgentComputed'
 import { useAgentInterface } from './main/useAgentInterface'
-import type { AgentCard } from './main/useAgentInterface'
+import type { AgentCard } from '../../../../../types/profiles/AgentCard'
 import { useAgentUpdate } from './main/useAgentUpdate'
 import { useAgentCreate } from './main/useAgentCreate'
 
@@ -19,7 +19,7 @@ export type Agent = {
   app: Partial<AgentCore> | null
 }
 
-export type { AgentCard }
+export type { AgentCore as AgentProfile, AgentCard }
 
 export function useAgent() {
   const { profile: refs, pending } = useProfile<AgentCore>(agentConfig)

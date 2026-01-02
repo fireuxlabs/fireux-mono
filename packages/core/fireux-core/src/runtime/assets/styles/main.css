@@ -1,6 +1,10 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
+:root {
+	--ui-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
 body {
 	background: var(--ui-bg);
 	color: var(--ui-text);
@@ -30,6 +34,12 @@ body {
 }
 
 @layer components {
+	.fx-pill {
+		@apply inline-flex items-center gap-2 rounded-full px-3 py-1.5 transition-opacity hover:opacity-90;
+		max-width: 100%;
+		box-shadow: var(--ui-shadow-sm);
+	}
+
 	.pagebody {
 		@apply grid gap-6;
 	}

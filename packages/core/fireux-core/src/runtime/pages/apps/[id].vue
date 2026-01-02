@@ -3,7 +3,7 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsAppCardsProfile :card="appProfile" />
+      <OrganismsAppCardsProfile v-if="appProfile" :card="appProfile" :app="currentApp" />
     </UPageBody>
   </UPage>
 </template>

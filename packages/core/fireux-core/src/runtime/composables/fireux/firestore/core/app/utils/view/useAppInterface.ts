@@ -11,9 +11,9 @@ export namespace AppCard {
     title: string
     subtitle: string
     badges: string[]
-    line1: string
-    line2: string
-    line3: string
+    description: string
+    role: string
+    shortName: string
   }
 }
 
@@ -41,9 +41,9 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       title: app.app_name,
       subtitle: app.ecosystem,
       badges: [],
-      line1: app.description,
-      line2: app.role,
-      line3: app.app_short_name,
+      description: app.description,
+      role: app.role,
+      shortName: app.app_short_name,
     }
   }
 

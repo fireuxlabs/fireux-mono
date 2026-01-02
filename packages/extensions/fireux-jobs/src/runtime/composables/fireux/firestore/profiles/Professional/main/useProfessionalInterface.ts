@@ -1,21 +1,8 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface.ts
 
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { professionalConfig, type ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
-
-export namespace ProfessionalCard {
-  export type Card = {
-    id: string
-    to: string
-    avatar: string
-    title: string
-    subtitle: string
-    badges: string[]
-    line1: string
-    line2: string
-    line3: string
-  }
-}
+import type { ProfessionalCard } from '../../../../../../types/profiles/ProfessionalCard'
 
 export function useProfessionalInterface(profile: ProfileRefs<ProfessionalCore>) {
   const resolveProfile = (target?: ProfessionalCore): ProfessionalCore => {

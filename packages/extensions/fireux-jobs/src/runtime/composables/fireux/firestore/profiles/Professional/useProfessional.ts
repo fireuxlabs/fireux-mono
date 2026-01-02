@@ -6,7 +6,7 @@ import {
   professionalConfig,
   type ProfessionalCore,
 } from '../../../../../models/profiles/Professional/Professional.model.ts'
-import type { ProfessionalCard } from './main/useProfessionalInterface'
+import type { ProfessionalCard } from '../../../../../types/profiles/ProfessionalCard'
 
 import { useProfessionalComputed } from './main/useProfessionalComputed'
 import { useProfessionalInterface } from './main/useProfessionalInterface'

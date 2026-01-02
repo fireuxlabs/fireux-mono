@@ -1,6 +1,6 @@
 <template>
   <UCard>
-    <div class="flex items-center gap-3">
+    <div class="flex items-start gap-3">
       <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
       <div class="min-w-0 flex-1">
         <div class="truncate font-medium">{{ vmTitle }}</div>

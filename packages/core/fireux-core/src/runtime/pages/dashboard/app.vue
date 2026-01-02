@@ -31,7 +31,7 @@
               class="grid gap-6 lg:grid-cols-2"
             >
               <template #preview>
-                <OrganismsAppCardsPreview :app="appSnapshot" :compact="false" />
+                <OrganismsAppCardsPreview v-if="previewCard" :card="previewCard" />
               </template>
 
               <template #core>
@@ -47,13 +47,15 @@
 
 <script setup lang="ts">
 import { definePageMeta } from '#imports'
+import { computed } from 'vue'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import OrganismsAppCardsPreview from '../../components/organisms/App/Cards/Preview.vue'
 import OrganismsAppEdit from '../../components/organisms/App/Edit.vue'
 
-const { app, pending } = useApp()
+const { app, pending, card } = useApp()
 
 const appSnapshot = (pending.value ? null : app.value) ?? null
+const previewCard = computed(() => (appSnapshot ? card(appSnapshot) : null))
 
 definePageMeta({
   layout: 'dashboard',

@@ -1,20 +1,18 @@
 <template>
   <NuxtLink
-    :to="vmTo"
-    class="inline-flex max-w-full items-center gap-2 rounded-full bg-[var(--ui-bg-muted)] px-3 py-1.5 transition-opacity hover:opacity-90"
+    :to="vm.to"
+    class="fx-pill"
   >
-    <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="xs" />
+    <UAvatar :src="vm.avatar || undefined" :alt="vm.title" size="xs" />
 
     <div class="min-w-0 flex-1">
-      <div class="flex min-w-0 items-baseline gap-2">
-        <div class="min-w-0 truncate text-sm font-medium">{{ vmTitle }}</div>
-        <div v-if="vmSubtitle" class="min-w-0 truncate text-xs text-dimmed">{{ vmSubtitle }}</div>
-      </div>
+      <div class="min-w-0 truncate text-sm font-medium">{{ vm.title }}</div>
+      <div v-if="vm.subtitle" class="min-w-0 truncate text-xs text-dimmed">{{ vm.subtitle }}</div>
     </div>
 
-    <div v-if="vmBadges.length" class="ml-2 flex shrink-0 items-center gap-1">
+    <div v-if="vm.badges.length" class="ml-2 flex shrink-0 items-center gap-1">
       <UBadge
-        v-for="badge in vmBadges"
+        v-for="badge in vm.badges"
         :key="badge"
         variant="soft"
         color="neutral"
@@ -28,26 +26,47 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface'
+import { useSupplier } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
+import type {
+  SupplierCard,
+  SupplierProfile,
+} from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
 
 const props = defineProps<{
   title?: string
   subtitle?: string
   avatar?: string | null
-  supplier?: SupplierCard.Card | null
+  supplier?: SupplierProfile | SupplierCard.Card | null
+  card?: SupplierCard.Card | null
 }>()
 
-const resolved = computed<SupplierCard.Card | null>(() => props.supplier ?? null)
+const { coreProfile, card: toCard } = useSupplier()
 
-const resolvedTitle = computed(() => resolved.value?.title ?? 'Supplier')
-const resolvedSubtitle = computed(() => resolved.value?.subtitle || undefined)
-const resolvedAvatar = computed(() => resolved.value?.avatar || null)
-const resolvedBadges = computed(() => resolved.value?.badges ?? [])
-const resolvedTo = computed(() => resolved.value?.to ?? '')
+const isSupplierCard = (value: unknown): value is SupplierCard.Card => {
+  if (!value || typeof value !== 'object') return false
+  return 'to' in value && 'title' in value && 'badges' in value && 'line1' in value
+}
 
-const vmTitle = computed(() => props.title ?? resolvedTitle.value)
-const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
-const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
-const vmBadges = computed(() => resolvedBadges.value)
-const vmTo = computed(() => resolvedTo.value || '#')
+const resolvedCard = computed<SupplierCard.Card | null>(() => {
+  if (props.card) return props.card
+
+  const supplied = props.supplier ?? null
+  if (supplied) {
+    return isSupplierCard(supplied) ? supplied : toCard(supplied)
+  }
+
+  return coreProfile.value ? toCard(coreProfile.value) : null
+})
+
+const vm = computed(() => {
+  const card = resolvedCard.value
+
+  const title = props.title ?? card?.title ?? 'Supplier'
+  const subtitle = props.subtitle ?? (card?.subtitle || undefined)
+  const avatar = props.avatar ?? (card?.avatar || null)
+  const badges = card?.badges ?? []
+  const to = card?.to || '#'
+
+  return { title, subtitle, avatar, badges, to }
+})
 </script>

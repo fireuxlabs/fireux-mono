@@ -15,22 +15,22 @@
 
         <div class="card-test-block">
           <h4>Pill</h4>
-          <OrganismsAppCardsPill />
+          <OrganismsAppCardsPill v-if="appCard" :card="appCard" />
         </div>
 
         <div class="card-test-block">
           <h4>Cell</h4>
-          <OrganismsAppCardsCell />
+          <OrganismsAppCardsCell v-if="appCard" :card="appCard" />
         </div>
 
         <div class="card-test-block">
           <h4>Preview</h4>
-          <OrganismsAppCardsPreview />
+          <OrganismsAppCardsPreview v-if="appCard" :card="appCard" />
         </div>
 
         <div class="card-test-block">
           <h4>Profile</h4>
-          <OrganismsAppCardsProfile />
+          <OrganismsAppCardsProfile v-if="appCard" :card="appCard" :app="app" />
         </div>
       </section>
 
@@ -40,7 +40,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useHead } from '#imports'
+import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 definePageMeta({
   nav: {
@@ -60,6 +62,9 @@ definePageMeta({
 })
 
 useHead({ title: 'Apps' })
+
+const { app, card } = useApp()
+const appCard = computed(() => (app.value ? card(app.value) : null))
 </script>
 
 <style scoped></style>

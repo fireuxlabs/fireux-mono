@@ -8,7 +8,7 @@
     <UPageBody class="space-y-10">
       <!-- Current App -->
       <section class="space-y-4">
-        <OrganismsAppCardsPreview />
+        <OrganismsAppCardsPreview v-if="appCard" :card="appCard" />
         <DevJsonPanel
           title="Dev · Current App"
           :data="currentAppDev"
@@ -71,7 +71,7 @@ definePageMeta({
   description: 'Developer view for Apps with section-level dev panels.',
 })
 
-const { app, pending, isResolved, isInitialized } = useApp()
+const { app, pending, isResolved, isInitialized, card } = useApp()
 const { users } = useAppUsers()
 const { apps } = useAppCollection()
 const { getChecksForScope } = useDevHealth()
@@ -84,6 +84,8 @@ const appsList = computed(() => apps.value ?? [])
 const showOnboardingBlocker = computed(
   () => isResolved.value && !isInitialized.value
 )
+
+const appCard = computed(() => (appSnapshot.value ? card(appSnapshot.value) : null))
 
 const currentAppDev = computed(() => ({
   flags: {

@@ -1,20 +1,18 @@
 <template>
   <NuxtLink
-    :to="vmTo"
-    class="inline-flex max-w-full items-center gap-2 rounded-full bg-[var(--ui-bg-muted)] px-3 py-1.5 transition-opacity hover:opacity-90"
+    :to="vm.to"
+    class="fx-pill"
   >
-    <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="xs" />
+    <UAvatar :src="vm.avatar || undefined" :alt="vm.title" size="xs" />
 
     <div class="min-w-0 flex-1">
-      <div class="flex min-w-0 items-baseline gap-2">
-        <div class="min-w-0 truncate text-sm font-medium">{{ vmTitle }}</div>
-        <div v-if="vmSubtitle" class="min-w-0 truncate text-xs text-dimmed">{{ vmSubtitle }}</div>
-      </div>
+      <div class="min-w-0 truncate text-sm font-medium">{{ vm.title }}</div>
+      <div v-if="vm.subtitle" class="min-w-0 truncate text-xs text-dimmed">{{ vm.subtitle }}</div>
     </div>
 
-    <div v-if="vmBadges.length" class="ml-2 flex shrink-0 items-center gap-1">
+    <div v-if="vm.badges.length" class="ml-2 flex shrink-0 items-center gap-1">
       <UBadge
-        v-for="badge in vmBadges"
+        v-for="badge in vm.badges"
         :key="badge"
         variant="soft"
         color="neutral"
@@ -28,26 +26,44 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface'
+import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
+import type { ChefCard, ChefCore } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
 
 const props = defineProps<{
   title?: string
   subtitle?: string
   avatar?: string | null
-  chef?: ChefCard.Card | null
+  chef?: ChefCore | ChefCard.Card | null
+  card?: ChefCard.Card | null
 }>()
 
-const resolved = computed<ChefCard.Card | null>(() => props.chef ?? null)
+const { coreProfile, card: toCard } = useChef()
 
-const resolvedTitle = computed(() => resolved.value?.title ?? 'Chef')
-const resolvedSubtitle = computed(() => resolved.value?.subtitle || undefined)
-const resolvedAvatar = computed(() => resolved.value?.avatar || null)
-const resolvedBadges = computed(() => resolved.value?.badges ?? [])
-const resolvedTo = computed(() => resolved.value?.to ?? '')
+const isChefCard = (value: unknown): value is ChefCard.Card => {
+  if (!value || typeof value !== 'object') return false
+  return 'to' in value && 'title' in value && 'badges' in value && 'line1' in value
+}
 
-const vmTitle = computed(() => props.title ?? resolvedTitle.value)
-const vmSubtitle = computed(() => props.subtitle ?? resolvedSubtitle.value)
-const vmAvatar = computed(() => props.avatar ?? resolvedAvatar.value)
-const vmBadges = computed(() => resolvedBadges.value)
-const vmTo = computed(() => resolvedTo.value || '#')
+const resolvedCard = computed<ChefCard.Card | null>(() => {
+  if (props.card) return props.card
+
+  const supplied = props.chef ?? null
+  if (supplied) {
+    return isChefCard(supplied) ? supplied : toCard(supplied)
+  }
+
+  return coreProfile.value ? toCard(coreProfile.value) : null
+})
+
+const vm = computed(() => {
+  const card = resolvedCard.value
+
+  const title = props.title ?? card?.title ?? 'Chef'
+  const subtitle = props.subtitle ?? (card?.subtitle || undefined)
+  const avatar = props.avatar ?? (card?.avatar || null)
+  const badges = card?.badges ?? []
+  const to = card?.to || '#'
+
+  return { title, subtitle, avatar, badges, to }
+})
 </script>
