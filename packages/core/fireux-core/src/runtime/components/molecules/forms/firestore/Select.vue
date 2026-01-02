@@ -6,6 +6,8 @@
       :is-editing="isEditing"
       :has-data="!!props.firebaseValue"
       :error-message="errorMessage"
+      :disabled="disabled"
+      :disabled-message="disabledMessage"
       @start-editing="startEditing"
       @check="saveChanges"
       @cancel="cancelEditing"
@@ -19,12 +21,14 @@
 
     <!-- Edit mode -->
     <div v-else class="editing">
-      <USelect
+      <UInputMenu
         v-model="localValue"
-        :options="options"
+        :items="normalizedOptions"
+        value-key="value"
+        label-key="label"
+        open-on-click
         :placeholder="placeholder"
         class="w-full"
-        @change="handleChange"
       />
     </div>
   </div>
@@ -57,6 +61,14 @@ const props = defineProps({
     type: String,
     default: 'Select an option',
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  disabledMessage: {
+    type: String,
+    default: '',
+  },
   validationFunction: {
     type: Function,
     default: null,
@@ -72,23 +84,19 @@ const isEditing = ref(false)
 const localValue = ref(props.firebaseValue || '')
 const errorMessage = ref('')
 
+const normalizedOptions = computed(() => {
+  const source = (props.options ?? []) as SelectOption[]
+  return source.map((opt) => (typeof opt === 'string' ? { label: opt, value: opt } : opt))
+})
+
 // Computed
 const displayValue = computed(() => {
   if (!props.firebaseValue) {
     return 'Not set'
   }
 
-  // Find the display label for the current value
-  const option = (props.options as SelectOption[]).find((opt) => {
-    if (typeof opt === 'string') {
-      return opt === props.firebaseValue
-    }
-    return opt.value === props.firebaseValue
-  })
-
-  if (option) {
-    return typeof option === 'string' ? option : option.label
-  }
+  const option = normalizedOptions.value.find((opt) => opt.value === props.firebaseValue)
+  if (option) return option.label
 
   return props.firebaseValue
 })
@@ -105,6 +113,7 @@ watch(
 
 // Methods
 const startEditing = () => {
+  if (props.disabled) return
   localValue.value = props.firebaseValue || ''
   isEditing.value = true
   errorMessage.value = ''
@@ -125,10 +134,6 @@ const deleteValue = async () => {
     console.error('Error deleting select value:', error)
     errorMessage.value = 'Failed to delete value'
   }
-}
-
-const handleChange = () => {
-  // Handle the change event if needed
 }
 
 const saveChanges = async () => {

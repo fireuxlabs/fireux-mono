@@ -7,7 +7,6 @@ export default defineNuxtConfig(
     id: 'niederhorn',
     name: 'Niederhorn',
     shortName: 'Niederhorn',
-    description: 'Tenant experience for Niederhorn hospitality partners.',
     role: 'tenant',
     modules: [
       // tenants are intentionally slim

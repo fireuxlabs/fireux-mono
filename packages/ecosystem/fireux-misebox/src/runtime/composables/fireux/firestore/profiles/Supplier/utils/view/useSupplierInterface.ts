@@ -1,7 +1,7 @@
-// FILE: packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts
+// FILE: packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface.ts
 
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
-import { supplierConfig, type SupplierCore } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { supplierConfig, type SupplierCore } from '../../../../../../../models/profiles/Supplier/Supplier.model.ts'
 
 export namespace SupplierCard {
   export type Card = {

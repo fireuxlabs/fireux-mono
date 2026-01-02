@@ -7,7 +7,6 @@ export default defineNuxtConfig(
     id: 'fireux-app',
     name: 'FireUX',
     shortName: 'FireUX',
-    description: 'Core workspace for FireUX platform operations.',
     role: 'global',
     modules: [
       'fireux-products',

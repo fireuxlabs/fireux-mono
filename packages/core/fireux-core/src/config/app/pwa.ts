@@ -4,7 +4,6 @@ import type { NuxtConfig } from 'nuxt/schema'
 export type FireUXPwaConfig = {
   name: string
   shortName: string
-  description: string
   themeColor: string
   backgroundColor: string
   lang: string
@@ -21,7 +20,6 @@ export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
       manifest: {
         name: c.name,
         short_name: c.shortName,
-        description: c.description,
         scope: '/',
         start_url: '/',
         display: 'standalone',

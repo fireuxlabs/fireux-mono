@@ -13,7 +13,7 @@ import { useAppEnsure } from './useAppEnsure'
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const { updateDocument } = useFirestoreUpdate()
   const { setDocument } = useFirestoreCreate()
-  const { uploadImage } = useImageStorage()
+  const { uploadImage, getDownloadUrlForPath } = useImageStorage()
   const { ensureAppMembership } = useAppEnsure()
 
   const ensureAppId = () => {
@@ -141,6 +141,44 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     return url
   }
 
+  type AppImageKind = 'avatar' | 'logo' | 'wordmark'
+
+  function imageStoragePath(appId: string, kind: AppImageKind): string {
+    // "Public bucket" convention: a stable object path that can be overwritten.
+    // The UI refresh simply resolves the current download URL and saves it.
+    switch (kind) {
+      case 'avatar':
+        return `apps/${appId}/media/avatar/current`
+      case 'logo':
+        return `apps/${appId}/media/logo/current`
+      case 'wordmark':
+        return `apps/${appId}/media/wordmark/current`
+    }
+  }
+
+  function cacheBust(url: string): string {
+    const stamp = Date.now().toString(36)
+    return url.includes('?') ? `${url}&v=${stamp}` : `${url}?v=${stamp}`
+  }
+
+  async function refreshImageFromBucket(kind: AppImageKind) {
+    const id = ensureAppId()
+    const path = imageStoragePath(id, kind)
+    const url = await getDownloadUrlForPath(path)
+    const next = cacheBust(url)
+
+    if (kind === 'avatar') {
+      await updateDocument<App>('apps', id, { avatar_url: next })
+      return next
+    }
+    if (kind === 'logo') {
+      await updateDocument<App>('apps', id, { logo_url: next })
+      return next
+    }
+    await updateDocument<App>('apps', id, { wordmark_url: next })
+    return next
+  }
+
   /**
    * Handles an app join request.
    * - Always removes user from `join_requests[]`
@@ -201,6 +239,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     updateInstagram,
     updateAvatarUrl,
     uploadAvatar,
+    refreshImageFromBucket,
     handleJoinRequests,
     setAppUserAdmin,
   }

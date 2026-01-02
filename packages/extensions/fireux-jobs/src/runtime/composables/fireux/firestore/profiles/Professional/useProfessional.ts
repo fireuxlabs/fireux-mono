@@ -9,7 +9,7 @@ import {
 import type { ProfessionalCard } from '../../../../../types/profiles/ProfessionalCard'
 
 import { useProfessionalComputed } from './main/useProfessionalComputed'
-import { useProfessionalInterface } from './main/useProfessionalInterface'
+import { useProfessionalInterface } from './utils/view/useProfessionalInterface'
 import { useProfessionalUpdate } from './main/useProfessionalUpdate'
 import { useProfessionalCreate } from './main/useProfessionalCreate'
 

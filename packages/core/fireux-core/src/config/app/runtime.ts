@@ -5,7 +5,6 @@ export type RuntimeApp = {
   id: string
   name: string
   shortName: string
-  description: string
   /** Optional app icon path/URL (e.g. /img/app/logo.png). */
   appIcon?: string
   /** Optional app logo path/URL (preferred over appIcon for listings). */

@@ -5,9 +5,9 @@ import {
   supplierConfig,
   type SupplierCore,
 } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
-import type { SupplierCard } from './main/useSupplierInterface.ts'
+import type { SupplierCard } from './utils/view/useSupplierInterface'
 import { useSupplierComputed } from './main/useSupplierComputed.ts'
-import { useSupplierInterface } from './main/useSupplierInterface.ts'
+import { useSupplierInterface } from './utils/view/useSupplierInterface'
 import { useSupplierUpdate } from './main/useSupplierUpdate.ts'
 import { useSupplierCreate } from './main/useSupplierCreate.ts'
 

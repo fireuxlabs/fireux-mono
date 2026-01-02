@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
-import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
+import type { AgentCard } from '../../../../../types/profiles/AgentCard'
 import { useAgentCollection } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
 import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 

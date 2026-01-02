@@ -8,7 +8,7 @@ import {
   type AgentCore,
 } from '../../../../../models/profiles/Agent/Agent.model'
 import { useAgentComputed } from './main/useAgentComputed'
-import { useAgentInterface } from './main/useAgentInterface'
+import { useAgentInterface } from './utils/view/useAgentInterface'
 import type { AgentCard } from '../../../../../types/profiles/AgentCard'
 import { useAgentUpdate } from './main/useAgentUpdate'
 import { useAgentCreate } from './main/useAgentCreate'

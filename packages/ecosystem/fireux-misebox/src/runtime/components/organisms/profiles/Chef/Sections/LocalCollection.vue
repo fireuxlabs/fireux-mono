@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model.ts'
-import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
+import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import { useChefCollection } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'
 import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef.ts'
 

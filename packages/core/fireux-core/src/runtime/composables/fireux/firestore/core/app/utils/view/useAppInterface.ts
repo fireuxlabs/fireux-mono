@@ -17,22 +17,12 @@ export namespace AppCard {
   }
 }
 
-// Backwards-compat alias (older code imported AppInterface.Interface)
-export namespace AppInterface {
-  export type Interface = AppCard.Card
-}
-
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
-  const resolveApp = (target?: App): App => {
+  function card(): AppCard.Card | null
+  function card(target: App): AppCard.Card
+  function card(target?: App): AppCard.Card | null {
     const app = target ?? appRef?.value
-    if (!app) {
-      throw new Error('[useAppInterface] App is required')
-    }
-    return app
-  }
-
-  const card = (target?: App): AppCard.Card => {
-    const app = resolveApp(target)
+    if (!app) return null
 
     return {
       id: app.id,

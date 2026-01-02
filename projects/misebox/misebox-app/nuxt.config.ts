@@ -6,7 +6,6 @@ const fireuxConfig = defineFireuxConfig({
   id: 'misebox-app',
   name: 'Misebox',
   shortName: 'Misebox',
-  description: 'Workhub for Misebox creative operations and collaborators.',
   role: 'global',
   modules: [
     ['fireux-places', { types: ['kitchen', 'company'] }],

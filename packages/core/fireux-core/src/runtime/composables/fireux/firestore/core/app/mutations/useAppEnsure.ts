@@ -10,7 +10,7 @@ type EnsureAppDocResult = { created: boolean; id: string }
 type EnsureMembershipResult = { created: boolean }
 
 export function useAppEnsure() {
-  const { appId, ecosystem, role, appName } = useFireUXConfig()
+  const { appId, ecosystem, role, appName, appShortName } = useFireUXConfig()
   const db = useFirestore()
   const { setDocument, updateDocument } = useFirestoreManager()
 
@@ -24,8 +24,8 @@ export function useAppEnsure() {
       id: appId,
       ecosystem,
       role,
-      app_name: appName || appId,
-      app_short_name: '',
+      app_name: appName,
+      app_short_name: appShortName,
       creator_id: uid,
       created_by: uid,
       admin_ids: [uid],

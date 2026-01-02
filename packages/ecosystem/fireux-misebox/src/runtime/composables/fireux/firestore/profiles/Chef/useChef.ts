@@ -5,9 +5,9 @@ import {
   chefConfig,
   type ChefCore,
 } from '../../../../../models/profiles/Chef/Chef.model.ts'
-import type { ChefCard } from './main/useChefInterface.ts'
+import type { ChefCard } from './utils/view/useChefInterface'
 import { useChefComputed } from './main/useChefComputed.ts'
-import { useChefInterface } from './main/useChefInterface.ts'
+import { useChefInterface } from './utils/view/useChefInterface'
 import { useChefUpdate } from './main/useChefUpdate.ts'
 import { useChefCreate } from './main/useChefCreate.ts'
 

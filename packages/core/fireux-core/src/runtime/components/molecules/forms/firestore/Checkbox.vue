@@ -6,6 +6,8 @@
       :is-editing="isEditing"
       :has-data="firebaseValue !== null && firebaseValue !== undefined"
       :error-message="errorMessage"
+      :disabled="disabled"
+      :disabled-message="disabledMessage"
       @start-editing="startEditing"
       @check="saveChanges"
       @cancel="cancelEditing"
@@ -24,7 +26,6 @@
           v-model="localValue"
           :label="checkboxLabel"
           class="flex-1"
-          @change="handleChange"
         />
       </div>
     </div>
@@ -51,6 +52,14 @@ const props = defineProps({
   checkboxLabel: {
     type: String,
     default: 'Enabled',
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  disabledMessage: {
+    type: String,
+    default: '',
   },
   validationFunction: {
     type: Function,
@@ -87,6 +96,7 @@ watch(
 
 // Methods
 const startEditing = () => {
+  if (props.disabled) return
   localValue.value = props.firebaseValue || false
   isEditing.value = true
   errorMessage.value = ''
@@ -107,10 +117,6 @@ const deleteValue = async () => {
     console.error('Error deleting checkbox value:', error)
     errorMessage.value = 'Failed to delete value'
   }
-}
-
-const handleChange = () => {
-  // Handle the change event if needed
 }
 
 const saveChanges = async () => {

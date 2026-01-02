@@ -11,7 +11,16 @@
 
       <div class="actions">
         <template v-if="!isEditing">
-          <UTooltip text="Edit" :popper="{ placement: 'top' }">
+          <UButton
+            v-if="disabled"
+            aria-label="Disabled"
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            :icon="'i-lucide-lock'"
+            disabled
+          />
+          <UTooltip v-else text="Edit" :popper="{ placement: 'top' }">
             <UButton
               aria-label="Edit"
               color="primary"
@@ -57,6 +66,10 @@
       </div>
     </div>
 
+    <div v-if="disabled && disabledMessage" class="disabled-wrap">
+      <p class="disabled-message">{{ disabledMessage }}</p>
+    </div>
+
     <div v-if="errorMessage" class="error-wrap" aria-live="polite">
       <UAlert
         :title="errorMessage"
@@ -74,6 +87,8 @@ defineProps({
   isEditing: { type: Boolean, default: false },
   hasData: { type: Boolean, default: false },
   errorMessage: { type: String, default: '' },
+  disabled: { type: Boolean, default: false },
+  disabledMessage: { type: String, default: '' },
 })
 
 defineEmits(['start-editing', 'check', 'cancel', 'delete'])
@@ -124,5 +139,12 @@ defineEmits(['start-editing', 'check', 'cancel', 'delete'])
 }
 .error-wrap {
   margin-top: 0.25rem;
+}
+.disabled-wrap {
+  margin-top: 0.25rem;
+}
+.disabled-message {
+  font-size: 0.75rem;
+  color: var(--ui-text-muted, rgb(107 114 128));
 }
 </style>

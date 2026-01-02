@@ -1,17 +1,50 @@
 <template>
   <ClientOnly>
     <div v-if="app" class="space-y-6">
-      <!-- Avatar -->
+      <!-- Images -->
       <UCard>
         <div class="flex flex-col items-center gap-2">
-          <MoleculesFormsFirestoreAvatarPicker
+          <UAvatar
             :src="avatarSrc"
             :alt="app.app_name || app.id || 'App'"
-            :initials="avatarInitials"
-            :update-function="handleAvatarUpdate"
+            :text="avatarInitials"
+            size="3xl"
           />
-          <p v-if="avatarUploading" class="text-xs text-gray-500">
-            Uploading avatar…
+
+          <div class="flex flex-wrap items-center justify-center gap-2">
+            <UButton
+              size="sm"
+              variant="soft"
+              icon="i-lucide-refresh-cw"
+              :loading="imageRefreshing === 'avatar'"
+              :disabled="Boolean(imageRefreshing)"
+              label="Refresh avatar from bucket"
+              @click="refreshAvatar"
+            />
+
+            <UButton
+              size="sm"
+              variant="soft"
+              icon="i-lucide-refresh-cw"
+              :loading="imageRefreshing === 'logo'"
+              :disabled="Boolean(imageRefreshing)"
+              label="Refresh logo from bucket"
+              @click="refreshLogo"
+            />
+
+            <UButton
+              size="sm"
+              variant="soft"
+              icon="i-lucide-refresh-cw"
+              :loading="imageRefreshing === 'wordmark'"
+              :disabled="Boolean(imageRefreshing)"
+              label="Refresh wordmark from bucket"
+              @click="refreshWordmark"
+            />
+          </div>
+
+          <p class="text-xs text-gray-500">
+            Update the image in the public bucket, then refresh here.
           </p>
         </div>
       </UCard>
@@ -30,11 +63,25 @@
 
         <div class="fx-section__item">
           <MoleculesFormsFirestoreSimpleField
+            label="App ID"
+            :firebase-value="app.id"
+            placeholder="app-id"
+            :maxlength="80"
+            :update-function="noopUpdate"
+            disabled
+            :disabled-message="lockedMessage"
+          />
+        </div>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
             label="App name"
             :firebase-value="app.app_name"
             placeholder="FireUX"
             :maxlength="60"
             :update-function="handleAppNameUpdate"
+            :disabled="lockedIdentity"
+            :disabled-message="lockedMessage"
           />
         </div>
 
@@ -45,6 +92,20 @@
             placeholder="fireux"
             :maxlength="40"
             :update-function="handleAppShortNameUpdate"
+            :disabled="lockedIdentity"
+            :disabled-message="lockedMessage"
+          />
+        </div>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
+            label="Role"
+            :firebase-value="app.role"
+            placeholder="global"
+            :maxlength="20"
+            :update-function="noopUpdate"
+            disabled
+            :disabled-message="lockedMessage"
           />
         </div>
 
@@ -55,6 +116,8 @@
             placeholder="misebox"
             :maxlength="60"
             :update-function="handleEcosystemUpdate"
+            disabled
+            :disabled-message="lockedMessage"
           />
         </div>
 
@@ -179,12 +242,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { App } from '../../../models/core/app.model'
+import type { User } from '../../../models/core/user.model'
 import { useAppUpdate } from '../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import { useAppUsers } from '../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
 import { useAppJoinRequests } from '../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 import { useUserFetch } from '../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
+import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 
 const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
 
@@ -193,6 +258,15 @@ const app = appRef
 
 const toast = useToastify()
 
+const { ecosystem } = useFireUXConfig()
+const lockedMessage = computed(() => `Contact your ${ecosystem} dev team.`)
+
+// Developer-owned identity values are seeded from Nuxt config.
+// Keep this as a single toggle so it's easy to loosen later.
+const lockedIdentity = true
+
+const noopUpdate = async () => {}
+
 const {
   updateDescription,
   updateAppName,
@@ -200,7 +274,7 @@ const {
   updateEcosystem,
   updateStatus,
   updateInstagram,
-  uploadAvatar,
+  refreshImageFromBucket,
   handleJoinRequests,
 } = useAppUpdate(appRef)
 const { users } = useAppUsers()
@@ -268,18 +342,47 @@ const handleUpdateInstagram = withToast(
   'Failed to update Instagram link'
 )
 
-const avatarUploading = ref(false)
-const handleAvatarUpdate = async (file: File) => {
-  avatarUploading.value = true
+type AppImageKind = 'avatar' | 'logo' | 'wordmark'
+const imageRefreshing = ref<AppImageKind | null>(null)
+const refreshAvatar = async () => {
+  imageRefreshing.value = 'avatar'
   try {
-    await uploadAvatar(file)
-    toast.success('Avatar updated')
+    await refreshImageFromBucket('avatar')
+    toast.success('Avatar refreshed')
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Failed to update avatar: ${message}`)
+    toast.error(`Failed to refresh avatar: ${message}`)
     throw error
   } finally {
-    avatarUploading.value = false
+    imageRefreshing.value = null
+  }
+}
+
+const refreshLogo = async () => {
+  imageRefreshing.value = 'logo'
+  try {
+    await refreshImageFromBucket('logo')
+    toast.success('Logo refreshed')
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Failed to refresh logo: ${message}`)
+    throw error
+  } finally {
+    imageRefreshing.value = null
+  }
+}
+
+const refreshWordmark = async () => {
+  imageRefreshing.value = 'wordmark'
+  try {
+    await refreshImageFromBucket('wordmark')
+    toast.success('Wordmark refreshed')
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Failed to refresh wordmark: ${message}`)
+    throw error
+  } finally {
+    imageRefreshing.value = null
   }
 }
 
@@ -288,7 +391,7 @@ const fetchedUser = (uid: string) => {
   return { user: computed(() => coreUser.value ?? null) }
 }
 
-const cardRef = computed(() => card)
+const cardRef = computed(() => (target?: User | null | undefined) => card(target ?? undefined))
 
 const {
   items: joinRequestItems,

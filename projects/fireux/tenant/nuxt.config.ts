@@ -7,7 +7,6 @@ export default defineNuxtConfig(
     id: 'fireux-tenant',
     name: 'FireUX Tenant',
     shortName: 'Tenant',
-    description: 'Tenant console for FireUX customers.',
     role: 'tenant',
     modules: [],
   })

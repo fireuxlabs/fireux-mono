@@ -7,8 +7,6 @@ export default defineNuxtConfig(
     id: 'richies-reinigung',
     name: 'Richies',
     shortName: 'Richies',
-    description:
-      'Freelance cleaning partner for Zürich apartments, studios, and office loops.',
     role: 'tenant',
     modules: [
       // tenant stays lean

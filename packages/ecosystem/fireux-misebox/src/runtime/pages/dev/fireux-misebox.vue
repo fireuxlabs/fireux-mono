@@ -331,8 +331,8 @@ import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChe
 import { useSupplier } from '../../composables/fireux/firestore/profiles/Supplier/useSupplier.ts'
 import { useChefCollection } from '../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'
 import { useSupplierCollection } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection.ts'
-import type { ChefCard } from '../../composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts'
-import type { SupplierCard } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
+import type { ChefCard } from '../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
+import type { SupplierCard } from '../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 
 definePageMeta({
   layout: 'dev',

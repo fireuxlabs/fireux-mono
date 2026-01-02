@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
-import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierInterface.ts'
+import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 import { useSupplierCollection } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection.ts'
 import { useSupplier } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
 

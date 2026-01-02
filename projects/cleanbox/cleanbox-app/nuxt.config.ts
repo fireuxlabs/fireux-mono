@@ -7,7 +7,6 @@ export default defineNuxtConfig(
     id: 'cleanbox-app',
     name: 'Cleanbox',
     shortName: 'Cleanbox',
-    description: 'Operations console for Cleanbox partners and teams.',
     role: 'global',
     modules: [
       'fireux-products',

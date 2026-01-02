@@ -1,7 +1,7 @@
-// FILE: packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Chef/main/useChefInterface.ts
+// FILE: packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface.ts
 
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
-import { chefConfig, type ChefCore } from '../../../../../../models/profiles/Chef/Chef.model.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { chefConfig, type ChefCore } from '../../../../../../../models/profiles/Chef/Chef.model.ts'
 
 export namespace ChefCard {
   export type Card = {

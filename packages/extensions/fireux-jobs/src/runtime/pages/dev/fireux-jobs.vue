@@ -295,8 +295,8 @@ import { useProfessional } from '../../composables/fireux/firestore/profiles/Pro
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
 import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection.ts'
-import type { ProfessionalCard } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalInterface'
-import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentInterface'
+import type { ProfessionalCard } from '../../types/profiles/ProfessionalCard'
+import type { AgentCard } from '../../types/profiles/AgentCard'
 
 type Ref<T> = { value: T }
 
