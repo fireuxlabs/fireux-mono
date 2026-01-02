@@ -33,6 +33,7 @@ export function useAppEnsure() {
       status: 'active',
       description: '',
       social_links: { instagram: '' },
+      user_count: 0,
       avatar_url: '',
       logo_url: '',
       wordmark_url: '',

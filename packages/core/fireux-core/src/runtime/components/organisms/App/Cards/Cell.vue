@@ -32,6 +32,15 @@
           <span v-if="card.description">{{ card.description }}</span>
           <span v-else class="italic">missing</span>
         </div>
+
+        <div class="flex flex-wrap items-center gap-1">
+          <UBadge variant="soft" color="neutral" size="xs">{{ card.shortName }}</UBadge>
+          <UBadge variant="soft" color="neutral" size="xs">{{ card.status }}</UBadge>
+        </div>
+        <div class="flex flex-wrap gap-2 text-xs text-dimmed">
+          <a v-if="card.logo" :href="card.logo" target="_blank" rel="noreferrer">Logo</a>
+          <a v-if="card.wordmark" :href="card.wordmark" target="_blank" rel="noreferrer">Wordmark</a>
+        </div>
       </div>
     </div>
   </NuxtLink>

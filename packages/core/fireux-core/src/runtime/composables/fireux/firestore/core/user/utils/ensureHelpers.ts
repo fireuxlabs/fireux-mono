@@ -2,11 +2,13 @@ import {
   arrayUnion,
   doc,
   getDoc,
+  increment,
   type DocumentSnapshot,
 } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'
+import type { App } from '../../../../../../models/core/app.model'
 import type {
   AppUser,
   User,
@@ -113,6 +115,12 @@ export async function ensureUserAppMembership(
       ],
     } as AppUser
     await setDocument<AppUser>(`apps/${appId}/users`, uid, payload)
+  }
+
+  if (created) {
+    await updateDocument<App>('apps', appId, {
+      user_count: increment(1) as unknown as App['user_count'],
+    })
   }
 
   await ensureCoreUserDocument(uid)

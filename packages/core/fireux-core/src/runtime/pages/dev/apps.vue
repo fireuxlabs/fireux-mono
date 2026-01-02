@@ -8,7 +8,36 @@
     <UPageBody class="space-y-10">
       <!-- Current App -->
       <section class="space-y-4">
-        <OrganismsAppCardsPreview v-if="appCard" :card="appCard" />
+        <div v-if="appCard" class="space-y-4">
+          <OrganismsAppCardsPreview :card="appCard" />
+
+          <div class="space-y-3">
+            <div class="text-sm font-medium">Card stack</div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class="space-y-2">
+                <div class="text-xs text-dimmed">Pill</div>
+                <OrganismsAppCardsPill :card="appCard" />
+              </div>
+
+              <div class="space-y-2">
+                <div class="text-xs text-dimmed">Cell</div>
+                <OrganismsAppCardsCell :card="appCard" />
+              </div>
+
+              <div class="space-y-2">
+                <div class="text-xs text-dimmed">Preview</div>
+                <OrganismsAppCardsPreview :card="appCard" />
+              </div>
+
+              <div class="space-y-2">
+                <div class="text-xs text-dimmed">Profile</div>
+                <OrganismsAppCardsProfile :card="appCard" :app="appSnapshot" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <DevJsonPanel
           title="Dev · Current App"
           :data="currentAppDev"

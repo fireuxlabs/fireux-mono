@@ -8,9 +8,9 @@
         <template #header>
           <div class="fx-section__header">
             <div class="fx-section__copy">
-              <h3 class="text-base font-semibold">Identity</h3>
+              <h3 class="text-base font-semibold">Locked</h3>
               <p class="text-xs text-gray-500">
-                Fields used by app cards across the UI.
+                Values seeded by config and not editable here.
               </p>
             </div>
           </div>
@@ -24,30 +24,6 @@
             :maxlength="80"
             :update-function="noopUpdate"
             disabled
-            :disabled-message="lockedMessage"
-          />
-        </div>
-
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="App name"
-            :firebase-value="app.app_name"
-            placeholder="FireUX"
-            :maxlength="60"
-            :update-function="handleAppNameUpdate"
-            :disabled="lockedIdentity"
-            :disabled-message="lockedMessage"
-          />
-        </div>
-
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="Short name"
-            :firebase-value="app.app_short_name"
-            placeholder="fireux"
-            :maxlength="40"
-            :update-function="handleAppShortNameUpdate"
-            :disabled="lockedIdentity"
             :disabled-message="lockedMessage"
           />
         </div>
@@ -75,6 +51,41 @@
             :disabled-message="lockedMessage"
           />
         </div>
+      </UCard>
+
+      <UCard class="fx-section">
+        <template #header>
+          <div class="fx-section__header">
+            <div class="fx-section__copy">
+              <h3 class="text-base font-semibold">Editable</h3>
+              <p class="text-xs text-gray-500">Fields used by app cards across the UI.</p>
+            </div>
+          </div>
+        </template>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
+            label="App name"
+            :firebase-value="app.app_name"
+            placeholder="FireUX"
+            :maxlength="60"
+            :update-function="handleAppNameUpdate"
+            :disabled="lockedIdentity"
+            :disabled-message="lockedMessage"
+          />
+        </div>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
+            label="Short name"
+            :firebase-value="app.app_short_name"
+            placeholder="fireux"
+            :maxlength="40"
+            :update-function="handleAppShortNameUpdate"
+            :disabled="lockedIdentity"
+            :disabled-message="lockedMessage"
+          />
+        </div>
 
         <div class="fx-section__item">
           <MoleculesFormsFirestoreSimpleField
@@ -84,6 +95,58 @@
             :maxlength="12"
             :update-function="handleStatusUpdate"
           />
+        </div>
+      </UCard>
+
+      <UCard class="fx-section">
+        <template #header>
+          <div class="fx-section__header">
+            <div class="fx-section__copy">
+              <h3 class="text-base font-semibold">Surfaces</h3>
+              <p class="text-xs text-gray-500">
+                Pill, cell, preview, and profile views derived from the app model.
+              </p>
+            </div>
+          </div>
+        </template>
+
+        <div v-if="appCard" class="fx-section__item space-y-4">
+          <div>
+            <div class="mb-2 text-xs text-gray-500">Pill</div>
+            <OrganismsAppCardsPill :card="appCard" />
+          </div>
+
+          <div>
+            <div class="mb-2 text-xs text-gray-500">Cell</div>
+            <OrganismsAppCardsCell :card="appCard" />
+          </div>
+
+          <div>
+            <div class="mb-2 text-xs text-gray-500">Preview</div>
+            <OrganismsAppCardsPreview :card="appCard" />
+          </div>
+
+          <div>
+            <div class="mb-2 text-xs text-gray-500">Profile</div>
+            <OrganismsAppCardsProfile :card="appCard" :app="app" />
+          </div>
+        </div>
+
+        <p v-else class="fx-section__empty">No app card available.</p>
+      </UCard>
+
+      <UCard class="fx-section">
+        <template #header>
+          <div class="fx-section__header">
+            <div class="fx-section__copy">
+              <h3 class="text-base font-semibold">Model</h3>
+              <p class="text-xs text-gray-500">Full app document.</p>
+            </div>
+          </div>
+        </template>
+
+        <div class="fx-section__item">
+          <pre class="text-xs font-mono text-gray-600 whitespace-pre-wrap break-words">{{ appModelJson }}</pre>
         </div>
       </UCard>
 
@@ -199,6 +262,7 @@ import { computed } from 'vue'
 import type { App } from '../../../models/core/app.model'
 import type { User } from '../../../models/core/user.model'
 import { useAppUpdate } from '../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
+import { useAppInterface } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useAppUsers } from '../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
 import { useAppJoinRequests } from '../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
@@ -233,6 +297,10 @@ const {
 } = useAppUpdate(appRef)
 const { users } = useAppUsers()
 const { card } = useUser()
+
+const appInterface = useAppInterface(appRef)
+const appCard = computed(() => appInterface.card())
+const appModelJson = computed(() => JSON.stringify(app.value ?? null, null, 2))
 
 // Images are handled by MoleculesFormsFirestoreAppImages
 

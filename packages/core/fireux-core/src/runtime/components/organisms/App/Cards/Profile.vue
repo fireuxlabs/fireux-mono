@@ -57,9 +57,25 @@
 
         <div class="mt-2 grid gap-2">
           <div class="flex items-center justify-between gap-3">
+            <div class="text-xs opacity-70">App ID</div>
+            <div class="text-sm">
+              <span v-if="app?.id">{{ app.id }}</span>
+              <span v-else class="opacity-50">missing</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-3">
             <div class="text-xs opacity-70">Ecosystem</div>
             <div class="text-sm">
               <span v-if="app?.ecosystem">{{ app.ecosystem }}</span>
+              <span v-else class="opacity-50">missing</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-xs opacity-70">Status</div>
+            <div class="text-sm">
+              <span v-if="app?.status">{{ app.status }}</span>
               <span v-else class="opacity-50">missing</span>
             </div>
           </div>
@@ -124,6 +140,14 @@
             <div class="text-xs opacity-70">Creator</div>
             <div class="text-sm">
               <span v-if="app?.creator_id">{{ app.creator_id }}</span>
+              <span v-else class="opacity-50">missing</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-xs opacity-70">Created by</div>
+            <div class="text-sm">
+              <span v-if="app?.created_by">{{ app.created_by }}</span>
               <span v-else class="opacity-50">missing</span>
             </div>
           </div>

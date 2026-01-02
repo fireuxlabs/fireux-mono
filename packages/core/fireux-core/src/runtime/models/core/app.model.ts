@@ -30,6 +30,9 @@ export interface App {
   description: string
   social_links: { instagram: string }
 
+  // Derived counts
+  user_count: number
+
   // System metadata
   created_at: Ts
   updated_at: Ts

@@ -4,7 +4,7 @@ import type {
   AppUser,
   User,
 } from '../../../../../../models/core/user.model'
-import { arrayRemove, arrayUnion } from 'firebase/firestore'
+import { arrayRemove, arrayUnion, increment } from 'firebase/firestore'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
@@ -232,6 +232,9 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
     if (!updatedDoc) {
       await setDocument(`apps/${appId}/users`, uid, { id: uid, role })
+      await updateDocument<App>('apps', appId, {
+        user_count: increment(1) as unknown as App['user_count'],
+      })
     }
 
     await updateDocument<App>('apps', appId, {
