@@ -102,7 +102,27 @@
             <OrganismsUserCardsPill :card="cardFor(u)" />
           </div>
         </div>
-        <DevJsonPanel v-if="usersJson" :data="usersJson" />
+        <DevJsonPanel v-if="usersJson" title="Users (hydrated)" :data="usersJson" />
+        <DevJsonPanel
+          v-if="rawUsersList.length"
+          title="Users (raw /users)"
+          :data="rawUsersList"
+          :default-open="true"
+        />
+
+        <DevJsonPanel
+          v-if="mergedUsersJson"
+          :title="`Users (raw + app overlay) · missing: ${missingOverlayCount}`"
+          :data="mergedUsersJson"
+          :default-open="missingOverlayCount > 0"
+        />
+
+        <DevJsonPanel
+          v-if="missingOverlayJson"
+          :title="`Users missing app overlay · ${missingOverlayCount}`"
+          :data="missingOverlayJson"
+          :default-open="missingOverlayCount > 0"
+        />
       </UCard>
       <MoleculesStateCard v-else kind="collection" entity="users" />
 
@@ -124,9 +144,11 @@ import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useAppUsers } from '../../composables/fireux/firestore/core/app/fetch/useAppUsers'
+import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useDevHealth } from '../../composables/dev/health/useDevHealth'
 import DevUserComponentGallery from '../../components/dev/UserComponentGallery.vue'
+import type { AppUser } from '../../models/core/user.model'
 
 definePageMeta({
   layout: 'dev',
@@ -148,6 +170,9 @@ const { users: usersCollection, fulfilled: hydratedAppUsers } = userCollections
 const { card: toUserCard } = useUserInterface()
 const fireux = useFireUXConfig()
 
+const { firestoreFetchCollection } = useFirestoreRead()
+const rawUsers = firestoreFetchCollection<User>('users')
+
 const { users: appUsers, pending: appUsersPending } = useAppUsers()
 const { getChecksForScope } = useDevHealth()
 
@@ -161,6 +186,49 @@ const users = computed(() => usersCollection.value ?? [])
 
 const usersJson = computed(() => {
   const list = users.value
+  return list.length ? list : null
+})
+
+const rawUsersList = computed(() => rawUsers.value ?? [])
+
+const appUsersById = computed(() => {
+  const map = new Map<string, AppUser>()
+  for (const member of appUsers.value ?? []) {
+    if (!member?.id) continue
+    map.set(member.id, member)
+  }
+  return map
+})
+
+const mergedUsers = computed(() =>
+  rawUsersList.value.map((u) => ({
+    ...u,
+    appUser: appUsersById.value.get((u as any).id) ?? null,
+  }))
+)
+
+const missingOverlay = computed(() =>
+  mergedUsers.value
+    .filter((u) => !(u as any).appUser)
+    .map((u) => ({
+      id: (u as any).id,
+      display_name: (u as any).display_name ?? '',
+      handle: (u as any).handle ?? '',
+      email: (u as any).email ?? '',
+      userOf: (u as any).userOf ?? [],
+      adminOf: (u as any).adminOf ?? [],
+    }))
+)
+
+const missingOverlayCount = computed(() => missingOverlay.value.length)
+
+const mergedUsersJson = computed(() => {
+  const list = mergedUsers.value
+  return list.length ? list : null
+})
+
+const missingOverlayJson = computed(() => {
+  const list = missingOverlay.value
   return list.length ? list : null
 })
 

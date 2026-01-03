@@ -228,16 +228,53 @@
             <div class="fx-section__copy">
               <h3 class="text-base font-semibold">Team</h3>
               <p class="text-xs text-gray-500">
-                Current tenant member document identifiers.
+                Search members and grant additional admins.
               </p>
             </div>
           </div>
         </template>
 
-        <div v-if="teamIds.length" class="fx-section__item">
-          <ul class="fx-section__grid font-mono text-[0.75rem]">
-            <li v-for="id in teamIds" :key="id">{{ id }}</li>
+        <div v-if="teamRows.length" class="fx-section__item space-y-3">
+          <UInput
+            v-model="teamSearch"
+            placeholder="Search by name, email, or uid"
+          />
+
+          <ul class="divide-y divide-gray-100">
+            <li
+              v-for="member in filteredTeamRows"
+              :key="member.id"
+              class="flex items-center justify-between gap-3 py-2"
+            >
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-gray-900">
+                  {{ member.display_name }}
+                </p>
+                <p class="truncate font-mono text-[0.75rem] text-gray-500">
+                  {{ member.id }}
+                  <span v-if="member.email">· {{ member.email }}</span>
+                </p>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <UBadge size="sm" variant="soft">
+                  {{ member.role === 'admin' ? 'Admin' : 'Member' }}
+                </UBadge>
+                <UButton
+                  size="xs"
+                  :loading="grantingAdminUid === member.id"
+                  :disabled="member.role === 'admin' || grantingAdminUid !== null"
+                  @click="grantAdmin(member.id)"
+                >
+                  Make admin
+                </UButton>
+              </div>
+            </li>
           </ul>
+
+          <p v-if="!filteredTeamRows.length" class="text-sm text-gray-500">
+            No matches.
+          </p>
         </div>
         <p v-else class="fx-section__empty">No members yet.</p>
       </UCard>
@@ -258,7 +295,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { App } from '../../../models/core/app.model'
 import type { User } from '../../../models/core/user.model'
 import { useAppUpdate } from '../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
@@ -266,6 +303,7 @@ import { useAppInterface } from '../../../composables/fireux/firestore/core/app/
 import { useAppUsers } from '../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
 import { useAppJoinRequests } from '../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
+import { useUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useUserFetch } from '../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
@@ -294,8 +332,10 @@ const {
   updateStatus,
   updateInstagram,
   handleJoinRequests,
+  setAppUserAdmin,
 } = useAppUpdate(appRef)
 const { users } = useAppUsers()
+const { fulfilled: hydratedUsers } = useUserCollection()
 const { card } = useUser()
 
 const appInterface = useAppInterface(appRef)
@@ -353,6 +393,57 @@ const handleUpdateInstagram = withToast(
   'Failed to update Instagram link'
 )
 
+const teamSearch = ref('')
+const grantingAdminUid = ref<string | null>(null)
+
+const teamRows = computed(() => {
+  const byId = new Map(hydratedUsers.value.map((u) => [u.id, u]))
+  return (users.value ?? [])
+    .map((appUser) => {
+      const id = (appUser?.id ?? '').trim()
+      if (!id) return null
+      const hydrated = byId.get(id)
+      return {
+        id,
+        role: appUser?.role === 'admin' ? 'admin' : 'user',
+        display_name: hydrated?.display_name ?? id,
+        email: hydrated?.email ?? null,
+      }
+    })
+    .filter(
+      (row): row is {
+        id: string
+        role: 'admin' | 'user'
+        display_name: string
+        email: string | null
+      } => Boolean(row)
+    )
+})
+
+const filteredTeamRows = computed(() => {
+  const q = teamSearch.value.trim().toLowerCase()
+  if (!q) return teamRows.value
+
+  return teamRows.value.filter((row) => {
+    const haystack = `${row.display_name} ${row.email ?? ''} ${row.id}`
+      .toLowerCase()
+      .trim()
+    return haystack.includes(q)
+  })
+})
+
+const grantAdmin = withToast(
+  async (uid: string) => {
+    grantingAdminUid.value = uid
+    try {
+      await setAppUserAdmin(uid, true)
+    } finally {
+      grantingAdminUid.value = null
+    }
+  },
+  'Granted admin',
+  'Failed to grant admin'
+)
 
 const fetchedUser = (uid: string) => {
   const { coreUser } = useUserFetch(uid)
@@ -371,12 +462,6 @@ const {
   fetchedUser,
   card: cardRef,
 })
-
-const teamIds = computed(() =>
-  (users.value ?? [])
-    .map((entry) => (entry?.id ?? '').trim())
-    .filter((id) => id.length > 0)
-)
 
 const onApprove = withToast(
   (uid: string) => approveJoinRequest(uid),

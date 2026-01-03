@@ -1,5 +1,6 @@
 import {
   arrayUnion,
+  arrayRemove,
   doc,
   getDoc,
   increment,
@@ -125,15 +126,21 @@ export async function ensureUserAppMembership(
 
   await ensureCoreUserDocument(uid)
 
-  let membershipUpdates: Partial<User> =
-    membershipRole === 'admin'
-      ? {
-          adminOf: arrayUnion(appId) as unknown as string[],
-          userOf: arrayUnion(appId) as unknown as string[],
-        }
-      : {
-          userOf: arrayUnion(appId) as unknown as string[],
-        }
+  // Keep all admin mirrors in sync with the app-scoped role.
+  // Canon: AppUser.role (apps/{appId}/users/{uid})
+  // Mirrors: apps/{appId}.admin_ids[], users/{uid}.adminOf[]
+  await updateDocument<App>('apps', appId, {
+    admin_ids: (membershipRole === 'admin'
+      ? arrayUnion(uid)
+      : arrayRemove(uid)) as unknown as App['admin_ids'],
+  })
+
+  let membershipUpdates: Partial<User> = {
+    userOf: arrayUnion(appId) as unknown as string[],
+    adminOf: (membershipRole === 'admin'
+      ? arrayUnion(appId)
+      : arrayRemove(appId)) as unknown as string[],
+  }
 
   if (created) {
     membershipUpdates = {

@@ -56,7 +56,11 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const currentUser = computed(() => coreUser.value ?? null)
 
   const isAdmin = computed(() => {
-    if (appUser.value?.role === 'admin') return true
+    // If an app-scoped overlay is resolved (even if role is 'user'), treat it as
+    // the source of truth for admin UI gating.
+    if (appUser.value !== undefined) {
+      return appUser.value?.role === 'admin'
+    }
     const activeAppId = appId?.trim()
     if (!activeAppId) return false
     return Boolean(coreUser.value?.adminOf?.some((id) => id === activeAppId))

@@ -1,0 +1,128 @@
+{
+  "ok": true,
+  "generatedAt": "2026-01-03T09:22:52.386Z",
+  "collection": "users",
+  "count": 6,
+  "docs": [
+    {
+      "id": "21CHVNZNMaX6mlCJfUqzzc0b8Li1",
+      "email": "test3@test.com",
+      "display_name": "New User",
+      "handle": "newuser21CH",
+      "creator_id": "21CHVNZNMaX6mlCJfUqzzc0b8Li1",
+      "updated_at": {
+        "_seconds": 1762986309,
+        "_nanoseconds": 561000000
+      },
+      "created_at": {
+        "_seconds": 1762986309,
+        "_nanoseconds": 561000000
+      },
+      "userOf": [
+        "fireux-app"
+      ],
+      "adminOf": []
+    },
+    {
+      "id": "WtJpOzaxuEN7dPFhl6dwct9p8LL2",
+      "email": "test7@test.com",
+      "display_name": "New User",
+      "handle": "newuserWtJp",
+      "creator_id": "WtJpOzaxuEN7dPFhl6dwct9p8LL2",
+      "created_at": {
+        "_seconds": 1763032732,
+        "_nanoseconds": 526000000
+      },
+      "updated_at": {
+        "_seconds": 1763121283,
+        "_nanoseconds": 218000000
+      },
+      "adminOf": [],
+      "userOf": [
+        "fireux-tenant",
+        "fireux-app"
+      ]
+    },
+    {
+      "id": "i378nWXJGXVMSvr7eU4C8EFbJEy2",
+      "email": "test6@test.com",
+      "display_name": "New User",
+      "handle": "newuseri378",
+      "creator_id": "i378nWXJGXVMSvr7eU4C8EFbJEy2",
+      "updated_at": {
+        "_seconds": 1763027099,
+        "_nanoseconds": 832000000
+      },
+      "created_at": {
+        "_seconds": 1763027099,
+        "_nanoseconds": 832000000
+      },
+      "userOf": [
+        "fireux-app"
+      ],
+      "adminOf": []
+    },
+    {
+      "id": "k9mRphdOPSQP1iYNEHiJlPJ6moZ2",
+      "email": "test2@test.com",
+      "display_name": "New User",
+      "handle": "newuserk9mR",
+      "creator_id": "k9mRphdOPSQP1iYNEHiJlPJ6moZ2",
+      "updated_at": {
+        "_seconds": 1762986186,
+        "_nanoseconds": 160000000
+      },
+      "created_at": {
+        "_seconds": 1762986186,
+        "_nanoseconds": 160000000
+      },
+      "userOf": [
+        "fireux-app"
+      ],
+      "adminOf": []
+    },
+    {
+      "id": "yZ1nY4RtxnMnJwcVZnaMBigqM1A2",
+      "email": "d.m.watson1985@gmail.com",
+      "display_name": "Daniel Watson",
+      "creator_id": "yZ1nY4RtxnMnJwcVZnaMBigqM1A2",
+      "created_at": {
+        "_seconds": 1761558782,
+        "_nanoseconds": 962000000
+      },
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/users%2FyZ1nY4RtxnMnJwcVZnaMBigqM1A2%2Favatar.jpg?alt=media&token=1ce632b0-3cb7-471b-aa55-bf783834d056",
+      "handle": "daniel",
+      "bio": "design and build software with a focus on clarity, consistency, and long-term maintainability. I care about shipping practical systems that work in the real wo",
+      "userOf": [
+        "fireux-tenant",
+        "fireux-app"
+      ],
+      "adminOf": [
+        "fireux-tenant"
+      ],
+      "updated_at": {
+        "_seconds": 1767431609,
+        "_nanoseconds": 165000000
+      }
+    },
+    {
+      "id": "zH9M59UwFgOBDotWpWp401DTLiz2",
+      "email": "test@test.com",
+      "display_name": "New User",
+      "handle": "newuserzH9M",
+      "creator_id": "zH9M59UwFgOBDotWpWp401DTLiz2",
+      "updated_at": {
+        "_seconds": 1762985866,
+        "_nanoseconds": 707000000
+      },
+      "created_at": {
+        "_seconds": 1762985866,
+        "_nanoseconds": 707000000
+      },
+      "userOf": [
+        "fireux-app"
+      ],
+      "adminOf": []
+    }
+  ]
+}

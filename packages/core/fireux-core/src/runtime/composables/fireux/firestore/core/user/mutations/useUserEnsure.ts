@@ -40,7 +40,7 @@ const DEFAULT_REDIRECT = '/dashboard'
 // Ensures core user + app membership; used by auth and profile flows.
 export function useAppUserEnsure() {
   const router = useRouter()
-  const { isTenant, appId, appName, ecosystem } = useFireUXConfig()
+  const { appId, appName, ecosystem } = useFireUXConfig()
   let authContextPromise: Promise<EnsureAuthContext> | null = null
 
   const resolveAuthContext = async () => {
@@ -68,7 +68,6 @@ export function useAppUserEnsure() {
   const ensureApp = async (
     membershipRole: MembershipRole = 'user'
   ): Promise<EnsureAppOutcome> => {
-    if (!isTenant || !appId) return { created: false }
     const { uid } = await resolveAuthContext()
     return ensureUserAppMembership(appId, uid, membershipRole, {
       appName,
