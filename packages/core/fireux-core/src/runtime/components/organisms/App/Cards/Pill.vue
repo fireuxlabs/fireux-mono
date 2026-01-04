@@ -1,5 +1,6 @@
 <template>
-  <NuxtLink :to="to" class="fx-pill">
+  <NuxtLink :to="to" class="fx-card fx-card--pill">
+
     <UAvatar
       :src="avatar || undefined"
       :alt="title"
@@ -9,9 +10,6 @@
     <div class="min-w-0 flex-1">
       <div class="min-w-0 truncate text-sm font-medium">
         {{ title }}
-      </div>
-      <div v-if="subtitle" class="min-w-0 truncate text-xs text-dimmed">
-        {{ subtitle }}
       </div>
     </div>
 
@@ -31,5 +29,8 @@
 
 <script setup lang="ts">
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-defineProps<Pick<AppCard.Card, 'to' | 'avatar' | 'title' | 'subtitle' | 'badges'>>()
+
+defineOptions({ inheritAttrs: false })
+
+defineProps<Pick<AppCard.Card, 'to' | 'avatar' | 'title' | 'badges'>>()
 </script>

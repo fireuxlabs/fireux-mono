@@ -31,7 +31,7 @@
               class="grid gap-6 lg:grid-cols-2"
             >
               <template #preview>
-                <OrganismsAppCardsPreview v-if="previewCard" :card="previewCard" />
+                <OrganismsAppCardsPreview v-if="previewCard" v-bind="previewCard" />
               </template>
 
               <template #core>

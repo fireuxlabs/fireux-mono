@@ -20,17 +20,17 @@
 
         <div class="card-test-block">
           <h4>Cell</h4>
-          <OrganismsAppCardsCell v-if="appCard" :card="appCard" />
+          <OrganismsAppCardsCell v-if="appCard" v-bind="appCard" />
         </div>
 
         <div class="card-test-block">
           <h4>Preview</h4>
-          <OrganismsAppCardsPreview v-if="appCard" :card="appCard" />
+          <OrganismsAppCardsPreview v-if="appCard" v-bind="appCard" />
         </div>
 
         <div class="card-test-block">
           <h4>Profile</h4>
-          <OrganismsAppCardsProfile v-if="appCard" :card="appCard" :app="app" />
+          <OrganismsAppCardsProfile v-if="appCard" v-bind="appCard" :app="app" />
         </div>
       </section>
 

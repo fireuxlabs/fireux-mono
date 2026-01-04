@@ -34,13 +34,6 @@ body {
 }
 
 @layer components {
-	.fx-pill {
-		@apply inline-flex items-center gap-2 rounded-full px-3 py-1.5 transition-opacity hover:opacity-90;
-		min-width: min(10rem, 100%);
-		max-width: 100%;
-		box-shadow: var(--fx-pill-shadow);
-	}
-
 	.pagebody {
 		@apply grid gap-6;
 	}

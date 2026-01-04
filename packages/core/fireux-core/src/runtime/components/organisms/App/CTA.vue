@@ -5,7 +5,7 @@
     variant="naked"
   >
     <template #default>
-      <OrganismsAppCardsPreview v-if="appCard" :card="appCard" />
+      <OrganismsAppCardsPreview v-if="appCard" v-bind="appCard" />
       <OrganismsAppCreateSystem v-else />
          <UButton
           variant="ghost"

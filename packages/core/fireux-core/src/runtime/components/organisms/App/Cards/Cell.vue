@@ -1,23 +1,17 @@
 <template>
-  <NuxtLink
-    :to="card.to"
-    class="block rounded-lg bg-[var(--ui-bg)] px-4 py-3 transition-colors hover:bg-[var(--ui-bg-muted)]"
-  >
-    <div class="flex items-start gap-3">
-      <UAvatar :src="card.avatar || undefined" :alt="card.title" size="sm" />
+  <NuxtLink :to="to" class="fx-card fx-card--cell">
+    <div class="fx-card__media">
+      <UAvatar :src="avatar || undefined" :alt="title" size="xs" />
 
-      <div class="min-w-0 flex-1 space-y-2">
-        <div class="flex items-start justify-between gap-3">
+      <div class="fx-card__content fx-card__stack">
+        <div class="fx-card__header">
           <div class="min-w-0">
-            <div class="truncate font-medium">{{ card.title }}</div>
-            <div v-if="card.subtitle" class="truncate text-sm text-dimmed">
-              {{ card.subtitle }}
-            </div>
+            <div class="fx-card__title">{{ title }}</div>
           </div>
 
-          <div v-if="card.badges.length" class="flex flex-wrap justify-end gap-1">
+          <div v-if="badges.length" class="fx-card__badges">
             <UBadge
-              v-for="badge in card.badges"
+              v-for="badge in badges"
               :key="badge"
               variant="soft"
               color="neutral"
@@ -28,14 +22,21 @@
           </div>
         </div>
 
-        <div v-if="card.tagline" class="text-sm text-dimmed line-clamp-2">
-          {{ card.tagline }}
+        <div v-if="tagline" class="fx-card__tagline">
+          {{ tagline }}
         </div>
 
-        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-dimmed">
-          <span v-if="card.shortName" class="truncate">{{ card.shortName }}</span>
-          <span v-if="card.role" class="truncate">{{ card.role }}</span>
-          <span class="truncate">{{ card.userCount }} users</span>
+        <div class="fx-card__meta">
+          <UBadge
+            v-if="userCount !== null"
+            variant="soft"
+            color="neutral"
+            size="xs"
+            class="inline-flex items-center gap-1"
+          >
+            <UIcon name="i-lucide-users" class="size-3 shrink-0" />
+            <span class="truncate">{{ userCount }}</span>
+          </UBadge>
         </div>
       </div>
     </div>
@@ -43,10 +44,19 @@
 </template>
 
 <script setup lang="ts">
-import { toRef } from 'vue'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
-const props = defineProps<{ card: AppCard.Card }>()
+defineOptions({ inheritAttrs: false })
 
-const card = toRef(props, 'card')
+defineProps<
+  Pick<
+    AppCard.Card,
+    | 'to'
+    | 'avatar'
+    | 'title'
+    | 'badges'
+    | 'tagline'
+    | 'userCount'
+  >
+>()
 </script>

@@ -108,17 +108,17 @@
 
           <div>
             <div class="mb-2 text-xs text-gray-500">Cell</div>
-            <OrganismsAppCardsCell :card="appCard" />
+            <OrganismsAppCardsCell v-bind="appCard" />
           </div>
 
           <div>
             <div class="mb-2 text-xs text-gray-500">Preview</div>
-            <OrganismsAppCardsPreview :card="appCard" />
+            <OrganismsAppCardsPreview v-bind="appCard" />
           </div>
 
           <div>
             <div class="mb-2 text-xs text-gray-500">Profile</div>
-            <OrganismsAppCardsProfile :card="appCard" :app="app" />
+            <OrganismsAppCardsProfile v-bind="appCard" :app="app" />
           </div>
         </div>
 

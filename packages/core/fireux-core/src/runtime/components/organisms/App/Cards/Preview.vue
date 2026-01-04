@@ -1,20 +1,20 @@
 <template>
-  <UCard class="space-y-3">
-    <div class="flex items-start gap-3">
-      <UAvatar :src="card.avatar || undefined" :alt="card.title" size="sm" />
+  <UCard class="fx-card fx-card--preview space-y-3">
+    <div class="fx-card__media">
+      <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-3">
+      <div class="fx-card__content space-y-1">
+        <div class="fx-card__header">
           <div class="min-w-0">
-            <div class="truncate font-medium">{{ card.title }}</div>
-            <div v-if="card.subtitle" class="truncate text-sm text-dimmed">
-              {{ card.subtitle }}
+            <div class="fx-card__title">{{ title }}</div>
+            <div v-if="subtitle" class="fx-card__subtitle">
+              {{ subtitle }}
             </div>
           </div>
 
-          <div v-if="card.badges.length" class="flex flex-wrap justify-end gap-1">
+          <div v-if="badges.length" class="fx-card__badges">
             <UBadge
-              v-for="badge in card.badges"
+              v-for="badge in badges"
               :key="badge"
               variant="soft"
               color="neutral"
@@ -30,10 +30,9 @@
 </template>
 
 <script setup lang="ts">
-import { toRef } from 'vue'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
-const props = defineProps<{ card: AppCard.Card }>()
+defineOptions({ inheritAttrs: false })
 
-const card = toRef(props, 'card')
+defineProps<Pick<AppCard.Card, 'avatar' | 'title' | 'subtitle' | 'badges'>>()
 </script>

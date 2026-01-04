@@ -1,23 +1,23 @@
 <template>
-  <UCard>
+  <UCard class="fx-card fx-card--profile">
     <template #header>
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex items-start gap-3">
-          <UAvatar :src="card.avatar || undefined" :alt="card.title" size="md" />
-          <div class="min-w-0">
-            <div class="truncate text-base font-semibold">{{ card.title }}</div>
+      <div class="fx-card__header">
+        <div class="fx-card__media">
+          <UAvatar :src="avatar || undefined" :alt="title" size="md" />
+          <div class="fx-card__content">
+            <div class="truncate text-base font-semibold">{{ title }}</div>
             <div class="text-sm text-dimmed">
-              <span v-if="card.subtitle">{{ card.subtitle }}</span>
+              <span v-if="subtitle">{{ subtitle }}</span>
               <span v-else class="italic">missing</span>
             </div>
           </div>
         </div>
 
-        <div v-if="card.badges.length" class="flex flex-wrap justify-end gap-1">
+        <div v-if="badges.length" class="fx-card__badges">
           <UBadge
-            v-for="badge in card.badges"
+            v-for="badge in badges"
             :key="badge"
-            variant="soft"
+            variant="subtle"
             color="neutral"
             size="xs"
           >
@@ -166,13 +166,12 @@
 </template>
 
 <script setup lang="ts">
-import { toRef } from 'vue'
 import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
-const props = defineProps<{ card: AppCard.Card; app?: App | null }>()
+defineOptions({ inheritAttrs: false })
 
-const card = toRef(props, 'card')
-
-const app = props.app
+defineProps<
+  { app?: App | null } & Pick<AppCard.Card, 'avatar' | 'title' | 'subtitle' | 'badges'>
+>()
 </script>
