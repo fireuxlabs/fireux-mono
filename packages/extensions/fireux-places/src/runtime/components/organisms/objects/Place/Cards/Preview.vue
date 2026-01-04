@@ -1,11 +1,11 @@
 <template>
   <UCard>
     <div class="flex items-start gap-3">
-      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
       <div class="min-w-0 flex-1">
-        <div class="truncate font-medium">{{ vmTitle }}</div>
-        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">
-          {{ vmSubtitle }}
+        <div class="truncate font-medium">{{ title }}</div>
+        <div v-if="subtitle" class="truncate text-sm text-dimmed">
+          {{ subtitle }}
         </div>
         <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
       </div>
@@ -14,26 +14,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import {
-  type PlaceBase,
-  usePlacesInterface,
-} from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
-const props = defineProps<{
-  title?: string
-  subtitle?: string
+const { card, avatar: avatarProp, prop } = defineProps<{
+  card: PlaceCard.Cell
   avatar?: string | null
-  place?: PlaceBase | null
   prop?: string
 }>()
-const { toCell } = usePlacesInterface()
 
-const resolved = computed(() => (props.place ? toCell(props.place) : null))
-
-const vmTitle = computed(() => props.title ?? resolved.value?.name ?? 'Place')
-const vmSubtitle = computed(
-  () => props.subtitle ?? resolved.value?.formatted_address
-)
-const vmAvatar = computed(() => props.avatar ?? resolved.value?.avatar ?? null)
+const { name, formatted_address, avatar: cardAvatar } = card
+const title = name
+const subtitle = formatted_address
+const avatar = avatarProp ?? cardAvatar ?? null
 </script>

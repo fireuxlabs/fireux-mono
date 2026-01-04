@@ -17,8 +17,8 @@
         </div>
 
         <div class="space-y-4">
-          <OrganismsProfilesAgentCardsCell v-if="showCellCard && cell" :agent="cell" />
-          <OrganismsProfilesAgentCardsPill v-else-if="pill" :agent="pill" />
+          <OrganismsProfilesAgentCardsCell v-if="showCellCard && profileCard" :card="profileCard" />
+          <OrganismsProfilesAgentCardsPill v-else-if="profileCard" :card="profileCard" />
           <p v-else class="text-sm text-slate-500">No agent profile loaded.</p>
         </div>
       </div>
@@ -31,12 +31,14 @@ import { computed, ref, watch } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 
-const { pill, cell } = useAgent()
+const { coreProfile, card } = useAgent()
 const { hasProfile } = useUser()
 
 const hasAgentProfile = computed(() => hasProfile('agent'))
 
-const canToggle = computed(() => Boolean(cell.value))
+const profileCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
+
+const canToggle = computed(() => Boolean(profileCard.value))
 const showCellView = ref(false)
 const showCellCard = computed(() => canToggle.value && showCellView.value)
 const toggleView = () => {

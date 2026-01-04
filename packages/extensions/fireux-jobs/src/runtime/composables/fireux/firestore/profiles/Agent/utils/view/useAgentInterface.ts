@@ -7,25 +7,20 @@ import { agentConfig, type AgentCore } from '../../../../../../../models/profile
 import type { AgentCard } from '../../../../../../../types/profiles/AgentCard.ts'
 
 export function useAgentInterface(profile: ProfileRefs<AgentCore>, user: Ref<User | null | undefined>) {
-  const resolveProfile = (target?: AgentCore): AgentCore => {
-    const current = target ?? profile.coreProfile.value
-    if (!current) {
-      throw new Error('[useAgentInterface] Agent profile is required')
-    }
-    return current
+  function resolveProfile(target?: AgentCore | null | undefined): AgentCore | null {
+    return target ?? profile.coreProfile.value ?? null
   }
 
-  const resolveUser = (): User => {
-    const current = user.value
-    if (!current) {
-      throw new Error('[useAgentInterface] User is required')
-    }
-    return current
+  function resolveUser(): User | null {
+    return user.value ?? null
   }
 
-  const card = (target?: AgentCore): AgentCard.Card => {
+  function card(target: AgentCore): AgentCard.Card
+  function card(target?: AgentCore | null | undefined): AgentCard.Card | null
+  function card(target?: AgentCore | null | undefined): AgentCard.Card | null {
     const currentProfile = resolveProfile(target)
     const currentUser = resolveUser()
+    if (!currentProfile || !currentUser) return null
 
     return {
       id: currentProfile.id,

@@ -24,7 +24,11 @@
           <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
             <template #preview>
               <ClientOnly>
-                <OrganismsUserCardsPreview :compact="false" />
+                <OrganismsUserCardsPreview
+                  v-if="resolvedUser"
+                  :card="card(resolvedUser)"
+                  :compact="false"
+                />
               </ClientOnly>
             </template>
 
@@ -64,7 +68,7 @@ const useHeadFn = (globalThis as any).useHead as
   | ((input: any) => void)
 useHeadFn?.({ title: 'Profile' })
 
-const { currentUser, isLoading } = useUser()
+const { currentUser, isLoading, card } = useUser()
 
 const resolvedUser = computed(() => currentUser.value ?? null)
 </script>

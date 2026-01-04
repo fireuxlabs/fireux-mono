@@ -1,21 +1,21 @@
 <template>
   <NuxtLink
-    :to="vmTo"
+    :to="to"
     class="block rounded-lg border border-[var(--ui-border)] px-3 py-2 transition-colors hover:bg-[var(--ui-bg-muted)]"
   >
     <div class="flex items-start gap-3">
-      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
 
       <div class="min-w-0 flex-1">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <div class="truncate font-medium">{{ vmTitle }}</div>
-            <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
+            <div class="truncate font-medium">{{ title }}</div>
+            <div v-if="subtitle" class="truncate text-sm text-dimmed">{{ subtitle }}</div>
           </div>
 
-          <div v-if="vmBadges.length" class="flex flex-wrap justify-end gap-1">
+          <div v-if="badges.length" class="flex flex-wrap justify-end gap-1">
             <UBadge
-              v-for="badge in vmBadges"
+              v-for="badge in badges"
               :key="badge"
               variant="soft"
               color="neutral"
@@ -27,7 +27,7 @@
         </div>
 
         <div class="mt-1 text-sm text-dimmed">
-          <span v-if="vmLine1">{{ vmLine1 }}</span>
+          <span v-if="prop || line1">{{ prop || line1 }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
@@ -36,59 +36,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
-import type {
-  ProfessionalCard,
-  ProfessionalProfile,
-} from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import { reactive, toRefs, watchEffect } from 'vue'
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
-const props = defineProps<{
-  title?: string
-  subtitle?: string
-  avatar?: string | null
-  professional?: ProfessionalProfile | ProfessionalCard.Card | null
-  card?: ProfessionalCard.Card | null
-  prop?: string
-}>()
+const prop = defineProp<string>('prop', { required: false })
 
-const { coreProfile, card: toCard } = useProfessional()
+const props = defineProps<{ card: ProfessionalCard.Card }>()
 
-const isProfessionalCard = (value: unknown): value is ProfessionalCard.Card => {
-  if (!value || typeof value !== 'object') return false
-  return 'to' in value && 'title' in value && 'badges' in value && 'line1' in value
-}
+const card = reactive({ ...props.card })
 
-const resolvedCard = computed<ProfessionalCard.Card | null>(() => {
-  if (props.card) return props.card
-
-  const supplied = props.professional ?? null
-  if (supplied) {
-    return isProfessionalCard(supplied) ? supplied : toCard(supplied)
-  }
-
-  return coreProfile.value ? toCard(coreProfile.value) : null
+watchEffect(() => {
+  Object.assign(card, props.card)
 })
 
-const vm = computed(() => {
-  const card = resolvedCard.value
-
-  const title = props.title ?? card?.title ?? 'Professional'
-  const subtitle = props.subtitle ?? (card?.subtitle || undefined)
-  const avatar = props.avatar ?? (card?.avatar || null)
-  const badges = card?.badges ?? []
-  const to = card?.to || '#'
-
-  const line1Source = typeof props.prop === 'string' ? props.prop : card?.line1 ?? ''
-  const line1 = String(line1Source ?? '').trim()
-
-  return { title, subtitle, avatar, badges, to, line1 }
-})
-
-const vmTitle = computed(() => vm.value.title)
-const vmSubtitle = computed(() => vm.value.subtitle)
-const vmAvatar = computed(() => vm.value.avatar)
-const vmBadges = computed(() => vm.value.badges)
-const vmTo = computed(() => vm.value.to)
-const vmLine1 = computed(() => vm.value.line1)
+const { to, avatar, title, subtitle, badges, line1 } = toRefs(card)
 </script>

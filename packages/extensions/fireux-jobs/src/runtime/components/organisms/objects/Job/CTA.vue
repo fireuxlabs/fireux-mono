@@ -15,11 +15,11 @@
 
           <div class="space-y-4">
             <OrganismsProfilesAgentCardsCell
-              v-if="cell"
-              :agent="cell"
+              v-if="profileCard"
+              :card="profileCard"
               class="cta-agent-cell"
             />
-            <OrganismsProfilesAgentCardsPill v-if="pill" :agent="pill" />
+            <OrganismsProfilesAgentCardsPill v-if="profileCard" :card="profileCard" />
           </div>
         </UCard>
       </div>
@@ -42,8 +42,10 @@ import { computed } from 'vue'
 import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 
-const { pill, cell } = useAgent()
+const { coreProfile, card } = useAgent()
 const { hasProfile } = useUser()
+
+const profileCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
 
 const hasAgentProfile = computed(() => hasProfile('agent'))
 const currentProfileTitle = 'Your agent profile'

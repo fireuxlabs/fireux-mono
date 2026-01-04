@@ -22,7 +22,7 @@
           </UButton>
         </div>
 
-        <OrganismsProfilesAgentCardsProfile :agent="profile" />
+        <OrganismsProfilesAgentCardsProfile v-if="agentCard" :card="agentCard" />
       </div>
     </div>
 
@@ -38,6 +38,8 @@ import { computed } from 'vue'
 import { navigateTo, useHead, useRoute, useSeoMeta } from '#imports'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import type { AgentCore } from '../../models/profiles/Agent/Agent.model'
+import type { AgentCard } from '../../types/profiles/AgentCard'
 
 useSeoMeta({
   title: 'Agent Profile',
@@ -55,6 +57,23 @@ const { firestoreFetchDoc } = useFirestoreRead()
 const rawDoc = docId ? await firestoreFetchDoc(agentConfig.collectionName, docId) : null
 const profile = computed<any>(() => (rawDoc as any)?.value ?? rawDoc ?? null)
 const loading = computed(() => !rawDoc && !!docId)
+
+const agentCard = computed<AgentCard.Card | null>(() => {
+  const p = profile.value as AgentCore | null
+  if (!p) return null
+
+  return {
+    id: p.id,
+    to: `/${agentConfig.collectionName}/${p.id}`,
+    avatar: '',
+    title: p.title,
+    subtitle: p.tagline,
+    badges: Array.isArray((p as any).badges) ? (p as any).badges : [],
+    line1: p.bio_short,
+    line2: p.contact_email,
+    line3: p.website_url,
+  }
+})
 
 const resolveName = (p: any) =>
   p?.display_name ||

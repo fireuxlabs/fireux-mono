@@ -11,10 +11,18 @@ export namespace RecipeCard {
     status?: string | null
   }
 
+  export type Card = Cell
+
   export type Profile = Recipe
 }
 
 export function useRecipeInterface() {
+  function card(recipe: Recipe): RecipeCard.Card
+  function card(recipe?: Recipe | null | undefined): RecipeCard.Card | null
+  function card(recipe?: Recipe | null | undefined): RecipeCard.Card | null {
+    return recipe ? cellProps(recipe) : null
+  }
+
   const pillProps = (recipe?: Recipe | null): RecipeCard.Pill => ({
     slug: recipe?.slug,
     title: recipe?.title || 'Recipe',
@@ -29,5 +37,5 @@ export function useRecipeInterface() {
     }
   }
 
-  return { pillProps, cellProps }
+  return { card, pillProps, cellProps }
 }

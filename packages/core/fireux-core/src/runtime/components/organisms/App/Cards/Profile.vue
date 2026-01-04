@@ -73,14 +73,6 @@
           </div>
 
           <div class="flex items-center justify-between gap-3">
-            <div class="text-xs opacity-70">Status</div>
-            <div class="text-sm">
-              <span v-if="app?.status">{{ app.status }}</span>
-              <span v-else class="opacity-50">missing</span>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between gap-3">
             <div class="text-xs opacity-70">Logo</div>
             <div class="text-sm">
               <a
@@ -117,12 +109,12 @@
             <div class="text-sm">
               <a
                 v-if="app?.social_links?.instagram"
-                :href="`https://instagram.com/${app.social_links.instagram}`"
+                :href="app.social_links.instagram"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="underline"
               >
-                @{{ app.social_links.instagram }}
+                {{ app.social_links.instagram }}
               </a>
               <span v-else class="opacity-50">missing</span>
             </div>
@@ -174,10 +166,13 @@
 </template>
 
 <script setup lang="ts">
+import { toRef } from 'vue'
 import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-defineProps<{
-  card: AppCard.Card
-  app?: App | null
-}>()
+
+const props = defineProps<{ card: AppCard.Card; app?: App | null }>()
+
+const card = toRef(props, 'card')
+
+const app = props.app
 </script>

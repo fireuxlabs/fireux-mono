@@ -11,10 +11,18 @@ export namespace CompanyCard {
     website?: string | null
   }
 
+  export type Card = Cell
+
   export type Profile = Company
 }
 
 export function useCompanyInterface() {
+  function card(company: Company): CompanyCard.Card
+  function card(company?: Company | null | undefined): CompanyCard.Card | null
+  function card(company?: Company | null | undefined): CompanyCard.Card | null {
+    return company ? cellProps(company) : null
+  }
+
   const pillProps = (company?: Company | null): CompanyCard.Pill => ({
     id: company?.id,
     title: company?.name || 'Company',
@@ -29,5 +37,5 @@ export function useCompanyInterface() {
     }
   }
 
-  return { pillProps, cellProps }
+  return { card, pillProps, cellProps }
 }

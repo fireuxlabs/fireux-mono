@@ -51,6 +51,12 @@ function baseProps(post: BlogPost): BlogCard.Base {
 }
 
 export function useBlogInterface() {
+  function card(post: BlogPost): BlogCard.Cell
+  function card(post?: BlogPost | null | undefined): BlogCard.Cell | null
+  function card(post?: BlogPost | null | undefined): BlogCard.Cell | null {
+    return post ? cellProps(post) : null
+  }
+
   const teaserProps = (post: BlogPost): BlogCard.Teaser => ({
     layout: 'teaser',
     ...baseProps(post),
@@ -61,5 +67,5 @@ export function useBlogInterface() {
     ...baseProps(post),
   })
 
-  return { teaserProps, cellProps }
+  return { card, teaserProps, cellProps }
 }

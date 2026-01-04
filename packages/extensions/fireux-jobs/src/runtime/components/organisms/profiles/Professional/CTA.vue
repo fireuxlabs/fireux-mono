@@ -18,12 +18,12 @@
 
         <div class="space-y-4">
           <OrganismsProfilesProfessionalCardsCell
-            v-if="showCellCard && cell"
-            :professional="cell"
+            v-if="showCellCard && profileCard"
+            :card="profileCard"
           />
           <OrganismsProfilesProfessionalCardsPill
-            v-else-if="pill"
-            :professional="pill"
+            v-else-if="profileCard"
+            :card="profileCard"
           />
           <p v-else class="text-sm text-slate-500">
             No professional profile loaded.
@@ -39,12 +39,16 @@ import { computed, ref, watch } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
-const { pill, cell } = useProfessional()
+const { coreProfile, card } = useProfessional()
 const { hasProfile } = useUser()
 
 const hasProfessionalProfile = computed(() => hasProfile('professional'))
 
-const canToggle = computed(() => Boolean(cell.value))
+const profileCard = computed(() =>
+  coreProfile.value ? card(coreProfile.value) : null
+)
+
+const canToggle = computed(() => Boolean(profileCard.value))
 const showCellView = ref(false)
 const showCellCard = computed(() => canToggle.value && showCellView.value)
 const toggleView = () => {

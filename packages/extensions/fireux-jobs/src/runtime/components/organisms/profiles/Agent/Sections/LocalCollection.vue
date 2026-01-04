@@ -14,7 +14,7 @@
       <OrganismsProfilesAgentCardsPill
         v-for="card in cards"
         :key="cardKey(card)"
-        :agent="card"
+        :card="card"
       />
     </div>
 

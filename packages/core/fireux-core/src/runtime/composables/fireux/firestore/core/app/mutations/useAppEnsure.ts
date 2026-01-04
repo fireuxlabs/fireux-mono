@@ -12,7 +12,7 @@ type EnsureMembershipResult = { created: boolean }
 export function useAppEnsure() {
   const { appId, ecosystem, role, appName, appShortName } = useFireUXConfig()
   const db = useFirestore()
-  const { setDocument } = useFirestoreManager()
+  const { setDocument, updateDocument } = useFirestoreManager()
 
   const requireAppConfig = () => {
     if (!appId) throw new Error('[useAppEnsure] missing config: appId')
@@ -42,8 +42,10 @@ export function useAppEnsure() {
         app_short_name: cfg.appShortName,
         creator_id: uid,
         created_by: uid,
-        status: 'active',
+        tagline: '',
         description: '',
+        short_bio: '',
+        long_bio: '',
         social_links: { instagram: '' },
         avatar_url: '',
         logo_url: '',
@@ -58,6 +60,42 @@ export function useAppEnsure() {
       await setDocument<App>('apps', cfg.appId, payload)
       await ensureAppMembership(uid, 'admin')
       return { created: true, id: cfg.appId }
+    }
+
+    // Existing doc may predate current schema. Backfill required keys with safe defaults.
+    const existing = snapshot.data() as Partial<App> | undefined
+    const patch: Partial<App> = {}
+
+    if (!existing?.id) patch.id = cfg.appId
+    if (!existing?.ecosystem) patch.ecosystem = cfg.ecosystem
+    if (!existing?.role) patch.role = cfg.role
+    if (!existing?.app_name) patch.app_name = cfg.appName
+    if (!existing?.app_short_name) patch.app_short_name = cfg.appShortName
+    if (!existing?.creator_id) patch.creator_id = uid
+    if (!existing?.created_by) patch.created_by = uid
+    if (typeof existing?.tagline !== 'string') patch.tagline = ''
+    if (typeof existing?.description !== 'string') patch.description = ''
+    if (typeof existing?.short_bio !== 'string') patch.short_bio = ''
+    if (typeof existing?.long_bio !== 'string') patch.long_bio = ''
+
+    const socialLinks = (existing as any)?.social_links
+    if (!socialLinks || typeof socialLinks !== 'object') {
+      patch.social_links = { instagram: '' }
+    } else if (typeof (socialLinks as any).instagram !== 'string') {
+      patch.social_links = { instagram: '' }
+    }
+
+    if (typeof existing?.avatar_url !== 'string') patch.avatar_url = ''
+    if (typeof existing?.logo_url !== 'string') patch.logo_url = ''
+    if (typeof existing?.wordmark_url !== 'string') patch.wordmark_url = ''
+
+    if (!Array.isArray(existing?.join_requests)) patch.join_requests = []
+    if (!Array.isArray(existing?.admin_ids)) patch.admin_ids = []
+    if (typeof existing?.user_count !== 'number') patch.user_count = 0
+    if (!existing?.created_at) patch.created_at = new Date().toISOString() as any
+
+    if (Object.keys(patch).length) {
+      await updateDocument<App>('apps', cfg.appId, patch)
     }
 
     await ensureAppMembership(uid, 'admin')

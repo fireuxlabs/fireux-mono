@@ -11,10 +11,18 @@ export namespace KitchenCard {
     formatted_address?: string | null
   }
 
+  export type Card = Cell
+
   export type Profile = Kitchen
 }
 
 export function useKitchenInterface() {
+  function card(kitchen: Kitchen): KitchenCard.Card
+  function card(kitchen?: Kitchen | null | undefined): KitchenCard.Card | null
+  function card(kitchen?: Kitchen | null | undefined): KitchenCard.Card | null {
+    return kitchen ? cellProps(kitchen) : null
+  }
+
   const pillProps = (kitchen?: Kitchen | null): KitchenCard.Pill => ({
     id: kitchen?.id ?? kitchen?.place_id,
     title: kitchen?.name || 'Kitchen',
@@ -29,5 +37,5 @@ export function useKitchenInterface() {
     }
   }
 
-  return { pillProps, cellProps }
+  return { card, pillProps, cellProps }
 }

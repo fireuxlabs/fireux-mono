@@ -1,34 +1,18 @@
 <template>
-  <div
-    class="fx-pill"
-  >
-    <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="xs" />
+  <div class="fx-pill">
+    <UAvatar :src="card.avatar || undefined" :alt="card.title" size="xs" />
     <div class="min-w-0 flex-1">
-      <div class="min-w-0 truncate text-sm font-medium">{{ vmTitle }}</div>
-      <div v-if="vmSubtitle" class="min-w-0 truncate text-xs text-dimmed">{{ vmSubtitle }}</div>
+      <div class="min-w-0 truncate text-sm font-medium">{{ card.title }}</div>
+      <div v-if="card.subtitle" class="min-w-0 truncate text-xs text-dimmed">{{ card.subtitle }}</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Job } from '../../../../../models/job.model'
-import { useJobInterface } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
+import { toRef } from 'vue'
+import type { JobCard } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
-const props = defineProps<{
-  title?: string
-  subtitle?: string
-  avatar?: string | null
-  job?: Job | null
-}>()
+const props = defineProps<{ card: JobCard.Card }>()
 
-const { mapToCardProps } = useJobInterface()
-
-const resolved = computed(() =>
-  mapToCardProps({ id: props.job?.id, title: props.job?.title, status: props.job?.status })
-)
-
-const vmTitle = computed(() => props.title ?? resolved.value.title)
-const vmSubtitle = computed(() => props.subtitle ?? resolved.value.status)
-const vmAvatar = computed(() => props.avatar ?? null)
+const card = toRef(props, 'card')
 </script>

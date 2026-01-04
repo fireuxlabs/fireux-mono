@@ -1,18 +1,18 @@
 <template>
   <NuxtLink
-    :to="vmTo"
+    :to="to"
     class="fx-pill"
   >
-    <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="xs" />
+    <UAvatar :src="avatar || undefined" :alt="title" size="xs" />
 
     <div class="min-w-0 flex-1">
-      <div class="min-w-0 truncate text-sm font-medium">{{ vmTitle }}</div>
-      <div v-if="vmSubtitle" class="min-w-0 truncate text-xs text-dimmed">{{ vmSubtitle }}</div>
+      <div class="min-w-0 truncate text-sm font-medium">{{ title }}</div>
+      <div v-if="subtitle" class="min-w-0 truncate text-xs text-dimmed">{{ subtitle }}</div>
     </div>
 
-    <div v-if="vmBadges.length" class="ml-2 flex shrink-0 items-center gap-1">
+    <div v-if="badges.length" class="ml-2 flex shrink-0 items-center gap-1">
       <UBadge
-        v-for="badge in vmBadges"
+        v-for="badge in badges"
         :key="badge"
         variant="soft"
         color="neutral"
@@ -25,51 +25,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
-import type { AgentCard, AgentProfile } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { reactive, toRefs, watchEffect } from 'vue'
+import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
-const props = defineProps<{
-  title?: string
-  subtitle?: string
-  avatar?: string | null
-  agent?: AgentProfile | AgentCard.Card | null
-  card?: AgentCard.Card | null
-}>()
+const props = defineProps<{ card: AgentCard.Card }>()
 
-const { coreProfile, card: toCard } = useAgent()
+const card = reactive({ ...props.card })
 
-const isAgentCard = (value: unknown): value is AgentCard.Card => {
-  if (!value || typeof value !== 'object') return false
-  return 'to' in value && 'title' in value && 'badges' in value && 'line1' in value
-}
-
-const resolvedCard = computed<AgentCard.Card | null>(() => {
-  if (props.card) return props.card
-
-  const supplied = props.agent ?? null
-  if (supplied) {
-    return isAgentCard(supplied) ? supplied : toCard(supplied)
-  }
-
-  return coreProfile.value ? toCard(coreProfile.value) : null
+watchEffect(() => {
+  Object.assign(card, props.card)
 })
 
-const vm = computed(() => {
-  const card = resolvedCard.value
-
-  const title = props.title ?? card?.title ?? 'Agent'
-  const subtitle = props.subtitle ?? (card?.subtitle || undefined)
-  const avatar = props.avatar ?? (card?.avatar || null)
-  const badges = card?.badges ?? []
-  const to = card?.to || '#'
-
-  return { title, subtitle, avatar, badges, to }
-})
-
-const vmTitle = computed(() => vm.value.title)
-const vmSubtitle = computed(() => vm.value.subtitle)
-const vmAvatar = computed(() => vm.value.avatar)
-const vmBadges = computed(() => vm.value.badges)
-const vmTo = computed(() => vm.value.to)
+const { to, avatar, title, subtitle, badges } = toRefs(card)
 </script>

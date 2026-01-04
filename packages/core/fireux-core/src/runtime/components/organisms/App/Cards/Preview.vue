@@ -30,8 +30,10 @@
 </template>
 
 <script setup lang="ts">
+import { toRef } from 'vue'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-defineProps<{
-  card: AppCard.Card
-}>()
+
+const props = defineProps<{ card: AppCard.Card }>()
+
+const card = toRef(props, 'card')
 </script>

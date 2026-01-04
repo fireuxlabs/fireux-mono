@@ -28,11 +28,11 @@
 
         <OrganismsProfilesProfessionalCardsCell
           v-if="showCellCard && previewCard"
-          :professional="previewCard"
+          :card="previewCard"
         />
         <OrganismsProfilesProfessionalCardsPill
           v-else-if="previewCard"
-          :professional="previewCard"
+          :card="previewCard"
         />
       </UCard>
 

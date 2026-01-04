@@ -18,16 +18,15 @@ export namespace ChefCard {
 }
 
 export function useChefInterface(profile: ProfileRefs<ChefCore>) {
-  const resolveProfile = (target?: ChefCore): ChefCore => {
-    const current = target ?? profile.coreProfile.value
-    if (!current) {
-      throw new Error('[useChefInterface] Chef profile is required')
-    }
-    return current
+  function resolveProfile(target?: ChefCore | null | undefined): ChefCore | null {
+    return target ?? profile.coreProfile.value ?? null
   }
 
-  const card = (target?: ChefCore): ChefCard.Card => {
+  function card(target: ChefCore): ChefCard.Card
+  function card(target?: ChefCore | null | undefined): ChefCard.Card | null
+  function card(target?: ChefCore | null | undefined): ChefCard.Card | null {
     const currentProfile = resolveProfile(target)
+    if (!currentProfile) return null
 
     return {
       id: currentProfile.id,

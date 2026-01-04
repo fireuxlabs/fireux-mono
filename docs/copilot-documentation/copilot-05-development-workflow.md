@@ -23,7 +23,12 @@ This chapter describes the standard local workflow, branching expectations, and 
 - Location: `http://localhost:<port>/dev` (dev layout landing page). Works across ecosystems; Misebox/Cleanbox keep it job-agnostic.
 - Backed by `/api/app/env-check`: validates required client/server env vars, Firebase Admin credentials (JSON, split keys, or service-account file), and brand assets dimensions.
 - Panel sections: runtime summary (ecosystem/role/appId/modules), admin SDK status with notes, and optional runtime JSON toggle.
-- If status shows `missing`, add the required env keys or a service-account file under `projects/<ecosystem>/<ecosystem>-app/config/service-account.json` (or root env JSON). Run `Refresh` in the panel after fixes.
+- If status shows `missing`, add the required env keys or provide Firebase Admin credentials using one of these patterns:
+   - `GOOGLE_APPLICATION_CREDENTIALS` pointing at the ecosystem convention:
+      - `packages/ecosystem/fireux-<ecosystem>/src/config/firebase/service-account.json`
+   - Or root env JSON via `FIREBASE_SERVICE_ACCOUNT`.
+   - Legacy/alternate file path (still supported in some flows): `projects/<ecosystem>/<ecosystem>-app/config/service-account.json`.
+   Run `Refresh` in the panel after fixes.
 
 ## Temporary debug panels (clipboard-first)
 

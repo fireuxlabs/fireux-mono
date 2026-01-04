@@ -22,7 +22,10 @@
           </UButton>
         </div>
 
-        <OrganismsProfilesProfessionalCardsProfile :professional="profile" />
+        <OrganismsProfilesProfessionalCardsProfile
+          v-if="professionalCard"
+          :card="professionalCard"
+        />
       </div>
     </div>
 
@@ -34,10 +37,12 @@
 
 <script setup lang="ts">
 import { professionalConfig } from '../../models/profiles/Professional/Professional.model.ts'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { navigateTo, useHead, useRoute, useSeoMeta } from '#imports'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import type { ProfessionalProfile } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 
 useSeoMeta({
   title: 'Professional Profile',
@@ -57,6 +62,15 @@ const rawDoc = docId
   : null
 const profile = computed<any>(() => (rawDoc as any)?.value ?? rawDoc ?? null)
 const loading = computed(() => !rawDoc && !!docId)
+
+const { card } = useProfessionalInterface({
+  coreProfile: ref<ProfessionalProfile | undefined | null>(null),
+  appProfile: ref(null),
+})
+
+const professionalCard = computed(() =>
+  profile.value ? card(profile.value as ProfessionalProfile) : null
+)
 
 const resolveName = (p: any) =>
   p?.display_name ||

@@ -25,16 +25,15 @@ export function useUserInterface(source?: Ref<User | null | undefined> | UserRef
   const isUserRefs = (value: unknown): value is UserRefs =>
     Boolean(value) && typeof value === 'object' && 'coreUser' in (value as UserRefs)
 
-  const resolveUser = (target?: User): User => {
-    const user = target ?? (isUserRefs(source) ? source.coreUser.value : source?.value)
-    if (!user) {
-      throw new Error('[useUserInterface] User is required')
-    }
-    return user
+  function resolveUser(target?: User | null | undefined): User | null {
+    return target ?? (isUserRefs(source) ? source.coreUser.value : source?.value) ?? null
   }
 
-  const card = (target?: User): UserCard.Card => {
+  function card(target: User): UserCard.Card
+  function card(target?: User | null | undefined): UserCard.Card | null
+  function card(target?: User | null | undefined): UserCard.Card | null {
     const user = resolveUser(target)
+    if (!user) return null
 
     const proxiedAvatar = getProxiedAvatarUrl(user.avatar)
     const avatar = proxiedAvatar || user.avatar

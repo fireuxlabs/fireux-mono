@@ -71,6 +71,9 @@ Notes:
 - App env template lives at `templates/.env.app.template` and defines the canonical required keys for every app.
 - Ecosystem config type is defined in `fireux-core/config/ecosystem` (public, shared, committed).
 - Firebase credentials can be supplied as JSON (`FIREBASE_SERVICE_ACCOUNT`) or split fields (`FIREBASE_PROJECT_ID`, etc.). `createFireuxConfig` normalizes private keys with newline handling.
+- Service-account file convention (local dev): each ecosystem keeps an uncommitted service account JSON at:
+  - `packages/ecosystem/fireux-<ecosystem>/src/config/firebase/service-account.json`
+  - Point `GOOGLE_APPLICATION_CREDENTIALS` at this file to enable Firebase Admin scripts and `/api/app/env-check`.
 - Places API access uses `GOOGLE_PLACES_API_KEY`. The helper exposes it via `runtimeConfig.public.googlePlacesApiKey` for both client composables and server handlers.
 - Add new env vars through `copilot-documentation/copilot-appendices/README.md` once populated so they remain discoverable.
 

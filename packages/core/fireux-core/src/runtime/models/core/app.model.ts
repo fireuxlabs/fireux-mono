@@ -2,7 +2,6 @@
 import type { FirestoreTimestampOrString } from '../../../types/firebase'
 
 export type AppRole = 'global' | 'tenant' | 'sandbox'
-export type AppStatus = 'active' | 'archived'
 type Ts = FirestoreTimestampOrString
 
 /** Core Firestore App document */
@@ -23,11 +22,11 @@ export interface App {
   creator_id: string
   created_by: string
 
-  // Ops
-  status: AppStatus
-
   // Optional metadata
+  tagline: string
   description: string
+  short_bio: string
+  long_bio: string
   social_links: { instagram: string }
 
   // Derived counts

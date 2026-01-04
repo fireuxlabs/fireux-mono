@@ -11,10 +11,18 @@ export namespace IngredientCard {
     category?: string | null
   }
 
+  export type Card = Cell
+
   export type Profile = Ingredient
 }
 
 export function useIngredientInterface() {
+  function card(ingredient: Ingredient): IngredientCard.Card
+  function card(ingredient?: Ingredient | null | undefined): IngredientCard.Card | null
+  function card(ingredient?: Ingredient | null | undefined): IngredientCard.Card | null {
+    return ingredient ? cellProps(ingredient) : null
+  }
+
   const pillProps = (ingredient?: Ingredient | null): IngredientCard.Pill => ({
     id: ingredient?.id,
     title: ingredient?.name || 'Ingredient',
@@ -29,5 +37,5 @@ export function useIngredientInterface() {
     }
   }
 
-  return { pillProps, cellProps }
+  return { card, pillProps, cellProps }
 }

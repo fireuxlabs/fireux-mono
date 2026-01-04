@@ -1,11 +1,11 @@
 <template>
   <UCard>
     <div class="flex items-start gap-3">
-      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
       <div class="min-w-0 flex-1">
-        <div class="truncate font-medium">{{ vmTitle }}</div>
-        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">
-          {{ vmSubtitle }}
+        <div class="truncate font-medium">{{ title }}</div>
+        <div v-if="resolvedSubtitle" class="truncate text-sm text-dimmed">
+          {{ resolvedSubtitle }}
         </div>
         <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
       </div>
@@ -14,24 +14,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Kitchen } from '../../../../../models/objects/kitchen.model'
-import { useKitchenInterface } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
+import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
 
-const props = defineProps<{
-  title?: string
-  subtitle?: string
+const { card, avatar: avatarProp, prop } = defineProps<{
+  card: KitchenCard.Cell
   avatar?: string | null
-  kitchen?: Kitchen | null
   prop?: string
 }>()
-const { cellProps } = useKitchenInterface()
 
-const resolved = computed(() => cellProps(props.kitchen ?? null))
-
-const vmTitle = computed(() => props.title ?? resolved.value.title)
-const vmSubtitle = computed(
-  () => props.subtitle ?? resolved.value.formatted_address ?? resolved.value.subtitle ?? undefined
-)
-const vmAvatar = computed(() => props.avatar ?? null)
+const { title, subtitle, formatted_address } = card
+const avatar = avatarProp ?? null
+const resolvedSubtitle = formatted_address ?? subtitle
 </script>

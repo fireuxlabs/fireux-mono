@@ -25,12 +25,6 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
       .trim()
       .slice(0, max)
 
-  const sanitizeStatus = (raw: string | null | undefined): App['status'] => {
-    const value = text(raw, 20)
-    if (value === 'active' || value === 'archived') return value
-    throw new Error('Status must be active or archived')
-  }
-
   const sanitizeInstagram = (raw: string | null | undefined) => {
     const value = text(raw, 2048)
     if (!value) return ''
@@ -72,6 +66,18 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     await updateApp({ description: text(description, 500) })
   }
 
+  async function updateTagline(tagline: string) {
+    await updateApp({ tagline: text(tagline, 120) })
+  }
+
+  async function updateShortBio(shortBio: string) {
+    await updateApp({ short_bio: text(shortBio, 240) })
+  }
+
+  async function updateLongBio(longBio: string) {
+    await updateApp({ long_bio: text(longBio, 4000) })
+  }
+
   async function updateAppName(name: string) {
     await updateApp({ app_name: text(name, 60) })
   }
@@ -82,11 +88,6 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   async function updateEcosystem(ecosystem: string) {
     await updateApp({ ecosystem: text(ecosystem, 60) })
-  }
-
-  async function updateStatus(status: string) {
-    const value = sanitizeStatus(status)
-    await updateApp({ status: value })
   }
 
   async function updateInstagram(url: string | null) {
@@ -178,10 +179,12 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   return {
     updateDescription,
+    updateTagline,
+    updateShortBio,
+    updateLongBio,
     updateAppName,
     updateAppShortName,
     updateEcosystem,
-    updateStatus,
     updateInstagram,
     updateAvatarUrl,
     uploadAvatar,

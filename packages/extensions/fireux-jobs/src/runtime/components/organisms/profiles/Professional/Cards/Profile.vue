@@ -3,19 +3,19 @@
     <template #header>
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-start gap-3">
-          <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="md" />
+          <UAvatar :src="avatar || undefined" :alt="title" size="md" />
           <div class="min-w-0">
-            <div class="truncate text-base font-semibold">{{ vmTitle }}</div>
+            <div class="truncate text-base font-semibold">{{ title }}</div>
             <div class="text-sm text-dimmed">
-              <span v-if="vmSubtitle">{{ vmSubtitle }}</span>
+              <span v-if="subtitle">{{ subtitle }}</span>
               <span v-else class="italic">missing</span>
             </div>
           </div>
         </div>
 
-        <div v-if="vmBadges.length" class="flex flex-wrap justify-end gap-1">
+        <div v-if="badges.length" class="flex flex-wrap justify-end gap-1">
           <UBadge
-            v-for="badge in vmBadges"
+            v-for="badge in badges"
             :key="badge"
             variant="soft"
             color="neutral"
@@ -28,14 +28,14 @@
     </template>
 
     <div class="space-y-4">
-      <div v-if="vmProp" class="text-sm text-dimmed">
-        {{ vmProp }}
+      <div v-if="prop" class="text-sm text-dimmed">
+        {{ prop }}
       </div>
 
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Bio</div>
         <div class="text-sm">
-          <span v-if="vmLine1">{{ vmLine1 }}</span>
+          <span v-if="prop || line1">{{ prop || line1 }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -43,7 +43,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Specialties</div>
         <div class="text-sm">
-          <span v-if="vmLine2">{{ vmLine2 }}</span>
+          <span v-if="line2">{{ line2 }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -51,7 +51,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Locations</div>
         <div class="text-sm">
-          <span v-if="vmLine3">{{ vmLine3 }}</span>
+          <span v-if="line3">{{ line3 }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -60,66 +60,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
-import type {
-  ProfessionalCard,
-  ProfessionalProfile,
-} from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import { reactive, toRefs, watchEffect } from 'vue'
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
-const props = defineProps<{
-  title?: string
-  subtitle?: string
-  avatar?: string | null
-  professional?: ProfessionalProfile | ProfessionalCard.Card | null
-  card?: ProfessionalCard.Card | null
-  prop?: string
-}>()
+const prop = defineProp<string>('prop', { required: false })
 
-const { coreProfile, card: toCard } = useProfessional()
+const props = defineProps<{ card: ProfessionalCard.Card }>()
 
-const isProfessionalCard = (value: unknown): value is ProfessionalCard.Card => {
-  if (!value || typeof value !== 'object') return false
-  return 'to' in value && 'title' in value && 'badges' in value && 'line1' in value
-}
+const card = reactive({ ...props.card })
 
-const resolvedCard = computed<ProfessionalCard.Card | null>(() => {
-  if (props.card) return props.card
-
-  const supplied = props.professional ?? null
-  if (supplied) {
-    return isProfessionalCard(supplied) ? supplied : toCard(supplied)
-  }
-
-  return coreProfile.value ? toCard(coreProfile.value) : null
+watchEffect(() => {
+  Object.assign(card, props.card)
 })
 
-const vm = computed(() => {
-  const card = resolvedCard.value
-
-  const title = props.title ?? card?.title ?? 'Professional'
-  const subtitle = props.subtitle ?? (card?.subtitle || undefined)
-  const avatar = props.avatar ?? (card?.avatar || null)
-  const badges = card?.badges ?? []
-
-  const prop = typeof props.prop === 'string' ? props.prop : ''
-
-  const line1Source = typeof props.prop === 'string' ? props.prop : card?.line1 ?? ''
-  const line1 = String(line1Source ?? '').trim()
-  const line2 = String(card?.line2 ?? '').trim()
-  const line3 = String(card?.line3 ?? '').trim()
-
-  return { title, subtitle, avatar, badges, prop, line1, line2, line3 }
-})
-
-const vmTitle = computed(() => vm.value.title)
-const vmSubtitle = computed(() => vm.value.subtitle)
-const vmAvatar = computed(() => vm.value.avatar)
-const vmBadges = computed(() => vm.value.badges)
-
-const vmProp = computed(() => vm.value.prop)
-
-const vmLine1 = computed(() => vm.value.line1)
-const vmLine2 = computed(() => vm.value.line2)
-const vmLine3 = computed(() => vm.value.line3)
+const { avatar, title, subtitle, badges, line1, line2, line3 } = toRefs(card)
 </script>

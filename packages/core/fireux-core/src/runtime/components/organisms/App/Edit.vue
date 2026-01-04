@@ -86,16 +86,6 @@
             :disabled-message="lockedMessage"
           />
         </div>
-
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="Status"
-            :firebase-value="app.status"
-            placeholder="active"
-            :maxlength="12"
-            :update-function="handleStatusUpdate"
-          />
-        </div>
       </UCard>
 
       <UCard class="fx-section">
@@ -164,6 +154,16 @@
 
         <div class="fx-section__item">
           <MoleculesFormsFirestoreSimpleField
+            label="Tagline"
+            :maxlength="120"
+            :firebase-value="app.tagline"
+            placeholder="A short one-liner for cards and lists"
+            :update-function="handleTaglineUpdate"
+          />
+        </div>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
             label="Description"
             type="textarea"
             :rows="3"
@@ -171,6 +171,30 @@
             :firebase-value="app.description"
             placeholder="Describe your application..."
             :update-function="handleDescriptionUpdate"
+          />
+        </div>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
+            label="Short bio"
+            type="textarea"
+            :rows="2"
+            :maxlength="240"
+            :firebase-value="app.short_bio"
+            placeholder="Short bio used on compact surfaces"
+            :update-function="handleShortBioUpdate"
+          />
+        </div>
+
+        <div class="fx-section__item">
+          <MoleculesFormsFirestoreSimpleField
+            label="Long bio"
+            type="textarea"
+            :rows="6"
+            :maxlength="4000"
+            :firebase-value="app.long_bio"
+            placeholder="Long bio for profile pages"
+            :update-function="handleLongBioUpdate"
           />
         </div>
       </UCard>
@@ -326,10 +350,12 @@ const noopUpdate = async () => {}
 
 const {
   updateDescription,
+  updateTagline,
+  updateShortBio,
+  updateLongBio,
   updateAppName,
   updateAppShortName,
   updateEcosystem,
-  updateStatus,
   updateInstagram,
   handleJoinRequests,
   setAppUserAdmin,
@@ -363,6 +389,24 @@ const handleDescriptionUpdate = withToast(
   'Failed to update description'
 )
 
+const handleTaglineUpdate = withToast(
+  updateTagline,
+  'Tagline updated',
+  'Failed to update tagline'
+)
+
+const handleShortBioUpdate = withToast(
+  updateShortBio,
+  'Short bio updated',
+  'Failed to update short bio'
+)
+
+const handleLongBioUpdate = withToast(
+  updateLongBio,
+  'Long bio updated',
+  'Failed to update long bio'
+)
+
 const handleAppNameUpdate = withToast(
   updateAppName,
   'App name updated',
@@ -379,12 +423,6 @@ const handleEcosystemUpdate = withToast(
   updateEcosystem,
   'Ecosystem updated',
   'Failed to update ecosystem'
-)
-
-const handleStatusUpdate = withToast(
-  updateStatus,
-  'Status updated',
-  'Failed to update status'
 )
 
 const handleUpdateInstagram = withToast(

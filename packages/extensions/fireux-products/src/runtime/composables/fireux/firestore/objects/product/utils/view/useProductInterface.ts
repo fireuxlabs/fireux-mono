@@ -8,6 +8,12 @@ export interface ProductCardProps {
 }
 
 export function useProductInterface() {
+  function card(product: Partial<ProductCardProps>): ProductCardProps
+  function card(product?: Partial<ProductCardProps> | null | undefined): ProductCardProps | null
+  function card(product?: Partial<ProductCardProps> | null | undefined): ProductCardProps | null {
+    return product ? mapToCardProps(product) : null
+  }
+
   const mapToCardProps = (
     product: Partial<ProductCardProps>
   ): ProductCardProps => ({
@@ -18,5 +24,5 @@ export function useProductInterface() {
     priceLabel: product.priceLabel,
   })
 
-  return { mapToCardProps }
+  return { card, mapToCardProps }
 }

@@ -1,99 +1,120 @@
 <template>
   <ClientOnly>
-    <UCard>
-      <div class="space-y-6">
+    <UCard class="fx-section">
+      <template #header>
+        <div class="fx-section__header">
+          <div class="fx-section__copy">
+            <h3 class="text-base font-semibold">Images</h3>
+            <p class="text-xs text-dimmed">
+              These are local public assets served from <span class="font-mono">/public/img/app</span>.
+              Syncing will overwrite the Firestore image URLs.
+            </p>
+          </div>
+        </div>
+      </template>
+
+      <div class="fx-section__item space-y-5">
         <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1 space-y-2">
+            <div class="text-sm font-medium">Logo</div>
             <a
               :href="localLogoPath"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-xs text-gray-500 underline break-all"
+              class="text-xs text-dimmed underline break-all"
             >
-              <span class="font-medium text-gray-700">Logo:</span>
               {{ localLogoPath }}
             </a>
 
-            <div class="mt-2">
+            <div class="inline-flex max-w-full items-center">
               <img
                 :src="localLogoPath"
                 alt="Local logo"
-                class="block h-14 w-auto"
+                class="block h-10 w-auto max-w-[12rem] object-contain"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>
 
           <UButton
             icon="i-lucide-refresh-cw"
+            label="Sync"
             variant="soft"
             size="xs"
             :loading="saving === 'logo'"
             :disabled="Boolean(saving)"
-            title="Sync local logo"
+            title="Sync local logo (overwrites Firestore URL)"
             @click="onOverwrite('logo')"
           />
         </div>
 
         <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1 space-y-2">
+            <div class="text-sm font-medium">Wordmark</div>
             <a
               :href="localWordmarkPath"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-xs text-gray-500 underline break-all"
+              class="text-xs text-dimmed underline break-all"
             >
-              <span class="font-medium text-gray-700">Wordmark:</span>
               {{ localWordmarkPath }}
             </a>
 
-            <div class="mt-2">
+            <div class="inline-flex max-w-full items-center">
               <img
                 :src="localWordmarkPath"
                 alt="Local wordmark"
-                class="block h-8 w-auto"
+                class="block h-8 w-auto max-w-[12rem] object-contain"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>
 
           <UButton
             icon="i-lucide-refresh-cw"
+            label="Sync"
             variant="soft"
             size="xs"
             :loading="saving === 'wordmark'"
             :disabled="Boolean(saving)"
-            title="Sync local wordmark"
+            title="Sync local wordmark (overwrites Firestore URL)"
             @click="onOverwrite('wordmark')"
           />
         </div>
 
         <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1 space-y-2">
+            <div class="text-sm font-medium">Avatar</div>
             <a
               :href="localAvatarPath"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-xs text-gray-500 underline break-all"
+              class="text-xs text-dimmed underline break-all"
             >
-              <span class="font-medium text-gray-700">Thumbnail:</span>
               {{ localAvatarPath }}
             </a>
 
-            <div class="mt-2">
+            <div class="inline-flex max-w-full items-center">
               <img
                 :src="localAvatarPath"
-                alt="Local thumbnail"
+                alt="Local avatar"
                 class="block h-12 w-12 rounded object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>
 
           <UButton
             icon="i-lucide-refresh-cw"
+            label="Sync"
             variant="soft"
             size="xs"
             :loading="saving === 'avatar'"
             :disabled="Boolean(saving)"
-            title="Sync local thumbnail"
+            title="Sync local avatar (overwrites Firestore URL)"
             @click="onOverwrite('avatar')"
           />
         </div>

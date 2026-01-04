@@ -1,10 +1,6 @@
 <template>
   <NuxtLink :to="card.to" class="fx-pill">
-    <UAvatar
-      :src="card.avatar || undefined"
-      :alt="card.title"
-      size="xs"
-    />
+    <UAvatar :src="card.avatar || undefined" :alt="card.title" size="xs" />
 
     <div class="min-w-0 flex-1">
       <div class="min-w-0 truncate text-sm font-medium">
@@ -15,10 +11,7 @@
       </div>
     </div>
 
-    <div
-      v-if="card.badges.length"
-      class="ml-2 flex shrink-0 items-center gap-1"
-    >
+    <div v-if="card.badges.length" class="ml-2 flex shrink-0 items-center gap-1">
       <UBadge
         v-for="badge in card.badges"
         :key="badge"
@@ -33,9 +26,10 @@
 </template>
 
 <script setup lang="ts">
+import { toRef } from 'vue'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
-defineProps<{
-  card: AppCard.Card
-}>()
+const props = defineProps<{ card: AppCard.Card }>()
+
+const card = toRef(props, 'card')
 </script>

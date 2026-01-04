@@ -18,16 +18,15 @@ export namespace SupplierCard {
 }
 
 export function useSupplierInterface(profile: ProfileRefs<SupplierCore>) {
-  const resolveProfile = (target?: SupplierCore): SupplierCore => {
-    const current = target ?? profile.coreProfile.value
-    if (!current) {
-      throw new Error('[useSupplierInterface] Supplier profile is required')
-    }
-    return current
+  function resolveProfile(target?: SupplierCore | null | undefined): SupplierCore | null {
+    return target ?? profile.coreProfile.value ?? null
   }
 
-  const card = (target?: SupplierCore): SupplierCard.Card => {
+  function card(target: SupplierCore): SupplierCard.Card
+  function card(target?: SupplierCore | null | undefined): SupplierCard.Card | null
+  function card(target?: SupplierCore | null | undefined): SupplierCard.Card | null {
     const currentProfile = resolveProfile(target)
+    if (!currentProfile) return null
 
     const locationLabel = currentProfile.locations
       .map((loc) => `${loc.city}, ${loc.country}`)

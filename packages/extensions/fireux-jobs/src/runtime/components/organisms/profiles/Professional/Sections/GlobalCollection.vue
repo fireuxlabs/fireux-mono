@@ -15,7 +15,7 @@
       <OrganismsProfilesProfessionalCardsPill
         v-for="card in cards"
         :key="cardKey(card)"
-        :professional="card"
+        :card="card"
       />
     </div>
 

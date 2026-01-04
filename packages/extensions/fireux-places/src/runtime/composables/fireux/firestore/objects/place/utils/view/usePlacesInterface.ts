@@ -30,6 +30,12 @@ export function usePlacesInterface() {
     }
   }
 
-  return { toCell }
+  function card(place: PlaceBase): PlaceCard.Cell
+  function card(place?: PlaceBase | null | undefined): PlaceCard.Cell | null
+  function card(place?: PlaceBase | null | undefined): PlaceCard.Cell | null {
+    return place ? toCell(place) : null
+  }
+
+  return { card, toCell }
 }
 

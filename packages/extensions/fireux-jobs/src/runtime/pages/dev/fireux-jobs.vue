@@ -26,11 +26,11 @@
             <div class="space-y-4">
               <OrganismsProfilesProfessionalCardsCell
                 v-if="professionalCard"
-                :professional="professionalCard"
+                :card="professionalCard"
               />
               <OrganismsProfilesProfessionalCardsPill
                 v-if="professionalCard"
-                :professional="professionalCard"
+                :card="professionalCard"
               />
             </div>
           </UCard>
@@ -65,7 +65,7 @@
             <OrganismsProfilesProfessionalCardsPill
               v-for="card in professionalGlobalPills"
               :key="professionalPillKey(card)"
-              :professional="card"
+              :card="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -110,7 +110,7 @@
             <OrganismsProfilesProfessionalCardsPill
               v-for="card in professionalLocalPills"
               :key="professionalPillKey(card)"
-              :professional="card"
+              :card="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -167,8 +167,8 @@
             </template>
 
             <div class="space-y-4">
-              <OrganismsProfilesAgentCardsCell v-if="agentCard" :agent="agentCard" />
-              <OrganismsProfilesAgentCardsPill v-if="agentCard" :agent="agentCard" />
+              <OrganismsProfilesAgentCardsCell v-if="agentCard" :card="agentCard" />
+              <OrganismsProfilesAgentCardsPill v-if="agentCard" :card="agentCard" />
             </div>
           </UCard>
         </div>
@@ -200,7 +200,7 @@
             <OrganismsProfilesAgentCardsPill
               v-for="card in agentGlobalPills"
               :key="agentPillKey(card)"
-              :agent="card"
+              :card="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -245,7 +245,7 @@
             <OrganismsProfilesAgentCardsPill
               v-for="card in agentLocalPills"
               :key="agentPillKey(card)"
-              :agent="card"
+              :card="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">

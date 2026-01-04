@@ -1,11 +1,11 @@
 <template>
   <UCard>
     <div class="flex items-start gap-3">
-      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
       <div class="min-w-0 flex-1">
-        <div class="truncate font-medium">{{ vmTitle }}</div>
-        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">
-          {{ vmSubtitle }}
+        <div class="truncate font-medium">{{ title }}</div>
+        <div v-if="resolvedSubtitle" class="truncate text-sm text-dimmed">
+          {{ resolvedSubtitle }}
         </div>
         <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
       </div>
@@ -14,24 +14,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Company } from '../../../../../models/objects/company.model'
-import { useCompanyInterface } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
+import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 
-const props = defineProps<{
-  title?: string
-  subtitle?: string
+const { card, avatar: avatarProp, prop } = defineProps<{
+  card: CompanyCard.Cell
   avatar?: string | null
-  company?: Company | null
   prop?: string
 }>()
-const { cellProps } = useCompanyInterface()
 
-const resolved = computed(() => cellProps(props.company ?? null))
-
-const vmTitle = computed(() => props.title ?? resolved.value.title)
-const vmSubtitle = computed(
-  () => props.subtitle ?? resolved.value.website ?? resolved.value.subtitle ?? undefined
-)
-const vmAvatar = computed(() => props.avatar ?? null)
+const { title, subtitle, website } = card
+const avatar = avatarProp ?? null
+const resolvedSubtitle = website ?? subtitle
 </script>

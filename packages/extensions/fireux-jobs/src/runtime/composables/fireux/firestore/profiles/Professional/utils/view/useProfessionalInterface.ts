@@ -5,16 +5,15 @@ import { professionalConfig, type ProfessionalCore } from '../../../../../../../
 import type { ProfessionalCard } from '../../../../../../../types/profiles/ProfessionalCard.ts'
 
 export function useProfessionalInterface(profile: ProfileRefs<ProfessionalCore>) {
-  const resolveProfile = (target?: ProfessionalCore): ProfessionalCore => {
-    const current = target ?? profile.coreProfile.value
-    if (!current) {
-      throw new Error('[useProfessionalInterface] Professional profile is required')
-    }
-    return current
+  function resolveProfile(target?: ProfessionalCore | null | undefined): ProfessionalCore | null {
+    return target ?? profile.coreProfile.value ?? null
   }
 
-  const card = (target?: ProfessionalCore): ProfessionalCard.Card => {
+  function card(target: ProfessionalCore): ProfessionalCard.Card
+  function card(target?: ProfessionalCore | null | undefined): ProfessionalCard.Card | null
+  function card(target?: ProfessionalCore | null | undefined): ProfessionalCard.Card | null {
     const currentProfile = resolveProfile(target)
+    if (!currentProfile) return null
 
     return {
       id: currentProfile.id,
