@@ -21,7 +21,7 @@
 
     <div v-if="directoryEntries.length" class="fx-section__grid">
       <article v-for="entry in directoryEntries" :key="entry.key">
-        <OrganismsAppCardsPill :card="entry.card" />
+        <OrganismsAppCardsPill v-bind="entry.card" />
       </article>
     </div>
 

@@ -15,7 +15,7 @@
 
         <div class="card-test-block">
           <h4>Pill</h4>
-          <OrganismsAppCardsPill v-if="appCard" :card="appCard" />
+          <OrganismsAppCardsPill v-if="appCard" v-bind="appCard" />
         </div>
 
         <div class="card-test-block">

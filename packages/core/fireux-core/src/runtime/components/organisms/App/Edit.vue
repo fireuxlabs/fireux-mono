@@ -103,7 +103,7 @@
         <div v-if="appCard" class="fx-section__item space-y-4">
           <div>
             <div class="mb-2 text-xs text-gray-500">Pill</div>
-            <OrganismsAppCardsPill :card="appCard" />
+            <OrganismsAppCardsPill v-bind="appCard" />
           </div>
 
           <div>
@@ -488,7 +488,22 @@ const fetchedUser = (uid: string) => {
   return { user: computed(() => coreUser.value ?? null) }
 }
 
-const cardRef = computed(() => (target?: User | null | undefined) => card(target ?? undefined))
+const cardRef = computed(() => (target?: User | null | undefined) => {
+  const payload = card(target ?? undefined)
+  if (payload) return payload
+  const uid = target?.id ?? ''
+  return {
+    id: uid,
+    to: uid ? `/users/${uid}` : '',
+    avatar: '',
+    title: uid || 'Unknown user',
+    subtitle: '',
+    badges: [],
+    line1: '',
+    line2: '',
+    line3: '',
+  }
+})
 
 const {
   items: joinRequestItems,

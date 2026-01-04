@@ -17,7 +17,7 @@
             <div class="grid gap-4 md:grid-cols-2">
               <div class="space-y-2">
                 <div class="text-xs text-dimmed">Pill</div>
-                <OrganismsAppCardsPill :card="appCard" />
+                <OrganismsAppCardsPill v-bind="appCard" />
               </div>
 
               <div class="space-y-2">
