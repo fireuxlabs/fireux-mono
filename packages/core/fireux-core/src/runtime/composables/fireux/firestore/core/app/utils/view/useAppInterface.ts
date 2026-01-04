@@ -8,15 +8,9 @@ export namespace AppCard {
     id: string
     to: string
     avatar: string
-    logo: string
-    wordmark: string
     title: string
     subtitle: string
     badges: string[]
-    description: string
-    role: string
-    shortName: string
-    status: string
   }
 }
 
@@ -30,16 +24,10 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     return {
       id: app.id,
       to: `/apps/${app.id}`,
-      avatar: app.avatar_url,
-      logo: app.logo_url,
-      wordmark: app.wordmark_url,
-      title: app.app_name,
-      subtitle: app.ecosystem,
+      avatar: app.avatar_url || '',
+      title: app.app_name || '',
+      subtitle: app.ecosystem || '',
       badges: [],
-      description: app.description,
-      role: app.role,
-      shortName: app.app_short_name,
-      status: app.status,
     }
   }
 

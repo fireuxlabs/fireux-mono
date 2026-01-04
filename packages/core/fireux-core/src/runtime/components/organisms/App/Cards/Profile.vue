@@ -31,7 +31,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Description</div>
         <div class="text-sm">
-          <span v-if="card.description">{{ card.description }}</span>
+          <span v-if="app?.description">{{ app.description }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -39,7 +39,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Role</div>
         <div class="text-sm">
-          <span v-if="card.role">{{ card.role }}</span>
+          <span v-if="app?.role">{{ app.role }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -47,7 +47,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Short name</div>
         <div class="text-sm">
-          <span v-if="card.shortName">{{ card.shortName }}</span>
+          <span v-if="app?.app_short_name">{{ app.app_short_name }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>

@@ -1,30 +1,26 @@
 <template>
-  <NuxtLink
-    v-if="props.card"
-    :to="props.card.to"
-    class="fx-pill"
-  >
+  <NuxtLink :to="card.to" class="fx-pill">
     <UAvatar
-      :src="props.card.avatar || undefined"
-      :alt="props.card.title"
+      :src="card.avatar || undefined"
+      :alt="card.title"
       size="xs"
     />
 
     <div class="min-w-0 flex-1">
       <div class="min-w-0 truncate text-sm font-medium">
-        {{ props.card.title }}
+        {{ card.title }}
       </div>
-      <div v-if="props.card.subtitle" class="min-w-0 truncate text-xs text-dimmed">
-        {{ props.card.subtitle }}
+      <div v-if="card.subtitle" class="min-w-0 truncate text-xs text-dimmed">
+        {{ card.subtitle }}
       </div>
     </div>
 
     <div
-      v-if="props.card.badges.length"
+      v-if="card.badges.length"
       class="ml-2 flex shrink-0 items-center gap-1"
     >
       <UBadge
-        v-for="badge in props.card.badges"
+        v-for="badge in card.badges"
         :key="badge"
         variant="soft"
         color="neutral"
@@ -39,12 +35,7 @@
 <script setup lang="ts">
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
-const props = withDefaults(
-  defineProps<{
-    card: AppCard.Card | null
-  }>(),
-  {
-    card: null,
-  },
-)
+defineProps<{
+  card: AppCard.Card
+}>()
 </script>

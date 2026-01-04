@@ -48,7 +48,7 @@ export function useUserInterface(source?: Ref<User | null | undefined> | UserRef
       badges: [],
       line1: user.email,
       line2: user.bio,
-      line3: user.profiles.join(', '),
+      line3: (user.profiles ?? []).join(', '),
     }
   }
 
