@@ -1,23 +1,20 @@
 <template>
-  <NuxtLink
-    :to="card.to"
-    class="block rounded-lg border border-[var(--ui-border)] px-3 py-2 transition-colors hover:bg-[var(--ui-bg-muted)]"
-  >
-    <div class="flex items-start gap-3">
-      <UAvatar :src="card.avatar || undefined" :alt="card.title" size="sm" />
+  <NuxtLink :to="to" class="fx-card fx-card--cell">
+    <div class="fx-card__media">
+      <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
 
-      <div class="min-w-0 flex-1">
-        <div class="flex items-start justify-between gap-3">
+      <div class="fx-card__content fx-card__stack">
+        <div class="fx-card__header">
           <div class="min-w-0">
-            <div class="truncate font-medium">{{ card.title }}</div>
-            <div v-if="card.subtitle" class="truncate text-sm text-dimmed">
-              {{ card.subtitle }}
+            <div class="fx-card__title">{{ title }}</div>
+            <div v-if="subtitle" class="fx-card__subtitle">
+              {{ subtitle }}
             </div>
           </div>
 
-          <div v-if="card.badges.length" class="flex flex-wrap justify-end gap-1">
+          <div v-if="badges.length" class="fx-card__badges">
             <UBadge
-              v-for="badge in card.badges"
+              v-for="badge in badges"
               :key="badge"
               variant="soft"
               color="neutral"
@@ -28,8 +25,8 @@
           </div>
         </div>
 
-        <div class="mt-1 text-sm text-dimmed">
-          <span v-if="prop || card.line1">{{ prop || card.line1 }}</span>
+        <div class="fx-card__tagline">
+          <span v-if="prop || line1">{{ prop || line1 }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
@@ -38,11 +35,9 @@
 </template>
 
 <script setup lang="ts">
-import { toRef } from 'vue'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-const props = defineProps<{ card: UserCard.Card; prop?: string }>()
+defineOptions({ inheritAttrs: false })
 
-const card = toRef(props, 'card')
-const prop = toRef(props, 'prop')
+defineProps<Pick<UserCard.Card, 'to' | 'avatar' | 'title' | 'subtitle' | 'badges' | 'line1'> & { prop?: string }>()
 </script>

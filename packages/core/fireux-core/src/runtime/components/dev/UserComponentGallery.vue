@@ -25,7 +25,7 @@
             Pill
           </h3>
         </template>
-        <OrganismsUserCardsPill v-if="card" :card="card" />
+        <OrganismsUserCardsPill v-if="card" v-bind="card" />
         <p class="text-xs text-gray-500 dark:text-gray-400">
           Derived pill props showing badges + runtime admin state.
         </p>
@@ -37,7 +37,7 @@
             Cell
           </h3>
         </template>
-        <OrganismsUserCardsCell v-if="card" :card="card" />
+        <OrganismsUserCardsCell v-if="card" v-bind="card" />
         <p class="text-xs text-gray-500 dark:text-gray-400">
           Cell variant surfaces handles, emails, and membership metadata.
         </p>

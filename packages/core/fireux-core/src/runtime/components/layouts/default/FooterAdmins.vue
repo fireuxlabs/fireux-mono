@@ -19,7 +19,7 @@
       <OrganismsUserCardsPill
         v-for="admin in adminCards"
         :key="admin.key"
-        :card="admin.card"
+        v-bind="admin.card"
       />
     </div>
 

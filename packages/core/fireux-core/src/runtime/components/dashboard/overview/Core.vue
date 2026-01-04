@@ -7,7 +7,7 @@
 
       <div class="space-y-2">
         <div class="w-fit max-w-full">
-          <OrganismsUserCardsPill v-if="pill" :card="pill" />
+          <OrganismsUserCardsPill v-if="pill" v-bind="pill" />
           <USkeleton v-else class="h-11 w-64 max-w-full" />
         </div>
       </div>

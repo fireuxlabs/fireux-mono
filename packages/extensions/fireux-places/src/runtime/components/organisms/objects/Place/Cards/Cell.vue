@@ -1,29 +1,29 @@
 <template>
-  <UCard>
-    <div class="flex items-start gap-3">
+  <div class="fx-card fx-card--cell">
+    <div class="fx-card__media">
       <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
-      <div class="min-w-0 flex-1">
-        <div class="truncate font-medium">{{ title }}</div>
-        <div v-if="subtitle" class="truncate text-sm text-dimmed">
+      <div class="fx-card__content fx-card__stack">
+        <div class="fx-card__title">{{ title }}</div>
+        <div v-if="subtitle" class="fx-card__subtitle">
           {{ subtitle }}
         </div>
-        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
+        <div v-if="prop" class="fx-card__tagline">{{ prop }}</div>
       </div>
     </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
-const { card, avatar: avatarProp, prop } = defineProps<{
-  card: PlaceCard.Cell
-  avatar?: string | null
-  prop?: string
-}>()
+defineOptions({ inheritAttrs: false })
 
-const { name, formatted_address, avatar: cardAvatar } = card
-const title = name
-const subtitle = formatted_address
-const avatar = avatarProp ?? cardAvatar ?? null
+const props = defineProps<
+  Pick<PlaceCard.Cell, 'place_id' | 'name' | 'formatted_address' | 'avatar' | 'source'> & { prop?: string }
+>()
+
+const title = props.name
+const subtitle = props.formatted_address
+const avatar = props.avatar ?? null
+const prop = props.prop
 </script>

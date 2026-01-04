@@ -32,10 +32,16 @@
     </template>
 
     <template v-if="!isTenant || showGlobalDirectory">
-      <div v-if="directoryEntries.length" class="fx-section__grid">
-        <article v-for="entry in directoryEntries" :key="entry.key">
-          <OrganismsUserCardsPill :card="entry.card" />
-        </article>
+      <div v-if="directoryEntries.length" class="space-y-4">
+        <div class="space-y-2">
+          <p class="text-xs text-gray-500">Pills</p>
+          <OrganismsUserCollectionCards :cards="cards" variant="pill" />
+        </div>
+
+        <div class="space-y-2">
+          <p class="text-xs text-gray-500">Cells</p>
+          <OrganismsUserCollectionCards :cards="cards" variant="cell" />
+        </div>
       </div>
 
       <p v-else class="fx-section__empty">No users found.</p>
@@ -96,6 +102,8 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
     })
     .filter((entry): entry is DirectoryEntry => Boolean(entry))
 })
+
+const cards = computed(() => directoryEntries.value.map((entry) => entry.card))
 
 const totalUsers = computed(() => globalUsers.value?.length ?? 0)
 const runtimeLabel = computed(() => appName?.trim() || 'Global')

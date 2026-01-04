@@ -115,6 +115,9 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   }
 
   nuxt.srcDir = 'app'
+  // Keep Nuxt build output inside the allowed app tree.
+  // FireUX project apps forbid L1 build artifacts like `.nuxt`.
+  nuxt.buildDir = 'app/.nuxt'
   nuxt.imports = { dirs: ['composables/**', 'utils/**'] }
 
   nuxt.modules = [

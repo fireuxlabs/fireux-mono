@@ -13,7 +13,7 @@
         <p class="status">You're signed in.</p>
         <OrganismsUserCardsPill
           v-if="currentUserPill"
-          :card="currentUserPill"
+          v-bind="currentUserPill"
           class="user-pill"
         />
         <div class="auth-actions">

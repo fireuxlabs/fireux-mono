@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="fx-pill"
-  >
+  <div class="fx-card fx-card--pill">
     <UAvatar :src="avatar || undefined" :alt="title" size="xs" />
     <div class="min-w-0 flex-1">
       <div class="min-w-0 truncate text-sm font-medium">{{ title }}</div>
@@ -15,13 +13,7 @@
 <script setup lang="ts">
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
-const { card, avatar: avatarProp } = defineProps<{
-  card: PlaceCard.Cell
-  avatar?: string | null
-}>()
+defineOptions({ inheritAttrs: false })
 
-const { name, formatted_address, avatar: cardAvatar } = card
-const title = name
-const subtitle = formatted_address
-const avatar = avatarProp ?? cardAvatar ?? null
+const { name: title, formatted_address: subtitle, avatar } = defineProps<Pick<PlaceCard.Pill, 'name' | 'avatar'> & Pick<PlaceCard.Cell, 'formatted_address'>>()
 </script>

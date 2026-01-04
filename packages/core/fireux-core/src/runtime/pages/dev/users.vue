@@ -10,7 +10,7 @@
         </template>
 
         <div class="space-y-2">
-          <OrganismsUserCardsPill :card="cardFor(currentUser)" />
+          <OrganismsUserCardsPill v-bind="cardFor(currentUser)" />
         </div>
 
         <p class="text-sm font-mono text-gray-600">
@@ -99,7 +99,7 @@
             :key="u.id || index"
             class="space-y-2 rounded-lg border border-gray-200 p-3"
           >
-            <OrganismsUserCardsPill :card="cardFor(u)" />
+            <OrganismsUserCardsPill v-bind="cardFor(u)" />
           </div>
         </div>
         <DevJsonPanel v-if="usersJson" title="Users (hydrated)" :data="usersJson" />

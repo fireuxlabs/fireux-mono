@@ -22,7 +22,7 @@
 
     <OrganismsUserCardsPill
       v-else-if="pillUser"
-      :card="pillUser"
+      v-bind="pillUser"
       class="w-full"
     />
   </div>

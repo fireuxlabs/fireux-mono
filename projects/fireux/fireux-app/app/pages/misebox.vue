@@ -1,0 +1,39 @@
+<template>
+  <UPage>
+    <UPageHeader
+      title="Misebox"
+      description="The hospitality ecosystem within FireUX."
+    />
+
+    <UPageBody class="pagebody">
+      <UCard class="space-y-3">
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          Misebox is the hospitality ecosystem: chefs, kitchens, suppliers, and
+          real-world work coordination.
+        </p>
+
+        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+          <p>Next: surface Misebox apps and the main operational flows.</p>
+          <p>
+            Ecosystem index lives at
+            <NuxtLink class="text-primary-500 hover:underline" to="/ecosystems">
+              /ecosystems
+            </NuxtLink>
+            .
+          </p>
+        </div>
+      </UCard>
+    </UPageBody>
+  </UPage>
+</template>
+
+<script setup lang="ts">
+definePageMeta({
+  title: 'Misebox',
+})
+
+useSeoMeta({
+  title: 'Misebox · FireUX',
+  description: 'Misebox ecosystem landing page.',
+})
+</script>
