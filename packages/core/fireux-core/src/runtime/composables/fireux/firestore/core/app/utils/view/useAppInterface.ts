@@ -2,6 +2,8 @@
 
 import type { Ref } from 'vue'
 import type { App } from '../../../../../../../models/core/app.model'
+import { computed } from '#imports'
+import { useResolvedColorMode } from '../../../../../app/useColorMode'
 
 export namespace AppCard {
   export type Card = {
@@ -29,12 +31,23 @@ export namespace AppCard {
 }
 
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
+  const resolvedMode = useResolvedColorMode()
+  const prefersLightWordmark = computed(() => resolvedMode.value === 'dark')
+
+  const resolveWordmark = (app: App) => {
+    // On dark backgrounds, we want the light wordmark (and vice versa).
+    if (prefersLightWordmark.value) {
+      return app.wordmark_light_url || app.wordmark_dark_url || ''
+    }
+    return app.wordmark_dark_url || app.wordmark_light_url || ''
+  }
+
   function map(app: App): AppCard.Card {
     return {
       id: app.id,
       to: `/apps/${app.id}`,
 
-      avatar: app.avatar_url || '',
+      avatar: app.thumbnail_url || app.avatar_url || '',
       title: app.app_name || '',
       subtitle: app.ecosystem || '',
       badges: [],
@@ -49,7 +62,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       longBio: app.long_bio || '',
 
       logo: app.logo_url || '',
-      wordmark: app.wordmark_light_url || app.wordmark_dark_url || '',
+      wordmark: resolveWordmark(app),
       instagram: app.social_links?.instagram || '',
     }
   }

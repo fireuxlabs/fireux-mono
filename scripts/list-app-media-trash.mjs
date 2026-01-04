@@ -3,10 +3,10 @@
  * Lists Firebase Storage objects that are NOT part of the canonical app media layout.
  *
  * Canonical objects (keep):
- * - apps/{appId}/media/avatar/current
- * - apps/{appId}/media/logo/current
- * - apps/{appId}/media/wordmark-light/current
- * - apps/{appId}/media/wordmark-dark/current
+ * - apps/{appId}/media/thumbnail
+ * - apps/{appId}/media/logo
+ * - apps/{appId}/media/wordmark-light
+ * - apps/{appId}/media/wordmark-dark
  *
  * Everything else under apps/{appId}/brand/** and apps/{appId}/media/** is considered "trash".
  */
@@ -51,10 +51,10 @@ async function listBucketObjects(bucket, prefix) {
 
 function canonicalPathsForApp(appId) {
   return new Set([
-    `apps/${appId}/media/avatar/current`,
-    `apps/${appId}/media/logo/current`,
-    `apps/${appId}/media/wordmark-light/current`,
-    `apps/${appId}/media/wordmark-dark/current`,
+    `apps/${appId}/media/thumbnail`,
+    `apps/${appId}/media/logo`,
+    `apps/${appId}/media/wordmark-light`,
+    `apps/${appId}/media/wordmark-dark`,
   ])
 }
 

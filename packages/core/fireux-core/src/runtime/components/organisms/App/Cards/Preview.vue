@@ -41,6 +41,14 @@
         </div>
 
         <div class="fx-card__meta">
+          <div v-if="shortName" class="text-xs text-dimmed">
+            <span class="font-mono">@{{ shortName }}</span>
+          </div>
+
+          <div v-if="id" class="text-xs text-dimmed">
+            <span class="font-mono">{{ id }}</span>
+          </div>
+
           <UBadge
             v-if="userCount !== null"
             variant="soft"
@@ -63,6 +71,9 @@ import type { AppCard } from '../../../../composables/fireux/firestore/core/app/
 defineOptions({ inheritAttrs: false })
 
 defineProps<
-  Pick<AppCard.Card, 'avatar' | 'title' | 'subtitle' | 'badges' | 'tagline' | 'userCount' | 'wordmark'>
+  Pick<
+    AppCard.Card,
+    'id' | 'shortName' | 'avatar' | 'title' | 'subtitle' | 'badges' | 'tagline' | 'userCount' | 'wordmark'
+  >
 >()
 </script>

@@ -1,5 +1,5 @@
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
-import { doc, getDoc } from 'firebase/firestore'
+import { deleteField, doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { requireUid } from '../../../utils/useEnsureCommon'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'
@@ -83,6 +83,10 @@ export function useAppEnsure() {
     }
 
     // Image URL fields are optional; we do not backfill them.
+    // Also, ensure no legacy field can linger (canon is light/dark wordmarks only).
+    if (typeof (existing as any)?.wordmark_url === 'string') {
+      ;(patch as any).wordmark_url = deleteField()
+    }
 
     if (!Array.isArray(existing?.join_requests)) patch.join_requests = []
     if (!Array.isArray(existing?.admin_ids)) patch.admin_ids = []

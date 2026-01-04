@@ -82,7 +82,7 @@ function validateBrandDimensions(
 
   if (!isSvg && !isPng) return 'Must be SVG or PNG'
 
-  if (name === 'avatar' || name === 'logo') {
+  if (name === 'thumbnail' || name === 'logo') {
     const { requiredWidth, requiredHeight } = constraints
     if (!requiredWidth || !requiredHeight) return null
     if (dim.width === requiredWidth && dim.height === requiredHeight)

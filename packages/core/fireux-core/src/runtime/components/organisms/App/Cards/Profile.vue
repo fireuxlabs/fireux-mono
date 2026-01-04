@@ -10,19 +10,55 @@
               <span v-if="subtitle">{{ subtitle }}</span>
               <span v-else class="italic">missing</span>
             </div>
+
+            <div v-if="tagline" class="mt-1 text-xs text-dimmed">
+              {{ tagline }}
+            </div>
           </div>
         </div>
 
-        <div v-if="badges.length" class="fx-card__badges">
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="subtle"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
+        <div class="grid justify-items-end gap-2">
+          <img
+            v-if="wordmark"
+            :src="wordmark"
+            :alt="`${title} wordmark`"
+            class="h-8 w-auto object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+
+          <div class="flex flex-wrap justify-end gap-2">
+            <UBadge
+              v-if="role"
+              variant="subtle"
+              color="neutral"
+              size="xs"
+            >
+              {{ role }}
+            </UBadge>
+
+            <UBadge
+              v-if="shortName"
+              variant="subtle"
+              color="neutral"
+              size="xs"
+            >
+              @{{ shortName }}
+            </UBadge>
+
+            <UBadge
+              v-if="typeof userCount === 'number'"
+              variant="subtle"
+              color="neutral"
+              size="xs"
+            >
+              {{ userCount }} users
+            </UBadge>
+          </div>
+
+          <div v-if="id" class="text-xs text-dimmed font-mono">
+            {{ id }}
+          </div>
         </div>
       </div>
     </template>
@@ -172,6 +208,10 @@ import type { AppCard } from '../../../../composables/fireux/firestore/core/app/
 defineOptions({ inheritAttrs: false })
 
 defineProps<
-  { app?: App | null } & Pick<AppCard.Card, 'avatar' | 'title' | 'subtitle' | 'badges'>
+  { app?: App | null } &
+    Pick<
+      AppCard.Card,
+      'id' | 'shortName' | 'role' | 'userCount' | 'tagline' | 'wordmark' | 'avatar' | 'title' | 'subtitle' | 'badges'
+    >
 >()
 </script>

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-01-04T16:36:26.238Z",
+  "generatedAt": "2026-01-04T20:57:48.232Z",
   "sourceAudit": "temp/app-media-audit.json",
   "ecosystems": {
     "fireux-cleanbox": {
@@ -10,10 +10,10 @@
       "apps": {
         "cleanbox-app": {
           "keep": [
-            "apps/cleanbox-app/media/avatar/current",
-            "apps/cleanbox-app/media/logo/current",
-            "apps/cleanbox-app/media/wordmark-dark/current",
-            "apps/cleanbox-app/media/wordmark-light/current"
+            "apps/cleanbox-app/media/logo",
+            "apps/cleanbox-app/media/thumbnail",
+            "apps/cleanbox-app/media/wordmark-dark",
+            "apps/cleanbox-app/media/wordmark-light"
           ],
           "trash": [],
           "totals": {
@@ -24,10 +24,10 @@
         },
         "richies-reinigung": {
           "keep": [
-            "apps/richies-reinigung/media/avatar/current",
-            "apps/richies-reinigung/media/logo/current",
-            "apps/richies-reinigung/media/wordmark-dark/current",
-            "apps/richies-reinigung/media/wordmark-light/current"
+            "apps/richies-reinigung/media/logo",
+            "apps/richies-reinigung/media/thumbnail",
+            "apps/richies-reinigung/media/wordmark-dark",
+            "apps/richies-reinigung/media/wordmark-light"
           ],
           "trash": [],
           "totals": {
@@ -46,10 +46,10 @@
       "apps": {
         "fireux-app": {
           "keep": [
-            "apps/fireux-app/media/avatar/current",
-            "apps/fireux-app/media/logo/current",
-            "apps/fireux-app/media/wordmark-dark/current",
-            "apps/fireux-app/media/wordmark-light/current"
+            "apps/fireux-app/media/logo",
+            "apps/fireux-app/media/thumbnail",
+            "apps/fireux-app/media/wordmark-dark",
+            "apps/fireux-app/media/wordmark-light"
           ],
           "trash": [],
           "totals": {
@@ -60,10 +60,10 @@
         },
         "fireux-tenant": {
           "keep": [
-            "apps/fireux-tenant/media/avatar/current",
-            "apps/fireux-tenant/media/logo/current",
-            "apps/fireux-tenant/media/wordmark-dark/current",
-            "apps/fireux-tenant/media/wordmark-light/current"
+            "apps/fireux-tenant/media/logo",
+            "apps/fireux-tenant/media/thumbnail",
+            "apps/fireux-tenant/media/wordmark-dark",
+            "apps/fireux-tenant/media/wordmark-light"
           ],
           "trash": [],
           "totals": {
@@ -82,10 +82,10 @@
       "apps": {
         "misebox-app": {
           "keep": [
-            "apps/misebox-app/media/avatar/current",
-            "apps/misebox-app/media/logo/current",
-            "apps/misebox-app/media/wordmark-dark/current",
-            "apps/misebox-app/media/wordmark-light/current"
+            "apps/misebox-app/media/logo",
+            "apps/misebox-app/media/thumbnail",
+            "apps/misebox-app/media/wordmark-dark",
+            "apps/misebox-app/media/wordmark-light"
           ],
           "trash": [],
           "totals": {
@@ -96,10 +96,10 @@
         },
         "niederhorn": {
           "keep": [
-            "apps/niederhorn/media/avatar/current",
-            "apps/niederhorn/media/logo/current",
-            "apps/niederhorn/media/wordmark-dark/current",
-            "apps/niederhorn/media/wordmark-light/current"
+            "apps/niederhorn/media/logo",
+            "apps/niederhorn/media/thumbnail",
+            "apps/niederhorn/media/wordmark-dark",
+            "apps/niederhorn/media/wordmark-light"
           ],
           "trash": [],
           "totals": {

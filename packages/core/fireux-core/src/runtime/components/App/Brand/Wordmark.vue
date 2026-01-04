@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { computed } from '#imports'
-import { useColorMode } from '../../../composables/fireux/app/useColorMode'
+import { useResolvedColorMode } from '../../../composables/fireux/app/useColorMode'
 
 type BrandSize = 'small' | 'medium' | 'large' | 'hero'
 
@@ -31,8 +31,8 @@ const props = withDefaults(defineProps<Props>(), {
   alt: 'App wordmark',
 })
 
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
+const resolvedMode = useResolvedColorMode()
+const isDark = computed(() => resolvedMode.value === 'dark')
 
 const resolvedSrc = computed(() => {
   if (props.variant === 'light') return '/img/app/wordmark-light.png'

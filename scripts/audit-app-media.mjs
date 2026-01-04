@@ -215,10 +215,10 @@ async function main() {
     console.log(`Usage: pnpm audit:app-media [--service-account ./service-account.json] [--bucket <bucket>] [--out <path>] [--list]
 
 Reads apps from Firestore collection 'apps' and checks Firebase Storage objects for:
-- apps/{appId}/media/avatar/current
-- apps/{appId}/media/logo/current
-- apps/{appId}/media/wordmark-light/current
-- apps/{appId}/media/wordmark-dark/current
+- apps/{appId}/media/thumbnail
+- apps/{appId}/media/logo
+- apps/{appId}/media/wordmark-light
+- apps/{appId}/media/wordmark-dark
 
 Also validates Firestore URL fields match the expected object path.
 
@@ -273,22 +273,22 @@ Options:
   const expectedKinds = [
     {
       kind: 'thumbnail',
-      objectPath: (id) => `apps/${id}/media/avatar/current`,
-      field: 'avatar_url',
+      objectPath: (id) => `apps/${id}/media/thumbnail`,
+      field: 'thumbnail_url',
     },
     {
       kind: 'logo',
-      objectPath: (id) => `apps/${id}/media/logo/current`,
+      objectPath: (id) => `apps/${id}/media/logo`,
       field: 'logo_url',
     },
     {
       kind: 'wordmarkLight',
-      objectPath: (id) => `apps/${id}/media/wordmark-light/current`,
+      objectPath: (id) => `apps/${id}/media/wordmark-light`,
       field: 'wordmark_light_url',
     },
     {
       kind: 'wordmarkDark',
-      objectPath: (id) => `apps/${id}/media/wordmark-dark/current`,
+      objectPath: (id) => `apps/${id}/media/wordmark-dark`,
       field: 'wordmark_dark_url',
     },
   ]

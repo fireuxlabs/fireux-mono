@@ -37,6 +37,8 @@ export interface App {
   updated_at: Ts
 
   // Brand/media URLs (flat)
+  thumbnail_url?: string
+  /** @deprecated use thumbnail_url */
   avatar_url?: string
   logo_url?: string
   // Canon wordmark variants

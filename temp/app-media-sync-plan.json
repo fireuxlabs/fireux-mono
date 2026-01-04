@@ -1,0 +1,169 @@
+{
+  "generatedAt": "2026-01-04T20:57:30.247Z",
+  "mode": "apply",
+  "targets": [
+    {
+      "ecosystemId": "fireux",
+      "appId": "fireux-app",
+      "bucket": "fireux-2005.firebasestorage.app",
+      "uploads": [
+        {
+          "kind": "thumbnail",
+          "local": "projects/fireux/fireux-app/public/img/app/thumbnail.png",
+          "objectPath": "apps/fireux-app/media/thumbnail"
+        },
+        {
+          "kind": "logo",
+          "local": "projects/fireux/fireux-app/public/img/app/logo.png",
+          "objectPath": "apps/fireux-app/media/logo"
+        },
+        {
+          "kind": "wordmark-light",
+          "local": "projects/fireux/fireux-app/public/img/app/wordmark-light.png",
+          "objectPath": "apps/fireux-app/media/wordmark-light"
+        },
+        {
+          "kind": "wordmark-dark",
+          "local": "projects/fireux/fireux-app/public/img/app/wordmark-dark.png",
+          "objectPath": "apps/fireux-app/media/wordmark-dark"
+        }
+      ]
+    },
+    {
+      "ecosystemId": "fireux",
+      "appId": "fireux-tenant",
+      "bucket": "fireux-2005.firebasestorage.app",
+      "uploads": [
+        {
+          "kind": "thumbnail",
+          "local": "projects/fireux/tenant/public/img/app/thumbnail.png",
+          "objectPath": "apps/fireux-tenant/media/thumbnail"
+        },
+        {
+          "kind": "logo",
+          "local": "projects/fireux/tenant/public/img/app/logo.png",
+          "objectPath": "apps/fireux-tenant/media/logo"
+        },
+        {
+          "kind": "wordmark-light",
+          "local": "projects/fireux/tenant/public/img/app/wordmark-light.png",
+          "objectPath": "apps/fireux-tenant/media/wordmark-light"
+        },
+        {
+          "kind": "wordmark-dark",
+          "local": "projects/fireux/tenant/public/img/app/wordmark-dark.png",
+          "objectPath": "apps/fireux-tenant/media/wordmark-dark"
+        }
+      ]
+    },
+    {
+      "ecosystemId": "fireux-cleanbox",
+      "appId": "cleanbox-app",
+      "bucket": "cleanbox-f15bc.firebasestorage.app",
+      "uploads": [
+        {
+          "kind": "thumbnail",
+          "local": "projects/cleanbox/cleanbox-app/public/img/app/thumbnail.png",
+          "objectPath": "apps/cleanbox-app/media/thumbnail"
+        },
+        {
+          "kind": "logo",
+          "local": "projects/cleanbox/cleanbox-app/public/img/app/logo.png",
+          "objectPath": "apps/cleanbox-app/media/logo"
+        },
+        {
+          "kind": "wordmark-light",
+          "local": "projects/cleanbox/cleanbox-app/public/img/app/wordmark-light.png",
+          "objectPath": "apps/cleanbox-app/media/wordmark-light"
+        },
+        {
+          "kind": "wordmark-dark",
+          "local": "projects/cleanbox/cleanbox-app/public/img/app/wordmark-dark.png",
+          "objectPath": "apps/cleanbox-app/media/wordmark-dark"
+        }
+      ]
+    },
+    {
+      "ecosystemId": "fireux-cleanbox",
+      "appId": "richies-reinigung",
+      "bucket": "cleanbox-f15bc.firebasestorage.app",
+      "uploads": [
+        {
+          "kind": "thumbnail",
+          "local": "projects/cleanbox/richies-reinigung/public/img/app/thumbnail.png",
+          "objectPath": "apps/richies-reinigung/media/thumbnail"
+        },
+        {
+          "kind": "logo",
+          "local": "projects/cleanbox/richies-reinigung/public/img/app/logo.png",
+          "objectPath": "apps/richies-reinigung/media/logo"
+        },
+        {
+          "kind": "wordmark-light",
+          "local": "projects/cleanbox/richies-reinigung/public/img/app/wordmark-light.png",
+          "objectPath": "apps/richies-reinigung/media/wordmark-light"
+        },
+        {
+          "kind": "wordmark-dark",
+          "local": "projects/cleanbox/richies-reinigung/public/img/app/wordmark-dark.png",
+          "objectPath": "apps/richies-reinigung/media/wordmark-dark"
+        }
+      ]
+    },
+    {
+      "ecosystemId": "fireux-misebox",
+      "appId": "misebox-app",
+      "bucket": "misebox-78f9c.appspot.com",
+      "uploads": [
+        {
+          "kind": "thumbnail",
+          "local": "projects/misebox/misebox-app/public/img/app/thumbnail.png",
+          "objectPath": "apps/misebox-app/media/thumbnail"
+        },
+        {
+          "kind": "logo",
+          "local": "projects/misebox/misebox-app/public/img/app/logo.png",
+          "objectPath": "apps/misebox-app/media/logo"
+        },
+        {
+          "kind": "wordmark-light",
+          "local": "projects/misebox/misebox-app/public/img/app/wordmark-light.png",
+          "objectPath": "apps/misebox-app/media/wordmark-light"
+        },
+        {
+          "kind": "wordmark-dark",
+          "local": "projects/misebox/misebox-app/public/img/app/wordmark-dark.png",
+          "objectPath": "apps/misebox-app/media/wordmark-dark"
+        }
+      ]
+    },
+    {
+      "ecosystemId": "fireux-misebox",
+      "appId": "niederhorn",
+      "bucket": "misebox-78f9c.appspot.com",
+      "uploads": [
+        {
+          "kind": "thumbnail",
+          "local": "projects/misebox/niederhorn/public/img/app/thumbnail.png",
+          "objectPath": "apps/niederhorn/media/thumbnail"
+        },
+        {
+          "kind": "logo",
+          "local": "projects/misebox/niederhorn/public/img/app/logo.png",
+          "objectPath": "apps/niederhorn/media/logo"
+        },
+        {
+          "kind": "wordmark-light",
+          "local": "projects/misebox/niederhorn/public/img/app/wordmark-light.png",
+          "objectPath": "apps/niederhorn/media/wordmark-light"
+        },
+        {
+          "kind": "wordmark-dark",
+          "local": "projects/misebox/niederhorn/public/img/app/wordmark-dark.png",
+          "objectPath": "apps/niederhorn/media/wordmark-dark"
+        }
+      ]
+    }
+  ],
+  "missing": []
+}

@@ -40,6 +40,8 @@
     "audit:app-media": "node scripts/audit-app-media.mjs",
     "list:app-media-trash": "node scripts/list-app-media-trash.mjs",
     "delete:app-media-trash": "node scripts/delete-app-media-trash.mjs",
+    "delete:app-media-folders": "node scripts/delete-app-media-folders.mjs",
+    "sync:app-media-from-public": "node scripts/sync-app-media-from-public.mjs",
     "clear:app-fields": "node scripts/clear-app-firestore-fields.mjs"
   },
   "engines": {

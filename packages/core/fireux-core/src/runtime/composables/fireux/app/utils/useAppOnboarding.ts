@@ -8,6 +8,11 @@ import { useAppEnvCheck } from './useAppEnvCheck'
 import { useImageStorage } from '../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../firestore/operations/useFirestoreUpdate'
 import { deleteField } from 'firebase/firestore'
+import {
+  appImageFirestoreField,
+  appImageStoragePath,
+  type AppImageKind,
+} from '../../firestore/core/app/utils/appMedia'
 
 export interface AppOnboardingState {
   coreUser: Ref<ReturnType<typeof useUser>['coreUser']['value'] | null>
@@ -103,43 +108,27 @@ export function useAppOnboarding(): AppOnboardingState {
     // This keeps the onboarding flow safe when devMode bypass is used.
     if (!env.value?.isValid) return
 
-    const uploads: Array<{
-      kind: 'avatar_url' | 'logo_url' | 'wordmark_light_url' | 'wordmark_dark_url'
-      storagePath: string
-      localPath: string
-    }> = [
-      {
-        kind: 'logo_url',
-        storagePath: `apps/${appId}/media/logo/current`,
-        localPath: '/img/app/logo.png',
-      },
-      {
-        kind: 'wordmark_light_url',
-        storagePath: `apps/${appId}/media/wordmark-light/current`,
-        localPath: '/img/app/wordmark-light.png',
-      },
-      {
-        kind: 'wordmark_dark_url',
-        storagePath: `apps/${appId}/media/wordmark-dark/current`,
-        localPath: '/img/app/wordmark-dark.png',
-      },
-      {
-        kind: 'avatar_url',
-        storagePath: `apps/${appId}/media/avatar/current`,
-        localPath: '/img/app/thumbnail.png',
-      },
+    const uploads: Array<{ kind: AppImageKind; localPath: string }> = [
+      { kind: 'logo', localPath: '/img/app/logo.png' },
+      { kind: 'wordmarkLight', localPath: '/img/app/wordmark-light.png' },
+      { kind: 'wordmarkDark', localPath: '/img/app/wordmark-dark.png' },
+      { kind: 'thumbnail', localPath: '/img/app/thumbnail.png' },
     ]
 
     const patch: Record<string, string> = {}
     for (const item of uploads) {
-      const url = await uploadImage(item.storagePath, item.localPath)
-      patch[item.kind] = cacheBust(url)
+      const storagePath = appImageStoragePath(appId, item.kind)
+      const field = appImageFirestoreField(item.kind)
+      const url = await uploadImage(storagePath, item.localPath)
+      patch[field] = cacheBust(url)
     }
 
     await updateDocument('apps', appId, {
       ...patch,
       // Ensure no legacy wordmark field can linger.
       wordmark_url: deleteField(),
+      // Ensure legacy thumbnail field is removed.
+      avatar_url: deleteField(),
     })
   }
 

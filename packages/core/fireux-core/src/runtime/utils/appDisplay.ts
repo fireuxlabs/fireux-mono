@@ -7,6 +7,7 @@ import type { App } from '../models/core/app.model'
 export function resolveAppAvatar(app: Partial<App> | null | undefined) {
   if (!app) return null
   return (
+    (app as any).thumbnail_url ||
     app.avatar_url ||
     app.logo_url ||
     app.wordmark_light_url ||

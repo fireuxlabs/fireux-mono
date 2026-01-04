@@ -106,6 +106,7 @@ const userAppLogoUrl = (app: App): string => {
   }
 
   const rawUrl =
+    (typeof (entry as any)?.thumbnail_url === 'string' && (entry as any).thumbnail_url) ||
     (typeof entry?.avatar_url === 'string' && entry.avatar_url) ||
     (typeof entry?.logo_url === 'string' && entry.logo_url) ||
     (typeof entry?.wordmark_light_url === 'string' && entry.wordmark_light_url) ||
@@ -163,6 +164,7 @@ const apps = computed<App[]>(() => {
 const avatarSrc = (app: App) => {
   const raw =
     userAppLogoUrl(app) ||
+    (app as any).thumbnail_url ||
     app.avatar_url ||
     app.logo_url ||
     app.wordmark_light_url ||

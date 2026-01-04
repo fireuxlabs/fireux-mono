@@ -6,8 +6,8 @@
           <div class="fx-section__copy">
             <h3 class="text-base font-semibold">Images</h3>
             <p class="text-xs text-dimmed">
-              These are local public assets served from <span class="font-mono">/public/img/app</span>.
-              Syncing (where available) overwrites the Firestore image URLs.
+              Firestore URLs are the canonical record values. Public assets are served from
+              <span class="font-mono">/public/img/app</span> and can be synced to overwrite Firestore.
             </p>
           </div>
         </div>
@@ -15,7 +15,51 @@
 
       <div class="fx-section__item space-y-5">
         <div class="space-y-3">
-          <div class="text-xs font-medium text-dimmed">Synced images</div>
+          <div class="text-xs font-medium text-dimmed">Firestore (record)</div>
+
+          <div
+            v-for="item in firestoreItems"
+            :key="item.key"
+            class="space-y-2"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <div class="flex min-w-0 items-baseline gap-2">
+                  <div class="shrink-0 text-sm font-medium">{{ item.label }}:</div>
+
+                  <a
+                    v-if="item.url"
+                    :href="item.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="min-w-0 text-xs text-dimmed underline break-all"
+                  >
+                    {{ item.url }}
+                  </a>
+                  <span v-else class="text-xs text-dimmed italic">missing</span>
+                </div>
+
+                <div class="mt-1 text-xs text-dimmed">
+                  Record field
+                </div>
+              </div>
+            </div>
+
+            <div v-if="item.url" class="inline-flex max-w-full items-center">
+              <img
+                :src="item.url"
+                :alt="`Firestore ${item.label}`"
+                class="block max-w-[12rem]"
+                :class="item.previewClass"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="text-xs font-medium text-dimmed">Public assets (syncable)</div>
 
           <div
             v-for="item in syncedItems"
@@ -44,7 +88,7 @@
                 size="xs"
                 :loading="saving === item.syncKind"
                 :disabled="Boolean(saving)"
-                :title="`Sync local ${item.syncKind} (overwrites Firestore URL)`"
+                :title="`Sync local ${kindLabel[item.syncKind]} (overwrites Firestore URL)`"
                 @click="onOverwrite(item.syncKind)"
               />
             </div>
@@ -65,7 +109,7 @@
         </div>
 
         <div class="space-y-3">
-          <div class="text-xs font-medium text-dimmed">Required files</div>
+          <div class="text-xs font-medium text-dimmed">Public assets (required, not synced)</div>
 
           <div
             v-for="item in requiredOnlyItems"
@@ -171,13 +215,13 @@ const syncedItems: SyncedImageItem[] = [
     syncKind: 'wordmarkDark',
   },
   {
-    key: 'avatar',
+    key: 'thumbnail',
     label: 'Thumbnail',
     path: localThumbnailPath,
     requirements:
       'Required (<span class="font-mono">thumbnail.png</span>). No strict dimensions enforced today.',
     previewClass: 'h-12 w-12 rounded object-cover',
-    syncKind: 'avatar',
+    syncKind: 'thumbnail',
   },
 ]
 
@@ -212,24 +256,66 @@ const requiredOnlyItems: ImageItemBase[] = [
   },
 ]
 
-type SyncedImageKind = 'avatar' | 'logo' | 'wordmarkLight' | 'wordmarkDark'
+type SyncedImageKind = 'thumbnail' | 'logo' | 'wordmarkLight' | 'wordmarkDark'
 const saving = ref<SyncedImageKind | null>(null)
 
 const kindToLocalPath: Record<SyncedImageKind, string> = {
-  avatar: localThumbnailPath,
+  thumbnail: localThumbnailPath,
   logo: localLogoPath,
   wordmarkLight: localWordmarkLightPath,
   wordmarkDark: localWordmarkDarkPath,
 }
 
+const kindLabel: Record<SyncedImageKind, string> = {
+  thumbnail: 'thumbnail',
+  logo: 'logo',
+  wordmarkLight: 'wordmark (light)',
+  wordmarkDark: 'wordmark (dark)',
+}
+
+const firestoreItems = computed(() => {
+  const value = appRef.value
+
+  return [
+    {
+      key: 'firestore-thumbnail',
+      label: 'Thumbnail',
+      field: 'thumbnail_url',
+      url: value?.thumbnail_url || value?.avatar_url || '',
+      previewClass: 'h-12 w-12 rounded object-cover',
+    },
+    {
+      key: 'firestore-logo',
+      label: 'Logo',
+      field: 'logo_url',
+      url: value?.logo_url || '',
+      previewClass: 'h-10 w-auto object-contain',
+    },
+    {
+      key: 'firestore-wordmark-light',
+      label: 'Wordmark (light)',
+      field: 'wordmark_light_url',
+      url: value?.wordmark_light_url || '',
+      previewClass: 'h-8 w-auto object-contain',
+    },
+    {
+      key: 'firestore-wordmark-dark',
+      label: 'Wordmark (dark)',
+      field: 'wordmark_dark_url',
+      url: value?.wordmark_dark_url || '',
+      previewClass: 'h-8 w-auto object-contain',
+    },
+  ]
+})
+
 async function onOverwrite(kind: SyncedImageKind) {
   saving.value = kind
   try {
     await overwriteImageFromLocal(kind, kindToLocalPath[kind])
-    toast?.success(`Updated ${kind} from local asset`)
+    toast?.success(`Updated ${kindLabel[kind]} from local asset`)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Please try again.'
-    toast?.error(`Failed to update ${kind}: ${message}`)
+    toast?.error(`Failed to update ${kindLabel[kind]}: ${message}`)
     throw error
   } finally {
     saving.value = null

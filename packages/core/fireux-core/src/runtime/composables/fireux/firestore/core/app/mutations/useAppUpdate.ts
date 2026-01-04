@@ -5,6 +5,12 @@ import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useAppEnsure } from './useAppEnsure'
 import { ensureUserAppMembership } from '../../user/utils/ensureHelpers'
+import {
+  appImageFirestoreField,
+  appImageStoragePath,
+  isWordmarkKind,
+  type AppImageKind,
+} from '../utils/appMedia'
 
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const { updateDocument } = useFirestoreUpdate()
@@ -44,20 +50,20 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     }
   }
 
-  const sanitizeAvatarUrl = (raw: string | null | undefined) => {
+  const sanitizeThumbnailUrl = (raw: string | null | undefined) => {
     const value = text(raw, 2048)
     if (!value) return ''
     try {
       const url = new URL(value)
       if (!['http:', 'https:'].includes(url.protocol)) {
-        throw new Error('Avatar URL must use http or https')
+        throw new Error('Thumbnail URL must use http or https')
       }
       return url.toString()
     } catch (error) {
       throw new Error(
         error instanceof Error && error.message
           ? error.message
-          : 'Invalid avatar URL'
+          : 'Invalid thumbnail URL'
       )
     }
   }
@@ -96,33 +102,24 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   }
 
   async function updateAvatarUrl(url: string | null) {
-    const value = sanitizeAvatarUrl(url)
-    await updateApp({ avatar_url: value })
+    const value = sanitizeThumbnailUrl(url)
+    await updateApp({ thumbnail_url: value, avatar_url: deleteField() })
+  }
+
+  async function updateThumbnailUrl(url: string | null) {
+    return updateAvatarUrl(url)
   }
 
   async function uploadAvatar(source: File | Blob) {
     const id = ensureAppId()
-    const path = `apps/${id}/media/avatar/current`
+    const path = appImageStoragePath(id, 'thumbnail')
     const url = await uploadImage(path, source)
-    await updateApp({ avatar_url: cacheBust(url) })
+    await updateApp({ thumbnail_url: cacheBust(url), avatar_url: deleteField() })
     return url
   }
 
-  type AppImageKind = 'avatar' | 'logo' | 'wordmarkLight' | 'wordmarkDark'
-
-  function imageStoragePath(appId: string, kind: AppImageKind): string {
-    // "Public bucket" convention: a stable object path that can be overwritten.
-    // The UI refresh simply resolves the current download URL and saves it.
-    switch (kind) {
-      case 'avatar':
-        return `apps/${appId}/media/avatar/current`
-      case 'logo':
-        return `apps/${appId}/media/logo/current`
-      case 'wordmarkLight':
-        return `apps/${appId}/media/wordmark-light/current`
-      case 'wordmarkDark':
-        return `apps/${appId}/media/wordmark-dark/current`
-    }
+  async function uploadThumbnail(source: File | Blob) {
+    return uploadAvatar(source)
   }
 
   function cacheBust(url: string): string {
@@ -132,15 +129,15 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   async function refreshImageFromBucket(kind: AppImageKind) {
     const id = ensureAppId()
-    const path = imageStoragePath(id, kind)
+    const path = appImageStoragePath(id, kind)
     const url = await getDownloadUrlForPath(path)
     const next = cacheBust(url)
 
-    if (kind === 'avatar') await updateApp({ avatar_url: next })
-    else if (kind === 'logo') await updateApp({ logo_url: next })
-    else if (kind === 'wordmarkLight')
-      await updateApp({ wordmark_light_url: next, wordmark_url: deleteField() })
-    else await updateApp({ wordmark_dark_url: next, wordmark_url: deleteField() })
+    const field = appImageFirestoreField(kind)
+    const patch: Record<string, any> = { [field]: next }
+    if (kind === 'thumbnail') patch.avatar_url = deleteField()
+    if (isWordmarkKind(kind)) patch.wordmark_url = deleteField()
+    await updateApp(patch)
     return next
   }
 
@@ -150,15 +147,15 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     }
 
     const id = ensureAppId()
-    const path = imageStoragePath(id, kind)
+    const path = appImageStoragePath(id, kind)
     const url = await uploadImage(path, localPath)
     const next = cacheBust(url)
 
-    if (kind === 'avatar') await updateApp({ avatar_url: next })
-    else if (kind === 'logo') await updateApp({ logo_url: next })
-    else if (kind === 'wordmarkLight')
-      await updateApp({ wordmark_light_url: next, wordmark_url: deleteField() })
-    else await updateApp({ wordmark_dark_url: next, wordmark_url: deleteField() })
+    const field = appImageFirestoreField(kind)
+    const patch: Record<string, any> = { [field]: next }
+    if (kind === 'thumbnail') patch.avatar_url = deleteField()
+    if (isWordmarkKind(kind)) patch.wordmark_url = deleteField()
+    await updateApp(patch)
     return next
   }
 
@@ -193,7 +190,9 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     updateEcosystem,
     updateInstagram,
     updateAvatarUrl,
+    updateThumbnailUrl,
     uploadAvatar,
+    uploadThumbnail,
     refreshImageFromBucket,
     overwriteImageFromLocal,
     handleJoinRequests,

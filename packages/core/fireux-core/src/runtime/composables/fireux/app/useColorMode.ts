@@ -1,6 +1,7 @@
 import { useState, watch } from '#imports'
 
 export type FireUXColorMode = 'system' | 'light' | 'dark'
+export type FireUXResolvedColorMode = 'light' | 'dark'
 
 let clientSetupDone = false
 
@@ -22,7 +23,7 @@ function writeStoredMode(mode: FireUXColorMode) {
   }
 }
 
-function resolveMode(mode: FireUXColorMode): 'light' | 'dark' {
+function resolveMode(mode: FireUXColorMode): FireUXResolvedColorMode {
   if (mode === 'dark') return 'dark'
   if (mode === 'light') return 'light'
 
@@ -35,11 +36,16 @@ function resolveMode(mode: FireUXColorMode): 'light' | 'dark' {
     : 'light'
 }
 
-function applyMode(mode: FireUXColorMode) {
+function applyMode(mode: FireUXColorMode, resolvedState?: { value: FireUXResolvedColorMode }) {
   if (typeof document === 'undefined') return
 
   const resolved = resolveMode(mode)
+  if (resolvedState) resolvedState.value = resolved
   document.documentElement.classList.toggle('dark', resolved === 'dark')
+}
+
+export function useResolvedColorMode() {
+  return useState<FireUXResolvedColorMode>('fireux-core:resolved-color-mode', () => 'light')
 }
 
 /**
@@ -50,6 +56,7 @@ function applyMode(mode: FireUXColorMode) {
  */
 export function useColorMode() {
   const mode = useState<FireUXColorMode>('fireux-core:color-mode', () => 'system')
+  const resolved = useResolvedColorMode()
 
   if (import.meta.client && !clientSetupDone) {
     clientSetupDone = true
@@ -58,11 +65,11 @@ export function useColorMode() {
     if (stored) mode.value = stored
 
     // Ensure the current mode is applied immediately.
-    applyMode(mode.value)
+    applyMode(mode.value, resolved)
 
     const media = window.matchMedia('(prefers-color-scheme: dark)')
     const handleMedia = () => {
-      if (mode.value === 'system') applyMode(mode.value)
+      if (mode.value === 'system') applyMode(mode.value, resolved)
     }
 
     // keep in sync when OS theme changes
@@ -72,7 +79,7 @@ export function useColorMode() {
       mode,
       (next: FireUXColorMode) => {
         writeStoredMode(next)
-        applyMode(next)
+        applyMode(next, resolved)
       },
       { immediate: true }
     )
