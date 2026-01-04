@@ -1,0 +1,114 @@
+{
+  "generatedAt": "2026-01-04T16:36:26.238Z",
+  "sourceAudit": "temp/app-media-audit.json",
+  "ecosystems": {
+    "fireux-cleanbox": {
+      "projectId": "cleanbox-f15bc",
+      "bucket": "cleanbox-f15bc.firebasestorage.app",
+      "sourceFile": null,
+      "serviceAccountPath": "packages/ecosystem/fireux-cleanbox/src/config/firebase/service-account.json",
+      "apps": {
+        "cleanbox-app": {
+          "keep": [
+            "apps/cleanbox-app/media/avatar/current",
+            "apps/cleanbox-app/media/logo/current",
+            "apps/cleanbox-app/media/wordmark-dark/current",
+            "apps/cleanbox-app/media/wordmark-light/current"
+          ],
+          "trash": [],
+          "totals": {
+            "keep": 4,
+            "trash": 0,
+            "scanned": 5
+          }
+        },
+        "richies-reinigung": {
+          "keep": [
+            "apps/richies-reinigung/media/avatar/current",
+            "apps/richies-reinigung/media/logo/current",
+            "apps/richies-reinigung/media/wordmark-dark/current",
+            "apps/richies-reinigung/media/wordmark-light/current"
+          ],
+          "trash": [],
+          "totals": {
+            "keep": 4,
+            "trash": 0,
+            "scanned": 5
+          }
+        }
+      }
+    },
+    "fireux": {
+      "projectId": "fireux-2005",
+      "bucket": "fireux-2005.firebasestorage.app",
+      "sourceFile": null,
+      "serviceAccountPath": "packages/ecosystem/fireux-fireux/src/config/firebase/service-account.json",
+      "apps": {
+        "fireux-app": {
+          "keep": [
+            "apps/fireux-app/media/avatar/current",
+            "apps/fireux-app/media/logo/current",
+            "apps/fireux-app/media/wordmark-dark/current",
+            "apps/fireux-app/media/wordmark-light/current"
+          ],
+          "trash": [],
+          "totals": {
+            "keep": 4,
+            "trash": 0,
+            "scanned": 4
+          }
+        },
+        "fireux-tenant": {
+          "keep": [
+            "apps/fireux-tenant/media/avatar/current",
+            "apps/fireux-tenant/media/logo/current",
+            "apps/fireux-tenant/media/wordmark-dark/current",
+            "apps/fireux-tenant/media/wordmark-light/current"
+          ],
+          "trash": [],
+          "totals": {
+            "keep": 4,
+            "trash": 0,
+            "scanned": 4
+          }
+        }
+      }
+    },
+    "fireux-misebox": {
+      "projectId": "misebox-78f9c",
+      "bucket": "misebox-78f9c.appspot.com",
+      "sourceFile": null,
+      "serviceAccountPath": "packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json",
+      "apps": {
+        "misebox-app": {
+          "keep": [
+            "apps/misebox-app/media/avatar/current",
+            "apps/misebox-app/media/logo/current",
+            "apps/misebox-app/media/wordmark-dark/current",
+            "apps/misebox-app/media/wordmark-light/current"
+          ],
+          "trash": [],
+          "totals": {
+            "keep": 4,
+            "trash": 0,
+            "scanned": 26
+          }
+        },
+        "niederhorn": {
+          "keep": [
+            "apps/niederhorn/media/avatar/current",
+            "apps/niederhorn/media/logo/current",
+            "apps/niederhorn/media/wordmark-dark/current",
+            "apps/niederhorn/media/wordmark-light/current"
+          ],
+          "trash": [],
+          "totals": {
+            "keep": 4,
+            "trash": 0,
+            "scanned": 4
+          }
+        }
+      }
+    }
+  }
+}

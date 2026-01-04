@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { App } from '../../../../../../models/core/app.model'
-import { arrayRemove } from 'firebase/firestore'
+import { arrayRemove, deleteField } from 'firebase/firestore'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useAppEnsure } from './useAppEnsure'
@@ -17,8 +17,8 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     return id
   }
 
-  const updateApp = (data: Partial<App>) =>
-    updateDocument<App>('apps', ensureAppId(), data)
+  const updateApp = (data: Partial<App> | Record<string, any>) =>
+    updateDocument<any>('apps', ensureAppId(), data as any)
 
   const text = (raw: unknown, max: number) =>
     String(raw ?? '')
@@ -108,7 +108,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     return url
   }
 
-  type AppImageKind = 'avatar' | 'logo' | 'wordmark'
+  type AppImageKind = 'avatar' | 'logo' | 'wordmarkLight' | 'wordmarkDark'
 
   function imageStoragePath(appId: string, kind: AppImageKind): string {
     // "Public bucket" convention: a stable object path that can be overwritten.
@@ -118,8 +118,10 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
         return `apps/${appId}/media/avatar/current`
       case 'logo':
         return `apps/${appId}/media/logo/current`
-      case 'wordmark':
-        return `apps/${appId}/media/wordmark/current`
+      case 'wordmarkLight':
+        return `apps/${appId}/media/wordmark-light/current`
+      case 'wordmarkDark':
+        return `apps/${appId}/media/wordmark-dark/current`
     }
   }
 
@@ -136,7 +138,9 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
     if (kind === 'avatar') await updateApp({ avatar_url: next })
     else if (kind === 'logo') await updateApp({ logo_url: next })
-    else await updateApp({ wordmark_url: next })
+    else if (kind === 'wordmarkLight')
+      await updateApp({ wordmark_light_url: next, wordmark_url: deleteField() })
+    else await updateApp({ wordmark_dark_url: next, wordmark_url: deleteField() })
     return next
   }
 
@@ -152,7 +156,9 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
     if (kind === 'avatar') await updateApp({ avatar_url: next })
     else if (kind === 'logo') await updateApp({ logo_url: next })
-    else await updateApp({ wordmark_url: next })
+    else if (kind === 'wordmarkLight')
+      await updateApp({ wordmark_light_url: next, wordmark_url: deleteField() })
+    else await updateApp({ wordmark_dark_url: next, wordmark_url: deleteField() })
     return next
   }
 

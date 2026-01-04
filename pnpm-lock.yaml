@@ -67,6 +67,9 @@ importers:
       firebase:
         specifier: 11.10.0
         version: 11.10.0
+      firebase-admin:
+        specifier: ^12.7.0
+        version: 12.7.0
       h3:
         specifier: ^1.15.4
         version: 1.15.4

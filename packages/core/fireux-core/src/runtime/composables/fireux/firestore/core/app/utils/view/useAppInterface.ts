@@ -49,7 +49,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       longBio: app.long_bio || '',
 
       logo: app.logo_url || '',
-      wordmark: app.wordmark_url || '',
+      wordmark: app.wordmark_light_url || app.wordmark_dark_url || '',
       instagram: app.social_links?.instagram || '',
     }
   }

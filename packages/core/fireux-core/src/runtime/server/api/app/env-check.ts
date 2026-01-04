@@ -76,7 +76,9 @@ function validateBrandDimensions(
   const isSvg = type === 'svg'
   const isPng = type === 'png'
 
-  if (name === 'wordmark' && isSvg) return null
+  const isWordmark = name === 'wordmark' || name.startsWith('wordmark-')
+
+  if (isWordmark && isSvg) return null
 
   if (!isSvg && !isPng) return 'Must be SVG or PNG'
 
@@ -88,7 +90,7 @@ function validateBrandDimensions(
     return `Must be exactly ${requiredWidth}×${requiredHeight} (got ${dim.width}×${dim.height})`
   }
 
-  if (name === 'wordmark') {
+  if (isWordmark) {
     const minWidth = constraints.minWidth ?? 256
     const minHeight = constraints.minHeight ?? 64
     const minAspect = constraints.minAspect ?? 3
@@ -431,28 +433,14 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
             height: 512,
           },
           {
-            name: 'wordmark',
-            path: 'img/app/wordmark.png',
-            minWidth: 256,
-            minHeight: 64,
-            minAspect: 3,
-          },
-          {
-            name: 'wordmark',
+            name: 'wordmark-light',
             path: 'img/app/wordmark-light.png',
             minWidth: 256,
             minHeight: 64,
             minAspect: 3,
           },
           {
-            name: 'wordmark',
-            path: 'img/app/wordmark-light.svg',
-            minWidth: 256,
-            minHeight: 64,
-            minAspect: 3,
-          },
-          {
-            name: 'wordmark',
+            name: 'wordmark-dark',
             path: 'img/app/wordmark-dark.png',
             minWidth: 256,
             minHeight: 64,

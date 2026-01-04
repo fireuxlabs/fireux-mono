@@ -36,7 +36,11 @@
     "clean:deep": "node scripts/clean.mjs --deep",
     "gitsave": "bash scripts/gitsave.sh",
     "gen:cta-innards": "node scripts/generate-cta-innards.mjs",
-    "gen:cta-trees": "node scripts/generate-cta-parent-trees.mjs"
+    "gen:cta-trees": "node scripts/generate-cta-parent-trees.mjs",
+    "audit:app-media": "node scripts/audit-app-media.mjs",
+    "list:app-media-trash": "node scripts/list-app-media-trash.mjs",
+    "delete:app-media-trash": "node scripts/delete-app-media-trash.mjs",
+    "clear:app-fields": "node scripts/clear-app-firestore-fields.mjs"
   },
   "engines": {
     "node": ">=20.11 <23",
@@ -58,6 +62,7 @@
     "concurrently": "^9.2.0",
     "eslint": "^9.28.0",
     "firebase": "11.10.0",
+    "firebase-admin": "^12.7.0",
     "h3": "^1.15.4",
     "nuxt": "4.1.2",
     "prettier": "^3.0.0",

@@ -17,7 +17,7 @@
               v-if="wordmark"
               :src="wordmark"
               :alt="`${title} wordmark`"
-              class="h-6 w-auto max-w-40 object-contain"
+              class="fx-card__wordmark"
               loading="lazy"
               decoding="async"
             />

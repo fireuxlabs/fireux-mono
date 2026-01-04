@@ -48,6 +48,7 @@ const SKIP_DIRS = new Set([
 ])
 
 let removedCount = 0
+let removedNuxtArtifacts = false
 
 function walk(dir) {
   if (!existsSync(dir)) return
@@ -65,6 +66,9 @@ function walk(dir) {
       rmSync(fullPath, { recursive: true, force: true })
       console.log(`[clean] 🧹 removed ${path.relative(repoRoot, fullPath)}`)
       removedCount++
+      if (name === '.nuxt' || name === '.data' || name === '.output' || name === '.nitro') {
+        removedNuxtArtifacts = true
+      }
       continue
     }
 
@@ -105,4 +109,10 @@ if (removedCount === 0) {
   console.log('[clean] ✅ Nothing to clean')
 } else {
   console.log(`[clean] ✅ Removed ${removedCount} item(s)`)
+}
+
+if (removedNuxtArtifacts) {
+  console.log(
+    '[clean] ℹ If a Nuxt dev server was running, restart it (clean removed generated build files).'
+  )
 }

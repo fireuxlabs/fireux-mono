@@ -47,9 +47,6 @@ export function useAppEnsure() {
         short_bio: '',
         long_bio: '',
         social_links: { instagram: '' },
-        avatar_url: '',
-        logo_url: '',
-        wordmark_url: '',
         join_requests: [],
         admin_ids: [],
         user_count: 0,
@@ -85,9 +82,7 @@ export function useAppEnsure() {
       patch.social_links = { instagram: '' }
     }
 
-    if (typeof existing?.avatar_url !== 'string') patch.avatar_url = ''
-    if (typeof existing?.logo_url !== 'string') patch.logo_url = ''
-    if (typeof existing?.wordmark_url !== 'string') patch.wordmark_url = ''
+    // Image URL fields are optional; we do not backfill them.
 
     if (!Array.isArray(existing?.join_requests)) patch.join_requests = []
     if (!Array.isArray(existing?.admin_ids)) patch.admin_ids = []

@@ -92,8 +92,8 @@
             <div class="text-xs opacity-70">Wordmark</div>
             <div class="text-sm">
               <a
-                v-if="app?.wordmark_url"
-                :href="app.wordmark_url"
+                v-if="app?.wordmark_light_url || app?.wordmark_dark_url"
+                :href="app?.wordmark_light_url || app?.wordmark_dark_url"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="underline"

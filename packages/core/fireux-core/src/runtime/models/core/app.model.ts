@@ -37,7 +37,9 @@ export interface App {
   updated_at: Ts
 
   // Brand/media URLs (flat)
-  avatar_url: string
-  logo_url: string
-  wordmark_url: string
+  avatar_url?: string
+  logo_url?: string
+  // Canon wordmark variants
+  wordmark_light_url?: string
+  wordmark_dark_url?: string
 }

@@ -5,6 +5,9 @@ import { useUser } from '../../firestore/core/user/useUser'
 import { useAppEnsure } from '../../firestore/core/app/mutations/useAppEnsure'
 import type { EnvCheckResponse } from '../../../../../types/app/onboarding'
 import { useAppEnvCheck } from './useAppEnvCheck'
+import { useImageStorage } from '../../firebase/useImageStorage'
+import { useFirestoreUpdate } from '../../firestore/operations/useFirestoreUpdate'
+import { deleteField } from 'firebase/firestore'
 
 export interface AppOnboardingState {
   coreUser: Ref<ReturnType<typeof useUser>['coreUser']['value'] | null>
@@ -87,6 +90,58 @@ export function useAppOnboarding(): AppOnboardingState {
   const bypassWarning = computed(() => !env.value?.isValid && Boolean(devMode))
 
   const { ensureApp } = useAppEnsure()
+  const { uploadImage } = useImageStorage()
+  const { updateDocument } = useFirestoreUpdate()
+
+  function cacheBust(url: string): string {
+    const stamp = Date.now().toString(36)
+    return url.includes('?') ? `${url}&v=${stamp}` : `${url}?v=${stamp}`
+  }
+
+  const syncNewAppImages = async (appId: string) => {
+    // Only sync when env-check says local assets are present/valid.
+    // This keeps the onboarding flow safe when devMode bypass is used.
+    if (!env.value?.isValid) return
+
+    const uploads: Array<{
+      kind: 'avatar_url' | 'logo_url' | 'wordmark_light_url' | 'wordmark_dark_url'
+      storagePath: string
+      localPath: string
+    }> = [
+      {
+        kind: 'logo_url',
+        storagePath: `apps/${appId}/media/logo/current`,
+        localPath: '/img/app/logo.png',
+      },
+      {
+        kind: 'wordmark_light_url',
+        storagePath: `apps/${appId}/media/wordmark-light/current`,
+        localPath: '/img/app/wordmark-light.png',
+      },
+      {
+        kind: 'wordmark_dark_url',
+        storagePath: `apps/${appId}/media/wordmark-dark/current`,
+        localPath: '/img/app/wordmark-dark.png',
+      },
+      {
+        kind: 'avatar_url',
+        storagePath: `apps/${appId}/media/avatar/current`,
+        localPath: '/img/app/thumbnail.png',
+      },
+    ]
+
+    const patch: Record<string, string> = {}
+    for (const item of uploads) {
+      const url = await uploadImage(item.storagePath, item.localPath)
+      patch[item.kind] = cacheBust(url)
+    }
+
+    await updateDocument('apps', appId, {
+      ...patch,
+      // Ensure no legacy wordmark field can linger.
+      wordmark_url: deleteField(),
+    })
+  }
 
   const onRefreshEnv = () => {
     void refreshEnv()
@@ -97,6 +152,12 @@ export function useAppOnboarding(): AppOnboardingState {
     try {
       const ensured = await ensureApp()
       console.log('[proceed] ensureApp result', ensured)
+
+      // For newly-created apps, push the canonical local brand assets to Storage
+      // and persist the corresponding URLs in Firestore.
+      if (ensured?.created) {
+        await syncNewAppImages(ensured.id)
+      }
     } catch (e) {
       console.error('[proceed] ensureApp failed', e)
     }

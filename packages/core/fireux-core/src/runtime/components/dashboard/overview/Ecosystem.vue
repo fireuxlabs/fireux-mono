@@ -108,10 +108,13 @@ const userAppLogoUrl = (app: App): string => {
   const rawUrl =
     (typeof entry?.avatar_url === 'string' && entry.avatar_url) ||
     (typeof entry?.logo_url === 'string' && entry.logo_url) ||
-    (typeof entry?.wordmark_url === 'string' && entry.wordmark_url) ||
+    (typeof entry?.wordmark_light_url === 'string' && entry.wordmark_light_url) ||
+    (typeof entry?.wordmark_dark_url === 'string' && entry.wordmark_dark_url) ||
     (typeof entry?.icon_url === 'string' && entry.icon_url) ||
     (typeof entry?.avatarUrl === 'string' && entry.avatarUrl) ||
     (typeof entry?.logoUrl === 'string' && entry.logoUrl) ||
+    (typeof entry?.wordmarkLightUrl === 'string' && entry.wordmarkLightUrl) ||
+    (typeof entry?.wordmarkDarkUrl === 'string' && entry.wordmarkDarkUrl) ||
     (typeof entry?.wordmarkUrl === 'string' && entry.wordmarkUrl) ||
     (typeof entry?.iconUrl === 'string' && entry.iconUrl) ||
     (typeof entry?.avatar === 'string' && entry.avatar) ||
@@ -158,7 +161,13 @@ const apps = computed<App[]>(() => {
 })
 
 const avatarSrc = (app: App) => {
-  const raw = userAppLogoUrl(app) || app.avatar_url || app.logo_url || app.wordmark_url || ''
+  const raw =
+    userAppLogoUrl(app) ||
+    app.avatar_url ||
+    app.logo_url ||
+    app.wordmark_light_url ||
+    app.wordmark_dark_url ||
+    ''
   return getProxiedAvatarUrl(raw)
 }
 

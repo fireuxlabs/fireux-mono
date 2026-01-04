@@ -1,0 +1,386 @@
+{
+  "generatedAt": "2026-01-04T16:35:31.818Z",
+  "targets": [
+    {
+      "ecosystemId": "fireux-cleanbox",
+      "ecosystemName": "cleanbox",
+      "projectId": "cleanbox-f15bc",
+      "bucket": "cleanbox-f15bc.firebasestorage.app",
+      "sourceFile": "packages/ecosystem/fireux-cleanbox/src/config/firebase/ecosystem.config.ts"
+    },
+    {
+      "ecosystemId": "fireux",
+      "ecosystemName": "FireUX",
+      "projectId": "fireux-2005",
+      "bucket": "fireux-2005.firebasestorage.app",
+      "sourceFile": "packages/ecosystem/fireux-fireux/src/config/firebase/ecosystem.config.ts"
+    },
+    {
+      "ecosystemId": "fireux-misebox",
+      "ecosystemName": "misebox",
+      "projectId": "misebox-78f9c",
+      "bucket": "misebox-78f9c.appspot.com",
+      "sourceFile": "packages/ecosystem/fireux-misebox/src/config/firebase/ecosystem.config.ts"
+    }
+  ],
+  "ecosystems": {
+    "fireux-cleanbox": {
+      "ecosystemId": "fireux-cleanbox",
+      "ecosystemName": "cleanbox",
+      "projectId": "cleanbox-f15bc",
+      "bucket": "cleanbox-f15bc.firebasestorage.app",
+      "serviceAccount": "packages/ecosystem/fireux-cleanbox/src/config/firebase/service-account.json",
+      "appCount": 2,
+      "apps": {
+        "cleanbox-app": {
+          "id": "cleanbox-app",
+          "ok": true,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "avatar_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Fcleanbox-app%2Fmedia%2Favatar%2Fcurrent?alt=media&token=1b11474c-d250-438f-ab5a-ca909165798d&v=mjzyckjn",
+              "storageObjectPath": "apps/cleanbox-app/media/avatar/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Fcleanbox-app%2Fmedia%2Flogo%2Fcurrent?alt=media&token=3962c785-8136-4fc8-ae39-ab6287d8b259&v=mjzycfcj",
+              "storageObjectPath": "apps/cleanbox-app/media/logo/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Fcleanbox-app%2Fmedia%2Fwordmark-light%2Fcurrent?alt=media&token=4ffa18d5-fdad-4ccf-bf45-47122dc613f1&v=mjzyche2",
+              "storageObjectPath": "apps/cleanbox-app/media/wordmark-light/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Fcleanbox-app%2Fmedia%2Fwordmark-dark%2Fcurrent?alt=media&token=d577a002-545b-4eb2-a6b0-d8847cd5538e&v=mjzycizx",
+              "storageObjectPath": "apps/cleanbox-app/media/wordmark-dark/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            }
+          ],
+          "legacy": {}
+        },
+        "richies-reinigung": {
+          "id": "richies-reinigung",
+          "ok": true,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "avatar_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Frichies-reinigung%2Fmedia%2Favatar%2Fcurrent?alt=media&token=57a3d311-6f27-4d78-820c-4bd91ccc9aef&v=mjzyd7f0",
+              "storageObjectPath": "apps/richies-reinigung/media/avatar/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Frichies-reinigung%2Fmedia%2Flogo%2Fcurrent?alt=media&token=583dcb47-bd93-4eab-a6c2-ce1c6a6dc824&v=mjzyd265",
+              "storageObjectPath": "apps/richies-reinigung/media/logo/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Frichies-reinigung%2Fmedia%2Fwordmark-light%2Fcurrent?alt=media&token=3156b800-43a5-4b27-8492-816279d76e7e&v=mjzyd42g",
+              "storageObjectPath": "apps/richies-reinigung/media/wordmark-light/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Frichies-reinigung%2Fmedia%2Fwordmark-dark%2Fcurrent?alt=media&token=6b905db0-5c37-4f70-becc-83f8dd9927ca&v=mjzyd5vp",
+              "storageObjectPath": "apps/richies-reinigung/media/wordmark-dark/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            }
+          ],
+          "legacy": {}
+        }
+      },
+      "totals": {
+        "ok": 2,
+        "warn": 0,
+        "error": 0
+      }
+    },
+    "fireux": {
+      "ecosystemId": "fireux",
+      "ecosystemName": "FireUX",
+      "projectId": "fireux-2005",
+      "bucket": "fireux-2005.firebasestorage.app",
+      "serviceAccount": "packages/ecosystem/fireux-fireux/src/config/firebase/service-account.json",
+      "appCount": 2,
+      "apps": {
+        "fireux-app": {
+          "id": "fireux-app",
+          "ok": true,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "avatar_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Favatar%2Fcurrent?alt=media&token=b7c4d660-e9af-4b89-96c7-ccd9564fc669&v=mjzxlrng",
+              "storageObjectPath": "apps/fireux-app/media/avatar/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Flogo%2Fcurrent?alt=media&token=1630501f-f297-466d-86bb-eb05a29f78c5&v=mjzxll84",
+              "storageObjectPath": "apps/fireux-app/media/logo/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Fwordmark-light%2Fcurrent?alt=media&token=c4f0b550-7e2f-437e-8f7c-df5d08c75f62&v=mjzxlnpp",
+              "storageObjectPath": "apps/fireux-app/media/wordmark-light/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Fwordmark-dark%2Fcurrent?alt=media&token=e389f7d8-150b-465f-b35d-8b8fca3d2521&v=mjzxlq1o",
+              "storageObjectPath": "apps/fireux-app/media/wordmark-dark/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            }
+          ],
+          "legacy": {}
+        },
+        "fireux-tenant": {
+          "id": "fireux-tenant",
+          "ok": true,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "avatar_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Favatar%2Fcurrent?alt=media&token=ec6255bb-4133-43a2-a888-5526d1bd409f&v=mjzxow4z",
+              "storageObjectPath": "apps/fireux-tenant/media/avatar/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Flogo%2Fcurrent?alt=media&token=c0b23925-9dec-4b86-bc1f-6aace60bed8c&v=mjzxora9",
+              "storageObjectPath": "apps/fireux-tenant/media/logo/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Fwordmark-light%2Fcurrent?alt=media&token=98034f2c-3f4d-4d06-9069-eb57d7fabd66&v=mjzxot2e",
+              "storageObjectPath": "apps/fireux-tenant/media/wordmark-light/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Fwordmark-dark%2Fcurrent?alt=media&token=2e4c7cfc-fea3-43eb-9b34-4ed14ed4c9eb&v=mjzxouqo",
+              "storageObjectPath": "apps/fireux-tenant/media/wordmark-dark/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            }
+          ],
+          "legacy": {}
+        }
+      },
+      "totals": {
+        "ok": 2,
+        "warn": 0,
+        "error": 0
+      }
+    },
+    "fireux-misebox": {
+      "ecosystemId": "fireux-misebox",
+      "ecosystemName": "misebox",
+      "projectId": "misebox-78f9c",
+      "bucket": "misebox-78f9c.appspot.com",
+      "serviceAccount": "packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json",
+      "appCount": 2,
+      "apps": {
+        "misebox-app": {
+          "id": "misebox-app",
+          "ok": true,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "avatar_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fmedia%2Favatar%2Fcurrent?alt=media&token=6d40ad71-9823-4f42-ab9e-9f5bf3cc60c8&v=mjzy78fh",
+              "storageObjectPath": "apps/misebox-app/media/avatar/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fmedia%2Flogo%2Fcurrent?alt=media&token=60fa0678-700e-4e46-8a43-b7e83c6b5acf&v=mjzy74x7",
+              "storageObjectPath": "apps/misebox-app/media/logo/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fmedia%2Fwordmark-light%2Fcurrent?alt=media&token=dbb1f8ae-7ad1-45ad-a9d8-f6b53ea8e3f7&v=mjzy75tl",
+              "storageObjectPath": "apps/misebox-app/media/wordmark-light/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fmedia%2Fwordmark-dark%2Fcurrent?alt=media&token=e478596b-fc10-4292-81a6-85d1d51120e2&v=mjzy76qv",
+              "storageObjectPath": "apps/misebox-app/media/wordmark-dark/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            }
+          ],
+          "legacy": {}
+        },
+        "niederhorn": {
+          "id": "niederhorn",
+          "ok": true,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "avatar_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fniederhorn%2Fmedia%2Favatar%2Fcurrent?alt=media&token=8cd282e7-dd58-4d87-a104-807406f72947&v=mjzy6fd2",
+              "storageObjectPath": "apps/niederhorn/media/avatar/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fniederhorn%2Fmedia%2Flogo%2Fcurrent?alt=media&token=a9e92089-4e8e-49e3-b63e-12813dbea7b1&v=mjzy6aaf",
+              "storageObjectPath": "apps/niederhorn/media/logo/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fniederhorn%2Fmedia%2Fwordmark-light%2Fcurrent?alt=media&token=2b636bf8-3823-4ffc-86fe-f827bd170292&v=mjzy6bwp",
+              "storageObjectPath": "apps/niederhorn/media/wordmark-light/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fniederhorn%2Fmedia%2Fwordmark-dark%2Fcurrent?alt=media&token=e890dffc-3e70-409d-9a62-56d41da71ce9&v=mjzy6de8",
+              "storageObjectPath": "apps/niederhorn/media/wordmark-dark/current",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            }
+          ],
+          "legacy": {}
+        }
+      },
+      "totals": {
+        "ok": 2,
+        "warn": 0,
+        "error": 0
+      }
+    }
+  },
+  "totals": {
+    "ecosystems": 3,
+    "apps": 6,
+    "ok": 6,
+    "warn": 0,
+    "error": 0
+  }
+}
