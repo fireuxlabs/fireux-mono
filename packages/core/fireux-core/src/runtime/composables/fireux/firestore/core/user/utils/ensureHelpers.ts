@@ -4,16 +4,18 @@ import {
   doc,
   getDoc,
   increment,
+  serverTimestamp,
+  writeBatch,
   type DocumentSnapshot,
 } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'
+import { useRequireUser } from '../../../../firebase/useRequireUser'
 import type { App } from '../../../../../../models/core/app.model'
 import type {
   AppUser,
   User,
-  UserNotification,
   NotificationScope,
 } from '../../../../../../models/core/user.model'
 
@@ -30,10 +32,6 @@ export type EnsureCoreResult = {
   displayName: string
 }
 
-export type EnsureMembershipOptions = {
-  appName?: string
-}
-
 export async function ensureCoreUserDocument(
   uid: string,
   options: EnsureCoreOptions = {}
@@ -44,8 +42,10 @@ export async function ensureCoreUserDocument(
 
   if (snapshot.exists()) {
     const data = snapshot.data() as User | undefined
-    const existingName =
-      data?.display_name || options.displayName || buildFallbackDisplayName(uid)
+    const existingName = data?.display_name
+    if (!existingName) {
+      throw new Error('[ensureCoreUserDocument] Existing user missing display_name')
+    }
     return {
       created: false,
       snapshot: snapshot as DocumentSnapshot<User>,
@@ -53,24 +53,26 @@ export async function ensureCoreUserDocument(
     }
   }
 
-  const displayName = options.displayName || buildFallbackDisplayName(uid)
-  const welcomeLabel = options.ecosystemName?.trim() || 'FireUX'
+  const displayName = options.displayName
+  if (!displayName) {
+    throw new Error('[ensureCoreUserDocument] Missing displayName')
+  }
+  const email = options.email
+  if (!email) {
+    throw new Error('[ensureCoreUserDocument] Missing email')
+  }
+  // EnsureCore is responsible for creating the core document, but should not
+  // create membership side effects (like notifications) by default.
   const payload: User = {
     id: uid,
     display_name: displayName,
     avatar: options.avatar ?? '',
     handle: makeHandle(displayName, uid),
-    email: options.email ?? '',
+    email,
     bio: '',
     profiles: [],
     userOf: [],
     adminOf: [],
-    notifications: [
-      createUserNotification({
-        message: `Welcome to ${welcomeLabel}`,
-        scope: 'ecosystem',
-      }),
-    ],
   }
 
   const { setDocument } = useFirestoreManager()
@@ -84,80 +86,129 @@ export type EnsureMembershipResult = { created: boolean }
 export async function ensureUserAppMembership(
   appId: string,
   uid: string,
-  membershipRole: 'admin' | 'user',
-  options: EnsureMembershipOptions = {}
+  membershipRole: 'admin' | 'user'
 ): Promise<EnsureMembershipResult> {
+  await useRequireUser()
   const db = useFirestore()
-  const ref = doc(db, 'apps', appId, 'users', uid)
-  const snapshot = await getDoc(ref)
-  const { setDocument, updateDocument } = useFirestoreManager()
-  const appLabel = options.appName?.trim() || appId
 
-  let created = true
-  if (snapshot.exists()) {
-    created = false
-    const current = snapshot.data() as AppUser | undefined
+  const appUserRef = doc(db, 'apps', appId, 'users', uid)
+  const appRef = doc(db, 'apps', appId)
+  const userRef = doc(db, 'users', uid)
+
+  const [appUserSnap, userSnap] = await Promise.all([
+    getDoc(appUserRef),
+    getDoc(userRef),
+  ])
+
+  if (!userSnap.exists()) {
+    throw new Error(
+      `[ensureUserAppMembership] Missing core user doc for uid=${uid}; call ensureCoreUserDocument first`
+    )
+  }
+
+  const created = !appUserSnap.exists()
+  const batch = writeBatch(db)
+
+  // 1) Canonical membership overlay
+  if (appUserSnap.exists()) {
+    const current = appUserSnap.data() as AppUser | undefined
     if (current?.role !== membershipRole) {
-      await updateDocument<AppUser>(`apps/${appId}/users`, uid, {
+      batch.update(appUserRef, {
         role: membershipRole,
+        updated_at: serverTimestamp(),
       })
     }
   } else {
-    const payload: AppUser = {
-      id: uid,
-      role: membershipRole,
-      creator_id: uid,
-      notifications: [
-        createUserNotification({
-          message: `Welcome to ${appLabel}`,
-          scope: 'app',
-          appId,
-        }),
-      ],
-    } as AppUser
-    await setDocument<AppUser>(`apps/${appId}/users`, uid, payload)
+    batch.set(
+      appUserRef,
+      {
+        id: uid,
+        role: membershipRole,
+        creator_id: uid,
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+      } as any,
+      { merge: false }
+    )
   }
 
+  // 2) App mirrors
   if (created) {
-    await updateDocument<App>('apps', appId, {
+    batch.update(appRef, {
       user_count: increment(1) as unknown as App['user_count'],
+      updated_at: serverTimestamp(),
     })
   }
-
-  await ensureCoreUserDocument(uid)
 
   // Keep all admin mirrors in sync with the app-scoped role.
   // Canon: AppUser.role (apps/{appId}/users/{uid})
   // Mirrors: apps/{appId}.admin_ids[], users/{uid}.adminOf[]
-  await updateDocument<App>('apps', appId, {
+  batch.update(appRef, {
     admin_ids: (membershipRole === 'admin'
       ? arrayUnion(uid)
       : arrayRemove(uid)) as unknown as App['admin_ids'],
+    updated_at: serverTimestamp(),
   })
 
-  let membershipUpdates: Partial<User> = {
+  // 3) Core user mirrors (and ensure core user exists)
+  const membershipUpdates: any = {
     userOf: arrayUnion(appId) as unknown as string[],
     adminOf: (membershipRole === 'admin'
       ? arrayUnion(appId)
       : arrayRemove(appId)) as unknown as string[],
+    updated_at: serverTimestamp(),
   }
 
-  if (created) {
-    membershipUpdates = {
-      ...membershipUpdates,
-      notifications: arrayUnion(
-        createUserNotification({
-          message: `You joined ${appLabel}`,
-          scope: 'app',
-          appId,
-        })
-      ) as unknown as UserNotification[],
-    }
-  }
+  batch.update(userRef, membershipUpdates as any)
 
-  await updateDocument<User>('users', uid, membershipUpdates)
-
+  await batch.commit()
   return { created }
+}
+
+export type RemoveMembershipResult = { removed: boolean }
+
+export async function removeUserAppMembership(
+  appId: string,
+  uid: string
+): Promise<RemoveMembershipResult> {
+  await useRequireUser()
+  const db = useFirestore()
+
+  const appUserRef = doc(db, 'apps', appId, 'users', uid)
+  const appRef = doc(db, 'apps', appId)
+  const userRef = doc(db, 'users', uid)
+
+  const [appUserSnap, userSnap] = await Promise.all([
+    getDoc(appUserRef),
+    getDoc(userRef),
+  ])
+  const existed = appUserSnap.exists()
+
+  const batch = writeBatch(db)
+  batch.delete(appUserRef)
+
+  if (existed) {
+    batch.update(appRef, {
+      user_count: increment(-1) as unknown as App['user_count'],
+      updated_at: serverTimestamp(),
+    })
+  }
+
+  batch.update(appRef, {
+    admin_ids: arrayRemove(uid) as unknown as App['admin_ids'],
+    updated_at: serverTimestamp(),
+  })
+
+  if (userSnap.exists()) {
+    batch.update(userRef, {
+      userOf: arrayRemove(appId) as unknown as string[],
+      adminOf: arrayRemove(appId) as unknown as string[],
+      updated_at: serverTimestamp(),
+    } as any)
+  }
+
+  await batch.commit()
+  return { removed: existed }
 }
 
 export type CreateNotificationInput = {
@@ -168,31 +219,22 @@ export type CreateNotificationInput = {
 
 export function createUserNotification(
   input: CreateNotificationInput
-): UserNotification {
+): { message: string; scope: NotificationScope; created_at: string; read: boolean; app_id?: string } {
   return {
-    id: generateNotificationId(),
     message: input.message,
     scope: input.scope,
     created_at: new Date().toISOString(),
     read: false,
-    app_id: input.appId ?? '',
+    app_id: input.appId,
   }
 }
 
 function makeHandle(displayName: string, uid: string) {
-  const base = displayName.toLowerCase().replaceAll(/[^a-z0-9]/g, '')
-  const padded = base || 'user'
-  return `${padded}${uid.slice(0, 4)}`.slice(0, 12)
-}
-
-function buildFallbackDisplayName(uid: string) {
-  const suffix = uid.slice(-4) || uid
-  return `Member ${suffix}`
-}
-
-function generateNotificationId() {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID()
-  }
-  return Math.random().toString(36).slice(2, 12)
+  // Strict rule: NEVER invent a word fallback.
+  // Deterministic handle: cleaned displayName prefix (may be empty) + uid suffix.
+  const cleaned = displayName.toLowerCase().replaceAll(/[^a-z0-9]/g, '')
+  const suffix = uid.slice(0, 8)
+  const combined = `${cleaned}${suffix}`.slice(0, 12)
+  if (!combined) throw new Error('[makeHandle] Unable to derive handle')
+  return combined
 }

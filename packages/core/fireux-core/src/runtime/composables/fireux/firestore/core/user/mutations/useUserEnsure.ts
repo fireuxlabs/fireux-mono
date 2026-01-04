@@ -1,4 +1,6 @@
 import { useRouter } from 'vue-router'
+import { doc, getDoc } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { requireUid } from '../../../utils/useEnsureCommon'
 import {
@@ -40,15 +42,24 @@ const DEFAULT_REDIRECT = '/dashboard'
 // Ensures core user + app membership; used by auth and profile flows.
 export function useAppUserEnsure() {
   const router = useRouter()
-  const { appId, appName, ecosystem } = useFireUXConfig()
+  const { appId, ecosystem } = useFireUXConfig()
+  const db = useFirestore()
   let authContextPromise: Promise<EnsureAuthContext> | null = null
 
   const resolveAuthContext = async () => {
     if (!authContextPromise) {
       authContextPromise = requireUid().then(({ uid, auth }) => ({
         uid,
-        email: auth?.email ?? '',
-        displayName: auth?.displayName || 'New User',
+        email: (() => {
+          const value = auth?.email
+          if (!value) throw new Error('[useUserEnsure] Missing auth email')
+          return value
+        })(),
+        displayName: (() => {
+          const value = auth?.displayName
+          if (!value) throw new Error('[useUserEnsure] Missing auth displayName')
+          return value
+        })(),
       }))
     }
     return authContextPromise
@@ -69,9 +80,20 @@ export function useAppUserEnsure() {
     membershipRole: MembershipRole = 'user'
   ): Promise<EnsureAppOutcome> => {
     const { uid } = await resolveAuthContext()
-    return ensureUserAppMembership(appId, uid, membershipRole, {
-      appName,
-    })
+    if (!appId) throw new Error('[useUserEnsure] Missing config.appId')
+
+    // IMPORTANT: never downgrade an existing admin to user as a side effect of
+    // “ensure user” flows (auth/profile). Explicit admin toggles should use the
+    // dedicated admin mutation helpers.
+    if (membershipRole === 'user') {
+      const existing = await getDoc(doc(db, 'apps', appId, 'users', uid))
+      const currentRole = existing.exists() ? (existing.data() as any)?.role : null
+      if (currentRole === 'admin') {
+        return ensureUserAppMembership(appId, uid, 'admin')
+      }
+    }
+
+    return ensureUserAppMembership(appId, uid, membershipRole)
   }
 
   // Ensures the core doc first, then mirrors membership inside the active app.
@@ -79,6 +101,7 @@ export function useAppUserEnsure() {
     options: EnsureUserOptions = {}
   ): Promise<EnsureUserResult> => {
     const membershipRole = options.membershipRole ?? 'user'
+    if (!ecosystem) throw new Error('[useUserEnsure] Missing config.ecosystem')
     const core = await ensureCore()
     const app = await ensureApp(membershipRole)
 

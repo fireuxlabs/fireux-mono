@@ -1,4 +1,4 @@
-import { arrayRemove, arrayUnion } from 'firebase/firestore'
+import { addDoc, arrayRemove, arrayUnion, collection } from 'firebase/firestore'
 import type {
   User,
   UserNotification,
@@ -8,27 +8,13 @@ import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
 import { useUserFormattingAndValidation } from '../validation/useUserFormatting'
 import { createUserNotification } from '../ensureHelpers'
-
-type CoreProfileActions = {
-  rename: (displayName: string) => Promise<void>
-  setAvatarUrl: (url: string | null) => Promise<void>
-  uploadAvatar: (source: File | Blob) => Promise<string>
-  setBio: (bio: string) => Promise<void>
-}
-
-type CoreTagActions = {
-  add: (tagId: string) => Promise<void>
-  remove: (tagId: string) => Promise<void>
-}
-
-type CoreNotificationActions = {
-  push: (message: string) => Promise<UserNotification>
-}
+import { useFirestore } from 'vuefire'
 
 export function useCoreUserUpdate(user: UserRefs) {
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
   const { DisplayName, AvatarUrl, Bio } = useUserFormattingAndValidation()
+  const db = useFirestore()
 
   const core = user.coreUser as { value: User | undefined }
 
@@ -38,44 +24,52 @@ export function useCoreUserUpdate(user: UserRefs) {
     return id
   }
 
-  const profile: CoreProfileActions = {
-    rename: async (displayName) => {
-      const id = requireCoreId()
-      const formatted = DisplayName.format(displayName)
-      const validation = DisplayName.validate(formatted)
-      if (!validation.isValid) {
-        throw new Error(validation.message || 'Invalid display name')
-      }
-      await updateDocument<User>('users', id, { display_name: formatted })
+  const updateCore = (data: Partial<User>) =>
+    updateDocument<User>('users', requireCoreId(), data)
+
+  const formatAndValidate = <T>(
+    formatter: {
+      format: (value: any) => T
+      validate: (value: T) => { isValid: boolean; message?: string }
     },
-    setAvatarUrl: async (value) => {
-      const id = requireCoreId()
-      const formatted = AvatarUrl.format(value ?? '')
-      const validation = AvatarUrl.validate(formatted)
-      if (!validation.isValid) {
-        throw new Error(validation.message || 'Invalid avatar URL')
-      }
-      await updateDocument<User>('users', id, { avatar: formatted || '' })
+    value: unknown,
+    fallbackMessage: string
+  ) => {
+    const formatted = formatter.format(value)
+    const validation = formatter.validate(formatted)
+    if (!validation.isValid) {
+      throw new Error(validation.message || fallbackMessage)
+    }
+    return formatted
+  }
+
+  const profile = {
+    rename: async (displayName: string) => {
+      const formatted = formatAndValidate(
+        DisplayName,
+        displayName,
+        'Invalid display name'
+      )
+      await updateCore({ display_name: formatted })
     },
-    uploadAvatar: async (source) => {
+    setAvatarUrl: async (url: string | null) => {
+      const formatted = formatAndValidate(
+        AvatarUrl,
+        url ?? '',
+        'Invalid avatar URL'
+      )
+      await updateCore({ avatar: formatted || '' })
+    },
+    uploadAvatar: async (source: File | Blob) => {
       const id = requireCoreId()
-      const token =
-        typeof crypto !== 'undefined' && 'randomUUID' in crypto
-          ? crypto.randomUUID()
-          : Math.random().toString(36).slice(2)
-      const path = `users/${id}/avatar/${token}`
+      const path = `users/${id}/avatar/current`
       const url = await uploadImage(path, source)
-      await updateDocument<User>('users', id, { avatar: url })
+      await updateCore({ avatar: url })
       return url
     },
-    setBio: async (value) => {
-      const id = requireCoreId()
-      const formatted = Bio.format(value ?? '')
-      const validation = Bio.validate(formatted)
-      if (!validation.isValid) {
-        throw new Error(validation.message || 'Invalid bio')
-      }
-      await updateDocument<User>('users', id, { bio: formatted || '' })
+    setBio: async (bio: string) => {
+      const formatted = formatAndValidate(Bio, bio ?? '', 'Invalid bio')
+      await updateCore({ bio: formatted || '' })
     },
   }
 
@@ -84,37 +78,32 @@ export function useCoreUserUpdate(user: UserRefs) {
     return trimmed || null
   }
 
-  const tags: CoreTagActions = {
-    add: async (tagId) => {
+  const tags = {
+    add: async (tagId: string) => {
       const normalized = normalizeTagId(tagId)
       if (!normalized) return
-      const id = requireCoreId()
-      await updateDocument<User>('users', id, {
+      await updateCore({
         profiles: arrayUnion(normalized) as unknown as string[],
       })
     },
-    remove: async (tagId) => {
+    remove: async (tagId: string) => {
       const normalized = normalizeTagId(tagId)
       if (!normalized) return
-      const id = requireCoreId()
-      await updateDocument<User>('users', id, {
+      await updateCore({
         profiles: arrayRemove(normalized) as unknown as string[],
       })
     },
   }
 
-  const notifications: CoreNotificationActions = {
-    push: async (message) => {
+  const notifications = {
+    push: async (message: string) => {
       const id = requireCoreId()
-      const notification = createUserNotification({
+      const notification: UserNotification = createUserNotification({
         message,
         scope: 'ecosystem',
       })
-      await updateDocument<User>('users', id, {
-        notifications: arrayUnion(
-          notification
-        ) as unknown as UserNotification[],
-      })
+
+      await addDoc(collection(db, 'users', id, 'notifications'), notification)
       return notification
     },
   }

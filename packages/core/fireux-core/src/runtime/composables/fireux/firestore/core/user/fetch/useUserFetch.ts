@@ -23,8 +23,8 @@ export function useUserFetch(
   /**
    * Canon: AppUser membership overlay
    * - Path: `apps/{appId}/users/{uid}`
-   * - This is NOT a “tenant profile overlay”. It exists to hold app-scoped role,
-   *   permissions, onboarding state, and app-scoped notifications.
+    * - This is NOT a “tenant profile overlay”. It exists to hold app-scoped role,
+    *   permissions, and onboarding state.
    * - Therefore it is valid for any app context (including operator apps like `misebox-app`)
    *   whenever `appId` exists.
    */

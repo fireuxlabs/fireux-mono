@@ -12,79 +12,64 @@ type EnsureMembershipResult = { created: boolean }
 export function useAppEnsure() {
   const { appId, ecosystem, role, appName, appShortName } = useFireUXConfig()
   const db = useFirestore()
-  const { setDocument, updateDocument } = useFirestoreManager()
+  const { setDocument } = useFirestoreManager()
+
+  const requireAppConfig = () => {
+    if (!appId) throw new Error('[useAppEnsure] missing config: appId')
+    if (!ecosystem) throw new Error('[useAppEnsure] missing config: ecosystem')
+    if (!role) throw new Error('[useAppEnsure] missing config: role')
+    if (!appName) throw new Error('[useAppEnsure] missing config: appName')
+    if (!appShortName)
+      throw new Error('[useAppEnsure] missing config: appShortName')
+    return { appId, ecosystem, role, appName, appShortName }
+  }
 
   async function ensureAppDoc(): Promise<EnsureAppDocResult> {
-    if (!appId || !ecosystem) {
-      throw new Error('[ensureAppDoc] missing app configuration')
-    }
+    const cfg = requireAppConfig()
 
     const { uid } = await requireUid()
-    const payload = {
-      id: appId,
-      ecosystem,
-      role,
-      app_name: appName,
-      app_short_name: appShortName,
-      creator_id: uid,
-      created_by: uid,
-      admin_ids: [uid],
-      join_requests: [],
-      status: 'active',
-      description: '',
-      social_links: { instagram: '' },
-      user_count: 0,
-      avatar_url: '',
-      logo_url: '',
-      wordmark_url: '',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    } as App
-
-    const ref = doc(db, 'apps', appId)
+    const ref = doc(db, 'apps', cfg.appId)
     const snapshot = await getDoc(ref)
 
-    if (snapshot.exists()) {
-      const current = snapshot.data() as App | undefined
-      const adminIds = Array.isArray(current?.admin_ids)
-        ? current.admin_ids
-        : []
-      console.info('[ensureAppDoc] existing app found', {
-        appId,
-        adminCount: adminIds.length,
-        adminIds,
-      })
-      if (!adminIds.includes(uid)) {
-        const nextAdminIds = [...adminIds, uid]
-        await updateDocument<App>('apps', appId, { admin_ids: nextAdminIds })
-        console.info('[ensureAppDoc] added caller as admin', {
-          appId,
-          adminCount: nextAdminIds.length,
-          adminIds: nextAdminIds,
-        })
-      }
+    if (!snapshot.exists()) {
+      // IMPORTANT: keep this payload NON-membership.
+      // Membership mirrors are written ONLY by ensureUserAppMembership().
+      const payload = {
+        id: cfg.appId,
+        ecosystem: cfg.ecosystem,
+        role: cfg.role,
+        app_name: cfg.appName,
+        app_short_name: cfg.appShortName,
+        creator_id: uid,
+        created_by: uid,
+        status: 'active',
+        description: '',
+        social_links: { instagram: '' },
+        avatar_url: '',
+        logo_url: '',
+        wordmark_url: '',
+        join_requests: [],
+        admin_ids: [],
+        user_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      } satisfies App
+
+      await setDocument<App>('apps', cfg.appId, payload)
       await ensureAppMembership(uid, 'admin')
-      return { created: false, id: appId }
+      return { created: true, id: cfg.appId }
     }
 
-    await setDocument<App>('apps', appId, payload)
-    console.info('[ensureAppDoc] created app', {
-      appId,
-      adminCount: payload.admin_ids?.length ?? 0,
-      adminIds: payload.admin_ids,
-    })
     await ensureAppMembership(uid, 'admin')
-    return { created: true, id: appId }
+    return { created: false, id: cfg.appId }
   }
 
   async function ensureAppMembership(
     uid: string,
-    membershipRole: 'admin' | 'user' = 'user'
+    membershipRole: 'admin' | 'user'
   ): Promise<EnsureMembershipResult> {
-    if (!appId) return { created: false }
-    return ensureUserAppMembership(appId, uid, membershipRole, {
-      appName,
-    })
+    const cfg = requireAppConfig()
+    return ensureUserAppMembership(cfg.appId, uid, membershipRole)
   }
 
   const ensureApp = () => ensureAppDoc()

@@ -53,6 +53,10 @@ export default defineNuxtPlugin(() => {
 
   if (import.meta.dev) {
     // eslint-disable-next-line no-console
-    console.log('[fireux-nuxtfire] firebase web app initialised', { appId })
+    console.log('[fireux-nuxtfire] firebase web app initialised', {
+      projectId,
+      authDomain,
+      appId,
+    })
   }
 })

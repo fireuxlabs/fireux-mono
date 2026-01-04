@@ -1,18 +1,13 @@
 import type { Ref } from 'vue'
 import type { App } from '../../../../../../models/core/app.model'
-import type {
-  AppUser,
-  User,
-} from '../../../../../../models/core/user.model'
-import { arrayRemove, arrayUnion, increment } from 'firebase/firestore'
+import { arrayRemove } from 'firebase/firestore'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
-import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useAppEnsure } from './useAppEnsure'
+import { ensureUserAppMembership } from '../../user/utils/ensureHelpers'
 
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const { updateDocument } = useFirestoreUpdate()
-  const { setDocument } = useFirestoreCreate()
   const { uploadImage, getDownloadUrlForPath } = useImageStorage()
   const { ensureAppMembership } = useAppEnsure()
 
@@ -22,34 +17,22 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     return id
   }
 
-  const sanitizeDescription = (description: string) =>
-    String(description ?? '')
-      .trim()
-      .slice(0, 500)
+  const updateApp = (data: Partial<App>) =>
+    updateDocument<App>('apps', ensureAppId(), data)
 
-  const sanitizeAppName = (raw: string | null | undefined) =>
+  const text = (raw: unknown, max: number) =>
     String(raw ?? '')
       .trim()
-      .slice(0, 60)
-
-  const sanitizeAppShortName = (raw: string | null | undefined) =>
-    String(raw ?? '')
-      .trim()
-      .slice(0, 40)
-
-  const sanitizeEcosystem = (raw: string | null | undefined) =>
-    String(raw ?? '')
-      .trim()
-      .slice(0, 60)
+      .slice(0, max)
 
   const sanitizeStatus = (raw: string | null | undefined): App['status'] => {
-    const value = String(raw ?? '').trim()
+    const value = text(raw, 20)
     if (value === 'active' || value === 'archived') return value
     throw new Error('Status must be active or archived')
   }
 
   const sanitizeInstagram = (raw: string | null | undefined) => {
-    const value = String(raw ?? '').trim()
+    const value = text(raw, 2048)
     if (!value) return ''
 
     const normalised = (() => {
@@ -68,7 +51,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   }
 
   const sanitizeAvatarUrl = (raw: string | null | undefined) => {
-    const value = String(raw ?? '').trim()
+    const value = text(raw, 2048)
     if (!value) return ''
     try {
       const url = new URL(value)
@@ -86,58 +69,41 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   }
 
   async function updateDescription(description: string) {
-    const id = ensureAppId()
-    const value = sanitizeDescription(description)
-    await updateDocument<App>('apps', id, { description: value })
+    await updateApp({ description: text(description, 500) })
   }
 
   async function updateAppName(name: string) {
-    const id = ensureAppId()
-    const value = sanitizeAppName(name)
-    await updateDocument<App>('apps', id, { app_name: value })
+    await updateApp({ app_name: text(name, 60) })
   }
 
   async function updateAppShortName(name: string) {
-    const id = ensureAppId()
-    const value = sanitizeAppShortName(name)
-    await updateDocument<App>('apps', id, { app_short_name: value })
+    await updateApp({ app_short_name: text(name, 40) })
   }
 
   async function updateEcosystem(ecosystem: string) {
-    const id = ensureAppId()
-    const value = sanitizeEcosystem(ecosystem)
-    await updateDocument<App>('apps', id, { ecosystem: value })
+    await updateApp({ ecosystem: text(ecosystem, 60) })
   }
 
   async function updateStatus(status: string) {
-    const id = ensureAppId()
     const value = sanitizeStatus(status)
-    await updateDocument<App>('apps', id, { status: value })
+    await updateApp({ status: value })
   }
 
   async function updateInstagram(url: string | null) {
-    const id = ensureAppId()
     const sanitized = sanitizeInstagram(url)
-    await updateDocument<App>('apps', id, {
-      social_links: { instagram: sanitized },
-    })
+    await updateApp({ social_links: { instagram: sanitized } })
   }
 
   async function updateAvatarUrl(url: string | null) {
-    const id = ensureAppId()
     const value = sanitizeAvatarUrl(url)
-    await updateDocument<App>('apps', id, { avatar_url: value })
+    await updateApp({ avatar_url: value })
   }
 
   async function uploadAvatar(source: File | Blob) {
     const id = ensureAppId()
-    const token =
-      typeof crypto !== 'undefined' && 'randomUUID' in crypto
-        ? crypto.randomUUID()
-        : Date.now().toString(36)
-    const path = `apps/${id}/media/avatar/${token}`
+    const path = `apps/${id}/media/avatar/current`
     const url = await uploadImage(path, source)
-    await updateDocument<App>('apps', id, { avatar_url: url })
+    await updateApp({ avatar_url: cacheBust(url) })
     return url
   }
 
@@ -167,15 +133,9 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const url = await getDownloadUrlForPath(path)
     const next = cacheBust(url)
 
-    if (kind === 'avatar') {
-      await updateDocument<App>('apps', id, { avatar_url: next })
-      return next
-    }
-    if (kind === 'logo') {
-      await updateDocument<App>('apps', id, { logo_url: next })
-      return next
-    }
-    await updateDocument<App>('apps', id, { wordmark_url: next })
+    if (kind === 'avatar') await updateApp({ avatar_url: next })
+    else if (kind === 'logo') await updateApp({ logo_url: next })
+    else await updateApp({ wordmark_url: next })
     return next
   }
 
@@ -189,15 +149,9 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const url = await uploadImage(path, localPath)
     const next = cacheBust(url)
 
-    if (kind === 'avatar') {
-      await updateDocument<App>('apps', id, { avatar_url: next })
-      return next
-    }
-    if (kind === 'logo') {
-      await updateDocument<App>('apps', id, { logo_url: next })
-      return next
-    }
-    await updateDocument<App>('apps', id, { wordmark_url: next })
+    if (kind === 'avatar') await updateApp({ avatar_url: next })
+    else if (kind === 'logo') await updateApp({ logo_url: next })
+    else await updateApp({ wordmark_url: next })
     return next
   }
 
@@ -207,8 +161,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
    * - If approve=true, ensures membership doc and user link are created
    */
   async function handleJoinRequests(uid: string, approve: boolean) {
-    const appId = ensureAppId()
-    await updateDocument<App>('apps', appId, {
+    await updateApp({
       // Firestore FieldValue cast is safe; updateDocument forwards as-is.
       join_requests: arrayRemove(uid) as unknown as App['join_requests'],
     })
@@ -220,39 +173,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   async function setAppUserAdmin(uid: string, makeAdmin: boolean) {
     const appId = ensureAppId()
-    const role = makeAdmin ? 'admin' : 'user'
-
-    let updatedDoc = false
-    try {
-      await updateDocument<AppUser>(`apps/${appId}/users`, uid, { role })
-      updatedDoc = true
-    } catch {
-      updatedDoc = false
-    }
-
-    if (!updatedDoc) {
-      await setDocument(`apps/${appId}/users`, uid, { id: uid, role })
-      await updateDocument<App>('apps', appId, {
-        user_count: increment(1) as unknown as App['user_count'],
-      })
-    }
-
-    await updateDocument<App>('apps', appId, {
-      admin_ids: (makeAdmin
-        ? arrayUnion(uid)
-        : arrayRemove(uid)) as unknown as App['admin_ids'],
-    })
-
-    const userUpdates: Partial<User> = makeAdmin
-      ? {
-          adminOf: arrayUnion(appId) as unknown as string[],
-          userOf: arrayUnion(appId) as unknown as string[],
-        }
-      : {
-          adminOf: arrayRemove(appId) as unknown as string[],
-        }
-
-    await updateDocument<User>('users', uid, userUpdates)
+    await ensureUserAppMembership(appId, uid, makeAdmin ? 'admin' : 'user')
   }
 
   return {

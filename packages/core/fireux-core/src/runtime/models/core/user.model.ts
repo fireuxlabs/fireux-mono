@@ -1,12 +1,15 @@
+import type { FirestoreTimestampOrString } from '../../../types/firebase'
+
 export type NotificationScope = 'ecosystem' | 'app'
 
+type Ts = FirestoreTimestampOrString
+
 export interface UserNotification {
-  id: string
   message: string
   scope: NotificationScope
   created_at: string
   read: boolean
-  app_id: string
+  app_id?: string
 }
 
 /**
@@ -27,8 +30,6 @@ export interface User {
   /** Core memberships */
   userOf: string[]
   adminOf: string[]
-
-  notifications: UserNotification[]
 }
 
 /**
@@ -42,5 +43,6 @@ export interface AppUser {
 
   creator_id: string
 
-  notifications: UserNotification[]
+  created_at: Ts
+  updated_at: Ts
 }
