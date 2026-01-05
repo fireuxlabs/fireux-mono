@@ -93,109 +93,6 @@ import type { NavItem } from '../../types/nav'
 
 defineOptions({ name: 'dashboard' })
 
-type ProfileNavConfig = {
-  key: string
-  label: string
-  to: string
-  order?: number
-  icon?: string
-}
-
-const PROFILE_NAV_EXTRAS: Record<string, ProfileNavConfig[]> = {
-  agent: [
-    {
-      key: 'dashboard-agent-home',
-      label: 'Agent',
-      to: '/dashboard/agent',
-      order: 210,
-      icon: 'i-lucide-shield-user',
-    },
-    {
-      key: 'dashboard-agent-profile',
-      label: 'Profile',
-      to: '/dashboard/agent/profile',
-      order: 211,
-      icon: 'i-lucide-file-user',
-    },
-    {
-      key: 'dashboard-agent-my-gigs',
-      label: 'My Gigs',
-      to: '/dashboard/agent/my-gigs',
-      order: 212,
-      icon: 'i-lucide-radio-tower',
-    },
-  ],
-  professional: [
-    {
-      key: 'dashboard-professional-home',
-      label: 'Professional',
-      to: '/dashboard/professional',
-      order: 220,
-      icon: 'i-lucide-user-star',
-    },
-    {
-      key: 'dashboard-professional-extra-1',
-      label: 'Profile',
-      to: '/dashboard/professional/profile',
-      order: 221,
-      icon: 'i-lucide-file-user',
-    },
-    {
-      key: 'dashboard-professional-extra-2',
-      label: 'My Jobs',
-      to: '/dashboard/professional/my-jobs',
-      order: 222,
-      icon: 'i-lucide-briefcase-business',
-    },
-  ],
-  chef: [
-    {
-      key: 'dashboard-chef-home',
-      label: 'Chef',
-      to: '/dashboard/chef',
-      order: 230,
-      icon: 'i-lucide-chef-hat',
-    },
-    {
-      key: 'dashboard-chef-profile',
-      label: 'Profile',
-      to: '/dashboard/chef/profile',
-      order: 231,
-      icon: 'i-lucide-file-user',
-    },
-    {
-      key: 'dashboard-chef-recipes',
-      label: 'My Recipes',
-      to: '/dashboard/chef/my-recipes',
-      order: 232,
-      icon: 'i-lucide-book-open',
-    },
-  ],
-  supplier: [
-    {
-      key: 'dashboard-supplier-home',
-      label: 'Supplier',
-      to: '/dashboard/supplier',
-      order: 240,
-      icon: 'i-lucide-package',
-    },
-    {
-      key: 'dashboard-supplier-profile',
-      label: 'Profile',
-      to: '/dashboard/supplier/profile',
-      order: 241,
-      icon: 'i-lucide-file-user',
-    },
-    {
-      key: 'dashboard-supplier-stock',
-      label: 'My Stock',
-      to: '/dashboard/supplier/my-stock',
-      order: 242,
-      icon: 'i-lucide-box',
-    },
-  ],
-}
-
 const open = ref(false)
 const route = useRoute()
 const router = useRouter()
@@ -236,6 +133,7 @@ const sortNavItems = (items: NavItem[]) =>
   })
 
 const TOP_PRIORITY = [
+  { key: 'dashboard-developer', to: '/dashboard/developer' },
   { key: 'dashboard-app', to: '/dashboard/app' },
   { key: 'dashboard-home', to: '/dashboard' },
   { key: 'dashboard-user-profile', to: '/dashboard/user-profile' },
@@ -251,27 +149,25 @@ const topPosition = (item: NavItem) =>
     ({ key, to }) => (key && item.key === key) || item.to === to
   )
 
+const canShowNavItem = (item: NavItem) => {
+  if (item.key === 'dashboard-app' || item.to === '/dashboard/app') {
+    return isAdmin.value
+  }
+
+  if (item.key === 'dashboard-developer' || item.to === '/dashboard/developer') {
+    return isDev.value
+  }
+
+  return true
+}
+
 const baseNav = computed(() =>
   sortNavItems(
     desktop.value
       .filter((i) => i.group !== 'profiles')
-      .filter((item) => {
-        if (item.key === 'dashboard-app' || item.to === '/dashboard/app') {
-          return isAdmin.value
-        }
-        if (
-          item.key === 'dashboard-developer' ||
-          item.to === '/dashboard/developer'
-        ) {
-          return isDev.value
-        }
-        return true
-      })
+      .filter((i) => !i.profileId)
+      .filter(canShowNavItem)
   )
-)
-
-const profileNavItems = computed(() =>
-  desktop.value.filter((item) => item.group === 'profiles')
 )
 
 const routeProfileId = computed(
@@ -290,27 +186,14 @@ watch(
 
 const activeProfileId = computed(() => activeProfileState.value)
 
-const activeProfileNav = computed(() =>
-  profileNavItems.value.find((item) => item.profileId === activeProfileId.value)
-)
-
-const profileExtras = computed<NavItem[]>(() => {
+const profileExtras = computed(() => {
   const profileId = activeProfileId.value
   if (!profileId) return []
-  const extras = PROFILE_NAV_EXTRAS[profileId] ?? []
-  const profileIcon = activeProfileNav.value?.icon ?? 'i-lucide-user'
-  return extras.map((item, index) => ({
-    key: item.key,
-    label: item.label,
-    icon: item.icon ?? profileIcon,
-    to: item.to,
-    group: 'profile-extra',
-    profileId,
-    order: item.order ?? 300 + index,
-    desktop: true,
-    mobile: false,
-    layouts: ['dashboard'],
-  }))
+  return sortNavItems(
+    desktop.value
+      .filter((item) => item.group !== 'profiles')
+      .filter((item) => item.profileId === profileId)
+  )
 })
 
 const topNav = computed(() =>

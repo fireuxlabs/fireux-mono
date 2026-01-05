@@ -63,40 +63,6 @@ const showDebug = computed(() => {
   if (q === '1' || q === 'true') return true
   return false
 })
-
-/*
-Dev pages inventory (grouped, meta-driven)
-
-- core
-  - packages/core/fireux-core/src/runtime/pages/dev/index.vue
-    meta: { layout: 'dev', nav: { key: 'dev-index', label: 'Overview', icon: 'i-lucide-wrench', desktop: true, group: 'core', layouts: ['dev'] } }
-  - packages/core/fireux-core/src/runtime/pages/dev/app.vue
-    meta: { layout: 'dev', alias: ['/dev/apps'], nav: { key: 'dev-app', label: 'Apps', icon: 'i-lucide-settings', desktop: true, group: 'core', layouts: ['dev'] } }
-  - packages/core/fireux-core/src/runtime/pages/dev/fireux-core.vue
-    meta: { layout: 'dev', nav: { key: 'dev-fireux-core', label: 'FireUX Core', icon: 'i-lucide-cpu', desktop: true, group: 'core', layouts: ['dev'] } }
-  - packages/core/fireux-core/src/runtime/pages/dev/users.vue
-    meta: { layout: 'dev', nav: { key: 'dev-users', label: 'Users', icon: 'i-lucide-users', desktop: true, group: 'core', layouts: ['dev'] } }
-
-- misebox (ecosystem)
-  - packages/ecosystem/fireux-misebox/src/runtime/pages/dev/index.vue
-    meta: { layout: 'dev', nav: { key: 'dev-tenant-index', label: 'Tenant Overview', icon: 'i-lucide-wrench', desktop: true, group: 'misebox', layouts: ['dev'] } }
-  - packages/ecosystem/fireux-misebox/src/runtime/pages/dev/fireux-misebox.vue
-    meta: { layout: 'dev', alias: ['/dev/fireux-misebox-tenant'], nav: { key: 'dev-tenant-misebox-global', label: 'Misebox Global', icon: 'i-lucide-globe-2', desktop: true, group: 'misebox', layouts: ['dev'] } }
-  - packages/ecosystem/fireux-misebox/src/runtime/pages/dev/fireux-misebox-tenant.vue
-    meta: { layout: 'dev', nav: { key: 'dev-tenant-misebox-app', label: 'Misebox App', icon: 'i-lucide-badge-check', desktop: true, group: 'misebox', layouts: ['dev'] } } [deleted]
-
-- app
-  - projects/fireux/fireux-app/app/pages/dev/design/index.vue
-    meta: { layout: 'dev', nav: { key: 'dev-design', label: 'Design', icon: 'i-lucide-palette', desktop: true, group: 'app', layouts: ['dev'] } } [removed; now public under /pages/design]
-
-- ext
-  - packages/extensions/fireux-jobs/src/runtime/pages/dev/fireux-jobs.vue
-    meta: { layout: 'dev', nav: { key: 'dev-ext-jobs', label: 'Jobs (Ext)', icon: 'i-lucide-briefcase', desktop: true, group: 'ext', layouts: ['dev'] } }
-
-Notes
-- Core stubs without definePageMeta are intentionally excluded from groups (e.g., core: fireux-jobs.vue, fireux-misebox.vue).
-- The ecosystem section title uses the current ecosystem from FireUXConfig.
-*/
 </script>
 
 <style scoped>

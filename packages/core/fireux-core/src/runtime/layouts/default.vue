@@ -14,22 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { watchEffect } from 'vue'
-import { useNav } from '../composables/fireux/app/ui/nav/useNav'
-
 defineOptions({ name: 'default' })
-
-if (import.meta.dev) {
-  const navDebug = useNav()
-
-  watchEffect(() => {
-    console.debug('[core-default:nav]', {
-      items: navDebug.items.value,
-      desktop: navDebug.desktop.value,
-      mobile: navDebug.mobile.value,
-    })
-  })
-}
 </script>
 
 <style scoped>

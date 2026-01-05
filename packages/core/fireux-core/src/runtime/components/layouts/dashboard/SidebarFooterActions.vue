@@ -83,7 +83,8 @@ const handleSignOut = async () => {
 const actionItems = computed(() => {
   const items: any[] = [
     {
-      label: `${fireux.appName}.app`,
+      // TODO: replace with final deploy target (domain) when available from config/runtime.
+      label: fireux.appName.toLowerCase(),
       icon: 'i-lucide-house',
       to: '/',
     },
