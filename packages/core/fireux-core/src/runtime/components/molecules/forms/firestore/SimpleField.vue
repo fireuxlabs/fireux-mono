@@ -14,8 +14,13 @@
       @delete="clear"
     />
 
-    <div v-if="!isEditing" class="flex min-h-9 items-center gap-2">
-      <span>{{ displayValue }}</span>
+    <div v-if="!isEditing" class="flex min-h-9 items-center">
+      <div
+        class="w-full rounded-md fx-field-surface px-3 py-2 text-sm"
+        :class="disabled ? 'text-dimmed' : 'text-default'"
+      >
+        <span class="break-words">{{ displayValue }}</span>
+      </div>
     </div>
 
     <div v-else>

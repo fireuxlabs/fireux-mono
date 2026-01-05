@@ -11,7 +11,7 @@
           <div class="fx-section__header">
             <div class="fx-section__copy">
               <h3 class="text-base font-semibold">Field groups (draft)</h3>
-              <p class="text-xs text-gray-500">
+              <p class="text-xs text-dimmed">
                 Proposed separation to prevent “locked” values leaking into editable surfaces.
                 Confirm what should be editable and I’ll enforce it.
               </p>
@@ -22,8 +22,8 @@
         <div class="fx-section__item">
           <div class="grid gap-4 sm:grid-cols-2">
             <div>
-              <div class="text-xs font-medium text-gray-600">Locked (config/system)</div>
-              <ul class="mt-2 space-y-1 text-sm text-gray-700">
+              <div class="text-xs font-medium text-dimmed">Locked (config/system)</div>
+              <ul class="mt-2 space-y-1 text-sm">
                 <li>
                   <span class="font-mono">id</span>, <span class="font-mono">role</span>,
                   <span class="font-mono">ecosystem</span>
@@ -49,8 +49,8 @@
             </div>
 
             <div>
-              <div class="text-xs font-medium text-gray-600">Editable (public-facing content)</div>
-              <ul class="mt-2 space-y-1 text-sm text-gray-700">
+              <div class="text-xs font-medium text-dimmed">Editable (public-facing content)</div>
+              <ul class="mt-2 space-y-1 text-sm">
                 <li>
                   <span class="font-mono">tagline</span>,
                   <span class="font-mono">description</span>
@@ -59,7 +59,7 @@
                   <span class="font-mono">short_bio</span>,
                   <span class="font-mono">long_bio</span>
                 </li>
-                <li><span class="font-mono">social_links.instagram</span></li>
+                <li><span class="font-mono">social_links</span></li>
               </ul>
             </div>
           </div>
@@ -71,13 +71,13 @@
           <div class="fx-section__header">
             <div class="fx-section__copy">
               <h3 class="text-base font-semibold">Model</h3>
-              <p class="text-xs text-gray-500">Full app document.</p>
+              <p class="text-xs text-dimmed">Full app document.</p>
             </div>
           </div>
         </template>
 
         <div class="fx-section__item">
-          <pre class="text-xs font-mono text-gray-600 whitespace-pre-wrap break-words">{{ appModelJson }}</pre>
+          <pre class="text-xs font-mono text-dimmed whitespace-pre-wrap break-words">{{ appModelJson }}</pre>
         </div>
       </UCard>
     </div>

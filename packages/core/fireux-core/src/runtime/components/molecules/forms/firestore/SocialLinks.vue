@@ -1,6 +1,5 @@
 <template>
-  <div class="form-field">
-    <!-- Top Section: Label, Icons, and Error Handling -->
+  <div class="flex w-full flex-col gap-1.5">
     <MoleculesFormsTop
       label="Social Links"
       :is-editing="isEditing"
@@ -12,64 +11,29 @@
       @delete="deleteValue"
     />
 
-    <!-- Display Mode -->
-    <div v-if="!isEditing" class="display">
-      <div v-if="hasData" class="social-links-display">
-        <div
-          v-for="(url, platform) in firebaseValue"
-          :key="platform"
-          class="social-link-item"
-        >
-          <UIcon :name="getSocialIcon(platform)" class="social-icon" />
-          <div class="social-link-content">
-            <span class="social-platform-label">{{ platform }}:</span>
-            <a :href="url" target="_blank" class="social-link-url">
-              {{ url }}
-            </a>
-          </div>
-        </div>
-      </div>
-      <span v-else class="no-links-message">No social links added</span>
-    </div>
-
-    <!-- Edit Mode -->
-    <div v-else class="editing">
-      <div
-        v-for="platform in socialPlatforms"
-        :key="platform"
-        class="social-input-group"
-      >
-        <label class="social-input-label" :for="`social-${platform}`">
-          <UIcon :name="getSocialIcon(platform)" class="social-input-icon" />
-          <span class="social-input-text">{{ platform }} URL</span>
-        </label>
-        <UInput
-          :id="`social-${platform}`"
-          v-model="localValue[platform]"
-          :placeholder="getSocialPlaceholder(platform)"
-          class="social-input"
-          @keyup.enter="saveChanges"
-          @keyup.esc="cancelEditing"
-        />
-      </div>
+    <div class="grid gap-4">
+      <MoleculesFormsFirestoreSocialLink
+        v-for="item in socialItems"
+        :key="item.platform"
+        :id="`social-${item.platform}`"
+        :label="item.label"
+        :icon="item.icon"
+        :is-editing="isEditing"
+        :leading="item.leading"
+        v-model="localValue[item.platform]"
+        @enter="saveChanges"
+        @esc="cancelEditing"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { PropType } from 'vue'
+import type { AppSocialLinks } from '../../../../models/core/app.model'
 
-type SocialPlatform =
-  | 'website'
-  | 'twitter'
-  | 'linkedin'
-  | 'github'
-  | 'instagram'
-  | 'facebook'
-  | 'youtube'
-
-type SocialLinks = Partial<Record<SocialPlatform, string>>
+type SocialLinks = AppSocialLinks
 
 const props = defineProps({
   firebaseValue: { type: Object as PropType<SocialLinks>, default: () => ({}) },
@@ -78,53 +42,193 @@ const props = defineProps({
 
 // Local reactive state
 const isEditing = ref(false)
-const localValue = ref<SocialLinks>({})
+const localValue = ref<Record<string, string>>({})
 const errorMessage = ref('')
 
-// Social platforms to support
-const socialPlatforms = [
-  'website',
-  'twitter',
-  'linkedin',
-  'github',
-  'instagram',
-  'facebook',
-  'youtube',
-] as const
+type SocialPlatform = keyof SocialLinks
+
+const socialItems = [
+  {
+    platform: 'website',
+    label: 'Website',
+    icon: 'heroicons:globe-alt',
+    leading: 'http://',
+    base: 'http://',
+  },
+  {
+    platform: 'twitter',
+    label: 'X',
+    icon: 'simple-icons:x',
+    leading: 'https://x.com/',
+    base: 'https://x.com/',
+  },
+  {
+    platform: 'instagram',
+    label: 'Instagram',
+    icon: 'skill-icons:instagram',
+    leading: 'https://instagram.com/',
+    base: 'https://instagram.com/',
+  },
+  {
+    platform: 'youtube',
+    label: 'YouTube',
+    icon: 'logos:youtube-icon',
+    leading: 'https://youtube.com/',
+    base: 'https://youtube.com/',
+  },
+  {
+    platform: 'linkedin',
+    label: 'LinkedIn',
+    icon: 'skill-icons:linkedin',
+    leading: 'https://www.linkedin.com/',
+    base: 'https://www.linkedin.com/',
+  },
+  {
+    platform: 'github',
+    label: 'GitHub',
+    icon: 'skill-icons:github-dark',
+    leading: 'https://github.com/',
+    base: 'https://github.com/',
+  },
+  {
+    platform: 'facebook',
+    label: 'Facebook',
+    icon: 'logos:facebook',
+    leading: 'https://facebook.com/',
+    base: 'https://facebook.com/',
+  },
+] as const satisfies ReadonlyArray<{
+  platform: SocialPlatform
+  label: string
+  icon: string
+  leading: string
+  base: string
+}>
+
+const platforms = computed(() => socialItems.map((x) => x.platform))
+
+const baseForPlatform = (platform: SocialPlatform): string => {
+  return socialItems.find((x) => x.platform === platform)?.base || ''
+}
 
 // Computed properties
 const hasData = computed(() => {
-  const value = props.firebaseValue || {}
-  return Object.values(value).some(
-    (url) => typeof url === 'string' && url.trim().length > 0
-  )
+  const src = props.firebaseValue || {}
+  for (const platform of platforms.value) {
+    const raw = (src as any)[platform]
+    if (typeof raw === 'string' && raw.trim()) return true
+  }
+  return false
 })
 
-// Helper functions
-function getSocialIcon(platform: SocialPlatform) {
-  const icons: Record<SocialPlatform, string> = {
-    website: 'i-heroicons-globe-alt',
-    twitter: 'i-simple-icons-twitter',
-    linkedin: 'i-simple-icons-linkedin',
-    github: 'i-simple-icons-github',
-    instagram: 'i-simple-icons-instagram',
-    facebook: 'i-simple-icons-facebook',
-    youtube: 'i-simple-icons-youtube',
+function toEditableWebsite(raw: unknown): string {
+  const value = typeof raw === 'string' ? raw.trim() : ''
+  if (!value) return ''
+
+  if (/^https?:\/\//i.test(value)) {
+    try {
+      const url = new URL(value)
+      return `${url.host}${url.pathname}${url.search}${url.hash}`
+    } catch {
+      return value
+    }
   }
-  return icons[platform] || 'i-heroicons-link'
+
+  return value.replace(/^\/+/, '')
 }
 
-function getSocialPlaceholder(platform: SocialPlatform) {
-  const placeholders: Record<SocialPlatform, string> = {
-    website: 'https://example.com',
-    twitter: 'https://twitter.com/username',
-    linkedin: 'https://linkedin.com/in/username',
-    github: 'https://github.com/username',
-    instagram: 'https://instagram.com/username',
-    facebook: 'https://facebook.com/username',
-    youtube: 'https://youtube.com/@username',
+function stripPrefixCaseInsensitive(value: string, prefix: string): string {
+  if (!prefix) return value
+  if (value.toLowerCase().startsWith(prefix.toLowerCase())) {
+    return value.slice(prefix.length)
   }
-  return placeholders[platform] || 'https://example.com'
+  return value
+}
+
+function toEditableSocial(platform: SocialPlatform, raw: unknown): string {
+  const value = typeof raw === 'string' ? raw.trim() : ''
+  if (!value) return ''
+
+  if (platform === 'website') return toEditableWebsite(value)
+
+  // Prefer showing the suffix after the configured base.
+  const base = baseForPlatform(platform)
+  if (base && /^https?:\/\//i.test(value)) {
+    const withoutBase = stripPrefixCaseInsensitive(value, base)
+    if (withoutBase !== value) return withoutBase.replace(/^\/+/, '')
+  }
+
+  // If it's a URL but not our base, show path+query+hash without leading slash.
+  if (/^https?:\/\//i.test(value)) {
+    try {
+      const url = new URL(value)
+      const combined = `${url.pathname}${url.search}${url.hash}`
+      return combined.replace(/^\/+/, '')
+    } catch {
+      return value
+    }
+  }
+
+  // Legacy stored suffix.
+  return value.replace(/^\/+/, '')
+}
+
+function toEditableLinks(value: SocialLinks | null | undefined): Record<string, string> {
+  const result: Record<string, string> = {}
+  const src = value || {}
+  for (const platform of platforms.value) {
+    const editable = toEditableSocial(platform, (src as any)[platform])
+    if (editable) result[platform] = editable
+  }
+  return result
+}
+
+function normalizeWebsite(raw: string): string {
+  const trimmed = raw.trim()
+  if (!trimmed) return ''
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      // Store full URL (validation expects protocol)
+      new URL(trimmed)
+      return trimmed
+    } catch {
+      throw new Error('Website is not a valid URL')
+    }
+  }
+
+  const candidate = `http://${trimmed.replace(/^\/+/, '')}`
+  try {
+    new URL(candidate)
+    return candidate
+  } catch {
+    throw new Error('Website is not a valid URL')
+  }
+}
+
+function normalizeSocial(platform: SocialPlatform, raw: string): string {
+  const trimmed = raw.trim()
+  if (!trimmed) return ''
+
+  if (platform === 'website') return normalizeWebsite(trimmed)
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      new URL(trimmed)
+      return trimmed
+    } catch {
+      throw new Error(`${platform} is not a valid URL`)
+    }
+  }
+
+  const base = baseForPlatform(platform)
+  const candidate = `${base}${trimmed.replace(/^\/+/, '')}`
+  try {
+    new URL(candidate)
+    return candidate
+  } catch {
+    throw new Error(`${platform} is not a valid URL`)
+  }
 }
 
 // Watch for prop changes
@@ -132,7 +236,7 @@ watch(
   () => props.firebaseValue,
   (newValue: SocialLinks) => {
     if (!isEditing.value) {
-      localValue.value = newValue ? { ...newValue } : {}
+      localValue.value = toEditableLinks(newValue)
     }
   },
   { immediate: true, deep: true }
@@ -140,46 +244,38 @@ watch(
 
 // Editing handlers
 function startEditing() {
-  localValue.value = props.firebaseValue ? { ...props.firebaseValue } : {}
+  localValue.value = toEditableLinks(props.firebaseValue)
   errorMessage.value = ''
   isEditing.value = true
 }
 
 function cancelEditing() {
-  localValue.value = props.firebaseValue ? { ...props.firebaseValue } : {}
+  localValue.value = toEditableLinks(props.firebaseValue)
   errorMessage.value = ''
   isEditing.value = false
 }
 
 async function saveChanges() {
   try {
-    // Filter out empty values and validate URLs
-    const validatedLinks: SocialLinks = {}
+    const next: SocialLinks = { ...(props.firebaseValue || {}) }
 
-    for (const [platform, url] of Object.entries(localValue.value)) {
-      if (typeof url === 'string' && url.trim()) {
-        const trimmedUrl = url.trim()
+    for (const platform of platforms.value) {
+      const raw = String(localValue.value[platform] ?? '').trim()
+      if (!raw) {
+        delete (next as any)[platform]
+        continue
+      }
 
-        // Basic URL validation
-        if (
-          !trimmedUrl.startsWith('http://') &&
-          !trimmedUrl.startsWith('https://')
-        ) {
-          errorMessage.value = `${platform} URL must start with http:// or https://`
-          return
-        }
-
-        try {
-          new URL(trimmedUrl) // Validate URL format
-          validatedLinks[platform as SocialPlatform] = trimmedUrl
-        } catch {
-          errorMessage.value = `${platform} URL is not a valid URL`
-          return
-        }
+      try {
+        ;(next as any)[platform] = normalizeSocial(platform, raw)
+      } catch (e) {
+        errorMessage.value =
+          e instanceof Error ? e.message : `${platform} is not a valid URL`
+        return
       }
     }
 
-    await props.updateFunction(validatedLinks)
+    await props.updateFunction(next)
     errorMessage.value = ''
     isEditing.value = false
   } catch (error) {
@@ -191,7 +287,12 @@ async function saveChanges() {
 
 async function deleteValue() {
   try {
-    await props.updateFunction({})
+    const next: SocialLinks = { ...(props.firebaseValue || {}) }
+    for (const platform of platforms.value) {
+      delete (next as any)[platform]
+    }
+
+    await props.updateFunction(next)
     localValue.value = {}
     errorMessage.value = ''
     isEditing.value = false
@@ -202,112 +303,3 @@ async function deleteValue() {
   }
 }
 </script>
-
-<style scoped>
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.display {
-  padding: var(--space-3) 0;
-  min-height: var(--space-10);
-  display: flex;
-  align-items: center;
-}
-
-.editing {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.social-links-display {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  width: 100%;
-}
-
-.social-link-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.social-icon {
-  width: var(--space-5);
-  height: var(--space-5);
-  color: #6b7280;
-  flex-shrink: 0;
-}
-
-.social-link-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  flex: 1;
-  min-width: 0;
-}
-
-@media (min-width: 640px) {
-  .social-link-content {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-2);
-  }
-}
-
-.social-platform-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-  text-transform: capitalize;
-  flex-shrink: 0;
-}
-
-.social-link-url {
-  color: #2563eb;
-  text-decoration: none;
-  word-break: break-all;
-  transition: color 0.2s ease;
-}
-
-.social-link-url:hover {
-  color: #1d4ed8;
-}
-
-.social-input-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.social-input-label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-}
-
-.social-input-icon {
-  width: var(--space-4);
-  height: var(--space-4);
-  flex-shrink: 0;
-}
-
-.social-input-text {
-  text-transform: capitalize;
-}
-
-.social-input {
-  width: 100%;
-}
-
-.no-links-message {
-  color: #6b7280;
-}
-</style>

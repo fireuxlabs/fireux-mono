@@ -1,7 +1,7 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts
 
 import type { Ref } from 'vue'
-import type { App } from '../../../../../../../models/core/app.model'
+import type { App, AppSocialLinks } from '../../../../../../../models/core/app.model'
 import { computed } from '#imports'
 import { useResolvedColorMode } from '../../../../../app/useColorMode'
 
@@ -29,6 +29,7 @@ export namespace AppCard {
     wordmarkDark: string
     wordmark: string
     instagram: string
+    socialLinks: AppSocialLinks
   }
 }
 
@@ -68,6 +69,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       wordmarkDark: app.wordmark_dark_url || '',
       wordmark: resolveWordmark(app),
       instagram: app.social_links?.instagram || '',
+      socialLinks: app.social_links || {},
     }
   }
 

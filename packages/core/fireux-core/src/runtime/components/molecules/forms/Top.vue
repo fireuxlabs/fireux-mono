@@ -3,6 +3,14 @@
     <div class="top-row">
       <div class="left">
         <span class="field-label">{{ label }}</span>
+        <UBadge
+          v-if="disabled"
+          size="xs"
+          color="neutral"
+          variant="soft"
+          label="Locked"
+          class="ml-2 shrink-0"
+        />
         <span v-if="isEditing" class="editing-indicator">
           <span class="dot"></span>
           Editing

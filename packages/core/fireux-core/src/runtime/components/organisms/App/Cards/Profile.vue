@@ -7,49 +7,52 @@
 
           <div class="min-w-0">
             <div class="truncate text-lg font-semibold leading-6">{{ title }}</div>
-            <div class="mt-0.5 text-sm text-dimmed truncate">
-              <span v-if="subtitle">{{ subtitle }}</span>
-              <span v-else class="italic">missing</span>
-            </div>
-            <div v-if="tagline" class="mt-2 text-sm text-dimmed line-clamp-2">
-              {{ tagline }}
-            </div>
           </div>
         </div>
 
-        <div class="shrink-0 grid justify-items-end gap-2">
+        <div class="shrink-0">
           <AppBrandWordmark
             v-if="wordmarkLight || wordmarkDark || wordmark"
             size="small"
             :light-src="wordmarkLight"
             :dark-src="wordmarkDark"
           />
-
-          <div class="flex flex-wrap justify-end gap-2">
-            <UBadge v-if="role" variant="subtle" color="neutral" size="xs">
-              {{ role }}
-            </UBadge>
-            <UBadge v-if="shortName" variant="subtle" color="neutral" size="xs">
-              @{{ shortName }}
-            </UBadge>
-            <UBadge
-              v-if="typeof userCount === 'number'"
-              variant="subtle"
-              color="neutral"
-              size="xs"
-            >
-              {{ userCount }} users
-            </UBadge>
-          </div>
-
-          <div v-if="id" class="text-xs text-dimmed font-mono">
-            {{ id }}
-          </div>
         </div>
       </div>
     </template>
 
     <div class="space-y-5">
+      <div class="space-y-2">
+        <div class="text-sm text-dimmed">
+          <span v-if="subtitle">{{ subtitle }}</span>
+          <span v-else class="italic">missing</span>
+        </div>
+
+        <div v-if="tagline" class="text-sm text-dimmed line-clamp-2">
+          {{ tagline }}
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <UBadge v-if="role" variant="subtle" color="neutral" size="xs">
+            {{ role }}
+          </UBadge>
+          <UBadge v-if="shortName" variant="subtle" color="neutral" size="xs">
+            @{{ shortName }}
+          </UBadge>
+          <UBadge
+            v-if="typeof userCount === 'number'"
+            variant="subtle"
+            color="neutral"
+            size="xs"
+          >
+            {{ userCount }} users
+          </UBadge>
+          <span v-if="id" class="text-xs text-dimmed font-mono">
+            {{ id }}
+          </span>
+        </div>
+      </div>
+
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Description</div>
         <div class="text-sm">
@@ -76,39 +79,25 @@
         </div>
 
         <div class="flex items-center justify-between gap-3">
-          <div class="text-xs text-dimmed">Links</div>
+          <div class="text-xs text-dimmed">Socials</div>
           <div class="flex flex-wrap justify-end gap-2">
             <a
-              v-if="app?.logo_url"
-              :href="app.logo_url"
+              v-for="link in socialLinkItems"
+              :key="link.platform"
+              :href="link.url"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-sm underline"
+              class="inline-flex items-center"
+              :title="link.platform"
+              :aria-label="link.platform"
             >
-              logo
+              <Icon
+                :name="iconForPlatform(link.platform)"
+                mode="svg"
+                class="size-5"
+              />
             </a>
-            <a
-              v-if="app?.wordmark_light_url || app?.wordmark_dark_url"
-              :href="app?.wordmark_light_url || app?.wordmark_dark_url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-sm underline"
-            >
-              wordmark
-            </a>
-            <a
-              v-if="app?.social_links?.instagram"
-              :href="app.social_links.instagram"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-sm underline"
-            >
-              instagram
-            </a>
-            <span
-              v-if="!app?.logo_url && !(app?.wordmark_light_url || app?.wordmark_dark_url) && !app?.social_links?.instagram"
-              class="text-sm text-dimmed italic"
-            >
+            <span v-if="!socialLinkItems.length" class="text-sm text-dimmed italic">
               missing
             </span>
           </div>
@@ -119,13 +108,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed, toRefs } from 'vue'
 import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import AppBrandWordmark from '../../../App/Brand/Wordmark.vue'
 
 defineOptions({ inheritAttrs: false })
 
-defineProps<
+const props = defineProps<
   { app?: App | null } &
     Pick<
       AppCard.Card,
@@ -143,4 +133,60 @@ defineProps<
       | 'badges'
     >
 >()
+
+const {
+  app,
+  id,
+  shortName,
+  role,
+  userCount,
+  tagline,
+  wordmark,
+  wordmarkLight,
+  wordmarkDark,
+  avatar,
+  title,
+  subtitle,
+} = toRefs(props)
+
+const socialLinkItems = computed(() => {
+  const socials = app.value?.social_links || {}
+  return Object.entries(socials)
+    .map(([platform, raw]) => {
+      const value = (raw || '').trim()
+      if (!value) return null
+
+      if (/^https?:\/\//i.test(value)) {
+        return { platform, url: value }
+      }
+
+      const base: Record<string, string> = {
+        website: 'http://',
+        twitter: 'https://x.com/',
+        linkedin: 'https://www.linkedin.com/',
+        github: 'https://github.com/',
+        instagram: 'https://instagram.com/',
+        facebook: 'https://facebook.com/',
+        youtube: 'https://youtube.com/',
+      }
+
+      const prefix = base[platform] || ''
+      const suffix = value.replace(/^\/+/, '')
+      return { platform, url: `${prefix}${suffix}` }
+    })
+    .filter((item): item is { platform: string; url: string } => Boolean(item))
+})
+
+const iconForPlatform = (platform: string) => {
+  const map: Record<string, string> = {
+    website: 'heroicons:globe-alt',
+    twitter: 'simple-icons:x',
+    linkedin: 'skill-icons:linkedin',
+    github: 'skill-icons:github-dark',
+    instagram: 'skill-icons:instagram',
+    facebook: 'logos:facebook',
+    youtube: 'logos:youtube-icon',
+  }
+  return map[platform] || 'heroicons:link'
+}
 </script>

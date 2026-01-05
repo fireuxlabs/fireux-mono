@@ -4,6 +4,17 @@ import type { FirestoreTimestampOrString } from '../../../types/firebase'
 export type AppRole = 'global' | 'tenant' | 'sandbox'
 type Ts = FirestoreTimestampOrString
 
+export type AppSocialPlatform =
+  | 'website'
+  | 'twitter'
+  | 'linkedin'
+  | 'github'
+  | 'instagram'
+  | 'facebook'
+  | 'youtube'
+
+export type AppSocialLinks = Partial<Record<AppSocialPlatform, string>>
+
 /** Core Firestore App document */
 export interface App {
   id: string
@@ -27,7 +38,7 @@ export interface App {
   description: string
   short_bio: string
   long_bio: string
-  social_links: { instagram: string }
+  social_links: AppSocialLinks
 
   // Derived counts
   user_count: number

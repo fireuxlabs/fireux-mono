@@ -2,266 +2,42 @@
   <ClientOnly>
     <div v-if="app" class="space-y-6 min-w-0">
 
-      <UCard class="fx-section">
-        <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
-              <h3 class="text-base font-semibold">locked app config</h3>
-            </div>
+      <OrganismsAppEditSectionsLockedConfig
+        :app="app"
+        :is-dev="isDev"
+        :noop-update="noopUpdate"
+        :handle-ecosystem-update="handleEcosystemUpdate"
+      />
 
-            <div v-if="isDev" class="shrink-0">
-              <UButton
-                to="/dashboard/developer"
-                size="xs"
-                variant="soft"
-                icon="i-lucide-arrow-up-right"
-                label="Go to dev panel"
-              />
-            </div>
-          </div>
-        </template>
+      <OrganismsAppEditSectionsAbout
+        :app="app"
+        :handle-tagline-update="handleTaglineUpdate"
+        :handle-description-update="handleDescriptionUpdate"
+        :handle-short-bio-update="handleShortBioUpdate"
+        :handle-long-bio-update="handleLongBioUpdate"
+      />
 
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="App ID"
-            :firebase-value="app.id"
-            placeholder="app-id"
-            :maxlength="80"
-            :update-function="noopUpdate"
-            disabled
-          />
-        </div>
+      <OrganismsAppEditSectionsSurfaces :app-card="appCard" />
 
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="Role"
-            :firebase-value="app.role"
-            placeholder="global"
-            :maxlength="20"
-            :update-function="noopUpdate"
-            disabled
-          />
-        </div>
+      <OrganismsAppEditSectionsSocial
+        :app="app"
+        :handle-update-social-links="handleUpdateSocialLinks"
+      />
 
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="Ecosystem"
-            :firebase-value="app.ecosystem"
-            placeholder="misebox"
-            :maxlength="60"
-            :update-function="handleEcosystemUpdate"
-            disabled
-          />
-        </div>
+      <OrganismsAppEditSectionsJoinRequests
+        :items="joinRequestItems"
+        :on-approve="onApprove"
+        :on-remove="onRemove"
+      />
 
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="App name"
-            :firebase-value="app.app_name"
-            placeholder="FireUX"
-            :maxlength="60"
-            :update-function="noopUpdate"
-            disabled
-          />
-        </div>
+      <OrganismsAppEditSectionsAdmins
+        :rows="adminRows"
+        :action-uid="adminActionUid"
+        :pill-for="adminPillFor"
+        :on-remove-admin="removeAdmin"
+      />
 
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="Short name"
-            :firebase-value="app.app_short_name"
-            placeholder="fireux"
-            :maxlength="40"
-            :update-function="noopUpdate"
-            disabled
-          />
-        </div>
-
-      </UCard>
-
-      <UCard class="fx-section">
-        <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
-              <h3 class="text-base font-semibold">About</h3>
-              <p class="text-xs text-dimmed">
-                Keep the human-facing description up to date.
-              </p>
-            </div>
-          </div>
-        </template>
-
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="Tagline"
-            :maxlength="120"
-            :firebase-value="app.tagline"
-            placeholder="A short one-liner for cards and lists"
-            :update-function="handleTaglineUpdate"
-          />
-        </div>
-
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="Description"
-            type="textarea"
-            :rows="3"
-            :maxlength="500"
-            :firebase-value="app.description"
-            placeholder="Describe your application..."
-            :update-function="handleDescriptionUpdate"
-          />
-        </div>
-
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="Short bio"
-            type="textarea"
-            :rows="2"
-            :maxlength="240"
-            :firebase-value="app.short_bio"
-            placeholder="Short bio used on compact surfaces"
-            :update-function="handleShortBioUpdate"
-          />
-        </div>
-
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="Long bio"
-            type="textarea"
-            :rows="6"
-            :maxlength="4000"
-            :firebase-value="app.long_bio"
-            placeholder="Long bio for profile pages"
-            :update-function="handleLongBioUpdate"
-          />
-        </div>
-      </UCard>
-
-      <UCard class="fx-section">
-        <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
-              <h3 class="text-base font-semibold">Surfaces</h3>
-              <p class="text-xs text-dimmed">
-                Card surfaces derived from the app model.
-              </p>
-            </div>
-          </div>
-        </template>
-
-        <div v-if="appCard" class="fx-section__item space-y-4">
-          <div>
-            <div class="mb-2">
-              <UBadge size="xs" variant="soft" color="neutral">Cell</UBadge>
-            </div>
-            <OrganismsAppCardsCell v-bind="appCard" />
-          </div>
-
-          <div>
-            <div class="mb-2">
-              <UBadge size="xs" variant="soft" color="neutral">Preview</UBadge>
-            </div>
-            <OrganismsAppCardsPreview v-bind="appCard" />
-          </div>
-        </div>
-
-        <p v-else class="fx-section__empty">No app card available.</p>
-      </UCard>
-
-      <UCard class="fx-section">
-        <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
-              <h3 class="text-base font-semibold">Social</h3>
-              <p class="text-xs text-dimmed">
-                Link tenant-visible marketing or support channels.
-              </p>
-            </div>
-          </div>
-        </template>
-
-        <div class="fx-section__item">
-          <MoleculesFormsFirestoreSimpleField
-            label="Instagram"
-            type="url"
-            :firebase-value="app.social_links?.instagram"
-            placeholder="https://instagram.com/your-app"
-            :update-function="handleUpdateInstagram"
-          />
-        </div>
-      </UCard>
-
-      <UCard class="fx-section">
-        <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
-              <h3 class="text-base font-semibold">Join Requests</h3>
-              <p class="text-xs text-gray-500">
-                Approve to add new members or clear pending invites.
-              </p>
-            </div>
-          </div>
-        </template>
-
-        <div v-if="joinRequestItems.length" class="fx-section__item">
-          <MoleculesFormsFirestoreListActions
-            :items="joinRequestItems"
-            :action-approve="onApprove"
-            :action-reject="onRemove"
-            approve-label="Approve"
-            reject-label="Remove"
-          />
-        </div>
-        <p v-else class="fx-section__empty">No pending requests.</p>
-      </UCard>
-
-      <UCard class="fx-section">
-        <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
-              <h3 class="text-base font-semibold">Admins</h3>
-              <p class="text-xs text-dimmed">App administrators.</p>
-            </div>
-          </div>
-        </template>
-
-        <div v-if="adminRows.length" class="fx-section__item space-y-2">
-          <ul class="space-y-2">
-            <li
-              v-for="admin in adminRows"
-              :key="admin.id"
-              class="flex items-center justify-between gap-3"
-            >
-              <OrganismsUserCardsPill
-                v-bind="adminPillFor(admin)"
-                class="min-w-0"
-              />
-
-              <UButton
-                size="xs"
-                variant="soft"
-                class="shrink-0"
-                :loading="adminActionUid === admin.id"
-                :disabled="adminActionUid !== null"
-                @click="removeAdmin(admin.id)"
-              >
-                Remove admin
-              </UButton>
-            </li>
-          </ul>
-        </div>
-        <p v-else class="fx-section__empty">No admins yet.</p>
-      </UCard>
-
-      <UCard>
-        <div class="fx-app-slot">
-          <p class="fx-app-slot__label">Tenant overrides</p>
-          <p class="fx-app-slot__copy">
-            This surface is reserved for per-tenant deltas once app-level
-            controls are defined.
-          </p>
-        </div>
-      </UCard>
+      <OrganismsAppEditSectionsTenantOverrides />
     </div>
 
     <MoleculesStateCard v-else entity="app settings" kind="document" loading />
@@ -280,7 +56,6 @@ import { useUser } from '../../../../composables/fireux/firestore/core/user/useU
 import { useUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 
 const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
 
@@ -291,8 +66,6 @@ const toast = useToastify()
 
 const isDev = computed(() => import.meta.dev)
 
-const { ecosystem } = useFireUXConfig()
-
 const noopUpdate = async () => {}
 
 const {
@@ -301,7 +74,7 @@ const {
   updateShortBio,
   updateLongBio,
   updateEcosystem,
-  updateInstagram,
+  updateSocialLinks,
   handleJoinRequests,
   setAppUserAdmin,
 } = useAppUpdate(appRef)
@@ -355,10 +128,10 @@ const handleEcosystemUpdate = withToast(
   'Failed to update ecosystem'
 )
 
-const handleUpdateInstagram = withToast(
-  updateInstagram,
-  'Instagram link saved',
-  'Failed to update Instagram link'
+const handleUpdateSocialLinks = withToast(
+  updateSocialLinks,
+  'Social links saved',
+  'Failed to update social links'
 )
 
 const adminActionUid = ref<string | null>(null)
@@ -406,7 +179,7 @@ const adminPillFor = (row: {
     profiles: [],
   } as unknown as User
 
-  const payload = cardRef.value(hydrated ?? fallbackUser)
+  const payload = cardRef.value(hydrated?.coreUser ?? fallbackUser)
   return payload ?? {
     id: row.id,
     to: row.id ? `/users/${row.id}` : '',
@@ -478,24 +251,3 @@ const onRemove = withToast(
   'Failed to remove request'
 )
 </script>
-
-<style scoped>
-.fx-app-slot {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.fx-app-slot__label {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(15, 23, 42, 0.7);
-}
-
-.fx-app-slot__copy {
-  margin: 0;
-  font-size: 0.875rem;
-  color: rgba(15, 23, 42, 0.8);
-}
-</style>

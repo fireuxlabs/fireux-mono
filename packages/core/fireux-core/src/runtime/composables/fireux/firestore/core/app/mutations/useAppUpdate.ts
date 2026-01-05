@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { App } from '../../../../../../models/core/app.model'
+import type { App, AppSocialLinks } from '../../../../../../models/core/app.model'
 import { arrayRemove, deleteField } from 'firebase/firestore'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
@@ -98,7 +98,13 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   async function updateInstagram(url: string | null) {
     const sanitized = sanitizeInstagram(url)
-    await updateApp({ social_links: { instagram: sanitized } })
+    await updateApp({
+      'social_links.instagram': sanitized ? sanitized : deleteField(),
+    })
+  }
+
+  async function updateSocialLinks(links: AppSocialLinks) {
+    await updateApp({ social_links: links || {} })
   }
 
   async function updateAvatarUrl(url: string | null) {
@@ -189,6 +195,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     updateAppShortName,
     updateEcosystem,
     updateInstagram,
+    updateSocialLinks,
     updateAvatarUrl,
     updateThumbnailUrl,
     uploadAvatar,

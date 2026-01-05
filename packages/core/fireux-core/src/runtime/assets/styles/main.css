@@ -11,6 +11,17 @@ body {
 }
 
 @layer base {
+	/* Nuxt UI uses `focus-visible:ring-2` widely; make it a thinner focus ring globally. */
+	.focus-visible\:ring-2:focus-visible {
+		--tw-ring-shadow: 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+	}
+
+	.has-focus-visible\:ring-2:has(:focus-visible) {
+		--tw-ring-shadow: 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+	}
+}
+
+@layer base {
 	h1 {
 		@apply text-3xl font-semibold tracking-tight;
 	}
@@ -67,5 +78,11 @@ body {
 	.fx-section__empty {
 		@apply text-sm;
 		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	/* Shared field surface (matches SimpleField display blocks) */
+	.fx-field-surface {
+	  border: 1px solid var(--ui-border);
+	  background: var(--ui-bg-muted);
 	}
 }
