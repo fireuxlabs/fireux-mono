@@ -13,13 +13,12 @@
           </div>
 
           <div class="grid justify-items-end gap-1">
-            <img
-              v-if="wordmark"
-              :src="wordmark"
-              :alt="`${title} wordmark`"
+            <AppBrandWordmark
+              v-if="wordmarkLight || wordmarkDark || wordmark"
+              size="card"
+              :light-src="wordmarkLight"
+              :dark-src="wordmarkDark"
               class="fx-card__wordmark"
-              loading="lazy"
-              decoding="async"
             />
 
             <div v-if="badges.length" class="fx-card__badges">
@@ -67,13 +66,24 @@
 
 <script setup lang="ts">
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import AppBrandWordmark from '../../../App/Brand/Wordmark.vue'
 
 defineOptions({ inheritAttrs: false })
 
 defineProps<
   Pick<
     AppCard.Card,
-    'id' | 'shortName' | 'avatar' | 'title' | 'subtitle' | 'badges' | 'tagline' | 'userCount' | 'wordmark'
+    | 'id'
+    | 'shortName'
+    | 'avatar'
+    | 'title'
+    | 'subtitle'
+    | 'badges'
+    | 'tagline'
+    | 'userCount'
+    | 'wordmark'
+    | 'wordmarkLight'
+    | 'wordmarkDark'
   >
 >()
 </script>

@@ -1,6 +1,7 @@
 <template>
   <ClientOnly>
     <img
+      v-bind="attrs"
       :src="resolvedSrc"
       :alt="resolvedAlt"
       class="fx-brand-wordmark"
@@ -13,37 +14,45 @@
 
 <script setup lang="ts">
 import { computed } from '#imports'
+import { useAttrs } from 'vue'
+import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useResolvedColorMode } from '../../../composables/fireux/app/useColorMode'
 
-type BrandSize = 'small' | 'medium' | 'large' | 'hero'
+defineOptions({ inheritAttrs: false })
 
-type Variant = 'auto' | 'light' | 'dark'
+type BrandSize = 'card' | 'small' | 'medium' | 'large' | 'hero'
 
 type Props = {
   size?: BrandSize
-  variant?: Variant
-  alt?: string
+  lightSrc?: string
+  darkSrc?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: 'medium',
-  variant: 'auto',
-  alt: 'App wordmark',
 })
+
+const attrs = useAttrs()
+
+const cfg = useFireUXConfig()
 
 const resolvedMode = useResolvedColorMode()
 const isDark = computed(() => resolvedMode.value === 'dark')
 
-const resolvedSrc = computed(() => {
-  if (props.variant === 'light') return '/img/app/wordmark-light.png'
-  if (props.variant === 'dark') return '/img/app/wordmark-dark.png'
-  return isDark.value ? '/img/app/wordmark-light.png' : '/img/app/wordmark-dark.png'
-})
+const resolvedSrc = computed(() =>
+  isDark.value
+    ? (props.darkSrc?.trim() || '/img/app/wordmark-dark.png')
+    : (props.lightSrc?.trim() || '/img/app/wordmark-light.png')
+)
 
-const resolvedAlt = computed(() => props.alt)
+const resolvedAlt = computed(() => {
+  const appName = cfg.appName?.trim()
+  return appName ? `${appName} logo` : 'App logo'
+})
 
 const sizeClass = computed(() => {
   return {
+    'fx-brand-wordmark--card': props.size === 'card',
     'fx-brand-wordmark--small': props.size === 'small',
     'fx-brand-wordmark--medium': props.size === 'medium',
     'fx-brand-wordmark--large': props.size === 'large',
@@ -58,6 +67,12 @@ const sizeClass = computed(() => {
   width: auto;
   object-fit: contain;
   object-position: left center;
+}
+
+.fx-brand-wordmark--card {
+  height: 1.5rem;
+  max-width: 10rem;
+  object-position: right center;
 }
 
 .fx-brand-wordmark--small {

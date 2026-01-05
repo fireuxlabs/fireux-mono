@@ -1,7 +1,7 @@
 <template>
   <ClientOnly>
     <NuxtLink to="/" class="logo-link">
-      <AppBrandWordmark :size="size" alt="App wordmark" class="logo" />
+      <AppBrandWordmark :size="size" class="logo" />
     </NuxtLink>
   </ClientOnly>
 </template>

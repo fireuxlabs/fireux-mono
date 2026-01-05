@@ -25,6 +25,8 @@ export namespace AppCard {
     longBio: string
 
     logo: string
+    wordmarkLight: string
+    wordmarkDark: string
     wordmark: string
     instagram: string
   }
@@ -62,6 +64,8 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       longBio: app.long_bio || '',
 
       logo: app.logo_url || '',
+      wordmarkLight: app.wordmark_light_url || '',
+      wordmarkDark: app.wordmark_dark_url || '',
       wordmark: resolveWordmark(app),
       instagram: app.social_links?.instagram || '',
     }

@@ -4,6 +4,7 @@ export type FireUXColorMode = 'system' | 'light' | 'dark'
 export type FireUXResolvedColorMode = 'light' | 'dark'
 
 let clientSetupDone = false
+let resolvedObserverSetupDone = false
 
 function readStoredMode(): FireUXColorMode | null {
   try {
@@ -45,7 +46,39 @@ function applyMode(mode: FireUXColorMode, resolvedState?: { value: FireUXResolve
 }
 
 export function useResolvedColorMode() {
-  return useState<FireUXResolvedColorMode>('fireux-core:resolved-color-mode', () => 'light')
+  const resolved = useState<FireUXResolvedColorMode>(
+    'fireux-core:resolved-color-mode',
+    () => 'light'
+  )
+
+  // Keep resolved mode in sync with whatever is actually applied to the DOM.
+  // This is important because some UIs (Nuxt UI, browser extensions, etc.)
+  // may toggle the `dark` class without touching our `useColorMode()` state.
+  if (import.meta.client && !resolvedObserverSetupDone) {
+    resolvedObserverSetupDone = true
+
+    const syncFromDom = () => {
+      resolved.value = document.documentElement.classList.contains('dark')
+        ? 'dark'
+        : 'light'
+    }
+
+    // Seed from current DOM state.
+    syncFromDom()
+
+    // Observe class changes on <html> to reflect theme toggles.
+    try {
+      const observer = new MutationObserver(() => syncFromDom())
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class'],
+      })
+    } catch {
+      // ignore (very old browsers)
+    }
+  }
+
+  return resolved
 }
 
 /**

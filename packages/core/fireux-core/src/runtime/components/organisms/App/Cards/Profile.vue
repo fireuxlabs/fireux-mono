@@ -18,13 +18,11 @@
         </div>
 
         <div class="grid justify-items-end gap-2">
-          <img
-            v-if="wordmark"
-            :src="wordmark"
-            :alt="`${title} wordmark`"
-            class="h-8 w-auto object-contain"
-            loading="lazy"
-            decoding="async"
+          <AppBrandWordmark
+            v-if="wordmarkLight || wordmarkDark || wordmark"
+            size="small"
+            :light-src="wordmarkLight"
+            :dark-src="wordmarkDark"
           />
 
           <div class="flex flex-wrap justify-end gap-2">
@@ -204,6 +202,7 @@
 <script setup lang="ts">
 import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import AppBrandWordmark from '../../../App/Brand/Wordmark.vue'
 
 defineOptions({ inheritAttrs: false })
 
@@ -211,7 +210,18 @@ defineProps<
   { app?: App | null } &
     Pick<
       AppCard.Card,
-      'id' | 'shortName' | 'role' | 'userCount' | 'tagline' | 'wordmark' | 'avatar' | 'title' | 'subtitle' | 'badges'
+      | 'id'
+      | 'shortName'
+      | 'role'
+      | 'userCount'
+      | 'tagline'
+      | 'wordmark'
+      | 'wordmarkLight'
+      | 'wordmarkDark'
+      | 'avatar'
+      | 'title'
+      | 'subtitle'
+      | 'badges'
     >
 >()
 </script>
