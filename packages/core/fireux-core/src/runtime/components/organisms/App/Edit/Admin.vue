@@ -1,8 +1,9 @@
 <template>
   <ClientOnly>
-    <div v-if="app" class="space-y-6 min-w-0">
+    <div v-if="app" class="grid gap-6 min-w-0 lg:grid-cols-2 items-start">
 
       <OrganismsAppEditSectionsLockedConfig
+        class="lg:col-span-2"
         :app="app"
         :is-dev="isDev"
         :noop-update="noopUpdate"
@@ -10,6 +11,7 @@
       />
 
       <OrganismsAppEditSectionsAbout
+        class="lg:col-span-2"
         :app="app"
         :handle-tagline-update="handleTaglineUpdate"
         :handle-description-update="handleDescriptionUpdate"
@@ -17,7 +19,7 @@
         :handle-long-bio-update="handleLongBioUpdate"
       />
 
-      <OrganismsAppEditSectionsSurfaces :app-card="appCard" />
+      <OrganismsAppEditSectionsSurfaces class="lg:col-span-2" :app-card="appCard" />
 
       <OrganismsAppEditSectionsSocial
         :app="app"
@@ -31,13 +33,14 @@
       />
 
       <OrganismsAppEditSectionsAdmins
+        class="lg:col-span-2"
         :rows="adminRows"
         :action-uid="adminActionUid"
         :pill-for="adminPillFor"
         :on-remove-admin="removeAdmin"
       />
 
-      <OrganismsAppEditSectionsTenantOverrides />
+      <OrganismsAppEditSectionsTenantOverrides class="lg:col-span-2" />
     </div>
 
     <MoleculesStateCard v-else entity="app settings" kind="document" loading />

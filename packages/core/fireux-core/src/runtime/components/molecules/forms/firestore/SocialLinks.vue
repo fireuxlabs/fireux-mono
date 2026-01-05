@@ -14,7 +14,8 @@
           :is-editing="editingPlatform === item.platform"
           :leading="item.leading"
           :display-value="displayUrl(item.platform)"
-          v-model="draft[item.platform]"
+          :model-value="draftValue(item.platform)"
+          @update:model-value="(v: unknown) => setDraft(item.platform, v)"
           @enter="savePlatform(item.platform)"
           @esc="cancelPlatform(item.platform)"
         >
@@ -96,6 +97,14 @@ type SocialPlatform = keyof SocialLinks
 const editingPlatform = ref<SocialPlatform | null>(null)
 const draft = ref<Record<string, string>>({})
 const rowError = ref<Record<string, string>>({})
+
+function draftValue(platform: SocialPlatform): string {
+  return String(draft.value[platform] ?? '')
+}
+
+function setDraft(platform: SocialPlatform, value: unknown) {
+  draft.value = { ...draft.value, [platform]: String(value ?? '') }
+}
 
 const socialItems = [
   {

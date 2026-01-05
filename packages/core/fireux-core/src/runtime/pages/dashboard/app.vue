@@ -32,10 +32,10 @@
 
             <LayoutsDashboardProfileEdit
               v-else
-              class="grid gap-6 lg:grid-cols-2"
+              class="grid gap-6 lg:grid-cols-3"
             >
               <template #preview>
-                <div class="space-y-4 min-w-0">
+                <div class="space-y-4 min-w-0 lg:col-span-1">
                   <OrganismsAppCardsProfile
                     v-if="previewCard"
                     v-bind="previewCard"
@@ -45,7 +45,9 @@
               </template>
 
               <template #core>
-                <OrganismsAppEditAdmin :app="appSnapshot" />
+                <div class="min-w-0 lg:col-span-2">
+                  <OrganismsAppEditAdmin :app="appSnapshot" />
+                </div>
               </template>
             </LayoutsDashboardProfileEdit>
           </UPageBody>

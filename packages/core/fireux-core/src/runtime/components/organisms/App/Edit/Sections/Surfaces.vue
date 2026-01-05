@@ -1,5 +1,5 @@
 <template>
-  <UCard class="fx-section">
+  <UCard class="fx-section overflow-visible">
     <template #header>
       <div class="fx-section__header">
         <div class="fx-section__copy">
