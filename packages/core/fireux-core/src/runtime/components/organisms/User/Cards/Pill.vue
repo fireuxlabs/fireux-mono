@@ -26,7 +26,8 @@
 <script setup lang="ts">
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-defineOptions({ inheritAttrs: false })
+type PillProps = Pick<UserCard.Card, 'to' | 'avatar' | 'title' | 'subtitle' | 'badges'> &
+  Partial<UserCard.Card>
 
-defineProps<Pick<UserCard.Card, 'to' | 'avatar' | 'title' | 'subtitle' | 'badges'>>()
+defineProps<PillProps>()
 </script>

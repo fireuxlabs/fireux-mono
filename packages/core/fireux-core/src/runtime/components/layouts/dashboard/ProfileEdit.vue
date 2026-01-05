@@ -1,9 +1,15 @@
 <!-- packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfileEdit.vue -->
 <template>
-  <section class="space-y-6">
-    <slot name="preview" />
-    <slot name="core" />
-    <slot v-if="isTenant" name="app" />
+  <section class="min-w-0">
+    <div class="min-w-0">
+      <slot name="preview" />
+    </div>
+    <div class="min-w-0">
+      <slot name="core" />
+    </div>
+    <div v-if="isTenant" class="min-w-0">
+      <slot name="app" />
+    </div>
   </section>
 </template>
 

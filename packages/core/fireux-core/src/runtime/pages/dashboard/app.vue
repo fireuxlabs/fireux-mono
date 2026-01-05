@@ -2,17 +2,21 @@
 <template>
   <UDashboardPanel id="dashboard-app">
     <template #header>
-      <LayoutsDashboardNavbar title="App Settings" />
+      <LayoutsDashboardNavbar title="Admin"/>
+
     </template>
 
     <template #body>
       <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
+        <div class="mb-2 flex flex-wrap items-center gap-2">
+          <OrganismsAppCardsPill v-if="previewCard" v-bind="previewCard" />
+          <OrganismsUserCardsPill
+            v-if="adminPill"
+            v-bind="{ ...adminPill, subtitle: '' }"
+          />
+        </div>
         <UPage>
           <UPageBody>
-            <UPageHeader
-              description="Admin-only app configuration."
-            />
-
             <UPageCard v-if="pending" variant="subtle">
               <p class="text-sm text-dimmed">Loading app…</p>
             </UPageCard>
@@ -31,9 +35,12 @@
               class="grid gap-6 lg:grid-cols-2"
             >
               <template #preview>
-                <div v-if="previewCard" class="space-y-4">
-                  <OrganismsAppCardsPill v-bind="previewCard" />
-                  <OrganismsAppCardsProfile v-bind="previewCard" :app="appSnapshot" />
+                <div class="space-y-4 min-w-0">
+                  <OrganismsAppCardsProfile
+                    v-if="previewCard"
+                    v-bind="previewCard"
+                    :app="appSnapshot"
+                  />
                 </div>
               </template>
 
@@ -52,20 +59,20 @@
 import { definePageMeta } from '#imports'
 import { computed } from 'vue'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
-import OrganismsAppCardsPill from '../../components/organisms/App/Cards/Pill.vue'
-import OrganismsAppCardsProfile from '../../components/organisms/App/Cards/Profile.vue'
-import OrganismsAppEditAdmin from '../../components/organisms/App/Edit/Admin.vue'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
 const { app, pending, card } = useApp()
+const { user, card: userCard } = useUser()
 
 const appSnapshot = (pending.value ? null : app.value) ?? null
 const previewCard = computed(() => (appSnapshot ? card(appSnapshot) : null))
+const adminPill = computed(() => userCard(user.value))
 
 definePageMeta({
   layout: 'dashboard',
   nav: {
     key: 'dashboard-app',
-    label: 'App Settings',
+    label: 'Admin',
     icon: 'i-lucide-badge-check',
     order: 10,
     desktop: true,

@@ -8,8 +8,6 @@
       <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
         <UPage>
           <UPageBody>
-            <UPageHeader description="Developer-only app diagnostics and controls." />
-
             <UPageCard v-if="pending" variant="subtle">
               <p class="text-sm text-dimmed">Loading app…</p>
             </UPageCard>
@@ -23,7 +21,10 @@
               <UButton to="/" label="Go to FireUX.app" variant="soft" class="w-fit" />
             </UPageCard>
 
-            <OrganismsAppEditDev v-else :app="appSnapshot" />
+            <div v-else class="space-y-6">
+              <OrganismsAppCardsPill v-if="previewCard" v-bind="previewCard" />
+              <OrganismsAppEditDev :app="appSnapshot" />
+            </div>
           </UPageBody>
         </UPage>
       </div>
@@ -33,13 +34,13 @@
 
 <script setup lang="ts">
 import { definePageMeta } from '#imports'
+import { computed } from 'vue'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
-import OrganismsAppEditDev from '../../components/organisms/App/Edit/Dev.vue'
 
 const { app, pending, card } = useApp()
 
 const appSnapshot = (pending.value ? null : app.value) ?? null
-void card
+const previewCard = computed(() => (appSnapshot ? card(appSnapshot) : null))
 
 definePageMeta({
   layout: 'dashboard',
