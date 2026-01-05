@@ -27,20 +27,29 @@
                 <div class="flex min-w-0 items-baseline gap-2">
                   <div class="shrink-0 text-sm font-medium">{{ item.label }}:</div>
 
-                  <a
-                    v-if="item.url"
-                    :href="item.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="min-w-0 text-xs text-dimmed underline break-all"
-                  >
-                    {{ item.url }}
-                  </a>
+                  <div v-if="item.url" class="inline-flex items-center gap-2">
+                    <a
+                      :href="item.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center text-dimmed"
+                      :aria-label="`Open ${item.label} URL`"
+                      :title="item.url"
+                    >
+                      <UIcon name="i-lucide-external-link" class="size-4" />
+                    </a>
+                    <span class="text-xs text-dimmed">Open</span>
+                  </div>
                   <span v-else class="text-xs text-dimmed italic">missing</span>
                 </div>
 
-                <div class="mt-1 text-xs text-dimmed">
-                  Record field
+                <div class="mt-1 space-y-1 text-xs text-dimmed">
+                  <div>
+                    Record field <span class="font-mono">{{ item.field }}</span>
+                  </div>
+                  <div>
+                    Storage path <span class="font-mono">{{ item.storagePath }}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -155,6 +164,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { App } from '../../../../models/core/app.model'
+import { appImageStoragePath } from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
 import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
 
@@ -275,12 +285,14 @@ const kindLabel: Record<SyncedImageKind, string> = {
 
 const firestoreItems = computed(() => {
   const value = appRef.value
+  const appId = value?.id || ''
 
   return [
     {
       key: 'firestore-thumbnail',
       label: 'Thumbnail',
       field: 'thumbnail_url',
+      storagePath: appId ? appImageStoragePath(appId, 'thumbnail') : '',
       url: value?.thumbnail_url || value?.avatar_url || '',
       previewClass: 'h-12 w-12 rounded object-cover',
     },
@@ -288,6 +300,7 @@ const firestoreItems = computed(() => {
       key: 'firestore-logo',
       label: 'Logo',
       field: 'logo_url',
+      storagePath: appId ? appImageStoragePath(appId, 'logo') : '',
       url: value?.logo_url || '',
       previewClass: 'h-10 w-auto object-contain',
     },
@@ -295,6 +308,7 @@ const firestoreItems = computed(() => {
       key: 'firestore-wordmark-light',
       label: 'Wordmark (light)',
       field: 'wordmark_light_url',
+      storagePath: appId ? appImageStoragePath(appId, 'wordmarkLight') : '',
       url: value?.wordmark_light_url || '',
       previewClass: 'h-8 w-auto object-contain',
     },
@@ -302,6 +316,7 @@ const firestoreItems = computed(() => {
       key: 'firestore-wordmark-dark',
       label: 'Wordmark (dark)',
       field: 'wordmark_dark_url',
+      storagePath: appId ? appImageStoragePath(appId, 'wordmarkDark') : '',
       url: value?.wordmark_dark_url || '',
       previewClass: 'h-8 w-auto object-contain',
     },

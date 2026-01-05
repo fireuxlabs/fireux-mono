@@ -208,6 +208,8 @@ const { isOpen: isNotificationsSlideoverOpen } = useDashboardNotifications()
 const { desktop } = useDashboardNav()
 const { isAdmin } = useUser()
 
+const isDev = computed(() => import.meta.dev)
+
 const { isAuthenticated, isReady, hasAuthState, lastBindError } = useAuth()
 
 if (import.meta.client) {
@@ -256,6 +258,12 @@ const baseNav = computed(() =>
       .filter((item) => {
         if (item.key === 'dashboard-app' || item.to === '/dashboard/app') {
           return isAdmin.value
+        }
+        if (
+          item.key === 'dashboard-developer' ||
+          item.to === '/dashboard/developer'
+        ) {
+          return isDev.value
         }
         return true
       })
