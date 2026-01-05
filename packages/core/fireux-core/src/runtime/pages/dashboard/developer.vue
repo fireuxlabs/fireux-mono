@@ -23,7 +23,7 @@
               <UButton to="/" label="Go to FireUX.app" variant="soft" class="w-fit" />
             </UPageCard>
 
-            <OrganismsAppDeveloper v-else :app="appSnapshot" />
+            <OrganismsAppEditDev v-else :app="appSnapshot" />
           </UPageBody>
         </UPage>
       </div>
@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { definePageMeta } from '#imports'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
-import OrganismsAppDeveloper from '../../components/organisms/App/Developer.vue'
+import OrganismsAppEditDev from '../../components/organisms/App/Edit/Dev.vue'
 
 const { app, pending, card } = useApp()
 

@@ -38,7 +38,7 @@
               </template>
 
               <template #core>
-                <OrganismsAppEdit :app="appSnapshot" />
+                <OrganismsAppEditAdmin :app="appSnapshot" />
               </template>
             </LayoutsDashboardProfileEdit>
           </UPageBody>
@@ -54,7 +54,7 @@ import { computed } from 'vue'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import OrganismsAppCardsPill from '../../components/organisms/App/Cards/Pill.vue'
 import OrganismsAppCardsProfile from '../../components/organisms/App/Cards/Profile.vue'
-import OrganismsAppEdit from '../../components/organisms/App/Edit.vue'
+import OrganismsAppEditAdmin from '../../components/organisms/App/Edit/Admin.vue'
 
 const { app, pending, card } = useApp()
 
