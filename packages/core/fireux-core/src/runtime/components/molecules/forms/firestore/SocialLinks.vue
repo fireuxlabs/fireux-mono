@@ -1,29 +1,80 @@
 <template>
   <div class="flex w-full flex-col gap-1.5">
-    <MoleculesFormsTop
-      label="Social Links"
-      :is-editing="isEditing"
-      :has-data="hasData"
-      :error-message="errorMessage"
-      @start-editing="startEditing"
-      @check="saveChanges"
-      @cancel="cancelEditing"
-      @delete="deleteValue"
-    />
+    <div class="flex items-center justify-between gap-3">
+      <p class="text-sm font-semibold text-default">Social Links</p>
+      <span v-if="!hasData" class="text-xs text-dimmed italic">none</span>
+    </div>
 
     <div class="grid gap-4">
-      <MoleculesFormsFirestoreSocialLink
-        v-for="item in socialItems"
-        :key="item.platform"
-        :id="`social-${item.platform}`"
-        :label="item.label"
-        :icon="item.icon"
-        :is-editing="isEditing"
-        :leading="item.leading"
-        v-model="localValue[item.platform]"
-        @enter="saveChanges"
-        @esc="cancelEditing"
-      />
+      <div v-for="item in socialItems" :key="item.platform" class="grid gap-2">
+        <MoleculesFormsFirestoreSocialLink
+          :id="`social-${item.platform}`"
+          :label="item.label"
+          :icon="item.icon"
+          :is-editing="editingPlatform === item.platform"
+          :leading="item.leading"
+          :display-value="displayUrl(item.platform)"
+          v-model="draft[item.platform]"
+          @enter="savePlatform(item.platform)"
+          @esc="cancelPlatform(item.platform)"
+        >
+          <template #actions>
+            <template v-if="editingPlatform !== item.platform">
+              <UTooltip text="Edit" :popper="{ placement: 'top' }">
+                <UButton
+                  aria-label="Edit"
+                  color="primary"
+                  variant="ghost"
+                  size="xs"
+                  icon="i-lucide-pencil"
+                  @click="startPlatform(item.platform)"
+                />
+              </UTooltip>
+            </template>
+
+            <template v-else>
+              <UTooltip text="Save" :popper="{ placement: 'top' }">
+                <UButton
+                  aria-label="Save"
+                  color="success"
+                  variant="soft"
+                  size="xs"
+                  icon="i-lucide-check"
+                  @click="savePlatform(item.platform)"
+                />
+              </UTooltip>
+              <UTooltip text="Cancel" :popper="{ placement: 'top' }">
+                <UButton
+                  aria-label="Cancel"
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  icon="i-lucide-undo-2"
+                  @click="cancelPlatform(item.platform)"
+                />
+              </UTooltip>
+              <UTooltip v-if="displayUrl(item.platform)" text="Clear" :popper="{ placement: 'top' }">
+                <UButton
+                  aria-label="Clear"
+                  color="error"
+                  variant="ghost"
+                  size="xs"
+                  icon="i-lucide-trash-2"
+                  @click="clearPlatform(item.platform)"
+                />
+              </UTooltip>
+            </template>
+          </template>
+        </MoleculesFormsFirestoreSocialLink>
+
+        <UAlert
+          v-if="rowError[item.platform]"
+          :title="rowError[item.platform]"
+          color="error"
+          variant="soft"
+          icon="i-lucide-alert-triangle"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -40,12 +91,11 @@ const props = defineProps({
   updateFunction: { type: Function, required: true },
 })
 
-// Local reactive state
-const isEditing = ref(false)
-const localValue = ref<Record<string, string>>({})
-const errorMessage = ref('')
-
 type SocialPlatform = keyof SocialLinks
+
+const editingPlatform = ref<SocialPlatform | null>(null)
+const draft = ref<Record<string, string>>({})
+const rowError = ref<Record<string, string>>({})
 
 const socialItems = [
   {
@@ -58,7 +108,7 @@ const socialItems = [
   {
     platform: 'twitter',
     label: 'X',
-    icon: 'simple-icons:x',
+    icon: 'logos:x',
     leading: 'https://x.com/',
     base: 'https://x.com/',
   },
@@ -173,16 +223,6 @@ function toEditableSocial(platform: SocialPlatform, raw: unknown): string {
   return value.replace(/^\/+/, '')
 }
 
-function toEditableLinks(value: SocialLinks | null | undefined): Record<string, string> {
-  const result: Record<string, string> = {}
-  const src = value || {}
-  for (const platform of platforms.value) {
-    const editable = toEditableSocial(platform, (src as any)[platform])
-    if (editable) result[platform] = editable
-  }
-  return result
-}
-
 function normalizeWebsite(raw: string): string {
   const trimmed = raw.trim()
   if (!trimmed) return ''
@@ -231,75 +271,91 @@ function normalizeSocial(platform: SocialPlatform, raw: string): string {
   }
 }
 
+function toDisplayUrl(platform: SocialPlatform, raw: unknown): string {
+  const value = typeof raw === 'string' ? raw.trim() : ''
+  if (!value) return ''
+  if (/^https?:\/\//i.test(value)) return value
+
+  const base = baseForPlatform(platform)
+  const suffix = value.replace(/^\/+/, '')
+  return `${base}${suffix}`
+}
+
+function displayUrl(platform: SocialPlatform): string {
+  return toDisplayUrl(platform, (props.firebaseValue as any)?.[platform])
+}
+
 // Watch for prop changes
 watch(
   () => props.firebaseValue,
   (newValue: SocialLinks) => {
-    if (!isEditing.value) {
-      localValue.value = toEditableLinks(newValue)
+    // Keep draft synced for non-editing rows (so opening edit reflects latest).
+    const nextDraft = { ...draft.value }
+    for (const platform of platforms.value) {
+      if (editingPlatform.value === platform) continue
+      const editable = toEditableSocial(platform, (newValue as any)?.[platform])
+      if (editable) nextDraft[platform] = editable
+      else delete nextDraft[platform]
     }
+    draft.value = nextDraft
   },
   { immediate: true, deep: true }
 )
 
-// Editing handlers
-function startEditing() {
-  localValue.value = toEditableLinks(props.firebaseValue)
-  errorMessage.value = ''
-  isEditing.value = true
-}
-
-function cancelEditing() {
-  localValue.value = toEditableLinks(props.firebaseValue)
-  errorMessage.value = ''
-  isEditing.value = false
-}
-
-async function saveChanges() {
-  try {
-    const next: SocialLinks = { ...(props.firebaseValue || {}) }
-
-    for (const platform of platforms.value) {
-      const raw = String(localValue.value[platform] ?? '').trim()
-      if (!raw) {
-        delete (next as any)[platform]
-        continue
-      }
-
-      try {
-        ;(next as any)[platform] = normalizeSocial(platform, raw)
-      } catch (e) {
-        errorMessage.value =
-          e instanceof Error ? e.message : `${platform} is not a valid URL`
-        return
-      }
-    }
-
-    await props.updateFunction(next)
-    errorMessage.value = ''
-    isEditing.value = false
-  } catch (error) {
-    console.error('Error saving social links:', error)
-    errorMessage.value =
-      error instanceof Error ? error.message : 'Failed to save social links'
+function startPlatform(platform: SocialPlatform) {
+  editingPlatform.value = platform
+  rowError.value = { ...rowError.value, [platform]: '' }
+  draft.value = {
+    ...draft.value,
+    [platform]: toEditableSocial(platform, (props.firebaseValue as any)?.[platform]),
   }
 }
 
-async function deleteValue() {
+function cancelPlatform(platform: SocialPlatform) {
+  if (editingPlatform.value === platform) editingPlatform.value = null
+  rowError.value = { ...rowError.value, [platform]: '' }
+  draft.value = {
+    ...draft.value,
+    [platform]: toEditableSocial(platform, (props.firebaseValue as any)?.[platform]),
+  }
+}
+
+async function savePlatform(platform: SocialPlatform) {
   try {
+    const raw = String(draft.value[platform] ?? '')
     const next: SocialLinks = { ...(props.firebaseValue || {}) }
-    for (const platform of platforms.value) {
-      delete (next as any)[platform]
-    }
+
+    const normalized = normalizeSocial(platform, raw)
+    if (normalized) (next as any)[platform] = normalized
+    else delete (next as any)[platform]
 
     await props.updateFunction(next)
-    localValue.value = {}
-    errorMessage.value = ''
-    isEditing.value = false
-  } catch (error) {
-    console.error('Error deleting social links:', error)
-    errorMessage.value =
-      error instanceof Error ? error.message : 'Failed to delete social links'
+    rowError.value = { ...rowError.value, [platform]: '' }
+    if (editingPlatform.value === platform) editingPlatform.value = null
+  } catch (e) {
+    rowError.value = {
+      ...rowError.value,
+      [platform]: e instanceof Error ? e.message : `${platform} is not a valid URL`,
+    }
+  }
+}
+
+async function clearPlatform(platform: SocialPlatform) {
+  try {
+    const next: SocialLinks = { ...(props.firebaseValue || {}) }
+    delete (next as any)[platform]
+    await props.updateFunction(next)
+
+    const nextDraft = { ...draft.value }
+    delete nextDraft[platform]
+    draft.value = nextDraft
+    rowError.value = { ...rowError.value, [platform]: '' }
+    if (editingPlatform.value === platform) editingPlatform.value = null
+  } catch (e) {
+    rowError.value = {
+      ...rowError.value,
+      [platform]: e instanceof Error ? e.message : `${platform} is not a valid URL`,
+    }
   }
 }
 </script>

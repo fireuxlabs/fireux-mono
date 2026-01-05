@@ -1,19 +1,25 @@
 <template>
   <div class="flex flex-col gap-1">
-    <div class="flex items-center gap-2 text-sm font-medium text-default">
-      <Icon :name="icon" mode="svg" class="size-4" />
-      <span>{{ label }}</span>
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-sm font-medium text-default min-w-0">
+        <Icon :name="icon" mode="svg" class="size-4 shrink-0" />
+        <span class="truncate">{{ label }}</span>
+      </div>
+
+      <div class="shrink-0">
+        <slot name="actions" />
+      </div>
     </div>
 
     <div v-if="!isEditing" class="w-full rounded-md fx-field-surface px-3 py-2 text-sm">
       <a
-        v-if="modelValue"
-        :href="toHref(modelValue)"
+        v-if="displayText"
+        :href="toHref(displayText)"
         target="_blank"
         rel="noopener noreferrer"
         class="break-words text-default hover:underline"
       >
-        {{ toHref(modelValue) }}
+        {{ toHref(displayText) }}
       </a>
       <span v-else class="text-dimmed italic">Not set</span>
     </div>
@@ -63,6 +69,7 @@ const props = defineProps<{
   icon: string
   isEditing: boolean
   modelValue: string
+  displayValue?: string
   placeholder?: string
   leading?: string
 }>()
@@ -75,6 +82,7 @@ const emit = defineEmits<{
 
 const computedPlaceholder = computed(() => props.placeholder ?? '')
 const leading = computed(() => (props.leading ?? '').trim())
+const displayText = computed(() => (props.displayValue ?? props.modelValue ?? '').trim())
 
 function onInput(e: Event) {
   const target = e.target as HTMLInputElement | null
