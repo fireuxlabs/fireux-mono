@@ -11,6 +11,16 @@
                 Values seeded by config and not editable here.
               </p>
             </div>
+
+            <div v-if="isDev" class="shrink-0">
+              <UButton
+                to="/dashboard/developer"
+                size="xs"
+                variant="soft"
+                icon="i-lucide-arrow-up-right"
+                label="Go to dev panel"
+              />
+            </div>
           </div>
         </template>
 
@@ -92,18 +102,13 @@
             <div class="fx-section__copy">
               <h3 class="text-base font-semibold">Surfaces</h3>
               <p class="text-xs text-gray-500">
-                Pill, cell, preview, and profile views derived from the app model.
+                Card surfaces derived from the app model.
               </p>
             </div>
           </div>
         </template>
 
         <div v-if="appCard" class="fx-section__item space-y-4">
-          <div>
-            <div class="mb-2 text-xs text-gray-500">Pill</div>
-            <OrganismsAppCardsPill v-bind="appCard" />
-          </div>
-
           <div>
             <div class="mb-2 text-xs text-gray-500">Cell</div>
             <OrganismsAppCardsCell v-bind="appCard" />
@@ -112,11 +117,6 @@
           <div>
             <div class="mb-2 text-xs text-gray-500">Preview</div>
             <OrganismsAppCardsPreview v-bind="appCard" />
-          </div>
-
-          <div>
-            <div class="mb-2 text-xs text-gray-500">Profile</div>
-            <OrganismsAppCardsProfile v-bind="appCard" :app="app" />
           </div>
         </div>
 
@@ -321,6 +321,8 @@ const appRef = computed(() => props.app)
 const app = appRef
 
 const toast = useToastify()
+
+const isDev = computed(() => import.meta.dev)
 
 const { ecosystem } = useFireUXConfig()
 const lockedMessage = computed(() => `Contact your ${ecosystem} dev team.`)

@@ -31,7 +31,10 @@
               class="grid gap-6 lg:grid-cols-2"
             >
               <template #preview>
-                <OrganismsAppCardsPreview v-if="previewCard" v-bind="previewCard" />
+                <div v-if="previewCard" class="space-y-4">
+                  <OrganismsAppCardsPill v-bind="previewCard" />
+                  <OrganismsAppCardsProfile v-bind="previewCard" :app="appSnapshot" />
+                </div>
               </template>
 
               <template #core>
@@ -49,7 +52,8 @@
 import { definePageMeta } from '#imports'
 import { computed } from 'vue'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
-import OrganismsAppCardsPreview from '../../components/organisms/App/Cards/Preview.vue'
+import OrganismsAppCardsPill from '../../components/organisms/App/Cards/Pill.vue'
+import OrganismsAppCardsProfile from '../../components/organisms/App/Cards/Profile.vue'
 import OrganismsAppEdit from '../../components/organisms/App/Edit.vue'
 
 const { app, pending, card } = useApp()

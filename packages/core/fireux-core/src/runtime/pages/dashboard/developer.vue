@@ -23,15 +23,7 @@
               <UButton to="/" label="Go to FireUX.app" variant="soft" class="w-fit" />
             </UPageCard>
 
-            <LayoutsDashboardProfileEdit v-else class="grid gap-6 lg:grid-cols-2">
-              <template #preview>
-                <OrganismsAppCardsPreview v-if="previewCard" v-bind="previewCard" />
-              </template>
-
-              <template #core>
-                <OrganismsAppDeveloper :app="appSnapshot" />
-              </template>
-            </LayoutsDashboardProfileEdit>
+            <OrganismsAppDeveloper v-else :app="appSnapshot" />
           </UPageBody>
         </UPage>
       </div>
@@ -41,15 +33,13 @@
 
 <script setup lang="ts">
 import { definePageMeta } from '#imports'
-import { computed } from 'vue'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
-import OrganismsAppCardsPreview from '../../components/organisms/App/Cards/Preview.vue'
 import OrganismsAppDeveloper from '../../components/organisms/App/Developer.vue'
 
 const { app, pending, card } = useApp()
 
 const appSnapshot = (pending.value ? null : app.value) ?? null
-const previewCard = computed(() => (appSnapshot ? card(appSnapshot) : null))
+void card
 
 definePageMeta({
   layout: 'dashboard',
