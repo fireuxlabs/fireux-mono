@@ -11,6 +11,10 @@
       <div class="min-w-0 truncate text-sm font-medium">
         {{ title }}
       </div>
+
+      <div v-if="subtitle" class="min-w-0 truncate text-xs text-dimmed">
+        {{ subtitle }}
+      </div>
     </div>
 
     <div v-if="badges.length" class="ml-2 flex shrink-0 items-center gap-1">
@@ -32,5 +36,5 @@ import type { AppCard } from '../../../../composables/fireux/firestore/core/app/
 
 defineOptions({ inheritAttrs: false })
 
-defineProps<Pick<AppCard.Card, 'to' | 'avatar' | 'title' | 'badges'>>()
+defineProps<Pick<AppCard.Card, 'to' | 'avatar' | 'title' | 'subtitle' | 'badges'>>()
 </script>

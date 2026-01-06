@@ -47,6 +47,16 @@
           >
             {{ userCount }} users
           </UBadge>
+
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="subtle"
+            color="neutral"
+            size="xs"
+          >
+            {{ badge }}
+          </UBadge>
           <span v-if="id" class="text-xs text-dimmed font-mono">
             {{ id }}
           </span>
