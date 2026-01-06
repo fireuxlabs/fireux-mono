@@ -10,7 +10,9 @@ export namespace AppCard {
     id: string
     to: string
 
-    avatar: string
+    // media is optional in the model, so it’s optional in the DTO
+    avatar?: string
+
     title: string
     subtitle: string
     badges: string[]
@@ -18,17 +20,20 @@ export namespace AppCard {
     tagline: string
     shortName: string
     role: string
-    userCount: number | null
+    userCount: number
 
     description: string
     shortBio: string
     longBio: string
 
-    logo: string
-    wordmarkLight: string
-    wordmarkDark: string
+    // media is optional in the model, so it’s optional in the DTO
+    logo?: string
+    wordmarkLight?: string
+    wordmarkDark?: string
+
+    // resolved wordmark can be empty-string if none exists
     wordmark: string
-    instagram: string
+
     socialLinks: AppSocialLinks
   }
 }
@@ -39,10 +44,8 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
 
   const resolveWordmark = (app: App) => {
     // On dark backgrounds, we want the light wordmark (and vice versa).
-    if (prefersLightWordmark.value) {
-      return app.wordmark_light_url || app.wordmark_dark_url || ''
-    }
-    return app.wordmark_dark_url || app.wordmark_light_url || ''
+    const src = prefersLightWordmark.value ? app.wordmark_light_url : app.wordmark_dark_url
+    return src ?? ''
   }
 
   function map(app: App): AppCard.Card {
@@ -50,26 +53,28 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       id: app.id,
       to: `/apps/${app.id}`,
 
-      avatar: app.thumbnail_url || app.avatar_url || '',
-      title: app.app_name || '',
-      subtitle: app.ecosystem || '',
+      // prefer thumbnail_url, then legacy avatar_url
+      avatar: app.thumbnail_url ?? app.avatar_url,
+
+      title: app.app_name,
+      subtitle: app.ecosystem,
       badges: [],
 
-      tagline: app.tagline || '',
-      shortName: app.app_short_name || '',
-      role: app.role || '',
-      userCount: app.user_count ?? null,
+      tagline: app.tagline,
+      shortName: app.app_short_name,
+      role: app.role,
+      userCount: app.user_count,
 
-      description: app.description || '',
-      shortBio: app.short_bio || '',
-      longBio: app.long_bio || '',
+      description: app.description,
+      shortBio: app.short_bio,
+      longBio: app.long_bio,
 
-      logo: app.logo_url || '',
-      wordmarkLight: app.wordmark_light_url || '',
-      wordmarkDark: app.wordmark_dark_url || '',
+      logo: app.logo_url,
+      wordmarkLight: app.wordmark_light_url,
+      wordmarkDark: app.wordmark_dark_url,
       wordmark: resolveWordmark(app),
-      instagram: app.social_links?.instagram || '',
-      socialLinks: app.social_links || {},
+
+      socialLinks: app.social_links,
     }
   }
 

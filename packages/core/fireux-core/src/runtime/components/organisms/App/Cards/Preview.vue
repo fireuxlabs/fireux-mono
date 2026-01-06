@@ -1,3 +1,4 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Preview.vue -->
 <template>
   <UCard class="fx-card fx-card--preview">
     <template #header>
@@ -10,9 +11,8 @@
           </div>
         </div>
 
-        <div class="shrink-0">
+        <div v-if="showWordmark && (wordmarkLight || wordmarkDark || wordmark)" class="shrink-0">
           <AppBrandWordmark
-            v-if="wordmarkLight || wordmarkDark || wordmark"
             size="small"
             :light-src="wordmarkLight"
             :dark-src="wordmarkDark"
@@ -22,11 +22,11 @@
     </template>
 
     <div class="space-y-3">
-      <div v-if="subtitle" class="text-sm text-dimmed truncate">
+      <div v-if="showSubtitle && subtitle" class="text-sm text-dimmed truncate">
         {{ subtitle }}
       </div>
 
-      <div v-if="badges.length" class="flex flex-wrap gap-2">
+      <div v-if="showBadges && badges.length" class="flex flex-wrap gap-2">
         <UBadge
           v-for="badge in badges"
           :key="badge"
@@ -38,11 +38,11 @@
         </UBadge>
       </div>
 
-      <div v-if="tagline" class="text-sm text-dimmed line-clamp-2">
+      <div v-if="showTagline && tagline" class="text-sm text-dimmed line-clamp-2">
         {{ tagline }}
       </div>
 
-      <div class="flex flex-wrap items-center gap-2">
+      <div v-if="showMeta" class="flex flex-wrap items-center gap-2">
         <div v-if="shortName" class="text-xs text-dimmed">
           <span class="font-mono">@{{ shortName }}</span>
         </div>
@@ -63,7 +63,7 @@
         </UBadge>
       </div>
 
-      <div v-if="socialIconItems.length" class="flex flex-wrap items-center gap-2">
+      <div v-if="showSocials && socialIconItems.length" class="flex flex-wrap items-center gap-2">
         <a
           v-for="item in socialIconItems"
           :key="item.platform"
@@ -82,30 +82,43 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import AppBrandWordmark from '../../../App/Brand/Wordmark.vue'
 
-defineOptions({ inheritAttrs: false })
-
-const props = defineProps<
-  Pick<
-    AppCard.Card,
-    | 'id'
-    | 'shortName'
-    | 'avatar'
-    | 'title'
-    | 'subtitle'
-    | 'badges'
-    | 'tagline'
-    | 'userCount'
-    | 'wordmark'
-    | 'wordmarkLight'
-    | 'wordmarkDark'
-    | 'instagram'
-    | 'socialLinks'
-  >
->()
+const props = withDefaults(
+  defineProps<
+    Pick<
+      AppCard.Card,
+      | 'id'
+      | 'shortName'
+      | 'avatar'
+      | 'title'
+      | 'subtitle'
+      | 'badges'
+      | 'tagline'
+      | 'userCount'
+      | 'wordmark'
+      | 'wordmarkLight'
+      | 'wordmarkDark'
+      | 'socialLinks'
+    > & {
+      showSubtitle?: boolean
+      showBadges?: boolean
+      showTagline?: boolean
+      showMeta?: boolean
+      showWordmark?: boolean
+      showSocials?: boolean
+    }
+  >(),
+  {
+    showSubtitle: true,
+    showBadges: true,
+    showTagline: true,
+    showMeta: true,
+    showWordmark: true,
+    showSocials: true,
+  }
+)
 
 const iconForPlatform = (platform: string) => {
   const map: Record<string, string> = {
@@ -142,20 +155,12 @@ const toSocialUrl = (platform: string, value: string) => {
 
 const socialIconItems = computed(() => {
   const socials = props.socialLinks || {}
-  const entries = Object.entries(socials)
+  return Object.entries(socials)
     .map(([platform, raw]) => {
       const url = toSocialUrl(platform, String(raw || ''))
       if (!url) return null
       return { platform, url, icon: iconForPlatform(platform) }
     })
     .filter((x): x is { platform: string; url: string; icon: string } => Boolean(x))
-
-  // Back-compat fallback for older payloads that only include instagram.
-  if (!entries.length && props.instagram) {
-    const url = toSocialUrl('instagram', props.instagram)
-    if (url) return [{ platform: 'instagram', url, icon: iconForPlatform('instagram') }]
-  }
-
-  return entries
 })
 </script>

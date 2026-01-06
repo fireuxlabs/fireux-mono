@@ -1,3 +1,4 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Profile.vue -->
 <template>
   <UCard class="fx-card fx-card--profile">
     <template #header>
@@ -10,9 +11,8 @@
           </div>
         </div>
 
-        <div class="shrink-0">
+        <div v-if="showWordmark && (wordmarkLight || wordmarkDark || wordmark)" class="shrink-0">
           <AppBrandWordmark
-            v-if="wordmarkLight || wordmarkDark || wordmark"
             size="small"
             :light-src="wordmarkLight"
             :dark-src="wordmarkDark"
@@ -23,16 +23,16 @@
 
     <div class="space-y-5">
       <div class="space-y-2">
-        <div class="text-sm text-dimmed">
+        <div v-if="showSubtitle" class="text-sm text-dimmed">
           <span v-if="subtitle">{{ subtitle }}</span>
           <span v-else class="italic">missing</span>
         </div>
 
-        <div v-if="tagline" class="text-sm text-dimmed line-clamp-2">
+        <div v-if="showTagline && tagline" class="text-sm text-dimmed line-clamp-2">
           {{ tagline }}
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div v-if="showMeta" class="flex flex-wrap items-center gap-2">
           <UBadge v-if="role" variant="subtle" color="neutral" size="xs">
             {{ role }}
           </UBadge>
@@ -63,7 +63,7 @@
         </div>
       </div>
 
-      <div class="space-y-1">
+      <div v-if="showDescription" class="space-y-1">
         <div class="text-xs text-dimmed">Description</div>
         <div class="text-sm">
           <span v-if="app?.description">{{ app.description }}</span>
@@ -71,7 +71,7 @@
         </div>
       </div>
 
-      <div class="rounded border p-4 space-y-3">
+      <div v-if="showDetails" class="rounded border p-4 space-y-3">
         <div class="flex items-center justify-between gap-3">
           <div class="text-xs text-dimmed">App ID</div>
           <div class="text-sm font-mono">
@@ -88,7 +88,7 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between gap-3">
+        <div v-if="showSocials" class="flex items-center justify-between gap-3">
           <div class="text-xs text-dimmed">Socials</div>
           <div class="flex flex-wrap justify-end gap-2">
             <a
@@ -118,74 +118,48 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
 import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import AppBrandWordmark from '../../../App/Brand/Wordmark.vue'
 
-defineOptions({ inheritAttrs: false })
-
-const props = defineProps<
-  { app?: App | null } &
-    Pick<
-      AppCard.Card,
-      | 'id'
-      | 'shortName'
-      | 'role'
-      | 'userCount'
-      | 'tagline'
-      | 'wordmark'
-      | 'wordmarkLight'
-      | 'wordmarkDark'
-      | 'avatar'
-      | 'title'
-      | 'subtitle'
-      | 'badges'
-    >
->()
-
-const {
-  app,
-  id,
-  shortName,
-  role,
-  userCount,
-  tagline,
-  wordmark,
-  wordmarkLight,
-  wordmarkDark,
-  avatar,
-  title,
-  subtitle,
-} = toRefs(props)
-
-const socialLinkItems = computed(() => {
-  const socials = app.value?.social_links || {}
-  return Object.entries(socials)
-    .map(([platform, raw]) => {
-      const value = (raw || '').trim()
-      if (!value) return null
-
-      if (/^https?:\/\//i.test(value)) {
-        return { platform, url: value }
+const props = withDefaults(
+  defineProps<
+    { app?: App | null } &
+      Pick<
+        AppCard.Card,
+        | 'id'
+        | 'shortName'
+        | 'role'
+        | 'userCount'
+        | 'tagline'
+        | 'wordmark'
+        | 'wordmarkLight'
+        | 'wordmarkDark'
+        | 'avatar'
+        | 'title'
+        | 'subtitle'
+        | 'badges'
+        | 'socialLinks'
+      > & {
+        showSubtitle?: boolean
+        showTagline?: boolean
+        showMeta?: boolean
+        showWordmark?: boolean
+        showDescription?: boolean
+        showDetails?: boolean
+        showSocials?: boolean
       }
-
-      const base: Record<string, string> = {
-        website: 'http://',
-        twitter: 'https://x.com/',
-        linkedin: 'https://www.linkedin.com/',
-        github: 'https://github.com/',
-        instagram: 'https://instagram.com/',
-        facebook: 'https://facebook.com/',
-        youtube: 'https://youtube.com/',
-      }
-
-      const prefix = base[platform] || ''
-      const suffix = value.replace(/^\/+/, '')
-      return { platform, url: `${prefix}${suffix}` }
-    })
-    .filter((item): item is { platform: string; url: string } => Boolean(item))
-})
+  >(),
+  {
+    showSubtitle: true,
+    showTagline: true,
+    showMeta: true,
+    showWordmark: true,
+    showDescription: true,
+    showDetails: true,
+    showSocials: true,
+  }
+)
 
 const iconForPlatform = (platform: string) => {
   const map: Record<string, string> = {
@@ -199,4 +173,35 @@ const iconForPlatform = (platform: string) => {
   }
   return map[platform] || 'heroicons:link'
 }
+
+const toSocialUrl = (platform: string, value: string) => {
+  const trimmed = (value || '').trim()
+  if (!trimmed) return ''
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+
+  const base: Record<string, string> = {
+    website: 'http://',
+    twitter: 'https://x.com/',
+    linkedin: 'https://www.linkedin.com/',
+    github: 'https://github.com/',
+    instagram: 'https://instagram.com/',
+    facebook: 'https://facebook.com/',
+    youtube: 'https://youtube.com/',
+  }
+
+  const prefix = base[platform] || ''
+  const suffix = trimmed.replace(/^\/+/, '')
+  return `${prefix}${suffix}`
+}
+
+const socialLinkItems = computed(() => {
+  const socials = props.socialLinks || {}
+  return Object.entries(socials)
+    .map(([platform, raw]) => {
+      const url = toSocialUrl(platform, String(raw || ''))
+      if (!url) return null
+      return { platform, url }
+    })
+    .filter((x): x is { platform: string; url: string } => Boolean(x))
+})
 </script>

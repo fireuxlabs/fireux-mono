@@ -1,3 +1,4 @@
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Cell.vue -->
 <template>
   <NuxtLink :to="to" class="fx-card fx-card--cell">
     <div class="fx-card__media">
@@ -9,7 +10,7 @@
             <div class="fx-card__title">{{ title }}</div>
           </div>
 
-          <div v-if="badges.length" class="fx-card__badges">
+          <div v-if="showBadges && badges.length" class="fx-card__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -22,11 +23,11 @@
           </div>
         </div>
 
-        <div v-if="tagline" class="fx-card__tagline">
+        <div v-if="showTagline && tagline" class="fx-card__tagline">
           {{ tagline }}
         </div>
 
-        <div class="fx-card__meta">
+        <div v-if="showMeta" class="fx-card__meta">
           <UBadge
             v-if="userCount !== null"
             variant="soft"
@@ -46,17 +47,18 @@
 <script setup lang="ts">
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
-defineOptions({ inheritAttrs: false })
-
-defineProps<
-  Pick<
-    AppCard.Card,
-    | 'to'
-    | 'avatar'
-    | 'title'
-    | 'badges'
-    | 'tagline'
-    | 'userCount'
-  >
->()
+withDefaults(
+  defineProps<
+    Pick<AppCard.Card, 'to' | 'avatar' | 'title' | 'badges' | 'tagline' | 'userCount'> & {
+      showBadges?: boolean
+      showTagline?: boolean
+      showMeta?: boolean
+    }
+  >(),
+  {
+    showBadges: true,
+    showTagline: true,
+    showMeta: true,
+  }
+)
 </script>
