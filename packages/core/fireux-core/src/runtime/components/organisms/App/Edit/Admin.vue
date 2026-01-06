@@ -1,6 +1,6 @@
 <template>
   <template v-if="app">
-    <div class="mb-6 break-inside-avoid">
+    <div class="fx-panels-masonry__item dashboard-item">
       <OrganismsAppEditSectionsLockedConfig
         :app="app"
         :is-dev="isDev"
@@ -9,7 +9,7 @@
       />
     </div>
 
-    <div class="mb-6 break-inside-avoid">
+    <div class="fx-panels-masonry__item dashboard-item">
       <OrganismsAppEditSectionsAbout
         :app="app"
         :handle-tagline-update="handleTaglineUpdate"
@@ -19,18 +19,18 @@
       />
     </div>
 
-    <div class="mb-6 break-inside-avoid">
+    <div class="fx-panels-masonry__item dashboard-item">
       <OrganismsAppEditSectionsSurfaces :app-card="appCard" />
     </div>
 
-    <div class="mb-6 break-inside-avoid">
+    <div class="fx-panels-masonry__item dashboard-item">
       <OrganismsAppEditSectionsSocial
         :app="app"
         :handle-update-social-links="handleUpdateSocialLinks"
       />
     </div>
 
-    <div class="mb-6 break-inside-avoid">
+    <div class="fx-panels-masonry__item dashboard-item">
       <OrganismsAppEditSectionsJoinRequests
         :items="joinRequestItems"
         :on-approve="onApprove"
@@ -38,7 +38,7 @@
       />
     </div>
 
-    <div class="mb-6 break-inside-avoid">
+    <div class="fx-panels-masonry__item dashboard-item">
       <OrganismsAppEditSectionsAdmins
         :rows="adminRows"
         :action-uid="adminActionUid"
@@ -47,7 +47,7 @@
       />
     </div>
 
-    <div class="mb-6 break-inside-avoid">
+    <div class="fx-panels-masonry__item dashboard-item">
       <OrganismsAppEditSectionsTenantOverrides />
     </div>
   </template>

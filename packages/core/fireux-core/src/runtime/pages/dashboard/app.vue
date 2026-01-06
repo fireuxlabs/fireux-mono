@@ -7,7 +7,7 @@
     </template>
 
     <template #body>
-      <div class="space-y-6">
+      <div class="fx-panels-stack">
         <div class="flex flex-wrap items-center gap-2">
           <OrganismsAppCardsPill v-if="previewCard" v-bind="previewCard" />
           <OrganismsUserCardsPill
@@ -29,8 +29,8 @@
           <UButton to="/" label="Go to FireUX.app" variant="soft" class="w-fit" />
         </UPageCard>
 
-        <div v-else class="columns-1 md:columns-2 md:[column-gap:1.5rem]">
-          <div class="mb-6 break-inside-avoid">
+        <div v-else class="fx-panels-masonry">
+          <div class="fx-panels-masonry__item">
             <OrganismsAppCardsProfile
               v-if="previewCard"
               v-bind="previewCard"

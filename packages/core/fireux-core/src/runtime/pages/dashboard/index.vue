@@ -5,16 +5,16 @@
     </template>
 
     <template #body>
-      <div class="space-y-6">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <DashboardOverviewCore />
-          <DashboardOverviewEcosystem />
-          <DashboardOverviewApp />
+      <div class="fx-panels-stack">
+        <div class="fx-panels-grid-3">
+          <DashboardOverviewCore class="dashboard-item" />
+          <DashboardOverviewEcosystem class="dashboard-item" />
+          <DashboardOverviewApp class="dashboard-item" />
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <DashboardOverviewDomainEcosystem />
-          <DashboardOverviewDomainApp />
+        <div class="fx-panels-grid-2">
+          <DashboardOverviewDomainEcosystem class="dashboard-item" />
+          <DashboardOverviewDomainApp class="dashboard-item" />
         </div>
       </div>
     </template>

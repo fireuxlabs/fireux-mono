@@ -80,6 +80,77 @@ body {
 		color: var(--ui-text-muted, var(--ui-text));
 	}
 
+	/* Dashboard panel layout utilities */
+	.fx-panels-stack {
+		@apply grid gap-7 min-w-0;
+	}
+
+	.fx-panels-stack > * {
+		min-width: 0;
+	}
+
+	.fx-panels-narrow {
+		@apply w-full max-w-xl mx-auto min-w-0;
+	}
+
+	.dashboard-item {
+		min-width: 0;
+		width: 100%;
+		display: block;
+		break-inside: avoid;
+		page-break-inside: avoid;
+		-webkit-column-break-inside: avoid;
+	}
+
+	.fx-panels-grid {
+		@apply grid gap-7;
+	}
+
+	.fx-panels-grid > * {
+		min-width: 0;
+	}
+
+	.fx-panels-grid-2 {
+		@apply grid grid-cols-1 gap-7 lg:grid-cols-2;
+	}
+
+	.fx-panels-grid-2 > * {
+		min-width: 0;
+	}
+
+	.fx-panels-grid-3 {
+		@apply grid grid-cols-1 gap-7 lg:grid-cols-3;
+	}
+
+	.fx-panels-grid-3 > * {
+		min-width: 0;
+	}
+
+	.fx-panels-masonry {
+		columns: 1;
+		column-gap: 1.75rem;
+	}
+
+	@media (min-width: 768px) {
+		.fx-panels-masonry {
+			columns: 2;
+		}
+	}
+
+	.fx-panels-masonry__item {
+		break-inside: avoid;
+		margin-bottom: 1.75rem;
+	}
+
+	.fx-panels-masonry > * {
+		min-width: 0;
+		display: block;
+		break-inside: avoid;
+		page-break-inside: avoid;
+		-webkit-column-break-inside: avoid;
+		margin-bottom: 1.75rem;
+	}
+
 	/* Shared field surface (matches SimpleField display blocks) */
 	.fx-field-surface {
 	  border: 1px solid var(--ui-border);
