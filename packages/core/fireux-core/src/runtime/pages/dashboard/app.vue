@@ -7,51 +7,38 @@
     </template>
 
     <template #body>
-      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
-        <div class="mb-2 flex flex-wrap items-center gap-2">
+      <div class="space-y-6">
+        <div class="flex flex-wrap items-center gap-2">
           <OrganismsAppCardsPill v-if="previewCard" v-bind="previewCard" />
           <OrganismsUserCardsPill
             v-if="adminPill"
             v-bind="{ ...adminPill, subtitle: '' }"
           />
         </div>
-        <UPage>
-          <UPageBody>
-            <UPageCard v-if="pending" variant="subtle">
-              <p class="text-sm text-dimmed">Loading app…</p>
-            </UPageCard>
 
-            <UPageCard
-              v-else-if="!appSnapshot"
-              title="App not available"
-              description="No app data found for this environment."
-              variant="subtle"
-            >
-              <UButton to="/" label="Go to FireUX.app" variant="soft" class="w-fit" />
-            </UPageCard>
+        <UPageCard v-if="pending" variant="subtle">
+          <p class="text-sm text-dimmed">Loading app…</p>
+        </UPageCard>
 
-            <LayoutsDashboardProfileEdit
-              v-else
-              class="grid gap-6 lg:grid-cols-3"
-            >
-              <template #preview>
-                <div class="space-y-4 min-w-0 lg:col-span-1">
-                  <OrganismsAppCardsProfile
-                    v-if="previewCard"
-                    v-bind="previewCard"
-                    :app="appSnapshot"
-                  />
-                </div>
-              </template>
+        <UPageCard
+          v-else-if="!appSnapshot"
+          title="App not available"
+          description="No app data found for this environment."
+          variant="subtle"
+        >
+          <UButton to="/" label="Go to FireUX.app" variant="soft" class="w-fit" />
+        </UPageCard>
 
-              <template #core>
-                <div class="min-w-0 lg:col-span-2">
-                  <OrganismsAppEditAdmin :app="appSnapshot" />
-                </div>
-              </template>
-            </LayoutsDashboardProfileEdit>
-          </UPageBody>
-        </UPage>
+        <div v-else class="columns-1 md:columns-2 md:[column-gap:1.5rem]">
+          <div class="mb-6 break-inside-avoid">
+            <OrganismsAppCardsProfile
+              v-if="previewCard"
+              v-bind="previewCard"
+              :app="appSnapshot"
+            />
+          </div>
+          <OrganismsAppEditAdmin :app="appSnapshot" />
+        </div>
       </div>
     </template>
   </UDashboardPanel>

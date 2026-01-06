@@ -1,50 +1,58 @@
 <template>
-  <ClientOnly>
-    <div v-if="app" class="grid gap-6 min-w-0 lg:grid-cols-2 items-start">
-
+  <template v-if="app">
+    <div class="mb-6 break-inside-avoid">
       <OrganismsAppEditSectionsLockedConfig
-        class="lg:col-span-2"
         :app="app"
         :is-dev="isDev"
         :noop-update="noopUpdate"
         :handle-ecosystem-update="handleEcosystemUpdate"
       />
+    </div>
 
+    <div class="mb-6 break-inside-avoid">
       <OrganismsAppEditSectionsAbout
-        class="lg:col-span-2"
         :app="app"
         :handle-tagline-update="handleTaglineUpdate"
         :handle-description-update="handleDescriptionUpdate"
         :handle-short-bio-update="handleShortBioUpdate"
         :handle-long-bio-update="handleLongBioUpdate"
       />
+    </div>
 
-      <OrganismsAppEditSectionsSurfaces class="lg:col-span-2" :app-card="appCard" />
+    <div class="mb-6 break-inside-avoid">
+      <OrganismsAppEditSectionsSurfaces :app-card="appCard" />
+    </div>
 
+    <div class="mb-6 break-inside-avoid">
       <OrganismsAppEditSectionsSocial
         :app="app"
         :handle-update-social-links="handleUpdateSocialLinks"
       />
+    </div>
 
+    <div class="mb-6 break-inside-avoid">
       <OrganismsAppEditSectionsJoinRequests
         :items="joinRequestItems"
         :on-approve="onApprove"
         :on-remove="onRemove"
       />
+    </div>
 
+    <div class="mb-6 break-inside-avoid">
       <OrganismsAppEditSectionsAdmins
-        class="lg:col-span-2"
         :rows="adminRows"
         :action-uid="adminActionUid"
         :pill-for="adminPillFor"
         :on-remove-admin="removeAdmin"
       />
-
-      <OrganismsAppEditSectionsTenantOverrides class="lg:col-span-2" />
     </div>
 
-    <MoleculesStateCard v-else entity="app settings" kind="document" loading />
-  </ClientOnly>
+    <div class="mb-6 break-inside-avoid">
+      <OrganismsAppEditSectionsTenantOverrides />
+    </div>
+  </template>
+
+  <MoleculesStateCard v-else entity="app settings" kind="document" loading />
 </template>
 
 <script setup lang="ts">

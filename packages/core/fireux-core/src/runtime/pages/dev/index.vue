@@ -95,7 +95,6 @@
           <div class="flex items-center gap-2">
             <div
               class="w-5 h-5 rounded border border-gray-300 dark:border-gray-700"
-              :style="{ backgroundColor: cfg.primaryColor }"
             />
             <span class="text-gray-500 dark:text-gray-400">{{
               cfg.primaryColor
@@ -111,7 +110,6 @@
           <div class="flex items-center gap-2">
             <div
               class="w-5 h-5 rounded border border-gray-300 dark:border-gray-700"
-              :style="{ backgroundColor: cfg.neutralColor }"
             />
             <span class="text-gray-500 dark:text-gray-400">{{
               cfg.neutralColor
@@ -127,7 +125,6 @@
           <div class="flex items-center gap-2">
             <div
               class="w-5 h-5 rounded border border-gray-300 dark:border-gray-700"
-              :style="{ backgroundColor: cfg.secondaryColor }"
             />
             <span class="text-gray-500 dark:text-gray-400">
               {{ cfg.secondaryColor }}
