@@ -4,7 +4,7 @@
 
     <div class="min-w-0 flex-1">
       <div class="min-w-0 truncate text-sm font-medium">{{ title }}</div>
-      <div v-if="subtitle" class="min-w-0 truncate text-xs text-dimmed">
+      <div v-if="showSubtitle && subtitle" class="min-w-0 truncate text-xs text-dimmed">
         {{ subtitle }}
       </div>
     </div>
@@ -27,7 +27,11 @@
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 type PillProps = Pick<UserCard.Card, 'to' | 'avatar' | 'title' | 'subtitle' | 'badges'> &
-  Partial<UserCard.Card>
+  Partial<UserCard.Card> & {
+    showSubtitle?: boolean
+  }
 
-defineProps<PillProps>()
+withDefaults(defineProps<PillProps>(), {
+  showSubtitle: true,
+})
 </script>

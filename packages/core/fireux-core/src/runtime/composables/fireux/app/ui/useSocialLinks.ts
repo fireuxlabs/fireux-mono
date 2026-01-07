@@ -2,6 +2,7 @@
 
 type SocialPlatform =
   | 'website'
+  | 'email'
   | 'twitter'
   | 'linkedin'
   | 'github'
@@ -20,6 +21,7 @@ export type SocialLinkItem = {
 
 const ICONS: Record<string, string> = {
   website: 'heroicons:globe-alt',
+  email: 'heroicons:envelope',
   twitter: 'simple-icons:x',
   linkedin: 'skill-icons:linkedin',
   github: 'skill-icons:github-dark',
@@ -30,6 +32,7 @@ const ICONS: Record<string, string> = {
 
 const BASE: Record<string, string> = {
   website: 'http://',
+  email: 'mailto:',
   twitter: 'https://x.com/',
   linkedin: 'https://www.linkedin.com/',
   github: 'https://github.com/',
@@ -41,6 +44,11 @@ const BASE: Record<string, string> = {
 function toSocialUrl(platform: string, value: string): string {
   const trimmed = (value ?? '').trim()
   if (!trimmed) return ''
+  if (platform === 'email') {
+    if (/^mailto:/i.test(trimmed)) return trimmed
+    // Allow plain email values.
+    if (/@/.test(trimmed) && !/^https?:\/\//i.test(trimmed)) return `mailto:${trimmed}`
+  }
   if (/^https?:\/\//i.test(trimmed)) return trimmed
 
   const prefix = BASE[platform] || ''

@@ -7,7 +7,7 @@
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <div class="truncate font-medium">{{ title }}</div>
-            <div v-if="subtitle" class="truncate text-sm text-dimmed">{{ subtitle }}</div>
+            <div v-if="showSubtitle && subtitle" class="truncate text-sm text-dimmed">{{ subtitle }}</div>
           </div>
 
           <div v-if="badges.length" class="flex flex-wrap justify-end gap-1">
@@ -39,18 +39,17 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, toRefs, watchEffect } from 'vue'
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
-const props = defineProps<{ card: AgentCard.Card; prop?: string }>()
-
-const card = reactive({ ...props.card })
-
-watchEffect(() => {
-  Object.assign(card, props.card)
-})
-
-const { avatar, title, subtitle, badges, line1, line2 } = toRefs(card)
-
-const prop = props.prop
+withDefaults(
+  defineProps<
+    Pick<AgentCard.Card, 'avatar' | 'title' | 'subtitle' | 'badges' | 'line1' | 'line2'> & {
+      prop?: string
+      showSubtitle?: boolean
+    }
+  >(),
+  {
+    showSubtitle: true,
+  }
+)
 </script>

@@ -1,13 +1,10 @@
 <template>
-  <NuxtLink
-    :to="to"
-    class="fx-pill"
-  >
+  <NuxtLink :to="to" class="fx-card fx-card--pill">
     <UAvatar :src="avatar || undefined" :alt="title" size="xs" />
 
     <div class="min-w-0 flex-1">
-      <div class="min-w-0 truncate text-sm font-medium">{{ title }}</div>
-      <div v-if="subtitle" class="min-w-0 truncate text-xs text-dimmed">{{ subtitle }}</div>
+      <div class="truncate text-sm font-medium">{{ title }}</div>
+      <div v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">{{ subtitle }}</div>
     </div>
 
     <div v-if="badges.length" class="ml-2 flex shrink-0 items-center gap-1">
@@ -25,16 +22,16 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, toRefs, watchEffect } from 'vue'
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
-const props = defineProps<{ card: AgentCard.Card }>()
-
-const card = reactive({ ...props.card })
-
-watchEffect(() => {
-  Object.assign(card, props.card)
-})
-
-const { to, avatar, title, subtitle, badges } = toRefs(card)
+withDefaults(
+  defineProps<
+    Pick<AgentCard.Card, 'to' | 'avatar' | 'title' | 'subtitle' | 'badges'> & {
+      showSubtitle?: boolean
+    }
+  >(),
+  {
+    showSubtitle: true,
+  }
+)
 </script>

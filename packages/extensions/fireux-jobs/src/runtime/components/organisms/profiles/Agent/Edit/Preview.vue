@@ -28,9 +28,9 @@
 
         <OrganismsProfilesAgentCardsCell
           v-if="showCellCard && previewCard"
-          :card="previewCard"
+          v-bind="previewCard"
         />
-        <OrganismsProfilesAgentCardsPill v-else-if="previewCard" :card="previewCard" />
+        <OrganismsProfilesAgentCardsPill v-else-if="previewCard" v-bind="previewCard" />
       </UCard>
 
       <UCard v-else>

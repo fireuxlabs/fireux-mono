@@ -17,8 +17,8 @@
         </div>
 
         <div class="space-y-4">
-          <OrganismsProfilesAgentCardsCell v-if="showCellCard && profileCard" :card="profileCard" />
-          <OrganismsProfilesAgentCardsPill v-else-if="profileCard" :card="profileCard" />
+          <OrganismsProfilesAgentCardsCell v-if="showCellCard && profileCard" v-bind="profileCard" />
+          <OrganismsProfilesAgentCardsPill v-else-if="profileCard" v-bind="profileCard" />
           <p v-else class="text-sm text-slate-500">No agent profile loaded.</p>
         </div>
       </div>

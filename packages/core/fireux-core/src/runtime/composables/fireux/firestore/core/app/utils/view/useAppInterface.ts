@@ -41,8 +41,8 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
 
   function resolveWordmark(app: App): string {
     return resolvedMode.value === 'dark'
-      ? app.wordmark_light_url ?? ''
-      : app.wordmark_dark_url ?? ''
+      ? app.wordmark_dark_url ?? ''
+      : app.wordmark_light_url ?? ''
   }
 
   function map(app: App): AppCard.Card {

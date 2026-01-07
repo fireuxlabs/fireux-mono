@@ -6,30 +6,46 @@
     </template>
 
     <template #body>
-      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6 space-y-6">
-        <MoleculesStateCard
-          v-if="isLoading"
-          layout="banner"
-          loading
-          title="Loading profile…"
-        />
+      <div class="fx-panels-stack">
+        <!-- Header pills -->
+        <div class="flex flex-wrap items-center gap-2">
+          <OrganismsAppCardsPill
+            v-if="appCard"
+            v-bind="appCard"
+            :show-subtitle="false"
+          />
 
-        <MoleculesStateCard
+          <OrganismsUserCardsPill
+            v-if="userCard"
+            v-bind="userCard"
+            :show-subtitle="false"
+          />
+        </div>
+
+        <!-- Loading -->
+        <UPageCard v-if="isLoading" variant="subtle">
+          <p class="text-sm text-dimmed">Loading profile…</p>
+        </UPageCard>
+
+        <!-- Missing profile -->
+        <UPageCard
           v-else-if="!resolvedUser"
-          layout="banner"
-          title="Profile not found."
-        />
+          title="Profile not available"
+          description="No profile data found for this user."
+          variant="subtle"
+        >
+          <UButton to="/" label="Go to Home" variant="soft" class="w-fit" />
+        </UPageCard>
 
+        <!-- Main panels -->
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
+          <LayoutsDashboardProfileEdit class="fx-panels-masonry">
             <template #preview>
-              <ClientOnly>
-                <OrganismsUserCardsPreview
-                  v-if="resolvedUser"
-                  :card="card(resolvedUser)"
-                  :compact="false"
-                />
-              </ClientOnly>
+              <OrganismsUserCardsProfile
+                v-if="resolvedUser"
+                :card="card(resolvedUser)"
+                :user="resolvedUser"
+              />
             </template>
 
             <template #core>
@@ -47,8 +63,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, definePageMeta, useHead } from '#imports'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 definePageMeta({
   layout: 'dashboard',
@@ -63,12 +80,13 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const useHeadFn = (globalThis as any).useHead as
-  | undefined
-  | ((input: any) => void)
-useHeadFn?.({ title: 'Profile' })
+useHead({ title: 'Profile' })
 
 const { currentUser, isLoading, card } = useUser()
+const { app, card: appToCard } = useApp()
 
 const resolvedUser = computed(() => currentUser.value ?? null)
+
+const userCard = computed(() => (resolvedUser.value ? card(resolvedUser.value) : null))
+const appCard = computed(() => appToCard(app.value))
 </script>

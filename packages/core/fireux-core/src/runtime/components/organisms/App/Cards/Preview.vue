@@ -11,7 +11,7 @@
           </div>
         </div>
 
-        <div v-if="showWordmark && (wordmarkLight || wordmarkDark)" class="shrink-0">
+        <div v-if="showWordmark" class="shrink-0">
           <AppBrandWordmark
             size="small"
             :light-src="wordmarkLight"

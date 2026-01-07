@@ -1,13 +1,13 @@
 <!-- packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfileEdit.vue -->
 <template>
   <section class="min-w-0">
-    <div class="min-w-0">
+    <div class="min-w-0 fx-panels-masonry__item mb-10">
       <slot name="preview" />
     </div>
-    <div class="min-w-0">
+    <div class="min-w-0 fx-panels-masonry__item mb-10">
       <slot name="core" />
     </div>
-    <div v-if="isTenant" class="min-w-0">
+    <div v-if="isTenant" class="min-w-0 fx-panels-masonry__item mb-10">
       <slot name="app" />
     </div>
   </section>

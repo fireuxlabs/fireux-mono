@@ -7,8 +7,8 @@
           <div class="min-w-0">
             <div class="truncate text-base font-semibold">{{ title }}</div>
             <div class="text-sm text-dimmed">
-              <span v-if="subtitle">{{ subtitle }}</span>
-              <span v-else class="italic">missing</span>
+                <span v-if="showSubtitle && subtitle">{{ subtitle }}</span>
+                <span v-else-if="showSubtitle" class="italic">missing</span>
             </div>
           </div>
         </div>
@@ -60,18 +60,20 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, toRefs, watchEffect } from 'vue'
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
-const props = defineProps<{ card: AgentCard.Card; prop?: string }>()
-
-const card = reactive({ ...props.card })
-
-watchEffect(() => {
-  Object.assign(card, props.card)
-})
-
-const { avatar, title, subtitle, badges, line1, line2, line3 } = toRefs(card)
-
-const prop = props.prop
+withDefaults(
+  defineProps<
+    Pick<
+      AgentCard.Card,
+      'avatar' | 'title' | 'subtitle' | 'badges' | 'line1' | 'line2' | 'line3'
+    > & {
+      prop?: string
+      showSubtitle?: boolean
+    }
+  >(),
+  {
+    showSubtitle: true,
+  }
+)
 </script>

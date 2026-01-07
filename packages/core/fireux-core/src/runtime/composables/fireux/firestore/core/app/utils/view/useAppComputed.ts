@@ -6,8 +6,11 @@ export function useAppComputed(
   app: Ref<App | null | undefined>,
   pending?: Ref<boolean>
 ) {
+  const isPending = computed(() => Boolean(pending?.value))
+  const isLoading = computed(() => isPending.value || app.value === undefined)
+
   const isResolved = computed(() => {
-    if (pending?.value) return false
+    if (isPending.value) return false
     return app.value !== undefined
   })
 
@@ -31,6 +34,7 @@ export function useAppComputed(
   })
 
   return {
+    isLoading,
     isResolved,
     isInitialized,
   }

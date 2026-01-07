@@ -2,38 +2,53 @@
 <template>
   <UDashboardPanel id="dashboard-agent-profile">
     <template #header>
-      <UDashboardNavbar :title="navTitle">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar :title="navTitle" />
     </template>
 
     <template #body>
-      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6 space-y-6">
-        <UCard v-if="isProfileLoading">
-          <div class="fallback loading">Agent profile data is loading.</div>
-        </UCard>
+      <div class="fx-panels-stack">
+        <!-- Header pills -->
+        <div class="flex flex-wrap items-center gap-2">
+          <OrganismsAppCardsPill
+            v-if="appCard"
+            v-bind="appCard"
+            :show-subtitle="false"
+          />
 
-        <UCard v-else-if="!resolvedCoreProfile">
-          <div class="fallback">
-            <p class="mb-4">Your agent profile hasn’t been created yet.</p>
+          <OrganismsUserCardsPill
+            v-if="userCard"
+            v-bind="userCard"
+            :show-subtitle="false"
+          />
+        </div>
 
-            <UButton
-              :label="agentConfig.cta || 'Create Agent profile'"
-              color="neutral"
-              :loading="isCreating"
-              @click="createProfile"
-            />
+        <!-- Loading -->
+        <UPageCard v-if="isProfileLoading" variant="subtle">
+          <p class="text-sm text-dimmed">Loading profile…</p>
+        </UPageCard>
 
-            <p v-if="createError" class="mt-3 text-sm text-dimmed">
-              {{ createError }}
-            </p>
-          </div>
-        </UCard>
+        <!-- Missing profile -->
+        <UPageCard
+          v-else-if="!resolvedCoreProfile"
+          title="Agent profile not available"
+          description="Your agent profile hasn’t been created yet."
+          variant="subtle"
+        >
+          <UButton
+            :label="agentConfig.cta || 'Create Agent profile'"
+            color="neutral"
+            :loading="isCreating"
+            @click="createProfile"
+          />
 
+          <p v-if="createError" class="mt-3 text-sm text-dimmed">
+            {{ createError }}
+          </p>
+        </UPageCard>
+
+        <!-- Main panels -->
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
+          <LayoutsDashboardProfileEdit class="fx-panels-masonry">
             <template #preview>
               <OrganismsProfilesAgentEditPreview />
             </template>
@@ -57,6 +72,8 @@ import { computed, ref } from 'vue'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { agentConfig } from '../../../models/profiles/Agent/Agent.model'
 
 const navLabel = agentConfig.navLabel ?? `${agentConfig.profileType} Profile`
@@ -77,7 +94,9 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { coreProfile, appProfile } = useAgent()
+const { coreProfile, appProfile, card: agentToCard } = useAgent()
+const { app, card: appToCard } = useApp()
+const { user, card: userToCard } = useUser()
 
 const { ensure } = useProfileEnsure(agentConfig)
 const isCreating = ref(false)
@@ -100,21 +119,11 @@ const createProfile = async () => {
 const isProfileLoading = computed(() => coreProfile.value === undefined)
 const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
 const resolvedAppProfile = computed(() => appProfile.value ?? null)
+
+const agentCard = computed(() =>
+  resolvedCoreProfile.value ? agentToCard(resolvedCoreProfile.value) : null
+)
+
+const userCard = computed(() => userToCard(user.value))
+const appCard = computed(() => appToCard(app.value))
 </script>
-
-<style scoped>
-.fallback {
-  margin: 0;
-  padding: 1.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.875rem;
-}
-
-.loading {
-  text-transform: none;
-  letter-spacing: normal;
-  font-size: 0.875rem;
-  opacity: 0.7;
-}
-</style>

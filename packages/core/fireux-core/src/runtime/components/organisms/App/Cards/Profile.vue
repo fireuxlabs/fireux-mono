@@ -11,7 +11,7 @@
           </div>
         </div>
 
-        <div v-if="showWordmark && (wordmarkLight || wordmarkDark)" class="shrink-0">
+        <div v-if="showWordmark" class="shrink-0">
           <AppBrandWordmark
             size="small"
             :light-src="wordmarkLight"
@@ -82,9 +82,70 @@
         </div>
 
         <div class="flex items-center justify-between gap-3">
+          <div class="text-xs text-dimmed">Role</div>
+          <div class="text-sm">
+            <span v-if="app?.role">{{ app.role }}</span>
+            <span v-else class="text-dimmed">missing</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3">
           <div class="text-xs text-dimmed">Ecosystem</div>
           <div class="text-sm">
             <span v-if="app?.ecosystem">{{ app.ecosystem }}</span>
+            <span v-else class="text-dimmed">missing</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3">
+          <div class="text-xs text-dimmed">Creator</div>
+          <div class="text-sm text-right">
+            <OrganismsUserCardsPill
+              v-if="creatorCard"
+              v-bind="creatorCard"
+              :show-subtitle="false"
+            />
+            <span v-else-if="app?.creator_id" class="font-mono break-all">
+              {{ app.creator_id }}
+            </span>
+            <span v-else class="text-dimmed">missing</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3">
+          <div class="text-xs text-dimmed">Admins</div>
+          <div class="text-sm">
+            <NuxtLink
+              v-if="app?.admin_ids?.length"
+              :to="adminUsersLink"
+              class="text-primary hover:underline"
+            >
+              {{ app.admin_ids.length }}
+            </NuxtLink>
+            <span v-else class="text-dimmed">0</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3">
+          <div class="text-xs text-dimmed">Join requests</div>
+          <div class="text-sm">
+            <span v-if="app?.join_requests?.length">{{ app.join_requests.length }}</span>
+            <span v-else class="text-dimmed">0</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3">
+          <div class="text-xs text-dimmed">Created</div>
+          <div class="text-sm">
+            <span v-if="createdAtText">{{ createdAtText }}</span>
+            <span v-else class="text-dimmed">missing</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3">
+          <div class="text-xs text-dimmed">Updated</div>
+          <div class="text-sm">
+            <span v-if="updatedAtText">{{ updatedAtText }}</span>
             <span v-else class="text-dimmed">missing</span>
           </div>
         </div>
@@ -119,7 +180,9 @@
 import { computed } from '#imports'
 import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useSocialLinks } from '../../../../composables/fireux/app/ui/useSocialLinks'
+import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
 
 const props = withDefaults(
   defineProps<
@@ -139,6 +202,7 @@ const props = withDefaults(
         | 'badges'
         | 'socialLinks'
       > & {
+        creatorCard?: UserCard.Card | null
         showSubtitle?: boolean
         showTagline?: boolean
         showMeta?: boolean
@@ -149,6 +213,7 @@ const props = withDefaults(
       }
   >(),
   {
+    creatorCard: null,
     showSubtitle: true,
     showTagline: true,
     showMeta: true,
@@ -161,4 +226,17 @@ const props = withDefaults(
 
 const { toItems } = useSocialLinks()
 const socialItems = computed(() => toItems(props.socialLinks))
+
+const createdAtText = computed(() =>
+  formatFirestoreTimestamp(props.app?.created_at, { fallback: undefined })
+)
+
+const updatedAtText = computed(() =>
+  formatFirestoreTimestamp(props.app?.updated_at, { fallback: undefined })
+)
+
+const adminUsersLink = computed(() => ({
+  path: '/misebox/users',
+  query: { filter: 'admins' },
+}))
 </script>

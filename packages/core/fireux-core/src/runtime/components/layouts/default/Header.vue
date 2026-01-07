@@ -9,7 +9,7 @@
       <!-- Brand -->
       <template #title>
         <NuxtLink to="/" aria-label="Home">
-          <LogoBrand size="large" />
+          <AppBrandWordmark size="large" />
         </NuxtLink>
       </template>
 

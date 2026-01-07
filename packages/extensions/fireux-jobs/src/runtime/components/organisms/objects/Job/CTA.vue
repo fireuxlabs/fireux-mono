@@ -16,10 +16,10 @@
           <div class="space-y-4">
             <OrganismsProfilesAgentCardsCell
               v-if="profileCard"
-              :card="profileCard"
+              v-bind="profileCard"
               class="cta-agent-cell"
             />
-            <OrganismsProfilesAgentCardsPill v-if="profileCard" :card="profileCard" />
+            <OrganismsProfilesAgentCardsPill v-if="profileCard" v-bind="profileCard" />
           </div>
         </UCard>
       </div>

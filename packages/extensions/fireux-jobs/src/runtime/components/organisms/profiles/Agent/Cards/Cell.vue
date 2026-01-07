@@ -1,19 +1,15 @@
 <template>
-  <NuxtLink
-    :to="to"
-    class="block rounded-lg border border-[var(--ui-border)] px-3 py-2 transition-colors hover:bg-[var(--ui-bg-muted)]"
-  >
-    <div class="flex items-start gap-3">
+  <NuxtLink :to="to" class="fx-card fx-card--cell">
+    <div class="fx-card__media">
       <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
 
-      <div class="min-w-0 flex-1">
-        <div class="flex items-start justify-between gap-3">
+      <div class="fx-card__content fx-card__stack">
+        <div class="fx-card__header">
           <div class="min-w-0">
-            <div class="truncate font-medium">{{ title }}</div>
-            <div v-if="subtitle" class="truncate text-sm text-dimmed">{{ subtitle }}</div>
+            <div class="fx-card__title">{{ title }}</div>
           </div>
 
-          <div v-if="badges.length" class="flex flex-wrap justify-end gap-1">
+          <div v-if="badges.length" class="fx-card__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -26,7 +22,11 @@
           </div>
         </div>
 
-        <div class="mt-1 text-sm text-dimmed">
+        <div v-if="showSubtitle && subtitle" class="fx-card__subtitle">
+          {{ subtitle }}
+        </div>
+
+        <div class="fx-card__tagline">
           <span v-if="prop || line1">{{ prop || line1 }}</span>
           <span v-else class="italic">missing</span>
         </div>
@@ -36,18 +36,20 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, toRefs, watchEffect } from 'vue'
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
-const props = defineProps<{ card: AgentCard.Card; prop?: string }>()
-
-const card = reactive({ ...props.card })
-
-watchEffect(() => {
-  Object.assign(card, props.card)
-})
-
-const { to, avatar, title, subtitle, badges, line1 } = toRefs(card)
-
-const prop = props.prop
+withDefaults(
+  defineProps<
+    Pick<
+      AgentCard.Card,
+      'to' | 'avatar' | 'title' | 'subtitle' | 'badges' | 'line1'
+    > & {
+      prop?: string
+      showSubtitle?: boolean
+    }
+  >(),
+  {
+    showSubtitle: true,
+  }
+)
 </script>

@@ -127,6 +127,24 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
     await updateCoreProfile({ contact_phone: normalized ?? undefined })
   }
 
+  const setContactEmailFromProfile = async (enabled: boolean) => {
+    // TODO: cascade update info
+    // If enabled and the user's profile email changes, propagate it to any
+    // derived/contact surfaces that rely on this agent contact.
+    await updateCoreProfile({
+      contact_email_from_profile: enabled,
+      ...(enabled ? { contact_email: '' } : {}),
+    })
+  }
+
+  const setContactPhoneFromProfile = async (enabled: boolean) => {
+    // TODO: cascade update info
+    await updateCoreProfile({
+      contact_phone_from_profile: enabled,
+      ...(enabled ? { contact_phone: '' } : {}),
+    })
+  }
+
   const updateWebsiteUrl = async (value: string) => {
     const normalized = cleanString(value)
     await updateCoreProfile({ website_url: normalized ?? undefined })
@@ -162,6 +180,8 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
     updateBioShort,
     updateContactEmail,
     updateContactPhone,
+    setContactEmailFromProfile,
+    setContactPhoneFromProfile,
     updateWebsiteUrl,
     updateBadges,
   }

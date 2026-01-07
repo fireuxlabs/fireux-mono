@@ -33,17 +33,29 @@
           <MoleculesFormsFirestoreSimpleField
             label="Contact Email"
             :firebase-value="contactEmail"
-            placeholder="Ex: daniel@misebox.app"
+            :placeholder="contactEmailFromProfile ? (inheritedEmail || 'missing on profile') : 'Ex: daniel@misebox.app'"
             :maxlength="120"
-            :update-function="handleContactEmail"
+            :update-function="contactEmailFromProfile ? undefined : handleContactEmail"
+          />
+
+          <UCheckbox
+            :model-value="contactEmailFromProfile"
+            label="Same as from profile"
+            @update:model-value="handleContactEmailFromProfile"
           />
 
           <MoleculesFormsFirestoreSimpleField
             label="Contact Phone"
             :firebase-value="contactPhone"
-            placeholder="Optional"
+            :placeholder="contactPhoneFromProfile ? (inheritedPhone || 'missing on profile') : 'Optional'"
             :maxlength="60"
-            :update-function="handleContactPhone"
+            :update-function="contactPhoneFromProfile ? undefined : handleContactPhone"
+          />
+
+          <UCheckbox
+            :model-value="contactPhoneFromProfile"
+            label="Same as from profile"
+            @update:model-value="handleContactPhoneFromProfile"
           />
 
           <MoleculesFormsFirestoreSimpleField
@@ -75,6 +87,7 @@ import { useToast } from '#imports'
 import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
 import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentUpdate'
 import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 
 const props = defineProps<{ agent: AgentCore | null }>()
 
@@ -85,10 +98,14 @@ const {
   updateBioShort,
   updateContactEmail,
   updateContactPhone,
+  setContactEmailFromProfile,
+  setContactPhoneFromProfile,
   updateWebsiteUrl,
   updateBadges,
 } = useAgentUpdate()
 const { DisplayName } = useUserFormattingAndValidation()
+
+const { currentUser } = useUser()
 
 const toast = useToast()
 
@@ -102,6 +119,61 @@ const contactEmail = computed(() => agent.value?.contact_email ?? '')
 const contactPhone = computed(() => agent.value?.contact_phone ?? '')
 const websiteUrl = computed(() => agent.value?.website_url ?? '')
 const badges = computed(() => (agent.value?.badges ?? []).join(', '))
+
+const contactEmailFromProfile = computed(
+  () => Boolean(agent.value?.contact_email_from_profile)
+)
+const contactPhoneFromProfile = computed(
+  () => Boolean(agent.value?.contact_phone_from_profile)
+)
+
+const inheritedEmail = computed(() => currentUser.value?.email?.trim() || '')
+const inheritedPhone = computed(() => {
+  const raw = (currentUser.value as any)?.phone ?? (currentUser.value as any)?.phone_number ?? (currentUser.value as any)?.phoneNumber
+  return typeof raw === 'string' ? raw.trim() : ''
+})
+
+const handleContactEmailFromProfile = async (enabled: boolean) => {
+  if (!agent.value) return
+  try {
+    await setContactEmailFromProfile(enabled)
+    toast?.add({
+      title: enabled ? 'Contact email set to profile' : 'Contact email set to custom',
+      icon: 'i-heroicons-check-circle',
+    })
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast?.add({
+      title: 'Failed to update contact email mode',
+      description,
+      color: 'amber',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+    throw error
+  }
+}
+
+const handleContactPhoneFromProfile = async (enabled: boolean) => {
+  if (!agent.value) return
+  try {
+    await setContactPhoneFromProfile(enabled)
+    toast?.add({
+      title: enabled ? 'Contact phone set to profile' : 'Contact phone set to custom',
+      icon: 'i-heroicons-check-circle',
+    })
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast?.add({
+      title: 'Failed to update contact phone mode',
+      description,
+      color: 'amber',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+    throw error
+  }
+}
 
 const handleAgencyName = async (value: string) => {
   if (!agent.value) return 'success'

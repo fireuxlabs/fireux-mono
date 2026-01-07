@@ -21,13 +21,13 @@ const repoRoot = process.cwd()
 const argv = new Set(process.argv.slice(2))
 const deep = argv.has('--deep') || argv.has('--all')
 
+
 /**
- * Exact directory/file names that are considered build noise
- * and should NEVER exist at commit time.
+ * Directory/file names considered build noise.
+ * - .nuxt is only removed with --deep or --all (to avoid breaking dev server during normal clean)
  */
 const NUKE_NAMES = new Set([
   'dist',
-  '.nuxt',
   '.output',
   '.nitro',
   '.cache',
@@ -35,6 +35,8 @@ const NUKE_NAMES = new Set([
   '--port',
   '--clear',
 ])
+
+const NUKE_NAMES_DEEP = new Set(['.nuxt'])
 
 const NUKE_FILES = new Set([
   'tsconfig.tsbuildinfo',
@@ -61,14 +63,24 @@ function walk(dir) {
 
     if (SKIP_DIRS.has(name)) continue
 
-    // Remove known junk directories
+
+    // Remove known junk directories (always)
     if (entry.isDirectory() && NUKE_NAMES.has(name)) {
       rmSync(fullPath, { recursive: true, force: true })
-      console.log(`[clean] 🧹 removed ${path.relative(repoRoot, fullPath)}`)
+      console.log(`[clean] 9 removed ${path.relative(repoRoot, fullPath)}`)
       removedCount++
-      if (name === '.nuxt' || name === '.data' || name === '.output' || name === '.nitro') {
+      if (name === '.data' || name === '.output' || name === '.nitro') {
         removedNuxtArtifacts = true
       }
+      continue
+    }
+
+    // Remove .nuxt only in deep mode
+    if (entry.isDirectory() && NUKE_NAMES_DEEP.has(name) && deep) {
+      rmSync(fullPath, { recursive: true, force: true })
+      console.log(`[clean] 9 removed ${path.relative(repoRoot, fullPath)}`)
+      removedCount++
+      removedNuxtArtifacts = true
       continue
     }
 

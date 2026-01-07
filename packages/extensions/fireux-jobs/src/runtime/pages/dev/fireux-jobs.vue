@@ -167,8 +167,8 @@
             </template>
 
             <div class="space-y-4">
-              <OrganismsProfilesAgentCardsCell v-if="agentCard" :card="agentCard" />
-              <OrganismsProfilesAgentCardsPill v-if="agentCard" :card="agentCard" />
+              <OrganismsProfilesAgentCardsCell v-if="agentCard" v-bind="agentCard" />
+              <OrganismsProfilesAgentCardsPill v-if="agentCard" v-bind="agentCard" />
             </div>
           </UCard>
         </div>
@@ -200,7 +200,7 @@
             <OrganismsProfilesAgentCardsPill
               v-for="card in agentGlobalPills"
               :key="agentPillKey(card)"
-              :card="card"
+              v-bind="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -245,7 +245,7 @@
             <OrganismsProfilesAgentCardsPill
               v-for="card in agentLocalPills"
               :key="agentPillKey(card)"
-              :card="card"
+              v-bind="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">

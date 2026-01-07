@@ -6,6 +6,7 @@ type Ts = FirestoreTimestampOrString
 
 export type AppSocialPlatform =
   | 'website'
+  | 'email'
   | 'twitter'
   | 'linkedin'
   | 'github'

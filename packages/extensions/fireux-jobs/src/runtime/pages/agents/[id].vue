@@ -22,7 +22,7 @@
           </UButton>
         </div>
 
-        <OrganismsProfilesAgentCardsProfile v-if="agentCard" :card="agentCard" />
+        <OrganismsProfilesAgentCardsProfile v-if="agentCard" v-bind="agentCard" />
       </div>
     </div>
 

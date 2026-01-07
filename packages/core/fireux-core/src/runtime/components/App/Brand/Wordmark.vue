@@ -39,8 +39,8 @@ const isDark = computed(() => resolvedMode.value === 'dark')
 
 const resolvedSrc = computed(() =>
   isDark.value
-    ? (props.darkSrc?.trim() || '/img/app/wordmark-dark.png')
-    : (props.lightSrc?.trim() || '/img/app/wordmark-light.png')
+    ? (props.darkSrc?.trim() || '/img/core/brand/wordmark-dark.png')
+    : (props.lightSrc?.trim() || '/img/core/brand/wordmark-light.png')
 )
 
 const resolvedAlt = computed(() => {
