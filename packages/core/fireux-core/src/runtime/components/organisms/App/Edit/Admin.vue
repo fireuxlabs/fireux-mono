@@ -1,6 +1,6 @@
 <template>
   <template v-if="app">
-    <div class="fx-panels-masonry__item dashboard-item">
+    <div class="fx-panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsLockedConfig
         :app="app"
         :is-dev="isDev"
@@ -9,7 +9,7 @@
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item">
+    <div class="fx-panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsAbout
         :app="app"
         :handle-tagline-update="handleTaglineUpdate"
@@ -19,18 +19,18 @@
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item">
+    <div class="fx-panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsSurfaces :app-card="appCard" />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item">
+    <div class="fx-panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsSocial
         :app="app"
         :handle-update-social-links="handleUpdateSocialLinks"
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item">
+    <div class="fx-panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsJoinRequests
         :items="joinRequestItems"
         :on-approve="onApprove"
@@ -38,7 +38,7 @@
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item">
+    <div class="fx-panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsAdmins
         :rows="adminRows"
         :action-uid="adminActionUid"
@@ -47,18 +47,26 @@
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item">
+    <div class="fx-panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsTenantOverrides />
     </div>
   </template>
 
-  <MoleculesStateCard v-else entity="app settings" kind="document" loading />
+  <MoleculesStateCard
+    v-else-if="pending"
+    entity="app settings"
+    kind="document"
+    loading
+  />
+
+  <MoleculesStateCard v-else entity="app settings" kind="document" />
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { App } from '../../../../models/core/app.model'
 import type { User } from '../../../../models/core/user.model'
+import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useAppUsers } from '../../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
@@ -70,8 +78,11 @@ import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
 
 const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
 
-const appRef = computed(() => props.app)
+const { app: internalApp, pending: internalPending } = useApp()
+
+const appRef = computed(() => props.app ?? internalApp.value ?? null)
 const app = appRef
+const pending = computed(() => (props.app ? false : internalPending.value))
 
 const toast = useToastify()
 

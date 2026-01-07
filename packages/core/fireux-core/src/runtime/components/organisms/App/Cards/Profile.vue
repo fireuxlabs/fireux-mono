@@ -1,6 +1,6 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Profile.vue -->
 <template>
-  <UCard class="fx-card fx-card--profile">
+  <UCard class="fx-card">
     <template #header>
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-start gap-3 min-w-0">
@@ -11,7 +11,7 @@
           </div>
         </div>
 
-        <div v-if="showWordmark && (wordmarkLight || wordmarkDark || wordmark)" class="shrink-0">
+        <div v-if="showWordmark && (wordmarkLight || wordmarkDark)" class="shrink-0">
           <AppBrandWordmark
             size="small"
             :light-src="wordmarkLight"
@@ -57,7 +57,8 @@
           >
             {{ badge }}
           </UBadge>
-          <span v-if="id" class="text-xs text-dimmed font-mono">
+
+          <span v-if="id" class="text-xs text-dimmed font-mono break-all">
             {{ id }}
           </span>
         </div>
@@ -74,7 +75,7 @@
       <div v-if="showDetails" class="rounded border p-4 space-y-3">
         <div class="flex items-center justify-between gap-3">
           <div class="text-xs text-dimmed">App ID</div>
-          <div class="text-sm font-mono">
+          <div class="text-sm font-mono break-all">
             <span v-if="app?.id">{{ app.id }}</span>
             <span v-else class="text-dimmed">missing</span>
           </div>
@@ -92,22 +93,19 @@
           <div class="text-xs text-dimmed">Socials</div>
           <div class="flex flex-wrap justify-end gap-2">
             <a
-              v-for="link in socialLinkItems"
-              :key="link.platform"
-              :href="link.url"
+              v-for="item in socialItems"
+              :key="item.platform"
+              :href="item.url"
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center"
-              :title="link.platform"
-              :aria-label="link.platform"
+              :title="item.platform"
+              :aria-label="item.platform"
             >
-              <Icon
-                :name="iconForPlatform(link.platform)"
-                mode="svg"
-                class="size-5"
-              />
+              <Icon :name="item.icon" mode="svg" class="size-5" />
             </a>
-            <span v-if="!socialLinkItems.length" class="text-sm text-dimmed italic">
+
+            <span v-if="!socialItems.length" class="text-sm text-dimmed italic">
               missing
             </span>
           </div>
@@ -118,9 +116,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from '#imports'
 import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import AppBrandWordmark from '../../../App/Brand/Wordmark.vue'
+import { useSocialLinks } from '../../../../composables/fireux/app/ui/useSocialLinks'
 
 const props = withDefaults(
   defineProps<
@@ -132,7 +131,6 @@ const props = withDefaults(
         | 'role'
         | 'userCount'
         | 'tagline'
-        | 'wordmark'
         | 'wordmarkLight'
         | 'wordmarkDark'
         | 'avatar'
@@ -161,47 +159,6 @@ const props = withDefaults(
   }
 )
 
-const iconForPlatform = (platform: string) => {
-  const map: Record<string, string> = {
-    website: 'heroicons:globe-alt',
-    twitter: 'simple-icons:x',
-    linkedin: 'skill-icons:linkedin',
-    github: 'skill-icons:github-dark',
-    instagram: 'skill-icons:instagram',
-    facebook: 'logos:facebook',
-    youtube: 'logos:youtube-icon',
-  }
-  return map[platform] || 'heroicons:link'
-}
-
-const toSocialUrl = (platform: string, value: string) => {
-  const trimmed = (value || '').trim()
-  if (!trimmed) return ''
-  if (/^https?:\/\//i.test(trimmed)) return trimmed
-
-  const base: Record<string, string> = {
-    website: 'http://',
-    twitter: 'https://x.com/',
-    linkedin: 'https://www.linkedin.com/',
-    github: 'https://github.com/',
-    instagram: 'https://instagram.com/',
-    facebook: 'https://facebook.com/',
-    youtube: 'https://youtube.com/',
-  }
-
-  const prefix = base[platform] || ''
-  const suffix = trimmed.replace(/^\/+/, '')
-  return `${prefix}${suffix}`
-}
-
-const socialLinkItems = computed(() => {
-  const socials = props.socialLinks || {}
-  return Object.entries(socials)
-    .map(([platform, raw]) => {
-      const url = toSocialUrl(platform, String(raw || ''))
-      if (!url) return null
-      return { platform, url }
-    })
-    .filter((x): x is { platform: string; url: string } => Boolean(x))
-})
+const { toItems } = useSocialLinks()
+const socialItems = computed(() => toItems(props.socialLinks))
 </script>

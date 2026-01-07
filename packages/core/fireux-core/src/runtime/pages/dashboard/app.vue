@@ -7,18 +7,27 @@
 
     <template #body>
       <div class="fx-panels-stack">
+        <!-- Header pills -->
         <div class="flex flex-wrap items-center gap-2">
           <OrganismsAppCardsPill
-            v-if="!pending && app"
-            v-bind="{ ...card(app), subtitle: '' }"
+            v-if="appCard"
+            v-bind="appCard"
+            :show-subtitle="false"
           />
-          <OrganismsUserCardsPill v-bind="{ ...userCardSafe(user), subtitle: '' }" />
+
+          <OrganismsUserCardsPill
+            v-if="userCard"
+            v-bind="userCard"
+            :show-subtitle="false"
+          />
         </div>
 
+        <!-- Loading -->
         <UPageCard v-if="pending" variant="subtle">
           <p class="text-sm text-dimmed">Loading app…</p>
         </UPageCard>
 
+        <!-- Missing app -->
         <UPageCard
           v-else-if="!app"
           title="App not available"
@@ -28,14 +37,17 @@
           <UButton to="/" label="Go to Home" variant="soft" class="w-fit" />
         </UPageCard>
 
+        <!-- Main panels -->
         <div v-else class="fx-panels-masonry">
-          <div class="fx-panels-masonry__item">
+          <div class="fx-panels-masonry__item mb-10">
             <OrganismsAppCardsProfile
-              v-bind="card(app)"
+              v-if="appCard"
+              v-bind="appCard"
               :app="app"
             />
           </div>
-          <OrganismsAppEditAdmin :app="app" />
+
+          <OrganismsAppEditAdmin />
         </div>
       </div>
     </template>
@@ -43,25 +55,16 @@
 </template>
 
 <script setup lang="ts">
-import { definePageMeta } from '#imports'
+import { computed, definePageMeta } from '#imports'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
-const { app, pending, card } = useApp()
-const { user, card: userCard } = useUser()
+const { app, pending, card: appToCard } = useApp()
+const { user, card: userToCard } = useUser()
 
-const safeUserPill = (() => {
-  const fallback = {
-    to: '',
-    avatar: '',
-    title: 'User',
-    subtitle: '',
-    badges: [],
-  }
-
-  return user.value ? userCard(user.value) ?? fallback : fallback
-})()
-
+// Reactive mapping lives in the consumer (simple + explicit)
+const appCard = computed(() => appToCard(app.value))
+const userCard = computed(() => userToCard(user.value))
 
 definePageMeta({
   layout: 'dashboard',

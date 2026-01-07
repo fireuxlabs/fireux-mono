@@ -128,7 +128,7 @@ body {
 
 	.fx-panels-masonry {
 		columns: 1;
-		column-gap: 2rem;
+		column-gap: 2.5rem;
 	}
 
 	@media (min-width: 768px) {
@@ -139,7 +139,7 @@ body {
 
 	.fx-panels-masonry__item {
 		break-inside: avoid;
-		margin-bottom: 2rem;
+		margin-bottom: 2.5rem;
 	}
 
 	.fx-panels-masonry > * {
@@ -148,7 +148,7 @@ body {
 		break-inside: avoid;
 		page-break-inside: avoid;
 		-webkit-column-break-inside: avoid;
-		margin-bottom: 2rem;
+		margin-bottom: 2.5rem;
 	}
 
 	/* Shared field surface (matches SimpleField display blocks) */

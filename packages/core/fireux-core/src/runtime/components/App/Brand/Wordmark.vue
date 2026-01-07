@@ -18,8 +18,6 @@ import { useAttrs } from 'vue'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useResolvedColorMode } from '../../../composables/fireux/app/useColorMode'
 
-defineOptions({ inheritAttrs: false })
-
 type BrandSize = 'card' | 'small' | 'medium' | 'large' | 'hero'
 
 type Props = {

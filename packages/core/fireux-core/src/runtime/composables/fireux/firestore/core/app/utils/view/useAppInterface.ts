@@ -2,7 +2,6 @@
 
 import type { Ref } from 'vue'
 import type { App, AppSocialLinks } from '../../../../../../../models/core/app.model'
-import { computed } from '#imports'
 import { useResolvedColorMode } from '../../../../../app/useColorMode'
 
 export namespace AppCard {
@@ -10,7 +9,7 @@ export namespace AppCard {
     id: string
     to: string
 
-    // media is optional in the model, so it’s optional in the DTO
+    // Media (optional in model → optional in DTO)
     avatar?: string
 
     title: string
@@ -26,12 +25,11 @@ export namespace AppCard {
     shortBio: string
     longBio: string
 
-    // media is optional in the model, so it’s optional in the DTO
     logo?: string
     wordmarkLight?: string
     wordmarkDark?: string
 
-    // resolved wordmark can be empty-string if none exists
+    // Always safe to render (empty string if none)
     wordmark: string
 
     socialLinks: AppSocialLinks
@@ -40,12 +38,11 @@ export namespace AppCard {
 
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   const resolvedMode = useResolvedColorMode()
-  const prefersLightWordmark = computed(() => resolvedMode.value === 'dark')
 
-  const resolveWordmark = (app: App) => {
-    // On dark backgrounds, we want the light wordmark (and vice versa).
-    const src = prefersLightWordmark.value ? app.wordmark_light_url : app.wordmark_dark_url
-    return src ?? ''
+  function resolveWordmark(app: App): string {
+    return resolvedMode.value === 'dark'
+      ? app.wordmark_light_url ?? ''
+      : app.wordmark_dark_url ?? ''
   }
 
   function map(app: App): AppCard.Card {
@@ -53,7 +50,6 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       id: app.id,
       to: `/apps/${app.id}`,
 
-      // prefer thumbnail_url, then legacy avatar_url
       avatar: app.thumbnail_url ?? app.avatar_url,
 
       title: app.app_name,
@@ -78,9 +74,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     }
   }
 
-  function card(target: App): AppCard.Card
-  function card(target?: App | null | undefined): AppCard.Card | null
-  function card(target?: App | null | undefined): AppCard.Card | null {
+  function card(target?: App | null): AppCard.Card | null {
     const app = target ?? appRef?.value
     return app ? map(app) : null
   }

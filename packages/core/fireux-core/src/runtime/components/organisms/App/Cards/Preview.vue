@@ -1,6 +1,6 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Preview.vue -->
 <template>
-  <UCard class="fx-card fx-card--preview">
+  <UCard class="fx-card">
     <template #header>
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-start gap-3 min-w-0">
@@ -11,7 +11,7 @@
           </div>
         </div>
 
-        <div v-if="showWordmark && (wordmarkLight || wordmarkDark || wordmark)" class="shrink-0">
+        <div v-if="showWordmark && (wordmarkLight || wordmarkDark)" class="shrink-0">
           <AppBrandWordmark
             size="small"
             :light-src="wordmarkLight"
@@ -48,7 +48,7 @@
         </div>
 
         <div v-if="id" class="text-xs text-dimmed">
-          <span class="font-mono">{{ id }}</span>
+          <span class="font-mono break-all">{{ id }}</span>
         </div>
 
         <UBadge
@@ -63,9 +63,9 @@
         </UBadge>
       </div>
 
-      <div v-if="showSocials && socialIconItems.length" class="flex flex-wrap items-center gap-2">
+      <div v-if="showSocials && socialItems.length" class="flex flex-wrap items-center gap-2">
         <a
-          v-for="item in socialIconItems"
+          v-for="item in socialItems"
           :key="item.platform"
           :href="item.url"
           target="_blank"
@@ -82,8 +82,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from '#imports'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import AppBrandWordmark from '../../../App/Brand/Wordmark.vue'
+import { useSocialLinks } from '../../../../composables/fireux/app/ui/useSocialLinks'
 
 const props = withDefaults(
   defineProps<
@@ -97,7 +98,6 @@ const props = withDefaults(
       | 'badges'
       | 'tagline'
       | 'userCount'
-      | 'wordmark'
       | 'wordmarkLight'
       | 'wordmarkDark'
       | 'socialLinks'
@@ -120,47 +120,6 @@ const props = withDefaults(
   }
 )
 
-const iconForPlatform = (platform: string) => {
-  const map: Record<string, string> = {
-    website: 'heroicons:globe-alt',
-    twitter: 'simple-icons:x',
-    linkedin: 'skill-icons:linkedin',
-    github: 'skill-icons:github-dark',
-    instagram: 'skill-icons:instagram',
-    facebook: 'logos:facebook',
-    youtube: 'logos:youtube-icon',
-  }
-  return map[platform] || 'heroicons:link'
-}
-
-const toSocialUrl = (platform: string, value: string) => {
-  const trimmed = (value || '').trim()
-  if (!trimmed) return ''
-  if (/^https?:\/\//i.test(trimmed)) return trimmed
-
-  const base: Record<string, string> = {
-    website: 'http://',
-    twitter: 'https://x.com/',
-    linkedin: 'https://www.linkedin.com/',
-    github: 'https://github.com/',
-    instagram: 'https://instagram.com/',
-    facebook: 'https://facebook.com/',
-    youtube: 'https://youtube.com/',
-  }
-
-  const prefix = base[platform] || ''
-  const suffix = trimmed.replace(/^\/+/, '')
-  return `${prefix}${suffix}`
-}
-
-const socialIconItems = computed(() => {
-  const socials = props.socialLinks || {}
-  return Object.entries(socials)
-    .map(([platform, raw]) => {
-      const url = toSocialUrl(platform, String(raw || ''))
-      if (!url) return null
-      return { platform, url, icon: iconForPlatform(platform) }
-    })
-    .filter((x): x is { platform: string; url: string; icon: string } => Boolean(x))
-})
+const { toItems } = useSocialLinks()
+const socialItems = computed(() => toItems(props.socialLinks))
 </script>

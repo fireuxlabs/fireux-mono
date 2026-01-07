@@ -37,7 +37,5 @@
 <script setup lang="ts">
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-defineOptions({ inheritAttrs: false })
-
 defineProps<Pick<UserCard.Card, 'to' | 'avatar' | 'title' | 'subtitle' | 'badges' | 'line1'> & { prop?: string }>()
 </script>
