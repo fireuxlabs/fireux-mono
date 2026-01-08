@@ -1,11 +1,12 @@
 <template>
   <ClientOnly>
     <img
-      v-bind="attrs"
+      v-if="resolvedSrc"
+      v-bind="$attrs"
       :src="resolvedSrc"
-      :alt="resolvedAlt"
+      :alt="alt"
       class="fx-brand-wordmark"
-      :class="sizeClass"
+      :class="`fx-brand-wordmark--${size}`"
       loading="lazy"
       decoding="async"
     />
@@ -13,9 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from '#imports'
-import { useAttrs } from 'vue'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { computed } from 'vue'
 import { useResolvedColorMode } from '../../../composables/fireux/app/useColorMode'
 
 type BrandSize = 'card' | 'small' | 'medium' | 'large' | 'hero'
@@ -24,39 +23,27 @@ type Props = {
   size?: BrandSize
   lightSrc?: string
   darkSrc?: string
+  alt?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: 'medium',
+  alt: 'App logo',
 })
 
-const attrs = useAttrs()
-
-const cfg = useFireUXConfig()
+const size = computed<BrandSize>(() => props.size)
 
 const resolvedMode = useResolvedColorMode()
+
 const isDark = computed(() => resolvedMode.value === 'dark')
 
-const resolvedSrc = computed(() =>
-  isDark.value
-    ? (props.darkSrc?.trim() || '/img/core/brand/wordmark-dark.png')
-    : (props.lightSrc?.trim() || '/img/core/brand/wordmark-light.png')
-)
+const alt = computed(() => (props.alt || '').trim() || 'App logo')
 
-const resolvedAlt = computed(() => {
-  const appName = cfg.appName?.trim()
-  return appName ? `${appName} logo` : 'App logo'
+const resolvedSrc = computed(() => {
+  const raw = isDark.value ? props.darkSrc : props.lightSrc
+  return typeof raw === 'string' ? raw.trim() : ''
 })
 
-const sizeClass = computed(() => {
-  return {
-    'fx-brand-wordmark--card': props.size === 'card',
-    'fx-brand-wordmark--small': props.size === 'small',
-    'fx-brand-wordmark--medium': props.size === 'medium',
-    'fx-brand-wordmark--large': props.size === 'large',
-    'fx-brand-wordmark--hero': props.size === 'hero',
-  }
-})
 </script>
 
 <style scoped>

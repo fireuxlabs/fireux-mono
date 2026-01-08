@@ -2,10 +2,11 @@
 <template>
   <section class="auth-card">
     <div class="auth-logo" aria-label="Brand wordmark">
-      <img
-        :src="brandWordmark"
-        :alt="`${ecosystemLabel} wordmark`"
+      <AppBrandWordmark
+        size="large"
         class="auth-logo__img"
+        light-src="/img/app/wordmark-light.png"
+        dark-src="/img/app/wordmark-dark.png"
       />
     </div>
     <template v-if="isAuthenticated">
@@ -68,12 +69,6 @@ const providerLoading = ref(false)
 
 const config = useFireUXConfig()
 const ecosystemLabel = config.ecosystem
-
-const brandWordmark = computed(() =>
-  isDarkMode.value
-    ? '/img/core/brand/wordmark-dark.png'
-    : '/img/core/brand/wordmark-light.png'
-)
 
 const colorMode = useColorMode()
 const isDarkMode = computed(() => colorMode.value === 'dark')

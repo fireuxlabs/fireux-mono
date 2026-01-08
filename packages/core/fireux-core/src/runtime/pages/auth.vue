@@ -8,10 +8,11 @@
             :alt="`${appName} icon`"
             class="tenant-brand__icon"
           />
-          <img
-            :src="tenantWordmark"
-            :alt="`${appName} wordmark`"
+          <AppBrandWordmark
+            size="large"
             class="tenant-brand__wordmark"
+            light-src="/img/app/wordmark-light.png"
+            dark-src="/img/app/wordmark-dark.png"
           />
         </div>
       </section>
@@ -24,21 +25,14 @@
 <script setup lang="ts">
 import { computed, definePageMeta } from '#imports'
 import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
-import { useColorMode } from '../composables/fireux/app/useColorMode'
 
 definePageMeta({
   layout: 'auth'
 })
 
-const colorMode = useColorMode()
 const { appName, isTenant } = useFireUXConfig()
 
 const tenantIcon = '/img/app/logo.png'
-const tenantWordmark = computed(() =>
-  colorMode.value === 'dark'
-    ? '/img/core/brand/wordmark-dark.png'
-    : '/img/core/brand/wordmark-light.png'
-)
 
 </script>
 

@@ -4,7 +4,11 @@
     <UContainer>
       <div class="flex w-full flex-col items-center gap-6">
         <div class="flex flex-col items-center gap-4 text-center">
-          <AppBrandWordmark size="medium" />
+          <AppBrandWordmark
+            size="medium"
+            light-src="/img/app/wordmark-light.png"
+            dark-src="/img/app/wordmark-dark.png"
+          />
           <p class="text-sm text-gray-600">
             &copy; {{ new Date().getFullYear() }} FIReUX. All rights reserved.
           </p>
