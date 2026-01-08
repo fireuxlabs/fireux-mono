@@ -24,10 +24,18 @@
       <OrganismsAppCardsCell v-bind="item" />
     </article>
   </div>
+
+  <DevJsonPanel
+    v-if="devMode"
+    class="mt-3"
+    title="Dev · App Collection"
+    :data="{ variant, count: cards.length, cards }"
+  />
 </template>
 
 <script setup lang="ts">
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 
 withDefaults(
   defineProps<{
@@ -38,4 +46,6 @@ withDefaults(
     variant: 'pill',
   }
 )
+
+const { devMode } = useFireUXConfig()
 </script>

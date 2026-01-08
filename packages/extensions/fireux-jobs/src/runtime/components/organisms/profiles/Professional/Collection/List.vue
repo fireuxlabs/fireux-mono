@@ -39,10 +39,18 @@
       :card="item"
     />
   </div>
+
+  <DevJsonPanel
+    v-if="devMode"
+    class="mt-3"
+    title="Dev · Professional Collection"
+    :data="{ variant, count: cards.length, cards }"
+  />
 </template>
 
 <script setup lang="ts">
 import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 
 withDefaults(
   defineProps<{
@@ -53,4 +61,6 @@ withDefaults(
     variant: 'pill',
   }
 )
+
+const { devMode } = useFireUXConfig()
 </script>

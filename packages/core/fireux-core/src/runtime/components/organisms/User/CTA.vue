@@ -8,7 +8,7 @@
     <template #default>
       <OrganismsUserCardsPreview
         v-if="isResolved && isInitialized && currentUser"
-        :card="card(currentUser)"
+        v-bind="card(currentUser)"
       />
       <OrganismsUserCreateSystem v-else />
     </template>

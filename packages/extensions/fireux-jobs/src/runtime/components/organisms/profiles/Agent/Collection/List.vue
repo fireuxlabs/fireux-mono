@@ -27,10 +27,18 @@
   <div v-else class="space-y-3">
     <OrganismsProfilesAgentCardsProfile v-for="item in cards" :key="item.to" v-bind="item" />
   </div>
+
+  <DevJsonPanel
+    v-if="devMode"
+    class="mt-3"
+    title="Dev · Agent Collection"
+    :data="{ variant, count: cards.length, cards }"
+  />
 </template>
 
 <script setup lang="ts">
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 
 withDefaults(
   defineProps<{
@@ -41,4 +49,6 @@ withDefaults(
     variant: 'pill',
   }
 )
+
+const { devMode } = useFireUXConfig()
 </script>

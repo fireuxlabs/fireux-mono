@@ -1,6 +1,22 @@
 <template>
   <div class="space-y-2">
-    <OrganismsProfilesChefSectionsLocalCollection v-if="isTenant" />
+    <UCard v-if="isTenant">
+      <template #header>
+        <div class="flex items-center justify-between gap-2">
+          <h2>App chefs</h2>
+          <UBadge variant="soft">{{ localTotal }} total</UBadge>
+        </div>
+        <p class="text-sm opacity-70">Chefs scoped to this tenant application.</p>
+      </template>
+
+      <OrganismsProfilesChefCollectionList
+        v-if="localCards.length"
+        :cards="localCards"
+        variant="pill"
+      />
+
+      <p v-else class="text-sm opacity-70">No tenant-scoped chefs found.</p>
+    </UCard>
 
     <section class="space-y-2">
       <div v-if="isTenant" class="flex items-center justify-end">
@@ -9,17 +25,78 @@
         </UButton>
       </div>
 
-      <OrganismsProfilesChefSectionsGlobalCollection
-        v-if="showGlobalDirectory || !isTenant"
-      />
+      <UCard v-if="showGlobalDirectory || !isTenant">
+        <template #header>
+          <div class="flex items-center justify-between gap-2">
+            <h2>Global chefs</h2>
+            <UBadge variant="soft">{{ globalTotal }} total</UBadge>
+          </div>
+          <p class="text-sm opacity-70">Chefs available across the FireUX network.</p>
+        </template>
+
+        <OrganismsProfilesChefCollectionList
+          v-if="globalCards.length"
+          :cards="globalCards"
+          variant="pill"
+        />
+
+        <p v-else class="text-sm opacity-70">No global chefs found.</p>
+      </UCard>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model.ts'
+import { useChefCollection } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'
+import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
+import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
 
 const { isTenant } = useFireUXConfig()
 const showGlobalDirectory = ref(!isTenant)
+
+const { globalChefs, localChefs } = useChefCollection()
+const { card } = useChef()
+
+type DirectoryEntry = {
+  key: string
+  card: ChefCard.Card
+  raw: ChefCore
+}
+
+const globalDirectoryEntries = computed<DirectoryEntry[]>(() => {
+  const list = globalChefs.value ?? []
+  if (!list.length) return []
+
+  return list
+    .filter((entry: unknown): entry is ChefCore => Boolean((entry as ChefCore | undefined)?.id))
+    .map((entry: ChefCore) => {
+      const payload = card(entry)
+      if (!payload) return null
+      return { key: entry.id, card: payload, raw: entry }
+    })
+    .filter((entry): entry is DirectoryEntry => Boolean(entry))
+})
+
+const localDirectoryEntries = computed<DirectoryEntry[]>(() => {
+  const list = localChefs?.value ?? []
+  if (!list.length) return []
+
+  return list
+    .filter((entry: unknown): entry is ChefCore => Boolean((entry as ChefCore | undefined)?.id))
+    .map((entry: ChefCore) => {
+      const payload = card(entry)
+      if (!payload) return null
+      return { key: entry.id, card: payload, raw: entry }
+    })
+    .filter((entry): entry is DirectoryEntry => Boolean(entry))
+})
+
+const globalCards = computed(() => globalDirectoryEntries.value.map((e) => e.card))
+const localCards = computed(() => localDirectoryEntries.value.map((e) => e.card))
+
+const globalTotal = computed(() => globalDirectoryEntries.value.length)
+const localTotal = computed(() => localDirectoryEntries.value.length)
 </script>

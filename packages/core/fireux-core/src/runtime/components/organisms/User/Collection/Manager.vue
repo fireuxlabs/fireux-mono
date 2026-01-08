@@ -1,23 +1,22 @@
 <template>
-  <slot
-    v-if="hasDefaultSlot"
-    :directory-entries="directoryEntries"
-    :collection-title="collectionTitle"
-    :global-badge-label="globalBadgeLabel"
-  />
-
-  <UCard v-else class="fx-section">
+  <UCard class="fx-section">
     <template #header>
       <div class="fx-section__header">
         <div class="fx-section__copy">
-          <h2 class="text-base font-semibold">{{ collectionTitle }}</h2>
+          <h2 class="text-base font-semibold">Users</h2>
           <p class="text-xs text-gray-500">
-            Streaming the canonical <code>/users</code> collection for this
-            runtime.
+            {{ scopeCopy }}
           </p>
         </div>
 
         <div class="flex items-center gap-2">
+          <UInput
+            v-model="query"
+            size="xs"
+            placeholder="Search users…"
+            class="w-44"
+          />
+
           <UButton
             v-if="isTenant"
             size="xs"
@@ -26,25 +25,26 @@
           >
             {{ showGlobalDirectory ? 'Hide global directory' : 'View global directory' }}
           </UButton>
-          <UBadge variant="soft">{{ globalBadgeLabel }}</UBadge>
+
+          <UButton size="xs" variant="ghost" @click="toggleVariant">
+            {{ variant === 'pill' ? 'Cells' : 'Pills' }}
+          </UButton>
+
+          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
         </div>
       </div>
     </template>
 
     <template v-if="!isTenant || showGlobalDirectory">
-      <div v-if="directoryEntries.length" class="space-y-4">
-        <div class="space-y-2">
-          <p class="text-xs text-gray-500">Pills</p>
-          <OrganismsUserCollectionList :cards="cards" variant="pill" />
-        </div>
+      <OrganismsUserCollectionList
+        v-if="cards.length"
+        :cards="cards"
+        :variant="variant"
+      />
 
-        <div class="space-y-2">
-          <p class="text-xs text-gray-500">Cells</p>
-          <OrganismsUserCollectionList :cards="cards" variant="cell" />
-        </div>
-      </div>
-
-      <p v-else class="fx-section__empty">No users found.</p>
+      <p v-else class="fx-section__empty">
+        {{ query ? 'No users match your search.' : 'No users found.' }}
+      </p>
     </template>
 
     <p v-else class="fx-section__empty">Global directory hidden.</p>
@@ -52,21 +52,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useSlots } from 'vue'
-import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
+import { computed, ref } from 'vue'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useGlobalUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
 import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import type { User } from '../../../../models/core/user.model'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-const slots = useSlots()
-const hasDefaultSlot = computed(() => Boolean(slots.default))
-
-const { firestoreFetchCollection } = useFirestoreRead()
-const { appName, appId, isTenant } = useFireUXConfig()
+const { appId, appName, ecosystem, isTenant } = useFireUXConfig()
 const showGlobalDirectory = ref(!isTenant)
-const globalUsers = firestoreFetchCollection<User>('users')
+const { users, count: totalCount } = useGlobalUserCollection()
 const { card } = useUserInterface()
+
+const scopeCopy = computed(() => {
+  if (isTenant) return `Browse users available to ${appName}.`
+  return `Browse users in the ${ecosystem} ecosystem directory.`
+})
+
+const query = ref('')
+
+const variant = ref<'pill' | 'cell'>('pill')
+const toggleVariant = () => {
+  variant.value = variant.value === 'pill' ? 'cell' : 'pill'
+}
 
 type DirectoryEntry = {
   key: string
@@ -77,13 +85,29 @@ type DirectoryEntry = {
 const inferRole = (entry: User): 'admin' | 'user' | undefined => {
   const activeAppId = appId?.trim()
   if (!activeAppId) return undefined
-  if (entry.adminOf?.some((id) => id === activeAppId)) return 'admin'
-  if (entry.userOf?.some((id) => id === activeAppId)) return 'user'
+  if (Array.isArray(entry.adminOf) && entry.adminOf.some((id) => id === activeAppId)) return 'admin'
+  if (Array.isArray(entry.userOf) && entry.userOf.some((id) => id === activeAppId)) return 'user'
   return undefined
 }
 
+const normalizedUsers = computed<User[]>(() => users.value ?? [])
+
+const visibleUsers = computed<User[]>(() => {
+  const q = query.value.trim().toLowerCase()
+  if (!q) return normalizedUsers.value
+
+  return normalizedUsers.value.filter((user) => {
+    const name = (user.display_name ?? '').toLowerCase()
+    const handle = (user.handle ?? '').toLowerCase()
+    const id = (user.id ?? '').toLowerCase()
+    return name.includes(q) || handle.includes(q) || id.includes(q)
+  })
+})
+
+const visibleCount = computed(() => visibleUsers.value.length)
+
 const directoryEntries = computed<DirectoryEntry[]>(() => {
-  const list = globalUsers.value ?? []
+  const list = visibleUsers.value ?? []
   if (!list.length) return []
 
   return list
@@ -92,6 +116,7 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
       const role = inferRole(entry)
 
       const payload = card(entry)
+      if (!payload) return null
       const badges = role === 'admin' ? ['Admin'] : []
 
       return {
@@ -104,18 +129,4 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
 })
 
 const cards = computed(() => directoryEntries.value.map((entry) => entry.card))
-
-const totalUsers = computed(() => globalUsers.value?.length ?? 0)
-const runtimeLabel = computed(() => appName?.trim() || 'Global')
-const collectionTitle = computed(() =>
-  isTenant ? 'Global Users' : `${runtimeLabel.value} Users`
-)
-const badgeRuntimeLabel = computed(() =>
-  isTenant ? 'Global' : runtimeLabel.value
-)
-const globalBadgeLabel = computed(() => {
-  const count = totalUsers.value
-  const suffix = count === 1 ? 'user' : 'users'
-  return `${count} ${suffix} · ${badgeRuntimeLabel.value}`
-})
 </script>

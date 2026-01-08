@@ -3,7 +3,7 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsUserCardsProfile :card="userCard" />
+      <OrganismsUserCardsProfile v-bind="userCard" />
     </UPageBody>
   </UPage>
 </template>

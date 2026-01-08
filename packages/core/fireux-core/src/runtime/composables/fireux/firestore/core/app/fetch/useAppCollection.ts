@@ -6,5 +6,8 @@ export function useAppCollection() {
   const { firestoreFetchCollection } = useFirestoreRead()
   const source = firestoreFetchCollection<App>('apps')
   const apps = computed(() => source.value ?? [])
-  return { apps }
+
+  const count = computed(() => apps.value?.length ?? 0)
+
+  return { apps, count }
 }

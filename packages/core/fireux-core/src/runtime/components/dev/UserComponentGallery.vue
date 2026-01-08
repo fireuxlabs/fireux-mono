@@ -39,7 +39,7 @@
         </template>
         <OrganismsUserCardsCell v-if="card" v-bind="card" />
         <p class="text-xs text-gray-500 dark:text-gray-400">
-          Cell variant surfaces handles, emails, and membership metadata.
+          Cell variant surfaces compact user metadata.
         </p>
       </UCard>
     </div>

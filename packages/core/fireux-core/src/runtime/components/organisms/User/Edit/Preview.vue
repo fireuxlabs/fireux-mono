@@ -1,7 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/Edit/Preview.vue -->
 <template>
   <ClientOnly>
-    <OrganismsUserCardsPreview v-if="currentUser" :card="card(currentUser)" :compact="false" />
+    <OrganismsUserCardsPreview v-if="currentUser" v-bind="card(currentUser)" />
   </ClientOnly>
 </template>
 

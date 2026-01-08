@@ -1,7 +1,7 @@
 <template>
   <NuxtLink :to="to" class="fx-card fx-card--cell">
     <div class="fx-card__media">
-      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar :src="avatarUrl" :alt="displayName" size="sm" />
 
       <div class="fx-card__content fx-card__stack">
         <div class="fx-card__header">
@@ -26,8 +26,10 @@
         </div>
 
         <div class="fx-card__tagline">
-          <span v-if="prop || bio">{{ prop || bio }}</span>
-          <span v-else class="italic">missing</span>
+          <span v-if="prop">{{ prop }}</span>
+          <span v-else-if="profiles.length && apps">{{ profiles.join(', ') }} · {{ apps }}</span>
+          <span v-else-if="profiles.length">{{ profiles.join(', ') }}</span>
+          <span v-else-if="apps">{{ apps }}</span>
         </div>
       </div>
     </div>
@@ -38,7 +40,10 @@
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 defineProps<
-  Pick<UserCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'bio'> & {
+  Pick<
+    UserCard.Card,
+    'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles' | 'apps'
+  > & {
     prop?: string
   }
 >()

@@ -43,7 +43,7 @@
             <template #preview>
               <OrganismsUserCardsProfile
                 v-if="resolvedUser"
-                :card="card(resolvedUser)"
+                v-bind="card(resolvedUser)"
                 :user="resolvedUser"
               />
             </template>

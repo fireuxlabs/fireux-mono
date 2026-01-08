@@ -7,7 +7,7 @@
     <OrganismsUserCardsPreview
       v-for="item in cards"
       :key="item.to"
-      :card="item"
+      v-bind="item"
     />
   </div>
 
@@ -15,7 +15,7 @@
     <OrganismsUserCardsProfile
       v-for="item in cards"
       :key="item.to"
-      :card="item"
+      v-bind="item"
     />
   </div>
 
@@ -24,10 +24,18 @@
       <OrganismsUserCardsCell v-bind="item" />
     </article>
   </div>
+
+  <DevJsonPanel
+    v-if="devMode"
+    class="mt-3"
+    title="Dev · User Collection"
+    :data="{ variant, count: cards.length, cards }"
+  />
 </template>
 
 <script setup lang="ts">
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 
 withDefaults(
   defineProps<{
@@ -38,4 +46,6 @@ withDefaults(
     variant: 'pill',
   }
 )
+
+const { devMode } = useFireUXConfig()
 </script>
