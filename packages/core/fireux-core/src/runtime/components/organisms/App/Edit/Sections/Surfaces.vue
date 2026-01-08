@@ -23,7 +23,7 @@
         <div class="mb-2">
           <UBadge size="xs" variant="soft" color="neutral">Preview</UBadge>
         </div>
-        <OrganismsAppCardsPreview v-bind="appCard" />
+        <OrganismsAppCardsPreview :card="appCard" />
       </div>
     </div>
 

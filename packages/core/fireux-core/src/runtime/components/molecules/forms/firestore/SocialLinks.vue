@@ -83,12 +83,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import type { PropType } from 'vue'
-import type { AppSocialLinks } from '../../../../models/core/app.model'
+import { createEmptyAppSocialLinks, type AppSocialLinks } from '../../../../models/core/app.model'
 
 type SocialLinks = AppSocialLinks
 
 const props = defineProps({
-  firebaseValue: { type: Object as PropType<SocialLinks>, default: () => ({}) },
+  firebaseValue: {
+    type: Object as PropType<SocialLinks>,
+    default: () => createEmptyAppSocialLinks(),
+  },
   updateFunction: { type: Function, required: true },
 })
 
@@ -332,11 +335,13 @@ function cancelPlatform(platform: SocialPlatform) {
 async function savePlatform(platform: SocialPlatform) {
   try {
     const raw = String(draft.value[platform] ?? '')
-    const next: SocialLinks = { ...(props.firebaseValue || {}) }
+    const next: SocialLinks = {
+      ...createEmptyAppSocialLinks(),
+      ...(props.firebaseValue || createEmptyAppSocialLinks()),
+    }
 
     const normalized = normalizeSocial(platform, raw)
-    if (normalized) (next as any)[platform] = normalized
-    else delete (next as any)[platform]
+    ;(next as any)[platform] = normalized
 
     await props.updateFunction(next)
     rowError.value = { ...rowError.value, [platform]: '' }
@@ -351,8 +356,11 @@ async function savePlatform(platform: SocialPlatform) {
 
 async function clearPlatform(platform: SocialPlatform) {
   try {
-    const next: SocialLinks = { ...(props.firebaseValue || {}) }
-    delete (next as any)[platform]
+    const next: SocialLinks = {
+      ...createEmptyAppSocialLinks(),
+      ...(props.firebaseValue || createEmptyAppSocialLinks()),
+    }
+    ;(next as any)[platform] = ''
     await props.updateFunction(next)
 
     const nextDraft = { ...draft.value }

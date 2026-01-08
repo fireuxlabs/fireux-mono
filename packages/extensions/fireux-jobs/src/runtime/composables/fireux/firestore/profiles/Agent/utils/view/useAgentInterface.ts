@@ -4,7 +4,20 @@ import type { Ref } from 'vue'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { agentConfig, type AgentCore } from '../../../../../../../models/profiles/Agent/Agent.model.ts'
-import type { AgentCard } from '../../../../../../../types/profiles/AgentCard.ts'
+
+export namespace AgentCard {
+  export type Card = {
+    id: string
+    to: string
+    avatarUrl: string
+    displayName: string
+    tagline: string
+    badges: string[]
+    bioShort: string
+    contactEmail: string
+    websiteUrl: string
+  }
+}
 
 type MaybeEnrichedAgent = AgentCore & { user?: Partial<Pick<User, 'avatar'>> | null }
 
@@ -29,7 +42,7 @@ export function useAgentInterface(
     const currentProfile = resolveProfile(target)
     if (!currentProfile) return ''
     if (currentProfile.contact_email_from_profile) {
-      return currentUserRef?.value?.email?.trim() || ''
+      return user?.value?.email?.trim() || ''
     }
     return currentProfile.contact_email?.trim() || ''
   }
@@ -43,13 +56,13 @@ export function useAgentInterface(
     return {
       id: currentProfile.id,
       to: `/${agentConfig.collectionName}/${currentProfile.id}`,
-      avatar: resolveAvatar(target),
-      title: currentProfile.title,
-      subtitle: currentProfile.tagline,
-      badges: Array.isArray(currentProfile.badges) ? currentProfile.badges : [],
-      line1: currentProfile.bio_short,
-      line2: resolveContactEmail(currentProfile),
-      line3: currentProfile.website_url,
+      avatarUrl: resolveAvatar(target),
+      displayName: currentProfile.title,
+      tagline: currentProfile.tagline,
+      badges: currentProfile.badges,
+      bioShort: currentProfile.bio_short,
+      contactEmail: resolveContactEmail(currentProfile),
+      websiteUrl: currentProfile.website_url,
     }
   }
 

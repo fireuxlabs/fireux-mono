@@ -6,10 +6,9 @@ import {
   professionalConfig,
   type ProfessionalCore,
 } from '../../../../../models/profiles/Professional/Professional.model.ts'
-import type { ProfessionalCard } from '../../../../../types/profiles/ProfessionalCard'
 
 import { useProfessionalComputed } from './main/useProfessionalComputed'
-import { useProfessionalInterface } from './utils/view/useProfessionalInterface'
+import { useProfessionalInterface, type ProfessionalCard } from './utils/view/useProfessionalInterface'
 import { useProfessionalUpdate } from './main/useProfessionalUpdate'
 import { useProfessionalCreate } from './main/useProfessionalCreate'
 

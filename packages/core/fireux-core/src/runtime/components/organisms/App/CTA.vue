@@ -5,25 +5,20 @@
     variant="naked"
   >
     <template #default>
-      <OrganismsAppCardsPreview v-if="appCard" v-bind="appCard" />
-      <OrganismsAppCreateSystem v-else />
-         <UButton
-          variant="ghost"
-          size="sm"
-          to="/learn-more"
-        >
-          Learn more
-        </UButton>
+      <div class="space-y-3">
+        <OrganismsAppCardsPreview v-if="app" v-bind="card(app)" />
+        <OrganismsAppCreateSystem v-else />
+
+        <div class="flex justify-end">
+          <UButton variant="ghost" size="sm" to="/learn-more">Learn more</UButton>
+        </div>
+      </div>
     </template>
   </UPageCTA>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
 
-const { app, card, isResolved, isInitialized } = useApp()
-const appCard = computed(() =>
-  isResolved.value && isInitialized.value && app.value ? card(app.value) : null
-)
+const { app, card } = useApp()
 </script>

@@ -1,14 +1,14 @@
 <template>
   <NuxtLink :to="to" class="fx-card fx-card--cell">
     <div class="fx-card__media">
-      <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
+      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="fx-card__content fx-card__stack">
         <div class="fx-card__header">
           <div class="min-w-0">
-            <div class="fx-card__title">{{ title }}</div>
-            <div v-if="subtitle" class="fx-card__subtitle">
-              {{ subtitle }}
+            <div class="fx-card__title">{{ displayName }}</div>
+            <div v-if="handle" class="fx-card__subtitle">
+              {{ handle }}
             </div>
           </div>
 
@@ -26,7 +26,7 @@
         </div>
 
         <div class="fx-card__tagline">
-          <span v-if="prop || line1">{{ prop || line1 }}</span>
+          <span v-if="prop || bio">{{ prop || bio }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
@@ -37,5 +37,9 @@
 <script setup lang="ts">
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-defineProps<Pick<UserCard.Card, 'to' | 'avatar' | 'title' | 'subtitle' | 'badges' | 'line1'> & { prop?: string }>()
+defineProps<
+  Pick<UserCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'bio'> & {
+    prop?: string
+  }
+>()
 </script>

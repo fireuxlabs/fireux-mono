@@ -1,11 +1,11 @@
 <template>
   <NuxtLink :to="to" class="fx-card fx-card--pill">
-    <UAvatar :src="avatar || undefined" :alt="title" size="xs" />
+    <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="xs" />
 
     <div class="min-w-0 flex-1">
-      <div class="min-w-0 truncate text-sm font-medium">{{ title }}</div>
-      <div v-if="showSubtitle && subtitle" class="min-w-0 truncate text-xs text-dimmed">
-        {{ subtitle }}
+      <div class="min-w-0 truncate text-sm font-medium">{{ displayName }}</div>
+      <div v-if="showSubtitle && handle" class="min-w-0 truncate text-xs text-dimmed">
+        {{ handle }}
       </div>
     </div>
 
@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-type PillProps = Pick<UserCard.Card, 'to' | 'avatar' | 'title' | 'subtitle' | 'badges'> &
+type PillProps = Pick<UserCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges'> &
   Partial<UserCard.Card> & {
     showSubtitle?: boolean
   }

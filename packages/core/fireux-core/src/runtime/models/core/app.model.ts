@@ -14,7 +14,31 @@ export type AppSocialPlatform =
   | 'facebook'
   | 'youtube'
 
-export type AppSocialLinks = Partial<Record<AppSocialPlatform, string>>
+export type AppSocialLinks = Record<AppSocialPlatform, string>
+
+export const APP_SOCIAL_PLATFORMS: ReadonlyArray<AppSocialPlatform> = [
+  'website',
+  'email',
+  'twitter',
+  'linkedin',
+  'github',
+  'instagram',
+  'facebook',
+  'youtube',
+] as const
+
+export function createEmptyAppSocialLinks(): AppSocialLinks {
+  return {
+    website: '',
+    email: '',
+    twitter: '',
+    linkedin: '',
+    github: '',
+    instagram: '',
+    facebook: '',
+    youtube: '',
+  }
+}
 
 /** Core Firestore App document */
 export interface App {
@@ -49,11 +73,15 @@ export interface App {
   updated_at: Ts
 
   // Brand/media URLs (flat)
-  thumbnail_url?: string
-  /** @deprecated use thumbnail_url */
-  avatar_url?: string
-  logo_url?: string
+  /** Used on avatar/thumbnail surfaces. Empty string means "not set". */
+  thumbnail_url: string
+  /** @deprecated legacy field. Keep as empty string; use thumbnail_url. */
+  avatar_url: string
+  /** Used on logo surfaces. Empty string means "not set". */
+  logo_url: string
   // Canon wordmark variants
-  wordmark_light_url?: string
-  wordmark_dark_url?: string
+  /** Used on light surfaces. Empty string means "not set". */
+  wordmark_light_url: string
+  /** Used on dark surfaces. Empty string means "not set". */
+  wordmark_dark_url: string
 }

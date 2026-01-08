@@ -1,14 +1,14 @@
 <template>
   <UCard class="space-y-4">
     <div class="flex items-start gap-3">
-      <UAvatar :src="card.avatar || undefined" :alt="card.title" size="sm" />
+      <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="sm" />
 
       <div class="min-w-0 flex-1 space-y-1">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <div class="truncate font-medium">{{ card.title }}</div>
-            <div v-if="card.subtitle" class="truncate text-sm text-dimmed">
-              {{ card.subtitle }}
+            <div class="truncate font-medium">{{ card.displayName }}</div>
+            <div v-if="card.handle" class="truncate text-sm text-dimmed">
+              {{ card.handle }}
             </div>
           </div>
 
@@ -27,11 +27,11 @@
 
         <div class="space-y-1">
           <div class="text-sm">
-            <span v-if="prop || card.line1">{{ prop || card.line1 }}</span>
+            <span v-if="prop || card.bio">{{ prop || card.bio }}</span>
             <span v-else class="text-dimmed italic">missing</span>
           </div>
           <div class="text-sm text-dimmed">
-            <span v-if="card.line2">{{ card.line2 }}</span>
+            <span v-if="card.profiles.length">{{ card.profiles.join(', ') }}</span>
             <span v-else class="italic">missing</span>
           </div>
         </div>

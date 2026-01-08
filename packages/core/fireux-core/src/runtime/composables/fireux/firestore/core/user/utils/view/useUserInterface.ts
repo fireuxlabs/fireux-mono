@@ -8,31 +8,35 @@ export namespace UserCard {
     id: string
     to: string
 
-    avatar: string
-    title: string
-    subtitle: string
+    avatarUrl: string
+    displayName: string
+    handle: string
     badges: string[]
 
-    line1: string
-    line2: string
-    line3: string
+    bio: string
+    profiles: string[]
+    apps: string
   }
 }
 
 export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   function map(user: User): UserCard.Card {
+    const appCount = user.userOf.length
+    const handle = user.handle.trim()
+
     return {
       id: user.id,
       to: `/users/${user.id}`,
 
-      avatar: user.avatar,
-      title: user.display_name,
-      subtitle: user.handle ? `@${user.handle}` : '',
+      avatarUrl: user.avatar,
+      displayName: user.display_name,
+      handle: handle ? `@${handle}` : '',
       badges: [],
 
-      line1: user.email,
-      line2: user.bio,
-      line3: (user.profiles ?? []).join(', '),
+      // IMPORTANT: do not expose user.email on public UI surfaces.
+      bio: user.bio,
+      profiles: user.profiles,
+      apps: appCount ? `${appCount} apps` : '',
     }
   }
 

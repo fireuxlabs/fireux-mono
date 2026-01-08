@@ -295,8 +295,8 @@ import { useProfessional } from '../../composables/fireux/firestore/profiles/Pro
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
 import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection.ts'
-import type { ProfessionalCard } from '../../types/profiles/ProfessionalCard'
-import type { AgentCard } from '../../types/profiles/AgentCard'
+import type { ProfessionalCard } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 type Ref<T> = { value: T }
 
@@ -406,7 +406,7 @@ const professionalLocalJson = computed(() =>
 )
 
 const professionalPillKey = (card: ProfessionalCard.Card) =>
-  card.id || card.to || card.title || 'professional'
+  card.id || card.to || card.displayName || 'professional'
 
 const { globalAgents, localAgents, rawGlobalAgents, rawLocalAgents } =
   useAgentCollection()
@@ -433,7 +433,7 @@ const agentLocalJson = computed(() =>
 )
 
 const agentPillKey = (card: AgentCard.Card) =>
-  card.id || card.to || card.title || 'agent'
+  card.id || card.to || card.displayName || 'agent'
 
 type ProfileDiffRow<TProfile> = {
   id: string

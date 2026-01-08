@@ -59,16 +59,10 @@ const adminEntries = computed(() =>
 const adminCards = computed(() =>
   adminEntries.value.map((record, index) => {
     const payload = card(record as any)
-    const title =
-      payload.title ||
-      record.display_name?.trim() ||
-      record.handle?.trim() ||
-      record.id ||
-      `Admin ${index + 1}`
-
+    const displayName = payload.displayName
     const enriched: UserCard.Card = {
       ...payload,
-      title,
+      displayName,
       badges: ['Admin'],
     }
 

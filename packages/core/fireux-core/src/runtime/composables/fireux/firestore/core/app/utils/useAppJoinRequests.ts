@@ -69,9 +69,9 @@ export function useAppJoinRequests({
     const payload = card.value(profile)
     return {
       id: uid,
-      title: payload.title,
-      subtitle: payload.subtitle,
-      avatar: payload.avatar,
+      title: payload.displayName,
+      subtitle: payload.handle,
+      avatar: payload.avatarUrl,
       to: payload.to,
     }
   }

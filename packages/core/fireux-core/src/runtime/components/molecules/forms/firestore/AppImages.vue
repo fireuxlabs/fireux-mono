@@ -293,7 +293,7 @@ const firestoreItems = computed(() => {
       label: 'Thumbnail',
       field: 'thumbnail_url',
       storagePath: appId ? appImageStoragePath(appId, 'thumbnail') : '',
-      url: value?.thumbnail_url || value?.avatar_url || '',
+      url: value?.thumbnail_url || '',
       previewClass: 'h-12 w-12 rounded object-cover',
     },
     {

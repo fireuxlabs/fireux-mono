@@ -13,8 +13,8 @@
       aria-label="View profile"
     >
       <UAvatar
-        :src="pillUser.avatar || undefined"
-        :alt="pillUser.title || 'User'"
+          :src="pillUser.avatarUrl || undefined"
+          :alt="pillUser.displayName || 'User'"
         :text="avatarFallback"
         size="sm"
       />
@@ -59,8 +59,8 @@ const pillUser = computed((): UserCard.Card | undefined => {
 })
 
 const avatarFallback = computed(() => {
-  const title = pillUser.value?.title ?? ''
-  const trimmed = typeof title === 'string' ? title.trim() : ''
+  const displayName = pillUser.value?.displayName ?? ''
+  const trimmed = typeof displayName === 'string' ? displayName.trim() : ''
   if (!trimmed) return 'U'
   return trimmed
     .split(/\s+/)

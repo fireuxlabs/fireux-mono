@@ -46,6 +46,7 @@ fi
 # Optional guard
 # Optional guard (advisory, not blocking)
 if $run_guard; then
+  pnpm -s pre-guard-clean || true
   if ! pnpm -s guard; then
     echo "\nGuard failed. You may fix the issues above, or continue and push anyway." >&2
     read -p "Continue and push anyway? [y/N]: " confirm

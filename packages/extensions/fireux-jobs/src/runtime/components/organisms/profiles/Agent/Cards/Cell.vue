@@ -1,12 +1,12 @@
 <template>
   <NuxtLink :to="to" class="fx-card fx-card--cell">
     <div class="fx-card__media">
-      <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
+      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="fx-card__content fx-card__stack">
         <div class="fx-card__header">
           <div class="min-w-0">
-            <div class="fx-card__title">{{ title }}</div>
+            <div class="fx-card__title">{{ displayName }}</div>
           </div>
 
           <div v-if="badges.length" class="fx-card__badges">
@@ -22,12 +22,12 @@
           </div>
         </div>
 
-        <div v-if="showSubtitle && subtitle" class="fx-card__subtitle">
-          {{ subtitle }}
+        <div v-if="showSubtitle && tagline" class="fx-card__subtitle">
+          {{ tagline }}
         </div>
 
         <div class="fx-card__tagline">
-          <span v-if="prop || line1">{{ prop || line1 }}</span>
+          <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
@@ -42,7 +42,7 @@ withDefaults(
   defineProps<
     Pick<
       AgentCard.Card,
-      'to' | 'avatar' | 'title' | 'subtitle' | 'badges' | 'line1'
+      'to' | 'avatarUrl' | 'displayName' | 'tagline' | 'badges' | 'bioShort'
     > & {
       prop?: string
       showSubtitle?: boolean

@@ -1,19 +1,13 @@
 import type { App } from '../models/core/app.model'
 
 /**
- * Resolve the best-fit avatar asset for an app record, falling back through
- * known image properties before returning null.
+ * Resolve the avatar/thumbnail asset for an app record.
+ * Canon: use thumbnail_url only (no cross-field fallbacks).
  */
 export function resolveAppAvatar(app: Partial<App> | null | undefined) {
   if (!app) return null
-  return (
-    (app as any).thumbnail_url ||
-    app.avatar_url ||
-    app.logo_url ||
-    app.wordmark_light_url ||
-    app.wordmark_dark_url ||
-    null
-  )
+  const value = (app as any).thumbnail_url
+  return typeof value === 'string' && value.trim() ? value : null
 }
 
 /**

@@ -209,9 +209,9 @@ const adminPillFor = (row: {
     title: row.display_name || row.id,
     subtitle: '',
     badges: [],
-    line1: '',
-    line2: '',
-    line3: '',
+    bio: '',
+    profiles: '',
+    apps: '',
   }
 }
 
@@ -240,13 +240,13 @@ const cardRef = computed(() => (target?: User | null | undefined) => {
   return {
     id: uid,
     to: uid ? `/users/${uid}` : '',
-    avatar: '',
-    title: uid || 'Unknown user',
-    subtitle: '',
+    avatarUrl: '',
+    displayName: uid || 'Unknown user',
+    handle: '',
     badges: [],
-    line1: '',
-    line2: '',
-    line3: '',
+    bio: '',
+    profiles: '',
+    apps: '',
   }
 })
 

@@ -1,12 +1,4 @@
-/** Types for app editable fields */
-export interface AppSocialLinks {
-  website?: string
-  twitter?: string
-  facebook?: string
-  instagram?: string
-  linkedin?: string
-  youtube?: string
-}
+import type { AppSocialLinks } from '../../../../../../../models/core/app.model'
 
 /** Validates app description field */
 export function validateAppDescription(value: string): string | null {
@@ -54,16 +46,17 @@ export function validateSocialLinks(
 
   const platforms = [
     'website',
-    'twitter',
-    'facebook',
     'instagram',
+    'twitter',
     'linkedin',
+    'github',
+    'facebook',
     'youtube',
   ] as const
 
   for (const platform of platforms) {
     const url = socialLinks[platform]
-    if (url) {
+    if (typeof url === 'string' && url.trim()) {
       const validationError = validateUrl(url, platform)
       if (validationError) return validationError
     }

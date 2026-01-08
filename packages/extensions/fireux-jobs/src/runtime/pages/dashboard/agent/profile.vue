@@ -94,7 +94,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { coreProfile, appProfile, card: agentToCard } = useAgent()
+const { coreProfile, appProfile } = useAgent()
 const { app, card: appToCard } = useApp()
 const { user, card: userToCard } = useUser()
 
@@ -119,10 +119,6 @@ const createProfile = async () => {
 const isProfileLoading = computed(() => coreProfile.value === undefined)
 const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
 const resolvedAppProfile = computed(() => appProfile.value ?? null)
-
-const agentCard = computed(() =>
-  resolvedCoreProfile.value ? agentToCard(resolvedCoreProfile.value) : null
-)
 
 const userCard = computed(() => userToCard(user.value))
 const appCard = computed(() => appToCard(app.value))

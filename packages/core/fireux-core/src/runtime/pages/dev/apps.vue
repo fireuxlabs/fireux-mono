@@ -9,7 +9,7 @@
       <!-- Current App -->
       <section class="space-y-4">
         <div v-if="appCard" class="space-y-4">
-          <OrganismsAppCardsPreview v-bind="appCard" />
+          <OrganismsAppCardsPreview :card="appCard" />
 
           <div class="space-y-3">
             <div class="text-sm font-medium">Card stack</div>
@@ -27,7 +27,7 @@
 
               <div class="space-y-2">
                 <div class="text-xs text-dimmed">Preview</div>
-                <OrganismsAppCardsPreview v-bind="appCard" />
+                <OrganismsAppCardsPreview :card="appCard" />
               </div>
 
               <div class="space-y-2">

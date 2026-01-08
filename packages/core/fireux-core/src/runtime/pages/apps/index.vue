@@ -9,40 +9,13 @@
     <UPageBody class="pagebody">
       <OrganismsAppCTA />
 
-      <!-- TEST: each card type -->
-      <section class="card-test">
-        <h3>Testing</h3>
-
-        <div class="card-test-block">
-          <h4>Pill</h4>
-          <OrganismsAppCardsPill v-if="appCard" v-bind="appCard" />
-        </div>
-
-        <div class="card-test-block">
-          <h4>Cell</h4>
-          <OrganismsAppCardsCell v-if="appCard" v-bind="appCard" />
-        </div>
-
-        <div class="card-test-block">
-          <h4>Preview</h4>
-          <OrganismsAppCardsPreview v-if="appCard" v-bind="appCard" />
-        </div>
-
-        <div class="card-test-block">
-          <h4>Profile</h4>
-          <OrganismsAppCardsProfile v-if="appCard" v-bind="appCard" :app="app" />
-        </div>
-      </section>
-
       <OrganismsAppCollectionManager />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useHead } from '#imports'
-import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 definePageMeta({
   nav: {
@@ -62,10 +35,6 @@ definePageMeta({
 })
 
 useHead({ title: 'Apps' })
-
-const { app, card } = useApp()
-const appCard = computed(() => (app.value ? card(app.value) : null))
 </script>
 
-<style scoped></style>
 

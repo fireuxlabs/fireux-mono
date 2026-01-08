@@ -3,11 +3,11 @@
     <template #header>
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-start gap-3">
-          <UAvatar :src="avatar || undefined" :alt="title" size="md" />
+          <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="md" />
           <div class="min-w-0">
-            <div class="truncate text-base font-semibold">{{ title }}</div>
+            <div class="truncate text-base font-semibold">{{ displayName }}</div>
             <div class="text-sm text-dimmed">
-              <span v-if="subtitle">{{ subtitle }}</span>
+              <span v-if="tagline">{{ tagline }}</span>
               <span v-else class="italic">missing</span>
             </div>
           </div>
@@ -35,7 +35,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Bio</div>
         <div class="text-sm">
-          <span v-if="prop || line1">{{ prop || line1 }}</span>
+          <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -43,7 +43,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Specialties</div>
         <div class="text-sm">
-          <span v-if="line2">{{ line2 }}</span>
+          <span v-if="specialties">{{ specialties }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -51,7 +51,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Locations</div>
         <div class="text-sm">
-          <span v-if="line3">{{ line3 }}</span>
+          <span v-if="locations">{{ locations }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -63,9 +63,7 @@
 import { reactive, toRefs, watchEffect } from 'vue'
 import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
-const prop = defineProp<string>('prop', { required: false })
-
-const props = defineProps<{ card: ProfessionalCard.Card }>()
+const props = defineProps<{ card: ProfessionalCard.Card; prop?: string }>()
 
 const card = reactive({ ...props.card })
 
@@ -73,5 +71,6 @@ watchEffect(() => {
   Object.assign(card, props.card)
 })
 
-const { avatar, title, subtitle, badges, line1, line2, line3 } = toRefs(card)
+const { prop } = toRefs(props)
+const { avatarUrl, displayName, tagline, badges, bioShort, specialties, locations } = toRefs(card)
 </script>

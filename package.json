@@ -29,6 +29,7 @@
     "lint:envs": "node scripts/lint-envs.mjs",
     "format": "prettier --write .",
     "guard": "node scripts/guard.mjs",
+    "pre-guard-clean": "node scripts/pre-guard-clean.mjs",
     "guard:shape": "pnpm guard",
     "guard:ts": "pnpm tsc:check",
     "tsc:check": "pnpm typecheck:packages",

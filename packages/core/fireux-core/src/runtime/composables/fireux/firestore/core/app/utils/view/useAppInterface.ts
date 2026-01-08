@@ -9,8 +9,8 @@ export namespace AppCard {
     id: string
     to: string
 
-    // Media (optional in model → optional in DTO)
-    avatar?: string
+    // Media (empty string means unset)
+    avatar: string
 
     title: string
     subtitle: string
@@ -25,9 +25,9 @@ export namespace AppCard {
     shortBio: string
     longBio: string
 
-    logo?: string
-    wordmarkLight?: string
-    wordmarkDark?: string
+    logo: string
+    wordmarkLight: string
+    wordmarkDark: string
 
     // Always safe to render (empty string if none)
     wordmark: string
@@ -41,8 +41,8 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
 
   function resolveWordmark(app: App): string {
     return resolvedMode.value === 'dark'
-      ? app.wordmark_dark_url ?? ''
-      : app.wordmark_light_url ?? ''
+      ? app.wordmark_dark_url
+      : app.wordmark_light_url
   }
 
   function map(app: App): AppCard.Card {
@@ -50,7 +50,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       id: app.id,
       to: `/apps/${app.id}`,
 
-      avatar: app.thumbnail_url ?? app.avatar_url,
+      avatar: app.thumbnail_url,
 
       title: app.app_name,
       subtitle: app.ecosystem,

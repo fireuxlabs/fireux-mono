@@ -27,7 +27,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model.ts'
-import type { ProfessionalCard } from '../../../../../types/profiles/ProfessionalCard'
 import { useProfessionalCollection } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
 import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 
@@ -40,5 +39,5 @@ const cards = computed<ProfessionalCard.Card[]>(() =>
   (localProfessionals?.value ?? []).map((prof: ProfessionalCore) => card(prof))
 )
 
-const cardKey = (payload: ProfessionalCard.Card) => payload.id || payload.to || payload.title
+const cardKey = (payload: ProfessionalCard.Card) => payload.id || payload.to || payload.displayName
 </script>

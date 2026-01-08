@@ -99,17 +99,18 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   async function updateInstagram(url: string | null) {
     const sanitized = sanitizeInstagram(url)
     await updateApp({
-      'social_links.instagram': sanitized ? sanitized : deleteField(),
+      'social_links.instagram': sanitized,
     })
   }
 
   async function updateSocialLinks(links: AppSocialLinks) {
-    await updateApp({ social_links: links || {} })
+    await updateApp({ social_links: links })
   }
 
   async function updateAvatarUrl(url: string | null) {
     const value = sanitizeThumbnailUrl(url)
-    await updateApp({ thumbnail_url: value, avatar_url: deleteField() })
+    // Canon field is thumbnail_url; keep legacy avatar_url as empty string.
+    await updateApp({ thumbnail_url: value, avatar_url: '' })
   }
 
   async function updateThumbnailUrl(url: string | null) {
@@ -120,7 +121,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const id = ensureAppId()
     const path = appImageStoragePath(id, 'thumbnail')
     const url = await uploadImage(path, source)
-    await updateApp({ thumbnail_url: cacheBust(url), avatar_url: deleteField() })
+    await updateApp({ thumbnail_url: cacheBust(url), avatar_url: '' })
     return url
   }
 
@@ -141,7 +142,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
     const field = appImageFirestoreField(kind)
     const patch: Record<string, any> = { [field]: next }
-    if (kind === 'thumbnail') patch.avatar_url = deleteField()
+    if (kind === 'thumbnail') patch.avatar_url = ''
     if (isWordmarkKind(kind)) patch.wordmark_url = deleteField()
     await updateApp(patch)
     return next
@@ -159,7 +160,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
     const field = appImageFirestoreField(kind)
     const patch: Record<string, any> = { [field]: next }
-    if (kind === 'thumbnail') patch.avatar_url = deleteField()
+    if (kind === 'thumbnail') patch.avatar_url = ''
     if (isWordmarkKind(kind)) patch.wordmark_url = deleteField()
     await updateApp(patch)
     return next

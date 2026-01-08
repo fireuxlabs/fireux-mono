@@ -1,4 +1,4 @@
-import type { AppSocialLinks } from './useAppValidation'
+import { createEmptyAppSocialLinks, type AppSocialLinks } from '../../../../../../../models/core/app.model'
 
 const HTTPS_PROTOCOL_REGEX = /^https?:\/\//
 
@@ -23,22 +23,24 @@ export function formatUrl(url: string): string {
 
 /** Formats social links object for storage */
 export function formatSocialLinks(socialLinks: AppSocialLinks): AppSocialLinks {
-  const formatted: AppSocialLinks = {}
+  const formatted: AppSocialLinks = createEmptyAppSocialLinks()
   const platforms = [
     'website',
-    'twitter',
-    'facebook',
     'instagram',
+    'twitter',
     'linkedin',
+    'github',
+    'facebook',
     'youtube',
   ] as const
 
   for (const platform of platforms) {
-    const trimmed = socialLinks[platform]?.trim()
-    if (trimmed) {
-      formatted[platform] = formatUrl(trimmed)
-    }
+    const trimmed = (socialLinks[platform] ?? '').trim()
+    formatted[platform] = trimmed ? formatUrl(trimmed) : ''
   }
+
+  // Email is stored as a raw string (not a URL).
+  formatted.email = (socialLinks.email ?? '').trim()
 
   return formatted
 }

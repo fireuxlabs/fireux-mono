@@ -3,11 +3,11 @@
     <template #header>
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-start gap-3">
-          <UAvatar :src="avatar || undefined" :alt="title" size="md" />
+          <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="md" />
           <div class="min-w-0">
-            <div class="truncate text-base font-semibold">{{ title }}</div>
+            <div class="truncate text-base font-semibold">{{ displayName }}</div>
             <div class="text-sm text-dimmed">
-                <span v-if="showSubtitle && subtitle">{{ subtitle }}</span>
+                <span v-if="showSubtitle && tagline">{{ tagline }}</span>
                 <span v-else-if="showSubtitle" class="italic">missing</span>
             </div>
           </div>
@@ -35,7 +35,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Bio</div>
         <div class="text-sm">
-          <span v-if="prop || line1">{{ prop || line1 }}</span>
+          <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -43,7 +43,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Contact</div>
         <div class="text-sm">
-          <span v-if="line2">{{ line2 }}</span>
+          <span v-if="contactEmail">{{ contactEmail }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -51,7 +51,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Website</div>
         <div class="text-sm">
-          <span v-if="line3">{{ line3 }}</span>
+          <span v-if="websiteUrl">{{ websiteUrl }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -66,7 +66,13 @@ withDefaults(
   defineProps<
     Pick<
       AgentCard.Card,
-      'avatar' | 'title' | 'subtitle' | 'badges' | 'line1' | 'line2' | 'line3'
+      | 'avatarUrl'
+      | 'displayName'
+      | 'tagline'
+      | 'badges'
+      | 'bioShort'
+      | 'contactEmail'
+      | 'websiteUrl'
     > & {
       prop?: string
       showSubtitle?: boolean

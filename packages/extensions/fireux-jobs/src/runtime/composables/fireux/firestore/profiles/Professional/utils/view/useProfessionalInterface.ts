@@ -2,11 +2,49 @@
 
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { professionalConfig, type ProfessionalCore } from '../../../../../../../models/profiles/Professional/Professional.model.ts'
-import type { ProfessionalCard } from '../../../../../../../types/profiles/ProfessionalCard.ts'
+
+export namespace ProfessionalCard {
+  export type Card = {
+    id: string
+    to: string
+    avatarUrl: string
+    displayName: string
+    tagline: string
+    badges: string[]
+    bioShort: string
+    specialties: string
+    locations: string
+  }
+}
 
 export function useProfessionalInterface(profile: ProfileRefs<ProfessionalCore>) {
   function resolveProfile(target?: ProfessionalCore | null | undefined): ProfessionalCore | null {
     return target ?? profile.coreProfile.value ?? null
+  }
+
+  function resolveAvatar(target?: ProfessionalCore | null | undefined): string {
+    const currentProfile = resolveProfile(target)
+    if (!currentProfile) return ''
+
+    const avatarUrl = (currentProfile as any).avatar_url
+    if (typeof avatarUrl === 'string' && avatarUrl.trim()) return avatarUrl.trim()
+
+    const avatar = (currentProfile as any).avatar
+    if (typeof avatar === 'string' && avatar.trim()) return avatar.trim()
+
+    return ''
+  }
+
+  function resolveCsv(value: unknown): string {
+    if (Array.isArray(value)) {
+      return value
+        .filter((x) => typeof x === 'string')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .join(', ')
+    }
+    if (typeof value === 'string') return value.trim()
+    return ''
   }
 
   function card(target: ProfessionalCore): ProfessionalCard.Card
@@ -18,13 +56,13 @@ export function useProfessionalInterface(profile: ProfileRefs<ProfessionalCore>)
     return {
       id: currentProfile.id,
       to: `/${professionalConfig.collectionName}/${currentProfile.id}`,
-      avatar: currentProfile.avatar_url,
-      title: currentProfile.title,
-      subtitle: currentProfile.tagline,
-      badges: [],
-      line1: currentProfile.bio_short,
-      line2: currentProfile.specialties.join(', '),
-      line3: currentProfile.locations.join(', '),
+      avatarUrl: resolveAvatar(currentProfile),
+      displayName: currentProfile.title,
+      tagline: currentProfile.tagline,
+      badges: currentProfile.badges,
+      bioShort: currentProfile.bio_short,
+      specialties: resolveCsv((currentProfile as any).specialties),
+      locations: resolveCsv((currentProfile as any).locations),
     }
   }
 

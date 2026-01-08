@@ -128,7 +128,7 @@ export function useAppOnboarding(): AppOnboardingState {
       // Ensure no legacy wordmark field can linger.
       wordmark_url: deleteField(),
       // Ensure legacy thumbnail field is removed.
-      avatar_url: deleteField(),
+      avatar_url: '',
     })
   }
 

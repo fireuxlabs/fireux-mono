@@ -1,7 +1,10 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader
+      title="Professionals"
+      description="Inspect the current professional and browse all professionals available to this runtime."
+    />
 
     <UPageBody class="pagebody">
       <OrganismsProfilesProfessionalCTA />
@@ -11,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useHead } from 'nuxt/app'
+import { useHead } from '#imports'
 
 definePageMeta({
   nav: {
@@ -29,9 +32,5 @@ definePageMeta({
   name: 'ProfessionalsIndexPage',
 })
 
-const pageTitle = 'Professionals'
-const pageDescription =
-  'Inspect your professional profile and browse all professionals available to this runtime.'
-
-useHead({ title: pageTitle })
+useHead({ title: 'Professionals' })
 </script>

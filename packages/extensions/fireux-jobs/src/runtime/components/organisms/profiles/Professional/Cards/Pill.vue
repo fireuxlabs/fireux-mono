@@ -3,11 +3,11 @@
     :to="to"
     class="fx-pill"
   >
-    <UAvatar :src="avatar || undefined" :alt="title" size="xs" />
+    <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="xs" />
 
     <div class="min-w-0 flex-1">
-      <div class="min-w-0 truncate text-sm font-medium">{{ title }}</div>
-      <div v-if="subtitle" class="min-w-0 truncate text-xs text-dimmed">{{ subtitle }}</div>
+      <div class="min-w-0 truncate text-sm font-medium">{{ displayName }}</div>
+      <div v-if="tagline" class="min-w-0 truncate text-xs text-dimmed">{{ tagline }}</div>
     </div>
 
     <div v-if="badges.length" class="ml-2 flex shrink-0 items-center gap-1">
@@ -36,5 +36,5 @@ watchEffect(() => {
   Object.assign(card, props.card)
 })
 
-const { to, avatar, title, subtitle, badges } = toRefs(card)
+const { to, avatarUrl, displayName, tagline, badges } = toRefs(card)
 </script>

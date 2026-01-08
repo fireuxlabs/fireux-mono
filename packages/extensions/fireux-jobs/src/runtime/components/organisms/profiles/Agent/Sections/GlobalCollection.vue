@@ -25,7 +25,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
-import type { AgentCard } from '../../../../../types/profiles/AgentCard'
 import { useAgentCollection } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
 import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
@@ -38,5 +37,5 @@ const cards = computed<AgentCard.Card[]>(() =>
   (globalAgents.value ?? []).map((agent: AgentCore) => card(agent))
 )
 
-const cardKey = (payload: AgentCard.Card) => payload.id || payload.to || payload.title
+const cardKey = (payload: AgentCard.Card) => payload.id || payload.to || payload.displayName
 </script>
