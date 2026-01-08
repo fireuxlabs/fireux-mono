@@ -2,12 +2,12 @@
 <template>
   <NuxtLink :to="to" class="fx-card fx-card--cell">
     <div class="fx-card__media">
-      <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
+      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="fx-card__content fx-card__stack">
         <div class="fx-card__header">
           <div class="min-w-0">
-            <div class="fx-card__title">{{ title }}</div>
+            <div class="fx-card__title">{{ displayName }}</div>
           </div>
 
           <div v-if="showBadges && badges.length" class="fx-card__badges">
@@ -49,7 +49,7 @@ import type { AppCard } from '../../../../composables/fireux/firestore/core/app/
 
 withDefaults(
   defineProps<
-    Pick<AppCard.Card, 'to' | 'avatar' | 'title' | 'badges' | 'tagline' | 'userCount'> & {
+    Pick<AppCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'badges' | 'tagline' | 'userCount'> & {
       showBadges?: boolean
       showTagline?: boolean
       showMeta?: boolean

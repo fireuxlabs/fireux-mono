@@ -1,44 +1,63 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface.ts
 
+import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { chefConfig, type ChefCore } from '../../../../../../../models/profiles/Chef/Chef.model.ts'
 
 export namespace ChefCard {
   export type Card = {
     id: string
     to: string
+
+    // Media (empty string means unset)
     avatar: string
+
     title: string
     subtitle: string
     badges: string[]
+
     line1: string
     line2: string
     line3: string
   }
 }
 
-export function useChefInterface(profile: ProfileRefs<ChefCore>) {
-  function resolveProfile(target?: ChefCore | null | undefined): ChefCore | null {
-    return target ?? profile.coreProfile.value ?? null
-  }
-
-  function card(target: ChefCore): ChefCard.Card
-  function card(target?: ChefCore | null | undefined): ChefCard.Card | null
-  function card(target?: ChefCore | null | undefined): ChefCard.Card | null {
-    const currentProfile = resolveProfile(target)
-    if (!currentProfile) return null
+export function useChefInterface(
+  profile: ProfileRefs<ChefCore>,
+  userRef?: Ref<User | null | undefined>
+) {
+  function map(currentProfile: ChefCore, user?: User | null): ChefCard.Card {
+    const title = user?.display_name ?? currentProfile.title
+    const specialties = Array.isArray(currentProfile.specialties)
+      ? currentProfile.specialties
+      : []
+    const locations = Array.isArray(currentProfile.locations)
+      ? currentProfile.locations
+      : []
 
     return {
       id: currentProfile.id,
       to: `/${chefConfig.collectionName}/${currentProfile.id}`,
-      avatar: currentProfile.avatar_url,
-      title: currentProfile.title,
+
+      avatar: user?.avatar ?? currentProfile.avatar_url ?? '',
+
+      title,
       subtitle: currentProfile.tagline,
+
+      // Caller-owned, aligned with useUserInterface
       badges: [],
+
       line1: currentProfile.bio_short,
-      line2: currentProfile.specialties.join(', '),
-      line3: currentProfile.locations.join(', '),
+      line2: specialties.join(', '),
+      line3: locations.join(', '),
     }
+  }
+
+  function card(target?: ChefCore | null | undefined): ChefCard.Card | null {
+    const currentProfile = target ?? profile.coreProfile.value ?? null
+    const user = userRef?.value ?? null
+    return currentProfile ? map(currentProfile, user) : null
   }
 
   return { card }

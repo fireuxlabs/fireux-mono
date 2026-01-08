@@ -22,12 +22,12 @@
     <div v-if="directoryEntries.length" class="space-y-4">
       <div class="space-y-2">
         <p class="text-xs text-gray-500">Pills</p>
-        <OrganismsAppCollectionCards :cards="cards" variant="pill" />
+        <OrganismsAppCollectionList :cards="cards" variant="pill" />
       </div>
 
       <div class="space-y-2">
         <p class="text-xs text-gray-500">Cells</p>
-        <OrganismsAppCollectionCards :cards="cards" variant="cell" />
+        <OrganismsAppCollectionList :cards="cards" variant="cell" />
       </div>
     </div>
 
@@ -52,15 +52,18 @@ const directoryEntries = computed(() => {
   const list = apps.value ?? []
   if (!list.length) return []
 
-  return list.map((entry) => {
-    const app = entry as App
-    const payload = card(app)
-    const key = entry?.id ?? `${payload.title}-${payload.subtitle || ''}`
-    return {
-      key,
-      card: payload,
-    } satisfies { key: string; card: AppCard.Card }
-  })
+  return list
+    .filter((entry: unknown): entry is App => Boolean((entry as App | undefined)?.id))
+    .map((entry: App) => {
+      const payload = card(entry)
+      if (!payload) return null
+
+      const key = entry.id ?? `${payload.displayName}-${payload.ecosystem}`
+      return { key, card: payload }
+    })
+    .filter(
+      (entry): entry is { key: string; card: AppCard.Card } => Boolean(entry)
+    )
 })
 
 const cards = computed(() => directoryEntries.value.map((entry) => entry.card))

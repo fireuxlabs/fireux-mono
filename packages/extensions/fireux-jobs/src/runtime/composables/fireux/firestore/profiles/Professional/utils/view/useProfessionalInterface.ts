@@ -1,35 +1,46 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface.ts
 
+import type { Ref } from 'vue'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { professionalConfig, type ProfessionalCore } from '../../../../../../../models/profiles/Professional/Professional.model.ts'
 
 export namespace ProfessionalCard {
   export type Card = {
     id: string
     to: string
+
+    // Media (empty string means unset)
     avatarUrl: string
+
     displayName: string
     tagline: string
     badges: string[]
+
     bioShort: string
     specialties: string
     locations: string
   }
 }
 
-export function useProfessionalInterface(profile: ProfileRefs<ProfessionalCore>) {
-  function resolveProfile(target?: ProfessionalCore | null | undefined): ProfessionalCore | null {
-    return target ?? profile.coreProfile.value ?? null
+export function useProfessionalInterface(
+  profile: ProfileRefs<ProfessionalCore>,
+  userRef?: Ref<User | null | undefined>
+) {
+  function readField(target: unknown, key: string): unknown {
+    if (typeof target !== 'object' || target === null) return undefined
+    if (!(key in target)) return undefined
+    return (target as Record<string, unknown>)[key]
   }
 
-  function resolveAvatar(target?: ProfessionalCore | null | undefined): string {
-    const currentProfile = resolveProfile(target)
-    if (!currentProfile) return ''
+  function resolveAvatar(currentProfile: ProfessionalCore, user?: User | null): string {
+    const fromUser = user?.avatar
+    if (typeof fromUser === 'string' && fromUser.trim()) return fromUser.trim()
 
-    const avatarUrl = (currentProfile as any).avatar_url
+    const avatarUrl = readField(currentProfile, 'avatar_url')
     if (typeof avatarUrl === 'string' && avatarUrl.trim()) return avatarUrl.trim()
 
-    const avatar = (currentProfile as any).avatar
+    const avatar = readField(currentProfile, 'avatar')
     if (typeof avatar === 'string' && avatar.trim()) return avatar.trim()
 
     return ''
@@ -47,23 +58,31 @@ export function useProfessionalInterface(profile: ProfileRefs<ProfessionalCore>)
     return ''
   }
 
-  function card(target: ProfessionalCore): ProfessionalCard.Card
-  function card(target?: ProfessionalCore | null | undefined): ProfessionalCard.Card | null
-  function card(target?: ProfessionalCore | null | undefined): ProfessionalCard.Card | null {
-    const currentProfile = resolveProfile(target)
-    if (!currentProfile) return null
+  function map(currentProfile: ProfessionalCore, user?: User | null): ProfessionalCard.Card {
+    const displayName = user?.display_name ?? currentProfile.title
 
     return {
       id: currentProfile.id,
       to: `/${professionalConfig.collectionName}/${currentProfile.id}`,
-      avatarUrl: resolveAvatar(currentProfile),
-      displayName: currentProfile.title,
+
+      avatarUrl: resolveAvatar(currentProfile, user),
+
+      displayName,
       tagline: currentProfile.tagline,
-      badges: currentProfile.badges,
+
+      // Caller-owned, aligned with useUserInterface
+      badges: [],
+
       bioShort: currentProfile.bio_short,
-      specialties: resolveCsv((currentProfile as any).specialties),
-      locations: resolveCsv((currentProfile as any).locations),
+      specialties: resolveCsv(readField(currentProfile, 'specialties')),
+      locations: resolveCsv(readField(currentProfile, 'locations')),
     }
+  }
+
+  function card(target?: ProfessionalCore | null | undefined): ProfessionalCard.Card | null {
+    const currentProfile = target ?? profile.coreProfile.value ?? null
+    const user = userRef?.value ?? null
+    return currentProfile ? map(currentProfile, user) : null
   }
 
   return { card }

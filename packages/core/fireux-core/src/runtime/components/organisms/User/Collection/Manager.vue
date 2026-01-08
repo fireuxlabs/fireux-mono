@@ -35,12 +35,12 @@
       <div v-if="directoryEntries.length" class="space-y-4">
         <div class="space-y-2">
           <p class="text-xs text-gray-500">Pills</p>
-          <OrganismsUserCollectionCards :cards="cards" variant="pill" />
+          <OrganismsUserCollectionList :cards="cards" variant="pill" />
         </div>
 
         <div class="space-y-2">
           <p class="text-xs text-gray-500">Cells</p>
-          <OrganismsUserCollectionCards :cards="cards" variant="cell" />
+          <OrganismsUserCollectionList :cards="cards" variant="cell" />
         </div>
       </div>
 
@@ -92,7 +92,7 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
       const role = inferRole(entry)
 
       const payload = card(entry)
-      const badges = role === 'admin' ? ['Admin'] : role === 'user' ? ['Member'] : []
+      const badges = role === 'admin' ? ['Admin'] : []
 
       return {
         key: entry.id,

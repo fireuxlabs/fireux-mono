@@ -4,10 +4,10 @@
     <template #header>
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-start gap-3 min-w-0">
-          <UAvatar :src="avatar || undefined" :alt="title" size="md" />
+          <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="md" />
 
           <div class="min-w-0">
-            <div class="truncate text-lg font-semibold leading-6">{{ title }}</div>
+            <div class="truncate text-lg font-semibold leading-6">{{ displayName }}</div>
           </div>
         </div>
 
@@ -22,8 +22,8 @@
     </template>
 
     <div class="space-y-3">
-      <div v-if="showSubtitle && subtitle" class="text-sm text-dimmed truncate">
-        {{ subtitle }}
+      <div v-if="showSubtitle && ecosystem" class="text-sm text-dimmed truncate">
+        {{ ecosystem }}
       </div>
 
       <div v-if="showBadges && badges.length" class="flex flex-wrap gap-2">
@@ -92,9 +92,9 @@ const props = withDefaults(
       AppCard.Card,
       | 'id'
       | 'shortName'
-      | 'avatar'
-      | 'title'
-      | 'subtitle'
+      | 'avatarUrl'
+      | 'displayName'
+      | 'ecosystem'
       | 'badges'
       | 'tagline'
       | 'userCount'

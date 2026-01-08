@@ -1,18 +1,15 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Pill.vue -->
 <template>
   <NuxtLink :to="to" class="fx-card fx-card--pill">
-    <UAvatar :src="avatar || undefined" :alt="title" size="xs" />
+    <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="xs" />
 
     <div class="min-w-0 flex-1">
       <div class="min-w-0 truncate text-sm font-medium">
-        {{ title }}
+        {{ displayName }}
       </div>
 
-      <div
-        v-if="showSubtitle && subtitle"
-        class="min-w-0 truncate text-xs text-dimmed"
-      >
-        {{ subtitle }}
+      <div v-if="showSubtitle && ecosystem" class="min-w-0 truncate text-xs text-dimmed">
+        {{ ecosystem }}
       </div>
     </div>
 
@@ -35,7 +32,7 @@ import type { AppCard } from '../../../../composables/fireux/firestore/core/app/
 
 withDefaults(
   defineProps<
-    Pick<AppCard.Card, 'to' | 'avatar' | 'title' | 'subtitle' | 'badges'> & {
+    Pick<AppCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'ecosystem' | 'badges'> & {
       showSubtitle?: boolean
       showBadges?: boolean
     }

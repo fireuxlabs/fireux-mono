@@ -10,7 +10,7 @@
         <OrganismsAppCreateSystem v-else />
 
         <div class="flex justify-end">
-          <UButton variant="ghost" size="sm" to="/learn-more">Learn more</UButton>
+          <UButton variant="ghost" size="sm" to="/apps/learn-more">Learn more</UButton>
         </div>
       </div>
     </template>

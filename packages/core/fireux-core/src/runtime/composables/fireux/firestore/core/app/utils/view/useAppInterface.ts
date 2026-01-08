@@ -10,10 +10,10 @@ export namespace AppCard {
     to: string
 
     // Media (empty string means unset)
-    avatar: string
+    avatarUrl: string
 
-    title: string
-    subtitle: string
+    displayName: string
+    ecosystem: string
     badges: string[]
 
     tagline: string
@@ -50,31 +50,31 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       id: app.id,
       to: `/apps/${app.id}`,
 
-      avatar: app.thumbnail_url,
+      avatarUrl: app.thumbnail_url ?? '',
 
-      title: app.app_name,
-      subtitle: app.ecosystem,
+      displayName: app.app_name ?? '',
+      ecosystem: app.ecosystem ?? '',
       badges: [],
 
-      tagline: app.tagline,
-      shortName: app.app_short_name,
-      role: app.role,
-      userCount: app.user_count,
+      tagline: app.tagline ?? '',
+      shortName: app.app_short_name ?? '',
+      role: app.role ?? '',
+      userCount: typeof app.user_count === 'number' ? app.user_count : 0,
 
-      description: app.description,
-      shortBio: app.short_bio,
-      longBio: app.long_bio,
+      description: app.description ?? '',
+      shortBio: app.short_bio ?? '',
+      longBio: app.long_bio ?? '',
 
-      logo: app.logo_url,
-      wordmarkLight: app.wordmark_light_url,
-      wordmarkDark: app.wordmark_dark_url,
+      logo: app.logo_url ?? '',
+      wordmarkLight: app.wordmark_light_url ?? '',
+      wordmarkDark: app.wordmark_dark_url ?? '',
       wordmark: resolveWordmark(app),
 
       socialLinks: app.social_links,
     }
   }
 
-  function card(target?: App | null): AppCard.Card | null {
+  function card(target?: App | null | undefined): AppCard.Card | null {
     const app = target ?? appRef?.value
     return app ? map(app) : null
   }

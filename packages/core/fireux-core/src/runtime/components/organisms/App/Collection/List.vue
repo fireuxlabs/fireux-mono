@@ -1,6 +1,18 @@
 <template>
   <div v-if="variant === 'pill'" class="flex flex-wrap gap-2">
-    <OrganismsAppCardsPill
+    <OrganismsAppCardsPill v-for="item in cards" :key="item.to" v-bind="item" />
+  </div>
+
+  <div v-else-if="variant === 'preview'" class="space-y-3">
+    <OrganismsAppCardsPreview
+      v-for="item in cards"
+      :key="item.to"
+      v-bind="item"
+    />
+  </div>
+
+  <div v-else-if="variant === 'profile'" class="space-y-3">
+    <OrganismsAppCardsProfile
       v-for="item in cards"
       :key="item.to"
       v-bind="item"
@@ -20,7 +32,7 @@ import type { AppCard } from '../../../../composables/fireux/firestore/core/app/
 withDefaults(
   defineProps<{
     cards: AppCard.Card[]
-    variant?: 'pill' | 'cell'
+    variant?: 'pill' | 'cell' | 'preview' | 'profile'
   }>(),
   {
     variant: 'pill',
