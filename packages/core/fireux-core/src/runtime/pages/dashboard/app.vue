@@ -44,7 +44,6 @@
               v-if="appCard"
               v-bind="appCard"
               :app="app"
-              :creator-card="creatorCard"
             />
           </div>
 
@@ -59,20 +58,13 @@
 import { computed, definePageMeta } from '#imports'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
-import { useUserFetch } from '../../composables/fireux/firestore/core/user/fetch/useUserFetch'
-import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const { app, pending, card: appToCard } = useApp()
 const { user, card: userToCard } = useUser()
 
-const creatorId = computed(() => app.value?.creator_id ?? null)
-const { user: creatorUser } = useUserFetch(creatorId)
-const { card: userToCardByValue } = useUserInterface()
-
 // Reactive mapping lives in the consumer (simple + explicit)
 const appCard = computed(() => appToCard(app.value))
 const userCard = computed(() => userToCard(user.value))
-const creatorCard = computed(() => userToCardByValue(creatorUser.value))
 
 definePageMeta({
   layout: 'dashboard',

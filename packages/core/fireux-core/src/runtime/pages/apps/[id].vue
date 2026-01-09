@@ -3,7 +3,64 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsAppCardsProfile v-if="appProfile" v-bind="appProfile" :app="currentApp" />
+      <div class="space-y-6">
+        <OrganismsAppCardsProfile
+          v-if="appProfile"
+          v-bind="appProfile"
+          :app="currentApp"
+        />
+
+        <section id="users">
+          <UPageCard
+            title="Users"
+            :description="usersDescription"
+            variant="subtle"
+          >
+            <div class="space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2">
+                  <UButton
+                    :to="filterLink('all')"
+                    label="All"
+                    size="xs"
+                    :variant="activeFilter === 'all' ? 'solid' : 'soft'"
+                  />
+                  <UButton
+                    :to="filterLink('admins')"
+                    label="Admins"
+                    size="xs"
+                    :variant="activeFilter === 'admins' ? 'solid' : 'soft'"
+                  />
+                  <UButton
+                    :to="filterLink('users')"
+                    label="Users"
+                    size="xs"
+                    :variant="activeFilter === 'users' ? 'solid' : 'soft'"
+                  />
+                </div>
+
+                <UBadge variant="subtle" color="neutral" size="xs">
+                  {{ visibleCount }} / {{ totalCount }}
+                </UBadge>
+              </div>
+
+              <div v-if="usersPending" class="text-sm text-dimmed">Loading users…</div>
+
+              <div v-else class="flex flex-wrap gap-2">
+                <OrganismsUserCardsPill
+                  v-for="card in visibleCards"
+                  :key="card.id"
+                  v-bind="card"
+                />
+
+                <span v-if="!visibleCards.length" class="text-sm text-dimmed italic">
+                  missing
+                </span>
+              </div>
+            </div>
+          </UPageCard>
+        </section>
+      </div>
     </UPageBody>
   </UPage>
 </template>
@@ -14,6 +71,9 @@ import { useHead } from '#imports'
 import { useRoute } from 'vue-router'
 import { useAppFetch } from '../../composables/fireux/firestore/core/app/fetch/useAppFetch'
 import { useAppInterface } from '../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import type { UserCard } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUserCollectionByAppId } from '../../composables/fireux/firestore/core/user/fetch/useUserCollectionByAppId'
 
 const route = useRoute()
 
@@ -29,6 +89,49 @@ const { app: currentApp } = useAppFetch(appId)
 const { card } = useAppInterface()
 
 const appProfile = computed(() => (currentApp.value ? card(currentApp.value) : null))
+
+const { users: appUsers, pending: usersPending } = useUserCollectionByAppId(appId)
+const { card: userToCardByValue } = useUserInterface()
+
+type UserFilter = 'all' | 'admins' | 'users'
+
+const activeFilter = computed<UserFilter>(() => {
+  const raw = route.query.filter
+  const value = Array.isArray(raw) ? raw[0] : String(raw ?? '')
+  if (value === 'admins' || value === 'users') return value
+  return 'all'
+})
+
+function filterLink(filter: UserFilter) {
+  const query = filter === 'all' ? {} : { filter }
+  return { path: `/apps/${appId.value ?? ''}`, hash: '#users', query }
+}
+
+const totalCount = computed(() => appUsers.value.length)
+
+const filteredUsers = computed(() => {
+  if (activeFilter.value === 'admins') {
+    return appUsers.value.filter((u) => u.appUser?.role === 'admin')
+  }
+  if (activeFilter.value === 'users') {
+    return appUsers.value.filter((u) => u.appUser?.role === 'user')
+  }
+  return appUsers.value
+})
+
+const visibleCards = computed<UserCard.Card[]>(() => {
+  return filteredUsers.value
+    .map((u) => userToCardByValue(u.coreUser ?? null))
+    .filter((card): card is UserCard.Card => Boolean(card))
+})
+
+const visibleCount = computed(() => visibleCards.value.length)
+
+const usersDescription = computed(() => {
+  if (activeFilter.value === 'admins') return 'Admin users for this app.'
+  if (activeFilter.value === 'users') return 'Non-admin users for this app.'
+  return 'All users for this app.'
+})
 
 const appName = computed(() => currentApp.value?.app_name ?? null)
 const pageTitle = computed(() => appName.value ?? 'App Details')

@@ -72,7 +72,7 @@
         </div>
       </div>
 
-      <div v-if="showDetails" class="rounded border p-4 space-y-3">
+      <div v-if="showDetails" class="rounded p-4 space-y-3">
         <div class="flex items-center justify-between gap-3">
           <div class="text-xs text-dimmed">App ID</div>
           <div class="text-sm font-mono break-all">
@@ -115,37 +115,48 @@
         <div class="flex items-center justify-between gap-3">
           <div class="text-xs text-dimmed">Admins</div>
           <div class="text-sm">
+            <div v-if="adminAvatarItems.length" class="flex items-center justify-end gap-2">
+              <UAvatarGroup :max="3" size="xs">
+                <UTooltip
+                  v-for="item in adminAvatarItems"
+                  :key="item.id"
+                  :text="item.tooltip"
+                >
+                  <ULink :to="item.to" raw class="hover:ring-primary transition rounded-full">
+                    <UAvatar
+                      :src="item.avatarUrl || undefined"
+                      :alt="item.alt"
+                    />
+                  </ULink>
+                </UTooltip>
+              </UAvatarGroup>
+
+              <NuxtLink
+                v-if="app?.admin_ids?.length"
+                :to="adminUsersLink"
+                class="text-primary hover:underline"
+              >
+                {{ app.admin_ids.length }}
+              </NuxtLink>
+            </div>
+
             <NuxtLink
-              v-if="app?.admin_ids?.length"
+              v-else-if="app?.admin_ids?.length"
               :to="adminUsersLink"
               class="text-primary hover:underline"
             >
               {{ app.admin_ids.length }}
             </NuxtLink>
-            <span v-else class="text-dimmed">0</span>
-          </div>
-        </div>
 
-        <div class="flex items-center justify-between gap-3">
-          <div class="text-xs text-dimmed">Join requests</div>
-          <div class="text-sm">
-            <span v-if="app?.join_requests?.length">{{ app.join_requests.length }}</span>
             <span v-else class="text-dimmed">0</span>
           </div>
         </div>
 
         <div class="flex items-center justify-between gap-3">
           <div class="text-xs text-dimmed">Created</div>
-          <div class="text-sm">
+          <div class="text-sm inline-flex items-center justify-end gap-2">
+            <UIcon name="i-lucide-calendar" class="size-4 text-dimmed shrink-0" />
             <span v-if="createdAtText">{{ createdAtText }}</span>
-            <span v-else class="text-dimmed">missing</span>
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between gap-3">
-          <div class="text-xs text-dimmed">Updated</div>
-          <div class="text-sm">
-            <span v-if="updatedAtText">{{ updatedAtText }}</span>
             <span v-else class="text-dimmed">missing</span>
           </div>
         </div>
@@ -177,12 +188,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from '#imports'
+import { computed, ref, watch } from '#imports'
+import { doc, getDoc } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
 import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useSocialLinks } from '../../../../composables/fireux/app/ui/useSocialLinks'
 import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
+import type { User } from '../../../../models/core/user.model'
 
 const props = withDefaults(
   defineProps<
@@ -202,7 +218,6 @@ const props = withDefaults(
         | 'badges'
         | 'socialLinks'
       > & {
-        creatorCard?: UserCard.Card | null
         showSubtitle?: boolean
         showTagline?: boolean
         showMeta?: boolean
@@ -213,7 +228,6 @@ const props = withDefaults(
       }
   >(),
   {
-    creatorCard: null,
     showSubtitle: true,
     showTagline: true,
     showMeta: true,
@@ -228,15 +242,104 @@ const { toItems } = useSocialLinks()
 const socialItems = computed(() => toItems(props.socialLinks))
 
 const createdAtText = computed(() =>
-  formatFirestoreTimestamp(props.app?.created_at, { fallback: undefined })
+  formatFirestoreTimestamp(props.app?.created_at, {
+    fallback: undefined,
+    format: { dateStyle: 'medium' },
+  })
 )
 
-const updatedAtText = computed(() =>
-  formatFirestoreTimestamp(props.app?.updated_at, { fallback: undefined })
+const creatorId = computed(() => props.app?.creator_id ?? null)
+const { user: creatorUser } = useUserFetch(creatorId)
+const { card: userToCard } = useUserInterface()
+
+const creatorCard = computed(() => userToCard(creatorUser.value))
+
+const adminIds = computed(() => {
+  const raw = props.app?.admin_ids
+  if (!Array.isArray(raw)) return []
+  return raw.filter((v): v is string => typeof v === 'string' && v.length > 0)
+})
+
+const adminPreviewIds = computed(() => adminIds.value.slice(0, 3))
+
+const db = useFirestore()
+const adminPreviewCards = ref<UserCard.Card[]>([])
+
+type AdminAvatarItem = {
+  id: string
+  to: string
+  avatarUrl: string
+  alt: string
+  tooltip: string
+}
+
+const adminAvatarItems = computed<AdminAvatarItem[]>(() => {
+  return adminPreviewIds.value.map((id: string) => {
+    const card = adminPreviewCards.value.find((c: UserCard.Card) => c.id === id)
+
+    const displayName = (card?.displayName ?? '').trim()
+    const handle = (card?.handle ?? '').trim()
+    return {
+      id,
+      to: card?.to ?? `/users/${id}`,
+      avatarUrl: card?.avatarUrl ?? '',
+      alt: displayName || handle || id,
+      tooltip: displayName || handle || id,
+    }
+  })
+})
+
+function normalizeUser(raw: any, fallbackId: string): User {
+  return {
+    ...raw,
+    id: raw?.id ?? fallbackId,
+    display_name: raw?.display_name ?? raw?.id ?? fallbackId,
+    avatar: raw?.avatar ?? '',
+    handle: raw?.handle ?? '',
+    email: raw?.email ?? '',
+    bio: raw?.bio ?? '',
+    profiles: Array.isArray(raw?.profiles) ? raw.profiles : [],
+    userOf: Array.isArray(raw?.userOf) ? raw.userOf : [],
+    adminOf: Array.isArray(raw?.adminOf) ? raw.adminOf : [],
+  }
+}
+
+watch(
+  adminPreviewIds,
+  async (ids: string[]) => {
+    adminPreviewCards.value = []
+
+    if (import.meta.server) return
+    if (!ids.length) return
+
+    const token = Symbol('fetch')
+    ;(watch as any)._appProfileAdminsToken = token
+
+    try {
+      const snapshots = await Promise.all(
+        ids.map((id: string) => getDoc(doc(db, 'users', id) as any))
+      )
+
+      if ((watch as any)._appProfileAdminsToken !== token) return
+
+      adminPreviewCards.value = snapshots
+        .filter((snap) => snap.exists())
+        .map((snap) => normalizeUser(snap.data(), snap.id))
+        .map((u) => userToCard(u)!)
+        .filter(Boolean)
+    } catch {
+      // If security rules block reads, keep id-based avatars.
+      if ((watch as any)._appProfileAdminsToken === token) {
+        adminPreviewCards.value = []
+      }
+    }
+  },
+  { immediate: true }
 )
 
 const adminUsersLink = computed(() => ({
-  path: '/misebox/users',
+  path: `/apps/${props.id}`,
+  hash: '#users',
   query: { filter: 'admins' },
 }))
 </script>
