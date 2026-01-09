@@ -1,5 +1,5 @@
 import { ref, watch } from 'vue'
-import type { BasePlace } from '../../../../../../../models/objects/place.model'
+import type { BasePlace } from '../../../../../../../models/place.model'
 import type { PlaceCard } from '../../utils/view/usePlacesInterface'
 import { useFirestoreSearch } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreSearch.ts'
 import {
@@ -13,7 +13,7 @@ import {
 const sanitize = (url?: string | null) =>
   url && !/mapfiles\/place_api\/icons/i.test(url) ? url : null
 
-// in-memory cache for logos by place_id
+// in-memory cache for logos by id
 const logoCache = new Map<string, string | null>()
 const pendingLogos = new Map<string, Promise<string | null>>()
 
@@ -82,20 +82,24 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       let firestoreFailed = false
       let firestoreError: unknown = null
       let fx: Array<{
-        place_id: string
+        id?: string
+        place_id?: string
         name: string
         formatted_address?: string
         avatar?: string | null
         search_term: string
+        source?: string
       }> = []
 
       try {
         fx = await prefixSearch<{
-          place_id: string
+          id?: string
+          place_id?: string
           name: string
           formatted_address?: string
           avatar?: string | null
           search_term: string
+          source?: string
         }>({ collection: 'places', field: 'search_term', query: term, limit: 5 })
       } catch (err) {
         firestoreFailed = true
@@ -106,23 +110,28 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       }
 
       if (fx.length) {
-        results.value = fx.map<PlaceCard.Cell>((p: {
-          place_id: string
-          name: string
-          formatted_address?: string
-          avatar?: string | null
-        }) => ({
-          place_id: p.place_id,
-          name: p.name,
-          formatted_address: p.formatted_address ?? undefined,
-          source: 'firestore',
-          avatar: p.avatar ?? null,
-        }))
+        results.value = fx.map<PlaceCard.Cell>((p: any) => {
+          const id = canonicalPlaceId(p?.place_id ?? p?.id) ?? ''
+          const sourceRaw = typeof p?.source === 'string' ? p.source : 'firebase'
+          const normalizedSource = sourceRaw === 'firestore' ? 'firebase' : sourceRaw
+          const safeSource = normalizedSource === 'google' ? 'google' : 'firebase'
+
+          return {
+            id,
+            name: String(p?.name ?? ''),
+            formatted_address:
+              typeof p?.formatted_address === 'string'
+                ? p.formatted_address
+                : undefined,
+            source: safeSource as any,
+            avatar: p?.avatar ?? null,
+          }
+        })
 
         if (import.meta.dev) {
           debug.value = {
             term,
-            stage: 'firestore',
+            stage: 'firebase',
             firestoreCount: fx.length,
             firestoreFailed,
             firestoreError:
@@ -202,7 +211,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       const googleCells = cells.filter((c) => c.source === 'google').slice(0, 6)
 
       for (const cell of googleCells) {
-        const id = canonicalPlaceId(cell.place_id)
+        const id = canonicalPlaceId(cell.id)
         if (!id) continue
         if (logoCache.has(id) || pendingLogos.has(id)) continue
 
@@ -220,7 +229,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             logoCache.set(id, nextAvatar)
 
             const idx = results.value.findIndex(
-              (row: PlaceCard.Cell) => canonicalPlaceId(row.place_id) === id
+              (row: PlaceCard.Cell) => canonicalPlaceId(row.id) === id
             )
             if (idx !== -1) {
               const current = results.value[idx]
@@ -234,7 +243,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
 
             if (
               selected.value &&
-              canonicalPlaceId(selected.value.place_id) === id &&
+              canonicalPlaceId((selected.value as any).place_id ?? selected.value.id) === id &&
               (selected.value.avatar ?? null) == null
             ) {
               selected.value = { ...selected.value, avatar: nextAvatar }
@@ -257,11 +266,11 @@ export function usePlacesSearch(options?: { type?: string | null }) {
 
   // select reuses cached logo; never clobbers an existing non-null avatar
   async function select(cell: PlaceCard.Cell) {
-    const id = canonicalPlaceId(cell.place_id) || cell.place_id
+    const id = canonicalPlaceId(cell.id) || cell.id
     const cached = logoCache.get(id) ?? null
 
     selected.value = {
-      place_id: id,
+      id,
       name: cell.name,
       formatted_address: cell.formatted_address ?? '',
       lat: 0,
@@ -278,7 +287,8 @@ export function usePlacesSearch(options?: { type?: string | null }) {
 
         const better = logoCache.get(id) ?? null
         const cur = selected.value
-        if (cur && canonicalPlaceId(cur.place_id) === id) {
+        const curId = cur ? canonicalPlaceId((cur as any).place_id ?? cur.id) : null
+        if (cur && curId === id) {
           selected.value = {
             ...cur,
             name: details.google.name,

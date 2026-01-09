@@ -9,27 +9,15 @@ export interface UsePlaceCollectionOptions {
   types?: string[]
 }
 
-function isRefLike<T>(value: unknown): value is Ref<T> {
-  return !!value && typeof value === 'object' && 'value' in (value as any)
-}
-
 export function usePlaceCollection<T extends Record<string, any> = Record<string, any>>(
   options: UsePlaceCollectionOptions = {}
 ) {
   const { firestoreFetchCollection } = useFirestoreManager()
   const configuredTypes = usePlaceTypesConfig()
 
-  const keyword = computed<string | null | undefined>(() => {
-    const raw = options.keyword ?? options.type
-    if (isRefLike<string | null | undefined>(raw)) return raw.value
-    return raw
-  })
-
   const types = computed<string[]>(() => options.types ?? configuredTypes)
 
-  const collectionPath = computed(() =>
-    toPlaceCollectionPath(keyword.value, types.value)
-  )
+  const collectionPath = computed(() => toPlaceCollectionPath(null, types.value))
 
   const collectionRef = shallowRef(null) as ShallowRef<Ref<T[] | undefined> | null>
   watch(

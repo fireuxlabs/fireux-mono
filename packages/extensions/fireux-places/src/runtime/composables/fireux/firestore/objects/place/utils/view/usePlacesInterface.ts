@@ -2,13 +2,13 @@ import type {
   BasePlace as PlaceBase,
   Place as PlaceEntity,
   PlaceSource,
-} from '../../../../../../../models/objects/place.model'
+} from '../../../../../../../models/place.model'
 
 export type { PlaceBase, PlaceEntity, PlaceSource }
 
 export namespace PlaceCard {
   export interface Pill {
-    place_id: string
+    id: string
     name: string
     avatar?: string | null
   }
@@ -21,11 +21,16 @@ export namespace PlaceCard {
 
 export function usePlacesInterface() {
   function toCell(place: PlaceBase): PlaceCard.Cell {
+    const rawId = (place as any)?.id ?? (place as any)?.place_id ?? ''
+    const id = String(rawId)
+    const sourceRaw = (place as any)?.source
+    const normalized = sourceRaw === 'firestore' ? 'firebase' : sourceRaw
+    const source = (normalized === 'google' ? 'google' : 'firebase') as PlaceSource
     return {
-      place_id: place.place_id,
+      id,
       name: place.name,
       avatar: place.avatar ?? null,
-      source: place.source,
+      source,
       formatted_address: place.formatted_address,
     }
   }

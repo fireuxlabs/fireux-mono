@@ -1,7 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
 import { useFirestore } from 'vuefire'
-import type { Place } from '../../../../../../models/objects/place.model'
+import type { PlaceUpsertInput } from '../../../../../../models/place.model'
 import { canonicalPlaceId } from '../fetch/google/usePlacesGoogle'
 import { toPlaceCollectionPath, usePlaceTypesConfig } from '../utils/placeCollections'
 
@@ -16,8 +16,8 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
   const configuredTypes = usePlaceTypesConfig()
 
   /** Ensure a place document exists in Firestore. */
-  async function ensurePlaceExists(place: Place): Promise<boolean> {
-    const id = canonicalPlaceId(place.place_id)
+  async function ensurePlaceExists(place: Partial<PlaceUpsertInput> & { id?: string }): Promise<boolean> {
+    const id = canonicalPlaceId((place as any)?.id ?? (place as any)?.place_id)
     if (!id) return false
 
     const types = options.types ?? configuredTypes
@@ -32,18 +32,31 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       return true
     }
 
-    const payload: Record<string, any> = {
-      ...place,
-      place_id: id,
-      source: 'firestore',
-    }
+    const name = typeof (place as any)?.name === 'string' ? String((place as any).name) : ''
+    const formatted =
+      typeof (place as any)?.formatted_address === 'string'
+        ? String((place as any).formatted_address)
+        : ''
+    const avatarRaw = (place as any)?.avatar
+    const avatar = typeof avatarRaw === 'string' ? avatarRaw : ''
+    const lat = Number.isFinite(Number((place as any)?.lat)) ? Number((place as any).lat) : 0
+    const lng = Number.isFinite(Number((place as any)?.lng)) ? Number((place as any).lng) : 0
+    const search_term_raw = (place as any)?.search_term
+    const search_term =
+      typeof search_term_raw === 'string' && search_term_raw.trim().length
+        ? search_term_raw.trim()
+        : `${name} ${formatted}`.toLowerCase().trim()
 
-    if (collectionPath !== 'places' && options.type) {
-      payload.type = options.type
+    const payload: PlaceUpsertInput = {
+      id,
+      source: 'firebase',
+      name,
+      formatted_address: formatted,
+      avatar,
+      lat,
+      lng,
+      search_term,
     }
-
-    delete payload.created_at
-    delete payload.updated_at
 
     await setDocument(collectionPath, id, payload)
 

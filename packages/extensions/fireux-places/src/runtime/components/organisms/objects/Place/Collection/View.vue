@@ -17,7 +17,7 @@
       <div v-if="cells.length" class="space-y-2">
         <UButton
           v-for="cell in cells"
-          :key="cell.place_id"
+          :key="cell.id"
           color="neutral"
           variant="ghost"
           class="w-full justify-start px-3 py-3"

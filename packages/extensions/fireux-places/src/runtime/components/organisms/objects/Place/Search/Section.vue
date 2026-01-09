@@ -45,7 +45,7 @@ import {
 } from '../../../../../composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
-import type { BasePlace, Place } from '../../../../../models/objects/place.model'
+import type { BasePlace, PlaceUpsertInput } from '../../../../../models/place.model'
 
 interface Props {
   type?: string | null
@@ -56,7 +56,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'confirmed', payload: { placeId: string; place: Place }): void
+  (e: 'confirmed', payload: { placeId: string; place: PlaceUpsertInput }): void
 }>()
 
 const { query, results, selected, isSearching, select, clear, debug } =
@@ -81,7 +81,7 @@ const debugPayload = computed(() => {
     resultsBySource,
     selected: selected.value
       ? {
-          place_id: selected.value.place_id,
+          id: selected.value.id,
           source: selected.value.source,
           name: selected.value.name,
         }
@@ -110,18 +110,17 @@ function sanitizeAvatar(value?: string | null) {
   return trimmed ? trimmed : null
 }
 
-function buildFallbackPlace(base: BasePlace, placeId: string): Place {
+function buildFallbackPlace(base: BasePlace, placeId: string): PlaceUpsertInput {
   const formatted = base.formatted_address ?? ''
   return {
-    place_id: placeId,
+    id: placeId,
+    source: 'firebase',
     name: base.name,
     formatted_address: formatted,
     lat: base.lat,
     lng: base.lng,
-    source: 'firestore',
-    avatar: sanitizeAvatar(base.avatar ?? null),
+    avatar: sanitizeAvatar(base.avatar ?? null) ?? '',
     search_term: `${base.name} ${formatted}`.toLowerCase().trim(),
-    created_at: new Date(),
   }
 }
 
@@ -130,14 +129,14 @@ function clearSelection() {
   isConfirming.value = false
 }
 
-async function loadDraftPlace(placeId: string, preview: BasePlace) {
+async function loadDraftPlace(placeId: string, preview: BasePlace): Promise<PlaceUpsertInput> {
   try {
     const details = await fetchPlaceDetails(placeId)
     if (details?.stored) {
       return {
         ...details.stored,
-        place_id: placeId,
-        avatar: sanitizeAvatar(details.stored.avatar ?? null),
+        id: placeId,
+        avatar: sanitizeAvatar(details.stored.avatar ?? null) ?? '',
       }
     }
   } catch (error) {
@@ -151,7 +150,7 @@ async function loadDraftPlace(placeId: string, preview: BasePlace) {
 
 async function maybeUploadAvatar(
   placeId: string,
-  draft: Place,
+  draft: PlaceUpsertInput,
   preview: BasePlace
 ) {
   const uploadSource = sanitizeAvatar(preview.avatar ?? draft.avatar ?? null)
@@ -177,7 +176,7 @@ async function maybeUploadAvatar(
 async function onConfirm(place: BasePlace) {
   if (isConfirming.value) return
 
-  const placeId = canonicalPlaceId(place.place_id)
+  const placeId = canonicalPlaceId((place as any).id ?? (place as any).place_id)
   if (!placeId) {
     if (import.meta.dev) {
       console.warn('[places][confirm] missing canonical place id', place)

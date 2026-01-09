@@ -1,5 +1,5 @@
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
-import type { BasePlace } from '../../../../../../../models/objects/place.model'
+import type { BasePlace } from '../../../../../../../models/place.model'
 import type { PlaceCard } from './usePlacesInterface'
 
 const LOGO_ENDPOINT = '/api/places/logo'
@@ -209,7 +209,7 @@ function defaultShouldHydrate(
 
 function toLogoCell(place: PlaceLogoTarget): PlaceCard.Cell {
   return {
-    place_id: place.place_id,
+    id: (place as any).id ?? (place as any).place_id,
     name: place.name,
     formatted_address: (place as PlaceCard.Cell).formatted_address ?? '',
     avatar: place.avatar ?? null,
@@ -289,7 +289,7 @@ export async function loadLogoForPlace(
   options: LoadLogoOptions = {}
 ): Promise<string | null> {
   if (typeof window === 'undefined') return place.avatar ?? null
-  const placeId = canonicalPlaceId(place.place_id)
+  const placeId = canonicalPlaceId((place as any).id ?? (place as any).place_id)
   if (!placeId) return place.avatar ?? null
 
   const start = performanceNow()

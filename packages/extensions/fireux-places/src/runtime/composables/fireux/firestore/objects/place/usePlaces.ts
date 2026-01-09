@@ -18,7 +18,7 @@ export function usePlaces<T extends Record<string, any> = Record<string, any>>(
 
   return {
     ...usePlaceCollection<T>(options),
-    ...usePlacesSearch(),
+    ...usePlacesSearch({ type }),
     ...usePlaceCreate({ types: options.types }),
     ...usePlaceSave({ type, types: options.types }),
   }

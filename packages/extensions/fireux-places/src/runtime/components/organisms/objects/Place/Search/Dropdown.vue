@@ -17,7 +17,7 @@
     <div class="space-y-1 p-2">
       <UButton
         v-for="cell in visibleCells"
-        :key="cell.place_id"
+        :key="cell.id"
         color="neutral"
         variant="ghost"
         class="w-full justify-start"

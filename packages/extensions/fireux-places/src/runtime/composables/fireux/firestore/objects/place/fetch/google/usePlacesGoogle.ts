@@ -1,4 +1,4 @@
-import type { GooglePlace, Place } from '../../../../../../../models/objects/place.model'
+import type { GooglePlace, PlaceUpsertInput } from '../../../../../../../models/place.model'
 import type { PlaceCard } from '../../utils/view/usePlacesInterface'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
@@ -126,11 +126,12 @@ export async function fetchGoogle(
       })
       .slice(0, limit)
       .map((p): PlaceCard.Cell => {
+        const id = canonicalPlaceId(p.place_id) as string
         const main = p.structured_formatting?.main_text
         const secondary = p.structured_formatting?.secondary_text
         const desc = p.description
         return {
-          place_id: canonicalPlaceId(p.place_id) as string,
+          id,
           name: main || desc || 'Unknown place',
           formatted_address: secondary || desc || undefined,
           source: 'google',
@@ -143,7 +144,7 @@ export async function fetchGoogle(
       total: cells.length,
       immediateLogoIds: cells
         .filter((cell) => Boolean(cell.avatar))
-        .map((cell) => cell.place_id),
+        .map((cell) => cell.id),
       pendingCount: cells.filter((cell) => !cell.avatar).length,
     })
 
@@ -152,7 +153,7 @@ export async function fetchGoogle(
         query,
         requested: limit,
         count: cells.length,
-        ids: cells.map((c) => c.place_id),
+        ids: cells.map((c) => c.id),
       })
     }
 
@@ -182,18 +183,17 @@ export async function fetchGoogle(
   }
 }
 
-function toStoredPlace(g: GooglePlace): Place {
+function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
   const search_term = `${g.name} ${g.formatted_address}`.toLowerCase()
   return {
-    place_id: g.place_id,
+    id: g.id,
     name: g.name,
     formatted_address: g.formatted_address,
     lat: g.lat,
     lng: g.lng,
-    source: 'firestore',
-    avatar: g.avatar ?? null,
+    source: 'firebase',
+    avatar: g.avatar ?? '',
     search_term,
-    created_at: new Date(),
   }
 }
 
@@ -212,7 +212,7 @@ export function mapDetailsToGooglePlace(
   }
 
   return {
-    place_id: id,
+    id,
     name: result?.name ?? 'Unknown place',
     formatted_address:
       result?.formatted_address ?? result?.vicinity ?? 'Unknown address',
@@ -232,7 +232,7 @@ export function mapDetailsToGooglePlace(
 
 export interface PlaceDetailsResult {
   google: GooglePlace
-  stored: Place
+  stored: PlaceUpsertInput
   raw: Record<string, any>
 }
 

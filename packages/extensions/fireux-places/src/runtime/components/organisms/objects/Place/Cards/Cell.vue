@@ -30,7 +30,7 @@ import type { PlaceCard } from '../../../../../composables/fireux/firestore/obje
 defineOptions({ inheritAttrs: false })
 
 const props = defineProps<
-  Pick<PlaceCard.Cell, 'place_id' | 'name' | 'formatted_address' | 'avatar' | 'source'> & { prop?: string }
+  Pick<PlaceCard.Cell, 'id' | 'name' | 'formatted_address' | 'avatar' | 'source'> & { prop?: string }
 >()
 
 const title = computed(() => props.name)
@@ -38,8 +38,8 @@ const subtitle = computed(() => props.formatted_address)
 const avatar = computed(() => props.avatar ?? null)
 const prop = computed(() => props.prop)
 const sourceLabel = computed(() =>
-  props.source === 'firestore'
-    ? 'Firestore'
+  props.source === 'firebase'
+    ? 'Firebase'
     : props.source === 'google'
       ? 'Google'
       : null

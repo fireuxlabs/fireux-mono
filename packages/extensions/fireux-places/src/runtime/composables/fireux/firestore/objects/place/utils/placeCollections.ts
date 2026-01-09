@@ -8,12 +8,10 @@ export function usePlaceTypesConfig(): string[] {
   return Array.isArray(types) ? (types as string[]) : []
 }
 
-export function toPlaceCollectionPath(type: string | null | undefined, types: string[]): string {
-  if (!type) return 'places'
-  if (type === 'other') return 'places'
-  if (!types.includes(type)) return 'places'
-  if (type === 'company') return 'companies'
-  return `${type}s`
+export function toPlaceCollectionPath(_type: string | null | undefined, _types: string[]): string {
+  // Canon: places are neutral and always stored under /places.
+  // `type` and `types` are only used for UI/search filtering.
+  return 'places'
 }
 
 export function normalizePlaceType(raw: unknown): string | null {
