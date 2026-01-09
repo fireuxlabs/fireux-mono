@@ -1,58 +1,79 @@
 <template>
-  <OrganismsProfilesAgentCTA v-if="!hasAgentProfile" />
-  <UPageCTA
-    v-else
-    title="Post a job"
-    description="Create a job posting to reach professionals across this runtime."
-    variant="naked"
-  >
-    <template #default>
-      <div class="space-y-6">
-        <UCard>
-          <template #header>
-            <h2>{{ currentProfileTitle }}</h2>
-          </template>
+  <div class="space-y-6">
+    <!-- Agent can post jobs -->
+    <UPageCTA
+      v-if="hasAgentProfile"
+      title="Post a job"
+      :description="agentCtaDescription"
+      variant="naked"
+    >
+      <template #default>
+        <OrganismsObjectsJobCreateSystem />
 
-          <div class="space-y-4">
-            <OrganismsProfilesAgentCardsCell
-              v-if="profileCard"
-              v-bind="profileCard"
-              class="cta-agent-cell"
-            />
-            <OrganismsProfilesAgentCardsPill v-if="profileCard" v-bind="profileCard" />
-          </div>
-        </UCard>
-      </div>
-    </template>
+        <!-- DEV sanity output -->
+        <pre
+          v-if="showCheck"
+          class="text-xs text-slate-500 whitespace-pre-wrap"
+        >{{ JSON.stringify(check, null, 2) }}</pre>
+      </template>
+    </UPageCTA>
 
-    <template #links>
-      <UButton
-        color="primary"
-        size="lg"
-        to="/jobs/create"
-      >
-        Create job posting
-      </UButton>
-    </template>
-  </UPageCTA>
+    <!-- Professional-only path -->
+    <OrganismsProfilesProfessionalCTA v-else-if="hasProfessionalProfile" />
+
+    <!-- No profiles yet -->
+    <div v-else class="space-y-6">
+      <OrganismsProfilesProfessionalCTA />
+      <OrganismsProfilesAgentCTA />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
-const { coreProfile, card } = useAgent()
+const { appName, ecosystem, isTenant } = useFireUXConfig()
 const { hasProfile } = useUser()
-
-const profileCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
+const { coreProfile } = useAgent()
 
 const hasAgentProfile = computed(() => hasProfile('agent'))
-const currentProfileTitle = 'Your agent profile'
-</script>
+const hasProfessionalProfile = computed(() => hasProfile('professional'))
 
-<style scoped>
-.cta-agent-cell {
-  margin-bottom: 1.5rem;
-}
-</style>
+const agentCtaScopeLabel = computed(() => (isTenant ? appName : ecosystem))
+const agentCtaDescription = computed(
+  () => `Create a job posting to reach professionals across ${agentCtaScopeLabel.value}.`
+)
+
+const showCheck = import.meta.dev
+
+/**
+ * DEV sanity check (temporary)
+ */
+const check = computed(() => {
+  if (!hasAgentProfile.value) {
+    return { status: 'no-agent-profile' }
+  }
+
+  if (!coreProfile.value) {
+    return { status: 'agent-profile-missing' }
+  }
+
+  const agent = coreProfile.value
+
+  const missing: string[] = []
+
+  if (!agent.title) missing.push('title')
+  if (!agent.contact_email) missing.push('contact_email')
+  if (!agent.website_url) missing.push('website_url')
+  if (!agent.bio_short) missing.push('bio_short')
+
+  return {
+    status: missing.length ? 'incomplete' : 'ready',
+    agentId: agent.id ?? null,
+    missing,
+  }
+})
+</script>

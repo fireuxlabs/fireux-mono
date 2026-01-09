@@ -23,23 +23,42 @@ export type JobCreateInput = {
   description?: string
 }
 
+function scaffoldJobDescription(): string {
+  return [
+    'Overview',
+    'TBD: What is the role and what does a typical shift look like?',
+    '',
+    'Schedule',
+    'TBD: Days/times, start date, full-time/part-time.',
+    '',
+    'Compensation',
+    'TBD: Hourly or salary range, tips, benefits.',
+    '',
+    'Requirements',
+    'TBD: Experience, certifications, must-haves.',
+    '',
+    'How to apply',
+    'TBD: Contact email / application link / what to include.',
+  ].join('\n')
+}
+
+function scaffoldJobForm(): JobCreateForm {
+  return {
+    title: 'Sous Chef (Evenings)',
+    status: 'open',
+    description: scaffoldJobDescription(),
+  }
+}
+
 export function useJobCreate() {
   const { appId } = useFireUXConfig()
   const { setDocument } = useFirestoreManager()
 
   // Shared create form state (used by write + preview + submit)
-  const form = useState<JobCreateForm>('jobs-create-form', () => ({
-    title: '',
-    status: 'open',
-    description: '',
-  }))
+  const form = useState<JobCreateForm>('jobs-create-form', () => scaffoldJobForm())
 
   const reset = () => {
-    form.value = {
-      title: '',
-      status: 'open',
-      description: '',
-    }
+    form.value = scaffoldJobForm()
   }
 
   const createJob = async (input: JobCreateInput): Promise<string> => {
@@ -59,6 +78,16 @@ export function useJobCreate() {
   const submit = async (): Promise<string> => {
     const trim = (v: string) => v.trim()
 
+    const title = trim(form.value.title)
+    const description = trim(form.value.description)
+
+    if (!title) {
+      throw new Error('[useJobCreate] Job title is required')
+    }
+    if (!description) {
+      throw new Error('[useJobCreate] Job description is required')
+    }
+
     const user = await useRequireUser()
     const uid = user?.uid
     if (!uid) throw new Error('[useJobCreate] Unable to resolve user')
@@ -76,9 +105,9 @@ export function useJobCreate() {
       place_id: null,
       kitchen_id: null,
       source: 'manual',
-      title: trim(form.value.title) || 'Hello world job',
+      title,
       status: form.value.status ?? 'open',
-      description: trim(form.value.description),
+      description,
     }
 
     await setDocument<Job>('jobs', id, payload, { raw: false })

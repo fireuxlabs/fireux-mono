@@ -3,19 +3,19 @@
     <template #header>
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-start gap-3">
-          <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="md" />
+          <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
           <div class="min-w-0">
-            <div class="truncate text-base font-semibold">{{ displayName }}</div>
+            <div class="truncate text-base font-semibold">{{ card.displayName }}</div>
             <div class="text-sm text-dimmed">
-                <span v-if="showSubtitle && tagline">{{ tagline }}</span>
+                <span v-if="showSubtitle && card.tagline">{{ card.tagline }}</span>
                 <span v-else-if="showSubtitle" class="italic">missing</span>
             </div>
           </div>
         </div>
 
-        <div v-if="badges.length" class="flex flex-wrap justify-end gap-1">
+        <div v-if="card.badges.length" class="flex flex-wrap justify-end gap-1">
           <UBadge
-            v-for="badge in badges"
+            v-for="badge in card.badges"
             :key="badge"
             variant="soft"
             color="neutral"
@@ -35,7 +35,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Bio</div>
         <div class="text-sm">
-          <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
+          <span v-if="prop || card.bioShort">{{ prop || card.bioShort }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -43,7 +43,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Contact</div>
         <div class="text-sm">
-          <span v-if="contactEmail">{{ contactEmail }}</span>
+          <span v-if="card.contactEmail">{{ card.contactEmail }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -51,7 +51,7 @@
       <div class="space-y-1">
         <div class="text-xs text-dimmed">Website</div>
         <div class="text-sm">
-          <span v-if="websiteUrl">{{ websiteUrl }}</span>
+          <span v-if="card.websiteUrl">{{ card.websiteUrl }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -63,21 +63,11 @@
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 withDefaults(
-  defineProps<
-    Pick<
-      AgentCard.Card,
-      | 'avatarUrl'
-      | 'displayName'
-      | 'tagline'
-      | 'badges'
-      | 'bioShort'
-      | 'contactEmail'
-      | 'websiteUrl'
-    > & {
-      prop?: string
-      showSubtitle?: boolean
-    }
-  >(),
+  defineProps<{
+    card: AgentCard.Card
+    prop?: string
+    showSubtitle?: boolean
+  }>(),
   {
     showSubtitle: true,
   }

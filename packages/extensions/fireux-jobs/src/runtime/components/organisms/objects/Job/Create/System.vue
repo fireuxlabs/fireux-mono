@@ -1,22 +1,30 @@
 <template>
-  <MoleculesCreateShell
-    :loading="submitting"
-    submit-label="Create"
-    @clear="onReset"
-    @submit="onSubmit"
-  >
-    <template #write>
-      <OrganismsObjectsJobCreateWrite v-model:form="form" />
-    </template>
+  <div class="space-y-3">
+    <MoleculesCreateShell
+      :loading="submitting"
+      submit-label="Create"
+      @clear="onReset"
+      @submit="onSubmit"
+    >
+      <template #write>
+        <OrganismsObjectsJobCreateWrite v-model:form="form" />
+      </template>
 
-    <template #preview>
-      <OrganismsObjectsJobCreatePreview :form="form" />
-    </template>
-  </MoleculesCreateShell>
+      <template #preview>
+        <OrganismsObjectsJobCreatePreview :form="form" />
+      </template>
+    </MoleculesCreateShell>
+
+    <!-- DEV scaffold check (temporary) -->
+    <pre
+      v-if="showCheck"
+      class="text-xs text-slate-500 whitespace-pre-wrap"
+    >{{ JSON.stringify(check, null, 2) }}</pre>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useJobCreate } from '../../../../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
 
@@ -40,5 +48,23 @@ async function onSubmit() {
     submitting.value = false
   }
 }
+
+const showCheck = import.meta.dev
+const check = computed(() => {
+  const missing: string[] = []
+
+  if (!String(form.value.title ?? '').trim()) missing.push('title')
+  if (!String(form.value.description ?? '').trim()) missing.push('description')
+
+  const desc = String(form.value.description ?? '')
+  const hasTbd = /\bTBD\b/i.test(desc)
+  if (hasTbd) missing.push('description: replace TBD sections')
+
+  return {
+    status: missing.length ? 'incomplete' : 'ready',
+    missing,
+    notCapturedYet: ['company/place/kitchen links', 'schedule fields', 'compensation fields'],
+  }
+})
 </script>
 

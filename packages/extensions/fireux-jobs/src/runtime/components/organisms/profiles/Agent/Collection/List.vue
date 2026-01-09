@@ -25,7 +25,7 @@
   </div>
 
   <div v-else class="space-y-3">
-    <OrganismsProfilesAgentCardsProfile v-for="item in cards" :key="item.to" v-bind="item" />
+    <OrganismsProfilesAgentCardsProfile v-for="item in cards" :key="item.to" :card="item" />
   </div>
 
   <DevJsonPanel

@@ -14,6 +14,13 @@
           <h3 class="text-base font-semibold text-gray-900">
             {{ title }}
           </h3>
+
+          <div v-if="agentCard" class="mt-3 space-y-1">
+            <p class="text-xs uppercase tracking-wide text-gray-400">
+              Posted by
+            </p>
+            <OrganismsProfilesAgentCardsPill v-bind="agentCard" :show-subtitle="false" />
+          </div>
         </div>
       </div>
     </template>
@@ -35,6 +42,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 type JobCreateForm = {
   title: string
@@ -44,6 +52,9 @@ type JobCreateForm = {
 const props = defineProps<{
   form: JobCreateForm
 }>()
+
+const { coreProfile, card } = useAgent()
+const agentCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
 
 const title = computed(() => props.form.title.trim() || 'Untitled job')
 const description = computed(() => props.form.description.trim())

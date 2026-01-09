@@ -9,67 +9,77 @@
         <OrganismsProfilesAgentCreateSystem />
       </div>
 
+      <div v-else-if="!profileCard" class="space-y-2">
+        <OrganismsProfilesAgentCreateSystem />
+      </div>
+
       <div v-else class="space-y-4">
         <div class="flex justify-end">
-          <div v-if="canToggle" class="flex items-center gap-2">
-            <UButton size="xs" variant="ghost" @click="toggleCompact">
-              {{ variant === 'pill' ? 'Cells' : 'Pills' }}
-            </UButton>
-            <UButton size="xs" variant="ghost" @click="toggleDetail">
-              {{ variant === 'preview' ? 'Profile' : 'Preview' }}
-            </UButton>
-          </div>
+          <UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
+            {{ view === 'preview' ? 'Profile' : 'Preview' }}
+          </UButton>
         </div>
 
         <div class="space-y-4">
           <OrganismsProfilesAgentCardsPreview
-            v-if="variant === 'preview' && profileCard"
+            v-if="view === 'preview' && profileCard"
             :card="profileCard"
           />
           <OrganismsProfilesAgentCardsProfile
-            v-else-if="variant === 'profile' && profileCard"
-            v-bind="profileCard"
+            v-else-if="profileCard"
+            :card="profileCard"
           />
-          <OrganismsProfilesAgentCardsCell
-            v-else-if="variant === 'cell' && profileCard"
-            v-bind="profileCard"
-          />
-          <OrganismsProfilesAgentCardsPill v-else-if="profileCard" v-bind="profileCard" />
-          <p v-else class="text-sm text-slate-500">No agent profile loaded.</p>
         </div>
       </div>
+
+      <DevJsonPanel
+        v-if="showDebug"
+        title="Agent CTA Debug"
+        :data="debugPayload"
+      />
     </template>
   </UPageCTA>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth.ts'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 
+import DevJsonPanel from 'fireux-core/runtime/components/dev/JsonPanel.vue'
+
 const { coreProfile, card } = useAgent()
-const { hasProfile } = useUser()
+const { uid } = useAuth()
+const { user, coreUser, hasProfile } = useUser()
 
 const hasAgentProfile = computed(() => hasProfile('agent'))
 
 const profileCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
 
 const canToggle = computed(() => Boolean(profileCard.value))
-type Variant = 'pill' | 'cell' | 'preview' | 'profile'
-const variant = ref<Variant>('pill')
+type View = 'preview' | 'profile'
+const view = ref<View>('preview')
 
-const toggleCompact = () => {
+const toggleView = () => {
   if (!canToggle.value) return
-  variant.value = variant.value === 'pill' ? 'cell' : 'pill'
-}
-
-const toggleDetail = () => {
-  if (!canToggle.value) return
-  variant.value = variant.value === 'preview' ? 'profile' : 'preview'
+  view.value = view.value === 'preview' ? 'profile' : 'preview'
 }
 
 watch(canToggle, (enabled: boolean) => {
-  if (!enabled) variant.value = 'pill'
+  if (!enabled) view.value = 'preview'
+})
+
+const showDebug = import.meta.dev
+const debugPayload = computed(() => {
+  return {
+    authUid: uid.value ?? null,
+    userId: user.value?.id ?? null,
+    profiles: coreUser.value?.profiles ?? null,
+    hasAgentProfile: hasAgentProfile.value,
+    hasProfileCard: Boolean(profileCard.value),
+    view: view.value,
+  }
 })
 </script>
 

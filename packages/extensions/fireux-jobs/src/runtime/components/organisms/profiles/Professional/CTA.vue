@@ -9,38 +9,49 @@
         <OrganismsProfilesProfessionalCreateSystem />
       </div>
 
+      <div v-else-if="!profileCard" class="space-y-2">
+        <OrganismsProfilesProfessionalCreateSystem />
+      </div>
+
       <div v-else class="space-y-4">
         <div class="flex justify-end">
           <UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
-            {{ showCellView ? 'Show pill' : 'Show cell' }}
+            {{ view === 'preview' ? 'Profile' : 'Preview' }}
           </UButton>
         </div>
 
         <div class="space-y-4">
-          <OrganismsProfilesProfessionalCardsCell
-            v-if="showCellCard && profileCard"
+          <OrganismsProfilesProfessionalCardsPreview
+            v-if="view === 'preview' && profileCard"
             :card="profileCard"
           />
-          <OrganismsProfilesProfessionalCardsPill
+          <OrganismsProfilesProfessionalCardsProfile
             v-else-if="profileCard"
             :card="profileCard"
           />
-          <p v-else class="text-sm text-slate-500">
-            No professional profile loaded.
-          </p>
         </div>
       </div>
+
+      <DevJsonPanel
+        v-if="showDebug"
+        title="Professional CTA Debug"
+        :data="debugPayload"
+      />
     </template>
   </UPageCTA>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth.ts'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
+import DevJsonPanel from 'fireux-core/runtime/components/dev/JsonPanel.vue'
+
 const { coreProfile, card } = useProfessional()
-const { hasProfile } = useUser()
+const { uid } = useAuth()
+const { user, coreUser, hasProfile } = useUser()
 
 const hasProfessionalProfile = computed(() => hasProfile('professional'))
 
@@ -49,15 +60,27 @@ const profileCard = computed(() =>
 )
 
 const canToggle = computed(() => Boolean(profileCard.value))
-const showCellView = ref(false)
-const showCellCard = computed(() => canToggle.value && showCellView.value)
+type View = 'preview' | 'profile'
+const view = ref<View>('preview')
 const toggleView = () => {
   if (!canToggle.value) return
-  showCellView.value = !showCellView.value
+  view.value = view.value === 'preview' ? 'profile' : 'preview'
 }
 
 watch(canToggle, (enabled: boolean) => {
-  if (!enabled) showCellView.value = false
+  if (!enabled) view.value = 'preview'
+})
+
+const showDebug = import.meta.dev
+const debugPayload = computed(() => {
+  return {
+    authUid: uid.value ?? null,
+    userId: user.value?.id ?? null,
+    profiles: coreUser.value?.profiles ?? null,
+    hasProfessionalProfile: hasProfessionalProfile.value,
+    hasProfileCard: Boolean(profileCard.value),
+    view: view.value,
+  }
 })
 </script>
 

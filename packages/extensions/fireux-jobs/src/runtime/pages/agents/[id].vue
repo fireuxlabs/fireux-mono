@@ -23,7 +23,7 @@
           </UButton>
         </div>
 
-        <OrganismsProfilesAgentCardsProfile v-if="agentCard" v-bind="agentCard" />
+        <OrganismsProfilesAgentCardsProfile v-if="agentCard" :card="agentCard" />
       </div>
     </UPageBody>
   </UPage>
