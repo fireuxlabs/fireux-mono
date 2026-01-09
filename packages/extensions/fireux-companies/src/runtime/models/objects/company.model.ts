@@ -1,22 +1,33 @@
 /**
- * Company (core entity)
- * Firestore: companies/{companyId}
- *
- * Phase-1: dead identity object (no relationships/permissions).
+ * Company overlay (Place-bound)
+ * Firestore: companies/{placeId}
+ * - Document ID is the canonical Place ID.
+ * - This is an overlay on top of an existing Place.
  */
 export interface Company {
-  /** Firestore document ID (auto/uuid). Often attached by FireUX fetch helpers. */
-  id?: string
+  /** Canonical Place ID (also the Firestore document ID). */
+  id: string
 
   /** Display name */
   name: string
 
-  /** Optional website (used for identity + enrichment later) */
-  website?: string | null
+  /** Canonical address snapshot */
+  formatted_address: string
 
-  /** Optional logo URL for rendering */
-  logo_url?: string | null
+  /** Canonical location snapshot */
+  lat: number
+  lng: number
+
+  /** Avatar snapshot (usually places/{id}/avatar storage URL) */
+  avatar: string
+
+  /** Optional website */
+  website: string
+
+  created_at?: any
+  updated_at?: any
+  creator_id?: string
 }
 
-export type CompanyCreateInput = Pick<Company, 'name' | 'website' | 'logo_url'>
-export type CompanyUpdateInput = Partial<CompanyCreateInput>
+export type CompanyCreateInput = Omit<Company, 'creator_id' | 'created_at' | 'updated_at'>
+export type CompanyUpdateInput = Partial<Omit<CompanyCreateInput, 'id'>>

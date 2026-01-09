@@ -185,24 +185,44 @@ async function onConfirm(place: BasePlace) {
     return
   }
 
-  if (place.source !== 'google') {
-    if (import.meta.dev) {
-      console.log('[places][confirm] skipping non-google place', place)
-    }
-    selected.value = null
-    return
-  }
-
   isConfirming.value = true
 
   try {
+    // If the user selects an existing Firebase place, allow confirmation
+    // so downstream overlays (companies/kitchens/etc) can be created.
+    if (place.source === 'firebase') {
+      const draft: PlaceUpsertInput = {
+        id: placeId,
+        source: 'firebase',
+        name: place.name,
+        formatted_address: place.formatted_address ?? '',
+        lat: place.lat,
+        lng: place.lng,
+        avatar: sanitizeAvatar(place.avatar ?? null) ?? '',
+        search_term:
+          (place as any).search_term ??
+          `${place.name} ${place.formatted_address ?? ''}`.toLowerCase().trim(),
+      }
+
+      await ensurePlaceExists(draft)
+      emit('confirmed', { placeId, place: draft })
+      return
+    }
+
+    if (place.source !== 'google') {
+      if (import.meta.dev) {
+        console.log('[places][confirm] skipping unknown place source', place)
+      }
+      return
+    }
+
     const draft = await loadDraftPlace(placeId, place)
     await maybeUploadAvatar(placeId, draft, place)
     await ensurePlaceExists(draft)
     emit('confirmed', { placeId, place: draft })
   } catch (error) {
     if (import.meta.dev) {
-      console.error('[places][confirm] failed to save', error)
+      console.error('[places][confirm] failed to confirm', error)
     }
   } finally {
     isConfirming.value = false

@@ -1,22 +1,20 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import type { Company, CompanyCreateInput } from '../../../../../../models/objects/company.model.ts'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 
 const COLLECTION_PATH = 'companies'
-
-const newId = (prefix?: string) => {
-  const uuid = globalThis.crypto?.randomUUID?.()
-  const base = uuid ?? `${Date.now()}_${Math.random().toString(16).slice(2)}`
-  return prefix ? `${prefix}_${base}` : base
-}
 
 export function useCompanyCreate() {
   const { setDocument } = useFirestoreManager()
 
-  const createCompany = async (input: CompanyCreateInput): Promise<string> => {
+  const createCompany = async (
+    input: CompanyCreateInput & { place: PlaceUpsertInput }
+  ): Promise<string> => {
+    const id = String(input?.id ?? '').trim()
+    if (!id) throw new Error('[useCompanyCreate] placeId (id) is required')
+
     const name = String(input?.name ?? '').trim()
     if (!name) throw new Error('[useCompanyCreate] name is required')
-
-    const id = newId('company')
 
     await setDocument<Company>(
       COLLECTION_PATH,
@@ -24,8 +22,11 @@ export function useCompanyCreate() {
       {
         id,
         name,
-        website: input.website ?? null,
-        logo_url: input.logo_url ?? null,
+        formatted_address: String(input.formatted_address ?? '').trim(),
+        lat: Number(input.lat ?? 0),
+        lng: Number(input.lng ?? 0),
+        avatar: String(input.avatar ?? '').trim(),
+        website: String(input.website ?? '').trim(),
       },
       { raw: false }
     )

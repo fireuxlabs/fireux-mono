@@ -22,7 +22,7 @@ const { card, avatar: avatarProp, prop } = defineProps<{
   prop?: string
 }>()
 
-const { title, subtitle, website } = card
+const { title, subtitle, website, formatted_address } = card
 const avatar = avatarProp ?? null
-const resolvedSubtitle = website ?? subtitle
+const resolvedSubtitle = website ?? formatted_address ?? subtitle
 </script>

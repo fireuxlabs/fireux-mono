@@ -6,7 +6,7 @@ const COLLECTION_PATH = 'companies'
 
 /**
  * Canon fetch helpers for Company (collection + single doc).
- * Phase-1: global collection `companies/{companyId}`.
+ * Canon: overlay collection `companies/{placeId}`.
  */
 export function useCompanyFetch() {
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()

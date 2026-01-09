@@ -9,6 +9,8 @@ export namespace CompanyCard {
 
   export interface Cell extends Pill {
     website?: string | null
+    formatted_address?: string | null
+    avatar?: string | null
   }
 
   export type Card = Cell
@@ -26,7 +28,7 @@ export function useCompanyInterface() {
   const pillProps = (company?: Company | null): CompanyCard.Pill => ({
     id: company?.id,
     title: company?.name || 'Company',
-    subtitle: company?.website ?? null,
+    subtitle: company?.formatted_address ?? company?.website ?? null,
   })
 
   const cellProps = (company?: Company | null): CompanyCard.Cell => {
@@ -34,6 +36,8 @@ export function useCompanyInterface() {
     return {
       ...pill,
       website: company?.website ?? null,
+      formatted_address: company?.formatted_address ?? null,
+      avatar: company?.avatar ?? null,
     }
   }
 
