@@ -1,7 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Pill.vue -->
 <template>
   <NuxtLink :to="to" class="fx-card fx-card--pill">
-    <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="xs" />
+    <UAvatar :src="avatarUrl" :alt="displayName" size="xs" />
 
     <div class="min-w-0 flex-1">
       <div class="min-w-0 truncate text-sm font-medium">

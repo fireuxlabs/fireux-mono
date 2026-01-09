@@ -7,12 +7,12 @@
         <div class="fx-card__header">
           <div class="min-w-0">
             <div class="fx-card__title">{{ displayName }}</div>
-            <div v-if="handle" class="fx-card__subtitle">
+            <div v-if="showSubtitle && handle" class="fx-card__subtitle">
               {{ handle }}
             </div>
           </div>
 
-          <div v-if="badges.length" class="fx-card__badges">
+          <div v-if="showBadges && badges.length" class="fx-card__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -25,7 +25,7 @@
           </div>
         </div>
 
-        <div class="fx-card__tagline">
+        <div v-if="showTagline" class="fx-card__tagline">
           <span v-if="prop">{{ prop }}</span>
           <span v-else-if="profiles.length && apps">{{ profiles.join(', ') }} · {{ apps }}</span>
           <span v-else-if="profiles.length">{{ profiles.join(', ') }}</span>
@@ -39,12 +39,22 @@
 <script setup lang="ts">
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-defineProps<
-  Pick<
-    UserCard.Card,
-    'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles' | 'apps'
-  > & {
-    prop?: string
+withDefaults(
+  defineProps<
+    Pick<
+      UserCard.Card,
+      'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles' | 'apps'
+    > & {
+      prop?: string
+      showSubtitle?: boolean
+      showBadges?: boolean
+      showTagline?: boolean
+    }
+  >(),
+  {
+    showSubtitle: true,
+    showBadges: true,
+    showTagline: true,
   }
->()
+)
 </script>

@@ -17,8 +17,12 @@
             class="w-44"
           />
 
-          <UButton size="xs" variant="ghost" @click="toggleVariant">
+          <UButton size="xs" variant="ghost" @click="toggleCompactVariant">
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
+          </UButton>
+
+          <UButton size="xs" variant="ghost" @click="toggleDetailVariant">
+            {{ variant === 'preview' ? 'Profile' : 'Preview' }}
           </UButton>
 
           <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
@@ -46,9 +50,16 @@ const { card } = useAppInterface()
 
 const query = ref('')
 
-const variant = ref<'pill' | 'cell'>('pill')
-const toggleVariant = () => {
-  variant.value = variant.value === 'pill' ? 'cell' : 'pill'
+type Variant = 'pill' | 'cell' | 'preview' | 'profile'
+
+const variant = ref<Variant>('pill')
+const toggleCompactVariant = () => {
+  if (variant.value === 'pill') variant.value = 'cell'
+  else variant.value = 'pill'
+}
+const toggleDetailVariant = () => {
+  if (variant.value === 'preview') variant.value = 'profile'
+  else variant.value = 'preview'
 }
 
 const normalizedApps = computed<App[]>(() => apps.value ?? [])

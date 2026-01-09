@@ -4,7 +4,17 @@
       <template #header>
         <div class="flex items-center justify-between gap-2">
           <h2>App agents</h2>
-          <UBadge variant="soft">{{ localTotal }} total</UBadge>
+          <div class="flex items-center gap-2">
+            <UButton size="xs" variant="ghost" @click="toggleCompactVariant">
+              {{ variant === 'pill' ? 'Cells' : 'Pills' }}
+            </UButton>
+
+            <UButton size="xs" variant="ghost" @click="toggleDetailVariant">
+              {{ variant === 'preview' ? 'Profile' : 'Preview' }}
+            </UButton>
+
+            <UBadge variant="soft">{{ localTotal }} total</UBadge>
+          </div>
         </div>
         <p class="text-sm opacity-70">Agents scoped to this tenant application.</p>
       </template>
@@ -12,7 +22,7 @@
       <OrganismsProfilesAgentCollectionList
         v-if="localCards.length"
         :cards="localCards"
-        variant="pill"
+        :variant="variant"
       />
 
       <p v-else class="text-sm opacity-70">No tenant-scoped agents found.</p>
@@ -29,7 +39,17 @@
         <template #header>
           <div class="flex items-center justify-between gap-2">
             <h2>Global agents</h2>
-            <UBadge variant="soft">{{ globalTotal }} total</UBadge>
+            <div class="flex items-center gap-2">
+              <UButton size="xs" variant="ghost" @click="toggleCompactVariant">
+                {{ variant === 'pill' ? 'Cells' : 'Pills' }}
+              </UButton>
+
+              <UButton size="xs" variant="ghost" @click="toggleDetailVariant">
+                {{ variant === 'preview' ? 'Profile' : 'Preview' }}
+              </UButton>
+
+              <UBadge variant="soft">{{ globalTotal }} total</UBadge>
+            </div>
           </div>
           <p class="text-sm opacity-70">Agents available across the FireUX network.</p>
         </template>
@@ -37,7 +57,7 @@
         <OrganismsProfilesAgentCollectionList
           v-if="globalCards.length"
           :cards="globalCards"
-          variant="pill"
+          :variant="variant"
         />
 
         <p v-else class="text-sm opacity-70">No global agents found.</p>
@@ -56,6 +76,19 @@ import type { AgentCard } from '../../../../../composables/fireux/firestore/prof
 
 const { isTenant } = useFireUXConfig()
 const showGlobalDirectory = ref(!isTenant)
+
+type Variant = 'pill' | 'cell' | 'preview' | 'profile'
+const variant = ref<Variant>('pill')
+
+const toggleCompactVariant = () => {
+  if (variant.value === 'pill') variant.value = 'cell'
+  else variant.value = 'pill'
+}
+
+const toggleDetailVariant = () => {
+  if (variant.value === 'preview') variant.value = 'profile'
+  else variant.value = 'preview'
+}
 
 const { globalAgents, localAgents } = useAgentCollection()
 const { card } = useAgent()

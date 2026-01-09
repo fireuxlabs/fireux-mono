@@ -12,7 +12,7 @@
       </div>
     </div>
 
-    <div v-if="badges.length" class="ml-2 flex shrink-0 items-center gap-1">
+    <div v-if="showBadges && badges.length" class="ml-2 flex shrink-0 items-center gap-1">
       <UBadge
         v-for="badge in badges"
         :key="badge"
@@ -34,9 +34,11 @@ type PillProps = Pick<
   'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles'
 > & {
   showSubtitle?: boolean
+  showBadges?: boolean
 }
 
 withDefaults(defineProps<PillProps>(), {
   showSubtitle: true,
+  showBadges: true,
 })
 </script>

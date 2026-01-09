@@ -30,6 +30,10 @@
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
           </UButton>
 
+          <UButton size="xs" variant="ghost" @click="toggleDetailVariant">
+            {{ variant === 'preview' ? 'Profile' : 'Preview' }}
+          </UButton>
+
           <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
         </div>
       </div>
@@ -71,9 +75,17 @@ const scopeCopy = computed(() => {
 
 const query = ref('')
 
-const variant = ref<'pill' | 'cell'>('pill')
+type Variant = 'pill' | 'cell' | 'preview' | 'profile'
+
+const variant = ref<Variant>('pill')
 const toggleVariant = () => {
-  variant.value = variant.value === 'pill' ? 'cell' : 'pill'
+  if (variant.value === 'pill') variant.value = 'cell'
+  else variant.value = 'pill'
+}
+
+const toggleDetailVariant = () => {
+  if (variant.value === 'preview') variant.value = 'profile'
+  else variant.value = 'preview'
 }
 
 type DirectoryEntry = {

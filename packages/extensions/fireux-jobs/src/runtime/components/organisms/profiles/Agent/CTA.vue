@@ -11,13 +11,29 @@
 
       <div v-else class="space-y-4">
         <div class="flex justify-end">
-          <UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
-            {{ showCellView ? 'Show pill' : 'Show cell' }}
-          </UButton>
+          <div v-if="canToggle" class="flex items-center gap-2">
+            <UButton size="xs" variant="ghost" @click="toggleCompact">
+              {{ variant === 'pill' ? 'Cells' : 'Pills' }}
+            </UButton>
+            <UButton size="xs" variant="ghost" @click="toggleDetail">
+              {{ variant === 'preview' ? 'Profile' : 'Preview' }}
+            </UButton>
+          </div>
         </div>
 
         <div class="space-y-4">
-          <OrganismsProfilesAgentCardsCell v-if="showCellCard && profileCard" v-bind="profileCard" />
+          <OrganismsProfilesAgentCardsPreview
+            v-if="variant === 'preview' && profileCard"
+            :card="profileCard"
+          />
+          <OrganismsProfilesAgentCardsProfile
+            v-else-if="variant === 'profile' && profileCard"
+            v-bind="profileCard"
+          />
+          <OrganismsProfilesAgentCardsCell
+            v-else-if="variant === 'cell' && profileCard"
+            v-bind="profileCard"
+          />
           <OrganismsProfilesAgentCardsPill v-else-if="profileCard" v-bind="profileCard" />
           <p v-else class="text-sm text-slate-500">No agent profile loaded.</p>
         </div>
@@ -39,15 +55,21 @@ const hasAgentProfile = computed(() => hasProfile('agent'))
 const profileCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
 
 const canToggle = computed(() => Boolean(profileCard.value))
-const showCellView = ref(false)
-const showCellCard = computed(() => canToggle.value && showCellView.value)
-const toggleView = () => {
+type Variant = 'pill' | 'cell' | 'preview' | 'profile'
+const variant = ref<Variant>('pill')
+
+const toggleCompact = () => {
   if (!canToggle.value) return
-  showCellView.value = !showCellView.value
+  variant.value = variant.value === 'pill' ? 'cell' : 'pill'
+}
+
+const toggleDetail = () => {
+  if (!canToggle.value) return
+  variant.value = variant.value === 'preview' ? 'profile' : 'preview'
 }
 
 watch(canToggle, (enabled: boolean) => {
-  if (!enabled) showCellView.value = false
+  if (!enabled) variant.value = 'pill'
 })
 </script>
 

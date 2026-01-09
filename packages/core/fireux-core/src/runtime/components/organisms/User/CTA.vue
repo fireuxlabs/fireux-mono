@@ -6,17 +6,46 @@
     variant="naked"
   >
     <template #default>
-      <OrganismsUserCardsPreview
-        v-if="isResolved && isInitialized && currentUser"
-        v-bind="card(currentUser)"
-      />
+      <div v-if="isResolved && isInitialized && currentUser" class="space-y-3">
+        <div class="flex justify-end">
+          <UButton size="xs" variant="ghost" @click="toggleView">
+            {{ view === 'preview' ? 'Profile' : 'Preview' }}
+          </UButton>
+        </div>
+
+        <OrganismsUserCardsPreview
+          v-if="view === 'preview'"
+          v-bind="card(currentUser)"
+        />
+
+        <OrganismsUserCardsProfile
+          v-else
+          v-bind="card(currentUser)"
+          :user="currentUser"
+        />
+      </div>
+
       <OrganismsUserCreateSystem v-else />
     </template>
   </UPageCTA>
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 const { isResolved, isInitialized, currentUser, card } = useUser()
+
+type View = 'preview' | 'profile'
+const view = ref<View>('preview')
+const toggleView = () => {
+  view.value = view.value === 'preview' ? 'profile' : 'preview'
+}
+
+watch(
+  () => Boolean(currentUser.value),
+  (hasUser) => {
+    if (!hasUser) view.value = 'preview'
+  }
+)
 </script>

@@ -4,7 +4,7 @@
     <template #header>
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-start gap-3 min-w-0">
-          <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="md" />
+          <UAvatar :src="avatarUrl" :alt="displayName" size="md" />
 
           <div class="min-w-0">
             <div class="truncate text-lg font-semibold leading-6">{{ displayName }}</div>

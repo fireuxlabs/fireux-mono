@@ -2,7 +2,7 @@
 <template>
   <NuxtLink :to="to" class="fx-card fx-card--cell">
     <div class="fx-card__media">
-      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar :src="avatarUrl" :alt="displayName" size="sm" />
 
       <div class="fx-card__content fx-card__stack">
         <div class="fx-card__header">
