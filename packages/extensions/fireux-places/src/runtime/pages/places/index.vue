@@ -3,11 +3,15 @@
     <UPageHeader title="Places" description="System Places" />
     <UPageBody class="pagebody">
       <OrganismsObjectsPlaceSearchSection
-        :type="null"
+        :type="placeType"
         @confirmed="onPlaceCreated"
       />
 
-      <OrganismsObjectsPlaceCollectionView :keyword="keyword" :title="pageTitle" />
+      <OrganismsObjectsPlaceCollectionView
+        :keyword="keyword"
+        :type="placeType"
+        :title="pageTitle"
+      />
     </UPageBody>
   </UPage>
 </template>
@@ -16,6 +20,7 @@
 import { computed } from 'vue'
 import { useHead, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { normalizePlaceType } from '../../composables/fireux/firestore/objects/place/utils/placeCollections'
 
 definePageMeta({
   layout: 'default',
@@ -44,6 +49,10 @@ const keyword = computed<string | null>(() => {
   const value = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
   return value ? value : null
 })
+
+const placeType = computed<string | null>(() =>
+  normalizePlaceType(route.query.type)
+)
 
 const pageTitle = computed(() => {
   if (!keyword.value) return 'Places'

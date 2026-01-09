@@ -9,6 +9,10 @@ import { configureServer } from './config/server-config'
 export interface ModuleOptions {
   prefix?: string
   types?: string[]
+  /** Optional filter map for Google Autocomplete prediction types by context type.
+   *  Example: { kitchen: ['restaurant','cafe','food_truck'] }
+   */
+  googleAutocompleteTypeFilters?: Record<string, string[]>
 }
 
 const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
@@ -20,6 +24,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   defaults: {
     prefix: 'Fire',
     types: [],
+    googleAutocompleteTypeFilters: {},
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
@@ -27,6 +32,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     configureRuntime(nuxt, 'places', {
       enabled: true,
       types: options.types || [],
+      googleAutocompleteTypeFilters: options.googleAutocompleteTypeFilters || {},
     })
     configureComponents(resolver, options)
     configureComposables(resolver, options)

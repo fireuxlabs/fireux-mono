@@ -26,12 +26,19 @@
         No results yet—try another name.
       </p>
     </UCard>
+
+    <DevJsonPanel
+      v-if="showDebug"
+      title="Places Search Debug"
+      :data="debugPayload"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage.ts'
+import DevJsonPanel from 'fireux-core/runtime/components/dev/JsonPanel.vue'
 import {
   canonicalPlaceId,
   fetchPlaceDetails,
@@ -52,8 +59,36 @@ const emit = defineEmits<{
   (e: 'confirmed', payload: { placeId: string; place: Place }): void
 }>()
 
-const { query, results, selected, isSearching, select, clear } =
-  usePlacesSearch()
+const { query, results, selected, isSearching, select, clear, debug } =
+  usePlacesSearch({ type: props.type })
+
+const showDebug = import.meta.dev
+
+const debugPayload = computed(() => {
+  const resultsBySource = (results.value ?? []).reduce(
+    (acc: Record<string, number>, row) => {
+      const key = row.source
+      acc[key] = (acc[key] ?? 0) + 1
+      return acc
+    },
+    {}
+  )
+
+  return {
+    query: query.value,
+    isSearching: isSearching.value,
+    resultsCount: results.value.length,
+    resultsBySource,
+    selected: selected.value
+      ? {
+          place_id: selected.value.place_id,
+          source: selected.value.source,
+          name: selected.value.name,
+        }
+      : null,
+    decision: debug.value ?? null,
+  }
+})
 
 const { ensurePlaceExists } = usePlaceSave({ type: props.type })
 // useImageStorage is auto-imported by fireux-core module
@@ -71,7 +106,8 @@ const showEmpty = computed(
 
 function sanitizeAvatar(value?: string | null) {
   if (!value) return null
-  return /mapfiles\/place_api\/icons/i.test(value) ? null : value
+  const trimmed = String(value).trim()
+  return trimmed ? trimmed : null
 }
 
 function buildFallbackPlace(base: BasePlace, placeId: string): Place {

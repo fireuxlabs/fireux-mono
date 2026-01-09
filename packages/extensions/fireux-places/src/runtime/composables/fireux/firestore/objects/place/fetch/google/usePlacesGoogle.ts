@@ -3,6 +3,23 @@ import type { PlaceCard } from '../../utils/view/usePlacesInterface'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
 
+export type PlacesAutocompleteDebug = {
+  query: string
+  url: string
+  ok: boolean
+  httpStatus: number | null
+  error: string | null
+  upstreamStatus: string | null
+  predictionsCount: number
+  timeMs: number
+  at: string
+}
+
+let lastAutocompleteDebug: PlacesAutocompleteDebug | null = null
+export function getLastPlacesAutocompleteDebug(): PlacesAutocompleteDebug | null {
+  return lastAutocompleteDebug
+}
+
 const log = (...args: unknown[]) => {
   if (import.meta.dev) {
     console.info('[places][logos]', ...args)
@@ -41,20 +58,63 @@ interface GooglePrediction {
 export async function fetchGoogle(
   query: string,
   excludeIds: Set<string>,
-  limit: number
+  limit: number,
+  options?: { type?: string | null }
 ): Promise<PlaceCard.Cell[]> {
   if (limit <= 0 || typeof window === 'undefined') return []
 
+  const start = Date.now()
   try {
     const url = new URL(GOOGLE_AUTOCOMPLETE_ENDPOINT, window.location.origin)
     url.searchParams.set('q', query)
+    if (options?.type) {
+      url.searchParams.set('type', String(options.type))
+    }
 
     const res = await fetch(url.toString(), {
       headers: { accept: 'application/json' },
     })
-    if (!res.ok) return []
+    if (!res.ok) {
+      if (import.meta.dev) {
+        lastAutocompleteDebug = {
+          query,
+          url: url.toString(),
+          ok: false,
+          httpStatus: res.status,
+          error: 'http_error',
+          upstreamStatus: null,
+          predictionsCount: 0,
+          timeMs: Date.now() - start,
+          at: new Date().toISOString(),
+        }
+      }
+      return []
+    }
 
     const json = await res.json()
+
+    if (import.meta.dev) {
+      const preds = Array.isArray(json?.predictions) ? json.predictions : []
+      lastAutocompleteDebug = {
+        query,
+        url: url.toString(),
+        ok: true,
+        httpStatus: res.status,
+        error: (json?.error as string | undefined) ?? null,
+        upstreamStatus: (json?.upstreamStatus as string | undefined) ?? null,
+        predictionsCount: preds.length,
+        timeMs: Date.now() - start,
+        at: new Date().toISOString(),
+      }
+    }
+
+    if (import.meta.dev && json?.error) {
+      console.warn('[places] autocomplete error', {
+        query,
+        error: json.error,
+        upstreamStatus: json.upstreamStatus ?? null,
+      })
+    }
     const preds: GooglePrediction[] = Array.isArray(json?.predictions)
       ? json.predictions
       : []
@@ -98,6 +158,25 @@ export async function fetchGoogle(
 
     return cells
   } catch (err) {
+    if (import.meta.dev) {
+      try {
+        const url = new URL(GOOGLE_AUTOCOMPLETE_ENDPOINT, window.location.origin)
+        url.searchParams.set('q', query)
+        lastAutocompleteDebug = {
+          query,
+          url: url.toString(),
+          ok: false,
+          httpStatus: null,
+          error: 'exception',
+          upstreamStatus: null,
+          predictionsCount: 0,
+          timeMs: Date.now() - start,
+          at: new Date().toISOString(),
+        }
+      } catch {
+        // ignore
+      }
+    }
     if (import.meta.dev) console.error('[places] google supplement failed', err)
     return []
   }

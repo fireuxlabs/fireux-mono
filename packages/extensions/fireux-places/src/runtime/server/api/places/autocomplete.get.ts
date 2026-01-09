@@ -5,6 +5,7 @@ import {
   getRequestIP,
   setResponseStatus,
 } from 'h3'
+import { useRuntimeConfig } from '#imports'
 import { resolvePlacesApiKey } from '../../utils/places-api-key'
 
 // Lightweight in-memory rate limiter (per IP). Not production-grade; replace with durable store if needed.
@@ -80,13 +81,25 @@ function rateLimit(ip: string): {
 }
 
 export default defineEventHandler(async (event: any) => {
+  const dev = import.meta.dev
+  const reqId = Math.random().toString(36).slice(2, 8)
+  const runtimeConfig = useRuntimeConfig(event) as any
+  const filterMap =
+    (runtimeConfig?.public as any)?.fireux?.places
+      ?.googleAutocompleteTypeFilters || {}
   const queryParams = getQuery(event)
   const q = queryParams.q as string | undefined
+  const contextType = (queryParams.type as string | undefined)?.trim() || null
   const DEFAULT_FALLBACK = '46.9480,7.4474'
   const location = (queryParams.location as string) || DEFAULT_FALLBACK
   const radius = (queryParams.radius as string) || '30000'
   const query = String(q || '')
-  if (!query) return { predictions: [] }
+  if (!query) {
+    if (dev) {
+      console.info('[places][autocomplete]', { reqId, stage: 'empty_query' })
+    }
+    return { predictions: [] }
+  }
 
   // Basic rate limit
   const ip =
@@ -95,14 +108,47 @@ export default defineEventHandler(async (event: any) => {
     'anon'
   const rl = rateLimit(ip)
   if (!rl.allowed) {
+    if (dev) {
+      console.warn('[places][autocomplete]', {
+        reqId,
+        stage: 'rate_limited',
+        ip,
+        query,
+        retryAfterMs: rl.retryAfter ?? null,
+      })
+    }
     setResponseStatus(event, 429)
-    return { predictions: [] }
+    return {
+      predictions: [],
+      error: 'rate_limited',
+      retryAfterMs: rl.retryAfter ?? null,
+    }
   }
 
   const key = resolvePlacesApiKey(event)
   if (!key) {
+    if (dev) {
+      console.error('[places][autocomplete]', {
+        reqId,
+        stage: 'missing_api_key',
+        ip,
+        query,
+      })
+    }
     setResponseStatus(event, 500)
-    return { predictions: [] }
+    return { predictions: [], error: 'missing_api_key' }
+  }
+
+  if (dev) {
+    console.info('[places][autocomplete]', {
+      reqId,
+      stage: 'request',
+      ip,
+      query,
+      type: contextType,
+      location,
+      radius,
+    })
   }
 
   const url = new URL(
@@ -114,9 +160,38 @@ export default defineEventHandler(async (event: any) => {
   url.searchParams.set('radius', radius)
 
   try {
+    const safeUrl = new URL(url.toString())
+    safeUrl.searchParams.set('key', '[redacted]')
+
+    const start = Date.now()
     const res = await fetch(url.toString())
     const data = await res.json()
-    if (data.status !== 'OK') return { predictions: [] }
+
+    if (dev) {
+      console.info('[places][autocomplete]', {
+        reqId,
+        stage: 'upstream_response',
+        httpStatus: res.status,
+        upstreamStatus: data?.status ?? null,
+        timeMs: Date.now() - start,
+        url: safeUrl.toString(),
+      })
+    }
+    if (data.status !== 'OK') {
+      if (dev) {
+        console.warn('[places][autocomplete]', {
+          reqId,
+          stage: 'upstream_not_ok',
+          upstreamStatus: data?.status ?? null,
+          errorMessage: data?.error_message ?? null,
+        })
+      }
+      return {
+        predictions: [],
+        error: 'upstream_not_ok',
+        upstreamStatus: import.meta.dev ? (data.status ?? null) : null,
+      }
+    }
     const predictions = (data.predictions || []).slice(0, 4).map((p: any) => ({
       place_id: p.place_id,
       description: p.description,
@@ -125,9 +200,51 @@ export default defineEventHandler(async (event: any) => {
       terms: p.terms,
     }))
 
-    return { predictions }
-  } catch {
+    // Optional filtering by context type (declared via module options/runtimeConfig)
+    const allowedRaw: unknown = contextType ? filterMap?.[contextType] : null
+    const allowedList = Array.isArray(allowedRaw)
+      ? (allowedRaw as unknown[]).map((v) => String(v))
+      : []
+    const allowed = new Set(allowedList.filter((v) => v.trim().length > 0))
+
+    const shouldFilter = !!contextType && allowed.size > 0
+    const filtered = shouldFilter
+      ? predictions.filter((p: any) => {
+          const types: unknown = p?.types
+          if (!Array.isArray(types)) return false
+          return types.some((t) => allowed.has(String(t)))
+        })
+      : predictions
+
+    if (dev && shouldFilter) {
+      console.info('[places][autocomplete]', {
+        reqId,
+        stage: 'filtered',
+        type: contextType,
+        allowed: Array.from(allowed),
+        before: predictions.length,
+        after: filtered.length,
+      })
+    }
+
+    if (dev) {
+      console.info('[places][autocomplete]', {
+        reqId,
+        stage: 'ok',
+        predictionsCount: filtered.length,
+      })
+    }
+
+    return { predictions: filtered }
+  } catch (error) {
+    if (dev) {
+      console.error('[places][autocomplete]', {
+        reqId,
+        stage: 'upstream_error',
+        error: error instanceof Error ? error.message : String(error),
+      })
+    }
     setResponseStatus(event, 502)
-    return { predictions: [] }
+    return { predictions: [], error: 'upstream_error' }
   }
 })

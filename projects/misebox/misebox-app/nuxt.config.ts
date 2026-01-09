@@ -8,7 +8,15 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Misebox',
   role: 'global',
   modules: [
-    ['fireux-places', { types: ['kitchen', 'company'] }],
+    [
+      'fireux-places',
+      {
+        types: ['kitchen', 'company'],
+        googleAutocompleteTypeFilters: {
+          kitchen: ['restaurant', 'cafe', 'food_truck'],
+        },
+      },
+    ],
     'fireux-kitchens',
     'fireux-jobs',
     'fireux-products',

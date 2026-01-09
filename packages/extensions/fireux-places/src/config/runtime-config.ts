@@ -7,5 +7,12 @@ export function configureRuntime(
   const pub = (rc.public ||= {})
   if (!pub.fireux) pub.fireux = {}
   const ns = pub.fireux as Record<string, any>
-  ns[key] ||= defaults
+
+  const current = ns[key]
+  if (current && typeof current === 'object' && !Array.isArray(current)) {
+    ns[key] = { ...defaults, ...current }
+    return
+  }
+
+  ns[key] = { ...defaults }
 }

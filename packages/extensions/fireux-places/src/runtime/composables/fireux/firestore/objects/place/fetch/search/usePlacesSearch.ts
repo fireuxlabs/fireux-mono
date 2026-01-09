@@ -6,6 +6,7 @@ import {
   canonicalPlaceId,
   fetchGoogle,
   fetchPlaceDetails,
+  getLastPlacesAutocompleteDebug,
   type PlaceDetailsResult,
 } from '../google/usePlacesGoogle'
 
@@ -52,7 +53,7 @@ async function resolveLogo(
   }
 }
 
-export function usePlacesSearch() {
+export function usePlacesSearch(options?: { type?: string | null }) {
   const { prefixSearch } = useFirestoreSearch()
 
   const query = ref('')
@@ -60,23 +61,49 @@ export function usePlacesSearch() {
   const selected = ref<BasePlace | null>(null)
   const isSearching = ref(false)
 
+  const debug = ref<Record<string, unknown> | null>(null)
+
   async function searchPlaces(q: string) {
     const term = q.trim().toLowerCase()
     if (!term) {
       results.value = []
+      if (import.meta.dev) {
+        debug.value = {
+          term: null,
+          stage: 'idle',
+        }
+      }
       return
     }
 
     isSearching.value = true
     try {
-      // firestore first
-      const fx = await prefixSearch<{
+      // firestore first (but don't block google fallback if firestore fails)
+      let firestoreFailed = false
+      let firestoreError: unknown = null
+      let fx: Array<{
         place_id: string
         name: string
         formatted_address?: string
         avatar?: string | null
         search_term: string
-      }>({ collection: 'places', field: 'search_term', query: term, limit: 5 })
+      }> = []
+
+      try {
+        fx = await prefixSearch<{
+          place_id: string
+          name: string
+          formatted_address?: string
+          avatar?: string | null
+          search_term: string
+        }>({ collection: 'places', field: 'search_term', query: term, limit: 5 })
+      } catch (err) {
+        firestoreFailed = true
+        firestoreError = err
+        if (import.meta.dev) {
+          console.warn('[places][search] firestore prefixSearch failed', err)
+        }
+      }
 
       if (fx.length) {
         results.value = fx.map<PlaceCard.Cell>((p: {
@@ -91,19 +118,72 @@ export function usePlacesSearch() {
           source: 'firestore',
           avatar: p.avatar ?? null,
         }))
+
+        if (import.meta.dev) {
+          debug.value = {
+            term,
+            stage: 'firestore',
+            firestoreCount: fx.length,
+            firestoreFailed,
+            firestoreError:
+              firestoreFailed && firestoreError
+                ? firestoreError instanceof Error
+                  ? firestoreError.message
+                  : String(firestoreError)
+                : null,
+            googleAttempted: false,
+          }
+        }
         return
       }
 
-      if (term.length < 3) {
+      if (term.length < 4) {
         results.value = []
+        if (import.meta.dev) {
+          debug.value = {
+            term,
+            stage: 'skip_google_term_too_short',
+            firestoreCount: 0,
+            googleAttempted: false,
+          }
+        }
         return
       }
 
       // google fallback (no avatars yet)
-      results.value = await fetchGoogle(term, new Set(), 4)
+      results.value = await fetchGoogle(term, new Set(), 4, {
+        type: options?.type ?? null,
+      })
+
+      if (import.meta.dev) {
+        debug.value = {
+          term,
+          stage: 'google',
+          firestoreCount: 0,
+          firestoreFailed,
+          firestoreError:
+            firestoreFailed && firestoreError
+              ? firestoreError instanceof Error
+                ? firestoreError.message
+                : String(firestoreError)
+              : null,
+          googleAttempted: true,
+          googleCount: results.value.length,
+          google: getLastPlacesAutocompleteDebug(),
+        }
+      }
     } catch (e) {
       console.warn('[places][search] failed', e)
       results.value = []
+
+      if (import.meta.dev) {
+        debug.value = {
+          term,
+          stage: 'error',
+          error: e instanceof Error ? e.message : String(e),
+          google: getLastPlacesAutocompleteDebug(),
+        }
+      }
     } finally {
       isSearching.value = false
     }
@@ -135,7 +215,9 @@ export function usePlacesSearch() {
             }
 
             const url = await resolveLogo(details)
-            logoCache.set(id, url ?? null)
+            const fallbackIcon = details.google.avatar ?? null
+            const nextAvatar = url ?? fallbackIcon ?? null
+            logoCache.set(id, nextAvatar)
 
             const idx = results.value.findIndex(
               (row: PlaceCard.Cell) => canonicalPlaceId(row.place_id) === id
@@ -145,7 +227,7 @@ export function usePlacesSearch() {
               if ((current.avatar ?? null) == null) {
                 results.value.splice(idx, 1, {
                   ...current,
-                  avatar: url ?? null,
+                  avatar: nextAvatar,
                 })
               }
             }
@@ -155,10 +237,10 @@ export function usePlacesSearch() {
               canonicalPlaceId(selected.value.place_id) === id &&
               (selected.value.avatar ?? null) == null
             ) {
-              selected.value = { ...selected.value, avatar: url ?? null }
+              selected.value = { ...selected.value, avatar: nextAvatar }
             }
 
-            return url ?? null
+            return nextAvatar
           } catch {
             logoCache.set(id, null)
             return null
@@ -203,7 +285,7 @@ export function usePlacesSearch() {
             formatted_address: details.google.formatted_address,
             lat: details.google.lat,
             lng: details.google.lng,
-            avatar: cur.avatar ?? better ?? null, // don’t overwrite a non-null
+            avatar: cur.avatar ?? better ?? details.google.avatar ?? null, // don’t overwrite a non-null
           }
         }
       } catch (e) {
@@ -218,6 +300,6 @@ export function usePlacesSearch() {
     selected.value = null
   }
 
-  return { query, results, selected, isSearching, select, clear }
+  return { query, results, selected, isSearching, select, clear, debug }
 }
 
