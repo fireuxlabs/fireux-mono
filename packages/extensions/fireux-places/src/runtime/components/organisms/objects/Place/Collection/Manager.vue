@@ -31,7 +31,7 @@ const { toCell } = usePlacesInterface()
 
 const cells = computed(() =>
   (places.value ?? []).map((place: PlaceEntity) =>
-    toCell({ ...place, avatar: place.avatar ?? null })
+    toCell({ ...place, avatar: place.avatar || null })
   )
 )
 

@@ -107,7 +107,7 @@ const profileComplete = computed<number | null>(() => {
     isFilledString(profile.bio_short ?? null),
     isFilledString(profile.contact_email ?? null),
     isFilledString(profile.website_url ?? null),
-    isFilledArray(profile.badges ?? null),
+    isFilledArray((profile as any).tags ?? (profile as any).badges ?? null),
   ]
 
   const complete = checks.filter(Boolean).length

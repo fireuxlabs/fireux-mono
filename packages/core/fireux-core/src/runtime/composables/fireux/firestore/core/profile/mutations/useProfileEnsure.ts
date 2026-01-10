@@ -35,7 +35,7 @@ export function useProfileEnsure(config: ProfileConfig) {
         domain: config.id ?? '',
         title: '',
         subtitle: '',
-        badges: [],
+        tags: [],
       })
       createdCore = true
     }
@@ -51,7 +51,7 @@ export function useProfileEnsure(config: ProfileConfig) {
           domain: config.id ?? '',
           title: '',
           subtitle: '',
-          badges: [],
+          tags: [],
         })
         createdApp = true
       }

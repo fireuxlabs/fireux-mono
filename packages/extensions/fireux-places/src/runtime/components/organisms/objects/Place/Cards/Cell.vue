@@ -35,7 +35,7 @@ const props = defineProps<
 
 const title = computed(() => props.name)
 const subtitle = computed(() => props.formatted_address)
-const avatar = computed(() => props.avatar ?? null)
+const avatar = computed(() => props.avatar || null)
 const prop = computed(() => props.prop)
 const sourceLabel = computed(() =>
   props.source === 'firebase'

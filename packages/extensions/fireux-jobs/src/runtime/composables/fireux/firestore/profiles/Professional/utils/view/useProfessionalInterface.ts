@@ -58,6 +58,24 @@ export function useProfessionalInterface(
     return ''
   }
 
+  function resolveBadges(currentProfile: ProfessionalCore): string[] {
+    const tags = readField(currentProfile, 'tags')
+    if (Array.isArray(tags)) {
+      return tags
+        .filter((x) => typeof x === 'string')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    }
+    const legacy = readField(currentProfile, 'badges')
+    if (Array.isArray(legacy)) {
+      return legacy
+        .filter((x) => typeof x === 'string')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    }
+    return []
+  }
+
   function map(currentProfile: ProfessionalCore, user?: User | null): ProfessionalCard.Card {
     const displayName = user?.display_name ?? currentProfile.title
 
@@ -70,8 +88,7 @@ export function useProfessionalInterface(
       displayName,
       tagline: currentProfile.tagline,
 
-      // Caller-owned, aligned with useUserInterface
-      badges: [],
+      badges: resolveBadges(currentProfile),
 
       bioShort: currentProfile.bio_short,
       specialties: resolveCsv(readField(currentProfile, 'specialties')),

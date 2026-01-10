@@ -153,7 +153,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
   const updateBadges = async (value: string) => {
     const normalized = (value || '').trim()
     if (!normalized.length) {
-      await updateCoreProfile({ badges: [] })
+      await updateCoreProfile({ tags: [] })
       return
     }
 
@@ -166,7 +166,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
       )
     )
 
-    await updateCoreProfile({ badges })
+    await updateCoreProfile({ tags: badges })
   }
 
   return {

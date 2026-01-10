@@ -27,6 +27,14 @@ export function useChefInterface(
   profile: ProfileRefs<ChefCore>,
   userRef?: Ref<User | null | undefined>
 ) {
+  function resolveBadges(currentProfile: ChefCore): string[] {
+    const tags = (currentProfile as any)?.tags
+    if (Array.isArray(tags)) return tags.filter((x) => typeof x === 'string') as string[]
+    const legacy = (currentProfile as any)?.badges
+    if (Array.isArray(legacy)) return legacy.filter((x) => typeof x === 'string') as string[]
+    return []
+  }
+
   function map(currentProfile: ChefCore, user?: User | null): ChefCard.Card {
     const title = user?.display_name ?? currentProfile.title
     const specialties = Array.isArray(currentProfile.specialties)
@@ -45,8 +53,7 @@ export function useChefInterface(
       title,
       subtitle: currentProfile.tagline,
 
-      // Caller-owned, aligned with useUserInterface
-      badges: [],
+      badges: resolveBadges(currentProfile),
 
       line1: currentProfile.bio_short,
       line2: specialties.join(', '),

@@ -4,6 +4,8 @@
  * - Document ID is the canonical Place ID.
  * - This is an overlay on top of an existing Place.
  */
+import type { FirestoreTimestampOrString } from 'fireux-core/types/firebase'
+
 export interface Company {
   /** Canonical Place ID (also the Firestore document ID). */
   id: string
@@ -24,8 +26,9 @@ export interface Company {
   /** Optional website */
   website: string
 
-  created_at?: any
-  updated_at?: any
+  /** System-managed metadata (stamped by Firestore manager). */
+  created_at?: FirestoreTimestampOrString
+  updated_at?: FirestoreTimestampOrString
   creator_id?: string
 }
 

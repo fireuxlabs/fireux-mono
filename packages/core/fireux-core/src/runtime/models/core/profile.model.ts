@@ -12,8 +12,8 @@ export interface CoreProfileBase {
   /** Secondary subtitle for pill/cell/etc */
   subtitle: string
 
-  /** Badges (skills, tags, specialties, etc.) */
-  badges: string[]
+  /** Stored labels/tags (UI can derive badges from these). */
+  tags: string[]
 }
 
 /**

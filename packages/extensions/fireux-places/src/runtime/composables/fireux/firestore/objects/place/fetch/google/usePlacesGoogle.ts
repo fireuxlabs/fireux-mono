@@ -135,7 +135,7 @@ export async function fetchGoogle(
           name: main || desc || 'Unknown place',
           formatted_address: secondary || desc || undefined,
           source: 'google',
-          avatar: null,
+          avatar: '',
         }
       })
 

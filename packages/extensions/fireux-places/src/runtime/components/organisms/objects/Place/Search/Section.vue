@@ -119,7 +119,7 @@ function buildFallbackPlace(base: BasePlace, placeId: string): PlaceUpsertInput 
     formatted_address: formatted,
     lat: base.lat,
     lng: base.lng,
-    avatar: sanitizeAvatar(base.avatar ?? null) ?? '',
+    avatar: sanitizeAvatar(base.avatar) ?? '',
     search_term: `${base.name} ${formatted}`.toLowerCase().trim(),
   }
 }
@@ -153,7 +153,7 @@ async function maybeUploadAvatar(
   draft: PlaceUpsertInput,
   preview: BasePlace
 ) {
-  const uploadSource = sanitizeAvatar(preview.avatar ?? draft.avatar ?? null)
+  const uploadSource = sanitizeAvatar(preview.avatar) ?? sanitizeAvatar(draft.avatar)
   if (!uploadSource) return
 
   try {
@@ -198,7 +198,7 @@ async function onConfirm(place: BasePlace) {
         formatted_address: place.formatted_address ?? '',
         lat: place.lat,
         lng: place.lng,
-        avatar: sanitizeAvatar(place.avatar ?? null) ?? '',
+        avatar: sanitizeAvatar(place.avatar) ?? '',
         search_term:
           (place as any).search_term ??
           `${place.name} ${place.formatted_address ?? ''}`.toLowerCase().trim(),

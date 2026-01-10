@@ -27,6 +27,14 @@ export function useSupplierInterface(
   profile: ProfileRefs<SupplierCore>,
   userRef?: Ref<User | null | undefined>
 ) {
+  function resolveBadges(currentProfile: SupplierCore): string[] {
+    const tags = (currentProfile as any)?.tags
+    if (Array.isArray(tags)) return tags.filter((x) => typeof x === 'string') as string[]
+    const legacy = (currentProfile as any)?.badges
+    if (Array.isArray(legacy)) return legacy.filter((x) => typeof x === 'string') as string[]
+    return []
+  }
+
   function map(currentProfile: SupplierCore, user?: User | null): SupplierCard.Card {
     const title = user?.display_name ?? currentProfile.title
 
@@ -50,8 +58,7 @@ export function useSupplierInterface(
       title,
       subtitle: currentProfile.tagline,
 
-      // Caller-owned, aligned with useUserInterface
-      badges: [],
+      badges: resolveBadges(currentProfile),
 
       line1: currentProfile.bio_short,
       line2: specialties.join(', '),

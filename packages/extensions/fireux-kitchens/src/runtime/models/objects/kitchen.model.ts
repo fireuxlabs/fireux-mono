@@ -1,3 +1,5 @@
+import type { FirestoreTimestampOrString } from 'fireux-core/types/firebase'
+
 export interface Kitchen {
   /** Canonical Place ID (also the Firestore document ID). */
   id: string
@@ -11,9 +13,10 @@ export interface Kitchen {
   /** Optional kitchen-specific details */
   website: string
 
-  created_at?: any
-  updated_at?: any
-  creator_id?: any
+  /** System-managed metadata (stamped by Firestore manager). */
+  created_at?: FirestoreTimestampOrString
+  updated_at?: FirestoreTimestampOrString
+  creator_id?: string
 }
 
 export type KitchenCreateInput = Omit<Kitchen, 'creator_id' | 'created_at' | 'updated_at'>

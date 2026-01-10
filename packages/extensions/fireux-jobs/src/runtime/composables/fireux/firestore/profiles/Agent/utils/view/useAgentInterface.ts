@@ -29,6 +29,14 @@ export function useAgentInterface(
   profile: ProfileRefs<AgentCore>,
   userRef?: Ref<User | null | undefined>
 ) {
+  function resolveBadges(currentProfile: AgentCore): string[] {
+    const tags = (currentProfile as any)?.tags
+    if (Array.isArray(tags)) return tags.filter((x) => typeof x === 'string') as string[]
+    const legacy = (currentProfile as any)?.badges
+    if (Array.isArray(legacy)) return legacy.filter((x) => typeof x === 'string') as string[]
+    return []
+  }
+
   function map(currentProfile: AgentCore, user?: User | null): AgentCard.Card {
     const displayName = user?.display_name ?? currentProfile.title
 
@@ -41,8 +49,7 @@ export function useAgentInterface(
       displayName,
       tagline: currentProfile.tagline,
 
-      // Caller-owned, same as useUserInterface
-      badges: [],
+      badges: resolveBadges(currentProfile),
 
       bioShort: currentProfile.bio_short,
 

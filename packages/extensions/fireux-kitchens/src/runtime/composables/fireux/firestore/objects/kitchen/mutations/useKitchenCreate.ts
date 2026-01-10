@@ -26,7 +26,7 @@ export function useKitchenCreate() {
         lat: Number(input.lat ?? 0),
         lng: Number(input.lng ?? 0),
         avatar: String(input.avatar ?? '').trim(),
-        website: String((input as any).website ?? '').trim(),
+        website: String(input.website ?? '').trim(),
       },
       { raw: false }
     )

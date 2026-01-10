@@ -224,7 +224,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             }
 
             const url = await resolveLogo(details)
-            const fallbackIcon = details.google.avatar ?? null
+            const fallbackIcon = details.google.avatar || null
             const nextAvatar = url ?? fallbackIcon ?? null
             logoCache.set(id, nextAvatar)
 
@@ -244,9 +244,9 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             if (
               selected.value &&
               canonicalPlaceId((selected.value as any).place_id ?? selected.value.id) === id &&
-              (selected.value.avatar ?? null) == null
+              !selected.value.avatar
             ) {
-              selected.value = { ...selected.value, avatar: nextAvatar }
+              selected.value = { ...selected.value, avatar: nextAvatar ?? '' }
             }
 
             return nextAvatar
@@ -276,7 +276,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       lat: 0,
       lng: 0,
       source: cell.source,
-      avatar: cell.avatar ?? cached ?? null,
+      avatar: cell.avatar ?? cached ?? '',
     }
 
     // enrich from details (lat/lng, but keep avatar if we already have one)
@@ -295,7 +295,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             formatted_address: details.google.formatted_address,
             lat: details.google.lat,
             lng: details.google.lng,
-            avatar: cur.avatar ?? better ?? details.google.avatar ?? null, // don’t overwrite a non-null
+            avatar: cur.avatar || better || details.google.avatar || '',
           }
         }
       } catch (e) {

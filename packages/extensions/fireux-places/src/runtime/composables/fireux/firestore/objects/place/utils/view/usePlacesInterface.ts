@@ -29,7 +29,7 @@ export function usePlacesInterface() {
     return {
       id,
       name: place.name,
-      avatar: place.avatar ?? null,
+      avatar: place.avatar || null,
       source,
       formatted_address: place.formatted_address,
     }

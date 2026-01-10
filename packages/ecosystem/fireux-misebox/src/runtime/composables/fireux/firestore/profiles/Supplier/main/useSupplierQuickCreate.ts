@@ -16,7 +16,7 @@ export function useSupplierQuickCreate() {
         id: 'supplier-mock-id',
         title: name,
         subtitle: '',
-        badges: [],
+        tags: [],
         tagline: '',
         bio_short: '',
         bio_long: '',

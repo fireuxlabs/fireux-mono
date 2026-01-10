@@ -118,7 +118,7 @@ const tagline = computed(() => agent.value?.tagline ?? '')
 const contactEmail = computed(() => agent.value?.contact_email ?? '')
 const contactPhone = computed(() => agent.value?.contact_phone ?? '')
 const websiteUrl = computed(() => agent.value?.website_url ?? '')
-const badges = computed(() => (agent.value?.badges ?? []).join(', '))
+const badges = computed(() => ((agent.value as any)?.tags ?? (agent.value as any)?.badges ?? []).join(', '))
 
 const contactEmailFromProfile = computed(
   () => Boolean(agent.value?.contact_email_from_profile)

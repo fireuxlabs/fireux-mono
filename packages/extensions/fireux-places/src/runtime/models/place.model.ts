@@ -24,7 +24,8 @@ export interface BasePlace {
 	lat: number
 	lng: number
 	source: PlaceSource
-	avatar?: string | null
+	/** Empty string means "unset". */
+	avatar: string
 }
 
 /** Google Place (transient/provider) */
@@ -38,15 +39,7 @@ export interface GooglePlace extends BasePlace {
 
 /** Firestore Place (stored) */
 export interface Place extends BasePlace {
-	id: string
 	source: 'firebase'
-
-	name: string
-	formatted_address: string
-	lat: number
-	lng: number
-
-	avatar: string
 
 	search_term: string
 	creator_id: string
