@@ -1,3 +1,12 @@
+// FILE: packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts
+
+/**
+ * Kitchen overlay (Place-bound)
+ * Firestore: kitchens/{placeId}
+ * - Document ID is the canonical Place ID.
+ * - This is an overlay on top of an existing Place.
+ */
+
 import type { FirestoreTimestampOrString } from 'fireux-core/types/firebase'
 
 export interface Kitchen {

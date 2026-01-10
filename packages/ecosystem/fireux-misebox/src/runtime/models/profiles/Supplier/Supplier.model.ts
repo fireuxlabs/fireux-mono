@@ -1,3 +1,5 @@
+// FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts
+
 import type {
   AppProfileBase,
   CoreProfileBase,
@@ -10,7 +12,6 @@ import { supplierConfig } from './supporting'
  * Core doc:  suppliers/{uid}
  * App doc:   apps/{appId}/suppliers/{uid}
  */
-
 export interface SupplierCore extends CoreProfileBase {
   tagline: string
   bio_short: string

@@ -1,3 +1,5 @@
+// FILE: packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts
+
 /**
  * Company overlay (Place-bound)
  * Firestore: companies/{placeId}

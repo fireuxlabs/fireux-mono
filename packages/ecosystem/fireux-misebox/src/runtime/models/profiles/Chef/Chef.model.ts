@@ -1,3 +1,5 @@
+// FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts
+
 import type {
   AppProfileBase,
   CoreProfileBase,
@@ -10,7 +12,6 @@ import { chefConfig } from './supporting'
  * Core doc:  chefs/{uid}
  * App doc:   apps/{appId}/chefs/{uid}
  */
-
 export interface ChefCore extends CoreProfileBase {
   tagline: string
   bio_short: string

@@ -1,3 +1,5 @@
+// FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
+
 import type {
   AppProfileBase,
   CoreProfileBase,

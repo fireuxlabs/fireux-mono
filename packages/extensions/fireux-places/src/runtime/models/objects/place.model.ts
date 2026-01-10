@@ -1,0 +1,56 @@
+// FILE: packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
+
+/**
+ * Canonical Place models for `fireux-places` (Firestore-shape only).
+ *
+ * Firestore:
+ * - Collection: /places (or type-scoped collection paths via this extension)
+ * - Document id: `Place.id` (== Google place_id)
+ *
+ * Notes:
+ * - We do NOT store both `id` and `place_id` on documents.
+ * - Canonical identifier is `id` only.
+ * - Empty string means "unset" for strings like `avatar`.
+ */
+
+/** Canonical sources are 'google' (provider/transient) and 'firebase' (stored). */
+export type PlaceSource = 'google' | 'firebase'
+
+/** Base (shared by Google & Firestore). */
+export interface BasePlace {
+	/** Canonical id (== Google place_id; Firestore document id). */
+	id: string
+
+	name: string
+	formatted_address: string
+	lat: number
+	lng: number
+	source: PlaceSource
+
+	/** Empty string means "unset". */
+	avatar: string
+}
+
+/** Google Place (transient/provider). */
+export interface GooglePlace extends BasePlace {
+	source: 'google'
+	website?: string | null
+	phone?: string | null
+	rating?: number | null
+	user_ratings_total?: number | null
+}
+
+/** Firestore Place (stored). */
+export interface Place extends BasePlace {
+	source: 'firebase'
+
+	search_term: string
+	creator_id: string
+
+	/** Timestamp shape is service-owned; kept permissive for now. */
+	created_at: any
+	updated_at: any
+}
+
+/** Payload used before Firestore stamping is applied. */
+export type PlaceUpsertInput = Omit<Place, 'creator_id' | 'created_at' | 'updated_at'>

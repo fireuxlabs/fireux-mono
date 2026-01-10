@@ -1,3 +1,14 @@
+// FILE: packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts
+
+/**
+ * Product models (Firestore-shape oriented).
+ * Firestore (typical): products/{id} (implementation may vary by tenant/app)
+ *
+ * Notes:
+ * - Keep this file free of UI/view models.
+ * - Some input/helper shapes here are used by services and admin surfaces.
+ */
+
 export interface ProductFeature {
   title: string
   description?: string

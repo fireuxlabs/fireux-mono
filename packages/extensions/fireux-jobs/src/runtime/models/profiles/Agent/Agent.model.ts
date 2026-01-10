@@ -1,3 +1,5 @@
+// FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
+
 import type {
   AppProfileBase,
   CoreProfileBase,

@@ -1,3 +1,5 @@
+// FILE: packages/core/fireux-core/src/runtime/models/core/profile.model.ts
+
 /**
  * Core profile doc base shape (global truth)
  * Example path: /chefs/<uid>, /agents/<uid>, /professionals/<uid>, etc.
