@@ -22,6 +22,9 @@ const ALLOWED_ROOT_DIRS = new Set([
   'types',
   'temp',
 
+  // Sandbox (tracked notes only; snapshots are gitignored)
+  'sandbox',
+
   // Local-only (ignored, but tolerated)
   'node_modules',
 ])
