@@ -1,15 +1,48 @@
 # Models (Temp Snapshot)
 
-Generated: 2026-01-09
+Generated: 2026-01-10
 
 This is a quick comparison of FireUX entity/domain model files under `packages/**/src/runtime/models/**/*.ts`.
 
 ## Inventory (by package)
 
+## Current Focus (Canon) vs Legacy
+
+### Canon (current focus)
+
+These are the models we treat as the “main mental path” right now.
+
+Core
+- `packages/core/fireux-core/src/runtime/models/core/app.model.ts` — `App`
+- `packages/core/fireux-core/src/runtime/models/core/user.model.ts` — `User`, `AppUser`
+- `packages/core/fireux-core/src/runtime/models/core/profile.model.ts` — `CoreProfileBase`, `AppProfileBase`
+
+Profiles
+- `packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts` — `AgentCore`, `AgentApp`
+- `packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts` — `ProfessionalCore`, `ProfessionalApp`
+- `packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts` — `ChefCore`, `ChefApp`
+- `packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts` — `SupplierCore`, `SupplierApp`
+
+Objects
+- `packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts` — `Place`
+- `packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts` — `Company`
+- `packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts` — `Kitchen`
+- `packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts` — `Job`
+
+### Legacy / Dev toolbox (do not touch for now)
+
+These are older helper-style models (generic CRUD helpers, protocol helpers, or mixed UI-ish utilities). If they’re still used, don’t delete yet — just treat them as “not canon”.
+
+- `packages/core/fireux-core/src/runtime/models/objects/object.model.ts` — generic CRUD helper types (legacy)
+- `packages/core/fireux-core/src/runtime/models/objects/protocols.ts` — protocol helpers (legacy)
+- `packages/core/fireux-core/src/runtime/models/utils/avatarManager.ts` — avatar helper utilities (legacy)
+
 ### Core (fireux-core)
-- `packages/core/fireux-core/src/runtime/models/core/user.model.ts` — `User`, `AppUser`, `UserNotification`
+- `packages/core/fireux-core/src/runtime/models/core/user.model.ts` — `User`, `AppUser`
+- `packages/core/fireux-core/src/runtime/models/core/user.supporting.ts` — `NotificationScope`, `UserNotification`
 - `packages/core/fireux-core/src/runtime/models/core/profile.model.ts` — `CoreProfileBase`, `AppProfileBase`, `ProfileConfig`
-- `packages/core/fireux-core/src/runtime/models/core/app.model.ts` — `App`, `AppRole`, social link helpers
+- `packages/core/fireux-core/src/runtime/models/core/app.model.ts` — `App`
+- `packages/core/fireux-core/src/runtime/models/core/app.supporting.ts` — `AppRole`, `AppSocialLinks`, `createEmptyAppSocialLinks`, `FireuxMeta`
 - `packages/core/fireux-core/src/runtime/models/core/ecosystem.model.ts` — `FireuxEcosystemRegistryDoc`
 - `packages/core/fireux-core/src/runtime/models/core/module.model.ts` — `FireuxModuleRegistryDoc`
 - `packages/core/fireux-core/src/runtime/models/task.model.ts` — `CoreTask`
@@ -18,10 +51,12 @@ This is a quick comparison of FireUX entity/domain model files under `packages/*
 - `packages/core/fireux-core/src/runtime/models/utils/avatarManager.ts` — `AvatarManager`
 
 ### Extensions
-- `packages/extensions/fireux-places/src/runtime/models/place.model.ts` — canonical Places (`BasePlace`, `GooglePlace`, `Place`)
+- `packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts` — canonical Places (`BasePlace`, `GooglePlace`, `Place`)
+- `packages/extensions/fireux-places/src/runtime/models/place.model.ts` — back-compat re-export
 - `packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts` — Company overlay (Place-bound)
 - `packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts` — Kitchen overlay (Place-bound)
-- `packages/extensions/fireux-jobs/src/runtime/models/job.model.ts` — `Job`
+- `packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts` — canonical `Job`
+- `packages/extensions/fireux-jobs/src/runtime/models/job.model.ts` — back-compat re-export
 - `packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts` — `AgentCore`, `AgentApp`
 - `packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/supporting.ts` — `agentConfig`
 - `packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts` — `ProfessionalCore`, `ProfessionalApp`
@@ -50,30 +85,152 @@ This is a quick comparison of FireUX entity/domain model files under `packages/*
 
 ## Canon notes (high level)
 
+- **Model files** now start with a `// FILE: <path>` header to make “where is this?” unambiguous.
 - **Places** are canonical, stored at `/places/{id}` with `id` as the only identifier. `source` is `'google' | 'firebase'`.
 - **Overlays** like Companies/Kitchens are stored as `/companies/{placeId}` and `/kitchens/{placeId}` with doc id == Place id.
 - Many other domains are still in mixed “object-model” shapes (some with `slug`, some with `id`, timestamps vary).
 
 ---
 
+## FireUX Model Canon (current focus)
+
+Applies to: App, User/AppUser, CoreProfileBase/AppProfileBase, Place, Company, Kitchen, Job, and profile cores (Agent/Professional/Chef/Supplier).
+
+Rules
+1) Models are Firestore-shape only. No UI types. No interface/view logic.
+2) Prefer “empty string means empty” and “empty array means empty” for canon models.
+3) Use snake_case for Firestore-ish field names.
+4) Profiles store `tags: string[]` (NOT `badges`). Badges are UI-only.
+5) Canonical imports should use the canonical file paths (see Place/Job re-exports below).
+
+Non-goals (for now)
+- Do not refactor Blog/Product/Recipe/Misebox kitchen-management objects yet.
+- Do not delete legacy helper models; just avoid touching them.
+
+### Timestamp policy (note)
+
+Current repo reality is still mixed in older domains (`FirestoreTimestampOrString`, `FirebaseTimestamp`, `any`, and plain strings in some legacy shapes). For the current-focus canon models (App/User/Profile base and related profile cores), the canon is now **`FirebaseTimestamp` everywhere** and required fields are enforced via writer/ensure logic.
+
+---
+
+## Group 1 — Canon models (current focus)
+
+This is the current canon set grouped by Core / Profiles / Objects, with quick shape notes and the main cleanup targets.
+
+### Core
+
+1) App
+- Path: `packages/core/fireux-core/src/runtime/models/core/app.model.ts`
+- Shape: mostly “no optionals” already (empty string/array allowed)
+- Watch-outs:
+  - `created_at` / `updated_at` / `creator_id` live on `FireuxMeta` (see `app.supporting.ts`) and are `FirebaseTimestamp`
+  - Legacy `avatar_url` was removed; use `thumbnail_url`
+
+2) User + AppUser
+- Path: `packages/core/fireux-core/src/runtime/models/core/user.model.ts`
+- Shape: clean and minimal
+- Watch-outs:
+  - `NotificationScope` + `UserNotification` live in `user.supporting.ts`
+  - `notifications: UserNotification[]` is embedded on both `User` and `AppUser` (ensure logic backfills defaults)
+  - Core user `email` exists (fine), but UI surfaces must not leak it casually
+
+### Profiles
+
+0) Base
+- Path: `packages/core/fireux-core/src/runtime/models/core/profile.model.ts`
+- Shape: base uses `tags: string[]` (badges are UI-only)
+- Watch-outs:
+  - `tagline` is now universal on `CoreProfileBase` (domain cores should not duplicate it)
+  - `created_at` / `updated_at` / `creator_id` are required on both base types and are `FirebaseTimestamp`
+
+1) Agent (Jobs module)
+- Path: `packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts`
+- Watch-outs:
+  - `contact_*_from_profile` flags were removed from the model (writer/interface can derive intent separately)
+
+2) Professional (Jobs module)
+- Path: `packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts`
+- Watch-outs:
+  - Experience item surfaces were made “no optionals”; writer logic should provide empty-string / empty-array defaults
+
+3) Chef (Misebox ecosystem)
+- Path: `packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts`
+- Watch-outs:
+  - Profile base now provides `tagline` and required meta fields; keep ChefCore minimal
+
+4) Supplier (Misebox ecosystem)
+- Path: `packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts`
+- Watch-outs:
+  - Nested fields (e.g. `locations`) are fine; keep defaults consistent (empty arrays).
+
+### Objects
+
+1) Place (Places module)
+- Path: `packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts`
+- Shape: aligned (id, `source`, `avatar: string`)
+- Watch-outs:
+  - Provider/transient `GooglePlace` has optional/nullable details (fine)
+
+2) Company (Companies module)
+- Path: `packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts`
+- Shape: mixed rule: core fields required; system fields optional
+- Watch-outs:
+  - Decide whether system fields (`created_at`, `updated_at`, `creator_id`) should be required in the model, or optional-but-guaranteed by writer logic.
+
+3) Kitchen (Kitchens module)
+- Path: `packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts`
+- Shape: same situation as Company
+
+4) Job (Jobs module)
+- Path: `packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts`
+- Shape: fine for MVP
+- Watch-outs:
+  - Optional links (company/place/kitchen) are reasonable at this stage
+  - `description?: string | null` could become `description: string` with default `''` if we enforce “no optionals”
+
+---
+
+## Easiest streamlining moves (no big refactor)
+
+1) Decide one rule for system fields on overlays/objects
+- Either: A) required in models (`created_at`, `updated_at`, `creator_id`)
+- Or: B) optional in models, but guaranteed by Firestore writer logic
+
+2) Booleans: make them required with defaults
+- Keep canon booleans required; ensure writers provide `false` defaults
+
+3) Text fields: decide if we want `string` everywhere
+- If yes: avoid `?: string | null` in canon models and use `''` by default
+
+---
+
 ## Source dumps (full code)
 
-### packages/core/fireux-core/src/runtime/models/core/user.model.ts
+### packages/core/fireux-core/src/runtime/models/core/user.supporting.ts
 
 ```ts
-import type { FirestoreTimestampOrString } from '../../../types/firebase'
+// FILE: packages/core/fireux-core/src/runtime/models/core/user.supporting.ts
+
+import type { FirebaseTimestamp } from '../../../types/firebase'
 
 export type NotificationScope = 'ecosystem' | 'app'
-
-type Ts = FirestoreTimestampOrString
 
 export interface UserNotification {
   message: string
   scope: NotificationScope
-  created_at: string
+  created_at: FirebaseTimestamp
   read: boolean
-  app_id?: string
+  app_id: string
 }
+```
+
+### packages/core/fireux-core/src/runtime/models/core/user.model.ts
+
+```ts
+// FILE: packages/core/fireux-core/src/runtime/models/core/user.model.ts
+
+import type { FirebaseTimestamp } from '../../../types/firebase'
+import type { UserNotification } from './user.supporting'
 
 /**
  * Core Firestore user document
@@ -93,6 +250,12 @@ export interface User {
   /** Core memberships */
   userOf: string[]
   adminOf: string[]
+
+  // notifications (safe to store; interfaces decide what to render)
+  notifications: UserNotification[]
+
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
 }
 
 /**
@@ -106,30 +269,41 @@ export interface AppUser {
 
   creator_id: string
 
-  created_at: Ts
-  updated_at: Ts
+  notifications: UserNotification[]
+
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
 }
 ```
 
 ### packages/core/fireux-core/src/runtime/models/core/profile.model.ts
 
 ```ts
+// FILE: packages/core/fireux-core/src/runtime/models/core/profile.model.ts
+
+import type { FirebaseTimestamp } from '../../../types/firebase'
+
 /**
  * Core profile doc base shape (global truth)
  * Example path: /chefs/<uid>, /agents/<uid>, /professionals/<uid>, etc.
+ *
+ * Canon notes:
+ * - `tagline` is now universal (remove duplication from each profile)
+ * - `tags` are stored (UI derives badges)
  */
 export interface CoreProfileBase {
-  /** Canonical Firestore id (== Firebase Auth UID) */
   id: string
 
-  /** Main title for pill/cell/etc */
   title: string
-
-  /** Secondary subtitle for pill/cell/etc */
   subtitle: string
 
-  /** Badges (skills, tags, specialties, etc.) */
-  badges: string[]
+  tagline: string
+
+  tags: string[]
+
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+  creator_id: string
 }
 
 /**
@@ -141,6 +315,10 @@ export interface CoreProfileBase {
  */
 export interface AppProfileBase {
   id: string
+
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+  creator_id: string
 }
 
 /**
@@ -167,15 +345,14 @@ export interface ProfileConfig {
 }
 ```
 
-### packages/core/fireux-core/src/runtime/models/core/app.model.ts
+### packages/core/fireux-core/src/runtime/models/core/app.supporting.ts
 
 ```ts
-// FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
-import type { FirestoreTimestampOrString } from '../../../types/firebase'
+// FILE: packages/core/fireux-core/src/runtime/models/core/app.supporting.ts
+
+import type { FirebaseTimestamp } from '../../../types/firebase'
 
 export type AppRole = 'global' | 'tenant' | 'sandbox'
-type Ts = FirestoreTimestampOrString
-
 export type AppSocialPlatform =
   | 'website'
   | 'email'
@@ -212,8 +389,34 @@ export function createEmptyAppSocialLinks(): AppSocialLinks {
   }
 }
 
-/** Core Firestore App document */
-export interface App {
+/**
+ * Standard metadata for all canon docs.
+ * (Kept in supporting so models can import without repeating)
+ */
+export interface FireuxMeta {
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+  creator_id: string
+}
+```
+
+### packages/core/fireux-core/src/runtime/models/core/app.model.ts
+
+```ts
+// FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
+
+import type { AppRole, AppSocialLinks, FireuxMeta } from './app.supporting'
+
+/**
+ * Core Firestore App document
+ * Path: /apps/<appId>
+ *
+ * Canon rules:
+ * - No optional strings (empty string means unset)
+ * - No nullable strings
+ * - Timestamps are FirebaseTimestamp (Firestore Timestamp)
+ */
+export interface App extends FireuxMeta {
   id: string
 
   // Display
@@ -227,34 +430,24 @@ export interface App {
   // Governance
   join_requests: string[]
   admin_ids: string[]
-  creator_id: string
   created_by: string
 
-  // Optional metadata
+  // Content
   tagline: string
   description: string
   short_bio: string
   long_bio: string
+
+  // Social
   social_links: AppSocialLinks
 
   // Derived counts
   user_count: number
 
-  // System metadata
-  created_at: Ts
-  updated_at: Ts
-
   // Brand/media URLs (flat)
-  /** Used on avatar/thumbnail surfaces. Empty string means "not set". */
   thumbnail_url: string
-  /** @deprecated legacy field. Keep as empty string; use thumbnail_url. */
-  avatar_url: string
-  /** Used on logo surfaces. Empty string means "not set". */
   logo_url: string
-  // Canon wordmark variants
-  /** Used on light surfaces. Empty string means "not set". */
   wordmark_light_url: string
-  /** Used on dark surfaces. Empty string means "not set". */
   wordmark_dark_url: string
 }
 ```
@@ -566,11 +759,13 @@ export type AvatarOperation = {
 }
 ```
 
-### packages/extensions/fireux-places/src/runtime/models/place.model.ts
+### packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts (canonical)
 
 ```ts
+// FILE: packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
+
 /**
- * Canonical Place models for `fireux-places`.
+ * Canonical Place models for `fireux-places` (Firestore-shape only).
  *
  * Firestore:
  * - Collection: /places (or type-scoped collection paths via this extension)
@@ -579,66 +774,75 @@ export type AvatarOperation = {
  * Notes:
  * - We do NOT store both `id` and `place_id` on documents.
  * - Canonical identifier is `id` only.
+ * - Empty string means "unset" for strings like `avatar`.
  */
 
 /** Canonical sources are 'google' (provider/transient) and 'firebase' (stored). */
 export type PlaceSource = 'google' | 'firebase'
-/**
- * Base (shared by Google & Firestore)
- */
+
+/** Base (shared by Google & Firestore). */
 export interface BasePlace {
-	/** Canonical id (== Google place_id; Firestore document id) */
-	id: string
+  /** Canonical id (== Google place_id; Firestore document id). */
+  id: string
 
-	name: string
-	formatted_address: string
-	lat: number
-	lng: number
-	source: PlaceSource
-	avatar?: string | null
+  name: string
+  formatted_address: string
+  lat: number
+  lng: number
+  source: PlaceSource
+
+  /** Empty string means "unset". */
+  avatar: string
 }
 
-/** Google Place (transient/provider) */
+/** Google Place (transient/provider). */
 export interface GooglePlace extends BasePlace {
-	source: 'google'
-	website?: string | null
-	phone?: string | null
-	rating?: number | null
-	user_ratings_total?: number | null
+  source: 'google'
+  website?: string | null
+  phone?: string | null
+  rating?: number | null
+  user_ratings_total?: number | null
 }
 
-/** Firestore Place (stored) */
+/** Firestore Place (stored). */
 export interface Place extends BasePlace {
-	id: string
-	source: 'firebase'
+  source: 'firebase'
 
-	name: string
-	formatted_address: string
-	lat: number
-	lng: number
+  search_term: string
+  creator_id: string
 
-	avatar: string
-
-	search_term: string
-	creator_id: string
-
-	created_at: any
-	updated_at: any
+  /** Timestamp shape is service-owned; kept permissive for now. */
+  created_at: any
+  updated_at: any
 }
 
 /** Payload used before Firestore stamping is applied. */
 export type PlaceUpsertInput = Omit<Place, 'creator_id' | 'created_at' | 'updated_at'>
 ```
 
+### packages/extensions/fireux-places/src/runtime/models/place.model.ts (back-compat re-export)
+
+```ts
+// FILE: packages/extensions/fireux-places/src/runtime/models/place.model.ts
+
+// Back-compat re-export.
+// Canonical location: `models/objects/place.model.ts`
+export * from './objects/place.model'
+```
+
 ### packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts
 
 ```ts
+// FILE: packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts
+
 /**
  * Company overlay (Place-bound)
  * Firestore: companies/{placeId}
  * - Document ID is the canonical Place ID.
  * - This is an overlay on top of an existing Place.
  */
+import type { FirestoreTimestampOrString } from 'fireux-core/types/firebase'
+
 export interface Company {
   /** Canonical Place ID (also the Firestore document ID). */
   id: string
@@ -659,8 +863,9 @@ export interface Company {
   /** Optional website */
   website: string
 
-  created_at?: any
-  updated_at?: any
+  /** System-managed metadata (stamped by Firestore manager). */
+  created_at?: FirestoreTimestampOrString
+  updated_at?: FirestoreTimestampOrString
   creator_id?: string
 }
 
@@ -671,6 +876,17 @@ export type CompanyUpdateInput = Partial<Omit<CompanyCreateInput, 'id'>>
 ### packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts
 
 ```ts
+// FILE: packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts
+
+/**
+ * Kitchen overlay (Place-bound)
+ * Firestore: kitchens/{placeId}
+ * - Document ID is the canonical Place ID.
+ * - This is an overlay on top of an existing Place.
+ */
+
+import type { FirestoreTimestampOrString } from 'fireux-core/types/firebase'
+
 export interface Kitchen {
   /** Canonical Place ID (also the Firestore document ID). */
   id: string
@@ -684,19 +900,25 @@ export interface Kitchen {
   /** Optional kitchen-specific details */
   website: string
 
-  created_at?: any
-  updated_at?: any
-  creator_id?: any
+  /** System-managed metadata (stamped by Firestore manager). */
+  created_at?: FirestoreTimestampOrString
+  updated_at?: FirestoreTimestampOrString
+  creator_id?: string
 }
 
 export type KitchenCreateInput = Omit<Kitchen, 'creator_id' | 'created_at' | 'updated_at'>
 export type KitchenUpdateInput = Partial<Omit<KitchenCreateInput, 'id'>>
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
+### packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts (canonical)
 
 ```ts
-// FILE: packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
+// FILE: packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts
+
+/**
+ * Job Firestore shape only.
+ * Firestore: jobs/{id}
+ */
 
 export type JobStatus = 'open' | 'closed'
 
@@ -727,9 +949,21 @@ export interface Job {
 }
 ```
 
+### packages/extensions/fireux-jobs/src/runtime/models/job.model.ts (back-compat re-export)
+
+```ts
+// FILE: packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
+
+// Back-compat re-export.
+// Canonical location: `models/objects/job.model.ts`
+export * from './objects/job.model'
+```
+
 ### packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
 
 ```ts
+// FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
+
 import type {
   AppProfileBase,
   CoreProfileBase,
@@ -789,6 +1023,8 @@ export const agentConfig: ProfileConfig = {
 ### packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
 
 ```ts
+// FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
+
 import type {
   AppProfileBase,
   CoreProfileBase,
@@ -899,6 +1135,8 @@ export const professionalConfig: ProfileConfig = {
 ### packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts
 
 ```ts
+// FILE: packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts
+
 // Author identity comes from CoreUser (do not import from AppUser)
 import type { Sluggable } from 'fireux-core/runtime/models/objects/protocols.ts'
 
@@ -972,6 +1210,8 @@ export {}
 ### packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts
 
 ```ts
+// FILE: packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts
+
 export interface ProductFeature {
   title: string
   description?: string
@@ -1094,6 +1334,8 @@ export interface MiseboxApp {
 ### packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts
 
 ```ts
+// FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts
+
 import type {
   AppProfileBase,
   CoreProfileBase,
@@ -1108,13 +1350,10 @@ import { chefConfig } from './supporting'
  */
 
 export interface ChefCore extends CoreProfileBase {
-  tagline: string
   bio_short: string
   bio_long: string
   specialties: string[]
   locations: string[]
-  avatar: string
-  avatar_url: string
   organization_name: string
 }
 
@@ -1152,6 +1391,8 @@ export const chefConfig: ProfileConfig = {
 ### packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts
 
 ```ts
+// FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts
+
 import type {
   AppProfileBase,
   CoreProfileBase,
@@ -1164,15 +1405,11 @@ import { supplierConfig } from './supporting'
  * Core doc:  suppliers/{uid}
  * App doc:   apps/{appId}/suppliers/{uid}
  */
-
 export interface SupplierCore extends CoreProfileBase {
-  tagline: string
   bio_short: string
   bio_long: string
   specialties: string[]
   categories: string[]
-  avatar: string
-  avatar_url: string
   organization_name: string
 
   business_type: string

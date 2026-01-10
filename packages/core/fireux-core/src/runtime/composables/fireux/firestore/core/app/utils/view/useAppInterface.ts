@@ -1,7 +1,8 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts
 
 import type { Ref } from 'vue'
-import type { App, AppSocialLinks } from '../../../../../../../models/core/app.model'
+import type { App } from '../../../../../../../models/core/app.model'
+import type { AppSocialLinks } from '../../../../../../../models/core/app.supporting'
 import { useResolvedColorMode } from '../../../../../app/useColorMode'
 
 export namespace AppCard {

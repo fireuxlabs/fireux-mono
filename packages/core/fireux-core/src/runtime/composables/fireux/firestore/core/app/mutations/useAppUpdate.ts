@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
-import type { App, AppSocialLinks } from '../../../../../../models/core/app.model'
+import type { App } from '../../../../../../models/core/app.model'
+import type { AppSocialLinks } from '../../../../../../models/core/app.supporting'
 import { arrayRemove, deleteField } from 'firebase/firestore'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
@@ -109,8 +110,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   async function updateAvatarUrl(url: string | null) {
     const value = sanitizeThumbnailUrl(url)
-    // Canon field is thumbnail_url; keep legacy avatar_url as empty string.
-    await updateApp({ thumbnail_url: value, avatar_url: '' })
+    await updateApp({ thumbnail_url: value })
   }
 
   async function updateThumbnailUrl(url: string | null) {
@@ -121,7 +121,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const id = ensureAppId()
     const path = appImageStoragePath(id, 'thumbnail')
     const url = await uploadImage(path, source)
-    await updateApp({ thumbnail_url: cacheBust(url), avatar_url: '' })
+    await updateApp({ thumbnail_url: cacheBust(url) })
     return url
   }
 
@@ -142,7 +142,6 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
     const field = appImageFirestoreField(kind)
     const patch: Record<string, any> = { [field]: next }
-    if (kind === 'thumbnail') patch.avatar_url = ''
     if (isWordmarkKind(kind)) patch.wordmark_url = deleteField()
     await updateApp(patch)
     return next
@@ -160,7 +159,6 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
     const field = appImageFirestoreField(kind)
     const patch: Record<string, any> = { [field]: next }
-    if (kind === 'thumbnail') patch.avatar_url = ''
     if (isWordmarkKind(kind)) patch.wordmark_url = deleteField()
     await updateApp(patch)
     return next

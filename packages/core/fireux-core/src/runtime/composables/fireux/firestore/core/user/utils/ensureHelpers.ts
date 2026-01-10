@@ -16,8 +16,9 @@ import type { App } from '../../../../../../models/core/app.model'
 import type {
   AppUser,
   User,
-  NotificationScope,
 } from '../../../../../../models/core/user.model'
+import type { NotificationScope, UserNotification } from '../../../../../../models/core/user.supporting'
+import type { FirebaseTimestamp } from '../../../../../../types/firebase'
 
 export type EnsureCoreOptions = {
   displayName?: string
@@ -46,6 +47,25 @@ export async function ensureCoreUserDocument(
     if (!existingName) {
       throw new Error('[ensureCoreUserDocument] Existing user missing display_name')
     }
+
+    // Backfill canon-required fields for older documents.
+    const patch: Partial<User> = {}
+    if (typeof (data as any)?.avatar !== 'string') patch.avatar = ''
+    if (typeof (data as any)?.handle !== 'string') patch.handle = makeHandle(existingName, uid)
+    if (typeof (data as any)?.email !== 'string') patch.email = options.email ?? ''
+    if (typeof (data as any)?.bio !== 'string') patch.bio = ''
+    if (!Array.isArray((data as any)?.profiles)) patch.profiles = []
+    if (!Array.isArray((data as any)?.userOf)) patch.userOf = []
+    if (!Array.isArray((data as any)?.adminOf)) patch.adminOf = []
+    if (!Array.isArray((data as any)?.notifications)) patch.notifications = []
+    if (!(data as any)?.created_at) (patch as any).created_at = serverTimestamp()
+    if (!(data as any)?.updated_at) (patch as any).updated_at = serverTimestamp()
+
+    if (Object.keys(patch).length) {
+      const { updateDocument } = useFirestoreManager()
+      await updateDocument<User>('users', uid, patch as any)
+    }
+
     return {
       created: false,
       snapshot: snapshot as DocumentSnapshot<User>,
@@ -73,6 +93,9 @@ export async function ensureCoreUserDocument(
     profiles: [],
     userOf: [],
     adminOf: [],
+    notifications: [],
+    created_at: serverTimestamp() as unknown as FirebaseTimestamp,
+    updated_at: serverTimestamp() as unknown as FirebaseTimestamp,
   }
 
   const { setDocument } = useFirestoreManager()
@@ -125,6 +148,7 @@ export async function ensureUserAppMembership(
         id: uid,
         role: membershipRole,
         creator_id: uid,
+        notifications: [],
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
       } as any,
@@ -219,13 +243,13 @@ export type CreateNotificationInput = {
 
 export function createUserNotification(
   input: CreateNotificationInput
-): { message: string; scope: NotificationScope; created_at: string; read: boolean; app_id?: string } {
+): UserNotification {
   return {
     message: input.message,
     scope: input.scope,
-    created_at: new Date().toISOString(),
+    created_at: serverTimestamp() as unknown as FirebaseTimestamp,
     read: false,
-    app_id: input.appId,
+    app_id: input.appId ?? '',
   }
 }
 

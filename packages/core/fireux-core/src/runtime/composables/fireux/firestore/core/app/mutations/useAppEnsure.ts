@@ -4,7 +4,8 @@ import { useFirestore } from 'vuefire'
 import { requireUid } from '../../../utils/useEnsureCommon'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'
 import { ensureUserAppMembership } from '../../user/utils/ensureHelpers'
-import { createEmptyAppSocialLinks, type App } from '../../../../../../models/core/app.model'
+import type { App } from '../../../../../../models/core/app.model'
+import { createEmptyAppSocialLinks } from '../../../../../../models/core/app.supporting'
 
 type EnsureAppDocResult = { created: boolean; id: string }
 type EnsureMembershipResult = { created: boolean }
@@ -56,7 +57,6 @@ export function useAppEnsure() {
 
         // Media URLs (no optionals; empty string = not set)
         thumbnail_url: '',
-        avatar_url: '',
         logo_url: '',
         wordmark_light_url: '',
         wordmark_dark_url: '',
@@ -98,7 +98,6 @@ export function useAppEnsure() {
 
     // Image URL fields are required strings (empty string means "not set").
     if (typeof (existing as any)?.thumbnail_url !== 'string') patch.thumbnail_url = ''
-    if (typeof (existing as any)?.avatar_url !== 'string') patch.avatar_url = ''
     if (typeof (existing as any)?.logo_url !== 'string') patch.logo_url = ''
     if (typeof (existing as any)?.wordmark_light_url !== 'string') patch.wordmark_light_url = ''
     if (typeof (existing as any)?.wordmark_dark_url !== 'string') patch.wordmark_dark_url = ''

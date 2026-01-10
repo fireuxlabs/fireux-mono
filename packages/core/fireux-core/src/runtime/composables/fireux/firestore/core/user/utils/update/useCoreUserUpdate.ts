@@ -1,8 +1,8 @@
 import { addDoc, arrayRemove, arrayUnion, collection } from 'firebase/firestore'
 import type {
   User,
-  UserNotification,
 } from '../../../../../../../models/core/user.model'
+import type { UserNotification } from '../../../../../../../models/core/user.supporting'
 import type { UserRefs } from '../../fetch/useUserFetch'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'

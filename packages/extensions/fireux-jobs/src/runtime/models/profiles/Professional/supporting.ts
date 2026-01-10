@@ -12,13 +12,13 @@
 
 /** Minimal shared structure for any experience entry */
 export interface ExperienceBase {
-  role?: string
-  from_month?: string
-  from_year?: string
-  to_month?: string | null
-  to_year?: string | null
-  ongoing?: boolean
-  responsibilities?: string
+  role: string
+  from_month: string
+  from_year: string
+  to_month: string
+  to_year: string
+  ongoing: boolean
+  responsibilities: string
 }
 
 /**
@@ -34,11 +34,11 @@ export interface RelevantExperienceItem extends ExperienceBase {
  * Self-contained. Useful when the place isn't in Firestore yet.
  */
 export interface OtherExperienceItem extends ExperienceBase {
-  place_id?: string | null
+  place_id: string
   name: string
-  formatted_address?: string
-  short_address?: string
-  image_url?: string | null
+  formatted_address: string
+  short_address: string
+  image_url: string
 }
 
 /** Combined union if needed elsewhere */

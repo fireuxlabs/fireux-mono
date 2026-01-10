@@ -1,5 +1,5 @@
 import { addDoc, collection } from 'firebase/firestore'
-import type { UserNotification } from '../../../../../../../models/core/user.model'
+import type { UserNotification } from '../../../../../../../models/core/user.supporting'
 import type { UserRefs } from '../../fetch/useUserFetch'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import {

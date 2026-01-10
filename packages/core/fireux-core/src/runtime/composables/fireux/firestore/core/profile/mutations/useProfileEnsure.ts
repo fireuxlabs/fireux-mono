@@ -1,4 +1,4 @@
-import { arrayUnion, doc, getDoc } from 'firebase/firestore'
+import { arrayUnion, doc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'
@@ -31,13 +31,30 @@ export function useProfileEnsure(config: ProfileConfig) {
     if (!coreSnapshot.exists()) {
       await setDocument(config.collectionName, uid, {
         id: uid,
-        user: {},
-        domain: config.id ?? '',
         title: '',
         subtitle: '',
+        tagline: '',
         tags: [],
-      })
+        creator_id: uid,
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+      } as any)
       createdCore = true
+    } else {
+      // Backfill required fields for older docs.
+      const existing = coreSnapshot.data() as any
+      const patch: any = {}
+      if (typeof existing?.id !== 'string') patch.id = uid
+      if (typeof existing?.title !== 'string') patch.title = ''
+      if (typeof existing?.subtitle !== 'string') patch.subtitle = ''
+      if (typeof existing?.tagline !== 'string') patch.tagline = ''
+      if (!Array.isArray(existing?.tags)) patch.tags = []
+      if (typeof existing?.creator_id !== 'string') patch.creator_id = uid
+      if (!existing?.created_at) patch.created_at = serverTimestamp()
+      if (!existing?.updated_at) patch.updated_at = serverTimestamp()
+      if (Object.keys(patch).length) {
+        await updateDocument(config.collectionName, uid, patch)
+      }
     }
 
     if (isTenant && appId) {
@@ -47,13 +64,21 @@ export function useProfileEnsure(config: ProfileConfig) {
       if (!appSnapshot.exists()) {
         await setDocument(appCollection, uid, {
           id: uid,
-          user: {},
-          domain: config.id ?? '',
-          title: '',
-          subtitle: '',
-          tags: [],
-        })
+          creator_id: uid,
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp(),
+        } as any)
         createdApp = true
+      } else {
+        const existing = appSnapshot.data() as any
+        const patch: any = {}
+        if (typeof existing?.id !== 'string') patch.id = uid
+        if (typeof existing?.creator_id !== 'string') patch.creator_id = uid
+        if (!existing?.created_at) patch.created_at = serverTimestamp()
+        if (!existing?.updated_at) patch.updated_at = serverTimestamp()
+        if (Object.keys(patch).length) {
+          await updateDocument(appCollection, uid, patch)
+        }
       }
     }
 
