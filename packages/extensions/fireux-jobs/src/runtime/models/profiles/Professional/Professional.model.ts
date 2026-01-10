@@ -17,14 +17,11 @@ import {
  * App doc:   apps/{appId}/professionals/{uid}
  */
 export interface ProfessionalCore extends CoreProfileBase {
-  tagline: string
   health_certifications: string[]
   bio_short: string
   bio_long: string
   specialties: string[]
   locations: string[]
-  avatar: string
-  avatar_url: string
   relevant_experience: RelevantExperienceItem[]
   other_experience: OtherExperienceItem[]
 }

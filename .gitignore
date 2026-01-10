@@ -95,3 +95,7 @@ packages/ecosystem/**/src/runtime/**/index.ts
 migrations/backups/*.json
 # Documentation artifacts
 artifacts/
+
+# Sandbox (local experimentation snapshots)
+sandbox/**
+!sandbox/README.md

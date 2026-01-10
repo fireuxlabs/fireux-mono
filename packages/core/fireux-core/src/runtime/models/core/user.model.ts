@@ -1,18 +1,7 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/user.model.ts
 
-import type { FirestoreTimestampOrString } from '../../../types/firebase'
-
-export type NotificationScope = 'ecosystem' | 'app'
-
-type Ts = FirestoreTimestampOrString
-
-export interface UserNotification {
-  message: string
-  scope: NotificationScope
-  created_at: string
-  read: boolean
-  app_id?: string
-}
+import type { FirebaseTimestamp } from '../../../types/firebase'
+import type { UserNotification } from './user.supporting'
 
 /**
  * Core Firestore user document
@@ -27,11 +16,18 @@ export interface User {
   handle: string
   email: string
   bio: string
+  
   profiles: string[]
 
   /** Core memberships */
   userOf: string[]
   adminOf: string[]
+
+  // notifications (safe to store; interfaces decide what to render)
+  notifications: UserNotification[]
+
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
 }
 
 /**
@@ -45,6 +41,8 @@ export interface AppUser {
 
   creator_id: string
 
-  created_at: Ts
-  updated_at: Ts
+  notifications: UserNotification[]
+
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
 }

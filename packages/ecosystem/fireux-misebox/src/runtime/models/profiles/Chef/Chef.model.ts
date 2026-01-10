@@ -13,13 +13,10 @@ import { chefConfig } from './supporting'
  * App doc:   apps/{appId}/chefs/{uid}
  */
 export interface ChefCore extends CoreProfileBase {
-  tagline: string
   bio_short: string
   bio_long: string
   specialties: string[]
   locations: string[]
-  avatar: string
-  avatar_url: string
   organization_name: string
 }
 

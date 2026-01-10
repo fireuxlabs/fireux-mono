@@ -13,13 +13,10 @@ import { supplierConfig } from './supporting'
  * App doc:   apps/{appId}/suppliers/{uid}
  */
 export interface SupplierCore extends CoreProfileBase {
-  tagline: string
   bio_short: string
   bio_long: string
   specialties: string[]
   categories: string[]
-  avatar: string
-  avatar_url: string
   organization_name: string
 
   business_type: string

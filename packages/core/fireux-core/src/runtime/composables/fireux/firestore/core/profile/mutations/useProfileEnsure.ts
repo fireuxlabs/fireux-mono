@@ -35,7 +35,6 @@ export function useProfileEnsure(config: ProfileConfig) {
         subtitle: '',
         tagline: '',
         tags: [],
-        creator_id: uid,
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
       } as any)
@@ -49,7 +48,6 @@ export function useProfileEnsure(config: ProfileConfig) {
       if (typeof existing?.subtitle !== 'string') patch.subtitle = ''
       if (typeof existing?.tagline !== 'string') patch.tagline = ''
       if (!Array.isArray(existing?.tags)) patch.tags = []
-      if (typeof existing?.creator_id !== 'string') patch.creator_id = uid
       if (!existing?.created_at) patch.created_at = serverTimestamp()
       if (!existing?.updated_at) patch.updated_at = serverTimestamp()
       if (Object.keys(patch).length) {

@@ -1,7 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/app.supporting.ts
 
-import type { FirebaseTimestamp } from '../../../types/firebase'
-
 export type AppRole = 'global' | 'tenant' | 'sandbox'
 export type AppSocialPlatform =
   | 'website'
@@ -37,14 +35,4 @@ export function createEmptyAppSocialLinks(): AppSocialLinks {
     facebook: '',
     youtube: '',
   }
-}
-
-/**
- * Standard metadata for all canon docs.
- * (Kept in supporting so models can import without repeating)
- */
-export interface FireuxMeta {
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
-  creator_id: string
 }
