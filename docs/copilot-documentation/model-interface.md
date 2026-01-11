@@ -63,6 +63,7 @@ This guide consolidates the current FireUX data models that power app users, sha
 
 - UI-facing `AgentCard.Card` payload emitted by `useAgentInterface().card()`.
 - Follows the same canonical card DTO shape used by App/User.
+- `useAgentInterface()` should also expose `searchText(raw)` (or `searchText(target?)`) so collection managers can filter via the interface rather than guessing fields.
 
 ## Core App Model (`packages/core/fireux-core/src/runtime/models/core/app.model.ts`)
 

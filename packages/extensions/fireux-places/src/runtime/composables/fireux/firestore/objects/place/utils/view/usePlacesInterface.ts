@@ -10,27 +10,24 @@ export namespace PlaceCard {
   export interface Pill {
     id: string
     name: string
-    avatar?: string | null
+
+    // Media (empty string means unset)
+    imageUrl: string
   }
 
   export interface Cell extends Pill {
     source: PlaceSource
-    formatted_address?: string
+    formatted_address: string
   }
 }
 
 export function usePlacesInterface() {
   function toCell(place: PlaceBase): PlaceCard.Cell {
-    const rawId = (place as any)?.id ?? (place as any)?.place_id ?? ''
-    const id = String(rawId)
-    const sourceRaw = (place as any)?.source
-    const normalized = sourceRaw === 'firestore' ? 'firebase' : sourceRaw
-    const source = (normalized === 'google' ? 'google' : 'firebase') as PlaceSource
     return {
-      id,
+      id: place.id,
       name: place.name,
-      avatar: place.avatar || null,
-      source,
+      imageUrl: place.image_url,
+      source: place.source,
       formatted_address: place.formatted_address,
     }
   }
@@ -41,6 +38,10 @@ export function usePlacesInterface() {
     return place ? toCell(place) : null
   }
 
-  return { card, toCell }
+  function searchText(place: PlaceBase): string {
+    return `${place.name} ${place.formatted_address} ${place.id}`.trim().toLowerCase()
+  }
+
+  return { card, toCell, searchText }
 }
 

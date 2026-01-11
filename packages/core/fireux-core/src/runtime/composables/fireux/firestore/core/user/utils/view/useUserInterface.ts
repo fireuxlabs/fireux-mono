@@ -26,22 +26,26 @@ export namespace UserCard {
 
 export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   function map(user: User): UserCard.Card {
-    const appCount = Array.isArray(user.userOf) ? user.userOf.length : 0
-    const handle = (user.handle ?? '').trim()
+    const appCount = user.userOf.length
+    const handle = user.handle.trim()
 
     return {
       id: user.id,
       to: `/users/${user.id}`,
 
-      avatarUrl: user.avatar ?? '',
-      displayName: user.display_name ?? '',
+      avatarUrl: user.avatar,
+      displayName: user.display_name,
       handle: handle ? `@${handle}` : '',
       badges: [],
 
-      bio: user.bio ?? '',
-      profiles: Array.isArray(user.profiles) ? user.profiles : [],
+      bio: user.bio,
+      profiles: user.profiles,
       apps: appCount ? `${appCount} apps` : '',
     }
+  }
+
+  function searchText(user: User): string {
+    return `${user.display_name} ${user.handle} ${user.id}`.trim().toLowerCase()
   }
 
   function card(target?: User | null | undefined): UserCard.Card | null {
@@ -49,5 +53,5 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
     return user ? map(user) : null
   }
 
-  return { card }
+  return { card, searchText }
 }

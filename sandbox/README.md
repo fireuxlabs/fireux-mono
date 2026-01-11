@@ -2,27 +2,36 @@
 
 # Sandbox
 
-This folder is for *detached* snapshots, sketches, and experiments.
+Use this folder as a **detached learning / drafting area**.
+
+Key idea: everything in `sandbox/` is allowed to be disposable except this README.
 
 - The repo ignores `sandbox/**` **except** this README.
-- Treat everything else in `sandbox/` as disposable *reference material*.
+- Sandbox snapshots are for reading/thinking, not compiling.
 
-## Rules
+## Sandbox Rules (Canon)
 
-1. Always include a filepath header
-   - Every sandbox snapshot file must start with a first-line comment like:
-     - `<!-- FILE: sandbox/<name>.vue (copied from <source path>) -->`
-     - `// FILE: sandbox/<name>.ts (copied from <source path>)`
+1) Always include a FILE header
+- Every sandbox snapshot must begin with a first-line header pointing to the real source path.
+   - Vue: `<!-- FILE: <real path> -->`
+   - TS: `// FILE: <real path>`
 
-2. No imports in sandbox snapshots
-   - Sandbox files are detached and should not depend on buildable import graphs.
-   - If you copy a real file in, remove all `import ...` lines.
-   - Keep the code/structure for reading, not compiling.
+2) No imports in snapshots
+- Remove all `import ...` lines.
+- Remove re-exports like `export * from '...'`.
+- If you need types, use local `declare type ...` stubs.
 
-3. When promoting sandbox → real code
-   - If a sandbox snapshot drives a real change, add a **top-of-file FILE comment** to the real file (or preserve the existing one) that includes the real filepath.
-   - Record a short note in the log below (date, what changed, source sandbox file).
+3) Collection manager canon
+- Managers own: `query` state + filtering + `variant: 'pill' | 'cell'`.
+- Interfaces own: `card(raw)` + `searchText(raw)`.
+- Details/CTA surfaces may use `view: 'preview' | 'profile'`.
 
-## Notes / Log (append-only)
+## Helpful Commands
 
-- 2026-01-11: Added collection-manager snapshots; removed imports to keep sandbox detached.
+If you want a clean sandbox, either ask Copilot to clear/fill it, or run these directly:
+
+- Clear everything except this README:
+  - `find sandbox -maxdepth 1 -type f ! -name 'README.md' -delete`
+  - `rm -rf sandbox/interfaces`
+
+When you want “sandbox filled with all useXInterfaces”, ask Copilot and it can regenerate `sandbox/interfaces/` from the real files with imports stripped.

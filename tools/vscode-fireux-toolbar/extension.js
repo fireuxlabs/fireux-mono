@@ -1,9 +1,10 @@
 const vscode = require('vscode')
 const cp = require('node:child_process')
+const path = require('node:path')
 
-function execFileAsync(cmd, args) {
+function execFileAsync(cmd, args, { maxBuffer } = {}) {
   return new Promise((resolve, reject) => {
-    cp.execFile(cmd, args, { maxBuffer: 1024 * 1024 }, (err, stdout, stderr) => {
+    cp.execFile(cmd, args, { maxBuffer: maxBuffer ?? 1024 * 1024 }, (err, stdout, stderr) => {
       if (err) {
         err.stdout = stdout
         err.stderr = stderr
@@ -13,6 +14,130 @@ function execFileAsync(cmd, args) {
       resolve({ stdout, stderr })
     })
   })
+}
+
+function shellQuotePosix(value) {
+  const s = String(value ?? '')
+  if (s.length === 0) return "''"
+  return `'${s.replaceAll("'", `'\\''`)}'`
+}
+
+function cwdForUri(uri) {
+  try {
+    if (!uri || !uri.fsPath) return undefined
+    const fsPath = uri.fsPath
+    // Heuristic: if it has an extension, treat as file.
+    if (path.extname(fsPath)) return path.dirname(fsPath)
+    return fsPath
+  } catch {
+    return undefined
+  }
+}
+
+function isProbablyBinary(buffer) {
+  if (!buffer || buffer.length === 0) return false
+  const limit = Math.min(buffer.length, 8000)
+  for (let i = 0; i < limit; i++) {
+    if (buffer[i] === 0) return true
+  }
+  return false
+}
+
+function normalizeRelPath(rel) {
+  return rel.split(path.sep).join('/')
+}
+
+async function collectFilesRecursive(fsApi, rootDir, opts) {
+  const ignoreNames = new Set([
+    '.git',
+    'node_modules',
+    'dist',
+    '.nuxt',
+    '.output',
+    '.data',
+    '.cache',
+    '.nitro',
+  ])
+
+  const results = []
+  const stack = [rootDir]
+
+  while (stack.length) {
+    const dir = stack.pop()
+    let entries
+    try {
+      entries = await fsApi.readDirectory(vscode.Uri.file(dir))
+    } catch {
+      continue
+    }
+
+    for (const [name, type] of entries) {
+      if (ignoreNames.has(name)) continue
+      if (name === '.DS_Store') continue
+
+      const full = path.join(dir, name)
+
+      if (type === vscode.FileType.Directory) {
+        stack.push(full)
+        continue
+      }
+      if (type !== vscode.FileType.File) continue
+
+      results.push(full)
+      if (results.length >= opts.maxFiles) return results
+    }
+  }
+
+  return results
+}
+
+async function buildCatTreeText(rootDir, { maxFiles, maxFileBytes, maxTotalBytes }) {
+  const files = await collectFilesRecursive(vscode.workspace.fs, rootDir, { maxFiles })
+  files.sort((a, b) => a.localeCompare(b))
+
+  const decoder = new TextDecoder('utf-8', { fatal: false })
+  let total = 0
+  const chunks = []
+
+  for (const abs of files) {
+    const rel = normalizeRelPath(path.relative(rootDir, abs))
+    const header = `\n\n===== ./${rel} =====\n`
+    chunks.push(header)
+    total += Buffer.byteLength(header, 'utf8')
+    if (total > maxTotalBytes) {
+      chunks.push('\n[cat-tree truncated: output size exceeded]\n')
+      break
+    }
+
+    let data
+    try {
+      data = await vscode.workspace.fs.readFile(vscode.Uri.file(abs))
+    } catch {
+      chunks.push('[unreadable]\n')
+      continue
+    }
+
+    if (data.byteLength > maxFileBytes) {
+      chunks.push(`[skipped: file too large (${data.byteLength} bytes)]\n`)
+      continue
+    }
+
+    const buf = Buffer.from(data)
+    if (isProbablyBinary(buf)) {
+      chunks.push('[skipped: binary file]\n')
+      continue
+    }
+
+    const text = decoder.decode(buf)
+    chunks.push(text)
+    total += Buffer.byteLength(text, 'utf8')
+    if (total > maxTotalBytes) {
+      chunks.push('\n[cat-tree truncated: output size exceeded]\n')
+      break
+    }
+  }
+
+  return chunks.join('')
 }
 
 function safeOrigin(url) {
@@ -101,6 +226,17 @@ function activate(context) {
     return term
   }
 
+  const ensureNamedTerminal = (name, { cwd } = {}) => {
+    const existing = vscode.window.terminals.find((t) => t.name === name)
+    if (existing) {
+      existing.show()
+      return existing
+    }
+    const term = vscode.window.createTerminal({ name, cwd })
+    term.show()
+    return term
+  }
+
   const runTaskIfPresent = async (label) => {
     try {
       const tasks = await vscode.tasks.fetchTasks()
@@ -146,6 +282,54 @@ function activate(context) {
     const d = vscode.commands.registerCommand(commandId, runner)
     context.subscriptions.push(d)
   }
+
+  register('fireuxToolbar.catTree', async (uri, selectedUris) => {
+    const targetUri =
+      (Array.isArray(selectedUris) && selectedUris.length
+        ? selectedUris[0]
+        : uri) ??
+      vscode.window.activeTextEditor?.document?.uri
+
+    const targetCwd = cwdForUri(targetUri) ?? cwd
+    const terminal = ensureNamedTerminal('Cat Tree', { cwd: targetCwd })
+
+    if (targetCwd) {
+      terminal.sendText(`cd ${shellQuotePosix(targetCwd)} && cat-tree`)
+    } else {
+      terminal.sendText('cat-tree')
+    }
+  })
+
+  register('fireuxToolbar.catTreeToEditor', async (uri, selectedUris) => {
+    const targetUri =
+      (Array.isArray(selectedUris) && selectedUris.length
+        ? selectedUris[0]
+        : uri) ??
+      vscode.window.activeTextEditor?.document?.uri
+
+    const targetCwd = cwdForUri(targetUri) ?? cwd
+
+    if (!targetCwd) {
+      vscode.window.showErrorMessage('Cat Tree: no target folder found')
+      return
+    }
+
+    try {
+      const output = await buildCatTreeText(targetCwd, {
+        maxFiles: 400,
+        maxFileBytes: 512 * 1024,
+        maxTotalBytes: 8 * 1024 * 1024,
+      })
+      const doc = await vscode.workspace.openTextDocument({
+        language: 'plaintext',
+        content: output,
+      })
+      await vscode.window.showTextDocument(doc, { preview: false })
+    } catch (err) {
+      const msg = String(err?.message || err || 'Failed to build cat-tree output')
+      vscode.window.showErrorMessage(`Cat Tree failed: ${msg}`)
+    }
+  })
 
   const apps = [
     {

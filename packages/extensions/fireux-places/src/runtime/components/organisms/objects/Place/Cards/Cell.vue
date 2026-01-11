@@ -2,7 +2,7 @@
   <div class="fx-card fx-card--cell">
     <div class="fx-card__media">
       <UAvatar
-        :src="avatar || undefined"
+        :src="imageUrl || undefined"
         :alt="title"
         size="sm"
         icon="i-lucide-map-pin"
@@ -30,12 +30,12 @@ import type { PlaceCard } from '../../../../../composables/fireux/firestore/obje
 defineOptions({ inheritAttrs: false })
 
 const props = defineProps<
-  Pick<PlaceCard.Cell, 'id' | 'name' | 'formatted_address' | 'avatar' | 'source'> & { prop?: string }
+  Pick<PlaceCard.Cell, 'id' | 'name' | 'formatted_address' | 'imageUrl' | 'source'> & { prop?: string }
 >()
 
 const title = computed(() => props.name)
 const subtitle = computed(() => props.formatted_address)
-const avatar = computed(() => props.avatar || null)
+const imageUrl = computed(() => props.imageUrl || '')
 const prop = computed(() => props.prop)
 const sourceLabel = computed(() =>
   props.source === 'firebase'

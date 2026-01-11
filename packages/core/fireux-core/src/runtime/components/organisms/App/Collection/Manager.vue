@@ -21,10 +21,6 @@
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
           </UButton>
 
-          <UButton size="xs" variant="ghost" @click="toggleDetailVariant">
-            {{ variant === 'preview' ? 'Profile' : 'Preview' }}
-          </UButton>
-
           <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
         </div>
       </div>
@@ -46,20 +42,16 @@ import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
 const { apps, count: totalCount } = useAppCollection()
-const { card } = useAppInterface()
+const { card, searchText } = useAppInterface()
 
 const query = ref('')
 
-type Variant = 'pill' | 'cell' | 'preview' | 'profile'
+type Variant = 'pill' | 'cell'
 
 const variant = ref<Variant>('pill')
 const toggleCompactVariant = () => {
   if (variant.value === 'pill') variant.value = 'cell'
   else variant.value = 'pill'
-}
-const toggleDetailVariant = () => {
-  if (variant.value === 'preview') variant.value = 'profile'
-  else variant.value = 'preview'
 }
 
 const normalizedApps = computed<App[]>(() => apps.value ?? [])
@@ -68,12 +60,7 @@ const visibleApps = computed<App[]>(() => {
   const q = query.value.trim().toLowerCase()
   if (!q) return normalizedApps.value
 
-  return normalizedApps.value.filter((app) => {
-    const name = (app.app_name ?? '').toLowerCase()
-    const eco = (app.ecosystem ?? '').toLowerCase()
-    const short = (app.app_short_name ?? '').toLowerCase()
-    return name.includes(q) || eco.includes(q) || short.includes(q)
-  })
+  return normalizedApps.value.filter((app) => searchText(app).includes(q))
 })
 
 const visibleCount = computed(() => visibleApps.value.length)

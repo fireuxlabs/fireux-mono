@@ -5,12 +5,15 @@
         <div class="flex items-center justify-between gap-2">
           <h2>App agents</h2>
           <div class="flex items-center gap-2">
+            <UInput
+              v-model="query"
+              size="xs"
+              placeholder="Search…"
+              class="w-44"
+            />
+
             <UButton size="xs" variant="ghost" @click="toggleCompactVariant">
               {{ variant === 'pill' ? 'Cells' : 'Pills' }}
-            </UButton>
-
-            <UButton size="xs" variant="ghost" @click="toggleDetailVariant">
-              {{ variant === 'preview' ? 'Profile' : 'Preview' }}
             </UButton>
 
             <UBadge variant="soft">{{ localTotal }} total</UBadge>
@@ -40,12 +43,15 @@
           <div class="flex items-center justify-between gap-2">
             <h2>Global agents</h2>
             <div class="flex items-center gap-2">
+              <UInput
+                v-model="query"
+                size="xs"
+                placeholder="Search…"
+                class="w-44"
+              />
+
               <UButton size="xs" variant="ghost" @click="toggleCompactVariant">
                 {{ variant === 'pill' ? 'Cells' : 'Pills' }}
-              </UButton>
-
-              <UButton size="xs" variant="ghost" @click="toggleDetailVariant">
-                {{ variant === 'preview' ? 'Profile' : 'Preview' }}
               </UButton>
 
               <UBadge variant="soft">{{ globalTotal }} total</UBadge>
@@ -71,27 +77,26 @@ import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
 import { useAgentCollection } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
-import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import {
+  useAgentsInterface,
+  type AgentDirectoryEntry,
+} from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentsInterface'
 
 const { isTenant } = useFireUXConfig()
 const showGlobalDirectory = ref(!isTenant)
 
-type Variant = 'pill' | 'cell' | 'preview' | 'profile'
+type Variant = 'pill' | 'cell'
 const variant = ref<Variant>('pill')
+const query = ref('')
 
 const toggleCompactVariant = () => {
   if (variant.value === 'pill') variant.value = 'cell'
   else variant.value = 'pill'
 }
 
-const toggleDetailVariant = () => {
-  if (variant.value === 'preview') variant.value = 'profile'
-  else variant.value = 'preview'
-}
-
 const { globalAgents, localAgents } = useAgentCollection()
-const { card } = useAgent()
+const { card, searchText } = useAgentsInterface()
 
 type DirectoryEntry = {
   key: string
@@ -100,41 +105,41 @@ type DirectoryEntry = {
 }
 
 const globalDirectoryEntries = computed<DirectoryEntry[]>(() => {
-  const list = globalAgents.value ?? []
+  const q = query.value.trim().toLowerCase()
+  const list = (globalAgents.value ?? []) as AgentDirectoryEntry[]
   if (!list.length) return []
 
   return list
-    .filter((entry: unknown): entry is AgentCore => Boolean((entry as AgentCore | undefined)?.id))
-    .map((entry: AgentCore) => {
+    .filter((entry) => Boolean(entry?.id))
+    .filter((entry) => (!q ? true : searchText(entry).includes(q)))
+    .map((entry) => {
       const payload = card(entry)
-      if (!payload) return null
 
       return {
         key: entry.id,
         card: payload,
-        raw: entry,
+        raw: entry as unknown as AgentCore,
       }
     })
-    .filter((entry): entry is DirectoryEntry => Boolean(entry))
 })
 
 const localDirectoryEntries = computed<DirectoryEntry[]>(() => {
-  const list = localAgents.value ?? []
+  const q = query.value.trim().toLowerCase()
+  const list = (localAgents.value ?? []) as AgentDirectoryEntry[]
   if (!list.length) return []
 
   return list
-    .filter((entry: unknown): entry is AgentCore => Boolean((entry as AgentCore | undefined)?.id))
-    .map((entry: AgentCore) => {
+    .filter((entry) => Boolean(entry?.id))
+    .filter((entry) => (!q ? true : searchText(entry).includes(q)))
+    .map((entry) => {
       const payload = card(entry)
-      if (!payload) return null
 
       return {
         key: entry.id,
         card: payload,
-        raw: entry,
+        raw: entry as unknown as AgentCore,
       }
     })
-    .filter((entry): entry is DirectoryEntry => Boolean(entry))
 })
 
 const globalCards = computed(() => globalDirectoryEntries.value.map((e) => e.card))

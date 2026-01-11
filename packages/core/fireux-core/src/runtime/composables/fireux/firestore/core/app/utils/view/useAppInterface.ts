@@ -51,28 +51,34 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       id: app.id,
       to: `/apps/${app.id}`,
 
-      avatarUrl: app.thumbnail_url ?? '',
+      avatarUrl: app.thumbnail_url,
 
-      displayName: app.app_name ?? '',
-      ecosystem: app.ecosystem ?? '',
+      displayName: app.app_name,
+      ecosystem: app.ecosystem,
       badges: [],
 
-      tagline: app.tagline ?? '',
-      shortName: app.app_short_name ?? '',
-      role: app.role ?? '',
-      userCount: typeof app.user_count === 'number' ? app.user_count : 0,
+      tagline: app.tagline,
+      shortName: app.app_short_name,
+      role: app.role,
+      userCount: app.user_count,
 
-      description: app.description ?? '',
-      shortBio: app.short_bio ?? '',
-      longBio: app.long_bio ?? '',
+      description: app.description,
+      shortBio: app.short_bio,
+      longBio: app.long_bio,
 
-      logo: app.logo_url ?? '',
-      wordmarkLight: app.wordmark_light_url ?? '',
-      wordmarkDark: app.wordmark_dark_url ?? '',
+      logo: app.logo_url,
+      wordmarkLight: app.wordmark_light_url,
+      wordmarkDark: app.wordmark_dark_url,
       wordmark: resolveWordmark(app),
 
       socialLinks: app.social_links,
     }
+  }
+
+  function searchText(app: App): string {
+    return `${app.app_name} ${app.app_short_name} ${app.ecosystem}`
+      .trim()
+      .toLowerCase()
   }
 
   function card(target?: App | null | undefined): AppCard.Card | null {
@@ -80,5 +86,5 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     return app ? map(app) : null
   }
 
-  return { card }
+  return { card, searchText }
 }

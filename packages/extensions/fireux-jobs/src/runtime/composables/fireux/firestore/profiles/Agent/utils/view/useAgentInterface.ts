@@ -54,8 +54,8 @@ export function useAgentInterface(
       bioShort: currentProfile.bio_short,
 
       // Keep strictly profile-owned here. Authorized surfaces can decide to override later.
-      contactEmail: currentProfile.contact_email?.trim() || '',
-      websiteUrl: currentProfile.website_url || '',
+      contactEmail: currentProfile.contact_email.trim(),
+      websiteUrl: currentProfile.website_url,
     }
   }
 
@@ -66,5 +66,17 @@ export function useAgentInterface(
     return currentProfile ? map(currentProfile, user) : null
   }
 
-  return { card }
+  function searchText(target?: AgentCore | null | undefined): string {
+    const currentProfile = target ?? profile.coreProfile.value ?? null
+    const user = userRef?.value ?? null
+    if (!currentProfile) return ''
+
+    const displayName = user?.display_name ?? currentProfile.title ?? ''
+
+    return `${displayName} ${currentProfile.tagline ?? ''} ${currentProfile.id ?? ''}`
+      .trim()
+      .toLowerCase()
+  }
+
+  return { card, searchText }
 }

@@ -30,9 +30,7 @@ const places = computed<PlaceEntity[]>(() => (collection.value ?? []) as PlaceEn
 const { toCell } = usePlacesInterface()
 
 const cells = computed(() =>
-  (places.value ?? []).map((place: PlaceEntity) =>
-    toCell({ ...place, avatar: place.avatar || null })
-  )
+  (places.value ?? []).map((place: PlaceEntity) => toCell(place))
 )
 
 const total = computed(() => cells.value.length)

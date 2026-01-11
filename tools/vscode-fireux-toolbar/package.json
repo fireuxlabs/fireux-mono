@@ -16,6 +16,16 @@
   "contributes": {
     "commands": [
       {
+        "command": "fireuxToolbar.catTree",
+        "title": "Cat Tree (Terminal)",
+        "icon": "$(list-tree)"
+      },
+      {
+        "command": "fireuxToolbar.catTreeToEditor",
+        "title": "Cat Tree (Editor)",
+        "icon": "$(output)"
+      },
+      {
         "command": "fireuxToolbar.startFireux",
         "title": "Dev: FireUX",
         "icon": "$(flame)"
@@ -47,6 +57,18 @@
       }
     ],
     "menus": {
+      "explorer/context": [
+        {
+          "command": "fireuxToolbar.catTree",
+          "group": "navigation@8",
+          "when": "resourceScheme == 'file'"
+        },
+        {
+          "command": "fireuxToolbar.catTreeToEditor",
+          "group": "navigation@9",
+          "when": "resourceScheme == 'file'"
+        }
+      ],
       "commandCenter": [
         {
           "command": "fireuxToolbar.startFireux",

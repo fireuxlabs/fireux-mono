@@ -30,10 +30,6 @@
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
           </UButton>
 
-          <UButton size="xs" variant="ghost" @click="toggleDetailVariant">
-            {{ variant === 'preview' ? 'Profile' : 'Preview' }}
-          </UButton>
-
           <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
         </div>
       </div>
@@ -66,7 +62,7 @@ import type { UserCard } from '../../../../composables/fireux/firestore/core/use
 const { appId, appName, ecosystem, isTenant } = useFireUXConfig()
 const showGlobalDirectory = ref(!isTenant)
 const { users, count: totalCount } = useGlobalUserCollection()
-const { card } = useUserInterface()
+const { card, searchText } = useUserInterface()
 
 const scopeCopy = computed(() => {
   if (isTenant) return `Browse users available to ${appName}.`
@@ -75,17 +71,12 @@ const scopeCopy = computed(() => {
 
 const query = ref('')
 
-type Variant = 'pill' | 'cell' | 'preview' | 'profile'
+type Variant = 'pill' | 'cell'
 
 const variant = ref<Variant>('pill')
 const toggleVariant = () => {
   if (variant.value === 'pill') variant.value = 'cell'
   else variant.value = 'pill'
-}
-
-const toggleDetailVariant = () => {
-  if (variant.value === 'preview') variant.value = 'profile'
-  else variant.value = 'preview'
 }
 
 type DirectoryEntry = {
@@ -108,12 +99,7 @@ const visibleUsers = computed<User[]>(() => {
   const q = query.value.trim().toLowerCase()
   if (!q) return normalizedUsers.value
 
-  return normalizedUsers.value.filter((user) => {
-    const name = (user.display_name ?? '').toLowerCase()
-    const handle = (user.handle ?? '').toLowerCase()
-    const id = (user.id ?? '').toLowerCase()
-    return name.includes(q) || handle.includes(q) || id.includes(q)
-  })
+  return normalizedUsers.value.filter((user) => searchText(user).includes(q))
 })
 
 const visibleCount = computed(() => visibleUsers.value.length)
