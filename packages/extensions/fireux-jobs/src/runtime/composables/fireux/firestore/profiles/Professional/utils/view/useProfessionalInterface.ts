@@ -1,9 +1,7 @@
-
 import type { Ref } from 'vue'
-import type { User } from '../../packages/core/fireux-core/src/runtime/models/core/user.model'
-import type { ProfileRefs } from '../../packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { ProfessionalCore } from '../../packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model'
-import { professionalConfig } from '../../packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/supporting'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { professionalConfig, type ProfessionalCore } from '../../../../../../../models/profiles/Professional/Professional.model'
 
 export namespace ProfessionalCard {
   export type Card = {

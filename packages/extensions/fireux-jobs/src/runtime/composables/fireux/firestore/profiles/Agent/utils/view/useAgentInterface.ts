@@ -1,9 +1,7 @@
-
 import type { Ref } from 'vue'
-import type { User } from '../../packages/core/fireux-core/src/runtime/models/core/user.model'
-import type { ProfileRefs } from '../../packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { AgentCore } from '../../packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model'
-import { agentConfig } from '../../packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/supporting'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { agentConfig, type AgentCore } from '../../../../../../../models/profiles/Agent/Agent.model'
 
 export namespace AgentCard {
   export type Card = {

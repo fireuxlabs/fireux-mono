@@ -5,7 +5,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceSave.ts'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle.ts'
-import type { Place } from 'fireux-places/runtime/models/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 import type {
@@ -140,15 +140,15 @@ export function useProfessionalUpdate(
     const placeTasks: Promise<void>[] = []
 
     for (const [placeId, isCurrent] of roster) {
-      const placeholder: Place = {
-        place_id: placeId,
+      const placeholder: PlaceUpsertInput = {
+        id: placeId,
         name: '(unknown)',
         formatted_address: '',
         lat: 0,
         lng: 0,
-        source: 'firestore',
+        image_url: '',
+        source: 'firebase',
         search_term: placeId,
-        created_at: new Date(),
       }
 
       await ensurePlaceExists(placeholder)
@@ -186,12 +186,12 @@ export function useProfessionalUpdate(
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
 
-    const normalized = items.map((item) => ({
-      ...item,
-      place_id: item.place_id
-        ? canonicalPlaceId(item.place_id) ?? null
-        : undefined,
-    }))
+    const normalized: OtherExperienceItem[] = items
+      .map((item) => {
+        const placeId = canonicalPlaceId(item.place_id) ?? ''
+        return { ...item, place_id: placeId }
+      })
+      .filter((item) => Boolean(item.place_id))
 
     await commitUpdate(
       {

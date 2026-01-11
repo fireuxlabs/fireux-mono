@@ -93,7 +93,7 @@ export function usePlaceLogoState(
       requestToken += 1
       isLoading.value = false
       error.value = null
-      const sanitized = sanitizeLogoAvatar(next?.avatar)
+      const sanitized = sanitizeLogoAvatar((next as any)?.image_url ?? null)
       avatar.value = sanitized
       hasAttempted.value = !!sanitized
       if (!next) return
@@ -211,8 +211,8 @@ function toLogoCell(place: PlaceLogoTarget): PlaceCard.Cell {
   return {
     id: (place as any).id ?? (place as any).place_id,
     name: place.name,
-    formatted_address: (place as PlaceCard.Cell).formatted_address ?? '',
-    avatar: place.avatar ?? null,
+    formatted_address: (place as any).formatted_address ?? '',
+    imageUrl: (place as any).imageUrl ?? (place as any).image_url ?? '',
     source: place.source,
   }
 }
@@ -288,16 +288,16 @@ export async function loadLogoForPlace(
   place: PlaceCard.Cell,
   options: LoadLogoOptions = {}
 ): Promise<string | null> {
-  if (typeof window === 'undefined') return place.avatar ?? null
+  if (typeof window === 'undefined') return place.imageUrl ?? null
   const placeId = canonicalPlaceId((place as any).id ?? (place as any).place_id)
-  if (!placeId) return place.avatar ?? null
+  if (!placeId) return place.imageUrl ?? null
 
   const start = performanceNow()
   logEvent('load:start', {
     placeId,
     priority: !!options.priority,
     forceReload: !!options.forceReload,
-    existingAvatar: sanitizeLogValue(place.avatar),
+    existingAvatar: sanitizeLogValue(place.imageUrl),
   })
 
   if (options.forceReload) {

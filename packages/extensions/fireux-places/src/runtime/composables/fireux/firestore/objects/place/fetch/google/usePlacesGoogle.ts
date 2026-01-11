@@ -133,9 +133,9 @@ export async function fetchGoogle(
         return {
           id,
           name: main || desc || 'Unknown place',
-          formatted_address: secondary || desc || undefined,
+          formatted_address: secondary || desc || '',
           source: 'google',
-          avatar: '',
+          imageUrl: '',
         }
       })
 
@@ -143,9 +143,9 @@ export async function fetchGoogle(
       query,
       total: cells.length,
       immediateLogoIds: cells
-        .filter((cell) => Boolean(cell.avatar))
+        .filter((cell) => Boolean(cell.imageUrl))
         .map((cell) => cell.id),
-      pendingCount: cells.filter((cell) => !cell.avatar).length,
+      pendingCount: cells.filter((cell) => !cell.imageUrl).length,
     })
 
     if (import.meta.dev) {
@@ -192,7 +192,7 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
     lat: g.lat,
     lng: g.lng,
     source: 'firebase',
-    avatar: g.avatar ?? '',
+    image_url: g.image_url ?? '',
     search_term,
   }
 }
@@ -204,7 +204,7 @@ export function mapDetailsToGooglePlace(
 ): GooglePlace {
   const location = result?.geometry?.location ?? {}
 
-  let phone: string | null = null
+  let phone = ''
   if (typeof result?.international_phone_number === 'string') {
     phone = result.international_phone_number
   } else if (typeof result?.formatted_phone_number === 'string') {
@@ -219,14 +219,14 @@ export function mapDetailsToGooglePlace(
     lat: Number(location?.lat ?? 0),
     lng: Number(location?.lng ?? 0),
     source: 'google',
-    avatar: typeof result?.icon === 'string' ? result.icon : null,
-    website: typeof result?.website === 'string' ? result.website : null,
+    image_url: typeof result?.icon === 'string' ? result.icon : '',
+    website: typeof result?.website === 'string' ? result.website : '',
     phone,
-    rating: typeof result?.rating === 'number' ? result.rating : null,
+    rating: typeof result?.rating === 'number' ? result.rating : 0,
     user_ratings_total:
       typeof result?.user_ratings_total === 'number'
         ? result.user_ratings_total
-        : null,
+        : 0,
   }
 }
 

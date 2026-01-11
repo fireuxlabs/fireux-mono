@@ -1,10 +1,13 @@
 import { ref } from 'vue'
 import type { SupplierCore } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export function useSupplierQuickCreate() {
   const creating = ref(false)
   const createError = ref<Error | null>(null)
   const createdSupplier = ref<SupplierCore | null>(null)
+
+  const emptyTimestamp: FirebaseTimestamp = { seconds: 0, nanoseconds: 0 }
 
   const createQuickSupplier = async (name: string) => {
     if (!name) throw new Error('name required')
@@ -16,14 +19,14 @@ export function useSupplierQuickCreate() {
         id: 'supplier-mock-id',
         title: name,
         subtitle: '',
+        created_at: emptyTimestamp,
+        updated_at: emptyTimestamp,
         tags: [],
         tagline: '',
         bio_short: '',
         bio_long: '',
         specialties: [],
         categories: [],
-        avatar: '',
-        avatar_url: '',
         organization_name: name,
         business_type: '',
         locations: [],

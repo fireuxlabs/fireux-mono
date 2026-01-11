@@ -1,5 +1,4 @@
-
-import type { Kitchen } from '../../packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model'
+import type { Kitchen } from '../../../../../../../models/objects/kitchen.model'
 
 export namespace KitchenCard {
   export type Card = {

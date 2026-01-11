@@ -37,8 +37,8 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       typeof (place as any)?.formatted_address === 'string'
         ? String((place as any).formatted_address)
         : ''
-    const avatarRaw = (place as any)?.avatar
-    const avatar = typeof avatarRaw === 'string' ? avatarRaw : ''
+    const imageUrlRaw = (place as any)?.image_url
+    const image_url = typeof imageUrlRaw === 'string' ? imageUrlRaw : ''
     const lat = Number.isFinite(Number((place as any)?.lat)) ? Number((place as any).lat) : 0
     const lng = Number.isFinite(Number((place as any)?.lng)) ? Number((place as any).lng) : 0
     const search_term_raw = (place as any)?.search_term
@@ -52,7 +52,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       source: 'firebase',
       name,
       formatted_address: formatted,
-      avatar,
+      image_url,
       lat,
       lng,
       search_term,

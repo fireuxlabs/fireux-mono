@@ -1,5 +1,4 @@
-
-import type { Ingredient } from '../../packages/ecosystem/fireux-misebox/src/runtime/models/objects/Ingredient.model'
+import type { Ingredient } from '../../../../../../../models/objects/Ingredient.model'
 
 export namespace IngredientCard {
   export type Card = {

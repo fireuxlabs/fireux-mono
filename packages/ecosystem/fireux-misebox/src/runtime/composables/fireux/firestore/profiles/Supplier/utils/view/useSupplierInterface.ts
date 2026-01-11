@@ -1,9 +1,7 @@
-
 import type { Ref } from 'vue'
-import type { User } from '../../packages/core/fireux-core/src/runtime/models/core/user.model'
-import type { ProfileRefs } from '../../packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { SupplierCore } from '../../packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model'
-import { supplierConfig } from '../../packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/supporting'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { supplierConfig, type SupplierCore } from '../../../../../../../models/profiles/Supplier/Supplier.model'
 
 export namespace SupplierCard {
   export type Card = {

@@ -1,5 +1,4 @@
-
-import type { Job } from '../../packages/extensions/fireux-jobs/src/runtime/models/objects/job.model'
+import type { Job } from '../../../../../../models/job.model'
 
 export namespace JobCard {
   export type Card = {
@@ -22,7 +21,7 @@ export function useJobInterface() {
 
       title: job.title,
       status: job.status,
-      description: job.description,
+      description: job.description ?? '',
 
       badges: [],
     }

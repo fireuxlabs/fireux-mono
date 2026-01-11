@@ -29,7 +29,7 @@ export function useJob(jobId: string | Ref<string | null | undefined>) {
     job,
     pending,
     ...useJobComputed(job, pending),
-    ...useJobInterface(job),
+    ...useJobInterface(),
     ...useJobState(),
     ...useJobCreate(),
     ...useJobUpdate(),

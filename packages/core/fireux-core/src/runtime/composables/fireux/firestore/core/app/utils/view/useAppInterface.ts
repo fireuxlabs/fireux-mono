@@ -1,8 +1,7 @@
-
 import type { Ref } from 'vue'
-import type { App } from '../../packages/core/fireux-core/src/runtime/models/core/app.model'
-import type { AppSocialLinks } from '../../packages/core/fireux-core/src/runtime/models/core/app.supporting'
-import { useResolvedColorMode } from '../../packages/core/fireux-core/src/runtime/composables/fireux/app/useColorMode'
+import type { App } from '../../../../../../../models/core/app.model'
+import type { AppSocialLinks } from '../../../../../../../models/core/app.supporting'
+import { useResolvedColorMode } from '../../../../../app/useColorMode'
 
 export namespace AppCard {
   export type Card = {

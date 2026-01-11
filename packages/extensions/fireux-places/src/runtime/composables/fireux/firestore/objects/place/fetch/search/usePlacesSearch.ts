@@ -86,7 +86,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
         place_id?: string
         name: string
         formatted_address?: string
-        avatar?: string | null
+        image_url?: string | null
         search_term: string
         source?: string
       }> = []
@@ -97,7 +97,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
           place_id?: string
           name: string
           formatted_address?: string
-          avatar?: string | null
+          image_url?: string | null
           search_term: string
           source?: string
         }>({ collection: 'places', field: 'search_term', query: term, limit: 5 })
@@ -122,9 +122,9 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             formatted_address:
               typeof p?.formatted_address === 'string'
                 ? p.formatted_address
-                : undefined,
+                : '',
             source: safeSource as any,
-            avatar: p?.avatar ?? null,
+            imageUrl: typeof p?.image_url === 'string' ? p.image_url : '',
           }
         })
 
@@ -224,19 +224,19 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             }
 
             const url = await resolveLogo(details)
-            const fallbackIcon = details.google.avatar || null
-            const nextAvatar = url ?? fallbackIcon ?? null
-            logoCache.set(id, nextAvatar)
+            const fallbackIcon = details.google.image_url || null
+            const nextImageUrl = url ?? fallbackIcon ?? null
+            logoCache.set(id, nextImageUrl)
 
             const idx = results.value.findIndex(
               (row: PlaceCard.Cell) => canonicalPlaceId(row.id) === id
             )
             if (idx !== -1) {
               const current = results.value[idx]
-              if ((current.avatar ?? null) == null) {
+              if (!current.imageUrl) {
                 results.value.splice(idx, 1, {
                   ...current,
-                  avatar: nextAvatar,
+                  imageUrl: nextImageUrl ?? '',
                 })
               }
             }
@@ -244,12 +244,12 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             if (
               selected.value &&
               canonicalPlaceId((selected.value as any).place_id ?? selected.value.id) === id &&
-              !selected.value.avatar
+              !selected.value.image_url
             ) {
-              selected.value = { ...selected.value, avatar: nextAvatar ?? '' }
+              selected.value = { ...selected.value, image_url: nextImageUrl ?? '' }
             }
 
-            return nextAvatar
+            return nextImageUrl
           } catch {
             logoCache.set(id, null)
             return null
@@ -272,11 +272,11 @@ export function usePlacesSearch(options?: { type?: string | null }) {
     selected.value = {
       id,
       name: cell.name,
-      formatted_address: cell.formatted_address ?? '',
+      formatted_address: cell.formatted_address || '',
       lat: 0,
       lng: 0,
       source: cell.source,
-      avatar: cell.avatar ?? cached ?? '',
+      image_url: cell.imageUrl || cached || '',
     }
 
     // enrich from details (lat/lng, but keep avatar if we already have one)
@@ -295,7 +295,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             formatted_address: details.google.formatted_address,
             lat: details.google.lat,
             lng: details.google.lng,
-            avatar: cur.avatar || better || details.google.avatar || '',
+            image_url: cur.image_url || better || details.google.image_url || '',
           }
         }
       } catch (e) {

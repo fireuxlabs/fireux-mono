@@ -1,5 +1,4 @@
-
-import type { Recipe } from '../../packages/ecosystem/fireux-misebox/src/runtime/models/objects/Recipe.model'
+import type { Recipe } from '../../../../../../../models/objects/Recipe.model'
 
 export namespace RecipeCard {
   export type Card = {
@@ -16,8 +15,8 @@ export namespace RecipeCard {
 export function useRecipeInterface() {
   function map(recipe: Recipe): RecipeCard.Card {
     return {
-      id: recipe.id,
-      to: `/recipes/${recipe.id}`,
+      id: recipe.slug,
+      to: `/recipes/${recipe.slug}`,
 
       title: recipe.title,
       status: String(recipe.status ?? ''),
@@ -31,7 +30,7 @@ export function useRecipeInterface() {
   }
 
   function searchText(recipe: Recipe): string {
-    return `${recipe.title} ${recipe.status ?? ''} ${recipe.id}`.toLowerCase()
+    return `${recipe.title} ${recipe.status ?? ''} ${recipe.slug}`.toLowerCase()
   }
 
   return { card, searchText }

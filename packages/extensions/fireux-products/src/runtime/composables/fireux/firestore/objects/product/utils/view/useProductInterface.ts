@@ -1,5 +1,4 @@
-
-import type { FirebaseProduct } from '../../packages/extensions/fireux-products/src/runtime/models/objects/product.model'
+import type { FirebaseProduct } from '../../../../../../../models/objects/product.model'
 
 export namespace ProductCard {
   export type Card = {

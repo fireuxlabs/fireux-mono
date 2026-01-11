@@ -35,6 +35,7 @@ export function useAgentsInterface() {
 
       // IMPORTANT: only render contactEmail on authorized UI surfaces.
       contactEmail: entry.contact_email.trim(),
+      contactPhone: entry.contact_phone.trim(),
       websiteUrl: entry.website_url,
     }
   }

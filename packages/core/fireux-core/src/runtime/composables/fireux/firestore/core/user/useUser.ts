@@ -25,7 +25,7 @@ export function useUser() {
     appUser,
     pending,
     ...useUserComputed(refs, pending),
-    ...useUserInterface(refs),
+    ...useUserInterface(user),
     ...useUserEnsure(),
     ...useUserUpdate(refs, 'useUser'),
     ...useUserDelete(refs),

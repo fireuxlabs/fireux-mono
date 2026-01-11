@@ -1,5 +1,4 @@
-
-import type { Company } from '../../packages/extensions/fireux-companies/src/runtime/models/objects/company.model'
+import type { Company } from '../../../../../../../models/objects/company.model'
 
 export namespace CompanyCard {
   export type Card = {

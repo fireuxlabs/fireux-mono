@@ -1,6 +1,5 @@
-
 import type { Ref } from 'vue'
-import type { User } from '../../packages/core/fireux-core/src/runtime/models/core/user.model'
+import type { User } from '../../../../../../../models/core/user.model'
 
 export namespace UserCard {
   export type Card = {

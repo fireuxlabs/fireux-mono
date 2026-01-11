@@ -1,5 +1,4 @@
-
-import type { BlogPost } from '../../packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model'
+import type { BlogPost } from '../../../../../../../models/objects/blogPost.model'
 
 export namespace BlogCard {
   export type Card = {

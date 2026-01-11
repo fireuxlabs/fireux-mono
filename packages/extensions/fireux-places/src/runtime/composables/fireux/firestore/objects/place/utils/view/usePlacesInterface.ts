@@ -1,7 +1,21 @@
+import type { BasePlace, PlaceSource } from '../../../../../../../models/objects/place.model'
 
-import type { PlaceDoc } from '../../packages/extensions/fireux-places/src/runtime/models/objects/place.model'
+export type PlaceBase = BasePlace
 
 export namespace PlaceCard {
+  export type Cell = {
+    id: string
+    name: string
+    formatted_address: string
+    imageUrl: string
+    source: PlaceSource
+  }
+
+  export type Pill = {
+    name: string
+    imageUrl: string
+  }
+
   export type Card = {
     id: string
     to: string
@@ -15,7 +29,7 @@ export namespace PlaceCard {
 }
 
 export function usePlacesInterface() {
-  function map(place: PlaceDoc): PlaceCard.Card {
+  function map(place: BasePlace): PlaceCard.Card {
     return {
       id: place.id,
       to: `/places/${place.id}`,
@@ -27,11 +41,11 @@ export function usePlacesInterface() {
     }
   }
 
-  function card(target?: PlaceDoc | null | undefined): PlaceCard.Card | null {
+  function card(target?: BasePlace | null | undefined): PlaceCard.Card | null {
     return target ? map(target) : null
   }
 
-  function searchText(place: PlaceDoc): string {
+  function searchText(place: BasePlace): string {
     return `${place.name} ${place.formatted_address} ${place.id}`.toLowerCase()
   }
 

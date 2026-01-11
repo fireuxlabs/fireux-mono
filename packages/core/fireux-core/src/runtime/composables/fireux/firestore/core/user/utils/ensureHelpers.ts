@@ -18,7 +18,7 @@ import type {
   User,
 } from '../../../../../../models/core/user.model'
 import type { NotificationScope, UserNotification } from '../../../../../../models/core/user.supporting'
-import type { FirebaseTimestamp } from '../../../../../../types/firebase'
+import type { FirebaseTimestamp } from '../../../../../../../types/firebase'
 
 export type EnsureCoreOptions = {
   displayName?: string

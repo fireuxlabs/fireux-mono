@@ -1,9 +1,7 @@
-
 import type { Ref } from 'vue'
-import type { User } from '../../packages/core/fireux-core/src/runtime/models/core/user.model'
-import type { ProfileRefs } from '../../packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { ChefCore } from '../../packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model'
-import { chefConfig } from '../../packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/supporting'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { chefConfig, type ChefCore } from '../../../../../../../models/profiles/Chef/Chef.model'
 
 export namespace ChefCard {
   export type Card = {

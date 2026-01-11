@@ -132,7 +132,6 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
     // If enabled and the user's profile email changes, propagate it to any
     // derived/contact surfaces that rely on this agent contact.
     await updateCoreProfile({
-      contact_email_from_profile: enabled,
       ...(enabled ? { contact_email: '' } : {}),
     })
   }
@@ -140,7 +139,6 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
   const setContactPhoneFromProfile = async (enabled: boolean) => {
     // TODO: cascade update info
     await updateCoreProfile({
-      contact_phone_from_profile: enabled,
       ...(enabled ? { contact_phone: '' } : {}),
     })
   }

@@ -119,7 +119,7 @@ function buildFallbackPlace(base: BasePlace, placeId: string): PlaceUpsertInput 
     formatted_address: formatted,
     lat: base.lat,
     lng: base.lng,
-    avatar: sanitizeAvatar(base.avatar) ?? '',
+    image_url: sanitizeAvatar(base.image_url) ?? '',
     search_term: `${base.name} ${formatted}`.toLowerCase().trim(),
   }
 }
@@ -136,7 +136,7 @@ async function loadDraftPlace(placeId: string, preview: BasePlace): Promise<Plac
       return {
         ...details.stored,
         id: placeId,
-        avatar: sanitizeAvatar(details.stored.avatar ?? null) ?? '',
+        image_url: sanitizeAvatar(details.stored.image_url ?? null) ?? '',
       }
     }
   } catch (error) {
@@ -153,17 +153,18 @@ async function maybeUploadAvatar(
   draft: PlaceUpsertInput,
   preview: BasePlace
 ) {
-  const uploadSource = sanitizeAvatar(preview.avatar) ?? sanitizeAvatar(draft.avatar)
+  const uploadSource =
+    sanitizeAvatar(preview.image_url) ?? sanitizeAvatar(draft.image_url)
   if (!uploadSource) return
 
   try {
     const path = `places/${placeId}/avatar`
     const uploadedUrl = await uploadFromUrl(path, uploadSource)
-    draft.avatar = uploadedUrl
+    draft.image_url = uploadedUrl
     if (selected.value) {
       selected.value = {
         ...selected.value,
-        avatar: uploadedUrl,
+        image_url: uploadedUrl,
       }
     }
   } catch (error) {
@@ -198,7 +199,7 @@ async function onConfirm(place: BasePlace) {
         formatted_address: place.formatted_address ?? '',
         lat: place.lat,
         lng: place.lng,
-        avatar: sanitizeAvatar(place.avatar) ?? '',
+        image_url: sanitizeAvatar(place.image_url) ?? '',
         search_term:
           (place as any).search_term ??
           `${place.name} ${place.formatted_address ?? ''}`.toLowerCase().trim(),
