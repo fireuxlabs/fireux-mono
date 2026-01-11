@@ -98,6 +98,6 @@ Type-specific additions:
 
 1. Define Zod schemas per entity (shareable via `packages/types`).
 2. Scaffold CLI commands under `packages/scripts` leveraging existing guard infrastructure.
-3. Add CI guard (probably in `automation/guards`) that blocks PRs adding asset folders without registry updates.
+3. Add CI guard (in `scripts/guards`) that blocks PRs adding asset folders without registry updates.
 4. Backfill existing apps/modules/ecosystems with `pnpm registry:backfill` (optionally `--dry` first, then push the real data once the registry endpoint is live).
 5. Document the workflow in `copilot-documentation` and link from `server.md` once the API is stable.

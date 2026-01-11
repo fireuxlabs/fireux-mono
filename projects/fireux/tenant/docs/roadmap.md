@@ -25,7 +25,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 - Tenant config should reuse `fireux-core` configuration interfaces; align schemas before implementing Firestore collections
 - Auth and billing rely on shared services/extensions; coordinate with platform teams on Stripe + Firebase auth conventions
-- Deployment tooling must integrate with FireUX automation scripts (`automation/maintenance`); collaborate before adding new CLIs
+- Deployment tooling must integrate with FireUX repo scripts (`scripts/`); collaborate before adding new CLIs
 - Analytics/legal content may depend on upcoming platform documentation; verify ADRs prior to implementation
 
 ## Next Actions

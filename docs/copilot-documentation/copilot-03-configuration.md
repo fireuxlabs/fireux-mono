@@ -85,7 +85,7 @@ Notes:
 - **Lint**: `pnpm lint`
 - **Dev servers**: `pnpm dev:fireux`, `pnpm dev:misebox`, `pnpm dev:cleanbox`, or `pnpm dev:all`
 - **Guards**: scripts under `tools/` (e.g. `tools/guard-tsconfigs.mjs`, `tools/check-app-structure.mjs`)
-- **Project scripts**: see `scripts/` directory; most support `--apply` for write mode.
+- **Project scripts**: see the cheatsheet in `docs/copilot-documentation/copilot-appendices/scripts-cheatsheet.md` (backed by `scripts/`).
 
 Before committing configuration changes, run lint, type-check, and any relevant guard script to ensure shared settings remain in sync across packages and apps.
 

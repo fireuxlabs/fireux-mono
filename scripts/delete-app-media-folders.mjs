@@ -17,54 +17,11 @@ import path from 'node:path'
 import process from 'node:process'
 import admin from 'firebase-admin'
 
+import { parseArgs } from './_lib/args.mjs'
+import { listBucketObjects } from './_lib/firebase-storage.mjs'
+
 const workspaceRoot = process.cwd()
 const auditPath = path.join(workspaceRoot, 'temp', 'app-media-audit.json')
-
-function parseArgs(argv) {
-  const args = {}
-  for (let i = 0; i < argv.length; i += 1) {
-    const token = argv[i]
-    if (!token.startsWith('--')) continue
-
-    const [rawKey, rawValue] = token.split('=')
-    const key = rawKey.slice(2)
-
-    if (rawValue !== undefined) {
-      args[key] = rawValue
-      continue
-    }
-
-    const next = argv[i + 1]
-    if (!next || next.startsWith('--')) {
-      args[key] = true
-      continue
-    }
-
-    args[key] = next
-    i += 1
-  }
-  return args
-}
-
-async function listBucketObjects(bucket, prefix) {
-  const results = []
-  let nextPageToken = undefined
-
-  do {
-    const [files, , apiResponse] = await bucket.getFiles({
-      prefix,
-      autoPaginate: false,
-      maxResults: 1000,
-      pageToken: nextPageToken,
-    })
-
-    for (const f of files) results.push(f.name)
-    nextPageToken = apiResponse?.nextPageToken
-  } while (nextPageToken)
-
-  results.sort()
-  return results
-}
 
 async function main() {
   const args = parseArgs(process.argv.slice(2))
@@ -147,6 +104,7 @@ By default this is a dry-run. Pass --apply to actually delete.
     for (const appId of appIds) {
       const prefix = `apps/${appId}/media/`
       const objects = await listBucketObjects(bucket, prefix)
+      objects.sort()
 
       plan.push({
         ecosystemId: ecoId,

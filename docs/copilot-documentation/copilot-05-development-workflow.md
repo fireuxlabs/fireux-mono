@@ -56,12 +56,14 @@ This chapter describes the standard local workflow, branching expectations, and 
 
 ## Automation Toolkit
 
-- Scripts now live under `automation/` with focused folders: `automation/migrations/` (with `legacy/` for archived flows), `automation/guards/`, `automation/maintenance/`, plus `automation/vendor/` and `automation/backups/` for external patches and artefacts.
-- Migration utilities default to dry runs; enable writes only after reviewing output and, when provided, passing `--apply` or equivalent flags.
-- Guard scripts are exposed via `pnpm guard:*`; run them after touching global config, navigation, or asset placement to keep structure checks green.
-- Maintenance scripts document their flags at the top of each file (e.g. `scan-deprecated-files.mjs`, `gitsave.sh`); review before executing.
-- `pnpm` aliases (e.g. `pnpm migrate:core-users`) target the new paths—prefer them over ad-hoc `tsx` commands.
-- Continue to use `pnpm lint --filter <package>` for focused linting, and promote hardened recipes into the appendices.
+- Repo automation lives under `scripts/`.
+   - Guards: `pnpm guard` runs `scripts/guard.mjs`, which composes checks in `scripts/guards/*.mjs`.
+   - Hygiene: `pnpm gitsave` runs `scripts/gitsave.sh` (guarded save + push flow).
+   - Maintenance: `pnpm clean` / `pnpm clean:deep` run `scripts/clean.mjs`.
+   - App media tooling: `pnpm audit:app-media`, `pnpm sync:app-media-from-public`, etc. map to `scripts/*app-media*.mjs`.
+- Prefer `pnpm` scripts over ad-hoc `node scripts/...` so workflows stay consistent across contributors.
+- Treat scripts as potentially destructive: skim the file first, and if you add new scripts prefer supporting `--dry-run` + `--apply`.
+- Promote repeated recipes into an appendix (see the scripts cheatsheet once it exists).
 
 ## Testing Expectations
 

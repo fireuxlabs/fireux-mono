@@ -13,7 +13,7 @@
  * It MUST NOT delete authored source files.
  */
 
-import { rmSync, readdirSync, statSync, existsSync } from 'node:fs'
+import { existsSync, readdirSync, rmSync } from 'node:fs'
 import path from 'node:path'
 
 const repoRoot = process.cwd()
@@ -21,110 +21,94 @@ const repoRoot = process.cwd()
 const argv = new Set(process.argv.slice(2))
 const deep = argv.has('--deep') || argv.has('--all')
 
-
-/**
- * Directory/file names considered build noise.
- * - .nuxt is only removed with --deep or --all (to avoid breaking dev server during normal clean)
- */
-const NUKE_NAMES = new Set([
-  'dist',
-  '.output',
-  '.nitro',
-  '.cache',
-  '.data',
-  '--port',
-  '--clear',
-])
-
-const NUKE_NAMES_DEEP = new Set(['.nuxt'])
-
-const NUKE_FILES = new Set([
-  'tsconfig.tsbuildinfo',
-])
-
-/**
- * Directories we should never descend into
- */
-const SKIP_DIRS = new Set([
-  '.git',
-])
+const ALWAYS_REMOVE_DIRS = new Set(['dist', '.output', '.nitro', '.cache', '.data'])
+const DEEP_REMOVE_DIRS = new Set(['.nuxt'])
+const ALWAYS_REMOVE_FILES = new Set(['tsconfig.tsbuildinfo'])
 
 let removedCount = 0
 let removedNuxtArtifacts = false
 
-function walk(dir) {
-  if (!existsSync(dir)) return
+function removeIfExists(fullPath, kind) {
+  if (!existsSync(fullPath)) return false
+  rmSync(fullPath, { recursive: kind === 'dir', force: true })
+  console.log(`[clean] removed ${path.relative(repoRoot, fullPath)}`)
+  removedCount += 1
+  return true
+}
 
-  const entries = readdirSync(dir, { withFileTypes: true })
+function listChildDirs(parentDir) {
+  if (!existsSync(parentDir)) return []
+  return readdirSync(parentDir, { withFileTypes: true })
+    .filter((e) => e.isDirectory() && !e.name.startsWith('.'))
+    .map((e) => e.name)
+}
 
-  for (const entry of entries) {
-    const name = entry.name
-    const fullPath = path.join(dir, name)
-
-    if (SKIP_DIRS.has(name)) continue
-
-
-    // Remove known junk directories (always)
-    if (entry.isDirectory() && NUKE_NAMES.has(name)) {
-      rmSync(fullPath, { recursive: true, force: true })
-      console.log(`[clean] 9 removed ${path.relative(repoRoot, fullPath)}`)
-      removedCount++
-      if (name === '.data' || name === '.output' || name === '.nitro') {
-        removedNuxtArtifacts = true
+function cleanPackageGroup(groupRoot) {
+  const names = listChildDirs(groupRoot)
+  for (const name of names) {
+    const root = path.join(groupRoot, name)
+    for (const d of ALWAYS_REMOVE_DIRS) {
+      if (removeIfExists(path.join(root, d), 'dir')) {
+        if (d === '.data' || d === '.output' || d === '.nitro') removedNuxtArtifacts = true
       }
-      continue
     }
-
-    // Remove .nuxt only in deep mode
-    if (entry.isDirectory() && NUKE_NAMES_DEEP.has(name) && deep) {
-      rmSync(fullPath, { recursive: true, force: true })
-      console.log(`[clean] 9 removed ${path.relative(repoRoot, fullPath)}`)
-      removedCount++
-      removedNuxtArtifacts = true
-      continue
-    }
-
-    // node_modules is intentionally preserved by default (so dev keeps working)
-    // but can be removed via --deep when you truly want a full reset.
-    if (entry.isDirectory() && name === 'node_modules') {
-      if (deep) {
-        rmSync(fullPath, { recursive: true, force: true })
-        console.log(`[clean] 🧹 removed ${path.relative(repoRoot, fullPath)}`)
-        removedCount++
+    for (const f of ALWAYS_REMOVE_FILES) removeIfExists(path.join(root, f), 'file')
+    if (deep) {
+      for (const d of DEEP_REMOVE_DIRS) {
+        if (removeIfExists(path.join(root, d), 'dir')) removedNuxtArtifacts = true
       }
-      continue
-    }
-
-    // Remove known junk files
-    if (entry.isFile() && NUKE_FILES.has(name)) {
-      rmSync(fullPath, { force: true })
-      console.log(`[clean] 🧹 removed ${path.relative(repoRoot, fullPath)}`)
-      removedCount++
-      continue
-    }
-
-    // Recurse
-    if (entry.isDirectory()) {
-      walk(fullPath)
+      removeIfExists(path.join(root, 'node_modules'), 'dir')
     }
   }
 }
 
+function cleanProjects() {
+  const projectsRoot = path.join(repoRoot, 'projects')
+  const ecosystems = listChildDirs(projectsRoot)
+  for (const eco of ecosystems) {
+    const ecoRoot = path.join(projectsRoot, eco)
+    const apps = listChildDirs(ecoRoot)
+    for (const app of apps) {
+      const root = path.join(ecoRoot, app)
+      for (const d of ALWAYS_REMOVE_DIRS) {
+        if (removeIfExists(path.join(root, d), 'dir')) {
+          if (d === '.data' || d === '.output' || d === '.nitro') removedNuxtArtifacts = true
+        }
+      }
+      for (const f of ALWAYS_REMOVE_FILES) removeIfExists(path.join(root, f), 'file')
+      if (deep) {
+        for (const d of DEEP_REMOVE_DIRS) {
+          if (removeIfExists(path.join(root, d), 'dir')) removedNuxtArtifacts = true
+        }
+        removeIfExists(path.join(root, 'node_modules'), 'dir')
+      }
+    }
+  }
+}
+
+function cleanRepoRootFiles() {
+  for (const f of ALWAYS_REMOVE_FILES) removeIfExists(path.join(repoRoot, f), 'file')
+  if (deep) removeIfExists(path.join(repoRoot, 'node_modules'), 'dir')
+}
+
 console.log(
   deep
-    ? '[clean] 🔥 Cleaning build artifacts (deep, including node_modules)...'
-    : '[clean] 🔥 Cleaning build artifacts (preserving node_modules)...'
+    ? '[clean] Cleaning build artifacts (deep, including node_modules)...'
+    : '[clean] Cleaning build artifacts (preserving node_modules)...'
 )
-walk(repoRoot)
+
+cleanPackageGroup(path.join(repoRoot, 'packages', 'core'))
+cleanPackageGroup(path.join(repoRoot, 'packages', 'ecosystem'))
+cleanPackageGroup(path.join(repoRoot, 'packages', 'extensions'))
+cleanProjects()
+cleanRepoRootFiles()
 
 if (removedCount === 0) {
-  console.log('[clean] ✅ Nothing to clean')
+  console.log('[clean] Nothing to clean')
 } else {
-  console.log(`[clean] ✅ Removed ${removedCount} item(s)`)
+  console.log(`[clean] Removed ${removedCount} item(s)`) 
 }
 
 if (removedNuxtArtifacts) {
-  console.log(
-    '[clean] ℹ If a Nuxt dev server was running, restart it (clean removed generated build files).'
-  )
+  console.log('[clean] If a Nuxt dev server was running, restart it (clean removed generated build files).')
 }

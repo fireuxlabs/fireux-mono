@@ -70,7 +70,7 @@ note: moved from repo root during doc cleanup
 ## Follow-Up Tasks
 
 - Update remaining references to `packages/ecosystem/…` across automation scripts, docs, and guards (grep count was >20). These mostly appear in:
-  - Automation scripts (`automation/migrations/*`, `automation/guards/*`).
+  - Repo scripts (`scripts/`), including migrations and guards.
   - Dev tooling UIs under `packages/core/fireux-core/src/runtime/...`.
   - Documentation (`config-report.md`, project docs).
 - After references are updated, rerun guard scripts (`pnpm guard:apps:shape`) to confirm the rename cascades cleanly.

@@ -11,7 +11,7 @@ The appendices collect reference material that supports the main handbook chapte
 ## Planned Sections
 
 - Environment variable reference
-- Command and script cheatsheet
+- [Scripts & commands cheatsheet](./scripts-cheatsheet.md)
 - Troubleshooting playbooks
 - Layout and navigation taxonomy
 - Avatar/media system notes

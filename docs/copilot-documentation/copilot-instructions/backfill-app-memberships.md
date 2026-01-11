@@ -1,6 +1,14 @@
+---
+title: Backfill App Memberships
+status: working
+updated: 2026-01-11
+---
+
 # Backfill App Memberships
 
-Use this playbook to sync `apps/{appId}/admin_ids` with matching `apps/{appId}/users/{uid}` membership documents. Run it per Firebase project (FireUX, Misebox, Cleanbox) so the UI can read accurate admin roles.
+This playbook describes the intended backfill flow to sync `apps/{appId}/admin_ids` with matching `apps/{appId}/users/{uid}` membership documents.
+
+Important: the referenced migration script has not been implemented in this repo yet (there is no `automation/` folder). Treat this document as a spec/placeholder until the script exists.
 
 ## Prerequisites
 
@@ -8,23 +16,9 @@ Use this playbook to sync `apps/{appId}/admin_ids` with matching `apps/{appId}/u
 - `pnpm install` already run so `esbuild-register` is available.
 - Terminal authenticated for `gcloud auth application-default login` if you are relying on ADC instead of a JSON key.
 
-## Script
+## Script (TODO)
 
-Path: `automation/migrations/2025-12-backfill-app-memberships.ts`
-
-### Dry run
-
-```sh
-FIREBASE_SERVICE_ACCOUNT_FILE=./service-accounts/cleanbox.json \
-node -r esbuild-register automation/migrations/2025-12-backfill-app-memberships.ts --dry-run
-```
-
-### Apply changes
-
-```sh
-FIREBASE_SERVICE_ACCOUNT_FILE=./service-accounts/cleanbox.json \
-node -r esbuild-register automation/migrations/2025-12-backfill-app-memberships.ts
-```
+Implement a migration script under `scripts/` (recommended location: `scripts/migrations/`) and add a `pnpm` entrypoint for it.
 
 ### Limit scope
 
@@ -35,7 +29,7 @@ node -r esbuild-register automation/migrations/2025-12-backfill-app-memberships.
 ### Output
 
 - Logs the admins synced per app.
-- Writes a summary JSON file to `migrations/backups/backfill-app-memberships-YYYY-MM-DD.json` for auditing.
+- Write a summary JSON file (location to be decided; keep it outside `packages/**/dist`).
 
 ## Verification
 

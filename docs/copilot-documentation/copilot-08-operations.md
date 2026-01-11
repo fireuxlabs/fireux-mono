@@ -26,7 +26,8 @@ This chapter captures operational procedures, debugging tips, and the baseline i
 ## Diagnostics Toolkit
 
 - **Dev pages**: `/dev/app` (alias `/dev/apps`), `/dev/users`, `/dev/fireux-core`, `/dev/fireux-places` (when available) provide snapshots of runtime state.
-- **Automation**: Remediation scripts live under `automation/` (migrations, maintenance, guards). Stick to dry runs first, then rerun with `--apply` or similar flags once reviewed.
+- **Automation**: Remediation scripts live under `scripts/` (maintenance, migrations, guards). Stick to dry runs first (when supported), then rerun with `--apply` or similar flags once reviewed.
+- **Guards**: `pnpm guard` runs repo checks (backed by `scripts/guard.mjs` and `scripts/guards/*.mjs`).
 - **Logging**: Use consistent prefixes in server/client logs to trace issues (`[fireux-core]`, `[fireux-places]`, etc.).
 - **Analytics**: Pending integration. When added, document dashboards and alert policies here.
 
