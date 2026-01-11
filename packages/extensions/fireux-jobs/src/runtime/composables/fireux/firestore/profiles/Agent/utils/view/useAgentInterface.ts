@@ -1,16 +1,15 @@
-// FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface.ts
 
 import type { Ref } from 'vue'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { agentConfig, type AgentCore } from '../../../../../../../models/profiles/Agent/Agent.model.ts'
+import type { User } from '../../packages/core/fireux-core/src/runtime/models/core/user.model'
+import type { ProfileRefs } from '../../packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { AgentCore } from '../../packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model'
+import { agentConfig } from '../../packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/supporting'
 
 export namespace AgentCard {
   export type Card = {
     id: string
     to: string
 
-    // Media (empty string means unset)
     avatarUrl: string
 
     displayName: string
@@ -30,44 +29,37 @@ export function useAgentInterface(
   profile: ProfileRefs<AgentCore>,
   userRef?: Ref<User | null | undefined>
 ) {
-  function map(currentProfile: AgentCore, user?: User | null): AgentCard.Card {
-    const displayName = user?.display_name ?? currentProfile.title
-
+  function map(p: AgentCore, u?: User | null): AgentCard.Card {
     return {
-      id: currentProfile.id,
-      to: `/${agentConfig.collectionName}/${currentProfile.id}`,
+      id: p.id,
+      to: `/${agentConfig.collectionName}/${p.id}`,
 
-      avatarUrl: user?.avatar ?? '',
+      avatarUrl: u?.avatar ?? '',
 
-      displayName,
-      tagline: currentProfile.tagline,
+      displayName: u?.display_name ?? p.title,
+      tagline: p.tagline,
+      badges: p.tags,
 
-      badges: currentProfile.tags,
+      bioShort: p.bio_short,
 
-      bioShort: currentProfile.bio_short,
-
-      // Keep strictly profile-owned here. Authorized surfaces can decide to override later.
-      contactEmail: currentProfile.contact_email.trim(),
-      contactPhone: currentProfile.contact_phone,
-      websiteUrl: currentProfile.website_url,
+      contactEmail: p.contact_email,
+      contactPhone: p.contact_phone,
+      websiteUrl: p.website_url,
     }
   }
 
   function card(target?: AgentCore | null | undefined): AgentCard.Card | null {
-    const currentProfile = target ?? profile.coreProfile.value ?? null
-    const user = userRef?.value ?? null
-
-    return currentProfile ? map(currentProfile, user) : null
+    const p = target ?? profile.coreProfile.value ?? null
+    if (!p) return null
+    return map(p, userRef?.value ?? null)
   }
 
   function searchText(target?: AgentCore | null | undefined): string {
-    const currentProfile = target ?? profile.coreProfile.value ?? null
-    const user = userRef?.value ?? null
-    if (!currentProfile) return ''
-
-    const displayName = user?.display_name ?? currentProfile.title ?? ''
-
-    return `${displayName} ${currentProfile.tagline} ${currentProfile.id}`.toLowerCase()
+    const p = target ?? profile.coreProfile.value ?? null
+    if (!p) return ''
+    const u = userRef?.value ?? null
+    const name = u?.display_name ?? p.title
+    return `${name} ${p.tagline} ${p.id}`.toLowerCase()
   }
 
   return { card, searchText }

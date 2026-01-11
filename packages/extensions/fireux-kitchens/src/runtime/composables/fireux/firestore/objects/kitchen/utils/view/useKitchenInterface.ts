@@ -1,45 +1,37 @@
-import type { Kitchen } from '../../../../../../../models/objects/kitchen.model.ts'
+
+import type { Kitchen } from '../../packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model'
 
 export namespace KitchenCard {
-  export interface Pill {
-    id?: string
-    title: string
-    subtitle?: string | null
+  export type Card = {
+    id: string
+    to: string
+
+    name: string
+    website: string
+    badges: string[]
   }
-
-  export interface Cell extends Pill {
-    formatted_address?: string | null
-    avatar?: string | null
-    website?: string | null
-  }
-
-  export type Card = Cell
-
-  export type Profile = Kitchen
 }
 
 export function useKitchenInterface() {
-  function card(kitchen: Kitchen): KitchenCard.Card
-  function card(kitchen?: Kitchen | null | undefined): KitchenCard.Card | null
-  function card(kitchen?: Kitchen | null | undefined): KitchenCard.Card | null {
-    return kitchen ? cellProps(kitchen) : null
-  }
-
-  const pillProps = (kitchen?: Kitchen | null): KitchenCard.Pill => ({
-    id: kitchen?.id,
-    title: kitchen?.name || 'Kitchen',
-    subtitle: kitchen?.formatted_address ?? null,
-  })
-
-  const cellProps = (kitchen?: Kitchen | null): KitchenCard.Cell => {
-    const pill = pillProps(kitchen)
+  function map(kitchen: Kitchen): KitchenCard.Card {
     return {
-      ...pill,
-      formatted_address: kitchen?.formatted_address ?? null,
-      avatar: kitchen?.avatar ?? null,
-      website: (kitchen as any)?.website ?? null,
+      id: kitchen.id,
+      to: `/kitchens/${kitchen.id}`,
+
+      name: kitchen.name,
+      website: kitchen.website,
+
+      badges: [],
     }
   }
 
-  return { card, pillProps, cellProps }
+  function card(target?: Kitchen | null | undefined): KitchenCard.Card | null {
+    return target ? map(target) : null
+  }
+
+  function searchText(kitchen: Kitchen): string {
+    return `${kitchen.name} ${kitchen.website} ${kitchen.id}`.toLowerCase()
+  }
+
+  return { card, searchText }
 }

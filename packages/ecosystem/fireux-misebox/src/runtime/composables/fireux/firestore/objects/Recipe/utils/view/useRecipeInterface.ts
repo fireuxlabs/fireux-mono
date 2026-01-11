@@ -1,41 +1,38 @@
-import type { Recipe } from '../../../../../../../models/objects/Recipe.model.ts'
+
+import type { Recipe } from '../../packages/ecosystem/fireux-misebox/src/runtime/models/objects/Recipe.model'
 
 export namespace RecipeCard {
-  export interface Pill {
-    slug?: string
+  export type Card = {
+    id: string
+    to: string
+
     title: string
-    subtitle?: string | null
+    status: string
+
+    badges: string[]
   }
-
-  export interface Cell extends Pill {
-    status?: string | null
-  }
-
-  export type Card = Cell
-
-  export type Profile = Recipe
 }
 
 export function useRecipeInterface() {
-  function card(recipe: Recipe): RecipeCard.Card
-  function card(recipe?: Recipe | null | undefined): RecipeCard.Card | null
-  function card(recipe?: Recipe | null | undefined): RecipeCard.Card | null {
-    return recipe ? cellProps(recipe) : null
-  }
-
-  const pillProps = (recipe?: Recipe | null): RecipeCard.Pill => ({
-    slug: recipe?.slug,
-    title: recipe?.title || 'Recipe',
-    subtitle: recipe?.chef_name ?? null,
-  })
-
-  const cellProps = (recipe?: Recipe | null): RecipeCard.Cell => {
-    const pill = pillProps(recipe)
+  function map(recipe: Recipe): RecipeCard.Card {
     return {
-      ...pill,
-      status: recipe?.status ?? null,
+      id: recipe.id,
+      to: `/recipes/${recipe.id}`,
+
+      title: recipe.title,
+      status: String(recipe.status ?? ''),
+
+      badges: [],
     }
   }
 
-  return { card, pillProps, cellProps }
+  function card(target?: Recipe | null | undefined): RecipeCard.Card | null {
+    return target ? map(target) : null
+  }
+
+  function searchText(recipe: Recipe): string {
+    return `${recipe.title} ${recipe.status ?? ''} ${recipe.id}`.toLowerCase()
+  }
+
+  return { card, searchText }
 }

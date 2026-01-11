@@ -1,28 +1,45 @@
-// Placeholder for product UI interfaces; extend when card/list props are defined
-export interface ProductCardProps {
-  id: string
-  title: string
-  slug?: string
-  description?: string
-  priceLabel?: string
+
+import type { FirebaseProduct } from '../../packages/extensions/fireux-products/src/runtime/models/objects/product.model'
+
+export namespace ProductCard {
+  export type Card = {
+    id: string
+    to: string
+
+    name: string
+    description: string
+
+    imageUrl: string
+    badges: string[]
+  }
 }
 
 export function useProductInterface() {
-  function card(product: Partial<ProductCardProps>): ProductCardProps
-  function card(product?: Partial<ProductCardProps> | null | undefined): ProductCardProps | null
-  function card(product?: Partial<ProductCardProps> | null | undefined): ProductCardProps | null {
-    return product ? mapToCardProps(product) : null
+  function map(product: FirebaseProduct): ProductCard.Card {
+    const imageUrl =
+      product.main_image ||
+      product.images?.[0]?.url ||
+      ''
+
+    return {
+      id: product.id,
+      to: `/products/${product.id}`,
+
+      name: product.name,
+      description: product.description || '',
+
+      imageUrl,
+      badges: [],
+    }
   }
 
-  const mapToCardProps = (
-    product: Partial<ProductCardProps>
-  ): ProductCardProps => ({
-    id: product.id ?? 'product-id',
-    title: product.title ?? 'Product',
-    slug: product.slug,
-    description: product.description,
-    priceLabel: product.priceLabel,
-  })
+  function card(target?: FirebaseProduct | null | undefined): ProductCard.Card | null {
+    return target ? map(target) : null
+  }
 
-  return { card, mapToCardProps }
+  function searchText(product: FirebaseProduct): string {
+    return `${product.name} ${product.id}`.toLowerCase()
+  }
+
+  return { card, searchText }
 }

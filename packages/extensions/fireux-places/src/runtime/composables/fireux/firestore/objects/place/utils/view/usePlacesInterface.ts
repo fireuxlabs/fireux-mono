@@ -1,47 +1,39 @@
-import type {
-  BasePlace as PlaceBase,
-  Place as PlaceEntity,
-  PlaceSource,
-} from '../../../../../../../models/place.model'
 
-export type { PlaceBase, PlaceEntity, PlaceSource }
+import type { PlaceDoc } from '../../packages/extensions/fireux-places/src/runtime/models/objects/place.model'
 
 export namespace PlaceCard {
-  export interface Pill {
+  export type Card = {
     id: string
-    name: string
+    to: string
 
     // Media (empty string means unset)
     imageUrl: string
-  }
 
-  export interface Cell extends Pill {
-    source: PlaceSource
-    formatted_address: string
+    name: string
+    formattedAddress: string
   }
 }
 
 export function usePlacesInterface() {
-  function toCell(place: PlaceBase): PlaceCard.Cell {
+  function map(place: PlaceDoc): PlaceCard.Card {
     return {
       id: place.id,
-      name: place.name,
+      to: `/places/${place.id}`,
+
       imageUrl: place.image_url,
-      source: place.source,
-      formatted_address: place.formatted_address,
+
+      name: place.name,
+      formattedAddress: place.formatted_address,
     }
   }
 
-  function card(place: PlaceBase): PlaceCard.Cell
-  function card(place?: PlaceBase | null | undefined): PlaceCard.Cell | null
-  function card(place?: PlaceBase | null | undefined): PlaceCard.Cell | null {
-    return place ? toCell(place) : null
+  function card(target?: PlaceDoc | null | undefined): PlaceCard.Card | null {
+    return target ? map(target) : null
   }
 
-  function searchText(place: PlaceBase): string {
-    return `${place.name} ${place.formatted_address} ${place.id}`.trim().toLowerCase()
+  function searchText(place: PlaceDoc): string {
+    return `${place.name} ${place.formatted_address} ${place.id}`.toLowerCase()
   }
 
-  return { card, toCell, searchText }
+  return { card, searchText }
 }
-

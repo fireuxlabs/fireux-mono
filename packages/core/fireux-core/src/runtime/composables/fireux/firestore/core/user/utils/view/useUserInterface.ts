@@ -1,7 +1,6 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface.ts
 
 import type { Ref } from 'vue'
-import type { User } from '../../../../../../../models/core/user.model'
+import type { User } from '../../packages/core/fireux-core/src/runtime/models/core/user.model'
 
 export namespace UserCard {
   export type Card = {
@@ -15,6 +14,7 @@ export namespace UserCard {
 
     // Public handle (empty string means unset)
     handle: string
+
     badges: string[]
 
     // IMPORTANT: do not expose user.email on public UI surfaces.
@@ -26,8 +26,8 @@ export namespace UserCard {
 
 export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   function map(user: User): UserCard.Card {
-    const appCount = user.userOf.length
     const handle = user.handle.trim()
+    const appCount = user.userOf.length
 
     return {
       id: user.id,
@@ -35,6 +35,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
 
       avatarUrl: user.avatar,
       displayName: user.display_name,
+
       handle: handle ? `@${handle}` : '',
       badges: [],
 

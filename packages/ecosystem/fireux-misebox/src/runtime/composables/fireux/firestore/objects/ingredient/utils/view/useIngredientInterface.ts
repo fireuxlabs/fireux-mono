@@ -1,41 +1,39 @@
-import type { Ingredient } from '../../../../../../../models/objects/Ingredient.model.ts'
+
+import type { Ingredient } from '../../packages/ecosystem/fireux-misebox/src/runtime/models/objects/Ingredient.model'
 
 export namespace IngredientCard {
-  export interface Pill {
-    id?: string
-    title: string
-    subtitle?: string | null
+  export type Card = {
+    id: string
+    to: string
+
+    name: string
+    category: string
+
+    badges: string[]
   }
-
-  export interface Cell extends Pill {
-    category?: string | null
-  }
-
-  export type Card = Cell
-
-  export type Profile = Ingredient
 }
 
 export function useIngredientInterface() {
-  function card(ingredient: Ingredient): IngredientCard.Card
-  function card(ingredient?: Ingredient | null | undefined): IngredientCard.Card | null
-  function card(ingredient?: Ingredient | null | undefined): IngredientCard.Card | null {
-    return ingredient ? cellProps(ingredient) : null
-  }
-
-  const pillProps = (ingredient?: Ingredient | null): IngredientCard.Pill => ({
-    id: ingredient?.id,
-    title: ingredient?.name || 'Ingredient',
-    subtitle: ingredient?.supplierInfo?.business_name ?? ingredient?.category ?? null,
-  })
-
-  const cellProps = (ingredient?: Ingredient | null): IngredientCard.Cell => {
-    const pill = pillProps(ingredient)
+  function map(ingredient: Ingredient): IngredientCard.Card {
     return {
-      ...pill,
-      category: ingredient?.category ?? null,
+      id: ingredient.id,
+      to: `/ingredients/${ingredient.id}`,
+
+      name: ingredient.name,
+      category: ingredient.category ?? '',
+
+      badges: [],
     }
   }
 
-  return { card, pillProps, cellProps }
+  function card(target?: Ingredient | null | undefined): IngredientCard.Card | null {
+    return target ? map(target) : null
+  }
+
+  function searchText(ingredient: Ingredient): string {
+    return `${ingredient.name} ${ingredient.category ?? ''} ${ingredient.id}`
+      .toLowerCase()
+  }
+
+  return { card, searchText }
 }

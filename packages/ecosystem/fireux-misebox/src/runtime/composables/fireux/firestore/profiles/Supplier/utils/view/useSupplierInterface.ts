@@ -1,25 +1,26 @@
-// FILE: packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface.ts
 
 import type { Ref } from 'vue'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
-import { supplierConfig, type SupplierCore } from '../../../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { User } from '../../packages/core/fireux-core/src/runtime/models/core/user.model'
+import type { ProfileRefs } from '../../packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { SupplierCore } from '../../packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model'
+import { supplierConfig } from '../../packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/supporting'
 
 export namespace SupplierCard {
   export type Card = {
     id: string
     to: string
 
-    // Media (empty string means unset)
-    avatar: string
+    avatarUrl: string
 
-    title: string
-    subtitle: string
+    displayName: string
+    tagline: string
     badges: string[]
 
-    line1: string
-    line2: string
-    line3: string
+    bioShort: string
+    specialtiesCsv: string
+    categoriesCsv: string
+    organizationName: string
+    locationsLabel: string
   }
 }
 
@@ -27,50 +28,46 @@ export function useSupplierInterface(
   profile: ProfileRefs<SupplierCore>,
   userRef?: Ref<User | null | undefined>
 ) {
-  function resolveBadges(currentProfile: SupplierCore): string[] {
-    const tags = (currentProfile as any)?.tags
-    if (Array.isArray(tags)) return tags.filter((x) => typeof x === 'string') as string[]
-    const legacy = (currentProfile as any)?.badges
-    if (Array.isArray(legacy)) return legacy.filter((x) => typeof x === 'string') as string[]
-    return []
+  function csv(list: string[]): string {
+    return list.join(', ')
   }
 
-  function map(currentProfile: SupplierCore, user?: User | null): SupplierCard.Card {
-    const title = user?.display_name ?? currentProfile.title
+  function locationLabel(list: Array<{ city: string; country: string }>): string {
+    return list.map((x) => `${x.city}, ${x.country}`).join(' · ')
+  }
 
-    const specialties = Array.isArray(currentProfile.specialties)
-      ? currentProfile.specialties
-      : []
-
-    const locationLabel = Array.isArray(currentProfile.locations)
-      ? currentProfile.locations
-          .filter((loc) => !!loc)
-          .map((loc) => `${loc.city}, ${loc.country}`)
-          .join(' · ')
-      : ''
-
+  function map(p: SupplierCore, u?: User | null): SupplierCard.Card {
     return {
-      id: currentProfile.id,
-      to: `/${supplierConfig.collectionName}/${currentProfile.id}`,
+      id: p.id,
+      to: `/${supplierConfig.collectionName}/${p.id}`,
 
-      avatar: user?.avatar ?? currentProfile.avatar_url ?? '',
+      avatarUrl: u?.avatar ?? '',
 
-      title,
-      subtitle: currentProfile.tagline,
+      displayName: u?.display_name ?? p.title,
+      tagline: p.tagline,
+      badges: p.tags,
 
-      badges: resolveBadges(currentProfile),
-
-      line1: currentProfile.bio_short,
-      line2: specialties.join(', '),
-      line3: locationLabel,
+      bioShort: p.bio_short,
+      specialtiesCsv: csv(p.specialties),
+      categoriesCsv: csv(p.categories),
+      organizationName: p.organization_name,
+      locationsLabel: locationLabel(p.locations),
     }
   }
 
   function card(target?: SupplierCore | null | undefined): SupplierCard.Card | null {
-    const currentProfile = target ?? profile.coreProfile.value ?? null
-    const user = userRef?.value ?? null
-    return currentProfile ? map(currentProfile, user) : null
+    const p = target ?? profile.coreProfile.value ?? null
+    if (!p) return null
+    return map(p, userRef?.value ?? null)
   }
 
-  return { card }
+  function searchText(target?: SupplierCore | null | undefined): string {
+    const p = target ?? profile.coreProfile.value ?? null
+    if (!p) return ''
+    const u = userRef?.value ?? null
+    const name = u?.display_name ?? p.title
+    return `${name} ${p.tagline} ${p.organization_name} ${p.id}`.toLowerCase()
+  }
+
+  return { card, searchText }
 }

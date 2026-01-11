@@ -1,71 +1,53 @@
-import type { BlogPost } from '../../../../../../../models/objects/blogPost.model'
+
+import type { BlogPost } from '../../packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model'
 
 export namespace BlogCard {
-  export interface Base {
+  export type Card = {
+    id: string
     to: string
+
     title: string
     excerpt: string
     author: string
-    avatar?: string
-    readingTime?: string
-    date?: string
-    image?: string
-    badge?: string
-  }
 
-  export interface Teaser extends Base {
-    layout: 'teaser'
-  }
-
-  export interface Cell extends Base {
-    layout: 'cell'
+    imageUrl: string
+    badges: string[]
   }
 }
 
 function stripHtml(input: string): string {
-  return (input || '')
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
+  return input.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
-function ellipsis(text: string, limit = 160): string {
-  if (!text) return ''
+function ellipsis(text: string, limit = 180): string {
   return text.length > limit ? `${text.slice(0, limit)}…` : text
 }
 
-function baseProps(post: BlogPost): BlogCard.Base {
-  const text = stripHtml(post.content)
-
-  return {
-    to: `/blog/${post.slug}`,
-    title: post.title,
-    excerpt: ellipsis(text, 180),
-    author: post.author?.display_name || 'Unknown author',
-    avatar: post.author?.avatar,
-    readingTime: post.readingTime?.replace(' min', '') || undefined,
-    date: post.created_at,
-    image: post.featuredImage || post.socialImage || undefined,
-    badge: post.type === 'product' ? 'Product' : undefined,
-  }
-}
-
 export function useBlogInterface() {
-  function card(post: BlogPost): BlogCard.Cell
-  function card(post?: BlogPost | null | undefined): BlogCard.Cell | null
-  function card(post?: BlogPost | null | undefined): BlogCard.Cell | null {
-    return post ? cellProps(post) : null
+  function map(post: BlogPost): BlogCard.Card {
+    const excerpt = ellipsis(stripHtml(post.content), 180)
+
+    return {
+      id: post.slug,
+      to: `/blog/${post.slug}`,
+
+      title: post.title,
+      excerpt,
+      author: post.author?.display_name || 'Unknown',
+
+      imageUrl: post.featuredImage || post.socialImage || '',
+      badges: [],
+    }
   }
 
-  const teaserProps = (post: BlogPost): BlogCard.Teaser => ({
-    layout: 'teaser',
-    ...baseProps(post),
-  })
+  function card(target?: BlogPost | null | undefined): BlogCard.Card | null {
+    return target ? map(target) : null
+  }
 
-  const cellProps = (post: BlogPost): BlogCard.Cell => ({
-    layout: 'cell',
-    ...baseProps(post),
-  })
+  function searchText(post: BlogPost): string {
+    return `${post.title} ${post.slug} ${post.author?.display_name || ''}`
+      .toLowerCase()
+  }
 
-  return { card, teaserProps, cellProps }
+  return { card, searchText }
 }

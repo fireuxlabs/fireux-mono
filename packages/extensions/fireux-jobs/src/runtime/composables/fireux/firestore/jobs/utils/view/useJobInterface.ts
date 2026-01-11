@@ -1,10 +1,11 @@
-import type { Ref } from 'vue'
-import type { Job } from '../../../../../../models/job.model'
+
+import type { Job } from '../../packages/extensions/fireux-jobs/src/runtime/models/objects/job.model'
 
 export namespace JobCard {
   export type Card = {
     id: string
     to: string
+
     title: string
     status: Job['status']
     description: string
@@ -13,7 +14,7 @@ export namespace JobCard {
   }
 }
 
-export function useJobInterface(jobRef?: Ref<Job | null | undefined>) {
+export function useJobInterface() {
   function map(job: Job): JobCard.Card {
     return {
       id: job.id,
@@ -21,18 +22,18 @@ export function useJobInterface(jobRef?: Ref<Job | null | undefined>) {
 
       title: job.title,
       status: job.status,
-      description: job.description ?? '',
+      description: job.description,
 
       badges: [],
     }
   }
 
   function card(target?: Job | null | undefined): JobCard.Card | null {
-    const job = target ?? jobRef?.value ?? null
-    return job ? map(job) : null
+    return target ? map(target) : null
   }
 
   function searchText(job: Job): string {
+    // keep it simple; add company/place names later once jobs are hydrated
     return `${job.title} ${job.status} ${job.id}`.toLowerCase()
   }
 

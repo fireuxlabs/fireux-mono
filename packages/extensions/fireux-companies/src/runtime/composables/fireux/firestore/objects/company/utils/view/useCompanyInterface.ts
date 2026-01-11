@@ -1,45 +1,37 @@
-import type { Company } from '../../../../../../../models/objects/company.model.ts'
+
+import type { Company } from '../../packages/extensions/fireux-companies/src/runtime/models/objects/company.model'
 
 export namespace CompanyCard {
-  export interface Pill {
-    id?: string
-    title: string
-    subtitle?: string | null
+  export type Card = {
+    id: string
+    to: string
+
+    name: string
+    website: string
+    badges: string[]
   }
-
-  export interface Cell extends Pill {
-    website?: string | null
-    formatted_address?: string | null
-    avatar?: string | null
-  }
-
-  export type Card = Cell
-
-  export type Profile = Company
 }
 
 export function useCompanyInterface() {
-  function card(company: Company): CompanyCard.Card
-  function card(company?: Company | null | undefined): CompanyCard.Card | null
-  function card(company?: Company | null | undefined): CompanyCard.Card | null {
-    return company ? cellProps(company) : null
-  }
-
-  const pillProps = (company?: Company | null): CompanyCard.Pill => ({
-    id: company?.id,
-    title: company?.name || 'Company',
-    subtitle: company?.formatted_address ?? company?.website ?? null,
-  })
-
-  const cellProps = (company?: Company | null): CompanyCard.Cell => {
-    const pill = pillProps(company)
+  function map(company: Company): CompanyCard.Card {
     return {
-      ...pill,
-      website: company?.website ?? null,
-      formatted_address: company?.formatted_address ?? null,
-      avatar: company?.avatar ?? null,
+      id: company.id,
+      to: `/companies/${company.id}`,
+
+      name: company.name,
+      website: company.website,
+
+      badges: [],
     }
   }
 
-  return { card, pillProps, cellProps }
+  function card(target?: Company | null | undefined): CompanyCard.Card | null {
+    return target ? map(target) : null
+  }
+
+  function searchText(company: Company): string {
+    return `${company.name} ${company.website} ${company.id}`.toLowerCase()
+  }
+
+  return { card, searchText }
 }
