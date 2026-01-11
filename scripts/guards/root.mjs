@@ -1,5 +1,5 @@
 // FILE: scripts/guards/root.mjs
-import { readdirSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 
 const ALLOWED_ROOT_DIRS = new Set([
@@ -107,6 +107,18 @@ export async function run(ctx) {
       '- Or explicitly allow them in scripts/guards/root.mjs',
     ]
     throw new Error(lines.join('\n'))
+  }
+
+  const sandboxReadmePath = path.join(repoRoot, 'sandbox', 'README.md')
+  if (!existsSync(sandboxReadmePath)) {
+    throw new Error(
+      [
+        '[guard] ❌ sandbox/README.md is required',
+        '',
+        '[guard] Fix:',
+        '- Restore sandbox/README.md (tracked) and re-run.',
+      ].join('\n')
+    )
   }
 
   console.log('[guard] ✅ Repo root is clean')

@@ -1,16 +1,13 @@
 // FILE: packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
 
+import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
+
 /**
- * Canonical Place models for `fireux-places` (Firestore-shape only).
- *
- * Firestore:
- * - Collection: /places (or type-scoped collection paths via this extension)
- * - Document id: `Place.id` (== Google place_id)
- *
- * Notes:
- * - We do NOT store both `id` and `place_id` on documents.
- * - Canonical identifier is `id` only.
- * - Empty string means "unset" for strings like `avatar`.
+ * Places canon:
+ * - GooglePlace = transient provider result (never written to Firestore)
+ * - Place = stored Firestore document in `/places/{id}`
+ * - `id` is always the Google place_id and also the Firestore doc id
+ * - Empty string means "unset"
  */
 
 /** Canonical sources are 'google' (provider/transient) and 'firebase' (stored). */
@@ -25,31 +22,30 @@ export interface BasePlace {
 	formatted_address: string
 	lat: number
 	lng: number
-	source: PlaceSource
 
-	/** Empty string means "unset". */
-	avatar: string
+	/** A display image for UI (empty string means unset). */
+	image_url: string
+
+	source: PlaceSource
 }
 
 /** Google Place (transient/provider). */
 export interface GooglePlace extends BasePlace {
 	source: 'google'
-	website?: string | null
-	phone?: string | null
-	rating?: number | null
-	user_ratings_total?: number | null
+
+	/** Useful to confirm identity before saving. */
+	website: string
+	phone: string
+	rating: number
+	user_ratings_total: number
 }
 
 /** Firestore Place (stored). */
-export interface Place extends BasePlace {
+export interface Place extends BasePlace, FireuxAuthored {
 	source: 'firebase'
 
+	/** “How we found this place” (kept for UX + duplicate avoidance). */
 	search_term: string
-	creator_id: string
-
-	/** Timestamp shape is service-owned; kept permissive for now. */
-	created_at: any
-	updated_at: any
 }
 
 /** Payload used before Firestore stamping is applied. */
