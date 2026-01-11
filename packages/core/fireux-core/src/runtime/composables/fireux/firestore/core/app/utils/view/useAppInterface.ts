@@ -1,5 +1,3 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts
-
 import type { Ref } from 'vue'
 import type { App } from '../../../../../../../models/core/app.model'
 import type { AppSocialLinks } from '../../../../../../../models/core/app.supporting'
@@ -26,12 +24,12 @@ export namespace AppCard {
     shortBio: string
     longBio: string
 
-    logo: string
-    wordmarkLight: string
-    wordmarkDark: string
+    logoUrl: string
+    wordmarkLightUrl: string
+    wordmarkDarkUrl: string
 
     // Always safe to render (empty string if none)
-    wordmark: string
+    wordmarkUrl: string
 
     socialLinks: AppSocialLinks
   }
@@ -40,7 +38,7 @@ export namespace AppCard {
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   const resolvedMode = useResolvedColorMode()
 
-  function resolveWordmark(app: App): string {
+  function resolveWordmarkUrl(app: App): string {
     return resolvedMode.value === 'dark'
       ? app.wordmark_dark_url
       : app.wordmark_light_url
@@ -59,31 +57,30 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
 
       tagline: app.tagline,
       shortName: app.app_short_name,
-      role: app.role,
+      role: String(app.role),
       userCount: app.user_count,
 
       description: app.description,
       shortBio: app.short_bio,
       longBio: app.long_bio,
 
-      logo: app.logo_url,
-      wordmarkLight: app.wordmark_light_url,
-      wordmarkDark: app.wordmark_dark_url,
-      wordmark: resolveWordmark(app),
+      logoUrl: app.logo_url,
+      wordmarkLightUrl: app.wordmark_light_url,
+      wordmarkDarkUrl: app.wordmark_dark_url,
+      wordmarkUrl: resolveWordmarkUrl(app),
 
       socialLinks: app.social_links,
     }
   }
 
-  function searchText(app: App): string {
-    return `${app.app_name} ${app.app_short_name} ${app.ecosystem}`
-      .trim()
-      .toLowerCase()
+  function card(target?: App | null | undefined): AppCard.Card | null {
+    const app = target ?? appRef?.value ?? null
+    return app ? map(app) : null
   }
 
-  function card(target?: App | null | undefined): AppCard.Card | null {
-    const app = target ?? appRef?.value
-    return app ? map(app) : null
+  function searchText(app: App): string {
+    return `${app.app_name} ${app.app_short_name} ${app.ecosystem} ${app.id}`
+      .toLowerCase()
   }
 
   return { card, searchText }

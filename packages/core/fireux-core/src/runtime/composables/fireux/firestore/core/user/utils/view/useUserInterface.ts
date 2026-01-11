@@ -13,14 +13,14 @@ export namespace UserCard {
 
     displayName: string
 
-    // Public profile handle (empty string means unset)
+    // Public handle (empty string means unset)
     handle: string
     badges: string[]
 
     // IMPORTANT: do not expose user.email on public UI surfaces.
     bio: string
     profiles: string[]
-    apps: string
+    appsLabel: string
   }
 }
 
@@ -40,17 +40,17 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
 
       bio: user.bio,
       profiles: user.profiles,
-      apps: appCount ? `${appCount} apps` : '',
+      appsLabel: appCount ? `${appCount} apps` : '',
     }
   }
 
-  function searchText(user: User): string {
-    return `${user.display_name} ${user.handle} ${user.id}`.trim().toLowerCase()
+  function card(target?: User | null | undefined): UserCard.Card | null {
+    const user = target ?? userRef?.value ?? null
+    return user ? map(user) : null
   }
 
-  function card(target?: User | null | undefined): UserCard.Card | null {
-    const user = target ?? userRef?.value
-    return user ? map(user) : null
+  function searchText(user: User): string {
+    return `${user.display_name} ${user.handle} ${user.id}`.toLowerCase()
   }
 
   return { card, searchText }

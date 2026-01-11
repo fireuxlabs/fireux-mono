@@ -10,7 +10,6 @@ export namespace ProfessionalCard {
     id: string
     to: string
 
-    // Media (empty string means unset)
     avatarUrl: string
 
     displayName: string
@@ -18,8 +17,8 @@ export namespace ProfessionalCard {
     badges: string[]
 
     bioShort: string
-    specialties: string
-    locations: string
+    specialtiesCsv: string
+    locationsCsv: string
   }
 }
 
@@ -27,80 +26,40 @@ export function useProfessionalInterface(
   profile: ProfileRefs<ProfessionalCore>,
   userRef?: Ref<User | null | undefined>
 ) {
-  function readField(target: unknown, key: string): unknown {
-    if (typeof target !== 'object' || target === null) return undefined
-    if (!(key in target)) return undefined
-    return (target as Record<string, unknown>)[key]
+  function csv(list: string[]): string {
+    return list.join(', ')
   }
 
-  function resolveAvatar(currentProfile: ProfessionalCore, user?: User | null): string {
-    const fromUser = user?.avatar
-    if (typeof fromUser === 'string' && fromUser.trim()) return fromUser.trim()
-
-    const avatarUrl = readField(currentProfile, 'avatar_url')
-    if (typeof avatarUrl === 'string' && avatarUrl.trim()) return avatarUrl.trim()
-
-    const avatar = readField(currentProfile, 'avatar')
-    if (typeof avatar === 'string' && avatar.trim()) return avatar.trim()
-
-    return ''
-  }
-
-  function resolveCsv(value: unknown): string {
-    if (Array.isArray(value)) {
-      return value
-        .filter((x) => typeof x === 'string')
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .join(', ')
-    }
-    if (typeof value === 'string') return value.trim()
-    return ''
-  }
-
-  function resolveBadges(currentProfile: ProfessionalCore): string[] {
-    const tags = readField(currentProfile, 'tags')
-    if (Array.isArray(tags)) {
-      return tags
-        .filter((x) => typeof x === 'string')
-        .map((s) => s.trim())
-        .filter(Boolean)
-    }
-    const legacy = readField(currentProfile, 'badges')
-    if (Array.isArray(legacy)) {
-      return legacy
-        .filter((x) => typeof x === 'string')
-        .map((s) => s.trim())
-        .filter(Boolean)
-    }
-    return []
-  }
-
-  function map(currentProfile: ProfessionalCore, user?: User | null): ProfessionalCard.Card {
-    const displayName = user?.display_name ?? currentProfile.title
-
+  function map(p: ProfessionalCore, u?: User | null): ProfessionalCard.Card {
     return {
-      id: currentProfile.id,
-      to: `/${professionalConfig.collectionName}/${currentProfile.id}`,
+      id: p.id,
+      to: `/${professionalConfig.collectionName}/${p.id}`,
 
-      avatarUrl: resolveAvatar(currentProfile, user),
+      avatarUrl: u?.avatar ?? '',
 
-      displayName,
-      tagline: currentProfile.tagline,
+      displayName: u?.display_name ?? p.title,
+      tagline: p.tagline,
+      badges: p.tags,
 
-      badges: resolveBadges(currentProfile),
-
-      bioShort: currentProfile.bio_short,
-      specialties: resolveCsv(readField(currentProfile, 'specialties')),
-      locations: resolveCsv(readField(currentProfile, 'locations')),
+      bioShort: p.bio_short,
+      specialtiesCsv: csv(p.specialties),
+      locationsCsv: csv(p.locations),
     }
   }
 
   function card(target?: ProfessionalCore | null | undefined): ProfessionalCard.Card | null {
-    const currentProfile = target ?? profile.coreProfile.value ?? null
-    const user = userRef?.value ?? null
-    return currentProfile ? map(currentProfile, user) : null
+    const p = target ?? profile.coreProfile.value ?? null
+    if (!p) return null
+    return map(p, userRef?.value ?? null)
   }
 
-  return { card }
+  function searchText(target?: ProfessionalCore | null | undefined): string {
+    const p = target ?? profile.coreProfile.value ?? null
+    if (!p) return ''
+    const u = userRef?.value ?? null
+    const name = u?.display_name ?? p.title
+    return `${name} ${p.tagline} ${p.id}`.toLowerCase()
+  }
+
+  return { card, searchText }
 }

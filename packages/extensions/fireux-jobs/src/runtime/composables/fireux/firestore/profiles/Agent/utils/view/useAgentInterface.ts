@@ -21,6 +21,7 @@ export namespace AgentCard {
 
     // IMPORTANT: only render contactEmail on authorized UI surfaces.
     contactEmail: string
+    contactPhone: string
     websiteUrl: string
   }
 }
@@ -29,14 +30,6 @@ export function useAgentInterface(
   profile: ProfileRefs<AgentCore>,
   userRef?: Ref<User | null | undefined>
 ) {
-  function resolveBadges(currentProfile: AgentCore): string[] {
-    const tags = (currentProfile as any)?.tags
-    if (Array.isArray(tags)) return tags.filter((x) => typeof x === 'string') as string[]
-    const legacy = (currentProfile as any)?.badges
-    if (Array.isArray(legacy)) return legacy.filter((x) => typeof x === 'string') as string[]
-    return []
-  }
-
   function map(currentProfile: AgentCore, user?: User | null): AgentCard.Card {
     const displayName = user?.display_name ?? currentProfile.title
 
@@ -49,12 +42,13 @@ export function useAgentInterface(
       displayName,
       tagline: currentProfile.tagline,
 
-      badges: resolveBadges(currentProfile),
+      badges: currentProfile.tags,
 
       bioShort: currentProfile.bio_short,
 
       // Keep strictly profile-owned here. Authorized surfaces can decide to override later.
       contactEmail: currentProfile.contact_email.trim(),
+      contactPhone: currentProfile.contact_phone,
       websiteUrl: currentProfile.website_url,
     }
   }
@@ -73,9 +67,7 @@ export function useAgentInterface(
 
     const displayName = user?.display_name ?? currentProfile.title ?? ''
 
-    return `${displayName} ${currentProfile.tagline ?? ''} ${currentProfile.id ?? ''}`
-      .trim()
-      .toLowerCase()
+    return `${displayName} ${currentProfile.tagline} ${currentProfile.id}`.toLowerCase()
   }
 
   return { card, searchText }

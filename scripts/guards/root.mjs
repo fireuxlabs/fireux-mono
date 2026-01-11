@@ -22,8 +22,8 @@ const ALLOWED_ROOT_DIRS = new Set([
   'types',
   'temp',
 
-  // Sandbox (tracked notes only; snapshots are gitignored)
-  'sandbox',
+  // Drafts (tracked README only; snapshots are gitignored)
+  'drafts',
 
   // Local-only (ignored, but tolerated)
   'node_modules',
@@ -109,14 +109,14 @@ export async function run(ctx) {
     throw new Error(lines.join('\n'))
   }
 
-  const sandboxReadmePath = path.join(repoRoot, 'sandbox', 'README.md')
-  if (!existsSync(sandboxReadmePath)) {
+  const draftsReadmePath = path.join(repoRoot, 'drafts', 'README.md')
+  if (!existsSync(draftsReadmePath)) {
     throw new Error(
       [
-        '[guard] ❌ sandbox/README.md is required',
+        '[guard] ❌ drafts/README.md is required',
         '',
         '[guard] Fix:',
-        '- Restore sandbox/README.md (tracked) and re-run.',
+        '- Restore drafts/README.md (tracked) and re-run.',
       ].join('\n')
     )
   }
