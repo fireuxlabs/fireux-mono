@@ -22,9 +22,10 @@
           </div>
         </div>
 
-        <div v-if="showTagline && tagline" class="fx-cell__tagline">
-          {{ tagline }}
-        </div>
+          <div v-if="showTagline" class="fx-cell__tagline">
+            <span v-if="tagline">{{ tagline }}</span>
+            <span v-else class="italic">missing</span>
+          </div>
 
         <div v-if="showMeta && userCount !== null" class="fx-cell__meta">
           <UBadge
@@ -43,13 +44,12 @@
 </template>
 
 <script setup lang="ts">
-type Props = {
-  to: string
-  avatarUrl: string
-  displayName: string
+import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
-  badges?: string[]
-  tagline?: string
+type Props = Omit<
+  Pick<AppCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'badges' | 'tagline' | 'userCount'>,
+  'userCount'
+> & {
   userCount?: number | null
 
   showBadges?: boolean

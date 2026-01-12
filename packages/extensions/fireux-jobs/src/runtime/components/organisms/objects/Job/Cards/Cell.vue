@@ -27,6 +27,7 @@
 
         <div v-if="showTagline" class="fx-cell__tagline">
           <span v-if="prop || description">{{ prop || description }}</span>
+          <span v-else class="italic">missing</span>
         </div>
       </div>
     </div>
@@ -48,6 +49,7 @@ type Props = Pick<JobCard.Card, 'to' | 'title' | 'description' | 'badges'> & {
 withDefaults(defineProps<Props>(), {
   avatarUrl: '',
   subtitle: '',
+  prop: '',
   showSubtitle: true,
   showBadges: true,
   showTagline: true,

@@ -27,6 +27,7 @@
 
         <div v-if="showTagline" class="fx-cell__tagline">
           <span v-if="prop">{{ prop }}</span>
+          <span v-else class="italic">missing</span>
         </div>
       </div>
     </div>
