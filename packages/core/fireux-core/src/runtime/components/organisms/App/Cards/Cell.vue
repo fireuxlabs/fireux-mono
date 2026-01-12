@@ -1,7 +1,7 @@
 <template>
   <NuxtLink :to="to" class="fx-cell">
     <div class="fx-cell__media">
-      <UAvatar :src="avatarUrl" :alt="displayName" size="sm" />
+      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="fx-cell__content fx-cell__stack">
         <div class="fx-cell__header">
@@ -26,9 +26,8 @@
           {{ tagline }}
         </div>
 
-        <div v-if="showMeta" class="fx-cell__meta">
+        <div v-if="showMeta && userCount !== null" class="fx-cell__meta">
           <UBadge
-            v-if="userCount !== null"
             variant="soft"
             color="neutral"
             size="xs"
@@ -48,9 +47,11 @@ type Props = {
   to: string
   avatarUrl: string
   displayName: string
+
   badges?: string[]
   tagline?: string
   userCount?: number | null
+
   showBadges?: boolean
   showTagline?: boolean
   showMeta?: boolean
@@ -58,6 +59,7 @@ type Props = {
 
 withDefaults(defineProps<Props>(), {
   badges: () => [],
+  tagline: '',
   userCount: null,
   showBadges: true,
   showTagline: true,

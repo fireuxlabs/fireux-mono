@@ -5,6 +5,10 @@ export namespace JobCard {
     id: string
     to: string
 
+    // Canon pill fields
+    avatarUrl: string
+    subtitle: string
+
     title: string
     status: Job['status']
     description: string
@@ -18,6 +22,9 @@ export function useJobInterface() {
     return {
       id: job.id,
       to: `/jobs/${job.id}`,
+
+      avatarUrl: '',
+      subtitle: String(job.status ?? ''),
 
       title: job.title,
       status: job.status,

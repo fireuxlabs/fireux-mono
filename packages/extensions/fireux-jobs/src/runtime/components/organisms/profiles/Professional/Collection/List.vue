@@ -6,7 +6,7 @@
     <OrganismsProfilesProfessionalCardsPill
       v-for="item in cards"
       :key="item.to"
-      :card="item"
+      v-bind="item"
     />
   </div>
 

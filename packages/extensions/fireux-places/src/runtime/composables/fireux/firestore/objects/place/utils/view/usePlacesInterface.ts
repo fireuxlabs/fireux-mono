@@ -20,6 +20,12 @@ export namespace PlaceCard {
     id: string
     to: string
 
+    // Canon pill fields
+    avatarUrl: string
+    title: string
+    subtitle: string
+    badges: string[]
+
     // Media (empty string means unset)
     imageUrl: string
 
@@ -33,6 +39,11 @@ export function usePlacesInterface() {
     return {
       id: place.id,
       to: `/places/${place.id}`,
+
+      avatarUrl: place.image_url,
+      title: place.name,
+      subtitle: place.formatted_address,
+      badges: [],
 
       imageUrl: place.image_url,
 

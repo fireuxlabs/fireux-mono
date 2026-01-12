@@ -1,32 +1,38 @@
 <template>
-  <div
-    class="fx-pill"
-  >
-    <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="xs" />
+  <NuxtLink :to="to" class="fx-card fx-card--pill">
+    <UAvatar :src="avatarUrl || undefined" :alt="title" size="xs" />
+
     <div class="min-w-0 flex-1">
-      <div class="min-w-0 truncate text-sm font-medium">{{ vmTitle }}</div>
-      <div v-if="vmSubtitle" class="min-w-0 truncate text-xs text-dimmed">{{ vmSubtitle }}</div>
+      <div class="min-w-0 truncate text-sm font-medium">{{ title }}</div>
+      <div v-if="showSubtitle && subtitle" class="min-w-0 truncate text-xs text-dimmed">
+        {{ subtitle }}
+      </div>
     </div>
-  </div>
+
+    <div v-if="showBadges && badges.length" class="ml-2 flex shrink-0 items-center gap-1">
+      <UBadge
+        v-for="badge in badges"
+        :key="badge"
+        variant="soft"
+        color="neutral"
+        size="xs"
+      >
+        {{ badge }}
+      </UBadge>
+    </div>
+  </NuxtLink>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Recipe } from '../../../../../models/objects/Recipe.model'
-import { useRecipeInterface } from '../../../../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface'
+import type { RecipeCard } from '../../../../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface'
 
-const props = defineProps<{
-  title?: string
-  subtitle?: string
-  avatar?: string | null
-  recipe?: Recipe | null
-}>()
+type PillProps = Pick<RecipeCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
+  showSubtitle?: boolean
+  showBadges?: boolean
+}
 
-const { pillProps } = useRecipeInterface()
-
-const resolved = computed(() => pillProps(props.recipe ?? null))
-
-const vmTitle = computed(() => props.title ?? resolved.value.title)
-const vmSubtitle = computed(() => props.subtitle ?? resolved.value.subtitle ?? undefined)
-const vmAvatar = computed(() => props.avatar ?? null)
+withDefaults(defineProps<PillProps>(), {
+  showSubtitle: true,
+  showBadges: true,
+})
 </script>

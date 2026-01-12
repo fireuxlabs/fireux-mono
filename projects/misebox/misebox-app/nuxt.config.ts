@@ -26,5 +26,15 @@ const fireuxConfig = defineFireuxConfig({
 
 export default defineNuxtConfig({
   ...fireuxConfig,
+  content: {
+    _localDatabase: {
+      type: 'sqlite',
+      filename: '/tmp/fireux-misebox-content-local.sqlite',
+    },
+    database: {
+      type: 'sqlite',
+      filename: '/tmp/fireux-misebox-content.sqlite',
+    },
+  },
   css: [...(fireuxConfig.css ?? []), '@/assets/styles/main.css'],
 })

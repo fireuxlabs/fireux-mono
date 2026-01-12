@@ -5,6 +5,11 @@ export namespace CompanyCard {
     id: string
     to: string
 
+    // Canon pill fields
+    avatarUrl: string
+    title: string
+    subtitle: string
+
     name: string
     website: string
     badges: string[]
@@ -16,6 +21,10 @@ export function useCompanyInterface() {
     return {
       id: company.id,
       to: `/companies/${company.id}`,
+
+      avatarUrl: '',
+      title: company.name,
+      subtitle: company.website,
 
       name: company.name,
       website: company.website,

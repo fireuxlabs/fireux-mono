@@ -21,7 +21,7 @@
             v-if="showCellCard && cell"
             :supplier="cell"
           />
-          <OrganismsProfilesSupplierCardsPill v-else-if="pill" :supplier="pill" />
+          <OrganismsProfilesSupplierCardsPill v-else-if="pill" v-bind="pill" />
           <p v-else class="text-sm text-slate-500">No supplier profile loaded.</p>
         </div>
       </div>

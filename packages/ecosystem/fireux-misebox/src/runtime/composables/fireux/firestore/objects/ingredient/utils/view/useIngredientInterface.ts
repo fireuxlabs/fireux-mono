@@ -5,6 +5,11 @@ export namespace IngredientCard {
     id: string
     to: string
 
+    // Canon pill fields
+    avatarUrl: string
+    title: string
+    subtitle: string
+
     name: string
     category: string
 
@@ -17,6 +22,10 @@ export function useIngredientInterface() {
     return {
       id: ingredient.id,
       to: `/ingredients/${ingredient.id}`,
+
+      avatarUrl: '',
+      title: ingredient.name,
+      subtitle: ingredient.category ?? '',
 
       name: ingredient.name,
       category: ingredient.category ?? '',

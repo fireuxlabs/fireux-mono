@@ -49,27 +49,27 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       id: app.id,
       to: `/apps/${app.id}`,
 
-      avatarUrl: app.thumbnail_url,
+      avatarUrl: app.thumbnail_url ?? '',
 
-      displayName: app.app_name,
-      ecosystem: app.ecosystem,
+      displayName: app.app_name ?? '',
+      ecosystem: app.ecosystem ?? '',
       badges: [],
 
-      tagline: app.tagline,
-      shortName: app.app_short_name,
-      role: String(app.role),
-      userCount: app.user_count,
+      tagline: app.tagline ?? '',
+      shortName: app.app_short_name ?? '',
+      role: app.role != null ? String(app.role) : '',
+      userCount: typeof app.user_count === 'number' ? app.user_count : 0,
 
-      description: app.description,
-      shortBio: app.short_bio,
-      longBio: app.long_bio,
+      description: app.description ?? '',
+      shortBio: app.short_bio ?? '',
+      longBio: app.long_bio ?? '',
 
-      logoUrl: app.logo_url,
-      wordmarkLightUrl: app.wordmark_light_url,
-      wordmarkDarkUrl: app.wordmark_dark_url,
+      logoUrl: app.logo_url ?? '',
+      wordmarkLightUrl: app.wordmark_light_url ?? '',
+      wordmarkDarkUrl: app.wordmark_dark_url ?? '',
       wordmarkUrl: resolveWordmarkUrl(app),
 
-      socialLinks: app.social_links,
+      socialLinks: app.social_links ?? {},
     }
   }
 

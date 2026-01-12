@@ -30,7 +30,7 @@
           v-if="showCellCard && previewCard"
           :chef="previewCard"
         />
-        <OrganismsProfilesChefCardsPill v-else-if="previewCard" :chef="previewCard" />
+        <OrganismsProfilesChefCardsPill v-else-if="previewCard" v-bind="previewCard" />
       </UCard>
 
       <UCard v-else>

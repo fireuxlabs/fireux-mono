@@ -5,6 +5,11 @@ export namespace ProductCard {
     id: string
     to: string
 
+    // Canon pill fields
+    avatarUrl: string
+    title: string
+    subtitle: string
+
     name: string
     description: string
 
@@ -23,6 +28,10 @@ export function useProductInterface() {
     return {
       id: product.id,
       to: `/products/${product.id}`,
+
+      avatarUrl: imageUrl,
+      title: product.name,
+      subtitle: product.description || '',
 
       name: product.name,
       description: product.description || '',

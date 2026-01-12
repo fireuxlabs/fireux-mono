@@ -19,7 +19,7 @@
 
 				<div class="space-y-4">
 					<OrganismsProfilesChefCardsCell v-if="showCellCard && cell" :chef="cell" />
-					<OrganismsProfilesChefCardsPill v-else-if="pill" :chef="pill" />
+					<OrganismsProfilesChefCardsPill v-else-if="pill" v-bind="pill" />
 					<p v-else class="text-sm text-slate-500">No chef profile loaded.</p>
 				</div>
 			</div>

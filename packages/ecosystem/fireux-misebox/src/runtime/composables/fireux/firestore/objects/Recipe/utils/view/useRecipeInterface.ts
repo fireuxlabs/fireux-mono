@@ -5,6 +5,10 @@ export namespace RecipeCard {
     id: string
     to: string
 
+    // Canon pill fields
+    avatarUrl: string
+    subtitle: string
+
     title: string
     status: string
 
@@ -14,12 +18,17 @@ export namespace RecipeCard {
 
 export function useRecipeInterface() {
   function map(recipe: Recipe): RecipeCard.Card {
+    const status = String(recipe.status ?? '')
+
     return {
       id: recipe.slug,
       to: `/recipes/${recipe.slug}`,
 
+      avatarUrl: '',
+      subtitle: status,
+
       title: recipe.title,
-      status: String(recipe.status ?? ''),
+      status,
 
       badges: [],
     }

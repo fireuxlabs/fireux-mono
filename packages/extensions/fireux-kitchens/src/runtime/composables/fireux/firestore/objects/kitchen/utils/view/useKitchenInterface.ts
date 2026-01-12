@@ -5,6 +5,11 @@ export namespace KitchenCard {
     id: string
     to: string
 
+    // Canon pill fields
+    avatarUrl: string
+    title: string
+    subtitle: string
+
     name: string
     website: string
     badges: string[]
@@ -16,6 +21,10 @@ export function useKitchenInterface() {
     return {
       id: kitchen.id,
       to: `/kitchens/${kitchen.id}`,
+
+      avatarUrl: '',
+      title: kitchen.name,
+      subtitle: kitchen.website,
 
       name: kitchen.name,
       website: kitchen.website,

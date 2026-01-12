@@ -79,6 +79,9 @@
     "vuefire": "3.2.2"
   },
   "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ],
     "overrides": {
       "nuxt": "4.1.2",
       "@nuxt/kit": "4.1.2",

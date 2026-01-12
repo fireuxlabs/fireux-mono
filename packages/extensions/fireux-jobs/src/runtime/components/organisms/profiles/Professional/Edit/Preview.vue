@@ -32,7 +32,7 @@
         />
         <OrganismsProfilesProfessionalCardsPill
           v-else-if="previewCard"
-          :card="previewCard"
+          v-bind="previewCard"
         />
       </UCard>
 

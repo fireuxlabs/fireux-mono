@@ -52,27 +52,22 @@
 </template>
 
 <script setup lang="ts">
-type Props = {
-  id: string
-  shortName: string
+import type { PropType } from 'vue'
 
-  avatarUrl: string
-  displayName: string
+defineProps({
+  id: { type: String, default: '' },
+  shortName: { type: String, default: '' },
 
-  ecosystem: string
-  tagline: string
-  userCount: number
-  badges: string[]
+  avatarUrl: { type: String, default: '' },
+  displayName: { type: String, default: '' },
 
-  showSubtitle?: boolean
-  showBadges?: boolean
-  showBody?: boolean
-}
+  ecosystem: { type: String, default: '' },
+  tagline: { type: String, default: '' },
+  userCount: { type: Number as PropType<number | null>, default: null },
+  badges: { type: Array as PropType<string[]>, default: () => [] },
 
-withDefaults(defineProps<Props>(), {
-  badges: () => [],
-  showSubtitle: true,
-  showBadges: true,
-  showBody: true,
+  showSubtitle: { type: Boolean, default: true },
+  showBadges: { type: Boolean, default: true },
+  showBody: { type: Boolean, default: true },
 })
 </script>

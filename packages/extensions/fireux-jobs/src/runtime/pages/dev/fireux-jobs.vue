@@ -30,7 +30,7 @@
               />
               <OrganismsProfilesProfessionalCardsPill
                 v-if="professionalCard"
-                :card="professionalCard"
+                v-bind="professionalCard"
               />
             </div>
           </UCard>
@@ -65,7 +65,7 @@
             <OrganismsProfilesProfessionalCardsPill
               v-for="card in professionalGlobalPills"
               :key="professionalPillKey(card)"
-              :card="card"
+              v-bind="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -110,7 +110,7 @@
             <OrganismsProfilesProfessionalCardsPill
               v-for="card in professionalLocalPills"
               :key="professionalPillKey(card)"
-              :card="card"
+              v-bind="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">

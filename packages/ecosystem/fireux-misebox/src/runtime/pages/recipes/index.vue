@@ -79,11 +79,10 @@
       <div v-else-if="displayedRecipes.length" class="recipe-grid">
         <div
           v-for="recipe in displayedRecipes"
-          :key="recipe.slug"
-          @click="navigateToRecipe(recipe)"
+          :key="recipe.slug || recipe.title || recipe.name"
           class="recipe-item"
         >
-          <ObjectsRecipeCardsPill :recipe="recipe" />
+          <ObjectsRecipeCardsPill v-bind="pillCardForRecipe(recipe)" />
         </div>
       </div>
 
@@ -128,6 +127,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from '#imports'
+import type { RecipeCard } from '../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface'
 
 // Data and state
 const searchQuery = ref('')
@@ -151,6 +151,22 @@ type RecipeStub = {
   cuisine?: string
   cuisines?: string[]
   ingredients?: string[]
+}
+
+type RecipePillCard = Pick<RecipeCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'>
+
+function pillCardForRecipe(recipe: RecipeStub): RecipePillCard {
+  const slug = recipe.slug || ''
+  const title = recipe.title || recipe.name || 'Recipe'
+  const subtitle = recipe.difficulty || ''
+
+  return {
+    to: slug ? `/recipes/${slug}` : '#',
+    avatarUrl: '',
+    title,
+    subtitle,
+    badges: [],
+  }
 }
 
 const allAvailableRecipes = ref<RecipeStub[]>([])
@@ -244,11 +260,6 @@ const displayedRecipes = computed(() => {
   return recipes
 })
 
-// Navigation
-const navigateToRecipe = (recipe: any) => {
-  // navigateTo(`/recipes/${recipe.slug}`) // Disabled for now
-  console.log('Navigate to recipe:', recipe)
-}
 </script>
 
 <style scoped>

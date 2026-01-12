@@ -5,6 +5,10 @@ export namespace BlogCard {
     id: string
     to: string
 
+    // Canon pill fields
+    avatarUrl: string
+    subtitle: string
+
     title: string
     excerpt: string
     author: string
@@ -26,15 +30,21 @@ export function useBlogInterface() {
   function map(post: BlogPost): BlogCard.Card {
     const excerpt = ellipsis(stripHtml(post.content), 180)
 
+    const author = post.author?.display_name || 'Unknown'
+    const imageUrl = post.featuredImage || post.socialImage || ''
+
     return {
       id: post.slug,
       to: `/blog/${post.slug}`,
 
+      avatarUrl: imageUrl,
+      subtitle: author,
+
       title: post.title,
       excerpt,
-      author: post.author?.display_name || 'Unknown',
+      author,
 
-      imageUrl: post.featuredImage || post.socialImage || '',
+      imageUrl,
       badges: [],
     }
   }

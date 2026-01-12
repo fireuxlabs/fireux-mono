@@ -102,7 +102,7 @@
 
             <div class="space-y-4">
               <OrganismsProfilesChefCardsCell v-if="chefCard" :chef="chefCard" />
-              <OrganismsProfilesChefCardsPill v-if="chefCard" :chef="chefCard" />
+              <OrganismsProfilesChefCardsPill v-if="chefCard" v-bind="chefCard" />
             </div>
           </UCard>
         </div>
@@ -134,7 +134,7 @@
             <OrganismsProfilesChefCardsPill
               v-for="card in chefGlobalPills"
               :key="chefPillKey(card)"
-              :chef="card"
+              v-bind="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -168,7 +168,7 @@
             <OrganismsProfilesChefCardsPill
               v-for="card in chefLocalPills"
               :key="chefPillKey(card)"
-              :chef="card"
+              v-bind="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -220,7 +220,7 @@
               />
               <OrganismsProfilesSupplierCardsPill
                 v-if="supplierCard"
-                :supplier="supplierCard"
+                v-bind="supplierCard"
               />
             </div>
           </UCard>
@@ -253,7 +253,7 @@
             <OrganismsProfilesSupplierCardsPill
               v-for="card in supplierGlobalPills"
               :key="supplierPillKey(card)"
-              :supplier="card"
+              v-bind="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">
@@ -290,7 +290,7 @@
             <OrganismsProfilesSupplierCardsPill
               v-for="card in supplierLocalPills"
               :key="supplierPillKey(card)"
-              :supplier="card"
+              v-bind="card"
             />
           </div>
           <p v-else class="text-sm text-gray-500 dark:text-gray-400">

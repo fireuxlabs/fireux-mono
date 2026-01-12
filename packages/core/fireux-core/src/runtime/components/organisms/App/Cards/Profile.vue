@@ -187,6 +187,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from '#imports'
+import type { PropType } from 'vue'
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import type { App } from '../../../../models/core/app.model'
@@ -197,39 +198,29 @@ import { useSocialLinks, type SocialLinks } from '../../../../composables/fireux
 import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
 import type { User } from '../../../../models/core/user.model'
 
-type Props = {
-  app?: App | null
+const props = defineProps({
+  app: { type: Object as PropType<App | null>, default: null },
 
-  id?: string
-  shortName?: string
-  role?: string
-  userCount?: number | null
-  tagline?: string
-  wordmarkLight?: string
-  wordmarkDark?: string
-  avatarUrl?: string
-  displayName?: string
-  ecosystem?: string
-  badges?: string[]
-  socialLinks?: SocialLinks | null
+  id: { type: String, default: '' },
+  shortName: { type: String, default: '' },
+  role: { type: String, default: '' },
+  userCount: { type: Number as PropType<number | null>, default: null },
+  tagline: { type: String, default: '' },
+  wordmarkLight: { type: String, default: '' },
+  wordmarkDark: { type: String, default: '' },
+  avatarUrl: { type: String, default: '' },
+  displayName: { type: String, default: '' },
+  ecosystem: { type: String, default: '' },
+  badges: { type: Array as PropType<string[]>, default: () => [] },
+  socialLinks: { type: Object as PropType<SocialLinks | null>, default: null },
 
-  showSubtitle?: boolean
-  showTagline?: boolean
-  showMeta?: boolean
-  showWordmark?: boolean
-  showDescription?: boolean
-  showDetails?: boolean
-  showSocials?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  showSubtitle: true,
-  showTagline: true,
-  showMeta: true,
-  showWordmark: true,
-  showDescription: true,
-  showDetails: true,
-  showSocials: true,
+  showSubtitle: { type: Boolean, default: true },
+  showTagline: { type: Boolean, default: true },
+  showMeta: { type: Boolean, default: true },
+  showWordmark: { type: Boolean, default: true },
+  showDescription: { type: Boolean, default: true },
+  showDetails: { type: Boolean, default: true },
+  showSocials: { type: Boolean, default: true },
 })
 
 const { toItems } = useSocialLinks()

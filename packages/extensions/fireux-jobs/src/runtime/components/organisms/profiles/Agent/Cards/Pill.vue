@@ -7,7 +7,7 @@
       <div v-if="showSubtitle && tagline" class="truncate text-xs text-dimmed">{{ tagline }}</div>
     </div>
 
-    <div v-if="badges.length" class="ml-2 flex shrink-0 items-center gap-1">
+    <div v-if="showBadges && badges.length" class="ml-2 flex shrink-0 items-center gap-1">
       <UBadge
         v-for="badge in badges"
         :key="badge"
@@ -28,10 +28,12 @@ withDefaults(
   defineProps<
     Pick<AgentCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'tagline' | 'badges'> & {
       showSubtitle?: boolean
+      showBadges?: boolean
     }
   >(),
   {
     showSubtitle: true,
+    showBadges: true,
   }
 )
 </script>

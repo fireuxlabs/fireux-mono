@@ -1,0 +1,60 @@
+/* Shared preview layout (used by all *Cards/Preview.vue) */
+
+.fx-preview { width: 100%; }
+
+.fx-preview__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-s, 0.75rem);
+}
+
+.fx-preview__main {
+  min-width: 0;
+  flex: 1;
+}
+
+.fx-preview__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-s, 0.75rem);
+}
+
+.fx-preview__title {
+  min-width: 0;
+  font-weight: 600;
+  color: var(--ui-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fx-preview__badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--spacing-xxs, 0.25rem);
+  flex-shrink: 0;
+}
+
+.fx-preview__subtitle {
+  margin-top: 0.125rem;
+  font-size: var(--font-size-s, 0.875rem);
+  color: var(--ui-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fx-preview__body {
+  margin-top: 0.5rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.fx-preview__line {
+  font-size: var(--font-size-s, 0.875rem);
+  color: var(--ui-text);
+}
+
+.text-dimmed { color: var(--ui-text-muted); }
