@@ -1,4 +1,4 @@
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Professional/Edit/Preview.vue -->
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Professional/Edit/PreviewPanel.vue -->
 <template>
   <ClientOnly>
     <section class="space-y-4">
@@ -62,46 +62,3 @@ const toggleView = () => {
   showCellView.value = !showCellView.value
 }
 </script>
-
-<style scoped>
-.fx-preview__header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.fx-preview__header-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.fx-preview__toggle {
-  align-self: flex-start;
-}
-
-.fx-preview__eyebrow {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(15, 23, 42, 0.6);
-}
-
-.fx-preview__copy {
-  margin: 0.25rem 0 0;
-  font-size: 0.875rem;
-  color: rgba(15, 23, 42, 0.85);
-}
-
-.fx-preview__fallback {
-  margin: 0;
-  padding: 1.25rem 0;
-  text-align: center;
-  font-size: 0.875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(15, 23, 42, 0.6);
-}
-</style>

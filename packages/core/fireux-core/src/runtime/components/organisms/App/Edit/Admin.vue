@@ -71,7 +71,7 @@ import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/
 import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useAppUsers } from '../../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
 import { useAppJoinRequests } from '../../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
-import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
+import { useUserInterface, type UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
@@ -102,7 +102,7 @@ const {
 } = useAppUpdate(appRef)
 const { users } = useAppUsers()
 const { fulfilled: hydratedUsers } = useUserCollection()
-const { card } = useUser()
+const { card: userCard } = useUserInterface()
 
 const appInterface = useAppInterface(appRef)
 const appCard = computed(() => appInterface.card())
@@ -184,6 +184,48 @@ const teamRows = computed(() => {
 
 const adminRows = computed(() => teamRows.value.filter((row) => row.role === 'admin'))
 
+const fallbackUserCard = (options: {
+  id: string
+  displayName: string
+  handle?: string
+}): UserCard.Card => {
+  const id = options.id
+  const displayName = options.displayName
+  const handle = (options.handle ?? '').trim()
+
+  return {
+    id,
+    to: id ? `/users/${id}` : '',
+
+    avatarUrl: '',
+    displayName,
+
+    handle: handle ? `@${handle}` : '',
+    badges: [],
+
+    bio: '',
+    profiles: [],
+    appsLabel: '',
+  }
+}
+
+const cardForUser = (target?: User | null | undefined): UserCard.Card => {
+  const payload = userCard(target ?? undefined)
+  if (payload) return payload
+
+  const id = (target?.id ?? '').trim()
+  const displayName = (target?.display_name ?? id).trim() || 'Unknown user'
+  const handle = (target?.handle ?? '').trim()
+
+  return {
+    ...fallbackUserCard({ id, displayName, handle }),
+    avatarUrl: target?.avatar ?? '',
+    bio: target?.bio ?? '',
+    profiles: target?.profiles ?? [],
+    appsLabel: target?.userOf?.length ? `${target.userOf.length} apps` : '',
+  }
+}
+
 const adminPillFor = (row: {
   id: string
   role: 'admin' | 'user'
@@ -191,28 +233,12 @@ const adminPillFor = (row: {
   email: string | null
 }) => {
   const hydrated = hydratedUsers.value.find((u) => u.id === row.id)
-  const fallbackUser = {
-    id: row.id,
-    display_name: row.display_name,
-    avatar: '',
-    handle: '',
-    email: row.email ?? '',
-    bio: '',
-    profiles: [],
-  } as unknown as User
+  if (hydrated?.coreUser) return cardForUser(hydrated.coreUser)
 
-  const payload = cardRef.value(hydrated?.coreUser ?? fallbackUser)
-  return payload ?? {
+  return fallbackUserCard({
     id: row.id,
-    to: row.id ? `/users/${row.id}` : '',
-    avatar: '',
-    title: row.display_name || row.id,
-    subtitle: '',
-    badges: [],
-    bio: '',
-    profiles: '',
-    apps: '',
-  }
+    displayName: row.display_name || row.id,
+  })
 }
 
 const removeAdmin = withToast(
@@ -233,22 +259,7 @@ const fetchedUser = (uid: string) => {
   return { user: computed(() => coreUser.value ?? null) }
 }
 
-const cardRef = computed(() => (target?: User | null | undefined) => {
-  const payload = card(target ?? undefined)
-  if (payload) return payload
-  const uid = target?.id ?? ''
-  return {
-    id: uid,
-    to: uid ? `/users/${uid}` : '',
-    avatarUrl: '',
-    displayName: uid || 'Unknown user',
-    handle: '',
-    badges: [],
-    bio: '',
-    profiles: '',
-    apps: '',
-  }
-})
+const cardRef = computed(() => cardForUser)
 
 const {
   items: joinRequestItems,

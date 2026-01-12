@@ -35,7 +35,7 @@
         <ClientOnly v-else>
           <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
             <template #preview>
-              <OrganismsProfilesSupplierEditPreview />
+              <OrganismsProfilesSupplierEditPreviewPanel />
             </template>
 
             <template #core>

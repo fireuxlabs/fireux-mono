@@ -1,9 +1,9 @@
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/components/Organisms/profiles/Chef/Edit/Preview.vue -->
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Organisms/profiles/Agent/Edit/PreviewPanel.vue -->
 <template>
   <ClientOnly>
     <section class="space-y-4">
       <UCard v-if="isLoading">
-        <p class="fx-preview__fallback">Loading chef preview…</p>
+        <p class="fx-preview__fallback">Loading agent preview…</p>
       </UCard>
 
       <UCard v-else-if="hasPreview" class="space-y-6">
@@ -11,7 +11,7 @@
           <div class="fx-preview__header-content">
             <p class="fx-preview__eyebrow">Directory preview</p>
             <p class="fx-preview__copy">
-              Snapshot of how your chef profile renders inside FireUX.
+              Snapshot of how your agent profile renders inside FireUX.
             </p>
           </div>
 
@@ -26,15 +26,15 @@
           </UButton>
         </header>
 
-        <OrganismsProfilesChefCardsCell
+        <OrganismsProfilesAgentCardsCell
           v-if="showCellCard && previewCard"
-          :chef="previewCard"
+          v-bind="previewCard"
         />
-        <OrganismsProfilesChefCardsPill v-else-if="previewCard" v-bind="previewCard" />
+        <OrganismsProfilesAgentCardsPill v-else-if="previewCard" v-bind="previewCard" />
       </UCard>
 
       <UCard v-else>
-        <p class="fx-preview__fallback">Chef preview unavailable.</p>
+        <p class="fx-preview__fallback">Agent preview unavailable.</p>
       </UCard>
     </section>
   </ClientOnly>
@@ -42,9 +42,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef.ts'
+import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 
-const { coreProfile, pending, card } = useChef()
+const { coreProfile, pending, card } = useAgent()
 
 const previewCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
 const isLoading = computed(() => Boolean(pending.value))
@@ -59,46 +59,3 @@ const toggleView = () => {
   showCellView.value = !showCellView.value
 }
 </script>
-
-<style scoped>
-.fx-preview__header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.fx-preview__header-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.fx-preview__toggle {
-  align-self: flex-start;
-}
-
-.fx-preview__eyebrow {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(15, 23, 42, 0.6);
-}
-
-.fx-preview__copy {
-  font-size: 0.875rem;
-  color: rgba(15, 23, 42, 0.85);
-  margin: 0.25rem 0 0;
-}
-
-.fx-preview__fallback {
-  margin: 0;
-  padding: 1.25rem 0;
-  text-align: center;
-  font-size: 0.875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(15, 23, 42, 0.6);
-}
-</style>

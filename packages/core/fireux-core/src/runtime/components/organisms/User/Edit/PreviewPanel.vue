@@ -1,4 +1,4 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/Edit/Preview.vue -->
+<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/Edit/PreviewPanel.vue -->
 <template>
   <ClientOnly>
     <OrganismsUserCardsPreview v-if="currentUser" v-bind="card(currentUser)" />

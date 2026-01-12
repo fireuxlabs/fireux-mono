@@ -3,11 +3,9 @@
 
 // NOTE: @use statements must come first.
 @use './scss/atoms/tokens';
-@use './scss/molecules/cards';
-@use './scss/molecules/preview';
-@use './scss/organisms/profile-cards';
-@use './scss/organisms/profiles';
-@use './scss/organisms/sections';
+
+// NOTE: Component styling is centralized in main.css.
+// Keep SCSS limited to global tokens/variables.
 
 @mixin fx-truncate {
   overflow: hidden;

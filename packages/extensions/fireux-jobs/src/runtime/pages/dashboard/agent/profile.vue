@@ -50,7 +50,7 @@
         <ClientOnly v-else>
           <LayoutsDashboardProfileEdit class="fx-panels-masonry">
             <template #preview>
-              <OrganismsProfilesAgentEditPreview />
+              <OrganismsProfilesAgentEditPreviewPanel />
             </template>
 
             <template #core>
