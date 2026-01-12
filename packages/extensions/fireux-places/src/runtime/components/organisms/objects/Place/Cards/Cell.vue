@@ -1,54 +1,58 @@
 <template>
-  <div class="fx-cell">
+  <NuxtLink :to="to" class="fx-cell">
     <div class="fx-cell__media">
       <UAvatar
         :src="imageUrl || undefined"
-        :alt="title"
+        :alt="name"
         size="sm"
         icon="i-lucide-map-pin"
       />
+
       <div class="fx-cell__content fx-cell__stack">
-        <div class="fx-cell__title flex items-center justify-between gap-2">
-          <span class="truncate">{{ title }}</span>
-          <UBadge v-if="sourceLabel" variant="soft" color="neutral" size="xs">
-            {{ sourceLabel }}
-          </UBadge>
+        <div class="fx-cell__header">
+          <div class="min-w-0">
+            <div class="fx-cell__title flex items-center justify-between gap-2">
+              <span class="truncate">{{ name }}</span>
+              <UBadge v-if="showSource && sourceLabel" variant="soft" color="neutral" size="xs">
+                {{ sourceLabel }}
+              </UBadge>
+            </div>
+
+            <div v-if="showSubtitle && formattedAddress" class="fx-cell__subtitle">
+              {{ formattedAddress }}
+            </div>
+          </div>
         </div>
-        <div v-if="subtitle" class="fx-cell__subtitle">
-          {{ subtitle }}
+
+        <div v-if="showTagline" class="fx-cell__tagline">
+          <span v-if="prop">{{ prop }}</span>
         </div>
-        <div v-if="prop" class="fx-cell__tagline">{{ prop }}</div>
       </div>
     </div>
-  </div>
+  </NuxtLink>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
-defineOptions({ inheritAttrs: false })
-
-type Props = {
-  id: PlaceCard.Cell['id']
-  name: PlaceCard.Cell['name']
-  formatted_address: PlaceCard.Cell['formatted_address']
-  imageUrl: PlaceCard.Cell['imageUrl']
-  source: PlaceCard.Cell['source']
+type Props = Pick<PlaceCard.Card, 'to' | 'name' | 'formattedAddress' | 'imageUrl'> & {
+  source?: 'google' | 'firebase'
   prop?: string
+  showSubtitle?: boolean
+  showSource?: boolean
+  showTagline?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  source: 'firebase',
+  prop: '',
+  showSubtitle: true,
+  showSource: true,
+  showTagline: true,
+})
 
-const title = computed(() => props.name)
-const subtitle = computed(() => props.formatted_address)
-const imageUrl = computed(() => props.imageUrl || '')
-const prop = computed(() => props.prop)
 const sourceLabel = computed(() =>
-  props.source === 'firebase'
-    ? 'Firebase'
-    : props.source === 'google'
-      ? 'Google'
-      : null
+  props.source === 'firebase' ? 'Firebase' : props.source === 'google' ? 'Google' : ''
 )
 </script>

@@ -1,36 +1,54 @@
 <template>
-  <div class="fx-cell">
+  <NuxtLink :to="to" class="fx-cell">
     <div class="fx-cell__media">
-      <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
+      <UAvatar :src="avatarUrl || undefined" :alt="name" size="sm" />
 
       <div class="fx-cell__content fx-cell__stack">
-        <div class="fx-cell__title">{{ vmTitle }}</div>
-        <div v-if="vmSubtitle" class="fx-cell__subtitle">{{ vmSubtitle }}</div>
-        <div v-if="prop" class="fx-cell__tagline">{{ prop }}</div>
+        <div class="fx-cell__header">
+          <div class="min-w-0">
+            <div class="fx-cell__title">{{ name }}</div>
+            <div v-if="showSubtitle && category" class="fx-cell__subtitle">
+              {{ category }}
+            </div>
+          </div>
+
+          <div v-if="showBadges && badges.length" class="fx-cell__badges">
+            <UBadge
+              v-for="badge in badges"
+              :key="badge"
+              variant="soft"
+              color="neutral"
+              size="xs"
+            >
+              {{ badge }}
+            </UBadge>
+          </div>
+        </div>
+
+        <div v-if="showTagline" class="fx-cell__tagline">
+          <span v-if="prop">{{ prop }}</span>
+        </div>
       </div>
     </div>
-  </div>
+  </NuxtLink>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Ingredient } from '../../../../../models/objects/Ingredient.model'
-import { useIngredientInterface } from '../../../../../composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface'
+import type { IngredientCard } from '../../../../../composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface'
 
-const props = defineProps<{
-  title?: string
-  subtitle?: string
-  avatar?: string | null
-  ingredient?: Ingredient | null
+type Props = Pick<IngredientCard.Card, 'to' | 'name' | 'category' | 'badges'> & {
+  avatarUrl?: string
   prop?: string
-}>()
-const { cellProps } = useIngredientInterface()
+  showSubtitle?: boolean
+  showBadges?: boolean
+  showTagline?: boolean
+}
 
-const resolved = computed(() => cellProps(props.ingredient ?? null))
-
-const vmTitle = computed(() => props.title ?? resolved.value.title)
-const vmSubtitle = computed(
-  () => props.subtitle ?? resolved.value.category ?? resolved.value.subtitle ?? undefined
-)
-const vmAvatar = computed(() => props.avatar ?? null)
+withDefaults(defineProps<Props>(), {
+  avatarUrl: '',
+  prop: '',
+  showSubtitle: true,
+  showBadges: true,
+  showTagline: true,
+})
 </script>

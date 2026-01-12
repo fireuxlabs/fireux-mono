@@ -96,6 +96,6 @@ migrations/backups/*.json
 # Documentation artifacts
 artifacts/
 
-# Drafts (canonical drafts; snapshots ignored)
-drafts/**
-!drafts/README.md
+# Mirror (disposable snapshots; safe to delete/recreate)
+mirror/**
+!mirror/README.md

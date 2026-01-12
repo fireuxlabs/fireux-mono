@@ -1,18 +1,20 @@
 <template>
-  <NuxtLink :to="vm.to" class="fx-cell">
+  <NuxtLink :to="to" class="fx-cell">
     <div class="fx-cell__media">
-      <UAvatar :src="vm.avatar || undefined" :alt="vm.title" size="sm" />
+      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="fx-cell__content fx-cell__stack">
         <div class="fx-cell__header">
           <div class="min-w-0">
-            <div class="fx-cell__title">{{ vm.title }}</div>
-            <div v-if="vm.subtitle" class="fx-cell__subtitle">{{ vm.subtitle }}</div>
+            <div class="fx-cell__title">{{ displayName }}</div>
+            <div v-if="showSubtitle && tagline" class="fx-cell__subtitle">
+              {{ tagline }}
+            </div>
           </div>
 
-          <div v-if="vm.badges.length" class="fx-cell__badges">
+          <div v-if="showBadges && badges.length" class="fx-cell__badges">
             <UBadge
-              v-for="badge in vm.badges"
+              v-for="badge in badges"
               :key="badge"
               variant="soft"
               color="neutral"
@@ -23,8 +25,8 @@
           </div>
         </div>
 
-        <div class="fx-cell__tagline">
-          <span v-if="vm.line1">{{ vm.line1 }}</span>
+        <div v-if="showTagline" class="fx-cell__tagline">
+          <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
@@ -33,50 +35,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useSupplier } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
-import type {
-  SupplierCard,
-  SupplierProfile,
-} from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
+import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 
-const props = defineProps<{
-  title?: string
-  subtitle?: string
-  avatar?: string | null
-  supplier?: SupplierProfile | SupplierCard.Card | null
-  card?: SupplierCard.Card | null
+type Props = Pick<
+  SupplierCard.Card,
+  'to' | 'avatarUrl' | 'displayName' | 'tagline' | 'badges' | 'bioShort'
+> & {
   prop?: string
-}>()
-
-const { coreProfile, card: toCard } = useSupplier()
-
-const isSupplierCard = (value: unknown): value is SupplierCard.Card => {
-  if (!value || typeof value !== 'object') return false
-  return 'to' in value && 'title' in value && 'badges' in value && 'line1' in value
+  showSubtitle?: boolean
+  showBadges?: boolean
+  showTagline?: boolean
 }
 
-const resolvedCard = computed<SupplierCard.Card | null>(() => {
-  if (props.card) return props.card
-
-  const supplied = props.supplier ?? null
-  if (supplied) {
-    return isSupplierCard(supplied) ? supplied : toCard(supplied)
-  }
-
-  return coreProfile.value ? toCard(coreProfile.value) : null
-})
-
-const vm = computed(() => {
-  const card = resolvedCard.value
-
-  const title = props.title ?? card?.title ?? 'Supplier'
-  const subtitle = props.subtitle ?? (card?.subtitle || undefined)
-  const avatar = props.avatar ?? (card?.avatar || null)
-  const badges = card?.badges ?? []
-  const to = card?.to || '#'
-  const line1 = String((typeof props.prop === 'string' ? props.prop : card?.line1) ?? '').trim()
-
-  return { title, subtitle, avatar, badges, to, line1 }
+withDefaults(defineProps<Props>(), {
+  prop: '',
+  showSubtitle: true,
+  showBadges: true,
+  showTagline: true,
 })
 </script>

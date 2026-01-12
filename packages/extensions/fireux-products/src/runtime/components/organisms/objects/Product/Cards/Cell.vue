@@ -1,27 +1,54 @@
 <template>
-  <div class="fx-cell">
+  <NuxtLink :to="to" class="fx-cell">
     <div class="fx-cell__media">
-      <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
+      <UAvatar :src="imageUrl || undefined" :alt="name" size="sm" />
 
       <div class="fx-cell__content fx-cell__stack">
-        <div class="fx-cell__title">{{ title }}</div>
-        <div v-if="subtitle" class="fx-cell__subtitle">{{ subtitle }}</div>
-        <div v-if="prop" class="fx-cell__tagline">{{ prop }}</div>
+        <div class="fx-cell__header">
+          <div class="min-w-0">
+            <div class="fx-cell__title">{{ name }}</div>
+            <div v-if="showSubtitle && subtitle" class="fx-cell__subtitle">
+              {{ subtitle }}
+            </div>
+          </div>
+
+          <div v-if="showBadges && badges.length" class="fx-cell__badges">
+            <UBadge
+              v-for="badge in badges"
+              :key="badge"
+              variant="soft"
+              color="neutral"
+              size="xs"
+            >
+              {{ badge }}
+            </UBadge>
+          </div>
+        </div>
+
+        <div v-if="showTagline" class="fx-cell__tagline">
+          <span v-if="prop">{{ prop }}</span>
+        </div>
       </div>
     </div>
-  </div>
+  </NuxtLink>
 </template>
 
 <script setup lang="ts">
-import type { ProductCardProps } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
+import type { ProductCard } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
 
-const { card, avatar: avatarProp, prop } = defineProps<{
-  card: ProductCardProps
-  avatar?: string | null
+type Props = Pick<ProductCard.Card, 'to' | 'name' | 'description' | 'imageUrl' | 'badges'> & {
   prop?: string
-}>()
+  showSubtitle?: boolean
+  showBadges?: boolean
+  showTagline?: boolean
+}
 
-const { title, description, priceLabel } = card
-const subtitle = priceLabel ?? description
-const avatar = avatarProp ?? null
+const props = withDefaults(defineProps<Props>(), {
+  prop: '',
+  showSubtitle: true,
+  showBadges: true,
+  showTagline: true,
+})
+
+const subtitle = props.description
 </script>

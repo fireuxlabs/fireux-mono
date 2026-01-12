@@ -1,5 +1,6 @@
 const vscode = require('vscode')
 const cp = require('node:child_process')
+const fs = require('node:fs')
 const path = require('node:path')
 
 function execFileAsync(cmd, args, { maxBuffer } = {}) {
@@ -77,11 +78,11 @@ async function collectFilesRecursive(fsApi, rootDir, opts) {
 
       const full = path.join(dir, name)
 
-      if (type === vscode.FileType.Directory) {
+      if ((type & vscode.FileType.Directory) === vscode.FileType.Directory) {
         stack.push(full)
         continue
       }
-      if (type !== vscode.FileType.File) continue
+      if ((type & vscode.FileType.File) !== vscode.FileType.File) continue
 
       results.push(full)
       if (results.length >= opts.maxFiles) return results
@@ -133,6 +134,88 @@ async function buildCatTreeText(rootDir, { maxFiles, maxFileBytes, maxTotalBytes
     total += Buffer.byteLength(text, 'utf8')
     if (total > maxTotalBytes) {
       chunks.push('\n[cat-tree truncated: output size exceeded]\n')
+      break
+    }
+  }
+
+  return chunks.join('')
+}
+
+function tryRealpath(absPath) {
+  try {
+    return fs.realpathSync(absPath)
+  } catch {
+    return null
+  }
+}
+
+function formatRealTarget({ workspaceRootDir, realAbsPath }) {
+  if (!realAbsPath) return ''
+  if (!workspaceRootDir) return normalizeRelPath(realAbsPath)
+
+  const rel = path.relative(workspaceRootDir, realAbsPath)
+  if (!rel || rel.startsWith('..') || path.isAbsolute(rel)) {
+    return normalizeRelPath(realAbsPath)
+  }
+
+  return normalizeRelPath(rel)
+}
+
+async function buildMirrorTreeText(
+  mirrorDir,
+  { workspaceRootDir, maxFiles, maxFileBytes, maxTotalBytes }
+) {
+  const files = await collectFilesRecursive(vscode.workspace.fs, mirrorDir, { maxFiles })
+  const filtered = files.filter((abs) => {
+    const base = path.basename(abs)
+    if (base === 'README.md') return false
+    if (base === 'mirror.txt') return false
+    return true
+  })
+  filtered.sort((a, b) => a.localeCompare(b))
+
+  const decoder = new TextDecoder('utf-8', { fatal: false })
+  let total = 0
+  const chunks = []
+
+  for (const abs of filtered) {
+    const rel = normalizeRelPath(path.relative(mirrorDir, abs))
+    const realAbs = tryRealpath(abs)
+    const realDisplay = formatRealTarget({ workspaceRootDir, realAbsPath: realAbs })
+    const isDifferent = !!(realAbs && path.resolve(realAbs) !== path.resolve(abs))
+
+    const header = `\n\n===== ./${rel}${isDifferent ? ` -> ${realDisplay}` : ''} =====\n`
+    chunks.push(header)
+    total += Buffer.byteLength(header, 'utf8')
+    if (total > maxTotalBytes) {
+      chunks.push('\n[mirror-tree truncated: output size exceeded]\n')
+      break
+    }
+
+    let data
+    try {
+      data = await vscode.workspace.fs.readFile(vscode.Uri.file(abs))
+    } catch {
+      chunks.push('[unreadable]\n')
+      continue
+    }
+
+    if (data.byteLength > maxFileBytes) {
+      chunks.push(`[skipped: file too large (${data.byteLength} bytes)]\n`)
+      continue
+    }
+
+    const buf = Buffer.from(data)
+    if (isProbablyBinary(buf)) {
+      chunks.push('[skipped: binary file]\n')
+      continue
+    }
+
+    const text = decoder.decode(buf)
+    chunks.push(text)
+    total += Buffer.byteLength(text, 'utf8')
+    if (total > maxTotalBytes) {
+      chunks.push('\n[mirror-tree truncated: output size exceeded]\n')
       break
     }
   }
@@ -328,6 +411,57 @@ function activate(context) {
     } catch (err) {
       const msg = String(err?.message || err || 'Failed to build cat-tree output')
       vscode.window.showErrorMessage(`Cat Tree failed: ${msg}`)
+    }
+  })
+
+  register('fireuxToolbar.mirrorTreeToEditor', async (uri, selectedUris) => {
+    const targetUri =
+      (Array.isArray(selectedUris) && selectedUris.length
+        ? selectedUris[0]
+        : uri) ??
+      vscode.window.activeTextEditor?.document?.uri
+
+    const wsRootDir = cwd
+    const mirrorDirFromSelection = targetUri?.fsPath
+    const mirrorDir = mirrorDirFromSelection
+      ? mirrorDirFromSelection
+      : wsRootDir
+        ? path.join(wsRootDir, 'mirror')
+        : undefined
+
+    if (!mirrorDir) {
+      vscode.window.showErrorMessage('Mirror Tree: no target folder found')
+      return
+    }
+
+    try {
+      const st = await vscode.workspace.fs.stat(vscode.Uri.file(mirrorDir))
+      if (st.type !== vscode.FileType.Directory) {
+        vscode.window.showErrorMessage('Mirror Tree: target is not a folder')
+        return
+      }
+    } catch {
+      vscode.window.showErrorMessage(`Mirror Tree: folder not found: ${mirrorDir}`)
+      return
+    }
+
+    try {
+      const output = await buildMirrorTreeText(mirrorDir, {
+        workspaceRootDir: wsRootDir,
+        maxFiles: 800,
+        maxFileBytes: 512 * 1024,
+        maxTotalBytes: 12 * 1024 * 1024,
+      })
+      const doc = await vscode.workspace.openTextDocument({
+        language: 'plaintext',
+        content: output,
+      })
+      await vscode.window.showTextDocument(doc, { preview: false })
+    } catch (err) {
+      const msg = String(
+        err?.message || err || 'Failed to build mirror-tree output'
+      )
+      vscode.window.showErrorMessage(`Mirror Tree failed: ${msg}`)
     }
   })
 

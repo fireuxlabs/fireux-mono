@@ -22,8 +22,8 @@ const ALLOWED_ROOT_DIRS = new Set([
   'types',
   'temp',
 
-  // Drafts (tracked README only; snapshots are gitignored)
-  'drafts',
+  // Mirror (tracked README + list file; symlink outputs are gitignored)
+  'mirror',
 
   // Local-only (ignored, but tolerated)
   'node_modules',
@@ -109,14 +109,14 @@ export async function run(ctx) {
     throw new Error(lines.join('\n'))
   }
 
-  const draftsReadmePath = path.join(repoRoot, 'drafts', 'README.md')
-  if (!existsSync(draftsReadmePath)) {
+  const mirrorReadmePath = path.join(repoRoot, 'mirror', 'README.md')
+  if (!existsSync(mirrorReadmePath)) {
     throw new Error(
       [
-        '[guard] ❌ drafts/README.md is required',
+        '[guard] ❌ mirror/README.md is required',
         '',
         '[guard] Fix:',
-        '- Restore drafts/README.md (tracked) and re-run.',
+        '- Restore mirror/README.md (tracked) and re-run.',
       ].join('\n')
     )
   }

@@ -26,6 +26,11 @@
         "icon": "$(output)"
       },
       {
+        "command": "fireuxToolbar.mirrorTreeToEditor",
+        "title": "Mirror Tree (Editor)",
+        "icon": "$(list-tree)"
+      },
+      {
         "command": "fireuxToolbar.startFireux",
         "title": "Dev: FireUX",
         "icon": "$(flame)"
@@ -67,6 +72,11 @@
           "command": "fireuxToolbar.catTreeToEditor",
           "group": "navigation@9",
           "when": "resourceScheme == 'file'"
+        },
+        {
+          "command": "fireuxToolbar.mirrorTreeToEditor",
+          "group": "navigation@10",
+          "when": "resourceScheme == 'file' && explorerResourceIsFolder && resourceFilename == 'mirror'"
         }
       ],
       "commandCenter": [
