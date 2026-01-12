@@ -1,18 +1,15 @@
 <template>
-  <UCard class="space-y-4">
-    <div class="flex items-start gap-3">
-      <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="sm" />
+  <UCard class="fx-preview">
+    <div class="fx-preview__row">
+      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="truncate font-medium">{{ card.displayName }}</div>
-            <div v-if="showSubtitle && card.tagline" class="truncate text-sm text-dimmed">{{ card.tagline }}</div>
-          </div>
+      <div class="fx-preview__main">
+        <div class="fx-preview__top">
+          <div class="fx-preview__title">{{ displayName }}</div>
 
-          <div v-if="card.badges.length" class="flex flex-wrap justify-end gap-1">
+          <div v-if="showBadges && badges.length" class="fx-preview__badges">
             <UBadge
-              v-for="badge in card.badges"
+              v-for="badge in badges"
               :key="badge"
               variant="soft"
               color="neutral"
@@ -23,13 +20,18 @@
           </div>
         </div>
 
-        <div class="space-y-1">
-          <div class="text-sm">
-            <span v-if="prop || card.bioShort">{{ prop || card.bioShort }}</span>
-            <span v-else class="text-dimmed italic">missing</span>
+        <div v-if="showSubtitle && tagline" class="fx-preview__subtitle">
+          {{ tagline }}
+        </div>
+
+        <div v-if="showBody" class="fx-preview__body">
+          <div class="fx-preview__line">
+            <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
+            <span v-else class="italic">missing</span>
           </div>
-          <div class="text-sm text-dimmed">
-            <span v-if="card.specialties">{{ card.specialties }}</span>
+
+          <div class="fx-preview__line text-dimmed">
+            <span v-if="specialtiesCsv">{{ specialtiesCsv }}</span>
             <span v-else class="italic">missing</span>
           </div>
         </div>
@@ -39,16 +41,23 @@
 </template>
 
 <script setup lang="ts">
-import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
+type Props = {
+  avatarUrl: string
+  displayName: string
+  tagline: string
+  badges: string[]
+  bioShort: string
+  specialtiesCsv: string
 
-withDefaults(
-  defineProps<{
-    card: ProfessionalCard.Card
-    prop?: string
-    showSubtitle?: boolean
-  }>(),
-  {
-    showSubtitle: true,
-  }
-)
+  prop?: string
+  showSubtitle?: boolean
+  showBadges?: boolean
+  showBody?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  showSubtitle: true,
+  showBadges: true,
+  showBody: true,
+})
 </script>

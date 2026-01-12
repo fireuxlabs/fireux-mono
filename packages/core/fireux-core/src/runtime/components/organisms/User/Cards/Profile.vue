@@ -1,19 +1,19 @@
 <template>
-  <UCard>
+  <UCard class="fx-profile">
     <template #header>
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex items-start gap-3">
+      <div class="fx-profile__header">
+        <div class="fx-profile__identity">
           <UAvatar :src="avatarUrl" :alt="displayName" size="md" />
-          <div class="min-w-0">
-            <div class="truncate text-base font-semibold">{{ displayName }}</div>
-            <div class="text-sm text-dimmed">
-              <span v-if="showSubtitle && handle">{{ handle }}</span>
+          <div class="fx-profile__titles">
+            <div class="fx-profile__title">{{ displayName }}</div>
+            <div v-if="showSubtitle" class="fx-profile__subtitle">
+              <span v-if="handle">{{ handle }}</span>
               <span v-else class="italic">missing</span>
             </div>
           </div>
         </div>
 
-        <div v-if="showBadges && badges.length" class="flex flex-wrap justify-end gap-1">
+        <div v-if="showBadges && badges.length" class="fx-profile__badges">
           <UBadge
             v-for="badge in badges"
             :key="badge"
@@ -27,86 +27,86 @@
       </div>
     </template>
 
-    <div class="space-y-4">
-      <div v-if="showDescription" class="space-y-1">
-        <div class="text-xs text-dimmed">Bio</div>
-        <div class="text-sm">
+    <div class="fx-profile__body">
+      <section v-if="showDescription" class="fx-profile__section">
+        <div class="fx-profile__label">Bio</div>
+        <div class="fx-profile__value">
           <span v-if="prop || bio">{{ prop || bio }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
+          <span v-else class="italic">missing</span>
         </div>
-      </div>
+      </section>
 
-      <div v-if="showMeta" class="space-y-1">
-        <div class="text-xs text-dimmed">Profiles</div>
-        <div class="text-sm">
+      <section v-if="showMeta" class="fx-profile__section">
+        <div class="fx-profile__label">Profiles</div>
+        <div class="fx-profile__value">
           <span v-if="profiles.length">{{ profiles.join(', ') }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
+          <span v-else class="italic">missing</span>
         </div>
-      </div>
+      </section>
 
-      <div v-if="showMeta" class="space-y-1">
-        <div class="text-xs text-dimmed">Apps</div>
-        <div class="text-sm">
-          <span v-if="apps">{{ apps }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
+      <section v-if="showMeta" class="fx-profile__section">
+        <div class="fx-profile__label">Apps</div>
+        <div class="fx-profile__value">
+          <span v-if="appsLabel">{{ appsLabel }}</span>
+          <span v-else class="italic">missing</span>
         </div>
-      </div>
+      </section>
 
-      <div v-if="showDetails" class="rounded border p-3">
-        <div class="text-xs font-medium opacity-70">Details</div>
-
-        <div class="mt-2 grid gap-2">
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-xs opacity-70">User id</div>
-            <div class="text-sm">
+      <section v-if="showDetails" class="fx-profile__section">
+        <div class="fx-profile__label">Details</div>
+        <div class="fx-profile__value">
+          <div class="fx-profile__kv">
+            <div class="fx-profile__k">User id</div>
+            <div class="fx-profile__v">
               <span v-if="user?.id">{{ user.id }}</span>
-              <span v-else class="opacity-50">missing</span>
+              <span v-else class="opacity-70">missing</span>
             </div>
           </div>
-
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-xs opacity-70">Created</div>
-            <div class="text-sm">
+          <div class="fx-profile__kv">
+            <div class="fx-profile__k">Created</div>
+            <div class="fx-profile__v">
               <span v-if="user?.created_at">set</span>
-              <span v-else class="opacity-50">missing</span>
+              <span v-else class="opacity-70">missing</span>
             </div>
           </div>
-
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-xs opacity-70">Updated</div>
-            <div class="text-sm">
+          <div class="fx-profile__kv">
+            <div class="fx-profile__k">Updated</div>
+            <div class="fx-profile__v">
               <span v-if="user?.updated_at">set</span>
-              <span v-else class="opacity-50">missing</span>
+              <span v-else class="opacity-70">missing</span>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+type Props = {
+  avatarUrl: string
+  displayName: string
+  handle: string
+  badges: string[]
+  bio: string
+  profiles: string[]
+  appsLabel: string
+
+  user?: {
+    id?: string
+    created_at?: unknown
+    updated_at?: unknown
+  } | null
+  prop?: string
+  showSubtitle?: boolean
+  showBadges?: boolean
+  showDescription?: boolean
+  showMeta?: boolean
+  showDetails?: boolean
+}
 
 withDefaults(
-  defineProps<
-    Pick<
-      UserCard.Card,
-      'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'bio' | 'profiles' | 'apps'
-    > & {
-      user?: {
-        id?: string
-        created_at?: unknown
-        updated_at?: unknown
-      } | null
-      prop?: string
-      showSubtitle?: boolean
-      showBadges?: boolean
-      showDescription?: boolean
-      showMeta?: boolean
-      showDetails?: boolean
-    }
-  >(),
+  defineProps<Props>(),
   {
     showSubtitle: true,
     showBadges: true,

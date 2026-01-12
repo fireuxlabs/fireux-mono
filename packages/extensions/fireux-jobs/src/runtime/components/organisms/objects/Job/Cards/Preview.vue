@@ -1,22 +1,53 @@
 <template>
-  <UCard>
-    <div class="flex items-start gap-3">
-      <UAvatar :src="card.avatar || undefined" :alt="card.title" size="sm" />
-      <div class="min-w-0 flex-1">
-        <div class="truncate font-medium">{{ card.title }}</div>
-        <div v-if="card.subtitle" class="truncate text-sm text-dimmed">{{ card.subtitle }}</div>
-        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
+  <UCard class="fx-preview">
+    <div class="fx-preview__row">
+      <UAvatar :src="avatarUrl || undefined" :alt="title" size="sm" icon="i-lucide-briefcase" />
+
+      <div class="fx-preview__main">
+        <div class="fx-preview__top">
+          <div class="fx-preview__title">{{ title }}</div>
+
+          <div v-if="showBadges && badges.length" class="fx-preview__badges">
+            <UBadge
+              v-for="badge in badges"
+              :key="badge"
+              variant="soft"
+              color="neutral"
+              size="xs"
+            >
+              {{ badge }}
+            </UBadge>
+          </div>
+        </div>
+
+        <div v-if="subtitle" class="fx-preview__subtitle">
+          {{ subtitle }}
+        </div>
+
+        <div v-if="showBody" class="fx-preview__body">
+          <div class="fx-preview__line">
+            <span v-if="prop">{{ prop }}</span>
+            <span v-else class="italic">missing</span>
+          </div>
+        </div>
       </div>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { toRef } from 'vue'
-import type { JobCard } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
+type Props = {
+  avatarUrl: string
+  title: string
+  subtitle: string
+  badges: string[]
+  prop?: string
+  showBadges?: boolean
+  showBody?: boolean
+}
 
-const props = defineProps<{ card: JobCard.Card; prop?: string }>()
-
-const card = toRef(props, 'card')
-const prop = toRef(props, 'prop')
+withDefaults(defineProps<Props>(), {
+  showBadges: true,
+  showBody: true,
+})
 </script>

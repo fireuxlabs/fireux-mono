@@ -1,19 +1,16 @@
 <template>
-  <NuxtLink
-    :to="to"
-    class="block rounded-lg border border-[var(--ui-border)] px-3 py-2 transition-colors hover:bg-[var(--ui-bg-muted)]"
-  >
-    <div class="flex items-start gap-3">
+  <NuxtLink :to="to" class="fx-cell">
+    <div class="fx-cell__media">
       <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
-      <div class="min-w-0 flex-1">
-        <div class="flex items-start justify-between gap-3">
+      <div class="fx-cell__content fx-cell__stack">
+        <div class="fx-cell__header">
           <div class="min-w-0">
-            <div class="truncate font-medium">{{ displayName }}</div>
-            <div v-if="tagline" class="truncate text-sm text-dimmed">{{ tagline }}</div>
+            <div class="fx-cell__title">{{ displayName }}</div>
+            <div v-if="tagline" class="fx-cell__subtitle">{{ tagline }}</div>
           </div>
 
-          <div v-if="badges.length" class="flex flex-wrap justify-end gap-1">
+          <div v-if="badges.length" class="fx-cell__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -26,7 +23,7 @@
           </div>
         </div>
 
-        <div class="mt-1 text-sm text-dimmed">
+        <div class="fx-cell__tagline">
           <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
           <span v-else class="italic">missing</span>
         </div>

@@ -1,125 +1,78 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Preview.vue -->
 <template>
-  <UCard class="fx-card">
-    <template #header>
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex items-start gap-3 min-w-0">
-          <UAvatar :src="avatarUrl" :alt="displayName" size="md" />
+  <UCard class="fx-preview">
+    <div class="fx-preview__row">
+      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
-          <div class="min-w-0">
-            <div class="truncate text-lg font-semibold leading-6">{{ displayName }}</div>
+      <div class="fx-preview__main">
+        <div class="fx-preview__top">
+          <div class="fx-preview__title">{{ displayName }}</div>
+
+          <div v-if="showBadges && badges.length" class="fx-preview__badges">
+            <UBadge
+              v-for="badge in badges"
+              :key="badge"
+              variant="soft"
+              color="neutral"
+              size="xs"
+            >
+              {{ badge }}
+            </UBadge>
           </div>
         </div>
 
-        <div v-if="showWordmark" class="shrink-0">
-          <AppBrandWordmark
-            size="small"
-            :light-src="wordmarkLight"
-            :dark-src="wordmarkDark"
-          />
-        </div>
-      </div>
-    </template>
-
-    <div class="space-y-3">
-      <div v-if="showSubtitle && ecosystem" class="text-sm text-dimmed truncate">
-        {{ ecosystem }}
-      </div>
-
-      <div v-if="showBadges && badges.length" class="flex flex-wrap gap-2">
-        <UBadge
-          v-for="badge in badges"
-          :key="badge"
-          variant="soft"
-          color="neutral"
-          size="xs"
-        >
-          {{ badge }}
-        </UBadge>
-      </div>
-
-      <div v-if="showTagline && tagline" class="text-sm text-dimmed line-clamp-2">
-        {{ tagline }}
-      </div>
-
-      <div v-if="showMeta" class="flex flex-wrap items-center gap-2">
-        <div v-if="shortName" class="text-xs text-dimmed">
-          <span class="font-mono">@{{ shortName }}</span>
+        <div v-if="showSubtitle && ecosystem" class="fx-preview__subtitle">
+          {{ ecosystem }}
         </div>
 
-        <div v-if="id" class="text-xs text-dimmed">
-          <span class="font-mono break-all">{{ id }}</span>
+        <div v-if="showBody" class="fx-preview__body">
+          <div class="fx-preview__line">
+            <span v-if="tagline">{{ tagline }}</span>
+            <span v-else class="italic">missing</span>
+          </div>
+
+          <div class="fx-preview__meta">
+            <span v-if="shortName" class="font-mono text-xs text-dimmed">@{{ shortName }}</span>
+            <span v-if="id" class="font-mono text-xs text-dimmed break-all">{{ id }}</span>
+
+            <UBadge
+              v-if="typeof userCount === 'number'"
+              variant="soft"
+              color="neutral"
+              size="xs"
+              class="inline-flex items-center gap-1"
+            >
+              <UIcon name="i-lucide-users" class="size-3 shrink-0" />
+              <span>{{ userCount }}</span>
+            </UBadge>
+          </div>
         </div>
-
-        <UBadge
-          v-if="userCount !== null"
-          variant="soft"
-          color="neutral"
-          size="xs"
-          class="inline-flex items-center gap-1"
-        >
-          <UIcon name="i-lucide-users" class="size-3 shrink-0" />
-          <span class="truncate">{{ userCount }}</span>
-        </UBadge>
-      </div>
-
-      <div v-if="showSocials && socialItems.length" class="flex flex-wrap items-center gap-2">
-        <a
-          v-for="item in socialItems"
-          :key="item.platform"
-          :href="item.url"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center"
-          :title="item.platform"
-          :aria-label="item.platform"
-        >
-          <Icon :name="item.icon" mode="svg" class="size-5" />
-        </a>
       </div>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed } from '#imports'
-import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import { useSocialLinks } from '../../../../composables/fireux/app/ui/useSocialLinks'
+type Props = {
+  id: string
+  shortName: string
 
-const props = withDefaults(
-  defineProps<
-    Pick<
-      AppCard.Card,
-      | 'id'
-      | 'shortName'
-      | 'avatarUrl'
-      | 'displayName'
-      | 'ecosystem'
-      | 'badges'
-      | 'tagline'
-      | 'userCount'
-      | 'wordmarkLight'
-      | 'wordmarkDark'
-      | 'socialLinks'
-    > & {
-      showSubtitle?: boolean
-      showBadges?: boolean
-      showTagline?: boolean
-      showMeta?: boolean
-      showWordmark?: boolean
-      showSocials?: boolean
-    }
-  >(),
-  {
-    showSubtitle: true,
-    showBadges: true,
-    showTagline: true,
-    showMeta: true,
-    showWordmark: true,
-    showSocials: true,
-  }
-)
+  avatarUrl: string
+  displayName: string
 
-const { toItems } = useSocialLinks()
-const socialItems = computed(() => toItems(props.socialLinks))
+  ecosystem: string
+  tagline: string
+  userCount: number
+  badges: string[]
+
+  showSubtitle?: boolean
+  showBadges?: boolean
+  showBody?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  badges: () => [],
+  showSubtitle: true,
+  showBadges: true,
+  showBody: true,
+})
 </script>

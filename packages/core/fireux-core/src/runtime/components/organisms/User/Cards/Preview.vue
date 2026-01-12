@@ -1,18 +1,13 @@
 <template>
-  <UCard class="space-y-4">
-    <div class="flex items-start gap-3">
-      <UAvatar :src="avatarUrl" :alt="displayName" size="sm" />
+  <UCard class="fx-preview">
+    <div class="fx-preview__row">
+      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="truncate font-medium">{{ displayName }}</div>
-            <div v-if="showSubtitle && handle" class="truncate text-sm text-dimmed">
-              {{ handle }}
-            </div>
-          </div>
+      <div class="fx-preview__main">
+        <div class="fx-preview__top">
+          <div class="fx-preview__title">{{ displayName }}</div>
 
-          <div v-if="showBadges && badges.length" class="flex flex-wrap justify-end gap-1">
+          <div v-if="showBadges && badges.length" class="fx-preview__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -25,14 +20,20 @@
           </div>
         </div>
 
-        <div class="space-y-1">
-          <div v-if="showTagline" class="text-sm">
+        <div v-if="showSubtitle && handle" class="fx-preview__subtitle">
+          {{ handle }}
+        </div>
+
+        <div v-if="showBody" class="fx-preview__body">
+          <div class="fx-preview__line">
             <span v-if="prop || bio">{{ prop || bio }}</span>
-            <span v-else class="text-dimmed italic">missing</span>
+            <span v-else class="italic">missing</span>
           </div>
-          <div v-if="showMeta" class="text-sm text-dimmed">
+
+          <div class="fx-preview__line text-dimmed">
             <span v-if="profiles.length">{{ profiles.join(', ') }}</span>
             <span v-else class="italic">missing</span>
+            <span v-if="appsLabel"> · {{ appsLabel }}</span>
           </div>
         </div>
       </div>
@@ -41,23 +42,25 @@
 </template>
 
 <script setup lang="ts">
-import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+type Props = {
+  avatarUrl: string
+  displayName: string
+  handle: string
+  badges: string[]
+  bio: string
+  profiles: string[]
 
-withDefaults(
-  defineProps<
-    Pick<UserCard.Card, 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'bio' | 'profiles'> & {
-      prop?: string
-      showSubtitle?: boolean
-      showBadges?: boolean
-      showTagline?: boolean
-      showMeta?: boolean
-    }
-  >(),
-  {
-    showSubtitle: true,
-    showBadges: true,
-    showTagline: true,
-    showMeta: true,
-  }
-)
+  appsLabel: string
+
+  prop?: string
+  showSubtitle?: boolean
+  showBadges?: boolean
+  showBody?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  showSubtitle: true,
+  showBadges: true,
+  showBody: true,
+})
 </script>

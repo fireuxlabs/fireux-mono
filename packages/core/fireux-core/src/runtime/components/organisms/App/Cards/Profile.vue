@@ -1,188 +1,186 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Profile.vue -->
 <template>
-  <UCard class="fx-card">
+  <UCard class="fx-profile">
     <template #header>
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex items-start gap-3 min-w-0">
+      <div class="fx-profile__header">
+        <div class="fx-profile__identity">
           <UAvatar :src="avatarUrl" :alt="displayName" size="md" />
-
-          <div class="min-w-0">
-            <div class="truncate text-lg font-semibold leading-6">{{ displayName }}</div>
+          <div class="fx-profile__titles">
+            <div class="fx-profile__title">{{ displayName }}</div>
+            <div v-if="showSubtitle" class="fx-profile__subtitle">
+              <span v-if="ecosystem">{{ ecosystem }}</span>
+              <span v-else class="italic">missing</span>
+            </div>
           </div>
         </div>
 
-        <div v-if="showWordmark" class="shrink-0">
-          <AppBrandWordmark
-            size="small"
-            :light-src="wordmarkLight"
-            :dark-src="wordmarkDark"
-          />
+        <div class="fx-profile__badges">
+          <div v-if="showWordmark" class="fx-profile__wordmark">
+            <AppBrandWordmark
+              size="small"
+              :light-src="wordmarkLight"
+              :dark-src="wordmarkDark"
+            />
+          </div>
+
+          <template v-if="showMeta">
+            <UBadge v-if="role" variant="subtle" color="neutral" size="xs">
+              {{ role }}
+            </UBadge>
+            <UBadge v-if="shortName" variant="subtle" color="neutral" size="xs">
+              @{{ shortName }}
+            </UBadge>
+            <UBadge
+              v-if="typeof userCount === 'number'"
+              variant="subtle"
+              color="neutral"
+              size="xs"
+            >
+              {{ userCount }} users
+            </UBadge>
+
+            <UBadge
+              v-for="badge in badges"
+              :key="badge"
+              variant="subtle"
+              color="neutral"
+              size="xs"
+            >
+              {{ badge }}
+            </UBadge>
+
+            <span v-if="id" class="fx-profile__mono">{{ id }}</span>
+          </template>
         </div>
       </div>
     </template>
+    <div class="fx-profile__body">
+      <section v-if="showTagline && tagline" class="fx-profile__section">
+        <div class="fx-profile__label">Tagline</div>
+        <div class="fx-profile__value">{{ tagline }}</div>
+      </section>
 
-    <div class="space-y-5">
-      <div class="space-y-2">
-        <div v-if="showSubtitle" class="text-sm text-dimmed">
-          <span v-if="ecosystem">{{ ecosystem }}</span>
+      <section v-if="showDescription" class="fx-profile__section">
+        <div class="fx-profile__label">Description</div>
+        <div class="fx-profile__value">
+          <span v-if="app?.description">{{ app.description }}</span>
           <span v-else class="italic">missing</span>
         </div>
+      </section>
 
-        <div v-if="showTagline && tagline" class="text-sm text-dimmed line-clamp-2">
-          {{ tagline }}
-        </div>
-
-        <div v-if="showMeta" class="flex flex-wrap items-center gap-2">
-          <UBadge v-if="role" variant="subtle" color="neutral" size="xs">
-            {{ role }}
-          </UBadge>
-          <UBadge v-if="shortName" variant="subtle" color="neutral" size="xs">
-            @{{ shortName }}
-          </UBadge>
-          <UBadge
-            v-if="typeof userCount === 'number'"
-            variant="subtle"
-            color="neutral"
-            size="xs"
-          >
-            {{ userCount }} users
-          </UBadge>
-
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="subtle"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
-
-          <span v-if="id" class="text-xs text-dimmed font-mono break-all">
-            {{ id }}
-          </span>
-        </div>
-      </div>
-
-      <div v-if="showDescription" class="space-y-1">
-        <div class="text-xs text-dimmed">Description</div>
-        <div class="text-sm">
-          <span v-if="app?.description">{{ app.description }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
-        </div>
-      </div>
-
-      <div v-if="showDetails" class="rounded p-4 space-y-3">
-        <div class="flex items-center justify-between gap-3">
-          <div class="text-xs text-dimmed">App ID</div>
-          <div class="text-sm font-mono break-all">
-            <span v-if="app?.id">{{ app.id }}</span>
-            <span v-else class="text-dimmed">missing</span>
+      <section v-if="showDetails" class="fx-profile__section">
+        <div class="fx-profile__label">Details</div>
+        <div class="fx-profile__value">
+          <div class="fx-profile__kv">
+            <div class="fx-profile__k">App ID</div>
+            <div class="fx-profile__v">
+              <span v-if="app?.id" class="fx-profile__mono">{{ app.id }}</span>
+              <span v-else class="opacity-70">missing</span>
+            </div>
           </div>
-        </div>
 
-        <div class="flex items-center justify-between gap-3">
-          <div class="text-xs text-dimmed">Role</div>
-          <div class="text-sm">
-            <span v-if="app?.role">{{ app.role }}</span>
-            <span v-else class="text-dimmed">missing</span>
+          <div class="fx-profile__kv">
+            <div class="fx-profile__k">Role</div>
+            <div class="fx-profile__v">
+              <span v-if="app?.role">{{ app.role }}</span>
+              <span v-else class="opacity-70">missing</span>
+            </div>
           </div>
-        </div>
 
-        <div class="flex items-center justify-between gap-3">
-          <div class="text-xs text-dimmed">Ecosystem</div>
-          <div class="text-sm">
-            <span v-if="app?.ecosystem">{{ app.ecosystem }}</span>
-            <span v-else class="text-dimmed">missing</span>
+          <div class="fx-profile__kv">
+            <div class="fx-profile__k">Ecosystem</div>
+            <div class="fx-profile__v">
+              <span v-if="app?.ecosystem">{{ app.ecosystem }}</span>
+              <span v-else class="opacity-70">missing</span>
+            </div>
           </div>
-        </div>
 
-        <div class="flex items-center justify-between gap-3">
-          <div class="text-xs text-dimmed">Creator</div>
-          <div class="text-sm text-right">
-            <OrganismsUserCardsPill
-              v-if="creatorCard"
-              v-bind="creatorCard"
-              :show-subtitle="false"
-            />
-            <span v-else-if="app?.creator_id" class="font-mono break-all">
-              {{ app.creator_id }}
-            </span>
-            <span v-else class="text-dimmed">missing</span>
+          <div class="fx-profile__kv">
+            <div class="fx-profile__k">Creator</div>
+            <div class="fx-profile__v">
+              <OrganismsUserCardsPill
+                v-if="creatorCard"
+                v-bind="creatorCard"
+                :show-subtitle="false"
+              />
+              <span v-else-if="app?.creator_id" class="fx-profile__mono">
+                {{ app.creator_id }}
+              </span>
+              <span v-else class="opacity-70">missing</span>
+            </div>
           </div>
-        </div>
 
-        <div class="flex items-center justify-between gap-3">
-          <div class="text-xs text-dimmed">Admins</div>
-          <div class="text-sm">
-            <div v-if="adminAvatarItems.length" class="flex items-center justify-end gap-2">
-              <UAvatarGroup :max="3" size="xs">
-                <UTooltip
-                  v-for="item in adminAvatarItems"
-                  :key="item.id"
-                  :text="item.tooltip"
+          <div class="fx-profile__kv">
+            <div class="fx-profile__k">Admins</div>
+            <div class="fx-profile__v">
+              <div v-if="adminAvatarItems.length" class="fx-profile__adminPreview">
+                <UAvatarGroup :max="3" size="xs">
+                  <UTooltip
+                    v-for="item in adminAvatarItems"
+                    :key="item.id"
+                    :text="item.tooltip"
+                  >
+                    <ULink :to="item.to" raw class="hover:ring-primary transition rounded-full">
+                      <UAvatar
+                        :src="item.avatarUrl || undefined"
+                        :alt="item.alt"
+                      />
+                    </ULink>
+                  </UTooltip>
+                </UAvatarGroup>
+
+                <NuxtLink
+                  v-if="app?.admin_ids?.length"
+                  :to="adminUsersLink"
+                  class="text-primary hover:underline"
                 >
-                  <ULink :to="item.to" raw class="hover:ring-primary transition rounded-full">
-                    <UAvatar
-                      :src="item.avatarUrl || undefined"
-                      :alt="item.alt"
-                    />
-                  </ULink>
-                </UTooltip>
-              </UAvatarGroup>
+                  {{ app.admin_ids.length }}
+                </NuxtLink>
+              </div>
 
               <NuxtLink
-                v-if="app?.admin_ids?.length"
+                v-else-if="app?.admin_ids?.length"
                 :to="adminUsersLink"
                 class="text-primary hover:underline"
               >
                 {{ app.admin_ids.length }}
               </NuxtLink>
+
+              <span v-else class="opacity-70">0</span>
             </div>
+          </div>
 
-            <NuxtLink
-              v-else-if="app?.admin_ids?.length"
-              :to="adminUsersLink"
-              class="text-primary hover:underline"
-            >
-              {{ app.admin_ids.length }}
-            </NuxtLink>
+          <div class="fx-profile__kv">
+            <div class="fx-profile__k">Created</div>
+            <div class="fx-profile__v">
+              <span v-if="createdAtText">{{ createdAtText }}</span>
+              <span v-else class="opacity-70">missing</span>
+            </div>
+          </div>
 
-            <span v-else class="text-dimmed">0</span>
+          <div v-if="showSocials" class="fx-profile__kv">
+            <div class="fx-profile__k">Socials</div>
+            <div class="fx-profile__v">
+              <div class="fx-profile__socials">
+                <a
+                  v-for="item in socialItems"
+                  :key="item.platform"
+                  :href="item.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center"
+                  :title="item.platform"
+                  :aria-label="item.platform"
+                >
+                  <Icon :name="item.icon" mode="svg" class="size-5" />
+                </a>
+
+                <span v-if="!socialItems.length" class="italic opacity-70">missing</span>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div class="flex items-center justify-between gap-3">
-          <div class="text-xs text-dimmed">Created</div>
-          <div class="text-sm inline-flex items-center justify-end gap-2">
-            <UIcon name="i-lucide-calendar" class="size-4 text-dimmed shrink-0" />
-            <span v-if="createdAtText">{{ createdAtText }}</span>
-            <span v-else class="text-dimmed">missing</span>
-          </div>
-        </div>
-
-        <div v-if="showSocials" class="flex items-center justify-between gap-3">
-          <div class="text-xs text-dimmed">Socials</div>
-          <div class="flex flex-wrap justify-end gap-2">
-            <a
-              v-for="item in socialItems"
-              :key="item.platform"
-              :href="item.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center"
-              :title="item.platform"
-              :aria-label="item.platform"
-            >
-              <Icon :name="item.icon" mode="svg" class="size-5" />
-            </a>
-
-            <span v-if="!socialItems.length" class="text-sm text-dimmed italic">
-              missing
-            </span>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   </UCard>
 </template>
@@ -192,51 +190,47 @@ import { computed, ref, watch } from '#imports'
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import type { App } from '../../../../models/core/app.model'
-import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { useSocialLinks } from '../../../../composables/fireux/app/ui/useSocialLinks'
+import { useSocialLinks, type SocialLinks } from '../../../../composables/fireux/app/ui/useSocialLinks'
 import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
 import type { User } from '../../../../models/core/user.model'
 
-const props = withDefaults(
-  defineProps<
-    { app?: App | null } &
-      Pick<
-        AppCard.Card,
-        | 'id'
-        | 'shortName'
-        | 'role'
-        | 'userCount'
-        | 'tagline'
-        | 'wordmarkLight'
-        | 'wordmarkDark'
-        | 'avatarUrl'
-        | 'displayName'
-        | 'ecosystem'
-        | 'badges'
-        | 'socialLinks'
-      > & {
-        showSubtitle?: boolean
-        showTagline?: boolean
-        showMeta?: boolean
-        showWordmark?: boolean
-        showDescription?: boolean
-        showDetails?: boolean
-        showSocials?: boolean
-      }
-  >(),
-  {
-    showSubtitle: true,
-    showTagline: true,
-    showMeta: true,
-    showWordmark: true,
-    showDescription: true,
-    showDetails: true,
-    showSocials: true,
-  }
-)
+type Props = {
+  app?: App | null
+
+  id?: string
+  shortName?: string
+  role?: string
+  userCount?: number | null
+  tagline?: string
+  wordmarkLight?: string
+  wordmarkDark?: string
+  avatarUrl?: string
+  displayName?: string
+  ecosystem?: string
+  badges?: string[]
+  socialLinks?: SocialLinks | null
+
+  showSubtitle?: boolean
+  showTagline?: boolean
+  showMeta?: boolean
+  showWordmark?: boolean
+  showDescription?: boolean
+  showDetails?: boolean
+  showSocials?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showSubtitle: true,
+  showTagline: true,
+  showMeta: true,
+  showWordmark: true,
+  showDescription: true,
+  showDetails: true,
+  showSocials: true,
+})
 
 const { toItems } = useSocialLinks()
 const socialItems = computed(() => toItems(props.socialLinks))

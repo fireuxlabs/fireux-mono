@@ -1,15 +1,15 @@
 <template>
-  <NuxtLink :to="to" class="fx-card fx-card--cell">
-    <div class="fx-card__media">
+  <NuxtLink :to="to" class="fx-cell">
+    <div class="fx-cell__media">
       <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
-      <div class="fx-card__content fx-card__stack">
-        <div class="fx-card__header">
+      <div class="fx-cell__content fx-cell__stack">
+        <div class="fx-cell__header">
           <div class="min-w-0">
-            <div class="fx-card__title">{{ displayName }}</div>
+            <div class="fx-cell__title">{{ displayName }}</div>
           </div>
 
-          <div v-if="badges.length" class="fx-card__badges">
+          <div v-if="badges.length" class="fx-cell__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -22,11 +22,11 @@
           </div>
         </div>
 
-        <div v-if="showSubtitle && tagline" class="fx-card__subtitle">
+        <div v-if="showSubtitle && tagline" class="fx-cell__subtitle">
           {{ tagline }}
         </div>
 
-        <div class="fx-card__tagline">
+        <div class="fx-cell__tagline">
           <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
           <span v-else class="italic">missing</span>
         </div>
@@ -38,16 +38,19 @@
 <script setup lang="ts">
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
+type Props = {
+  to: AgentCard.Card['to']
+  avatarUrl: AgentCard.Card['avatarUrl']
+  displayName: AgentCard.Card['displayName']
+  tagline: AgentCard.Card['tagline']
+  badges: AgentCard.Card['badges']
+  bioShort: AgentCard.Card['bioShort']
+  prop?: string
+  showSubtitle?: boolean
+}
+
 withDefaults(
-  defineProps<
-    Pick<
-      AgentCard.Card,
-      'to' | 'avatarUrl' | 'displayName' | 'tagline' | 'badges' | 'bioShort'
-    > & {
-      prop?: string
-      showSubtitle?: boolean
-    }
-  >(),
+  defineProps<Props>(),
   {
     showSubtitle: true,
   }

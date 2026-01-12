@@ -1,23 +1,23 @@
 <template>
-  <div class="fx-card fx-card--cell">
-    <div class="fx-card__media">
+  <div class="fx-cell">
+    <div class="fx-cell__media">
       <UAvatar
         :src="imageUrl || undefined"
         :alt="title"
         size="sm"
         icon="i-lucide-map-pin"
       />
-      <div class="fx-card__content fx-card__stack">
-        <div class="fx-card__title flex items-center justify-between gap-2">
+      <div class="fx-cell__content fx-cell__stack">
+        <div class="fx-cell__title flex items-center justify-between gap-2">
           <span class="truncate">{{ title }}</span>
           <UBadge v-if="sourceLabel" variant="soft" color="neutral" size="xs">
             {{ sourceLabel }}
           </UBadge>
         </div>
-        <div v-if="subtitle" class="fx-card__subtitle">
+        <div v-if="subtitle" class="fx-cell__subtitle">
           {{ subtitle }}
         </div>
-        <div v-if="prop" class="fx-card__tagline">{{ prop }}</div>
+        <div v-if="prop" class="fx-cell__tagline">{{ prop }}</div>
       </div>
     </div>
   </div>
@@ -29,9 +29,16 @@ import type { PlaceCard } from '../../../../../composables/fireux/firestore/obje
 
 defineOptions({ inheritAttrs: false })
 
-const props = defineProps<
-  Pick<PlaceCard.Cell, 'id' | 'name' | 'formatted_address' | 'imageUrl' | 'source'> & { prop?: string }
->()
+type Props = {
+  id: PlaceCard.Cell['id']
+  name: PlaceCard.Cell['name']
+  formatted_address: PlaceCard.Cell['formatted_address']
+  imageUrl: PlaceCard.Cell['imageUrl']
+  source: PlaceCard.Cell['source']
+  prop?: string
+}
+
+const props = defineProps<Props>()
 
 const title = computed(() => props.name)
 const subtitle = computed(() => props.formatted_address)

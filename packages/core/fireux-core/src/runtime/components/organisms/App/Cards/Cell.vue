@@ -1,16 +1,15 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Cell.vue -->
 <template>
-  <NuxtLink :to="to" class="fx-card fx-card--cell">
-    <div class="fx-card__media">
+  <NuxtLink :to="to" class="fx-cell">
+    <div class="fx-cell__media">
       <UAvatar :src="avatarUrl" :alt="displayName" size="sm" />
 
-      <div class="fx-card__content fx-card__stack">
-        <div class="fx-card__header">
+      <div class="fx-cell__content fx-cell__stack">
+        <div class="fx-cell__header">
           <div class="min-w-0">
-            <div class="fx-card__title">{{ displayName }}</div>
+            <div class="fx-cell__title">{{ displayName }}</div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="fx-card__badges">
+          <div v-if="showBadges && badges.length" class="fx-cell__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -23,11 +22,11 @@
           </div>
         </div>
 
-        <div v-if="showTagline && tagline" class="fx-card__tagline">
+        <div v-if="showTagline && tagline" class="fx-cell__tagline">
           {{ tagline }}
         </div>
 
-        <div v-if="showMeta" class="fx-card__meta">
+        <div v-if="showMeta" class="fx-cell__meta">
           <UBadge
             v-if="userCount !== null"
             variant="soft"
@@ -45,20 +44,23 @@
 </template>
 
 <script setup lang="ts">
-import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+type Props = {
+  to: string
+  avatarUrl: string
+  displayName: string
+  badges?: string[]
+  tagline?: string
+  userCount?: number | null
+  showBadges?: boolean
+  showTagline?: boolean
+  showMeta?: boolean
+}
 
-withDefaults(
-  defineProps<
-    Pick<AppCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'badges' | 'tagline' | 'userCount'> & {
-      showBadges?: boolean
-      showTagline?: boolean
-      showMeta?: boolean
-    }
-  >(),
-  {
-    showBadges: true,
-    showTagline: true,
-    showMeta: true,
-  }
-)
+withDefaults(defineProps<Props>(), {
+  badges: () => [],
+  userCount: null,
+  showBadges: true,
+  showTagline: true,
+  showMeta: true,
+})
 </script>

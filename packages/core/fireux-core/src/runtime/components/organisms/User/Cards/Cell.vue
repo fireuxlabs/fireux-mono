@@ -1,18 +1,18 @@
 <template>
-  <NuxtLink :to="to" class="fx-card fx-card--cell">
-    <div class="fx-card__media">
+  <NuxtLink :to="to" class="fx-cell">
+    <div class="fx-cell__media">
       <UAvatar :src="avatarUrl" :alt="displayName" size="sm" />
 
-      <div class="fx-card__content fx-card__stack">
-        <div class="fx-card__header">
+      <div class="fx-cell__content fx-cell__stack">
+        <div class="fx-cell__header">
           <div class="min-w-0">
-            <div class="fx-card__title">{{ displayName }}</div>
-            <div v-if="showSubtitle && handle" class="fx-card__subtitle">
+            <div class="fx-cell__title">{{ displayName }}</div>
+            <div v-if="showSubtitle && handle" class="fx-cell__subtitle">
               {{ handle }}
             </div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="fx-card__badges">
+          <div v-if="showBadges && badges.length" class="fx-cell__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -25,11 +25,11 @@
           </div>
         </div>
 
-        <div v-if="showTagline" class="fx-card__tagline">
+        <div v-if="showTagline" class="fx-cell__tagline">
           <span v-if="prop">{{ prop }}</span>
-          <span v-else-if="profiles.length && apps">{{ profiles.join(', ') }} · {{ apps }}</span>
+          <span v-else-if="profiles.length && appsLabel">{{ profiles.join(', ') }} · {{ appsLabel }}</span>
           <span v-else-if="profiles.length">{{ profiles.join(', ') }}</span>
-          <span v-else-if="apps">{{ apps }}</span>
+          <span v-else-if="appsLabel">{{ appsLabel }}</span>
         </div>
       </div>
     </div>
@@ -37,20 +37,23 @@
 </template>
 
 <script setup lang="ts">
-import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+type Props = {
+  to: string
+  avatarUrl: string
+  displayName: string
+  handle: string
+  badges: string[]
+  profiles: string[]
+  appsLabel: string
+
+  prop?: string
+  showSubtitle?: boolean
+  showBadges?: boolean
+  showTagline?: boolean
+}
 
 withDefaults(
-  defineProps<
-    Pick<
-      UserCard.Card,
-      'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles' | 'apps'
-    > & {
-      prop?: string
-      showSubtitle?: boolean
-      showBadges?: boolean
-      showTagline?: boolean
-    }
-  >(),
+  defineProps<Props>(),
   {
     showSubtitle: true,
     showBadges: true,

@@ -1,14 +1,15 @@
 <template>
-  <UCard>
-    <div class="flex items-start gap-3">
+  <div class="fx-cell">
+    <div class="fx-cell__media">
       <UAvatar :src="vmAvatar || undefined" :alt="vmTitle" size="sm" />
-      <div class="min-w-0 flex-1">
-        <div class="truncate font-medium">{{ vmTitle }}</div>
-        <div v-if="vmSubtitle" class="truncate text-sm text-dimmed">{{ vmSubtitle }}</div>
-        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
+
+      <div class="fx-cell__content fx-cell__stack">
+        <div class="fx-cell__title">{{ vmTitle }}</div>
+        <div v-if="vmSubtitle" class="fx-cell__subtitle">{{ vmSubtitle }}</div>
+        <div v-if="prop" class="fx-cell__tagline">{{ prop }}</div>
       </div>
     </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">

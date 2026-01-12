@@ -1,29 +1,56 @@
 <template>
-  <UCard>
-    <div class="flex items-start gap-3">
-      <UAvatar :src="imageUrl || undefined" :alt="title" size="sm" />
-      <div class="min-w-0 flex-1">
-        <div class="truncate font-medium">{{ title }}</div>
-        <div v-if="subtitle" class="truncate text-sm text-dimmed">
-          {{ subtitle }}
+  <UCard class="fx-preview">
+    <div class="fx-preview__row">
+      <UAvatar
+        :src="imageUrl || undefined"
+        :alt="name"
+        size="sm"
+        icon="i-lucide-map-pin"
+      />
+
+      <div class="fx-preview__main">
+        <div class="fx-preview__top">
+          <div class="fx-preview__title">{{ name }}</div>
+
+          <div v-if="showBadges && sourceLabel" class="fx-preview__badges">
+            <UBadge variant="soft" color="neutral" size="xs">{{ sourceLabel }}</UBadge>
+          </div>
         </div>
-        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
+
+        <div v-if="formattedAddress" class="fx-preview__subtitle">
+          {{ formattedAddress }}
+        </div>
+
+        <div v-if="showBody" class="fx-preview__body">
+          <div class="fx-preview__line">
+            <span v-if="prop">{{ prop }}</span>
+            <span v-else class="italic">missing</span>
+          </div>
+        </div>
       </div>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import { computed } from 'vue'
 
-const { card, imageUrl: imageUrlProp, prop } = defineProps<{
-  card: PlaceCard.Cell
-  imageUrl?: string
+type Props = {
+  imageUrl: string
+  name: string
+  formattedAddress: string
+  source: 'google' | 'firebase'
   prop?: string
-}>()
+  showBadges?: boolean
+  showBody?: boolean
+}
 
-const { name, formatted_address, imageUrl: cardImageUrl } = card
-const title = name
-const subtitle = formatted_address
-const imageUrl = imageUrlProp ?? cardImageUrl
+const props = withDefaults(defineProps<Props>(), {
+  showBadges: true,
+  showBody: true,
+})
+
+const sourceLabel = computed(() =>
+  props.source === 'firebase' ? 'Firebase' : props.source === 'google' ? 'Google' : ''
+)
 </script>
