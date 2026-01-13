@@ -72,6 +72,28 @@ const porcelain = capture('git', ['status', '--porcelain'])
 const dirtyPaths = parsePorcelain(porcelain)
 
 if (dirtyPaths.length === 0) {
+  // If there are no local changes, we may still be ahead of upstream.
+  // In that case, run gitsave so it can push.
+  let aheadCount = 0
+  try {
+    const hasUpstream = spawnSync('git', ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'], {
+      stdio: 'ignore',
+    }).status === 0
+
+    if (hasUpstream) {
+      const aheadRaw = capture('git', ['rev-list', '--count', '@{u}..HEAD']).trim()
+      aheadCount = Number.parseInt(aheadRaw, 10) || 0
+    }
+  } catch {
+    aheadCount = 0
+  }
+
+  if (aheadCount > 0) {
+    console.log(`[go] Working tree clean, but branch is ahead by ${aheadCount}; pushing via gitsave`)
+    run('bash', ['scripts/gitsave.sh', ...argv])
+    process.exit(0)
+  }
+
   console.log('[go] Working tree clean; nothing to save')
   process.exit(0)
 }
