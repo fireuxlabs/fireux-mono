@@ -66,7 +66,19 @@ fi
 git add -A
 
 if git diff --cached --quiet; then
-  echo "No changes to commit." >&2
+  # If nothing new to commit, still push if we're ahead of upstream.
+  if git rev-parse --abbrev-ref --symbolic-full-name "@{u}" >/dev/null 2>&1; then
+    ahead_count=$(git rev-list --count "@{u}..HEAD" 2>/dev/null || echo "0")
+    if [[ "${ahead_count}" != "0" ]]; then
+      echo "No changes to commit, but branch is ahead by ${ahead_count}; pushing..." >&2
+      git push origin "$current_branch"
+      echo "Saved: pushed $current_branch to origin." >&2
+    else
+      echo "No changes to commit." >&2
+    fi
+  else
+    echo "No changes to commit (no upstream configured)." >&2
+  fi
   exit 0
 fi
 
