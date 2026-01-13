@@ -30,6 +30,38 @@ export interface User {
   updated_at: FirebaseTimestamp
 }
 
+// Canonical shape keys for runtime validation.
+// NOTE: This is intentionally co-located with the model to prevent drift.
+export const USER_MODEL_KEYS = [
+  'id',
+  'display_name',
+  'avatar',
+  'handle',
+  'email',
+  'bio',
+  'profiles',
+  'userOf',
+  'adminOf',
+  'notifications',
+  'created_at',
+  'updated_at',
+] as const satisfies readonly (keyof User)[]
+
+export const USER_MODEL_REQUIRED_KEYS = [
+  'id',
+  'display_name',
+  'avatar',
+  'handle',
+  'email',
+  'bio',
+  'profiles',
+  'userOf',
+  'adminOf',
+  'notifications',
+  'created_at',
+  'updated_at',
+] as const satisfies readonly (keyof User)[]
+
 /**
  * App-specific user overlay
  * Path: /apps/<appId>/users/<userId>

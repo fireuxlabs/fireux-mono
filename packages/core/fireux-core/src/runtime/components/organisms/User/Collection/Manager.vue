@@ -45,6 +45,17 @@
       <p v-else class="fx-section__empty">
         {{ query ? 'No users match your search.' : 'No users found.' }}
       </p>
+
+      <DevCollectionShapePane
+        :enabled="devMode"
+        :summary="dev"
+        title="User health checks"
+        description="Flags missing required fields and unexpected legacy keys on /users documents."
+        json-title="Dev · User Collection Health"
+        :report="report"
+        :check="result"
+        :default-open="report.flagged > 0"
+      />
     </template>
 
     <p v-else class="fx-section__empty">Global directory hidden.</p>
@@ -54,12 +65,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useDevUsersCollectionShapeHealth } from '../../../../composables/dev/health/checks/useDevUsersCollectionShapeHealth'
 import { useGlobalUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
 import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import type { User } from '../../../../models/core/user.model'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-const { appId, appName, ecosystem, isTenant } = useFireUXConfig()
+const { appId, appName, ecosystem, isTenant, devMode } = useFireUXConfig()
 const showGlobalDirectory = ref(!isTenant)
 const { users, count: totalCount } = useGlobalUserCollection()
 const { card, searchText } = useUserInterface()
@@ -103,6 +115,8 @@ const visibleUsers = computed<User[]>(() => {
 })
 
 const visibleCount = computed(() => visibleUsers.value.length)
+
+const { dev, report, result } = useDevUsersCollectionShapeHealth()
 
 const directoryEntries = computed<DirectoryEntry[]>(() => {
   const list = visibleUsers.value ?? []

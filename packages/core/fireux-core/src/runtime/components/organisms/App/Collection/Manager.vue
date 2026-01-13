@@ -31,6 +31,17 @@
     <p v-else class="fx-section__empty">
       {{ query ? 'No apps match your search.' : 'No apps found.' }}
     </p>
+
+    <DevCollectionShapePane
+      :enabled="devMode"
+      :summary="dev"
+      title="App health checks"
+      description="Flags missing required fields and unexpected legacy keys on /apps documents."
+      json-title="Dev · App Collection Health"
+      :report="report"
+      :check="result"
+      :default-open="report.flagged > 0"
+    />
   </UCard>
 </template>
 
@@ -38,11 +49,14 @@
 import { computed, ref } from 'vue'
 import { useAppCollection } from '../../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useDevAppsCollectionShapeHealth } from '../../../../composables/dev/health/checks/useDevAppsCollectionShapeHealth'
 import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
 const { apps, count: totalCount } = useAppCollection()
 const { card, searchText } = useAppInterface()
+const { devMode } = useFireUXConfig()
 
 const query = ref('')
 
@@ -70,4 +84,6 @@ const cards = computed<AppCard.Card[]>(() =>
     .map((app) => card(app))
     .filter((payload): payload is AppCard.Card => Boolean(payload))
 )
+
+const { dev, report, result } = useDevAppsCollectionShapeHealth()
 </script>
