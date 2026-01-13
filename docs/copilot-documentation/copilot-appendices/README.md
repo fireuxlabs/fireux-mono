@@ -11,6 +11,7 @@ The appendices collect reference material that supports the main handbook chapte
 ## Planned Sections
 
 - Environment variable reference
+- [FireUX alignment](./fireux-alignment.md)
 - [Scripts & commands cheatsheet](./scripts-cheatsheet.md)
 - Troubleshooting playbooks
 - Layout and navigation taxonomy

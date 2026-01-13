@@ -16,6 +16,12 @@ function linkNameFromRelPath(relPath) {
   //   -> core-App-Edit-Admin.vue
   // - packages/extensions/fireux-jobs/.../organisms/profiles/Agent/Cards/Cell.vue
   //   -> jobs-profiles-Agent-Cards-Cell.vue
+  // - packages/core/fireux-core/src/runtime/components/dev/HealthPanel.vue
+  //   -> core-dev-HealthPanel.vue
+  // - packages/core/fireux-core/src/runtime/pages/dev/index.vue
+  //   -> core-dev-index.vue
+  // - packages/core/fireux-core/src/runtime/server/api/dev/images.get.ts
+  //   -> core-api-dev-images.get.ts
 
   const parts = relPath.split('/').filter(Boolean)
   const packagesIndex = parts.indexOf('packages')
@@ -37,8 +43,34 @@ function linkNameFromRelPath(relPath) {
     if (organismsIndex !== -1) {
       tail = parts.slice(organismsIndex + 1)
     } else {
-      // Fallback: take the last few segments.
-      tail = parts.slice(-6)
+      // Use stable anchors to keep names short and human-readable.
+      // Prefer the closest semantic segment under src/runtime.
+      const runtimeIndex = parts.indexOf('runtime')
+
+      const componentsIndex = parts.indexOf('components')
+      const layoutsIndex = parts.indexOf('layouts')
+      const pagesIndex = parts.indexOf('pages')
+      const composablesIndex = parts.indexOf('composables')
+      const apiIndex = parts.indexOf('api')
+
+      if (layoutsIndex !== -1 && componentsIndex !== -1) {
+        // Keep the "layouts" context to avoid collisions (e.g. layouts/dev/Nav.vue).
+        tail = parts.slice(layoutsIndex)
+      } else if (componentsIndex !== -1) {
+        tail = parts.slice(componentsIndex + 1)
+      } else if (pagesIndex !== -1) {
+        tail = parts.slice(pagesIndex + 1)
+      } else if (composablesIndex !== -1) {
+        tail = parts.slice(composablesIndex + 1)
+      } else if (apiIndex !== -1) {
+        tail = ['api', ...parts.slice(apiIndex + 1)]
+      } else if (runtimeIndex !== -1) {
+        // Fallback: everything after runtime.
+        tail = parts.slice(runtimeIndex + 1)
+      } else {
+        // Last resort fallback.
+        tail = parts.slice(-4)
+      }
     }
   }
 

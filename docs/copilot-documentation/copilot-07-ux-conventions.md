@@ -47,6 +47,12 @@ Notes:
 - Align actions inline with controls (edit/save/cancel buttons) to reduce vertical sprawl.
 - Surface errors via the component `error` prop instead of custom alerts.
 
+## Alignment
+
+Use the FireUX definition of alignment as the default review lens for UI/data changes:
+
+- [FireUX alignment (canon)](./copilot-appendices/fireux-alignment.md)
+
 ## Navigation & Layouts
 
 - Pages that should appear in the dev layout must set `layout: 'dev'` and include `nav` metadata with `key`, `label`, `group`, and `layouts: ['dev']`.
