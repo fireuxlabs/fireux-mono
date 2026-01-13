@@ -38,6 +38,8 @@ type PillProps = Pick<
 }
 
 withDefaults(defineProps<PillProps>(), {
+  badges: () => [],
+  profiles: () => [],
   showSubtitle: true,
   showBadges: true,
 })

@@ -34,16 +34,11 @@
             <span v-if="shortName" class="font-mono text-xs text-dimmed">@{{ shortName }}</span>
             <span v-if="id" class="font-mono text-xs text-dimmed break-all">{{ id }}</span>
 
-            <UBadge
+            <MoleculesMetricBadge
               v-if="typeof userCount === 'number'"
-              variant="soft"
-              color="neutral"
-              size="xs"
-              class="inline-flex items-center gap-1"
-            >
-              <UIcon name="i-lucide-users" class="size-3 shrink-0" />
-              <span>{{ userCount }}</span>
-            </UBadge>
+              icon="i-lucide-users"
+              :value="userCount"
+            />
           </div>
         </div>
       </div>

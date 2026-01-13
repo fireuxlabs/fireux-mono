@@ -30,14 +30,15 @@
             <UBadge v-if="shortName" variant="subtle" color="neutral" size="xs">
               @{{ shortName }}
             </UBadge>
-            <UBadge
+            <MoleculesMetricBadge
               v-if="typeof userCount === 'number'"
               variant="subtle"
               color="neutral"
               size="xs"
-            >
-              {{ userCount }} users
-            </UBadge>
+              icon="i-lucide-users"
+              :value="userCount"
+              label="users"
+            />
 
             <UBadge
               v-for="badge in badges"

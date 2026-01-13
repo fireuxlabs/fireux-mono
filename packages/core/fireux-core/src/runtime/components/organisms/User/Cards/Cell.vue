@@ -37,15 +37,12 @@
 </template>
 
 <script setup lang="ts">
-type Props = {
-  to: string
-  avatarUrl: string
-  displayName: string
-  handle: string
-  badges: string[]
-  profiles: string[]
-  appsLabel: string
+import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
+type Props = Pick<
+  UserCard.Card,
+  'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles' | 'appsLabel'
+> & {
   prop?: string
   showSubtitle?: boolean
   showBadges?: boolean
@@ -55,6 +52,13 @@ type Props = {
 withDefaults(
   defineProps<Props>(),
   {
+    avatarUrl: '',
+    displayName: '',
+    handle: '',
+    badges: () => [],
+    profiles: () => [],
+    appsLabel: '',
+
     showSubtitle: true,
     showBadges: true,
     showTagline: true,

@@ -28,15 +28,7 @@
           </div>
 
         <div v-if="showMeta && userCount !== null" class="fx-cell__meta">
-          <UBadge
-            variant="soft"
-            color="neutral"
-            size="xs"
-            class="inline-flex items-center gap-1"
-          >
-            <UIcon name="i-lucide-users" class="size-3 shrink-0" />
-            <span class="truncate">{{ userCount }}</span>
-          </UBadge>
+          <MoleculesMetricBadge icon="i-lucide-users" :value="userCount" />
         </div>
       </div>
     </div>
