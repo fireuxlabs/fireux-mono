@@ -85,7 +85,7 @@ import type {
   DevHealthStatus,
 } from '../../composables/dev/health/types'
 
-defineOptions({ name: 'DevHealthPanel' })
+defineOptions({ name: 'DevHealth' })
 
 interface Props {
   title?: string

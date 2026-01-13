@@ -21,7 +21,7 @@
       <template #header>
         <h2>DevNav Debug</h2>
       </template>
-      <DevJsonPanel :data="{ ecosystem, core, ecosystemNav, ext }" />
+      <DevJson :data="{ ecosystem, core, ecosystemNav, ext }" />
     </UCard>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="shouldRender">
     <div class="jsonpanel-header">
       <h2 class="jsonpanel-title">{{ title }}</h2>
       <div class="jsonpanel-actions">
@@ -32,25 +32,37 @@
 import { computed, ref } from 'vue'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard'
 
-defineOptions({ name: 'DevJsonPanel' })
+defineOptions({ name: 'DevJson' })
 
 interface JsonPanelProps {
   data: unknown
   title?: string
   defaultOpen?: boolean
+  hideWhenEmpty?: boolean
 }
 
 const props = withDefaults(defineProps<JsonPanelProps>(), {
   title: 'JSON',
   defaultOpen: false,
+  hideWhenEmpty: true,
 })
 
 const expanded = ref(props.defaultOpen)
+const isEmpty = computed(() => {
+  const value = props.data as any
+  if (value === null || value === undefined) return true
+  if (Array.isArray(value)) return value.length === 0
+  if (typeof value === 'object') return Object.keys(value).length === 0
+  if (typeof value === 'string') return value.length === 0
+  return false
+})
+
+const shouldRender = computed(() => !props.hideWhenEmpty || !isEmpty.value)
 const jsonString = computed(() => {
   try {
     return JSON.stringify(props.data, null, 2)
   } catch {
-    return '[DevJsonPanel] Unable to stringify data'
+    return '[DevJson] Unable to stringify data'
   }
 })
 

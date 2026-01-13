@@ -6,72 +6,34 @@
     />
 
     <UPageBody class="space-y-10">
-      <!-- Current App -->
-      <section class="space-y-4">
-        <div v-if="appCard" class="space-y-4">
-          <OrganismsAppCardsPreview v-bind="appCard" />
+      <DevPane
+        title="Current app"
+        description="Preview the resolved app and its card shapes."
+        :debug-data="currentAppDev"
+        :default-open="hasCurrentApp"
+      >
+        <OrganismsAppCTA />
+      </DevPane>
 
-          <div class="space-y-3">
-            <div class="text-sm font-medium">Card stack</div>
+      <DevPane
+        title="App health checks"
+        description="Cross-checks admin metadata across users and memberships."
+        :checks="appHealthChecks"
+      />
 
-            <div class="grid gap-4 md:grid-cols-2">
-              <div class="space-y-2">
-                <div class="text-xs text-dimmed">Pill</div>
-                <OrganismsAppCardsPill v-bind="appCard" />
-              </div>
+      <DevPane
+        title="App members"
+        description="Live /apps/{id}/users memberships and counts."
+        :debug-data="appUsersDev"
+        :default-open="hasAppMembers"
+      />
 
-              <div class="space-y-2">
-                <div class="text-xs text-dimmed">Cell</div>
-                <OrganismsAppCardsCell v-bind="appCard" />
-              </div>
-
-              <div class="space-y-2">
-                <div class="text-xs text-dimmed">Preview</div>
-                <OrganismsAppCardsPreview v-bind="appCard" />
-              </div>
-
-              <div class="space-y-2">
-                <div class="text-xs text-dimmed">Profile</div>
-                <OrganismsAppCardsProfile v-bind="appCard" :app="appSnapshot" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <DevJsonPanel
-          title="Dev · Current App"
-          :data="currentAppDev"
-          :default-open="hasCurrentApp"
-        />
-      </section>
-
-      <!-- App Health -->
-      <section class="space-y-4">
-        <DevHealthPanel
-          title="App health checks"
-          description="Cross-checks admin metadata across users and memberships."
-          :checks="appHealthChecks"
-        />
-      </section>
-
-      <!-- App Members -->
-      <section class="space-y-4">
-        <DevJsonPanel
-          title="Dev · App Members"
-          :data="appUsersDev"
-          :default-open="hasAppMembers"
-        />
-      </section>
-
-      <!-- App Collection -->
-      <section class="space-y-4">
+      <DevPane
+        title="App collection"
+        description="Browse apps available to this runtime."
+      >
         <OrganismsAppCollectionManager />
-        <DevJsonPanel
-          title="Dev · App Collection"
-          :data="appCollectionDev"
-          :default-open="hasCollection"
-        />
-      </section>
+      </DevPane>
     </UPageBody>
   </UPage>
 </template>
@@ -80,7 +42,6 @@
 import { computed } from 'vue'
 import { definePageMeta } from '#imports'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
-import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useAppUsers } from '../../composables/fireux/firestore/core/app/fetch/useAppUsers'
 import { useDevHealth } from '../../composables/dev/health/useDevHealth'
 
@@ -100,21 +61,17 @@ definePageMeta({
   description: 'Developer view for Apps with section-level dev panels.',
 })
 
-const { app, pending, isResolved, isInitialized, card } = useApp()
+const { app, pending, isResolved, isInitialized } = useApp()
 const { users } = useAppUsers()
-const { apps } = useAppCollection()
 const { getChecksForScope } = useDevHealth()
 
 const isLoading = computed(() => app.value === undefined || pending.value)
 const appSnapshot = computed(() => app.value ?? null)
 const appUsersList = computed(() => users.value ?? [])
-const appsList = computed(() => apps.value ?? [])
 
 const showOnboardingBlocker = computed(
   () => isResolved.value && !isInitialized.value
 )
-
-const appCard = computed(() => (appSnapshot.value ? card(appSnapshot.value) : null))
 
 const currentAppDev = computed(() => ({
   flags: {
@@ -131,13 +88,7 @@ const appUsersDev = computed(() => ({
   members: appUsersList.value,
 }))
 
-const appCollectionDev = computed(() => ({
-  total: appsList.value.length,
-  apps: appsList.value,
-}))
-
 const hasCurrentApp = computed(() => Boolean(appSnapshot.value))
 const hasAppMembers = computed(() => appUsersList.value.length > 0)
-const hasCollection = computed(() => appsList.value.length > 0)
 const appHealthChecks = getChecksForScope('apps')
 </script>

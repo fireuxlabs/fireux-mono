@@ -33,8 +33,8 @@
       </template>
 
       <template #dev>
-        <!-- T0DO remove DevJsonPanel once diagnostics migrate elsewhere -->
-        <DevJsonPanel v-if="shouldShowDevPanel && devData" :data="devData" />
+        <!-- TODO remove DevJson once diagnostics migrate elsewhere -->
+        <DevJson v-if="shouldShowDevPanel && devData" :data="devData" />
       </template>
     </LayoutsDashboardBaseSection>
   </client-only>

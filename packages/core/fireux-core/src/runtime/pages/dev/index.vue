@@ -204,7 +204,7 @@
       <template #header>
         <h2>Runtime JSON</h2>
       </template>
-      <DevJsonPanel :data="{ runtime: cfg }" />
+      <DevJson :data="{ runtime: cfg }" />
     </UCard>
   </div>
 </template>

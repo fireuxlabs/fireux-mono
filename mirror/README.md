@@ -40,6 +40,7 @@ Examples:
 - **sync**: Regenerating the symlinks by running `node scripts/mirror-sync.mjs`.
 - **pop**: Short for “populate”. Add/update entries in `mirror/mirror.txt` so the next sync produces the intended set of mirror symlinks.
 - **mirror pop**: Populate + sync the mirror according to a specific intent (e.g. “mirror pop all dev based components”).
+- **clear**: Remove generated mirror symlinks so `mirror/` contains only `README.md` and `mirror.txt`.
 - **key id**: The short, human-readable symlink file name created by the sync script (package slug + meaningful tail).
 
 ### Operator phrases
@@ -48,3 +49,8 @@ When you say: **“mirror pop …”**, treat it as an instruction to:
 
 1. Update `mirror/mirror.txt` to include the requested set of files.
 2. Run `node scripts/mirror-sync.mjs` to regenerate `mirror/`.
+
+When you say: **“mirror clear”**, treat it as an instruction to:
+
+1. Ensure `mirror/mirror.txt` is empty (or contains only comments).
+2. Run `node scripts/mirror-sync.mjs` to remove all generated symlinks.

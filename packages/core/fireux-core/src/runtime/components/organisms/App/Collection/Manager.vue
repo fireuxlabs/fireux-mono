@@ -31,15 +31,31 @@
     <p v-else class="fx-section__empty">
       {{ query ? 'No apps match your search.' : 'No apps found.' }}
     </p>
+
+    <component
+      :is="DevJson"
+      v-if="devMode && DevJson"
+      class="mt-3"
+      title="Dev · App Collection Manager"
+      :data="devPayload"
+      :default-open="false"
+    />
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
+import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { useAppCollection } from '../../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+
+const DevJson = defineAsyncComponent(() =>
+  import('../../../../components/dev/DevJson.vue')
+)
+
+const { devMode } = useFireUXConfig()
 
 const { apps, count: totalCount } = useAppCollection()
 const { card, searchText } = useAppInterface()
@@ -70,4 +86,14 @@ const cards = computed<AppCard.Card[]>(() =>
     .map((app) => card(app))
     .filter((payload): payload is AppCard.Card => Boolean(payload))
 )
+
+const devPayload = computed(() => ({
+  variant: variant.value,
+  query: query.value,
+  totalCount: totalCount.value,
+  visibleCount: visibleCount.value,
+  apps: normalizedApps.value,
+  visible: visibleApps.value,
+  cards: cards.value,
+}))
 </script>

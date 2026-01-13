@@ -48,18 +48,31 @@
     </template>
 
     <p v-else class="fx-section__empty">Global directory hidden.</p>
+
+    <component
+      :is="DevJson"
+      v-if="devMode && DevJson"
+      class="mt-3"
+      title="Dev · User Collection Manager"
+      :data="devPayload"
+      :default-open="false"
+    />
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { useGlobalUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
 import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import type { User } from '../../../../models/core/user.model'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-const { appId, appName, ecosystem, isTenant } = useFireUXConfig()
+const DevJson = defineAsyncComponent(() =>
+  import('../../../../components/dev/DevJson.vue')
+)
+
+const { appId, appName, ecosystem, isTenant, devMode } = useFireUXConfig()
 const showGlobalDirectory = ref(!isTenant)
 const { users, count: totalCount } = useGlobalUserCollection()
 const { card, searchText } = useUserInterface()
@@ -127,4 +140,17 @@ const directoryEntries = computed<DirectoryEntry[]>(() => {
 })
 
 const cards = computed(() => directoryEntries.value.map((entry) => entry.card))
+
+const devPayload = computed(() => ({
+  variant: variant.value,
+  query: query.value,
+  isTenant,
+  showGlobalDirectory: showGlobalDirectory.value,
+  totalCount: totalCount.value,
+  visibleCount: visibleCount.value,
+  scopeCopy: scopeCopy.value,
+  users: normalizedUsers.value,
+  visible: visibleUsers.value,
+  cards: cards.value,
+}))
 </script>
