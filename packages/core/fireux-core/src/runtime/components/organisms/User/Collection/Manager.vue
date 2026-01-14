@@ -48,31 +48,19 @@
     </template>
 
     <p v-else class="fx-section__empty">Global directory hidden.</p>
-
-    <component
-      :is="DevJson"
-      v-if="devMode && DevJson"
-      class="mt-3"
-      title="Dev · User Collection Manager"
-      :data="devPayload"
-      :default-open="false"
-    />
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { useGlobalUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
 import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import type { User } from '../../../../models/core/user.model'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-const DevJson = defineAsyncComponent(() =>
-  import('../../../../components/dev/DevJson.vue')
-)
-
-const { appId, appName, ecosystem, isTenant, devMode } = useFireUXConfig()
+const { appId, appName, ecosystem, isTenant } = useFireUXConfig()
 const showGlobalDirectory = ref(!isTenant)
 const { users, count: totalCount } = useGlobalUserCollection()
 const { card, searchText } = useUserInterface()
@@ -82,22 +70,6 @@ const scopeCopy = computed(() => {
   return `Browse users in the ${ecosystem} ecosystem directory.`
 })
 
-const query = ref('')
-
-type Variant = 'pill' | 'cell'
-
-const variant = ref<Variant>('pill')
-const toggleVariant = () => {
-  if (variant.value === 'pill') variant.value = 'cell'
-  else variant.value = 'pill'
-}
-
-type DirectoryEntry = {
-  key: string
-  card: UserCard.Card
-  raw: User
-}
-
 const inferRole = (entry: User): 'admin' | 'user' | undefined => {
   const activeAppId = appId?.trim()
   if (!activeAppId) return undefined
@@ -106,51 +78,22 @@ const inferRole = (entry: User): 'admin' | 'user' | undefined => {
   return undefined
 }
 
-const normalizedUsers = computed<User[]>(() => users.value ?? [])
-
-const visibleUsers = computed<User[]>(() => {
-  const q = query.value.trim().toLowerCase()
-  if (!q) return normalizedUsers.value
-
-  return normalizedUsers.value.filter((user) => searchText(user).includes(q))
+const {
+  query,
+  variant,
+  toggleVariant,
+  visibleCount,
+  cards,
+} = useCollectionSearch<User, UserCard.Card>({
+  items: users,
+  searchText,
+  makeCard: (entry: User) => {
+    if (!entry?.id) return null
+    const role = inferRole(entry)
+    const payload = card(entry)
+    if (!payload) return null
+    const badges = role === 'admin' ? ['Admin'] : []
+    return { ...payload, badges }
+  },
 })
-
-const visibleCount = computed(() => visibleUsers.value.length)
-
-const directoryEntries = computed<DirectoryEntry[]>(() => {
-  const list = visibleUsers.value ?? []
-  if (!list.length) return []
-
-  return list
-    .filter((entry: unknown): entry is User => Boolean((entry as User | undefined)?.id))
-    .map((entry: User) => {
-      const role = inferRole(entry)
-
-      const payload = card(entry)
-      if (!payload) return null
-      const badges = role === 'admin' ? ['Admin'] : []
-
-      return {
-        key: entry.id,
-        card: { ...payload, badges },
-        raw: entry,
-      }
-    })
-    .filter((entry): entry is DirectoryEntry => Boolean(entry))
-})
-
-const cards = computed(() => directoryEntries.value.map((entry) => entry.card))
-
-const devPayload = computed(() => ({
-  variant: variant.value,
-  query: query.value,
-  isTenant,
-  showGlobalDirectory: showGlobalDirectory.value,
-  totalCount: totalCount.value,
-  visibleCount: visibleCount.value,
-  scopeCopy: scopeCopy.value,
-  users: normalizedUsers.value,
-  visible: visibleUsers.value,
-  cards: cards.value,
-}))
 </script>

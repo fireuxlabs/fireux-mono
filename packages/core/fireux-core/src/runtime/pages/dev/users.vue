@@ -4,11 +4,41 @@
     <UPageBody class="pagebody space-y-8">
       <DevPane
         title="Current user"
-        description="Preview the resolved user or onboarding state."
+        description="Resolved /users/<uid> for this runtime."
         :debug-data="currentUserDev"
         :default-open="hasCurrentUser"
       >
-        <OrganismsUserCTA />
+        <template #actions>
+          <UButton v-if="hasCurrentUser" size="xs" variant="ghost" @click="toggleUserView">
+            {{ userView === 'preview' ? 'Profile' : 'Preview' }}
+          </UButton>
+        </template>
+
+        <MoleculesStateCard
+          v-if="isLoading"
+          entity="user"
+          kind="document"
+          loading
+        />
+
+        <MoleculesStateCard
+          v-else-if="!hasCurrentUser"
+          entity="user"
+          kind="document"
+        />
+
+        <div v-else class="space-y-4">
+          <OrganismsUserCardsPreview
+            v-if="userView === 'preview' && currentUser"
+            v-bind="card(currentUser)"
+          />
+
+          <OrganismsUserCardsProfile
+            v-else-if="currentUser"
+            v-bind="card(currentUser)"
+            :user="currentUser"
+          />
+        </div>
       </DevPane>
 
       <DevPane
@@ -100,6 +130,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { definePageMeta } from '#imports'
+import { useCardViewToggle } from '../../composables/shared/useCardViewToggle'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useAppUsers } from '../../composables/fireux/firestore/core/app/fetch/useAppUsers'
@@ -121,7 +152,7 @@ definePageMeta({
   },
 })
 
-const { currentUser, isLoading } = useUser()
+const { currentUser, isLoading, card } = useUser()
 const { users: usersCollection, fulfilled: hydratedAppUsers } = useUserCollection()
 const fireux = useFireUXConfig()
 
@@ -129,6 +160,8 @@ const { users: appUsers, pending: appUsersPending } = useAppUsers()
 const { getChecksForScope } = useDevHealth()
 
 const users = computed(() => usersCollection.value ?? [])
+const hasCurrentUser = computed(() => Boolean(currentUser.value))
+const { view: userView, toggleView: toggleUserView } = useCardViewToggle(() => hasCurrentUser.value)
 const membershipCount = computed(() => appUsers.value?.length ?? 0)
 const scopedUsers = computed(() => hydratedAppUsers?.value ?? [])
 const hydratedCount = computed(() => scopedUsers.value.length)
@@ -140,7 +173,6 @@ const scopedUsersJson = computed(() =>
   scopedUsers.value.length ? scopedUsers.value : null
 )
 
-const hasCurrentUser = computed(() => Boolean(currentUser.value))
 const hasMemberships = computed(() => membershipCount.value > 0)
 
 const currentUserDev = computed(() => ({

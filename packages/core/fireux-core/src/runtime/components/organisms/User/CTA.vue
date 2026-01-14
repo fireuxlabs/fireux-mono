@@ -31,21 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { useCardViewToggle } from '../../../composables/shared/useCardViewToggle'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 const { isResolved, isInitialized, currentUser, card } = useUser()
-
-type View = 'preview' | 'profile'
-const view = ref<View>('preview')
-const toggleView = () => {
-  view.value = view.value === 'preview' ? 'profile' : 'preview'
-}
-
-watch(
-  () => Boolean(currentUser.value),
-  (hasUser) => {
-    if (!hasUser) view.value = 'preview'
-  }
-)
+const { view, toggleView } = useCardViewToggle(() => Boolean(currentUser.value))
 </script>
