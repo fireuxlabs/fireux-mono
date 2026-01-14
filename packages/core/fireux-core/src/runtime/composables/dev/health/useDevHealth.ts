@@ -1,12 +1,12 @@
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
-import { useFireUXConfig } from '../../app/FireUXConfig'
+import { useFireUXConfig } from '../../fireux/app/FireUXConfig'
 import { useApp } from '../../fireux/firestore/core/app/useApp'
-import { APP_MODEL_REQUIRED_KEYS } from '../../../../models/core/app.model'
+import { App as AppModel } from '../../../models/core/app.model'
 import { useAppUsers } from '../../fireux/firestore/core/app/fetch/useAppUsers'
 import { useUserCollection } from '../../fireux/firestore/core/user/fetch/useUserCollection'
 import { useFirestoreRead } from '../../fireux/firestore/operations/useFirestoreRead'
-import type { App } from '../../../../models/core/app.model'
+import type { App as AppType } from '../../../../models/core/app.model'
 import type { AppUser, User } from '../../../../models/core/user.model'
 import type {
   DevHealthApi,
@@ -22,6 +22,106 @@ const resolveStatus = (issues: DevHealthIssue[]): DevHealthStatus => {
   return 'pass'
 }
 
+const kindOf = (v: unknown): string => {
+  if (v === null) return 'null'
+  if (Array.isArray(v)) return 'array'
+  return typeof v
+}
+
+const isPlainObject = (v: unknown): v is Record<string, unknown> => {
+  if (!v || typeof v !== 'object') return false
+  if (Array.isArray(v)) return false
+  return Object.prototype.toString.call(v) === '[object Object]'
+}
+
+type DriftIssue = {
+  kind: 'missing' | 'extra' | 'type'
+  path: string
+  expectedType?: string
+  actualType?: string
+}
+
+const driftCompare = (
+  template: unknown,
+  data: unknown,
+  path = ''
+): DriftIssue[] => {
+  const issues: DriftIssue[] = []
+
+  const tType = kindOf(template)
+  const dType = kindOf(data)
+
+  if (!isPlainObject(template)) {
+    if (tType !== dType) {
+      issues.push({
+        kind: 'type',
+        path: path || '(root)',
+        expectedType: tType,
+        actualType: dType,
+      })
+    }
+    return issues
+  }
+
+  if (!isPlainObject(data)) {
+    issues.push({
+      kind: 'type',
+      path: path || '(root)',
+      expectedType: 'object',
+      actualType: dType,
+    })
+    return issues
+  }
+
+  const tKeys = Object.keys(template)
+  const dKeys = Object.keys(data)
+
+  for (const key of tKeys) {
+    if (!(key in data)) {
+      issues.push({
+        kind: 'missing',
+        path: path ? `${path}.${key}` : key,
+        expectedType: kindOf((template as Record<string, unknown>)[key]),
+      })
+    }
+  }
+
+  for (const key of dKeys) {
+    if (!(key in template)) {
+      issues.push({
+        kind: 'extra',
+        path: path ? `${path}.${key}` : key,
+        actualType: kindOf((data as Record<string, unknown>)[key]),
+      })
+    }
+  }
+
+  for (const key of tKeys) {
+    if (!(key in data)) continue
+    const tVal = (template as Record<string, unknown>)[key]
+    const dVal = (data as Record<string, unknown>)[key]
+
+    const tt = kindOf(tVal)
+    const dt = kindOf(dVal)
+
+    if (isPlainObject(tVal) || isPlainObject(dVal)) {
+      issues.push(...driftCompare(tVal, dVal, path ? `${path}.${key}` : key))
+      continue
+    }
+
+    if (tt !== dt) {
+      issues.push({
+        kind: 'type',
+        path: path ? `${path}.${key}` : key,
+        expectedType: tt,
+        actualType: dt,
+      })
+    }
+  }
+
+  return issues
+}
+
 export function useDevHealth(): DevHealthApi {
   const { appId } = useFireUXConfig()
 
@@ -35,12 +135,12 @@ export function useDevHealth(): DevHealthApi {
   const checks = computed<DevHealthResult[]>(() => {
     const results: DevHealthResult[] = []
 
-    const appValue = app.value as App | null | undefined
+    const appValue = app.value as AppType | null | undefined
     const appUsersValue = appUsers.value as AppUser[] | undefined
     const rawUsersValue = rawUsers.value as User[] | undefined
     const hydratedUsers = hydratedAppUsers.value
 
-    // 1) App required fields present
+    // 1) App drift vs template
     {
       const issues: DevHealthIssue[] = []
 
@@ -60,33 +160,30 @@ export function useDevHealth(): DevHealthApi {
           hint: 'Ensure FireUXConfig.appId resolves to a valid /apps/<id> document.',
         })
       } else {
-        const missing = APP_MODEL_REQUIRED_KEYS.filter((key) => {
-          const value = appValue[key]
-          if (typeof value === 'string') return value.trim() === ''
-          return value === undefined || value === null
-        })
+        const drift = driftCompare(AppModel, appValue)
 
-        if (missing.length) {
+        if (drift.length) {
           issues.push({
-            id: 'app-missing-required',
+            id: 'app-drift',
             severity: 'error',
-            message: `Missing required fields: ${missing.join(', ')}`,
-            hint: 'Populate required App fields; empty strings count as missing.',
+            message: `App document shape drift: ${drift.length} issue(s).`,
+            hint: 'Update /apps/<id> to match the App model template.',
+            context: { drift },
           })
         }
       }
 
       results.push({
-        id: 'app-required-fields',
+        id: 'app-template-drift',
         label: 'App document health',
-        description: 'Validates the current app exists and required fields are set.',
+        description: 'Validates the current app exists and matches the App model template.',
         status: resolveStatus(issues),
-        summary: issues.length ? `${issues.length} issue(s)` : 'All required fields present.',
+        summary: issues.length ? `${issues.length} issue(s)` : 'Template alignment ok.',
         issues,
         scopes: ['apps', 'runtime'],
         stats: {
-          requiredFields: APP_MODEL_REQUIRED_KEYS.length,
-          missing: issues.filter((issue) => issue.id === 'app-missing-required').length,
+          driftIssues:
+            issues.find((issue) => issue.id === 'app-drift')?.context?.drift?.length ?? 0,
         },
       })
     }

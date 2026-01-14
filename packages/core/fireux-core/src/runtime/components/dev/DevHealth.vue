@@ -5,7 +5,7 @@
         <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
           {{ title }}
         </p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">
+        <p v-if="description" class="text-xs text-gray-500 dark:text-gray-400">
           {{ description }}
         </p>
       </div>
@@ -35,7 +35,7 @@
                   {{ statusLabel(check.status) }}
                 </UBadge>
               </div>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
+              <p v-if="check.description" class="text-xs text-gray-500 dark:text-gray-400">
                 {{ check.description }}
               </p>
             </div>

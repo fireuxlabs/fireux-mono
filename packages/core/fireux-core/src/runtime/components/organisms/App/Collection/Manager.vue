@@ -17,7 +17,7 @@
             class="w-44"
           />
 
-          <UButton size="xs" variant="ghost" @click="toggleCompactVariant">
+          <UButton size="xs" variant="ghost" @click="toggleVariant">
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
           </UButton>
 
@@ -32,14 +32,18 @@
       {{ query ? 'No apps match your search.' : 'No apps found.' }}
     </p>
 
-    <component
-      :is="DevJson"
-      v-if="devMode && DevJson"
-      class="mt-3"
-      title="Dev · App Collection Manager"
-      :data="devPayload"
-      :default-open="false"
-    />
+    <div
+      v-if="showDebug"
+      class="pt-4 mt-4 border-t border-slate-200/70 max-w-3xl mx-auto space-y-2"
+    >
+      <component
+        :is="DevJson"
+        v-if="DevJson"
+        title="Dev · App Collection Manager"
+        :data="devPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
@@ -56,6 +60,7 @@ const DevJson = defineAsyncComponent(() =>
 )
 
 const { devMode } = useFireUXConfig()
+const showDebug = computed(() => Boolean(devMode) && import.meta.dev)
 
 const { apps, count: totalCount } = useAppCollection()
 const { card, searchText } = useAppInterface()
@@ -65,9 +70,8 @@ const query = ref('')
 type Variant = 'pill' | 'cell'
 
 const variant = ref<Variant>('pill')
-const toggleCompactVariant = () => {
-  if (variant.value === 'pill') variant.value = 'cell'
-  else variant.value = 'pill'
+const toggleVariant = () => {
+  variant.value = variant.value === 'pill' ? 'cell' : 'pill'
 }
 
 const normalizedApps = computed<App[]>(() => apps.value ?? [])

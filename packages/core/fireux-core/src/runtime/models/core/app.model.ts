@@ -11,85 +11,51 @@ import type { AppRole, AppSocialLinks } from './app.supporting'
  * - No optional strings (empty string means unset)
  * - No nullable strings
  * - Timestamps are FirebaseTimestamp (Firestore Timestamp)
+ *
+ * Canon strategy:
+ * - Runtime object is the single source of truth
+ * - TypeScript derives types from it
+ * - Drift is detected by comparing data ↔ model shape
  */
-export interface App extends FireuxAuthored {
-  id: string
+
+// 🔑 Runtime + canonical shape (source of truth)
+export const App = {
+  // Identity
+  id: '',
 
   // Display
-  app_name: string
-  app_short_name: string
+  app_name: '',
+  app_short_name: '',
 
   // Scope + lineage
-  role: AppRole
-  ecosystem: string
+  role: '' as AppRole,
+  ecosystem: '',
 
   // Governance
-  join_requests: string[]
-  admin_ids: string[]
-  created_by: string
+  join_requests: [] as string[],
+  admin_ids: [] as string[],
+  created_by: '',
 
   // Content
-  tagline: string
-  description: string
-  short_bio: string
-  long_bio: string
+  tagline: '',
+  description: '',
+  short_bio: '',
+  long_bio: '',
 
   // Social
-  social_links: AppSocialLinks
+  social_links: {} as AppSocialLinks,
 
-  // Derived counts
-  user_count: number
+  // Derived
+  user_count: 0,
 
-  // Brand/media URLs (flat)
-  thumbnail_url: string
-  logo_url: string
-  wordmark_light_url: string
-  wordmark_dark_url: string
+  // Brand / media
+  thumbnail_url: '',
+  logo_url: '',
+  wordmark_light_url: '',
+  wordmark_dark_url: '',
+} as const
+
+// ✅ Type derived from the runtime model (no duplication)
+export type App = FireuxAuthored & {
+  [K in keyof typeof App]: (typeof App)[K]
 }
-
-// Canonical shape keys for runtime validation.
-// NOTE: This is intentionally co-located with the model to prevent drift.
-export const APP_MODEL_KEYS = [
-  'id',
-
-  'app_name',
-  'app_short_name',
-
-  'role',
-  'ecosystem',
-
-  'join_requests',
-  'admin_ids',
-  'created_by',
-
-  'tagline',
-  'description',
-  'short_bio',
-  'long_bio',
-
-  'social_links',
-
-  'user_count',
-
-  'thumbnail_url',
-  'logo_url',
-  'wordmark_light_url',
-  'wordmark_dark_url',
-
-  'creator_id',
-  'created_at',
-  'updated_at',
-] as const satisfies readonly (keyof App)[]
-
-// Required fields for health checks.
-// Keep this intentionally strict; legacy docs will be flagged for migrate.
-export const APP_MODEL_REQUIRED_KEYS = [
-  'id',
-  'app_name',
-  'app_short_name',
-  'role',
-  'ecosystem',
-  'creator_id',
-  'created_at',
-  'updated_at',
-] as const satisfies readonly (keyof App)[]

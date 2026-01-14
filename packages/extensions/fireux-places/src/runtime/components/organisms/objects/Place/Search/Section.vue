@@ -27,8 +27,9 @@
       </p>
     </UCard>
 
-    <DevJsonPanel
-      v-if="showDebug"
+    <component
+      :is="DevJson"
+      v-if="showDebug && DevJson"
       title="Places Search Debug"
       :data="debugPayload"
     />
@@ -36,9 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage.ts'
-import DevJsonPanel from 'fireux-core/runtime/components/dev/JsonPanel.vue'
 import {
   canonicalPlaceId,
   fetchPlaceDetails,
@@ -46,6 +46,10 @@ import {
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import type { BasePlace, PlaceUpsertInput } from '../../../../../models/place.model'
+
+const DevJson = defineAsyncComponent(() =>
+  import('fireux-core/runtime/components/dev/DevJson.vue')
+)
 
 interface Props {
   type?: string | null

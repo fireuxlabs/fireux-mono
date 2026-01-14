@@ -32,8 +32,9 @@
         </div>
       </div>
 
-      <DevJsonPanel
-        v-if="showDebug"
+      <component
+        :is="DevJson"
+        v-if="showDebug && DevJson"
         title="Professional CTA Debug"
         :data="debugPayload"
       />
@@ -42,12 +43,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth.ts'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
-import DevJsonPanel from 'fireux-core/runtime/components/dev/JsonPanel.vue'
+const DevJson = defineAsyncComponent(() =>
+  import('fireux-core/runtime/components/dev/DevJson.vue')
+)
 
 const { coreProfile, card } = useProfessional()
 const { uid } = useAuth()
