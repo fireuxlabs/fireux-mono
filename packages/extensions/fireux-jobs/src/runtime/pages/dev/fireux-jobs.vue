@@ -1,412 +1,416 @@
 <template>
   <UPage>
     <UPageHeader
-      title="FireUX Jobs Profiles"
-      description="Debug the active professional and agent profiles with no inferred fallbacks."
+      title="Dev · Jobs"
+      description="Collection-first view; filter by missing or extra fields (against runtime models)."
     />
 
     <UPageBody class="space-y-10">
-      <section class="space-y-4">
-        <header>
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Professional
-          </h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Mirrors the main Professionals page and shows data only when a
-            professional profile is resolved for this runtime.
-          </p>
-        </header>
+      <DevPane
+        title="Jobs collection"
+        description="Browse jobs resolved for this runtime and filter by model drift."
+      >
+        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+          <span class="font-medium">Drift:</span>
 
-        <div v-if="professionalHasProfile" class="space-y-6">
-          <UCard>
-            <template #header>
-              <h2>Professional profile</h2>
-            </template>
-
-            <div class="space-y-4">
-              <OrganismsProfilesProfessionalCardsCell
-                v-if="professionalCard"
-                :card="professionalCard"
-              />
-              <OrganismsProfilesProfessionalCardsPill
-                v-if="professionalCard"
-                v-bind="professionalCard"
-              />
-            </div>
-          </UCard>
-        </div>
-        <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-          No professional profile loaded.
-        </p>
-
-        <DevJsonPanel v-if="professionalJson" :data="professionalJson" />
-
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Global professionals
-              </h3>
-              <UBadge variant="soft"
-                >{{ professionalGlobalCount }} total</UBadge
-              >
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Pulled directly from the shared professionals collection.
-            </p>
-          </template>
-
-          <div
-            v-if="professionalGlobalPills.length"
-            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          <UButton
+            size="xs"
+            :variant="jobDriftKind === 'missing' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setJobDriftKind('missing')"
           >
-            <OrganismsProfilesProfessionalCardsPill
-              v-for="card in professionalGlobalPills"
-              :key="professionalPillKey(card)"
-              v-bind="card"
-            />
-          </div>
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            No global professionals found.
-          </p>
+            Missing
+          </UButton>
 
-          <template #footer>
-            <div class="space-y-4">
-              <DevProfileDiffList
-                :rows="professionalGlobalDiffRows"
-                title="Raw vs enriched (global)"
-                empty-text="Load global professionals to inspect the collection."
-              />
-              <DevJsonPanel
-                v-if="professionalGlobalJson.length"
-                :data="professionalGlobalJson"
-                title="Global professionals (raw)"
-              />
-            </div>
-          </template>
-        </UCard>
-
-        <UCard v-if="isTenant && hasProfessionalLocalCollection">
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Tenant professionals
-              </h3>
-              <UBadge variant="soft">{{ professionalLocalCount }} total</UBadge>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Scoped to the active tenant application.
-            </p>
-          </template>
-
-          <div
-            v-if="professionalLocalPills.length"
-            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          <UButton
+            size="xs"
+            :variant="jobDriftKind === 'extra' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setJobDriftKind('extra')"
           >
-            <OrganismsProfilesProfessionalCardsPill
-              v-for="card in professionalLocalPills"
-              :key="professionalPillKey(card)"
-              v-bind="card"
-            />
-          </div>
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            No tenant-scoped professionals found.
-          </p>
+            Extra
+          </UButton>
 
-          <template #footer>
-            <div class="space-y-4">
-              <DevProfileDiffList
-                :rows="professionalLocalDiffRows"
-                title="Raw vs enriched (tenant)"
-                empty-text="No tenant-specific professionals detected."
-              />
-              <DevJsonPanel
-                v-if="professionalLocalJson.length"
-                :data="professionalLocalJson"
-                title="Tenant professionals (raw)"
-              />
-            </div>
-          </template>
-        </UCard>
-        <UCard v-else-if="isTenant">
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Tenant professionals
-              </h3>
-              <UBadge variant="soft">0 total</UBadge>
-            </div>
-          </template>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Tenant-overridden collection is not available in this runtime.
-          </p>
-        </UCard>
-      </section>
+          <span class="font-medium ml-2">Filter {{ jobDriftKind }}:</span>
 
-      <section class="space-y-4">
-        <header>
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Agent
-          </h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Reflects the active agent profile with the same surface used in the
-            runtime app.
-          </p>
-        </header>
-
-        <div v-if="agentHasProfile" class="space-y-6">
-          <UCard>
-            <template #header>
-              <h2>Agent profile</h2>
-            </template>
-
-            <div class="space-y-4">
-              <OrganismsProfilesAgentCardsCell v-if="agentCard" v-bind="agentCard" />
-              <OrganismsProfilesAgentCardsPill v-if="agentCard" v-bind="agentCard" />
-            </div>
-          </UCard>
-        </div>
-        <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-          No agent profile loaded.
-        </p>
-
-        <DevJsonPanel v-if="agentJson" :data="agentJson" />
-
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Global agents
-              </h3>
-              <UBadge variant="soft">{{ agentGlobalCount }} total</UBadge>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Agents available across the shared directory.
-            </p>
-          </template>
-
-          <div
-            v-if="agentGlobalPills.length"
-            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          <UButton
+            v-for="option in jobFilterOptions"
+            :key="option.value"
+            size="xs"
+            :variant="jobSelectedField === option.value ? 'solid' : 'ghost'"
+            color="primary"
+            @click="jobSelectedField = option.value"
           >
-            <OrganismsProfilesAgentCardsPill
-              v-for="card in agentGlobalPills"
-              :key="agentPillKey(card)"
-              v-bind="card"
-            />
-          </div>
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            No global agents found.
-          </p>
+            {{ option.label }}
+          </UButton>
 
-          <template #footer>
-            <div class="space-y-4">
-              <DevProfileDiffList
-                :rows="agentGlobalDiffRows"
-                title="Raw vs enriched (global)"
-                empty-text="Load global agents to inspect the collection."
-              />
-              <DevJsonPanel
-                v-if="agentGlobalJson.length"
-                :data="agentGlobalJson"
-                title="Global agents (raw)"
-              />
-            </div>
-          </template>
-        </UCard>
-
-        <UCard v-if="isTenant && hasAgentLocalCollection">
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Tenant agents
-              </h3>
-              <UBadge variant="soft">{{ agentLocalCount }} total</UBadge>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Agent overrides scoped to the active tenant.
-            </p>
-          </template>
-
-          <div
-            v-if="agentLocalPills.length"
-            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            <OrganismsProfilesAgentCardsPill
-              v-for="card in agentLocalPills"
-              :key="agentPillKey(card)"
-              v-bind="card"
-            />
-          </div>
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            No tenant-scoped agents found.
-          </p>
-
-          <template #footer>
-            <div class="space-y-4">
-              <DevProfileDiffList
-                :rows="agentLocalDiffRows"
-                title="Raw vs enriched (tenant)"
-                empty-text="No tenant-specific agents detected."
-              />
-              <DevJsonPanel
-                v-if="agentLocalJson.length"
-                :data="agentLocalJson"
-                title="Tenant agents (raw)"
-              />
-            </div>
-          </template>
-        </UCard>
-        <UCard v-else-if="isTenant">
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Tenant agents
-              </h3>
-              <UBadge variant="soft">0 total</UBadge>
-            </div>
-          </template>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Tenant agent collection is not available in this runtime.
-          </p>
-        </UCard>
-      </section>
-
-      <section class="space-y-4">
-        <header>
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Jobs
-          </h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Collection-first view; filter by missing or extra fields (against the runtime Job model).
-          </p>
-        </header>
-
-        <DevPane
-          title="Jobs collection"
-          description="Browse jobs resolved for this runtime and filter by model drift."
-        >
-          <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-            <span class="font-medium">Drift:</span>
-
-            <UButton
-              size="xs"
-              :variant="jobDriftKind === 'missing' ? 'solid' : 'ghost'"
-              color="primary"
-              @click="setJobDriftKind('missing')"
-            >
-              Missing
-            </UButton>
-
-            <UButton
-              size="xs"
-              :variant="jobDriftKind === 'extra' ? 'solid' : 'ghost'"
-              color="primary"
-              @click="setJobDriftKind('extra')"
-            >
-              Extra
-            </UButton>
-
-            <span class="font-medium ml-2">Filter {{ jobDriftKind }}:</span>
-
-            <UButton
-              v-for="option in jobFilterOptions"
-              :key="option.value"
-              size="xs"
-              :variant="jobSelectedField === option.value ? 'solid' : 'ghost'"
-              color="primary"
-              @click="jobSelectedField = option.value"
-            >
-              {{ option.label }}
-            </UButton>
-
-            <UButton
-              size="xs"
-              variant="outline"
-              :disabled="copying"
-              :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-              @click="copyFilteredJobs"
-            >
-              {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-            </UButton>
-          </div>
-
-          <UAlert
-            v-if="!filteredJobCards.length"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-inbox"
-            title="No matching jobs"
-            description="Adjust filters or add job documents to Firestore."
-          />
-
-          <div v-else class="grid gap-3 md:grid-cols-2">
-            <OrganismsObjectsJobCardsCell
-              v-for="card in filteredJobCards"
-              :key="card.id"
-              :to="card.to"
-              :title="card.title"
-              :description="card.description"
-              :badges="card.badges"
-              :avatar-url="card.avatarUrl"
-              :subtitle="card.subtitle"
-              :prop="jobTaglineById.get(card.id) || ''"
-            />
-          </div>
-        </DevPane>
-
-        <div class="flex justify-end">
           <UButton
             size="xs"
             variant="outline"
             :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document'"
-            @click="copyAllJobs"
+            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+            @click="copyFilteredJobs"
           >
-            {{ copying ? 'Copying…' : 'Copy all (JSON)' }}
+            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
           </UButton>
         </div>
-      </section>
+
+        <UAlert
+          v-if="!jobFilteredCards.length"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-inbox"
+          title="No matching jobs"
+          description="Adjust filters or add job documents to Firestore."
+        />
+
+        <div v-else class="grid gap-3 md:grid-cols-2">
+          <OrganismsObjectsJobCardsCell
+            v-for="card in jobFilteredCards"
+            :key="card.id"
+            :to="card.to"
+            :title="card.title"
+            :description="card.description"
+            :badges="card.badges"
+            :avatar-url="card.avatarUrl"
+            :subtitle="card.subtitle"
+            :prop="jobTaglineById.get(card.id) || ''"
+          />
+        </div>
+      </DevPane>
+
+      <DevPane
+        title="Jobs (JSON)"
+        description="Raw collection payload + drift map (copyable)."
+        debug-title="Dev · Jobs (Ext) · Jobs · All data"
+        :debug-data="jobAllJsonPayload"
+        :default-open="false"
+      />
+
+      <DevPane
+        title="Professionals collection (global)"
+        description="Browse global professionals and filter by model drift (ProfessionalCore)."
+      >
+        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+          <span class="font-medium">Drift:</span>
+
+          <UButton
+            size="xs"
+            :variant="professionalGlobalDriftKind === 'missing' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setProfessionalGlobalDriftKind('missing')"
+          >
+            Missing
+          </UButton>
+
+          <UButton
+            size="xs"
+            :variant="professionalGlobalDriftKind === 'extra' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setProfessionalGlobalDriftKind('extra')"
+          >
+            Extra
+          </UButton>
+
+          <span class="font-medium ml-2">Filter {{ professionalGlobalDriftKind }}:</span>
+
+          <UButton
+            v-for="option in professionalGlobalFilterOptions"
+            :key="option.value"
+            size="xs"
+            :variant="professionalGlobalSelectedField === option.value ? 'solid' : 'ghost'"
+            color="primary"
+            @click="professionalGlobalSelectedField = option.value"
+          >
+            {{ option.label }}
+          </UButton>
+
+          <UButton
+            size="xs"
+            variant="outline"
+            :disabled="copying"
+            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+            @click="copyProfessionalGlobalFiltered"
+          >
+            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
+          </UButton>
+        </div>
+
+        <div class="space-y-2">
+          <UAlert
+            v-if="!professionalGlobalFilteredCards.length"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-inbox"
+            title="No matching professionals"
+            description="Adjust filters or add professional documents to Firestore."
+          />
+
+          <OrganismsProfilesProfessionalCollectionList
+            v-else
+            :cards="professionalGlobalFilteredCards"
+            variant="pill"
+          />
+        </div>
+      </DevPane>
+
+      <DevPane
+        title="Professionals (JSON)"
+        description="Raw collection payload + drift map (copyable)."
+        debug-title="Dev · Jobs (Ext) · Professionals · Global · All data"
+        :debug-data="professionalGlobalAllJsonPayload"
+        :default-open="false"
+      />
+
+      <DevPane
+        v-if="isTenant && hasProfessionalLocalCollection"
+        title="Professionals collection (tenant)"
+        description="Browse tenant professionals and filter by model drift (ProfessionalCore)."
+      >
+        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+          <span class="font-medium">Drift:</span>
+
+          <UButton
+            size="xs"
+            :variant="professionalLocalDriftKind === 'missing' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setProfessionalLocalDriftKind('missing')"
+          >
+            Missing
+          </UButton>
+
+          <UButton
+            size="xs"
+            :variant="professionalLocalDriftKind === 'extra' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setProfessionalLocalDriftKind('extra')"
+          >
+            Extra
+          </UButton>
+
+          <span class="font-medium ml-2">Filter {{ professionalLocalDriftKind }}:</span>
+
+          <UButton
+            v-for="option in professionalLocalFilterOptions"
+            :key="option.value"
+            size="xs"
+            :variant="professionalLocalSelectedField === option.value ? 'solid' : 'ghost'"
+            color="primary"
+            @click="professionalLocalSelectedField = option.value"
+          >
+            {{ option.label }}
+          </UButton>
+
+          <UButton
+            size="xs"
+            variant="outline"
+            :disabled="copying"
+            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+            @click="copyProfessionalLocalFiltered"
+          >
+            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
+          </UButton>
+        </div>
+
+        <div class="space-y-2">
+          <UAlert
+            v-if="!professionalLocalFilteredCards.length"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-inbox"
+            title="No matching professionals"
+            description="Adjust filters or add professional documents to Firestore."
+          />
+
+          <OrganismsProfilesProfessionalCollectionList
+            v-else
+            :cards="professionalLocalFilteredCards"
+            variant="pill"
+          />
+        </div>
+      </DevPane>
+
+      <DevPane
+        v-if="isTenant && hasProfessionalLocalCollection"
+        title="Professionals (JSON) · Tenant"
+        description="Raw collection payload + drift map (copyable)."
+        debug-title="Dev · Jobs (Ext) · Professionals · Tenant · All data"
+        :debug-data="professionalLocalAllJsonPayload"
+        :default-open="false"
+      />
+
+      <DevPane
+        title="Agents collection (global)"
+        description="Browse global agents and filter by model drift (AgentCore)."
+      >
+        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+          <span class="font-medium">Drift:</span>
+
+          <UButton
+            size="xs"
+            :variant="agentGlobalDriftKind === 'missing' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setAgentGlobalDriftKind('missing')"
+          >
+            Missing
+          </UButton>
+
+          <UButton
+            size="xs"
+            :variant="agentGlobalDriftKind === 'extra' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setAgentGlobalDriftKind('extra')"
+          >
+            Extra
+          </UButton>
+
+          <span class="font-medium ml-2">Filter {{ agentGlobalDriftKind }}:</span>
+
+          <UButton
+            v-for="option in agentGlobalFilterOptions"
+            :key="option.value"
+            size="xs"
+            :variant="agentGlobalSelectedField === option.value ? 'solid' : 'ghost'"
+            color="primary"
+            @click="agentGlobalSelectedField = option.value"
+          >
+            {{ option.label }}
+          </UButton>
+
+          <UButton
+            size="xs"
+            variant="outline"
+            :disabled="copying"
+            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+            @click="copyAgentGlobalFiltered"
+          >
+            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
+          </UButton>
+        </div>
+
+        <div class="space-y-2">
+          <UAlert
+            v-if="!agentGlobalFilteredCards.length"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-inbox"
+            title="No matching agents"
+            description="Adjust filters or add agent documents to Firestore."
+          />
+
+          <OrganismsProfilesAgentCollectionList
+            v-else
+            :cards="agentGlobalFilteredCards"
+            variant="pill"
+          />
+        </div>
+      </DevPane>
+
+      <DevPane
+        title="Agents (JSON)"
+        description="Raw collection payload + drift map (copyable)."
+        debug-title="Dev · Jobs (Ext) · Agents · Global · All data"
+        :debug-data="agentGlobalAllJsonPayload"
+        :default-open="false"
+      />
+
+      <DevPane
+        v-if="isTenant && hasAgentLocalCollection"
+        title="Agents collection (tenant)"
+        description="Browse tenant agents and filter by model drift (AgentCore)."
+      >
+        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+          <span class="font-medium">Drift:</span>
+
+          <UButton
+            size="xs"
+            :variant="agentLocalDriftKind === 'missing' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setAgentLocalDriftKind('missing')"
+          >
+            Missing
+          </UButton>
+
+          <UButton
+            size="xs"
+            :variant="agentLocalDriftKind === 'extra' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setAgentLocalDriftKind('extra')"
+          >
+            Extra
+          </UButton>
+
+          <span class="font-medium ml-2">Filter {{ agentLocalDriftKind }}:</span>
+
+          <UButton
+            v-for="option in agentLocalFilterOptions"
+            :key="option.value"
+            size="xs"
+            :variant="agentLocalSelectedField === option.value ? 'solid' : 'ghost'"
+            color="primary"
+            @click="agentLocalSelectedField = option.value"
+          >
+            {{ option.label }}
+          </UButton>
+
+          <UButton
+            size="xs"
+            variant="outline"
+            :disabled="copying"
+            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+            @click="copyAgentLocalFiltered"
+          >
+            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
+          </UButton>
+        </div>
+
+        <div class="space-y-2">
+          <UAlert
+            v-if="!agentLocalFilteredCards.length"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-inbox"
+            title="No matching agents"
+            description="Adjust filters or add agent documents to Firestore."
+          />
+
+          <OrganismsProfilesAgentCollectionList
+            v-else
+            :cards="agentLocalFilteredCards"
+            variant="pill"
+          />
+        </div>
+      </DevPane>
+
+      <DevPane
+        v-if="isTenant && hasAgentLocalCollection"
+        title="Agents (JSON) · Tenant"
+        description="Raw collection payload + drift map (copyable)."
+        debug-title="Dev · Jobs (Ext) · Agents · Tenant · All data"
+        :debug-data="agentLocalAllJsonPayload"
+        :default-open="false"
+      />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from '#imports'
-import DevProfileDiffList from 'fireux-core/runtime/components/dev/ProfileDiffList.vue'
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
-import {
-    humanizeDriftPath,
-    resolveDriftFromModel,
-    type DriftKind,
-    type ModelDrift,
-} from 'fireux-core/runtime/composables/dev/useModelDrift'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { ref, watch } from 'vue'
+import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
+import { computed } from 'vue'
 import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
 import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
-import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
-import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useAgentsInterface, type AgentDirectoryEntry } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentsInterface'
 import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
-import type { ProfessionalCard } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import type { Job as JobModel } from '../../models/objects/job.model'
 import { Job as JobModelRuntime } from '../../models/objects/job.model'
-
-type Ref<T> = { value: T }
+import type { AgentCore } from '../../models/profiles/Agent/Agent.model'
+import { AgentCore as AgentCoreRuntime } from '../../models/profiles/Agent/Agent.model'
+import type { ProfessionalCore } from '../../models/profiles/Professional/Professional.model'
+import { ProfessionalCore as ProfessionalCoreRuntime } from '../../models/profiles/Professional/Professional.model'
 
 definePageMeta({
   layout: 'dev',
@@ -421,359 +425,48 @@ definePageMeta({
   },
 })
 
-const {
-  coreProfile: professionalCoreProfile,
-  appProfile: professionalAppProfile,
-  card: resolveProfessionalCard,
-} = useProfessional()
-
-const {
-  coreProfile: agentCoreProfile,
-  appProfile: agentAppProfile,
-  card: resolveAgentCard,
-} = useAgent()
-
-const professionalCard = computed<ProfessionalCard.Card | null>(() => {
-  const core = professionalCoreProfile.value
-  return core ? resolveProfessionalCard(core as any) : null
-})
-
-const agentCard = computed<AgentCard.Card | null>(() => {
-  const core = agentCoreProfile.value
-  return core ? resolveAgentCard(core as any) : null
-})
-
-const professionalHasProfile = computed(
-  () => Boolean(professionalCoreProfile.value)
-)
-
-const agentHasProfile = computed(() => Boolean(agentCoreProfile.value))
-
-const professionalJson = computed(() => {
-  const core = professionalCoreProfile.value
-  const app = professionalAppProfile.value
-  if (!core && !app) return null
-  return {
-    coreProfile: core,
-    appProfile: app,
-  }
-})
-
-const agentJson = computed(() => {
-  const core = agentCoreProfile.value
-  const app = agentAppProfile.value
-  if (!core && !app) return null
-  return {
-    coreProfile: core,
-    appProfile: app,
-  }
-})
-
 const { isTenant } = useFireUXConfig()
-
-const {
-  globalProfessionals,
-  localProfessionals,
-  rawGlobalProfessionals,
-  rawLocalProfessionals,
-} = useProfessionalCollection()
-
-const professionalGlobalPills = computed<ProfessionalCard.Card[]>(() =>
-  (globalProfessionals.value ?? []).map((profile) =>
-    resolveProfessionalCard(profile as any)
-  )
-)
-
-const professionalGlobalCount = computed(
-  () => professionalGlobalPills.value.length
-)
-
-const professionalGlobalJson = computed(
-  () => rawGlobalProfessionals.value ?? []
-)
-
-const hasProfessionalLocalCollection = computed(() =>
-  Boolean(localProfessionals)
-)
-
-const professionalLocalPills = computed<ProfessionalCard.Card[]>(() => {
-  if (!localProfessionals) return []
-  return (localProfessionals.value ?? []).map((profile) =>
-    resolveProfessionalCard(profile as any)
-  )
-})
-
-const professionalLocalCount = computed(
-  () => professionalLocalPills.value.length
-)
-
-const professionalLocalJson = computed(() =>
-  localProfessionals && rawLocalProfessionals
-    ? rawLocalProfessionals.value ?? []
-    : []
-)
-
-const professionalPillKey = (card: ProfessionalCard.Card) =>
-  card.id || card.to || card.displayName || 'professional'
-
-const { globalAgents, localAgents, rawGlobalAgents, rawLocalAgents } =
-  useAgentCollection()
-
-const agentGlobalPills = computed<AgentCard.Card[]>(() =>
-  (globalAgents.value ?? []).map((profile) => resolveAgentCard(profile as any))
-)
-
-const agentGlobalCount = computed(() => agentGlobalPills.value.length)
-
-const agentGlobalJson = computed(() => rawGlobalAgents.value ?? [])
-
-const hasAgentLocalCollection = computed(() => Boolean(localAgents))
-
-const agentLocalPills = computed<AgentCard.Card[]>(() => {
-  if (!localAgents) return []
-  return (localAgents.value ?? []).map((profile) => resolveAgentCard(profile as any))
-})
-
-const agentLocalCount = computed(() => agentLocalPills.value.length)
-
-const agentLocalJson = computed(() =>
-  localAgents && rawLocalAgents ? rawLocalAgents.value ?? [] : []
-)
-
-const agentPillKey = (card: AgentCard.Card) =>
-  card.id || card.to || card.displayName || 'agent'
-
-type ProfileDiffRow<TProfile> = {
-  id: string
-  raw: Partial<TProfile> | null
-  enriched: Partial<TProfile> | null
-  issues: string[]
-}
-
-interface ProfileModelSpec {
-  typeLabel: string
-  requireUser?: boolean
-}
-
-type MaybeProfileEntries<TProfile> = Ref<
-  Array<Partial<TProfile>> | null | undefined
-> | null
-
-const resolveProfileId = (
-  profile?: Partial<{
-    id?: string | null
-    user?: { id?: string | null } | null
-  }> | null
-) => {
-  if (!profile) return null
-  const profileId = (profile as { id?: string | null }).id
-  if (profileId) return profileId
-  return (profile as { user?: { id?: string | null } }).user?.id ?? null
-}
-
-const collectProfileIssues = (
-  raw: Record<string, any> | null | undefined,
-  enriched: Record<string, any> | null | undefined,
-  spec: ProfileModelSpec
-) => {
-  const issues: string[] = []
-
-  if (!raw) {
-    issues.push(`${spec.typeLabel} document missing`)
-    return issues
-  }
-
-  const id = resolveProfileId(raw)
-  if (!id) {
-    issues.push('Missing profile id')
-  }
-
-  const requireUser = spec.requireUser !== false
-  const user = raw.user
-
-  if (requireUser) {
-    if (!user) {
-      issues.push('Missing linked user reference')
-    } else {
-      if (!user.id) {
-        issues.push('Missing linked user id')
-      }
-      if (raw.id && user.id && raw.id !== user.id) {
-        issues.push('Profile id and user id mismatch')
-      }
-    }
-  }
-
-  if (!enriched) {
-    issues.push('Profile missing from enriched collection')
-    return issues
-  }
-
-  if (requireUser) {
-    const enrichedUser = enriched.user
-    if (!enrichedUser) {
-      issues.push('Enriched payload missing user data')
-    } else {
-      if (!enrichedUser.display_name) {
-        issues.push('Enriched user missing display name')
-      }
-      if (!enrichedUser.avatar) {
-        issues.push('Enriched user missing avatar')
-      }
-    }
-  }
-
-  return issues
-}
-
-const toEntriesArray = <TProfile>(
-  source: MaybeProfileEntries<TProfile>
-): Partial<TProfile>[] => {
-  if (!source) return []
-  const value = source.value
-  return Array.isArray(value) ? (value as Partial<TProfile>[]) : []
-}
-
-const buildProfileDiffRows = <TProfile>(
-  rawSource: MaybeProfileEntries<TProfile>,
-  enrichedSource: MaybeProfileEntries<TProfile>,
-  spec: ProfileModelSpec
-) =>
-  computed<ProfileDiffRow<TProfile>[]>(() => {
-    const rawEntries = toEntriesArray(rawSource)
-    if (!rawEntries.length) return []
-
-    const enrichedEntries = toEntriesArray(enrichedSource)
-    const enrichedMap = new Map<string, Partial<TProfile>>()
-
-    for (const entry of enrichedEntries) {
-      const id = resolveProfileId(entry)
-      if (id) {
-        enrichedMap.set(id, entry)
-      }
-    }
-
-    return rawEntries.map((raw) => {
-      const id = resolveProfileId(raw) ?? 'unknown-profile'
-      const enriched = id ? enrichedMap.get(id) ?? null : null
-
-      return {
-        id,
-        raw: raw ?? null,
-        enriched,
-        issues: collectProfileIssues(raw as any, enriched as any, spec),
-      }
-    })
-  })
-
-const professionalModelSpec: ProfileModelSpec = {
-  typeLabel: 'Professional',
-}
-
-const agentModelSpec: ProfileModelSpec = {
-  typeLabel: 'Agent',
-}
-
-const professionalGlobalDiffRows = buildProfileDiffRows(
-  rawGlobalProfessionals,
-  globalProfessionals,
-  professionalModelSpec
-)
-
-const professionalLocalDiffRows = buildProfileDiffRows(
-  rawLocalProfessionals,
-  localProfessionals,
-  professionalModelSpec
-)
-
-const agentGlobalDiffRows = buildProfileDiffRows(
-  rawGlobalAgents,
-  globalAgents,
-  agentModelSpec
-)
-
-const agentLocalDiffRows = buildProfileDiffRows(
-  rawLocalAgents,
-  localAgents,
-  agentModelSpec
-)
-
 const { copyJSON, copying } = useDevClipboard()
 
+function safeArray<T>(input: unknown): T[] {
+  return Array.isArray(input) ? (input as T[]) : []
+}
+
+// Jobs
 const { appJobs } = useJobCollection()
 const jobs = computed<JobModel[]>(() => appJobs.value ?? [])
-
 const { card: makeJobCard } = useJobInterface()
-const jobCards = computed(() =>
-  jobs.value
+
+const {
+  driftKind: jobDriftKind,
+  setDriftKind: setJobDriftKind,
+  selectedField: jobSelectedField,
+  driftById: jobDriftById,
+  filterOptions: jobFilterOptions,
+  filteredCollection: jobFilteredCollection,
+} = useDevDriftFilter({
+  collection: jobs,
+  runtimeModel: JobModelRuntime as unknown as Record<string, unknown>,
+})
+
+const jobFilteredCards = computed(() =>
+  jobFilteredCollection.value
     .map((job) => makeJobCard(job))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 )
 
-const jobDriftKind = ref<DriftKind>('missing')
-const jobSelectedField = ref<string>('')
-
-const setJobDriftKind = (kind: DriftKind) => {
-  jobDriftKind.value = kind
-}
-
-watch(jobDriftKind, () => {
-  jobSelectedField.value = ''
-})
-
-const jobDriftById = computed(() => {
-  const map = new Map<string, ModelDrift>()
-  for (const job of jobs.value) {
-    if (!job?.id) continue
-    const drift = resolveDriftFromModel(
-      JobModelRuntime as unknown as Record<string, unknown>,
-      job as unknown as Record<string, unknown>
-    )
-    map.set(job.id, drift)
-  }
-  return map
-})
-
-const jobFieldOptions = computed(() => {
-  const counts = new Map<string, number>()
-  for (const drift of jobDriftById.value.values()) {
-    const list = jobDriftKind.value === 'missing' ? drift.missing : drift.extra
-    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
-  }
-
-  return [...counts.entries()]
-    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
-    .sort((a, b) => a.label.localeCompare(b.label))
-})
-
-const jobFilterOptions = computed(() => [
-  { label: 'All', value: '' },
-  ...jobFieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
-])
-
-const filteredJobCards = computed(() => {
-  if (!jobSelectedField.value) return jobCards.value
-
-  return jobCards.value.filter((card) => {
-    const drift = jobDriftById.value.get(card.id)
-    if (!drift) return false
-    const list = jobDriftKind.value === 'missing' ? drift.missing : drift.extra
-    return list.includes(jobSelectedField.value)
-  })
-})
-
 const jobTaglineById = computed(() => {
   const map = new Map<string, string>()
-  for (const card of jobCards.value) {
+  for (const card of jobFilteredCards.value) {
     const drift = jobDriftById.value.get(card.id)
     if (!drift) continue
     const list = jobDriftKind.value === 'missing' ? drift.missing : drift.extra
-
     const selected = jobSelectedField.value
+
     if (selected && list.includes(selected)) {
       map.set(
         card.id,
-        `${jobDriftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${humanizeDriftPath(selected)}`
+        `${jobDriftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${selected}`
       )
       continue
     }
@@ -782,15 +475,15 @@ const jobTaglineById = computed(() => {
     if (first) {
       map.set(
         card.id,
-        `${jobDriftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${humanizeDriftPath(first)}`
+        `${jobDriftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${first}`
       )
     }
   }
   return map
 })
 
-const filteredJobsPayload = computed(() =>
-  filteredJobCards.value.map((card) => {
+const jobFilteredPayload = computed(() =>
+  jobFilteredCards.value.map((card) => {
     const drift = jobDriftById.value.get(card.id) ?? { missing: [], extra: [] }
     return {
       id: card.id,
@@ -801,26 +494,289 @@ const filteredJobsPayload = computed(() =>
   })
 )
 
+const jobAllJsonPayload = computed(() => ({
+  totalJobs: jobs.value.length,
+  jobs: jobs.value,
+  driftById: Object.fromEntries(jobDriftById.value),
+}))
+
 const copyFilteredJobs = async () => {
   await copyJSON(
     {
       driftKind: jobDriftKind.value,
       selectedField: jobSelectedField.value || null,
       totalJobs: jobs.value.length,
-      jobs: filteredJobsPayload.value,
+      jobs: jobFilteredPayload.value,
     },
-    { label: 'Dev · Jobs (Ext) · Filtered drift' }
+    { label: 'Dev · Jobs (Ext) · Jobs · Filtered drift' }
   )
 }
 
-const copyAllJobs = async () => {
+// Professionals
+const {
+  globalProfessionals,
+  localProfessionals,
+  rawGlobalProfessionals,
+  rawLocalProfessionals,
+} = useProfessionalCollection()
+const { card: makeProfessionalCard } = useProfessional()
+
+const professionalGlobalRawCollection = computed<ProfessionalCore[]>(() =>
+  safeArray<unknown>(rawGlobalProfessionals.value)
+    .filter((x: any) => Boolean(x?.id)) as ProfessionalCore[]
+)
+
+const professionalGlobalEntryById = computed(() => {
+  const map = new Map<string, any>()
+  for (const entry of safeArray<unknown>(globalProfessionals.value)) {
+    const id = (entry as any)?.id
+    if (id) map.set(String(id), entry)
+  }
+  return map
+})
+
+const {
+  driftKind: professionalGlobalDriftKind,
+  setDriftKind: setProfessionalGlobalDriftKind,
+  selectedField: professionalGlobalSelectedField,
+  driftById: professionalGlobalDriftById,
+  filterOptions: professionalGlobalFilterOptions,
+  filteredCollection: professionalGlobalFilteredCollection,
+} = useDevDriftFilter({
+  collection: professionalGlobalRawCollection,
+  runtimeModel: ProfessionalCoreRuntime as unknown as Record<string, unknown>,
+})
+
+const professionalGlobalFilteredCards = computed(() =>
+  professionalGlobalFilteredCollection.value
+    .map((raw) => {
+      const entry = professionalGlobalEntryById.value.get(raw.id)
+      return makeProfessionalCard(raw as any, (entry as any)?.user ?? null)
+    })
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+
+const professionalGlobalFilteredPayload = computed(() =>
+  professionalGlobalFilteredCards.value.map((card) => {
+    const drift = professionalGlobalDriftById.value.get(card.id) ?? {
+      missing: [],
+      extra: [],
+    }
+    return { id: card.id, displayName: card.displayName, drift }
+  })
+)
+
+const professionalGlobalAllJsonPayload = computed(() => ({
+  totalProfessionals: professionalGlobalRawCollection.value.length,
+  professionals: professionalGlobalRawCollection.value,
+  driftById: Object.fromEntries(professionalGlobalDriftById.value),
+}))
+
+const copyProfessionalGlobalFiltered = async () => {
   await copyJSON(
     {
-      totalJobs: jobs.value.length,
-      jobs: jobs.value,
-      driftById: Object.fromEntries(jobDriftById.value),
+      driftKind: professionalGlobalDriftKind.value,
+      selectedField: professionalGlobalSelectedField.value || null,
+      totalProfessionals: professionalGlobalRawCollection.value.length,
+      professionals: professionalGlobalFilteredPayload.value,
     },
-    { label: 'Dev · Jobs (Ext)' }
+    { label: 'Dev · Jobs (Ext) · Professionals · Global · Filtered drift' }
+  )
+}
+
+const hasProfessionalLocalCollection = computed(() => Boolean(localProfessionals))
+
+const professionalLocalRawCollection = computed<ProfessionalCore[]>(() => {
+  if (!rawLocalProfessionals) return []
+  return safeArray<unknown>(rawLocalProfessionals.value)
+    .filter((x: any) => Boolean(x?.id)) as ProfessionalCore[]
+})
+
+const professionalLocalEntryById = computed(() => {
+  const map = new Map<string, any>()
+  if (!localProfessionals) return map
+  for (const entry of safeArray<unknown>(localProfessionals.value)) {
+    const id = (entry as any)?.id
+    if (id) map.set(String(id), entry)
+  }
+  return map
+})
+
+const {
+  driftKind: professionalLocalDriftKind,
+  setDriftKind: setProfessionalLocalDriftKind,
+  selectedField: professionalLocalSelectedField,
+  driftById: professionalLocalDriftById,
+  filterOptions: professionalLocalFilterOptions,
+  filteredCollection: professionalLocalFilteredCollection,
+} = useDevDriftFilter({
+  collection: professionalLocalRawCollection,
+  runtimeModel: ProfessionalCoreRuntime as unknown as Record<string, unknown>,
+})
+
+const professionalLocalFilteredCards = computed(() =>
+  professionalLocalFilteredCollection.value
+    .map((raw) => {
+      const entry = professionalLocalEntryById.value.get(raw.id)
+      return makeProfessionalCard(raw as any, (entry as any)?.user ?? null)
+    })
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+
+const professionalLocalFilteredPayload = computed(() =>
+  professionalLocalFilteredCards.value.map((card) => {
+    const drift = professionalLocalDriftById.value.get(card.id) ?? {
+      missing: [],
+      extra: [],
+    }
+    return { id: card.id, displayName: card.displayName, drift }
+  })
+)
+
+const professionalLocalAllJsonPayload = computed(() => ({
+  totalProfessionals: professionalLocalRawCollection.value.length,
+  professionals: professionalLocalRawCollection.value,
+  driftById: Object.fromEntries(professionalLocalDriftById.value),
+}))
+
+const copyProfessionalLocalFiltered = async () => {
+  await copyJSON(
+    {
+      driftKind: professionalLocalDriftKind.value,
+      selectedField: professionalLocalSelectedField.value || null,
+      totalProfessionals: professionalLocalRawCollection.value.length,
+      professionals: professionalLocalFilteredPayload.value,
+    },
+    { label: 'Dev · Jobs (Ext) · Professionals · Tenant · Filtered drift' }
+  )
+}
+
+// Agents
+const { globalAgents, localAgents, rawGlobalAgents, rawLocalAgents } =
+  useAgentCollection()
+const { card: makeAgentCard } = useAgentsInterface()
+
+const agentGlobalRawCollection = computed<AgentCore[]>(() =>
+  safeArray<unknown>(rawGlobalAgents.value)
+    .filter((x: any) => Boolean(x?.id)) as AgentCore[]
+)
+
+const agentGlobalEntryById = computed(() => {
+  const map = new Map<string, AgentDirectoryEntry>()
+  for (const entry of safeArray<unknown>(globalAgents.value) as AgentDirectoryEntry[]) {
+    const id = (entry as any)?.id
+    if (id) map.set(String(id), entry)
+  }
+  return map
+})
+
+const {
+  driftKind: agentGlobalDriftKind,
+  setDriftKind: setAgentGlobalDriftKind,
+  selectedField: agentGlobalSelectedField,
+  driftById: agentGlobalDriftById,
+  filterOptions: agentGlobalFilterOptions,
+  filteredCollection: agentGlobalFilteredCollection,
+} = useDevDriftFilter({
+  collection: agentGlobalRawCollection,
+  runtimeModel: AgentCoreRuntime as unknown as Record<string, unknown>,
+})
+
+const agentGlobalFilteredCards = computed(() =>
+  agentGlobalFilteredCollection.value
+    .map((raw) => {
+      const entry = agentGlobalEntryById.value.get(raw.id)
+      return makeAgentCard((entry ?? (raw as any)) as any)
+    })
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+
+const agentGlobalFilteredPayload = computed(() =>
+  agentGlobalFilteredCards.value.map((card) => {
+    const drift = agentGlobalDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+    return { id: card.id, displayName: card.displayName, drift }
+  })
+)
+
+const agentGlobalAllJsonPayload = computed(() => ({
+  totalAgents: agentGlobalRawCollection.value.length,
+  agents: agentGlobalRawCollection.value,
+  driftById: Object.fromEntries(agentGlobalDriftById.value),
+}))
+
+const copyAgentGlobalFiltered = async () => {
+  await copyJSON(
+    {
+      driftKind: agentGlobalDriftKind.value,
+      selectedField: agentGlobalSelectedField.value || null,
+      totalAgents: agentGlobalRawCollection.value.length,
+      agents: agentGlobalFilteredPayload.value,
+    },
+    { label: 'Dev · Jobs (Ext) · Agents · Global · Filtered drift' }
+  )
+}
+
+const hasAgentLocalCollection = computed(() => Boolean(localAgents))
+
+const agentLocalRawCollection = computed<AgentCore[]>(() => {
+  if (!rawLocalAgents) return []
+  return safeArray<unknown>(rawLocalAgents.value)
+    .filter((x: any) => Boolean(x?.id)) as AgentCore[]
+})
+
+const agentLocalEntryById = computed(() => {
+  const map = new Map<string, AgentDirectoryEntry>()
+  if (!localAgents) return map
+  for (const entry of safeArray<unknown>(localAgents.value) as AgentDirectoryEntry[]) {
+    const id = (entry as any)?.id
+    if (id) map.set(String(id), entry)
+  }
+  return map
+})
+
+const {
+  driftKind: agentLocalDriftKind,
+  setDriftKind: setAgentLocalDriftKind,
+  selectedField: agentLocalSelectedField,
+  driftById: agentLocalDriftById,
+  filterOptions: agentLocalFilterOptions,
+  filteredCollection: agentLocalFilteredCollection,
+} = useDevDriftFilter({
+  collection: agentLocalRawCollection,
+  runtimeModel: AgentCoreRuntime as unknown as Record<string, unknown>,
+})
+
+const agentLocalFilteredCards = computed(() =>
+  agentLocalFilteredCollection.value
+    .map((raw) => {
+      const entry = agentLocalEntryById.value.get(raw.id)
+      return makeAgentCard((entry ?? (raw as any)) as any)
+    })
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+
+const agentLocalFilteredPayload = computed(() =>
+  agentLocalFilteredCards.value.map((card) => {
+    const drift = agentLocalDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+    return { id: card.id, displayName: card.displayName, drift }
+  })
+)
+
+const agentLocalAllJsonPayload = computed(() => ({
+  totalAgents: agentLocalRawCollection.value.length,
+  agents: agentLocalRawCollection.value,
+  driftById: Object.fromEntries(agentLocalDriftById.value),
+}))
+
+const copyAgentLocalFiltered = async () => {
+  await copyJSON(
+    {
+      driftKind: agentLocalDriftKind.value,
+      selectedField: agentLocalSelectedField.value || null,
+      totalAgents: agentLocalRawCollection.value.length,
+      agents: agentLocalFilteredPayload.value,
+    },
+    { label: 'Dev · Jobs (Ext) · Agents · Tenant · Filtered drift' }
   )
 }
 </script>

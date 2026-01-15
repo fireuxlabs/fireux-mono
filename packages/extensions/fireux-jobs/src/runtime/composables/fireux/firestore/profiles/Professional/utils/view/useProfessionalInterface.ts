@@ -3,6 +3,9 @@ import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { professionalConfig, type ProfessionalCore } from '../../../../../../../models/profiles/Professional/Professional.model'
 
+type UserLike = Pick<User, 'display_name' | 'avatar'> &
+  Partial<Pick<User, 'id' | 'handle' | 'email'>>
+
 export namespace ProfessionalCard {
   export type Card = {
     id: string
@@ -24,39 +27,61 @@ export function useProfessionalInterface(
   profile: ProfileRefs<ProfessionalCore>,
   userRef?: Ref<User | null | undefined>
 ) {
-  function csv(list: string[]): string {
-    return list.join(', ')
+  function safeArray<T>(input: unknown): T[] {
+    return Array.isArray(input) ? (input as T[]) : []
   }
 
-  function map(p: ProfessionalCore, u?: User | null): ProfessionalCard.Card {
+  function safeString(input: unknown): string {
+    return typeof input === 'string' ? input : ''
+  }
+
+  function csv(list: unknown): string {
+    return safeArray<string>(list).join(', ')
+  }
+
+  function map(p: ProfessionalCore, u?: UserLike | null): ProfessionalCard.Card {
+    const title = safeString((p as any)?.title)
+    const subtitle = safeString((p as any)?.subtitle)
+    const tagline = safeString((p as any)?.tagline)
+    const tags = safeArray<string>((p as any)?.tags)
+    const specialties = (p as any)?.specialties
+    const locations = (p as any)?.locations
+
     return {
       id: p.id,
       to: `/${professionalConfig.collectionName}/${p.id}`,
 
       avatarUrl: u?.avatar ?? '',
 
-      displayName: u?.display_name ?? p.title,
-      tagline: p.tagline,
-      badges: p.tags,
+      // Canonical: professional pills are user-hydrated; no profile-title fallback for display name.
+      displayName: safeString(u?.display_name),
+      tagline: tagline || title || subtitle,
+      badges: tags,
 
-      bioShort: p.bio_short,
-      specialtiesCsv: csv(p.specialties),
-      locationsCsv: csv(p.locations),
+      bioShort: safeString((p as any)?.bio_short),
+      specialtiesCsv: csv(specialties),
+      locationsCsv: csv(locations),
     }
   }
 
-  function card(target?: ProfessionalCore | null | undefined): ProfessionalCard.Card | null {
+  function card(
+    target?: ProfessionalCore | null | undefined,
+    userOverride?: UserLike | null
+  ): ProfessionalCard.Card | null {
     const p = target ?? profile.coreProfile.value ?? null
     if (!p) return null
-    return map(p, userRef?.value ?? null)
+    const u = userOverride ?? userRef?.value ?? null
+    return map(p, u)
   }
 
   function searchText(target?: ProfessionalCore | null | undefined): string {
     const p = target ?? profile.coreProfile.value ?? null
     if (!p) return ''
     const u = userRef?.value ?? null
-    const name = u?.display_name ?? p.title
-    return `${name} ${p.tagline} ${p.id}`.toLowerCase()
+    const displayName = safeString((u as any)?.display_name)
+    const title = safeString((p as any)?.title)
+    const tagline = safeString((p as any)?.tagline)
+    return `${displayName} ${title} ${tagline} ${p.id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

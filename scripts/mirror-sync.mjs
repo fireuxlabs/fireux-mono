@@ -119,10 +119,15 @@ function linkNameFromRelPath(relPath) {
 
 function readMirrorList(filePath) {
   const raw = fs.readFileSync(filePath, 'utf8')
+  // Return array of { path, linkName } objects
   return raw
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter((line) => line && !line.startsWith('#'))
+    .map((line) => {
+      const [path, comment] = line.split('#').map((s) => s.trim())
+      return { path, linkName: comment && comment.endsWith('.ts') ? comment : undefined }
+    })
 }
 
 function collectFilesRecursive(absPath) {
@@ -195,9 +200,9 @@ function main() {
 
   const relPaths = []
   for (const entry of relEntries) {
-    const entryAbs = path.join(repoRoot, entry)
+    const entryAbs = path.join(repoRoot, entry.path)
     if (!fs.existsSync(entryAbs)) {
-      console.warn(`mirror-sync: missing target: ${entry}`)
+      console.warn(`mirror-sync: missing target: ${entry.path}`)
       continue
     }
 
@@ -205,20 +210,20 @@ function main() {
     if (stat.isDirectory()) {
       const filesAbs = collectFilesRecursive(entryAbs)
       for (const fAbs of filesAbs) {
-        relPaths.push(path.relative(repoRoot, fAbs))
+        relPaths.push({ path: path.relative(repoRoot, fAbs), linkName: undefined })
       }
     } else {
       relPaths.push(entry)
     }
   }
 
-  relPaths.sort((a, b) => a.localeCompare(b))
+  relPaths.sort((a, b) => a.path.localeCompare(b.path))
 
   for (const rel of relPaths) {
-    const targetAbs = path.join(repoRoot, rel)
+    const targetAbs = path.join(repoRoot, rel.path)
     if (!fs.existsSync(targetAbs)) continue
 
-    const baseName = linkNameFromRelPath(rel)
+    const baseName = rel.linkName || linkNameFromRelPath(rel.path)
     const count = (usedNames.get(baseName) || 0) + 1
     usedNames.set(baseName, count)
     const linkName = count === 1 ? baseName : `${baseName}--${count}`

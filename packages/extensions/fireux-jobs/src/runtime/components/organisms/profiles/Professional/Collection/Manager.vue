@@ -81,7 +81,7 @@ const globalDirectoryEntries = computed<DirectoryEntry[]>(() => {
       Boolean((entry as ProfessionalCore | undefined)?.id)
     )
     .map((entry: ProfessionalCore) => {
-      const payload = card(entry)
+      const payload = card(entry, (entry as any)?.user ?? null)
       if (!payload) return null
       return { key: entry.id, card: payload, raw: entry }
     })
@@ -97,7 +97,7 @@ const localDirectoryEntries = computed<DirectoryEntry[]>(() => {
       Boolean((entry as ProfessionalCore | undefined)?.id)
     )
     .map((entry: ProfessionalCore) => {
-      const payload = card(entry)
+      const payload = card(entry, (entry as any)?.user ?? null)
       if (!payload) return null
       return { key: entry.id, card: payload, raw: entry }
     })
