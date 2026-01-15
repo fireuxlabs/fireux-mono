@@ -241,24 +241,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
+import { computed } from 'vue'
 
 import { useChefCollection } from '../../composables/fireux/firestore/profiles/Chef/main/useChefCollection'
 import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef'
-import { ChefCore as ChefCoreRuntime } from '../../models/profiles/Chef/Chef.model'
 import type { ChefCore } from '../../models/profiles/Chef/Chef.model'
+import { ChefCore as ChefCoreRuntime } from '../../models/profiles/Chef/Chef.model'
 
 import { useSupplierCollection } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection'
 import { useSupplier } from '../../composables/fireux/firestore/profiles/Supplier/useSupplier'
-import { SupplierCore as SupplierCoreRuntime } from '../../models/profiles/Supplier/Supplier.model'
 import type { SupplierCore } from '../../models/profiles/Supplier/Supplier.model'
+import { SupplierCore as SupplierCoreRuntime } from '../../models/profiles/Supplier/Supplier.model'
 
 import { useKitchens } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/useKitchens'
 import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
-import { Kitchen as KitchenModelRuntime } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
 import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
+import { Kitchen as KitchenModelRuntime } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
 
 definePageMeta({
   layout: 'dev',
@@ -323,7 +323,12 @@ const chefFilteredCards = computed(() =>
 const chefFilteredPayload = computed(() =>
   chefFilteredCards.value.map((card) => {
     const drift = chefDriftById.value.get(card.id) ?? { missing: [], extra: [] }
-    return { id: card.id, displayName: card.displayName, drift }
+    return {
+      id: card.id,
+      displayName: card.displayName,
+      title: card.tagline,
+      drift,
+    }
   })
 )
 

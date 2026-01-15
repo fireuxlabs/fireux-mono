@@ -94,18 +94,18 @@
 </template>
 
 <script setup lang="ts">
+import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
+import {
+    humanizeDriftPath,
+    resolveDriftFromModel,
+    type DriftKind,
+    type ModelDrift,
+} from 'fireux-core/runtime/composables/dev/useModelDrift'
 import { computed, ref, watch } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from '../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
-import {
-  humanizeDriftPath,
-  resolveDriftFromModel,
-  type DriftKind,
-  type ModelDrift,
-} from 'fireux-core/runtime/composables/dev/useModelDrift'
-import { Company as CompanyModelRuntime } from '../../models/objects/company.model'
 import type { Company as CompanyModel } from '../../models/objects/company.model'
+import { Company as CompanyModelRuntime } from '../../models/objects/company.model'
 
 definePageMeta({
   layout: 'dev',

@@ -1,6 +1,6 @@
-import type { Ref } from 'vue'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { Ref } from 'vue'
 import { supplierConfig, type SupplierCore } from '../../../../../../../models/profiles/Supplier/Supplier.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
@@ -66,7 +66,8 @@ export function useSupplierInterface(
 
       avatarUrl: u?.avatar ?? '',
 
-      displayName: u?.display_name ?? safeString((p as any)?.title),
+      // Canonical: supplier pills are user-hydrated; no profile-title fallback for display name.
+      displayName: safeString(u?.display_name),
       tagline: safeString((p as any)?.tagline),
       badges: tags,
 
@@ -92,8 +93,11 @@ export function useSupplierInterface(
     const p = target ?? profile.coreProfile.value ?? null
     if (!p) return ''
     const u = userRef?.value ?? null
-    const name = u?.display_name ?? p.title
-    return `${name} ${p.tagline} ${p.organization_name} ${p.id}`.toLowerCase()
+    const displayName = safeString((u as any)?.display_name)
+    const title = safeString((p as any)?.title)
+    const tagline = safeString((p as any)?.tagline)
+    const org = safeString((p as any)?.organization_name)
+    return `${displayName} ${title} ${tagline} ${org} ${p.id}`.toLowerCase()
   }
 
   return { card, searchText }

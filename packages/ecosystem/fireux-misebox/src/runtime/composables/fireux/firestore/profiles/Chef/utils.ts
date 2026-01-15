@@ -1,6 +1,6 @@
 import type {
-  ChefCore,
-} from '../../../../../models/profiles/Chef/Chef.model'
+    ChefCore,
+} from '../../../../../models/profiles/Chef/Chef.model';
 
 export function useChefValidation() {
   // Validate chef name

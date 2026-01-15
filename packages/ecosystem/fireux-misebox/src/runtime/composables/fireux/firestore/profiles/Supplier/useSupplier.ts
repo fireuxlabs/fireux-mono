@@ -2,16 +2,16 @@
 
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 import {
-  supplierConfig,
-  type SupplierCore,
+    supplierConfig,
+    type SupplierCore,
 } from '../../../../../models/profiles/Supplier/Supplier.model'
-import type { SupplierCard } from './utils/view/useSupplierInterface'
 import { useSupplierComputed } from './main/useSupplierComputed'
-import { useSupplierInterface } from './utils/view/useSupplierInterface'
-import { useSupplierUpdate } from './main/useSupplierUpdate'
 import { useSupplierCreate } from './main/useSupplierCreate'
+import { useSupplierUpdate } from './main/useSupplierUpdate'
+import type { SupplierCard } from './utils/view/useSupplierInterface'
+import { useSupplierInterface } from './utils/view/useSupplierInterface'
 
-export type { SupplierCore as SupplierProfile, SupplierCard }
+export type { SupplierCard, SupplierCore as SupplierProfile }
 
 /**
  * useSupplier

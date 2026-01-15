@@ -17,9 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
+import { computed } from 'vue';
+import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef';
 
 type Variant = 'pill' | 'cell' | 'preview' | 'profile'
 

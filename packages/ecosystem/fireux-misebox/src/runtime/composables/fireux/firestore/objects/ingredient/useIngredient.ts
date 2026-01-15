@@ -1,8 +1,8 @@
+import { collection, doc, orderBy, query } from 'firebase/firestore'
 import { computed, ref } from 'vue'
-import { useFirestore, useCollection, useDocument } from 'vuefire'
-import { collection, query, orderBy, doc } from 'firebase/firestore'
-import { useIngredientCreate } from './useIngredientCreate'
+import { useCollection, useDocument, useFirestore } from 'vuefire'
 import { normalizeIngredient } from '../../../../../models/objects/Ingredient.model'
+import { useIngredientCreate } from './useIngredientCreate'
 
 // Simple firestore collection fetch - just ingredients
 export function useIngredient() {

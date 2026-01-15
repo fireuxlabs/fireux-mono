@@ -2,8 +2,8 @@
 
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
 import {
-  professionalConfig,
-  type ProfessionalCore,
+    professionalConfig,
+    type ProfessionalCore,
 } from '../../../../../../models/profiles/Professional/Professional.model'
 
 export function useProfessionalCollection() {

@@ -93,18 +93,18 @@
 </template>
 
 <script setup lang="ts">
+import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
+import {
+    humanizeDriftPath,
+    resolveDriftFromModel,
+    type DriftKind,
+    type ModelDrift,
+} from 'fireux-core/runtime/composables/dev/useModelDrift'
 import { computed, ref, watch } from 'vue'
 import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
 import { usePlacesInterface } from '../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
-import {
-  humanizeDriftPath,
-  resolveDriftFromModel,
-  type DriftKind,
-  type ModelDrift,
-} from 'fireux-core/runtime/composables/dev/useModelDrift'
-import { Place as PlaceModelRuntime } from '../../models/objects/place.model'
 import type { Place as PlaceModel } from '../../models/objects/place.model'
+import { Place as PlaceModelRuntime } from '../../models/objects/place.model'
 
 definePageMeta({
   layout: 'dev',

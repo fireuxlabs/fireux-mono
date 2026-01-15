@@ -1,5 +1,5 @@
-import { useRouter } from 'vue-router'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { useRouter } from 'vue-router'
 import { chefConfig } from '../../../../../../models/profiles/Chef/Chef.model'
 
 export function useChefCreate() {

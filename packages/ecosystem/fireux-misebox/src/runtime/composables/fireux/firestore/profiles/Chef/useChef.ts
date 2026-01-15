@@ -2,16 +2,16 @@
 
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 import {
-  chefConfig,
-  type ChefCore,
+    chefConfig,
+    type ChefCore,
 } from '../../../../../models/profiles/Chef/Chef.model'
-import type { ChefCard } from './utils/view/useChefInterface'
 import { useChefComputed } from './main/useChefComputed'
-import { useChefInterface } from './utils/view/useChefInterface'
-import { useChefUpdate } from './main/useChefUpdate'
 import { useChefCreate } from './main/useChefCreate'
+import { useChefUpdate } from './main/useChefUpdate'
+import type { ChefCard } from './utils/view/useChefInterface'
+import { useChefInterface } from './utils/view/useChefInterface'
 
-export type { ChefCore, ChefCard }
+export type { ChefCard, ChefCore }
 
 /**
  * useChef

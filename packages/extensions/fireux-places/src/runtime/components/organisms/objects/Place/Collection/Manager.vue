@@ -3,10 +3,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { usePlaces } from '../../../../../composables/fireux/firestore/objects/place/usePlaces'
-import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
-import type { BasePlace } from '../../../../../models/objects/place.model'
+import { computed } from 'vue';
+import { usePlaces } from '../../../../../composables/fireux/firestore/objects/place/usePlaces';
+import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
+import type { BasePlace } from '../../../../../models/objects/place.model';
 
 const props = withDefaults(
   defineProps<{

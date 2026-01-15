@@ -75,15 +75,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { definePageMeta, useRoute } from '#imports'
+import { computed } from 'vue'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard'
 import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
-import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { User as UserModelRuntime } from '../../models/core/user.model'
-import type { User } from '../../models/core/user.model'
 import type { UserCard } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import type { User } from '../../models/core/user.model'
+import { User as UserModelRuntime } from '../../models/core/user.model'
 
 definePageMeta({
   layout: 'dev',

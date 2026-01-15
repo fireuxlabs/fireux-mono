@@ -25,7 +25,7 @@
     node scripts/migrate-places-canonical.mjs --project your-project-id --commit --limit 500
 */
 
-import { initializeApp, applicationDefault, cert } from 'firebase-admin/app'
+import { applicationDefault, cert, initializeApp } from 'firebase-admin/app'
 import { FieldPath, FieldValue, getFirestore } from 'firebase-admin/firestore'
 import { readFile } from 'node:fs/promises'
 

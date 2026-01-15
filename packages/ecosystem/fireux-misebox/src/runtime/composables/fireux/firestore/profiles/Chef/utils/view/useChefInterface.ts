@@ -1,6 +1,6 @@
-import type { Ref } from 'vue'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { Ref } from 'vue'
 import { chefConfig, type ChefCore } from '../../../../../../../models/profiles/Chef/Chef.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
@@ -45,14 +45,22 @@ export function useChefInterface(
     const specialties = (p as any)?.specialties
     const locations = (p as any)?.locations
 
+    const title = safeString((p as any)?.title)
+    const subtitle = safeString((p as any)?.subtitle)
+    const tagline = safeString((p as any)?.tagline)
+
     return {
       id: p.id,
       to: `/${chefConfig.collectionName}/${p.id}`,
 
       avatarUrl: u?.avatar ?? '',
 
-      displayName: u?.display_name ?? safeString((p as any)?.title),
-      tagline: safeString((p as any)?.tagline),
+      // Canonical: chef pills are user-hydrated; no legacy profile-name fallbacks.
+      displayName: safeString(u?.display_name),
+
+      // Prefer true tagline, else fall back to chef title/subtitle.
+      // This makes pills useful even when docs are missing `tagline`.
+      tagline: tagline || title || subtitle,
       badges: tags,
 
       bioShort: safeString((p as any)?.bio_short),
@@ -76,8 +84,11 @@ export function useChefInterface(
     const p = target ?? profile.coreProfile.value ?? null
     if (!p) return ''
     const u = userRef?.value ?? null
-    const name = u?.display_name ?? p.title
-    return `${name} ${p.tagline} ${p.organization_name} ${p.id}`.toLowerCase()
+    const displayName = safeString((u as any)?.display_name)
+    const title = safeString((p as any)?.title)
+    const tagline = safeString((p as any)?.tagline)
+    const org = safeString((p as any)?.organization_name)
+    return `${displayName} ${title} ${tagline} ${org} ${p.id}`.toLowerCase()
   }
 
   return { card, searchText }

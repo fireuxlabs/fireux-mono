@@ -47,12 +47,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import type { SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
+import { computed, ref } from 'vue'
 import { useSupplierCollection } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection.ts'
-import { useSupplier } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
 import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
+import { useSupplier } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
+import type { SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
 
 const { isTenant } = useFireUXConfig()
 const showGlobalDirectory = ref(!isTenant)

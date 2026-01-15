@@ -47,12 +47,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model.ts'
+import { computed, ref } from 'vue'
 import { useChefCollection } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'
-import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
 import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
+import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
+import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model.ts'
 
 const { isTenant } = useFireUXConfig()
 const showGlobalDirectory = ref(!isTenant)

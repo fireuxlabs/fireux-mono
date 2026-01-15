@@ -94,18 +94,18 @@
 </template>
 
 <script setup lang="ts">
+import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
+import {
+    humanizeDriftPath,
+    resolveDriftFromModel,
+    type DriftKind,
+    type ModelDrift,
+} from 'fireux-core/runtime/composables/dev/useModelDrift'
 import { computed, ref, watch } from 'vue'
 import { useKitchens } from '../../composables/fireux/firestore/objects/kitchen/useKitchens'
 import { useKitchenInterface } from '../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
-import {
-  humanizeDriftPath,
-  resolveDriftFromModel,
-  type DriftKind,
-  type ModelDrift,
-} from 'fireux-core/runtime/composables/dev/useModelDrift'
-import { Kitchen as KitchenModelRuntime } from '../../models/objects/kitchen.model'
 import type { Kitchen as KitchenModel } from '../../models/objects/kitchen.model'
+import { Kitchen as KitchenModelRuntime } from '../../models/objects/kitchen.model'
 
 definePageMeta({
   layout: 'dev',

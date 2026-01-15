@@ -3,16 +3,16 @@
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 
 import {
-  professionalConfig,
-  type ProfessionalCore,
+    professionalConfig,
+    type ProfessionalCore,
 } from '../../../../../models/profiles/Professional/Professional.model'
 
 import { useProfessionalComputed } from './main/useProfessionalComputed'
-import { useProfessionalInterface, type ProfessionalCard } from './utils/view/useProfessionalInterface'
-import { useProfessionalUpdate } from './main/useProfessionalUpdate'
 import { useProfessionalCreate } from './main/useProfessionalCreate'
+import { useProfessionalUpdate } from './main/useProfessionalUpdate'
+import { useProfessionalInterface, type ProfessionalCard } from './utils/view/useProfessionalInterface'
 
-export type { ProfessionalCore as ProfessionalProfile, ProfessionalCard }
+export type { ProfessionalCard, ProfessionalCore as ProfessionalProfile }
 
 /**
  * useProfessional

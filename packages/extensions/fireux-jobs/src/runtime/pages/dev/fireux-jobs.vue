@@ -385,26 +385,26 @@
 
 <script setup lang="ts">
 import { computed } from '#imports'
-import { ref, watch } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import DevProfileDiffList from 'fireux-core/runtime/components/dev/ProfileDiffList.vue'
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import {
-  humanizeDriftPath,
-  resolveDriftFromModel,
-  type DriftKind,
-  type ModelDrift,
+    humanizeDriftPath,
+    resolveDriftFromModel,
+    type DriftKind,
+    type ModelDrift,
 } from 'fireux-core/runtime/composables/dev/useModelDrift'
-import DevProfileDiffList from 'fireux-core/runtime/components/dev/ProfileDiffList.vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { ref, watch } from 'vue'
 import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
 import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
-import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
+import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
-import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
-import { Job as JobModelRuntime } from '../../models/objects/job.model'
 import type { ProfessionalCard } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
-import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import type { Job as JobModel } from '../../models/objects/job.model'
+import { Job as JobModelRuntime } from '../../models/objects/job.model'
 
 type Ref<T> = { value: T }
 

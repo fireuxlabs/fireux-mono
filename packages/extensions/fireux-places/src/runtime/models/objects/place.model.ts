@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
 
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
  * Places canon:

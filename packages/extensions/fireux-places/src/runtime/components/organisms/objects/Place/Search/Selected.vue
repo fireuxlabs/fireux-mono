@@ -59,8 +59,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { PlaceBase as BasePlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import { computed } from 'vue';
+import type { PlaceBase as BasePlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 
 const emit = defineEmits<{
   (e: 'clear'): void
