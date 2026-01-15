@@ -75,15 +75,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { definePageMeta, useRoute } from '#imports'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard'
-import {
-  humanizeDriftPath,
-  resolveDriftFromModel,
-  type DriftKind,
-  type ModelDrift,
-} from '../../composables/dev/useModelDrift'
+import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { User as UserModelRuntime } from '../../models/core/user.model'
@@ -133,46 +128,16 @@ const userCards = computed<UserCard.Card[]>(() =>
     .filter((c): c is UserCard.Card => Boolean(c))
 )
 
-const driftKind = ref<DriftKind>('missing')
-const selectedField = ref<string>('')
-
-const setDriftKind = (kind: DriftKind) => {
-  driftKind.value = kind
-}
-
-watch(driftKind, () => {
-  selectedField.value = ''
+const {
+  driftKind,
+  setDriftKind,
+  selectedField,
+  driftById,
+  filterOptions,
+} = useDevDriftFilter({
+  collection: viewedCollection,
+  runtimeModel: UserModelRuntime as unknown as Record<string, unknown>,
 })
-
-const driftById = computed(() => {
-  const map = new Map<string, ModelDrift>()
-  for (const user of viewedCollection.value) {
-    if (!user?.id) continue
-    const drift = resolveDriftFromModel(
-      UserModelRuntime as unknown as Record<string, unknown>,
-      user as unknown as Record<string, unknown>
-    )
-    map.set(user.id, drift)
-  }
-  return map
-})
-
-const fieldOptions = computed(() => {
-  const counts = new Map<string, number>()
-  for (const drift of driftById.value.values()) {
-    const list = driftKind.value === 'missing' ? drift.missing : drift.extra
-    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
-  }
-
-  return [...counts.entries()]
-    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
-    .sort((a, b) => a.label.localeCompare(b.label))
-})
-
-const filterOptions = computed(() => [
-  { label: 'All', value: '' },
-  ...fieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
-])
 
 const filteredUserCards = computed<UserCard.Card[]>(() => {
   if (!selectedField.value) return userCards.value

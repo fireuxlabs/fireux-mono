@@ -3,6 +3,9 @@ import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { supplierConfig, type SupplierCore } from '../../../../../../../models/profiles/Supplier/Supplier.model'
 
+type UserLike = Pick<User, 'display_name' | 'avatar'> &
+  Partial<Pick<User, 'id' | 'handle' | 'email'>>
+
 export namespace SupplierCard {
   export type Card = {
     id: string
@@ -26,37 +29,63 @@ export function useSupplierInterface(
   profile: ProfileRefs<SupplierCore>,
   userRef?: Ref<User | null | undefined>
 ) {
-  function csv(list: string[]): string {
-    return list.join(', ')
+  function safeArray<T>(input: unknown): T[] {
+    return Array.isArray(input) ? (input as T[]) : []
   }
 
-  function locationLabel(list: Array<{ city: string; country: string }>): string {
-    return list.map((x) => `${x.city}, ${x.country}`).join(' · ')
+  function safeString(input: unknown): string {
+    return typeof input === 'string' ? input : ''
   }
 
-  function map(p: SupplierCore, u?: User | null): SupplierCard.Card {
+  function csv(list: unknown): string {
+    return safeArray<string>(list).join(', ')
+  }
+
+  function locationLabel(list: unknown): string {
+    const parsed = safeArray<unknown>(list)
+      .map((x: any) => {
+        const city = safeString(x?.city)
+        const country = safeString(x?.country)
+        if (!city && !country) return ''
+        return [city, country].filter(Boolean).join(', ')
+      })
+      .filter(Boolean)
+
+    return parsed.join(' · ')
+  }
+
+  function map(p: SupplierCore, u?: UserLike | null): SupplierCard.Card {
+    const tags = safeArray<string>((p as any)?.tags)
+    const specialties = (p as any)?.specialties
+    const categories = (p as any)?.categories
+    const locations = (p as any)?.locations
+
     return {
       id: p.id,
       to: `/${supplierConfig.collectionName}/${p.id}`,
 
       avatarUrl: u?.avatar ?? '',
 
-      displayName: u?.display_name ?? p.title,
-      tagline: p.tagline,
-      badges: p.tags,
+      displayName: u?.display_name ?? safeString((p as any)?.title),
+      tagline: safeString((p as any)?.tagline),
+      badges: tags,
 
-      bioShort: p.bio_short,
-      specialtiesCsv: csv(p.specialties),
-      categoriesCsv: csv(p.categories),
-      organizationName: p.organization_name,
-      locationsLabel: locationLabel(p.locations),
+      bioShort: safeString((p as any)?.bio_short),
+      specialtiesCsv: csv(specialties),
+      categoriesCsv: csv(categories),
+      organizationName: safeString((p as any)?.organization_name),
+      locationsLabel: locationLabel(locations),
     }
   }
 
-  function card(target?: SupplierCore | null | undefined): SupplierCard.Card | null {
+  function card(
+    target?: SupplierCore | null | undefined,
+    userOverride?: UserLike | null
+  ): SupplierCard.Card | null {
     const p = target ?? profile.coreProfile.value ?? null
     if (!p) return null
-    return map(p, userRef?.value ?? null)
+    const u = userOverride ?? userRef?.value ?? null
+    return map(p, u)
   }
 
   function searchText(target?: SupplierCore | null | undefined): string {

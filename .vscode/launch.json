@@ -33,6 +33,30 @@
       "command": "pnpm dev:cleanbox",
       "cwd": "${workspaceFolder}",
       "presentation": { "group": "Dev Servers", "order": 3 }
+    },
+    {
+      "name": "🦌 Niederhorn dev (3003)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:niederhorn",
+      "cwd": "${workspaceFolder}",
+      "presentation": { "group": "Dev Servers", "order": 4 }
+    },
+    {
+      "name": "🧽 Richies dev (3004)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:richies",
+      "cwd": "${workspaceFolder}",
+      "presentation": { "group": "Dev Servers", "order": 5 }
+    },
+    {
+      "name": "🏢 Tenant dev (3005)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:tenant",
+      "cwd": "${workspaceFolder}",
+      "presentation": { "group": "Dev Servers", "order": 6 }
     }
   ],
   "compounds": [
@@ -42,6 +66,17 @@
         "🔥 FireUX dev (3000)",
         "🥘 MiseBox dev (3001)",
         "🧼 CleanBox dev (3002)"
+      ]
+    },
+    {
+      "name": "All dev servers extended (3000-3005)",
+      "configurations": [
+        "🔥 FireUX dev (3000)",
+        "🥘 MiseBox dev (3001)",
+        "🧼 CleanBox dev (3002)",
+        "🦌 Niederhorn dev (3003)",
+        "🧽 Richies dev (3004)",
+        "🏢 Tenant dev (3005)"
       ]
     }
   ]

@@ -60,6 +60,8 @@ const showGlobalDirectory = ref(!isTenant)
 const { globalSuppliers, localSuppliers } = useSupplierCollection()
 const { card } = useSupplier()
 
+type SupplierEntryWithUser = SupplierCore & { user?: any }
+
 type DirectoryEntry = {
   key: string
   card: SupplierCard.Card
@@ -71,13 +73,14 @@ const globalDirectoryEntries = computed<DirectoryEntry[]>(() => {
   if (!list.length) return []
 
   return list
-    .filter((entry: unknown): entry is SupplierCore =>
-      Boolean((entry as SupplierCore | undefined)?.id)
+    .filter((entry: unknown): entry is SupplierEntryWithUser =>
+      Boolean((entry as SupplierEntryWithUser | undefined)?.id)
     )
-    .map((entry: SupplierCore) => {
-      const payload = card(entry)
+    .map((entry: SupplierEntryWithUser) => {
+      const payload = card(entry, entry.user ?? null)
       if (!payload) return null
-      return { key: entry.id, card: payload, raw: entry }
+      const { user: _user, ...raw } = entry as any
+      return { key: entry.id, card: payload, raw: raw as SupplierCore }
     })
     .filter((entry): entry is DirectoryEntry => Boolean(entry))
 })
@@ -87,13 +90,14 @@ const localDirectoryEntries = computed<DirectoryEntry[]>(() => {
   if (!list.length) return []
 
   return list
-    .filter((entry: unknown): entry is SupplierCore =>
-      Boolean((entry as SupplierCore | undefined)?.id)
+    .filter((entry: unknown): entry is SupplierEntryWithUser =>
+      Boolean((entry as SupplierEntryWithUser | undefined)?.id)
     )
-    .map((entry: SupplierCore) => {
-      const payload = card(entry)
+    .map((entry: SupplierEntryWithUser) => {
+      const payload = card(entry, entry.user ?? null)
       if (!payload) return null
-      return { key: entry.id, card: payload, raw: entry }
+      const { user: _user, ...raw } = entry as any
+      return { key: entry.id, card: payload, raw: raw as SupplierCore }
     })
     .filter((entry): entry is DirectoryEntry => Boolean(entry))
 })

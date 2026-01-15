@@ -3,6 +3,9 @@ import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { chefConfig, type ChefCore } from '../../../../../../../models/profiles/Chef/Chef.model'
 
+type UserLike = Pick<User, 'display_name' | 'avatar'> &
+  Partial<Pick<User, 'id' | 'handle' | 'email'>>
+
 export namespace ChefCard {
   export type Card = {
     id: string
@@ -25,32 +28,48 @@ export function useChefInterface(
   profile: ProfileRefs<ChefCore>,
   userRef?: Ref<User | null | undefined>
 ) {
-  function csv(list: string[]): string {
-    return list.join(', ')
+  function safeArray<T>(input: unknown): T[] {
+    return Array.isArray(input) ? (input as T[]) : []
   }
 
-  function map(p: ChefCore, u?: User | null): ChefCard.Card {
+  function safeString(input: unknown): string {
+    return typeof input === 'string' ? input : ''
+  }
+
+  function csv(list: unknown): string {
+    return safeArray<string>(list).join(', ')
+  }
+
+  function map(p: ChefCore, u?: UserLike | null): ChefCard.Card {
+    const tags = safeArray<string>((p as any)?.tags)
+    const specialties = (p as any)?.specialties
+    const locations = (p as any)?.locations
+
     return {
       id: p.id,
       to: `/${chefConfig.collectionName}/${p.id}`,
 
       avatarUrl: u?.avatar ?? '',
 
-      displayName: u?.display_name ?? p.title,
-      tagline: p.tagline,
-      badges: p.tags,
+      displayName: u?.display_name ?? safeString((p as any)?.title),
+      tagline: safeString((p as any)?.tagline),
+      badges: tags,
 
-      bioShort: p.bio_short,
-      specialtiesCsv: csv(p.specialties),
-      locationsCsv: csv(p.locations),
-      organizationName: p.organization_name,
+      bioShort: safeString((p as any)?.bio_short),
+      specialtiesCsv: csv(specialties),
+      locationsCsv: csv(locations),
+      organizationName: safeString((p as any)?.organization_name),
     }
   }
 
-  function card(target?: ChefCore | null | undefined): ChefCard.Card | null {
+  function card(
+    target?: ChefCore | null | undefined,
+    userOverride?: UserLike | null
+  ): ChefCard.Card | null {
     const p = target ?? profile.coreProfile.value ?? null
     if (!p) return null
-    return map(p, userRef?.value ?? null)
+    const u = userOverride ?? userRef?.value ?? null
+    return map(p, u)
   }
 
   function searchText(target?: ChefCore | null | undefined): string {

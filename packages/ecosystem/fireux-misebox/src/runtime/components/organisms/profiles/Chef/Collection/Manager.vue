@@ -60,6 +60,8 @@ const showGlobalDirectory = ref(!isTenant)
 const { globalChefs, localChefs } = useChefCollection()
 const { card } = useChef()
 
+type ChefEntryWithUser = ChefCore & { user?: any }
+
 type DirectoryEntry = {
   key: string
   card: ChefCard.Card
@@ -71,11 +73,14 @@ const globalDirectoryEntries = computed<DirectoryEntry[]>(() => {
   if (!list.length) return []
 
   return list
-    .filter((entry: unknown): entry is ChefCore => Boolean((entry as ChefCore | undefined)?.id))
-    .map((entry: ChefCore) => {
-      const payload = card(entry)
+    .filter((entry: unknown): entry is ChefEntryWithUser =>
+      Boolean((entry as ChefEntryWithUser | undefined)?.id)
+    )
+    .map((entry: ChefEntryWithUser) => {
+      const payload = card(entry, entry.user ?? null)
       if (!payload) return null
-      return { key: entry.id, card: payload, raw: entry }
+      const { user: _user, ...raw } = entry as any
+      return { key: entry.id, card: payload, raw: raw as ChefCore }
     })
     .filter((entry): entry is DirectoryEntry => Boolean(entry))
 })
@@ -85,11 +90,14 @@ const localDirectoryEntries = computed<DirectoryEntry[]>(() => {
   if (!list.length) return []
 
   return list
-    .filter((entry: unknown): entry is ChefCore => Boolean((entry as ChefCore | undefined)?.id))
-    .map((entry: ChefCore) => {
-      const payload = card(entry)
+    .filter((entry: unknown): entry is ChefEntryWithUser =>
+      Boolean((entry as ChefEntryWithUser | undefined)?.id)
+    )
+    .map((entry: ChefEntryWithUser) => {
+      const payload = card(entry, entry.user ?? null)
       if (!payload) return null
-      return { key: entry.id, card: payload, raw: entry }
+      const { user: _user, ...raw } = entry as any
+      return { key: entry.id, card: payload, raw: raw as ChefCore }
     })
     .filter((entry): entry is DirectoryEntry => Boolean(entry))
 })

@@ -24,35 +24,28 @@ function linkNameFromRelPath(relPath) {
   //   -> core-api-dev-images.get.ts
 
   function normalizeModelTail(modelParts) {
-    // modelParts are path segments after `models/`.
-    // Prefer compact, stable names:
-    // - models/profiles/Agent/Agent.model.ts -> profile-Agent.model.ts
-    // - models/objects/job.model.ts -> object-job.model.ts
-    // - models/core/user.model.ts -> model-user.model.ts
-
+    // Human-friendly: chef-model.ts, supplier-model.ts, app-interface.ts, user-interface.ts, etc.
     if (!Array.isArray(modelParts) || modelParts.length === 0) return modelParts
 
-    const [rawKind, ...rest] = modelParts
-    const kindMap = {
-      profiles: 'profile',
-      objects: 'object',
-      core: 'model',
+    // Look for Chef/Supplier/App/User and model/interface in the path
+    const last = modelParts[modelParts.length - 1]
+    const prev = modelParts.length >= 2 ? modelParts[modelParts.length - 2] : ''
+    const lcLast = last.toLowerCase()
+    const lcPrev = prev.toLowerCase()
+
+    // Model files: Chef.model.ts, Supplier.model.ts, etc.
+    if (lcLast.endsWith('.model.ts')) {
+      const entity = lcPrev || lcLast.replace('.model.ts', '')
+      return [`${entity}-model.ts`]
     }
-    const kind = kindMap[rawKind] || rawKind
-
-    if (rest.length === 0) return [kind]
-
-    const last = rest[rest.length - 1]
-    const prev = rest.length >= 2 ? rest[rest.length - 2] : null
-
-    // If the folder repeats the model name (Agent/Agent.model.ts), drop the folder.
-    if (prev && last.toLowerCase().startsWith(`${prev.toLowerCase()}.`)) {
-      return [kind, last]
+    // Interface files: useChefInterface.ts, useSupplierInterface.ts, etc.
+    if (lcLast.startsWith('use') && lcLast.endsWith('interface.ts')) {
+      // useChefInterface.ts -> chef-interface.ts
+      const entity = lcLast.replace(/^use/i, '').replace(/interface\.ts$/i, '')
+      return [`${entity}-interface.ts`]
     }
-
-    // Otherwise keep the last 2 segments to retain context.
-    if (rest.length >= 2) return [kind, ...rest.slice(-2)]
-    return [kind, last]
+    // Fallback: just use the last segment, lowercased
+    return [lcLast]
   }
 
   const parts = relPath.split('/').filter(Boolean)
@@ -113,8 +106,14 @@ function linkNameFromRelPath(relPath) {
     .map((seg) => seg.replace(/\.(vue|ts|js|mjs)$/i, (m) => m))
     .map((seg) => seg.replaceAll(' ', '-'))
     .map((seg) => seg.replaceAll('_', '-'))
+    .map((seg) => seg.toLowerCase())
 
-  // Keep extension on last segment; make everything else dash-joined.
+  // For model/interface files, just use the cleaned name (no pkgSlug prefix)
+  if (cleaned.length === 1 && (cleaned[0].endsWith('-model.ts') || cleaned[0].endsWith('-interface.ts'))) {
+    return cleaned[0]
+  }
+
+  // For .vue files, keep the old logic but lowercase
   return [pkgSlug, ...cleaned].join('-')
 }
 

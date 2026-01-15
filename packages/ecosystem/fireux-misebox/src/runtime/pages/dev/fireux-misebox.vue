@@ -65,16 +65,11 @@
             description="Adjust filters or add chef documents to Firestore."
           />
 
-          <UButton
-            v-for="card in chefFilteredCards"
+          <OrganismsProfilesChefCollectionList
             v-else
-            :key="card.id"
-            color="neutral"
-            variant="ghost"
-            class="w-full justify-start px-3 py-3"
-          >
-            <OrganismsProfilesChefCardsPill v-bind="card" />
-          </UButton>
+            :cards="chefFilteredCards"
+            variant="pill"
+          />
         </div>
       </DevPane>
 
@@ -145,16 +140,11 @@
             description="Adjust filters or add supplier documents to Firestore."
           />
 
-          <UButton
-            v-for="card in supplierFilteredCards"
+          <OrganismsProfilesSupplierCollectionList
             v-else
-            :key="card.id"
-            color="neutral"
-            variant="ghost"
-            class="w-full justify-start px-3 py-3"
-          >
-            <OrganismsProfilesSupplierCardsPill v-bind="card" />
-          </UButton>
+            :cards="supplierFilteredCards"
+            variant="pill"
+          />
         </div>
       </DevPane>
 
@@ -225,22 +215,17 @@
             description="Adjust filters or add kitchen documents to Firestore."
           />
 
-          <UButton
-            v-for="card in kitchenFilteredCards"
-            v-else
-            :key="card.id"
-            color="neutral"
-            variant="ghost"
-            class="w-full justify-start px-3 py-3"
-          >
+          <div v-else class="grid gap-3 md:grid-cols-2">
             <OrganismsObjectsKitchenCardsCell
+              v-for="card in kitchenFilteredCards"
+              :key="card.id"
               :to="card.to"
               :name="card.name"
               :website="card.website"
               :badges="card.badges"
               :avatar-url="card.avatarUrl"
             />
-          </UButton>
+          </div>
         </div>
       </DevPane>
 
@@ -256,14 +241,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
-import {
-  humanizeDriftPath,
-  resolveDriftFromModel,
-  type DriftKind,
-  type ModelDrift,
-} from 'fireux-core/runtime/composables/dev/useModelDrift'
+import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 
 import { useChefCollection } from '../../composables/fireux/firestore/profiles/Chef/main/useChefCollection'
 import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef'
@@ -299,70 +279,46 @@ definePageMeta({
 const { copyJSON, copying } = useDevClipboard()
 
 // Chefs
-const { rawGlobalChefs } = useChefCollection()
+const { rawGlobalChefs, globalChefs } = useChefCollection()
 const { card: resolveChefCard } = useChef()
 
+type ChefEntryWithUser = ChefCore & { user?: any }
+
+const chefEntriesWithUser = computed<ChefEntryWithUser[]>(() =>
+  (globalChefs.value ?? []).filter((c: any): c is ChefEntryWithUser => Boolean(c?.id))
+)
+
+// Drift should be computed against the core model only (ignore attached `user`).
 const chefCollection = computed<ChefCore[]>(() =>
   (rawGlobalChefs.value ?? []).filter((c: any): c is ChefCore => Boolean(c?.id))
 )
 
-const chefCards = computed(() =>
-  chefCollection.value
-    .map((c) => resolveChefCard(c as any))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
-const chefDriftKind = ref<DriftKind>('missing')
-const chefSelectedField = ref('')
-
-const setChefDriftKind = (kind: DriftKind) => {
-  chefDriftKind.value = kind
-}
-
-watch(chefDriftKind, () => {
-  chefSelectedField.value = ''
-})
-
-const chefDriftById = computed(() => {
-  const map = new Map<string, ModelDrift>()
-  for (const chef of chefCollection.value) {
-    if (!chef?.id) continue
-    map.set(
-      chef.id,
-      resolveDriftFromModel(
-        ChefCoreRuntime as unknown as Record<string, unknown>,
-        chef as unknown as Record<string, unknown>
-      )
-    )
+const chefUserById = computed(() => {
+  const map = new Map<string, any>()
+  for (const entry of chefEntriesWithUser.value) {
+    if (!entry?.id) continue
+    map.set(entry.id, entry.user)
   }
   return map
 })
 
-const chefFieldOptions = computed(() => {
-  const counts = new Map<string, number>()
-  for (const drift of chefDriftById.value.values()) {
-    const list = chefDriftKind.value === 'missing' ? drift.missing : drift.extra
-    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
-  }
-  return [...counts.entries()]
-    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
-    .sort((a, b) => a.label.localeCompare(b.label))
+const {
+  driftKind: chefDriftKind,
+  setDriftKind: setChefDriftKind,
+  selectedField: chefSelectedField,
+  driftById: chefDriftById,
+  filterOptions: chefFilterOptions,
+  filteredCollection: chefFilteredCollection,
+} = useDevDriftFilter({
+  collection: chefCollection,
+  runtimeModel: ChefCoreRuntime as unknown as Record<string, unknown>,
 })
 
-const chefFilterOptions = computed(() => [
-  { label: 'All', value: '' },
-  ...chefFieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
-])
-
-const chefFilteredCards = computed(() => {
-  if (!chefSelectedField.value) return chefCards.value
-  return chefCards.value.filter((card) => {
-    const drift = chefDriftById.value.get(card.id)
-    if (!drift) return false
-    const list = chefDriftKind.value === 'missing' ? drift.missing : drift.extra
-    return list.includes(chefSelectedField.value)
-  })
-})
+const chefFilteredCards = computed(() =>
+  chefFilteredCollection.value
+    .map((c) => resolveChefCard(c as any, chefUserById.value.get(c.id) ?? null))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
 
 const chefFilteredPayload = computed(() =>
   chefFilteredCards.value.map((card) => {
@@ -372,6 +328,7 @@ const chefFilteredPayload = computed(() =>
 )
 
 const chefAllJsonPayload = computed(() => ({
+  totalChefs: chefCollection.value.length,
   chefs: chefCollection.value,
   driftById: Object.fromEntries(chefDriftById.value),
 }))
@@ -389,70 +346,46 @@ const copyChefFiltered = async () => {
 }
 
 // Suppliers
-const { rawGlobalSuppliers } = useSupplierCollection()
+const { rawGlobalSuppliers, globalSuppliers } = useSupplierCollection()
 const { card: resolveSupplierCard } = useSupplier()
 
+type SupplierEntryWithUser = SupplierCore & { user?: any }
+
+const supplierEntriesWithUser = computed<SupplierEntryWithUser[]>(() =>
+  (globalSuppliers.value ?? []).filter((s: any): s is SupplierEntryWithUser => Boolean(s?.id))
+)
+
+// Drift should be computed against the core model only (ignore attached `user`).
 const supplierCollection = computed<SupplierCore[]>(() =>
   (rawGlobalSuppliers.value ?? []).filter((s: any): s is SupplierCore => Boolean(s?.id))
 )
 
-const supplierCards = computed(() =>
-  supplierCollection.value
-    .map((s) => resolveSupplierCard(s as any))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
-const supplierDriftKind = ref<DriftKind>('missing')
-const supplierSelectedField = ref('')
-
-const setSupplierDriftKind = (kind: DriftKind) => {
-  supplierDriftKind.value = kind
-}
-
-watch(supplierDriftKind, () => {
-  supplierSelectedField.value = ''
-})
-
-const supplierDriftById = computed(() => {
-  const map = new Map<string, ModelDrift>()
-  for (const supplier of supplierCollection.value) {
-    if (!supplier?.id) continue
-    map.set(
-      supplier.id,
-      resolveDriftFromModel(
-        SupplierCoreRuntime as unknown as Record<string, unknown>,
-        supplier as unknown as Record<string, unknown>
-      )
-    )
+const supplierUserById = computed(() => {
+  const map = new Map<string, any>()
+  for (const entry of supplierEntriesWithUser.value) {
+    if (!entry?.id) continue
+    map.set(entry.id, entry.user)
   }
   return map
 })
 
-const supplierFieldOptions = computed(() => {
-  const counts = new Map<string, number>()
-  for (const drift of supplierDriftById.value.values()) {
-    const list = supplierDriftKind.value === 'missing' ? drift.missing : drift.extra
-    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
-  }
-  return [...counts.entries()]
-    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
-    .sort((a, b) => a.label.localeCompare(b.label))
+const {
+  driftKind: supplierDriftKind,
+  setDriftKind: setSupplierDriftKind,
+  selectedField: supplierSelectedField,
+  driftById: supplierDriftById,
+  filterOptions: supplierFilterOptions,
+  filteredCollection: supplierFilteredCollection,
+} = useDevDriftFilter({
+  collection: supplierCollection,
+  runtimeModel: SupplierCoreRuntime as unknown as Record<string, unknown>,
 })
 
-const supplierFilterOptions = computed(() => [
-  { label: 'All', value: '' },
-  ...supplierFieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
-])
-
-const supplierFilteredCards = computed(() => {
-  if (!supplierSelectedField.value) return supplierCards.value
-  return supplierCards.value.filter((card) => {
-    const drift = supplierDriftById.value.get(card.id)
-    if (!drift) return false
-    const list = supplierDriftKind.value === 'missing' ? drift.missing : drift.extra
-    return list.includes(supplierSelectedField.value)
-  })
-})
+const supplierFilteredCards = computed(() =>
+  supplierFilteredCollection.value
+    .map((s) => resolveSupplierCard(s as any, supplierUserById.value.get(s.id) ?? null))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
 
 const supplierFilteredPayload = computed(() =>
   supplierFilteredCards.value.map((card) => {
@@ -462,6 +395,7 @@ const supplierFilteredPayload = computed(() =>
 )
 
 const supplierAllJsonPayload = computed(() => ({
+  totalSuppliers: supplierCollection.value.length,
   suppliers: supplierCollection.value,
   driftById: Object.fromEntries(supplierDriftById.value),
 }))
@@ -483,63 +417,23 @@ const { collection: kitchensRaw } = useKitchens<Kitchen>()
 const kitchens = computed<Kitchen[]>(() => (kitchensRaw.value ?? []) as Kitchen[])
 const { card: resolveKitchenCard } = useKitchenInterface()
 
-const kitchenCards = computed(() =>
-  kitchens.value
+const {
+  driftKind: kitchenDriftKind,
+  setDriftKind: setKitchenDriftKind,
+  selectedField: kitchenSelectedField,
+  driftById: kitchenDriftById,
+  filterOptions: kitchenFilterOptions,
+  filteredCollection: kitchenFilteredCollection,
+} = useDevDriftFilter({
+  collection: kitchens,
+  runtimeModel: KitchenModelRuntime as unknown as Record<string, unknown>,
+})
+
+const kitchenFilteredCards = computed(() =>
+  kitchenFilteredCollection.value
     .map((k) => resolveKitchenCard(k))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 )
-
-const kitchenDriftKind = ref<DriftKind>('missing')
-const kitchenSelectedField = ref('')
-
-const setKitchenDriftKind = (kind: DriftKind) => {
-  kitchenDriftKind.value = kind
-}
-
-watch(kitchenDriftKind, () => {
-  kitchenSelectedField.value = ''
-})
-
-const kitchenDriftById = computed(() => {
-  const map = new Map<string, ModelDrift>()
-  for (const kitchen of kitchens.value) {
-    if (!kitchen?.id) continue
-    map.set(
-      kitchen.id,
-      resolveDriftFromModel(
-        KitchenModelRuntime as unknown as Record<string, unknown>,
-        kitchen as unknown as Record<string, unknown>
-      )
-    )
-  }
-  return map
-})
-
-const kitchenFieldOptions = computed(() => {
-  const counts = new Map<string, number>()
-  for (const drift of kitchenDriftById.value.values()) {
-    const list = kitchenDriftKind.value === 'missing' ? drift.missing : drift.extra
-    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
-  }
-  return [...counts.entries()]
-    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
-    .sort((a, b) => a.label.localeCompare(b.label))
-})
-
-const kitchenFilterOptions = computed(() => [
-  { label: 'All', value: '' },
-  ...kitchenFieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
-])
-
-const kitchenFilteredCards = computed(() => {
-  if (!kitchenSelectedField.value) return kitchenCards.value
-  return kitchenCards.value.filter((card) => {
-    const drift = kitchenDriftById.value.get(card.id)
-    if (!drift) return false
-    const list = kitchenDriftKind.value === 'missing' ? drift.missing : drift.extra
-    return list.includes(kitchenSelectedField.value)
-  })
-})
 
 const kitchenFilteredPayload = computed(() =>
   kitchenFilteredCards.value.map((card) => {
@@ -549,6 +443,7 @@ const kitchenFilteredPayload = computed(() =>
 )
 
 const kitchenAllJsonPayload = computed(() => ({
+  totalKitchens: kitchens.value.length,
   kitchens: kitchens.value,
   driftById: Object.fromEntries(kitchenDriftById.value),
 }))

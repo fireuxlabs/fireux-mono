@@ -116,6 +116,65 @@
         "$tsc"
       ],
       "group": "build"
+    },
+    {
+      "label": "pnpm: lint",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "lint"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": false,
+      "problemMatcher": [
+        "$eslint-compact"
+      ],
+      "group": "test"
+    },
+    {
+      "label": "pnpm: typecheck",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "typecheck"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": false,
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "pnpm: guard",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "guard"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": false,
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "pnpm: format",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "format"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": false,
+      "problemMatcher": []
     }
   ]
 }
