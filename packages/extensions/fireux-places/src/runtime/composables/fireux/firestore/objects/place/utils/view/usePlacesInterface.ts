@@ -38,14 +38,14 @@ export function usePlacesInterface() {
   function map(place: BasePlace): PlaceCard.Card {
     return {
       id: place.id,
-      to: `/places/${place.id}`,
+      to: `/places/${encodeURIComponent(place.id)}`,
 
-	  avatarUrl: place.place_image,
+      avatarUrl: place.place_image ?? '',
       title: place.name,
       subtitle: place.formatted_address,
       badges: [],
 
-	  imageUrl: place.place_image,
+      imageUrl: place.place_image ?? '',
 
       name: place.name,
       formattedAddress: place.formatted_address,

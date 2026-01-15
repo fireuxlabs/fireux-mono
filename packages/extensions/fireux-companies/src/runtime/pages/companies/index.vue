@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 
 definePageMeta({
   layout: 'default',
@@ -33,5 +34,6 @@ const pageTitle = 'Companies'
 const pageDescription =
   'Create a company and browse all companies available to this runtime.'
 
-useHead({ title: pageTitle })
+const { appName } = useFireUXConfig()
+useHead({ title: `${appName} | ${pageTitle}` })
 </script>

@@ -53,12 +53,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model.ts'
+import { computed, ref } from 'vue'
 import { useProfessionalCollection } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
-import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
+import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
+import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model.ts'
 
 const { isTenant } = useFireUXConfig()
 const showGlobalDirectory = ref(true)

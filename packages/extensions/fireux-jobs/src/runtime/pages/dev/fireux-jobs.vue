@@ -396,8 +396,8 @@
 
 <script setup lang="ts">
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
 import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'

@@ -4,8 +4,8 @@ import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/cor
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 
 import {
-    professionalConfig,
-    type ProfessionalCore,
+  professionalConfig,
+  type ProfessionalCore,
 } from '../../../../../models/profiles/Professional/Professional.model'
 
 import { useProfessionalComputed } from './main/useProfessionalComputed'

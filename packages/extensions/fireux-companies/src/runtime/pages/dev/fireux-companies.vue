@@ -78,30 +78,21 @@
         </div>
       </DevPane>
 
-      <div class="flex justify-end">
-        <UButton
-          size="xs"
-          variant="outline"
-          :disabled="copying"
-          :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document'"
-          @click="copyAll"
-        >
-          {{ copying ? 'Copying…' : 'Copy all (JSON)' }}
-        </UButton>
-      </div>
+      <DevPane
+        title="Companies (JSON)"
+        description="Raw collection payload + drift map (copyable)."
+        debug-title="Dev · Companies (Ext) · All data"
+        :debug-data="allJsonPayload"
+        :default-open="false"
+      />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
-import {
-    humanizeDriftPath,
-    resolveDriftFromModel,
-    type DriftKind,
-    type ModelDrift,
-} from 'fireux-core/runtime/composables/dev/useModelDrift'
-import { computed, ref, watch } from 'vue'
+import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
+import { computed } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from '../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 import type { Company as CompanyModel } from '../../models/objects/company.model'
@@ -126,82 +117,40 @@ const { card: makeCard } = useCompanyInterface()
 
 const companyList = computed<CompanyModel[]>(() => companies.value ?? [])
 
-const companyCards = computed(() =>
-  companyList.value
-    .map((c) => makeCard(c))
+const {
+  driftKind,
+  setDriftKind,
+  selectedField,
+  driftById,
+  filterOptions,
+  filteredCollection,
+} = useDevDriftFilter({
+  collection: companyList,
+  runtimeModel: CompanyModelRuntime as unknown as Record<string, unknown>,
+})
+
+const filteredCards = computed(() =>
+  filteredCollection.value
+    .map((company) => makeCard(company))
     .filter((card): card is NonNullable<typeof card> => Boolean(card))
 )
 
-type DriftById = Map<string, ModelDrift>
-
-const driftKind = ref<DriftKind>('missing')
-const selectedField = ref<string>('')
-
-const setDriftKind = (kind: DriftKind) => {
-  driftKind.value = kind
-}
-
-watch(driftKind, () => {
-  selectedField.value = ''
-})
-
-const driftById = computed<DriftById>(() => {
-  const map = new Map<string, ModelDrift>()
-  for (const company of companyList.value) {
-    if (!company?.id) continue
-    const drift = resolveDriftFromModel(
-      CompanyModelRuntime as unknown as Record<string, unknown>,
-      company as unknown as Record<string, unknown>
-    )
-    map.set(company.id, drift)
-  }
-  return map
-})
-
-const fieldOptions = computed(() => {
-  const counts = new Map<string, number>()
-  for (const drift of driftById.value.values()) {
-    const list = driftKind.value === 'missing' ? drift.missing : drift.extra
-    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
-  }
-
-  return [...counts.entries()]
-    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
-    .sort((a, b) => a.label.localeCompare(b.label))
-})
-
-const filterOptions = computed(() => [
-  { label: 'All', value: '' },
-  ...fieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
-])
-
-const filteredCards = computed(() => {
-  if (!selectedField.value) return companyCards.value
-
-  return companyCards.value.filter((card) => {
-    const drift = driftById.value.get(card.id)
-    if (!drift) return false
-    const list = driftKind.value === 'missing' ? drift.missing : drift.extra
-    return list.includes(selectedField.value)
-  })
-})
-
 const taglineById = computed(() => {
   const map = new Map<string, string>()
-  for (const card of companyCards.value) {
+  for (const card of filteredCards.value) {
     const drift = driftById.value.get(card.id)
     if (!drift) continue
     const list = driftKind.value === 'missing' ? drift.missing : drift.extra
 
     const selected = selectedField.value
     if (selected && list.includes(selected)) {
-      map.set(card.id, `${driftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${humanizeDriftPath(selected)}`)
+      map.set(card.id, `${driftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${selected}`)
       continue
     }
 
     const first = list[0]
     if (first) {
-      map.set(card.id, `${driftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${humanizeDriftPath(first)}`)
+      map.set(card.id, `${driftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${first}`)
     }
   }
   return map
@@ -219,6 +168,12 @@ const filteredPayload = computed(() =>
   })
 )
 
+const allJsonPayload = computed(() => ({
+  totalCompanies: companyList.value.length,
+  companies: companyList.value,
+  driftById: Object.fromEntries(driftById.value),
+}))
+
 const copyFiltered = async () => {
   await copyJSON(
     {
@@ -228,17 +183,6 @@ const copyFiltered = async () => {
       companies: filteredPayload.value,
     },
     { label: 'Dev · Companies (Ext) · Filtered drift' }
-  )
-}
-
-const copyAll = async () => {
-  await copyJSON(
-    {
-      totalCompanies: companyList.value.length,
-      companies: companyList.value,
-      driftById: Object.fromEntries(driftById.value),
-    },
-    { label: 'Dev · Companies (Ext)' }
   )
 }
 </script>

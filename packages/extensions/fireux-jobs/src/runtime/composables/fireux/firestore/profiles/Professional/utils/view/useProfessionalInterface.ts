@@ -1,6 +1,6 @@
-import type { Ref } from 'vue'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { Ref } from 'vue'
 import { professionalConfig, type ProfessionalCore } from '../../../../../../../models/profiles/Professional/Professional.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &

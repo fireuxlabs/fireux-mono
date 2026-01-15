@@ -20,7 +20,7 @@ export function useCompanyInterface() {
   function map(company: Company): CompanyCard.Card {
     return {
       id: company.id,
-      to: `/companies/${company.id}`,
+      to: `/companies/${encodeURIComponent(company.id)}`,
 
       avatarUrl: '',
       title: company.name,
