@@ -8,7 +8,6 @@
 
     <UPageBody class="pagebody">
       <OrganismsAppCTA />
-
       <OrganismsAppCollectionManager :cards="appCards" :total="totalCount" />
     </UPageBody>
   </UPage>

@@ -5,6 +5,7 @@
         <UAvatar
           :src="place.place_image || undefined"
           :alt="place.name"
+          class="bg-white dark:bg-white"
           size="lg"
           icon="i-lucide-map-pin"
         />

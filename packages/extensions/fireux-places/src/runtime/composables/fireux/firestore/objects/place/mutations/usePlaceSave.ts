@@ -38,7 +38,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
         ? String((place as any).formatted_address)
         : ''
     const placeImageRaw =
-      (place as any)?.place_image ?? (place as any)?.image_url ?? (place as any)?.avatar
+      (place as any)?.place_image ?? (place as any)?.image_url
     const place_image = typeof placeImageRaw === 'string' ? placeImageRaw : ''
     const lat = Number.isFinite(Number((place as any)?.lat)) ? Number((place as any).lat) : 0
     const lng = Number.isFinite(Number((place as any)?.lng)) ? Number((place as any).lng) : 0
@@ -48,7 +48,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
         ? search_term_raw.trim()
         : `${name} ${formatted}`.toLowerCase().trim()
 
-    const payload: PlaceUpsertInput = {
+    const payload = {
       id,
       source: 'firebase',
       name,
@@ -57,7 +57,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       lat,
       lng,
       search_term,
-    }
+    } as any as PlaceUpsertInput
 
     await setDocument(collectionPath, id, payload)
 

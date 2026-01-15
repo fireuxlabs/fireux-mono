@@ -1,7 +1,28 @@
 <template>
   <ClientOnly>
     <UPage>
-      <UPageHeader :title="pageTitle" :description="pageDescription" />
+      <UPageHeader :title="pageTitle" :description="pageDescription">
+        <template #ctas>
+          <UButton
+            size="xs"
+            variant="ghost"
+            icon="i-lucide-arrow-left"
+            to="/places"
+          >
+            Back
+          </UButton>
+
+          <UButton
+            size="xs"
+            color="primary"
+            icon="i-lucide-pencil"
+            :disabled="!docId"
+            :to="editTo"
+          >
+            Edit
+          </UButton>
+        </template>
+      </UPageHeader>
 
       <UPageBody class="pagebody">
         <div v-if="loading" class="py-10 text-sm opacity-70">
@@ -59,6 +80,10 @@ const { appName } = useFireUXConfig()
 const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
+
+const editTo = computed(() =>
+  docId ? `/places/edit/${encodeURIComponent(docId)}` : '/places'
+)
 
 const { firestoreFetchDoc } = useFirestoreRead()
 const rawDoc = docId ? await firestoreFetchDoc<Place>('places', docId) : null

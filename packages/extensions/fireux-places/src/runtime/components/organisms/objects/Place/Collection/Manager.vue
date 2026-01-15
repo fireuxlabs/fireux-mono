@@ -1,5 +1,5 @@
 <template>
-  <slot :cards="cards" :total="total" />
+  <slot :cards="cards" :total="total" :places="places" />
 </template>
 
 <script setup lang="ts">
@@ -23,12 +23,15 @@ const keyword = computed<string | null>(() => props.keyword ?? null)
 const type = computed<string | null>(() => props.type ?? null)
 
 const { collection } = usePlaces<Record<string, any>>({ keyword, type })
-const places = computed<BasePlace[]>(() => (collection.value ?? []) as BasePlace[])
+
+// Keep raw Firestore payload for consumers (e.g. dev drift tooling)
+const places = computed<Record<string, any>[]>(() => collection.value ?? [])
+const placesBase = computed<BasePlace[]>(() => places.value as BasePlace[])
 
 const { card: makeCard } = usePlacesInterface()
 
 const cards = computed(() =>
-  (places.value ?? [])
+  (placesBase.value ?? [])
     .map((place) => makeCard(place))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 )

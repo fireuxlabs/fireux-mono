@@ -4,6 +4,7 @@
       <UAvatar
         :src="imageUrl || undefined"
         :alt="name"
+        class="bg-white dark:bg-white"
         size="sm"
         icon="i-lucide-map-pin"
       />

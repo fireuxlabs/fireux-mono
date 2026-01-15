@@ -1,6 +1,26 @@
 <template>
   <UPage>
-    <UPageHeader title="Places" description="System Places" />
+    <UPageHeader :title="pageTitle" :description="pageDescription">
+      <template #ctas>
+        <UButton
+          size="xs"
+          variant="ghost"
+          icon="i-lucide-info"
+          to="/places/learn-more"
+        >
+          Learn more
+        </UButton>
+
+        <UButton
+          size="xs"
+          color="primary"
+          icon="i-lucide-plus"
+          to="/places/create"
+        >
+          Create
+        </UButton>
+      </template>
+    </UPageHeader>
     <UPageBody class="pagebody">
       <OrganismsObjectsPlaceSearchSection
         :type="placeType"
@@ -10,16 +30,16 @@
       <OrganismsObjectsPlaceCollectionView
         :keyword="keyword"
         :type="placeType"
-        :title="pageTitle"
+        :title="collectionTitle"
       />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useHead, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { computed } from 'vue'
 import { normalizePlaceType } from '../../composables/fireux/firestore/objects/place/utils/placeCollections'
 
 definePageMeta({
@@ -35,6 +55,7 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
+  name: 'PlacesIndexPage',
   head: { title: 'Places' },
 })
 
@@ -54,7 +75,11 @@ const placeType = computed<string | null>(() =>
   normalizePlaceType(route.query.type)
 )
 
-const pageTitle = computed(() => {
+const pageTitle = 'Places'
+const pageDescription =
+  'Create a place and browse all places available to this runtime.'
+
+const collectionTitle = computed(() => {
   if (!keyword.value) return 'Places'
   return `Places: ${keyword.value}`
 })

@@ -88,7 +88,6 @@ export function usePlacesSearch(options?: { type?: string | null }) {
         formatted_address?: string
         place_image?: string | null
         image_url?: string | null
-        avatar?: string | null
         search_term: string
         source?: string
       }> = []
@@ -101,7 +100,6 @@ export function usePlacesSearch(options?: { type?: string | null }) {
           formatted_address?: string
           place_image?: string | null
           image_url?: string | null
-          avatar?: string | null
           search_term: string
           source?: string
         }>({ collection: 'places', field: 'search_term', query: term, limit: 5 })
@@ -120,7 +118,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
           const normalizedSource = sourceRaw === 'firestore' ? 'firebase' : sourceRaw
           const safeSource = normalizedSource === 'google' ? 'google' : 'firebase'
 
-          const placeImageRaw = p?.place_image ?? p?.image_url ?? p?.avatar
+          const placeImageRaw = p?.place_image ?? p?.image_url
           const place_image = typeof placeImageRaw === 'string' ? placeImageRaw : ''
 
           return {
@@ -253,7 +251,10 @@ export function usePlacesSearch(options?: { type?: string | null }) {
               canonicalPlaceId((selected.value as any).place_id ?? selected.value.id) === id &&
               !(selected.value as any).place_image
             ) {
-              selected.value = { ...selected.value, place_image: nextImageUrl ?? '' }
+              selected.value = {
+                ...(selected.value as any),
+                place_image: nextImageUrl ?? '',
+              } as any
             }
 
             return nextImageUrl
@@ -271,7 +272,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
     { immediate: false }
   )
 
-  // select reuses cached logo; never clobbers an existing non-null avatar
+  // select reuses cached logo; never clobbers an existing non-null place_image
   async function select(cell: PlaceCard.Cell) {
     const id = canonicalPlaceId(cell.id) || cell.id
     const cached = logoCache.get(id) ?? null
@@ -284,9 +285,9 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       lng: 0,
       source: cell.source,
       place_image: cell.imageUrl || cached || '',
-    }
+    } as any
 
-    // enrich from details (lat/lng, but keep avatar if we already have one)
+    // enrich from details (lat/lng, but keep place_image if we already have one)
     if (cell.source === 'google' && globalThis.window) {
       try {
         const details = await fetchPlaceDetails(id)
