@@ -1,28 +1,17 @@
 <template>
-  <div class="product-list">
-    <template v-if="products.length">
-      <OrganismsObjectsProductViewProduct
-        v-for="product in products"
-        :key="product.slug"
-        :product="product"
-        mode="fetch"
-        variant="cell"
-      />
-    </template>
-    <p v-else>No products found.</p>
-  </div>
+  <OrganismsObjectsProductCollectionManager :cards="cards" :total="total" />
 </template>
 
 <script setup lang="ts">
-import type { FirebaseProduct } from '../../../../../models/objects/product.model'
+import type { ProductCard } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface';
 
-defineProps<{ products: FirebaseProduct[] }>()
+withDefaults(
+  defineProps<{
+    cards: ProductCard.Card[]
+    total?: number
+  }>(),
+  {
+    total: undefined,
+  }
+)
 </script>
-
-<style scoped>
-.product-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-</style>

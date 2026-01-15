@@ -1,30 +1,35 @@
 <template>
-  <OrganismsObjectsBlogCollectionProvider v-slot="slotProps">
-    <slot v-bind="slotProps">
-      <UCard class="fx-section">
-        <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
-              <h2 class="text-base font-semibold">Latest Posts</h2>
-            </div>
-            <UBadge variant="soft">{{ slotProps.total }} posts</UBadge>
-          </div>
-        </template>
-
-        <div
-          v-if="slotProps.posts.length"
-          class="grid grid-cols-1 gap-4 lg:grid-cols-2"
-        >
-          <OrganismsObjectsBlogViewArticle
-            v-for="post in slotProps.posts"
-            :key="post.slug"
-            :post="post"
-          />
+  <slot :cards="cards" :total="total">
+    <UCard :ui="{ body: 'space-y-4' }">
+      <template #header>
+        <div class="flex items-center justify-between">
+          <div class="font-medium">Blog</div>
+          <div class="text-sm text-dimmed">{{ total }}</div>
         </div>
+      </template>
 
-        <p v-else class="text-sm text-gray-500">No posts published yet.</p>
-      </UCard>
-    </slot>
-  </OrganismsObjectsBlogCollectionProvider>
+      <div v-if="!cards.length" class="text-sm text-dimmed">
+        No posts published yet.
+      </div>
+
+      <div v-else class="grid gap-3 md:grid-cols-2">
+        <OrganismsObjectsBlogCardsCell
+          v-for="card in cards"
+          :key="card.id"
+          v-bind="card"
+        />
+      </div>
+    </UCard>
+  </slot>
 </template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+import type { BlogCard } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface';
+
+const props = defineProps<{ cards: BlogCard.Card[]; total?: number }>()
+
+const cards = computed(() => props.cards ?? [])
+const total = computed(() => props.total ?? cards.value.length)
+</script>
 

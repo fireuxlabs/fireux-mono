@@ -26,17 +26,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useCompanyFetch } from '../../../../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
+import { computed } from 'vue';
+import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
 
-const { companies } = useCompanyFetch()
-const { card: makeCard } = useCompanyInterface()
+const props = defineProps<{ cards: CompanyCard.Card[]; total?: number }>()
 
-const cards = computed(() =>
-  (companies.value ?? [])
-    .map((c) => makeCard(c))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-const total = computed(() => cards.value.length)
+const cards = computed(() => props.cards ?? [])
+const total = computed(() => props.total ?? cards.value.length)
 </script>

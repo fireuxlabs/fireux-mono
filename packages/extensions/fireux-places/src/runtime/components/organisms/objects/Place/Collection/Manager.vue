@@ -1,40 +1,32 @@
 <template>
-  <slot :cards="cards" :total="total" :places="places" />
+  <UCard :ui="{ body: 'space-y-4' }">
+    <template #header>
+      <div class="flex items-center justify-between">
+        <div class="font-medium">Places</div>
+        <div class="text-sm text-dimmed">{{ total }}</div>
+      </div>
+    </template>
+
+    <div v-if="!cards.length" class="text-sm text-dimmed">
+      No places yet.
+    </div>
+
+    <div v-else class="grid gap-3 md:grid-cols-2">
+      <OrganismsObjectsPlaceCardsCell
+        v-for="card in cards"
+        :key="card.id"
+        v-bind="card"
+      />
+    </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { usePlaces } from '../../../../../composables/fireux/firestore/objects/place/usePlaces';
-import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
-import type { BasePlace } from '../../../../../models/objects/place.model';
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 
-const props = withDefaults(
-  defineProps<{
-    keyword?: string | null
-    type?: string | null
-  }>(),
-  {
-    keyword: null,
-    type: null,
-  }
-)
+const props = defineProps<{ cards: PlaceCard.Card[]; total?: number }>()
 
-const keyword = computed<string | null>(() => props.keyword ?? null)
-const type = computed<string | null>(() => props.type ?? null)
-
-const { collection } = usePlaces<Record<string, any>>({ keyword, type })
-
-// Keep raw Firestore payload for consumers (e.g. dev drift tooling)
-const places = computed<Record<string, any>[]>(() => collection.value ?? [])
-const placesBase = computed<BasePlace[]>(() => places.value as BasePlace[])
-
-const { card: makeCard } = usePlacesInterface()
-
-const cards = computed(() =>
-  (placesBase.value ?? [])
-    .map((place) => makeCard(place))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
-const total = computed(() => cards.value.length)
+const cards = computed(() => props.cards ?? [])
+const total = computed(() => props.total ?? cards.value.length)
 </script>

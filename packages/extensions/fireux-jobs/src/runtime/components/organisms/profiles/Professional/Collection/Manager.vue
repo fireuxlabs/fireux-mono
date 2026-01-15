@@ -1,112 +1,48 @@
 <template>
-  <div class="space-y-2">
-    <UCard v-if="isTenant">
-      <template #header>
-        <div class="flex items-center justify-between gap-2">
-          <h2>App professionals</h2>
-          <UBadge variant="soft">{{ localTotal }} total</UBadge>
+  <UCard class="fx-section">
+    <template #header>
+      <div class="fx-section__header">
+        <div class="fx-section__copy">
+          <h2 class="text-base font-semibold">Professionals</h2>
+          <p class="text-xs text-gray-500">Browse professionals available to this runtime.</p>
         </div>
-        <p class="text-sm opacity-70">Professionals scoped to this tenant application.</p>
-      </template>
 
-      <OrganismsProfilesProfessionalCollectionList
-        v-if="localCards.length"
-        :cards="localCards"
-        variant="pill"
-      />
+        <div class="flex items-center gap-2">
+          <UInput v-model="query" size="xs" placeholder="Search professionals…" class="w-44" />
 
-      <p v-else class="text-sm opacity-70">No tenant-scoped professionals found.</p>
-    </UCard>
+          <UButton size="xs" variant="ghost" @click="toggleVariant">
+            {{ variant === 'pill' ? 'Cells' : 'Pills' }}
+          </UButton>
 
-    <section class="space-y-2">
-      <div v-if="isTenant" class="flex items-center justify-end">
-        <UButton variant="ghost" @click="showGlobalDirectory = !showGlobalDirectory">
-          {{
-            showGlobalDirectory
-              ? 'Hide global professionals'
-              : 'View global professionals'
-          }}
-        </UButton>
+          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+        </div>
       </div>
+    </template>
 
-      <UCard v-if="showGlobalDirectory || !isTenant">
-        <template #header>
-          <div class="flex items-center justify-between gap-2">
-            <h2>Global professionals</h2>
-            <UBadge variant="soft">{{ globalTotal }} total</UBadge>
-          </div>
-          <p class="text-sm opacity-70">
-            Professionals available globally in this FireUX environment.
-          </p>
-        </template>
+    <OrganismsProfilesProfessionalCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    />
 
-        <OrganismsProfilesProfessionalCollectionList
-          v-if="globalCards.length"
-          :cards="globalCards"
-          variant="pill"
-        />
-
-        <p v-else class="text-sm opacity-70">No global professionals found.</p>
-      </UCard>
-    </section>
-  </div>
+    <p v-else class="fx-section__empty">No professionals found.</p>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { computed, ref } from 'vue'
-import { useProfessionalCollection } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
-import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
-import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
-import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model.ts'
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
+import { computed } from 'vue';
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional';
 
-const { isTenant } = useFireUXConfig()
-const showGlobalDirectory = ref(true)
+const props = defineProps<{ cards: ProfessionalCard.Card[]; total?: number }>()
 
-const { globalProfessionals, localProfessionals } = useProfessionalCollection()
-const { card } = useProfessional()
+const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
+  useCollectionSearch<ProfessionalCard.Card, ProfessionalCard.Card>({
+    items: computed(() => props.cards ?? []),
+    searchText: (card) =>
+      `${card.displayName} ${card.tagline} ${card.id}`.trim().toLowerCase(),
+    makeCard: (card) => card,
+  })
 
-type DirectoryEntry = {
-  key: string
-  card: ProfessionalCard.Card
-  raw: ProfessionalCore
-}
-
-const globalDirectoryEntries = computed<DirectoryEntry[]>(() => {
-  const list = globalProfessionals.value ?? []
-  if (!list.length) return []
-
-  return list
-    .filter((entry: unknown): entry is ProfessionalCore =>
-      Boolean((entry as ProfessionalCore | undefined)?.id)
-    )
-    .map((entry: ProfessionalCore) => {
-      const payload = card(entry, (entry as any)?.user ?? null)
-      if (!payload) return null
-      return { key: entry.id, card: payload, raw: entry }
-    })
-    .filter((entry): entry is DirectoryEntry => Boolean(entry))
-})
-
-const localDirectoryEntries = computed<DirectoryEntry[]>(() => {
-  const list = localProfessionals.value ?? []
-  if (!list.length) return []
-
-  return list
-    .filter((entry: unknown): entry is ProfessionalCore =>
-      Boolean((entry as ProfessionalCore | undefined)?.id)
-    )
-    .map((entry: ProfessionalCore) => {
-      const payload = card(entry, (entry as any)?.user ?? null)
-      if (!payload) return null
-      return { key: entry.id, card: payload, raw: entry }
-    })
-    .filter((entry): entry is DirectoryEntry => Boolean(entry))
-})
-
-const globalCards = computed(() => globalDirectoryEntries.value.map((e) => e.card))
-const localCards = computed(() => localDirectoryEntries.value.map((e) => e.card))
-
-const globalTotal = computed(() => globalDirectoryEntries.value.length)
-const localTotal = computed(() => localDirectoryEntries.value.length)
+const totalCount = computed(() => props.total ?? props.cards.length)
 </script>

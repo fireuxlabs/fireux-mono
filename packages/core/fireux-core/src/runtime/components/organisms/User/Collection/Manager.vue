@@ -39,13 +39,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
-import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { computed } from 'vue';
+import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
+import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch';
 
-const props = defineProps<{ cards: UserCard.Card[]; total?: number; subtitle?: string }>()
+const props = defineProps<{ cards: UserCard.Card[]; total?: number }>()
 
-const scopeCopy = computed(() => props.subtitle ?? 'Browse users available to this runtime.')
+const scopeCopy = computed(() => 'Browse users available to this runtime.')
 
 const {
   query,
@@ -59,5 +59,5 @@ const {
   makeCard: (card) => card,
 })
 
-const totalCount = computed(() => props.total ?? props.cards?.length ?? 0)
+const totalCount = computed(() => props.total ?? props.cards.length)
 </script>

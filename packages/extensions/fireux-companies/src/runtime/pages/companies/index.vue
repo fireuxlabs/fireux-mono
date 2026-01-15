@@ -4,7 +4,7 @@
 
     <UPageBody class="pagebody">
       <OrganismsObjectsCompanyCTA />
-      <OrganismsObjectsCompanyCollectionManager />
+      <OrganismsObjectsCompanyCollectionManager :cards="cards" :total="total" />
     </UPageBody>
   </UPage>
 </template>
@@ -12,6 +12,9 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { computed } from 'vue'
+import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
+import { useCompanyInterface } from '../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 
 definePageMeta({
   layout: 'default',
@@ -36,4 +39,15 @@ const pageDescription =
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
+
+const { companies } = useCompanyFetch()
+const { card: makeCard } = useCompanyInterface()
+
+const cards = computed(() =>
+  (companies.value ?? [])
+    .map((company) => makeCard(company))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+
+const total = computed(() => cards.value.length)
 </script>

@@ -1,21 +1,19 @@
 <template>
   <UPage>
-    <UPageHeader
-      title="Apps"
-      description="Inspect the current app and browse all apps available to this runtime."
-    />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <OrganismsAppCTA />
-      <OrganismsAppCollectionManager :cards="appCards" :total="totalCount" />
+      <OrganismsAppCollectionManager :cards="cards" :total="total" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useHead } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useAppInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { computed } from 'vue'
 
 definePageMeta({
   nav: {
@@ -34,16 +32,22 @@ definePageMeta({
   name: 'AppsIndexPage',
 })
 
-useHead({ title: 'Apps' })
+const { appName } = useFireUXConfig()
+
+const pageTitle = 'Apps'
+const pageDescription =
+  'Inspect the current app and browse all apps available to this runtime.'
+
+useHead({ title: `${appName} | ${pageTitle}` })
 
 const { apps, count } = useAppCollection()
 const { card: makeCard } = useAppInterface()
 
-const appCards = computed(() =>
+const cards = computed(() =>
   (apps.value ?? [])
     .map((app) => makeCard(app))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 )
 
-const totalCount = computed(() => count.value ?? appCards.value.length)
+const total = computed(() => count.value ?? cards.value.length)
 </script>

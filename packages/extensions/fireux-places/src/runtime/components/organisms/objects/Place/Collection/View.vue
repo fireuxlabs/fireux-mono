@@ -1,56 +1,17 @@
 <template>
-  <OrganismsObjectsPlaceCollectionManager
-    :keyword="keyword"
-    :type="type"
-    v-slot="{ cards, total }"
-  >
-    <UCard :ui="{ body: 'space-y-4' }">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2 text-sm font-semibold">
-            <UIcon name="i-lucide-bookmark" /> {{ title }}
-          </div>
-          <UBadge color="neutral" variant="soft" size="xs">{{ total }}</UBadge>
-        </div>
-      </template>
-
-      <div v-if="cards.length" class="space-y-2">
-        <UButton
-          v-for="card in cards"
-          :key="card.id"
-          color="neutral"
-          variant="ghost"
-          class="w-full justify-start px-3 py-3"
-        >
-          <OrganismsObjectsPlaceCardsCell v-bind="card" />
-        </UButton>
-      </div>
-
-      <UAlert
-        v-else
-        color="neutral"
-        variant="soft"
-        icon="i-lucide-inbox"
-        title="No saved places yet"
-        description="Add a place to Firestore and it will appear here instantly."
-      />
-    </UCard>
-  </OrganismsObjectsPlaceCollectionManager>
+  <OrganismsObjectsPlaceCollectionManager :cards="cards" :total="total" />
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
+
+withDefaults(
   defineProps<{
-    keyword?: string | null
-    type?: string | null
-    title?: string
+    cards: PlaceCard.Card[]
+    total?: number
   }>(),
   {
-    keyword: null,
-    type: null,
-    title: 'Saved places',
+    total: undefined,
   }
 )
-
-const { keyword, type, title } = props
 </script>

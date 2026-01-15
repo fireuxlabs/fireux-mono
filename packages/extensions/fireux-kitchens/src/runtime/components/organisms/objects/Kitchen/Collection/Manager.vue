@@ -26,21 +26,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useKitchens } from '../../../../../composables/fireux/firestore/objects/kitchen/useKitchens'
-import { useKitchenInterface } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
-import type { Kitchen } from '../../../../../models/objects/kitchen.model'
+import { computed } from 'vue';
+import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
 
-const { collection } = useKitchens<Kitchen>()
-const kitchens = computed(() => (collection.value ?? []) as Kitchen[])
+const props = defineProps<{ cards: KitchenCard.Card[]; total?: number }>()
 
-const { card: makeCard } = useKitchenInterface()
-
-const cards = computed(() =>
-  (kitchens.value ?? [])
-    .map((k) => makeCard(k))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
-const total = computed(() => cards.value.length)
+const cards = computed(() => props.cards ?? [])
+const total = computed(() => props.total ?? cards.value.length)
 </script>

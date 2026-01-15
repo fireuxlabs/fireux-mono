@@ -1,20 +1,22 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue -->
 <template>
   <UPage>
-    <UPageHeader
-      title="Professionals"
-      description="Inspect the current professional and browse all professionals available to this runtime."
-    />
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
       <OrganismsProfilesProfessionalCTA />
-      <OrganismsProfilesProfessionalCollectionManager />
+      <OrganismsProfilesProfessionalCollectionManager :cards="cards" :total="total" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useHead } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { computed } from 'vue'
+import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
+import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import type { ProfessionalCore } from '../../models/profiles/Professional/Professional.model'
 
 definePageMeta({
   nav: {
@@ -32,5 +34,26 @@ definePageMeta({
   name: 'ProfessionalsIndexPage',
 })
 
-useHead({ title: 'Professionals' })
+const { appName } = useFireUXConfig()
+
+const pageTitle = 'Professionals'
+const pageDescription =
+  'Inspect the current professional and browse all professionals available to this runtime.'
+
+useHead({ title: `${appName} | ${pageTitle}` })
+
+const { globalProfessionals, localProfessionals } = useProfessionalCollection()
+const { card: makeCard } = useProfessional()
+
+const cards = computed(() => {
+  const globalCards = (globalProfessionals.value ?? [])
+    .map((entry) => makeCard(entry as ProfessionalCore, (entry as any)?.user ?? null))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+  const localCards = (localProfessionals.value ?? [])
+    .map((entry) => makeCard(entry as ProfessionalCore, (entry as any)?.user ?? null))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+  return [...localCards, ...globalCards]
+})
+
+const total = computed(() => cards.value.length)
 </script>

@@ -39,9 +39,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
-import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { computed } from 'vue';
+import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
+import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch';
 
 const props = defineProps<{ cards: AppCard.Card[]; total?: number }>()
 
@@ -58,5 +58,5 @@ const {
   makeCard: (card) => card,
 })
 
-const totalCount = computed(() => props.total ?? props.cards?.length ?? 0)
+const totalCount = computed(() => props.total ?? props.cards.length)
 </script>

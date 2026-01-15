@@ -1,6 +1,17 @@
 <template>
-  <OrganismsObjectsJobCollectionManager v-slot="{ showAgentCollection }">
-    <OrganismsObjectsJobSectionsAgentCollection v-if="showAgentCollection" />
-    <OrganismsObjectsJobSectionsGlobalCollection />
-  </OrganismsObjectsJobCollectionManager>
+  <OrganismsObjectsJobCollectionManager :cards="cards" :total="total" />
 </template>
+
+<script setup lang="ts">
+import type { JobCard } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
+
+withDefaults(
+  defineProps<{
+    cards: JobCard.Card[]
+    total?: number
+  }>(),
+  {
+    total: undefined,
+  }
+)
+</script>

@@ -6,16 +6,15 @@
     />
 
     <UPageBody class="space-y-10">
-      <OrganismsObjectsPlaceCollectionManager v-slot="{ places }">
-        <DevPlacesDriftPanels :places="places" />
-      </OrganismsObjectsPlaceCollectionManager>
+      <DevPlacesDriftPanels :places="places" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-// This dev page intentionally uses the same collection manager as /places
-// so we have one aligned source of truth for collection + card mapping.
+import { computed } from 'vue'
+import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
+import type { Place } from '../../models/objects/place.model'
 
 definePageMeta({
   layout: 'dev',
@@ -29,4 +28,7 @@ definePageMeta({
     layouts: ['dev'],
   },
 })
+
+const { collection } = usePlaces<Place>()
+const places = computed(() => collection.value ?? [])
 </script>

@@ -1,37 +1,9 @@
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription">
-      <template #ctas>
-        <UButton
-          size="xs"
-          variant="ghost"
-          icon="i-lucide-info"
-          to="/places/learn-more"
-        >
-          Learn more
-        </UButton>
-
-        <UButton
-          size="xs"
-          color="primary"
-          icon="i-lucide-plus"
-          to="/places/create"
-        >
-          Create
-        </UButton>
-      </template>
-    </UPageHeader>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsObjectsPlaceSearchSection
-        :type="placeType"
-        @confirmed="onPlaceCreated"
-      />
-
-      <OrganismsObjectsPlaceCollectionView
-        :keyword="keyword"
-        :type="placeType"
-        :title="collectionTitle"
-      />
+      <OrganismsObjectsPlaceCTA :type="placeType" @confirmed="onPlaceCreated" />
+      <OrganismsObjectsPlaceCollectionManager :cards="placeCards" :total="totalCount" />
     </UPageBody>
   </UPage>
 </template>
@@ -40,7 +12,9 @@
 import { useHead, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
+import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
 import { normalizePlaceType } from '../../composables/fireux/firestore/objects/place/utils/placeCollections'
+import { usePlacesInterface } from '../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
 definePageMeta({
   layout: 'default',
@@ -60,7 +34,6 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-useHead({ title: `${appName} | Places` })
 
 const route = useRoute()
 const router = useRouter()
@@ -79,10 +52,18 @@ const pageTitle = 'Places'
 const pageDescription =
   'Create a place and browse all places available to this runtime.'
 
-const collectionTitle = computed(() => {
-  if (!keyword.value) return 'Places'
-  return `Places: ${keyword.value}`
-})
+useHead({ title: `${appName} | ${pageTitle}` })
+
+const { collection } = usePlaces<Record<string, any>>({ keyword, type: placeType })
+const { card: makeCard } = usePlacesInterface()
+
+const placeCards = computed(() =>
+  (collection.value ?? [])
+    .map((place) => makeCard(place as any))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+
+const totalCount = computed(() => placeCards.value.length)
 
 async function onPlaceCreated() {
   // Nudge the route so the list refreshes immediately in dev.

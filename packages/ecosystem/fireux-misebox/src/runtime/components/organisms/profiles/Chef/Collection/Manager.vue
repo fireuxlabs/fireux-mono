@@ -1,110 +1,48 @@
 <template>
-  <div class="space-y-2">
-    <UCard v-if="isTenant">
-      <template #header>
-        <div class="flex items-center justify-between gap-2">
-          <h2>App chefs</h2>
-          <UBadge variant="soft">{{ localTotal }} total</UBadge>
+  <UCard class="fx-section">
+    <template #header>
+      <div class="fx-section__header">
+        <div class="fx-section__copy">
+          <h2 class="text-base font-semibold">Chefs</h2>
+          <p class="text-xs text-gray-500">Browse chefs available to this runtime.</p>
         </div>
-        <p class="text-sm opacity-70">Chefs scoped to this tenant application.</p>
-      </template>
 
-      <OrganismsProfilesChefCollectionList
-        v-if="localCards.length"
-        :cards="localCards"
-        variant="pill"
-      />
+        <div class="flex items-center gap-2">
+          <UInput v-model="query" size="xs" placeholder="Search chefs…" class="w-44" />
 
-      <p v-else class="text-sm opacity-70">No tenant-scoped chefs found.</p>
-    </UCard>
+          <UButton size="xs" variant="ghost" @click="toggleVariant">
+            {{ variant === 'pill' ? 'Cells' : 'Pills' }}
+          </UButton>
 
-    <section class="space-y-2">
-      <div v-if="isTenant" class="flex items-center justify-end">
-        <UButton variant="ghost" @click="showGlobalDirectory = !showGlobalDirectory">
-          {{ showGlobalDirectory ? 'Hide global chefs' : 'View global chefs' }}
-        </UButton>
+          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+        </div>
       </div>
+    </template>
 
-      <UCard v-if="showGlobalDirectory || !isTenant">
-        <template #header>
-          <div class="flex items-center justify-between gap-2">
-            <h2>Global chefs</h2>
-            <UBadge variant="soft">{{ globalTotal }} total</UBadge>
-          </div>
-          <p class="text-sm opacity-70">Chefs available across the FireUX network.</p>
-        </template>
+    <OrganismsProfilesChefCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    />
 
-        <OrganismsProfilesChefCollectionList
-          v-if="globalCards.length"
-          :cards="globalCards"
-          variant="pill"
-        />
-
-        <p v-else class="text-sm opacity-70">No global chefs found.</p>
-      </UCard>
-    </section>
-  </div>
+    <p v-else class="fx-section__empty">No chefs found.</p>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { computed, ref } from 'vue'
-import { useChefCollection } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'
-import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
-import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
-import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model.ts'
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
+import { computed } from 'vue';
+import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef';
 
-const { isTenant } = useFireUXConfig()
-const showGlobalDirectory = ref(!isTenant)
+const props = defineProps<{ cards: ChefCard.Card[]; total?: number }>()
 
-const { globalChefs, localChefs } = useChefCollection()
-const { card } = useChef()
+const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
+  useCollectionSearch<ChefCard.Card, ChefCard.Card>({
+    items: computed(() => props.cards ?? []),
+    searchText: (card) =>
+      `${card.displayName} ${card.tagline} ${card.id}`.trim().toLowerCase(),
+    makeCard: (card) => card,
+  })
 
-type ChefEntryWithUser = ChefCore & { user?: any }
-
-type DirectoryEntry = {
-  key: string
-  card: ChefCard.Card
-  raw: ChefCore
-}
-
-const globalDirectoryEntries = computed<DirectoryEntry[]>(() => {
-  const list = globalChefs.value ?? []
-  if (!list.length) return []
-
-  return list
-    .filter((entry: unknown): entry is ChefEntryWithUser =>
-      Boolean((entry as ChefEntryWithUser | undefined)?.id)
-    )
-    .map((entry: ChefEntryWithUser) => {
-      const payload = card(entry, entry.user ?? null)
-      if (!payload) return null
-      const { user: _user, ...raw } = entry as any
-      return { key: entry.id, card: payload, raw: raw as ChefCore }
-    })
-    .filter((entry): entry is DirectoryEntry => Boolean(entry))
-})
-
-const localDirectoryEntries = computed<DirectoryEntry[]>(() => {
-  const list = localChefs?.value ?? []
-  if (!list.length) return []
-
-  return list
-    .filter((entry: unknown): entry is ChefEntryWithUser =>
-      Boolean((entry as ChefEntryWithUser | undefined)?.id)
-    )
-    .map((entry: ChefEntryWithUser) => {
-      const payload = card(entry, entry.user ?? null)
-      if (!payload) return null
-      const { user: _user, ...raw } = entry as any
-      return { key: entry.id, card: payload, raw: raw as ChefCore }
-    })
-    .filter((entry): entry is DirectoryEntry => Boolean(entry))
-})
-
-const globalCards = computed(() => globalDirectoryEntries.value.map((e) => e.card))
-const localCards = computed(() => localDirectoryEntries.value.map((e) => e.card))
-
-const globalTotal = computed(() => globalDirectoryEntries.value.length)
-const localTotal = computed(() => localDirectoryEntries.value.length)
+const totalCount = computed(() => props.total ?? props.cards.length)
 </script>
