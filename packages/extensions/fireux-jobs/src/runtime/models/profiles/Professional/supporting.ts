@@ -48,7 +48,7 @@ export type ExperienceItem = RelevantExperienceItem | OtherExperienceItem
  * Professional Profile Config
  * ---------------------------------- */
 
-import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model'
 
 /**
  * Runtime config consumed by useProfile()

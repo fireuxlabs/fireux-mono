@@ -1,4 +1,4 @@
-import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp.ts'
+import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp'
 
 export function useMiseApp() {
   const coreApp = useApp()

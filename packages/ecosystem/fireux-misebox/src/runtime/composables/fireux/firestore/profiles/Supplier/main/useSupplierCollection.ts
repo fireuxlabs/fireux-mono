@@ -1,8 +1,8 @@
-import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection.ts'
+import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
 import {
   supplierConfig,
   type SupplierCore,
-} from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
+} from '../../../../../../models/profiles/Supplier/Supplier.model'
 
 export function useSupplierCollection() {
   const {

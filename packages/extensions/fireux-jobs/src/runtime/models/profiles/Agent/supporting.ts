@@ -6,7 +6,7 @@
  * so model imports stay Firestore-shape-only.
  */
 
-import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model'
 
 export const agentConfig: ProfileConfig = {
   id: 'agent',

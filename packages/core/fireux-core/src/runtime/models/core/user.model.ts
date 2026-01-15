@@ -2,79 +2,61 @@
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { UserNotification } from './user.supporting'
+import type { FireuxAuthored } from './meta.model'
 
 /**
  * Core Firestore user document
  * Path: /users/<userId>
+ *
+ * Canon rules:
+ * - No optional strings
+ * - Empty string means unset
+ * - Arrays always exist
+ * - Runtime object is the single source of truth
  */
-export interface User {
-  id: string
 
-  display_name: string
-  avatar: string
+// Runtime canonical shape
+export const User = {
+  id: '',
 
-  handle: string
-  email: string
-  bio: string
-  
-  profiles: string[]
+  display_name: '',
+  avatar: '',
 
-  /** Core memberships */
-  userOf: string[]
-  adminOf: string[]
+  handle: '',
+  email: '',
+  bio: '',
 
-  // notifications (safe to store; interfaces decide what to render)
-  notifications: UserNotification[]
+  profiles: [] as string[],
 
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
+  userOf: [] as string[],
+  adminOf: [] as string[],
+
+  notifications: [] as UserNotification[],
+
+  // Authored (FireuxAuthored)
+  creator_id: '',
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+} as const
+
+// Type derived from runtime model
+export type User = FireuxAuthored & {
+  [K in keyof typeof User]: (typeof User)[K]
 }
-
-// Canonical shape keys for runtime validation.
-// NOTE: This is intentionally co-located with the model to prevent drift.
-export const USER_MODEL_KEYS = [
-  'id',
-  'display_name',
-  'avatar',
-  'handle',
-  'email',
-  'bio',
-  'profiles',
-  'userOf',
-  'adminOf',
-  'notifications',
-  'created_at',
-  'updated_at',
-] as const satisfies readonly (keyof User)[]
-
-export const USER_MODEL_REQUIRED_KEYS = [
-  'id',
-  'display_name',
-  'avatar',
-  'handle',
-  'email',
-  'bio',
-  'profiles',
-  'userOf',
-  'adminOf',
-  'notifications',
-  'created_at',
-  'updated_at',
-] as const satisfies readonly (keyof User)[]
 
 /**
  * App-specific user overlay
  * Path: /apps/<appId>/users/<userId>
  */
-export interface AppUser {
-  id: string
+export const AppUser = {
+  id: '',
+  role: 'user' as 'user' | 'admin',
+  creator_id: '',
+  notifications: [] as UserNotification[],
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+} as const
 
-  role: 'user' | 'admin'
-
-  creator_id: string
-
-  notifications: UserNotification[]
-
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
+export type AppUser = {
+  [K in keyof typeof AppUser]: (typeof AppUser)[K]
 }

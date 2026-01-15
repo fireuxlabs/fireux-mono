@@ -283,20 +283,128 @@
           </p>
         </UCard>
       </section>
+
+      <section class="space-y-4">
+        <header>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Jobs
+          </h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Collection-first view; filter by missing or extra fields (against the runtime Job model).
+          </p>
+        </header>
+
+        <DevPane
+          title="Jobs collection"
+          description="Browse jobs resolved for this runtime and filter by model drift."
+        >
+          <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+            <span class="font-medium">Drift:</span>
+
+            <UButton
+              size="xs"
+              :variant="jobDriftKind === 'missing' ? 'solid' : 'ghost'"
+              color="primary"
+              @click="setJobDriftKind('missing')"
+            >
+              Missing
+            </UButton>
+
+            <UButton
+              size="xs"
+              :variant="jobDriftKind === 'extra' ? 'solid' : 'ghost'"
+              color="primary"
+              @click="setJobDriftKind('extra')"
+            >
+              Extra
+            </UButton>
+
+            <span class="font-medium ml-2">Filter {{ jobDriftKind }}:</span>
+
+            <UButton
+              v-for="option in jobFilterOptions"
+              :key="option.value"
+              size="xs"
+              :variant="jobSelectedField === option.value ? 'solid' : 'ghost'"
+              color="primary"
+              @click="jobSelectedField = option.value"
+            >
+              {{ option.label }}
+            </UButton>
+
+            <UButton
+              size="xs"
+              variant="outline"
+              :disabled="copying"
+              :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+              @click="copyFilteredJobs"
+            >
+              {{ copying ? 'Copying…' : 'Copy filtered drift' }}
+            </UButton>
+          </div>
+
+          <UAlert
+            v-if="!filteredJobCards.length"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-inbox"
+            title="No matching jobs"
+            description="Adjust filters or add job documents to Firestore."
+          />
+
+          <div v-else class="grid gap-3 md:grid-cols-2">
+            <OrganismsObjectsJobCardsCell
+              v-for="card in filteredJobCards"
+              :key="card.id"
+              :to="card.to"
+              :title="card.title"
+              :description="card.description"
+              :badges="card.badges"
+              :avatar-url="card.avatarUrl"
+              :subtitle="card.subtitle"
+              :prop="jobTaglineById.get(card.id) || ''"
+            />
+          </div>
+        </DevPane>
+
+        <div class="flex justify-end">
+          <UButton
+            size="xs"
+            variant="outline"
+            :disabled="copying"
+            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document'"
+            @click="copyAllJobs"
+          >
+            {{ copying ? 'Copying…' : 'Copy all (JSON)' }}
+          </UButton>
+        </div>
+      </section>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { computed } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { ref, watch } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
+import {
+  humanizeDriftPath,
+  resolveDriftFromModel,
+  type DriftKind,
+  type ModelDrift,
+} from 'fireux-core/runtime/composables/dev/useModelDrift'
 import DevProfileDiffList from 'fireux-core/runtime/components/dev/ProfileDiffList.vue'
-import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
-import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
-import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection.ts'
-import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection.ts'
+import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
+import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
+import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
+import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
+import { Job as JobModelRuntime } from '../../models/objects/job.model'
 import type { ProfessionalCard } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import type { AgentCard } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
+import type { Job as JobModel } from '../../models/objects/job.model'
 
 type Ref<T> = { value: T }
 
@@ -589,4 +697,130 @@ const agentLocalDiffRows = buildProfileDiffRows(
   localAgents,
   agentModelSpec
 )
+
+const { copyJSON, copying } = useDevClipboard()
+
+const { appJobs } = useJobCollection()
+const jobs = computed<JobModel[]>(() => appJobs.value ?? [])
+
+const { card: makeJobCard } = useJobInterface()
+const jobCards = computed(() =>
+  jobs.value
+    .map((job) => makeJobCard(job))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+
+const jobDriftKind = ref<DriftKind>('missing')
+const jobSelectedField = ref<string>('')
+
+const setJobDriftKind = (kind: DriftKind) => {
+  jobDriftKind.value = kind
+}
+
+watch(jobDriftKind, () => {
+  jobSelectedField.value = ''
+})
+
+const jobDriftById = computed(() => {
+  const map = new Map<string, ModelDrift>()
+  for (const job of jobs.value) {
+    if (!job?.id) continue
+    const drift = resolveDriftFromModel(
+      JobModelRuntime as unknown as Record<string, unknown>,
+      job as unknown as Record<string, unknown>
+    )
+    map.set(job.id, drift)
+  }
+  return map
+})
+
+const jobFieldOptions = computed(() => {
+  const counts = new Map<string, number>()
+  for (const drift of jobDriftById.value.values()) {
+    const list = jobDriftKind.value === 'missing' ? drift.missing : drift.extra
+    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
+  }
+
+  return [...counts.entries()]
+    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+})
+
+const jobFilterOptions = computed(() => [
+  { label: 'All', value: '' },
+  ...jobFieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
+])
+
+const filteredJobCards = computed(() => {
+  if (!jobSelectedField.value) return jobCards.value
+
+  return jobCards.value.filter((card) => {
+    const drift = jobDriftById.value.get(card.id)
+    if (!drift) return false
+    const list = jobDriftKind.value === 'missing' ? drift.missing : drift.extra
+    return list.includes(jobSelectedField.value)
+  })
+})
+
+const jobTaglineById = computed(() => {
+  const map = new Map<string, string>()
+  for (const card of jobCards.value) {
+    const drift = jobDriftById.value.get(card.id)
+    if (!drift) continue
+    const list = jobDriftKind.value === 'missing' ? drift.missing : drift.extra
+
+    const selected = jobSelectedField.value
+    if (selected && list.includes(selected)) {
+      map.set(
+        card.id,
+        `${jobDriftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${humanizeDriftPath(selected)}`
+      )
+      continue
+    }
+
+    const first = list[0]
+    if (first) {
+      map.set(
+        card.id,
+        `${jobDriftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${humanizeDriftPath(first)}`
+      )
+    }
+  }
+  return map
+})
+
+const filteredJobsPayload = computed(() =>
+  filteredJobCards.value.map((card) => {
+    const drift = jobDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+    return {
+      id: card.id,
+      title: card.title,
+      status: card.status,
+      drift,
+    }
+  })
+)
+
+const copyFilteredJobs = async () => {
+  await copyJSON(
+    {
+      driftKind: jobDriftKind.value,
+      selectedField: jobSelectedField.value || null,
+      totalJobs: jobs.value.length,
+      jobs: filteredJobsPayload.value,
+    },
+    { label: 'Dev · Jobs (Ext) · Filtered drift' }
+  )
+}
+
+const copyAllJobs = async () => {
+  await copyJSON(
+    {
+      totalJobs: jobs.value.length,
+      jobs: jobs.value,
+      driftById: Object.fromEntries(jobDriftById.value),
+    },
+    { label: 'Dev · Jobs (Ext)' }
+  )
+}
 </script>

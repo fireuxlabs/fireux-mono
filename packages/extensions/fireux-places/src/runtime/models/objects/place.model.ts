@@ -1,5 +1,6 @@
 // FILE: packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
 
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
 
 /**
@@ -13,24 +14,43 @@ import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
 /** Canonical sources are 'google' (provider/transient) and 'firebase' (stored). */
 export type PlaceSource = 'google' | 'firebase'
 
-/** Base (shared by Google & Firestore). */
-export interface BasePlace {
+// 🔑 Runtime + canonical shape for the STORED Firestore Place
+export const Place = {
 	/** Canonical id (== Google place_id; Firestore document id). */
-	id: string
+	id: '',
 
-	name: string
-	formatted_address: string
-	lat: number
-	lng: number
+	name: '',
+	formatted_address: '',
+	lat: 0,
+	lng: 0,
 
-	/** A display image for UI (empty string means unset). */
-	image_url: string
+	/** Canonical place image for UI (empty string means unset). */
+	place_image: '',
 
-	source: PlaceSource
+	source: 'firebase' as PlaceSource,
+
+	/** “How we found this place” (kept for UX + duplicate avoidance). */
+	search_term: '',
+
+	// Authored (FireuxAuthored)
+	creator_id: '',
+	created_at: {} as FirebaseTimestamp,
+	updated_at: {} as FirebaseTimestamp,
+} as const
+
+// ✅ Type derived from the runtime model (stored Place)
+export type Place = FireuxAuthored & {
+	[K in keyof typeof Place]: (typeof Place)[K]
 }
 
+/** Base (shared by Google & Firestore). */
+export type BasePlace = Pick<
+	Place,
+	'id' | 'name' | 'formatted_address' | 'lat' | 'lng' | 'place_image' | 'source'
+>
+
 /** Google Place (transient/provider). */
-export interface GooglePlace extends BasePlace {
+export type GooglePlace = BasePlace & {
 	source: 'google'
 
 	/** Useful to confirm identity before saving. */
@@ -40,13 +60,5 @@ export interface GooglePlace extends BasePlace {
 	user_ratings_total: number
 }
 
-/** Firestore Place (stored). */
-export interface Place extends BasePlace, FireuxAuthored {
-	source: 'firebase'
-
-	/** “How we found this place” (kept for UX + duplicate avoidance). */
-	search_term: string
-}
-
 /** Payload used before Firestore stamping is applied. */
-export type PlaceUpsertInput = Omit<Place, 'creator_id' | 'created_at' | 'updated_at'>
+export type PlaceUpsertInput = Omit<Place, keyof FireuxAuthored>

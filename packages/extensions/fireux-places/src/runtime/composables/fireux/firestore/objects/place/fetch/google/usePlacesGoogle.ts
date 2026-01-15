@@ -192,7 +192,7 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
     lat: g.lat,
     lng: g.lng,
     source: 'firebase',
-    image_url: g.image_url ?? '',
+    place_image: g.place_image ?? '',
     search_term,
   }
 }
@@ -219,7 +219,7 @@ export function mapDetailsToGooglePlace(
     lat: Number(location?.lat ?? 0),
     lng: Number(location?.lng ?? 0),
     source: 'google',
-    image_url: typeof result?.icon === 'string' ? result.icon : '',
+    place_image: typeof result?.icon === 'string' ? result.icon : '',
     website: typeof result?.website === 'string' ? result.website : '',
     phone,
     rating: typeof result?.rating === 'number' ? result.rating : 0,

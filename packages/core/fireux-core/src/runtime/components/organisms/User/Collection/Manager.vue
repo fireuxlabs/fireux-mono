@@ -17,15 +17,6 @@
             class="w-44"
           />
 
-          <UButton
-            v-if="isTenant"
-            size="xs"
-            variant="ghost"
-            @click="showGlobalDirectory = !showGlobalDirectory"
-          >
-            {{ showGlobalDirectory ? 'Hide global directory' : 'View global directory' }}
-          </UButton>
-
           <UButton size="xs" variant="ghost" @click="toggleVariant">
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
           </UButton>
@@ -35,65 +26,38 @@
       </div>
     </template>
 
-    <template v-if="!isTenant || showGlobalDirectory">
-      <OrganismsUserCollectionList
-        v-if="cards.length"
-        :cards="cards"
-        :variant="variant"
-      />
+    <OrganismsUserCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    />
 
-      <p v-else class="fx-section__empty">
-        {{ query ? 'No users match your search.' : 'No users found.' }}
-      </p>
-    </template>
-
-    <p v-else class="fx-section__empty">Global directory hidden.</p>
+    <p v-else class="fx-section__empty">
+      {{ query ? 'No users match your search.' : 'No users found.' }}
+    </p>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
-import { useGlobalUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
-import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import type { User } from '../../../../models/core/user.model'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-const { appId, appName, ecosystem, isTenant } = useFireUXConfig()
-const showGlobalDirectory = ref(!isTenant)
-const { users, count: totalCount } = useGlobalUserCollection()
-const { card, searchText } = useUserInterface()
+const props = defineProps<{ cards: UserCard.Card[]; total?: number; subtitle?: string }>()
 
-const scopeCopy = computed(() => {
-  if (isTenant) return `Browse users available to ${appName}.`
-  return `Browse users in the ${ecosystem} ecosystem directory.`
-})
-
-const inferRole = (entry: User): 'admin' | 'user' | undefined => {
-  const activeAppId = appId?.trim()
-  if (!activeAppId) return undefined
-  if (Array.isArray(entry.adminOf) && entry.adminOf.some((id) => id === activeAppId)) return 'admin'
-  if (Array.isArray(entry.userOf) && entry.userOf.some((id) => id === activeAppId)) return 'user'
-  return undefined
-}
+const scopeCopy = computed(() => props.subtitle ?? 'Browse users available to this runtime.')
 
 const {
   query,
   variant,
   toggleVariant,
+  cards: cardsFiltered,
   visibleCount,
-  cards,
-} = useCollectionSearch<User, UserCard.Card>({
-  items: users,
-  searchText,
-  makeCard: (entry: User) => {
-    if (!entry?.id) return null
-    const role = inferRole(entry)
-    const payload = card(entry)
-    if (!payload) return null
-    const badges = role === 'admin' ? ['Admin'] : []
-    return { ...payload, badges }
-  },
+} = useCollectionSearch<UserCard.Card, UserCard.Card>({
+  items: computed(() => props.cards ?? []),
+  searchText: (card) => `${card.displayName} ${card.handle ?? ''} ${card.id ?? ''}`.toLowerCase(),
+  makeCard: (card) => card,
 })
+
+const totalCount = computed(() => props.total ?? props.cards?.length ?? 0)
 </script>

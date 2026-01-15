@@ -1,56 +1,34 @@
 # Mirror
-Live mirror (symlinks).
 
-- `mirror/` is safe to delete/recreate.
-- Do not use subfolders under `mirror/`.
-- All mirror symlinks must live in the `mirror/` root.
-- All mirror symlinks must have human-readable key-id file names (not full paths).
-- Mirror contents are generated symlinks (not copies).
-- Never edit files in `mirror/`.
-- Always edit real files under `packages/**`.
+`mirror/` is a *flat*, generated workspace of symlinks for the files you want to keep “in view” during a task.
 
-## How mirror is generated
+## Quick use
 
-- Source of truth: `mirror/mirror.txt` (one repo-relative file path per line)
-- Regenerate symlinks: `node scripts/mirror-sync.mjs`
+1. Edit `mirror/mirror.txt` (add/remove paths).
+2. Regenerate: `node scripts/mirror-sync.mjs`.
+3. Work from the symlinks in `mirror/` (but edit the real sources under `packages/**`).
 
-Notes:
-- The sync script flattens paths into short, readable key ids and will add a numeric suffix if needed to avoid collisions.
-- Don’t hand-create or rename symlinks in `mirror/`; they’ll be deleted on the next sync.
+## Rules (the “mirror contract”)
 
-## Naming convention (key ids)
+- **Source of truth:** `mirror/mirror.txt`.
+- **Generated output:** everything in `mirror/` *except* `mirror/README.md` and `mirror/mirror.txt`.
+- **Safe to delete:** generated symlinks only. Don’t delete the README or list file as part of normal workflow.
+- **Flat only:** no subfolders under `mirror/` (symlinks must live in the `mirror/` root).
+- **Never hand-edit symlinks:** don’t create/rename/delete symlinks manually; run the sync script instead.
 
-Mirror symlink names are intentionally short “key ids” so you can scan/search them quickly.
+## What goes in `mirror/mirror.txt`
 
-- Names include a package slug prefix (e.g. `core`, `jobs`, `places`) plus a meaningful tail (e.g. `dev-HealthPanel.vue`).
-- Names should *not* include full `src/runtime/...` paths.
-- Collisions are resolved by appending `--2`, `--3`, etc.
+- One repo-relative path per line.
+- You can list a file or a directory.
+	- If you list a directory, the sync script will include files under it (recursively).
+- Lines starting with `#` are comments.
 
-Examples:
+## Common workflows
 
-- `core-dev-HealthPanel.vue`
-- `core-dev-index.vue`
-- `core-api-dev-images.get.ts`
-- `jobs-dev-fireux-jobs.vue`
+- **Clear the mirror:** remove the non-comment lines from `mirror/mirror.txt`, then run `node scripts/mirror-sync.mjs`.
+- **Switch focus (“pop” a new set):** edit `mirror/mirror.txt`, then run the sync.
 
-## Glossary
+## Notes
 
-- **mirror**: The generated set of symlinks in `mirror/` pointing to real files elsewhere in the repo.
-- **source of truth**: `mirror/mirror.txt` (the list of repo-relative paths that should be mirrored).
-- **sync**: Regenerating the symlinks by running `node scripts/mirror-sync.mjs`.
-- **pop**: Short for “populate”. Add/update entries in `mirror/mirror.txt` so the next sync produces the intended set of mirror symlinks.
-- **mirror pop**: Populate + sync the mirror according to a specific intent (e.g. “mirror pop all dev based components”).
-- **clear**: Remove generated mirror symlinks so `mirror/` contains only `README.md` and `mirror.txt`.
-- **key id**: The short, human-readable symlink file name created by the sync script (package slug + meaningful tail).
-
-### Operator phrases
-
-When you say: **“mirror pop …”**, treat it as an instruction to:
-
-1. Update `mirror/mirror.txt` to include the requested set of files.
-2. Run `node scripts/mirror-sync.mjs` to regenerate `mirror/`.
-
-When you say: **“mirror clear”**, treat it as an instruction to:
-
-1. Ensure `mirror/mirror.txt` is empty (or contains only comments).
-2. Run `node scripts/mirror-sync.mjs` to remove all generated symlinks.
+- Symlink names are generated to be human-readable; collisions get a numeric suffix (e.g. `--2`).
+- If VS Code shows save conflicts while syncing, close any open `mirror/` tabs and rerun the sync (or reload the window).

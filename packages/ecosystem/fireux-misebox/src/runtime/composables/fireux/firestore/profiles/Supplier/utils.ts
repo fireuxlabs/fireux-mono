@@ -1,4 +1,4 @@
-import type { SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
+import type { SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model'
 
 export function useSupplierValidation() {
   /** Validate supplier data */

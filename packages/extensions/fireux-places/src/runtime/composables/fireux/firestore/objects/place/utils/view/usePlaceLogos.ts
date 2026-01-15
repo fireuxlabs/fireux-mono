@@ -93,7 +93,7 @@ export function usePlaceLogoState(
       requestToken += 1
       isLoading.value = false
       error.value = null
-      const sanitized = sanitizeLogoAvatar((next as any)?.image_url ?? null)
+      const sanitized = sanitizeLogoAvatar((next as any)?.place_image ?? null)
       avatar.value = sanitized
       hasAttempted.value = !!sanitized
       if (!next) return
@@ -212,7 +212,7 @@ function toLogoCell(place: PlaceLogoTarget): PlaceCard.Cell {
     id: (place as any).id ?? (place as any).place_id,
     name: place.name,
     formatted_address: (place as any).formatted_address ?? '',
-    imageUrl: (place as any).imageUrl ?? (place as any).image_url ?? '',
+    imageUrl: (place as any).imageUrl ?? (place as any).place_image ?? '',
     source: place.source,
   }
 }

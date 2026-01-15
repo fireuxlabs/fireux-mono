@@ -1,6 +1,6 @@
 import { useRouter } from 'vue-router'
-import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure.ts'
-import { supplierConfig } from '../../../../../../models/profiles/Supplier/Supplier.model.ts'
+import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { supplierConfig } from '../../../../../../models/profiles/Supplier/Supplier.model'
 
 export function useSupplierCreate() {
   const { ensure } = useProfileEnsure(supplierConfig)

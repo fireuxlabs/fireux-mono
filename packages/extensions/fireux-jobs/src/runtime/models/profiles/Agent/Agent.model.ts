@@ -1,29 +1,45 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
 
-import type {
-  AppProfileBase,
-  CoreProfileBase,
-} from 'fireux-core/runtime/models/core/profile.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { agentConfig } from './supporting'
 
 /**
- * Firestore shapes only. No UI. No composable wiring. No generics.
- *
+ * Runtime canonical shapes (core + app overlay)
  * Core doc:  agents/{uid}
  * App doc:   apps/{appId}/agents/{uid}
  */
-export interface AgentCore extends CoreProfileBase {
-  bio_short: string
-  contact_email: string
-  contact_phone: string
-  website_url: string
+
+export const AgentCore = {
+  id: '',
+  title: '',
+  subtitle: '',
+  tagline: '',
+  tags: [] as string[],
+
+  bio_short: '',
+  contact_email: '',
+  contact_phone: '',
+  website_url: '',
+
+  creator_id: '',
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+} as const
+
+export type AgentCore = {
+  [K in keyof typeof AgentCore]: (typeof AgentCore)[K]
 }
 
-/**
- * Tenant overlay (delta-only).
- * Keep empty until you truly need tenant-specific fields.
- */
-export interface AgentApp extends AppProfileBase {}
+export const AgentApp = {
+  id: '',
+  creator_id: '',
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+} as const
+
+export type AgentApp = {
+  [K in keyof typeof AgentApp]: (typeof AgentApp)[K]
+}
 
 export { agentConfig }
 

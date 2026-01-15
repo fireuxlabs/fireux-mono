@@ -3,7 +3,7 @@
     <div class="flex items-start gap-3">
       <div class="relative">
         <UAvatar
-          :src="place.image_url || undefined"
+          :src="place.place_image || undefined"
           :alt="place.name"
           size="lg"
           icon="i-lucide-map-pin"

@@ -1,4 +1,4 @@
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 
 /**

@@ -1,5 +1,5 @@
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts'
-import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model.ts'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model'
 
 /**
  * useChefComputed

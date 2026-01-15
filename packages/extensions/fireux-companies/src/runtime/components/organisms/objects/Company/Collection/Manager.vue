@@ -7,16 +7,19 @@
       </div>
     </template>
 
-    <div v-if="!cells.length" class="text-sm text-dimmed">
+    <div v-if="!cards.length" class="text-sm text-dimmed">
       No companies yet.
     </div>
 
     <div v-else class="grid gap-3 md:grid-cols-2">
       <OrganismsObjectsCompanyCardsCell
-        v-for="cell in cells"
-        :key="cell.id"
-        :card="cell"
-        :avatar="cell.avatar ?? null"
+        v-for="card in cards"
+        :key="card.id"
+        :to="card.to"
+        :name="card.name"
+        :website="card.website"
+        :badges="card.badges"
+        :avatar-url="card.avatarUrl"
       />
     </div>
   </UCard>
@@ -28,8 +31,12 @@ import { useCompanyFetch } from '../../../../../composables/fireux/firestore/obj
 import { useCompanyInterface } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 
 const { companies } = useCompanyFetch()
-const { cellProps } = useCompanyInterface()
+const { card: makeCard } = useCompanyInterface()
 
-const cells = computed(() => (companies.value ?? []).map((c) => cellProps(c)))
-const total = computed(() => cells.value.length)
+const cards = computed(() =>
+  (companies.value ?? [])
+    .map((c) => makeCard(c))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+const total = computed(() => cards.value.length)
 </script>

@@ -107,30 +107,6 @@
           </div>
         </dl>
       </UCard>
-
-      <UCard>
-        <template #header>
-          <div class="flex items-center justify-between gap-3">
-            <div class="flex flex-col">
-              <h2 class="text-base font-semibold">Jobs developer tools</h2>
-              <p class="text-sm text-gray-500">
-                Use the jobs module dev page for streams and collections.
-              </p>
-            </div>
-            <UButton
-              size="sm"
-              to="/dev/fireux-jobs"
-              icon="i-lucide-arrow-up-right"
-            >
-              Open jobs dev
-            </UButton>
-          </div>
-        </template>
-        <p class="text-sm text-gray-600">
-          Cleanbox dev view is now ecosystem-only. Job data inspection lives
-          under the fireux-jobs dev page.
-        </p>
-      </UCard>
     </UPageBody>
   </UPage>
 </template>

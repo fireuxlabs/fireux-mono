@@ -1,6 +1,6 @@
 import { useRouter } from 'vue-router'
-import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure.ts'
-import { professionalConfig } from '../../../../../../models/profiles/Professional/Professional.model.ts'
+import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { professionalConfig } from '../../../../../../models/profiles/Professional/Professional.model'
 
 export function useProfessionalCreate() {
   const { ensure } = useProfileEnsure(professionalConfig)

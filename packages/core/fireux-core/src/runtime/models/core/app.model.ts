@@ -1,5 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
 
+import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { FireuxAuthored } from './meta.model'
 import type { AppRole, AppSocialLinks } from './app.supporting'
 
@@ -53,6 +54,11 @@ export const App = {
   logo_url: '',
   wordmark_light_url: '',
   wordmark_dark_url: '',
+
+  // Authored (FireuxAuthored)
+  creator_id: '',
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
 } as const
 
 // ✅ Type derived from the runtime model (no duplication)

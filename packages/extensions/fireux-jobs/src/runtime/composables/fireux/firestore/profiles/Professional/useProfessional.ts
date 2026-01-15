@@ -1,11 +1,11 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/useProfessional.ts
 
-import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile.ts'
+import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 
 import {
   professionalConfig,
   type ProfessionalCore,
-} from '../../../../../models/profiles/Professional/Professional.model.ts'
+} from '../../../../../models/profiles/Professional/Professional.model'
 
 import { useProfessionalComputed } from './main/useProfessionalComputed'
 import { useProfessionalInterface, type ProfessionalCard } from './utils/view/useProfessionalInterface'

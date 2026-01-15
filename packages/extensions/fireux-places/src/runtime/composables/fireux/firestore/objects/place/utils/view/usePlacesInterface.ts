@@ -40,12 +40,12 @@ export function usePlacesInterface() {
       id: place.id,
       to: `/places/${place.id}`,
 
-      avatarUrl: place.image_url,
+	  avatarUrl: place.place_image,
       title: place.name,
       subtitle: place.formatted_address,
       badges: [],
 
-      imageUrl: place.image_url,
+	  imageUrl: place.place_image,
 
       name: place.name,
       formattedAddress: place.formatted_address,

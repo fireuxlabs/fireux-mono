@@ -6,13 +6,16 @@
     />
     <UPageBody class="pagebody">
       <OrganismsAppCTA />
-      <OrganismsAppCollectionManager />
+      <OrganismsAppCollectionManager :cards="appCards" :total="totalCount" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useHead } from '#imports'
+import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection'
+import { useAppInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
 definePageMeta({
   nav: {
@@ -32,4 +35,15 @@ definePageMeta({
 })
 
 useHead({ title: 'Apps' })
+
+const { apps, count } = useAppCollection()
+const { card: makeCard } = useAppInterface()
+
+const appCards = computed(() =>
+  (apps.value ?? [])
+    .map((app) => makeCard(app))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+
+const totalCount = computed(() => count.value ?? appCards.value.length)
 </script>

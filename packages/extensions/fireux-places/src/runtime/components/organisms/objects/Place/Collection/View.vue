@@ -2,7 +2,7 @@
   <OrganismsObjectsPlaceCollectionManager
     :keyword="keyword"
     :type="type"
-    v-slot="{ cells, total }"
+    v-slot="{ cards, total }"
   >
     <UCard :ui="{ body: 'space-y-4' }">
       <template #header>
@@ -14,15 +14,15 @@
         </div>
       </template>
 
-      <div v-if="cells.length" class="space-y-2">
+      <div v-if="cards.length" class="space-y-2">
         <UButton
-          v-for="cell in cells"
-          :key="cell.id"
+          v-for="card in cards"
+          :key="card.id"
           color="neutral"
           variant="ghost"
           class="w-full justify-start px-3 py-3"
         >
-          <OrganismsObjectsPlaceCardsCell v-bind="cell" />
+          <OrganismsObjectsPlaceCardsCell v-bind="card" />
         </UButton>
       </div>
 

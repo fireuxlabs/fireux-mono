@@ -104,7 +104,7 @@ console.log('[migrate-places] start', {
 let processed = 0
 let updated = 0
 let skipped = 0
-let missingAvatarsFixed = 0
+let missingPlaceImagesFixed = 0
 
 let lastDoc = null
 
@@ -134,8 +134,8 @@ while (true) {
 
     const name = asString(data.name)
     const formatted_address = asString(data.formatted_address)
-    const avatarNullish = data.avatar == null
-    const avatar = asString(data.avatar)
+    const placeImageNullish = data.place_image == null
+    const place_image = asString(data.place_image || data.avatar || data.image_url)
     const lat = asNumber(data.lat)
     const lng = asNumber(data.lng)
 
@@ -148,7 +148,8 @@ while (true) {
       source: 'firebase',
       name,
       formatted_address,
-      avatar,
+
+      place_image,
       lat,
       lng,
       search_term,
@@ -171,7 +172,8 @@ while (true) {
       'place_id' in data ||
       'professionals_current' in data ||
       'professionals_alumni' in data ||
-      avatarNullish ||
+      placeImageNullish ||
+      !('place_image' in data) ||
       !('search_term' in data) ||
       !('creator_id' in data) ||
       !data.created_at ||
@@ -183,7 +185,7 @@ while (true) {
       skipped++
     } else {
       updated++
-      if (avatarNullish) missingAvatarsFixed++
+      if (placeImageNullish) missingPlaceImagesFixed++
       if (args.commit) {
         batch.set(docSnap.ref, patch, { merge: true })
         batchOps++
@@ -203,7 +205,7 @@ while (true) {
     processed,
     updated,
     skipped,
-    missingAvatarsFixed,
+    missingPlaceImagesFixed,
     lastId: lastDoc?.id,
   })
 
@@ -214,6 +216,6 @@ console.log('[migrate-places] done', {
   processed,
   updated,
   skipped,
-  missingAvatarsFixed,
+  missingPlaceImagesFixed,
   commit: args.commit,
 })

@@ -1,6 +1,6 @@
 import { computed, shallowRef, watch } from 'vue'
 import type { Ref, ShallowRef } from 'vue'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 export function useKitchenCollection<
   T extends Record<string, any> = Record<string, any>,

@@ -27,8 +27,8 @@
     </template>
 
     <OrganismsAppCollectionList
-      v-if="cards.length"
-      :cards="cards"
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
       :variant="variant"
     />
 
@@ -39,24 +39,24 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
-import { useAppCollection } from '../../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
-import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import type { App } from '../../../../models/core/app.model'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
-const { apps, count: totalCount } = useAppCollection()
-const { card, searchText } = useAppInterface()
+const props = defineProps<{ cards: AppCard.Card[]; total?: number }>()
 
 const {
   query,
   variant,
   toggleVariant,
+  cards: cardsFiltered,
   visibleCount,
-  cards,
-} = useCollectionSearch<App, AppCard.Card>({
-  items: apps,
-  searchText,
-  makeCard: card,
+} = useCollectionSearch<AppCard.Card, AppCard.Card>({
+  items: computed(() => props.cards ?? []),
+  searchText: (card) =>
+    `${card.displayName} ${card.shortName ?? ''} ${card.id ?? ''} ${card.ecosystem ?? ''}`.toLowerCase(),
+  makeCard: (card) => card,
 })
+
+const totalCount = computed(() => props.total ?? props.cards?.length ?? 0)
 </script>

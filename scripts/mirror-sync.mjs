@@ -23,6 +23,38 @@ function linkNameFromRelPath(relPath) {
   // - packages/core/fireux-core/src/runtime/server/api/dev/images.get.ts
   //   -> core-api-dev-images.get.ts
 
+  function normalizeModelTail(modelParts) {
+    // modelParts are path segments after `models/`.
+    // Prefer compact, stable names:
+    // - models/profiles/Agent/Agent.model.ts -> profile-Agent.model.ts
+    // - models/objects/job.model.ts -> object-job.model.ts
+    // - models/core/user.model.ts -> model-user.model.ts
+
+    if (!Array.isArray(modelParts) || modelParts.length === 0) return modelParts
+
+    const [rawKind, ...rest] = modelParts
+    const kindMap = {
+      profiles: 'profile',
+      objects: 'object',
+      core: 'model',
+    }
+    const kind = kindMap[rawKind] || rawKind
+
+    if (rest.length === 0) return [kind]
+
+    const last = rest[rest.length - 1]
+    const prev = rest.length >= 2 ? rest[rest.length - 2] : null
+
+    // If the folder repeats the model name (Agent/Agent.model.ts), drop the folder.
+    if (prev && last.toLowerCase().startsWith(`${prev.toLowerCase()}.`)) {
+      return [kind, last]
+    }
+
+    // Otherwise keep the last 2 segments to retain context.
+    if (rest.length >= 2) return [kind, ...rest.slice(-2)]
+    return [kind, last]
+  }
+
   const parts = relPath.split('/').filter(Boolean)
   const packagesIndex = parts.indexOf('packages')
 
@@ -51,6 +83,7 @@ function linkNameFromRelPath(relPath) {
       const layoutsIndex = parts.indexOf('layouts')
       const pagesIndex = parts.indexOf('pages')
       const composablesIndex = parts.indexOf('composables')
+      const modelsIndex = parts.indexOf('models')
       const apiIndex = parts.indexOf('api')
 
       if (layoutsIndex !== -1 && componentsIndex !== -1) {
@@ -62,6 +95,8 @@ function linkNameFromRelPath(relPath) {
         tail = parts.slice(pagesIndex + 1)
       } else if (composablesIndex !== -1) {
         tail = parts.slice(composablesIndex + 1)
+      } else if (modelsIndex !== -1) {
+        tail = normalizeModelTail(parts.slice(modelsIndex + 1))
       } else if (apiIndex !== -1) {
         tail = ['api', ...parts.slice(apiIndex + 1)]
       } else if (runtimeIndex !== -1) {

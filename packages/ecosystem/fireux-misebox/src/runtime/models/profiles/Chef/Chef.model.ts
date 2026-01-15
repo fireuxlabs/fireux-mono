@@ -1,30 +1,46 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts
 
-import type {
-  AppProfileBase,
-  CoreProfileBase,
-} from 'fireux-core/runtime/models/core/profile.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { chefConfig } from './supporting'
 
 /**
- * Firestore shapes only. No UI. No composable wiring. No generics.
- *
+ * Runtime canonical shapes (core + app overlay)
  * Core doc:  chefs/{uid}
  * App doc:   apps/{appId}/chefs/{uid}
  */
-export interface ChefCore extends CoreProfileBase {
-  bio_short: string
-  bio_long: string
-  specialties: string[]
-  locations: string[]
-  organization_name: string
+
+export const ChefCore = {
+  id: '',
+  title: '',
+  subtitle: '',
+  tagline: '',
+  tags: [] as string[],
+
+  bio_short: '',
+  bio_long: '',
+  specialties: [] as string[],
+  locations: [] as string[],
+  organization_name: '',
+
+  creator_id: '',
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+} as const
+
+export type ChefCore = {
+  [K in keyof typeof ChefCore]: (typeof ChefCore)[K]
 }
 
-/**
- * Tenant overlay (delta-only).
- * Keep empty until you truly need tenant-specific fields.
- */
-export interface ChefApp extends AppProfileBase {}
+export const ChefApp = {
+  id: '',
+  creator_id: '',
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+} as const
+
+export type ChefApp = {
+  [K in keyof typeof ChefApp]: (typeof ChefApp)[K]
+}
 
 export { chefConfig }
 

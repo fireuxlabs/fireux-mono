@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref } from 'vue'
-import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage.ts'
+import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import {
   canonicalPlaceId,
   fetchPlaceDetails,
@@ -123,7 +123,7 @@ function buildFallbackPlace(base: BasePlace, placeId: string): PlaceUpsertInput 
     formatted_address: formatted,
     lat: base.lat,
     lng: base.lng,
-    image_url: sanitizeAvatar(base.image_url) ?? '',
+    place_image: sanitizeAvatar((base as any).place_image) ?? '',
     search_term: `${base.name} ${formatted}`.toLowerCase().trim(),
   }
 }
@@ -140,7 +140,7 @@ async function loadDraftPlace(placeId: string, preview: BasePlace): Promise<Plac
       return {
         ...details.stored,
         id: placeId,
-        image_url: sanitizeAvatar(details.stored.image_url ?? null) ?? '',
+        place_image: sanitizeAvatar((details.stored as any).place_image ?? null) ?? '',
       }
     }
   } catch (error) {
@@ -158,17 +158,17 @@ async function maybeUploadAvatar(
   preview: BasePlace
 ) {
   const uploadSource =
-    sanitizeAvatar(preview.image_url) ?? sanitizeAvatar(draft.image_url)
+    sanitizeAvatar((preview as any).place_image) ?? sanitizeAvatar((draft as any).place_image)
   if (!uploadSource) return
 
   try {
     const path = `places/${placeId}/avatar`
     const uploadedUrl = await uploadFromUrl(path, uploadSource)
-    draft.image_url = uploadedUrl
+    ;(draft as any).place_image = uploadedUrl
     if (selected.value) {
       selected.value = {
         ...selected.value,
-        image_url: uploadedUrl,
+        place_image: uploadedUrl,
       }
     }
   } catch (error) {
@@ -203,7 +203,7 @@ async function onConfirm(place: BasePlace) {
         formatted_address: place.formatted_address ?? '',
         lat: place.lat,
         lng: place.lng,
-        image_url: sanitizeAvatar(place.image_url) ?? '',
+        place_image: sanitizeAvatar((place as any).place_image) ?? '',
         search_term:
           (place as any).search_term ??
           `${place.name} ${place.formatted_address ?? ''}`.toLowerCase().trim(),

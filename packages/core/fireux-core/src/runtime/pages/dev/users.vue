@@ -1,142 +1,94 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/pages/dev/users.vue -->
 <template>
   <UPage>
-    <UPageBody class="pagebody space-y-8">
-      <DevPane
-        title="Current user"
-        description="Resolved /users/<uid> for this runtime."
-        :debug-data="currentUserDev"
-        :default-open="hasCurrentUser"
-      >
-        <template #actions>
-          <UButton v-if="hasCurrentUser" size="xs" variant="ghost" @click="toggleUserView">
-            {{ userView === 'preview' ? 'Profile' : 'Preview' }}
-          </UButton>
-        </template>
+    <UPageHeader
+      title="Dev · Users"
+      description="Collection-first view; filter by missing or extra fields (against the runtime model)."
+    />
 
-        <MoleculesStateCard
-          v-if="isLoading"
-          entity="user"
-          kind="document"
-          loading
-        />
-
-        <MoleculesStateCard
-          v-else-if="!hasCurrentUser"
-          entity="user"
-          kind="document"
-        />
-
-        <div v-else class="space-y-4">
-          <OrganismsUserCardsPreview
-            v-if="userView === 'preview' && currentUser"
-            v-bind="card(currentUser)"
-          />
-
-          <OrganismsUserCardsProfile
-            v-else-if="currentUser"
-            v-bind="card(currentUser)"
-            :user="currentUser"
-          />
-        </div>
-      </DevPane>
-
-      <DevPane
-        title="App memberships"
-        description="Live /apps/{id}/users memberships and counts."
-        :debug-data="membershipsDev"
-        :default-open="hasMemberships"
-      >
-        <div class="space-y-4">
-          <div class="flex flex-col gap-1">
-            <div class="flex items-center justify-between gap-3">
-              <h2 class="text-base font-semibold">App memberships</h2>
-              <UBadge variant="soft">
-                {{ membershipCount }} membership{{
-                  membershipCount === 1 ? '' : 's'
-                }}
-              </UBadge>
-            </div>
-            <p class="text-xs text-gray-500">
-              Scoped to app {{ fireux.appId }} · Pending: {{ appUsersPending }}
-            </p>
-          </div>
-
-          <div class="grid gap-3 md:grid-cols-3">
-            <div
-              class="flex flex-col gap-1 rounded-lg border border-gray-200 p-3"
-            >
-              <span class="text-xs uppercase tracking-wide text-gray-500">
-                Membership Docs
-              </span>
-              <span class="text-2xl font-semibold">{{ membershipCount }}</span>
-            </div>
-            <div
-              class="flex flex-col gap-1 rounded-lg border border-gray-200 p-3"
-            >
-              <span class="text-xs uppercase tracking-wide text-gray-500">
-                Hydrated Profiles
-              </span>
-              <span class="text-2xl font-semibold">{{ hydratedCount }}</span>
-            </div>
-            <div
-              class="flex flex-col gap-1 rounded-lg border border-gray-200 p-3"
-            >
-              <span class="text-xs uppercase tracking-wide text-gray-500">
-                Tenant Mode
-              </span>
-              <span class="text-2xl font-semibold">
-                {{ fireux.isTenant ? 'Tenant' : 'Global' }}
-              </span>
-            </div>
-          </div>
-
-          <div class="grid gap-4 md:grid-cols-2">
-            <DevJson
-              v-if="membershipsJson"
-              label="Memberships"
-              :data="membershipsJson"
-            />
-            <DevJson
-              v-if="scopedUsersJson"
-              label="Scoped Users (hydrated)"
-              :data="scopedUsersJson"
-            />
-          </div>
-          <p v-if="!membershipCount" class="text-sm text-gray-500">
-            No app user records streamed yet.
-          </p>
-        </div>
-      </DevPane>
-
+    <UPageBody class="space-y-10">
       <DevPane
         title="User collection"
-        description="Browse users available to this runtime."
+        description="Browse users resolved for this runtime and filter by model drift."
       >
-        <OrganismsUserCollectionManager />
+        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+          <span class="font-medium">Drift:</span>
+
+          <UButton
+            size="xs"
+            :variant="driftKind === 'missing' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setDriftKind('missing')"
+          >
+            Missing
+          </UButton>
+
+          <UButton
+            size="xs"
+            :variant="driftKind === 'extra' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setDriftKind('extra')"
+          >
+            Extra
+          </UButton>
+
+          <span class="font-medium ml-2">
+            Filter {{ driftKind }}:
+          </span>
+
+          <UButton
+            v-for="option in filterOptions"
+            :key="option.value"
+            size="xs"
+            :variant="selectedField === option.value ? 'solid' : 'ghost'"
+            color="primary"
+            @click="selectedField = option.value"
+          >
+            {{ option.label }}
+          </UButton>
+
+          <UButton
+            size="xs"
+            variant="outline"
+            :disabled="copying"
+            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+            @click="copyFiltered"
+          >
+            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
+          </UButton>
+        </div>
+
+        <OrganismsUserCollectionManager
+          :cards="filteredUserCards"
+          :total="viewedCollection.length"
+        />
       </DevPane>
 
       <DevPane
-        title="User health checks"
-        description="Compares user.adminOf, app admin lists, and tenant membership roles."
-        :checks="userHealthChecks"
+        title="Users (JSON)"
+        description="Raw collection payload + drift map (copyable)."
+        debug-title="Dev · Users · All data"
+        :debug-data="allJsonPayload"
+        :default-open="false"
       />
-
-      <DevUserComponentGallery :user="previewUser" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { definePageMeta } from '#imports'
-import { useCardViewToggle } from '../../composables/shared/useCardViewToggle'
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { computed, ref, watch } from 'vue'
+import { definePageMeta, useRoute } from '#imports'
+import { useDevClipboard } from '../../composables/dev/useDevClipboard'
+import {
+  humanizeDriftPath,
+  resolveDriftFromModel,
+  type DriftKind,
+  type ModelDrift,
+} from '../../composables/dev/useModelDrift'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
-import { useAppUsers } from '../../composables/fireux/firestore/core/app/fetch/useAppUsers'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useDevHealth } from '../../composables/dev/health/useDevHealth'
-import DevUserComponentGallery from '../../components/dev/UserComponentGallery.vue'
+import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { User as UserModelRuntime } from '../../models/core/user.model'
+import type { User } from '../../models/core/user.model'
+import type { UserCard } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 definePageMeta({
   layout: 'dev',
@@ -150,49 +102,116 @@ definePageMeta({
     layouts: ['dev'],
     order: 30,
   },
+  title: 'Dev · Users',
+  description: 'Developer view for Users (collection-first).',
 })
 
-const { currentUser, isLoading, card } = useUser()
-const { users: usersCollection, fulfilled: hydratedAppUsers } = useUserCollection()
-const fireux = useFireUXConfig()
-
-const { users: appUsers, pending: appUsersPending } = useAppUsers()
-const { getChecksForScope } = useDevHealth()
-
-const users = computed(() => usersCollection.value ?? [])
-const hasCurrentUser = computed(() => Boolean(currentUser.value))
-const { view: userView, toggleView: toggleUserView } = useCardViewToggle(() => hasCurrentUser.value)
-const membershipCount = computed(() => appUsers.value?.length ?? 0)
-const scopedUsers = computed(() => hydratedAppUsers?.value ?? [])
-const hydratedCount = computed(() => scopedUsers.value.length)
-
-const membershipsJson = computed(() =>
-  membershipCount.value ? appUsers.value : null
-)
-const scopedUsersJson = computed(() =>
-  scopedUsers.value.length ? scopedUsers.value : null
+const route = useRoute()
+const userIdFilter = computed(() =>
+  typeof route.query.userId === 'string' ? route.query.userId : ''
 )
 
-const hasMemberships = computed(() => membershipCount.value > 0)
+const { users: usersRaw } = useUserCollection()
+const { card: makeCard } = useUserInterface()
+const { copyJSON, copying } = useDevClipboard()
 
-const currentUserDev = computed(() => ({
-  flags: {
-    isLoading: isLoading.value,
-    hasUser: hasCurrentUser.value,
-  },
-  user: currentUser.value,
+const userCollection = computed<User[]>(() =>
+  (usersRaw.value ?? [])
+    .map((entry: unknown) => (entry as any)?.coreUser ?? entry)
+    .filter((u: any): u is User => Boolean(u?.id))
+)
+
+const viewedCollection = computed<User[]>(() =>
+  userIdFilter.value
+    ? userCollection.value.filter((u) => u.id === userIdFilter.value)
+    : userCollection.value
+)
+
+const userCards = computed<UserCard.Card[]>(() =>
+  viewedCollection.value
+    .map((user) => makeCard(user))
+    .filter((c): c is UserCard.Card => Boolean(c))
+)
+
+const driftKind = ref<DriftKind>('missing')
+const selectedField = ref<string>('')
+
+const setDriftKind = (kind: DriftKind) => {
+  driftKind.value = kind
+}
+
+watch(driftKind, () => {
+  selectedField.value = ''
+})
+
+const driftById = computed(() => {
+  const map = new Map<string, ModelDrift>()
+  for (const user of viewedCollection.value) {
+    if (!user?.id) continue
+    const drift = resolveDriftFromModel(
+      UserModelRuntime as unknown as Record<string, unknown>,
+      user as unknown as Record<string, unknown>
+    )
+    map.set(user.id, drift)
+  }
+  return map
+})
+
+const fieldOptions = computed(() => {
+  const counts = new Map<string, number>()
+  for (const drift of driftById.value.values()) {
+    const list = driftKind.value === 'missing' ? drift.missing : drift.extra
+    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
+  }
+
+  return [...counts.entries()]
+    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+})
+
+const filterOptions = computed(() => [
+  { label: 'All', value: '' },
+  ...fieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
+])
+
+const filteredUserCards = computed<UserCard.Card[]>(() => {
+  if (!selectedField.value) return userCards.value
+
+  return userCards.value.filter((card) => {
+    const drift = driftById.value.get(card.id)
+    if (!drift) return false
+    const list = driftKind.value === 'missing' ? drift.missing : drift.extra
+    return list.includes(selectedField.value)
+  })
+})
+
+const filteredPayload = computed(() =>
+  filteredUserCards.value.map((card) => {
+    const drift = driftById.value.get(card.id) ?? { missing: [], extra: [] }
+    return {
+      id: card.id,
+      displayName: card.displayName,
+      handle: card.handle,
+      drift,
+    }
+  })
+)
+
+const allJsonPayload = computed(() => ({
+  userIdFilter: userIdFilter.value || null,
+  users: viewedCollection.value,
+  driftById: Object.fromEntries(driftById.value),
 }))
 
-const membershipsDev = computed(() => ({
-  count: membershipCount.value,
-  hydratedCount: hydratedCount.value,
-  pending: appUsersPending.value,
-  memberships: appUsers.value ?? [],
-  scopedUsers: scopedUsers.value,
-}))
-
-const userHealthChecks = getChecksForScope('users')
-const previewUser = computed(
-  () => currentUser.value ?? users.value?.[0] ?? null
-)
+const copyFiltered = async () => {
+  await copyJSON(
+    {
+      userIdFilter: userIdFilter.value || null,
+      driftKind: driftKind.value,
+      selectedField: selectedField.value || null,
+      users: filteredPayload.value,
+    },
+    { label: 'Dev · Users · Filtered drift' }
+  )
+}
 </script>

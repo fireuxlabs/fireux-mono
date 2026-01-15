@@ -1,6 +1,6 @@
 import { useRouter } from 'vue-router'
-import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure.ts'
-import { chefConfig } from '../../../../../../models/profiles/Chef/Chef.model.ts'
+import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { chefConfig } from '../../../../../../models/profiles/Chef/Chef.model'
 
 export function useChefCreate() {
   const { ensure } = useProfileEnsure(chefConfig)

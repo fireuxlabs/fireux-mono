@@ -43,13 +43,27 @@ type Props = Pick<CompanyCard.Card, 'to' | 'name' | 'website' | 'badges'> & {
   showSubtitle?: boolean
   showBadges?: boolean
   showTagline?: boolean
+
+  // Back-compat with older callsites
+  card?: Partial<CompanyCard.Card> | null
+  avatar?: string | null
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   avatarUrl: '',
   prop: '',
   showSubtitle: true,
   showBadges: true,
   showTagline: true,
+
+  card: null,
+  avatar: null,
 })
+
+// Allow passing either structured props or a legacy `card` object.
+const to = props.to || props.card?.to || ''
+const name = props.name || props.card?.name || ''
+const website = props.website || props.card?.website || ''
+const badges = props.badges.length ? props.badges : props.card?.badges || []
+const avatarUrl = props.avatarUrl || props.card?.avatarUrl || props.avatar || ''
 </script>

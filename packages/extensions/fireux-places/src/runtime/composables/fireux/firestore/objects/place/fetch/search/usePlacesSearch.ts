@@ -1,7 +1,7 @@
 import { ref, watch } from 'vue'
 import type { BasePlace } from '../../../../../../../models/place.model'
 import type { PlaceCard } from '../../utils/view/usePlacesInterface'
-import { useFirestoreSearch } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreSearch.ts'
+import { useFirestoreSearch } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreSearch'
 import {
   canonicalPlaceId,
   fetchGoogle,
@@ -86,7 +86,9 @@ export function usePlacesSearch(options?: { type?: string | null }) {
         place_id?: string
         name: string
         formatted_address?: string
+        place_image?: string | null
         image_url?: string | null
+        avatar?: string | null
         search_term: string
         source?: string
       }> = []
@@ -97,7 +99,9 @@ export function usePlacesSearch(options?: { type?: string | null }) {
           place_id?: string
           name: string
           formatted_address?: string
+          place_image?: string | null
           image_url?: string | null
+          avatar?: string | null
           search_term: string
           source?: string
         }>({ collection: 'places', field: 'search_term', query: term, limit: 5 })
@@ -116,6 +120,9 @@ export function usePlacesSearch(options?: { type?: string | null }) {
           const normalizedSource = sourceRaw === 'firestore' ? 'firebase' : sourceRaw
           const safeSource = normalizedSource === 'google' ? 'google' : 'firebase'
 
+          const placeImageRaw = p?.place_image ?? p?.image_url ?? p?.avatar
+          const place_image = typeof placeImageRaw === 'string' ? placeImageRaw : ''
+
           return {
             id,
             name: String(p?.name ?? ''),
@@ -124,7 +131,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
                 ? p.formatted_address
                 : '',
             source: safeSource as any,
-            imageUrl: typeof p?.image_url === 'string' ? p.image_url : '',
+            imageUrl: place_image,
           }
         })
 
@@ -224,7 +231,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             }
 
             const url = await resolveLogo(details)
-            const fallbackIcon = details.google.image_url || null
+            const fallbackIcon = details.google.place_image || null
             const nextImageUrl = url ?? fallbackIcon ?? null
             logoCache.set(id, nextImageUrl)
 
@@ -244,9 +251,9 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             if (
               selected.value &&
               canonicalPlaceId((selected.value as any).place_id ?? selected.value.id) === id &&
-              !selected.value.image_url
+              !(selected.value as any).place_image
             ) {
-              selected.value = { ...selected.value, image_url: nextImageUrl ?? '' }
+              selected.value = { ...selected.value, place_image: nextImageUrl ?? '' }
             }
 
             return nextImageUrl
@@ -276,7 +283,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       lat: 0,
       lng: 0,
       source: cell.source,
-      image_url: cell.imageUrl || cached || '',
+      place_image: cell.imageUrl || cached || '',
     }
 
     // enrich from details (lat/lng, but keep avatar if we already have one)
@@ -295,7 +302,8 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             formatted_address: details.google.formatted_address,
             lat: details.google.lat,
             lng: details.google.lng,
-            image_url: cur.image_url || better || details.google.image_url || '',
+            place_image:
+              (cur as any).place_image || better || details.google.place_image || '',
           }
         }
       } catch (e) {

@@ -1,9 +1,6 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
 
-import type {
-  AppProfileBase,
-  CoreProfileBase,
-} from 'fireux-core/runtime/models/core/profile.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import {
   professionalConfig,
   type OtherExperienceItem,
@@ -11,25 +8,44 @@ import {
 } from './supporting'
 
 /**
- * Firestore shapes only. No UI. No composable wiring. No generics.
- *
+ * Runtime canonical shapes (core + app overlay)
  * Core doc:  professionals/{uid}
  * App doc:   apps/{appId}/professionals/{uid}
  */
-export interface ProfessionalCore extends CoreProfileBase {
-  health_certifications: string[]
-  bio_short: string
-  bio_long: string
-  specialties: string[]
-  locations: string[]
-  relevant_experience: RelevantExperienceItem[]
-  other_experience: OtherExperienceItem[]
+
+export const ProfessionalCore = {
+  id: '',
+  title: '',
+  subtitle: '',
+  tagline: '',
+  tags: [] as string[],
+
+  health_certifications: [] as string[],
+  bio_short: '',
+  bio_long: '',
+  specialties: [] as string[],
+  locations: [] as string[],
+  relevant_experience: [] as RelevantExperienceItem[],
+  other_experience: [] as OtherExperienceItem[],
+
+  creator_id: '',
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+} as const
+
+export type ProfessionalCore = {
+  [K in keyof typeof ProfessionalCore]: (typeof ProfessionalCore)[K]
 }
 
-/**
- * Tenant overlay (delta-only).
- * Keep empty until you truly need tenant-specific fields.
- */
-export interface ProfessionalApp extends AppProfileBase {}
+export const ProfessionalApp = {
+  id: '',
+  creator_id: '',
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+} as const
+
+export type ProfessionalApp = {
+  [K in keyof typeof ProfessionalApp]: (typeof ProfessionalApp)[K]
+}
 
 export { professionalConfig }

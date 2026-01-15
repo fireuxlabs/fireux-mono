@@ -88,3 +88,13 @@ Notes for VS Code agent-mode
 
 - The setting `chat.useAgentsMdFile` is expected to be enabled; this file provides your top-level instructions.
 - Treat this `AGENTS.md` as the root of truth for routing and conventions; prefer this over legacy docs.
+
+Alignment sprint mode (when the user requests it)
+
+- Do NOT run any commands unless explicitly asked (no build/typecheck/lint/tests; no `pnpm` tasks).
+- Do NOT commit, push, create PRs, or run `pnpm gitsave` unless explicitly asked.
+- Modify ONLY the files the user lists. If additional files are required, name them first and stop for approval.
+- No renames/moves. No “while we’re here” improvements.
+- Keep diffs minimal: avoid formatting sweeps, doc rewrites, and comment cleanups.
+- Work in batches of ~10 files max. After each batch, summarize changes and list the files touched.
+- Repo search policy: only use search within the provided file list (avoid broad repo scans).

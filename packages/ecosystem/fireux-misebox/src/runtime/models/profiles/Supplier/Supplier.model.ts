@@ -1,38 +1,54 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts
 
-import type {
-  AppProfileBase,
-  CoreProfileBase,
-} from 'fireux-core/runtime/models/core/profile.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { supplierConfig } from './supporting'
 
 /**
- * Firestore shapes only. No UI. No composable wiring. No generics.
- *
+ * Runtime canonical shapes (core + app overlay)
  * Core doc:  suppliers/{uid}
  * App doc:   apps/{appId}/suppliers/{uid}
  */
-export interface SupplierCore extends CoreProfileBase {
-  bio_short: string
-  bio_long: string
-  specialties: string[]
-  categories: string[]
-  organization_name: string
 
-  business_type: string
-  locations: Array<{ city: string; country: string }>
-  years_in_business: number
-  products_offered: string[]
-  employee_count: number
-  certifications: string[]
-  delivery_range: number
+export const SupplierCore = {
+  id: '',
+  title: '',
+  subtitle: '',
+  tagline: '',
+  tags: [] as string[],
+
+  bio_short: '',
+  bio_long: '',
+  specialties: [] as string[],
+  categories: [] as string[],
+  organization_name: '',
+
+  business_type: '',
+  locations: [] as Array<{ city: string; country: string }>,
+  years_in_business: 0,
+  products_offered: [] as string[],
+  employee_count: 0,
+  certifications: [] as string[],
+  delivery_range: 0,
+
+  creator_id: '',
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+} as const
+
+export type SupplierCore = {
+  [K in keyof typeof SupplierCore]: (typeof SupplierCore)[K]
 }
 
-/**
- * Tenant overlay (delta-only).
- * Keep empty until you truly need tenant-specific fields.
- */
-export interface SupplierApp extends AppProfileBase {}
+export const SupplierApp = {
+  id: '',
+  creator_id: '',
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+} as const
+
+export type SupplierApp = {
+  [K in keyof typeof SupplierApp]: (typeof SupplierApp)[K]
+}
 
 export { supplierConfig }
 

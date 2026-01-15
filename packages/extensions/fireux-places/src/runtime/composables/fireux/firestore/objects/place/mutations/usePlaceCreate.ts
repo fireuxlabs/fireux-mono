@@ -1,4 +1,4 @@
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { toPlaceCollectionPath } from '../utils/placeCollections'
 
 export interface UsePlaceCreateOptions {

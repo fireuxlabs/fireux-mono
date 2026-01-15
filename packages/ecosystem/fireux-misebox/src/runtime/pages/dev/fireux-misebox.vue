@@ -1,338 +1,284 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Misebox Profiles"
-      description="Inspect chef and supplier profiles with the same surfaces used in runtime."
+      title="Dev · Misebox"
+      description="Collection-first view; filter by missing or extra fields (against the runtime models)."
     />
 
     <UPageBody class="space-y-10">
-      <UCard>
-        <template #header>
-          <div class="flex items-center justify-between gap-3">
-            <div class="flex flex-col gap-1">
-              <h2 class="text-base font-semibold">Images</h2>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                Preview common assets (core/ecosystem/app) in the running
-                runtime.
-              </p>
-            </div>
-            <UButton
-              size="sm"
-              to="/dev/images"
-              icon="i-lucide-arrow-up-right"
-            >
-              Open images
-            </UButton>
-          </div>
-        </template>
+      <DevPane
+        title="Chefs collection"
+        description="Browse chefs and filter by model drift (ChefCore)."
+      >
+        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+          <span class="font-medium">Drift:</span>
 
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div class="space-y-2">
-            <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-              Ecosystem
-            </p>
-            <div class="flex items-center gap-3">
-              <img
-                class="h-10 w-10 rounded-lg border"
-                src="/img/ecosystem/logo.png"
-                alt="Ecosystem logo"
-              />
-              <img
-                class="h-10 w-10 rounded-lg border"
-                src="/img/ecosystem/avatar.png"
-                alt="Ecosystem avatar"
-              />
-            </div>
-          </div>
+          <UButton
+            size="xs"
+            :variant="chefDriftKind === 'missing' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setChefDriftKind('missing')"
+          >
+            Missing
+          </UButton>
 
-          <div class="space-y-2">
-            <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-              App
-            </p>
-            <div class="flex items-center gap-3">
-              <img
-                class="h-10 w-10 rounded-lg border"
-                src="/img/app/logo.png"
-                alt="App logo"
-              />
-              <img
-                class="h-10 w-10 rounded-lg border"
-                src="/img/app/pwa/icon-192.png"
-                alt="PWA icon 192"
-              />
-            </div>
-          </div>
+          <UButton
+            size="xs"
+            :variant="chefDriftKind === 'extra' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setChefDriftKind('extra')"
+          >
+            Extra
+          </UButton>
 
-          <div class="space-y-2">
-            <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-              Core
-            </p>
-            <div class="flex items-center gap-3">
-              <img
-                class="h-10 w-10 rounded-lg border"
-                src="/img/core/brand/logo.png"
-                alt="FireUX logo"
-              />
-              <img
-                class="h-10 w-10 rounded-lg border bg-slate-900 p-1"
-                src="/img/core/auth/sign-in-light.svg"
-                alt="Auth illustration"
-              />
-            </div>
-          </div>
+          <span class="font-medium ml-2">Filter {{ chefDriftKind }}:</span>
+
+          <UButton
+            v-for="option in chefFilterOptions"
+            :key="option.value"
+            size="xs"
+            :variant="chefSelectedField === option.value ? 'solid' : 'ghost'"
+            color="primary"
+            @click="chefSelectedField = option.value"
+          >
+            {{ option.label }}
+          </UButton>
+
+          <UButton
+            size="xs"
+            variant="outline"
+            :disabled="copying"
+            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+            @click="copyChefFiltered"
+          >
+            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
+          </UButton>
         </div>
-      </UCard>
 
-      <section class="space-y-4">
-        <header>
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Chef
-          </h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Mirrors the main Chefs page and resolves data without extra
-            fallbacks.
-          </p>
-        </header>
+        <div class="space-y-2">
+          <UAlert
+            v-if="!chefFilteredCards.length"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-inbox"
+            title="No matching chefs"
+            description="Adjust filters or add chef documents to Firestore."
+          />
 
-        <div v-if="chefHasProfile" class="space-y-6">
-          <UCard>
-            <template #header>
-              <h2>Chef profile</h2>
-            </template>
-
-            <div class="space-y-4">
-              <OrganismsProfilesChefCardsCell v-if="chefCard" :chef="chefCard" />
-              <OrganismsProfilesChefCardsPill v-if="chefCard" v-bind="chefCard" />
-            </div>
-          </UCard>
+          <UButton
+            v-for="card in chefFilteredCards"
+            v-else
+            :key="card.id"
+            color="neutral"
+            variant="ghost"
+            class="w-full justify-start px-3 py-3"
+          >
+            <OrganismsProfilesChefCardsPill v-bind="card" />
+          </UButton>
         </div>
-        <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-          No chef profile loaded.
-        </p>
+      </DevPane>
 
-        <DevJsonPanel v-if="chefJson" :data="chefJson" />
+      <DevPane
+        title="Chefs (JSON)"
+        description="Raw collection payload + drift map (copyable)."
+        debug-title="Dev · Misebox · Chefs · All data"
+        :debug-data="chefAllJsonPayload"
+        :default-open="false"
+      />
 
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Global chefs
-              </h3>
-              <UBadge variant="soft">{{ chefGlobalCount }} total</UBadge>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Pulled directly from the shared chefs collection.
-            </p>
-          </template>
+      <DevPane
+        title="Suppliers collection"
+        description="Browse suppliers and filter by model drift (SupplierCore)."
+      >
+        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+          <span class="font-medium">Drift:</span>
 
-          <div
-            v-if="chefGlobalPills.length"
-            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          <UButton
+            size="xs"
+            :variant="supplierDriftKind === 'missing' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setSupplierDriftKind('missing')"
           >
-            <OrganismsProfilesChefCardsPill
-              v-for="card in chefGlobalPills"
-              :key="chefPillKey(card)"
-              v-bind="card"
-            />
-          </div>
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            No global chefs found.
-          </p>
+            Missing
+          </UButton>
 
-          <template #footer>
-            <DevJsonPanel v-if="chefGlobalJson.length" :data="chefGlobalJson" />
-          </template>
-        </UCard>
-
-        <UCard v-if="isTenant && hasChefLocalCollection">
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Tenant chefs
-              </h3>
-              <UBadge variant="soft">{{ chefLocalCount }} total</UBadge>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Scoped to the active tenant application.
-            </p>
-          </template>
-
-          <div
-            v-if="chefLocalPills.length"
-            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          <UButton
+            size="xs"
+            :variant="supplierDriftKind === 'extra' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setSupplierDriftKind('extra')"
           >
-            <OrganismsProfilesChefCardsPill
-              v-for="card in chefLocalPills"
-              :key="chefPillKey(card)"
-              v-bind="card"
-            />
-          </div>
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            No tenant-scoped chefs found.
-          </p>
+            Extra
+          </UButton>
 
-          <template #footer>
-            <DevJsonPanel v-if="chefLocalJson.length" :data="chefLocalJson" />
-          </template>
-        </UCard>
-        <UCard v-else-if="isTenant">
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Tenant chefs
-              </h3>
-              <UBadge variant="soft">0 total</UBadge>
-            </div>
-          </template>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Tenant-overridden collection is not available in this runtime.
-          </p>
-        </UCard>
-      </section>
+          <span class="font-medium ml-2">Filter {{ supplierDriftKind }}:</span>
 
-      <section class="space-y-4">
-        <header>
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Supplier
-          </h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Reflects the active supplier profile with the same surface used in
-            the app.
-          </p>
-        </header>
+          <UButton
+            v-for="option in supplierFilterOptions"
+            :key="option.value"
+            size="xs"
+            :variant="supplierSelectedField === option.value ? 'solid' : 'ghost'"
+            color="primary"
+            @click="supplierSelectedField = option.value"
+          >
+            {{ option.label }}
+          </UButton>
 
-        <div v-if="supplierHasProfile" class="space-y-6">
-          <UCard>
-            <template #header>
-              <h2>Supplier profile</h2>
-            </template>
-
-            <div class="space-y-4">
-              <OrganismsProfilesSupplierCardsCell
-                v-if="supplierCard"
-                :supplier="supplierCard"
-              />
-              <OrganismsProfilesSupplierCardsPill
-                v-if="supplierCard"
-                v-bind="supplierCard"
-              />
-            </div>
-          </UCard>
+          <UButton
+            size="xs"
+            variant="outline"
+            :disabled="copying"
+            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+            @click="copySupplierFiltered"
+          >
+            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
+          </UButton>
         </div>
-        <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-          No supplier profile loaded.
-        </p>
 
-        <DevJsonPanel v-if="supplierJson" :data="supplierJson" />
+        <div class="space-y-2">
+          <UAlert
+            v-if="!supplierFilteredCards.length"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-inbox"
+            title="No matching suppliers"
+            description="Adjust filters or add supplier documents to Firestore."
+          />
 
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Global suppliers
-              </h3>
-              <UBadge variant="soft">{{ supplierGlobalCount }} total</UBadge>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Suppliers available across the shared directory.
-            </p>
-          </template>
-
-          <div
-            v-if="supplierGlobalPills.length"
-            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          <UButton
+            v-for="card in supplierFilteredCards"
+            v-else
+            :key="card.id"
+            color="neutral"
+            variant="ghost"
+            class="w-full justify-start px-3 py-3"
           >
-            <OrganismsProfilesSupplierCardsPill
-              v-for="card in supplierGlobalPills"
-              :key="supplierPillKey(card)"
-              v-bind="card"
-            />
-          </div>
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            No global suppliers found.
-          </p>
+            <OrganismsProfilesSupplierCardsPill v-bind="card" />
+          </UButton>
+        </div>
+      </DevPane>
 
-          <template #footer>
-            <DevJsonPanel
-              v-if="supplierGlobalJson.length"
-              :data="supplierGlobalJson"
-            />
-          </template>
-        </UCard>
+      <DevPane
+        title="Suppliers (JSON)"
+        description="Raw collection payload + drift map (copyable)."
+        debug-title="Dev · Misebox · Suppliers · All data"
+        :debug-data="supplierAllJsonPayload"
+        :default-open="false"
+      />
 
-        <UCard v-if="isTenant && hasSupplierLocalCollection">
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Tenant suppliers
-              </h3>
-              <UBadge variant="soft">{{ supplierLocalCount }} total</UBadge>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Supplier overrides scoped to the active tenant.
-            </p>
-          </template>
+      <DevPane
+        title="Kitchens collection"
+        description="Browse kitchens and filter by model drift (Kitchen)."
+      >
+        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+          <span class="font-medium">Drift:</span>
 
-          <div
-            v-if="supplierLocalPills.length"
-            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          <UButton
+            size="xs"
+            :variant="kitchenDriftKind === 'missing' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setKitchenDriftKind('missing')"
           >
-            <OrganismsProfilesSupplierCardsPill
-              v-for="card in supplierLocalPills"
-              :key="supplierPillKey(card)"
-              v-bind="card"
-            />
-          </div>
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            No tenant-scoped suppliers found.
-          </p>
+            Missing
+          </UButton>
 
-          <template #footer>
-            <DevJsonPanel
-              v-if="supplierLocalJson.length"
-              :data="supplierLocalJson"
+          <UButton
+            size="xs"
+            :variant="kitchenDriftKind === 'extra' ? 'solid' : 'ghost'"
+            color="primary"
+            @click="setKitchenDriftKind('extra')"
+          >
+            Extra
+          </UButton>
+
+          <span class="font-medium ml-2">Filter {{ kitchenDriftKind }}:</span>
+
+          <UButton
+            v-for="option in kitchenFilterOptions"
+            :key="option.value"
+            size="xs"
+            :variant="kitchenSelectedField === option.value ? 'solid' : 'ghost'"
+            color="primary"
+            @click="kitchenSelectedField = option.value"
+          >
+            {{ option.label }}
+          </UButton>
+
+          <UButton
+            size="xs"
+            variant="outline"
+            :disabled="copying"
+            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+            @click="copyKitchenFiltered"
+          >
+            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
+          </UButton>
+        </div>
+
+        <div class="space-y-2">
+          <UAlert
+            v-if="!kitchenFilteredCards.length"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-inbox"
+            title="No matching kitchens"
+            description="Adjust filters or add kitchen documents to Firestore."
+          />
+
+          <UButton
+            v-for="card in kitchenFilteredCards"
+            v-else
+            :key="card.id"
+            color="neutral"
+            variant="ghost"
+            class="w-full justify-start px-3 py-3"
+          >
+            <OrganismsObjectsKitchenCardsCell
+              :to="card.to"
+              :name="card.name"
+              :website="card.website"
+              :badges="card.badges"
+              :avatar-url="card.avatarUrl"
             />
-          </template>
-        </UCard>
-        <UCard v-else-if="isTenant">
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <h3
-                class="text-base font-semibold text-gray-900 dark:text-gray-100"
-              >
-                Tenant suppliers
-              </h3>
-              <UBadge variant="soft">0 total</UBadge>
-            </div>
-          </template>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Tenant supplier collection is not available in this runtime.
-          </p>
-        </UCard>
-      </section>
+          </UButton>
+        </div>
+      </DevPane>
+
+      <DevPane
+        title="Kitchens (JSON)"
+        description="Raw collection payload + drift map (copyable)."
+        debug-title="Dev · Misebox · Kitchens · All data"
+        :debug-data="kitchenAllJsonPayload"
+        :default-open="false"
+      />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef.ts'
-import { useSupplier } from '../../composables/fireux/firestore/profiles/Supplier/useSupplier.ts'
-import { useChefCollection } from '../../composables/fireux/firestore/profiles/Chef/main/useChefCollection.ts'
-import { useSupplierCollection } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection.ts'
-import type { ChefCard } from '../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import type { SupplierCard } from '../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
+import { computed, ref, watch } from 'vue'
+import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
+import {
+  humanizeDriftPath,
+  resolveDriftFromModel,
+  type DriftKind,
+  type ModelDrift,
+} from 'fireux-core/runtime/composables/dev/useModelDrift'
+
+import { useChefCollection } from '../../composables/fireux/firestore/profiles/Chef/main/useChefCollection'
+import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef'
+import { ChefCore as ChefCoreRuntime } from '../../models/profiles/Chef/Chef.model'
+import type { ChefCore } from '../../models/profiles/Chef/Chef.model'
+
+import { useSupplierCollection } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection'
+import { useSupplier } from '../../composables/fireux/firestore/profiles/Supplier/useSupplier'
+import { SupplierCore as SupplierCoreRuntime } from '../../models/profiles/Supplier/Supplier.model'
+import type { SupplierCore } from '../../models/profiles/Supplier/Supplier.model'
+
+import { useKitchens } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/useKitchens'
+import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
+import { Kitchen as KitchenModelRuntime } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
+import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
 
 definePageMeta({
   layout: 'dev',
@@ -350,112 +296,272 @@ definePageMeta({
   },
 })
 
-const {
-  coreProfile: chefCoreProfile,
-  appProfile: chefAppProfile,
-  card: resolveChefCard,
-} = useChef()
+const { copyJSON, copying } = useDevClipboard()
 
-const {
-  coreProfile: supplierCoreProfile,
-  appProfile: supplierAppProfile,
-  card: resolveSupplierCard,
-} = useSupplier()
+// Chefs
+const { rawGlobalChefs } = useChefCollection()
+const { card: resolveChefCard } = useChef()
 
-const chefCard = computed<ChefCard.Card | null>(() => {
-  const core = unref(chefCoreProfile)
-  return core ? resolveChefCard(core as any) : null
+const chefCollection = computed<ChefCore[]>(() =>
+  (rawGlobalChefs.value ?? []).filter((c: any): c is ChefCore => Boolean(c?.id))
+)
+
+const chefCards = computed(() =>
+  chefCollection.value
+    .map((c) => resolveChefCard(c as any))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+
+const chefDriftKind = ref<DriftKind>('missing')
+const chefSelectedField = ref('')
+
+const setChefDriftKind = (kind: DriftKind) => {
+  chefDriftKind.value = kind
+}
+
+watch(chefDriftKind, () => {
+  chefSelectedField.value = ''
 })
 
-const supplierCard = computed<SupplierCard.Card | null>(() => {
-  const core = unref(supplierCoreProfile)
-  return core ? resolveSupplierCard(core as any) : null
-})
-
-const chefHasProfile = computed(() => Boolean(unref(chefCoreProfile)))
-const supplierHasProfile = computed(() => Boolean(unref(supplierCoreProfile)))
-
-const chefJson = computed(() => {
-  const core = unref(chefCoreProfile)
-  const app = unref(chefAppProfile)
-  if (!core && !app) return null
-  return {
-    coreProfile: core,
-    appProfile: app,
+const chefDriftById = computed(() => {
+  const map = new Map<string, ModelDrift>()
+  for (const chef of chefCollection.value) {
+    if (!chef?.id) continue
+    map.set(
+      chef.id,
+      resolveDriftFromModel(
+        ChefCoreRuntime as unknown as Record<string, unknown>,
+        chef as unknown as Record<string, unknown>
+      )
+    )
   }
+  return map
 })
 
-const supplierJson = computed(() => {
-  const core = unref(supplierCoreProfile)
-  const app = unref(supplierAppProfile)
-  if (!core && !app) return null
-  return {
-    coreProfile: core,
-    appProfile: app,
+const chefFieldOptions = computed(() => {
+  const counts = new Map<string, number>()
+  for (const drift of chefDriftById.value.values()) {
+    const list = chefDriftKind.value === 'missing' ? drift.missing : drift.extra
+    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
   }
+  return [...counts.entries()]
+    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
+    .sort((a, b) => a.label.localeCompare(b.label))
 })
 
-const { isTenant } = useFireUXConfig()
+const chefFilterOptions = computed(() => [
+  { label: 'All', value: '' },
+  ...chefFieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
+])
 
-const { globalChefs, localChefs, rawGlobalChefs, rawLocalChefs } =
-  useChefCollection()
-
-const chefGlobalPills = computed<ChefCard.Card[]>(() =>
-  (globalChefs.value ?? []).map((profile) => resolveChefCard(profile as any))
-)
-
-const chefGlobalCount = computed(() => chefGlobalPills.value.length)
-
-const chefGlobalJson = computed(() => rawGlobalChefs.value ?? [])
-
-const hasChefLocalCollection = computed(() => Boolean(localChefs))
-
-const chefLocalPills = computed<ChefCard.Card[]>(() => {
-  if (!localChefs) return []
-  return (localChefs.value ?? []).map((profile) => resolveChefCard(profile as any))
+const chefFilteredCards = computed(() => {
+  if (!chefSelectedField.value) return chefCards.value
+  return chefCards.value.filter((card) => {
+    const drift = chefDriftById.value.get(card.id)
+    if (!drift) return false
+    const list = chefDriftKind.value === 'missing' ? drift.missing : drift.extra
+    return list.includes(chefSelectedField.value)
+  })
 })
 
-const chefLocalCount = computed(() => chefLocalPills.value.length)
-
-const chefLocalJson = computed(() =>
-  localChefs && rawLocalChefs ? rawLocalChefs.value ?? [] : []
+const chefFilteredPayload = computed(() =>
+  chefFilteredCards.value.map((card) => {
+    const drift = chefDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+    return { id: card.id, displayName: card.displayName, drift }
+  })
 )
 
-const chefPillKey = (card: ChefCard.Card) =>
-  card.id || card.to || card.title || 'chef'
+const chefAllJsonPayload = computed(() => ({
+  chefs: chefCollection.value,
+  driftById: Object.fromEntries(chefDriftById.value),
+}))
 
-const {
-  globalSuppliers,
-  localSuppliers,
-  rawGlobalSuppliers,
-  rawLocalSuppliers,
-} = useSupplierCollection()
-
-const supplierGlobalPills = computed<SupplierCard.Card[]>(() =>
-  (globalSuppliers.value ?? []).map((profile) =>
-    resolveSupplierCard(profile as any)
+const copyChefFiltered = async () => {
+  await copyJSON(
+    {
+      driftKind: chefDriftKind.value,
+      selectedField: chefSelectedField.value || null,
+      totalChefs: chefCollection.value.length,
+      chefs: chefFilteredPayload.value,
+    },
+    { label: 'Dev · Misebox · Chefs · Filtered drift' }
   )
+}
+
+// Suppliers
+const { rawGlobalSuppliers } = useSupplierCollection()
+const { card: resolveSupplierCard } = useSupplier()
+
+const supplierCollection = computed<SupplierCore[]>(() =>
+  (rawGlobalSuppliers.value ?? []).filter((s: any): s is SupplierCore => Boolean(s?.id))
 )
 
-const supplierGlobalCount = computed(() => supplierGlobalPills.value.length)
+const supplierCards = computed(() =>
+  supplierCollection.value
+    .map((s) => resolveSupplierCard(s as any))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
 
-const supplierGlobalJson = computed(() => rawGlobalSuppliers.value ?? [])
+const supplierDriftKind = ref<DriftKind>('missing')
+const supplierSelectedField = ref('')
 
-const hasSupplierLocalCollection = computed(() => Boolean(localSuppliers))
+const setSupplierDriftKind = (kind: DriftKind) => {
+  supplierDriftKind.value = kind
+}
 
-const supplierLocalPills = computed<SupplierCard.Card[]>(() => {
-  if (!localSuppliers) return []
-  return (localSuppliers.value ?? []).map((profile) =>
-    resolveSupplierCard(profile as any)
-  )
+watch(supplierDriftKind, () => {
+  supplierSelectedField.value = ''
 })
 
-const supplierLocalCount = computed(() => supplierLocalPills.value.length)
+const supplierDriftById = computed(() => {
+  const map = new Map<string, ModelDrift>()
+  for (const supplier of supplierCollection.value) {
+    if (!supplier?.id) continue
+    map.set(
+      supplier.id,
+      resolveDriftFromModel(
+        SupplierCoreRuntime as unknown as Record<string, unknown>,
+        supplier as unknown as Record<string, unknown>
+      )
+    )
+  }
+  return map
+})
 
-const supplierLocalJson = computed(() =>
-  localSuppliers && rawLocalSuppliers ? rawLocalSuppliers.value ?? [] : []
+const supplierFieldOptions = computed(() => {
+  const counts = new Map<string, number>()
+  for (const drift of supplierDriftById.value.values()) {
+    const list = supplierDriftKind.value === 'missing' ? drift.missing : drift.extra
+    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
+  }
+  return [...counts.entries()]
+    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+})
+
+const supplierFilterOptions = computed(() => [
+  { label: 'All', value: '' },
+  ...supplierFieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
+])
+
+const supplierFilteredCards = computed(() => {
+  if (!supplierSelectedField.value) return supplierCards.value
+  return supplierCards.value.filter((card) => {
+    const drift = supplierDriftById.value.get(card.id)
+    if (!drift) return false
+    const list = supplierDriftKind.value === 'missing' ? drift.missing : drift.extra
+    return list.includes(supplierSelectedField.value)
+  })
+})
+
+const supplierFilteredPayload = computed(() =>
+  supplierFilteredCards.value.map((card) => {
+    const drift = supplierDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+    return { id: card.id, displayName: card.displayName, drift }
+  })
 )
 
-const supplierPillKey = (card: SupplierCard.Card) =>
-  card.id || card.to || card.title || 'supplier'
+const supplierAllJsonPayload = computed(() => ({
+  suppliers: supplierCollection.value,
+  driftById: Object.fromEntries(supplierDriftById.value),
+}))
+
+const copySupplierFiltered = async () => {
+  await copyJSON(
+    {
+      driftKind: supplierDriftKind.value,
+      selectedField: supplierSelectedField.value || null,
+      totalSuppliers: supplierCollection.value.length,
+      suppliers: supplierFilteredPayload.value,
+    },
+    { label: 'Dev · Misebox · Suppliers · Filtered drift' }
+  )
+}
+
+// Kitchens
+const { collection: kitchensRaw } = useKitchens<Kitchen>()
+const kitchens = computed<Kitchen[]>(() => (kitchensRaw.value ?? []) as Kitchen[])
+const { card: resolveKitchenCard } = useKitchenInterface()
+
+const kitchenCards = computed(() =>
+  kitchens.value
+    .map((k) => resolveKitchenCard(k))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+
+const kitchenDriftKind = ref<DriftKind>('missing')
+const kitchenSelectedField = ref('')
+
+const setKitchenDriftKind = (kind: DriftKind) => {
+  kitchenDriftKind.value = kind
+}
+
+watch(kitchenDriftKind, () => {
+  kitchenSelectedField.value = ''
+})
+
+const kitchenDriftById = computed(() => {
+  const map = new Map<string, ModelDrift>()
+  for (const kitchen of kitchens.value) {
+    if (!kitchen?.id) continue
+    map.set(
+      kitchen.id,
+      resolveDriftFromModel(
+        KitchenModelRuntime as unknown as Record<string, unknown>,
+        kitchen as unknown as Record<string, unknown>
+      )
+    )
+  }
+  return map
+})
+
+const kitchenFieldOptions = computed(() => {
+  const counts = new Map<string, number>()
+  for (const drift of kitchenDriftById.value.values()) {
+    const list = kitchenDriftKind.value === 'missing' ? drift.missing : drift.extra
+    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
+  }
+  return [...counts.entries()]
+    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+})
+
+const kitchenFilterOptions = computed(() => [
+  { label: 'All', value: '' },
+  ...kitchenFieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
+])
+
+const kitchenFilteredCards = computed(() => {
+  if (!kitchenSelectedField.value) return kitchenCards.value
+  return kitchenCards.value.filter((card) => {
+    const drift = kitchenDriftById.value.get(card.id)
+    if (!drift) return false
+    const list = kitchenDriftKind.value === 'missing' ? drift.missing : drift.extra
+    return list.includes(kitchenSelectedField.value)
+  })
+})
+
+const kitchenFilteredPayload = computed(() =>
+  kitchenFilteredCards.value.map((card) => {
+    const drift = kitchenDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+    return { id: card.id, name: card.name, website: card.website, drift }
+  })
+)
+
+const kitchenAllJsonPayload = computed(() => ({
+  kitchens: kitchens.value,
+  driftById: Object.fromEntries(kitchenDriftById.value),
+}))
+
+const copyKitchenFiltered = async () => {
+  await copyJSON(
+    {
+      driftKind: kitchenDriftKind.value,
+      selectedField: kitchenSelectedField.value || null,
+      totalKitchens: kitchens.value.length,
+      kitchens: kitchenFilteredPayload.value,
+    },
+    { label: 'Dev · Misebox · Kitchens · Filtered drift' }
+  )
+}
 </script>
