@@ -19,7 +19,13 @@
             <p class="text-xs uppercase tracking-wide text-gray-400">
               Posted by
             </p>
-            <OrganismsProfilesAgentCardsPill v-bind="agentCard" :show-subtitle="false" />
+            <component
+              :is="wrapperFor(agentCard)"
+              v-bind="wrapperPropsFor(agentCard)"
+              class="block"
+            >
+              <OrganismsProfilesAgentCardsPill v-bind="agentCard" :show-subtitle="false" />
+            </component>
           </div>
         </div>
       </div>
@@ -58,4 +64,7 @@ const agentCard = computed(() => (coreProfile.value ? card(coreProfile.value) : 
 
 const title = computed(() => props.form.title.trim() || 'Untitled job')
 const description = computed(() => props.form.description.trim())
+
+const wrapperFor = (card: ReturnType<typeof card> | null) => (card?.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: ReturnType<typeof card> | null) => (card?.to ? { to: card.to } : {})
 </script>

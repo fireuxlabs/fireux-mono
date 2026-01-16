@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink :to="to" class="fx-card fx-card--pill">
+  <div class="fx-card fx-card--pill">
     <UAvatar :src="avatarUrl || undefined" :alt="title" size="xs" />
 
     <div class="min-w-0 flex-1">
@@ -20,11 +20,11 @@
         {{ badge }}
       </UBadge>
     </div>
-  </NuxtLink>
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { RecipeCard } from '../../../../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface'
+import type { RecipeCard } from '../../../../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface';
 
 type PillProps = Pick<RecipeCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean

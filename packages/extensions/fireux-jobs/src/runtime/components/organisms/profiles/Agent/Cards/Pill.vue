@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink :to="to" class="fx-card fx-card--pill">
+  <div class="fx-card fx-card--pill">
     <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="xs" />
 
     <div class="min-w-0 flex-1">
@@ -18,11 +18,11 @@
         {{ badge }}
       </UBadge>
     </div>
-  </NuxtLink>
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
 
 withDefaults(
   defineProps<

@@ -47,11 +47,15 @@
               <div v-if="usersPending" class="text-sm text-dimmed">Loading users…</div>
 
               <div v-else class="flex flex-wrap gap-2">
-                <OrganismsUserCardsPill
+                <component
+                  :is="wrapperFor(card)"
                   v-for="card in visibleCards"
                   :key="card.id"
-                  v-bind="card"
-                />
+                  v-bind="wrapperPropsFor(card)"
+                  class="block"
+                >
+                  <OrganismsUserCardsPill v-bind="card" />
+                </component>
 
                 <span v-if="!visibleCards.length" class="text-sm text-dimmed italic">
                   missing
@@ -146,4 +150,7 @@ const headTitle = computed(() =>
 )
 
 useHead({ title: headTitle })
+
+const wrapperFor = (card: UserCard.Card) => (card.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: UserCard.Card) => (card.to ? { to: card.to } : {})
 </script>

@@ -8,11 +8,15 @@
     <div>
       <h2>All Ingredients</h2>
       <div>
-          <IngredientCardsCell
+        <component
+          :is="wrapperFor(ingredient)"
           v-for="ingredient in ingredients"
           :key="ingredient.id"
-          :ingredient="ingredient"
-        />
+          v-bind="wrapperPropsFor(ingredient)"
+          class="block"
+        >
+          <IngredientCardsCell :ingredient="ingredient" />
+        </component>
       </div>
     </div>
   </div>
@@ -22,4 +26,9 @@
 import { useIngredient } from '../../composables/fireux/firestore/objects/ingredient/useIngredient'
 
 const { all: ingredients } = useIngredient()
+
+const wrapperFor = (ingredient: { to?: string | null }) =>
+  ingredient.to ? 'NuxtLink' : 'div'
+const wrapperPropsFor = (ingredient: { to?: string | null }) =>
+  ingredient.to ? { to: ingredient.to } : {}
 </script>

@@ -3,9 +3,9 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 
 import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
-import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { existsSync } from 'fs'
 import { configureComponents } from './config/components-config'
+import { ecosystemConfig } from './config/firebase/ecosystem.config'
 
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   meta: {

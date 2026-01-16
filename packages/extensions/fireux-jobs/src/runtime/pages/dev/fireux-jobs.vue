@@ -65,17 +65,18 @@
         />
 
         <div v-else class="grid gap-3 md:grid-cols-2">
-          <JobCardsCell
+          <component
+            :is="wrapperFor(card)"
             v-for="card in jobFilteredCards"
             :key="card.id"
-            :to="card.to"
-            :title="card.title"
-            :description="card.description"
-            :badges="card.badges"
-            :avatar-url="card.avatarUrl"
-            :subtitle="card.subtitle"
-            :prop="jobTaglineById.get(card.id) || ''"
-          />
+            v-bind="wrapperPropsFor(card)"
+            class="block"
+          >
+            <JobCardsCell
+              v-bind="card"
+              :prop="jobTaglineById.get(card.id) || ''"
+            />
+          </component>
         </div>
       </DevPane>
 
@@ -779,4 +780,7 @@ const copyAgentLocalFiltered = async () => {
     { label: 'Dev · Jobs (Ext) · Agents · Tenant · Filtered drift' }
   )
 }
+
+const wrapperFor = (card: { to?: string | null }) => (card.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: { to?: string | null }) => (card.to ? { to: card.to } : {})
 </script>

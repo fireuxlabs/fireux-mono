@@ -15,16 +15,15 @@
     </template>
 
     <div class="space-y-1 p-2">
-      <UButton
+      <component
+        :is="wrapperFor(cell)"
         v-for="cell in visibleCells"
         :key="cell.id"
-        color="neutral"
-        variant="ghost"
-        class="w-full justify-start"
-        @click="emit('select', cell)"
+        v-bind="wrapperPropsFor(cell)"
+        class="block w-full text-left rounded-[16px] ring-1 ring-transparent transition hover:bg-neutral-100/80 dark:hover:bg-neutral-900/70"
       >
         <PlaceCardsCell v-bind="cell" :show-source="true" />
-      </UButton>
+      </component>
     </div>
   </UCard>
 </template>
@@ -41,9 +40,16 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), { cells: () => [] })
 const { cells } = toRefs(props)
 
-const emit = defineEmits<(e: 'select', cell: PlaceCard.Card) => void>()
+const emit = defineEmits<{ (e: 'select', cell: PlaceCard.Card): void }>()
 const visibleCells = computed(() =>
   (cells.value ?? []).slice(0, SHORTLIST_LIMIT)
 )
+
+const wrapperFor = (_cell: PlaceCard.Card) => 'button'
+
+const wrapperPropsFor = (cell: PlaceCard.Card) => ({
+  type: 'button',
+  onClick: () => emit('select', cell),
+})
 </script>
 

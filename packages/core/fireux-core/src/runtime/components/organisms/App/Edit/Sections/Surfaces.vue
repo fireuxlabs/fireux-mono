@@ -16,7 +16,13 @@
         <div class="mb-2">
           <UBadge size="xs" variant="soft" color="neutral">Cell</UBadge>
         </div>
-        <OrganismsAppCardsCell v-bind="appCard" />
+        <component
+          :is="wrapperFor(appCard)"
+          v-bind="wrapperPropsFor(appCard)"
+          class="block"
+        >
+          <OrganismsAppCardsCell v-bind="appCard" />
+        </component>
       </div>
 
       <div>
@@ -37,4 +43,7 @@ import type { AppCard } from '../../../../../composables/fireux/firestore/core/a
 defineProps<{
   appCard: AppCard.Card | null
 }>()
+
+const wrapperFor = (card: AppCard.Card | null) => (card?.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: AppCard.Card | null) => (card?.to ? { to: card.to } : {})
 </script>

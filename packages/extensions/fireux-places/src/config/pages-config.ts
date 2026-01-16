@@ -1,5 +1,5 @@
-import type { Nuxt, NuxtPage } from 'nuxt/schema'
 import type { Resolver } from '@nuxt/kit'
+import type { Nuxt, NuxtPage } from 'nuxt/schema'
 
 interface PageEntry {
   name: string

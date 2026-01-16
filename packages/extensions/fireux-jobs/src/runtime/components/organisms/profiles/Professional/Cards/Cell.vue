@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink :to="to" class="fx-cell">
+  <div class="fx-cell">
     <div class="fx-cell__media">
       <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-  </NuxtLink>
+  </div>
 </template>
 
 <script setup lang="ts">

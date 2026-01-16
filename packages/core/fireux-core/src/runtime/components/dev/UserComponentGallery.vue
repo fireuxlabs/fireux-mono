@@ -25,7 +25,14 @@
             Pill
           </h3>
         </template>
-        <OrganismsUserCardsPill v-if="card" v-bind="card" />
+        <component
+          :is="wrapperFor(card)"
+          v-if="card"
+          v-bind="wrapperPropsFor(card)"
+          class="block"
+        >
+          <OrganismsUserCardsPill v-bind="card" />
+        </component>
         <p class="text-xs text-gray-500 dark:text-gray-400">
           Derived pill props showing badges + runtime admin state.
         </p>
@@ -37,7 +44,14 @@
             Cell
           </h3>
         </template>
-        <OrganismsUserCardsCell v-if="card" v-bind="card" />
+        <component
+          :is="wrapperFor(card)"
+          v-if="card"
+          v-bind="wrapperPropsFor(card)"
+          class="block"
+        >
+          <OrganismsUserCardsCell v-bind="card" />
+        </component>
         <p class="text-xs text-gray-500 dark:text-gray-400">
           Cell variant surfaces compact user metadata.
         </p>
@@ -65,4 +79,9 @@ const { card: userCard } = useUserInterface()
 
 const hasUser = computed(() => Boolean(props.user))
 const card = computed(() => (props.user ? userCard(props.user) : null))
+
+const wrapperFor = (payload: ReturnType<typeof userCard> | null) =>
+  payload?.to ? 'NuxtLink' : 'div'
+const wrapperPropsFor = (payload: ReturnType<typeof userCard> | null) =>
+  payload?.to ? { to: payload.to } : {}
 </script>

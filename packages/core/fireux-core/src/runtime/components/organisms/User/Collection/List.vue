@@ -1,12 +1,26 @@
 <template>
   <div v-if="variant === 'pill'" class="flex flex-wrap gap-2">
-    <OrganismsUserCardsPill v-for="item in cards" :key="item.to" v-bind="item" />
+    <component
+      :is="wrapperFor(item)"
+      v-for="item in cards"
+      :key="item.to || item.id"
+      v-bind="wrapperPropsFor(item)"
+      class="block"
+    >
+      <OrganismsUserCardsPill v-bind="item" />
+    </component>
   </div>
 
   <div v-else class="fx-section__grid">
-    <article v-for="item in cards" :key="item.to">
+    <component
+      :is="wrapperFor(item)"
+      v-for="item in cards"
+      :key="item.to || item.id"
+      v-bind="wrapperPropsFor(item)"
+      class="block"
+    >
       <OrganismsUserCardsCell v-bind="item" />
-    </article>
+    </component>
   </div>
 </template>
 
@@ -22,4 +36,7 @@ withDefaults(
     variant: 'pill',
   }
 )
+
+const wrapperFor = (item: UserCard.Card) => (item.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (item: UserCard.Card) => (item.to ? { to: item.to } : {})
 </script>

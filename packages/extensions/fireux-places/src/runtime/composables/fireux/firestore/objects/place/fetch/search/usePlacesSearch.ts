@@ -3,11 +3,11 @@ import { ref, watch } from 'vue'
 import type { BasePlace } from '../../../../../../../models/place.model'
 import type { PlaceCard } from '../../utils/view/usePlacesInterface'
 import {
-    canonicalPlaceId,
-    fetchGoogle,
-    fetchPlaceDetails,
-    getLastPlacesAutocompleteDebug,
-    type PlaceDetailsResult,
+  canonicalPlaceId,
+  fetchGoogle,
+  fetchPlaceDetails,
+  getLastPlacesAutocompleteDebug,
+  type PlaceDetailsResult,
 } from '../google/usePlacesGoogle'
 
 const sanitize = (url?: string | null) =>

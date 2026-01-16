@@ -9,17 +9,23 @@
       <div class="fx-panels-stack">
         <!-- Header pills -->
         <div class="flex flex-wrap items-center gap-2">
-          <OrganismsAppCardsPill
+          <component
+            :is="wrapperFor(appCard)"
             v-if="appCard"
-            v-bind="appCard"
-            :show-subtitle="false"
-          />
+            v-bind="wrapperPropsFor(appCard)"
+            class="block"
+          >
+            <OrganismsAppCardsPill v-bind="appCard" :show-subtitle="false" />
+          </component>
 
-          <OrganismsUserCardsPill
+          <component
+            :is="wrapperFor(userCard)"
             v-if="userCard"
-            v-bind="userCard"
-            :show-subtitle="false"
-          />
+            v-bind="wrapperPropsFor(userCard)"
+            class="block"
+          >
+            <OrganismsUserCardsPill v-bind="userCard" :show-subtitle="false" />
+          </component>
         </div>
 
         <!-- Loading -->
@@ -89,4 +95,7 @@ const resolvedUser = computed(() => currentUser.value ?? null)
 
 const userCard = computed(() => (resolvedUser.value ? card(resolvedUser.value) : null))
 const appCard = computed(() => appToCard(app.value))
+
+const wrapperFor = (card: { to?: string | null } | null) => (card?.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: { to?: string | null } | null) => (card?.to ? { to: card.to } : {})
 </script>

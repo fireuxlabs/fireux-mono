@@ -17,11 +17,22 @@
         </div>
 
         <div class="space-y-4">
-          <OrganismsProfilesSupplierCardsCell
+          <component
+            :is="wrapperFor(cell)"
             v-if="showCellCard && cell"
-            :supplier="cell"
-          />
-          <OrganismsProfilesSupplierCardsPill v-else-if="pill" v-bind="pill" />
+            v-bind="wrapperPropsFor(cell)"
+            class="block"
+          >
+            <OrganismsProfilesSupplierCardsCell :supplier="cell" />
+          </component>
+          <component
+            :is="wrapperFor(pill)"
+            v-else-if="pill"
+            v-bind="wrapperPropsFor(pill)"
+            class="block"
+          >
+            <OrganismsProfilesSupplierCardsPill v-bind="pill" />
+          </component>
           <p v-else class="text-sm text-slate-500">No supplier profile loaded.</p>
         </div>
       </div>
@@ -50,5 +61,8 @@ const toggleView = () => {
 watch(canToggle, (enabled: boolean) => {
   if (!enabled) showCellView.value = false
 })
+
+const wrapperFor = (card: ReturnType<typeof cell> | null) => (card?.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: ReturnType<typeof cell> | null) => (card?.to ? { to: card.to } : {})
 </script>
 

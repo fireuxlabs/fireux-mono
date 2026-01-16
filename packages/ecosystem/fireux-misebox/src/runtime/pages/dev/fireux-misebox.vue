@@ -216,15 +216,15 @@
           />
 
           <div v-else class="grid gap-3 md:grid-cols-2">
-            <KitchenCardsCell
+            <component
+              :is="wrapperFor(card)"
               v-for="card in kitchenFilteredCards"
               :key="card.id"
-              :to="card.to"
-              :name="card.name"
-              :website="card.website"
-              :badges="card.badges"
-              :avatar-url="card.avatarUrl"
-            />
+              v-bind="wrapperPropsFor(card)"
+              class="block"
+            >
+              <KitchenCardsCell v-bind="card" />
+            </component>
           </div>
         </div>
       </DevPane>
@@ -464,4 +464,7 @@ const copyKitchenFiltered = async () => {
     { label: 'Dev · Misebox · Kitchens · Filtered drift' }
   )
 }
+
+const wrapperFor = (card: { to?: string | null }) => (card.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: { to?: string | null }) => (card.to ? { to: card.to } : {})
 </script>

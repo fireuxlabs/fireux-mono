@@ -22,7 +22,14 @@
             </UPageCard>
 
             <div v-else class="space-y-6">
-              <OrganismsAppCardsPill v-if="previewCard" v-bind="previewCard" />
+              <component
+                :is="wrapperFor(previewCard)"
+                v-if="previewCard"
+                v-bind="wrapperPropsFor(previewCard)"
+                class="block"
+              >
+                <OrganismsAppCardsPill v-bind="previewCard" />
+              </component>
               <OrganismsAppEditDev :app="appSnapshot" />
             </div>
           </UPageBody>
@@ -41,6 +48,9 @@ const { app, pending, card } = useApp()
 
 const appSnapshot = (pending.value ? null : app.value) ?? null
 const previewCard = computed(() => (appSnapshot ? card(appSnapshot) : null))
+
+const wrapperFor = (card: { to?: string | null } | null) => (card?.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: { to?: string | null } | null) => (card?.to ? { to: card.to } : {})
 
 definePageMeta({
   layout: 'dashboard',

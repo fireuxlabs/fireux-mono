@@ -1,6 +1,6 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Pill.vue -->
 <template>
-  <NuxtLink :to="to" class="fx-card fx-card--pill">
+  <div class="fx-card fx-card--pill">
     <UAvatar :src="avatarUrl" :alt="displayName" size="xs" />
 
     <div class="min-w-0 flex-1">
@@ -24,11 +24,11 @@
         {{ badge }}
       </UBadge>
     </div>
-  </NuxtLink>
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
 
 withDefaults(
   defineProps<

@@ -59,12 +59,18 @@
       />
 
       <div v-else class="space-y-2">
-        <PlaceCardsCell
+        <component
+          :is="wrapperFor(card)"
           v-for="card in filteredCards"
           :key="card.id"
-          v-bind="card"
-          :prop="taglineById.get(card.id) || ''"
-        />
+          v-bind="wrapperPropsFor(card)"
+          class="block"
+        >
+          <PlaceCardsCell
+            v-bind="card"
+            :prop="taglineById.get(card.id) || ''"
+          />
+        </component>
       </div>
     </div>
   </DevPane>
@@ -175,4 +181,7 @@ const copyFiltered = async () => {
     { label: 'Dev · Places (Ext) · Filtered drift' }
   )
 }
+
+const wrapperFor = (card: { to?: string }) => (card.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: { to?: string }) => (card.to ? { to: card.to } : {})
 </script>

@@ -20,19 +20,27 @@
         v-if="variant === 'pill'"
         class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <JobCardsPill
+        <component
+          :is="wrapperFor(card)"
           v-for="card in cards"
           :key="card.id"
-          v-bind="card"
-        />
+          v-bind="wrapperPropsFor(card)"
+          class="block"
+        >
+          <JobCardsPill v-bind="card" />
+        </component>
       </div>
 
       <div v-else class="grid gap-3 md:grid-cols-2">
-        <JobCardsCell
+        <component
+          :is="wrapperFor(card)"
           v-for="card in cards"
           :key="card.id"
-          v-bind="card"
-        />
+          v-bind="wrapperPropsFor(card)"
+          class="block"
+        >
+          <JobCardsCell v-bind="card" />
+        </component>
       </div>
     </div>
   </UCard>
@@ -52,5 +60,8 @@ const variant = ref<Variant>('cell')
 const toggleVariant = () => {
   variant.value = variant.value === 'pill' ? 'cell' : 'pill'
 }
+
+const wrapperFor = (card: JobCard.Card) => (card.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: JobCard.Card) => (card.to ? { to: card.to } : {})
 </script>
 

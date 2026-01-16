@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink :to="to" class="fx-card fx-card--pill">
+  <div class="fx-card fx-card--pill">
     <UAvatar
       :src="avatarUrl || undefined"
       :alt="title"
@@ -25,7 +25,7 @@
         {{ badge }}
       </UBadge>
     </div>
-  </NuxtLink>
+  </div>
 </template>
 
 <script setup lang="ts">

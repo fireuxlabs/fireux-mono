@@ -22,23 +22,27 @@
         v-if="variant === 'pill'"
         class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <KitchenCardsPill
+        <component
+          :is="wrapperFor(card)"
           v-for="card in cards"
           :key="card.id"
-          v-bind="card"
-        />
+          v-bind="wrapperPropsFor(card)"
+          class="block"
+        >
+          <KitchenCardsPill v-bind="card" />
+        </component>
       </div>
 
       <div v-else class="grid gap-3 md:grid-cols-2">
-        <KitchenCardsCell
+        <component
+          :is="wrapperFor(card)"
           v-for="card in cards"
           :key="card.id"
-          :to="card.to"
-          :name="card.name"
-          :website="card.website"
-          :badges="card.badges"
-          :avatar-url="card.avatarUrl"
-        />
+          v-bind="wrapperPropsFor(card)"
+          class="block"
+        >
+          <KitchenCardsCell v-bind="card" />
+        </component>
       </div>
     </div>
   </UCard>
@@ -58,4 +62,7 @@ const variant = ref<Variant>('cell')
 const toggleVariant = () => {
   variant.value = variant.value === 'pill' ? 'cell' : 'pill'
 }
+
+const wrapperFor = (card: KitchenCard.Card) => (card.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: KitchenCard.Card) => (card.to ? { to: card.to } : {})
 </script>

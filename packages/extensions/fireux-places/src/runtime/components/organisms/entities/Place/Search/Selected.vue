@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { usePlaceLogoState } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos';
-import type { BasePlace } from '../../../../../models/objects/place.model'
+import type { BasePlace } from '../../../../../models/objects/place.model';
 
 const emit = defineEmits<{
   (e: 'clear'): void

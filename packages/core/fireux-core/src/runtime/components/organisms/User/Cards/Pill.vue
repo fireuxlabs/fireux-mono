@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink :to="to" class="fx-card fx-card--pill">
+  <div class="fx-card fx-card--pill">
     <UAvatar :src="avatarUrl" :alt="displayName" size="xs" />
 
     <div class="min-w-0 flex-1">
@@ -23,11 +23,11 @@
         {{ badge }}
       </UBadge>
     </div>
-  </NuxtLink>
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
 
 type PillProps = Pick<
   UserCard.Card,

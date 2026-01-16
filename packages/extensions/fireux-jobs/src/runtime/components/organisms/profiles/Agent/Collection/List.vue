@@ -3,14 +3,30 @@
     v-if="variant === 'pill'"
     class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
   >
-    <OrganismsProfilesAgentCardsPill v-for="item in cards" :key="item.to" v-bind="item" />
+    <component
+      :is="wrapperFor(item)"
+      v-for="item in cards"
+      :key="item.to || item.id"
+      v-bind="wrapperPropsFor(item)"
+      class="block"
+    >
+      <OrganismsProfilesAgentCardsPill v-bind="item" />
+    </component>
   </div>
 
   <div
     v-else-if="variant === 'cell'"
     class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
   >
-    <OrganismsProfilesAgentCardsCell v-for="item in cards" :key="item.to" v-bind="item" />
+    <component
+      :is="wrapperFor(item)"
+      v-for="item in cards"
+      :key="item.to || item.id"
+      v-bind="wrapperPropsFor(item)"
+      class="block"
+    >
+      <OrganismsProfilesAgentCardsCell v-bind="item" />
+    </component>
   </div>
 
   <div
@@ -51,4 +67,7 @@ withDefaults(
 )
 
 const { devMode } = useFireUXConfig()
+
+const wrapperFor = (item: AgentCard.Card) => (item.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (item: AgentCard.Card) => (item.to ? { to: item.to } : {})
 </script>

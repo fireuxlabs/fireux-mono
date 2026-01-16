@@ -76,13 +76,19 @@
       </div>
 
       <!-- Recipe Grid -->
-      <div v-else-if="displayedRecipes.length" class="recipe-grid">
+      <div v-else-if="displayedRecipeCards.length" class="recipe-grid">
         <div
-          v-for="recipe in displayedRecipes"
-          :key="recipe.slug || recipe.title || recipe.name"
+          v-for="item in displayedRecipeCards"
+          :key="item.key"
           class="recipe-item"
         >
-          <ObjectsRecipeCardsPill v-bind="pillCardForRecipe(recipe)" />
+          <component
+            :is="wrapperFor(item.card)"
+            v-bind="wrapperPropsFor(item.card)"
+            class="block"
+          >
+            <ObjectsRecipeCardsPill v-bind="item.card" />
+          </component>
         </div>
       </div>
 
@@ -259,6 +265,17 @@ const displayedRecipes = computed(() => {
 
   return recipes
 })
+
+const displayedRecipeCards = computed(() =>
+  displayedRecipes.value.map((recipe) => {
+    const card = pillCardForRecipe(recipe)
+    const key = recipe.slug || recipe.title || recipe.name || card.title
+    return { key, card }
+  })
+)
+
+const wrapperFor = (card: RecipePillCard) => (card.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: RecipePillCard) => (card.to ? { to: card.to } : {})
 
 </script>
 
