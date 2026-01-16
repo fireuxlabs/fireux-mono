@@ -158,9 +158,12 @@ function checkConfigShape(pkgPath) {
   const missingDirs = REQUIRED_CONFIG_DIRS.filter((d) => !entries.includes(d))
 
   const allowedEntries = new Set([...ALLOWED_CONFIG_FILES, ...REQUIRED_CONFIG_DIRS])
-  const unexpected = entries.filter(
-    (e) => !allowedEntries.has(e) && !CONFIG_ALLOWED_NOISE.includes(e)
-  )
+  const isAllowedConfigEntry = (entry) => {
+    if (allowedEntries.has(entry)) return true
+    if (CONFIG_ALLOWED_NOISE.includes(entry)) return true
+    return entry.endsWith('-config.ts')
+  }
+  const unexpected = entries.filter((e) => !isAllowedConfigEntry(e))
 
   if (!missingDirs.length && !unexpected.length) return null
 
