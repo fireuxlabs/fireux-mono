@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BlogCard } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface'
+import type { BlogCard } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface';
 
 type PillProps = Pick<BlogCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean

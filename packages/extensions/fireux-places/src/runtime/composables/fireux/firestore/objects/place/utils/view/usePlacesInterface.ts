@@ -1,7 +1,5 @@
 import type { BasePlace, PlaceSource } from '../../../../../../../models/objects/place.model'
 
-export type PlaceBase = BasePlace
-
 export namespace PlaceCard {
   export type Card = {
     id: string

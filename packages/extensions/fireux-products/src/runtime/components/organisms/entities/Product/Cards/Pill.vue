@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProductCard } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
+import type { ProductCard } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface';
 
 type PillProps = Pick<ProductCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean

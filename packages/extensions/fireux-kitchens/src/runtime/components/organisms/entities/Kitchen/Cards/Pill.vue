@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
+import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
 
 type PillProps = Pick<KitchenCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean

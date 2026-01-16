@@ -31,7 +31,7 @@ export function sanitizeLogoAvatar(value?: string | null): string | null {
   return value
 }
 
-type PlaceLogoTarget = PlaceCard.Cell | BasePlace
+type PlaceLogoTarget = PlaceCard.Card | BasePlace
 type SanitizedAvatar = string | null
 
 export interface UsePlaceLogoStateOptions {
@@ -207,13 +207,27 @@ function defaultShouldHydrate(
   return place.source === 'google' && !currentAvatar
 }
 
-function toLogoCell(place: PlaceLogoTarget): PlaceCard.Cell {
+function toLogoCard(place: PlaceLogoTarget): PlaceCard.Card {
+  const id = (place as any).id ?? (place as any).place_id ?? ''
+  const name = (place as any).name ?? ''
+  const formattedAddress =
+    (place as any).formattedAddress ?? (place as any).formatted_address ?? ''
+  const imageUrl = (place as any).imageUrl ?? (place as any).place_image ?? ''
+
   return {
-    id: (place as any).id ?? (place as any).place_id,
-    name: place.name,
-    formatted_address: (place as any).formatted_address ?? '',
-    imageUrl: (place as any).imageUrl ?? (place as any).place_image ?? '',
-    source: place.source,
+    id,
+    to: `/places/${encodeURIComponent(id)}`,
+
+    avatarUrl: imageUrl,
+    title: (place as any).title ?? name,
+    subtitle: (place as any).subtitle ?? formattedAddress,
+    badges: (place as any).badges ?? [],
+
+    name,
+    formattedAddress,
+
+    imageUrl,
+    source: (place as any).source,
   }
 }
 
@@ -252,7 +266,7 @@ async function executeLogoAttempts(
   getToken: () => number
 ): Promise<{ sanitized: string | null; aborted: boolean }> {
   for (const options of optionsList) {
-    const logo = await loadLogoForPlace(toLogoCell(place), options)
+    const logo = await loadLogoForPlace(toLogoCard(place), options)
     if (expectedToken !== getToken()) {
       return { sanitized: null, aborted: true }
     }
@@ -285,7 +299,7 @@ interface LoadLogoOptions {
 }
 
 export async function loadLogoForPlace(
-  place: PlaceCard.Cell,
+  place: PlaceCard.Card,
   options: LoadLogoOptions = {}
 ): Promise<string | null> {
   if (typeof window === 'undefined') return place.imageUrl ?? null
@@ -429,7 +443,7 @@ function cancelLogoRequest(
 }
 
 async function fetchLogo(
-  place: PlaceCard.Cell,
+  place: PlaceCard.Card,
   placeId: string,
   signal?: AbortSignal
 ): Promise<string | null> {
@@ -583,7 +597,7 @@ function cancelDetailsRequest(placeId: string) {
 }
 
 async function attemptLogoFetch(
-  place: PlaceCard.Cell,
+  place: PlaceCard.Card,
   placeId: string,
   signal: AbortSignal | undefined,
   allowDetails: boolean,
@@ -591,7 +605,7 @@ async function attemptLogoFetch(
 ): Promise<string | null> {
   logEvent('fetch:request-build', {
     placeId,
-    formatted_address: sanitizeLogValue(place.formatted_address),
+    formattedAddress: sanitizeLogValue(place.formattedAddress),
     hasSignal: !!signal,
     allowDetails,
   })
@@ -643,7 +657,7 @@ async function attemptLogoFetch(
 
 function applyLogoSearchParams(
   params: URLSearchParams,
-  place: PlaceCard.Cell,
+  place: PlaceCard.Card,
   hint: PlaceDetailsResult | null
 ) {
   params.set('q', place.name)
@@ -658,7 +672,7 @@ function applyLogoSearchParams(
   }
 
   candidates.push(
-    { key: 'domain', value: extractDomain(place.formatted_address) },
+    { key: 'domain', value: extractDomain(place.formattedAddress) },
     { key: 'domain', value: extractDomain(place.name) }
   )
 

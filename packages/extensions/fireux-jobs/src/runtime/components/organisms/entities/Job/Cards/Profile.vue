@@ -12,8 +12,8 @@
 </template>
 
 <script setup lang="ts">
-import { toRef } from 'vue'
-import type { JobCard } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
+import { toRef } from 'vue';
+import type { JobCard } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
 
 const props = defineProps<{ card: JobCard.Card; prop?: string }>()
 

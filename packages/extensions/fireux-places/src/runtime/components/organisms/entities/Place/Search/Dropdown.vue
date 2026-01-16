@@ -36,12 +36,12 @@ import type { PlaceCard } from '../../../../../composables/fireux/firestore/obje
 const SHORTLIST_LIMIT = 4
 
 interface Props {
-  cells?: PlaceCard.Cell[] | null
+  cells?: PlaceCard.Card[] | null
 }
 const props = withDefaults(defineProps<Props>(), { cells: () => [] })
 const { cells } = toRefs(props)
 
-const emit = defineEmits<(e: 'select', cell: PlaceCard.Cell) => void>()
+const emit = defineEmits<(e: 'select', cell: PlaceCard.Card) => void>()
 const visibleCells = computed(() =>
   (cells.value ?? []).slice(0, SHORTLIST_LIMIT)
 )

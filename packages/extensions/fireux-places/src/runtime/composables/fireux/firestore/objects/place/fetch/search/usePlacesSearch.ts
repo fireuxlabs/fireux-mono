@@ -57,7 +57,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
   const { prefixSearch } = useFirestoreSearch()
 
   const query = ref('')
-  const results = ref<PlaceCard.Cell[]>([])
+  const results = ref<PlaceCard.Card[]>([])
   const selected = ref<BasePlace | null>(null)
   const isSearching = ref(false)
 
@@ -112,7 +112,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       }
 
       if (fx.length) {
-        results.value = fx.map<PlaceCard.Cell>((p: any) => {
+        results.value = fx.map<PlaceCard.Card>((p: any) => {
           const id = canonicalPlaceId(p?.place_id ?? p?.id) ?? ''
           const sourceRaw = typeof p?.source === 'string' ? p.source : 'firebase'
           const normalizedSource = sourceRaw === 'firestore' ? 'firebase' : sourceRaw
@@ -121,15 +121,23 @@ export function usePlacesSearch(options?: { type?: string | null }) {
           const placeImageRaw = p?.place_image ?? p?.image_url
           const place_image = typeof placeImageRaw === 'string' ? placeImageRaw : ''
 
+          const formattedAddress =
+            typeof p?.formatted_address === 'string' ? p.formatted_address : ''
+
           return {
             id,
+            to: `/places/${encodeURIComponent(id)}`,
+
+            avatarUrl: place_image,
+            title: String(p?.name ?? ''),
+            subtitle: formattedAddress,
+            badges: [],
+
             name: String(p?.name ?? ''),
-            formatted_address:
-              typeof p?.formatted_address === 'string'
-                ? p.formatted_address
-                : '',
-            source: safeSource as any,
+            formattedAddress,
+
             imageUrl: place_image,
+            source: safeSource as any,
           }
         })
 
@@ -208,7 +216,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
   // 🔎 whenever shortlist changes, lazily hydrate missing Google logos
   watch(
     results,
-    (cells: PlaceCard.Cell[]) => {
+    (cells: PlaceCard.Card[]) => {
       if (!globalThis.window) {
         return
       }
@@ -234,7 +242,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
             logoCache.set(id, nextImageUrl)
 
             const idx = results.value.findIndex(
-              (row: PlaceCard.Cell) => canonicalPlaceId(row.id) === id
+              (row: PlaceCard.Card) => canonicalPlaceId(row.id) === id
             )
             if (idx !== -1) {
               const current = results.value[idx]
@@ -273,7 +281,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
   )
 
   // select reuses cached logo; never clobbers an existing non-null place_image
-  async function select(cell: PlaceCard.Cell) {
+  async function select(cell: PlaceCard.Card) {
     const id = canonicalPlaceId(cell.id) || cell.id
     const cached = logoCache.get(id) ?? null
 

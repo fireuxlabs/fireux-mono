@@ -22,13 +22,11 @@
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 
 const { card, imageUrl: imageUrlProp, prop } = defineProps<{
-  card: PlaceCard.Cell
+  card: PlaceCard.Card
   imageUrl?: string
   prop?: string
 }>()
 
-const { name, formatted_address, imageUrl: cardImageUrl } = card
-const title = name
-const subtitle = formatted_address
+const { title, subtitle, imageUrl: cardImageUrl } = card
 const imageUrl = imageUrlProp ?? cardImageUrl
 </script>

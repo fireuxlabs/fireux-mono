@@ -60,7 +60,7 @@ export async function fetchGoogle(
   excludeIds: Set<string>,
   limit: number,
   options?: { type?: string | null }
-): Promise<PlaceCard.Cell[]> {
+): Promise<PlaceCard.Card[]> {
   if (limit <= 0 || typeof window === 'undefined') return []
 
   const start = Date.now()
@@ -119,23 +119,32 @@ export async function fetchGoogle(
       ? json.predictions
       : []
 
-    const cells: PlaceCard.Cell[] = preds
+    const cells: PlaceCard.Card[] = preds
       .filter((p) => {
         const id = canonicalPlaceId(p?.place_id)
         return id && !excludeIds.has(id)
       })
       .slice(0, limit)
-      .map((p): PlaceCard.Cell => {
+      .map((p): PlaceCard.Card => {
         const id = canonicalPlaceId(p.place_id) as string
         const main = p.structured_formatting?.main_text
         const secondary = p.structured_formatting?.secondary_text
         const desc = p.description
+        const formattedAddress = secondary || desc || ''
         return {
           id,
+          to: `/places/${encodeURIComponent(id)}`,
+
+          avatarUrl: '',
+          title: main || desc || 'Unknown place',
+          subtitle: formattedAddress,
+          badges: [],
+
           name: main || desc || 'Unknown place',
-          formatted_address: secondary || desc || '',
-          source: 'google',
+          formattedAddress,
+
           imageUrl: '',
+          source: 'google',
         }
       })
 

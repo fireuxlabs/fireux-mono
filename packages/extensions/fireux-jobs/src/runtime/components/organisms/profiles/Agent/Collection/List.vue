@@ -37,8 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
+import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
 
 withDefaults(
   defineProps<{
