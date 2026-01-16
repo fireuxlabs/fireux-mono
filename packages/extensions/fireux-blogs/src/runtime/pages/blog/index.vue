@@ -3,8 +3,8 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsObjectsBlogCTA />
-      <OrganismsObjectsBlogCollectionManager :cards="cards" />
+      <BlogCTA />
+      <BlogCollectionManager :cards="cards" />
     </UPageBody>
   </UPage>
 </template>

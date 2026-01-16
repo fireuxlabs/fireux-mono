@@ -1,14 +1,13 @@
-import { addComponentsDir } from '@nuxt/kit'
-import type { Resolver } from '@nuxt/kit'
+import { addComponentsDir, type Resolver } from '@nuxt/kit'
 
-export function configureComponents(
-  resolver: Resolver,
-  options: { prefix?: string } = {}
-) {
+/**
+ * Register runtime components for this module.
+ */
+export function configureComponents(resolver: Resolver) {
   addComponentsDir({
-    path: resolver.resolve('../runtime/components'),
-    prefix: options.prefix ?? 'Fire',
-    global: false,
-    pathPrefix: false,
+    path: resolver.resolve('./runtime/components/organisms/entities/Place'),
+    prefix: 'Place',
+    global: true,
+    pathPrefix: true,
   })
 }

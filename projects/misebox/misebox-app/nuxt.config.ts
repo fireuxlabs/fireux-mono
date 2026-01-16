@@ -1,4 +1,5 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+/// <reference types="@nuxt/content" />
 import { defineNuxtConfig } from 'nuxt/config'
 
 const fireuxConfig = defineFireuxConfig({

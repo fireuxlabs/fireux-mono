@@ -1,9 +1,9 @@
-import { defineNuxtModule, createResolver } from '@nuxt/kit'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
-import { configureRuntime } from './config/runtime-config'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
 import { configurePages } from './config/pages-config'
+import { configureRuntime } from './config/runtime-config'
 import { configureServer } from './config/server-config'
 
 export interface ModuleOptions {
@@ -34,7 +34,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
       types: options.types || [],
       googleAutocompleteTypeFilters: options.googleAutocompleteTypeFilters || {},
     })
-    configureComponents(resolver, options)
+    configureComponents(resolver)
     configureComposables(resolver, options)
     configurePages(resolver, nuxt)
     configureServer(resolver)

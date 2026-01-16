@@ -6,7 +6,7 @@
     />
 
     <UPageBody class="pagebody space-y-6">
-      <OrganismsObjectsPlaceSearchSection
+      <PlaceSearchSection
         :type="placeType"
         @confirmed="onConfirmed"
       />

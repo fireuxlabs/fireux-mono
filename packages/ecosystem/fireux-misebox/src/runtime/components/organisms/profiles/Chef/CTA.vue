@@ -18,7 +18,10 @@
 				</div>
 
 				<div class="space-y-4">
-					<OrganismsProfilesChefCardsCell v-if="showCellCard && cell" :chef="cell" />
+					<OrganismsProfilesChefCardsCell
+						v-if="showCellCard && cell"
+						v-bind="cell"
+					/>
 					<OrganismsProfilesChefCardsPill v-else-if="pill" v-bind="pill" />
 					<p v-else class="text-sm text-slate-500">No chef profile loaded.</p>
 				</div>
@@ -28,15 +31,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { computed, ref, watch } from 'vue'
 import { useChef } from '../../../../composables/fireux/firestore/profiles/Chef/useChef'
 
-const { pill, cell } = useChef()
+const { card } = useChef()
 const { hasProfile } = useUser()
 
 const hasChefProfile = computed(() => hasProfile('chef'))
 
+const cell = computed(() => card())
+const pill = computed(() => card())
 const canToggle = computed(() => Boolean(cell.value))
 const showCellView = ref(false)
 const showCellCard = computed(() => canToggle.value && showCellView.value)

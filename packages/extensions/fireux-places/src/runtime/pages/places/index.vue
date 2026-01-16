@@ -2,13 +2,17 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsObjectsPlaceCTA :type="placeType" @confirmed="onPlaceCreated" />
-      <OrganismsObjectsPlaceCollectionManager :cards="placeCards" />
+      <PlaceCTA :type="placeType" @confirmed="onPlaceCreated" />
+      <PlaceCollectionManager :cards="placeCards" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import {
+  OrganismsEntitiesPlaceCTA as PlaceCTA,
+  OrganismsEntitiesPlaceCollectionManager as PlaceCollectionManager,
+} from '#components'
 import { useHead, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'

@@ -1,15 +1,15 @@
 import {
-  defineNuxtModule,
-  createResolver,
-  addImportsDir,
-  addComponentsDir,
-} from 'nuxt/kit'
-import type { Nuxt } from 'nuxt/schema'
-import {
   ensureRuntimeConfigBuckets,
   ensureRuntimeLayer,
   exposeRuntimeAlias,
 } from 'fireux-core/config/nuxt/nuxt-runtime-layer'
+import {
+  addImportsDir,
+  createResolver,
+  defineNuxtModule,
+} from 'nuxt/kit'
+import type { Nuxt } from 'nuxt/schema'
+import { configureComponents } from './config/components-config'
 
 declare module 'nuxt/schema' {
   interface NuxtConfig {
@@ -40,12 +40,7 @@ export default defineNuxtModule({
     // Auto-import runtime composables directory (create files as needed)
     addImportsDir(resolver.resolve('./runtime/composables'))
 
-    // Globally register blog components using their path-based names
-    addComponentsDir({
-      path: resolver.resolve('./runtime/components'),
-      global: true,
-      pathPrefix: true,
-    })
+    configureComponents(resolver)
 
     exposeRuntimeAlias(nuxt, '#fireux-blogs', runtimeDir)
 

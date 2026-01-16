@@ -2,7 +2,7 @@
   <ClientOnly>
     <div>
       <div v-if="ingredient">
-          <OrganismsObjectsIngredientCardsProfile :ingredient="ingredient" />
+          <IngredientCardsProfile :ingredient="ingredient" />
 
         <!-- Edit Ingredient Button (shown when user can edit) -->
         <div class="edit-object-section">

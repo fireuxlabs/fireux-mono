@@ -10,7 +10,7 @@
         </div>
       </template>
 
-      <OrganismsObjectsPlaceSearchSection @confirmed="onPlaceConfirmed" />
+      <PlaceSearchSection @confirmed="onPlaceConfirmed" />
 
       <div class="space-y-2">
         <div class="text-sm font-medium">Optional</div>

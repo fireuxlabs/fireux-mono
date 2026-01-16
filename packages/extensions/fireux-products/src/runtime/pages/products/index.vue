@@ -4,8 +4,8 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsObjectsProductCTA />
-      <OrganismsObjectsProductCollectionManager :cards="cards" />
+      <ProductCTA />
+      <ProductCollectionManager :cards="cards" />
     </UPageBody>
   </UPage>
 </template>

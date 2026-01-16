@@ -22,10 +22,10 @@
         @clear="handleClear"
       >
         <template #write>
-          <OrganismsObjectsBlogCreateWrite />
+          <BlogCreateWrite />
         </template>
         <template #preview>
-          <OrganismsObjectsBlogCreatePreview />
+          <BlogCreatePreview />
         </template>
       </MoleculesCreateShell>
     </UPageBody>

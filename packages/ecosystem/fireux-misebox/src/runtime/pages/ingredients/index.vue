@@ -8,7 +8,7 @@
     <div>
       <h2>All Ingredients</h2>
       <div>
-          <OrganismsObjectsIngredientCardsCell
+          <IngredientCardsCell
           v-for="ingredient in ingredients"
           :key="ingredient.id"
           :ingredient="ingredient"

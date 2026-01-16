@@ -4,13 +4,17 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <OrganismsObjectsKitchenCTA />
-      <OrganismsObjectsKitchenCollectionManager :cards="cards" />
+      <KitchenCTA />
+      <KitchenCollectionManager :cards="cards" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import {
+  OrganismsEntitiesKitchenCTA as KitchenCTA,
+  OrganismsEntitiesKitchenCollectionManager as KitchenCollectionManager,
+} from '#components'
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useKitchens } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/useKitchens'

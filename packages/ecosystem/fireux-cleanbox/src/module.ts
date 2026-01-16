@@ -1,13 +1,9 @@
-import {
-  addComponentsDir,
-  addImportsDir,
-  createResolver,
-  defineNuxtModule,
-} from '@nuxt/kit'
+import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
 import { configurePages } from 'fireux-core/config/module/pages-config'
 import { existsSync } from 'fs'
+import { configureComponents } from './config/components-config'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({
@@ -32,22 +28,7 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     // Layer runtime pages/layouts/middleware
     configurePages(resolver, nuxt)
 
-    // Register runtime components WITHOUT a prefix
-    const componentsDir = resolver.resolve('./runtime/components')
-    if (existsSync(componentsDir)) {
-      ;(nuxt.options.alias ||= {}) as Record<string, string>
-      ;(nuxt.options.alias as Record<string, string>)['#fireux-cleanbox-components'] =
-        componentsDir
-
-      addComponentsDir({
-        path: componentsDir,
-        pattern: '**/*.vue',
-        global: false,
-        pathPrefix: true,
-        // Ensure ecosystem components override core defaults
-        priority: 1,
-      })
-    }
+    configureComponents(resolver, nuxt)
 
     // Auto-import composables and models if present
     const composablesDir = resolver.resolve('./runtime/composables')

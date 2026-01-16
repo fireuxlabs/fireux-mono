@@ -1,15 +1,11 @@
-import {
-    addComponentsDir,
-    addImportsDir,
-    createResolver,
-    defineNuxtModule,
-} from '@nuxt/kit'
+import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import {
-    ensureRuntimeConfigBuckets,
-    ensureRuntimeLayer,
-    exposeRuntimeAlias,
+  ensureRuntimeConfigBuckets,
+  ensureRuntimeLayer,
+  exposeRuntimeAlias,
 } from 'fireux-core/config/nuxt/nuxt-runtime-layer'
+import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
 import { configureRuntime } from './config/runtime-config'
 
@@ -34,12 +30,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
 
     addImportsDir(resolver.resolve('./runtime/composables'))
 
-    addComponentsDir({
-      path: resolver.resolve('./runtime/components/organisms/entities/Company'),
-      global: true,
-      pathPrefix: true,
-      prefix: 'Company',
-    })
+    configureComponents(resolver)
 
     exposeRuntimeAlias(nuxt, '#fireux-companies', runtimeDir)
     registerCompanyPages(nuxt, resolver, runtimeDir)

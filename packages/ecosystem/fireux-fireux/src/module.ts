@@ -1,10 +1,11 @@
 // FILE: packages/ecosystem/fireux-fireux/src/module.ts
-import { addComponentsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 
 import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { existsSync } from 'fs'
+import { configureComponents } from './config/components-config'
 
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   meta: {
@@ -43,22 +44,7 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       )
     }
 
-    // Register runtime components WITHOUT a prefix
-    const componentsDir = resolver.resolve('./runtime/components')
-    if (existsSync(componentsDir)) {
-      ;(nuxt.options.alias ||= {}) as Record<string, string>
-      ;(nuxt.options.alias as Record<string, string>)['#fireux-fireux-components'] =
-        componentsDir
-
-      addComponentsDir({
-        path: componentsDir,
-        pattern: '**/*.vue',
-        global: false,
-        pathPrefix: true,
-        // Ensure ecosystem components override core defaults
-        priority: 1,
-      })
-    }
+    configureComponents(resolver, nuxt)
 
     // Serve runtime public assets via Nitro (so /img/ecosystem/* works)
     const publicDir = resolver.resolve('./runtime/public')

@@ -26,10 +26,10 @@
         @clear="handleClear"
       >
         <template #write>
-          <OrganismsObjectsProductCreateWrite />
+          <ProductCreateWrite />
         </template>
         <template #preview>
-          <OrganismsObjectsProductCreatePreview />
+          <ProductCreatePreview />
         </template>
       </MoleculesCreateShell>
     </UPageBody>

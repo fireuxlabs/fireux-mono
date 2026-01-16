@@ -36,7 +36,7 @@
         </div>
 
         <div v-else class="space-y-4">
-          <OrganismsObjectsPlaceCardsPreview
+          <PlaceCardsPreview
             :image-url="place.place_image ?? ''"
             :name="place.name ?? ''"
             :formatted-address="place.formatted_address ?? ''"

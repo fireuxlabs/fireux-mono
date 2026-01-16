@@ -3,8 +3,8 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsObjectsJobCTA />
-      <OrganismsObjectsJobCollectionManager :cards="cards" />
+      <JobCTA />
+      <JobCollectionManager :cards="cards" />
     </UPageBody>
   </UPage>
 </template>

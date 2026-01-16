@@ -59,7 +59,7 @@
       />
 
       <div v-else class="space-y-2">
-        <OrganismsObjectsPlaceCardsCell
+        <PlaceCardsCell
           v-for="card in filteredCards"
           :key="card.id"
           v-bind="card"

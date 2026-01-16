@@ -65,7 +65,7 @@
         />
 
         <div v-else class="grid gap-3 md:grid-cols-2">
-          <OrganismsObjectsJobCardsCell
+          <JobCardsCell
             v-for="card in jobFilteredCards"
             :key="card.id"
             :to="card.to"

@@ -1,11 +1,11 @@
-import { defineNuxtModule, createResolver } from '@nuxt/kit'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
-import { configureRuntime } from './config/runtime-config'
-import { configurePlugins } from './config/plugins-config'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
 import { configureLayouts } from './config/layouts-config'
 import { configurePages } from './config/pages-config'
+import { configurePlugins } from './config/plugins-config'
+import { configureRuntime } from './config/runtime-config'
 
 export interface ModuleOptions {
   prefix?: string
