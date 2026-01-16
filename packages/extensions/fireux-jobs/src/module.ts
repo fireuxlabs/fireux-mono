@@ -1,11 +1,11 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
-import { configureComponents } from './config/components-config'
-import { configureComposables } from './config/composables-config'
-import { configureLayouts } from './config/layouts-config'
-import { configurePages } from './config/pages-config'
-import { configurePlugins } from './config/plugins-config'
-import { configureRuntime } from './config/runtime-config'
+import { configureComponents } from './config/module/components-config'
+import { configureComposables } from './config/module/composables-config'
+import { configureLayouts } from './config/module/layouts-config'
+import { configurePages } from './config/module/pages-config'
+import { configurePlugins } from './config/module/plugins-config'
+import { configureRuntime } from './config/module/runtime-config'
 
 export interface ModuleOptions {
   prefix?: string

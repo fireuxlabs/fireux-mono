@@ -5,14 +5,14 @@ import {
   ensureRuntimeLayer,
   exposeRuntimeAlias,
 } from 'fireux-core/config/nuxt/nuxt-runtime-layer'
-import { configureComponents } from './config/components-config'
-import { configureComposables } from './config/composables-config'
-import { configureLayouts } from './config/layouts-config'
-import { configureModels } from './config/models-config'
-import { configurePages } from './config/pages-config'
-import { configurePlugins } from './config/plugins-config'
-import { configureRuntime } from './config/runtime-config'
-import { configureServer } from './config/server-config'
+import { configureComponents } from './config/module/components-config'
+import { configureComposables } from './config/module/composables-config'
+import { configureLayouts } from './config/module/layouts-config'
+import { configureModels } from './config/module/models-config'
+import { configurePages } from './config/module/pages-config'
+import { configurePlugins } from './config/module/plugins-config'
+import { configureRuntime } from './config/module/runtime-config'
+import { configureServer } from './config/module/server-config'
 
 export interface ModuleOptions {
   prefix?: string
