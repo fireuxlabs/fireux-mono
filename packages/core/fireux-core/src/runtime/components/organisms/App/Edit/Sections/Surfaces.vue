@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AppCard } from '../../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import type { AppCard } from '../../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
 
 defineProps<{
   appCard: AppCard.Card | null

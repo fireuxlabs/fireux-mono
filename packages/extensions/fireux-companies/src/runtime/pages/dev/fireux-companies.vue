@@ -102,7 +102,6 @@ import { Company as CompanyModelRuntime } from '../../models/objects/company.mod
 
 definePageMeta({
   layout: 'dev',
-  alias: ['/dev/fireux-companies'],
   nav: {
     key: 'dev-ext-companies',
     label: 'Companies (Ext)',
@@ -113,7 +112,6 @@ definePageMeta({
   },
 })
 
-const { copyJSON, copying } = useDevClipboard()
 const { companies } = useCompanyFetch()
 const { card: makeCard } = useCompanyInterface()
 

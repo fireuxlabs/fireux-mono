@@ -57,8 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional';
 
 withDefaults(
   defineProps<{

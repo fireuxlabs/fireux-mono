@@ -334,7 +334,6 @@ import { useFirestoreRead } from '../../composables/fireux/firestore/operations/
 
 definePageMeta({
   layout: 'dev',
-  alias: ['/dev/forms'],
   nav: {
     key: 'dev-forms',
     label: 'Forms',

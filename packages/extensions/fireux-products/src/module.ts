@@ -10,6 +10,12 @@ import {
 } from 'nuxt/kit'
 import type { Nuxt } from 'nuxt/schema'
 import { configureComponents } from './config/components-config'
+import { configureComposables } from './config/composables-config'
+import { configureLayouts } from './config/layouts-config'
+import { configureModels } from './config/models-config'
+import { configurePages } from './config/pages-config'
+import { configurePlugins } from './config/plugins-config'
+import { configureRuntime } from './config/runtime-config'
 import { configureServer } from './config/server-config'
 
 declare module 'nuxt/schema' {
@@ -37,11 +43,17 @@ export default defineNuxtModule({
     const runtimeDir = resolver.resolve('./runtime')
 
     ensureRuntimeConfigBuckets(nuxt, 'products')
+    configureRuntime(nuxt, 'products')
+    configurePlugins(resolver)
+    configureComposables(resolver)
 
     // Auto-import runtime composables directory (create files as needed)
     addImportsDir(resolver.resolve('./runtime/composables'))
 
     configureComponents(resolver)
+    configureLayouts(resolver, nuxt)
+    configureModels(resolver)
+    configurePages(resolver, nuxt)
 
     exposeRuntimeAlias(nuxt, '#fireux-products', runtimeDir)
 

@@ -1,5 +1,6 @@
-import { defineNuxtModule, createResolver, addImportsDir } from 'nuxt/kit'
-import type {} from 'nuxt/schema'
+import { ensureRuntimeConfigBuckets, exposeRuntimeAlias } from 'fireux-core/config/module/runtime-layer'
+import { addImportsDir, createResolver, defineNuxtModule } from 'nuxt/kit'
+import type { } from 'nuxt/schema'
 
 declare module 'nuxt/schema' {
   interface NuxtConfig { drop?: Partial<typeof defaults> }
@@ -21,17 +22,12 @@ export default defineNuxtModule({
     const resolver = createResolver(import.meta.url)
 
     // Ensure runtime config buckets exist
-    nuxt.options.runtimeConfig.drop = nuxt.options.runtimeConfig.drop || {}
-    nuxt.options.runtimeConfig.public.drop =
-      nuxt.options.runtimeConfig.public.drop || {}
+    ensureRuntimeConfigBuckets(nuxt as any, 'drop')
 
     // Auto-import runtime composables directory (create files as needed)
     addImportsDir(resolver.resolve('./runtime/composables'))
 
     // Example: expose runtime directory via alias for server routes/plugins
-    nuxt.hook('nitro:config', (nitroConfig) => {
-      nitroConfig.alias = nitroConfig.alias || {}
-      nitroConfig.alias['#fireux-drop'] = resolver.resolve('./runtime')
-    })
+    exposeRuntimeAlias(nuxt as any, '#fireux-drop', resolver.resolve('./runtime'))
   },
 })

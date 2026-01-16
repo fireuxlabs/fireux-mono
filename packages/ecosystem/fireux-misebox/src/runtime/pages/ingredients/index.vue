@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { useIngredient } from '../../composables/fireux/firestore/objects/ingredient/useIngredient'
+import { useIngredient } from '../../composables/fireux/firestore/objects/ingredient/useIngredient';
 
 const { all: ingredients } = useIngredient()
 

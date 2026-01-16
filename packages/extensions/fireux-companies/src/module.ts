@@ -7,7 +7,12 @@ import {
 } from 'fireux-core/config/nuxt/nuxt-runtime-layer'
 import { configureComponents } from './config/components-config'
 import { configureComposables } from './config/composables-config'
+import { configureLayouts } from './config/layouts-config'
+import { configureModels } from './config/models-config'
+import { configurePages } from './config/pages-config'
+import { configurePlugins } from './config/plugins-config'
 import { configureRuntime } from './config/runtime-config'
+import { configureServer } from './config/server-config'
 
 export interface ModuleOptions {
   prefix?: string
@@ -26,11 +31,16 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
 
     ensureRuntimeConfigBuckets(nuxt, 'companies')
     configureRuntime(nuxt, 'companies')
+    configurePlugins(resolver)
     configureComposables(resolver)
 
     addImportsDir(resolver.resolve('./runtime/composables'))
 
     configureComponents(resolver)
+    configureLayouts(resolver, nuxt)
+    configureModels(resolver)
+    configurePages(resolver, nuxt)
+    configureServer(resolver)
 
     exposeRuntimeAlias(nuxt, '#fireux-companies', runtimeDir)
     registerCompanyPages(nuxt, resolver, runtimeDir)
@@ -71,6 +81,11 @@ function registerCompanyPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
       name: 'fireux-companies-id',
       path: '/companies/:id',
       file: resolver.resolve('./runtime/pages/companies/[id].vue'),
+    },
+    {
+      name: 'dev-fireux-companies',
+      path: '/dev/fireux-companies',
+      file: resolver.resolve('./runtime/pages/dev/fireux-companies.vue'),
     },
   ]
 

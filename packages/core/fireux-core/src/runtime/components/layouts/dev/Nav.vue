@@ -16,53 +16,36 @@
       <UNavigationMenu orientation="vertical" :items="ext" />
     </section>
 
-    <!-- Debug: show grouped links and ecosystem when ?debug=devnav -->
-    <UCard v-if="showDebug" class="mt-3">
-      <template #header>
-        <h2>DevNav Debug</h2>
-      </template>
-      <DevJson :data="{ ecosystem, core, ecosystemNav, ext }" />
-    </UCard>
+    <section class="text-[10px] text-gray-500 space-y-2">
+      <div>
+        counts: core {{ core.length }} | eco {{ ecosystemNav.length }} | ext
+        {{ ext.length }} | all {{ desktop.length }}
+      </div>
+      <div class="space-y-1">
+        <div v-for="item in desktop" :key="item.to">
+          {{ item.group || 'none' }} — {{ item.label || item.to }}
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 import { useDevNav } from '../../../composables/fireux/app/routing/presets'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-const route = useRoute()
 
 // Collect all dev-layout nav items and group them by meta.group
 const { desktop } = useDevNav()
-const { ecosystem } = useFireUXConfig()
-
 const core = computed(() => desktop.value.filter((i) => i.group === 'core'))
 
-// Track known ecosystem groups so we can surface multiple ecosystems when present
-const ECOSYSTEM_GROUPS = new Set(['misebox', 'cleanbox', 'ecosystem'])
-const normalisedEcosystem =
-  typeof ecosystem === 'string' ? ecosystem.toLowerCase() : ''
-
-const isEcosystemGroup = (group?: string) => {
-  if (!group) return false
-  const name = group.toLowerCase()
-  if (normalisedEcosystem && name === normalisedEcosystem) return true
-  return ECOSYSTEM_GROUPS.has(name)
-}
-
 const ecosystemNav = computed(() =>
-  desktop.value.filter((item) => isEcosystemGroup(item.group))
+  desktop.value.filter((item) =>
+    Boolean(item.group) && item.group !== 'core' && item.group !== 'ext'
+  )
 )
 
 const ext = computed(() => desktop.value.filter((i) => i.group === 'ext'))
 
-const showDebug = computed(() => {
-  const q = route.query?.debug
-  if (q === 'devnav') return true
-  if (q === '1' || q === 'true') return true
-  return false
-})
 </script>
 
 <style scoped>

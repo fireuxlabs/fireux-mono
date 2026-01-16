@@ -70,8 +70,8 @@
 
 <script setup lang="ts">
 import { computed, definePageMeta, useHead } from '#imports'
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
 definePageMeta({
   layout: 'dashboard',

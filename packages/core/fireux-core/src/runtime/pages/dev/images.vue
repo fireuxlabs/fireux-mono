@@ -173,7 +173,6 @@ const firestoreAppGroups = computed<FirestoreAppGroup[]>(() => {
 
 definePageMeta({
   layout: 'dev',
-  alias: ['/dev/img'],
   nav: {
     key: 'dev-images',
     label: 'Images',

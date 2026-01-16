@@ -74,12 +74,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
-import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
-import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp'
+import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { computed, ref } from 'vue'
+import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
 import { agentConfig } from '../../../models/profiles/Agent/Agent.model'
 
 const navLabel = agentConfig.navLabel ?? `${agentConfig.profileType} Profile`

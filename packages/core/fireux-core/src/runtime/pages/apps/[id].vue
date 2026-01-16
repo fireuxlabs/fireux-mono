@@ -70,14 +70,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useHead } from '#imports'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAppFetch } from '../../composables/fireux/firestore/core/app/fetch/useAppFetch'
 import { useAppInterface } from '../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import type { UserCard } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserCollectionByAppId } from '../../composables/fireux/firestore/core/user/fetch/useUserCollectionByAppId'
+import type { UserCard } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const route = useRoute()
 

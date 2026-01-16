@@ -194,16 +194,16 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from '#imports'
-import type { PropType } from 'vue'
 import { doc, getDoc } from 'firebase/firestore'
+import type { PropType } from 'vue'
 import { useFirestore } from 'vuefire'
-import type { App } from '../../../../models/core/app.model'
-import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
-import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useSocialLinks, type SocialLinks } from '../../../../composables/fireux/app/ui/useSocialLinks'
-import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
+import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
+import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import type { App } from '../../../../models/core/app.model'
 import type { User } from '../../../../models/core/user.model'
+import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
 
 const props = defineProps({
   app: { type: Object as PropType<App | null>, default: null },

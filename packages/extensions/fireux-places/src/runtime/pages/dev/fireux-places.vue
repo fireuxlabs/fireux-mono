@@ -18,7 +18,6 @@ import type { Place } from '../../models/objects/place.model'
 
 definePageMeta({
   layout: 'dev',
-  alias: ['/dev/fireux-places'],
   nav: {
     key: 'dev-ext-places',
     label: 'Places (Ext)',

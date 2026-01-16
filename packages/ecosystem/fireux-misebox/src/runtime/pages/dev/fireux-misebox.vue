@@ -262,10 +262,6 @@ import { Kitchen as KitchenModelRuntime } from 'fireux-kitchens/runtime/models/o
 
 definePageMeta({
   layout: 'dev',
-  alias: [
-    '/dev/fireux-misebox',
-    '/dev/fireux-misebox-tenant',
-  ],
   nav: {
     key: 'dev-tenant-misebox',
     label: 'Misebox',

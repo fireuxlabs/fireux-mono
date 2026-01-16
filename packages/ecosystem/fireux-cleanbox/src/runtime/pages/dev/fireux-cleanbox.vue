@@ -116,7 +116,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 
 definePageMeta({
   layout: 'dev',
-  alias: ['/dev/fireux-cleanbox'],
   nav: {
     key: 'dev-cleanbox-ecosystem',
     label: 'Cleanbox',

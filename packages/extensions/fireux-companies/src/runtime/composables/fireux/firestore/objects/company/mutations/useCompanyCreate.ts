@@ -1,11 +1,14 @@
+import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import type { Company, CompanyCreateInput } from '../../../../../../models/objects/company.model'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import { useFirestore } from 'vuefire'
+import type { Company, CompanyCreateInput } from '../../../../../../models/objects/company.model'
 
 const COLLECTION_PATH = 'companies'
 
 export function useCompanyCreate() {
   const { setDocument } = useFirestoreManager()
+  const db = useFirestore()
 
   const createCompany = async (
     input: CompanyCreateInput & { place: PlaceUpsertInput }
@@ -15,6 +18,12 @@ export function useCompanyCreate() {
 
     const name = String(input?.name ?? '').trim()
     if (!name) throw new Error('[useCompanyCreate] name is required')
+
+    const ref = doc(db, COLLECTION_PATH, id)
+    const snapshot = await getDoc(ref)
+    if (snapshot.exists()) {
+      throw new Error(`[useCompanyCreate] company already exists: ${id}`)
+    }
 
     await setDocument<Company>(
       COLLECTION_PATH,

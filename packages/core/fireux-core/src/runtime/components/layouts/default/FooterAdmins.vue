@@ -33,12 +33,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
-import { useAppUsers } from '../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
-import { useUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
-import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useAppUsers } from '../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
+import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
+import { useUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const { app } = useApp()
 const { users, pending } = useAppUsers()

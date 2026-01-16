@@ -87,7 +87,6 @@ import { User as UserModelRuntime } from '../../models/core/user.model'
 
 definePageMeta({
   layout: 'dev',
-  alias: ['/dev/users'],
   nav: {
     key: 'dev-users',
     label: 'Users',

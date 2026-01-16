@@ -41,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { computed, ref, watch } from 'vue'
 import { useSupplier } from '../../../../composables/fireux/firestore/profiles/Supplier/useSupplier.ts'
 
 const { pill, cell } = useSupplier()

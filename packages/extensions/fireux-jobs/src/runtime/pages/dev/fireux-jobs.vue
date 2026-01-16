@@ -415,7 +415,6 @@ import { ProfessionalCore as ProfessionalCoreRuntime } from '../../models/profil
 
 definePageMeta({
   layout: 'dev',
-  alias: ['/dev/fireux-jobs'],
   nav: {
     key: 'dev-ext-jobs',
     label: 'Jobs (Ext)',

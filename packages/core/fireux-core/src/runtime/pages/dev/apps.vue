@@ -87,7 +87,6 @@ import { App as AppModelRuntime } from '../../models/core/app.model'
 
 definePageMeta({
   layout: 'dev',
-  alias: ['/dev/apps'],
   nav: {
     key: 'dev-apps',
     label: 'Apps',
