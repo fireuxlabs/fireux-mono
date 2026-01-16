@@ -17,7 +17,7 @@ const ALLOWED_NOISE = ['node_modules', 'tsconfig.tsbuildinfo', '.DS_Store']
 // Ecosystem config contract (inside each ecosystem package)
 const REQUIRED_CONFIG_DIR = path.join('src', 'config')
 const REQUIRED_CONFIG_DIRS = ['firebase']
-const ALLOWED_CONFIG_FILES = []
+const ALLOWED_CONFIG_FILES = ['module']
 const CONFIG_ALLOWED_NOISE = ['.DS_Store']
 
 // Firebase config contract (inside each ecosystem package)
@@ -123,7 +123,7 @@ function checkEcosystemPackage(pkgPath) {
     '- docs/ is required for ecosystems (this is where the canonical docs live)',
     '- .firebaserc is required for ecosystems (this is where Firebase project binding lives)',
     `- Ecosystems MUST ship runtime public assets at /${REQUIRED_RUNTIME_PUBLIC_DIR}`,
-    `- Config MUST live at /${REQUIRED_CONFIG_DIR} and only include /firebase`,
+    `- Config MUST live at /${REQUIRED_CONFIG_DIR} and include /firebase (and optional /module)`,
     `- Firebase MUST live at /${REQUIRED_FIREBASE_DIR} with exactly: ${REQUIRED_FIREBASE_FILES.join(
       ', '
     )} (no index files)`
