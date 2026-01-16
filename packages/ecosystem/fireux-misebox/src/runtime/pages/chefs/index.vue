@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <OrganismsProfilesChefCTA />
-      <OrganismsProfilesChefCollectionManager :cards="cards" :total="total" />
+      <OrganismsProfilesChefCollectionManager :cards="cards" />
     </UPageBody>
   </UPage>
 </template>
@@ -48,11 +48,10 @@ const cards = computed(() => {
   const globalCards = (globalChefs.value ?? [])
     .map((entry) => makeCard(entry as ChefCore, (entry as any)?.user ?? null))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
-  const localCards = (localChefs.value ?? [])
+  const localCards = (localChefs?.value ?? [])
     .map((entry) => makeCard(entry as ChefCore, (entry as any)?.user ?? null))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
   return [...localCards, ...globalCards]
 })
 
-const total = computed(() => cards.value.length)
 </script>

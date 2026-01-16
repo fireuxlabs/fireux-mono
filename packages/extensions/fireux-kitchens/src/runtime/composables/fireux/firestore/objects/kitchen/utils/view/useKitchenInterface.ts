@@ -5,13 +5,17 @@ export namespace KitchenCard {
     id: string
     to: string
 
-    // Canon pill fields
+    // Media (empty string means unset)
     avatarUrl: string
+
+    // Primary display fields
     title: string
     subtitle: string
 
     name: string
     website: string
+
+    // Status/label chips
     badges: string[]
   }
 }

@@ -5,13 +5,16 @@ export namespace RecipeCard {
     id: string
     to: string
 
-    // Canon pill fields
+    // Media (empty string means unset)
     avatarUrl: string
+
+    // Primary display fields
     subtitle: string
 
     title: string
     status: string
 
+    // Status/label chips
     badges: string[]
   }
 }

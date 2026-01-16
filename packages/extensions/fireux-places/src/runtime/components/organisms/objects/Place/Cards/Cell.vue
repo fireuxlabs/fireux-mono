@@ -2,7 +2,7 @@
   <NuxtLink :to="to" class="fx-cell">
     <div class="fx-cell__media">
       <UAvatar
-        :src="imageUrl || undefined"
+        :src="resolvedImageUrl || undefined"
         :alt="name"
         class="bg-white dark:bg-white"
         size="sm"
@@ -14,8 +14,8 @@
           <div class="min-w-0">
             <div class="fx-cell__title">{{ name }}</div>
 
-            <div v-if="showSubtitle && formattedAddress" class="fx-cell__subtitle">
-              {{ formattedAddress }}
+            <div v-if="showSubtitle && resolvedAddress" class="fx-cell__subtitle">
+              {{ resolvedAddress }}
             </div>
           </div>
 
@@ -35,9 +35,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { usePlaceLogoState } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
-type Props = Pick<PlaceCard.Card, 'to' | 'name' | 'formattedAddress' | 'imageUrl'> & {
+type Props = Pick<PlaceCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl'> & {
+  formatted_address?: string
   source?: 'google' | 'firebase'
   prop?: string
   showSubtitle?: boolean
@@ -49,9 +51,27 @@ const props = withDefaults(defineProps<Props>(), {
   source: 'firebase',
   prop: '',
   showSubtitle: true,
-  showSource: true,
-  showTagline: true,
+  showSource: false,
+  showTagline: false,
 })
+
+const resolvedAddress = computed(
+  () => props.formattedAddress || props.formatted_address || ''
+)
+
+const placeRef = computed(() => ({
+  id: props.id,
+  name: props.name,
+  formatted_address: resolvedAddress.value,
+  imageUrl: props.imageUrl,
+  source: props.source,
+}))
+
+const { avatar } = usePlaceLogoState(placeRef)
+
+const resolvedImageUrl = computed(
+  () => props.imageUrl || avatar.value || ''
+)
 
 const sourceLabel = computed(() =>
   props.source === 'firebase' ? 'Firebase' : props.source === 'google' ? 'Google' : ''

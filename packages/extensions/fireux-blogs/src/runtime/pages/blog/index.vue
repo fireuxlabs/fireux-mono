@@ -4,7 +4,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <OrganismsObjectsBlogCTA />
-      <OrganismsObjectsBlogCollectionManager :cards="cards" :total="total" />
+      <OrganismsObjectsBlogCollectionManager :cards="cards" />
     </UPageBody>
   </UPage>
 </template>
@@ -48,5 +48,4 @@ const cards = computed(() =>
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 )
 
-const total = computed(() => cards.value.length)
 </script>

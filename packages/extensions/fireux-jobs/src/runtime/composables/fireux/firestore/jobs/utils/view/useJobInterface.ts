@@ -5,14 +5,17 @@ export namespace JobCard {
     id: string
     to: string
 
-    // Canon pill fields
+    // Media (empty string means unset)
     avatarUrl: string
+
+    // Primary display fields
     subtitle: string
 
     title: string
     status: Job['status']
     description: string
 
+    // Status/label chips
     badges: string[]
   }
 }

@@ -1,15 +1,32 @@
 <template>
-  <slot :cards="cards" :total="total">
-    <UCard :ui="{ body: 'space-y-4' }">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <div class="font-medium">Blog</div>
-          <div class="text-sm text-dimmed">{{ total }}</div>
-        </div>
-      </template>
+  <UCard :ui="{ body: 'space-y-4' }">
+    <template #header>
+      <div class="flex items-center justify-between">
+        <div class="font-medium">Blog</div>
 
-      <div v-if="!cards.length" class="text-sm text-dimmed">
-        No posts published yet.
+        <div class="flex items-center gap-2">
+          <UButton size="xs" variant="ghost" @click="toggleVariant">
+            {{ variant === 'pill' ? 'Cells' : 'Pills' }}
+          </UButton>
+          <UBadge variant="soft">{{ total }}</UBadge>
+        </div>
+      </div>
+    </template>
+
+    <div v-if="!cards.length" class="text-sm text-dimmed">
+      No posts published yet.
+    </div>
+
+    <div v-else>
+      <div
+        v-if="variant === 'pill'"
+        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        <OrganismsObjectsBlogCardsPill
+          v-for="card in cards"
+          :key="card.id"
+          v-bind="card"
+        />
       </div>
 
       <div v-else class="grid gap-3 md:grid-cols-2">
@@ -19,17 +36,23 @@
           v-bind="card"
         />
       </div>
-    </UCard>
-  </slot>
+    </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { BlogCard } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface';
 
 const props = defineProps<{ cards: BlogCard.Card[]; total?: number }>()
 
 const cards = computed(() => props.cards ?? [])
 const total = computed(() => props.total ?? cards.value.length)
+
+type Variant = 'pill' | 'cell'
+const variant = ref<Variant>('cell')
+const toggleVariant = () => {
+  variant.value = variant.value === 'pill' ? 'cell' : 'pill'
+}
 </script>
 

@@ -6,7 +6,7 @@
     />
 
     <UPageBody class="pagebody space-y-6">
-      <OrganismsObjectsCompanyCreateSystem />
+      <CompanyCreateSystem />
 
       <UAlert
         color="neutral"

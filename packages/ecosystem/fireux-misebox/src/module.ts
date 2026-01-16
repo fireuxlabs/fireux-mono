@@ -1,8 +1,8 @@
 import {
-  addComponentsDir,
-  addImportsDir,
-  createResolver,
-  defineNuxtModule,
+    addComponentsDir,
+    addImportsDir,
+    createResolver,
+    defineNuxtModule,
 } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
@@ -28,8 +28,34 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       firebase: ecosystemConfig.firebase,
     })
 
+    const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+    const pub = (rc.public ||= {}) as Record<string, any>
+    const fireux = (pub.fireux ||= {}) as Record<string, any>
+    const currentPlaces = fireux.places
+    const miseboxPlacesDefaults = {
+      enabled: true,
+      types: ['kitchen', 'company'],
+      googleAutocompleteTypeFilters: {
+        kitchen: ['restaurant', 'cafe', 'food_truck'],
+      },
+    }
+
+    fireux.places = currentPlaces && typeof currentPlaces === 'object'
+      ? { ...miseboxPlacesDefaults, ...currentPlaces }
+      : { ...miseboxPlacesDefaults }
+
     // Layer runtime pages/layouts/middleware
     configurePages(resolver, nuxt)
+
+    nuxt.hook('pages:extend', (pages: any[]) => {
+      for (let i = pages.length - 1; i >= 0; i -= 1) {
+        const page = pages[i]
+        const file = typeof page?.file === 'string' ? page.file : ''
+        if (file.includes('/fireux-misebox/src/runtime/pages/companies')) {
+          pages.splice(i, 1)
+        }
+      }
+    })
 
     // Register runtime components WITHOUT a prefix
     const componentsDir = resolver.resolve('./runtime/components')
@@ -74,14 +100,13 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       if (!already) publicAssets.push({ dir: publicDir })
     }
 
-      // Dev tooling: expose ecosystem public dirs for /dev/images scanning
-      const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
-      const fireuxDev = (rc.fireuxDev ||= {}) as Record<string, any>
-      const ecoDirs = (fireuxDev.ecosystemPublicDirs ||= []) as Array<any>
-      const alreadyDev = ecoDirs.some((e) => e?.dir === publicDir)
-      if (!alreadyDev) {
-        ecoDirs.push({ key: 'misebox', title: 'Misebox ecosystem images', dir: publicDir })
-      }
+    // Dev tooling: expose ecosystem public dirs for /dev/images scanning
+    const fireuxDev = (rc.fireuxDev ||= {}) as Record<string, any>
+    const ecoDirs = (fireuxDev.ecosystemPublicDirs ||= []) as Array<any>
+    const alreadyDev = ecoDirs.some((e) => e?.dir === publicDir)
+    if (!alreadyDev) {
+      ecoDirs.push({ key: 'misebox', title: 'Misebox ecosystem images', dir: publicDir })
+    }
 
     nuxt.hook('ready', () => {
       if (process.env.FIREUX_DEBUG_LAYERS) {

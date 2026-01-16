@@ -4,7 +4,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <OrganismsProfilesAgentCTA />
-      <OrganismsProfilesAgentCollectionManager :cards="cards" :total="total" />
+      <OrganismsProfilesAgentCollectionManager :cards="cards" />
     </UPageBody>
   </UPage>
 </template>
@@ -47,11 +47,10 @@ const cards = computed(() => {
   const globalCards = (globalAgents.value ?? [])
     .map((entry) => makeCard(entry as any))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
-  const localCards = (localAgents.value ?? [])
+  const localCards = (localAgents?.value ?? [])
     .map((entry) => makeCard(entry as any))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
   return [...localCards, ...globalCards]
 })
 
-const total = computed(() => cards.value.length)
 </script>

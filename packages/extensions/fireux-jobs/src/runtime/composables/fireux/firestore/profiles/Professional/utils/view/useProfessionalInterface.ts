@@ -11,12 +11,17 @@ export namespace ProfessionalCard {
     id: string
     to: string
 
+    // Media (empty string means unset)
     avatarUrl: string
 
+    // Primary display fields
     displayName: string
     tagline: string
+
+    // Status/label chips
     badges: string[]
 
+    // Summary fields for list views
     bioShort: string
     specialtiesCsv: string
     locationsCsv: string

@@ -5,15 +5,20 @@ export namespace BlogCard {
     id: string
     to: string
 
-    // Canon pill fields
+    // Media (empty string means unset)
     avatarUrl: string
+
+    // Primary display fields
     subtitle: string
 
     title: string
     excerpt: string
     author: string
 
+    // Secondary media (empty string means unset)
     imageUrl: string
+
+    // Status/label chips
     badges: string[]
   }
 }

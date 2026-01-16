@@ -3,34 +3,28 @@ import type { BasePlace, PlaceSource } from '../../../../../../../models/objects
 export type PlaceBase = BasePlace
 
 export namespace PlaceCard {
-  export type Cell = {
-    id: string
-    name: string
-    formatted_address: string
-    imageUrl: string
-    source: PlaceSource
-  }
-
-  export type Pill = {
-    name: string
-    imageUrl: string
-  }
-
   export type Card = {
     id: string
     to: string
 
-    // Canon pill fields
+    // Media (empty string means unset)
     avatarUrl: string
+
+    // Primary display fields
     title: string
     subtitle: string
-    badges: string[]
 
-    // Media (empty string means unset)
-    imageUrl: string
+    // Status/label chips
+    badges: string[]
 
     name: string
     formattedAddress: string
+
+    // Secondary media (empty string means unset)
+    imageUrl: string
+
+    // Source metadata
+    source?: PlaceSource
   }
 }
 
@@ -42,13 +36,15 @@ export function usePlacesInterface() {
 
       avatarUrl: place.place_image ?? '',
       title: place.name,
-      subtitle: place.formatted_address,
+      subtitle: place.formatted_address ?? '',
       badges: [],
+
+      name: place.name,
+      formattedAddress: place.formatted_address ?? '',
 
       imageUrl: place.place_image ?? '',
 
-      name: place.name,
-      formattedAddress: place.formatted_address,
+      source: place.source,
     }
   }
 

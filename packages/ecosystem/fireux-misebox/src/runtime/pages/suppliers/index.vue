@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <OrganismsProfilesSupplierCTA />
-      <OrganismsProfilesSupplierCollectionManager :cards="cards" :total="total" />
+      <OrganismsProfilesSupplierCollectionManager :cards="cards" />
     </UPageBody>
   </UPage>
 </template>
@@ -48,11 +48,10 @@ const cards = computed(() => {
   const globalCards = (globalSuppliers.value ?? [])
     .map((entry) => makeCard(entry as SupplierCore, (entry as any)?.user ?? null))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
-  const localCards = (localSuppliers.value ?? [])
+  const localCards = (localSuppliers?.value ?? [])
     .map((entry) => makeCard(entry as SupplierCore, (entry as any)?.user ?? null))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
   return [...localCards, ...globalCards]
 })
 
-const total = computed(() => cards.value.length)
 </script>

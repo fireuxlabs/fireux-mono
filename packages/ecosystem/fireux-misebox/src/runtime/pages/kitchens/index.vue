@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <OrganismsObjectsKitchenCTA />
-      <OrganismsObjectsKitchenCollectionManager :cards="cards" :total="total" />
+      <OrganismsObjectsKitchenCollectionManager :cards="cards" />
     </UPageBody>
   </UPage>
 </template>
@@ -50,5 +50,4 @@ const cards = computed(() =>
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 )
 
-const total = computed(() => cards.value.length)
 </script>

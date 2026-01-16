@@ -3,7 +3,7 @@
     <div class="flex items-start gap-3">
       <div class="relative">
         <UAvatar
-          :src="place.place_image || undefined"
+          :src="resolvedImageUrl || undefined"
           :alt="place.name"
           class="bg-white dark:bg-white"
           size="lg"
@@ -61,6 +61,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { usePlaceLogoState } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos';
 import type { PlaceBase as BasePlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 
 const emit = defineEmits<{
@@ -75,4 +76,11 @@ const props = defineProps<{
 }>()
 
 const isBusy = computed(() => !!props.confirming || !!props.disabled)
+
+const placeRef = computed(() => props.place)
+const { avatar } = usePlaceLogoState(placeRef)
+
+const resolvedImageUrl = computed(
+  () => props.place.place_image || avatar.value || ''
+)
 </script>

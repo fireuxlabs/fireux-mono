@@ -3,7 +3,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <OrganismsObjectsPlaceCTA :type="placeType" @confirmed="onPlaceCreated" />
-      <OrganismsObjectsPlaceCollectionManager :cards="placeCards" :total="totalCount" />
+      <OrganismsObjectsPlaceCollectionManager :cards="placeCards" />
     </UPageBody>
   </UPage>
 </template>
@@ -62,8 +62,6 @@ const placeCards = computed(() =>
     .map((place) => makeCard(place as any))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 )
-
-const totalCount = computed(() => placeCards.value.length)
 
 async function onPlaceCreated() {
   // Nudge the route so the list refreshes immediately in dev.

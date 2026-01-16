@@ -23,15 +23,15 @@
         class="w-full justify-start"
         @click="emit('select', cell)"
       >
-        <OrganismsObjectsPlaceCardsCell v-bind="cell" />
+        <OrganismsObjectsPlaceCardsCell v-bind="cell" :show-source="true" />
       </UButton>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
-import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import { computed, toRefs } from 'vue';
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 
 const SHORTLIST_LIMIT = 4
 

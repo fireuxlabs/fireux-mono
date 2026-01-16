@@ -11,12 +11,17 @@ export namespace AgentCard {
     id: string
     to: string
 
+    // Media (empty string means unset)
     avatarUrl: string
 
+    // Primary display fields
     displayName: string
     tagline: string
+
+    // Status/label chips
     badges: string[]
 
+    // Short bio shown in lists
     bioShort: string
 
     // IMPORTANT: only render contactEmail on authorized UI surfaces.

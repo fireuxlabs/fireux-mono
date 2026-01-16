@@ -1,5 +1,5 @@
-import { defineNuxtConfig } from 'nuxt/config'
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineNuxtConfig } from 'nuxt/config'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'misebox',
@@ -8,15 +8,8 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Misebox',
   role: 'global',
   modules: [
-    [
-      'fireux-places',
-      {
-        types: ['kitchen', 'company'],
-        googleAutocompleteTypeFilters: {
-          kitchen: ['restaurant', 'cafe', 'food_truck'],
-        },
-      },
-    ],
+    'fireux-places',
+    'fireux-companies',
     'fireux-kitchens',
     'fireux-jobs',
     'fireux-products',
