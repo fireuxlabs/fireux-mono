@@ -2,7 +2,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { useFirestore } from 'vuefire'
-import type { Kitchen, KitchenCreateInput } from '../../../../../../models/objects/kitchen.model'
+import type { KitchenCreateInput } from '../../../../../../models/objects/kitchen.model'
 
 const COLLECTION_PATH = 'kitchens'
 
@@ -25,7 +25,7 @@ export function useKitchenCreate() {
       throw new Error(`[useKitchenCreate] kitchen already exists: ${id}`)
     }
 
-    await setDocument<Kitchen>(
+    await setDocument<KitchenCreateInput>(
       COLLECTION_PATH,
       id,
       {

@@ -114,6 +114,7 @@ definePageMeta({
 
 const { companies } = useCompanyFetch()
 const { card: makeCard } = useCompanyInterface()
+const { copyJSON, copying } = useDevClipboard()
 
 const companyList = computed<CompanyModel[]>(() => companies.value ?? [])
 

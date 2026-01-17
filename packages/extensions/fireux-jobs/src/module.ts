@@ -18,11 +18,11 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     configKey: 'fireuxJobs',
   },
   defaults: { prefix: 'Fire' },
-  async setup(options, nuxt) {
+  async setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
     configureRuntime(nuxt, 'jobs')
     configurePlugins(resolver)
-    configureComponents(resolver, options)
+    configureComponents(resolver)
     configureComposables(resolver)
     configureLayouts(resolver, nuxt)
     configurePages(resolver, nuxt)

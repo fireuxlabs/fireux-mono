@@ -15,8 +15,22 @@ import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
  * - Drift is detected by comparing data ↔ model shape
  */
 
+export type KitchenShape = FireuxAuthored & {
+  /** Canonical Place ID (also the Firestore document ID). */
+  id: string
+
+  name: string
+  formatted_address: string
+  lat: number
+  lng: number
+  avatar: string
+
+  /** Optional kitchen-specific details (empty string means unset) */
+  website: string
+}
+
 // 🔑 Runtime + canonical shape (source of truth)
-export const Kitchen = {
+export const Kitchen: KitchenShape = {
   /** Canonical Place ID (also the Firestore document ID). */
   id: '',
 
@@ -33,12 +47,10 @@ export const Kitchen = {
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
+}
 
 // ✅ Type derived from the runtime model (no duplication)
-export type Kitchen = FireuxAuthored & {
-  [K in keyof typeof Kitchen]: (typeof Kitchen)[K]
-}
+export type Kitchen = KitchenShape
 
 export type KitchenCreateInput = Omit<Kitchen, keyof FireuxAuthored>
 export type KitchenUpdateInput = Partial<Omit<KitchenCreateInput, 'id'>>

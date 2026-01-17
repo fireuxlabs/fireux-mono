@@ -9,7 +9,25 @@ import { chefConfig } from './supporting'
  * App doc:   apps/{appId}/chefs/{uid}
  */
 
-export const ChefCore = {
+export type ChefCoreShape = {
+  id: string
+  title: string
+  subtitle: string
+  tagline: string
+  tags: string[]
+
+  bio_short: string
+  bio_long: string
+  specialties: string[]
+  locations: string[]
+  organization_name: string
+
+  creator_id: string
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+}
+
+export const ChefCore: ChefCoreShape = {
   id: '',
   title: '',
   subtitle: '',
@@ -25,22 +43,25 @@ export const ChefCore = {
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
-
-export type ChefCore = {
-  [K in keyof typeof ChefCore]: (typeof ChefCore)[K]
 }
 
-export const ChefApp = {
+export type ChefCore = ChefCoreShape
+
+export type ChefAppShape = {
+  id: string
+  creator_id: string
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+}
+
+export const ChefApp: ChefAppShape = {
   id: '',
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
-
-export type ChefApp = {
-  [K in keyof typeof ChefApp]: (typeof ChefApp)[K]
 }
+
+export type ChefApp = ChefAppShape
 
 export { chefConfig }
 

@@ -15,8 +15,21 @@ import type { FireuxAuthored } from './meta.model'
  * - Runtime object is the single source of truth
  */
 
+export type UserShape = FireuxAuthored & {
+  id: string
+  display_name: string
+  avatar: string
+  handle: string
+  email: string
+  bio: string
+  profiles: string[]
+  userOf: string[]
+  adminOf: string[]
+  notifications: UserNotification[]
+}
+
 // Runtime canonical shape
-export const User = {
+export const User: UserShape = {
   id: '',
 
   display_name: '',
@@ -37,26 +50,31 @@ export const User = {
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
+}
 
 // Type derived from runtime model
-export type User = FireuxAuthored & {
-  [K in keyof typeof User]: (typeof User)[K]
-}
+export interface User extends UserShape {}
 
 /**
  * App-specific user overlay
  * Path: /apps/<appId>/users/<userId>
  */
-export const AppUser = {
+export type AppUserShape = {
+  id: string
+  role: 'user' | 'admin'
+  creator_id: string
+  notifications: UserNotification[]
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+}
+
+export const AppUser: AppUserShape = {
   id: '',
   role: 'user' as 'user' | 'admin',
   creator_id: '',
   notifications: [] as UserNotification[],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
-
-export type AppUser = {
-  [K in keyof typeof AppUser]: (typeof AppUser)[K]
 }
+
+export interface AppUser extends AppUserShape {}

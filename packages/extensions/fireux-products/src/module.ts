@@ -1,8 +1,8 @@
 import {
   ensureRuntimeConfigBuckets,
-  ensureRuntimeLayer,
+  ensureRuntimeLayerFromPath,
   exposeRuntimeAlias,
-} from 'fireux-core/config/nuxt/nuxt-runtime-layer'
+} from 'fireux-core/config/module/runtime-layer'
 import {
   addImportsDir,
   createResolver,
@@ -63,7 +63,7 @@ export default defineNuxtModule({
 })
 
 function registerProductPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
-  ensureRuntimeLayer(nuxt, runtimeDir)
+  ensureRuntimeLayerFromPath(nuxt, runtimeDir)
 
   const pagesToInject = [
     {

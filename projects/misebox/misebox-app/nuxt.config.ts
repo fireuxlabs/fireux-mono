@@ -19,7 +19,7 @@ const fireuxConfig = defineFireuxConfig({
 })
 
 export default defineNuxtConfig({
-  ...fireuxConfig,
+  ...(fireuxConfig as any),
   content: {
     _localDatabase: {
       type: 'sqlite',
@@ -31,4 +31,4 @@ export default defineNuxtConfig({
     },
   },
   css: [...(fireuxConfig.css ?? []), '@/assets/styles/main.css'],
-})
+} as any)

@@ -13,7 +13,27 @@ import {
  * App doc:   apps/{appId}/professionals/{uid}
  */
 
-export const ProfessionalCore = {
+export type ProfessionalCoreShape = {
+  id: string
+  title: string
+  subtitle: string
+  tagline: string
+  tags: string[]
+
+  health_certifications: string[]
+  bio_short: string
+  bio_long: string
+  specialties: string[]
+  locations: string[]
+  relevant_experience: RelevantExperienceItem[]
+  other_experience: OtherExperienceItem[]
+
+  creator_id: string
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+}
+
+export const ProfessionalCore: ProfessionalCoreShape = {
   id: '',
   title: '',
   subtitle: '',
@@ -31,21 +51,24 @@ export const ProfessionalCore = {
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
-
-export type ProfessionalCore = {
-  [K in keyof typeof ProfessionalCore]: (typeof ProfessionalCore)[K]
 }
 
-export const ProfessionalApp = {
+export type ProfessionalCore = ProfessionalCoreShape
+
+export type ProfessionalAppShape = {
+  id: string
+  creator_id: string
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+}
+
+export const ProfessionalApp: ProfessionalAppShape = {
   id: '',
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
-
-export type ProfessionalApp = {
-  [K in keyof typeof ProfessionalApp]: (typeof ProfessionalApp)[K]
 }
+
+export type ProfessionalApp = ProfessionalAppShape
 
 export { professionalConfig }

@@ -288,7 +288,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
     selected.value = {
       id,
       name: cell.name,
-      formatted_address: cell.formatted_address || '',
+      formatted_address: cell.formattedAddress || '',
       lat: 0,
       lng: 0,
       source: cell.source,

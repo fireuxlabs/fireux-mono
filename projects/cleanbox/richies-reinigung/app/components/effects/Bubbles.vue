@@ -5,6 +5,9 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useBubbles } from '../../composables/useBubbles'
+
 const { initializeBubbles } = useBubbles()
 
 onMounted(() => {

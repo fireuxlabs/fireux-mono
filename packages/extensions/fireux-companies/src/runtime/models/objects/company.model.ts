@@ -15,8 +15,29 @@ import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
  * - Drift is detected by comparing data ↔ model shape
  */
 
+export type CompanyShape = FireuxAuthored & {
+  /** Canonical Place ID (also the Firestore document ID). */
+  id: string
+
+  /** Display name */
+  name: string
+
+  /** Canonical address snapshot */
+  formatted_address: string
+
+  /** Canonical location snapshot */
+  lat: number
+  lng: number
+
+  /** Avatar snapshot (usually places/{id}/avatar storage URL) */
+  avatar: string
+
+  /** Optional website (empty string means unset) */
+  website: string
+}
+
 // 🔑 Runtime + canonical shape (source of truth)
-export const Company = {
+export const Company: CompanyShape = {
   /** Canonical Place ID (also the Firestore document ID). */
   id: '',
 
@@ -40,12 +61,10 @@ export const Company = {
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
+}
 
 // ✅ Type derived from the runtime model (no duplication)
-export type Company = FireuxAuthored & {
-  [K in keyof typeof Company]: (typeof Company)[K]
-}
+export type Company = CompanyShape
 
 export type CompanyCreateInput = Omit<Company, keyof FireuxAuthored>
 export type CompanyUpdateInput = Partial<Omit<CompanyCreateInput, 'id'>>

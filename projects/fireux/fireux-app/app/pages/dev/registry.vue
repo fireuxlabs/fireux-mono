@@ -109,9 +109,20 @@
 </template>
 
 <script setup lang="ts">
-import DevJsonPanel from 'fireux-core/runtime/components/dev/JsonPanel.vue'
+import { computed, ref, watch } from 'vue'
+import { useFetch } from 'nuxt/app'
 
-const { data, pending, error, refresh } = await useFetch('/api/registry', {
+type RegistryResponse = {
+  ok: boolean
+  generatedAt: string | null
+  modules: unknown[]
+  apps: unknown[]
+  ecosystems: unknown[]
+}
+
+const { data, pending, error, refresh } = await useFetch<RegistryResponse>(
+  '/api/registry',
+  {
   server: true,
   default: () => ({
     ok: false,
@@ -120,7 +131,8 @@ const { data, pending, error, refresh } = await useFetch('/api/registry', {
     apps: [],
     ecosystems: [],
   }),
-})
+  }
+)
 
 const copied = ref(false)
 

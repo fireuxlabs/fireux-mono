@@ -88,6 +88,6 @@ const profileLabel = computed(() => {
   return `${profileComplete.value}%`
 })
 
-const wrapperFor = (card: ReturnType<typeof card> | null) => (card?.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: ReturnType<typeof card> | null) => (card?.to ? { to: card.to } : {})
+const wrapperFor = (pill: { to?: string | null } | null) => (pill?.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (pill: { to?: string | null } | null) => (pill?.to ? { to: pill.to } : {})
 </script>

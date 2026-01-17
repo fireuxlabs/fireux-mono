@@ -19,6 +19,7 @@ export function useSupplierQuickCreate() {
         id: 'supplier-mock-id',
         title: name,
         subtitle: '',
+        creator_id: 'supplier-mock-id',
         created_at: emptyTimestamp,
         updated_at: emptyTimestamp,
         tags: [],

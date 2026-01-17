@@ -9,7 +9,33 @@ import { supplierConfig } from './supporting'
  * App doc:   apps/{appId}/suppliers/{uid}
  */
 
-export const SupplierCore = {
+export type SupplierCoreShape = {
+  id: string
+  title: string
+  subtitle: string
+  tagline: string
+  tags: string[]
+
+  bio_short: string
+  bio_long: string
+  specialties: string[]
+  categories: string[]
+  organization_name: string
+
+  business_type: string
+  locations: Array<{ city: string; country: string }>
+  years_in_business: number
+  products_offered: string[]
+  employee_count: number
+  certifications: string[]
+  delivery_range: number
+
+  creator_id: string
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+}
+
+export const SupplierCore: SupplierCoreShape = {
   id: '',
   title: '',
   subtitle: '',
@@ -33,22 +59,25 @@ export const SupplierCore = {
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
-
-export type SupplierCore = {
-  [K in keyof typeof SupplierCore]: (typeof SupplierCore)[K]
 }
 
-export const SupplierApp = {
+export type SupplierCore = SupplierCoreShape
+
+export type SupplierAppShape = {
+  id: string
+  creator_id: string
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+}
+
+export const SupplierApp: SupplierAppShape = {
   id: '',
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
-
-export type SupplierApp = {
-  [K in keyof typeof SupplierApp]: (typeof SupplierApp)[K]
 }
+
+export type SupplierApp = SupplierAppShape
 
 export { supplierConfig }
 

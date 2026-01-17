@@ -103,6 +103,7 @@
 </template>
 
 <script setup lang="ts">
+import { useState } from 'nuxt/app'
 import type { FireuxEcosystemRegistryDoc } from 'fireux-core/runtime/models/core/ecosystem.model'
 
 type EcosystemStage = 'active' | 'rolling'

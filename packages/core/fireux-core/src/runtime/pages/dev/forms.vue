@@ -326,8 +326,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
 import { doc, getDoc } from 'firebase/firestore'
+import { computed, ref, watchEffect } from 'vue'
 import { useFirestore } from 'vuefire'
 import { useFirestoreCreate } from '../../composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'

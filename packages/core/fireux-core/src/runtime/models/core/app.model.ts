@@ -19,8 +19,44 @@ import type { AppRole, AppSocialLinks } from './app.supporting'
  * - Drift is detected by comparing data ↔ model shape
  */
 
+export type AppShape = FireuxAuthored & {
+  // Identity
+  id: string
+
+  // Display
+  app_name: string
+  app_short_name: string
+
+  // Scope + lineage
+  role: AppRole
+  ecosystem: string
+
+  // Governance
+  join_requests: string[]
+  admin_ids: string[]
+  created_by: string
+
+  // Content
+  tagline: string
+  description: string
+  short_bio: string
+  long_bio: string
+
+  // Social
+  social_links: AppSocialLinks
+
+  // Derived
+  user_count: number
+
+  // Brand / media
+  thumbnail_url: string
+  logo_url: string
+  wordmark_light_url: string
+  wordmark_dark_url: string
+}
+
 // 🔑 Runtime + canonical shape (source of truth)
-export const App = {
+export const App: AppShape = {
   // Identity
   id: '',
 
@@ -59,9 +95,7 @@ export const App = {
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
+}
 
 // ✅ Type derived from the runtime model (no duplication)
-export type App = FireuxAuthored & {
-  [K in keyof typeof App]: (typeof App)[K]
-}
+export type App = AppShape

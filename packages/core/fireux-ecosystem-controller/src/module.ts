@@ -2,9 +2,9 @@ import { defineNuxtModule, createResolver, addImportsDir } from 'nuxt/kit'
 import type {} from 'nuxt/schema'
 import {
   ensureRuntimeConfigBuckets,
-  ensureRuntimeLayer,
+  ensureRuntimeLayerFromPath,
   exposeRuntimeAlias,
-} from 'fireux-core/config/nuxt/nuxt-runtime-layer'
+} from 'fireux-core/config/module/runtime-layer'
 
 
 declare module 'nuxt/schema' {
@@ -37,7 +37,7 @@ export default defineNuxtModule({
     addImportsDir(resolver.resolve('./runtime/composables'))
 
     // Layer runtime pages (e.g., /apps)
-    ensureRuntimeLayer(nuxt, runtimeDir)
+    ensureRuntimeLayerFromPath(nuxt, runtimeDir)
 
     exposeRuntimeAlias(nuxt, '#fireux-ecosystem-controller', runtimeDir)
   },

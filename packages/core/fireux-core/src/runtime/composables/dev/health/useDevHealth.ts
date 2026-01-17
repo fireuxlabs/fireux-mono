@@ -6,8 +6,8 @@ import { App as AppModel } from '../../../models/core/app.model'
 import { useAppUsers } from '../../fireux/firestore/core/app/fetch/useAppUsers'
 import { useUserCollection } from '../../fireux/firestore/core/user/fetch/useUserCollection'
 import { useFirestoreRead } from '../../fireux/firestore/operations/useFirestoreRead'
-import type { App as AppType } from '../../../../models/core/app.model'
-import type { AppUser, User } from '../../../../models/core/user.model'
+import type { App as AppType } from '../../../models/core/app.model'
+import type { AppUser, User } from '../../../models/core/user.model'
 import type {
   DevHealthApi,
   DevHealthIssue,
@@ -182,8 +182,11 @@ export function useDevHealth(): DevHealthApi {
         issues,
         scopes: ['apps', 'runtime'],
         stats: {
-          driftIssues:
-            issues.find((issue) => issue.id === 'app-drift')?.context?.drift?.length ?? 0,
+          driftIssues: (() => {
+            const drift = issues.find((issue) => issue.id === 'app-drift')?.context
+            const list = (drift as { drift?: unknown })?.drift
+            return Array.isArray(list) ? list.length : 0
+          })(),
         },
       })
     }

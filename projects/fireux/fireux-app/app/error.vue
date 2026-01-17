@@ -59,7 +59,8 @@
 </template>
 
 <script setup lang="ts">
-import type { NuxtError } from 'nuxt/app'
+import { computed } from 'vue'
+import { clearError, type NuxtError } from 'nuxt/app'
 
 const props = defineProps<{ error: NuxtError }>()
 

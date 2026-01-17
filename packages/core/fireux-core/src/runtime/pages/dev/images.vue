@@ -103,8 +103,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { App } from '../../models/core/app.model'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
+import type { App } from '../../models/core/app.model'
 
 type ImageEntry = {
   urlPath: string

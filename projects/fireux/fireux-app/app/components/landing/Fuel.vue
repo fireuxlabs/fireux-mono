@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useNuxtApp } from '#imports'
+import { useNuxtApp } from 'nuxt/app'
 
 const nuxtApp = useNuxtApp()
 const colorMode = nuxtApp.$colorMode as { value: string } | undefined

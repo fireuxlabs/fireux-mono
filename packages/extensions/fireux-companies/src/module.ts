@@ -2,9 +2,9 @@ import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import {
   ensureRuntimeConfigBuckets,
-  ensureRuntimeLayer,
+  ensureRuntimeLayerFromPath,
   exposeRuntimeAlias,
-} from 'fireux-core/config/nuxt/nuxt-runtime-layer'
+} from 'fireux-core/config/module/runtime-layer'
 import { configureComponents } from './config/module/components-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureLayouts } from './config/module/layouts-config'
@@ -54,7 +54,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
 export default module
 
 function registerCompanyPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
-  ensureRuntimeLayer(nuxt, runtimeDir)
+  ensureRuntimeLayerFromPath(nuxt, runtimeDir)
 
   const pagesToInject = [
     {

@@ -14,8 +14,26 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /** Canonical sources are 'google' (provider/transient) and 'firebase' (stored). */
 export type PlaceSource = 'google' | 'firebase'
 
+export type PlaceShape = FireuxAuthored & {
+	/** Canonical id (== Google place_id; Firestore document id). */
+	id: string
+
+	name: string
+	formatted_address: string
+	lat: number
+	lng: number
+
+	/** Canonical place image for UI (empty string means unset). */
+	place_image: string
+
+	source: PlaceSource
+
+	/** “How we found this place” (kept for UX + duplicate avoidance). */
+	search_term: string
+}
+
 // 🔑 Runtime + canonical shape for the STORED Firestore Place
-export const Place = {
+export const Place: PlaceShape = {
 	/** Canonical id (== Google place_id; Firestore document id). */
 	id: '',
 
@@ -36,12 +54,10 @@ export const Place = {
 	creator_id: '',
 	created_at: {} as FirebaseTimestamp,
 	updated_at: {} as FirebaseTimestamp,
-} as const
+}
 
 // ✅ Type derived from the runtime model (stored Place)
-export type Place = FireuxAuthored & {
-	[K in keyof typeof Place]: (typeof Place)[K]
-}
+export type Place = PlaceShape
 
 /** Base (shared by Google & Firestore). */
 export type BasePlace = Pick<

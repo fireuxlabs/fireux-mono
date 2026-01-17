@@ -9,7 +9,7 @@ import { useState } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import type { Job, JobStatus } from '../../../../../models/job.model'
+import type { JobCreateInput, JobStatus } from '../../../../../models/job.model'
 
 export type JobCreateForm = {
   title: string
@@ -17,7 +17,7 @@ export type JobCreateForm = {
   description: string
 }
 
-export type JobCreateInput = {
+export type JobFormInput = {
   title: string
   status: JobStatus
   description?: string
@@ -61,7 +61,7 @@ export function useJobCreate() {
     form.value = scaffoldJobForm()
   }
 
-  const createJob = async (input: JobCreateInput): Promise<string> => {
+  const createJob = async (input: JobFormInput): Promise<string> => {
     const nextTitle = input.title ?? ''
     const nextStatus = input.status ?? 'open'
     const nextDescription = input.description ?? ''
@@ -96,7 +96,7 @@ export function useJobCreate() {
     const base = uuid ?? `${Date.now()}_${Math.random().toString(16).slice(2)}`
     const id = `job_${base}`
 
-    const payload: Job = {
+    const payload: JobCreateInput = {
       id,
       app_id: appId,
       created_by: uid,
@@ -110,7 +110,7 @@ export function useJobCreate() {
       description,
     }
 
-    await setDocument<Job>('jobs', id, payload, { raw: false })
+    await setDocument<JobCreateInput>('jobs', id, payload, { raw: false })
     return id
   }
 

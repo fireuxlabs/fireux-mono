@@ -9,7 +9,24 @@ import { agentConfig } from './supporting'
  * App doc:   apps/{appId}/agents/{uid}
  */
 
-export const AgentCore = {
+export type AgentCoreShape = {
+  id: string
+  title: string
+  subtitle: string
+  tagline: string
+  tags: string[]
+
+  bio_short: string
+  contact_email: string
+  contact_phone: string
+  website_url: string
+
+  creator_id: string
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+}
+
+export const AgentCore: AgentCoreShape = {
   id: '',
   title: '',
   subtitle: '',
@@ -24,22 +41,25 @@ export const AgentCore = {
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
-
-export type AgentCore = {
-  [K in keyof typeof AgentCore]: (typeof AgentCore)[K]
 }
 
-export const AgentApp = {
+export type AgentCore = AgentCoreShape
+
+export type AgentAppShape = {
+  id: string
+  creator_id: string
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+}
+
+export const AgentApp: AgentAppShape = {
   id: '',
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} as const
-
-export type AgentApp = {
-  [K in keyof typeof AgentApp]: (typeof AgentApp)[K]
 }
+
+export type AgentApp = AgentAppShape
 
 export { agentConfig }
 

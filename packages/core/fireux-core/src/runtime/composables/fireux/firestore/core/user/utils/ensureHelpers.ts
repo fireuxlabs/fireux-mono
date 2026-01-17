@@ -94,6 +94,7 @@ export async function ensureCoreUserDocument(
     userOf: [],
     adminOf: [],
     notifications: [],
+    creator_id: uid,
     created_at: serverTimestamp() as unknown as FirebaseTimestamp,
     updated_at: serverTimestamp() as unknown as FirebaseTimestamp,
   }

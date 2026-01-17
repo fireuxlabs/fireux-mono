@@ -1,32 +1,19 @@
-import { addComponentsDir, type Resolver } from '@nuxt/kit'
-import { existsSync } from 'node:fs'
+import type { Resolver } from '@nuxt/kit'
+import {
+  registerComponentAliases,
+  registerComponentsDir,
+} from 'fireux-core/config/module/module-helpers'
 
-/**
- * Register runtime components for this module.
- */
-export function configureComponents(
-	resolver: Resolver,
-	options: { prefix?: string } = {}
-) {
-	const baseDir = resolver.resolve('./runtime/components')
-	if (existsSync(baseDir)) {
-		addComponentsDir({
-			path: baseDir,
-			pattern: '**/*.vue',
-			prefix: options.prefix ?? 'Fire',
-			global: false,
-			pathPrefix: false,
-		})
-	}
+export function configureComponents(resolver: Resolver) {
+  registerComponentsDir(resolver, './runtime/components/organisms/entities/Job', {
+    global: true,
+    pathPrefix: true,
+    prefix: 'Job',
+  })
 
-	const jobDir = resolver.resolve('./runtime/components/organisms/entities/Job')
-	if (existsSync(jobDir)) {
-		addComponentsDir({
-			path: jobDir,
-			pattern: '**/*.vue',
-			global: true,
-			pathPrefix: true,
-			prefix: 'Job',
-		})
-	}
+  registerComponentAliases(
+    resolver,
+    './runtime/components/organisms/entities/Job',
+    'Job'
+  )
 }

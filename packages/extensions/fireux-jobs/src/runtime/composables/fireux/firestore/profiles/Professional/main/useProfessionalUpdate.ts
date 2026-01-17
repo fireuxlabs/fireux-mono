@@ -146,7 +146,7 @@ export function useProfessionalUpdate(
         formatted_address: '',
         lat: 0,
         lng: 0,
-        image_url: '',
+        place_image: '',
         source: 'firebase',
         search_term: placeId,
       }
