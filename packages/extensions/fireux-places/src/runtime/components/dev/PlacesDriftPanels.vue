@@ -76,9 +76,6 @@
   </DevPane>
 
   <DevPane
-    title="Places (JSON)"
-    description="Raw collection payload + drift map (copyable)."
-    debug-title="Dev · Places (Ext) · All data"
     :debug-data="allJsonPayload"
     :default-open="false"
   />

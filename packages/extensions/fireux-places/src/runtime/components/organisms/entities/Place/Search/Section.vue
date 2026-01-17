@@ -30,7 +30,6 @@
     <component
       :is="DevJson"
       v-if="showDebug && DevJson"
-      title="Places Search Debug"
       :data="debugPayload"
     />
   </section>
