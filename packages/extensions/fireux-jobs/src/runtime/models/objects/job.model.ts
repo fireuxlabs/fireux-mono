@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts
 
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
  * Job Firestore shape only.

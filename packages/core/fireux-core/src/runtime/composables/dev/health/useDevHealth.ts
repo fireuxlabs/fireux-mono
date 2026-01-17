@@ -1,13 +1,13 @@
-import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
-import { useFireUXConfig } from '../../fireux/app/FireUXConfig'
-import { useApp } from '../../fireux/firestore/core/app/useApp'
+import { computed } from 'vue'
+import type { App as AppType } from '../../../models/core/app.model'
 import { App as AppModel } from '../../../models/core/app.model'
+import type { AppUser, User } from '../../../models/core/user.model'
+import { useFireUXConfig } from '../../fireux/app/FireUXConfig'
 import { useAppUsers } from '../../fireux/firestore/core/app/fetch/useAppUsers'
+import { useApp } from '../../fireux/firestore/core/app/useApp'
 import { useUserCollection } from '../../fireux/firestore/core/user/fetch/useUserCollection'
 import { useFirestoreRead } from '../../fireux/firestore/operations/useFirestoreRead'
-import type { App as AppType } from '../../../models/core/app.model'
-import type { AppUser, User } from '../../../models/core/user.model'
 import type {
   DevHealthApi,
   DevHealthIssue,

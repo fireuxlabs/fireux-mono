@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="Create Place"
-      description="Search Google Places and confirm a place into Firestore."
+      description="Search a place, confirm it, and store the canonical record for this runtime."
     />
 
     <UPageBody class="pagebody space-y-6">
@@ -31,7 +31,7 @@ import { normalizePlaceType } from '../../composables/fireux/firestore/objects/p
 definePageMeta({
   layout: 'default',
   title: 'Create Place',
-  description: 'Confirm a place into Firestore.',
+  description: 'Confirm a canonical place for this runtime.',
   nav: {
     key: 'places-create',
     label: 'Create place',

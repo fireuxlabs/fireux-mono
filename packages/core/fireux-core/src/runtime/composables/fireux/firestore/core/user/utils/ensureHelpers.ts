@@ -1,24 +1,24 @@
 import {
-  arrayUnion,
-  arrayRemove,
-  doc,
-  getDoc,
-  increment,
-  serverTimestamp,
-  writeBatch,
-  type DocumentSnapshot,
+    arrayRemove,
+    arrayUnion,
+    doc,
+    getDoc,
+    increment,
+    serverTimestamp,
+    writeBatch,
+    type DocumentSnapshot,
 } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 
-import { useFirestoreManager } from '../../../operations/useFirestoreManager'
-import { useRequireUser } from '../../../../firebase/useRequireUser'
+import type { FirebaseTimestamp } from '../../../../../../../types/firebase'
 import type { App } from '../../../../../../models/core/app.model'
 import type {
-  AppUser,
-  User,
+    AppUser,
+    User,
 } from '../../../../../../models/core/user.model'
 import type { NotificationScope, UserNotification } from '../../../../../../models/core/user.supporting'
-import type { FirebaseTimestamp } from '../../../../../../../types/firebase'
+import { useRequireUser } from '../../../../firebase/useRequireUser'
+import { useFirestoreManager } from '../../../operations/useFirestoreManager'
 
 export type EnsureCoreOptions = {
   displayName?: string

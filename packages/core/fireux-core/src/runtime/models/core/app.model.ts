@@ -1,8 +1,8 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { FireuxAuthored } from './meta.model'
 import type { AppRole, AppSocialLinks } from './app.supporting'
+import type { FireuxAuthored } from './meta.model'
 
 /**
  * Core Firestore App document

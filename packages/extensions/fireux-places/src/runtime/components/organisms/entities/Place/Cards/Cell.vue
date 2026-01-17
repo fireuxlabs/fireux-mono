@@ -48,7 +48,7 @@ type Props = Pick<PlaceCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'i
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  source: 'firebase',
+  source: 'fireux',
   prop: '',
   showSubtitle: true,
   showSource: false,

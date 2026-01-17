@@ -1,7 +1,7 @@
 <template>
   <UPageCTA
     title="Create a place"
-    description="Search, confirm, then store a canonical place for this runtime."
+    description="Search a place, confirm it, and store the canonical record for this runtime."
     variant="naked"
   >
     <template #default>

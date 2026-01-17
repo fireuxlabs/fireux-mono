@@ -50,7 +50,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
 
     const payload = {
       id,
-      source: 'firebase',
+      source: 'fireux',
       name,
       formatted_address: formatted,
       place_image,

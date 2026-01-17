@@ -164,7 +164,6 @@ const filteredPayload = computed(() =>
 const allJsonPayload = computed(() => ({
   totalPlaces: totalPlaces.value,
   places: placesList.value,
-  driftById: Object.fromEntries(driftById.value),
 }))
 
 const copyFiltered = async () => {

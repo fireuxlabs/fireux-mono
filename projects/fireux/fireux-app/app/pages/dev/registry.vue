@@ -109,8 +109,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
 import { useFetch } from 'nuxt/app'
+import { computed, ref, watch } from 'vue'
 
 type RegistryResponse = {
   ok: boolean

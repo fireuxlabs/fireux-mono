@@ -1,10 +1,10 @@
-import { defineNuxtModule, createResolver, addImportsDir } from 'nuxt/kit'
-import type {} from 'nuxt/schema'
 import {
-  ensureRuntimeConfigBuckets,
-  ensureRuntimeLayerFromPath,
-  exposeRuntimeAlias,
+    ensureRuntimeConfigBuckets,
+    ensureRuntimeLayerFromPath,
+    exposeRuntimeAlias,
 } from 'fireux-core/config/module/runtime-layer'
+import { addImportsDir, createResolver, defineNuxtModule } from 'nuxt/kit'
+import type { } from 'nuxt/schema'
 
 
 declare module 'nuxt/schema' {

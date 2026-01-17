@@ -1,12 +1,12 @@
 import {
-  ensureRuntimeConfigBuckets,
-  ensureRuntimeLayerFromPath,
-  exposeRuntimeAlias,
+    ensureRuntimeConfigBuckets,
+    ensureRuntimeLayerFromPath,
+    exposeRuntimeAlias,
 } from 'fireux-core/config/module/runtime-layer'
 import {
-  addImportsDir,
-  createResolver,
-  defineNuxtModule,
+    addImportsDir,
+    createResolver,
+    defineNuxtModule,
 } from 'nuxt/kit'
 import type { Nuxt } from 'nuxt/schema'
 import { configureComponents } from './config/module/components-config'

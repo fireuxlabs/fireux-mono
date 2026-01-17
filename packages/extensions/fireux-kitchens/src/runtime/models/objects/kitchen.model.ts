@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts
 
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
  * Kitchen overlay (Place-bound)

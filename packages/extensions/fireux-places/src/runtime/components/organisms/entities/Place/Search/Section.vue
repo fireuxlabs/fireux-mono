@@ -117,7 +117,7 @@ function buildFallbackPlace(base: BasePlace, placeId: string): PlaceUpsertInput 
   const formatted = base.formatted_address ?? ''
   return {
     id: placeId,
-    source: 'firebase',
+    source: 'fireux',
     name: base.name,
     formatted_address: formatted,
     lat: base.lat,
@@ -192,12 +192,12 @@ async function onConfirm(place: BasePlace) {
   isConfirming.value = true
 
   try {
-    // If the user selects an existing Firebase place, allow confirmation
+    // If the user selects an existing FireUX place, allow confirmation
     // so downstream overlays (companies/kitchens/etc) can be created.
-    if (place.source === 'firebase') {
+    if (place.source === 'fireux') {
       const draft: PlaceUpsertInput = {
         id: placeId,
-        source: 'firebase',
+        source: 'fireux',
         name: place.name,
         formatted_address: place.formatted_address ?? '',
         lat: place.lat,

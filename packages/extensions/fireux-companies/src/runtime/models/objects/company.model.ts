@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts
 
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
  * Company overlay (Place-bound)

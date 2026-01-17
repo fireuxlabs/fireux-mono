@@ -10,50 +10,17 @@
         title="Company collection"
         description="Browse companies resolved for this runtime and filter by model drift."
       >
-        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span class="font-medium">Drift:</span>
-
-          <UButton
-            size="xs"
-            :variant="driftKind === 'missing' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setDriftKind('missing')"
-          >
-            Missing
-          </UButton>
-
-          <UButton
-            size="xs"
-            :variant="driftKind === 'extra' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setDriftKind('extra')"
-          >
-            Extra
-          </UButton>
-
-          <span class="font-medium ml-2">Filter {{ driftKind }}:</span>
-
-          <UButton
-            v-for="option in filterOptions"
-            :key="option.value"
-            size="xs"
-            :variant="selectedField === option.value ? 'solid' : 'ghost'"
-            color="primary"
-            @click="selectedField = option.value"
-          >
-            {{ option.label }}
-          </UButton>
-
-          <UButton
-            size="xs"
-            variant="outline"
-            :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-            @click="copyFiltered"
-          >
-            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-          </UButton>
-        </div>
+        <DevDriftToolbar
+          :drift-kind="driftKind"
+          :selected-field="selectedField"
+          :filter-options="filterOptions"
+          :copy-label="copying ? 'Copying…' : 'Copy drift'"
+          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+          :copy-disabled="copying"
+          @update:drift-kind="setDriftKind"
+          @update:selected-field="updateSelectedField"
+          @copy="copyFiltered"
+        />
 
         <UAlert
           v-if="!filteredCards.length"
@@ -80,11 +47,9 @@
         </div>
       </DevPane>
 
-      <DevPane
+      <DevJson
         title="Companies (JSON)"
-        description="Raw collection payload + drift map (copyable)."
-        debug-title="Dev · Companies (Ext) · All data"
-        :debug-data="allJsonPayload"
+        :data="allJsonPayload"
         :default-open="false"
       />
     </UPageBody>
@@ -92,6 +57,7 @@
 </template>
 
 <script setup lang="ts">
+import DevDriftToolbar from 'fireux-core/runtime/components/dev/DevDriftToolbar'
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
@@ -172,7 +138,6 @@ const filteredPayload = computed(() =>
 const allJsonPayload = computed(() => ({
   totalCompanies: companyList.value.length,
   companies: companyList.value,
-  driftById: Object.fromEntries(driftById.value),
 }))
 
 const copyFiltered = async () => {
@@ -185,6 +150,10 @@ const copyFiltered = async () => {
     },
     { label: 'Dev · Companies (Ext) · Filtered drift' }
   )
+}
+
+const updateSelectedField = (value: string) => {
+  selectedField.value = value
 }
 
 const wrapperFor = (card: { to?: string | null }) => (card.to ? 'NuxtLink' : 'div')

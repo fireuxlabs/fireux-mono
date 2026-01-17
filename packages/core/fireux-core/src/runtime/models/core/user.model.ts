@@ -1,8 +1,8 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/user.model.ts
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { UserNotification } from './user.supporting'
 import type { FireuxAuthored } from './meta.model'
+import type { UserNotification } from './user.supporting'
 
 /**
  * Core Firestore user document

@@ -5,16 +5,45 @@
       description="Collection-first view; filter by missing or extra fields (against the runtime Place model)."
     />
 
-    <UPageBody class="space-y-10">
-      <DevPlacesDriftPanels :places="places" />
+    <UPageBody class="space-y-6">
+      <DevModel
+        title="Place model shape"
+        :model="placeModelRuntime"
+      />
+
+      <DevDriftToolbar
+        :drift-kind="driftKind"
+        :selected-field="selectedField"
+        :filter-options="filterOptions"
+        :copy-label="copying ? 'Copying…' : 'Copy drift'"
+        :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+        :copy-disabled="copying"
+        @update:drift-kind="setDriftKind"
+        @update:selected-field="updateSelectedField"
+        @copy="copyDrift"
+      />
+
+      <PlaceCollectionManager
+        :cards="placeCards"
+        :total="totalPlaces"
+      />
+      <DevJson
+        title="Places (JSON)"
+        :data="allJsonPayload"
+        :default-open="false"
+      />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
+import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
+import { usePlacesInterface } from '../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { Place } from '../../models/objects/place.model'
+import { Place as PlaceModelRuntime } from '../../models/objects/place.model'
 
 definePageMeta({
   layout: 'dev',
@@ -30,4 +59,62 @@ definePageMeta({
 
 const { collection } = usePlaces<Place>()
 const places = computed(() => collection.value ?? [])
+
+const placeModelRuntime = PlaceModelRuntime as unknown as Record<string, unknown>
+
+const {
+  driftKind,
+  setDriftKind,
+  selectedField,
+  driftById,
+  filterOptions,
+  filteredCollection,
+} = useDevDriftFilter({
+  collection: places,
+  runtimeModel: placeModelRuntime,
+})
+
+const { card: makeCard } = usePlacesInterface()
+const placeCards = computed(() =>
+  filteredCollection.value
+    .map((place) => makeCard(place))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+
+const totalPlaces = computed(() => placeCards.value.length)
+
+const allJsonPayload = computed(() => ({
+  totalPlaces: places.value.length,
+  places: places.value,
+}))
+
+const filteredDriftPayload = computed(() =>
+  placeCards.value.map((card) => {
+    const drift = driftById.value.get(card.id) ?? { missing: [], extra: [] }
+    return {
+      id: card.id,
+      name: card.name,
+      formattedAddress: card.formattedAddress,
+      drift,
+    }
+  })
+)
+
+const { copyJSON, copying } = useDevClipboard()
+
+const copyDrift = async () => {
+  await copyJSON(
+    {
+      driftKind: driftKind.value,
+      selectedField: selectedField.value || null,
+      totalPlaces: totalPlaces.value,
+      places: filteredDriftPayload.value,
+    },
+    { label: 'Dev · Places (Ext) · Filtered drift' }
+  )
+}
+
+const updateSelectedField = (value: string) => {
+  selectedField.value = value
+}
 </script>

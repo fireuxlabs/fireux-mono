@@ -17,6 +17,17 @@ export const kindOf = (v: unknown): string => {
   return typeof v
 }
 
+const parseEnum = (value: unknown): string[] | null => {
+  if (typeof value !== 'string') return null
+  if (!value.startsWith('enum:')) return null
+  const list = value
+    .slice('enum:'.length)
+    .split('|')
+    .map((v) => v.trim())
+    .filter(Boolean)
+  return list.length ? list : null
+}
+
 export const isMissingValue = (modelValue: unknown, dataValue: unknown): boolean => {
   if (typeof modelValue === 'string') return typeof dataValue !== 'string' || dataValue.trim() === ''
   if (Array.isArray(modelValue)) return !Array.isArray(dataValue)
@@ -39,6 +50,15 @@ export const resolveDriftFromModel = (
     const modelValue = model[key]
     const dataValue = dataObj[key]
     const path = basePath ? `${basePath}.${key}` : key
+
+    const enumValues = parseEnum(modelValue)
+    if (enumValues) {
+      if (typeof dataValue !== 'string' || !enumValues.includes(dataValue)) {
+        const actual = typeof dataValue === 'string' ? dataValue : kindOf(dataValue)
+        missing.push(`${path} (enum:${enumValues.join('|')}; got ${actual})`)
+      }
+      continue
+    }
 
     if (isPlainObject(modelValue)) {
       // Treat empty objects in the model as leaf nodes.

@@ -10,50 +10,17 @@
         title="Jobs collection"
         description="Browse jobs resolved for this runtime and filter by model drift."
       >
-        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span class="font-medium">Drift:</span>
-
-          <UButton
-            size="xs"
-            :variant="jobDriftKind === 'missing' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setJobDriftKind('missing')"
-          >
-            Missing
-          </UButton>
-
-          <UButton
-            size="xs"
-            :variant="jobDriftKind === 'extra' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setJobDriftKind('extra')"
-          >
-            Extra
-          </UButton>
-
-          <span class="font-medium ml-2">Filter {{ jobDriftKind }}:</span>
-
-          <UButton
-            v-for="option in jobFilterOptions"
-            :key="option.value"
-            size="xs"
-            :variant="jobSelectedField === option.value ? 'solid' : 'ghost'"
-            color="primary"
-            @click="jobSelectedField = option.value"
-          >
-            {{ option.label }}
-          </UButton>
-
-          <UButton
-            size="xs"
-            variant="outline"
-            :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-            @click="copyFilteredJobs"
-          >
-            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-          </UButton>
-        </div>
+        <DevDriftToolbar
+          :drift-kind="jobDriftKind"
+          :selected-field="jobSelectedField"
+          :filter-options="jobFilterOptions"
+          :copy-label="copying ? 'Copying…' : 'Copy drift'"
+          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+          :copy-disabled="copying"
+          @update:drift-kind="setJobDriftKind"
+          @update:selected-field="(value) => (jobSelectedField = value)"
+          @copy="copyFilteredJobs"
+        />
 
         <UAlert
           v-if="!jobFilteredCards.length"
@@ -80,11 +47,9 @@
         </div>
       </DevPane>
 
-      <DevPane
+      <DevJson
         title="Jobs (JSON)"
-        description="Raw collection payload + drift map (copyable)."
-        debug-title="Dev · Jobs (Ext) · Jobs · All data"
-        :debug-data="jobAllJsonPayload"
+        :data="jobAllJsonPayload"
         :default-open="false"
       />
 
@@ -92,50 +57,17 @@
         title="Professionals collection (global)"
         description="Browse global professionals and filter by model drift (ProfessionalCore)."
       >
-        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span class="font-medium">Drift:</span>
-
-          <UButton
-            size="xs"
-            :variant="professionalGlobalDriftKind === 'missing' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setProfessionalGlobalDriftKind('missing')"
-          >
-            Missing
-          </UButton>
-
-          <UButton
-            size="xs"
-            :variant="professionalGlobalDriftKind === 'extra' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setProfessionalGlobalDriftKind('extra')"
-          >
-            Extra
-          </UButton>
-
-          <span class="font-medium ml-2">Filter {{ professionalGlobalDriftKind }}:</span>
-
-          <UButton
-            v-for="option in professionalGlobalFilterOptions"
-            :key="option.value"
-            size="xs"
-            :variant="professionalGlobalSelectedField === option.value ? 'solid' : 'ghost'"
-            color="primary"
-            @click="professionalGlobalSelectedField = option.value"
-          >
-            {{ option.label }}
-          </UButton>
-
-          <UButton
-            size="xs"
-            variant="outline"
-            :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-            @click="copyProfessionalGlobalFiltered"
-          >
-            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-          </UButton>
-        </div>
+        <DevDriftToolbar
+          :drift-kind="professionalGlobalDriftKind"
+          :selected-field="professionalGlobalSelectedField"
+          :filter-options="professionalGlobalFilterOptions"
+          :copy-label="copying ? 'Copying…' : 'Copy drift'"
+          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+          :copy-disabled="copying"
+          @update:drift-kind="setProfessionalGlobalDriftKind"
+          @update:selected-field="(value) => (professionalGlobalSelectedField = value)"
+          @copy="copyProfessionalGlobalFiltered"
+        />
 
         <div class="space-y-2">
           <UAlert
@@ -155,11 +87,9 @@
         </div>
       </DevPane>
 
-      <DevPane
+      <DevJson
         title="Professionals (JSON)"
-        description="Raw collection payload + drift map (copyable)."
-        debug-title="Dev · Jobs (Ext) · Professionals · Global · All data"
-        :debug-data="professionalGlobalAllJsonPayload"
+        :data="professionalGlobalAllJsonPayload"
         :default-open="false"
       />
 
@@ -168,50 +98,17 @@
         title="Professionals collection (tenant)"
         description="Browse tenant professionals and filter by model drift (ProfessionalCore)."
       >
-        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span class="font-medium">Drift:</span>
-
-          <UButton
-            size="xs"
-            :variant="professionalLocalDriftKind === 'missing' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setProfessionalLocalDriftKind('missing')"
-          >
-            Missing
-          </UButton>
-
-          <UButton
-            size="xs"
-            :variant="professionalLocalDriftKind === 'extra' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setProfessionalLocalDriftKind('extra')"
-          >
-            Extra
-          </UButton>
-
-          <span class="font-medium ml-2">Filter {{ professionalLocalDriftKind }}:</span>
-
-          <UButton
-            v-for="option in professionalLocalFilterOptions"
-            :key="option.value"
-            size="xs"
-            :variant="professionalLocalSelectedField === option.value ? 'solid' : 'ghost'"
-            color="primary"
-            @click="professionalLocalSelectedField = option.value"
-          >
-            {{ option.label }}
-          </UButton>
-
-          <UButton
-            size="xs"
-            variant="outline"
-            :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-            @click="copyProfessionalLocalFiltered"
-          >
-            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-          </UButton>
-        </div>
+        <DevDriftToolbar
+          :drift-kind="professionalLocalDriftKind"
+          :selected-field="professionalLocalSelectedField"
+          :filter-options="professionalLocalFilterOptions"
+          :copy-label="copying ? 'Copying…' : 'Copy drift'"
+          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+          :copy-disabled="copying"
+          @update:drift-kind="setProfessionalLocalDriftKind"
+          @update:selected-field="(value) => (professionalLocalSelectedField = value)"
+          @copy="copyProfessionalLocalFiltered"
+        />
 
         <div class="space-y-2">
           <UAlert
@@ -231,12 +128,10 @@
         </div>
       </DevPane>
 
-      <DevPane
+      <DevJson
         v-if="isTenant && hasProfessionalLocalCollection"
         title="Professionals (JSON) · Tenant"
-        description="Raw collection payload + drift map (copyable)."
-        debug-title="Dev · Jobs (Ext) · Professionals · Tenant · All data"
-        :debug-data="professionalLocalAllJsonPayload"
+        :data="professionalLocalAllJsonPayload"
         :default-open="false"
       />
 
@@ -244,50 +139,17 @@
         title="Agents collection (global)"
         description="Browse global agents and filter by model drift (AgentCore)."
       >
-        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span class="font-medium">Drift:</span>
-
-          <UButton
-            size="xs"
-            :variant="agentGlobalDriftKind === 'missing' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setAgentGlobalDriftKind('missing')"
-          >
-            Missing
-          </UButton>
-
-          <UButton
-            size="xs"
-            :variant="agentGlobalDriftKind === 'extra' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setAgentGlobalDriftKind('extra')"
-          >
-            Extra
-          </UButton>
-
-          <span class="font-medium ml-2">Filter {{ agentGlobalDriftKind }}:</span>
-
-          <UButton
-            v-for="option in agentGlobalFilterOptions"
-            :key="option.value"
-            size="xs"
-            :variant="agentGlobalSelectedField === option.value ? 'solid' : 'ghost'"
-            color="primary"
-            @click="agentGlobalSelectedField = option.value"
-          >
-            {{ option.label }}
-          </UButton>
-
-          <UButton
-            size="xs"
-            variant="outline"
-            :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-            @click="copyAgentGlobalFiltered"
-          >
-            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-          </UButton>
-        </div>
+        <DevDriftToolbar
+          :drift-kind="agentGlobalDriftKind"
+          :selected-field="agentGlobalSelectedField"
+          :filter-options="agentGlobalFilterOptions"
+          :copy-label="copying ? 'Copying…' : 'Copy drift'"
+          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+          :copy-disabled="copying"
+          @update:drift-kind="setAgentGlobalDriftKind"
+          @update:selected-field="(value) => (agentGlobalSelectedField = value)"
+          @copy="copyAgentGlobalFiltered"
+        />
 
         <div class="space-y-2">
           <UAlert
@@ -307,11 +169,9 @@
         </div>
       </DevPane>
 
-      <DevPane
+      <DevJson
         title="Agents (JSON)"
-        description="Raw collection payload + drift map (copyable)."
-        debug-title="Dev · Jobs (Ext) · Agents · Global · All data"
-        :debug-data="agentGlobalAllJsonPayload"
+        :data="agentGlobalAllJsonPayload"
         :default-open="false"
       />
 
@@ -320,50 +180,17 @@
         title="Agents collection (tenant)"
         description="Browse tenant agents and filter by model drift (AgentCore)."
       >
-        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span class="font-medium">Drift:</span>
-
-          <UButton
-            size="xs"
-            :variant="agentLocalDriftKind === 'missing' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setAgentLocalDriftKind('missing')"
-          >
-            Missing
-          </UButton>
-
-          <UButton
-            size="xs"
-            :variant="agentLocalDriftKind === 'extra' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setAgentLocalDriftKind('extra')"
-          >
-            Extra
-          </UButton>
-
-          <span class="font-medium ml-2">Filter {{ agentLocalDriftKind }}:</span>
-
-          <UButton
-            v-for="option in agentLocalFilterOptions"
-            :key="option.value"
-            size="xs"
-            :variant="agentLocalSelectedField === option.value ? 'solid' : 'ghost'"
-            color="primary"
-            @click="agentLocalSelectedField = option.value"
-          >
-            {{ option.label }}
-          </UButton>
-
-          <UButton
-            size="xs"
-            variant="outline"
-            :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-            @click="copyAgentLocalFiltered"
-          >
-            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-          </UButton>
-        </div>
+        <DevDriftToolbar
+          :drift-kind="agentLocalDriftKind"
+          :selected-field="agentLocalSelectedField"
+          :filter-options="agentLocalFilterOptions"
+          :copy-label="copying ? 'Copying…' : 'Copy drift'"
+          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+          :copy-disabled="copying"
+          @update:drift-kind="setAgentLocalDriftKind"
+          @update:selected-field="(value) => (agentLocalSelectedField = value)"
+          @copy="copyAgentLocalFiltered"
+        />
 
         <div class="space-y-2">
           <UAlert
@@ -383,12 +210,10 @@
         </div>
       </DevPane>
 
-      <DevPane
+      <DevJson
         v-if="isTenant && hasAgentLocalCollection"
         title="Agents (JSON) · Tenant"
-        description="Raw collection payload + drift map (copyable)."
-        debug-title="Dev · Jobs (Ext) · Agents · Tenant · All data"
-        :debug-data="agentLocalAllJsonPayload"
+        :data="agentLocalAllJsonPayload"
         :default-open="false"
       />
     </UPageBody>
@@ -396,6 +221,7 @@
 </template>
 
 <script setup lang="ts">
+import DevDriftToolbar from 'fireux-core/runtime/components/dev/DevDriftToolbar'
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'

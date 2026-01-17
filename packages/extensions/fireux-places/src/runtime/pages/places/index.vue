@@ -50,7 +50,7 @@ const placeType = computed<string | null>(() =>
 
 const pageTitle = 'Places'
 const pageDescription =
-  'Create a place and browse all places available to this runtime.'
+  'Create a place and browse canonical places available to this runtime.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 

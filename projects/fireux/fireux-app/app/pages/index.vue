@@ -71,8 +71,8 @@
 
 <script setup lang="ts">
 import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy.ts'
-import { computed, onMounted, ref } from 'vue'
 import { useRuntimeConfig } from 'nuxt/app'
+import { computed, onMounted, ref } from 'vue'
 
 type LandingProductItem = {
   title: string

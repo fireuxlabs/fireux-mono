@@ -10,50 +10,17 @@
         title="Chefs collection"
         description="Browse chefs and filter by model drift (ChefCore)."
       >
-        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span class="font-medium">Drift:</span>
-
-          <UButton
-            size="xs"
-            :variant="chefDriftKind === 'missing' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setChefDriftKind('missing')"
-          >
-            Missing
-          </UButton>
-
-          <UButton
-            size="xs"
-            :variant="chefDriftKind === 'extra' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setChefDriftKind('extra')"
-          >
-            Extra
-          </UButton>
-
-          <span class="font-medium ml-2">Filter {{ chefDriftKind }}:</span>
-
-          <UButton
-            v-for="option in chefFilterOptions"
-            :key="option.value"
-            size="xs"
-            :variant="chefSelectedField === option.value ? 'solid' : 'ghost'"
-            color="primary"
-            @click="chefSelectedField = option.value"
-          >
-            {{ option.label }}
-          </UButton>
-
-          <UButton
-            size="xs"
-            variant="outline"
-            :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-            @click="copyChefFiltered"
-          >
-            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-          </UButton>
-        </div>
+        <DevDriftToolbar
+          :drift-kind="chefDriftKind"
+          :selected-field="chefSelectedField"
+          :filter-options="chefFilterOptions"
+          :copy-label="copying ? 'Copying…' : 'Copy drift'"
+          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+          :copy-disabled="copying"
+          @update:drift-kind="setChefDriftKind"
+          @update:selected-field="(value) => (chefSelectedField = value)"
+          @copy="copyChefFiltered"
+        />
 
         <div class="space-y-2">
           <UAlert
@@ -73,11 +40,9 @@
         </div>
       </DevPane>
 
-      <DevPane
+      <DevJson
         title="Chefs (JSON)"
-        description="Raw collection payload + drift map (copyable)."
-        debug-title="Dev · Misebox · Chefs · All data"
-        :debug-data="chefAllJsonPayload"
+        :data="chefAllJsonPayload"
         :default-open="false"
       />
 
@@ -85,50 +50,17 @@
         title="Suppliers collection"
         description="Browse suppliers and filter by model drift (SupplierCore)."
       >
-        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span class="font-medium">Drift:</span>
-
-          <UButton
-            size="xs"
-            :variant="supplierDriftKind === 'missing' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setSupplierDriftKind('missing')"
-          >
-            Missing
-          </UButton>
-
-          <UButton
-            size="xs"
-            :variant="supplierDriftKind === 'extra' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setSupplierDriftKind('extra')"
-          >
-            Extra
-          </UButton>
-
-          <span class="font-medium ml-2">Filter {{ supplierDriftKind }}:</span>
-
-          <UButton
-            v-for="option in supplierFilterOptions"
-            :key="option.value"
-            size="xs"
-            :variant="supplierSelectedField === option.value ? 'solid' : 'ghost'"
-            color="primary"
-            @click="supplierSelectedField = option.value"
-          >
-            {{ option.label }}
-          </UButton>
-
-          <UButton
-            size="xs"
-            variant="outline"
-            :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-            @click="copySupplierFiltered"
-          >
-            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-          </UButton>
-        </div>
+        <DevDriftToolbar
+          :drift-kind="supplierDriftKind"
+          :selected-field="supplierSelectedField"
+          :filter-options="supplierFilterOptions"
+          :copy-label="copying ? 'Copying…' : 'Copy drift'"
+          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+          :copy-disabled="copying"
+          @update:drift-kind="setSupplierDriftKind"
+          @update:selected-field="(value) => (supplierSelectedField = value)"
+          @copy="copySupplierFiltered"
+        />
 
         <div class="space-y-2">
           <UAlert
@@ -148,11 +80,9 @@
         </div>
       </DevPane>
 
-      <DevPane
+      <DevJson
         title="Suppliers (JSON)"
-        description="Raw collection payload + drift map (copyable)."
-        debug-title="Dev · Misebox · Suppliers · All data"
-        :debug-data="supplierAllJsonPayload"
+        :data="supplierAllJsonPayload"
         :default-open="false"
       />
 
@@ -160,50 +90,17 @@
         title="Kitchens collection"
         description="Browse kitchens and filter by model drift (Kitchen)."
       >
-        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span class="font-medium">Drift:</span>
-
-          <UButton
-            size="xs"
-            :variant="kitchenDriftKind === 'missing' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setKitchenDriftKind('missing')"
-          >
-            Missing
-          </UButton>
-
-          <UButton
-            size="xs"
-            :variant="kitchenDriftKind === 'extra' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setKitchenDriftKind('extra')"
-          >
-            Extra
-          </UButton>
-
-          <span class="font-medium ml-2">Filter {{ kitchenDriftKind }}:</span>
-
-          <UButton
-            v-for="option in kitchenFilterOptions"
-            :key="option.value"
-            size="xs"
-            :variant="kitchenSelectedField === option.value ? 'solid' : 'ghost'"
-            color="primary"
-            @click="kitchenSelectedField = option.value"
-          >
-            {{ option.label }}
-          </UButton>
-
-          <UButton
-            size="xs"
-            variant="outline"
-            :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-            @click="copyKitchenFiltered"
-          >
-            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-          </UButton>
-        </div>
+        <DevDriftToolbar
+          :drift-kind="kitchenDriftKind"
+          :selected-field="kitchenSelectedField"
+          :filter-options="kitchenFilterOptions"
+          :copy-label="copying ? 'Copying…' : 'Copy drift'"
+          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+          :copy-disabled="copying"
+          @update:drift-kind="setKitchenDriftKind"
+          @update:selected-field="(value) => (kitchenSelectedField = value)"
+          @copy="copyKitchenFiltered"
+        />
 
         <div class="space-y-2">
           <UAlert
@@ -229,11 +126,9 @@
         </div>
       </DevPane>
 
-      <DevPane
+      <DevJson
         title="Kitchens (JSON)"
-        description="Raw collection payload + drift map (copyable)."
-        debug-title="Dev · Misebox · Kitchens · All data"
-        :debug-data="kitchenAllJsonPayload"
+        :data="kitchenAllJsonPayload"
         :default-open="false"
       />
     </UPageBody>
@@ -241,6 +136,7 @@
 </template>
 
 <script setup lang="ts">
+import DevDriftToolbar from 'fireux-core/runtime/components/dev/DevDriftToolbar'
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'

@@ -44,11 +44,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
 import type { ComputedRef } from 'vue'
+import { computed, unref } from 'vue'
+import type { DevHealthResult } from '../../composables/dev/health/types'
 import DevHealth from './DevHealth.vue'
 import DevJson from './DevJson.vue'
-import type { DevHealthResult } from '../../composables/dev/health/types'
 
 defineOptions({ name: 'DevPane' })
 
@@ -68,7 +68,7 @@ const props = withDefaults(defineProps<Props>(), {
   checks: () => [],
   healthTitle: 'Health checks',
   healthDescription: 'Integrity checks for this scope.',
-  debugTitle: 'Debug data',
+  debugTitle: 'JSON',
   defaultOpen: false,
 })
 

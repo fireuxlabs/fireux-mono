@@ -9,8 +9,8 @@ import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { useFirestore } from 'vuefire'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 import type {
-  OtherExperienceItem,
-  RelevantExperienceItem,
+    OtherExperienceItem,
+    RelevantExperienceItem,
 } from '../../../../../../models/profiles/Professional/supporting'
 
 const COLLECTION = 'professionals'

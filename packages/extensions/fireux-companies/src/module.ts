@@ -1,9 +1,9 @@
 import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import {
-  ensureRuntimeConfigBuckets,
-  ensureRuntimeLayerFromPath,
-  exposeRuntimeAlias,
+    ensureRuntimeConfigBuckets,
+    ensureRuntimeLayerFromPath,
+    exposeRuntimeAlias,
 } from 'fireux-core/config/module/runtime-layer'
 import { configureComponents } from './config/module/components-config'
 import { configureComposables } from './config/module/composables-config'

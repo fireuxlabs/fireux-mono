@@ -11,10 +11,10 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Empty string means "unset"
  */
 
-/** Canonical sources are 'google' (provider/transient) and 'firebase' (stored). */
-export type PlaceSource = 'google' | 'firebase'
+/** Canonical sources: google (provider), fireux (stored), manual (user-entered). */
+export type PlaceSource = 'google' | 'fireux' | 'manual'
 
-export type PlaceShape = FireuxAuthored & {
+export interface Place extends FireuxAuthored {
 	/** Canonical id (== Google place_id; Firestore document id). */
 	id: string
 
@@ -33,7 +33,7 @@ export type PlaceShape = FireuxAuthored & {
 }
 
 // 🔑 Runtime + canonical shape for the STORED Firestore Place
-export const Place: PlaceShape = {
+export const Place: Place = {
 	/** Canonical id (== Google place_id; Firestore document id). */
 	id: '',
 
@@ -45,7 +45,8 @@ export const Place: PlaceShape = {
 	/** Canonical place image for UI (empty string means unset). */
 	place_image: '',
 
-	source: 'firebase' as PlaceSource,
+	// Drift validation uses enum:... markers in runtime models.
+	source: 'enum:google|fireux|manual' as unknown as PlaceSource,
 
 	/** “How we found this place” (kept for UX + duplicate avoidance). */
 	search_term: '',
@@ -55,9 +56,6 @@ export const Place: PlaceShape = {
 	created_at: {} as FirebaseTimestamp,
 	updated_at: {} as FirebaseTimestamp,
 }
-
-// ✅ Type derived from the runtime model (stored Place)
-export type Place = PlaceShape
 
 /** Base (shared by Google & Firestore). */
 export type BasePlace = Pick<

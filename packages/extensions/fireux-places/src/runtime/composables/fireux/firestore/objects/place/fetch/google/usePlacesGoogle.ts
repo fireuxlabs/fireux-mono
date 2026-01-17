@@ -200,7 +200,7 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
     formatted_address: g.formatted_address,
     lat: g.lat,
     lng: g.lng,
-    source: 'firebase',
+    source: 'fireux',
     place_image: g.place_image ?? '',
     search_term,
   }

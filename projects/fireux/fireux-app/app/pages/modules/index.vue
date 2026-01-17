@@ -70,8 +70,8 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from 'nuxt/app'
 import type { FireuxModuleRegistryDoc } from 'fireux-core/runtime/models/core/module.model'
+import { useState } from 'nuxt/app'
 
 definePageMeta({
   nav: {
