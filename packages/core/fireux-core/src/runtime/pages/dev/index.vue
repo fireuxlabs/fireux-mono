@@ -1,6 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Intro -->
+    
     <UCard>
       <template #header>
         <div class="flex flex-col gap-1">
@@ -204,11 +205,10 @@
       <template #header>
         <h2>Runtime JSON</h2>
       </template>
-      <DevPane
-        title="Runtime (JSON)"
-        :json-title="'Runtime (JSON)'"
-        :json-data="{ runtime: cfg }"
-        :json-default-open="false"
+      <DevJson
+        :title="'Runtime (JSON)'"
+        :data="{ runtime: cfg }"
+        :default-open="false"
       />
     </UCard>
   </div>
@@ -250,7 +250,9 @@ const adminConfigured = computed(() => adminAuth.value?.configured ?? false)
 
 const adminNotes = computed(() => {
   const notes = envData.value?.notes ?? []
-  return notes.filter((note) => note.toLowerCase().includes('service account'))
+  return notes.filter((note: string) =>
+    note.toLowerCase().includes('service account')
+  )
 })
 
 const adminStatus = computed(() => {

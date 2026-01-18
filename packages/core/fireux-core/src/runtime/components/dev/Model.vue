@@ -83,7 +83,7 @@ const toTreeItems = (list: ShapeNode[], prefix = ''): any[] =>
       id: path,
       label: `${node.key}: ${typeLabel(node.type)}`,
       icon: hasChildren ? 'i-lucide-braces' : undefined,
-      children: hasChildren ? toTreeItems(node.children, path) : undefined,
+      children: hasChildren ? toTreeItems(node.children ?? [], path) : undefined,
     }
   })
 
