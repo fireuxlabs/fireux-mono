@@ -32,15 +32,15 @@ export function usePlacesInterface() {
       id: place.id,
       to: `/places/${encodeURIComponent(place.id)}`,
 
-      avatarUrl: place.place_image ?? '',
+      avatarUrl: place.place_image,
       title: place.name,
-      subtitle: place.formatted_address ?? '',
+      subtitle: place.formatted_address,
       badges: [],
 
       name: place.name,
-      formattedAddress: place.formatted_address ?? '',
+      formattedAddress: place.formatted_address,
 
-      imageUrl: place.place_image ?? '',
+      imageUrl: place.place_image,
 
       source: place.source,
     }

@@ -36,7 +36,7 @@ export interface Place extends FireuxStamped {
 }
 
 // 🔑 Runtime + canonical shape for the STORED Firestore Place
-export const Place: Place = {
+export const Place = {
 	/** Canonical id (== Google place_id; Firestore document id). */
 	id: '',
 
@@ -61,7 +61,7 @@ export const Place: Place = {
 	creator_id: undefined,
 	created_at: {} as FirebaseTimestamp,
 	updated_at: {} as FirebaseTimestamp,
-}
+} satisfies Place & Record<string, unknown>
 
 /** Base (shared by Google & Firestore). */
 export type BasePlace = Pick<

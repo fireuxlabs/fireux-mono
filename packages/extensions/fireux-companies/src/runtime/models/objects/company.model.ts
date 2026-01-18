@@ -37,7 +37,7 @@ export type CompanyShape = FireuxStamped & {
 }
 
 // 🔑 Runtime + canonical shape (source of truth)
-export const Company: CompanyShape = {
+export const Company = {
   /** Canonical Place ID (also the Firestore document ID). */
   id: '',
 
@@ -61,7 +61,7 @@ export const Company: CompanyShape = {
   creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies CompanyShape & Record<string, unknown>
 
 // ✅ Type derived from the runtime model (no duplication)
 export type Company = CompanyShape

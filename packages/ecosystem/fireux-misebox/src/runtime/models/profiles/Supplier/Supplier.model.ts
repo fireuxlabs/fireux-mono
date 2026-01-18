@@ -26,7 +26,7 @@ export type SupplierCoreShape = CoreProfileBase & {
   delivery_range: number
 }
 
-export const SupplierCore: SupplierCoreShape = {
+export const SupplierCore = {
   id: '',
   title: '',
   subtitle: '',
@@ -49,18 +49,18 @@ export const SupplierCore: SupplierCoreShape = {
 
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies SupplierCoreShape & Record<string, unknown>
 
 export type SupplierCore = SupplierCoreShape
 
 export type SupplierAppShape = AppProfileBase
 
-export const SupplierApp: SupplierAppShape = {
+export const SupplierApp = {
   id: '',
   creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies SupplierAppShape & Record<string, unknown>
 
 export type SupplierApp = SupplierAppShape
 

@@ -32,25 +32,11 @@ export function useProfessionalInterface(
   profile: ProfileRefs<ProfessionalCore>,
   userRef?: Ref<User | null | undefined>
 ) {
-  function safeArray<T>(input: unknown): T[] {
-    return Array.isArray(input) ? (input as T[]) : []
-  }
-
-  function safeString(input: unknown): string {
-    return typeof input === 'string' ? input : ''
-  }
-
-  function csv(list: unknown): string {
-    return safeArray<string>(list).join(', ')
-  }
-
   function map(p: ProfessionalCore, u?: UserLike | null): ProfessionalCard.Card {
-    const title = safeString((p as any)?.title)
-    const subtitle = safeString((p as any)?.subtitle)
-    const tagline = safeString((p as any)?.tagline)
-    const tags = safeArray<string>((p as any)?.tags)
-    const specialties = (p as any)?.specialties
-    const locations = (p as any)?.locations
+    const title = p.title
+    const subtitle = p.subtitle
+    const tagline = p.tagline
+    const tags = p.tags
 
     return {
       id: p.id,
@@ -59,13 +45,13 @@ export function useProfessionalInterface(
       avatarUrl: u?.avatar ?? '',
 
       // Canonical: professional pills are user-hydrated; no profile-title fallback for display name.
-      displayName: safeString(u?.display_name),
+      displayName: u?.display_name ?? '',
       tagline: tagline || title || subtitle,
       badges: tags,
 
-      bioShort: safeString((p as any)?.bio_short),
-      specialtiesCsv: csv(specialties),
-      locationsCsv: csv(locations),
+      bioShort: p.bio_short,
+      specialtiesCsv: p.specialties.join(', '),
+      locationsCsv: p.locations.join(', '),
     }
   }
 
@@ -83,10 +69,8 @@ export function useProfessionalInterface(
     const p = target ?? profile.coreProfile.value ?? null
     if (!p) return ''
     const u = userRef?.value ?? null
-    const displayName = safeString((u as any)?.display_name)
-    const title = safeString((p as any)?.title)
-    const tagline = safeString((p as any)?.tagline)
-    return `${displayName} ${title} ${tagline} ${p.id}`.trim().toLowerCase()
+    const displayName = u?.display_name ?? ''
+    return `${displayName} ${p.title} ${p.tagline} ${p.id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

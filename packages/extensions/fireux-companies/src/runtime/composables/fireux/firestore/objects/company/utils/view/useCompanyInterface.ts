@@ -26,7 +26,7 @@ export function useCompanyInterface() {
       id: company.id,
       to: `/companies/${encodeURIComponent(company.id)}`,
 
-      avatarUrl: company.place_image ?? '',
+      avatarUrl: company.place_image,
       title: company.name,
       subtitle: company.website,
 

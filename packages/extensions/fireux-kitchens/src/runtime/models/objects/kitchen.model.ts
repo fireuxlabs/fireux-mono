@@ -28,7 +28,7 @@ export type KitchenShape = FireuxStamped & {
 }
 
 // 🔑 Runtime + canonical shape (source of truth)
-export const Kitchen: KitchenShape = {
+export const Kitchen = {
   /** Canonical Place ID (also the Firestore document ID). */
   id: '',
 
@@ -43,7 +43,7 @@ export const Kitchen: KitchenShape = {
   creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies KitchenShape & Record<string, unknown>
 
 // ✅ Type derived from the runtime model (no duplication)
 export type Kitchen = KitchenShape

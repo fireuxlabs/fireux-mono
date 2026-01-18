@@ -95,3 +95,32 @@ export interface ProductCreationInput {
 }
 
 export type ProductId = Product['id']
+
+// ------------------------------------------------------------------
+// Runtime model shape (for dev tooling)
+// ------------------------------------------------------------------
+export const ProductRuntime = {
+  id: '',
+  name: '',
+  description: '',
+  images: [],
+  features: [],
+  prices: [],
+  created_at: {},
+  updated_at: {},
+  slug: '',
+  content: '',
+  active: false,
+  main_image: '',
+  default_price: {
+    id: '',
+    unit_amount: 0,
+    interval: 'enum:day|week|month|year' as unknown as DefaultPrice['interval'],
+  },
+  stock: 0,
+  product_type: 'enum:physical|digital|service|subscription' as unknown as FirebaseProduct['product_type'],
+  track_stock: false,
+  creator_id: '',
+  appId: '',
+  metadata: {},
+} satisfies FirebaseProduct & Record<string, unknown>

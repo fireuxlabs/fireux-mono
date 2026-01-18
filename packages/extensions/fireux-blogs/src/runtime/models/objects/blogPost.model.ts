@@ -50,3 +50,33 @@ export interface Author {
 	handle?: string
 	email?: string
 }
+
+// ------------------------------------------------------------------
+// Runtime model shape (for dev tooling)
+// ------------------------------------------------------------------
+export const BlogPostRuntime = {
+	title: '',
+	content: '',
+	metaDescription: '',
+	slug: '',
+	created_at: '',
+	updated_at: '',
+	author: {
+		id: '',
+		display_name: '',
+		avatar: '',
+		handle: '',
+		email: '',
+	},
+	keywords: [],
+	tags: [],
+	canonicalUrl: '',
+	featuredImage: '',
+	socialImage: '',
+	readingTime: '',
+	cta_link: '',
+	cta_text: '',
+	type: 'enum:article|product' as unknown as BlogPost['type'],
+	product_id: '',
+	appId: '',
+} satisfies BlogPost & Record<string, unknown>

@@ -29,7 +29,7 @@ export type UserShape = FireuxStamped & {
 }
 
 // Runtime canonical shape
-export const User: UserShape = {
+export const User = {
   id: '',
 
   display_name: '',
@@ -50,7 +50,7 @@ export const User: UserShape = {
   creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies UserShape & Record<string, unknown>
 
 // Type derived from runtime model
 export interface User extends UserShape {}
@@ -65,13 +65,13 @@ export type AppUserShape = FireuxStamped & {
   notifications: UserNotification[]
 }
 
-export const AppUser: AppUserShape = {
+export const AppUser = {
   id: '',
   role: 'user' as 'user' | 'admin',
   notifications: [] as UserNotification[],
   creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies AppUserShape & Record<string, unknown>
 
 export interface AppUser extends AppUserShape {}

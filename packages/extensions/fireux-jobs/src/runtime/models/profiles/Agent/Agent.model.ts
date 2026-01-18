@@ -17,7 +17,7 @@ export type AgentCoreShape = CoreProfileBase & {
   website_url: string
 }
 
-export const AgentCore: AgentCoreShape = {
+export const AgentCore = {
   id: '',
   title: '',
   subtitle: '',
@@ -31,18 +31,18 @@ export const AgentCore: AgentCoreShape = {
 
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies AgentCoreShape & Record<string, unknown>
 
 export type AgentCore = AgentCoreShape
 
 export type AgentAppShape = AppProfileBase
 
-export const AgentApp: AgentAppShape = {
+export const AgentApp = {
   id: '',
   creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies AgentAppShape & Record<string, unknown>
 
 export type AgentApp = AgentAppShape
 

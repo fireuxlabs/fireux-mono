@@ -35,8 +35,8 @@ export function useBlogInterface() {
   function map(post: BlogPost): BlogCard.Card {
     const excerpt = ellipsis(stripHtml(post.content), 180)
 
-    const author = post.author?.display_name || 'Unknown'
-    const imageUrl = post.featuredImage || post.socialImage || ''
+    const author = post.author.display_name
+    const imageUrl = post.featuredImage || post.socialImage
 
     return {
       id: post.slug,
@@ -59,8 +59,7 @@ export function useBlogInterface() {
   }
 
   function searchText(post: BlogPost): string {
-    return `${post.title} ${post.slug} ${post.author?.display_name || ''}`
-      .toLowerCase()
+    return `${post.title} ${post.slug} ${post.author.display_name}`.toLowerCase()
   }
 
   return { card, searchText }

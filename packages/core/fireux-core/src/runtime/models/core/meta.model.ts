@@ -2,16 +2,23 @@
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 
-/** Canonical timestamps present on all Firestore documents. */
+/**
+ * Canonical timestamps present on all Firestore documents.
+ */
 export interface FireuxTimestamps {
   created_at: FirebaseTimestamp
   updated_at: FirebaseTimestamp
 }
 
-/** Optional authored metadata (creator may be absent for system writes). */
+/**
+ * Optional authored metadata.
+ * Creator may be absent for system or migration writes.
+ */
 export interface FireuxAuthored {
   creator_id?: string
 }
 
-/** Convenience type: timestamps plus optional authored metadata. */
+/**
+ * Convenience type used by all persisted models.
+ */
 export type FireuxStamped = FireuxTimestamps & FireuxAuthored

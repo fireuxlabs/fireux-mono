@@ -72,7 +72,7 @@ definePageMeta({
 const { collection } = usePlaces<Place>()
 const places = computed(() => collection.value ?? [])
 
-const placeModelRuntime = PlaceModelRuntime as unknown as Record<string, unknown>
+const placeModelRuntime = PlaceModelRuntime
 
 const {
   driftKind,
@@ -117,6 +117,7 @@ const { copyJSON, copying } = useDevClipboard()
 const copyDrift = async () => {
   await copyJSON(
     {
+      modelPath: 'packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts',
       driftKind: driftKind.value,
       selectedField: selectedField.value || null,
       totalPlaces: totalPlaces.value,

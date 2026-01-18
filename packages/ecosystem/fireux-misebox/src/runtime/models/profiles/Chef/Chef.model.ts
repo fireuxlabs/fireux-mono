@@ -18,7 +18,7 @@ export type ChefCoreShape = CoreProfileBase & {
   organization_name: string
 }
 
-export const ChefCore: ChefCoreShape = {
+export const ChefCore = {
   id: '',
   title: '',
   subtitle: '',
@@ -33,18 +33,18 @@ export const ChefCore: ChefCoreShape = {
 
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies ChefCoreShape & Record<string, unknown>
 
 export type ChefCore = ChefCoreShape
 
 export type ChefAppShape = AppProfileBase
 
-export const ChefApp: ChefAppShape = {
+export const ChefApp = {
   id: '',
   creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies ChefAppShape & Record<string, unknown>
 
 export type ChefApp = ChefAppShape
 

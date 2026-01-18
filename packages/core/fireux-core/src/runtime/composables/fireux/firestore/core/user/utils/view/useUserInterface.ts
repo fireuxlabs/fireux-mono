@@ -25,21 +25,21 @@ export namespace UserCard {
 
 export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   function map(user: User): UserCard.Card {
-    const handle = (user.handle ?? '').trim()
-    const appCount = user.userOf?.length ?? 0
+    const handle = user.handle.trim()
+    const appCount = user.userOf.length
 
     return {
       id: user.id,
       to: `/users/${user.id}`,
 
-      avatarUrl: user.avatar ?? '',
-      displayName: user.display_name ?? '',
+      avatarUrl: user.avatar,
+      displayName: user.display_name,
 
       handle: handle ? `@${handle}` : '',
       badges: [],
 
-      bio: user.bio ?? '',
-      profiles: user.profiles ?? [],
+      bio: user.bio,
+      profiles: user.profiles,
       appsLabel: appCount ? `${appCount} apps` : '',
     }
   }

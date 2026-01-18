@@ -24,7 +24,7 @@ export type ProfessionalCoreShape = CoreProfileBase & {
   other_experience: OtherExperienceItem[]
 }
 
-export const ProfessionalCore: ProfessionalCoreShape = {
+export const ProfessionalCore = {
   id: '',
   title: '',
   subtitle: '',
@@ -41,18 +41,18 @@ export const ProfessionalCore: ProfessionalCoreShape = {
 
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies ProfessionalCoreShape & Record<string, unknown>
 
 export type ProfessionalCore = ProfessionalCoreShape
 
 export type ProfessionalAppShape = AppProfileBase
 
-export const ProfessionalApp: ProfessionalAppShape = {
+export const ProfessionalApp = {
   id: '',
   creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies ProfessionalAppShape & Record<string, unknown>
 
 export type ProfessionalApp = ProfessionalAppShape
 

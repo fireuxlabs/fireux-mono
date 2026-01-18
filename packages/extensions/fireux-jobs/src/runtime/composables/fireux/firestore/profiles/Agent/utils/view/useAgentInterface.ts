@@ -35,19 +35,11 @@ export function useAgentInterface(
   profile: ProfileRefs<AgentCore>,
   userRef?: Ref<User | null | undefined>
 ) {
-  function safeArray<T>(input: unknown): T[] {
-    return Array.isArray(input) ? (input as T[]) : []
-  }
-
-  function safeString(input: unknown): string {
-    return typeof input === 'string' ? input : ''
-  }
-
   function map(p: AgentCore, u?: UserLike | null): AgentCard.Card {
-    const title = safeString((p as any)?.title)
-    const subtitle = safeString((p as any)?.subtitle)
-    const tagline = safeString((p as any)?.tagline)
-    const tags = safeArray<string>((p as any)?.tags)
+    const title = p.title
+    const subtitle = p.subtitle
+    const tagline = p.tagline
+    const tags = p.tags
 
     return {
       id: p.id,
@@ -56,17 +48,17 @@ export function useAgentInterface(
       avatarUrl: u?.avatar ?? '',
 
       // Canonical: agent pills are user-hydrated; no profile-title fallback for display name.
-      displayName: safeString(u?.display_name),
+      displayName: u?.display_name ?? '',
 
       // Prefer tagline; fall back to title/subtitle so pills stay useful.
       tagline: tagline || title || subtitle,
       badges: tags,
 
-      bioShort: safeString((p as any)?.bio_short),
+      bioShort: p.bio_short,
 
-      contactEmail: safeString((p as any)?.contact_email).trim(),
-      contactPhone: safeString((p as any)?.contact_phone).trim(),
-      websiteUrl: safeString((p as any)?.website_url),
+      contactEmail: p.contact_email.trim(),
+      contactPhone: p.contact_phone.trim(),
+      websiteUrl: p.website_url,
     }
   }
 
@@ -84,11 +76,8 @@ export function useAgentInterface(
     const p = target ?? profile.coreProfile.value ?? null
     if (!p) return ''
     const u = userRef?.value ?? null
-
-    const displayName = safeString((u as any)?.display_name)
-    const title = safeString((p as any)?.title)
-    const tagline = safeString((p as any)?.tagline)
-    return `${displayName} ${title} ${tagline} ${p.id}`.trim().toLowerCase()
+    const displayName = u?.display_name ?? ''
+    return `${displayName} ${p.title} ${p.tagline} ${p.id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

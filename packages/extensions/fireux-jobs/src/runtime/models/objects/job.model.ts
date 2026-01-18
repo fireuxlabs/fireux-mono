@@ -39,7 +39,7 @@ export type JobShape = FireuxStamped & {
 }
 
 // 🔑 Runtime + canonical shape (source of truth)
-export const Job: JobShape = {
+export const Job = {
   /** Firestore document ID */
   id: '',
 
@@ -65,7 +65,7 @@ export const Job: JobShape = {
   creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies JobShape & Record<string, unknown>
 
 // ✅ Type derived from the runtime model (no duplication)
 export type Job = JobShape

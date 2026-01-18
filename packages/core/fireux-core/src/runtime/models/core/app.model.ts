@@ -3,6 +3,7 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { AppRole, AppSocialLinks } from './app.supporting'
 import type { FireuxStamped } from './meta.model'
+
 /**
  * Core Firestore App document
  * Path: /apps/<appId>
@@ -10,52 +11,12 @@ import type { FireuxStamped } from './meta.model'
  * Canon rules:
  * - No optional strings (empty string means unset)
  * - No nullable strings
- * - Timestamps are FirebaseTimestamp (Firestore Timestamp)
- *
- * Canon strategy:
  * - Runtime object is the single source of truth
- * - TypeScript derives types from it
- * - Drift is detected by comparing data ↔ model shape
+ * - TypeScript derives types from runtime
  */
 
-export type AppShape = FireuxStamped & {
-  // Identity
-  id: string
-
-  // Display
-  app_name: string
-  app_short_name: string
-
-  // Scope + lineage
-  role: AppRole
-  ecosystem: string
-
-  // Governance
-  join_requests: string[]
-  admin_ids: string[]
-  // Governance fields
-
-  // Content
-  tagline: string
-  description: string
-  short_bio: string
-  long_bio: string
-
-  // Social
-  social_links: AppSocialLinks
-
-  // Derived
-  user_count: number
-
-  // Brand / media
-  thumbnail_url: string
-  logo_url: string
-  wordmark_light_url: string
-  wordmark_dark_url: string
-}
-
 // 🔑 Runtime + canonical shape (source of truth)
-export const App: AppShape = {
+export const App = {
   // Identity
   id: '',
 
@@ -79,9 +40,15 @@ export const App: AppShape = {
   long_bio: '',
 
   // Social
-  social_links: {} as AppSocialLinks,
+  social_links: {
+    website: '',
+    twitter: '',
+    github: '',
+    linkedin: '',
+    instagram: '',
+  } as AppSocialLinks,
 
-  // Derived
+  // Derived (system-managed)
   user_count: 0,
 
   // Brand / media
@@ -90,11 +57,11 @@ export const App: AppShape = {
   wordmark_light_url: '',
   wordmark_dark_url: '',
 
-  // Authored (FireuxStamped)
+  // Stamps
   creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-}
+} satisfies FireuxStamped & Record<string, unknown>
 
 // ✅ Type derived from the runtime model (no duplication)
-export type App = AppShape
+export type App = typeof App
