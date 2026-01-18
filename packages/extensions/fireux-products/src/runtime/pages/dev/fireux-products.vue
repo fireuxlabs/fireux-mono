@@ -58,7 +58,7 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useProductCollection } from '../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
 import { useProductInterface } from '../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
-import { ProductRuntime as ProductModelRuntime } from '../../models/objects/product.model';
+import { ProductRuntime as ProductModelRuntime } from '../../models/objects/product.model'
 
 definePageMeta({
   layout: 'dev',

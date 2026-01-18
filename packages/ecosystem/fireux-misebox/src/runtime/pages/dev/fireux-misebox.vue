@@ -103,10 +103,10 @@ import { useChefCollection } from '../../composables/fireux/firestore/profiles/C
 import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef'
 import { useSupplierCollection } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection'
 import { useSupplier } from '../../composables/fireux/firestore/profiles/Supplier/useSupplier'
-import { ChefCore as ChefCoreRuntime } from '../../models/profiles/Chef/Chef.model'
 import type { ChefCore } from '../../models/profiles/Chef/Chef.model'
-import { SupplierCore as SupplierCoreRuntime } from '../../models/profiles/Supplier/Supplier.model'
+import { ChefCore as ChefCoreRuntime } from '../../models/profiles/Chef/Chef.model'
 import type { SupplierCore } from '../../models/profiles/Supplier/Supplier.model'
+import { SupplierCore as SupplierCoreRuntime } from '../../models/profiles/Supplier/Supplier.model'
 
 definePageMeta({
   layout: 'dev',

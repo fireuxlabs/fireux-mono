@@ -59,7 +59,7 @@ import { computed } from 'vue'
 import { useBlogFetch } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogFetch'
 import { useBlogInterface } from '../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface'
 import type { BlogPost } from '../../models/objects/blogPost.model'
-import { BlogPostRuntime as BlogPostModelRuntime } from '../../models/objects/blogPost.model';
+import { BlogPostRuntime as BlogPostModelRuntime } from '../../models/objects/blogPost.model'
 
 definePageMeta({
   layout: 'dev',

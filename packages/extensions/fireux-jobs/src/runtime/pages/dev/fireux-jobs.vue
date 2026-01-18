@@ -150,8 +150,8 @@ import { useProfessionalCollection } from '../../composables/fireux/firestore/pr
 import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import { Job as JobModelRuntime } from '../../models/objects/job.model'
 import { AgentCore as AgentCoreRuntime } from '../../models/profiles/Agent/Agent.model'
-import { ProfessionalCore as ProfessionalCoreRuntime } from '../../models/profiles/Professional/Professional.model'
 import type { ProfessionalCore } from '../../models/profiles/Professional/Professional.model'
+import { ProfessionalCore as ProfessionalCoreRuntime } from '../../models/profiles/Professional/Professional.model'
 
 definePageMeta({
   layout: 'dev',

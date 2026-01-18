@@ -58,7 +58,7 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from '../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
-import { Company as CompanyModelRuntime } from '../../models/objects/company.model';
+import { Company as CompanyModelRuntime } from '../../models/objects/company.model'
 
 definePageMeta({
   layout: 'dev',

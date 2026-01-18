@@ -57,8 +57,8 @@
 
 <script setup lang="ts">
 import { definePageMeta } from '#imports';
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
-import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
+import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard';
+import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter';
 import { computed } from 'vue';
 import { useGlobalUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection';
 import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface';

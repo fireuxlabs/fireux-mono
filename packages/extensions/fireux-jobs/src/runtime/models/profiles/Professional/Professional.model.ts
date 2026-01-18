@@ -3,9 +3,9 @@
 import type { AppProfileBase, CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import {
-  professionalConfig,
-  type OtherExperienceItem,
-  type RelevantExperienceItem,
+    professionalConfig,
+    type OtherExperienceItem,
+    type RelevantExperienceItem,
 } from './supporting'
 
 /**

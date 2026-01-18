@@ -59,7 +59,7 @@ import { computed } from 'vue'
 import { useKitchens } from '../../composables/fireux/firestore/objects/kitchen/useKitchens'
 import { useKitchenInterface } from '../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../models/objects/kitchen.model'
-import { Kitchen as KitchenModelRuntime } from '../../models/objects/kitchen.model';
+import { Kitchen as KitchenModelRuntime } from '../../models/objects/kitchen.model'
 
 definePageMeta({
   layout: 'dev',
