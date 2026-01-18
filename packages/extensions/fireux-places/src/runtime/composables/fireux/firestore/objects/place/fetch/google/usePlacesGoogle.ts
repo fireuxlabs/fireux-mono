@@ -1,4 +1,4 @@
-import type { GooglePlace, PlaceUpsertInput } from '../../../../../../../models/place.model'
+import type { GooglePlace, PlaceUpsertInput } from '../../../../../../../models/objects/place.model'
 import type { PlaceCard } from '../../utils/view/usePlacesInterface'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'

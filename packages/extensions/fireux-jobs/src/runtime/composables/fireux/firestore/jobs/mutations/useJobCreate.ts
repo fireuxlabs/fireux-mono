@@ -9,7 +9,7 @@ import { useState } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import type { JobCreateInput, JobStatus } from '../../../../../models/job.model'
+import type { JobCreateInput, JobStatus } from '../../../../../models/objects/job.model'
 
 export type JobCreateForm = {
   title: string

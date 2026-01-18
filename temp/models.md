@@ -34,8 +34,8 @@ Objects
 These are older helper-style models (generic CRUD helpers, protocol helpers, or mixed UI-ish utilities). If they’re still used, don’t delete yet — just treat them as “not canon”.
 
 - `packages/core/fireux-core/src/runtime/models/objects/object.model.ts` — generic CRUD helper types (legacy)
-- `packages/core/fireux-core/src/runtime/models/objects/protocols.ts` — protocol helpers (legacy)
-- `packages/core/fireux-core/src/runtime/models/utils/avatarManager.ts` — avatar helper utilities (legacy)
+- `packages/core/fireux-core/src/runtime/models/shared/protocols.ts` — protocol helpers (legacy)
+- `packages/core/fireux-core/src/runtime/models/shared/avatarManager.ts` — avatar helper utilities (legacy)
 
 ### Core (fireux-core)
 - `packages/core/fireux-core/src/runtime/models/core/user.model.ts` — `User`, `AppUser`
@@ -43,20 +43,20 @@ These are older helper-style models (generic CRUD helpers, protocol helpers, or 
 - `packages/core/fireux-core/src/runtime/models/core/profile.model.ts` — `CoreProfileBase`, `AppProfileBase`, `ProfileConfig`
 - `packages/core/fireux-core/src/runtime/models/core/app.model.ts` — `App`
 - `packages/core/fireux-core/src/runtime/models/core/app.supporting.ts` — `AppRole`, `AppSocialLinks`, `createEmptyAppSocialLinks`, `FireuxMeta`
-- `packages/core/fireux-core/src/runtime/models/core/ecosystem.model.ts` — `FireuxEcosystemRegistryDoc`
-- `packages/core/fireux-core/src/runtime/models/core/module.model.ts` — `FireuxModuleRegistryDoc`
-- `packages/core/fireux-core/src/runtime/models/task.model.ts` — `CoreTask`
-- `packages/core/fireux-core/src/runtime/models/objects/protocols.ts` — tiny protocol types (`BaseObject`, `WithAuthor`, `Sluggable`)
+- `packages/core/fireux-core/src/runtime/models/system/ecosystem.model.ts` — `FireuxEcosystemRegistryDoc`
+- `packages/core/fireux-core/src/runtime/models/system/module.model.ts` — `FireuxModuleRegistryDoc`
+- `packages/core/fireux-core/src/runtime/models/shared/task.model.ts` — `CoreTask`
+- `packages/core/fireux-core/src/runtime/models/shared/protocols.ts` — tiny protocol types (`BaseObject`, `WithAuthor`, `Sluggable`)
 - `packages/core/fireux-core/src/runtime/models/objects/object.model.ts` — generic CRUD model types (`FirestoreObject`, `ObjectInput`, `ObjectUpdate`, `ObjectCRUD`)
-- `packages/core/fireux-core/src/runtime/models/utils/avatarManager.ts` — `AvatarManager`
+- `packages/core/fireux-core/src/runtime/models/shared/avatarManager.ts` — `AvatarManager`
 
 ### Extensions
 - `packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts` — canonical Places (`BasePlace`, `GooglePlace`, `Place`)
-- `packages/extensions/fireux-places/src/runtime/models/place.model.ts` — back-compat re-export
+- `packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts` — back-compat re-export
 - `packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts` — Company overlay (Place-bound)
 - `packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts` — Kitchen overlay (Place-bound)
 - `packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts` — canonical `Job`
-- `packages/extensions/fireux-jobs/src/runtime/models/job.model.ts` — back-compat re-export
+- `packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts` — back-compat re-export
 - `packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts` — `AgentCore`, `AgentApp`
 - `packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/supporting.ts` — `agentConfig`
 - `packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts` — `ProfessionalCore`, `ProfessionalApp`
@@ -452,7 +452,7 @@ export interface App extends FireuxMeta {
 }
 ```
 
-### packages/core/fireux-core/src/runtime/models/core/ecosystem.model.ts
+### packages/core/fireux-core/src/runtime/models/system/ecosystem.model.ts
 
 ```ts
 /**
@@ -467,7 +467,7 @@ export interface FireuxEcosystemRegistryDoc {
 }
 ```
 
-### packages/core/fireux-core/src/runtime/models/core/module.model.ts
+### packages/core/fireux-core/src/runtime/models/system/module.model.ts
 
 ```ts
 /**
@@ -480,7 +480,7 @@ export interface FireuxModuleRegistryDoc {
 }
 ```
 
-### packages/core/fireux-core/src/runtime/models/task.model.ts
+### packages/core/fireux-core/src/runtime/models/shared/task.model.ts
 
 ```ts
 import type { FirebaseTimestamp } from '../../types/firebase'
@@ -513,7 +513,7 @@ export interface CoreTask {
 }
 ```
 
-### packages/core/fireux-core/src/runtime/models/objects/protocols.ts
+### packages/core/fireux-core/src/runtime/models/shared/protocols.ts
 
 ```ts
 export interface BaseObject {
@@ -622,7 +622,7 @@ export interface ObjectCRUD<T extends FirestoreObject> {
 }
 ```
 
-### packages/core/fireux-core/src/runtime/models/utils/avatarManager.ts
+### packages/core/fireux-core/src/runtime/models/shared/avatarManager.ts
 
 ```ts
 /**
@@ -820,10 +820,10 @@ export interface Place extends BasePlace {
 export type PlaceUpsertInput = Omit<Place, 'creator_id' | 'created_at' | 'updated_at'>
 ```
 
-### packages/extensions/fireux-places/src/runtime/models/place.model.ts (back-compat re-export)
+### packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts (back-compat re-export)
 
 ```ts
-// FILE: packages/extensions/fireux-places/src/runtime/models/place.model.ts
+// FILE: packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
 
 // Back-compat re-export.
 // Canonical location: `models/objects/place.model.ts`
@@ -949,10 +949,10 @@ export interface Job {
 }
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/models/job.model.ts (back-compat re-export)
+### packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts (back-compat re-export)
 
 ```ts
-// FILE: packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
+// FILE: packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts
 
 // Back-compat re-export.
 // Canonical location: `models/objects/job.model.ts`
@@ -1138,7 +1138,7 @@ export const professionalConfig: ProfileConfig = {
 // FILE: packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts
 
 // Author identity comes from CoreUser (do not import from AppUser)
-import type { Sluggable } from 'fireux-core/runtime/models/objects/protocols.ts'
+import type { Sluggable } from 'fireux-core/runtime/models/shared/protocols.ts'
 
 // ------------------------------------------------------------------
 // Author & full BlogPost

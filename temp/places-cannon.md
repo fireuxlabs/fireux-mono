@@ -138,7 +138,7 @@ Placement rules:
 
 Repo paths today (FireUX mono conventions):
 - Data model (not yet under `models/objects/`):
-  - `packages/extensions/fireux-places/src/runtime/models/place.model.ts`
+  - `packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts`
 - Entry point:
   - `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/usePlaces.ts`
 - Fetch:
@@ -161,7 +161,7 @@ Repo paths today (FireUX mono conventions):
 - ✅ UI components can import UI shapes/mappers from `view/usePlacesInterface.ts`.
 
 Gaps (against the starter stack):
-- ⚠️ Model placement: Places uses `runtime/models/place.model.ts`; starter wants `runtime/models/objects/Place.model.ts`.
+- ⚠️ Model placement: Places uses `runtime/models/objects/place.model.ts`; starter wants `runtime/models/objects/Place.model.ts`.
 - ⚠️ Model contents: `place.model.ts` still includes UI-ish types/mappers (`PlaceCard`, `toCell`). Starter wants those only in `view/use<Object>Interface.ts`.
 - ⚠️ Fetch shape: `usePlaceCollection` returns `collection` (possibly `undefined`) and `count`, but does not expose a first-class `pending` + `error` pair like Misebox’s patterns.
 - ⚠️ Naming: we currently use `utils/view/usePlacesInterface.ts` rather than `view/usePlaceInterface.ts` directly under the object. Starter template puts `view/` alongside `fetch/` and `mutations/`.

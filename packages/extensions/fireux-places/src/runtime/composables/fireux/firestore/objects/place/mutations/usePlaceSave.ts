@@ -1,7 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'vuefire'
-import type { PlaceUpsertInput } from '../../../../../../models/place.model'
+import type { PlaceUpsertInput } from '../../../../../../models/objects/place.model'
 import { canonicalPlaceId } from '../fetch/google/usePlacesGoogle'
 import { toPlaceCollectionPath, usePlaceTypesConfig } from '../utils/placeCollections'
 

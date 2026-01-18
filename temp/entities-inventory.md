@@ -347,7 +347,7 @@
   - packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/utils/view/useJobComputed.ts
   - packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/utils/view/useJobInterface.ts
 - Models:
-  - packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
+  - packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts
 - Index shape:
   - CTA (page-level v-if) + Sections (AgentCollection gated + GlobalCollection always).
 
@@ -421,7 +421,7 @@
   - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/utils/view/usePlaceLogos.ts
   - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface.ts
 - Models:
-  - packages/extensions/fireux-places/src/runtime/models/place.model.ts
+  - packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
   - packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
 - Index shape:
   - Search/confirm “CTA-like” section + List (no toggle; no debug).
@@ -491,7 +491,7 @@
 - Composables:
   - (none found)
 - Models:
-  - packages/core/fireux-core/src/runtime/models/task.model.ts
+  - packages/core/fireux-core/src/runtime/models/shared/task.model.ts
   - packages/ecosystem/fireux-misebox/src/runtime/models/objects/Task.model.ts
 - Index shape:
   - No runtime index page.

@@ -1,4 +1,4 @@
-import type { Job } from '../../../../../../models/job.model'
+import type { Job } from '../../../../../../models/objects/job.model'
 
 export namespace JobCard {
   export type Card = {

@@ -74,7 +74,7 @@ This note maps the Phase-1 “prove the graph” briefing onto the current FireU
 
 **Exists** ✅ (strong match, slightly different field names)
 - Collection: `places/{placeId}` (the composable expects an ID when fetching a doc)
-- Model: `packages/extensions/fireux-places/src/runtime/models/place.model.ts`
+- Model: `packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts`
 - Identity:
   - Uses `place_id` (Google Place ID)
 - Core fields:
@@ -108,7 +108,7 @@ This note maps the Phase-1 “prove the graph” briefing onto the current FireU
 
 **Exists** ✅ (minimal, but the graph links are mostly missing)
 - Collection: `jobs/{jobId}`
-- Model: `packages/extensions/fireux-jobs/src/runtime/models/job.model.ts`
+- Model: `packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts`
 - Current core fields:
   - `id`, `app_id`, `created_by`, `title`, `status ('open'|'closed')`, optional `description`
 - Links present:

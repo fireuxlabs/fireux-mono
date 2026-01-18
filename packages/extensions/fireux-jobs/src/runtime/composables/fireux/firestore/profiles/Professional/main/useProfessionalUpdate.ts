@@ -5,7 +5,7 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceSave'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { useFirestore } from 'vuefire'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 import type {

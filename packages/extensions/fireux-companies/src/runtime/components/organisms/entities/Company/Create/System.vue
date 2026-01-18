@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { doc, getDoc } from 'firebase/firestore'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { ref } from 'vue'
 import { useFirestore } from 'vuefire'
 import { useCompanyCreate } from '../../../../../composables/fireux/firestore/objects/company/mutations/useCompanyCreate'

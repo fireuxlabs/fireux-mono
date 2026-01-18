@@ -26,6 +26,9 @@ export interface Place extends FireuxAuthored {
 	/** Canonical place image for UI (empty string means unset). */
 	place_image: string
 
+	/** User id that has claimed this place (empty string means unclaimed). */
+	claimed_by: string
+
 	source: PlaceSource
 
 	/** “How we found this place” (kept for UX + duplicate avoidance). */
@@ -44,6 +47,9 @@ export const Place: Place = {
 
 	/** Canonical place image for UI (empty string means unset). */
 	place_image: '',
+
+	/** User id that has claimed this place (empty string means unclaimed). */
+	claimed_by: '',
 
 	// Drift validation uses enum:... markers in runtime models.
 	source: 'enum:google|fireux|manual' as unknown as PlaceSource,

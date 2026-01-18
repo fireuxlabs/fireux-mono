@@ -1,6 +1,6 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { useFirestore } from 'vuefire'
 import type { CompanyCreateInput } from '../../../../../../models/objects/company.model'
 

@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FireuxModuleRegistryDoc } from 'fireux-core/runtime/models/core/module.model'
+import type { FireuxModuleRegistryDoc } from 'fireux-core/runtime/models/system/module.model'
 import { useState } from 'nuxt/app'
 
 definePageMeta({
