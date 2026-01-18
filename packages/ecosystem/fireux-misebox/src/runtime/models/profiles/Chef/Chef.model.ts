@@ -1,7 +1,7 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts
 
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { AppProfileBase, CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { chefConfig } from './supporting'
 
 /**

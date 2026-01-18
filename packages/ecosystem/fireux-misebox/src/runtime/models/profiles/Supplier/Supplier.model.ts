@@ -1,7 +1,7 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts
 
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { AppProfileBase, CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { supplierConfig } from './supporting'
 
 /**

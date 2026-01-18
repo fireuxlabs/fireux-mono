@@ -20,7 +20,7 @@
     </template>
 
     <div class="space-y-4">
-      <DevDriftToolbar
+      <DriftToolbar
         v-if="showDrift"
         :drift-kind="driftKind"
         :selected-field="selectedField"
@@ -37,7 +37,7 @@
     </div>
 
     <template v-if="jsonData != null || $slots.footer" #footer>
-      <DevJson
+      <Json
         v-if="jsonData != null"
         :title="jsonTitle || 'JSON'"
         :data="jsonData"
@@ -51,8 +51,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import DevDriftToolbar from './DevDriftToolbar.vue'
-import DevJson from './DevJson.vue'
+import DriftToolbar from './DriftToolbar.vue'
+import Json from './Json.vue'
 
 defineOptions({ name: 'Pane' })
 

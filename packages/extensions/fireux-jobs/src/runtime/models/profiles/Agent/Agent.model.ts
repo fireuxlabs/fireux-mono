@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
 
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { AppProfileBase, CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { agentConfig } from './supporting'
 
 /**
