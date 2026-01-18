@@ -2,52 +2,16 @@
   <DevPane
     title="Places collection"
     description="Browse places resolved for this runtime and filter by model drift."
+    :drift-kind="driftKind"
+    :selected-field="selectedField"
+    :filter-options="filterOptions"
+    :copy-label="copying ? 'Copying…' : 'Copy filtered drift'"
+    :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+    :copy-disabled="copying"
+    @update:drift-kind="setDriftKind"
+    @update:selected-field="(value) => (selectedField = value)"
+    @copy="copyFiltered"
   >
-    <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-      <span class="font-medium">Drift:</span>
-
-      <UButton
-        size="xs"
-        :variant="driftKind === 'missing' ? 'solid' : 'ghost'"
-        color="primary"
-        @click="setDriftKind('missing')"
-      >
-        Missing
-      </UButton>
-
-      <UButton
-        size="xs"
-        :variant="driftKind === 'extra' ? 'solid' : 'ghost'"
-        color="primary"
-        @click="setDriftKind('extra')"
-      >
-        Extra
-      </UButton>
-
-      <span class="font-medium ml-2">Filter {{ driftKind }}:</span>
-
-      <UButton
-        v-for="option in filterOptions"
-        :key="option.value"
-        size="xs"
-        :variant="selectedField === option.value ? 'solid' : 'ghost'"
-        color="primary"
-        @click="selectedField = option.value"
-      >
-        {{ option.label }}
-      </UButton>
-
-      <UButton
-        size="xs"
-        variant="outline"
-        :disabled="copying"
-        :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-        @click="copyFiltered"
-      >
-        {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-      </UButton>
-    </div>
-
     <div class="space-y-2">
       <UAlert
         v-if="!filteredCards.length"
@@ -76,8 +40,10 @@
   </DevPane>
 
   <DevPane
-    :debug-data="allJsonPayload"
-    :default-open="false"
+    title="Places (JSON)"
+    :json-title="'Places (JSON)'"
+    :json-data="allJsonPayload"
+    :json-default-open="false"
   />
 </template>
 

@@ -34,7 +34,7 @@ export function useCompanyCreate() {
         formatted_address: String(input.formatted_address ?? '').trim(),
         lat: Number(input.lat ?? 0),
         lng: Number(input.lng ?? 0),
-        avatar: String(input.avatar ?? '').trim(),
+        place_image: String(input.place_image ?? '').trim(),
         website: String(input.website ?? '').trim(),
       },
       { raw: false }

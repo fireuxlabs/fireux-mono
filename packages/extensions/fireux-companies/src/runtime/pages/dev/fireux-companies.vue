@@ -6,21 +6,38 @@
     />
 
     <UPageBody class="space-y-10">
-      <DevPane
-        title="Company collection"
-        description="Browse companies resolved for this runtime and filter by model drift."
-      >
-        <DevDriftToolbar
-          :drift-kind="driftKind"
-          :selected-field="selectedField"
-          :filter-options="filterOptions"
-          :copy-label="copying ? 'Copying…' : 'Copy drift'"
-          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-          :copy-disabled="copying"
-          @update:drift-kind="setDriftKind"
-          @update:selected-field="updateSelectedField"
-          @copy="copyFiltered"
-        />
+      <UCard>
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Companies collection
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse companies resolved for this runtime and filter by model drift.
+              </p>
+              <DevDriftToolbar
+                :drift-kind="driftKind"
+                :selected-field="selectedField"
+                :filter-options="filterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift · Companies'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setDriftKind"
+                @update:selected-field="updateSelectedField"
+                @copy="copyFiltered"
+              />
+            </div>
+          </div>
+        </template>
+
+        <template #footer>
+          <DevJson
+            :title="'Companies (JSON)'"
+            :data="allJsonPayload"
+            :default-open="false"
+          />
+        </template>
 
         <UAlert
           v-if="!filteredCards.length"
@@ -45,19 +62,12 @@
             />
           </component>
         </div>
-      </DevPane>
-
-      <DevJson
-        title="Companies (JSON)"
-        :data="allJsonPayload"
-        :default-open="false"
-      />
+      </UCard>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import DevDriftToolbar from 'fireux-core/runtime/components/dev/DevDriftToolbar'
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
@@ -83,6 +93,7 @@ const { card: makeCard } = useCompanyInterface()
 const { copyJSON, copying } = useDevClipboard()
 
 const companyList = computed<CompanyModel[]>(() => companies.value ?? [])
+const companyModelRuntime = CompanyModelRuntime as unknown as Record<string, unknown>
 
 const {
   driftKind,
@@ -93,7 +104,7 @@ const {
   filteredCollection,
 } = useDevDriftFilter({
   collection: companyList,
-  runtimeModel: CompanyModelRuntime as unknown as Record<string, unknown>,
+  runtimeModel: companyModelRuntime,
 })
 
 const filteredCards = computed(() =>

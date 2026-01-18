@@ -27,28 +27,20 @@
       </p>
     </UCard>
 
-    <component
-      :is="DevJson"
-      v-if="showDebug && DevJson"
-      :data="debugPayload"
-    />
+    <pre v-if="showDebug" class="text-xs text-muted">{{ debugPayload }}</pre>
   </section>
 </template>
 
 <script setup lang="ts">
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import { computed, defineAsyncComponent, ref } from 'vue'
+import { computed, ref } from 'vue'
 import {
-    canonicalPlaceId,
-    fetchPlaceDetails,
+  canonicalPlaceId,
+  fetchPlaceDetails,
 } from '../../../../../composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import type { BasePlace, PlaceUpsertInput } from '../../../../../models/place.model'
-
-const DevJson = defineAsyncComponent(() =>
-  import('fireux-core/runtime/components/dev/DevJson.vue')
-)
 
 interface Props {
   type?: string | null

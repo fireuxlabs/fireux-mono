@@ -22,27 +22,25 @@
         v-if="variant === 'pill'"
         class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <component
-          :is="wrapperFor(card)"
-          v-for="card in cards"
-          :key="card.id"
-          v-bind="wrapperPropsFor(card)"
-          class="block"
-        >
-          <PlaceCardsPill v-bind="card" />
-        </component>
+        <template v-for="card in cards" :key="card.id">
+          <NuxtLink v-if="card.to" :to="card.to" class="block">
+            <PlaceCardsPill v-bind="card" />
+          </NuxtLink>
+          <div v-else class="block">
+            <PlaceCardsPill v-bind="card" />
+          </div>
+        </template>
       </div>
 
       <div v-else class="grid gap-3 md:grid-cols-2">
-        <component
-          :is="wrapperFor(card)"
-          v-for="card in cards"
-          :key="card.id"
-          v-bind="wrapperPropsFor(card)"
-          class="block"
-        >
-          <PlaceCardsCell v-bind="card" />
-        </component>
+        <template v-for="card in cards" :key="card.id">
+          <NuxtLink v-if="card.to" :to="card.to" class="block">
+            <PlaceCardsCell v-bind="card" />
+          </NuxtLink>
+          <div v-else class="block">
+            <PlaceCardsCell v-bind="card" />
+          </div>
+        </template>
       </div>
     </div>
   </UCard>

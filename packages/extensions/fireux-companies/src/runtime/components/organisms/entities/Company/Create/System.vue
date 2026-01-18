@@ -75,7 +75,7 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
       formatted_address: place.formatted_address ?? '',
       lat: place.lat ?? 0,
       lng: place.lng ?? 0,
-      avatar: place.place_image ?? '',
+      place_image: place.place_image ?? '',
       website: website.value.trim(),
     })
 

@@ -46,10 +46,70 @@
 
           <UCard>
             <template #header>
-              <div class="text-sm font-semibold">Raw</div>
+              <div class="text-sm font-semibold">Details</div>
             </template>
 
-            <pre class="max-h-[420px] overflow-auto text-xs">{{ json }}</pre>
+            <div class="grid gap-2 sm:grid-cols-2 p-4 text-sm">
+              <div class="text-dimmed">Address</div>
+              <div class="break-words">{{ place.formatted_address || '—' }}</div>
+
+              <div class="text-dimmed">Location</div>
+              <div>
+                <a
+                  v-if="place.lat && place.lng"
+                  :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.lat},${place.lng}`)}`"
+                  target="_blank"
+                  rel="noreferrer"
+                  class="text-primary hover:underline inline-flex items-center"
+                  aria-label="Open in Google Maps"
+                >
+                  <i class="i-lucide-map-pin" />
+                </a>
+                <span v-else>—</span>
+              </div>
+
+              <div class="text-dimmed">Source</div>
+              <div class="capitalize">{{ place.source || '—' }}</div>
+
+              <div class="text-dimmed">Search Term</div>
+              <div class="break-words">{{ place.search_term || '—' }}</div>
+
+              <div class="text-dimmed">ID</div>
+              <div class="break-words">{{ place.id }}</div>
+            </div>
+          </UCard>
+
+          <UCard>
+            <template #header>
+              <div class="text-sm font-semibold">Actions</div>
+            </template>
+
+            <div class="p-4 flex flex-wrap items-center gap-2">
+              <a
+                v-if="place.lat && place.lng"
+                :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.lat},${place.lng}`)}`"
+                target="_blank"
+                rel="noreferrer"
+                class="text-primary hover:underline"
+              >
+                Open in Google Maps
+              </a>
+
+              <NuxtLink v-if="docId" :to="editTo" class="text-primary hover:underline">
+                Edit place
+              </NuxtLink>
+            </div>
+          </UCard>
+
+          <UCard>
+            <template #header>
+              <div class="text-sm font-semibold">Raw JSON</div>
+            </template>
+
+            <details class="p-4">
+              <summary class="cursor-pointer text-sm text-dimmed">Show raw JSON</summary>
+              <pre class="mt-2 max-h-[420px] overflow-auto text-xs">{{ json }}</pre>
+            </details>
           </UCard>
         </div>
       </UPageBody>
@@ -81,9 +141,6 @@ const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const editTo = computed(() =>
-  docId ? `/places/edit/${encodeURIComponent(docId)}` : '/places'
-)
 
 const { firestoreFetchDoc } = useFirestoreRead()
 const rawDoc = docId ? await firestoreFetchDoc<Place>('places', docId) : null
@@ -97,9 +154,35 @@ const pageDescription = computed(
   () => place.value?.formatted_address || 'Saved place details.'
 )
 
+const editTo = computed(() =>
+  docId ? `/places/edit/${encodeURIComponent(docId)}` : '/places'
+)
+
 useHead({
   title: computed(() => `${appName} | ${pageTitle.value}`),
 })
 
-const json = computed(() => JSON.stringify(place.value, null, 2))
+const json = computed(() => {
+  const v = place.value
+  if (!v) return ''
+  const seen = new WeakSet()
+  try {
+    return JSON.stringify(v, function (_, value) {
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) return '[Circular]'
+        seen.add(value)
+      }
+      return value
+    }, 2)
+  } catch (e) {
+    try {
+      // Fallback: attempt to stringify the raw object
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { toRaw } = require('vue')
+      return JSON.stringify(toRaw(v), null, 2)
+    } catch (e2) {
+      return String(e)
+    }
+  }
+})
 </script>

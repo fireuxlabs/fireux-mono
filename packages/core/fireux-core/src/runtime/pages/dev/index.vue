@@ -204,7 +204,12 @@
       <template #header>
         <h2>Runtime JSON</h2>
       </template>
-      <DevJson :data="{ runtime: cfg }" />
+      <DevPane
+        title="Runtime (JSON)"
+        :json-title="'Runtime (JSON)'"
+        :json-data="{ runtime: cfg }"
+        :json-default-open="false"
+      />
     </UCard>
   </div>
 </template>

@@ -21,9 +21,7 @@ export type KitchenShape = FireuxAuthored & {
 
   name: string
   formatted_address: string
-  lat: number
-  lng: number
-  avatar: string
+  kitchen_image: string
 
   /** Optional kitchen-specific details (empty string means unset) */
   website: string
@@ -36,9 +34,7 @@ export const Kitchen: KitchenShape = {
 
   name: '',
   formatted_address: '',
-  lat: 0,
-  lng: 0,
-  avatar: '',
+  kitchen_image: '',
 
   /** Optional kitchen-specific details (empty string means unset) */
   website: '',

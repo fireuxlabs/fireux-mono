@@ -11,6 +11,7 @@ The appendices collect reference material that supports the main handbook chapte
 ## Planned Sections
 
 - Environment variable reference
+- [Migrations runbook](./migrations.md)
 - [FireUX alignment](./fireux-alignment.md)
 - [Scripts & commands cheatsheet](./scripts-cheatsheet.md)
 - Troubleshooting playbooks

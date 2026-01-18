@@ -1,11 +1,11 @@
-import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { deleteField, doc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import { requireUid } from '../../../utils/useEnsureCommon'
-import { useFirestoreManager } from '../../../operations/useFirestoreManager'
-import { ensureUserAppMembership } from '../../user/utils/ensureHelpers'
 import type { App } from '../../../../../../models/core/app.model'
 import { createEmptyAppSocialLinks } from '../../../../../../models/core/app.supporting'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useFirestoreManager } from '../../../operations/useFirestoreManager'
+import { requireUid } from '../../../utils/useEnsureCommon'
+import { ensureUserAppMembership } from '../../user/utils/ensureHelpers'
 
 type EnsureAppDocResult = { created: boolean; id: string }
 type EnsureMembershipResult = { created: boolean }
@@ -62,7 +62,7 @@ export function useAppEnsure() {
         wordmark_dark_url: '',
       } satisfies App
 
-      await setDocument<App>('apps', cfg.appId, payload)
+      await setDocument<App>('apps', cfg.appId, payload, { mode: 'date' })
       await ensureAppMembership(uid, 'admin')
       return { created: true, id: cfg.appId }
     }

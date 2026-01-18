@@ -32,25 +32,16 @@
         </div>
       </div>
 
-      <component
-        :is="DevJson"
-        v-if="showDebug && DevJson"
-        title="Agent CTA Debug"
-        :data="debugPayload"
-      />
+      <pre v-if="showDebug" class="text-xs text-muted">{{ debugPayload }}</pre>
     </template>
   </UPageCTA>
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth.ts'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { computed, ref, watch } from 'vue'
 import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
-
-const DevJson = defineAsyncComponent(() =>
-  import('fireux-core/runtime/components/dev/DevJson.vue')
-)
 
 const { coreProfile, card } = useAgent()
 const { uid } = useAuth()

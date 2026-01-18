@@ -4,6 +4,14 @@ import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { AppRole, AppSocialLinks } from './app.supporting'
 import type { FireuxAuthored } from './meta.model'
 
+/** Grouped media assets for apps. */
+export type AppMedia = {
+  thumbnail_url: string
+  logo_url: string
+  wordmark_light_url: string
+  wordmark_dark_url: string
+}
+
 /**
  * Core Firestore App document
  * Path: /apps/<appId>
@@ -34,7 +42,7 @@ export type AppShape = FireuxAuthored & {
   // Governance
   join_requests: string[]
   admin_ids: string[]
-  created_by: string
+  // Governance fields
 
   // Content
   tagline: string
@@ -49,10 +57,7 @@ export type AppShape = FireuxAuthored & {
   user_count: number
 
   // Brand / media
-  thumbnail_url: string
-  logo_url: string
-  wordmark_light_url: string
-  wordmark_dark_url: string
+  media: AppMedia
 }
 
 // 🔑 Runtime + canonical shape (source of truth)
@@ -71,7 +76,7 @@ export const App: AppShape = {
   // Governance
   join_requests: [] as string[],
   admin_ids: [] as string[],
-  created_by: '',
+  // (removed legacy `created_by` — use `creator_id` instead)
 
   // Content
   tagline: '',
@@ -86,15 +91,21 @@ export const App: AppShape = {
   user_count: 0,
 
   // Brand / media
-  thumbnail_url: '',
-  logo_url: '',
-  wordmark_light_url: '',
-  wordmark_dark_url: '',
+  media: {
+    thumbnail_url: '',
+    logo_url: '',
+    wordmark_light_url: '',
+    wordmark_dark_url: '',
+  },
 
   // Authored (FireuxAuthored)
   creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
+  // optional client-side stamps (opt-in)
+  created_at_client: undefined,
+  created_at_precise: undefined,
+  stamp_mode: undefined,
 }
 
 // ✅ Type derived from the runtime model (no duplication)

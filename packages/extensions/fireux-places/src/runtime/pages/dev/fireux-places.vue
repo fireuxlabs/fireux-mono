@@ -5,33 +5,45 @@
       description="Collection-first view; filter by missing or extra fields (against the runtime Place model)."
     />
 
-    <UPageBody class="space-y-6">
-      <DevModel
-        title="Place model shape"
-        :model="placeModelRuntime"
-      />
+    <UPageBody class="space-y-10">
+      <UCard>
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Places collection
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse places resolved for this runtime and filter by model drift.
+              </p>
+              <DevDriftToolbar
+                :drift-kind="driftKind"
+                :selected-field="selectedField"
+                :filter-options="filterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift · Places'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setDriftKind"
+                @update:selected-field="updateSelectedField"
+                @copy="copyDrift"
+              />
+            </div>
+          </div>
+        </template>
 
-      <DevDriftToolbar
-        :drift-kind="driftKind"
-        :selected-field="selectedField"
-        :filter-options="filterOptions"
-        :copy-label="copying ? 'Copying…' : 'Copy drift'"
-        :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-        :copy-disabled="copying"
-        @update:drift-kind="setDriftKind"
-        @update:selected-field="updateSelectedField"
-        @copy="copyDrift"
-      />
+        <template #footer>
+          <DevJson
+            :title="'Places (JSON)'"
+            :data="allJsonPayload"
+            :default-open="false"
+          />
+        </template>
 
-      <PlaceCollectionManager
-        :cards="placeCards"
-        :total="totalPlaces"
-      />
-      <DevJson
-        title="Places (JSON)"
-        :data="allJsonPayload"
-        :default-open="false"
-      />
+        <PlaceCollectionManager
+          :cards="placeCards"
+          :total="totalPlaces"
+        />
+      </UCard>
     </UPageBody>
   </UPage>
 </template>

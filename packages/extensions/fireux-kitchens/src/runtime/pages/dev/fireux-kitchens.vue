@@ -6,21 +6,38 @@
     />
 
     <UPageBody class="space-y-10">
-      <DevPane
-        title="Kitchen collection"
-        description="Browse kitchens resolved for this runtime and filter by model drift."
-      >
-        <DevDriftToolbar
-          :drift-kind="driftKind"
-          :selected-field="selectedField"
-          :filter-options="filterOptions"
-          :copy-label="copying ? 'Copying…' : 'Copy drift'"
-          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-          :copy-disabled="copying"
-          @update:drift-kind="setDriftKind"
-          @update:selected-field="updateSelectedField"
-          @copy="copyFiltered"
-        />
+      <UCard>
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Kitchens collection
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse kitchens resolved for this runtime and filter by model drift.
+              </p>
+              <DevDriftToolbar
+                :drift-kind="driftKind"
+                :selected-field="selectedField"
+                :filter-options="filterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift · Kitchens'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setDriftKind"
+                @update:selected-field="updateSelectedField"
+                @copy="copyFiltered"
+              />
+            </div>
+          </div>
+        </template>
+
+        <template #footer>
+          <DevJson
+            :title="'Kitchens (JSON)'"
+            :data="allJsonPayload"
+            :default-open="false"
+          />
+        </template>
 
         <UAlert
           v-if="!filteredCards.length"
@@ -45,27 +62,15 @@
             />
           </component>
         </div>
-      </DevPane>
-
-      <DevJson
-        title="Kitchens (JSON)"
-        :data="allJsonPayload"
-        :default-open="false"
-      />
+      </UCard>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import DevDriftToolbar from 'fireux-core/runtime/components/dev/DevDriftToolbar'
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
-import {
-    humanizeDriftPath,
-    resolveDriftFromModel,
-    type DriftKind,
-    type ModelDrift,
-} from 'fireux-core/runtime/composables/dev/useModelDrift'
-import { computed, ref, watch } from 'vue'
+import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
+import { computed } from 'vue'
 import { useKitchens } from '../../composables/fireux/firestore/objects/kitchen/useKitchens'
 import { useKitchenInterface } from '../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen as KitchenModel } from '../../models/objects/kitchen.model'
@@ -88,83 +93,42 @@ const { card: makeCard } = useKitchenInterface()
 
 const { collection } = useKitchens<KitchenModel>()
 const kitchenList = computed<KitchenModel[]>(() => (collection.value ?? []) as KitchenModel[])
+const kitchenModelRuntime = KitchenModelRuntime as unknown as Record<string, unknown>
 
-const kitchenCards = computed(() =>
-  kitchenList.value
-    .map((k) => makeCard(k))
+const {
+  driftKind,
+  setDriftKind,
+  selectedField,
+  driftById,
+  filterOptions,
+  filteredCollection,
+} = useDevDriftFilter({
+  collection: kitchenList,
+  runtimeModel: kitchenModelRuntime,
+})
+
+const filteredCards = computed(() =>
+  filteredCollection.value
+    .map((kitchen) => makeCard(kitchen))
     .filter((card): card is NonNullable<typeof card> => Boolean(card))
 )
 
-type DriftById = Map<string, ModelDrift>
-
-const driftKind = ref<DriftKind>('missing')
-const selectedField = ref<string>('')
-
-const setDriftKind = (kind: DriftKind) => {
-  driftKind.value = kind
-}
-
-watch(driftKind, () => {
-  selectedField.value = ''
-})
-
-const driftById = computed<DriftById>(() => {
-  const map = new Map<string, ModelDrift>()
-  for (const kitchen of kitchenList.value) {
-    if (!kitchen?.id) continue
-    const drift = resolveDriftFromModel(
-      KitchenModelRuntime as unknown as Record<string, unknown>,
-      kitchen as unknown as Record<string, unknown>
-    )
-    map.set(kitchen.id, drift)
-  }
-  return map
-})
-
-const fieldOptions = computed(() => {
-  const counts = new Map<string, number>()
-  for (const drift of driftById.value.values()) {
-    const list = driftKind.value === 'missing' ? drift.missing : drift.extra
-    for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
-  }
-
-  return [...counts.entries()]
-    .map(([key, count]) => ({ key, count, label: `${humanizeDriftPath(key)} (${count})` }))
-    .sort((a, b) => a.label.localeCompare(b.label))
-})
-
-const filterOptions = computed(() => [
-  { label: 'All', value: '' },
-  ...fieldOptions.value.map((o) => ({ label: o.label, value: o.key })),
-])
-
-const filteredCards = computed(() => {
-  if (!selectedField.value) return kitchenCards.value
-
-  return kitchenCards.value.filter((card) => {
-    const drift = driftById.value.get(card.id)
-    if (!drift) return false
-    const list = driftKind.value === 'missing' ? drift.missing : drift.extra
-    return list.includes(selectedField.value)
-  })
-})
-
 const taglineById = computed(() => {
   const map = new Map<string, string>()
-  for (const card of kitchenCards.value) {
+  for (const card of filteredCards.value) {
     const drift = driftById.value.get(card.id)
     if (!drift) continue
     const list = driftKind.value === 'missing' ? drift.missing : drift.extra
 
     const selected = selectedField.value
     if (selected && list.includes(selected)) {
-      map.set(card.id, `${driftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${humanizeDriftPath(selected)}`)
+      map.set(card.id, `${driftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${selected}`)
       continue
     }
 
     const first = list[0]
     if (first) {
-      map.set(card.id, `${driftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${humanizeDriftPath(first)}`)
+      map.set(card.id, `${driftKind.value === 'missing' ? 'Missing' : 'Extra'}: ${first}`)
     }
   }
   return map

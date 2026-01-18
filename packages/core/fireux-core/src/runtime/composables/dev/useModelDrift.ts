@@ -82,11 +82,35 @@ export const resolveDriftFromModel = (
     }
 
     if (isMissingValue(modelValue, dataValue)) {
+      // Allow aliasing between legacy `created_by` and new `creator_id`.
+      if (
+        (key === 'created_by' && typeof dataObj['creator_id'] === 'string') ||
+        (key === 'creator_id' && typeof dataObj['created_by'] === 'string')
+      ) {
+        continue
+      }
+
+      // If the model expects a timestamp-like empty object, tolerate common
+      // canonical timestamp fields present on the data (created_at/updated_at)
+      if (
+        isPlainObject(modelValue) &&
+        Object.keys(modelValue).length === 0 &&
+        (dataObj['created_at'] !== undefined || dataObj['updated_at'] !== undefined)
+      ) {
+        continue
+      }
+
       missing.push(`${path} (${kindOf(modelValue)})`)
     }
   }
 
   for (const key of Object.keys(dataObj)) {
+    // Ignore known opt-in client-side timestamp fields and stamp metadata
+    // These fields are added by stamping modes (time/pinpoint) and should not
+    // be treated as drift when the canonical model doesn't include them.
+    const IGNORE_EXTRA_TIMESTAMP = /^(created_at(?:_client|_precise|_ms)?|updated_at(?:_client|_precise|_ms)?|stamp_mode)$/
+    if (IGNORE_EXTRA_TIMESTAMP.test(key)) continue
+
     if (key in model) continue
     const path = basePath ? `${basePath}.${key}` : key
     extra.push(`${path} (${kindOf(dataObj[key])})`)

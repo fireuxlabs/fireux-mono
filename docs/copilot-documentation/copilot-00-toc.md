@@ -22,6 +22,7 @@ Legacy documentation has been retired after migration into this handbook. The se
 ## Appendices
 
 - [Appendices index](./copilot-appendices/README.md)
+- [Migrations runbook](./copilot-appendices/migrations.md)
 
 ## Instructions
 

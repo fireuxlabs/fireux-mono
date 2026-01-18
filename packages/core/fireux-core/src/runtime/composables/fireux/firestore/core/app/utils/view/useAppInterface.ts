@@ -39,9 +39,10 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   const resolvedMode = useResolvedColorMode()
 
   function resolveWordmarkUrl(app: App): string {
+    const media = (app as any).media ?? {}
     return resolvedMode.value === 'dark'
-      ? app.wordmark_dark_url
-      : app.wordmark_light_url
+      ? media.wordmark_dark_url ?? ''
+      : media.wordmark_light_url ?? ''
   }
 
   function map(app: App): AppCard.Card {
@@ -49,7 +50,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       id: app.id,
       to: `/apps/${app.id}`,
 
-      avatarUrl: app.thumbnail_url ?? '',
+      avatarUrl: (app as any).media?.thumbnail_url ?? '',
 
       displayName: app.app_name ?? '',
       ecosystem: app.ecosystem ?? '',
@@ -64,9 +65,9 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       shortBio: app.short_bio ?? '',
       longBio: app.long_bio ?? '',
 
-      logoUrl: app.logo_url ?? '',
-      wordmarkLightUrl: app.wordmark_light_url ?? '',
-      wordmarkDarkUrl: app.wordmark_dark_url ?? '',
+      logoUrl: (app as any).media?.logo_url ?? '',
+      wordmarkLightUrl: (app as any).media?.wordmark_light_url ?? '',
+      wordmarkDarkUrl: (app as any).media?.wordmark_dark_url ?? '',
       wordmarkUrl: resolveWordmarkUrl(app),
 
       socialLinks: app.social_links ?? {},

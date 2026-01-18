@@ -6,22 +6,30 @@
     />
 
     <UPageBody class="space-y-10">
-      <DevPane
-        title="Jobs collection"
-        description="Browse jobs resolved for this runtime and filter by model drift."
-      >
-        <DevDriftToolbar
-          :drift-kind="jobDriftKind"
-          :selected-field="jobSelectedField"
-          :filter-options="jobFilterOptions"
-          :copy-label="copying ? 'Copying…' : 'Copy drift'"
-          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-          :copy-disabled="copying"
-          @update:drift-kind="setJobDriftKind"
-          @update:selected-field="(value) => (jobSelectedField = value)"
-          @copy="copyFilteredJobs"
-        />
-
+      <UCard>
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Jobs collection
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse jobs resolved for this runtime and filter by model drift.
+              </p>
+              <DevDriftToolbar
+                :drift-kind="jobDriftKind"
+                :selected-field="jobSelectedField"
+                :filter-options="jobFilterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setJobDriftKind"
+                @update:selected-field="(value) => (jobSelectedField = value)"
+                @copy="copyFilteredJobs"
+              />
+            </div>
+          </div>
+        </template>
         <UAlert
           v-if="!jobFilteredCards.length"
           color="neutral"
@@ -45,30 +53,39 @@
             />
           </component>
         </div>
-      </DevPane>
+        <template #footer>
+          <DevJson
+            :title="'Jobs (JSON)'"
+            :data="jobAllJsonPayload"
+            :default-open="false"
+          />
+        </template>
+      </UCard>
 
-      <DevJson
-        title="Jobs (JSON)"
-        :data="jobAllJsonPayload"
-        :default-open="false"
-      />
-
-      <DevPane
-        title="Professionals collection (global)"
-        description="Browse global professionals and filter by model drift (ProfessionalCore)."
-      >
-        <DevDriftToolbar
-          :drift-kind="professionalGlobalDriftKind"
-          :selected-field="professionalGlobalSelectedField"
-          :filter-options="professionalGlobalFilterOptions"
-          :copy-label="copying ? 'Copying…' : 'Copy drift'"
-          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-          :copy-disabled="copying"
-          @update:drift-kind="setProfessionalGlobalDriftKind"
-          @update:selected-field="(value) => (professionalGlobalSelectedField = value)"
-          @copy="copyProfessionalGlobalFiltered"
-        />
-
+      <UCard>
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Professionals collection (global)
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse global professionals and filter by model drift (ProfessionalCore).
+              </p>
+              <DevDriftToolbar
+                :drift-kind="professionalGlobalDriftKind"
+                :selected-field="professionalGlobalSelectedField"
+                :filter-options="professionalGlobalFilterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setProfessionalGlobalDriftKind"
+                @update:selected-field="(value) => (professionalGlobalSelectedField = value)"
+                @copy="copyProfessionalGlobalFiltered"
+              />
+            </div>
+          </div>
+        </template>
         <div class="space-y-2">
           <UAlert
             v-if="!professionalGlobalFilteredCards.length"
@@ -85,31 +102,39 @@
             variant="pill"
           />
         </div>
-      </DevPane>
+        <template #footer>
+          <DevJson
+            :title="'Professionals (JSON)'"
+            :data="professionalGlobalAllJsonPayload"
+            :default-open="false"
+          />
+        </template>
+      </UCard>
 
-      <DevJson
-        title="Professionals (JSON)"
-        :data="professionalGlobalAllJsonPayload"
-        :default-open="false"
-      />
-
-      <DevPane
-        v-if="isTenant && hasProfessionalLocalCollection"
-        title="Professionals collection (tenant)"
-        description="Browse tenant professionals and filter by model drift (ProfessionalCore)."
-      >
-        <DevDriftToolbar
-          :drift-kind="professionalLocalDriftKind"
-          :selected-field="professionalLocalSelectedField"
-          :filter-options="professionalLocalFilterOptions"
-          :copy-label="copying ? 'Copying…' : 'Copy drift'"
-          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-          :copy-disabled="copying"
-          @update:drift-kind="setProfessionalLocalDriftKind"
-          @update:selected-field="(value) => (professionalLocalSelectedField = value)"
-          @copy="copyProfessionalLocalFiltered"
-        />
-
+      <UCard v-if="isTenant && hasProfessionalLocalCollection">
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Professionals collection (tenant)
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse tenant professionals and filter by model drift (ProfessionalCore).
+              </p>
+              <DevDriftToolbar
+                :drift-kind="professionalLocalDriftKind"
+                :selected-field="professionalLocalSelectedField"
+                :filter-options="professionalLocalFilterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setProfessionalLocalDriftKind"
+                @update:selected-field="(value) => (professionalLocalSelectedField = value)"
+                @copy="copyProfessionalLocalFiltered"
+              />
+            </div>
+          </div>
+        </template>
         <div class="space-y-2">
           <UAlert
             v-if="!professionalLocalFilteredCards.length"
@@ -126,31 +151,39 @@
             variant="pill"
           />
         </div>
-      </DevPane>
+        <template #footer>
+          <DevJson
+            :title="'Professionals (JSON) · Tenant'"
+            :data="professionalLocalAllJsonPayload"
+            :default-open="false"
+          />
+        </template>
+      </UCard>
 
-      <DevJson
-        v-if="isTenant && hasProfessionalLocalCollection"
-        title="Professionals (JSON) · Tenant"
-        :data="professionalLocalAllJsonPayload"
-        :default-open="false"
-      />
-
-      <DevPane
-        title="Agents collection (global)"
-        description="Browse global agents and filter by model drift (AgentCore)."
-      >
-        <DevDriftToolbar
-          :drift-kind="agentGlobalDriftKind"
-          :selected-field="agentGlobalSelectedField"
-          :filter-options="agentGlobalFilterOptions"
-          :copy-label="copying ? 'Copying…' : 'Copy drift'"
-          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-          :copy-disabled="copying"
-          @update:drift-kind="setAgentGlobalDriftKind"
-          @update:selected-field="(value) => (agentGlobalSelectedField = value)"
-          @copy="copyAgentGlobalFiltered"
-        />
-
+      <UCard>
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Agents collection (global)
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse global agents and filter by model drift (AgentCore).
+              </p>
+              <DevDriftToolbar
+                :drift-kind="agentGlobalDriftKind"
+                :selected-field="agentGlobalSelectedField"
+                :filter-options="agentGlobalFilterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setAgentGlobalDriftKind"
+                @update:selected-field="(value) => (agentGlobalSelectedField = value)"
+                @copy="copyAgentGlobalFiltered"
+              />
+            </div>
+          </div>
+        </template>
         <div class="space-y-2">
           <UAlert
             v-if="!agentGlobalFilteredCards.length"
@@ -167,31 +200,39 @@
             variant="pill"
           />
         </div>
-      </DevPane>
+        <template #footer>
+          <DevJson
+            :title="'Agents (JSON)'"
+            :data="agentGlobalAllJsonPayload"
+            :default-open="false"
+          />
+        </template>
+      </UCard>
 
-      <DevJson
-        title="Agents (JSON)"
-        :data="agentGlobalAllJsonPayload"
-        :default-open="false"
-      />
-
-      <DevPane
-        v-if="isTenant && hasAgentLocalCollection"
-        title="Agents collection (tenant)"
-        description="Browse tenant agents and filter by model drift (AgentCore)."
-      >
-        <DevDriftToolbar
-          :drift-kind="agentLocalDriftKind"
-          :selected-field="agentLocalSelectedField"
-          :filter-options="agentLocalFilterOptions"
-          :copy-label="copying ? 'Copying…' : 'Copy drift'"
-          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-          :copy-disabled="copying"
-          @update:drift-kind="setAgentLocalDriftKind"
-          @update:selected-field="(value) => (agentLocalSelectedField = value)"
-          @copy="copyAgentLocalFiltered"
-        />
-
+      <UCard v-if="isTenant && hasAgentLocalCollection">
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Agents collection (tenant)
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse tenant agents and filter by model drift (AgentCore).
+              </p>
+              <DevDriftToolbar
+                :drift-kind="agentLocalDriftKind"
+                :selected-field="agentLocalSelectedField"
+                :filter-options="agentLocalFilterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setAgentLocalDriftKind"
+                @update:selected-field="(value) => (agentLocalSelectedField = value)"
+                @copy="copyAgentLocalFiltered"
+              />
+            </div>
+          </div>
+        </template>
         <div class="space-y-2">
           <UAlert
             v-if="!agentLocalFilteredCards.length"
@@ -208,20 +249,19 @@
             variant="pill"
           />
         </div>
-      </DevPane>
-
-      <DevJson
-        v-if="isTenant && hasAgentLocalCollection"
-        title="Agents (JSON) · Tenant"
-        :data="agentLocalAllJsonPayload"
-        :default-open="false"
-      />
+        <template #footer>
+          <DevJson
+            :title="'Agents (JSON) · Tenant'"
+            :data="agentLocalAllJsonPayload"
+            :default-open="false"
+          />
+        </template>
+      </UCard>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import DevDriftToolbar from 'fireux-core/runtime/components/dev/DevDriftToolbar'
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'

@@ -6,70 +6,42 @@
     />
 
     <UPageBody class="space-y-10">
-      <DevPane
-        title="App collection"
-        description="Browse apps resolved for this runtime and filter by model drift."
-      >
-        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span class="font-medium">Drift:</span>
-
-          <UButton
-            size="xs"
-            :variant="driftKind === 'missing' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setDriftKind('missing')"
-          >
-            Missing
-          </UButton>
-
-          <UButton
-            size="xs"
-            :variant="driftKind === 'extra' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setDriftKind('extra')"
-          >
-            Extra
-          </UButton>
-
-          <span class="font-medium ml-2">
-            Filter {{ driftKind }}:
-          </span>
-
-          <UButton
-            v-for="option in filterOptions"
-            :key="option.value"
-            size="xs"
-            :variant="selectedField === option.value ? 'solid' : 'ghost'"
-            color="primary"
-            @click="selectedField = option.value"
-          >
-            {{ option.label }}
-          </UButton>
-
-          <UButton
-            size="xs"
-            variant="outline"
-            :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-            @click="copyFiltered"
-          >
-            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-          </UButton>
-        </div>
-
+      <UCard>
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                App collection
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse apps resolved for this runtime.
+              </p>
+              <DevDriftToolbar
+                :drift-kind="driftKind"
+                :selected-field="selectedField"
+                :filter-options="filterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift · Apps'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setDriftKind"
+                @update:selected-field="updateSelectedField"
+                @copy="copyFiltered"
+              />
+            </div>
+          </div>
+        </template>
         <OrganismsAppCollectionManager
           :cards="filteredCards"
           :total="viewedCollection.length"
         />
-      </DevPane>
-
-      <DevPane
-        title="Apps (JSON)"
-        description="Raw collection payload + drift map (copyable)."
-        debug-title="Dev · Apps · All data"
-        :debug-data="allJsonPayload"
-        :default-open="false"
-      />
+        <template #footer>
+          <DevJson
+            :title="'Dev · Apps · All data'"
+            :data="allJsonPayload"
+            :default-open="false"
+          />
+        </template>
+      </UCard>
     </UPageBody>
   </UPage>
 </template>
@@ -107,8 +79,6 @@ const appIdFilter = computed(() =>
 
 const { apps: appCollectionRaw } = useAppCollection()
 const { card: makeCard } = useAppInterface()
-const { copyJSON, copying } = useDevClipboard()
-
 const appCollection = computed<AppModel[]>(() => appCollectionRaw.value ?? [])
 const viewedCollection = computed<AppModel[]>(() =>
   appIdFilter.value
@@ -116,11 +86,9 @@ const viewedCollection = computed<AppModel[]>(() =>
     : appCollection.value
 )
 
-const appCards = computed<AppCard.Card[]>(() =>
-  viewedCollection.value
-    .map((app) => makeCard(app))
-    .filter((c): c is AppCard.Card => Boolean(c))
-)
+const { copyJSON, copying } = useDevClipboard()
+
+const appModelRuntime = AppModelRuntime as unknown as Record<string, unknown>
 
 const {
   driftKind,
@@ -128,23 +96,19 @@ const {
   selectedField,
   driftById,
   filterOptions,
+  filteredCollection,
 } = useDevDriftFilter({
   collection: viewedCollection,
   runtimeModel: AppModelRuntime as unknown as Record<string, unknown>,
 })
 
-const filteredCards = computed<AppCard.Card[]>(() => {
-  if (!selectedField.value) return appCards.value
+const filteredCards = computed<AppCard.Card[]>(() =>
+  filteredCollection.value
+    .map((app) => makeCard(app))
+    .filter((c): c is AppCard.Card => Boolean(c))
+)
 
-  return appCards.value.filter((card) => {
-    const drift = driftById.value.get(card.id)
-    if (!drift) return false
-    const list = driftKind.value === 'missing' ? drift.missing : drift.extra
-    return list.includes(selectedField.value)
-  })
-})
-
-const filteredPayload = computed(() =>
+const filteredDriftPayload = computed(() =>
   filteredCards.value.map((card) => {
     const drift = driftById.value.get(card.id) ?? { missing: [], extra: [] }
     return {
@@ -158,20 +122,23 @@ const filteredPayload = computed(() =>
 )
 
 const allJsonPayload = computed(() => ({
-  appIdFilter: appIdFilter.value || null,
+  totalApps: viewedCollection.value.length,
   apps: viewedCollection.value,
-  driftById: Object.fromEntries(driftById.value),
 }))
 
 const copyFiltered = async () => {
   await copyJSON(
     {
-      appIdFilter: appIdFilter.value || null,
       driftKind: driftKind.value,
       selectedField: selectedField.value || null,
-      apps: filteredPayload.value,
+      totalApps: viewedCollection.value.length,
+      apps: filteredDriftPayload.value,
     },
     { label: 'Dev · Apps · Filtered drift' }
   )
+}
+
+const updateSelectedField = (value: string) => {
+  selectedField.value = value
 }
 </script>

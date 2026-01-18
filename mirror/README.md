@@ -55,32 +55,46 @@ No other files or symlinks should remain after a successful clear.
 
 	This will create a symlink named `app-interface.ts` in `mirror/`.
 
-## Naming convention for symlinks
+# Mirror (quick)
 
-- If you add a `# name` comment after a path, that will be used as the symlink name (e.g. `user-interface.ts`).
-- If you don’t specify a name, the script will generate a readable name from the path.
+Purpose: a simple, flat workspace of symlinks for files you want to "peek" during work.
 
-This makes it easy to keep the mirror directory clean and human-friendly for any set of files.
+Quick commands
+- Reset the mirror (remove symlinks + clear the list):
 
-## Common workflows
+```sh
+find mirror -type l ! -name 'README.md' ! -name 'mirror.txt' -delete && \
+awk '/^[[:space:]]*#/ || /^[[:space:]]*$/ {print}' mirror/mirror.txt > mirror/mirror.txt.tmp && mv mirror/mirror.txt.tmp mirror/mirror.txt
+```
 
-- **Clear the mirror:** remove the non-comment lines from `mirror/mirror.txt`, then run `node scripts/mirror-sync.mjs`.
-- **Switch focus (“pop” a new set):** edit `mirror/mirror.txt`, then run the sync.
+- Generate symlinks from the list:
 
-## Troubleshooting: Mirror not clearing?
+```sh
+node scripts/mirror-sync.mjs
+```
 
-If you clear `mirror/mirror.txt` and run the sync but files still remain in `mirror/`, they may be leftover symlinks or files not removed by the script.
+How to use
+- Edit `mirror/mirror.txt`: add one repo-relative path per line (files or directories).
+- Run `node scripts/mirror-sync.mjs` to populate `mirror/`.
+- Work from the symlinks in `mirror/`; edit the original files in-place in the repo.
 
-- **To force-remove everything except the docs/list:**
+Mirror rules
+- `mirror/mirror.txt` is the single source-of-truth (one path per non-comment line).
+- Lines starting with `#` are comments.
+- On reset, the filepaths (non-comment lines) are removed — only header/comments remain.
+- To set a custom symlink name, append `# custom-name.ext` to a path on the same line.
 
-	```sh
-	find mirror/ ! -name 'README.md' ! -name 'mirror.txt' -delete
-	```
+Examples
+- Add a file:
 
-- After running this, only `README.md` and `mirror.txt` should remain in `mirror/`.
+```
+packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
+```
 
-- If you see save conflicts in VS Code, close any open `mirror/` tabs and rerun the sync (or reload the window).
+- Add a file with a custom symlink name:
 
-## Notes
+```
+packages/core/fireux-core/src/runtime/composables/useAppInterface.ts # app-interface.ts
+```
 
-- Symlink names are generated to be human-readable; collisions get a numeric suffix (e.g. `--2`).
+That's it — keep `mirror/mirror.txt` as the list of paths you want visible, and use the reset command when you want a fresh starting point.

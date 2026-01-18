@@ -6,21 +6,38 @@
     />
 
     <UPageBody class="space-y-10">
-      <DevPane
-        title="Chefs collection"
-        description="Browse chefs and filter by model drift (ChefCore)."
-      >
-        <DevDriftToolbar
-          :drift-kind="chefDriftKind"
-          :selected-field="chefSelectedField"
-          :filter-options="chefFilterOptions"
-          :copy-label="copying ? 'Copying…' : 'Copy drift'"
-          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-          :copy-disabled="copying"
-          @update:drift-kind="setChefDriftKind"
-          @update:selected-field="(value) => (chefSelectedField = value)"
-          @copy="copyChefFiltered"
-        />
+      <UCard>
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Chefs collection
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse chefs and filter by model drift (ChefCore).
+              </p>
+              <DevDriftToolbar
+                :drift-kind="chefDriftKind"
+                :selected-field="chefSelectedField"
+                :filter-options="chefFilterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setChefDriftKind"
+                @update:selected-field="(value) => (chefSelectedField = value)"
+                @copy="copyChefFiltered"
+              />
+            </div>
+          </div>
+        </template>
+
+        <template #footer>
+          <DevJson
+            :title="'Chefs (JSON)'"
+            :data="chefAllJsonPayload"
+            :default-open="false"
+          />
+        </template>
 
         <div class="space-y-2">
           <UAlert
@@ -38,29 +55,40 @@
             variant="pill"
           />
         </div>
-      </DevPane>
+      </UCard>
 
-      <DevJson
-        title="Chefs (JSON)"
-        :data="chefAllJsonPayload"
-        :default-open="false"
-      />
+      <UCard>
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Suppliers collection
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse suppliers and filter by model drift (SupplierCore).
+              </p>
+              <DevDriftToolbar
+                :drift-kind="supplierDriftKind"
+                :selected-field="supplierSelectedField"
+                :filter-options="supplierFilterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setSupplierDriftKind"
+                @update:selected-field="(value) => (supplierSelectedField = value)"
+                @copy="copySupplierFiltered"
+              />
+            </div>
+          </div>
+        </template>
 
-      <DevPane
-        title="Suppliers collection"
-        description="Browse suppliers and filter by model drift (SupplierCore)."
-      >
-        <DevDriftToolbar
-          :drift-kind="supplierDriftKind"
-          :selected-field="supplierSelectedField"
-          :filter-options="supplierFilterOptions"
-          :copy-label="copying ? 'Copying…' : 'Copy drift'"
-          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-          :copy-disabled="copying"
-          @update:drift-kind="setSupplierDriftKind"
-          @update:selected-field="(value) => (supplierSelectedField = value)"
-          @copy="copySupplierFiltered"
-        />
+        <template #footer>
+          <DevJson
+            :title="'Suppliers (JSON)'"
+            :data="supplierAllJsonPayload"
+            :default-open="false"
+          />
+        </template>
 
         <div class="space-y-2">
           <UAlert
@@ -78,65 +106,13 @@
             variant="pill"
           />
         </div>
-      </DevPane>
+      </UCard>
 
-      <DevJson
-        title="Suppliers (JSON)"
-        :data="supplierAllJsonPayload"
-        :default-open="false"
-      />
-
-      <DevPane
-        title="Kitchens collection"
-        description="Browse kitchens and filter by model drift (Kitchen)."
-      >
-        <DevDriftToolbar
-          :drift-kind="kitchenDriftKind"
-          :selected-field="kitchenSelectedField"
-          :filter-options="kitchenFilterOptions"
-          :copy-label="copying ? 'Copying…' : 'Copy drift'"
-          :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-          :copy-disabled="copying"
-          @update:drift-kind="setKitchenDriftKind"
-          @update:selected-field="(value) => (kitchenSelectedField = value)"
-          @copy="copyKitchenFiltered"
-        />
-
-        <div class="space-y-2">
-          <UAlert
-            v-if="!kitchenFilteredCards.length"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-inbox"
-            title="No matching kitchens"
-            description="Adjust filters or add kitchen documents to Firestore."
-          />
-
-          <div v-else class="grid gap-3 md:grid-cols-2">
-            <component
-              :is="wrapperFor(card)"
-              v-for="card in kitchenFilteredCards"
-              :key="card.id"
-              v-bind="wrapperPropsFor(card)"
-              class="block"
-            >
-              <KitchenCardsCell v-bind="card" />
-            </component>
-          </div>
-        </div>
-      </DevPane>
-
-      <DevJson
-        title="Kitchens (JSON)"
-        :data="kitchenAllJsonPayload"
-        :default-open="false"
-      />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import DevDriftToolbar from 'fireux-core/runtime/components/dev/DevDriftToolbar'
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
@@ -151,10 +127,6 @@ import { useSupplier } from '../../composables/fireux/firestore/profiles/Supplie
 import type { SupplierCore } from '../../models/profiles/Supplier/Supplier.model'
 import { SupplierCore as SupplierCoreRuntime } from '../../models/profiles/Supplier/Supplier.model'
 
-import { useKitchens } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/useKitchens'
-import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
-import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
-import { Kitchen as KitchenModelRuntime } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
 
 definePageMeta({
   layout: 'dev',
@@ -309,53 +281,6 @@ const copySupplierFiltered = async () => {
   )
 }
 
-// Kitchens
-const { collection: kitchensRaw } = useKitchens<Kitchen>()
-const kitchens = computed<Kitchen[]>(() => (kitchensRaw.value ?? []) as Kitchen[])
-const { card: resolveKitchenCard } = useKitchenInterface()
-
-const {
-  driftKind: kitchenDriftKind,
-  setDriftKind: setKitchenDriftKind,
-  selectedField: kitchenSelectedField,
-  driftById: kitchenDriftById,
-  filterOptions: kitchenFilterOptions,
-  filteredCollection: kitchenFilteredCollection,
-} = useDevDriftFilter({
-  collection: kitchens,
-  runtimeModel: KitchenModelRuntime as unknown as Record<string, unknown>,
-})
-
-const kitchenFilteredCards = computed(() =>
-  kitchenFilteredCollection.value
-    .map((k) => resolveKitchenCard(k))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
-const kitchenFilteredPayload = computed(() =>
-  kitchenFilteredCards.value.map((card) => {
-    const drift = kitchenDriftById.value.get(card.id) ?? { missing: [], extra: [] }
-    return { id: card.id, name: card.name, website: card.website, drift }
-  })
-)
-
-const kitchenAllJsonPayload = computed(() => ({
-  totalKitchens: kitchens.value.length,
-  kitchens: kitchens.value,
-  driftById: Object.fromEntries(kitchenDriftById.value),
-}))
-
-const copyKitchenFiltered = async () => {
-  await copyJSON(
-    {
-      driftKind: kitchenDriftKind.value,
-      selectedField: kitchenSelectedField.value || null,
-      totalKitchens: kitchens.value.length,
-      kitchens: kitchenFilteredPayload.value,
-    },
-    { label: 'Dev · Misebox · Kitchens · Filtered drift' }
-  )
-}
 
 const wrapperFor = (card: { to?: string | null }) => (card.to ? 'NuxtLink' : 'div')
 const wrapperPropsFor = (card: { to?: string | null }) => (card.to ? { to: card.to } : {})

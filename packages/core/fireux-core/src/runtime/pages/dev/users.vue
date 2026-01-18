@@ -6,70 +6,44 @@
     />
 
     <UPageBody class="space-y-10">
-      <DevPane
-        title="User collection"
-        description="Browse users resolved for this runtime and filter by model drift."
-      >
-        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span class="font-medium">Drift:</span>
+      <UCard>
+        <template #header>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-3">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                User collection
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Browse users resolved for this runtime and filter by model drift.
+              </p>
+              <DevDriftToolbar
+                :drift-kind="driftKind"
+                :selected-field="selectedField"
+                :filter-options="filterOptions"
+                :copy-label="copying ? 'Copying…' : 'Copy drift · Users'"
+                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
+                :copy-disabled="copying"
+                @update:drift-kind="setDriftKind"
+                @update:selected-field="updateSelectedField"
+                @copy="copyFiltered"
+              />
+            </div>
+          </div>
+        </template>
 
-          <UButton
-            size="xs"
-            :variant="driftKind === 'missing' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setDriftKind('missing')"
-          >
-            Missing
-          </UButton>
-
-          <UButton
-            size="xs"
-            :variant="driftKind === 'extra' ? 'solid' : 'ghost'"
-            color="primary"
-            @click="setDriftKind('extra')"
-          >
-            Extra
-          </UButton>
-
-          <span class="font-medium ml-2">
-            Filter {{ driftKind }}:
-          </span>
-
-          <UButton
-            v-for="option in filterOptions"
-            :key="option.value"
-            size="xs"
-            :variant="selectedField === option.value ? 'solid' : 'ghost'"
-            color="primary"
-            @click="selectedField = option.value"
-          >
-            {{ option.label }}
-          </UButton>
-
-          <UButton
-            size="xs"
-            variant="outline"
-            :disabled="copying"
-            :icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-            @click="copyFiltered"
-          >
-            {{ copying ? 'Copying…' : 'Copy filtered drift' }}
-          </UButton>
-        </div>
+        <template #footer>
+          <DevJson
+            :title="'Dev · Users · All data'"
+            :data="allJsonPayload"
+            :default-open="false"
+          />
+        </template>
 
         <OrganismsUserCollectionManager
           :cards="filteredUserCards"
           :total="viewedCollection.length"
         />
-      </DevPane>
-
-      <DevPane
-        title="Users (JSON)"
-        description="Raw collection payload + drift map (copyable)."
-        debug-title="Dev · Users · All data"
-        :debug-data="allJsonPayload"
-        :default-open="false"
-      />
+      </UCard>
     </UPageBody>
   </UPage>
 </template>
@@ -107,8 +81,6 @@ const userIdFilter = computed(() =>
 
 const { users: usersRaw } = useUserCollection()
 const { card: makeCard } = useUserInterface()
-const { copyJSON, copying } = useDevClipboard()
-
 const userCollection = computed<User[]>(() =>
   (usersRaw.value ?? [])
     .map((entry: unknown) => (entry as any)?.coreUser ?? entry)
@@ -121,11 +93,9 @@ const viewedCollection = computed<User[]>(() =>
     : userCollection.value
 )
 
-const userCards = computed<UserCard.Card[]>(() =>
-  viewedCollection.value
-    .map((user) => makeCard(user))
-    .filter((c): c is UserCard.Card => Boolean(c))
-)
+const { copyJSON, copying } = useDevClipboard()
+
+const userModelRuntime = UserModelRuntime as unknown as Record<string, unknown>
 
 const {
   driftKind,
@@ -133,23 +103,19 @@ const {
   selectedField,
   driftById,
   filterOptions,
+  filteredCollection,
 } = useDevDriftFilter({
   collection: viewedCollection,
-  runtimeModel: UserModelRuntime as unknown as Record<string, unknown>,
+  runtimeModel: userModelRuntime,
 })
 
-const filteredUserCards = computed<UserCard.Card[]>(() => {
-  if (!selectedField.value) return userCards.value
+const filteredUserCards = computed<UserCard.Card[]>(() =>
+  filteredCollection.value
+    .map((user) => makeCard(user))
+    .filter((c): c is UserCard.Card => Boolean(c))
+)
 
-  return userCards.value.filter((card) => {
-    const drift = driftById.value.get(card.id)
-    if (!drift) return false
-    const list = driftKind.value === 'missing' ? drift.missing : drift.extra
-    return list.includes(selectedField.value)
-  })
-})
-
-const filteredPayload = computed(() =>
+const filteredDriftPayload = computed(() =>
   filteredUserCards.value.map((card) => {
     const drift = driftById.value.get(card.id) ?? { missing: [], extra: [] }
     return {
@@ -162,20 +128,23 @@ const filteredPayload = computed(() =>
 )
 
 const allJsonPayload = computed(() => ({
-  userIdFilter: userIdFilter.value || null,
+  totalUsers: viewedCollection.value.length,
   users: viewedCollection.value,
-  driftById: Object.fromEntries(driftById.value),
 }))
 
 const copyFiltered = async () => {
   await copyJSON(
     {
-      userIdFilter: userIdFilter.value || null,
       driftKind: driftKind.value,
       selectedField: selectedField.value || null,
-      users: filteredPayload.value,
+      totalUsers: viewedCollection.value.length,
+      users: filteredDriftPayload.value,
     },
     { label: 'Dev · Users · Filtered drift' }
   )
+}
+
+const updateSelectedField = (value: string) => {
+  selectedField.value = value
 }
 </script>

@@ -1,9 +1,9 @@
 import { arrayUnion, doc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
+import type { ProfileConfig } from '../../../../../../models/core/profile.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'
 import { requireUid } from '../../../utils/useEnsureCommon'
-import type { ProfileConfig } from '../../../../../../models/core/profile.model'
 
 type EnsureResult = {
   createdCore: boolean
@@ -37,7 +37,7 @@ export function useProfileEnsure(config: ProfileConfig) {
         tags: [],
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
-      } as any)
+      } as any, { mode: 'time' })
       createdCore = true
     } else {
       // Backfill required fields for older docs.
@@ -65,7 +65,7 @@ export function useProfileEnsure(config: ProfileConfig) {
           creator_id: uid,
           created_at: serverTimestamp(),
           updated_at: serverTimestamp(),
-        } as any)
+        } as any, { mode: 'time' })
         createdApp = true
       } else {
         const existing = appSnapshot.data() as any

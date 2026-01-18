@@ -32,9 +32,7 @@ export function useKitchenCreate() {
         id,
         name,
         formatted_address: String(input.formatted_address ?? '').trim(),
-        lat: Number(input.lat ?? 0),
-        lng: Number(input.lng ?? 0),
-        avatar: String(input.avatar ?? '').trim(),
+        kitchen_image: String(input.kitchen_image ?? '').trim(),
         website: String(input.website ?? '').trim(),
       },
       { raw: false }

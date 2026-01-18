@@ -26,7 +26,7 @@ export function useKitchenInterface() {
       id: kitchen.id,
       to: `/kitchens/${kitchen.id}`,
 
-      avatarUrl: '',
+      avatarUrl: kitchen.kitchen_image ?? '',
       title: kitchen.name,
       subtitle: kitchen.website,
 

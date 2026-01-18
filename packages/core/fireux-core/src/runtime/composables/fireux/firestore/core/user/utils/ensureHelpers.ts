@@ -1,20 +1,20 @@
 import {
-    arrayRemove,
-    arrayUnion,
-    doc,
-    getDoc,
-    increment,
-    serverTimestamp,
-    writeBatch,
-    type DocumentSnapshot,
+  arrayRemove,
+  arrayUnion,
+  doc,
+  getDoc,
+  increment,
+  serverTimestamp,
+  writeBatch,
+  type DocumentSnapshot,
 } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 
 import type { FirebaseTimestamp } from '../../../../../../../types/firebase'
 import type { App } from '../../../../../../models/core/app.model'
 import type {
-    AppUser,
-    User,
+  AppUser,
+  User,
 } from '../../../../../../models/core/user.model'
 import type { NotificationScope, UserNotification } from '../../../../../../models/core/user.supporting'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
@@ -100,7 +100,7 @@ export async function ensureCoreUserDocument(
   }
 
   const { setDocument } = useFirestoreManager()
-  await setDocument<User>('users', uid, payload)
+  await setDocument<User>('users', uid, payload, { mode: 'date' })
 
   return { created: true, displayName }
 }

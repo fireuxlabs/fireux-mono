@@ -33,16 +33,15 @@
       </template>
 
       <template #dev>
-        <!-- TODO remove DevJson once diagnostics migrate elsewhere -->
-        <DevJson v-if="shouldShowDevPanel && devData" :data="devData" />
+        <pre v-if="shouldShowDevPanel && devData" class="text-xs text-muted">{{ devData }}</pre>
       </template>
     </LayoutsDashboardBaseSection>
   </client-only>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 
 defineProps<{
   title: string

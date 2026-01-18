@@ -5,7 +5,7 @@
   - Reads all docs from collection: /places
   - Writes back to the SAME document id
   - Ensures canonical fields exist (defaults: '' or 0)
-  - Migrates legacy: source 'firestore' -> 'firebase' (and never emits 'firestore')
+  - Migrates legacy: source 'firestore'/'firebase' -> 'fireux'
   - Deletes legacy fields if present:
       - place_id
       - professionals_current
@@ -129,8 +129,9 @@ while (true) {
     const legacyPlaceId = asString(data.place_id || '')
     const id = docId || asString(data.id || legacyPlaceId || docId)
 
-    // Canon: stored docs are always firebase.
+    // Canon: stored docs are always fireux.
     const sourceRaw = asString(data.source || '')
+    const source = sourceRaw === 'firebase' || sourceRaw === 'firestore' ? 'fireux' : sourceRaw || 'fireux'
 
     const name = asString(data.name)
     const formatted_address = asString(data.formatted_address)
@@ -145,7 +146,7 @@ while (true) {
 
     const patch = {
       id,
-      source: 'firebase',
+      source,
       name,
       formatted_address,
 
@@ -168,7 +169,7 @@ while (true) {
     // Determine whether anything actually needs changing.
     const needs =
       asString(data.id || '') !== id ||
-      asString(data.source || '') !== 'firebase' ||
+      asString(data.source || '') !== source ||
       'place_id' in data ||
       'professionals_current' in data ||
       'professionals_alumni' in data ||

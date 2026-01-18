@@ -29,8 +29,8 @@ export type CompanyShape = FireuxAuthored & {
   lat: number
   lng: number
 
-  /** Avatar snapshot (usually places/{id}/avatar storage URL) */
-  avatar: string
+  /** Canonical place image snapshot (empty string means unset). */
+  place_image: string
 
   /** Optional website (empty string means unset) */
   website: string
@@ -51,8 +51,8 @@ export const Company: CompanyShape = {
   lat: 0,
   lng: 0,
 
-  /** Avatar snapshot (usually places/{id}/avatar storage URL) */
-  avatar: '',
+  /** Canonical place image snapshot (empty string means unset). */
+  place_image: '',
 
   /** Optional website (empty string means unset) */
   website: '',

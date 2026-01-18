@@ -1,5 +1,5 @@
 <template>
-  <div class="fx-card fx-card--pill">
+  <div class="fx-card fx-card--pill cursor-pointer">
     <UAvatar
       :src="avatarUrl || undefined"
       :alt="title"

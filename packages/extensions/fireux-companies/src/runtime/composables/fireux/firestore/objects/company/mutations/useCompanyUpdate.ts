@@ -13,7 +13,7 @@ export function useCompanyUpdate() {
     const next: CompanyUpdateInput = { ...patch }
     if (typeof next.name === 'string') next.name = next.name.trim()
     if (typeof next.website === 'string') next.website = next.website.trim()
-    if (typeof (next as any).avatar === 'string') (next as any).avatar = (next as any).avatar.trim()
+    if (typeof (next as any).place_image === 'string') (next as any).place_image = (next as any).place_image.trim()
     if (typeof (next as any).formatted_address === 'string') (next as any).formatted_address = (next as any).formatted_address.trim()
 
     await updateDocument<Company>(COLLECTION_PATH, id, next)
