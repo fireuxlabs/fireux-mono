@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts
 
-import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -15,7 +15,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Drift is detected by comparing data ↔ model shape
  */
 
-export type CompanyShape = FireuxAuthored & {
+export type CompanyShape = FireuxStamped & {
   /** Canonical Place ID (also the Firestore document ID). */
   id: string
 
@@ -57,8 +57,8 @@ export const Company: CompanyShape = {
   /** Optional website (empty string means unset) */
   website: '',
 
-  // Authored (FireuxAuthored)
-  creator_id: '',
+  // Authored (FireuxStamped)
+  creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 }
@@ -66,5 +66,5 @@ export const Company: CompanyShape = {
 // ✅ Type derived from the runtime model (no duplication)
 export type Company = CompanyShape
 
-export type CompanyCreateInput = Omit<Company, keyof FireuxAuthored>
+export type CompanyCreateInput = Omit<Company, keyof FireuxStamped>
 export type CompanyUpdateInput = Partial<Omit<CompanyCreateInput, 'id'>>

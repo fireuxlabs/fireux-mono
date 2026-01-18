@@ -37,6 +37,10 @@
             :data="allJsonPayload"
             :default-open="false"
           />
+          <DevModel
+            :title="'Kitchens · Model'"
+            :model="kitchenModelRuntime"
+          />
         </template>
 
         <UAlert
@@ -69,6 +73,7 @@
 
 <script setup lang="ts">
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
+import { useDevDriftCopyMeta } from 'fireux-core/runtime/composables/dev/useDevDriftCopyMeta'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useKitchens } from '../../composables/fireux/firestore/objects/kitchen/useKitchens'
@@ -89,6 +94,7 @@ definePageMeta({
 })
 
 const { copyJSON, copying } = useDevClipboard()
+const driftMeta = useDevDriftCopyMeta()
 const { card: makeCard } = useKitchenInterface()
 
 const { collection } = useKitchens<KitchenModel>()
@@ -154,6 +160,8 @@ const allJsonPayload = computed(() => ({
 const copyFiltered = async () => {
   await copyJSON(
     {
+      meta: driftMeta,
+      runtimeModel: kitchenModelRuntime,
       driftKind: driftKind.value,
       selectedField: selectedField.value || null,
       totalKitchens: kitchenList.value.length,

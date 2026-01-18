@@ -1,6 +1,7 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts
 
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { AppProfileBase, CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
 import { chefConfig } from './supporting'
 
 /**
@@ -9,22 +10,12 @@ import { chefConfig } from './supporting'
  * App doc:   apps/{appId}/chefs/{uid}
  */
 
-export type ChefCoreShape = {
-  id: string
-  title: string
-  subtitle: string
-  tagline: string
-  tags: string[]
-
+export type ChefCoreShape = CoreProfileBase & {
   bio_short: string
   bio_long: string
   specialties: string[]
   locations: string[]
   organization_name: string
-
-  creator_id: string
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
 }
 
 export const ChefCore: ChefCoreShape = {
@@ -40,23 +31,17 @@ export const ChefCore: ChefCoreShape = {
   locations: [] as string[],
   organization_name: '',
 
-  creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 }
 
 export type ChefCore = ChefCoreShape
 
-export type ChefAppShape = {
-  id: string
-  creator_id: string
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
-}
+export type ChefAppShape = AppProfileBase
 
 export const ChefApp: ChefAppShape = {
   id: '',
-  creator_id: '',
+  creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 }

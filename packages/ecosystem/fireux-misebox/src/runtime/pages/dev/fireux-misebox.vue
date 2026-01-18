@@ -37,6 +37,10 @@
             :data="chefAllJsonPayload"
             :default-open="false"
           />
+          <DevModel
+            :title="'Chefs · Model'"
+            :model="ChefCoreRuntime as unknown as Record<string, unknown>"
+          />
         </template>
 
         <div class="space-y-2">
@@ -88,6 +92,10 @@
             :data="supplierAllJsonPayload"
             :default-open="false"
           />
+          <DevModel
+            :title="'Suppliers · Model'"
+            :model="SupplierCoreRuntime as unknown as Record<string, unknown>"
+          />
         </template>
 
         <div class="space-y-2">
@@ -114,6 +122,7 @@
 
 <script setup lang="ts">
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
+import { useDevDriftCopyMeta } from 'fireux-core/runtime/composables/dev/useDevDriftCopyMeta'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 
@@ -141,6 +150,7 @@ definePageMeta({
 })
 
 const { copyJSON, copying } = useDevClipboard()
+const driftMeta = useDevDriftCopyMeta()
 
 // Chefs
 const { rawGlobalChefs, globalChefs } = useChefCollection()
@@ -205,6 +215,8 @@ const chefAllJsonPayload = computed(() => ({
 const copyChefFiltered = async () => {
   await copyJSON(
     {
+      meta: driftMeta,
+      runtimeModel: ChefCoreRuntime as unknown as Record<string, unknown>,
       driftKind: chefDriftKind.value,
       selectedField: chefSelectedField.value || null,
       totalChefs: chefCollection.value.length,
@@ -272,6 +284,8 @@ const supplierAllJsonPayload = computed(() => ({
 const copySupplierFiltered = async () => {
   await copyJSON(
     {
+      meta: driftMeta,
+      runtimeModel: SupplierCoreRuntime as unknown as Record<string, unknown>,
       driftKind: supplierDriftKind.value,
       selectedField: supplierSelectedField.value || null,
       totalSuppliers: supplierCollection.value.length,

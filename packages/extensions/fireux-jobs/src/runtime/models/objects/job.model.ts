@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts
 
-import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -15,7 +15,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type JobStatus = 'open' | 'closed'
 
-export type JobShape = FireuxAuthored & {
+export type JobShape = FireuxStamped & {
   /** Firestore document ID */
   id: string
 
@@ -61,8 +61,8 @@ export const Job: JobShape = {
   status: 'open' as JobStatus,
   description: '',
 
-  // Authored (FireuxAuthored)
-  creator_id: '',
+  // Authored (FireuxStamped)
+  creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 }
@@ -70,5 +70,5 @@ export const Job: JobShape = {
 // ✅ Type derived from the runtime model (no duplication)
 export type Job = JobShape
 
-export type JobCreateInput = Omit<Job, keyof FireuxAuthored>
+export type JobCreateInput = Omit<Job, keyof FireuxStamped>
 export type JobUpdateInput = Partial<Omit<JobCreateInput, 'id'>>

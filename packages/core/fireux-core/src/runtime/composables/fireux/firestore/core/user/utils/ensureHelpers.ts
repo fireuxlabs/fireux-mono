@@ -94,7 +94,6 @@ export async function ensureCoreUserDocument(
     userOf: [],
     adminOf: [],
     notifications: [],
-    creator_id: uid,
     created_at: serverTimestamp() as unknown as FirebaseTimestamp,
     updated_at: serverTimestamp() as unknown as FirebaseTimestamp,
   }
@@ -148,7 +147,6 @@ export async function ensureUserAppMembership(
       {
         id: uid,
         role: membershipRole,
-        creator_id: uid,
         notifications: [],
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),

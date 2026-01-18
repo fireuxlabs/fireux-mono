@@ -37,6 +37,10 @@
             :data="allJsonPayload"
             :default-open="false"
           />
+          <DevModel
+            :title="'Companies · Model'"
+            :model="companyModelRuntime"
+          />
         </template>
 
         <UAlert
@@ -69,6 +73,7 @@
 
 <script setup lang="ts">
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
+import { useDevDriftCopyMeta } from 'fireux-core/runtime/composables/dev/useDevDriftCopyMeta'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
@@ -91,6 +96,7 @@ definePageMeta({
 const { companies } = useCompanyFetch()
 const { card: makeCard } = useCompanyInterface()
 const { copyJSON, copying } = useDevClipboard()
+const driftMeta = useDevDriftCopyMeta()
 
 const companyList = computed<CompanyModel[]>(() => companies.value ?? [])
 const companyModelRuntime = CompanyModelRuntime as unknown as Record<string, unknown>
@@ -154,6 +160,8 @@ const allJsonPayload = computed(() => ({
 const copyFiltered = async () => {
   await copyJSON(
     {
+      meta: driftMeta,
+      runtimeModel: companyModelRuntime,
       driftKind: driftKind.value,
       selectedField: selectedField.value || null,
       totalCompanies: companyList.value.length,

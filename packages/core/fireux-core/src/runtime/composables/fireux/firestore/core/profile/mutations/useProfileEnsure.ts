@@ -62,7 +62,6 @@ export function useProfileEnsure(config: ProfileConfig) {
       if (!appSnapshot.exists()) {
         await setDocument(appCollection, uid, {
           id: uid,
-          creator_id: uid,
           created_at: serverTimestamp(),
           updated_at: serverTimestamp(),
         } as any, { mode: 'time' })
@@ -71,7 +70,6 @@ export function useProfileEnsure(config: ProfileConfig) {
         const existing = appSnapshot.data() as any
         const patch: any = {}
         if (typeof existing?.id !== 'string') patch.id = uid
-        if (typeof existing?.creator_id !== 'string') patch.creator_id = uid
         if (!existing?.created_at) patch.created_at = serverTimestamp()
         if (!existing?.updated_at) patch.updated_at = serverTimestamp()
         if (Object.keys(patch).length) {

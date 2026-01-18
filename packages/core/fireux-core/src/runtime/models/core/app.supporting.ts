@@ -13,6 +13,14 @@ export type AppSocialPlatform =
 
 export type AppSocialLinks = Record<AppSocialPlatform, string>
 
+/** Grouped media assets for apps. */
+export type AppMedia = {
+  thumbnail_url: string
+  logo_url: string
+  wordmark_light_url: string
+  wordmark_dark_url: string
+}
+
 export const APP_SOCIAL_PLATFORMS: ReadonlyArray<AppSocialPlatform> = [
   'website',
   'email',

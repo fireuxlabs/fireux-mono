@@ -33,7 +33,6 @@ export function useSupplierQuickCreate() {
         locations: [],
         years_in_business: 0,
         products_offered: [],
-        employee_count: 0,
         certifications: [],
         delivery_range: 0,
       }

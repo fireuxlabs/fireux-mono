@@ -2,16 +2,7 @@
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { AppRole, AppSocialLinks } from './app.supporting'
-import type { FireuxAuthored } from './meta.model'
-
-/** Grouped media assets for apps. */
-export type AppMedia = {
-  thumbnail_url: string
-  logo_url: string
-  wordmark_light_url: string
-  wordmark_dark_url: string
-}
-
+import type { FireuxStamped } from './meta.model'
 /**
  * Core Firestore App document
  * Path: /apps/<appId>
@@ -27,7 +18,7 @@ export type AppMedia = {
  * - Drift is detected by comparing data ↔ model shape
  */
 
-export type AppShape = FireuxAuthored & {
+export type AppShape = FireuxStamped & {
   // Identity
   id: string
 
@@ -57,7 +48,10 @@ export type AppShape = FireuxAuthored & {
   user_count: number
 
   // Brand / media
-  media: AppMedia
+  thumbnail_url: string
+  logo_url: string
+  wordmark_light_url: string
+  wordmark_dark_url: string
 }
 
 // 🔑 Runtime + canonical shape (source of truth)
@@ -91,21 +85,15 @@ export const App: AppShape = {
   user_count: 0,
 
   // Brand / media
-  media: {
-    thumbnail_url: '',
-    logo_url: '',
-    wordmark_light_url: '',
-    wordmark_dark_url: '',
-  },
+  thumbnail_url: '',
+  logo_url: '',
+  wordmark_light_url: '',
+  wordmark_dark_url: '',
 
-  // Authored (FireuxAuthored)
-  creator_id: '',
+  // Authored (FireuxStamped)
+  creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-  // optional client-side stamps (opt-in)
-  created_at_client: undefined,
-  created_at_precise: undefined,
-  stamp_mode: undefined,
 }
 
 // ✅ Type derived from the runtime model (no duplication)

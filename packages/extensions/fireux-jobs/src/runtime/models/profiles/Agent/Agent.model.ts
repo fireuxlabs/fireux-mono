@@ -1,6 +1,7 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
 
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { AppProfileBase, CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
 import { agentConfig } from './supporting'
 
 /**
@@ -9,21 +10,11 @@ import { agentConfig } from './supporting'
  * App doc:   apps/{appId}/agents/{uid}
  */
 
-export type AgentCoreShape = {
-  id: string
-  title: string
-  subtitle: string
-  tagline: string
-  tags: string[]
-
+export type AgentCoreShape = CoreProfileBase & {
   bio_short: string
   contact_email: string
   contact_phone: string
   website_url: string
-
-  creator_id: string
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
 }
 
 export const AgentCore: AgentCoreShape = {
@@ -38,23 +29,17 @@ export const AgentCore: AgentCoreShape = {
   contact_phone: '',
   website_url: '',
 
-  creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 }
 
 export type AgentCore = AgentCoreShape
 
-export type AgentAppShape = {
-  id: string
-  creator_id: string
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
-}
+export type AgentAppShape = AppProfileBase
 
 export const AgentApp: AgentAppShape = {
   id: '',
-  creator_id: '',
+  creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 }

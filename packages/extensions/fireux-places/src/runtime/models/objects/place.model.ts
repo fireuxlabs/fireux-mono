@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
 
-import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -14,7 +14,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /** Canonical sources: google (provider), fireux (stored), manual (user-entered). */
 export type PlaceSource = 'google' | 'fireux' | 'manual'
 
-export interface Place extends FireuxAuthored {
+export interface Place extends FireuxStamped {
 	/** Canonical id (== Google place_id; Firestore document id). */
 	id: string
 
@@ -57,8 +57,8 @@ export const Place: Place = {
 	/** “How we found this place” (kept for UX + duplicate avoidance). */
 	search_term: '',
 
-	// Authored (FireuxAuthored)
-	creator_id: '',
+	// Authored (FireuxStamped)
+	creator_id: undefined,
 	created_at: {} as FirebaseTimestamp,
 	updated_at: {} as FirebaseTimestamp,
 }
@@ -66,7 +66,14 @@ export const Place: Place = {
 /** Base (shared by Google & Firestore). */
 export type BasePlace = Pick<
 	Place,
-	'id' | 'name' | 'formatted_address' | 'lat' | 'lng' | 'place_image' | 'source'
+	'id'
+	| 'name'
+	| 'formatted_address'
+	| 'lat'
+	| 'lng'
+	| 'place_image'
+	| 'claimed_by'
+	| 'source'
 >
 
 /** Google Place (transient/provider). */
@@ -81,4 +88,4 @@ export type GooglePlace = BasePlace & {
 }
 
 /** Payload used before Firestore stamping is applied. */
-export type PlaceUpsertInput = Omit<Place, keyof FireuxAuthored>
+export type PlaceUpsertInput = Omit<Place, keyof FireuxStamped>

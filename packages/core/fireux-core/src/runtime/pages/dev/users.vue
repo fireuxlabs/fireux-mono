@@ -37,6 +37,10 @@
             :data="allJsonPayload"
             :default-open="false"
           />
+          <DevModel
+            :title="'Dev · Users · Model'"
+            :model="userModelRuntime"
+          />
         </template>
 
         <OrganismsUserCollectionManager
@@ -52,6 +56,7 @@
 import { definePageMeta, useRoute } from '#imports'
 import { computed } from 'vue'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard'
+import { useDevDriftCopyMeta } from '../../composables/dev/useDevDriftCopyMeta'
 import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import type { UserCard } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
@@ -94,6 +99,7 @@ const viewedCollection = computed<User[]>(() =>
 )
 
 const { copyJSON, copying } = useDevClipboard()
+const driftMeta = useDevDriftCopyMeta()
 
 const userModelRuntime = UserModelRuntime as unknown as Record<string, unknown>
 
@@ -135,6 +141,8 @@ const allJsonPayload = computed(() => ({
 const copyFiltered = async () => {
   await copyJSON(
     {
+      meta: driftMeta,
+      runtimeModel: userModelRuntime,
       driftKind: driftKind.value,
       selectedField: selectedField.value || null,
       totalUsers: viewedCollection.value.length,

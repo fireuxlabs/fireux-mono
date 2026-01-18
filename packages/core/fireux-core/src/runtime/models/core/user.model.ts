@@ -1,7 +1,7 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/user.model.ts
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { FireuxAuthored } from './meta.model'
+import type { FireuxStamped } from './meta.model'
 import type { UserNotification } from './user.supporting'
 
 /**
@@ -15,7 +15,7 @@ import type { UserNotification } from './user.supporting'
  * - Runtime object is the single source of truth
  */
 
-export type UserShape = FireuxAuthored & {
+export type UserShape = FireuxStamped & {
   id: string
   display_name: string
   avatar: string
@@ -46,8 +46,8 @@ export const User: UserShape = {
 
   notifications: [] as UserNotification[],
 
-  // Authored (FireuxAuthored)
-  creator_id: '',
+  // Authored (FireuxStamped)
+  creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 }
@@ -59,20 +59,17 @@ export interface User extends UserShape {}
  * App-specific user overlay
  * Path: /apps/<appId>/users/<userId>
  */
-export type AppUserShape = {
+export type AppUserShape = FireuxStamped & {
   id: string
   role: 'user' | 'admin'
-  creator_id: string
   notifications: UserNotification[]
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
 }
 
 export const AppUser: AppUserShape = {
   id: '',
   role: 'user' as 'user' | 'admin',
-  creator_id: '',
   notifications: [] as UserNotification[],
+  creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 }

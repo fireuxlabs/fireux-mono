@@ -59,6 +59,10 @@
             :data="jobAllJsonPayload"
             :default-open="false"
           />
+          <DevModel
+            :title="'Jobs · Model'"
+            :model="JobModelRuntime as unknown as Record<string, unknown>"
+          />
         </template>
       </UCard>
 
@@ -107,6 +111,10 @@
             :title="'Professionals (JSON)'"
             :data="professionalGlobalAllJsonPayload"
             :default-open="false"
+          />
+          <DevModel
+            :title="'Professionals · Model'"
+            :model="ProfessionalCoreRuntime as unknown as Record<string, unknown>"
           />
         </template>
       </UCard>
@@ -157,6 +165,10 @@
             :data="professionalLocalAllJsonPayload"
             :default-open="false"
           />
+          <DevModel
+            :title="'Professionals · Model'"
+            :model="ProfessionalCoreRuntime as unknown as Record<string, unknown>"
+          />
         </template>
       </UCard>
 
@@ -205,6 +217,10 @@
             :title="'Agents (JSON)'"
             :data="agentGlobalAllJsonPayload"
             :default-open="false"
+          />
+          <DevModel
+            :title="'Agents · Model'"
+            :model="AgentCoreRuntime as unknown as Record<string, unknown>"
           />
         </template>
       </UCard>
@@ -255,6 +271,10 @@
             :data="agentLocalAllJsonPayload"
             :default-open="false"
           />
+          <DevModel
+            :title="'Agents · Model'"
+            :model="AgentCoreRuntime as unknown as Record<string, unknown>"
+          />
         </template>
       </UCard>
     </UPageBody>
@@ -263,6 +283,7 @@
 
 <script setup lang="ts">
 import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
+import { useDevDriftCopyMeta } from 'fireux-core/runtime/composables/dev/useDevDriftCopyMeta'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
@@ -293,6 +314,7 @@ definePageMeta({
 
 const { isTenant } = useFireUXConfig()
 const { copyJSON, copying } = useDevClipboard()
+const driftMeta = useDevDriftCopyMeta()
 
 function safeArray<T>(input: unknown): T[] {
   return Array.isArray(input) ? (input as T[]) : []
@@ -369,6 +391,8 @@ const jobAllJsonPayload = computed(() => ({
 const copyFilteredJobs = async () => {
   await copyJSON(
     {
+      meta: driftMeta,
+      runtimeModel: JobModelRuntime as unknown as Record<string, unknown>,
       driftKind: jobDriftKind.value,
       selectedField: jobSelectedField.value || null,
       totalJobs: jobs.value.length,
@@ -441,6 +465,8 @@ const professionalGlobalAllJsonPayload = computed(() => ({
 const copyProfessionalGlobalFiltered = async () => {
   await copyJSON(
     {
+      meta: driftMeta,
+      runtimeModel: ProfessionalCoreRuntime as unknown as Record<string, unknown>,
       driftKind: professionalGlobalDriftKind.value,
       selectedField: professionalGlobalSelectedField.value || null,
       totalProfessionals: professionalGlobalRawCollection.value.length,
@@ -508,6 +534,8 @@ const professionalLocalAllJsonPayload = computed(() => ({
 const copyProfessionalLocalFiltered = async () => {
   await copyJSON(
     {
+      meta: driftMeta,
+      runtimeModel: ProfessionalCoreRuntime as unknown as Record<string, unknown>,
       driftKind: professionalLocalDriftKind.value,
       selectedField: professionalLocalSelectedField.value || null,
       totalProfessionals: professionalLocalRawCollection.value.length,
@@ -573,6 +601,8 @@ const agentGlobalAllJsonPayload = computed(() => ({
 const copyAgentGlobalFiltered = async () => {
   await copyJSON(
     {
+      meta: driftMeta,
+      runtimeModel: AgentCoreRuntime as unknown as Record<string, unknown>,
       driftKind: agentGlobalDriftKind.value,
       selectedField: agentGlobalSelectedField.value || null,
       totalAgents: agentGlobalRawCollection.value.length,
@@ -637,6 +667,8 @@ const agentLocalAllJsonPayload = computed(() => ({
 const copyAgentLocalFiltered = async () => {
   await copyJSON(
     {
+      meta: driftMeta,
+      runtimeModel: AgentCoreRuntime as unknown as Record<string, unknown>,
       driftKind: agentLocalDriftKind.value,
       selectedField: agentLocalSelectedField.value || null,
       totalAgents: agentLocalRawCollection.value.length,

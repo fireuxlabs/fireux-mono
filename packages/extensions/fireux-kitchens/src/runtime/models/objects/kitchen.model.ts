@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts
 
-import type { FireuxAuthored } from 'fireux-core/runtime/models/core/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -15,13 +15,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Drift is detected by comparing data ↔ model shape
  */
 
-export type KitchenShape = FireuxAuthored & {
+export type KitchenShape = FireuxStamped & {
   /** Canonical Place ID (also the Firestore document ID). */
   id: string
 
   name: string
   formatted_address: string
-  kitchen_image: string
+  place_image: string
 
   /** Optional kitchen-specific details (empty string means unset) */
   website: string
@@ -34,13 +34,13 @@ export const Kitchen: KitchenShape = {
 
   name: '',
   formatted_address: '',
-  kitchen_image: '',
+  place_image: '',
 
   /** Optional kitchen-specific details (empty string means unset) */
   website: '',
 
-  // Authored (FireuxAuthored)
-  creator_id: '',
+  // Authored (FireuxStamped)
+  creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 }
@@ -48,5 +48,5 @@ export const Kitchen: KitchenShape = {
 // ✅ Type derived from the runtime model (no duplication)
 export type Kitchen = KitchenShape
 
-export type KitchenCreateInput = Omit<Kitchen, keyof FireuxAuthored>
+export type KitchenCreateInput = Omit<Kitchen, keyof FireuxStamped>
 export type KitchenUpdateInput = Partial<Omit<KitchenCreateInput, 'id'>>

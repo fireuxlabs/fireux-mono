@@ -3,49 +3,39 @@ import { useFirestore } from 'vuefire'
 import { useRequireUser } from '../../firebase/useRequireUser'
 
 type StampMode = 'none' | 'date' | 'time' | 'pinpoint'
-type StampOpts = { raw?: boolean; mode?: StampMode }
+type StampOpts = { raw?: boolean; mode?: StampMode; creator_id?: string | null; requireUser?: boolean }
 
 type Stamped<T> = T & {
   created_at: ReturnType<typeof serverTimestamp>
   updated_at: ReturnType<typeof serverTimestamp>
-  creator_id: string
-  // opt-in client-side fields for higher-accuracy modes
-  created_at_client?: number
-  created_at_precise?: { ms: number; hr?: number | null }
-  stamp_mode?: StampMode
+  creator_id?: string
 }
 
 export async function stampDoc<T>(data: T, opts: StampOpts = {}): Promise<T | Stamped<T>> {
   // honor explicit raw or explicit 'none' mode
   if (opts.raw || opts.mode === 'none') return data
 
-  const user = await useRequireUser()
-  const mode: StampMode = opts.mode ?? 'date'
+  const requireUser = opts.requireUser !== false
+  let creatorId = typeof opts.creator_id === 'string' ? opts.creator_id.trim() : ''
+
+  if (!creatorId && requireUser) {
+    const user = await useRequireUser()
+    creatorId = user.uid
+  }
 
   const base: any = {
     ...(data as any),
     // canonical server timestamps (authoritative)
     created_at: serverTimestamp(),
     updated_at: serverTimestamp(),
-    creator_id: user.uid,
   }
+
+  if (creatorId) base.creator_id = creatorId
 
   // Maintain legacy `created_by` for backward compatibility when callers
   // haven't explicitly provided it. Do not overwrite an explicit value.
-  if (!(data as any).hasOwnProperty('created_by')) {
-    base.created_by = user.uid
-  }
-
-  // Only set stamp_mode when non-default to avoid storing for the common case
-  if (mode !== 'date') base.stamp_mode = mode
-
-  // 'time' and 'pinpoint' include client-side high-res timing (opt-in)
-  if (mode === 'time' || mode === 'pinpoint') {
-    const nowMs = Date.now()
-    const perf = (globalThis as any)?.performance
-    const hr = typeof perf?.now === 'function' ? perf.now() : null
-    base.created_at_client = nowMs
-    base.created_at_precise = { ms: nowMs, hr }
+  if (creatorId && !(data as any).hasOwnProperty('created_by')) {
+    base.created_by = creatorId
   }
 
   return base as Stamped<T>

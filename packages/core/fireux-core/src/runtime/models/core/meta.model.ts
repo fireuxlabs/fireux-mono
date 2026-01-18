@@ -6,17 +6,12 @@ import type { FirebaseTimestamp } from '../../../types/firebase'
 export interface FireuxTimestamps {
   created_at: FirebaseTimestamp
   updated_at: FirebaseTimestamp
-  /**
-   * Optional client-side epoch milliseconds used for optimistic ordering
-   * when callers request higher-accuracy stamping (mode='time'|'pinpoint').
-   */
-  created_at_client?: number
-  /** Optional high-resolution timing details (opt-in). */
-  created_at_precise?: { ms: number; hr?: number | null }
-  /** Optional stamp mode when non-default (date). */
-  stamp_mode?: 'none' | 'date' | 'time' | 'pinpoint'
 }
 
-export interface FireuxAuthored extends FireuxTimestamps {
-  creator_id: string
+/** Optional authored metadata (creator may be absent for system writes). */
+export interface FireuxAuthored {
+  creator_id?: string
 }
+
+/** Convenience type: timestamps plus optional authored metadata. */
+export type FireuxStamped = FireuxTimestamps & FireuxAuthored

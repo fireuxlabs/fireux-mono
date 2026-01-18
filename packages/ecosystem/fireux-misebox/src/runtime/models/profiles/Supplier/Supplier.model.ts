@@ -1,6 +1,7 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts
 
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { AppProfileBase, CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
 import { supplierConfig } from './supporting'
 
 /**
@@ -9,13 +10,7 @@ import { supplierConfig } from './supporting'
  * App doc:   apps/{appId}/suppliers/{uid}
  */
 
-export type SupplierCoreShape = {
-  id: string
-  title: string
-  subtitle: string
-  tagline: string
-  tags: string[]
-
+export type SupplierCoreShape = CoreProfileBase & {
   bio_short: string
   bio_long: string
   specialties: string[]
@@ -29,10 +24,6 @@ export type SupplierCoreShape = {
   employee_count: number
   certifications: string[]
   delivery_range: number
-
-  creator_id: string
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
 }
 
 export const SupplierCore: SupplierCoreShape = {
@@ -56,23 +47,17 @@ export const SupplierCore: SupplierCoreShape = {
   certifications: [] as string[],
   delivery_range: 0,
 
-  creator_id: '',
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 }
 
 export type SupplierCore = SupplierCoreShape
 
-export type SupplierAppShape = {
-  id: string
-  creator_id: string
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
-}
+export type SupplierAppShape = AppProfileBase
 
 export const SupplierApp: SupplierAppShape = {
   id: '',
-  creator_id: '',
+  creator_id: undefined,
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 }

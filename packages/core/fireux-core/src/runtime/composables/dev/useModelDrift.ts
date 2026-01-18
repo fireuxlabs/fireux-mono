@@ -108,7 +108,7 @@ export const resolveDriftFromModel = (
     // Ignore known opt-in client-side timestamp fields and stamp metadata
     // These fields are added by stamping modes (time/pinpoint) and should not
     // be treated as drift when the canonical model doesn't include them.
-    const IGNORE_EXTRA_TIMESTAMP = /^(created_at(?:_client|_precise|_ms)?|updated_at(?:_client|_precise|_ms)?|stamp_mode)$/
+    const IGNORE_EXTRA_TIMESTAMP = /^(created_at(?:_ms)?|updated_at(?:_ms)?|stamp_mode)$/
     if (IGNORE_EXTRA_TIMESTAMP.test(key)) continue
 
     if (key in model) continue

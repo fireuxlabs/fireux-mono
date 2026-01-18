@@ -40,6 +40,10 @@
             :data="allJsonPayload"
             :default-open="false"
           />
+          <DevModel
+            :title="'Dev · Apps · Model'"
+            :model="appModelRuntime"
+          />
         </template>
       </UCard>
     </UPageBody>
@@ -50,6 +54,7 @@
 import { definePageMeta, useRoute } from '#imports'
 import { computed } from 'vue'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard'
+import { useDevDriftCopyMeta } from '../../composables/dev/useDevDriftCopyMeta'
 import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'
 import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
 import type { AppCard } from '../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
@@ -87,6 +92,7 @@ const viewedCollection = computed<AppModel[]>(() =>
 )
 
 const { copyJSON, copying } = useDevClipboard()
+const driftMeta = useDevDriftCopyMeta()
 
 const appModelRuntime = AppModelRuntime as unknown as Record<string, unknown>
 
@@ -129,6 +135,8 @@ const allJsonPayload = computed(() => ({
 const copyFiltered = async () => {
   await copyJSON(
     {
+      meta: driftMeta,
+      runtimeModel: appModelRuntime,
       driftKind: driftKind.value,
       selectedField: selectedField.value || null,
       totalApps: viewedCollection.value.length,
