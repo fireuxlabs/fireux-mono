@@ -17,6 +17,96 @@ Related (more specific) canons:
 - Explicit stacks: shared modules flow through predictable folders.
 - No shadow copies: one canonical implementation per concern.
 
+---
+
+## Entity classes + page mode canon
+
+FireUX entities are grouped by how they are operated. This drives routing, edit patterns, and permissions.
+
+### 1) Workspace entities
+
+These are long‑lived workspaces with frequent edits and multiple tools.
+
+**Traits**
+
+- Owned or co‑owned
+- Multi‑section UX
+- Inline edits acceptable
+- Dashboard‑first
+
+**Routing**
+
+- `/dashboard/<entity>/*`
+
+**Examples**
+
+- App
+- User
+- Chef
+- Professional
+- Agent
+- Supplier
+- Kitchen
+- Company (when it graduates)
+
+### 2) Operational content objects
+
+These are created often, edited occasionally, and typically belong to a workspace entity.
+
+**Traits**
+
+- High volume
+- Not a workspace on their own
+- Dedicated create + edit routes
+
+**Routing**
+
+- `/<objects>/index`
+- `/<objects>/create`
+- `/<objects>/[id]`
+- `/<objects>/edit/[id]`
+
+**Examples**
+
+- Job
+- Recipe
+- Product
+- Blog post
+- Dish
+- Menu (managed inside a workspace, not a dashboard)
+
+### 3) Reference / system objects
+
+These are shared, lightly edited system entities used by other objects.
+
+**Traits**
+
+- Small shape
+- Rarely edited
+- Often derived or constrained
+- Admin‑only mutation if needed
+
+**Routing**
+
+- `/<objects>/index`
+- `/<objects>/[id]` (optional)
+- `/<objects>/edit/[id]` only if mutations exist
+
+**Examples**
+
+- Ingredient
+- Place
+- Tag
+- Category
+- Skill
+- Certification
+
+### Canon rule (page modes)
+
+- `/<entity>/[id]` is read‑only, safe to view.
+- `/<entity>/edit/[id]` is the only mutation surface for operational objects.
+- Inline editing is reserved for workspace dashboards.
+
 ## Docs conventions
 
 - Keep repo-wide docs in `/docs`; keep ecosystem/app notes in their local `docs/`.
