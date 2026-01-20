@@ -153,8 +153,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
 import { doc, getDoc } from 'firebase/firestore'
+import { computed, ref, watch } from 'vue'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { useAppUsers } from '../../../../composables/fireux/firestore/core/app/fetch/useAppUsers'

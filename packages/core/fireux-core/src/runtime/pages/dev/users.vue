@@ -6,6 +6,17 @@
     />
 
     <UPageBody class="space-y-6">
+      <UCard variant="subtle">
+        <div class="text-xs text-gray-500 dark:text-gray-400">
+          Mode:
+          <span class="font-mono">
+            {{ isTenant ? 'tenant (single app)' : 'global (all apps)' }}
+          </span>
+        </div>
+      </UCard>
+
+      <DevBinding :app="bindingApp" :apps="bindingApps" />
+
       <UCard>
         <DevModel
           :title="'Users · Model'"
@@ -54,12 +65,15 @@
 </template>
 
 <script setup lang="ts">
-import { definePageMeta } from '#imports';
-import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter';
-import { computed } from 'vue';
-import { useGlobalUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection';
-import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
-import { User as UserModelRuntime } from '../../models/core/user.model';
+import { definePageMeta } from '#imports'
+import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
+import { computed } from 'vue'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
+import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
+import { useGlobalUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
+import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { User as UserModelRuntime } from '../../models/core/user.model'
 
 definePageMeta({
   layout: 'dev',
@@ -80,6 +94,16 @@ const userModelRuntime = UserModelRuntime
 
 const { users, count } = useGlobalUserCollection()
 const { card: makeCard } = useUserInterface()
+
+const { apps } = useAppCollection()
+const { app: activeApp } = useApp()
+const { appId: configAppId, isTenant } = useFireUXConfig()
+const bindingApps = computed(() =>
+  isTenant ? (activeApp.value ? [activeApp.value] : []) : apps.value ?? []
+)
+const bindingApp = computed(
+  () => bindingApps.value.find((item) => item?.id === configAppId) ?? null
+)
 
 const userCollection = computed(() => users.value ?? [])
 

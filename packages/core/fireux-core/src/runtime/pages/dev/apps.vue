@@ -15,76 +15,7 @@
         </div>
       </UCard>
 
-      <UCard variant="subtle">
-        <template #header>
-          <div class="flex items-start justify-between gap-3">
-            <div class="space-y-3">
-              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Binding check (app ↔ users)
-              </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
-                Compares app users against core user mirrors and app admin lists.
-                Membership is authoritative in <span class="font-mono">/apps/{appId}/users</span>.
-              </p>
-            </div>
-          </div>
-        </template>
-
-        <div class="space-y-3 text-sm">
-          <div class="text-xs text-gray-500 dark:text-gray-400">
-            <span class="font-mono">appId</span>: {{ bindingAppId || 'unknown' }} ·
-            <span class="font-mono">app users</span>: {{ bindingAppUsersCount }} ·
-            <span class="font-mono">admin_ids</span>: {{ bindingAdminIdsCount }}
-          </div>
-
-          <div v-if="bindingPending" class="text-xs text-gray-500 dark:text-gray-400">
-            Checking…
-          </div>
-
-          <div v-else>
-            <div v-if="!bindingTotal" class="text-sm text-emerald-600">
-              No binding issues detected.
-            </div>
-
-            <div v-else class="space-y-3">
-              <div v-if="binding.missingCore.length">
-                <div class="text-sm font-medium">App users missing core user docs</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ binding.missingCore.join(', ') }}
-                </div>
-              </div>
-
-              <div v-if="binding.missingUserOf.length">
-                <div class="text-sm font-medium">Core users missing userOf mirror</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ binding.missingUserOf.join(', ') }}
-                </div>
-              </div>
-
-              <div v-if="binding.missingAdminOf.length">
-                <div class="text-sm font-medium">Admin app users missing adminOf mirror</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ binding.missingAdminOf.join(', ') }}
-                </div>
-              </div>
-
-              <div v-if="binding.adminMissingAppUser.length">
-                <div class="text-sm font-medium">Admin ids missing app user doc</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ binding.adminMissingAppUser.join(', ') }}
-                </div>
-              </div>
-
-              <div v-if="binding.adminRoleMismatch.length">
-                <div class="text-sm font-medium">Admin ids not marked admin in app users</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ binding.adminRoleMismatch.join(', ') }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </UCard>
+      <DevBinding :app="bindingApp" :apps="appCollection" />
 
       <UCard>
         <DevModel
@@ -135,17 +66,13 @@
 
 <script setup lang="ts">
 import { definePageMeta } from '#imports'
-import { doc, getDoc } from 'firebase/firestore'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
-import { computed, ref, watch } from 'vue'
-import { useFirestore } from 'vuefire'
+import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
-import { useAppUsers } from '../../composables/fireux/firestore/core/app/fetch/useAppUsers'
-import { useAppInterface } from '../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
+import { useAppInterface } from '../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { App as AppModelRuntime } from '../../models/core/app.model'
-import type { User } from '../../models/core/user.model'
 
 definePageMeta({
   layout: 'dev',
@@ -165,7 +92,7 @@ definePageMeta({
 const appModelRuntime = AppModelRuntime
 
 const { apps, count } = useAppCollection()
-const { app: activeApp, pending: activeAppPending } = useApp()
+const { app: activeApp } = useApp()
 const { card: makeCard } = useAppInterface()
 
 const { appId: configAppId, isTenant } = useFireUXConfig()
@@ -178,109 +105,6 @@ const bindingApp = computed(() =>
   appCollection.value.find((item) => item?.id === bindingAppId.value) ?? null
 )
 
-const { users: appUsers, pending: appUsersPending } = useAppUsers()
-const db = useFirestore()
-const coreUsers = ref<Map<string, User | null>>(new Map())
-const bindingPending = ref(false)
-
-const appUserIds = computed(() =>
-  (appUsers.value ?? [])
-    .map((u) => (u?.id ?? '').trim())
-    .filter((id): id is string => Boolean(id))
-)
-
-watch(
-  appUserIds,
-  async (ids) => {
-    if (import.meta.server) return
-    const appId = bindingAppId.value
-    if (!appId) return
-
-    bindingPending.value = true
-    const next = new Map<string, User | null>()
-
-    await Promise.all(
-      ids.map(async (id) => {
-        try {
-          const snap = await getDoc(doc(db, 'users', id) as any)
-          next.set(id, snap.exists() ? (snap.data() as User) : null)
-        } catch {
-          next.set(id, null)
-        }
-      })
-    )
-
-    coreUsers.value = next
-    bindingPending.value = false
-  },
-  { immediate: true }
-)
-
-const bindingAdminIds = computed(() => {
-  const raw = bindingApp.value?.admin_ids
-  if (!Array.isArray(raw)) return []
-  return raw.filter((id): id is string => typeof id === 'string' && id.length > 0)
-})
-
-const binding = computed(() => {
-  const appId = bindingAppId.value
-  const missingCore: string[] = []
-  const missingUserOf: string[] = []
-  const missingAdminOf: string[] = []
-  const adminMissingAppUser: string[] = []
-  const adminRoleMismatch: string[] = []
-
-  if (!appId) {
-    return { missingCore, missingUserOf, missingAdminOf, adminMissingAppUser, adminRoleMismatch }
-  }
-
-  const appUserById = new Map((appUsers.value ?? []).map((u) => [u.id, u]))
-
-  for (const [id, coreUser] of coreUsers.value.entries()) {
-    if (!coreUser) {
-      missingCore.push(id)
-      continue
-    }
-
-    const userOf = Array.isArray(coreUser.userOf) ? coreUser.userOf : []
-    if (!userOf.includes(appId)) {
-      missingUserOf.push(id)
-    }
-
-    const appUser = appUserById.get(id)
-    if (appUser?.role === 'admin') {
-      const adminOf = Array.isArray(coreUser.adminOf) ? coreUser.adminOf : []
-      if (!adminOf.includes(appId)) {
-        missingAdminOf.push(id)
-      }
-    }
-  }
-
-  for (const id of bindingAdminIds.value) {
-    const appUser = appUserById.get(id)
-    if (!appUser) {
-      adminMissingAppUser.push(id)
-      continue
-    }
-    if (appUser.role !== 'admin') {
-      adminRoleMismatch.push(id)
-    }
-  }
-
-  return { missingCore, missingUserOf, missingAdminOf, adminMissingAppUser, adminRoleMismatch }
-})
-
-const bindingTotal = computed(
-  () =>
-    binding.value.missingCore.length +
-    binding.value.missingUserOf.length +
-    binding.value.missingAdminOf.length +
-    binding.value.adminMissingAppUser.length +
-    binding.value.adminRoleMismatch.length
-)
-
-const bindingAppUsersCount = computed(() => appUserIds.value.length)
-const bindingAdminIdsCount = computed(() => bindingAdminIds.value.length)
 
 const {
   driftKind: appsDriftKind,
