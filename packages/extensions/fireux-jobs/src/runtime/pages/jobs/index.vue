@@ -4,15 +4,16 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <JobCTA />
-      <JobCollectionManager :collection="appJobs" />
+      <JobCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { useHead } from 'nuxt/app'
+import { useHead } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
+import { computed } from 'vue'
 
 const { appName } = useFireUXConfig()
 
@@ -33,11 +34,11 @@ definePageMeta({
     layouts: ['default'],
   },
   name: 'JobsIndexPage',
-  head: { title: 'Jobs' },
 })
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { appJobs } = useJobCollection()
+const collection = computed(() => appJobs.value ?? [])
 </script>
 

@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <OrganismsProfilesChefCTA />
-      <OrganismsProfilesChefCollectionManager :collection="chefsCollection" />
+      <OrganismsProfilesChefCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -40,7 +40,7 @@ const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { globalChefs, localChefs } = useChefCollection()
-const chefsCollection = computed(() => [
+const collection = computed(() => [
   ...(localChefs?.value ?? []),
   ...(globalChefs.value ?? []),
 ])

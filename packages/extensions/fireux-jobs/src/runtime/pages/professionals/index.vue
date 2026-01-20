@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <OrganismsProfilesProfessionalCTA />
-      <OrganismsProfilesProfessionalCollectionManager :collection="professionalsCollection" />
+      <OrganismsProfilesProfessionalCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -21,7 +21,7 @@ definePageMeta({
     key: 'professionals',
     label: 'Professionals',
     icon: 'i-lucide-briefcase',
-    order: 60,
+    order: 62,
     desktop: true,
     mobile: true,
     layouts: ['default'],
@@ -41,7 +41,7 @@ const pageDescription =
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { globalProfessionals, localProfessionals } = useProfessionalCollection()
-const professionalsCollection = computed(() => [
+const collection = computed(() => [
   ...(localProfessionals?.value ?? []),
   ...(globalProfessionals.value ?? []),
 ])

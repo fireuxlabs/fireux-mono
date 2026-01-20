@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <CompanyCTA />
-      <CompanyCollectionManager :collection="companiesCollection" />
+      <CompanyCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -29,7 +29,6 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
-  head: { title: 'Companies' },
   name: 'CompaniesIndexPage',
 })
 
@@ -41,5 +40,5 @@ const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { companies } = useCompanyFetch()
-const companiesCollection = computed(() => companies.value ?? [])
+const collection = computed(() => companies.value ?? [])
 </script>

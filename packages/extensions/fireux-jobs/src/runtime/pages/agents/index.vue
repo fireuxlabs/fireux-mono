@@ -4,7 +4,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <OrganismsProfilesAgentCTA />
-      <OrganismsProfilesAgentCollectionManager :collection="agentsCollection" />
+      <OrganismsProfilesAgentCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -40,7 +40,7 @@ const pageDescription =
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { globalAgents, localAgents } = useAgentCollection()
-const agentsCollection = computed(() => [
+const collection = computed(() => [
   ...(localAgents?.value ?? []),
   ...(globalAgents.value ?? []),
 ])

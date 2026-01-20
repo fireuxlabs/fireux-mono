@@ -29,7 +29,6 @@ definePageMeta({
     layouts: ['default'],
   },
   name: 'PlacesIndexPage',
-  head: { title: 'Places' },
 })
 
 const { appName } = useFireUXConfig()

@@ -4,7 +4,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <BlogCTA />
-      <BlogCollectionManager :collection="items" />
+      <BlogCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -13,6 +13,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useBlogFetch } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogFetch'
+import { computed } from 'vue'
 
 const { appName } = useFireUXConfig()
 
@@ -32,10 +33,11 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
-  head: { title: 'Blog' },
+  name: 'BlogIndexPage',
 })
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { items } = useBlogFetch()
+const collection = computed(() => items.value ?? [])
 </script>

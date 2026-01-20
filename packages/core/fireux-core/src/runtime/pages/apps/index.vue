@@ -5,15 +5,16 @@
 
     <UPageBody class="pagebody">
       <OrganismsAppCTA />
-      <OrganismsAppCollectionManager :collection="apps" />
+      <OrganismsAppCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection'
+import { computed } from 'vue'
 
 definePageMeta({
   nav: {
@@ -41,6 +42,7 @@ const pageDescription =
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { apps } = useAppCollection()
+const collection = computed(() => apps.value ?? [])
 </script>
 
 

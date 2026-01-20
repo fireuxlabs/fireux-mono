@@ -4,7 +4,7 @@
 
     <UPageBody class="pagebody">
       <CompanyCTA />
-      <CompanyCollectionManager :collection="companyCollection" />
+      <CompanyCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -29,7 +29,6 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
-  head: { title: 'Companies' },
   name: 'CompaniesIndexPage',
 })
 
@@ -68,6 +67,6 @@ const mergedCompanies = computed(() =>
   })
 )
 
-const companyCollection = computed(() => mergedCompanies.value)
+const collection = computed(() => mergedCompanies.value)
 
 </script>

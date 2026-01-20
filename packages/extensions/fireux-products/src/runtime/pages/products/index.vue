@@ -5,7 +5,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <ProductCTA />
-      <ProductCollectionManager :collection="products" />
+      <ProductCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -14,6 +14,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useProductCollection } from '../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
+import { computed } from 'vue'
 
 const { appName } = useFireUXConfig()
 
@@ -33,11 +34,12 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
-  head: { title: 'Products' },
+  name: 'ProductsIndexPage',
 })
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { products } = useProductCollection()
+const collection = computed(() => products.value ?? [])
 </script>
 

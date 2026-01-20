@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <OrganismsProfilesSupplierCTA />
-      <OrganismsProfilesSupplierCollectionManager :collection="suppliersCollection" />
+      <OrganismsProfilesSupplierCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -40,7 +40,7 @@ const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { globalSuppliers, localSuppliers } = useSupplierCollection()
-const suppliersCollection = computed(() => [
+const collection = computed(() => [
   ...(localSuppliers?.value ?? []),
   ...(globalSuppliers.value ?? []),
 ])

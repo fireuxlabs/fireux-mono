@@ -5,15 +5,16 @@
 
     <UPageBody class="pagebody">
       <OrganismsUserCTA />
-      <OrganismsUserCollectionManager :collection="users" />
+      <OrganismsUserCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useGlobalUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useGlobalUserCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
+import { computed } from 'vue'
 
 definePageMeta({
   nav: {
@@ -40,4 +41,5 @@ const pageDescription =
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { users } = useGlobalUserCollection()
+const collection = computed(() => users.value ?? [])
 </script>

@@ -3,7 +3,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <OrganismsAppCTA />
-      <OrganismsAppCollectionManager :collection="apps" />
+      <OrganismsAppCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -12,6 +12,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection'
+import { computed } from 'vue'
 
 definePageMeta({
   nav: {
@@ -39,4 +40,5 @@ const pageDescription =
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { apps } = useAppCollection()
+const collection = computed(() => apps.value ?? [])
 </script>
