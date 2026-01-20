@@ -1,11 +1,11 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
 
-import type { AppProfileBase, CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import {
-    professionalConfig,
-    type OtherExperienceItem,
-    type RelevantExperienceItem,
+  professionalConfig,
+  type OtherExperienceItem,
+  type RelevantExperienceItem,
 } from './supporting'
 
 /**
@@ -13,16 +13,6 @@ import {
  * Core doc:  professionals/{uid}
  * App doc:   apps/{appId}/professionals/{uid}
  */
-
-export type ProfessionalCoreShape = CoreProfileBase & {
-  health_certifications: string[]
-  bio_short: string
-  bio_long: string
-  specialties: string[]
-  locations: string[]
-  relevant_experience: RelevantExperienceItem[]
-  other_experience: OtherExperienceItem[]
-}
 
 export const ProfessionalCore = {
   id: '',
@@ -39,21 +29,27 @@ export const ProfessionalCore = {
   relevant_experience: [] as RelevantExperienceItem[],
   other_experience: [] as OtherExperienceItem[],
 
+  // Stamps
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies ProfessionalCoreShape & Record<string, unknown>
+} as const
 
-export type ProfessionalCore = ProfessionalCoreShape
-
-export type ProfessionalAppShape = AppProfileBase
+export type ProfessionalCore = {
+  [K in keyof typeof ProfessionalCore]: (typeof ProfessionalCore)[K]
+}
 
 export const ProfessionalApp = {
   id: '',
-  creator_id: undefined,
+
+  // Stamps
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies ProfessionalAppShape & Record<string, unknown>
+} as const
 
-export type ProfessionalApp = ProfessionalAppShape
+export type ProfessionalApp = {
+  [K in keyof typeof ProfessionalApp]: (typeof ProfessionalApp)[K]
+}
 
 export { professionalConfig }

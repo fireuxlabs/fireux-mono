@@ -125,8 +125,24 @@ function readMirrorList(filePath) {
     .map((line) => line.trim())
     .filter((line) => line && !line.startsWith('#'))
     .map((line) => {
-      const [path, comment] = line.split('#').map((s) => s.trim())
-      return { path, linkName: comment && comment.endsWith('.ts') ? comment : undefined }
+      // Support an optional `# custom-name` comment after the path.
+      // If the comment omits an extension, infer it from the target path.
+      const parts = line.split('#')
+      const relPath = parts[0].trim()
+      const rawComment = parts.slice(1).join('#').trim()
+
+      let linkName = undefined
+      if (rawComment) {
+        const targetExt = path.extname(relPath) || '.ts'
+        // If the comment already contains an extension, use it as-is.
+        if (path.extname(rawComment)) {
+          linkName = rawComment
+        } else {
+          linkName = `${rawComment}${targetExt}`
+        }
+      }
+
+      return { path: relPath, linkName }
     })
 }
 

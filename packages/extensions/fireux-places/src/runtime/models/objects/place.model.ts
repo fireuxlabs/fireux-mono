@@ -4,40 +4,19 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Places canon:
- * - GooglePlace = transient provider result (never written to Firestore)
- * - Place = stored Firestore document in `/places/{id}`
- * - `id` is always the Google place_id and also the Firestore doc id
- * - Empty string means "unset"
+ * Place (canonical location)
+ * Firestore: places/{id}
+ *
+ * Canon rules:
+ * - id is Google place_id when sourced from Google
+ * - manual places also use id as doc id (not google)
  */
 
 /** Canonical sources: google (provider), fireux (stored), manual (user-entered). */
 export type PlaceSource = 'google' | 'fireux' | 'manual'
 
-export interface Place extends FireuxStamped {
-	/** Canonical id (== Google place_id; Firestore document id). */
-	id: string
-
-	name: string
-	formatted_address: string
-	lat: number
-	lng: number
-
-	/** Canonical place image for UI (empty string means unset). */
-	place_image: string
-
-	/** User id that has claimed this place (empty string means unclaimed). */
-	claimed_by: string
-
-	source: PlaceSource
-
-	/** “How we found this place” (kept for UX + duplicate avoidance). */
-	search_term: string
-}
-
 // 🔑 Runtime + canonical shape for the STORED Firestore Place
 export const Place = {
-	/** Canonical id (== Google place_id; Firestore document id). */
 	id: '',
 
 	name: '',
@@ -45,23 +24,25 @@ export const Place = {
 	lat: 0,
 	lng: 0,
 
-	/** Canonical place image for UI (empty string means unset). */
 	place_image: '',
 
-	/** User id that has claimed this place (empty string means unclaimed). */
+	/** Claimed owner (uid); empty string means unclaimed. */
 	claimed_by: '',
 
-	// Drift validation uses enum:... markers in runtime models.
 	source: 'enum:google|fireux|manual' as unknown as PlaceSource,
 
 	/** “How we found this place” (kept for UX + duplicate avoidance). */
 	search_term: '',
 
-	// Authored (FireuxStamped)
-	creator_id: undefined,
+	// Stamps
+	creator_id: undefined as FireuxStamped['creator_id'],
 	created_at: {} as FirebaseTimestamp,
 	updated_at: {} as FirebaseTimestamp,
-} satisfies Place & Record<string, unknown>
+} as const
+
+export type Place = {
+	[K in keyof typeof Place]: (typeof Place)[K]
+}
 
 /** Base (shared by Google & Firestore). */
 export type BasePlace = Pick<
@@ -88,4 +69,4 @@ export type GooglePlace = BasePlace & {
 }
 
 /** Payload used before Firestore stamping is applied. */
-export type PlaceUpsertInput = Omit<Place, keyof FireuxStamped>
+export type PlaceUpsertInput = Omit<Place, 'created_at' | 'updated_at' | 'creator_id'>

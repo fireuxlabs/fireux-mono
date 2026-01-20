@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
 
-import type { AppProfileBase, CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { agentConfig } from './supporting'
 
@@ -9,13 +9,6 @@ import { agentConfig } from './supporting'
  * Core doc:  agents/{uid}
  * App doc:   apps/{appId}/agents/{uid}
  */
-
-export type AgentCoreShape = CoreProfileBase & {
-  bio_short: string
-  contact_email: string
-  contact_phone: string
-  website_url: string
-}
 
 export const AgentCore = {
   id: '',
@@ -29,22 +22,28 @@ export const AgentCore = {
   contact_phone: '',
   website_url: '',
 
+  // Stamps
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies AgentCoreShape & Record<string, unknown>
+} as const
 
-export type AgentCore = AgentCoreShape
-
-export type AgentAppShape = AppProfileBase
+export type AgentCore = {
+  [K in keyof typeof AgentCore]: (typeof AgentCore)[K]
+}
 
 export const AgentApp = {
   id: '',
-  creator_id: undefined,
+
+  // Stamps
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies AgentAppShape & Record<string, unknown>
+} as const
 
-export type AgentApp = AgentAppShape
+export type AgentApp = {
+  [K in keyof typeof AgentApp]: (typeof AgentApp)[K]
+}
 
 export { agentConfig }
 

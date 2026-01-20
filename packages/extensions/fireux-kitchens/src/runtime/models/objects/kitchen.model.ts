@@ -15,18 +15,6 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Drift is detected by comparing data ↔ model shape
  */
 
-export type KitchenShape = FireuxStamped & {
-  /** Canonical Place ID (also the Firestore document ID). */
-  id: string
-
-  name: string
-  formatted_address: string
-  place_image: string
-
-  /** Optional kitchen-specific details (empty string means unset) */
-  website: string
-}
-
 // 🔑 Runtime + canonical shape (source of truth)
 export const Kitchen = {
   /** Canonical Place ID (also the Firestore document ID). */
@@ -40,13 +28,14 @@ export const Kitchen = {
   website: '',
 
   // Authored (FireuxStamped)
-  creator_id: undefined,
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies KitchenShape & Record<string, unknown>
+} as const
 
-// ✅ Type derived from the runtime model (no duplication)
-export type Kitchen = KitchenShape
+export type Kitchen = {
+  [K in keyof typeof Kitchen]: (typeof Kitchen)[K]
+}
 
-export type KitchenCreateInput = Omit<Kitchen, keyof FireuxStamped>
+export type KitchenCreateInput = Omit<Kitchen, 'created_at' | 'updated_at' | 'creator_id'>
 export type KitchenUpdateInput = Partial<Omit<KitchenCreateInput, 'id'>>

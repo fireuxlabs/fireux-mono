@@ -76,10 +76,10 @@
 </template>
 
 <script setup lang="ts">
-import type { App } from '../../../../../models/core/app.model'
+import type { AppModel } from '../../../../../models/core/app.model';
 
 defineProps<{
-  app: App
+  app: AppModel
   isDev: boolean
   noopUpdate: () => Promise<void>
   handleEcosystemUpdate: (value: string) => Promise<unknown>

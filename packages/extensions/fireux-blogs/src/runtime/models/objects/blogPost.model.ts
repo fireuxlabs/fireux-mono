@@ -1,82 +1,78 @@
 // FILE: packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts
 
-// Author identity comes from CoreUser (do not import from AppUser)
-import type { Sluggable } from 'fireux-core/runtime/models/shared/protocols.ts'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
-// ------------------------------------------------------------------
-// Author & full BlogPost
-// ------------------------------------------------------------------
-export interface BlogPost extends Sluggable {
-	title: string
-	content: string
-	metaDescription: string
-	slug: string
-	created_at: string
-	updated_at: string
-	author: Author
-	keywords: string[]
-	tags: string[]
-	canonicalUrl: string
-	featuredImage: string
-	socialImage: string
-	readingTime: string
-	cta_link: string
-	cta_text: string
-	type: 'article' | 'product'
-	product_id?: string
-	appId: string
-}
+/**
+ * BlogPost Firestore doc (extension)
+ * Collection: blogs/{slug}
+ *
+ * Canon rules:
+ * - id is slug (string)
+ * - Uses FireuxStamped for created/updated (+ optional creator_id)
+ */
 
-// ------------------------------------------------------------------
-// Entry type: exactly what the user fills in
-// ------------------------------------------------------------------
-export type BlogPostEntry = Omit<BlogPost, 'created_at' | 'updated_at' | 'appId'>
+export type BlogPostType = 'article' | 'product'
 
-// ------------------------------------------------------------------
-// Simplified BlogPost interface
-// ------------------------------------------------------------------
-export interface SimpleBlogPost {
-	title: string
-	content: string
-	author: string
-	createdAt: Date
-	updatedAt?: Date
-}
-
-export interface Author {
+export type BlogAuthor = {
 	id: string
 	display_name: string
-	avatar?: string
-	handle?: string
-	email?: string
+	avatar: string
+	handle: string
+	email: string
 }
 
-// ------------------------------------------------------------------
-// Runtime model shape (for dev tooling)
-// ------------------------------------------------------------------
-export const BlogPostRuntime = {
+export const BlogPost = {
+	// Identity
+	id: '', // == slug
+
+	// Core content
 	title: '',
 	content: '',
 	metaDescription: '',
 	slug: '',
-	created_at: '',
-	updated_at: '',
+
+	// Author snapshot
 	author: {
 		id: '',
 		display_name: '',
 		avatar: '',
 		handle: '',
 		email: '',
-	},
-	keywords: [],
-	tags: [],
+	} as BlogAuthor,
+
+	// SEO
+	keywords: [] as string[],
+	tags: [] as string[],
 	canonicalUrl: '',
+
+	// Media
 	featuredImage: '',
 	socialImage: '',
+
+	// Meta
 	readingTime: '',
 	cta_link: '',
 	cta_text: '',
-	type: 'enum:article|product' as unknown as BlogPost['type'],
+
+	// Type + optional product link
+	type: 'article' as BlogPostType,
 	product_id: '',
+
+	// Scope
 	appId: '',
-} satisfies BlogPost & Record<string, unknown>
+
+	// Stamps
+	creator_id: undefined as FireuxStamped['creator_id'],
+	created_at: {} as FirebaseTimestamp,
+	updated_at: {} as FirebaseTimestamp,
+} as const
+
+export type BlogPost = {
+	[K in keyof typeof BlogPost]: (typeof BlogPost)[K]
+}
+
+export type BlogPostEntry = Omit<
+	BlogPost,
+	'created_at' | 'updated_at' | 'creator_id'
+>

@@ -27,12 +27,10 @@
                 :drift-kind="companiesDriftKind"
                 :selected-field="companiesSelectedField"
                 :filter-options="companiesFilterOptions"
-                :copy-label="copying ? 'Copying…' : 'Copy drift · Companies'"
-                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-                :copy-disabled="copying"
+                :copy-label="'Copy drift · Companies'"
+                :copy-payload="companiesDriftCopyPayload"
                 @update:drift-kind="setCompaniesDriftKind"
                 @update:selected-field="updateCompaniesSelectedField"
-                @copy="copyCompaniesDrift"
               />
             </div>
           </div>
@@ -53,7 +51,6 @@
 </template>
 
 <script setup lang="ts">
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
@@ -113,20 +110,13 @@ const filteredCompaniesDriftPayload = computed(() =>
   })
 )
 
-const { copyJSON, copying } = useDevClipboard()
-
-const copyCompaniesDrift = async () => {
-  await copyJSON(
-    {
-      modelPath: 'packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts',
-      driftKind: companiesDriftKind.value,
-      selectedField: companiesSelectedField.value || null,
-      totalCompanies: cards.value.length,
-      companies: filteredCompaniesDriftPayload.value,
-    },
-    { label: 'Dev · Companies · Filtered drift' }
-  )
-}
+const companiesDriftCopyPayload = computed(() => ({
+  modelPath: 'packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts',
+  driftKind: companiesDriftKind.value,
+  selectedField: companiesSelectedField.value || null,
+  totalCompanies: cards.value.length,
+  companies: filteredCompaniesDriftPayload.value,
+}))
 
 const updateCompaniesSelectedField = (value: string) => {
   companiesSelectedField.value = value

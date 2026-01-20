@@ -104,7 +104,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
-import type { App } from '../../models/core/app.model'
+import type { AppModel } from '../../models/core/app.model'
 
 type ImageEntry = {
   urlPath: string
@@ -125,12 +125,14 @@ type FirestoreAppImage = { key: string; label: string; url: string }
 type FirestoreAppGroup = { id: string; name: string; images: FirestoreAppImage[] }
 
 const appsRef = import.meta.client
-  ? useFirestoreRead().firestoreFetchCollection<App>('apps')
+  ? useFirestoreRead().firestoreFetchCollection<AppModel>('apps')
   : (null as any)
 
 const firestorePending = computed(() => import.meta.client && appsRef?.value === undefined)
 
-function collectFirestoreImages(app: App & Record<string, any>): FirestoreAppImage[] {
+function collectFirestoreImages(
+  app: AppModel & Record<string, any>
+): FirestoreAppImage[] {
   const entries: FirestoreAppImage[] = []
 
   const push = (key: string, label: string, value: unknown) => {
@@ -141,10 +143,10 @@ function collectFirestoreImages(app: App & Record<string, any>): FirestoreAppIma
   }
 
   // Canonical fields used across the app
-  push('avatar_url', 'Thumbnail (avatar_url)', (app as any).avatar_url)
-  push('logo_url', 'Logo (logo_url)', (app as any).logo_url)
-  push('wordmark_light_url', 'Wordmark (light)', (app as any).wordmark_light_url)
-  push('wordmark_dark_url', 'Wordmark (dark)', (app as any).wordmark_dark_url)
+  push('media.thumbnail_url', 'Thumbnail (media.thumbnail_url)', (app as any)?.media?.thumbnail_url)
+  push('media.logo_url', 'Logo (media.logo_url)', (app as any)?.media?.logo_url)
+  push('media.wordmark_light_url', 'Wordmark (light)', (app as any)?.media?.wordmark_light_url)
+  push('media.wordmark_dark_url', 'Wordmark (dark)', (app as any)?.media?.wordmark_dark_url)
 
   // De-dupe by url, keep first label
   const seen = new Set<string>()
@@ -157,7 +159,7 @@ function collectFirestoreImages(app: App & Record<string, any>): FirestoreAppIma
 
 const firestoreAppGroups = computed<FirestoreAppGroup[]>(() => {
   if (!import.meta.client) return []
-  const apps = (appsRef?.value ?? []) as Array<App & Record<string, any>>
+  const apps = (appsRef?.value ?? []) as Array<AppModel & Record<string, any>>
   return apps
     .map((app) => {
       const images = collectFirestoreImages(app)

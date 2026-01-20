@@ -1,7 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Pill.vue -->
 <template>
   <div class="fx-card fx-card--pill">
-    <UAvatar :src="avatarUrl" :alt="displayName" size="xs" />
+    <UAvatar :src="thumbnailUrl || undefined" :alt="displayName" size="xs" />
 
     <div class="min-w-0 flex-1">
       <div class="min-w-0 truncate text-sm font-medium">
@@ -32,7 +32,7 @@ import type { AppCard } from '../../../../composables/fireux/firestore/core/app/
 
 withDefaults(
   defineProps<
-    Pick<AppCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'ecosystem' | 'badges'> & {
+    Pick<AppCard.Card, 'to' | 'thumbnailUrl' | 'displayName' | 'ecosystem' | 'badges'> & {
       showSubtitle?: boolean
       showBadges?: boolean
     }

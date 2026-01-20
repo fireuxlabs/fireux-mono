@@ -9,11 +9,24 @@ import type { FireuxStamped } from './meta.model'
  * Path: /apps/<appId>
  *
  * Canon rules:
- * - No optional strings (empty string means unset)
- * - No nullable strings
- * - Runtime object is the single source of truth
- * - TypeScript derives types from runtime
+ * - Empty string means unset
+ * - Arrays always exist
+ * - Stamping is FireuxStamped (creator_id optional)
+ *
+ * NOTE: This file is runtime-canon (used by drift tooling AND app code).
  */
+
+export type AppMedia = {
+  thumbnail_url: string
+  logo_url: string
+  wordmark_light_url: string
+  wordmark_dark_url: string
+  cover_url: string
+}
+
+export type AppDerived = {
+  user_count: number
+}
 
 // 🔑 Runtime + canonical shape (source of truth)
 export const App = {
@@ -40,28 +53,26 @@ export const App = {
   long_bio: '',
 
   // Social
-  social_links: {
-    website: '',
-    twitter: '',
-    github: '',
-    linkedin: '',
-    instagram: '',
-  } as AppSocialLinks,
+  social_links: {} as AppSocialLinks,
 
-  // Derived (system-managed)
-  user_count: 0,
+  // Derived (keep grouped for future expansion)
+  derived: {
+    user_count: 0,
+  } as AppDerived,
 
-  // Brand / media
-  thumbnail_url: '',
-  logo_url: '',
-  wordmark_light_url: '',
-  wordmark_dark_url: '',
+  // Brand / media (keep grouped for future expansion)
+  media: {
+    thumbnail_url: '',
+    logo_url: '',
+    wordmark_light_url: '',
+    wordmark_dark_url: '',
+    cover_url: '',
+  } as AppMedia,
 
   // Stamps
-  creator_id: undefined,
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies FireuxStamped & Record<string, unknown>
+}
 
-// ✅ Type derived from the runtime model (no duplication)
-export type App = typeof App
+export type AppModel = typeof App

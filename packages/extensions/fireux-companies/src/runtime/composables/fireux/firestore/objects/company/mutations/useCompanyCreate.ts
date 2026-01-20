@@ -1,46 +1,39 @@
-import { doc, getDoc } from 'firebase/firestore'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
-import { useFirestore } from 'vuefire'
-import type { CompanyCreateInput } from '../../../../../../models/objects/company.model'
+import type { Company, CompanyCreateInput } from '../../../../../../models/objects/company.model'
 
-const COLLECTION_PATH = 'companies'
+export const CompanyPayload = {
+  id: '',
+  name: '',
+  formatted_address: '',
+  lat: 0,
+  lng: 0,
+  place_image: '',
+  website: '',
+}
+
+export const CompanyStampOptions = {
+  creator: true,
+} as const
 
 export function useCompanyCreate() {
-  const { setDocument } = useFirestoreManager()
-  const db = useFirestore()
+  const { setDocument } = useFirestoreCreate()
 
-  const createCompany = async (
-    input: CompanyCreateInput & { place: PlaceUpsertInput }
-  ): Promise<string> => {
-    const id = String(input?.id ?? '').trim()
-    if (!id) throw new Error('[useCompanyCreate] placeId (id) is required')
-
-    const name = String(input?.name ?? '').trim()
-    if (!name) throw new Error('[useCompanyCreate] name is required')
-
-    const ref = doc(db, COLLECTION_PATH, id)
-    const snapshot = await getDoc(ref)
-    if (snapshot.exists()) {
-      throw new Error(`[useCompanyCreate] company already exists: ${id}`)
+  async function createCompany(
+    input: CompanyCreateInput & { place?: PlaceUpsertInput }
+  ): Promise<string> {
+    if (!input?.id) {
+      throw new Error('Company id is required')
     }
 
-    await setDocument<CompanyCreateInput>(
-      COLLECTION_PATH,
-      id,
-      {
-        id,
-        name,
-        formatted_address: String(input.formatted_address ?? '').trim(),
-        lat: Number(input.lat ?? 0),
-        lng: Number(input.lng ?? 0),
-        place_image: String(input.place_image ?? '').trim(),
-        website: String(input.website ?? '').trim(),
-      },
-      { raw: false }
-    )
+    const { place, ...payload } = input
+    void place
 
-    return id
+    await setDocument<Company>('companies', payload.id, payload as Company, {
+      creator: true,
+    })
+
+    return payload.id
   }
 
   return { createCompany }

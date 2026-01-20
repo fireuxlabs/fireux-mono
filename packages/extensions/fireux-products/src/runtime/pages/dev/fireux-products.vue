@@ -27,12 +27,10 @@
                 :drift-kind="productsDriftKind"
                 :selected-field="productsSelectedField"
                 :filter-options="productsFilterOptions"
-                :copy-label="copying ? 'Copying…' : 'Copy drift · Products'"
-                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-                :copy-disabled="copying"
+                :copy-label="'Copy drift · Products'"
+                :copy-payload="productsDriftCopyPayload"
                 @update:drift-kind="setProductsDriftKind"
                 @update:selected-field="updateProductsSelectedField"
-                @copy="copyProductsDrift"
               />
             </div>
           </div>
@@ -53,12 +51,11 @@
 </template>
 
 <script setup lang="ts">
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useProductCollection } from '../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
 import { useProductInterface } from '../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
-import { ProductRuntime as ProductModelRuntime } from '../../models/objects/product.model'
+import { FirebaseProduct as ProductModelRuntime } from '../../models/objects/product.model'
 
 definePageMeta({
   layout: 'dev',
@@ -113,20 +110,13 @@ const filteredProductsDriftPayload = computed(() =>
   })
 )
 
-const { copyJSON, copying } = useDevClipboard()
-
-const copyProductsDrift = async () => {
-  await copyJSON(
-    {
-      modelPath: 'packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts',
-      driftKind: productsDriftKind.value,
-      selectedField: productsSelectedField.value || null,
-      totalProducts: cards.value.length,
-      products: filteredProductsDriftPayload.value,
-    },
-    { label: 'Dev · Products · Filtered drift' }
-  )
-}
+const productsDriftCopyPayload = computed(() => ({
+  modelPath: 'packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts',
+  driftKind: productsDriftKind.value,
+  selectedField: productsSelectedField.value || null,
+  totalProducts: cards.value.length,
+  products: filteredProductsDriftPayload.value,
+}))
 
 const updateProductsSelectedField = (value: string) => {
   productsSelectedField.value = value

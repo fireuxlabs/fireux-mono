@@ -15,27 +15,6 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Drift is detected by comparing data ↔ model shape
  */
 
-export type CompanyShape = FireuxStamped & {
-  /** Canonical Place ID (also the Firestore document ID). */
-  id: string
-
-  /** Display name */
-  name: string
-
-  /** Canonical address snapshot */
-  formatted_address: string
-
-  /** Canonical location snapshot */
-  lat: number
-  lng: number
-
-  /** Canonical place image snapshot (empty string means unset). */
-  place_image: string
-
-  /** Optional website (empty string means unset) */
-  website: string
-}
-
 // 🔑 Runtime + canonical shape (source of truth)
 export const Company = {
   /** Canonical Place ID (also the Firestore document ID). */
@@ -58,13 +37,14 @@ export const Company = {
   website: '',
 
   // Authored (FireuxStamped)
-  creator_id: undefined,
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies CompanyShape & Record<string, unknown>
+} as const
 
-// ✅ Type derived from the runtime model (no duplication)
-export type Company = CompanyShape
+export type Company = {
+  [K in keyof typeof Company]: (typeof Company)[K]
+}
 
-export type CompanyCreateInput = Omit<Company, keyof FireuxStamped>
+export type CompanyCreateInput = Omit<Company, 'created_at' | 'updated_at' | 'creator_id'>
 export type CompanyUpdateInput = Partial<Omit<CompanyCreateInput, 'id'>>

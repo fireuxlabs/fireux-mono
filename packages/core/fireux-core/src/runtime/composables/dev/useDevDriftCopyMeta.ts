@@ -1,26 +1,33 @@
 import { useFireUXConfig } from '../fireux/app/FireUXConfig'
 
 export interface DevDriftCopyMeta {
-  ecosystem: string
   migration: {
     script: string
-    configDir: string
-    ecosystemConfig: string
-    serviceAccount: string
+    ecosystem: string
+    app: string
+    appConfigPath: string
+    firebaseConfigDir: string
+    ecosystemConfigPath: string
+    serviceAccountPath: string
   }
 }
 
 export function useDevDriftCopyMeta(): DevDriftCopyMeta {
   const cfg = useFireUXConfig()
-  const configDir = `packages/ecosystem/fireux-${cfg.ecosystem}/src/config/firebase`
+  const ecosystem = cfg.ecosystem || 'unknown'
+  const ecosystemSlug = ecosystem.startsWith('fireux-') ? ecosystem : `fireux-${ecosystem}`
+  const appId = cfg.appId || 'unknown-app'
+  const firebaseConfigDir = `packages/ecosystem/${ecosystemSlug}/src/config/firebase`
 
   return {
-    ecosystem: cfg.ecosystem,
     migration: {
       script: 'scripts/migrate.mjs',
-      configDir,
-      ecosystemConfig: `${configDir}/ecosystem.config.ts`,
-      serviceAccount: `${configDir}/service-account.json`,
+      ecosystem,
+      app: appId,
+      appConfigPath: `projects/${ecosystem}/${appId}/nuxt.config.ts`,
+      firebaseConfigDir,
+      ecosystemConfigPath: `${firebaseConfigDir}/ecosystem.config.ts`,
+      serviceAccountPath: `${firebaseConfigDir}/service-account.json`,
     },
   }
 }

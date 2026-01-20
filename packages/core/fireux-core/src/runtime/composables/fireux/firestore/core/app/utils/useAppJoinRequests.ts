@@ -1,6 +1,6 @@
 import { computed, ref, watchEffect, type ComputedRef, type Ref } from 'vue'
 
-import type { App } from '../../../../../../models/core/app.model'
+import type { AppModel } from '../../../../../../models/core/app.model'
 import type { User } from '../../../../../../models/core/user.model'
 import type { UserCard } from '../../user/utils/view/useUserInterface'
 
@@ -19,7 +19,7 @@ type UserRef = ComputedRef<User | null>
 type CardBuilder = ComputedRef<(target?: User | null | undefined) => UserCard.Card>
 
 type Options = {
-  app: Ref<App | null | undefined>
+  app: Ref<AppModel | null | undefined>
   handleJoinRequests: HandleJoinRequests
   fetchedUser: (uid: string) => { user: UserRef }
   card: CardBuilder

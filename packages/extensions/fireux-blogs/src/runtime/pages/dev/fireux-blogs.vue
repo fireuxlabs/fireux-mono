@@ -27,12 +27,10 @@
                 :drift-kind="blogsDriftKind"
                 :selected-field="blogsSelectedField"
                 :filter-options="blogsFilterOptions"
-                :copy-label="copying ? 'Copying…' : 'Copy drift · Blogs'"
-                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-                :copy-disabled="copying"
+                :copy-label="'Copy drift · Blogs'"
+                :copy-payload="blogsDriftCopyPayload"
                 @update:drift-kind="setBlogsDriftKind"
                 @update:selected-field="updateBlogsSelectedField"
-                @copy="copyBlogsDrift"
               />
             </div>
           </div>
@@ -53,13 +51,12 @@
 </template>
 
 <script setup lang="ts">
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useBlogFetch } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogFetch'
 import { useBlogInterface } from '../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface'
 import type { BlogPost } from '../../models/objects/blogPost.model'
-import { BlogPostRuntime as BlogPostModelRuntime } from '../../models/objects/blogPost.model'
+import { BlogPost as BlogPostModelRuntime } from '../../models/objects/blogPost.model'
 
 definePageMeta({
   layout: 'dev',
@@ -116,20 +113,13 @@ const filteredBlogsDriftPayload = computed(() =>
   })
 )
 
-const { copyJSON, copying } = useDevClipboard()
-
-const copyBlogsDrift = async () => {
-  await copyJSON(
-    {
-      modelPath: 'packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts',
-      driftKind: blogsDriftKind.value,
-      selectedField: blogsSelectedField.value || null,
-      totalBlogs: cards.value.length,
-      blogs: filteredBlogsDriftPayload.value,
-    },
-    { label: 'Dev · Blogs · Filtered drift' }
-  )
-}
+const blogsDriftCopyPayload = computed(() => ({
+  modelPath: 'packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts',
+  driftKind: blogsDriftKind.value,
+  selectedField: blogsSelectedField.value || null,
+  totalBlogs: cards.value.length,
+  blogs: filteredBlogsDriftPayload.value,
+}))
 
 const updateBlogsSelectedField = (value: string) => {
   blogsSelectedField.value = value

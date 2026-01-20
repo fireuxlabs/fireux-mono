@@ -1,19 +1,19 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firebase/useAuth.ts
-import { computed, onMounted, ref, watch, type Ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useFirebaseAuth, useCurrentUser } from 'vuefire'
 import { getApps } from 'firebase/app'
 import {
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  getAuth,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  type Auth,
-  type User,
+    createUserWithEmailAndPassword,
+    getAuth,
+    GoogleAuthProvider,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut,
+    type Auth,
+    type User,
 } from 'firebase/auth'
+import { computed, onMounted, ref, watch, type Ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useCurrentUser, useFirebaseAuth } from 'vuefire'
 import { useUserEnsure } from '../firestore/core/user/mutations/useUserEnsure'
 
 export type AuthUser = {

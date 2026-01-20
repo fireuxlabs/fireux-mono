@@ -1,7 +1,7 @@
 <template>
   <div class="fx-cell">
     <div class="fx-cell__media">
-      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar :src="thumbnailUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="fx-cell__content fx-cell__stack">
         <div class="fx-cell__header">
@@ -39,7 +39,10 @@
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
 type Props = Omit<
-  Pick<AppCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'badges' | 'tagline' | 'userCount'>,
+  Pick<
+    AppCard.Card,
+    'to' | 'thumbnailUrl' | 'displayName' | 'badges' | 'tagline' | 'userCount'
+  >,
   'userCount'
 > & {
   userCount?: number | null

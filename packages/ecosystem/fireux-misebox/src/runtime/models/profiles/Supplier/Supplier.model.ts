@@ -1,30 +1,14 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts
 
-import type { AppProfileBase, CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import { supplierConfig } from './supporting'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model';
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase';
+import { supplierConfig } from './supporting';
 
 /**
  * Runtime canonical shapes (core + app overlay)
  * Core doc:  suppliers/{uid}
  * App doc:   apps/{appId}/suppliers/{uid}
  */
-
-export type SupplierCoreShape = CoreProfileBase & {
-  bio_short: string
-  bio_long: string
-  specialties: string[]
-  categories: string[]
-  organization_name: string
-
-  business_type: string
-  locations: Array<{ city: string; country: string }>
-  years_in_business: number
-  products_offered: string[]
-  employee_count: number
-  certifications: string[]
-  delivery_range: number
-}
 
 export const SupplierCore = {
   id: '',
@@ -47,22 +31,28 @@ export const SupplierCore = {
   certifications: [] as string[],
   delivery_range: 0,
 
+  // Stamps
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies SupplierCoreShape & Record<string, unknown>
+} as const
 
-export type SupplierCore = SupplierCoreShape
-
-export type SupplierAppShape = AppProfileBase
+export type SupplierCore = {
+  [K in keyof typeof SupplierCore]: (typeof SupplierCore)[K]
+}
 
 export const SupplierApp = {
   id: '',
-  creator_id: undefined,
+
+  // Stamps
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies SupplierAppShape & Record<string, unknown>
+} as const
 
-export type SupplierApp = SupplierAppShape
+export type SupplierApp = {
+  [K in keyof typeof SupplierApp]: (typeof SupplierApp)[K]
+}
 
-export { supplierConfig }
+export { supplierConfig };
 

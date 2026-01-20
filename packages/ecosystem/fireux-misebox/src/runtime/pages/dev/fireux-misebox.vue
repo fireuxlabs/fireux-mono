@@ -27,12 +27,10 @@
                 :drift-kind="chefsDriftKind"
                 :selected-field="chefsSelectedField"
                 :filter-options="chefsFilterOptions"
-                :copy-label="copying ? 'Copying…' : 'Copy drift · Chefs'"
-                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-                :copy-disabled="copying"
+                :copy-label="'Copy drift · Chefs'"
+                :copy-payload="chefsDriftCopyPayload"
                 @update:drift-kind="setChefsDriftKind"
                 @update:selected-field="updateChefsSelectedField"
-                @copy="copyChefsDrift"
               />
             </div>
           </div>
@@ -70,12 +68,10 @@
                 :drift-kind="suppliersDriftKind"
                 :selected-field="suppliersSelectedField"
                 :filter-options="suppliersFilterOptions"
-                :copy-label="copying ? 'Copying…' : 'Copy drift · Suppliers'"
-                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-                :copy-disabled="copying"
+                :copy-label="'Copy drift · Suppliers'"
+                :copy-payload="suppliersDriftCopyPayload"
                 @update:drift-kind="setSuppliersDriftKind"
                 @update:selected-field="updateSuppliersSelectedField"
-                @copy="copySuppliersDrift"
               />
             </div>
           </div>
@@ -96,7 +92,6 @@
 </template>
 
 <script setup lang="ts">
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useChefCollection } from '../../composables/fireux/firestore/profiles/Chef/main/useChefCollection'
@@ -165,6 +160,14 @@ const filteredChefsDriftPayload = computed(() =>
   })
 )
 
+const chefsDriftCopyPayload = computed(() => ({
+  modelPath: 'packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts',
+  driftKind: chefsDriftKind.value,
+  selectedField: chefsSelectedField.value || null,
+  totalChefs: chefsCollection.value.length,
+  chefs: filteredChefsDriftPayload.value,
+}))
+
 const { globalSuppliers, localSuppliers } = useSupplierCollection()
 const { card: makeSupplierCard } = useSupplier()
 
@@ -207,33 +210,13 @@ const filteredSuppliersDriftPayload = computed(() =>
   })
 )
 
-const { copyJSON, copying } = useDevClipboard()
-
-const copyChefsDrift = async () => {
-  await copyJSON(
-    {
-      modelPath: 'packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts',
-      driftKind: chefsDriftKind.value,
-      selectedField: chefsSelectedField.value || null,
-      totalChefs: chefsCollection.value.length,
-      chefs: filteredChefsDriftPayload.value,
-    },
-    { label: 'Dev · Chefs · Filtered drift' }
-  )
-}
-
-const copySuppliersDrift = async () => {
-  await copyJSON(
-    {
-      modelPath: 'packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts',
-      driftKind: suppliersDriftKind.value,
-      selectedField: suppliersSelectedField.value || null,
-      totalSuppliers: suppliersCollection.value.length,
-      suppliers: filteredSuppliersDriftPayload.value,
-    },
-    { label: 'Dev · Suppliers · Filtered drift' }
-  )
-}
+const suppliersDriftCopyPayload = computed(() => ({
+  modelPath: 'packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts',
+  driftKind: suppliersDriftKind.value,
+  selectedField: suppliersSelectedField.value || null,
+  totalSuppliers: suppliersCollection.value.length,
+  suppliers: filteredSuppliersDriftPayload.value,
+}))
 
 const updateChefsSelectedField = (value: string) => {
   chefsSelectedField.value = value

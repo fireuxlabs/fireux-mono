@@ -5,43 +5,55 @@ export type FireUXRole = 'global' | 'tenant'
 export interface FireUXConfig {
   devMode: boolean
   role: FireUXRole
+
   ecosystem: string
   appId: string
   appName: string
   appShortName: string
+
   // TODO: make `siteUrl` available via runtime config (final deploy target/domain).
   modules: string[]
-  appIcon?: string
+
+  appThumbnail?: string
   appLogo?: string
+
   primaryColor?: string
   neutralColor?: string
   secondaryColor?: string
+
   centralSignupUrl?: string
   globalAppId?: string
   developerPin?: string
+
   // derived
   isTenant: boolean
   isGlobal: boolean
 }
 
-function reqString(src: Record<string, unknown>, key: string): string {
+type AnyRecord = Record<string, unknown>
+
+const FIREUX_CACHE_KEY = '__FIREUX_CONFIG'
+
+function isNonEmptyString(v: unknown): v is string {
+  return typeof v === 'string' && v.trim().length > 0
+}
+
+function reqString(src: AnyRecord, key: string): string {
   const v = src[key]
-  if (typeof v !== 'string' || !v.trim()) {
+  if (!isNonEmptyString(v)) {
     throw new Error(
       `[fireux] runtimeConfig.public.fireux.${key} must be a non-empty string.`
     )
   }
   return v.trim()
 }
-function optString(
-  src: Record<string, unknown>,
-  key: string
-): string | undefined {
+
+function optString(src: AnyRecord, key: string): string | undefined {
   const v = src[key]
-  if (typeof v !== 'string') return undefined
-  const t = v.trim()
-  return t || undefined
+  if (!isNonEmptyString(v)) return undefined
+  return v.trim()
 }
+
 function toStringArray(v: unknown): string[] {
   if (!Array.isArray(v)) return []
   return v
@@ -49,44 +61,72 @@ function toStringArray(v: unknown): string[] {
     .filter(Boolean)
 }
 
-/**
- * Central accessor:
- * - On client, reuses window.__FIREUX_CONFIG set by the plugin
- * - On server (or if plugin didn’t run), builds from runtime config
- * - Returns a frozen object with derived flags
- */
-export function useFireUXConfig(): Readonly<FireUXConfig> {
-  const pub = (useRuntimeConfig().public ?? {}) as Record<string, unknown>
-  const fireux = (pub.fireux ?? {}) as Record<string, unknown>
-
-  const devMode = import.meta.dev
-  const rawRole = reqString(fireux, 'role').toLowerCase()
-  if (rawRole !== 'global' && rawRole !== 'tenant') {
+function reqRole(src: AnyRecord): FireUXRole {
+  const raw = reqString(src, 'role').toLowerCase()
+  if (raw !== 'global' && raw !== 'tenant') {
     throw new Error(
       `[fireux] runtimeConfig.public.fireux.role must be "global" or "tenant".`
     )
   }
-  const role = rawRole as FireUXRole
+  return raw
+}
 
-  const cfg: Readonly<FireUXConfig> = Object.freeze({
+function buildConfig(): Readonly<FireUXConfig> {
+  const pub = (useRuntimeConfig().public ?? {}) as AnyRecord
+  const fireux = (pub.fireux ?? {}) as AnyRecord
+
+  const devMode = import.meta.dev
+  const role = reqRole(fireux)
+
+  const cfg: FireUXConfig = {
     devMode,
     role,
+
     ecosystem: reqString(fireux, 'ecosystem'),
     appId: reqString(fireux, 'id'),
     appName: reqString(fireux, 'name'),
     appShortName: reqString(fireux, 'shortName'),
+
     modules: toStringArray(fireux.modules),
-    appIcon: optString(fireux, 'appIcon'),
+
+    appThumbnail: optString(fireux, 'appThumbnail'),
     appLogo: optString(fireux, 'appLogo'),
+
     primaryColor: optString(fireux, 'primaryColor'),
     neutralColor: optString(fireux, 'neutralColor'),
     secondaryColor: optString(fireux, 'secondaryColor'),
+
     centralSignupUrl: optString(fireux, 'centralSignupUrl'),
     globalAppId: optString(fireux, 'globalAppId'),
     developerPin: optString(fireux, 'developerPin'),
+
     isTenant: role === 'tenant',
     isGlobal: role === 'global',
-  })
+  }
+
+  return Object.freeze(cfg)
+}
+
+/**
+ * Central accessor:
+ * - On client, reuses a cached config (set by plugin OR computed here)
+ * - On server, builds from runtime config
+ * - Returns a frozen object with derived flags
+ */
+export function useFireUXConfig(): Readonly<FireUXConfig> {
+  const g = globalThis as any
+
+  // Client cache (fast path)
+  if (import.meta.client && g?.[FIREUX_CACHE_KEY]) {
+    return g[FIREUX_CACHE_KEY] as Readonly<FireUXConfig>
+  }
+
+  const cfg = buildConfig()
+
+  // Populate cache on client so all calls share the same frozen object.
+  if (import.meta.client) {
+    g[FIREUX_CACHE_KEY] = cfg
+  }
 
   return cfg
 }

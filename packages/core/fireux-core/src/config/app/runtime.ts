@@ -5,9 +5,9 @@ export type RuntimeApp = {
   id: string
   name: string
   shortName: string
-  /** Optional app icon path/URL (e.g. /img/app/logo.png). */
-  appIcon?: string
-  /** Optional app logo path/URL (preferred over appIcon for listings). */
+  /** Optional app thumbnail path/URL (e.g. /img/app/thumbnail.png). */
+  appThumbnail?: string
+  /** Optional app logo path/URL (preferred over appThumbnail for listings). */
   appLogo?: string
   domain: string
   role: 'global' | 'tenant'

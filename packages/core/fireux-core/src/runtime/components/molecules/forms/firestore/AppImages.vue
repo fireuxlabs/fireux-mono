@@ -163,12 +163,12 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { App } from '../../../../models/core/app.model'
-import { appImageStoragePath } from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
-import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
+import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
+import { appImageStoragePath } from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
+import type { AppModel } from '../../../../models/core/app.model'
 
-const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
+const props = withDefaults(defineProps<{ app?: AppModel | null }>(), { app: null })
 const appRef = computed(() => props.app)
 
 const toast = import.meta.client ? useToastify() : null
@@ -291,33 +291,33 @@ const firestoreItems = computed(() => {
     {
       key: 'firestore-thumbnail',
       label: 'Thumbnail',
-      field: 'thumbnail_url',
+      field: 'media.thumbnail_url',
       storagePath: appId ? appImageStoragePath(appId, 'thumbnail') : '',
-      url: value?.thumbnail_url || '',
+      url: value?.media?.thumbnail_url || '',
       previewClass: 'h-12 w-12 rounded object-cover',
     },
     {
       key: 'firestore-logo',
       label: 'Logo',
-      field: 'logo_url',
+      field: 'media.logo_url',
       storagePath: appId ? appImageStoragePath(appId, 'logo') : '',
-      url: value?.logo_url || '',
+      url: value?.media?.logo_url || '',
       previewClass: 'h-10 w-auto object-contain',
     },
     {
       key: 'firestore-wordmark-light',
       label: 'Wordmark (light)',
-      field: 'wordmark_light_url',
+      field: 'media.wordmark_light_url',
       storagePath: appId ? appImageStoragePath(appId, 'wordmarkLight') : '',
-      url: value?.wordmark_light_url || '',
+      url: value?.media?.wordmark_light_url || '',
       previewClass: 'h-8 w-auto object-contain',
     },
     {
       key: 'firestore-wordmark-dark',
       label: 'Wordmark (dark)',
-      field: 'wordmark_dark_url',
+      field: 'media.wordmark_dark_url',
       storagePath: appId ? appImageStoragePath(appId, 'wordmarkDark') : '',
-      url: value?.wordmark_dark_url || '',
+      url: value?.media?.wordmark_dark_url || '',
       previewClass: 'h-8 w-auto object-contain',
     },
   ]

@@ -1,6 +1,6 @@
 // Canonical app media naming:
 // - Storage objects: apps/<appId>/media/{thumbnail|logo|wordmark-light|wordmark-dark}
-// - Firestore fields: {thumbnail_url|logo_url|wordmark_light_url|wordmark_dark_url}
+// - Firestore fields: {media.thumbnail_url|media.logo_url|media.wordmark_light_url|media.wordmark_dark_url}
 export type AppImageKind =
   | 'thumbnail'
   | 'logo'
@@ -8,10 +8,10 @@ export type AppImageKind =
   | 'wordmarkDark'
 
 type AppImageFirestoreField =
-  | 'thumbnail_url'
-  | 'logo_url'
-  | 'wordmark_light_url'
-  | 'wordmark_dark_url'
+  | 'media.thumbnail_url'
+  | 'media.logo_url'
+  | 'media.wordmark_light_url'
+  | 'media.wordmark_dark_url'
 
 export function appImageStoragePath(appId: string, kind: AppImageKind): string {
   // "Public bucket" convention: a stable object path that can be overwritten.
@@ -31,13 +31,13 @@ export function appImageStoragePath(appId: string, kind: AppImageKind): string {
 export function appImageFirestoreField(kind: AppImageKind): AppImageFirestoreField {
   switch (kind) {
     case 'thumbnail':
-      return 'thumbnail_url'
+      return 'media.thumbnail_url'
     case 'logo':
-      return 'logo_url'
+      return 'media.logo_url'
     case 'wordmarkLight':
-      return 'wordmark_light_url'
+      return 'media.wordmark_light_url'
     case 'wordmarkDark':
-      return 'wordmark_dark_url'
+      return 'media.wordmark_dark_url'
   }
 }
 

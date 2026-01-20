@@ -9,6 +9,9 @@
  * - Some input/helper shapes here are used by services and admin surfaces.
  */
 
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+
 export interface ProductFeature {
   title: string
   description?: string
@@ -48,79 +51,59 @@ export interface StripePriceInput {
   metadata?: Record<string, any>
 }
 
-export interface Product {
-  id?: string
-  name: string
-  description?: string
-  images?: ProductImage[]
-  features?: ProductFeature[]
-  prices?: Price[]
-  created_at?: any
-  updated_at?: any
-}
+export type ProductType = 'physical' | 'digital' | 'service' | 'subscription'
 
-export interface FirebaseProduct extends Product {
-  id: string
-  created_at: any
-  updated_at: any
-  slug?: string
-  content?: string
-  active?: boolean
-  main_image?: string
-  default_price?: DefaultPrice
-  stock?: number | null
-  product_type?: 'physical' | 'digital' | 'service' | 'subscription'
-  track_stock?: boolean
-  creator_id?: string
-  appId?: string
-  metadata?: Record<string, any>
-}
-
-export interface ProductCreationInput {
-  name: string
-  description?: string
-  content?: string
-  images?: ProductImage[]
-  features?: ProductFeature[]
-  prices?: Price[]
-  // Additional fields used during creation from UI
-  active?: boolean
-  slug?: string
-  stock?: number | null
-  product_type?: 'physical' | 'digital' | 'service' | 'subscription'
-  track_stock?: boolean
-  main_image?: string
-  appId?: string
-  creator_id?: string
-}
-
-export type ProductId = Product['id']
-
-// ------------------------------------------------------------------
-// Runtime model shape (for dev tooling)
-// ------------------------------------------------------------------
-export const ProductRuntime = {
+/**
+ * Canon Firestore Product doc for FireUX apps.
+ * (This is what UI + dev drift should target.)
+ */
+export const FirebaseProduct = {
   id: '',
+
   name: '',
   description: '',
-  images: [],
-  features: [],
-  prices: [],
-  created_at: {},
-  updated_at: {},
-  slug: '',
   content: '',
+
+  slug: '',
   active: false,
+
+  // Media
   main_image: '',
+  images: [] as ProductImage[],
+
+  // Optional structured content
+  features: [] as ProductFeature[],
+
+  // Commerce
+  prices: [] as Price[],
   default_price: {
     id: '',
     unit_amount: 0,
     interval: 'enum:day|week|month|year' as unknown as DefaultPrice['interval'],
-  },
-  stock: 0,
-  product_type: 'enum:physical|digital|service|subscription' as unknown as FirebaseProduct['product_type'],
+  } as DefaultPrice,
+  product_type: 'enum:physical|digital|service|subscription' as unknown as ProductType,
   track_stock: false,
-  creator_id: '',
+  stock: 0 as number | null,
+
+  // Scope
   appId: '',
-  metadata: {},
-} satisfies FirebaseProduct & Record<string, unknown>
+
+  // Meta bag
+  metadata: {} as Record<string, any>,
+
+  // Stamps
+  creator_id: undefined as FireuxStamped['creator_id'],
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+} as const
+
+export type FirebaseProduct = {
+  [K in keyof typeof FirebaseProduct]: (typeof FirebaseProduct)[K]
+}
+
+export type ProductCreationInput = Omit<
+  FirebaseProduct,
+  'id' | 'created_at' | 'updated_at' | 'creator_id'
+>
+
+export type ProductUpdateInput = Partial<Omit<ProductCreationInput, 'appId'>>

@@ -27,12 +27,10 @@
                 :drift-kind="usersDriftKind"
                 :selected-field="usersSelectedField"
                 :filter-options="usersFilterOptions"
-                :copy-label="copying ? 'Copying…' : 'Copy drift · Users'"
-                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-                :copy-disabled="copying"
+                :copy-label="'Copy drift · Users'"
+                :copy-payload="usersDriftCopyPayload"
                 @update:drift-kind="setUsersDriftKind"
                 @update:selected-field="updateUsersSelectedField"
-                @copy="copyUsersDrift"
               />
             </div>
           </div>
@@ -57,7 +55,6 @@
 
 <script setup lang="ts">
 import { definePageMeta } from '#imports';
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard';
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter';
 import { computed } from 'vue';
 import { useGlobalUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection';
@@ -122,20 +119,13 @@ const filteredUsersDriftPayload = computed(() =>
   })
 )
 
-const { copyJSON, copying } = useDevClipboard()
-
-const copyUsersDrift = async () => {
-  await copyJSON(
-    {
-      modelPath: 'packages/core/fireux-core/src/runtime/models/core/user.model.ts',
-      driftKind: usersDriftKind.value,
-      selectedField: usersSelectedField.value || null,
-      totalUsers: total.value,
-      users: filteredUsersDriftPayload.value,
-    },
-    { label: 'Dev · Users · Filtered drift' }
-  )
-}
+const usersDriftCopyPayload = computed(() => ({
+  modelPath: 'packages/core/fireux-core/src/runtime/models/core/user.model.ts',
+  driftKind: usersDriftKind.value,
+  selectedField: usersSelectedField.value || null,
+  totalUsers: total.value,
+  users: filteredUsersDriftPayload.value,
+}))
 
 const updateUsersSelectedField = (value: string) => {
   usersSelectedField.value = value

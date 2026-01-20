@@ -60,10 +60,10 @@
 </template>
 
 <script setup lang="ts">
-import type { App } from '../../../../../models/core/app.model'
+import type { AppModel } from '../../../../../models/core/app.model';
 
 defineProps<{
-  app: App
+  app: AppModel
   handleTaglineUpdate: (value: string) => Promise<unknown>
   handleDescriptionUpdate: (value: string) => Promise<unknown>
   handleShortBioUpdate: (value: string) => Promise<unknown>

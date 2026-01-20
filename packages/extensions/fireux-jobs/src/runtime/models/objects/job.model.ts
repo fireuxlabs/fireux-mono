@@ -15,29 +15,6 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type JobStatus = 'open' | 'closed'
 
-export type JobShape = FireuxStamped & {
-  /** Firestore document ID */
-  id: string
-
-  /** App that owns the job */
-  app_id: string
-
-  /** FireUX user who created the listing (business field, not Firestore stamping) */
-  created_by: string
-
-  /** Phase-1 graph links (horizontal MVP) */
-  posted_by_agent_id: string
-  company_id: string
-  place_id: string
-  kitchen_id: string
-  source: string
-
-  /** Pipeline & preview surface */
-  title: string
-  status: JobStatus
-  description: string
-}
-
 // 🔑 Runtime + canonical shape (source of truth)
 export const Job = {
   /** Firestore document ID */
@@ -62,13 +39,14 @@ export const Job = {
   description: '',
 
   // Authored (FireuxStamped)
-  creator_id: undefined,
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies JobShape & Record<string, unknown>
+} as const
 
-// ✅ Type derived from the runtime model (no duplication)
-export type Job = JobShape
+export type Job = {
+  [K in keyof typeof Job]: (typeof Job)[K]
+}
 
-export type JobCreateInput = Omit<Job, keyof FireuxStamped>
+export type JobCreateInput = Omit<Job, 'created_at' | 'updated_at' | 'creator_id'>
 export type JobUpdateInput = Partial<Omit<JobCreateInput, 'id'>>

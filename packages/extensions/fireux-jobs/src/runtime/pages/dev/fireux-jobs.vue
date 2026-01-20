@@ -27,12 +27,10 @@
                 :drift-kind="jobsDriftKind"
                 :selected-field="jobsSelectedField"
                 :filter-options="jobsFilterOptions"
-                :copy-label="copying ? 'Copying…' : 'Copy drift · Jobs'"
-                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-                :copy-disabled="copying"
+                :copy-label="'Copy drift · Jobs'"
+                :copy-payload="jobsDriftCopyPayload"
                 @update:drift-kind="setJobsDriftKind"
                 @update:selected-field="updateJobsSelectedField"
-                @copy="copyJobsDrift"
               />
             </div>
           </div>
@@ -70,12 +68,10 @@
                 :drift-kind="professionalsDriftKind"
                 :selected-field="professionalsSelectedField"
                 :filter-options="professionalsFilterOptions"
-                :copy-label="copying ? 'Copying…' : 'Copy drift · Professionals'"
-                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-                :copy-disabled="copying"
+                :copy-label="'Copy drift · Professionals'"
+                :copy-payload="professionalsDriftCopyPayload"
                 @update:drift-kind="setProfessionalsDriftKind"
                 @update:selected-field="updateProfessionalsSelectedField"
-                @copy="copyProfessionalsDrift"
               />
             </div>
           </div>
@@ -113,12 +109,10 @@
                 :drift-kind="agentsDriftKind"
                 :selected-field="agentsSelectedField"
                 :filter-options="agentsFilterOptions"
-                :copy-label="copying ? 'Copying…' : 'Copy drift · Agents'"
-                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-                :copy-disabled="copying"
+                :copy-label="'Copy drift · Agents'"
+                :copy-payload="agentsDriftCopyPayload"
                 @update:drift-kind="setAgentsDriftKind"
                 @update:selected-field="updateAgentsSelectedField"
-                @copy="copyAgentsDrift"
               />
             </div>
           </div>
@@ -139,7 +133,6 @@
 </template>
 
 <script setup lang="ts">
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
@@ -208,6 +201,14 @@ const filteredJobsDriftPayload = computed(() =>
   })
 )
 
+const jobsDriftCopyPayload = computed(() => ({
+  modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts',
+  driftKind: jobsDriftKind.value,
+  selectedField: jobsSelectedField.value || null,
+  totalJobs: jobsCollection.value.length,
+  jobs: filteredJobsDriftPayload.value,
+}))
+
 const { globalProfessionals, localProfessionals } = useProfessionalCollection()
 const { card: makeProfessionalCard } = useProfessional()
 
@@ -249,6 +250,14 @@ const filteredProfessionalsDriftPayload = computed(() =>
     }
   })
 )
+
+const professionalsDriftCopyPayload = computed(() => ({
+  modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts',
+  driftKind: professionalsDriftKind.value,
+  selectedField: professionalsSelectedField.value || null,
+  totalProfessionals: professionalsCollection.value.length,
+  professionals: filteredProfessionalsDriftPayload.value,
+}))
 
 const { globalAgents, localAgents } = useAgentCollection()
 const { card: makeAgentCard } = useAgentsInterface()
@@ -292,46 +301,13 @@ const filteredAgentsDriftPayload = computed(() =>
   })
 )
 
-const { copyJSON, copying } = useDevClipboard()
-
-const copyJobsDrift = async () => {
-  await copyJSON(
-    {
-      modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts',
-      driftKind: jobsDriftKind.value,
-      selectedField: jobsSelectedField.value || null,
-      totalJobs: jobsCollection.value.length,
-      jobs: filteredJobsDriftPayload.value,
-    },
-    { label: 'Dev · Jobs · Filtered drift' }
-  )
-}
-
-const copyProfessionalsDrift = async () => {
-  await copyJSON(
-    {
-      modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts',
-      driftKind: professionalsDriftKind.value,
-      selectedField: professionalsSelectedField.value || null,
-      totalProfessionals: professionalsCollection.value.length,
-      professionals: filteredProfessionalsDriftPayload.value,
-    },
-    { label: 'Dev · Professionals · Filtered drift' }
-  )
-}
-
-const copyAgentsDrift = async () => {
-  await copyJSON(
-    {
-      modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts',
-      driftKind: agentsDriftKind.value,
-      selectedField: agentsSelectedField.value || null,
-      totalAgents: agentsCollection.value.length,
-      agents: filteredAgentsDriftPayload.value,
-    },
-    { label: 'Dev · Agents · Filtered drift' }
-  )
-}
+const agentsDriftCopyPayload = computed(() => ({
+  modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts',
+  driftKind: agentsDriftKind.value,
+  selectedField: agentsSelectedField.value || null,
+  totalAgents: agentsCollection.value.length,
+  agents: filteredAgentsDriftPayload.value,
+}))
 
 const updateJobsSelectedField = (value: string) => {
   jobsSelectedField.value = value

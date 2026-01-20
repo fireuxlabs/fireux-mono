@@ -1,6 +1,6 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts
 
-import type { AppProfileBase, CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { chefConfig } from './supporting'
 
@@ -9,14 +9,6 @@ import { chefConfig } from './supporting'
  * Core doc:  chefs/{uid}
  * App doc:   apps/{appId}/chefs/{uid}
  */
-
-export type ChefCoreShape = CoreProfileBase & {
-  bio_short: string
-  bio_long: string
-  specialties: string[]
-  locations: string[]
-  organization_name: string
-}
 
 export const ChefCore = {
   id: '',
@@ -31,22 +23,28 @@ export const ChefCore = {
   locations: [] as string[],
   organization_name: '',
 
+  // Stamps
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies ChefCoreShape & Record<string, unknown>
+} as const
 
-export type ChefCore = ChefCoreShape
-
-export type ChefAppShape = AppProfileBase
+export type ChefCore = {
+  [K in keyof typeof ChefCore]: (typeof ChefCore)[K]
+}
 
 export const ChefApp = {
   id: '',
-  creator_id: undefined,
+
+  // Stamps
+  creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
-} satisfies ChefAppShape & Record<string, unknown>
+} as const
 
-export type ChefApp = ChefAppShape
+export type ChefApp = {
+  [K in keyof typeof ChefApp]: (typeof ChefApp)[K]
+}
 
 export { chefConfig }
 

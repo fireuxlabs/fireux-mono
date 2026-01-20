@@ -1,9 +1,9 @@
 // FILE: packages/core/fireux-core/config/app/fireux.config.ts
 import type { NuxtConfig } from 'nuxt/schema'
 
-import { setRuntime } from './runtime'
-import { configPwa } from './pwa'
 import { configNitroFirebase } from './nitro'
+import { configPwa } from './pwa'
+import { setRuntime } from './runtime'
 import { configViteWorkspace } from './vite'
 
 export type FireuxAppConfig = {
@@ -11,8 +11,8 @@ export type FireuxAppConfig = {
   id: string
   name: string
   shortName: string
-  /** Optional app icon path/URL (defaults to /img/app/logo.png). */
-  appIcon?: string
+  /** Optional app thumbnail path/URL (defaults to /img/app/thumbnail.png). */
+  appThumbnail?: string
   /** Optional app logo path/URL (preferred). Defaults to /img/app/logo.png. */
   appLogo?: string
   role: 'global' | 'tenant'
@@ -157,8 +157,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       id: app.id,
       name: app.name,
       shortName: app.shortName,
-      appIcon: app.appIcon || app.appLogo || '/img/app/logo.png',
-      appLogo: app.appLogo || app.appIcon || '/img/app/logo.png',
+      appThumbnail: app.appThumbnail || '/img/app/thumbnail.png',
+      appLogo: app.appLogo || '/img/app/logo.png',
       domain: envDomain,
       role: app.role,
       ecosystem: app.ecosystem,

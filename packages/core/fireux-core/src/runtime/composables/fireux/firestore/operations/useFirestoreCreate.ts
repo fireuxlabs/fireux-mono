@@ -2,8 +2,10 @@ import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/fires
 import { useFirestore } from 'vuefire'
 import { useRequireUser } from '../../firebase/useRequireUser'
 
-type StampMode = 'none' | 'date' | 'time' | 'pinpoint'
-type StampOpts = { raw?: boolean; mode?: StampMode; creator_id?: string | null; requireUser?: boolean }
+type StampOpts = {
+  stamp?: boolean
+  creator?: boolean
+}
 
 type Stamped<T> = T & {
   created_at: ReturnType<typeof serverTimestamp>
@@ -12,30 +14,17 @@ type Stamped<T> = T & {
 }
 
 export async function stampDoc<T>(data: T, opts: StampOpts = {}): Promise<T | Stamped<T>> {
-  // honor explicit raw or explicit 'none' mode
-  if (opts.raw || opts.mode === 'none') return data
-
-  const requireUser = opts.requireUser !== false
-  let creatorId = typeof opts.creator_id === 'string' ? opts.creator_id.trim() : ''
-
-  if (!creatorId && requireUser) {
-    const user = await useRequireUser()
-    creatorId = user.uid
-  }
+  if (opts.stamp === false) return data
 
   const base: any = {
     ...(data as any),
-    // canonical server timestamps (authoritative)
     created_at: serverTimestamp(),
     updated_at: serverTimestamp(),
   }
 
-  if (creatorId) base.creator_id = creatorId
-
-  // Maintain legacy `created_by` for backward compatibility when callers
-  // haven't explicitly provided it. Do not overwrite an explicit value.
-  if (creatorId && !(data as any).hasOwnProperty('created_by')) {
-    base.created_by = creatorId
+  if (opts.creator) {
+    const user = await useRequireUser()
+    base.creator_id = user.uid
   }
 
   return base as Stamped<T>

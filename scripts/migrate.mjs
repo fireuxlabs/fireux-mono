@@ -4,6 +4,7 @@
 
   Usage:
     node scripts/migrate.mjs --project <projectId> --recipe <name> [--commit] [--app <appId>] [--limit N] [--pageSize N]
+    node scripts/migrate.mjs --project <projectId> --recipe apply-drift-payload [--commit] [--payload <json> | --payloadFile <path>]
 
   Auth (one required):
     - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)
@@ -30,13 +31,18 @@ const pageSize = Math.min(Number(args.pageSize || 250), 500)
 const limit = args.limit ? Number(args.limit) : null
 const targetAppId = typeof args.app === 'string' ? args.app : null
 const recipe = typeof args.recipe === 'string' ? args.recipe : null
+const payloadArg = typeof args.payload === 'string' ? args.payload : null
+const payloadFile = typeof args.payloadFile === 'string' ? args.payloadFile : null
 
 if (help) {
   console.log(`\nFirestore migration runner\n`)
   console.log('Usage:')
   console.log('  node scripts/migrate.mjs --project <projectId> --recipe <name> [--commit] [--app <appId>] [--limit N] [--pageSize N]')
+  console.log('  node scripts/migrate.mjs --project <projectId> --recipe apply-drift-payload [--commit] [--payload <json> | --payloadFile <path>]')
   console.log('\nRecipes:')
   console.log('  - app-media-flatten')
+  console.log('  - app-social-links-normalize')
+  console.log('  - apply-drift-payload')
   console.log('\nAuth (one required):')
   console.log('  - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)')
   console.log('  - FIREBASE_SERVICE_ACCOUNT (JSON string)')
@@ -172,6 +178,8 @@ async function runAppMediaFlatten() {
 
 const recipes = {
   'app-media-flatten': runAppMediaFlatten,
+  'app-social-links-normalize': runAppSocialLinksNormalize,
+  'apply-drift-payload': runApplyDriftPayload,
 }
 
 const runner = recipes[recipe]
@@ -181,3 +189,290 @@ if (!runner) {
 }
 
 await runner()
+
+async function readPayloadInput() {
+  if (payloadFile) {
+    return JSON.parse(await readFile(payloadFile, 'utf8'))
+  }
+
+  if (payloadArg) {
+    return JSON.parse(payloadArg)
+  }
+
+  if (!process.stdin.isTTY) {
+    const chunks = []
+    for await (const chunk of process.stdin) chunks.push(chunk)
+    const raw = Buffer.concat(chunks).toString('utf8').trim()
+    if (!raw) return null
+    return JSON.parse(raw)
+  }
+
+  return null
+}
+
+function parseDriftEntry(entry) {
+  if (typeof entry !== 'string') return { field: '', type: '' }
+  const trimmed = entry.trim()
+  if (!trimmed) return { field: '', type: '' }
+  const match = trimmed.match(/^(.*?)\s*\(([^)]+)\)\s*$/)
+  if (match) {
+    return {
+      field: match[1].trim(),
+      type: match[2].trim().toLowerCase(),
+    }
+  }
+  const [name] = trimmed.split(' ')
+  return { field: (name || '').trim(), type: '' }
+}
+
+function defaultForType(type) {
+  switch (type) {
+    case 'string':
+      return ''
+    case 'number':
+    case 'int':
+    case 'float':
+      return 0
+    case 'boolean':
+    case 'bool':
+      return false
+    case 'array':
+    case 'list':
+      return []
+    case 'object':
+    case 'map':
+    case 'record':
+      return {}
+    case 'timestamp':
+    case 'date':
+    case 'datetime':
+      return null
+    default:
+      return undefined
+  }
+}
+
+function getDriftDefaults(collection) {
+  if (collection === 'blogs') {
+    return {
+      created_at: {},
+      updated_at: {},
+      product_id: '',
+    }
+  }
+
+  return {}
+}
+
+function resolveDriftTarget(payload) {
+  if (!payload || typeof payload !== 'object') return null
+
+  if (Array.isArray(payload.apps)) {
+    return { collection: 'apps', items: payload.apps }
+  }
+
+  if (Array.isArray(payload.blogs)) {
+    return { collection: 'blogs', items: payload.blogs }
+  }
+
+  if (Array.isArray(payload.places)) {
+    return { collection: 'places', items: payload.places }
+  }
+
+  if (typeof payload.modelPath === 'string') {
+    if (payload.modelPath.includes('/fireux-core/') && payload.modelPath.includes('/app.model')) {
+      return { collection: 'apps', items: payload.apps || [] }
+    }
+    if (payload.modelPath.includes('/fireux-blogs/')) {
+      return { collection: 'blogs', items: payload.blogs || [] }
+    }
+    if (payload.modelPath.includes('/fireux-places/')) {
+      return { collection: 'places', items: payload.places || [] }
+    }
+  }
+
+  return null
+}
+
+async function runApplyDriftPayload() {
+  const payload = await readPayloadInput()
+  if (!payload) {
+    console.error('Missing payload. Provide --payload, --payloadFile, or pipe JSON to stdin.')
+    process.exit(1)
+  }
+
+  const target = resolveDriftTarget(payload)
+  if (!target) {
+    console.error('Unsupported payload. Could not resolve target collection.')
+    process.exit(1)
+  }
+
+  const { collection, items } = target
+  const defaults = getDriftDefaults(collection)
+
+  console.log('[migrate] apply-drift-payload start', {
+    projectId,
+    commit,
+    collection,
+    total: Array.isArray(items) ? items.length : 0,
+  })
+
+  if (!Array.isArray(items) || items.length === 0) {
+    console.log('[migrate] apply-drift-payload done', { processed: 0, updated: 0, skipped: 0, commit })
+    return
+  }
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+
+  let batch = db.batch()
+  let batchOps = 0
+
+  for (const item of items) {
+    processed += 1
+    const id = typeof item?.id === 'string' ? item.id : ''
+    if (!id) {
+      skipped += 1
+      continue
+    }
+
+    const drift = item?.drift || {}
+    const missing = Array.isArray(drift.missing) ? drift.missing : []
+    const extra = Array.isArray(drift.extra) ? drift.extra : []
+
+    const patch = {}
+    let needs = false
+
+    for (const entry of missing) {
+      const { field, type } = parseDriftEntry(entry)
+      if (!field) continue
+      if (Object.prototype.hasOwnProperty.call(defaults, field)) {
+        patch[field] = defaults[field]
+        needs = true
+        continue
+      }
+      const fallback = defaultForType(type)
+      if (fallback !== undefined) {
+        patch[field] = fallback
+        needs = true
+      }
+    }
+
+    for (const entry of extra) {
+      const { field } = parseDriftEntry(entry)
+      if (!field) continue
+      patch[field] = FieldValue.delete()
+      needs = true
+    }
+
+    if (!needs) {
+      skipped += 1
+      continue
+    }
+
+    updated += 1
+    const ref = db.collection(collection).doc(id)
+
+    if (commit) {
+      batch.update(ref, patch)
+      batchOps += 1
+    } else {
+      console.log('[dry-run]', ref.path, patch)
+    }
+
+    if (commit && batchOps >= 400) {
+      await batch.commit()
+      batch = db.batch()
+      batchOps = 0
+    }
+  }
+
+  if (commit && batchOps > 0) {
+    await batch.commit()
+  }
+
+  console.log('[migrate] apply-drift-payload done', { processed, updated, skipped, commit })
+}
+
+async function runAppSocialLinksNormalize() {
+  console.log('[migrate] app-social-links-normalize start', {
+    projectId,
+    commit,
+    pageSize,
+    limit,
+    app: targetAppId,
+  })
+
+  const requiredKeys = ['website', 'twitter', 'github', 'linkedin', 'instagram']
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+
+  let lastDoc = null
+
+  while (true) {
+    if (limit && processed >= limit) break
+
+    let q = db.collection('apps').orderBy(FieldPath.documentId()).limit(pageSize)
+    if (lastDoc) q = q.startAfter(lastDoc)
+    if (targetAppId) q = db.collection('apps').where(FieldPath.documentId(), '==', targetAppId)
+
+    const snap = await q.get()
+    if (snap.empty) break
+
+    let batch = db.batch()
+    let batchOps = 0
+
+    for (const docSnap of snap.docs) {
+      if (limit && processed >= limit) break
+
+      processed += 1
+      const data = docSnap.data() || {}
+
+      const social = (data.social_links && typeof data.social_links === 'object')
+        ? data.social_links
+        : {}
+
+      const next = {}
+      for (const key of requiredKeys) {
+        next[key] = asString(social?.[key], '')
+      }
+
+      const needs = !requiredKeys.every(
+        (key) => asString(social?.[key], '') === next[key]
+      ) || Object.keys(social).some((key) => !requiredKeys.includes(key))
+
+      if (!needs) {
+        skipped += 1
+        continue
+      }
+
+      updated += 1
+
+      if (commit) {
+        batch.update(docSnap.ref, { social_links: next })
+        batchOps += 1
+      } else {
+        console.log('[dry-run]', docSnap.ref.path, { social_links: next })
+      }
+
+      if (commit && batchOps >= 400) {
+        await batch.commit()
+        batch = db.batch()
+        batchOps = 0
+      }
+    }
+
+    if (commit && batchOps > 0) {
+      await batch.commit()
+    }
+
+    lastDoc = snap.docs[snap.docs.length - 1]
+
+    if (targetAppId) break
+  }
+
+  console.log('[migrate] app-social-links-normalize done', { processed, updated, skipped, commit })
+}

@@ -1,44 +1,37 @@
-import { doc, getDoc } from 'firebase/firestore'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
-import { useFirestore } from 'vuefire'
-import type { KitchenCreateInput } from '../../../../../../models/objects/kitchen.model'
+import type { Kitchen, KitchenCreateInput } from '../../../../../../models/objects/kitchen.model'
 
-const COLLECTION_PATH = 'kitchens'
+export const KitchenPayload = {
+  id: '',
+  name: '',
+  formatted_address: '',
+  place_image: '',
+  website: '',
+}
+
+export const KitchenStampOptions = {
+  creator: true,
+} as const
 
 export function useKitchenCreate() {
-  const { setDocument } = useFirestoreManager()
-  const db = useFirestore()
+  const { setDocument } = useFirestoreCreate()
 
-  const createKitchen = async (
-    input: KitchenCreateInput & { place: PlaceUpsertInput }
-  ): Promise<string> => {
-    const id = String(input?.id ?? '').trim()
-    if (!id) throw new Error('[useKitchenCreate] placeId (id) is required')
-
-    const name = String(input?.name ?? '').trim()
-    if (!name) throw new Error('[useKitchenCreate] name is required')
-
-    const ref = doc(db, COLLECTION_PATH, id)
-    const snapshot = await getDoc(ref)
-    if (snapshot.exists()) {
-      throw new Error(`[useKitchenCreate] kitchen already exists: ${id}`)
+  async function createKitchen(
+    input: KitchenCreateInput & { place?: PlaceUpsertInput }
+  ): Promise<string> {
+    if (!input?.id) {
+      throw new Error('Kitchen id is required')
     }
 
-    await setDocument<KitchenCreateInput>(
-      COLLECTION_PATH,
-      id,
-      {
-        id,
-        name,
-        formatted_address: String(input.formatted_address ?? '').trim(),
-        place_image: String(input.place_image ?? '').trim(),
-        website: String(input.website ?? '').trim(),
-      },
-      { raw: false }
-    )
+    const { place, ...payload } = input
+    void place
 
-    return id
+    await setDocument<Kitchen>('kitchens', payload.id, payload as Kitchen, {
+      creator: true,
+    })
+
+    return payload.id
   }
 
   return { createKitchen }

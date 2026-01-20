@@ -25,8 +25,8 @@ export namespace UserCard {
 
 export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   function map(user: User): UserCard.Card {
-    const handle = user.handle.trim()
-    const appCount = user.userOf.length
+    const handle = (user.handle ?? '').trim()
+    const appCount = user.userOf?.length ?? 0
 
     return {
       id: user.id,
@@ -39,7 +39,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
       badges: [],
 
       bio: user.bio,
-      profiles: user.profiles,
+      profiles: user.profiles ?? [],
       appsLabel: appCount ? `${appCount} apps` : '',
     }
   }

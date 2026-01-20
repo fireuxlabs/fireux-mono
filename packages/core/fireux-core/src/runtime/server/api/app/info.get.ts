@@ -40,8 +40,8 @@ export default defineEventHandler((event: H3Event) => {
       ecosystem: cfg.ecosystem,
       role: cfg.role,
       modules: cfg.modules,
-      logo: cfg.appLogo || cfg.appIcon,
-      appIcon: cfg.appIcon,
+      logo: cfg.appLogo || cfg.appThumbnail,
+      appThumbnail: cfg.appThumbnail,
     },
     package: pkg,
     endpoints: {

@@ -19,7 +19,7 @@ export class AvatarManager {
    * Generate app user avatar storage path
    */
   static getAppUserAvatarPath(appId: string, userId: string): string {
-    return `${appId}/users/${userId}/avatar`
+    return `apps/${appId}/users/${userId}/avatar`
   }
 
   /**

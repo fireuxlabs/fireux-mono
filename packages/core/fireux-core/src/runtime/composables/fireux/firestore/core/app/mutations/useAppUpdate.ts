@@ -1,31 +1,75 @@
+import { arrayRemove, arrayUnion, deleteField } from 'firebase/firestore'
 import type { Ref } from 'vue'
-import type { App } from '../../../../../../models/core/app.model'
+import type { AppModel } from '../../../../../../models/core/app.model'
 import type { AppSocialLinks } from '../../../../../../models/core/app.supporting'
-import { arrayRemove, deleteField } from 'firebase/firestore'
-import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
-import { useAppEnsure } from './useAppEnsure'
-import { ensureUserAppMembership } from '../../user/utils/ensureHelpers'
+import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import {
-  appImageFirestoreField,
-  appImageStoragePath,
-  isWordmarkKind,
-  type AppImageKind,
+    appImageFirestoreField,
+    appImageStoragePath,
+    isWordmarkKind,
+    type AppImageKind,
 } from '../utils/appMedia'
 
-export function useAppUpdate(appRef: Ref<App | null | undefined>) {
+export function useAppUpdate(appRef: Ref<AppModel | null | undefined>) {
+  const cfg = useFireUXConfig()
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage, getDownloadUrlForPath } = useImageStorage()
-  const { ensureAppMembership } = useAppEnsure()
 
   const ensureAppId = () => {
-    const id = appRef.value?.id
+    const id = appRef.value?.id ?? cfg.appId
     if (!id) throw new Error('[useAppUpdate] Missing app or app.id')
     return id
   }
 
-  const updateApp = (data: Partial<App> | Record<string, any>) =>
+  const updateApp = (data: Partial<AppModel> | Record<string, any>) =>
     updateDocument<any>('apps', ensureAppId(), data as any)
+
+  const updateUserMembership = async (
+    uid: string,
+    membershipRole: 'admin' | 'user'
+  ) => {
+    const appId = ensureAppId()
+    const userId = String(uid ?? '').trim()
+    if (!userId) throw new Error('[useAppUpdate] Missing uid')
+
+    await updateDocument('users', userId, {
+      userOf: arrayUnion(appId) as unknown as string[],
+      adminOf:
+        membershipRole === 'admin'
+          ? (arrayUnion(appId) as unknown as string[])
+          : (arrayRemove(appId) as unknown as string[]),
+    })
+  }
+
+  const updateAppMembership = async (
+    uid: string,
+    membershipRole: 'admin' | 'user'
+  ) => {
+    const userId = String(uid ?? '').trim()
+    if (!userId) throw new Error('[useAppUpdate] Missing uid')
+
+    await updateApp({
+      admin_ids:
+        membershipRole === 'admin'
+          ? (arrayUnion(userId) as unknown as App['admin_ids'])
+          : (arrayRemove(userId) as unknown as App['admin_ids']),
+    })
+  }
+
+  const updateAppUserRole = async (
+    uid: string,
+    membershipRole: 'admin' | 'user'
+  ) => {
+    const appId = ensureAppId()
+    const userId = String(uid ?? '').trim()
+    if (!userId) throw new Error('[useAppUpdate] Missing uid')
+
+    await updateDocument(`apps/${appId}/users`, userId, {
+      role: membershipRole,
+    })
+  }
 
   const text = (raw: unknown, max: number) =>
     String(raw ?? '')
@@ -110,7 +154,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   async function updateAvatarUrl(url: string | null) {
     const value = sanitizeThumbnailUrl(url)
-    await updateApp({ thumbnail_url: value })
+    await updateApp({ 'media.thumbnail_url': value })
   }
 
   async function updateThumbnailUrl(url: string | null) {
@@ -121,7 +165,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const id = ensureAppId()
     const path = appImageStoragePath(id, 'thumbnail')
     const url = await uploadImage(path, source)
-    await updateApp({ thumbnail_url: cacheBust(url) })
+    await updateApp({ 'media.thumbnail_url': cacheBust(url) })
     return url
   }
 
@@ -172,17 +216,21 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   async function handleJoinRequests(uid: string, approve: boolean) {
     await updateApp({
       // Firestore FieldValue cast is safe; updateDocument forwards as-is.
-      join_requests: arrayRemove(uid) as unknown as App['join_requests'],
+      join_requests: arrayRemove(uid) as unknown as AppModel['join_requests'],
     })
 
     if (approve) {
-      await ensureAppMembership(uid, 'user')
+      await updateAppUserRole(uid, 'user')
+      await updateUserMembership(uid, 'user')
+      await updateAppMembership(uid, 'user')
     }
   }
 
   async function setAppUserAdmin(uid: string, makeAdmin: boolean) {
-    const appId = ensureAppId()
-    await ensureUserAppMembership(appId, uid, makeAdmin ? 'admin' : 'user')
+    const membershipRole = makeAdmin ? 'admin' : 'user'
+    await updateAppUserRole(uid, membershipRole)
+    await updateUserMembership(uid, membershipRole)
+    await updateAppMembership(uid, membershipRole)
   }
 
   return {
@@ -203,5 +251,9 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     overwriteImageFromLocal,
     handleJoinRequests,
     setAppUserAdmin,
+    membership: {
+      setAdmin: (uid: string, makeAdmin: boolean) =>
+        updateAppMembership(uid, makeAdmin ? 'admin' : 'user'),
+    },
   }
 }

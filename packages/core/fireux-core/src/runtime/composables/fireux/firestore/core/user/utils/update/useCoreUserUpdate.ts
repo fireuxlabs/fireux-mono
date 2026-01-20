@@ -1,14 +1,14 @@
 import { addDoc, arrayRemove, arrayUnion, collection } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
 import type {
-  User,
+    User,
 } from '../../../../../../../models/core/user.model'
 import type { UserNotification } from '../../../../../../../models/core/user.supporting'
-import type { UserRefs } from '../../fetch/useUserFetch'
-import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
-import { useUserFormattingAndValidation } from '../validation/useUserFormatting'
+import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
+import type { UserRefs } from '../../fetch/useUserFetch'
 import { createUserNotification } from '../ensureHelpers'
-import { useFirestore } from 'vuefire'
+import { useUserFormattingAndValidation } from '../validation/useUserFormatting'
 
 export function useCoreUserUpdate(user: UserRefs) {
   const { updateDocument } = useFirestoreUpdate()
@@ -108,9 +108,34 @@ export function useCoreUserUpdate(user: UserRefs) {
     },
   }
 
+  const membership = {
+    joinApp: async (appId: string, role: 'admin' | 'user' = 'user') => {
+      const normalized = String(appId ?? '').trim()
+      if (!normalized) return
+
+      await updateCore({
+        userOf: arrayUnion(normalized) as unknown as string[],
+        adminOf:
+          role === 'admin'
+            ? (arrayUnion(normalized) as unknown as string[])
+            : (arrayRemove(normalized) as unknown as string[]),
+      })
+    },
+    leaveApp: async (appId: string) => {
+      const normalized = String(appId ?? '').trim()
+      if (!normalized) return
+
+      await updateCore({
+        userOf: arrayRemove(normalized) as unknown as string[],
+        adminOf: arrayRemove(normalized) as unknown as string[],
+      })
+    },
+  }
+
   return {
     profile,
     tags,
     notifications,
+    membership,
   }
 }

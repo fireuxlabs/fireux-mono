@@ -29,7 +29,7 @@ const parseEnum = (value: unknown): string[] | null => {
 }
 
 export const isMissingValue = (modelValue: unknown, dataValue: unknown): boolean => {
-  if (typeof modelValue === 'string') return typeof dataValue !== 'string' || dataValue.trim() === ''
+  if (typeof modelValue === 'string') return typeof dataValue !== 'string'
   if (Array.isArray(modelValue)) return !Array.isArray(dataValue)
   if (typeof modelValue === 'number') return typeof dataValue !== 'number'
   if (isPlainObject(modelValue)) return !isPlainObject(dataValue)

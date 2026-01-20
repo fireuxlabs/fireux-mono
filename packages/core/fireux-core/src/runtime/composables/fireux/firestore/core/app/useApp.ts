@@ -5,7 +5,7 @@ import { useAppInterface } from './utils/view/useAppInterface'
 import { useAppEnsure } from './mutations/useAppEnsure'
 import { useAppUpdate } from './mutations/useAppUpdate'
 
-export type { App } from '../../../../../models/core/app.model'
+export type { AppModel } from '../../../../../models/core/app.model'
 
 /**
  * useApp

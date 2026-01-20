@@ -1,12 +1,12 @@
-import { useFirebaseStorage } from 'vuefire'
-import type { RuntimeConfig } from 'nuxt/schema'
 import { useRuntimeConfig } from '#imports'
 import {
-  ref as storageRef,
-  uploadBytes,
   getDownloadURL,
   getStorage,
+  ref as storageRef,
+  uploadBytes,
 } from 'firebase/storage'
+import type { RuntimeConfig } from 'nuxt/schema'
+import { useFirebaseStorage } from 'vuefire'
 
 function getDefaultImageUrl(
   path: string = '/img/core/defaults/default-thumbnail.png'
@@ -117,6 +117,8 @@ function resolveStorageBucket(
 ) {
   try {
     const rawBucket =
+      (runtimeConfig?.public as any)?.firebaseEcosystem?.firebase
+        ?.storageBucket ??
       (runtimeConfig?.public as any)?.firebaseConfig?.storageBucket ??
       storage.app.options.storageBucket
 

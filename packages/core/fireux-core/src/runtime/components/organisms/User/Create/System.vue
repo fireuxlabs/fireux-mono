@@ -42,6 +42,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
 
 type PrimaryAction =
@@ -66,11 +67,14 @@ type PrimaryAction =
       disabled: boolean
     }
 
-const { appName, ecosystem } = useFireUXConfig()
-const { cta, ensureCore, ensureApp, isLoading } = useUser()
+const { appId, appName, ecosystem } = useFireUXConfig()
+const { cta, ensureUser, core, isLoading, user } = useUser()
+const { membership: appMembership } = useApp()
 
 const error = ref<string | null>(null)
 const isEnsuring = ref(false)
+
+const uid = computed(() => user.value?.id ?? null)
 
 const ctaKey = computed(() => cta.value?.key ?? 'avatar')
 const shouldRender = computed(() => ctaKey.value !== 'avatar')
@@ -113,10 +117,13 @@ const handleEnsure = async () => {
   isEnsuring.value = true
 
   try {
-    if (requiresCore.value) {
-      await ensureCore()
-    } else if (requiresApp.value) {
-      await ensureApp()
+    if (requiresCore.value || requiresApp.value) {
+      await ensureUser()
+    }
+
+    if (appId && uid.value && core?.membership && appMembership?.setAdmin) {
+      await core.membership.joinApp(appId, 'user')
+      await appMembership.setAdmin(uid.value, false)
     }
   } catch (e) {
     const message =

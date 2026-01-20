@@ -38,16 +38,19 @@
     <UButton
       size="xs"
       variant="outline"
-      :disabled="copyDisabled"
-      :icon="copyIcon || 'i-heroicons-clipboard-document-check'"
-      @click="$emit('copy')"
+      :disabled="copyDisabled || copying"
+      :icon="copying ? 'i-heroicons-arrow-path' : (copyIcon || 'i-heroicons-clipboard-document-check')"
+      @click="handleCopy"
     >
-      {{ copyLabel || 'Copy filtered drift' }}
+      {{ copying ? 'Copying…' : (copyLabel || 'Copy filtered drift') }}
     </UButton>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useDevClipboard } from '../../composables/dev/useDevClipboard'
+import { useDevDriftCopyMeta } from '../../composables/dev/useDevDriftCopyMeta'
+
 defineOptions({ name: 'DriftToolbar' })
 
 type DriftKind = 'missing' | 'extra'
@@ -61,16 +64,39 @@ interface Props {
   driftKind: DriftKind
   selectedField: string
   filterOptions: FilterOption[]
+  copyPayload?: unknown
   copyLabel?: string
   copyIcon?: string
   copyDisabled?: boolean
 }
 
-defineProps<Props>()
-
-defineEmits<{
+const props = defineProps<Props>()
+const emit = defineEmits<{
   (event: 'update:drift-kind', value: DriftKind): void
   (event: 'update:selected-field', value: string): void
   (event: 'copy'): void
 }>()
+
+const { copyJSON, copying } = useDevClipboard()
+const { migration } = useDevDriftCopyMeta()
+
+const buildCopyPayload = () => {
+  if (!props.copyPayload || typeof props.copyPayload !== 'object') return props.copyPayload
+  const payload = props.copyPayload as Record<string, unknown>
+  if (payload.migration) return payload
+  return {
+    ...payload,
+    migration,
+  }
+}
+
+const handleCopy = async () => {
+  const payload = buildCopyPayload()
+  if (payload !== undefined) {
+    await copyJSON(payload, {
+      label: props.copyLabel || 'Copy filtered drift',
+    })
+  }
+  emit('copy')
+}
 </script>

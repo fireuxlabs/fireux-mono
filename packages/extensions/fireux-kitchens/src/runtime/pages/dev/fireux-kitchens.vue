@@ -27,12 +27,10 @@
                 :drift-kind="kitchensDriftKind"
                 :selected-field="kitchensSelectedField"
                 :filter-options="kitchensFilterOptions"
-                :copy-label="copying ? 'Copying…' : 'Copy drift · Kitchens'"
-                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-                :copy-disabled="copying"
+                :copy-label="'Copy drift · Kitchens'"
+                :copy-payload="kitchensDriftCopyPayload"
                 @update:drift-kind="setKitchensDriftKind"
                 @update:selected-field="updateKitchensSelectedField"
-                @copy="copyKitchensDrift"
               />
             </div>
           </div>
@@ -53,7 +51,6 @@
 </template>
 
 <script setup lang="ts">
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useKitchens } from '../../composables/fireux/firestore/objects/kitchen/useKitchens'
@@ -114,20 +111,13 @@ const filteredKitchensDriftPayload = computed(() =>
   })
 )
 
-const { copyJSON, copying } = useDevClipboard()
-
-const copyKitchensDrift = async () => {
-  await copyJSON(
-    {
-      modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts',
-      driftKind: kitchensDriftKind.value,
-      selectedField: kitchensSelectedField.value || null,
-      totalKitchens: cards.value.length,
-      kitchens: filteredKitchensDriftPayload.value,
-    },
-    { label: 'Dev · Kitchens · Filtered drift' }
-  )
-}
+const kitchensDriftCopyPayload = computed(() => ({
+  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts',
+  driftKind: kitchensDriftKind.value,
+  selectedField: kitchensSelectedField.value || null,
+  totalKitchens: cards.value.length,
+  kitchens: filteredKitchensDriftPayload.value,
+}))
 
 const updateKitchensSelectedField = (value: string) => {
   kitchensSelectedField.value = value

@@ -11,7 +11,6 @@ import {
 import { useFirestore } from 'vuefire'
 
 import type { FirebaseTimestamp } from '../../../../../../../types/firebase'
-import type { App } from '../../../../../../models/core/app.model'
 import type {
   AppUser,
   User,
@@ -158,7 +157,7 @@ export async function ensureUserAppMembership(
   // 2) App mirrors
   if (created) {
     batch.update(appRef, {
-      user_count: increment(1) as unknown as App['user_count'],
+      'derived.user_count': increment(1),
       updated_at: serverTimestamp(),
     })
   }
@@ -212,7 +211,7 @@ export async function removeUserAppMembership(
 
   if (existed) {
     batch.update(appRef, {
-      user_count: increment(-1) as unknown as App['user_count'],
+      'derived.user_count': increment(-1),
       updated_at: serverTimestamp(),
     })
   }

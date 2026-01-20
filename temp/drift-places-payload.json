@@ -1,0 +1,369 @@
+{
+  "modelPath": "packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts",
+  "driftKind": "missing",
+  "selectedField": null,
+  "totalPlaces": 32,
+  "places": [
+    {
+      "id": "ChIJ-x5EtnEzGQ0R8am5BtQUOLs",
+      "name": "Four Seasons Ritz",
+      "formattedAddress": "R. Rodrigo da Fonseca 88, 1099-039 Lisboa, Portugal",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJ0UF6GPmvj0cR__jYKy-J8pE",
+      "name": "Berghaus Niederhorn",
+      "formattedAddress": "Niederhorn 1015, 3803 Beatenberg, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJ3w_c1MA5jkcRxgKHq51MuHg",
+      "name": "Migros Restaurant - Bern - Marktgasse",
+      "formattedAddress": "Marktgasse 46, 3011 Bern, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJ4WdXoJIZjkcRFH_M6dS5EPo",
+      "name": "DISPO",
+      "formattedAddress": "Dr. Schneider-Strasse 3, 2560 Nidau, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJ5_TdZKNFj0cRunmn1AAOhAM",
+      "name": "Hotel Allalin Saas-Fee",
+      "formattedAddress": "Lomattenstrasse 7, 3906 Saas-Fee, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJ5a7zI4yZb0gREnXFLyK2efw",
+      "name": "The Hafod Hotel",
+      "formattedAddress": "Devil's Bridge, Aberystwyth SY23 3JL, UK",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJ84hrmh6lj0cRoczGWuTvTtE",
+      "name": "Balmers Backyard",
+      "formattedAddress": "Hauptstrasse 23, 3800 Matten bei Interlaken, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJEbkWR0ijj0cRiHfShuHPLcc",
+      "name": "Boutique Hotel / Restaurant / Bar Bären Ringgenberg",
+      "formattedAddress": "Hauptstrasse 128, 3852 Ringgenberg, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJGZLquf6bj0cRgf5eaOtK7PY",
+      "name": "Berghaus Männlichen",
+      "formattedAddress": "Männlichen, 3818 Grindelwald, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJHxvMffqkj0cR7zCUD5KfxXc",
+      "name": "Salzano",
+      "formattedAddress": "Seestrasse 108, 3800 Interlaken, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJJRK8XSeue0gRAvddTH8ORtQ",
+      "name": "Old Pint Pot",
+      "formattedAddress": "Adelphi St, Salford M3 6EN, UK",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJKzNNYhvUfEgRVcGRFx60Mbk",
+      "name": "Trout Hotel",
+      "formattedAddress": "3 Crown St, Cockermouth CA13 0EJ, UK",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJM3aUezGjj0cRm9qzSb-cUao",
+      "name": "misebox",
+      "formattedAddress": "Bachtalenweg 21, 3852 Ringgenberg, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJO1deUZqkj0cR4rc4Wz6VbOM",
+      "name": "Velo Cafe",
+      "formattedAddress": "Unionsgasse 10, 3800 Interlaken, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJQzGAsJCkj0cRJZIIj0XoBqA",
+      "name": "Goldener Anker",
+      "formattedAddress": "Marktgasse 57, 3800 Interlaken, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJS1kBa_AGOEYRwRaP4kZIjvs",
+      "name": "Boen Gård",
+      "formattedAddress": "Dønnestadveien 341, 4658 Tveit, Norway",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJTeUywPmbj0cR-wT2hmyQaUM",
+      "name": "Berghaus Alpiglen",
+      "formattedAddress": "Alpiglen, 3818 Grindelwald, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJWS2cLEkKkEcRPkeZB6EcnLk",
+      "name": "Coople (Schweiz) AG",
+      "formattedAddress": "Albisriederstrasse 253, 8047 Zürich, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJWfJ_ovw5jkcRbC19phRjokk",
+      "name": "McDonald's Restaurant",
+      "formattedAddress": "Wankdorf Shopping Mall, Papiermühlestrasse 85, 3014 Bern, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJXdh4fWQzGQ0Rv0Q55pCtVb4",
+      "name": "Cantina da Estrela",
+      "formattedAddress": "R. Saraiva de Carvalho 35, 1250-242 Lisboa, Portugal",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJYfJCOagukEcRrSRZachhhlg",
+      "name": "Coop Restaurant Bern Ryfflihof",
+      "formattedAddress": "Aarbergergasse 53, 3011 Bern, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJZYHwV2osOUYR6N1qUJ8m0jU",
+      "name": "Hovden Alpin Lodge",
+      "formattedAddress": "Alpin Lodge, 4755 Hovden, Norway",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJcUsl4xejj0cRbug8Ds7VHNc",
+      "name": "Seehotel Bönigen",
+      "formattedAddress": "Seestrasse 22, 3806 Bönigen, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJd5U3YbF0iUcR-oLtm9B0M5Y",
+      "name": "Hôtel Le Ski d'Or",
+      "formattedAddress": "282 Rue du Val Claret, 73320 Tignes, France",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJfQbcFs5C2EcRfPr8IZUWn6g",
+      "name": "The Kings Head",
+      "formattedAddress": "1 Stetchworth Rd, Dullingham, Newmarket CB8 9UJ, UK",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJgZS5zY_8jkcRG3KbHXxkrlw",
+      "name": "Hüttenzauber - Kappeler Gastro AG",
+      "formattedAddress": "Gutenbrunnenstrasse 6, 3775 Lenk, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJoVol0XW33kcRzlGVA086YZc",
+      "name": "Broome Park Hotel",
+      "formattedAddress": "Broome Park Hotel, Canterbury Rd, Canterbury CT4 6QX, UK",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJswCZ5HQzGQ0REazzU1ROadQ",
+      "name": "Real Palácio",
+      "formattedAddress": "R. Tomás Ribeiro 115, 1050-228 Lisboa, Portugal",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJt0ko0AmgmkcRZJMyt51zAUg",
+      "name": "Adia",
+      "formattedAddress": "Uetlibergstrasse 134, 8045 Zürich, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJt1LkPOKlj0cRlu3-_x8jj90",
+      "name": "Yellow Velo",
+      "formattedAddress": "Postgasse 11, 3800 Interlaken, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJwedNwIulj0cRoVNhqVhc_mQ",
+      "name": "Runft Cafe",
+      "formattedAddress": "Bahnhofstrasse 51, 3800 Interlaken, Switzerland",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "ChIJy9QERoAFR0YRAnMwI2eEV8Q",
+      "name": "Tollboden Restaurant",
+      "formattedAddress": "P. A. Heuchs Gate 4A, 3770 Kragerø, Norway",
+      "drift": {
+        "missing": [
+          "claimed_by (string)"
+        ],
+        "extra": []
+      }
+    }
+  ],
+  "migration": {
+    "script": "scripts/migrate.mjs",
+    "ecosystem": "misebox",
+    "app": "misebox-app",
+    "appConfigPath": "projects/misebox/misebox-app/nuxt.config.ts",
+    "firebaseConfigDir": "packages/ecosystem/fireux-misebox/src/config/firebase",
+    "ecosystemConfigPath": "packages/ecosystem/fireux-misebox/src/config/firebase/ecosystem.config.ts",
+    "serviceAccountPath": "packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json"
+  }
+}

@@ -21,10 +21,10 @@
 </template>
 
 <script setup lang="ts">
-import type { App } from '../../../../../models/core/app.model'
+import type { AppModel } from '../../../../../models/core/app.model';
 
 defineProps<{
-  app: App
-  handleUpdateSocialLinks: (value: App['social_links']) => Promise<unknown>
+  app: AppModel
+  handleUpdateSocialLinks: (value: AppModel['social_links']) => Promise<unknown>
 }>()
 </script>

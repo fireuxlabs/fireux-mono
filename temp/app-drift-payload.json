@@ -1,0 +1,59 @@
+{
+  "modelPath": "packages/core/fireux-core/src/runtime/models/core/app.model.ts",
+  "driftKind": "missing",
+  "selectedField": null,
+  "totalApps": 2,
+  "apps": [
+    {
+      "id": "misebox-app",
+      "displayName": "Misebox",
+      "drift": {
+        "missing": [
+          "derived.user_count (number)",
+          "media.thumbnail_url (string)",
+          "media.logo_url (string)",
+          "media.wordmark_light_url (string)",
+          "media.wordmark_dark_url (string)",
+          "media.cover_url (string)"
+        ],
+        "extra": [
+          "thumbnail_url (string)",
+          "logo_url (string)",
+          "wordmark_light_url (string)",
+          "wordmark_dark_url (string)",
+          "user_count (number)"
+        ]
+      }
+    },
+    {
+      "id": "niederhorn",
+      "displayName": "Niederhorn",
+      "drift": {
+        "missing": [
+          "derived.user_count (number)",
+          "media.thumbnail_url (string)",
+          "media.logo_url (string)",
+          "media.wordmark_light_url (string)",
+          "media.wordmark_dark_url (string)",
+          "media.cover_url (string)"
+        ],
+        "extra": [
+          "wordmark_dark_url (string)",
+          "logo_url (string)",
+          "wordmark_light_url (string)",
+          "user_count (number)",
+          "thumbnail_url (string)"
+        ]
+      }
+    }
+  ],
+  "migration": {
+    "script": "scripts/migrate.mjs",
+    "ecosystem": "misebox",
+    "app": "misebox-app",
+    "appConfigPath": "projects/misebox/misebox-app/nuxt.config.ts",
+    "firebaseConfigDir": "packages/ecosystem/fireux-misebox/src/config/firebase",
+    "ecosystemConfigPath": "packages/ecosystem/fireux-misebox/src/config/firebase/ecosystem.config.ts",
+    "serviceAccountPath": "packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json"
+  }
+}

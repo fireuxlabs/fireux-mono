@@ -4,7 +4,7 @@
     <template #header>
       <div class="fx-profile__header">
         <div class="fx-profile__identity">
-          <UAvatar :src="avatarUrl" :alt="displayName" size="md" />
+          <UAvatar :src="thumbnailUrl || undefined" :alt="displayName" size="md" />
           <div class="fx-profile__titles">
             <div class="fx-profile__title">{{ displayName }}</div>
             <div v-if="showSubtitle" class="fx-profile__subtitle">
@@ -201,12 +201,12 @@ import { useSocialLinks, type SocialLinks } from '../../../../composables/fireux
 import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import type { App } from '../../../../models/core/app.model'
+import type { AppModel } from '../../../../models/core/app.model'
 import type { User } from '../../../../models/core/user.model'
 import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
 
 const props = defineProps({
-  app: { type: Object as PropType<App | null>, default: null },
+  app: { type: Object as PropType<AppModel | null>, default: null },
 
   id: { type: String, default: '' },
   shortName: { type: String, default: '' },
@@ -215,7 +215,7 @@ const props = defineProps({
   tagline: { type: String, default: '' },
   wordmarkLight: { type: String, default: '' },
   wordmarkDark: { type: String, default: '' },
-  avatarUrl: { type: String, default: '' },
+  thumbnailUrl: { type: String, default: '' },
   displayName: { type: String, default: '' },
   ecosystem: { type: String, default: '' },
   badges: { type: Array as PropType<string[]>, default: () => [] },

@@ -20,12 +20,10 @@
                 :drift-kind="driftKind"
                 :selected-field="selectedField"
                 :filter-options="filterOptions"
-                :copy-label="copying ? 'Copying…' : 'Copy drift · Places'"
-                :copy-icon="copying ? 'i-heroicons-arrow-path' : 'i-heroicons-clipboard-document-check'"
-                :copy-disabled="copying"
+                :copy-label="'Copy drift · Places'"
+                :copy-payload="driftCopyPayload"
                 @update:drift-kind="setDriftKind"
                 @update:selected-field="updateSelectedField"
-                @copy="copyDrift"
               />
             </div>
           </div>
@@ -49,7 +47,6 @@
 </template>
 
 <script setup lang="ts">
-import { useDevClipboard } from 'fireux-core/runtime/composables/dev/useDevClipboard'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
@@ -112,20 +109,13 @@ const filteredDriftPayload = computed(() =>
   })
 )
 
-const { copyJSON, copying } = useDevClipboard()
-
-const copyDrift = async () => {
-  await copyJSON(
-    {
-      modelPath: 'packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts',
-      driftKind: driftKind.value,
-      selectedField: selectedField.value || null,
-      totalPlaces: totalPlaces.value,
-      places: filteredDriftPayload.value,
-    },
-    { label: 'Dev · Places (Ext) · Filtered drift' }
-  )
-}
+const driftCopyPayload = computed(() => ({
+  modelPath: 'packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts',
+  driftKind: driftKind.value,
+  selectedField: selectedField.value || null,
+  totalPlaces: totalPlaces.value,
+  places: filteredDriftPayload.value,
+}))
 
 const updateSelectedField = (value: string) => {
   selectedField.value = value

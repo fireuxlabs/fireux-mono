@@ -113,7 +113,7 @@ type AppInfoResponse = {
     role?: string
     modules?: string[]
     logo?: string
-    appIcon?: string
+    appThumbnail?: string
   }
   package?: {
     name?: string
@@ -224,7 +224,7 @@ const displayedApps = computed(() =>
   CANONICAL_APPS.map((app) => {
     const base = baseUrlFor(app.key)
     const info = infoByKey.value[app.key]
-    const logo = info?.app?.logo ?? info?.app?.appIcon ?? DEFAULT_LOGO_PATH
+    const logo = info?.app?.logo ?? info?.app?.appThumbnail ?? DEFAULT_LOGO_PATH
     const resolved = resolveIconUrl(base, logo)
     if (import.meta.dev && base && !resolved) {
       console.warn(`[fireux] No logo resolved for ${app.key}.`) 

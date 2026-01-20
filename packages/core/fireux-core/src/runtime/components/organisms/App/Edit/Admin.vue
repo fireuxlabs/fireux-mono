@@ -64,19 +64,22 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { App } from '../../../../models/core/app.model'
-import type { User } from '../../../../models/core/user.model'
-import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
-import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
-import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
 import { useAppUsers } from '../../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
+import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
+import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 import { useAppJoinRequests } from '../../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
-import { useUserInterface, type UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
-import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
+import { useUserInterface, type UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import type { AppModel } from '../../../../models/core/app.model'
+import type { User } from '../../../../models/core/user.model'
 
-const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
+const props = withDefaults(
+  defineProps<{ app?: AppModel | null }>(),
+  { app: null }
+)
 
 const { app: internalApp, pending: internalPending } = useApp()
 

@@ -45,7 +45,7 @@ import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 
 const cfg = useFireUXConfig()
 
-const appLogo = computed(() => cfg.appLogo || cfg.appIcon || '')
+const appLogo = computed(() => cfg.appLogo || cfg.appThumbnail || '')
 
 const roleLabel = computed(() => {
   // Note: this is runtime “app role” (global/tenant), not app membership role.
