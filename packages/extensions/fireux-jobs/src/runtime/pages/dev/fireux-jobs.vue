@@ -44,7 +44,7 @@
           />
         </template>
 
-        <JobCollectionManager :cards="jobCards" />
+        <JobCollectionManager :collection="filteredJobs" />
       </UCard>
 
       <UCard>
@@ -85,7 +85,7 @@
           />
         </template>
 
-        <OrganismsProfilesProfessionalCollectionManager :cards="professionalCards" />
+        <OrganismsProfilesProfessionalCollectionManager :collection="filteredProfessionals" />
       </UCard>
 
       <UCard>
@@ -126,7 +126,7 @@
           />
         </template>
 
-        <OrganismsProfilesAgentCollectionManager :cards="agentCards" />
+        <OrganismsProfilesAgentCollectionManager :collection="filteredAgents" />
       </UCard>
     </UPageBody>
   </UPage>

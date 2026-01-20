@@ -1,3 +1,4 @@
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreSearch } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreSearch'
 import { ref, watch } from 'vue'
 import type { BasePlace } from '../../../../../../../models/objects/place.model'
@@ -12,6 +13,19 @@ import {
 
 const sanitize = (url?: string | null) =>
   url && !/mapfiles\/place_api\/icons/i.test(url) ? url : null
+
+type PlaceSearchRow = {
+  id?: string
+  place_id?: string
+  name: string
+  formatted_address?: string
+  place_image?: string | null
+  image_url?: string | null
+  search_term: string
+  search_term_normalized?: string
+  source?: string
+  claimed_by?: string
+}
 
 // in-memory cache for logos by id
 const logoCache = new Map<string, string | null>()
@@ -53,8 +67,29 @@ async function resolveLogo(
   }
 }
 
-export function usePlacesSearch(options?: { type?: string | null }) {
+export function usePlacesSearch(options?: {
+  type?: string | null
+  collection?: string
+  normalizedField?: keyof PlaceSearchRow & string
+  localFallback?: boolean
+  extraCollections?: string[]
+  allowGoogle?: boolean
+}) {
   const { prefixSearch } = useFirestoreSearch()
+  const { firestoreFetchCollection } = useFirestoreRead()
+
+  const collectionName = options?.collection || 'places'
+  const extraCollections = options?.extraCollections ?? []
+  const allowGoogle = options?.allowGoogle ?? collectionName === 'places'
+  const localCollection = options?.localFallback
+    ? firestoreFetchCollection<Record<string, any>>(collectionName)
+    : null
+  const extraLocalCollections = options?.localFallback
+    ? extraCollections.map((name) => ({
+        name,
+        data: firestoreFetchCollection<Record<string, any>>(name),
+      }))
+    : []
 
   const query = ref('')
   const results = ref<PlaceCard.Card[]>([])
@@ -65,6 +100,9 @@ export function usePlacesSearch(options?: { type?: string | null }) {
 
   async function searchPlaces(q: string) {
     const term = q.trim().toLowerCase()
+    const termNormalized = term
+      ? term.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      : ''
     if (!term) {
       results.value = []
       if (import.meta.dev) {
@@ -76,33 +114,64 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       return
     }
 
+    const mapToCard = (p: any, collectionOverride?: string): PlaceCard.Card => {
+      const id = canonicalPlaceId(p?.place_id ?? p?.id) ?? ''
+      const sourceRaw = typeof p?.source === 'string' ? p.source : 'fireux'
+      const safeSource =
+        sourceRaw === 'google'
+          ? 'google'
+          : sourceRaw === 'manual'
+            ? 'manual'
+            : 'fireux'
+
+      const placeImageRaw = p?.place_image ?? p?.image_url
+      const place_image = typeof placeImageRaw === 'string' ? placeImageRaw : ''
+      const formattedAddress =
+        typeof p?.formatted_address === 'string' ? p.formatted_address : ''
+
+      return {
+        id,
+        to: `/places/${encodeURIComponent(id)}`,
+
+        avatarUrl: place_image,
+        title: String(p?.name ?? ''),
+        subtitle: formattedAddress,
+        badges: [],
+
+        name: String(p?.name ?? ''),
+        formattedAddress,
+
+        imageUrl: place_image,
+        source: safeSource as any,
+
+        collection: collectionOverride ?? p?.collection ?? undefined,
+
+        claimedBy: typeof p?.claimed_by === 'string' ? p.claimed_by : '',
+      }
+    }
+
     isSearching.value = true
     try {
-      // firestore first (but don't block google fallback if firestore fails)
       let firestoreFailed = false
       let firestoreError: unknown = null
-      let fx: Array<{
-        id?: string
-        place_id?: string
-        name: string
-        formatted_address?: string
-        place_image?: string | null
-        image_url?: string | null
-        search_term: string
-        source?: string
-      }> = []
+      let fx: PlaceSearchRow[] = []
 
       try {
-        fx = await prefixSearch<{
-          id?: string
-          place_id?: string
-          name: string
-          formatted_address?: string
-          place_image?: string | null
-          image_url?: string | null
-          search_term: string
-          source?: string
-        }>({ collection: 'places', field: 'search_term', query: term, limit: 5 })
+        fx = await prefixSearch<PlaceSearchRow>({
+          collection: collectionName,
+          field: 'search_term',
+          query: term,
+          limit: 5,
+        })
+
+        if (!fx.length && termNormalized && termNormalized !== term && options?.normalizedField) {
+          fx = await prefixSearch<PlaceSearchRow>({
+            collection: collectionName,
+            field: options.normalizedField as keyof PlaceSearchRow & string,
+            query: termNormalized,
+            limit: 5,
+          })
+        }
       } catch (err) {
         firestoreFailed = true
         firestoreError = err
@@ -112,46 +181,18 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       }
 
       if (fx.length) {
-        results.value = fx.map<PlaceCard.Card>((p: any) => {
-          const id = canonicalPlaceId(p?.place_id ?? p?.id) ?? ''
-          const sourceRaw = typeof p?.source === 'string' ? p.source : 'fireux'
-          const safeSource =
-            sourceRaw === 'google'
-              ? 'google'
-              : sourceRaw === 'manual'
-                ? 'manual'
-                : 'fireux'
-
-          const placeImageRaw = p?.place_image ?? p?.image_url
-          const place_image = typeof placeImageRaw === 'string' ? placeImageRaw : ''
-
-          const formattedAddress =
-            typeof p?.formatted_address === 'string' ? p.formatted_address : ''
-
-          return {
-            id,
-            to: `/places/${encodeURIComponent(id)}`,
-
-            avatarUrl: place_image,
-            title: String(p?.name ?? ''),
-            subtitle: formattedAddress,
-            badges: [],
-
-            name: String(p?.name ?? ''),
-            formattedAddress,
-
-            imageUrl: place_image,
-            source: safeSource as any,
-
-            claimedBy: typeof p?.claimed_by === 'string' ? p.claimed_by : '',
-          }
-        })
-
+        results.value = fx.map((row) => mapToCard(row, collectionName))
         if (import.meta.dev) {
           debug.value = {
             term,
+            termNormalized,
             stage: 'firebase',
+            field:
+              fx.length && options?.normalizedField && termNormalized !== term
+                ? options.normalizedField
+                : 'search_term',
             firestoreCount: fx.length,
+            firestoreCollections: [collectionName],
             firestoreFailed,
             firestoreError:
               firestoreFailed && firestoreError
@@ -165,11 +206,132 @@ export function usePlacesSearch(options?: { type?: string | null }) {
         return
       }
 
+      if (extraCollections.length) {
+        let extraHits: Array<{ row: PlaceSearchRow; collection: string }> = []
+        for (const extra of extraCollections) {
+          try {
+            const rows = await prefixSearch<PlaceSearchRow>({
+              collection: extra,
+              field: 'search_term',
+              query: term,
+              limit: 5,
+            })
+            extraHits = extraHits.concat(
+              rows.map((row) => ({ row, collection: extra }))
+            )
+
+            if (
+              !rows.length &&
+              termNormalized &&
+              termNormalized !== term &&
+              options?.normalizedField
+            ) {
+              const normalizedRows = await prefixSearch<PlaceSearchRow>({
+                collection: extra,
+                field: options.normalizedField as keyof PlaceSearchRow & string,
+                query: termNormalized,
+                limit: 5,
+              })
+              extraHits = extraHits.concat(
+                normalizedRows.map((row) => ({ row, collection: extra }))
+              )
+            }
+          } catch (err) {
+            if (import.meta.dev) {
+              console.warn('[places][search] extra collection failed', extra, err)
+            }
+          }
+        }
+
+        if (extraHits.length) {
+          results.value = extraHits.map(({ row, collection }) =>
+            mapToCard(row, collection)
+          )
+          if (import.meta.dev) {
+            debug.value = {
+              term,
+              termNormalized,
+              stage: 'firebase-extra',
+              firestoreCount: extraHits.length,
+              firestoreCollections: [collectionName, ...extraCollections],
+              googleAttempted: false,
+            }
+          }
+          return
+        }
+      }
+
+      if (options?.localFallback) {
+        const normalizedQuery = termNormalized || term
+        const filtered = (localCollection?.value ?? [])
+          .filter((row) => {
+            const raw = `${row?.name ?? ''} ${row?.formatted_address ?? ''} ${row?.search_term ?? ''} ${row?.id ?? ''}`
+            const normalized = raw
+              .toLowerCase()
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+            return normalized.includes(normalizedQuery)
+          })
+          .slice(0, 5)
+
+        let extraFiltered: any[] = []
+        if (extraLocalCollections.length) {
+          for (const extra of extraLocalCollections) {
+            const rows = (extra.data.value ?? [])
+              .filter((row) => {
+                const raw = `${row?.name ?? ''} ${row?.formatted_address ?? ''} ${row?.search_term ?? ''} ${row?.id ?? ''}`
+                const normalized = raw
+                  .toLowerCase()
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+                return normalized.includes(normalizedQuery)
+              })
+              .slice(0, 5)
+            extraFiltered = extraFiltered.concat(rows)
+          }
+        }
+
+        const mergedFiltered = filtered.length ? filtered : extraFiltered
+        if (mergedFiltered.length) {
+          results.value = mergedFiltered.map((row) =>
+            mapToCard(row, collectionName)
+          )
+          if (import.meta.dev) {
+            debug.value = {
+              term,
+              termNormalized,
+              stage: 'local',
+              localCount: mergedFiltered.length,
+              firestoreCount: 0,
+              firestoreCollections: [collectionName, ...extraCollections],
+              googleAttempted: false,
+            }
+          }
+          return
+        }
+      }
+
+      if (!allowGoogle) {
+        results.value = []
+        if (import.meta.dev) {
+          debug.value = {
+            term,
+            termNormalized,
+            stage: 'skip_google_collection',
+            firestoreCount: 0,
+            localCount: (localCollection?.value ?? []).length,
+            googleAttempted: false,
+          }
+        }
+        return
+      }
+
       if (term.length < 4) {
         results.value = []
         if (import.meta.dev) {
           debug.value = {
             term,
+            termNormalized,
             stage: 'skip_google_term_too_short',
             firestoreCount: 0,
             googleAttempted: false,
@@ -178,7 +340,6 @@ export function usePlacesSearch(options?: { type?: string | null }) {
         return
       }
 
-      // google fallback (no avatars yet)
       results.value = await fetchGoogle(term, new Set(), 4, {
         type: options?.type ?? null,
       })
@@ -186,6 +347,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       if (import.meta.dev) {
         debug.value = {
           term,
+          termNormalized,
           stage: 'google',
           firestoreCount: 0,
           firestoreFailed,
@@ -207,6 +369,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       if (import.meta.dev) {
         debug.value = {
           term,
+          termNormalized,
           stage: 'error',
           error: e instanceof Error ? e.message : String(e),
           google: getLastPlacesAutocompleteDebug(),
@@ -300,6 +463,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       source: cell.source,
       place_image: cell.imageUrl || cached || '',
       claimed_by: cell.claimedBy || '',
+      collection: cell.collection,
     } as any
 
     // enrich from details (lat/lng, but keep place_image if we already have one)

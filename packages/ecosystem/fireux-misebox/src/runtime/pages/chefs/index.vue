@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <OrganismsProfilesChefCTA />
-      <OrganismsProfilesChefCollectionManager :cards="cards" />
+      <OrganismsProfilesChefCollectionManager :collection="chefsCollection" />
     </UPageBody>
   </UPage>
 </template>
@@ -15,8 +15,6 @@ import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 import { useChefCollection } from '../../composables/fireux/firestore/profiles/Chef/main/useChefCollection'
-import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef'
-import type { ChefCore } from '../../models/profiles/Chef/Chef.model'
 
 definePageMeta({
   nav: {
@@ -42,16 +40,9 @@ const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { globalChefs, localChefs } = useChefCollection()
-const { card: makeCard } = useChef()
-
-const cards = computed(() => {
-  const globalCards = (globalChefs.value ?? [])
-    .map((entry) => makeCard(entry as ChefCore, (entry as any)?.user ?? null))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-  const localCards = (localChefs?.value ?? [])
-    .map((entry) => makeCard(entry as ChefCore, (entry as any)?.user ?? null))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-  return [...localCards, ...globalCards]
-})
+const chefsCollection = computed(() => [
+  ...(localChefs?.value ?? []),
+  ...(globalChefs.value ?? []),
+])
 
 </script>

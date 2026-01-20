@@ -44,7 +44,7 @@
           />
         </template>
 
-        <OrganismsProfilesChefCollectionManager :cards="chefCards" />
+        <OrganismsProfilesChefCollectionManager :collection="filteredChefs" />
       </UCard>
 
       <UCard>
@@ -85,7 +85,7 @@
           />
         </template>
 
-        <OrganismsProfilesSupplierCollectionManager :cards="supplierCards" />
+        <OrganismsProfilesSupplierCollectionManager :collection="filteredSuppliers" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -95,12 +95,8 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useChefCollection } from '../../composables/fireux/firestore/profiles/Chef/main/useChefCollection'
-import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef'
 import { useSupplierCollection } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection'
-import { useSupplier } from '../../composables/fireux/firestore/profiles/Supplier/useSupplier'
-import type { ChefCore } from '../../models/profiles/Chef/Chef.model'
 import { ChefCore as ChefCoreRuntime } from '../../models/profiles/Chef/Chef.model'
-import type { SupplierCore } from '../../models/profiles/Supplier/Supplier.model'
 import { SupplierCore as SupplierCoreRuntime } from '../../models/profiles/Supplier/Supplier.model'
 
 definePageMeta({
@@ -119,7 +115,6 @@ const chefModelRuntime = ChefCoreRuntime
 const supplierModelRuntime = SupplierCoreRuntime
 
 const { globalChefs, localChefs } = useChefCollection()
-const { card: makeChefCard } = useChef()
 
 const chefsCollection = computed(() => [
   ...(localChefs?.value ?? []),
@@ -138,23 +133,17 @@ const {
   runtimeModel: chefModelRuntime,
 })
 
-const chefCards = computed(() => {
-  return filteredChefs.value
-    .map((entry) => makeChefCard(entry as ChefCore, (entry as any)?.user ?? null))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-})
-
 const allChefsJsonPayload = computed(() => ({
   totalChefs: chefsCollection.value.length,
   chefs: chefsCollection.value,
 }))
 
 const filteredChefsDriftPayload = computed(() =>
-  chefCards.value.map((card) => {
-    const drift = chefsDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+  filteredChefs.value.map((entry) => {
+    const drift = chefsDriftById.value.get(entry.id) ?? { missing: [], extra: [] }
     return {
-      id: card.id,
-      displayName: card.displayName,
+      id: entry.id,
+      displayName: (entry as any)?.user?.display_name ?? '',
       drift,
     }
   })
@@ -169,7 +158,6 @@ const chefsDriftCopyPayload = computed(() => ({
 }))
 
 const { globalSuppliers, localSuppliers } = useSupplierCollection()
-const { card: makeSupplierCard } = useSupplier()
 
 const suppliersCollection = computed(() => [
   ...(localSuppliers?.value ?? []),
@@ -188,23 +176,17 @@ const {
   runtimeModel: supplierModelRuntime,
 })
 
-const supplierCards = computed(() => {
-  return filteredSuppliers.value
-    .map((entry) => makeSupplierCard(entry as SupplierCore, (entry as any)?.user ?? null))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-})
-
 const allSuppliersJsonPayload = computed(() => ({
   totalSuppliers: suppliersCollection.value.length,
   suppliers: suppliersCollection.value,
 }))
 
 const filteredSuppliersDriftPayload = computed(() =>
-  supplierCards.value.map((card) => {
-    const drift = suppliersDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+  filteredSuppliers.value.map((entry) => {
+    const drift = suppliersDriftById.value.get(entry.id) ?? { missing: [], extra: [] }
     return {
-      id: card.id,
-      displayName: card.displayName,
+      id: entry.id,
+      displayName: (entry as any)?.user?.display_name ?? '',
       drift,
     }
   })

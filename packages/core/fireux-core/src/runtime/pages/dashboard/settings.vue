@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { definePageMeta, useState } from '#imports'
-import { useColorMode } from '../../composables/fireux/app/useColorMode'
 import { useToastify } from '../../composables/fireux/app/ui/useToastify'
+import { useColorMode } from '../../composables/fireux/app/useColorMode'
 
 definePageMeta({
   layout: 'dashboard',

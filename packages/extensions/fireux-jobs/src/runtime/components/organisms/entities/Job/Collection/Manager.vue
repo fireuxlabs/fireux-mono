@@ -8,7 +8,7 @@
           <UButton size="xs" variant="ghost" @click="toggleVariant">
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
           </UButton>
-          <UBadge variant="soft">{{ total }}</UBadge>
+          <UBadge variant="soft">{{ cards.length }}</UBadge>
         </div>
       </div>
     </template>
@@ -43,17 +43,37 @@
         </component>
       </div>
     </div>
+
+    <div v-if="showDebug" class="pt-3">
+      <DevJson
+        :title="'Jobs (JSON)'"
+        :data="debugPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { JobCard } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
+import { useJobInterface } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
+import type { Job } from '../../../../../models/objects/job.model';
 
-const props = defineProps<{ cards: JobCard.Card[]; total?: number }>()
+const props = defineProps<{ collection?: Job[] }>()
 
-const cards = computed(() => props.cards ?? [])
-const total = computed(() => props.total ?? cards.value.length)
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard } = useJobInterface()
+type JobCardShape = NonNullable<ReturnType<typeof makeCard>>
+const cards = computed(() =>
+  collection.value
+    .map((job) => makeCard(job))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+const showDebug = import.meta.dev
+const debugPayload = computed(() => ({
+  totalJobs: collection.value.length,
+  jobs: collection.value,
+}))
 
 type Variant = 'pill' | 'cell'
 const variant = ref<Variant>('cell')
@@ -61,7 +81,7 @@ const toggleVariant = () => {
   variant.value = variant.value === 'pill' ? 'cell' : 'pill'
 }
 
-const wrapperFor = (card: JobCard.Card) => (card.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: JobCard.Card) => (card.to ? { to: card.to } : {})
+const wrapperFor = (card: JobCardShape) => (card.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: JobCardShape) => (card.to ? { to: card.to } : {})
 </script>
 

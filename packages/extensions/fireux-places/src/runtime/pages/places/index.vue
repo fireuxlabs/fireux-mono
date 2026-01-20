@@ -3,14 +3,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <PlaceCTA :type="placeType" @confirmed="onPlaceCreated" />
-      <PlaceCollectionManager :cards="placeCards" />
-      <UCard v-if="showDebug">
-        <DevJson
-          :title="'Places (JSON)'"
-          :data="placesDebugPayload"
-          :default-open="false"
-        />
-      </UCard>
+      <PlaceCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -21,7 +14,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { computed } from 'vue'
 import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
 import { normalizePlaceType } from '../../composables/fireux/firestore/objects/place/utils/placeCollections'
-import { usePlacesInterface } from '../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
 definePageMeta({
   layout: 'default',
@@ -62,19 +54,6 @@ const pageDescription =
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { collection } = usePlaces<Record<string, any>>({ keyword, type: placeType })
-const { card: makeCard } = usePlacesInterface()
-
-const placeCards = computed(() =>
-  (collection.value ?? [])
-    .map((place) => makeCard(place as any))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
-const showDebug = import.meta.dev
-const placesDebugPayload = computed(() => ({
-  totalPlaces: collection.value?.length ?? 0,
-  places: collection.value ?? [],
-}))
 
 async function onPlaceCreated() {
   // Nudge the route so the list refreshes immediately in dev.

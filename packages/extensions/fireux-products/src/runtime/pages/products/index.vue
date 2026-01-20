@@ -5,7 +5,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <ProductCTA />
-      <ProductCollectionManager :cards="cards" />
+      <ProductCollectionManager :collection="products" />
     </UPageBody>
   </UPage>
 </template>
@@ -13,9 +13,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { computed } from 'vue'
 import { useProductCollection } from '../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
-import { useProductInterface } from '../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
 
 const { appName } = useFireUXConfig()
 
@@ -41,13 +39,5 @@ definePageMeta({
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { products } = useProductCollection()
-const { card: makeCard } = useProductInterface()
-
-const cards = computed(() =>
-  (products.value ?? [])
-    .map((product) => makeCard(product))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
 </script>
 

@@ -43,16 +43,36 @@
         </template>
       </div>
     </div>
+
+    <div v-if="showDebug" class="pt-3">
+      <DevJson
+        :title="'Companies (JSON)'"
+        :data="debugPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
+import type { Company } from '../../../../../models/objects/company.model';
+import { useCompanyInterface } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
 
-const props = defineProps<{ cards: CompanyCard.Card[] }>()
+const props = defineProps<{ collection?: Company[] }>()
 
-const cards = computed(() => props.cards ?? [])
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard } = useCompanyInterface()
+const cards = computed(() =>
+  collection.value
+    .map((company) => makeCard(company as any))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+const showDebug = import.meta.dev
+const debugPayload = computed(() => ({
+  totalCompanies: collection.value.length,
+  companies: collection.value,
+}))
 
 type Variant = 'pill' | 'cell'
 const variant = ref<Variant>('cell')

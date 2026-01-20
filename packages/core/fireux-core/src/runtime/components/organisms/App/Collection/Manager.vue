@@ -35,28 +35,43 @@
     <p v-else class="fx-section__empty">
       {{ query ? 'No apps match your search.' : 'No apps found.' }}
     </p>
+
+    <div v-if="showDebug" class="pt-3">
+      <DevJson
+        :title="'Apps (JSON)'"
+        :data="debugPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
+import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
 import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch';
+import type { AppModel } from '../../../../models/core/app.model';
 
-const props = defineProps<{ cards: AppCard.Card[]; total?: number }>()
+const props = defineProps<{ collection?: AppModel[] }>()
 
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard, searchText } = useAppInterface()
 const {
   query,
   variant,
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<AppCard.Card, AppCard.Card>({
-  items: computed(() => props.cards ?? []),
-  searchText: (card) =>
-    `${card.displayName} ${card.shortName ?? ''} ${card.id ?? ''} ${card.ecosystem ?? ''}`.toLowerCase(),
-  makeCard: (card) => card,
+} = useCollectionSearch<AppModel, ReturnType<typeof makeCard>>({
+  items: collection,
+  searchText: (app) => searchText(app),
+  makeCard: (app) => makeCard(app),
 })
 
-const totalCount = computed(() => props.total ?? props.cards.length)
+const totalCount = computed(() => collection.value.length)
+const showDebug = import.meta.dev
+const debugPayload = computed(() => ({
+  totalApps: collection.value.length,
+  apps: collection.value,
+}))
 </script>

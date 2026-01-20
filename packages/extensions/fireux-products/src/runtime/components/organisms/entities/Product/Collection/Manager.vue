@@ -8,7 +8,7 @@
           <UButton size="xs" variant="ghost" @click="toggleVariant">
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
           </UButton>
-          <UBadge variant="soft">{{ total }}</UBadge>
+          <UBadge variant="soft">{{ cards.length }}</UBadge>
         </div>
       </div>
     </template>
@@ -45,17 +45,37 @@
         </component>
       </div>
     </div>
+
+    <div v-if="showDebug" class="pt-3">
+      <DevJson
+        :title="'Products (JSON)'"
+        :data="debugPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { ProductCard } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface';
+import { useProductInterface } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface';
+import type { FirebaseProduct } from '../../../../../models/objects/product.model';
 
-const props = defineProps<{ cards: ProductCard.Card[]; total?: number }>()
+const props = defineProps<{ collection?: FirebaseProduct[] }>()
 
-const cards = computed(() => props.cards ?? [])
-const total = computed(() => props.total ?? cards.value.length)
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard } = useProductInterface()
+type ProductCardShape = NonNullable<ReturnType<typeof makeCard>>
+const cards = computed(() =>
+  collection.value
+    .map((product) => makeCard(product))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+const showDebug = import.meta.dev
+const debugPayload = computed(() => ({
+  totalProducts: collection.value.length,
+  products: collection.value,
+}))
 
 type Variant = 'pill' | 'cell'
 const variant = ref<Variant>('cell')
@@ -63,7 +83,7 @@ const toggleVariant = () => {
   variant.value = variant.value === 'pill' ? 'cell' : 'pill'
 }
 
-const wrapperFor = (card: ProductCard.Card) => (card.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: ProductCard.Card) => (card.to ? { to: card.to } : {})
+const wrapperFor = (card: ProductCardShape) => (card.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: ProductCardShape) => (card.to ? { to: card.to } : {})
 </script>
 

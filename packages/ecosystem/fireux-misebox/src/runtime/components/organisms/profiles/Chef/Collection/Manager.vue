@@ -26,23 +26,49 @@
     />
 
     <p v-else class="fx-section__empty">No chefs found.</p>
+
+    <div v-if="showDebug" class="pt-3">
+      <DevJson
+        :title="'Chefs (JSON)'"
+        :data="debugPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef';
+import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef';
+import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model';
 
-const props = defineProps<{ cards: ChefCard.Card[]; total?: number }>()
+type ChefEntry = ChefCore & { user?: unknown }
 
+const props = defineProps<{ collection?: ChefEntry[] }>()
+
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard } = useChef()
+const searchTextFor = (entry: ChefEntry) => {
+  const displayName = (entry as any)?.user?.display_name ?? ''
+  const title = (entry as any)?.title ?? ''
+  const tagline = (entry as any)?.tagline ?? ''
+  const organization = (entry as any)?.organization_name ?? ''
+  return `${displayName} ${title} ${tagline} ${organization} ${entry.id ?? ''}`
+    .trim()
+    .toLowerCase()
+}
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
-  useCollectionSearch<ChefCard.Card, ChefCard.Card>({
-    items: computed(() => props.cards ?? []),
-    searchText: (card) =>
-      `${card.displayName} ${card.tagline} ${card.id}`.trim().toLowerCase(),
-    makeCard: (card) => card,
+  useCollectionSearch<ChefEntry, ReturnType<typeof makeCard>>({
+    items: collection,
+    searchText: (entry) => searchTextFor(entry),
+    makeCard: (entry) => makeCard(entry as ChefCore, (entry as any)?.user ?? null),
   })
 
-const totalCount = computed(() => props.total ?? props.cards.length)
+const totalCount = computed(() => collection.value.length)
+const showDebug = import.meta.dev
+const debugPayload = computed(() => ({
+  totalChefs: collection.value.length,
+  chefs: collection.value,
+}))
 </script>

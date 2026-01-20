@@ -8,7 +8,7 @@
           <UButton size="xs" variant="ghost" @click="toggleVariant">
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
           </UButton>
-          <UBadge variant="soft">{{ total }}</UBadge>
+          <UBadge variant="soft">{{ cards.length }}</UBadge>
         </div>
       </div>
     </template>
@@ -45,17 +45,37 @@
         </component>
       </div>
     </div>
+
+    <div v-if="showDebug" class="pt-3">
+      <DevJson
+        :title="'Kitchens (JSON)'"
+        :data="debugPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
+import { useKitchenInterface } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
+import type { Kitchen } from '../../../../../models/objects/kitchen.model';
 
-const props = defineProps<{ cards: KitchenCard.Card[]; total?: number }>()
+const props = defineProps<{ collection?: Kitchen[] }>()
 
-const cards = computed(() => props.cards ?? [])
-const total = computed(() => props.total ?? cards.value.length)
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard } = useKitchenInterface()
+type KitchenCardShape = NonNullable<ReturnType<typeof makeCard>>
+const cards = computed(() =>
+  collection.value
+    .map((kitchen) => makeCard(kitchen))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+const showDebug = import.meta.dev
+const debugPayload = computed(() => ({
+  totalKitchens: collection.value.length,
+  kitchens: collection.value,
+}))
 
 type Variant = 'pill' | 'cell'
 const variant = ref<Variant>('cell')
@@ -63,6 +83,6 @@ const toggleVariant = () => {
   variant.value = variant.value === 'pill' ? 'cell' : 'pill'
 }
 
-const wrapperFor = (card: KitchenCard.Card) => (card.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: KitchenCard.Card) => (card.to ? { to: card.to } : {})
+const wrapperFor = (card: KitchenCardShape) => (card.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: KitchenCardShape) => (card.to ? { to: card.to } : {})
 </script>

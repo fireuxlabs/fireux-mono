@@ -24,6 +24,9 @@ export namespace PlaceCard {
     // Source metadata
     source?: PlaceSource
 
+    // Search collection (optional)
+    collection?: string
+
     // Ownership
     claimedBy?: string
   }

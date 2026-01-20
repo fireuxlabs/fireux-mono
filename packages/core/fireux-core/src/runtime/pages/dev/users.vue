@@ -55,10 +55,7 @@
           />
         </template>
 
-        <OrganismsUserCollectionManager
-          :cards="cards"
-          :total="total"
-        />
+        <OrganismsUserCollectionManager :collection="filteredUsers" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -72,7 +69,6 @@ import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import { useGlobalUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
-import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { User as UserModelRuntime } from '../../models/core/user.model'
 
 definePageMeta({
@@ -92,8 +88,7 @@ definePageMeta({
 
 const userModelRuntime = UserModelRuntime
 
-const { users, count } = useGlobalUserCollection()
-const { card: makeCard } = useUserInterface()
+const { users } = useGlobalUserCollection()
 
 const { apps } = useAppCollection()
 const { app: activeApp } = useApp()
@@ -119,25 +114,17 @@ const {
   runtimeModel: userModelRuntime,
 })
 
-const cards = computed(() =>
-  filteredUsers.value
-    .map((user) => makeCard(user))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
-const total = computed(() => count.value ?? cards.value.length)
-
 const allUsersJsonPayload = computed(() => ({
   totalUsers: userCollection.value.length,
   users: userCollection.value,
 }))
 
 const filteredUsersDriftPayload = computed(() =>
-  cards.value.map((card) => {
-    const drift = usersDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+  filteredUsers.value.map((user) => {
+    const drift = usersDriftById.value.get(user.id) ?? { missing: [], extra: [] }
     return {
-      id: card.id,
-      displayName: card.displayName,
+      id: user.id,
+      displayName: user.display_name ?? '',
       drift,
     }
   })
@@ -147,7 +134,7 @@ const usersDriftCopyPayload = computed(() => ({
   modelPath: 'packages/core/fireux-core/src/runtime/models/core/user.model.ts',
   driftKind: usersDriftKind.value,
   selectedField: usersSelectedField.value || null,
-  totalUsers: total.value,
+  totalUsers: filteredUsers.value.length,
   users: filteredUsersDriftPayload.value,
 }))
 

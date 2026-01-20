@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <CompanyCTA />
-      <CompanyCollectionManager :cards="cards" />
+      <CompanyCollectionManager :collection="companiesCollection" />
     </UPageBody>
   </UPage>
 </template>
@@ -13,7 +13,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 
@@ -42,11 +41,5 @@ const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { companies } = useCompanyFetch()
-const { card: makeCard } = useCompanyInterface()
-
-const cards = computed(() =>
-  (companies.value ?? [])
-    .map((company) => makeCard(company))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
+const companiesCollection = computed(() => companies.value ?? [])
 </script>

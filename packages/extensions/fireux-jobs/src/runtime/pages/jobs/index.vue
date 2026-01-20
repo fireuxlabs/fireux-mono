@@ -4,7 +4,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <JobCTA />
-      <JobCollectionManager :cards="cards" />
+      <JobCollectionManager :collection="appJobs" />
     </UPageBody>
   </UPage>
 </template>
@@ -12,9 +12,7 @@
 <script setup lang="ts">
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
 import { useHead } from 'nuxt/app'
-import { computed } from 'vue'
 import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
-import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
 const { appName } = useFireUXConfig()
 
@@ -41,13 +39,5 @@ definePageMeta({
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { appJobs } = useJobCollection()
-const { card: makeCard } = useJobInterface()
-
-const cards = computed(() =>
-  (appJobs.value ?? [])
-    .map((job) => makeCard(job))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
 </script>
 

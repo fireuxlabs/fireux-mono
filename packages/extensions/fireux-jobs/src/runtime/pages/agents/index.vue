@@ -4,7 +4,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <OrganismsProfilesAgentCTA />
-      <OrganismsProfilesAgentCollectionManager :cards="cards" />
+      <OrganismsProfilesAgentCollectionManager :collection="agentsCollection" />
     </UPageBody>
   </UPage>
 </template>
@@ -14,7 +14,6 @@ import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
-import { useAgentsInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentsInterface'
 
 definePageMeta({
   nav: {
@@ -41,16 +40,9 @@ const pageDescription =
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { globalAgents, localAgents } = useAgentCollection()
-const { card: makeCard } = useAgentsInterface()
-
-const cards = computed(() => {
-  const globalCards = (globalAgents.value ?? [])
-    .map((entry) => makeCard(entry as any))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-  const localCards = (localAgents?.value ?? [])
-    .map((entry) => makeCard(entry as any))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-  return [...localCards, ...globalCards]
-})
+const agentsCollection = computed(() => [
+  ...(localAgents?.value ?? []),
+  ...(globalAgents.value ?? []),
+])
 
 </script>

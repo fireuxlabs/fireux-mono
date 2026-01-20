@@ -5,18 +5,15 @@
 
     <UPageBody class="pagebody">
       <OrganismsUserCTA />
-      <OrganismsUserCollectionManager :cards="cards" :total="total" />
+      <OrganismsUserCollectionManager :collection="users" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useGlobalUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
-import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import type { User } from '../../models/core/user.model'
 
 definePageMeta({
   nav: {
@@ -42,14 +39,5 @@ const pageDescription =
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { users, count } = useGlobalUserCollection()
-const { card: makeUserCard } = useUserInterface()
-
-const cards = computed(() =>
-  (users.value ?? [])
-    .map((entry) => makeUserCard(entry as User))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
-const total = computed(() => count.value ?? cards.value.length)
+const { users } = useGlobalUserCollection()
 </script>

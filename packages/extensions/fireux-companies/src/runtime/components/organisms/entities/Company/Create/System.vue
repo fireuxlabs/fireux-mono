@@ -3,14 +3,21 @@
     <UCard :ui="{ body: 'space-y-4' }">
       <template #header>
         <div class="space-y-1">
-          <div class="font-medium">Find a place</div>
+          <div class="font-medium">Select a place</div>
           <div class="text-sm text-dimmed">
-            Pick an existing place or confirm a new Google result.
+            We’ll use the existing company if it exists, or create the overlay if it doesn’t.
           </div>
         </div>
       </template>
 
-      <PlaceSearchSection @confirmed="onPlaceConfirmed" />
+      <PlaceSearchSection
+        collection="companies"
+        normalized-field="search_term_normalized"
+        :local-fallback="true"
+        :extra-collections="['places']"
+        :allow-google="true"
+        @confirmed="onPlaceConfirmed"
+      />
 
       <div v-if="successId" class="text-sm text-green-600">
         Company created: {{ successId }}
@@ -39,13 +46,22 @@ import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/plac
 import { ref } from 'vue'
 import { useFirestore } from 'vuefire'
 import { useCompanyCreate } from '../../../../../composables/fireux/firestore/objects/company/mutations/useCompanyCreate'
+import { useCompanyUpdate } from '../../../../../composables/fireux/firestore/objects/company/mutations/useCompanyUpdate'
 
 const { createCompany } = useCompanyCreate()
+const { updateCompany } = useCompanyUpdate()
 const db = useFirestore()
 
 const error = ref<string | null>(null)
 const successId = ref<string | null>(null)
 const existingId = ref<string | null>(null)
+
+const normalizeSearchTerm = (value: string) =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
 
 async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput }) {
   error.value = null
@@ -59,6 +75,17 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
     const existingSnap = await getDoc(doc(db, 'companies', id))
     if (existingSnap.exists()) {
       existingId.value = id
+      const existing = existingSnap.data() as Record<string, any>
+      const searchTerm = `${place.name} ${place.formatted_address ?? ''}`
+        .toLowerCase()
+        .trim()
+      const searchTermNormalized = normalizeSearchTerm(searchTerm)
+      if (!existing.search_term || !existing.search_term_normalized) {
+        await updateCompany(id, {
+          search_term: existing.search_term || searchTerm,
+          search_term_normalized: existing.search_term_normalized || searchTermNormalized,
+        } as any)
+      }
       return
     }
 
@@ -71,6 +98,12 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
       lng: place.lng ?? 0,
       place_image: place.place_image ?? '',
       website: '',
+      search_term: `${place.name} ${place.formatted_address ?? ''}`
+        .toLowerCase()
+        .trim(),
+      search_term_normalized: normalizeSearchTerm(
+        `${place.name} ${place.formatted_address ?? ''}`
+      ),
     })
 
     successId.value = createdId

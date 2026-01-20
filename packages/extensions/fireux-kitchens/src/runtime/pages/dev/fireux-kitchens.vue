@@ -44,7 +44,7 @@
           />
         </template>
 
-        <KitchenCollectionManager :cards="cards" />
+        <KitchenCollectionManager :collection="filteredKitchens" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -54,7 +54,6 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useKitchens } from '../../composables/fireux/firestore/objects/kitchen/useKitchens'
-import { useKitchenInterface } from '../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../models/objects/kitchen.model'
 import { Kitchen as KitchenModelRuntime } from '../../models/objects/kitchen.model'
 
@@ -73,7 +72,6 @@ definePageMeta({
 const kitchenModelRuntime = KitchenModelRuntime
 
 const { collection } = useKitchens<Kitchen>()
-const { card: makeCard } = useKitchenInterface()
 
 const kitchensCollection = computed(() => collection.value ?? [])
 
@@ -89,23 +87,17 @@ const {
   runtimeModel: kitchenModelRuntime,
 })
 
-const cards = computed(() =>
-  filteredKitchens.value
-    .map((kitchen) => makeCard(kitchen as Kitchen))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
 const allKitchensJsonPayload = computed(() => ({
   totalKitchens: kitchensCollection.value.length,
   kitchens: kitchensCollection.value,
 }))
 
 const filteredKitchensDriftPayload = computed(() =>
-  cards.value.map((card) => {
-    const drift = kitchensDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+  filteredKitchens.value.map((kitchen) => {
+    const drift = kitchensDriftById.value.get(kitchen.id) ?? { missing: [], extra: [] }
     return {
-      id: card.id,
-      name: card.name,
+      id: kitchen.id,
+      name: kitchen.name,
       drift,
     }
   })
@@ -115,7 +107,7 @@ const kitchensDriftCopyPayload = computed(() => ({
   modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts',
   driftKind: kitchensDriftKind.value,
   selectedField: kitchensSelectedField.value || null,
-  totalKitchens: cards.value.length,
+  totalKitchens: filteredKitchens.value.length,
   kitchens: filteredKitchensDriftPayload.value,
 }))
 

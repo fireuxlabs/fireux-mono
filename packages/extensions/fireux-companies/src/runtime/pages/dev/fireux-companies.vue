@@ -44,7 +44,7 @@
           />
         </template>
 
-        <CompanyCollectionManager :cards="cards" />
+        <CompanyCollectionManager :collection="filteredCompanies" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -54,7 +54,6 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from '../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 import { Company as CompanyModelRuntime } from '../../models/objects/company.model'
 
 definePageMeta({
@@ -72,7 +71,6 @@ definePageMeta({
 const companyModelRuntime = CompanyModelRuntime
 
 const { companies } = useCompanyFetch()
-const { card: makeCard } = useCompanyInterface()
 
 const companiesCollection = computed(() => companies.value ?? [])
 
@@ -88,23 +86,17 @@ const {
   runtimeModel: companyModelRuntime,
 })
 
-const cards = computed(() =>
-  filteredCompanies.value
-    .map((company) => makeCard(company))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
 const allCompaniesJsonPayload = computed(() => ({
   totalCompanies: companiesCollection.value.length,
   companies: companiesCollection.value,
 }))
 
 const filteredCompaniesDriftPayload = computed(() =>
-  cards.value.map((card) => {
-    const drift = companiesDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+  filteredCompanies.value.map((company) => {
+    const drift = companiesDriftById.value.get(company.id) ?? { missing: [], extra: [] }
     return {
-      id: card.id,
-      name: card.name,
+      id: company.id,
+      name: company.name,
       drift,
     }
   })
@@ -114,7 +106,7 @@ const companiesDriftCopyPayload = computed(() => ({
   modelPath: 'packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts',
   driftKind: companiesDriftKind.value,
   selectedField: companiesSelectedField.value || null,
-  totalCompanies: cards.value.length,
+  totalCompanies: filteredCompanies.value.length,
   companies: filteredCompaniesDriftPayload.value,
 }))
 

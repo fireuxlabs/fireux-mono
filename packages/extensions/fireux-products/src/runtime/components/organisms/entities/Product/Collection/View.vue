@@ -1,17 +1,14 @@
 <template>
-  <ProductCollectionManager :cards="cards" :total="total" />
+  <ProductCollectionManager :collection="collection" />
 </template>
 
 <script setup lang="ts">
-import type { ProductCard } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface';
+import type { FirebaseProduct } from '../../../../../models/objects/product.model';
 
 withDefaults(
   defineProps<{
-    cards: ProductCard.Card[]
-    total?: number
+    collection: FirebaseProduct[]
   }>(),
-  {
-    total: undefined,
-  }
+  {}
 )
 </script>

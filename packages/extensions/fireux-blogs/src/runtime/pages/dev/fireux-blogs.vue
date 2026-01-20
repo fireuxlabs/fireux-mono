@@ -44,7 +44,7 @@
           />
         </template>
 
-        <BlogCollectionManager :cards="cards" />
+        <BlogCollectionManager :collection="filteredBlogs" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -54,7 +54,6 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useBlogFetch } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogFetch'
-import { useBlogInterface } from '../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface'
 import type { BlogPost } from '../../models/objects/blogPost.model'
 import { BlogPost as BlogPostModelRuntime } from '../../models/objects/blogPost.model'
 
@@ -73,7 +72,6 @@ definePageMeta({
 const blogPostModelRuntime = BlogPostModelRuntime
 
 const { items } = useBlogFetch()
-const { card: makeCard } = useBlogInterface()
 
 const blogsCollection = computed<Array<BlogPost & { id: string }>>(() =>
   (items.value ?? []).map((post) => ({ ...post, id: post.slug }))
@@ -91,23 +89,17 @@ const {
   runtimeModel: blogPostModelRuntime,
 })
 
-const cards = computed(() =>
-  filteredBlogs.value
-    .map((post) => makeCard(post))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
 const allBlogsJsonPayload = computed(() => ({
   totalBlogs: blogsCollection.value.length,
   blogs: blogsCollection.value,
 }))
 
 const filteredBlogsDriftPayload = computed(() =>
-  cards.value.map((card) => {
-    const drift = blogsDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+  filteredBlogs.value.map((post) => {
+    const drift = blogsDriftById.value.get(post.id) ?? { missing: [], extra: [] }
     return {
-      id: card.id,
-      title: card.title,
+      id: post.id,
+      title: post.title,
       drift,
     }
   })
@@ -117,7 +109,7 @@ const blogsDriftCopyPayload = computed(() => ({
   modelPath: 'packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts',
   driftKind: blogsDriftKind.value,
   selectedField: blogsSelectedField.value || null,
-  totalBlogs: cards.value.length,
+  totalBlogs: filteredBlogs.value.length,
   blogs: filteredBlogsDriftPayload.value,
 }))
 

@@ -44,7 +44,7 @@
           />
         </template>
 
-        <ProductCollectionManager :cards="cards" />
+        <ProductCollectionManager :collection="filteredProducts" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -54,7 +54,6 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useProductCollection } from '../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
-import { useProductInterface } from '../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
 import { FirebaseProduct as ProductModelRuntime } from '../../models/objects/product.model'
 
 definePageMeta({
@@ -72,7 +71,6 @@ definePageMeta({
 const productModelRuntime = ProductModelRuntime
 
 const { products } = useProductCollection()
-const { card: makeCard } = useProductInterface()
 
 const productsCollection = computed(() => products.value ?? [])
 
@@ -88,23 +86,17 @@ const {
   runtimeModel: productModelRuntime,
 })
 
-const cards = computed(() =>
-  filteredProducts.value
-    .map((product) => makeCard(product))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
 const allProductsJsonPayload = computed(() => ({
   totalProducts: productsCollection.value.length,
   products: productsCollection.value,
 }))
 
 const filteredProductsDriftPayload = computed(() =>
-  cards.value.map((card) => {
-    const drift = productsDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+  filteredProducts.value.map((product) => {
+    const drift = productsDriftById.value.get(product.id) ?? { missing: [], extra: [] }
     return {
-      id: card.id,
-      name: card.name,
+      id: product.id,
+      name: product.name,
       drift,
     }
   })
@@ -114,7 +106,7 @@ const productsDriftCopyPayload = computed(() => ({
   modelPath: 'packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts',
   driftKind: productsDriftKind.value,
   selectedField: productsSelectedField.value || null,
-  totalProducts: cards.value.length,
+  totalProducts: filteredProducts.value.length,
   products: filteredProductsDriftPayload.value,
 }))
 

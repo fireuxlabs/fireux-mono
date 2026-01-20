@@ -10,6 +10,8 @@ export const CompanyPayload = {
   lng: 0,
   place_image: '',
   website: '',
+  search_term: '',
+  search_term_normalized: '',
 }
 
 export const CompanyStampOptions = {

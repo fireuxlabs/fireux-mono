@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <OrganismsProfilesProfessionalCTA />
-      <OrganismsProfilesProfessionalCollectionManager :cards="cards" />
+      <OrganismsProfilesProfessionalCollectionManager :collection="professionalsCollection" />
     </UPageBody>
   </UPage>
 </template>
@@ -15,8 +15,6 @@ import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
-import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
-import type { ProfessionalCore } from '../../models/profiles/Professional/Professional.model'
 
 definePageMeta({
   nav: {
@@ -43,16 +41,9 @@ const pageDescription =
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { globalProfessionals, localProfessionals } = useProfessionalCollection()
-const { card: makeCard } = useProfessional()
-
-const cards = computed(() => {
-  const globalCards = (globalProfessionals.value ?? [])
-    .map((entry) => makeCard(entry as ProfessionalCore, (entry as any)?.user ?? null))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-  const localCards = (localProfessionals?.value ?? [])
-    .map((entry) => makeCard(entry as ProfessionalCore, (entry as any)?.user ?? null))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-  return [...localCards, ...globalCards]
-})
+const professionalsCollection = computed(() => [
+  ...(localProfessionals?.value ?? []),
+  ...(globalProfessionals.value ?? []),
+])
 
 </script>

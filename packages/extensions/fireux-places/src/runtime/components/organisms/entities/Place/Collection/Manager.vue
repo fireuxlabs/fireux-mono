@@ -43,16 +43,36 @@
         </template>
       </div>
     </div>
+
+    <div v-if="showDebug" class="pt-3">
+      <DevJson
+        :title="'Places (JSON)'"
+        :data="debugPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
+import type { BasePlace } from '../../../../../models/objects/place.model';
+import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 
-const props = defineProps<{ cards: PlaceCard.Card[] }>()
+const props = defineProps<{ collection?: BasePlace[] }>()
 
-const cards = computed(() => props.cards ?? [])
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard } = usePlacesInterface()
+const cards = computed(() =>
+  collection.value
+    .map((place) => makeCard(place))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+)
+const showDebug = import.meta.dev
+const debugPayload = computed(() => ({
+  totalPlaces: collection.value.length,
+  places: collection.value,
+}))
 
 type Variant = 'pill' | 'cell'
 const variant = ref<Variant>('cell')
@@ -60,7 +80,4 @@ const toggleVariant = () => {
   variant.value = variant.value === 'pill' ? 'cell' : 'pill'
 }
 
-const wrapperFor = (card: PlaceCard.Card) => (card.to ? 'NuxtLink' : 'div')
-
-const wrapperPropsFor = (card: PlaceCard.Card) => (card.to ? { to: card.to } : {})
 </script>

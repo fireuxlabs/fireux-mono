@@ -1,9 +1,9 @@
 <template>
-  <PlaceCollectionManager :cards="cards" />
+  <PlaceCollectionManager :collection="collection" />
 </template>
 
 <script setup lang="ts">
-import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
+import type { BasePlace } from '../../../../../models/objects/place.model';
 
-defineProps<{ cards: PlaceCard.Card[] }>()
+defineProps<{ collection: BasePlace[] }>()
 </script>

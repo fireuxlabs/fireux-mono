@@ -26,23 +26,48 @@
     />
 
     <p v-else class="fx-section__empty">No professionals found.</p>
+
+    <div v-if="showDebug" class="pt-3">
+      <DevJson
+        :title="'Professionals (JSON)'"
+        :data="debugPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional';
+import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional';
+import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model';
 
-const props = defineProps<{ cards: ProfessionalCard.Card[]; total?: number }>()
+type ProfessionalEntry = ProfessionalCore & { user?: unknown }
 
+const props = defineProps<{ collection?: ProfessionalEntry[] }>()
+
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard } = useProfessional()
+const searchTextFor = (entry: ProfessionalEntry) => {
+  const displayName = (entry as any)?.user?.display_name ?? ''
+  const title = (entry as any)?.title ?? ''
+  const tagline = (entry as any)?.tagline ?? ''
+  return `${displayName} ${title} ${tagline} ${entry.id ?? ''}`
+    .trim()
+    .toLowerCase()
+}
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
-  useCollectionSearch<ProfessionalCard.Card, ProfessionalCard.Card>({
-    items: computed(() => props.cards ?? []),
-    searchText: (card) =>
-      `${card.displayName} ${card.tagline} ${card.id}`.trim().toLowerCase(),
-    makeCard: (card) => card,
+  useCollectionSearch<ProfessionalEntry, ReturnType<typeof makeCard>>({
+    items: collection,
+    searchText: (entry) => searchTextFor(entry),
+    makeCard: (entry) => makeCard(entry as ProfessionalCore, (entry as any)?.user ?? null),
   })
 
-const totalCount = computed(() => props.total ?? props.cards.length)
+const totalCount = computed(() => collection.value.length)
+const showDebug = import.meta.dev
+const debugPayload = computed(() => ({
+  totalProfessionals: collection.value.length,
+  professionals: collection.value,
+}))
 </script>

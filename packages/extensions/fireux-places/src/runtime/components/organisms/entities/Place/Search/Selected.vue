@@ -33,7 +33,7 @@
             color="primary"
             variant="soft"
           >
-            Already in database
+            {{ existingBadgeLabel }}
           </UBadge>
           <UBadge
             v-if="isExisting && !isClaimed"
@@ -52,6 +52,9 @@
             Claimed
           </UBadge>
         </div>
+        <p v-if="isExisting" class="mt-2 text-xs text-muted">
+          {{ existingNote }}
+        </p>
       </div>
     </div>
 
@@ -88,7 +91,7 @@
             name="i-lucide-check"
             class="mr-2 h-4 w-4"
           />
-          <span>{{ confirming ? 'Saving…' : 'Confirm' }}</span>
+          <span>{{ confirming ? 'Saving…' : confirmLabel }}</span>
         </UButton>
       </div>
     </template>
@@ -111,6 +114,8 @@ const props = defineProps<{
   confirming?: boolean
   disabled?: boolean
   claiming?: boolean
+  confirmLabel?: string
+  existingNote?: string
 }>()
 
 const isBusy = computed(
@@ -120,6 +125,34 @@ const isBusy = computed(
 const isExisting = computed(() => props.place.source !== 'google')
 const isClaimed = computed(() => !!props.place.claimed_by)
 const canClaim = computed(() => isExisting.value && !isClaimed.value && !isBusy.value)
+const selectedCollection = computed(
+  () => (props.place as any)?.collection as string | undefined
+)
+
+const existingBadgeLabel = computed(() => {
+  if (selectedCollection.value === 'companies') return 'Already in companies'
+  if (selectedCollection.value === 'places') return 'Already in places'
+  return 'Already in database'
+})
+
+const confirmLabel = computed(() => {
+  if (props.confirmLabel) return props.confirmLabel
+  if (!isExisting.value) return 'Confirm'
+  if (selectedCollection.value === 'companies') return 'Use existing company'
+  if (selectedCollection.value === 'places') return 'Create company'
+  return 'Use existing'
+})
+
+const existingNote = computed(() => {
+  if (props.existingNote) return props.existingNote
+  if (selectedCollection.value === 'companies') {
+    return 'A company record already exists. Confirm will reuse it — no duplicate will be created.'
+  }
+  if (selectedCollection.value === 'places') {
+    return 'No company record found yet. Confirm will create the company overlay.'
+  }
+  return 'Confirm will use the existing record — no duplicate will be created.'
+})
 
 const placeRef = computed(() => props.place)
 const { avatar } = usePlaceLogoState(placeRef)

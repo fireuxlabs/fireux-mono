@@ -26,23 +26,37 @@
     />
 
     <p v-else class="fx-section__empty">No agents found.</p>
+
+    <div v-if="showDebug" class="pt-3">
+      <DevJson
+        :title="'Agents (JSON)'"
+        :data="debugPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
+import { useAgentsInterface, type AgentDirectoryEntry } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentsInterface';
 
-const props = defineProps<{ cards: AgentCard.Card[]; total?: number }>()
+const props = defineProps<{ collection?: AgentDirectoryEntry[] }>()
 
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard, searchText } = useAgentsInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
-  useCollectionSearch<AgentCard.Card, AgentCard.Card>({
-    items: computed(() => props.cards ?? []),
-    searchText: (card) =>
-      `${card.displayName} ${card.tagline} ${card.id}`.trim().toLowerCase(),
-    makeCard: (card) => card,
+  useCollectionSearch<AgentDirectoryEntry, ReturnType<typeof makeCard>>({
+    items: collection,
+    searchText: (entry) => searchText(entry),
+    makeCard: (entry) => makeCard(entry),
   })
 
-const totalCount = computed(() => props.total ?? props.cards.length)
+const totalCount = computed(() => collection.value.length)
+const showDebug = import.meta.dev
+const debugPayload = computed(() => ({
+  totalAgents: collection.value.length,
+  agents: collection.value,
+}))
 </script>

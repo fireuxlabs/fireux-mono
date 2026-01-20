@@ -10,6 +10,8 @@
         :place="selected"
         :confirming="isConfirming"
         :claiming="isClaiming"
+        :confirm-label="confirmLabel"
+        :existing-note="existingNote"
         @clear="clearSelection"
         @confirm="onConfirm"
         @claim="onClaim"
@@ -47,10 +49,24 @@ import type { BasePlace, PlaceUpsertInput } from '../../../../../models/place.mo
 
 interface Props {
   type?: string | null
+  collection?: string
+  normalizedField?: string
+  localFallback?: boolean
+  extraCollections?: string[]
+  allowGoogle?: boolean
+  confirmLabel?: string
+  existingNote?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   type: null,
+  collection: 'places',
+  normalizedField: undefined,
+  localFallback: false,
+  extraCollections: () => [],
+  allowGoogle: undefined,
+  confirmLabel: undefined,
+  existingNote: undefined,
 })
 
 const emit = defineEmits<{
@@ -58,7 +74,17 @@ const emit = defineEmits<{
 }>()
 
 const { query, results, selected, isSearching, select, clear, debug } =
-  usePlacesSearch({ type: props.type })
+  usePlacesSearch({
+    type: props.type,
+    collection: props.collection,
+    normalizedField: props.normalizedField as any,
+    localFallback: props.localFallback,
+    extraCollections: props.extraCollections,
+    allowGoogle: props.allowGoogle,
+  })
+
+const confirmLabel = computed(() => props.confirmLabel)
+const existingNote = computed(() => props.existingNote)
 
 const showDebug = import.meta.dev
 

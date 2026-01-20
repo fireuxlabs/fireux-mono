@@ -26,23 +26,48 @@
     />
 
     <p v-else class="fx-section__empty">No suppliers found.</p>
+
+    <div v-if="showDebug" class="pt-3">
+      <DevJson
+        :title="'Suppliers (JSON)'"
+        :data="debugPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier';
+import { useSupplier } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier';
+import type { SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model';
 
-const props = defineProps<{ cards: SupplierCard.Card[]; total?: number }>()
+type SupplierEntry = SupplierCore & { user?: unknown }
 
+const props = defineProps<{ collection?: SupplierEntry[] }>()
+
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard } = useSupplier()
+const searchTextFor = (entry: SupplierEntry) => {
+  const displayName = (entry as any)?.user?.display_name ?? ''
+  const title = (entry as any)?.title ?? ''
+  const tagline = (entry as any)?.tagline ?? ''
+  return `${displayName} ${title} ${tagline} ${entry.id ?? ''}`
+    .trim()
+    .toLowerCase()
+}
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
-  useCollectionSearch<SupplierCard.Card, SupplierCard.Card>({
-    items: computed(() => props.cards ?? []),
-    searchText: (card) =>
-      `${card.displayName} ${card.tagline} ${card.id}`.trim().toLowerCase(),
-    makeCard: (card) => card,
+  useCollectionSearch<SupplierEntry, ReturnType<typeof makeCard>>({
+    items: collection,
+    searchText: (entry) => searchTextFor(entry),
+    makeCard: (entry) => makeCard(entry as SupplierCore, (entry as any)?.user ?? null),
   })
 
-const totalCount = computed(() => props.total ?? props.cards.length)
+const totalCount = computed(() => collection.value.length)
+const showDebug = import.meta.dev
+const debugPayload = computed(() => ({
+  totalSuppliers: collection.value.length,
+  suppliers: collection.value,
+}))
 </script>

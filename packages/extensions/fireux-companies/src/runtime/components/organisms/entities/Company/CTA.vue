@@ -1,7 +1,7 @@
 <template>
   <UPageCTA
-    title="Create a company"
-    description="Search a place, confirm it, then create a Company overlay bound to that Place."
+    title="Companies"
+    description="Select a place to view or update its company overlay."
     variant="naked"
   >
     <template #default>

@@ -4,7 +4,7 @@
 
     <UPageBody class="pagebody">
       <CompanyCTA />
-      <CompanyCollectionManager :cards="cards" />
+      <CompanyCollectionManager :collection="companyCollection" />
     </UPageBody>
   </UPage>
 </template>
@@ -12,9 +12,9 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { usePlaces } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/usePlaces'
 import { computed } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from '../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 
 definePageMeta({
   layout: 'default',
@@ -34,19 +34,40 @@ definePageMeta({
 })
 
 const pageTitle = 'Companies'
-const pageDescription =
-  'Create a company and browse all companies available to this runtime.'
+const pageDescription = 'Browse companies available to this runtime.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { companies } = useCompanyFetch()
-const { card: makeCard } = useCompanyInterface()
+const { collection: placesCollection } = usePlaces<Record<string, any>>()
 
-const cards = computed(() =>
-  (companies.value ?? [])
-    .map((company) => makeCard(company))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+const placesById = computed(() => {
+  const map = new Map<string, Record<string, any>>()
+  for (const place of placesCollection.value ?? []) {
+    if (place?.id) map.set(String(place.id), place)
+  }
+  return map
+})
+
+const mergedCompanies = computed(() =>
+  (companies.value ?? []).map((company) => {
+    const place = placesById.value.get(String(company.id))
+    if (!place) return company
+    return {
+      ...place,
+      ...company,
+      id: company.id,
+      name: company.name || place.name || '',
+      formatted_address: company.formatted_address || place.formatted_address || '',
+      lat: Number.isFinite(company.lat) ? company.lat : place.lat,
+      lng: Number.isFinite(company.lng) ? company.lng : place.lng,
+      place_image: company.place_image || place.place_image || '',
+      place_source: company.place_source || place.source || '',
+    }
+  })
 )
+
+const companyCollection = computed(() => mergedCompanies.value)
 
 </script>

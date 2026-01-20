@@ -35,17 +35,29 @@
     <p v-else class="fx-section__empty">
       {{ query ? 'No users match your search.' : 'No users found.' }}
     </p>
+
+    <div v-if="showDebug" class="pt-3">
+      <DevJson
+        :title="'Users (JSON)'"
+        :data="debugPayload"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
+import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
 import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch';
+import type { User } from '../../../../models/core/user.model';
 
-const props = defineProps<{ cards: UserCard.Card[]; total?: number }>()
+const props = defineProps<{ collection?: User[] }>()
 
 const scopeCopy = computed(() => 'Browse users available to this runtime.')
+
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard, searchText } = useUserInterface()
 
 const {
   query,
@@ -53,11 +65,16 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<UserCard.Card, UserCard.Card>({
-  items: computed(() => props.cards ?? []),
-  searchText: (card) => `${card.displayName} ${card.handle ?? ''} ${card.id ?? ''}`.toLowerCase(),
-  makeCard: (card) => card,
+} = useCollectionSearch<User, ReturnType<typeof makeCard>>({
+  items: collection,
+  searchText: (user) => searchText(user),
+  makeCard: (user) => makeCard(user),
 })
 
-const totalCount = computed(() => props.total ?? props.cards.length)
+const totalCount = computed(() => collection.value.length)
+const showDebug = import.meta.dev
+const debugPayload = computed(() => ({
+  totalUsers: collection.value.length,
+  users: collection.value,
+}))
 </script>

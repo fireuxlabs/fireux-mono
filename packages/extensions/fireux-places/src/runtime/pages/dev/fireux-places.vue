@@ -37,7 +37,7 @@
           />
         </template>
 
-        <PlaceCollectionManager :cards="placeCards" />
+        <PlaceCollectionManager :collection="filteredCollection" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -47,7 +47,6 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
-import { usePlacesInterface } from '../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { Place } from '../../models/objects/place.model'
 import { Place as PlaceModelRuntime } from '../../models/objects/place.model'
 
@@ -80,27 +79,18 @@ const {
   runtimeModel: placeModelRuntime,
 })
 
-const { card: makeCard } = usePlacesInterface()
-const placeCards = computed(() =>
-  filteredCollection.value
-    .map((place) => makeCard(place))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
-const totalPlaces = computed(() => placeCards.value.length)
-
 const allJsonPayload = computed(() => ({
   totalPlaces: places.value.length,
   places: places.value,
 }))
 
 const filteredDriftPayload = computed(() =>
-  placeCards.value.map((card) => {
-    const drift = driftById.value.get(card.id) ?? { missing: [], extra: [] }
+  filteredCollection.value.map((place) => {
+    const drift = driftById.value.get(place.id) ?? { missing: [], extra: [] }
     return {
-      id: card.id,
-      name: card.name,
-      formattedAddress: card.formattedAddress,
+      id: place.id,
+      name: place.name,
+      formattedAddress: place.formatted_address,
       drift,
     }
   })
@@ -110,7 +100,7 @@ const driftCopyPayload = computed(() => ({
   modelPath: 'packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts',
   driftKind: driftKind.value,
   selectedField: selectedField.value || null,
-  totalPlaces: totalPlaces.value,
+  totalPlaces: filteredCollection.value.length,
   places: filteredDriftPayload.value,
 }))
 

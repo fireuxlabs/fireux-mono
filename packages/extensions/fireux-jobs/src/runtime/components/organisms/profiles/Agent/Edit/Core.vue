@@ -82,12 +82,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
-import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentUpdate'
-import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
+import { computed } from 'vue'
+import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentUpdate'
+import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
 
 const props = defineProps<{ agent: AgentCore | null }>()
 

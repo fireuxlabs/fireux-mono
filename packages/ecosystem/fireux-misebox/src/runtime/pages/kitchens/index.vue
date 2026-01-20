@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <KitchenCTA />
-      <KitchenCollectionManager :cards="cards" />
+      <KitchenCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -14,9 +14,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useKitchens } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/useKitchens'
-import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
-import { computed } from 'vue'
 
 definePageMeta({
   nav: {
@@ -42,12 +40,4 @@ const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { collection } = useKitchens<Kitchen>()
-const { card: makeCard } = useKitchenInterface()
-
-const cards = computed(() =>
-  (collection.value ?? [])
-    .map((kitchen) => makeCard(kitchen as Kitchen))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
 </script>

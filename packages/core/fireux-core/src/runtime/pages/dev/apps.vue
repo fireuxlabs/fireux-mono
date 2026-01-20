@@ -55,10 +55,7 @@
           />
         </template>
 
-        <OrganismsAppCollectionManager
-          :cards="cards"
-          :total="total"
-        />
+        <OrganismsAppCollectionManager :collection="filteredApps" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -71,7 +68,6 @@ import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
-import { useAppInterface } from '../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { App as AppModelRuntime } from '../../models/core/app.model'
 
 definePageMeta({
@@ -91,9 +87,8 @@ definePageMeta({
 
 const appModelRuntime = AppModelRuntime
 
-const { apps, count } = useAppCollection()
+const { apps } = useAppCollection()
 const { app: activeApp } = useApp()
-const { card: makeCard } = useAppInterface()
 
 const { appId: configAppId, isTenant } = useFireUXConfig()
 const appCollection = computed(() =>
@@ -118,27 +113,17 @@ const {
   runtimeModel: appModelRuntime,
 })
 
-const cards = computed(() =>
-  filteredApps.value
-    .map((app) => makeCard(app))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-
-const total = computed(() =>
-  isTenant ? appCollection.value.length : count.value ?? cards.value.length
-)
-
 const allAppsJsonPayload = computed(() => ({
   totalApps: appCollection.value.length,
   apps: appCollection.value,
 }))
 
 const filteredAppsDriftPayload = computed(() =>
-  cards.value.map((card) => {
-    const drift = appsDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+  filteredApps.value.map((app) => {
+    const drift = appsDriftById.value.get(app.id) ?? { missing: [], extra: [] }
     return {
-      id: card.id,
-      displayName: card.displayName,
+      id: app.id,
+      displayName: app.app_name,
       drift,
     }
   })
@@ -148,7 +133,7 @@ const appsDriftCopyPayload = computed(() => ({
   modelPath: 'packages/core/fireux-core/src/runtime/models/core/app.model.ts',
   driftKind: appsDriftKind.value,
   selectedField: appsSelectedField.value || null,
-  totalApps: total.value,
+  totalApps: filteredApps.value.length,
   apps: filteredAppsDriftPayload.value,
 }))
 

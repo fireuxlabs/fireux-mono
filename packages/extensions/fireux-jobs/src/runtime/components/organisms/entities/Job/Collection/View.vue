@@ -1,17 +1,14 @@
 <template>
-  <JobCollectionManager :cards="cards" :total="total" />
+  <JobCollectionManager :collection="collection" />
 </template>
 
 <script setup lang="ts">
-import type { JobCard } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
+import type { Job } from '../../../../../models/objects/job.model';
 
 withDefaults(
   defineProps<{
-    cards: JobCard.Card[]
-    total?: number
+    collection: Job[]
   }>(),
-  {
-    total: undefined,
-  }
+  {}
 )
 </script>

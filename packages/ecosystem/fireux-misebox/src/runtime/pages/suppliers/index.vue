@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <OrganismsProfilesSupplierCTA />
-      <OrganismsProfilesSupplierCollectionManager :cards="cards" />
+      <OrganismsProfilesSupplierCollectionManager :collection="suppliersCollection" />
     </UPageBody>
   </UPage>
 </template>
@@ -15,8 +15,6 @@ import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 import { useSupplierCollection } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection'
-import { useSupplier } from '../../composables/fireux/firestore/profiles/Supplier/useSupplier'
-import type { SupplierCore } from '../../models/profiles/Supplier/Supplier.model'
 
 definePageMeta({
   nav: {
@@ -42,16 +40,9 @@ const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { globalSuppliers, localSuppliers } = useSupplierCollection()
-const { card: makeCard } = useSupplier()
-
-const cards = computed(() => {
-  const globalCards = (globalSuppliers.value ?? [])
-    .map((entry) => makeCard(entry as SupplierCore, (entry as any)?.user ?? null))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-  const localCards = (localSuppliers?.value ?? [])
-    .map((entry) => makeCard(entry as SupplierCore, (entry as any)?.user ?? null))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-  return [...localCards, ...globalCards]
-})
+const suppliersCollection = computed(() => [
+  ...(localSuppliers?.value ?? []),
+  ...(globalSuppliers.value ?? []),
+])
 
 </script>

@@ -1,17 +1,14 @@
 <template>
-  <BlogCollectionManager :cards="cards" :total="total" />
+  <BlogCollectionManager :collection="collection" />
 </template>
 
 <script setup lang="ts">
-import type { BlogCard } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface';
+import type { BlogPost } from '../../../../../models/objects/blogPost.model';
 
 withDefaults(
   defineProps<{
-    cards: BlogCard.Card[]
-    total?: number
+    collection: BlogPost[]
   }>(),
-  {
-    total: undefined,
-  }
+  {}
 )
 </script>
