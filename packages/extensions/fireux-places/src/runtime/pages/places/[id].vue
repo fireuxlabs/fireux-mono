@@ -115,7 +115,7 @@
             </UCard>
           </div>
 
-          <UCard>
+          <UCard v-if="showDebug">
             <template #header>
               <div class="text-sm font-semibold">Raw JSON</div>
             </template>
@@ -162,6 +162,7 @@ const rawDoc = docId ? await firestoreFetchDoc<Place>('places', docId) : null
 const place = computed<Place | null>(() => (rawDoc as any)?.value ?? rawDoc ?? null)
 
 const loading = computed(() => !rawDoc && !!docId)
+const showDebug = import.meta.dev
 
 const pageTitle = computed(() => place.value?.name || 'Place')
 const pageDescription = computed(

@@ -42,6 +42,17 @@
             <OrganismsEntitiesPlaceEdit :place="place" />
           </template>
         </LayoutsDashboardProfileEdit>
+
+        <UCard v-if="showDebug && place">
+          <template #header>
+            <div class="text-sm font-semibold">Raw JSON</div>
+          </template>
+
+          <details class="p-4">
+            <summary class="cursor-pointer text-sm text-dimmed">Show raw JSON</summary>
+            <pre class="mt-2 max-h-[420px] overflow-auto text-xs">{{ json }}</pre>
+          </details>
+        </UCard>
       </UPageBody>
     </UPage>
 
@@ -80,7 +91,31 @@ const docRef = placeId ? firestoreFetchDoc<Place>('places', placeId) : null
 
 const place = computed<Place | null>(() => docRef?.value ?? null)
 const loading = computed(() => Boolean(placeId) && docRef?.value === undefined)
+const showDebug = import.meta.dev
 
 const pageTitle = computed(() => place.value?.name || 'Edit place')
 const pageSubtitle = computed(() => (placeId ? `Place: ${placeId}` : 'Edit a place'))
+
+const json = computed(() => {
+  const v = place.value
+  if (!v) return ''
+  const seen = new WeakSet()
+  try {
+    return JSON.stringify(v, function (_, value) {
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) return '[Circular]'
+        seen.add(value)
+      }
+      return value
+    }, 2)
+  } catch (e) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { toRaw } = require('vue')
+      return JSON.stringify(toRaw(v), null, 2)
+    } catch (e2) {
+      return String(e)
+    }
+  }
+})
 </script>
