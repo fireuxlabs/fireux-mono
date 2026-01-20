@@ -23,6 +23,9 @@ export namespace PlaceCard {
 
     // Source metadata
     source?: PlaceSource
+
+    // Ownership
+    claimedBy?: string
   }
 }
 
@@ -43,6 +46,8 @@ export function usePlacesInterface() {
       imageUrl: place.place_image,
 
       source: place.source,
+
+      claimedBy: place.claimed_by || '',
     }
   }
 

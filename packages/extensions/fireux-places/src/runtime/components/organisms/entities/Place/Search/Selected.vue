@@ -26,11 +26,47 @@
         <p class="truncate text-sm text-dimmed">
           {{ place.formatted_address || '—' }}
         </p>
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <UBadge
+            v-if="isExisting"
+            size="xs"
+            color="primary"
+            variant="soft"
+          >
+            Already in database
+          </UBadge>
+          <UBadge
+            v-if="isExisting && !isClaimed"
+            size="xs"
+            color="amber"
+            variant="soft"
+          >
+            Unclaimed
+          </UBadge>
+          <UBadge
+            v-else-if="isExisting && isClaimed"
+            size="xs"
+            color="emerald"
+            variant="soft"
+          >
+            Claimed
+          </UBadge>
+        </div>
       </div>
     </div>
 
     <template #footer>
       <div class="flex items-center justify-end gap-2">
+        <UButton
+          v-if="canClaim"
+          size="sm"
+          color="amber"
+          variant="soft"
+          :disabled="isBusy"
+          @click="emit('claim', place)"
+        >
+          <UIcon name="i-lucide-flag" class="mr-1 h-4 w-4" /> Claim
+        </UButton>
         <UButton
           size="sm"
           color="neutral"
@@ -67,15 +103,23 @@ import type { BasePlace } from '../../../../../models/objects/place.model';
 const emit = defineEmits<{
   (e: 'clear'): void
   (e: 'confirm', place: BasePlace): void
+  (e: 'claim', place: BasePlace): void
 }>()
 
 const props = defineProps<{
   place: BasePlace
   confirming?: boolean
   disabled?: boolean
+  claiming?: boolean
 }>()
 
-const isBusy = computed(() => !!props.confirming || !!props.disabled)
+const isBusy = computed(
+  () => !!props.confirming || !!props.claiming || !!props.disabled
+)
+
+const isExisting = computed(() => props.place.source !== 'google')
+const isClaimed = computed(() => !!props.place.claimed_by)
+const canClaim = computed(() => isExisting.value && !isClaimed.value && !isBusy.value)
 
 const placeRef = computed(() => props.place)
 const { avatar } = usePlaceLogoState(placeRef)

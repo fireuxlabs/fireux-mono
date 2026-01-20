@@ -9,8 +9,10 @@
         v-if="selected"
         :place="selected"
         :confirming="isConfirming"
+        :claiming="isClaiming"
         @clear="clearSelection"
         @confirm="onConfirm"
+        @claim="onClaim"
       />
 
       <!-- Suggestions -->
@@ -39,6 +41,7 @@ import {
     fetchPlaceDetails,
 } from '../../../../../composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
+import { usePlaceClaim } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceClaim'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import type { BasePlace, PlaceUpsertInput } from '../../../../../models/place.model'
 
@@ -86,10 +89,12 @@ const debugPayload = computed(() => {
 })
 
 const { ensurePlaceExists } = usePlaceSave({ type: props.type })
+const { claimPlace } = usePlaceClaim({ type: props.type })
 // useImageStorage is auto-imported by fireux-core module
 const { uploadFromUrl } = useImageStorage()
 
 const isConfirming = ref(false)
+const isClaiming = ref(false)
 
 const showEmpty = computed(
   () =>
@@ -223,6 +228,29 @@ async function onConfirm(place: BasePlace) {
   } finally {
     isConfirming.value = false
     selected.value = null
+  }
+}
+
+async function onClaim(place: BasePlace) {
+  if (isClaiming.value) return
+  const placeId = canonicalPlaceId((place as any).id ?? (place as any).place_id)
+  if (!placeId) return
+
+  isClaiming.value = true
+  try {
+    const { claimedBy } = await claimPlace(placeId)
+    if (selected.value && selected.value.id === placeId) {
+      selected.value = {
+        ...selected.value,
+        claimed_by: claimedBy,
+      }
+    }
+  } catch (error) {
+    if (import.meta.dev) {
+      console.warn('[places][claim] failed', error)
+    }
+  } finally {
+    isClaiming.value = false
   }
 }
 </script>

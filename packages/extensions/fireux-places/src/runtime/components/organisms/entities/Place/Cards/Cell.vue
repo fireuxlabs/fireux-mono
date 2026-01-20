@@ -40,7 +40,7 @@ import type { PlaceCard } from '../../../../../composables/fireux/firestore/obje
 
 type Props = Pick<PlaceCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl'> & {
   formatted_address?: string
-  source?: 'google' | 'firebase'
+  source?: 'google' | 'fireux' | 'manual'
   prop?: string
   showSubtitle?: boolean
   showSource?: boolean
@@ -74,6 +74,12 @@ const resolvedImageUrl = computed(
 )
 
 const sourceLabel = computed(() =>
-  props.source === 'firebase' ? 'Firebase' : props.source === 'google' ? 'Google' : ''
+  props.source === 'fireux'
+    ? 'FireUX'
+    : props.source === 'manual'
+      ? 'Manual'
+      : props.source === 'google'
+        ? 'Google'
+        : ''
 )
 </script>

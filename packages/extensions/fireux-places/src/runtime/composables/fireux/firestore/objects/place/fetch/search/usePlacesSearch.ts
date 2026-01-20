@@ -114,9 +114,13 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       if (fx.length) {
         results.value = fx.map<PlaceCard.Card>((p: any) => {
           const id = canonicalPlaceId(p?.place_id ?? p?.id) ?? ''
-          const sourceRaw = typeof p?.source === 'string' ? p.source : 'firebase'
-          const normalizedSource = sourceRaw === 'firestore' ? 'firebase' : sourceRaw
-          const safeSource = normalizedSource === 'google' ? 'google' : 'firebase'
+          const sourceRaw = typeof p?.source === 'string' ? p.source : 'fireux'
+          const safeSource =
+            sourceRaw === 'google'
+              ? 'google'
+              : sourceRaw === 'manual'
+                ? 'manual'
+                : 'fireux'
 
           const placeImageRaw = p?.place_image ?? p?.image_url
           const place_image = typeof placeImageRaw === 'string' ? placeImageRaw : ''
@@ -138,6 +142,8 @@ export function usePlacesSearch(options?: { type?: string | null }) {
 
             imageUrl: place_image,
             source: safeSource as any,
+
+            claimedBy: typeof p?.claimed_by === 'string' ? p.claimed_by : '',
           }
         })
 
@@ -293,6 +299,7 @@ export function usePlacesSearch(options?: { type?: string | null }) {
       lng: 0,
       source: cell.source,
       place_image: cell.imageUrl || cached || '',
+      claimed_by: cell.claimedBy || '',
     } as any
 
     // enrich from details (lat/lng, but keep place_image if we already have one)
