@@ -36,70 +36,84 @@
         </div>
 
         <div v-else class="space-y-4">
-          <PlaceCardsPreview
-            :image-url="place.place_image ?? ''"
-            :name="place.name ?? ''"
-            :formatted-address="place.formatted_address ?? ''"
-            :source="place.source ?? 'firebase'"
-            :show-body="false"
-          />
-
           <UCard>
-            <template #header>
-              <div class="text-sm font-semibold">Details</div>
-            </template>
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+              <PlaceCardsPreview
+                :image-url="place.place_image ?? ''"
+                :name="place.name ?? ''"
+                :formatted-address="place.formatted_address ?? ''"
+                :source="place.source ?? 'fireux'"
+                :show-body="false"
+              />
 
-            <div class="grid gap-2 sm:grid-cols-2 p-4 text-sm">
-              <div class="text-dimmed">Address</div>
-              <div class="break-words">{{ place.formatted_address || '—' }}</div>
-
-              <div class="text-dimmed">Location</div>
-              <div>
-                <a
-                  v-if="place.lat && place.lng"
-                  :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.lat},${place.lng}`)}`"
-                  target="_blank"
-                  rel="noreferrer"
-                  class="text-primary hover:underline inline-flex items-center"
-                  aria-label="Open in Google Maps"
+              <div class="flex flex-1 flex-wrap items-center gap-2">
+                <UBadge
+                  v-if="isExisting"
+                  size="xs"
+                  color="primary"
+                  variant="soft"
                 >
-                  <i class="i-lucide-map-pin" />
-                </a>
-                <span v-else>—</span>
+                  Already in database
+                </UBadge>
+                <UBadge
+                  v-if="isExisting && !isClaimed"
+                  size="xs"
+                  color="amber"
+                  variant="soft"
+                >
+                  Unclaimed
+                </UBadge>
+                <UBadge
+                  v-else-if="isExisting && isClaimed"
+                  size="xs"
+                  color="emerald"
+                  variant="soft"
+                >
+                  Claimed
+                </UBadge>
+                <UBadge size="xs" color="neutral" variant="soft">
+                  {{ sourceLabel }}
+                </UBadge>
               </div>
-
-              <div class="text-dimmed">Source</div>
-              <div class="capitalize">{{ place.source || '—' }}</div>
-
-              <div class="text-dimmed">Search Term</div>
-              <div class="break-words">{{ place.search_term || '—' }}</div>
-
-              <div class="text-dimmed">ID</div>
-              <div class="break-words">{{ place.id }}</div>
             </div>
           </UCard>
 
-          <UCard>
-            <template #header>
-              <div class="text-sm font-semibold">Actions</div>
-            </template>
+          <div class="grid gap-4 lg:grid-cols-3">
+            <UCard class="lg:col-span-3">
+              <template #header>
+                <div class="text-sm font-semibold">Details</div>
+              </template>
 
-            <div class="p-4 flex flex-wrap items-center gap-2">
-              <a
-                v-if="place.lat && place.lng"
-                :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.lat},${place.lng}`)}`"
-                target="_blank"
-                rel="noreferrer"
-                class="text-primary hover:underline"
-              >
-                Open in Google Maps
-              </a>
+              <div class="grid gap-3 p-4 text-sm sm:grid-cols-2">
+                <div class="text-dimmed">Address</div>
+                <div class="break-words">{{ place.formatted_address || '—' }}</div>
 
-              <NuxtLink v-if="docId" :to="editTo" class="text-primary hover:underline">
-                Edit place
-              </NuxtLink>
-            </div>
-          </UCard>
+                <div class="text-dimmed">Map</div>
+                <div class="break-words">
+                  <a
+                    v-if="mapUrl"
+                    :href="mapUrl"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="text-primary hover:underline inline-flex items-center gap-2"
+                  >
+                    <i class="i-lucide-map-pin" />
+                    Open in Google Maps
+                  </a>
+                  <span v-else>—</span>
+                </div>
+
+                <div class="text-dimmed">Claimed by</div>
+                <div class="break-words">{{ place.claimed_by || '—' }}</div>
+
+                <div class="text-dimmed">Search Term</div>
+                <div class="break-words">{{ place.search_term || '—' }}</div>
+
+                <div class="text-dimmed">Place ID</div>
+                <div class="break-words">{{ place.id }}</div>
+              </div>
+            </UCard>
+          </div>
 
           <UCard>
             <template #header>
@@ -153,6 +167,24 @@ const pageTitle = computed(() => place.value?.name || 'Place')
 const pageDescription = computed(
   () => place.value?.formatted_address || 'Saved place details.'
 )
+
+const isExisting = computed(() => place.value?.source !== 'google')
+const isClaimed = computed(() => !!place.value?.claimed_by)
+
+const sourceLabel = computed(() => {
+  const source = place.value?.source
+  if (source === 'fireux') return 'FireUX'
+  if (source === 'manual') return 'Manual'
+  if (source === 'google') return 'Google'
+  return '—'
+})
+
+const mapUrl = computed(() => {
+  const lat = place.value?.lat
+  const lng = place.value?.lng
+  if (!lat || !lng) return ''
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lat},${lng}`)}`
+})
 
 const editTo = computed(() =>
   docId ? `/places/edit/${encodeURIComponent(docId)}` : '/places'

@@ -17,12 +17,12 @@
       <UCard class="space-y-4">
         <template #header>
           <div class="flex items-center justify-between gap-3">
-            <h2 class="text-base font-semibold">AvatarPicker</h2>
+            <h2 class="text-base font-semibold">ImagePicker</h2>
             <span class="text-xs text-gray-500 font-mono">test/avatarpicker</span>
           </div>
         </template>
 
-        <MoleculesFormsFirestoreAvatarPicker
+        <MoleculesFormsFirestoreImagePicker
           :src="avatarPreview"
           alt="Avatar"
           initials="FX"

@@ -26,7 +26,7 @@
 
         <UCard>
           <div class="flex flex-col items-center gap-2">
-            <MoleculesFormsFirestoreAvatarPicker
+            <MoleculesFormsFirestoreImagePicker
               :src="user.avatar"
               :alt="user.display_name || user.handle || 'User'"
               :initials="avatarInitials"
@@ -95,11 +95,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { User } from '../../../../models/core/user.model'
-import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
-import { useUserFormattingAndValidation } from '../../../../composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
 import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
+import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
+import { useUserFormattingAndValidation } from '../../../../composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
+import type { User } from '../../../../models/core/user.model'
 
 const props = defineProps<{ user: User | null }>()
 

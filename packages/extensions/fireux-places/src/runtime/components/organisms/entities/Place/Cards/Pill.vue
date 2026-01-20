@@ -1,10 +1,11 @@
 <template>
   <div class="fx-card fx-card--pill cursor-pointer">
     <UAvatar
-      :src="avatarUrl || undefined"
+      :src="resolvedAvatarUrl || undefined"
       :alt="title"
       class="bg-white dark:bg-white"
       size="xs"
+      icon="i-lucide-image"
     />
 
     <div class="min-w-0 flex-1">
@@ -29,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
 defineOptions({ inheritAttrs: false })
@@ -38,8 +40,10 @@ type PillProps = Pick<PlaceCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' 
   showBadges?: boolean
 }
 
-withDefaults(defineProps<PillProps>(), {
+const props = withDefaults(defineProps<PillProps>(), {
   showSubtitle: true,
   showBadges: true,
 })
+
+const resolvedAvatarUrl = computed(() => props.avatarUrl || '')
 </script>

@@ -6,7 +6,7 @@
         :alt="name"
         class="bg-white dark:bg-white"
         size="sm"
-        icon="i-lucide-map-pin"
+        icon="i-lucide-image"
       />
 
       <div class="fx-cell__content fx-cell__stack">

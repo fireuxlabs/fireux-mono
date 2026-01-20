@@ -1,10 +1,10 @@
-<!-- packages/core/fireux-core/src/runtime/components/molecules/forms/firestore/AvatarPicker.vue -->
+<!-- packages/core/fireux-core/src/runtime/components/molecules/forms/firestore/ImagePicker.vue -->
 <template>
   <div class="avatar-container">
     <UAvatar
       :src="src || ''"
-      :alt="alt || 'Avatar'"
-      :text="initials || 'U'"
+      :alt="alt || 'Image'"
+      :text="initials || 'I'"
       class="avatar"
     />
     <label class="upload-label">

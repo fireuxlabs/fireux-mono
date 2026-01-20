@@ -2,11 +2,11 @@
   <UCard class="fx-preview">
     <div class="fx-preview__row">
       <UAvatar
-        :src="imageUrl || undefined"
+        :src="resolvedImageUrl || undefined"
         :alt="name"
         class="bg-white dark:bg-white"
         size="sm"
-        icon="i-lucide-map-pin"
+        icon="i-lucide-image"
       />
 
       <div class="fx-preview__main">
@@ -40,7 +40,7 @@ type Props = {
   imageUrl: string
   name: string
   formattedAddress: string
-  source: 'google' | 'firebase'
+  source: 'google' | 'fireux' | 'manual'
   prop?: string
   showBadges?: boolean
   showBody?: boolean
@@ -51,7 +51,15 @@ const props = withDefaults(defineProps<Props>(), {
   showBody: true,
 })
 
+const resolvedImageUrl = computed(() => props.imageUrl || '')
+
 const sourceLabel = computed(() =>
-  props.source === 'firebase' ? 'Firebase' : props.source === 'google' ? 'Google' : ''
+  props.source === 'fireux'
+    ? 'FireUX'
+    : props.source === 'manual'
+      ? 'Manual'
+      : props.source === 'google'
+        ? 'Google'
+        : ''
 )
 </script>

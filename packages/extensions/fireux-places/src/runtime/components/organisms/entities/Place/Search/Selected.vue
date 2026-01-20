@@ -7,7 +7,7 @@
           :alt="place.name"
           class="bg-white dark:bg-white"
           size="lg"
-          icon="i-lucide-map-pin"
+          icon="i-lucide-image"
         />
         <div
           v-if="confirming"
