@@ -1,7 +1,12 @@
 <template>
   <div class="fx-cell">
     <div class="fx-cell__media">
-      <UAvatar :src="avatarUrl || undefined" :alt="name" size="sm" />
+      <UAvatar
+        :src="avatarUrl || undefined"
+        :alt="name"
+        size="sm"
+        :style="avatarUrl ? { backgroundColor: '#ffffff' } : undefined"
+      />
 
       <div class="fx-cell__content fx-cell__stack">
         <div class="fx-cell__header">
@@ -25,9 +30,8 @@
           </div>
         </div>
 
-        <div v-if="showTagline" class="fx-cell__tagline">
-          <span v-if="prop">{{ prop }}</span>
-          <span v-else class="italic">missing</span>
+        <div v-if="showTagline && prop" class="fx-cell__tagline">
+          <span>{{ prop }}</span>
         </div>
       </div>
     </div>

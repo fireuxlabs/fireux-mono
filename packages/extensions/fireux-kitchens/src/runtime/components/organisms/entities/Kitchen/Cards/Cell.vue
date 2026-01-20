@@ -1,7 +1,12 @@
 <template>
   <div class="fx-cell">
     <div class="fx-cell__media">
-      <UAvatar :src="avatarUrl || undefined" :alt="name" size="sm" />
+      <UAvatar
+        :src="avatarUrl || undefined"
+        :alt="name"
+        size="sm"
+        :class="avatarUrl ? 'bg-white dark:bg-white' : ''"
+      />
 
       <div class="fx-cell__content fx-cell__stack">
         <div class="fx-cell__header">

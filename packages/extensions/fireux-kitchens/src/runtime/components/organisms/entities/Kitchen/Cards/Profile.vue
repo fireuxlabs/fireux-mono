@@ -1,7 +1,12 @@
 <template>
   <UCard>
     <div class="flex items-start gap-3">
-      <UAvatar :src="avatar || undefined" :alt="title" size="sm" />
+      <UAvatar
+        :src="avatar || undefined"
+        :alt="title"
+        size="sm"
+        :class="avatar ? 'bg-white dark:bg-white' : ''"
+      />
       <div class="min-w-0 flex-1">
         <div class="truncate font-medium">{{ title }}</div>
         <div v-if="subtitle" class="truncate text-sm text-dimmed">
@@ -14,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
+import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
 
 const { card, avatar: avatarProp, prop } = defineProps<{
   card: KitchenCard.Pill

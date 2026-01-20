@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useToast } from '#imports'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
 import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentUpdate'
 import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
@@ -107,7 +107,7 @@ const { DisplayName } = useUserFormattingAndValidation()
 
 const { currentUser } = useUser()
 
-const toast = useToast()
+const toast = useToastify()
 
 const agencyName = computed(() => agent.value?.title ?? '')
 
@@ -137,14 +137,14 @@ const handleContactEmailFromProfile = async (enabled: boolean) => {
   if (!agent.value) return
   try {
     await setContactEmailFromProfile(enabled)
-    toast?.add({
+    toast.add({
       title: enabled ? 'Contact email set to profile' : 'Contact email set to custom',
       icon: 'i-heroicons-check-circle',
     })
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
+    toast.add({
       title: 'Failed to update contact email mode',
       description,
       color: 'amber',
@@ -158,14 +158,14 @@ const handleContactPhoneFromProfile = async (enabled: boolean) => {
   if (!agent.value) return
   try {
     await setContactPhoneFromProfile(enabled)
-    toast?.add({
+    toast.add({
       title: enabled ? 'Contact phone set to profile' : 'Contact phone set to custom',
       icon: 'i-heroicons-check-circle',
     })
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
+    toast.add({
       title: 'Failed to update contact phone mode',
       description,
       color: 'amber',
@@ -179,7 +179,7 @@ const handleAgencyName = async (value: string) => {
   if (!agent.value) return 'success'
   try {
     await updateAgencyName(value)
-    toast?.add({
+    toast.add({
       title: 'Agency name updated',
       icon: 'i-heroicons-check-circle',
     })
@@ -187,7 +187,7 @@ const handleAgencyName = async (value: string) => {
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
+    toast.add({
       title: 'Failed to update agency name',
       description,
       color: 'amber',
@@ -201,7 +201,7 @@ const handleTagline = async (value: string) => {
   if (!agent.value) return 'success'
   try {
     await updateTagline(value)
-    toast?.add({
+    toast.add({
       title: 'Tagline updated',
       icon: 'i-heroicons-check-circle',
     })
@@ -209,7 +209,7 @@ const handleTagline = async (value: string) => {
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
+    toast.add({
       title: 'Failed to update tagline',
       description,
       color: 'amber',
@@ -223,7 +223,7 @@ const handleBioShort = async (value: string) => {
   if (!agent.value) return 'success'
   try {
     await updateBioShort(value)
-    toast?.add({
+    toast.add({
       title: 'Short bio updated',
       icon: 'i-heroicons-check-circle',
     })
@@ -231,7 +231,7 @@ const handleBioShort = async (value: string) => {
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
+    toast.add({
       title: 'Failed to update short bio',
       description,
       color: 'amber',
@@ -245,7 +245,7 @@ const handleContactEmail = async (value: string) => {
   if (!agent.value) return 'success'
   try {
     await updateContactEmail(value)
-    toast?.add({
+    toast.add({
       title: 'Contact email updated',
       icon: 'i-heroicons-check-circle',
     })
@@ -253,7 +253,7 @@ const handleContactEmail = async (value: string) => {
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
+    toast.add({
       title: 'Failed to update contact email',
       description,
       color: 'amber',
@@ -267,7 +267,7 @@ const handleContactPhone = async (value: string) => {
   if (!agent.value) return 'success'
   try {
     await updateContactPhone(value)
-    toast?.add({
+    toast.add({
       title: 'Contact phone updated',
       icon: 'i-heroicons-check-circle',
     })
@@ -275,7 +275,7 @@ const handleContactPhone = async (value: string) => {
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
+    toast.add({
       title: 'Failed to update contact phone',
       description,
       color: 'amber',
@@ -289,7 +289,7 @@ const handleWebsiteUrl = async (value: string) => {
   if (!agent.value) return 'success'
   try {
     await updateWebsiteUrl(value)
-    toast?.add({
+    toast.add({
       title: 'Website updated',
       icon: 'i-heroicons-check-circle',
     })
@@ -297,7 +297,7 @@ const handleWebsiteUrl = async (value: string) => {
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
+    toast.add({
       title: 'Failed to update website',
       description,
       color: 'amber',
@@ -311,7 +311,7 @@ const handleBadges = async (value: string) => {
   if (!agent.value) return 'success'
   try {
     await updateBadges(value)
-    toast?.add({
+    toast.add({
       title: 'Badges updated',
       icon: 'i-heroicons-check-circle',
     })
@@ -319,7 +319,7 @@ const handleBadges = async (value: string) => {
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
+    toast.add({
       title: 'Failed to update badges',
       description,
       color: 'amber',

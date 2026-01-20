@@ -37,10 +37,7 @@
           />
         </template>
 
-        <PlaceCollectionManager
-          :cards="placeCards"
-          :total="totalPlaces"
-        />
+        <PlaceCollectionManager :cards="placeCards" />
       </UCard>
     </UPageBody>
   </UPage>

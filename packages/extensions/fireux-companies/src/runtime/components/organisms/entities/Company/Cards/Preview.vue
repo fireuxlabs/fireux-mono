@@ -24,10 +24,9 @@
           {{ website }}
         </div>
 
-        <div v-if="showBody" class="fx-preview__body">
+        <div v-if="showBody && prop" class="fx-preview__body">
           <div class="fx-preview__line">
-            <span v-if="prop">{{ prop }}</span>
-            <span v-else class="italic">missing</span>
+            <span>{{ prop }}</span>
           </div>
         </div>
       </div>

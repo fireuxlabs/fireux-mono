@@ -1,7 +1,12 @@
 <template>
   <UCard class="fx-preview">
     <div class="fx-preview__row">
-      <UAvatar :src="avatarUrl || undefined" :alt="name" size="sm" />
+      <UAvatar
+        :src="avatarUrl || undefined"
+        :alt="name"
+        size="sm"
+        :class="avatarUrl ? 'bg-white dark:bg-white' : ''"
+      />
 
       <div class="fx-preview__main">
         <div class="fx-preview__top">

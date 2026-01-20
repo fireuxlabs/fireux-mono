@@ -12,11 +12,6 @@
 
       <PlaceSearchSection @confirmed="onPlaceConfirmed" />
 
-      <div class="space-y-2">
-        <div class="text-sm font-medium">Optional</div>
-        <UInput v-model="website" placeholder="Website (optional)" />
-      </div>
-
       <div v-if="successId" class="text-sm text-green-600">
         Company created: {{ successId }}
       </div>
@@ -48,7 +43,6 @@ import { useCompanyCreate } from '../../../../../composables/fireux/firestore/ob
 const { createCompany } = useCompanyCreate()
 const db = useFirestore()
 
-const website = ref('')
 const error = ref<string | null>(null)
 const successId = ref<string | null>(null)
 const existingId = ref<string | null>(null)
@@ -76,7 +70,7 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
       lat: place.lat ?? 0,
       lng: place.lng ?? 0,
       place_image: place.place_image ?? '',
-      website: website.value.trim(),
+      website: '',
     })
 
     successId.value = createdId

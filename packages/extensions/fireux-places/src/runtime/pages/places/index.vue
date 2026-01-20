@@ -4,6 +4,13 @@
     <UPageBody class="pagebody">
       <PlaceCTA :type="placeType" @confirmed="onPlaceCreated" />
       <PlaceCollectionManager :cards="placeCards" />
+      <UCard v-if="showDebug">
+        <DevJson
+          :title="'Places (JSON)'"
+          :data="placesDebugPayload"
+          :default-open="false"
+        />
+      </UCard>
     </UPageBody>
   </UPage>
 </template>
@@ -62,6 +69,12 @@ const placeCards = computed(() =>
     .map((place) => makeCard(place as any))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 )
+
+const showDebug = import.meta.dev
+const placesDebugPayload = computed(() => ({
+  totalPlaces: collection.value?.length ?? 0,
+  places: collection.value ?? [],
+}))
 
 async function onPlaceCreated() {
   // Nudge the route so the list refreshes immediately in dev.

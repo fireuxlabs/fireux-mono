@@ -45,6 +45,29 @@
 							:initials="avatarInitials"
 							:update-function="canEditImage ? handleAvatarUpload : undefined"
 						/>
+						<div class="w-full">
+							<p class="text-xs text-gray-500">Preview pill</p>
+							<div class="mt-2">
+								<PlaceCardsPill
+									:avatar-url="place.place_image || ''"
+									:title="place.name || 'Place'"
+									:subtitle="place.formatted_address || ''"
+									:badges="[]"
+									:show-badges="false"
+								/>
+							</div>
+						</div>
+						<UButton
+							v-if="canNormalizeImage"
+							size="xs"
+							variant="soft"
+							color="neutral"
+							:loading="isNormalizingImage"
+							:disabled="isNormalizingImage"
+							@click="onNormalizeImage"
+						>
+							Normalize background
+						</UButton>
 						<p v-if="avatarUploading" class="text-xs text-gray-500">
 							Uploading image…
 						</p>
@@ -145,6 +168,9 @@ const isClaimedByUser = computed(() => {
 const canEditImage = computed(
 	() => !hasImage.value || isAdmin.value || isClaimedByUser.value
 )
+const canNormalizeImage = computed(
+	() => hasImage.value && canEditImage.value
+)
 
 const avatarInitials = computed(() => {
 	const name = place.value?.name || 'P'
@@ -159,6 +185,7 @@ const avatarInitials = computed(() => {
 })
 
 const avatarUploading = ref(false)
+const isNormalizingImage = ref(false)
 const isClaiming = ref(false)
 const { uploadImage } = useImageStorage()
 const { updateDocument } = useFirestoreUpdate()
@@ -187,6 +214,69 @@ async function handleAvatarUpload(file: File) {
 		throw error
 	} finally {
 		avatarUploading.value = false
+	}
+}
+
+function loadImageFromBlob(blob: Blob): Promise<HTMLImageElement> {
+	return new Promise((resolve, reject) => {
+		const url = URL.createObjectURL(blob)
+		const img = new Image()
+		img.onload = () => {
+			URL.revokeObjectURL(url)
+			resolve(img)
+		}
+		img.onerror = () => {
+			URL.revokeObjectURL(url)
+			reject(new Error('Unable to load image'))
+		}
+		img.src = url
+	})
+}
+
+async function onNormalizeImage() {
+	if (!placeId.value || !place.value?.place_image || isNormalizingImage.value) return
+	isNormalizingImage.value = true
+	try {
+		const originalUrl = place.value.place_image
+		const fetchUrl = originalUrl.startsWith('/')
+			? originalUrl
+			: `/api/proxy/image?url=${encodeURIComponent(originalUrl)}`
+		const response = await fetch(fetchUrl, { cache: 'no-store' })
+		if (!response.ok) {
+			throw new Error(`Unable to download image (${response.status})`)
+		}
+		const blob = await response.blob()
+		const img = await loadImageFromBlob(blob)
+		const width = img.naturalWidth || img.width
+		const height = img.naturalHeight || img.height
+		const canvas = document.createElement('canvas')
+		canvas.width = width
+		canvas.height = height
+		const ctx = canvas.getContext('2d')
+		if (!ctx) {
+			throw new Error('Unable to process image')
+		}
+		ctx.fillStyle = '#ffffff'
+		ctx.fillRect(0, 0, width, height)
+		ctx.drawImage(img, 0, 0, width, height)
+		const normalizedBlob = await new Promise<Blob>((resolve, reject) => {
+			canvas.toBlob((result) => {
+				if (result) resolve(result)
+				else reject(new Error('Unable to export image'))
+			}, 'image/png')
+		})
+		const file = new File([normalizedBlob], 'avatar.png', { type: 'image/png' })
+		const url = await uploadImage(`places/${placeId.value}/avatar`, file)
+		await updateDocument<Place>('places', placeId.value, {
+			place_image: url,
+		})
+		toast.success('Image normalized')
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : 'Please try again.'
+		toast.error(`Failed to normalize image: ${msg}`)
+		throw error
+	} finally {
+		isNormalizingImage.value = false
 	}
 }
 

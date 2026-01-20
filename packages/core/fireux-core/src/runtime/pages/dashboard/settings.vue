@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { definePageMeta, useState, useToast } from '#imports'
+import { definePageMeta, useState } from '#imports'
 import { useColorMode } from '../../composables/fireux/app/useColorMode'
+import { useToastify } from '../../composables/fireux/app/ui/useToastify'
 
 definePageMeta({
   layout: 'dashboard',
@@ -15,7 +16,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const toast = useToast()
+const toast = useToastify()
 const colorMode = useColorMode()
 
 // Preferences (client-only persistence later)
@@ -40,12 +41,7 @@ const themeOptions = [
 const savePreferences = async () => {
   colorMode.value = preferences.value.theme
 
-  toast.add({
-    title: 'Saved',
-    description: 'Preferences updated.',
-    icon: 'i-lucide-check',
-    color: 'success',
-  })
+  toast.success('Preferences updated.')
 }
 </script>
 

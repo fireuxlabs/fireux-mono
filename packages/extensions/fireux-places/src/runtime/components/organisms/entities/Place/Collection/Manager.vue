@@ -8,7 +8,7 @@
           <UButton size="xs" variant="ghost" @click="toggleVariant">
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
           </UButton>
-          <UBadge variant="soft">{{ total }}</UBadge>
+          <UBadge variant="soft">{{ cards.length }}</UBadge>
         </div>
       </div>
     </template>
@@ -50,10 +50,9 @@
 import { computed, ref } from 'vue';
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 
-const props = defineProps<{ cards: PlaceCard.Card[]; total?: number }>()
+const props = defineProps<{ cards: PlaceCard.Card[] }>()
 
 const cards = computed(() => props.cards ?? [])
-const total = computed(() => props.total ?? cards.value.length)
 
 type Variant = 'pill' | 'cell'
 const variant = ref<Variant>('cell')

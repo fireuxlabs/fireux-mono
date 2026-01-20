@@ -3,7 +3,7 @@
     <UAvatar
       :src="resolvedAvatarUrl || undefined"
       :alt="title"
-      class="bg-white dark:bg-white"
+      :style="resolvedAvatarUrl ? { backgroundColor: '#ffffff' } : undefined"
       size="xs"
       icon="i-lucide-image"
     />

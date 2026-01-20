@@ -4,7 +4,7 @@
       <UAvatar
         :src="resolvedImageUrl || undefined"
         :alt="name"
-        class="bg-white dark:bg-white"
+        :style="resolvedImageUrl ? { backgroundColor: '#ffffff' } : undefined"
         size="sm"
         icon="i-lucide-image"
       />

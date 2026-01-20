@@ -1,17 +1,9 @@
 <template>
-  <PlaceCollectionManager :cards="cards" :total="total" />
+  <PlaceCollectionManager :cards="cards" />
 </template>
 
 <script setup lang="ts">
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 
-withDefaults(
-  defineProps<{
-    cards: PlaceCard.Card[]
-    total?: number
-  }>(),
-  {
-    total: undefined,
-  }
-)
+defineProps<{ cards: PlaceCard.Card[] }>()
 </script>

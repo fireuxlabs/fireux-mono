@@ -1,18 +1,18 @@
-import { useCollection, useDocument, useFirestore } from 'vuefire'
 import {
-  collection,
-  doc,
-  query as fsq,
-  orderBy,
-  startAt,
-  endAt,
-  limit as fslimit,
-  getDocs,
-  type Query,
-  type QueryDocumentSnapshot,
-  type DocumentSnapshot,
+    collection,
+    doc,
+    endAt,
+    limit as fslimit,
+    query as fsq,
+    getDocs,
+    orderBy,
+    startAt,
+    type DocumentSnapshot,
+    type Query,
+    type QueryDocumentSnapshot,
 } from 'firebase/firestore'
 import type { Ref } from 'vue'
+import { useCollection, useDocument, useFirestore } from 'vuefire'
 
 /**
  * Unified Firestore read composable for FireUX.
@@ -27,7 +27,12 @@ export function useFirestoreRead() {
     idField = 'id'
   ): T | undefined => {
     if (!record || typeof record !== 'object') return record
-    if (idField in record) return record
+    const current = record[idField]
+    const hasId =
+      current !== undefined &&
+      current !== null &&
+      (typeof current !== 'string' || current.trim().length > 0)
+    if (hasId) return record
     return { ...record, [idField]: docId }
   }
 

@@ -20,6 +20,7 @@ type Toastify = {
   success: ToastCaller
   error: ToastCaller
   warn: ToastCaller
+  add: (options: { title?: string; description?: string; color?: string }) => void
   withToast: <T extends unknown[]>(
     fn: (...args: T) => Promise<unknown>,
     messages: { ok: string; fail: string }
@@ -36,6 +37,72 @@ function resolveToast(): ToastApi | null {
   }
 
   return null
+}
+
+async function copyToClipboard(message: string) {
+  if (!message) return
+  if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(message)
+    return
+  }
+
+  if (typeof document !== 'undefined') {
+    const textarea = document.createElement('textarea')
+    textarea.value = message
+    textarea.style.position = 'fixed'
+    textarea.style.opacity = '0'
+    document.body.appendChild(textarea)
+    textarea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textarea)
+  }
+}
+
+function buildToastOptions(type: 'success' | 'error' | 'warn', message: string) {
+  let color = 'warning'
+  let title = 'Notice'
+  if (type === 'success') {
+    color = 'success'
+    title = 'Success'
+  } else if (type === 'error') {
+    color = 'error'
+    title = 'Error'
+  }
+
+  return {
+    title,
+    description: message,
+    color,
+    timeout: TOAST_TIMEOUT,
+    actions: [
+      {
+        label: 'Copy',
+        click: () => copyToClipboard(message),
+      },
+    ],
+  }
+}
+
+function buildCustomToastOptions(options: {
+  title?: string
+  description?: string
+  color?: string
+}) {
+  const message = options.description || options.title || ''
+  return {
+    title: options.title,
+    description: options.description,
+    color: options.color,
+    timeout: TOAST_TIMEOUT,
+    actions: message
+      ? [
+          {
+            label: 'Copy',
+            click: () => copyToClipboard(message),
+          },
+        ]
+      : undefined,
+  }
 }
 
 function callWithFallback(
@@ -59,41 +126,13 @@ function callWithFallback(
     logger(`${prefix} ${message}`)
   }
 
-  let addColor = 'warning'
-  if (type === 'success') addColor = 'success'
-  else if (type === 'error') addColor = 'error'
-
-  let addTitle = 'Notice'
-  if (type === 'success') addTitle = 'Success'
-  else if (type === 'error') addTitle = 'Error'
-
   if (!toast) {
     fallback()
     return
   }
 
-  if (type === 'success' && typeof toast.success === 'function') {
-    toast.success(message, { timeout: TOAST_TIMEOUT })
-    return
-  }
-
-  if (type === 'error' && typeof toast.error === 'function') {
-    toast.error(message, { timeout: TOAST_TIMEOUT })
-    return
-  }
-
-  if (type === 'warn' && typeof toast.warn === 'function') {
-    toast.warn(message, { timeout: TOAST_TIMEOUT })
-    return
-  }
-
   if (typeof toast.add === 'function') {
-    toast.add({
-      title: addTitle,
-      description: message,
-      color: addColor,
-      timeout: TOAST_TIMEOUT,
-    })
+    toast.add(buildToastOptions(type, message))
     return
   }
 
@@ -131,6 +170,14 @@ export function useToastify(): Toastify {
     success,
     error,
     warn,
+    add: (options) => {
+      if (!toast || typeof toast.add !== 'function') {
+        const message = options.description || options.title || ''
+        if (message) console.log(`🔔 ${message}`)
+        return
+      }
+      toast.add(buildCustomToastOptions(options))
+    },
     withToast,
   }
 }

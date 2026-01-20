@@ -8,7 +8,7 @@
           <UButton size="xs" variant="ghost" @click="toggleVariant">
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
           </UButton>
-          <UBadge variant="soft">{{ total }}</UBadge>
+          <UBadge variant="soft">{{ cards.length }}</UBadge>
         </div>
       </div>
     </template>
@@ -22,27 +22,25 @@
         v-if="variant === 'pill'"
         class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <component
-          :is="wrapperFor(card)"
-          v-for="card in cards"
-          :key="card.id"
-          v-bind="wrapperPropsFor(card)"
-          class="block"
-        >
-          <CompanyCardsPill v-bind="card" />
-        </component>
+        <template v-for="card in cards" :key="card.id">
+          <NuxtLink v-if="card.to" :to="card.to" class="block">
+            <CompanyCardsPill v-bind="card" />
+          </NuxtLink>
+          <div v-else class="block">
+            <CompanyCardsPill v-bind="card" />
+          </div>
+        </template>
       </div>
 
       <div v-else class="grid gap-3 md:grid-cols-2">
-        <component
-          :is="wrapperFor(card)"
-          v-for="card in cards"
-          :key="card.id"
-          v-bind="wrapperPropsFor(card)"
-          class="block"
-        >
-          <CompanyCardsCell v-bind="card" />
-        </component>
+        <template v-for="card in cards" :key="card.id">
+          <NuxtLink v-if="card.to" :to="card.to" class="block">
+            <CompanyCardsCell v-bind="card" />
+          </NuxtLink>
+          <div v-else class="block">
+            <CompanyCardsCell v-bind="card" />
+          </div>
+        </template>
       </div>
     </div>
   </UCard>
@@ -52,10 +50,9 @@
 import { computed, ref } from 'vue';
 import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
 
-const props = defineProps<{ cards: CompanyCard.Card[]; total?: number }>()
+const props = defineProps<{ cards: CompanyCard.Card[] }>()
 
 const cards = computed(() => props.cards ?? [])
-const total = computed(() => props.total ?? cards.value.length)
 
 type Variant = 'pill' | 'cell'
 const variant = ref<Variant>('cell')
@@ -63,6 +60,4 @@ const toggleVariant = () => {
   variant.value = variant.value === 'pill' ? 'cell' : 'pill'
 }
 
-const wrapperFor = (card: CompanyCard.Card) => (card.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: CompanyCard.Card) => (card.to ? { to: card.to } : {})
 </script>
