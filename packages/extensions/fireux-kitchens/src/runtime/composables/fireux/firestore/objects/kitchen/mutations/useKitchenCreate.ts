@@ -6,6 +6,8 @@ export const KitchenPayload = {
   id: '',
   name: '',
   formatted_address: '',
+  lat: 0,
+  lng: 0,
   place_image: '',
   website: '',
 }

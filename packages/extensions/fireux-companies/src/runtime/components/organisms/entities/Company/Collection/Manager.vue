@@ -22,25 +22,27 @@
         v-if="variant === 'pill'"
         class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <template v-for="card in cards" :key="card.id">
-          <NuxtLink v-if="card.to" :to="card.to" class="block">
-            <CompanyCardsPill v-bind="card" />
-          </NuxtLink>
-          <div v-else class="block">
-            <CompanyCardsPill v-bind="card" />
-          </div>
-        </template>
+        <component
+          :is="wrapperFor(card)"
+          v-for="card in cards"
+          :key="card.id"
+          v-bind="wrapperPropsFor(card)"
+          class="block"
+        >
+          <CompanyCardsPill v-bind="card" />
+        </component>
       </div>
 
       <div v-else class="grid gap-3 md:grid-cols-2">
-        <template v-for="card in cards" :key="card.id">
-          <NuxtLink v-if="card.to" :to="card.to" class="block">
-            <CompanyCardsCell v-bind="card" />
-          </NuxtLink>
-          <div v-else class="block">
-            <CompanyCardsCell v-bind="card" />
-          </div>
-        </template>
+        <component
+          :is="wrapperFor(card)"
+          v-for="card in cards"
+          :key="card.id"
+          v-bind="wrapperPropsFor(card)"
+          class="block"
+        >
+          <CompanyCardsCell v-bind="card" />
+        </component>
       </div>
     </div>
 
@@ -55,17 +57,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import type { Company } from '../../../../../models/objects/company.model';
-import { useCompanyInterface } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
+import { computed, ref } from 'vue'
+import { useCompanyInterface } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
+import type { Company } from '../../../../../models/objects/company.model'
 
 const props = defineProps<{ collection?: Company[] }>()
 
 const collection = computed(() => props.collection ?? [])
 const { card: makeCard } = useCompanyInterface()
+type CompanyCardShape = NonNullable<ReturnType<typeof makeCard>>
 const cards = computed(() =>
   collection.value
-    .map((company) => makeCard(company as any))
+    .map((company) => makeCard(company))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 )
 const showDebug = import.meta.dev
@@ -79,5 +82,8 @@ const variant = ref<Variant>('cell')
 const toggleVariant = () => {
   variant.value = variant.value === 'pill' ? 'cell' : 'pill'
 }
+
+const wrapperFor = (card: CompanyCardShape) => (card.to ? 'NuxtLink' : 'div')
+const wrapperPropsFor = (card: CompanyCardShape) => (card.to ? { to: card.to } : {})
 
 </script>

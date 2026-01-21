@@ -12,8 +12,8 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
 import { computed } from 'vue'
+import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
 
 const { appName } = useFireUXConfig()
 

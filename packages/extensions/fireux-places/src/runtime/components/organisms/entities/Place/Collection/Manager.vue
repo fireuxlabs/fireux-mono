@@ -56,8 +56,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { BasePlace } from '../../../../../models/objects/place.model';
 import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
+import type { BasePlace } from '../../../../../models/objects/place.model';
 
 const props = defineProps<{ collection?: BasePlace[] }>()
 

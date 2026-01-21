@@ -2,20 +2,10 @@
   <UPage>
     <UPageHeader
       title="Create Company"
-      description="Search a place, confirm it, then create a Company overlay bound to that Place."
+      description="Coming (company) creation-soon"
     />
 
-    <UPageBody class="pagebody space-y-6">
-      <CompanyCreateSystem />
-
-      <UAlert
-        color="neutral"
-        variant="soft"
-        icon="i-lucide-info"
-        title="Tip"
-        description="After creation, open the company from the Companies list."
-      />
-    </UPageBody>
+    <UPageBody class="pagebody" />
   </UPage>
 </template>
 
@@ -31,7 +21,7 @@ definePageMeta({
     key: 'companies-create',
     label: 'Create company',
     icon: 'i-lucide-plus',
-    order: 25,
+    order: 56,
     desktop: false,
     mobile: false,
     layouts: ['default'],

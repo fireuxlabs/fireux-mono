@@ -10,7 +10,7 @@
         <h2 class="text-lg font-semibold">Why Companies exists</h2>
         <p class="text-sm text-gray-600">
           Companies are overlays bound to canonical Places. This keeps location data
-          consistent while allowing company-specific metadata (name, website, badges)
+          consistent while allowing company-specific metadata (name, website)
           to live in its own document.
         </p>
       </section>

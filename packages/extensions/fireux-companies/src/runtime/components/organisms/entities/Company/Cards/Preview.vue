@@ -1,7 +1,12 @@
 <template>
   <UCard class="fx-preview">
     <div class="fx-preview__row">
-      <UAvatar :src="avatarUrl || undefined" :alt="name" size="sm" />
+      <UAvatar
+        :src="avatarUrl || undefined"
+        :alt="name"
+        size="sm"
+        :class="avatarUrl ? 'bg-white dark:bg-white' : ''"
+      />
 
       <div class="fx-preview__main">
         <div class="fx-preview__top">
@@ -24,9 +29,10 @@
           {{ website }}
         </div>
 
-        <div v-if="showBody && prop" class="fx-preview__body">
+        <div v-if="showBody" class="fx-preview__body">
           <div class="fx-preview__line">
-            <span>{{ prop }}</span>
+            <span v-if="prop">{{ prop }}</span>
+            <span v-else class="italic">missing</span>
           </div>
         </div>
       </div>

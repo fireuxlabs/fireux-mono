@@ -13,8 +13,8 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useProductCollection } from '../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
 import { computed } from 'vue'
+import { useProductCollection } from '../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
 
 const { appName } = useFireUXConfig()
 

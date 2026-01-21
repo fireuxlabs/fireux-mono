@@ -24,7 +24,7 @@ export function useCompanyInterface() {
   function map(company: Company): CompanyCard.Card {
     return {
       id: company.id,
-      to: `/companies/${encodeURIComponent(company.id)}`,
+      to: `/companies/${company.id}`,
 
       avatarUrl: company.place_image,
       title: company.name,

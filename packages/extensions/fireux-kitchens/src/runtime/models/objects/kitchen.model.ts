@@ -22,7 +22,15 @@ export const Kitchen = {
 
   name: '',
   formatted_address: '',
+
+  /** Canonical location snapshot */
+  lat: 0,
+  lng: 0,
   place_image: '',
+
+  /** Search helpers */
+  search_term: '',
+  search_term_normalized: '',
 
   /** Optional kitchen-specific details (empty string means unset) */
   website: '',

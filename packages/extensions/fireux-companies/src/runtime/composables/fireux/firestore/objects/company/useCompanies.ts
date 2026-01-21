@@ -1,19 +1,15 @@
-import { useCompanyFetch } from './fetch/useCompanyFetch'
-import { useCompanyCreate } from './mutations/useCompanyCreate'
-import { useCompanyUpdate } from './mutations/useCompanyUpdate'
+import { useCompanyCollection } from './fetch/useCompanyCollection'
 
-/**
- * Canonical facade for Company: fetch + mutations.
- * Phase-1: dead object identity only.
- */
-export function useCompanies() {
-  const fetch = useCompanyFetch()
-  const create = useCompanyCreate()
-  const update = useCompanyUpdate()
+export interface UseCompaniesOptions {
+  collectionPath?: string
+}
 
-  return {
-    ...fetch,
-    ...create,
-    ...update,
-  }
+export function useCompanies<
+  T extends Record<string, any> = Record<string, any>,
+>(options: UseCompaniesOptions = {}) {
+  const { collectionPath, collection, count } = useCompanyCollection<T>(
+    options.collectionPath ?? 'companies'
+  )
+
+  return { collectionPath, collection, count }
 }

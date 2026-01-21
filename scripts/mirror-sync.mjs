@@ -113,8 +113,9 @@ function linkNameFromRelPath(relPath) {
     return cleaned[0]
   }
 
-  // For .vue files, keep the old logic but lowercase
-  return [pkgSlug, ...cleaned].join('-')
+  // Prefer simplified names: drop the package prefix and use the cleaned tail segments.
+  // This produces short, human-friendly names like `kitchens-index.vue` or `companies-create.vue`.
+  return cleaned.join('-')
 }
 
 function readMirrorList(filePath) {

@@ -12,8 +12,8 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useBlogFetch } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogFetch'
 import { computed } from 'vue'
+import { useBlogFetch } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogFetch'
 
 const { appName } = useFireUXConfig()
 

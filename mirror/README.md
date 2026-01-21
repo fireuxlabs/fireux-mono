@@ -84,6 +84,13 @@ Mirror rules
 - On reset, the filepaths (non-comment lines) are removed — only header/comments remain.
 - To set a custom symlink name, append `# custom-name.ext` to a path on the same line.
 
+Alignment notes (Company + Kitchen overlays)
+- Company/Kitchen documents are overlays bound to a Place id.
+- Overlay docs must include the shared place snapshot fields:
+	id, name, formatted_address, lat, lng, place_image, search_term, search_term_normalized.
+- Overlay docs may add domain fields, but no optionals (empty string = unset).
+- Create/System must create from Place confirmation with a minimal write.
+
 Examples
 - Add a file:
 

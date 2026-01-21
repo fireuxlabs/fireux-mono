@@ -19,12 +19,12 @@ import { useCompanyFetch } from '../../composables/fireux/firestore/objects/comp
 definePageMeta({
   layout: 'default',
   title: 'Companies',
-  description: 'Saved companies.',
+  description: 'Company overlays resolved for this runtime.',
   nav: {
     key: 'companies',
     label: 'Companies',
     icon: 'i-lucide-building-2',
-    order: 24,
+    order: 55,
     desktop: true,
     mobile: true,
     layouts: ['default'],
@@ -33,7 +33,8 @@ definePageMeta({
 })
 
 const pageTitle = 'Companies'
-const pageDescription = 'Browse companies available to this runtime.'
+const pageDescription =
+  'Create a company and browse all companies available to this runtime.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
@@ -53,16 +54,35 @@ const mergedCompanies = computed(() =>
   (companies.value ?? []).map((company) => {
     const place = placesById.value.get(String(company.id))
     if (!place) return company
+    const name = company.name || place.name || ''
+    const formattedAddress = company.formatted_address || place.formatted_address || ''
+    const searchTerm = company.search_term || `${name} ${formattedAddress}`.toLowerCase().trim()
+    const searchTermNormalized =
+      company.search_term_normalized || searchTerm
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim()
     return {
       ...place,
       ...company,
       id: company.id,
-      name: company.name || place.name || '',
-      formatted_address: company.formatted_address || place.formatted_address || '',
-      lat: Number.isFinite(company.lat) ? company.lat : place.lat,
-      lng: Number.isFinite(company.lng) ? company.lng : place.lng,
+      name,
+      formatted_address: formattedAddress,
+      lat: Number.isFinite(company.lat)
+        ? company.lat
+        : Number.isFinite(place.lat)
+          ? place.lat
+          : 0,
+      lng: Number.isFinite(company.lng)
+        ? company.lng
+        : Number.isFinite(place.lng)
+          ? place.lng
+          : 0,
       place_image: company.place_image || place.place_image || '',
-      place_source: company.place_source || place.source || '',
+      website: company.website || '',
+      search_term: searchTerm,
+      search_term_normalized: searchTermNormalized,
     }
   })
 )

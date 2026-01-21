@@ -3,19 +3,21 @@
     <UCard :ui="{ body: 'space-y-4' }">
       <template #header>
         <div class="space-y-1">
-          <div class="font-medium">Find a place</div>
+          <div class="font-medium">Select a place</div>
           <div class="text-sm text-dimmed">
-            Pick an existing place or confirm a new Google result.
+            We’ll use the existing kitchen if it exists, or create the overlay if it doesn’t.
           </div>
         </div>
       </template>
 
-      <PlaceSearchSection @confirmed="onPlaceConfirmed" />
-
-      <div class="space-y-2">
-        <div class="text-sm font-medium">Optional</div>
-        <UInput v-model="website" placeholder="Website (optional)" />
-      </div>
+      <PlaceSearchSection
+        collection="kitchens"
+        normalized-field="search_term_normalized"
+        :local-fallback="true"
+        :extra-collections="['places']"
+        :allow-google="true"
+        @confirmed="onPlaceConfirmed"
+      />
 
       <div v-if="successId" class="text-sm text-green-600">
         Kitchen created: {{ successId }}
@@ -44,14 +46,22 @@ import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/plac
 import { ref } from 'vue'
 import { useFirestore } from 'vuefire'
 import { useKitchenCreate } from '../../../../../composables/fireux/firestore/objects/kitchen/mutations/useKitchenCreate'
+import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/objects/kitchen/mutations/useKitchenUpdate'
 
 const { createKitchen } = useKitchenCreate()
+const { updateKitchen } = useKitchenUpdate()
 const db = useFirestore()
 
-const website = ref('')
 const error = ref<string | null>(null)
 const successId = ref<string | null>(null)
 const existingId = ref<string | null>(null)
+
+const normalizeSearchTerm = (value: string) =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
 
 async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput }) {
   error.value = null
@@ -65,6 +75,18 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
     const existingSnap = await getDoc(doc(db, 'kitchens', id))
     if (existingSnap.exists()) {
       existingId.value = id
+      const existing = existingSnap.data() as Record<string, any>
+      const searchTerm = `${place.name} ${place.formatted_address ?? ''}`
+        .toLowerCase()
+        .trim()
+      const searchTermNormalized = normalizeSearchTerm(searchTerm)
+      if (!existing.search_term || !existing.search_term_normalized) {
+        await updateKitchen(id, {
+          search_term: existing.search_term || searchTerm,
+          search_term_normalized:
+            existing.search_term_normalized || searchTermNormalized,
+        } as any)
+      }
       return
     }
 
@@ -73,8 +95,16 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
       place,
       name: place.name,
       formatted_address: place.formatted_address ?? '',
+      lat: place.lat ?? 0,
+      lng: place.lng ?? 0,
       place_image: place.place_image ?? '',
-      website: website.value.trim(),
+      website: '',
+      search_term: `${place.name} ${place.formatted_address ?? ''}`
+        .toLowerCase()
+        .trim(),
+      search_term_normalized: normalizeSearchTerm(
+        `${place.name} ${place.formatted_address ?? ''}`
+      ),
     })
 
     successId.value = createdId

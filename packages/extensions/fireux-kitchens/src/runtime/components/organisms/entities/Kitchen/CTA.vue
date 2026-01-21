@@ -1,7 +1,7 @@
 <template>
   <UPageCTA
-    title="Create a kitchen"
-    description="Search a place, confirm it, then create a Kitchen overlay bound to that Place."
+    title="Kitchens"
+    description="Select a place to view or update its kitchen overlay."
     variant="naked"
   >
     <template #default>

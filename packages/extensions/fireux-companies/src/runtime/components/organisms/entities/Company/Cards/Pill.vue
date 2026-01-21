@@ -4,7 +4,7 @@
       :src="avatarUrl || undefined"
       :alt="title"
       size="xs"
-      :style="avatarUrl ? { backgroundColor: '#ffffff' } : undefined"
+      :class="avatarUrl ? 'bg-white dark:bg-white' : ''"
     />
 
     <div class="min-w-0 flex-1">
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
+import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 
 type PillProps = Pick<CompanyCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean

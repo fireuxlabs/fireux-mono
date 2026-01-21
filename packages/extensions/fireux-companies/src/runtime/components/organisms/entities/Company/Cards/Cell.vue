@@ -5,7 +5,7 @@
         :src="avatarUrl || undefined"
         :alt="name"
         size="sm"
-        :style="avatarUrl ? { backgroundColor: '#ffffff' } : undefined"
+        :class="avatarUrl ? 'bg-white dark:bg-white' : ''"
       />
 
       <div class="fx-cell__content fx-cell__stack">
@@ -30,8 +30,9 @@
           </div>
         </div>
 
-        <div v-if="showTagline && prop" class="fx-cell__tagline">
-          <span>{{ prop }}</span>
+        <div v-if="showTagline" class="fx-cell__tagline">
+          <span v-if="prop">{{ prop }}</span>
+          <span v-else class="italic">missing</span>
         </div>
       </div>
     </div>
