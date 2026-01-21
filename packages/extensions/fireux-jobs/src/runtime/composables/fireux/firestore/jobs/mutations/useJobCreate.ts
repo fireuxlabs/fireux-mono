@@ -1,20 +1,12 @@
-import { doc, getDoc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useFirestore } from 'vuefire'
-import type { Job, JobCreateInput } from '../../../../../models/objects/job.model'
+import { ref } from 'vue'
+import type { JobStatus } from '../../../../../models/objects/job.model'
 
 export const JobPayload = {
-  id: '',
-  app_id: '',
-  created_by: '',
-  posted_by_agent_id: '',
   company_id: '',
   place_id: '',
-  kitchen_id: '',
-  source: '',
   title: '',
-  status: '',
+  status: 'open' as JobStatus,
   description: '',
 }
 
@@ -22,33 +14,63 @@ export const JobStampOptions = {
   creator: true,
 } as const
 
+export type JobCreateForm = {
+  company_id: string
+  place_id: string
+  title: string
+  status: JobStatus
+  description: string
+}
+
+type JobCreateInput = JobCreateForm
+
+const DEFAULT_FORM: JobCreateForm = {
+  ...JobPayload,
+}
+
 export function useJobCreate() {
-  const db = useFirestore()
-  const { setDocument } = useFirestoreCreate()
+  const { createDocument } = useFirestoreCreate()
+  const form = ref<JobCreateForm>({ ...DEFAULT_FORM })
 
-  async function createJob(payload: JobCreateInput): Promise<{ created: boolean; id: string }> {
-    if (!payload?.id) {
-      throw new Error('Job id is required')
-    }
-
-    const ref = doc(db, 'jobs', payload.id)
-    const snap = await getDoc(ref)
-    if (snap.exists()) {
-      return { created: false, id: payload.id }
-    }
-
-    const fireux = useFireUXConfig()
-    const data = {
-      ...payload,
-      app_id: payload.app_id || fireux.appId,
-    } satisfies Omit<Job, 'created_at' | 'updated_at' | 'creator_id'>
-
-    await setDocument<Job>('jobs', payload.id, data as Job, {
-      creator: true,
-    })
-
-    return { created: true, id: payload.id }
+  const reset = () => {
+    form.value = { ...DEFAULT_FORM }
   }
 
-  return { createJob }
+  async function createJob(payload: JobCreateInput): Promise<{ created: boolean; id: string }> {
+    const data = {
+      ...payload,
+    } satisfies JobCreateInput
+
+    const id = await createDocument<JobCreateInput>('jobs', data, {
+      app: true,
+      creator: true,
+    })
+    
+
+    return { created: true, id }
+  }
+
+  const submit = async (): Promise<string> => {
+    const title = String(form.value.title ?? '').trim()
+    const description = String(form.value.description ?? '').trim()
+    const placeId = String(form.value.place_id ?? '').trim()
+
+    if (!placeId) throw new Error('Place is required')
+    if (!title) throw new Error('Title is required')
+    if (!description) throw new Error('Description is required')
+
+    const payload: JobCreateInput = {
+      ...form.value,
+      title,
+      description,
+      place_id: placeId,
+      company_id: String(form.value.company_id ?? '').trim(),
+      status: form.value.status ?? 'open',
+    }
+
+    const result = await createJob(payload)
+    return result.id
+  }
+
+  return { form, reset, submit, createJob }
 }

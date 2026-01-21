@@ -1,4 +1,35 @@
 {
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Git Tree (full)",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["git-tree:full"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Git Tree",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["git-tree"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
+{
 	// VS Code Tasks to run each app
 	"version": "2.0.0",
 	"tasks": [

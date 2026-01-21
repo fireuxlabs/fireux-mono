@@ -31,7 +31,6 @@
       </p>
     </UCard>
 
-    <pre v-if="showDebug" class="text-xs text-muted">{{ debugPayload }}</pre>
   </section>
 </template>
 
@@ -45,7 +44,7 @@ import {
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import { usePlaceClaim } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceClaim'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
-import type { BasePlace, PlaceUpsertInput } from '../../../../../models/place.model'
+import type { BasePlace, PlaceUpsertInput } from '../../../../../models/objects/place.model'
 
 interface Props {
   type?: string | null
@@ -73,7 +72,7 @@ const emit = defineEmits<{
   (e: 'confirmed', payload: { placeId: string; place: PlaceUpsertInput }): void
 }>()
 
-const { query, results, selected, isSearching, select, clear, debug } =
+const { query, results, selected, isSearching, select, clear } =
   usePlacesSearch({
     type: props.type,
     collection: props.collection,
@@ -86,33 +85,6 @@ const { query, results, selected, isSearching, select, clear, debug } =
 const confirmLabel = computed(() => props.confirmLabel)
 const existingNote = computed(() => props.existingNote)
 
-const showDebug = import.meta.dev
-
-const debugPayload = computed(() => {
-  const resultsBySource = (results.value ?? []).reduce(
-    (acc: Record<string, number>, row) => {
-      const key = row.source
-      acc[key] = (acc[key] ?? 0) + 1
-      return acc
-    },
-    {}
-  )
-
-  return {
-    query: query.value,
-    isSearching: isSearching.value,
-    resultsCount: results.value.length,
-    resultsBySource,
-    selected: selected.value
-      ? {
-          id: selected.value.id,
-          source: selected.value.source,
-          name: selected.value.name,
-        }
-      : null,
-    decision: debug.value ?? null,
-  }
-})
 
 const { ensurePlaceExists } = usePlaceSave({ type: props.type })
 const { claimPlace } = usePlaceClaim({ type: props.type })
@@ -146,6 +118,7 @@ function buildFallbackPlace(base: BasePlace, placeId: string): PlaceUpsertInput 
     lat: base.lat,
     lng: base.lng,
     place_image: sanitizeAvatar((base as any).place_image) ?? '',
+    claimed_by: base.claimed_by ?? '',
     search_term: `${base.name} ${formatted}`.toLowerCase().trim(),
   }
 }
@@ -191,7 +164,7 @@ async function maybeUploadAvatar(
       selected.value = {
         ...selected.value,
         place_image: uploadedUrl,
-      }
+      } as BasePlace
     }
   } catch (error) {
     if (import.meta.dev) {
@@ -226,6 +199,7 @@ async function onConfirm(place: BasePlace) {
         lat: place.lat,
         lng: place.lng,
         place_image: sanitizeAvatar((place as any).place_image) ?? '',
+        claimed_by: place.claimed_by ?? '',
         search_term:
           (place as any).search_term ??
           `${place.name} ${place.formatted_address ?? ''}`.toLowerCase().trim(),
@@ -269,7 +243,7 @@ async function onClaim(place: BasePlace) {
       selected.value = {
         ...selected.value,
         claimed_by: claimedBy,
-      }
+      } as BasePlace
     }
   } catch (error) {
     if (import.meta.dev) {

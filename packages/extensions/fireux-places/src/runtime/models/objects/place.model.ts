@@ -17,22 +17,22 @@ export type PlaceSource = 'google' | 'fireux' | 'manual'
 
 // 🔑 Runtime + canonical shape for the STORED Firestore Place
 export const Place = {
-	id: '',
+	id: '' as string,
 
-	name: '',
-	formatted_address: '',
+	name: '' as string,
+	formatted_address: '' as string,
 	lat: 0,
 	lng: 0,
 
-	place_image: '',
+	place_image: '' as string,
 
 	/** Claimed owner (uid); empty string means unclaimed. */
-	claimed_by: '',
+	claimed_by: '' as string,
 
 	source: 'enum:google|fireux|manual' as unknown as PlaceSource,
 
 	/** “How we found this place” (kept for UX + duplicate avoidance). */
-	search_term: '',
+	search_term: '' as string,
 
 	// Stamps
 	creator_id: undefined as FireuxStamped['creator_id'],

@@ -20,18 +20,9 @@ export const Job = {
   /** Firestore document ID */
   id: '',
 
-  /** App that owns the job */
-  app_id: '',
-
-  /** FireUX user who created the listing (business field, not Firestore stamping) */
-  created_by: '',
-
   /** Phase-1 graph links (horizontal MVP) */
-  posted_by_agent_id: '',
   company_id: '',
   place_id: '',
-  kitchen_id: '',
-  source: '',
 
   /** Pipeline & preview surface */
   title: '',
@@ -46,7 +37,10 @@ export const Job = {
 
 export type Job = {
   [K in keyof typeof Job]: (typeof Job)[K]
-}
+} & FireuxStamped
 
-export type JobCreateInput = Omit<Job, 'created_at' | 'updated_at' | 'creator_id'>
+export type JobCreateInput = Omit<
+  Job,
+  'app_id' | 'created_at' | 'updated_at' | 'creator_id'
+>
 export type JobUpdateInput = Partial<Omit<JobCreateInput, 'id'>>

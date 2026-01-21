@@ -3,9 +3,14 @@ const cp = require('node:child_process')
 const fs = require('node:fs')
 const path = require('node:path')
 
-function execFileAsync(cmd, args, { maxBuffer } = {}) {
+function execFileAsync(cmd, args, opts = {}) {
+  const { maxBuffer, ...execOpts } = opts ?? {}
   return new Promise((resolve, reject) => {
-    cp.execFile(cmd, args, { maxBuffer: maxBuffer ?? 1024 * 1024 }, (err, stdout, stderr) => {
+    cp.execFile(
+      cmd,
+      args,
+      { ...execOpts, maxBuffer: maxBuffer ?? 1024 * 1024 },
+      (err, stdout, stderr) => {
       if (err) {
         err.stdout = stdout
         err.stderr = stderr
@@ -13,7 +18,8 @@ function execFileAsync(cmd, args, { maxBuffer } = {}) {
         return
       }
       resolve({ stdout, stderr })
-    })
+      }
+    )
   })
 }
 
@@ -338,6 +344,7 @@ function activate(context) {
   }
 
   const openAppUrl = async (url) => {
+    if (!url) return
     const cfg = vscode.workspace.getConfiguration('fireuxToolbar')
     const reuse = cfg.get('reuseBrowserTab', true)
     const browser = cfg.get('reuseBrowser', 'chrome')
@@ -465,6 +472,118 @@ function activate(context) {
     }
   })
 
+  register('fireuxToolbar.gitQPreview', async () => {
+    if (!cwd) {
+      vscode.window.showErrorMessage('Git Q: workspace root not found')
+      return
+    }
+
+    let statusRes
+    try {
+      statusRes = await execFileAsync(
+        'git',
+        ['status', '--porcelain'],
+        { cwd, maxBuffer: 4 * 1024 * 1024 }
+      )
+    } catch (err) {
+      const msg = String(err?.stderr || err?.message || err || 'Git failed')
+      vscode.window.showErrorMessage(`Git Q failed: ${msg}`)
+      return
+    }
+
+    const lines = String(statusRes.stdout || '')
+      .split('\n')
+      .map((line) => line.replace(/\r$/, ''))
+      .filter((line) => line.length > 0)
+
+    const parseStatusLine = (line) => {
+      if (line.startsWith('?? ')) {
+        return { status: '??', relPath: line.slice(3) }
+      }
+
+      const status = line.slice(0, 2)
+      const rest = line.slice(3)
+      if (!rest) return null
+
+      if (rest.includes(' -> ')) {
+        const [oldPath, newPath] = rest.split(' -> ')
+        if (!newPath) return null
+        return { status, relPath: newPath, oldPath }
+      }
+
+      return { status, relPath: rest }
+    }
+
+    const entries = lines.map(parseStatusLine).filter(Boolean)
+
+    const maxFileBytes = 512 * 1024
+    const maxTotalBytes = 12 * 1024 * 1024
+    let totalBytes = 0
+    const chunks = []
+    const push = (text) => {
+      const next = totalBytes + Buffer.byteLength(text, 'utf8')
+      if (next > maxTotalBytes) {
+        if (totalBytes < maxTotalBytes) {
+          chunks.push('\n[git-q output truncated: size exceeded]\n')
+        }
+        totalBytes = maxTotalBytes + 1
+        return false
+      }
+      chunks.push(text)
+      totalBytes = next
+      return true
+    }
+
+    push('Git Q (working tree) contents\n')
+    push(`Root: ${normalizeRelPath(cwd)}\n`)
+    push(`Files: ${entries.length}\n`)
+
+    if (!entries.length) {
+      push('\n[no staged files found]\n')
+    }
+
+    for (const entry of entries) {
+      if (totalBytes > maxTotalBytes) break
+      const rel = normalizeRelPath(entry.relPath)
+      const label = entry.oldPath
+        ? `${entry.status} ${entry.oldPath} -> ${rel}`
+        : `${entry.status} ${rel}`
+
+      if (!push(`\n\n===== ${label} =====\n`)) break
+
+      if (entry.status.includes('D')) {
+        push('[deleted in index]\n')
+        continue
+      }
+
+      try {
+        const fileUri = vscode.Uri.file(path.join(cwd, entry.relPath))
+        const data = await vscode.workspace.fs.readFile(fileUri)
+        const buf = Buffer.from(data)
+        if (isProbablyBinary(buf)) {
+          push('[skipped: binary file]\n')
+          continue
+        }
+        const text = new TextDecoder('utf-8', { fatal: false }).decode(buf)
+        const bytes = Buffer.byteLength(text, 'utf8')
+        if (bytes > maxFileBytes) {
+          push(`[skipped: file too large (${bytes} bytes)]\n`)
+          continue
+        }
+        push(text)
+      } catch {
+        push('[unreadable]\n')
+      }
+    }
+
+    const output = chunks.join('')
+    const doc = await vscode.workspace.openTextDocument({
+      language: 'plaintext',
+      content: output,
+    })
+    await vscode.window.showTextDocument(doc, { preview: false })
+  })
+
   const apps = [
     {
       key: 'fireux',
@@ -590,7 +709,39 @@ function activate(context) {
       app.priority
     )
   }
+
+  makeBtn(
+    '$(git-commit) Git Q',
+    'Show staged file contents',
+    'fireuxToolbar.gitQPreview',
+    91
+  )
 }
+
+  // When the Git Tree task finishes, open the generated docs/git-tree.md
+  const taskWatcher = vscode.tasks.onDidEndTaskProcess(async (e) => {
+    try {
+      const name = e.execution?.task?.name
+      if (!name) return
+      // Accept either exact match or the short label
+      if (!name.includes('Git Tree')) return
+      if (e.exitCode !== 0) return
+
+      if (!ws) return
+      const mdUri = vscode.Uri.joinPath(ws.uri, 'docs', 'git-tree.md')
+      try {
+        await vscode.workspace.fs.stat(mdUri)
+      } catch {
+        return
+      }
+
+      const doc = await vscode.workspace.openTextDocument(mdUri)
+      await vscode.window.showTextDocument(doc, { preview: false })
+    } catch {
+      // noop
+    }
+  })
+  context.subscriptions.push(taskWatcher)
 
 function deactivate() {}
 

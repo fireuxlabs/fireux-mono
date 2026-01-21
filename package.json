@@ -44,7 +44,11 @@
     "delete:app-media-trash": "node scripts/delete-app-media-trash.mjs",
     "delete:app-media-folders": "node scripts/delete-app-media-folders.mjs",
     "sync:app-media-from-public": "node scripts/sync-app-media-from-public.mjs",
-    "clear:app-fields": "node scripts/clear-app-firestore-fields.mjs"
+    "clear:app-fields": "node scripts/clear-app-firestore-fields.mjs",
+    "git-tree": "node scripts/git-tree.mjs",
+    "git-tree:full": "cross-env INCLUDE_CONTENT=1 node scripts/git-tree.mjs",
+    "mirror:sync": "node scripts/mirror-sync.mjs",
+    "mirror:gitq": "node scripts/mirror-from-gitq.mjs"
   },
   "engines": {
     "node": ">=20.11 <23",
@@ -64,6 +68,7 @@
     "@typescript-eslint/parser": "^8.50.0",
     "@vueuse/core": "13.9.0",
     "concurrently": "^9.2.0",
+    "cross-env": "7.0.3",
     "eslint": "^9.28.0",
     "firebase": "11.10.0",
     "firebase-admin": "^12.7.0",

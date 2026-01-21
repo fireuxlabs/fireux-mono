@@ -57,9 +57,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useCompanyInterface } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
-import type { Company } from '../../../../../models/objects/company.model'
+import { computed, ref } from 'vue';
+import { useCompanyInterface } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
+import type { Company } from '../../../../../models/objects/company.model';
 
 const props = defineProps<{ collection?: Company[] }>()
 

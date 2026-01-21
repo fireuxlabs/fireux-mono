@@ -16,6 +16,7 @@ export interface FireuxTimestamps {
  */
 export interface FireuxAuthored {
   creator_id?: string
+  app_id?: string
 }
 
 /**
