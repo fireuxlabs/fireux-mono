@@ -16,15 +16,13 @@
     </div>
 
     <div v-else-if="adminCards.length" class="footer-admins__grid">
-      <component
-        :is="wrapperFor(admin.card)"
+      <OrganismsUserCardsPill
         v-for="admin in adminCards"
         :key="admin.key"
-        v-bind="wrapperPropsFor(admin.card)"
+        v-bind="admin.card"
+        :link="Boolean(admin.card.to)"
         class="block"
-      >
-        <OrganismsUserCardsPill v-bind="admin.card" />
-      </component>
+      />
     </div>
 
     <p v-else class="footer-admins__empty">No admins assigned yet.</p>
@@ -82,8 +80,6 @@ const shouldRender = computed(
   () => isLoading.value || Boolean(adminCards.value.length)
 )
 
-const wrapperFor = (card: UserCard.Card) => (card.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: UserCard.Card) => (card.to ? { to: card.to } : {})
 </script>
 
 <style scoped>

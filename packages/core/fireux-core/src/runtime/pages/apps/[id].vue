@@ -47,15 +47,13 @@
               <div v-if="usersPending" class="text-sm text-dimmed">Loading users…</div>
 
               <div v-else class="flex flex-wrap gap-2">
-                <component
-                  :is="wrapperFor(card)"
+                <OrganismsUserCardsPill
                   v-for="card in visibleCards"
                   :key="card.id"
-                  v-bind="wrapperPropsFor(card)"
+                  v-bind="card"
+                  :link="Boolean(card.to)"
                   class="block"
-                >
-                  <OrganismsUserCardsPill v-bind="card" />
-                </component>
+                />
 
                 <span v-if="!visibleCards.length" class="text-sm text-dimmed italic">
                   missing

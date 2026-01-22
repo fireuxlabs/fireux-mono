@@ -12,14 +12,12 @@
     <template v-if="isAuthenticated">
       <div class="signed-in">
         <p class="status">You're signed in.</p>
-        <component
-          :is="wrapperFor(currentUserPill)"
+        <OrganismsUserCardsPill
           v-if="currentUserPill"
-          v-bind="wrapperPropsFor(currentUserPill)"
+          v-bind="currentUserPill"
+          :link="Boolean(currentUserPill.to)"
           class="user-pill"
-        >
-          <OrganismsUserCardsPill v-bind="currentUserPill" />
-        </component>
+        />
         <div class="auth-actions">
           <UButton block color="primary" @click="goToDashboard">
             Go to dashboard
@@ -85,9 +83,6 @@ const { currentUser, card } = useUser()
 const currentUserPill = computed(() =>
   currentUser.value ? card(currentUser.value) : null
 )
-
-const wrapperFor = (card: ReturnType<typeof card> | null) => (card?.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: ReturnType<typeof card> | null) => (card?.to ? { to: card.to } : {})
 
 const goToDashboard = async () => {
   await router.push('/dashboard').catch(() => {})

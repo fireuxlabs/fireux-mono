@@ -16,13 +16,11 @@
           :key="admin.id"
           class="flex items-center justify-between gap-3"
         >
-          <component
-            :is="wrapperFor(pillFor(admin))"
-            v-bind="wrapperPropsFor(pillFor(admin))"
+          <OrganismsUserCardsPill
+            v-bind="pillFor(admin)"
+            :link="Boolean(pillFor(admin).to)"
             class="min-w-0"
-          >
-            <OrganismsUserCardsPill v-bind="pillFor(admin)" class="min-w-0" />
-          </component>
+          />
 
           <UButton
             size="xs"
@@ -58,6 +56,4 @@ defineProps<{
   onRemoveAdmin: (uid: string) => Promise<unknown>
 }>()
 
-const wrapperFor = (card: UserCard.Card) => (card.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: UserCard.Card) => (card.to ? { to: card.to } : {})
 </script>

@@ -1,5 +1,17 @@
 <template>
   <div class="space-y-3">
+    <UCard v-if="agentCard">
+      <template #header>
+        <div class="space-y-1">
+          <p class="text-sm text-gray-500">Creator</p>
+          <h2 class="text-lg font-semibold">Current agent</h2>
+          <p class="text-sm text-gray-500">This job will be stamped to this agent.</p>
+        </div>
+      </template>
+
+      <OrganismsProfilesAgentCardsPill v-bind="agentCard" :show-subtitle="false" :link="true" />
+    </UCard>
+
     <MoleculesCreateShell
       :loading="submitting"
       submit-label="Create"
@@ -28,10 +40,14 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useJobCreate } from '../../../../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
+import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const router = useRouter()
 const { form, reset, submit } = useJobCreate()
 const { coreUser } = useUser()
+const { coreProfile, card } = useAgent()
+
+const agentCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
 
 const submitting = ref(false)
 
@@ -65,7 +81,7 @@ const check = computed(() => {
 
   return {
     status: missing.length ? 'incomplete' : 'ready',
-    agentId: coreUser.value?.uid ?? null,
+    agentId: coreUser.value?.id ?? null,
     missing,
     notCapturedYet: ['schedule fields', 'compensation fields'],
   }

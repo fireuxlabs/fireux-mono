@@ -11,16 +11,12 @@
 					<div class="flex items-center justify-between gap-3">
 						<div class="flex items-center gap-3">
 							<span class="text-xs text-gray-600">Claimed:</span>
-							<component
-								:is="wrapperFor(claimedUserPill)"
+							<OrganismsUserCardsPill
 								v-if="claimedUserPill"
-								v-bind="wrapperPropsFor(claimedUserPill)"
-							>
-								<OrganismsUserCardsPill
-									v-bind="claimedUserPill"
-									:show-subtitle="false"
-								/>
-							</component>
+								v-bind="claimedUserPill"
+								:show-subtitle="false"
+								:link="Boolean(claimedUserPill.to)"
+							/>
 							<span v-else class="text-xs text-gray-500">—</span>
 						</div>
 						<UButton
@@ -156,8 +152,6 @@ const { user: claimedUser } = useUserFetch(claimedUserId)
 const { card: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 
-const wrapperFor = (card: { to?: string | null } | null) => (card?.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: { to?: string | null } | null) => (card?.to ? { to: card.to } : {})
 
 const hasImage = computed(() => !!place.value?.place_image)
 const isClaimedByUser = computed(() => {

@@ -20,14 +20,12 @@
       />
     </NuxtLink>
 
-    <component
-      :is="wrapperFor(pillUser)"
+    <OrganismsUserCardsPill
       v-else-if="pillUser"
-      v-bind="wrapperPropsFor(pillUser)"
+      v-bind="pillUser"
+      :link="Boolean(pillUser.to)"
       class="w-full"
-    >
-      <OrganismsUserCardsPill v-bind="pillUser" class="w-full" />
-    </component>
+    />
   </div>
 </template>
 
@@ -107,6 +105,4 @@ const actionItems = computed(() => {
 
 const compactProfile = computed(() => props.compactProfile)
 
-const wrapperFor = (item: UserCard.Card | undefined) => (item?.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (item: UserCard.Card | undefined) => (item?.to ? { to: item.to } : {})
 </script>

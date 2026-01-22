@@ -99,17 +99,13 @@
           <div class="fx-profile__kv">
             <div class="fx-profile__k">Creator</div>
             <div class="fx-profile__v">
-              <component
-                :is="wrapperFor(creatorCard)"
+              <OrganismsUserCardsPill
                 v-if="creatorCard"
-                v-bind="wrapperPropsFor(creatorCard)"
+                v-bind="creatorCard"
+                :show-subtitle="false"
+                :link="Boolean(creatorCard.to)"
                 class="block"
-              >
-                <OrganismsUserCardsPill
-                  v-bind="creatorCard"
-                  :show-subtitle="false"
-                />
-              </component>
+              />
               <span v-else-if="app?.creator_id" class="fx-profile__mono">
                 {{ app.creator_id }}
               </span>
@@ -246,8 +242,6 @@ const { card: userToCard } = useUserInterface()
 
 const creatorCard = computed(() => userToCard(creatorUser.value))
 
-const wrapperFor = (card: UserCard.Card | null) => (card?.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: UserCard.Card | null) => (card?.to ? { to: card.to } : {})
 
 const adminIds = computed(() => {
   const raw = props.app?.admin_ids

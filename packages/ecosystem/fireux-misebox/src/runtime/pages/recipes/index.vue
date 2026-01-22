@@ -82,13 +82,11 @@
           :key="item.key"
           class="recipe-item"
         >
-          <component
-            :is="wrapperFor(item.card)"
-            v-bind="wrapperPropsFor(item.card)"
+          <ObjectsRecipeCardsPill
+            v-bind="item.card"
+            :link="Boolean(item.card?.to)"
             class="block"
-          >
-            <ObjectsRecipeCardsPill v-bind="item.card" />
-          </component>
+          />
         </div>
       </div>
 
@@ -274,8 +272,6 @@ const displayedRecipeCards = computed(() =>
   })
 )
 
-const wrapperFor = (card: RecipePillCard) => (card.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: RecipePillCard) => (card.to ? { to: card.to } : {})
 
 </script>
 

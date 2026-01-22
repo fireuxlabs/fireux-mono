@@ -26,22 +26,18 @@
           </UButton>
         </header>
 
-        <component
-          :is="wrapperFor(previewCard)"
+        <OrganismsProfilesProfessionalCardsCell
           v-if="showCellCard && previewCard"
-          v-bind="wrapperPropsFor(previewCard)"
+          v-bind="previewCard"
+          :link="Boolean(previewCard.to)"
           class="block"
-        >
-          <OrganismsProfilesProfessionalCardsCell :card="previewCard" />
-        </component>
-        <component
-          :is="wrapperFor(previewCard)"
+        />
+        <OrganismsProfilesProfessionalCardsPill
           v-else-if="previewCard"
-          v-bind="wrapperPropsFor(previewCard)"
+          v-bind="previewCard"
+          :link="Boolean(previewCard.to)"
           class="block"
-        >
-          <OrganismsProfilesProfessionalCardsPill v-bind="previewCard" />
-        </component>
+        />
       </UCard>
 
       <UCard v-else>
@@ -70,6 +66,4 @@ const toggleView = () => {
   showCellView.value = !showCellView.value
 }
 
-const wrapperFor = (card: ReturnType<typeof card> | null) => (card?.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: ReturnType<typeof card> | null) => (card?.to ? { to: card.to } : {})
 </script>

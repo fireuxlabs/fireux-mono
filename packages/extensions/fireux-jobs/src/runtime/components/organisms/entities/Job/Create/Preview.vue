@@ -30,13 +30,12 @@
           <p class="text-xs uppercase tracking-wide text-gray-400">
             Posted by
           </p>
-          <component
-            :is="wrapperFor(agentCard)"
-            v-bind="wrapperPropsFor(agentCard)"
+          <OrganismsProfilesAgentCardsPill
+            v-bind="agentCard"
+            :show-subtitle="false"
+            :link="Boolean(agentCard.to)"
             class="block"
-          >
-            <OrganismsProfilesAgentCardsPill v-bind="agentCard" :show-subtitle="false" />
-          </component>
+          />
         </div>
       </div>
     </template>
@@ -88,8 +87,4 @@ const placeId = computed(() => props.form.place_id.trim())
 const companyId = computed(() => props.form.company_id.trim())
 const statusLabel = computed(() => (props.form.status === 'closed' ? 'Closed' : 'Open'))
 
-type AgentCard = ReturnType<ReturnType<typeof useAgent>['card']>
-
-const wrapperFor = (agent: AgentCard | null) => (agent?.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (agent: AgentCard | null) => (agent?.to ? { to: agent.to } : {})
 </script>

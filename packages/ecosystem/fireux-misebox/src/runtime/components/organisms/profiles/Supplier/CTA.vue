@@ -17,22 +17,18 @@
         </div>
 
         <div class="space-y-4">
-          <component
-            :is="wrapperFor(cell)"
+          <OrganismsProfilesSupplierCardsCell
             v-if="showCellCard && cell"
-            v-bind="wrapperPropsFor(cell)"
+            v-bind="cell"
+            :link="Boolean(cell.to)"
             class="block"
-          >
-            <OrganismsProfilesSupplierCardsCell :supplier="cell" />
-          </component>
-          <component
-            :is="wrapperFor(pill)"
+          />
+          <OrganismsProfilesSupplierCardsPill
             v-else-if="pill"
-            v-bind="wrapperPropsFor(pill)"
+            v-bind="pill"
+            :link="Boolean(pill.to)"
             class="block"
-          >
-            <OrganismsProfilesSupplierCardsPill v-bind="pill" />
-          </component>
+          />
           <p v-else class="text-sm text-slate-500">No supplier profile loaded.</p>
         </div>
       </div>
@@ -62,7 +58,5 @@ watch(canToggle, (enabled: boolean) => {
   if (!enabled) showCellView.value = false
 })
 
-const wrapperFor = (card: ReturnType<typeof cell> | null) => (card?.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: ReturnType<typeof cell> | null) => (card?.to ? { to: card.to } : {})
 </script>
 

@@ -7,14 +7,12 @@
 
       <div class="space-y-2">
         <div class="w-fit max-w-full">
-          <component
-            :is="wrapperFor(pill)"
+          <OrganismsUserCardsPill
             v-if="pill"
-            v-bind="wrapperPropsFor(pill)"
+            v-bind="pill"
+            :link="Boolean(pill.to)"
             class="block"
-          >
-            <OrganismsUserCardsPill v-bind="pill" />
-          </component>
+          />
           <USkeleton v-else class="h-11 w-64 max-w-full" />
         </div>
       </div>
@@ -88,6 +86,4 @@ const profileLabel = computed(() => {
   return `${profileComplete.value}%`
 })
 
-const wrapperFor = (pill: { to?: string | null } | null) => (pill?.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (pill: { to?: string | null } | null) => (pill?.to ? { to: pill.to } : {})
 </script>
