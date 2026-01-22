@@ -23,23 +23,13 @@
         class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
       >
         <template v-for="card in cards" :key="card.id">
-          <NuxtLink v-if="card.to" :to="card.to" class="block">
-            <PlaceCardsPill v-bind="card" />
-          </NuxtLink>
-          <div v-else class="block">
-            <PlaceCardsPill v-bind="card" />
-          </div>
+          <PlaceCardsPill v-bind="card" :link="Boolean(card.to)" class="block" />
         </template>
       </div>
 
       <div v-else class="grid gap-3 md:grid-cols-2">
         <template v-for="card in cards" :key="card.id">
-          <NuxtLink v-if="card.to" :to="card.to" class="block">
-            <PlaceCardsCell v-bind="card" />
-          </NuxtLink>
-          <div v-else class="block">
-            <PlaceCardsCell v-bind="card" />
-          </div>
+          <PlaceCardsCell v-bind="card" :link="Boolean(card.to)" class="block" />
         </template>
       </div>
     </div>

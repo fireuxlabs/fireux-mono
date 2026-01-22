@@ -1,5 +1,10 @@
 <template>
-  <div class="fx-cell">
+  <component
+    :is="link && to ? 'NuxtLink' : 'div'"
+    :to="link && to ? to : undefined"
+    class="fx-cell"
+    @click="onClick"
+  >
     <div class="fx-cell__media">
       <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
@@ -32,7 +37,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -44,9 +49,21 @@ type Props = Pick<
 > & {
   prop?: string
   showSubtitle?: boolean
+  link?: boolean
+  action?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
+
+const props = withDefaults(defineProps<Props>(), {
   showSubtitle: true,
+  link: false,
+  action: false,
 })
+
+const onClick = () => {
+  if (props.action) emit('action')
+}
 </script>

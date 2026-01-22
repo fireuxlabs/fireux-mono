@@ -1,5 +1,10 @@
 <template>
-  <div class="fx-card fx-card--pill">
+  <component
+    :is="link && to ? 'NuxtLink' : 'div'"
+    :to="link && to ? to : undefined"
+    class="fx-card fx-card--pill"
+    @click="onClick"
+  >
     <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="xs" />
 
     <div class="min-w-0 flex-1">
@@ -20,22 +25,34 @@
         {{ badge }}
       </UBadge>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
 import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional';
 
-withDefaults(
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
+
+const props = withDefaults(
   defineProps<
     Pick<ProfessionalCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'tagline' | 'badges'> & {
       showSubtitle?: boolean
       showBadges?: boolean
+      link?: boolean
+      action?: boolean
     }
   >(),
   {
     showSubtitle: true,
     showBadges: true,
+    link: false,
+    action: false,
   }
 )
+
+const onClick = () => {
+  if (props.action) emit('action')
+}
 </script>

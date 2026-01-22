@@ -1,5 +1,10 @@
 <template>
-  <div class="fx-cell">
+  <component
+    :is="link && to ? 'NuxtLink' : 'div'"
+    :to="link && to ? to : undefined"
+    class="fx-cell"
+    @click="onClick"
+  >
     <div class="fx-cell__media">
       <UAvatar
         :src="avatarUrl || undefined"
@@ -36,7 +41,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -48,11 +53,17 @@ type Props = Pick<CompanyCard.Card, 'to' | 'name' | 'website' | 'badges'> & {
   showSubtitle?: boolean
   showBadges?: boolean
   showTagline?: boolean
+  link?: boolean
+  action?: boolean
 
   // Back-compat with older callsites
   card?: Partial<CompanyCard.Card> | null
   avatar?: string | null
 }
+
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
 
 const props = withDefaults(defineProps<Props>(), {
   avatarUrl: '',
@@ -60,6 +71,8 @@ const props = withDefaults(defineProps<Props>(), {
   showSubtitle: true,
   showBadges: true,
   showTagline: true,
+  link: false,
+  action: false,
 
   card: null,
   avatar: null,
@@ -71,4 +84,8 @@ const name = props.name || props.card?.name || ''
 const website = props.website || props.card?.website || ''
 const badges = props.badges.length ? props.badges : props.card?.badges || []
 const avatarUrl = props.avatarUrl || props.card?.avatarUrl || props.avatar || ''
+
+const onClick = () => {
+  if (props.action) emit('action')
+}
 </script>

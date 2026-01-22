@@ -1,5 +1,10 @@
 <template>
-  <div class="fx-cell">
+  <component
+    :is="link && to ? 'NuxtLink' : 'div'"
+    :to="link && to ? to : undefined"
+    class="fx-cell"
+    @click="onClick"
+  >
     <div class="fx-cell__media">
       <UAvatar
         :src="resolvedImageUrl || undefined"
@@ -30,7 +35,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -45,7 +50,13 @@ type Props = Pick<PlaceCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'i
   showSubtitle?: boolean
   showSource?: boolean
   showTagline?: boolean
+  link?: boolean
+  action?: boolean
 }
+
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
 
 const props = withDefaults(defineProps<Props>(), {
   source: 'fireux',
@@ -53,6 +64,8 @@ const props = withDefaults(defineProps<Props>(), {
   showSubtitle: true,
   showSource: false,
   showTagline: false,
+  link: false,
+  action: false,
 })
 
 const resolvedAddress = computed(
@@ -82,4 +95,8 @@ const sourceLabel = computed(() =>
         ? 'Google'
         : ''
 )
+
+const onClick = () => {
+  if (props.action) emit('action')
+}
 </script>

@@ -1,5 +1,10 @@
 <template>
-  <div class="fx-card fx-card--pill">
+  <component
+    :is="link && to ? 'NuxtLink' : 'div'"
+    :to="link && to ? to : undefined"
+    class="fx-card fx-card--pill"
+    @click="onClick"
+  >
     <UAvatar :src="avatarUrl" :alt="displayName" size="xs" />
 
     <div class="min-w-0 flex-1">
@@ -23,7 +28,7 @@
         {{ badge }}
       </UBadge>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -35,12 +40,24 @@ type PillProps = Pick<
 > & {
   showSubtitle?: boolean
   showBadges?: boolean
+  link?: boolean
+  action?: boolean
 }
 
-withDefaults(defineProps<PillProps>(), {
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
+
+const props = withDefaults(defineProps<PillProps>(), {
   badges: () => [],
   profiles: () => [],
   showSubtitle: true,
   showBadges: true,
+  link: false,
+  action: false,
 })
+
+const onClick = () => {
+  if (props.action) emit('action')
+}
 </script>

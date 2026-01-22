@@ -1,5 +1,10 @@
 <template>
-  <div class="fx-cell">
+  <component
+    :is="link && to ? 'NuxtLink' : 'div'"
+    :to="link && to ? to : undefined"
+    class="fx-cell"
+    @click="onClick"
+  >
     <div class="fx-cell__media">
       <UAvatar :src="thumbnailUrl || undefined" :alt="displayName" size="sm" />
 
@@ -32,7 +37,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -50,14 +55,26 @@ type Props = Omit<
   showBadges?: boolean
   showTagline?: boolean
   showMeta?: boolean
+  link?: boolean
+  action?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
+
+const props = withDefaults(defineProps<Props>(), {
   badges: () => [],
   tagline: '',
   userCount: null,
   showBadges: true,
   showTagline: true,
   showMeta: true,
+  link: false,
+  action: false,
 })
+
+const onClick = () => {
+  if (props.action) emit('action')
+}
 </script>

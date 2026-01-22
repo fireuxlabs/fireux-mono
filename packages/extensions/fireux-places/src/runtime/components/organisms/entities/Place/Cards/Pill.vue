@@ -1,5 +1,10 @@
 <template>
-  <div class="fx-card fx-card--pill cursor-pointer">
+  <component
+    :is="link && to ? 'NuxtLink' : 'div'"
+    :to="link && to ? to : undefined"
+    class="fx-card fx-card--pill cursor-pointer"
+    @click="onClick"
+  >
     <UAvatar
       :src="resolvedAvatarUrl || undefined"
       :alt="title"
@@ -26,7 +31,7 @@
         {{ badge }}
       </UBadge>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -38,12 +43,24 @@ defineOptions({ inheritAttrs: false })
 type PillProps = Pick<PlaceCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean
   showBadges?: boolean
+  link?: boolean
+  action?: boolean
 }
+
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
 
 const props = withDefaults(defineProps<PillProps>(), {
   showSubtitle: true,
   showBadges: true,
+  link: false,
+  action: false,
 })
 
 const resolvedAvatarUrl = computed(() => props.avatarUrl || '')
+
+const onClick = () => {
+  if (props.action) emit('action')
+}
 </script>
