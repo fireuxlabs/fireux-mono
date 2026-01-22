@@ -133,26 +133,34 @@ const targetCollection = computed(
   () => props.targetCollection || sourceCollection.value
 )
 
+const targetCollectionComputed = computed(() => targetCollection.value || 'record')
+const collectionLabel = computed(() => {
+  const val = String(targetCollectionComputed.value || 'record')
+  if (val.endsWith('ies')) return `${val.slice(0, -3)}y`
+  if (val.endsWith('s')) return val.slice(0, -1)
+  return val
+})
+
 const existingBadgeLabel = computed(() => 'Already in database')
 
 const confirmLabel = computed(() => {
   if (props.confirmLabel) return props.confirmLabel
-  if (!isExisting.value) return 'Add record and use in job'
+  if (!isExisting.value) return `Add ${collectionLabel.value} and use in job`
   if (sourceCollection.value && targetCollection.value && sourceCollection.value !== targetCollection.value) {
-    return 'Add overlay and use in job'
+    return `Add overlay and use ${collectionLabel.value} in job`
   }
-  return 'Use record in job'
+  return `Use ${collectionLabel.value} in job`
 })
 
 const existingNote = computed(() => {
   if (props.existingNote) return props.existingNote
   if (!isExisting.value) {
-    return 'Confirm will create the record and use it for this job.'
+    return `Confirm will create the ${collectionLabel.value} and use it for this job.`
   }
   if (sourceCollection.value && targetCollection.value && sourceCollection.value !== targetCollection.value) {
-    return 'A base record already exists. Confirm will create the overlay and use it for this job.'
+    return `A base record already exists. Confirm will create the overlay and use the ${collectionLabel.value} for this job.`
   }
-  return 'Confirm will reuse the existing record — no duplicate will be created.'
+  return `Confirm will reuse the existing ${collectionLabel.value} — no duplicate will be created.`
 })
 
 const placeRef = computed(() => props.place)
