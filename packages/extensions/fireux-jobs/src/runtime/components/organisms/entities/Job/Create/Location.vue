@@ -1,5 +1,6 @@
 <template>
   <UCard>
+    <p class="text-xs text-gray-500">Hello* 10 Location</p>
     <template #header>
       <div class="space-y-1">
         <p class="text-sm text-gray-500">Step 1 · Location</p>
@@ -18,9 +19,9 @@
 
     <div class="space-y-4">
       <div v-show="!chosenPlaceCard" class="space-y-4">
-        <UFormGroup v-if="placeCollections.length > 1" label="Place type">
+        <UFormField v-if="placeCollections.length > 1" label="Place type">
           <URadioGroup v-model="selectedCollection" :items="collectionOptions" />
-        </UFormGroup>
+        </UFormField>
 
         <ClientOnly>
           <PlaceSearchSection
@@ -38,9 +39,9 @@
         <PlaceCardsCell v-bind="chosenPlaceCard" :show-source="true" />
       </div>
 
-      <UFormGroup v-show="!chosenPlaceCard" label="Selected place id" required>
+      <UFormField v-show="!chosenPlaceCard" label="Selected place id" required>
         <UInput v-model="form.place_id" placeholder="Place id" />
-      </UFormGroup>
+      </UFormField>
     </div>
   </UCard>
 </template>
@@ -174,7 +175,7 @@ const onPlaceConfirmed = async (payload: {
           search_term_normalized: normalizeSearchTerm(
             `${place.name} ${place.formatted_address ?? ''}`
           ),
-        })
+        } as any)
         confirmDebug.value = {
           ...confirmDebug.value,
           stage: 'kitchen-created',

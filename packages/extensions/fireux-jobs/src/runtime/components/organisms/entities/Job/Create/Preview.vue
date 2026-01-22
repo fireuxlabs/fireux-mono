@@ -7,6 +7,7 @@
 
 <template>
   <UCard>
+    <p class="text-xs text-gray-500">Hello* 9 Preview</p>
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="space-y-1">

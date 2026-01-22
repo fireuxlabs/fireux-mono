@@ -1,37 +1,45 @@
 <template>
   <div class="space-y-3">
-    <UCard v-if="agentCard">
-      <template #header>
-        <div class="space-y-1">
-          <p class="text-sm text-gray-500">Creator</p>
-          <h2 class="text-lg font-semibold">Current agent</h2>
-          <p class="text-sm text-gray-500">This job will be stamped to this agent.</p>
-        </div>
-      </template>
+    <p class="text-xs text-gray-500">Hello* 1 System</p>
+    <ClientOnly>
+      <p class="text-xs text-gray-500">Hello* 2 ClientOnly</p>
+      <UCard v-if="agentCard">
+        <template #header>
+          <div class="space-y-1">
+            <p class="text-sm text-gray-500">Creator</p>
+            <h2 class="text-lg font-semibold">Current agent</h2>
+            <p class="text-sm text-gray-500">This job will be stamped to this agent.</p>
+          </div>
+        </template>
 
-      <OrganismsProfilesAgentCardsPill v-bind="agentCard" :show-subtitle="false" :link="true" />
-    </UCard>
+        <p class="text-xs text-gray-500">Hello* 3 AgentCard</p>
+        <OrganismsProfilesAgentCardsPill v-bind="agentCard" :show-subtitle="false" :link="true" />
+      </UCard>
 
-    <MoleculesCreateShell
-      :loading="submitting"
-      submit-label="Create"
-      @clear="onReset"
-      @submit="onSubmit"
-    >
-      <template #write>
-        <JobCreateWrite v-model:form="form" />
-      </template>
+      <p class="text-xs text-gray-500">Hello* 4 CreateShell</p>
+      <MoleculesCreateShell
+        :loading="submitting"
+        submit-label="Create"
+        @clear="onReset"
+        @submit="onSubmit"
+      >
+        <template #write>
+          <p class="text-xs text-gray-500">Hello* 5 WriteSlot</p>
+          <JobCreateWrite v-model:form="form" />
+        </template>
 
-      <template #preview>
-        <JobCreatePreview :form="form" />
-      </template>
-    </MoleculesCreateShell>
+        <template #preview>
+          <p class="text-xs text-gray-500">Hello* 6 PreviewSlot</p>
+          <JobCreatePreview :form="form" />
+        </template>
+      </MoleculesCreateShell>
 
-    <!-- DEV scaffold check (temporary) -->
-    <pre
-      v-if="showCheck"
-      class="text-xs text-slate-500 whitespace-pre-wrap"
-    >{{ JSON.stringify(check, null, 2) }}</pre>
+      <!-- DEV scaffold check (temporary) -->
+      <pre
+        v-if="showCheck"
+        class="text-xs text-slate-500 whitespace-pre-wrap"
+      >{{ JSON.stringify(check, null, 2) }}</pre>
+    </ClientOnly>
   </div>
 </template>
 

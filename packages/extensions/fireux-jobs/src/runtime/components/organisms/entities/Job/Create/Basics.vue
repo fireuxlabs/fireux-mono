@@ -2,41 +2,37 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm text-gray-500">Step 2 · Job basics</p>
-        <h2 class="text-lg font-semibold">Write the core details</h2>
         <p class="text-sm text-gray-500">
-          Capture the job basics and required links for the model.
+          {{ props.stepLabel }} · {{ props.title }}
+        </p>
+        <h2 class="text-lg font-semibold">{{ props.title }}</h2>
+        <p v-if="props.subtitle" class="text-sm text-gray-500">
+          {{ props.subtitle }}
         </p>
       </div>
     </template>
 
     <div class="space-y-5">
-      <UFormGroup label="Job title" required>
+      <UFormField label="Job title" required>
         <UInput
           v-model="form.title"
           autofocus
           placeholder="e.g. Sous Chef (Evenings)"
           icon="i-lucide-briefcase"
         />
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup label="Job description" required>
+      <UFormField label="Job description" required>
         <UTextarea
           v-model="form.description"
           placeholder="What is the job, roughly when, and what are you looking for?"
           :rows="7"
         />
-      </UFormGroup>
+      </UFormField>
 
-      <div class="grid gap-5 md:grid-cols-2">
-        <UFormGroup label="Company id (optional)">
-          <UInput v-model="form.company_id" placeholder="Company overlay id" />
-        </UFormGroup>
-
-        <UFormGroup label="Status" required>
-          <USelect v-model="form.status" :options="statusOptions" />
-        </UFormGroup>
-      </div>
+      <UFormField label="Status" required>
+        <USelect v-model="form.status" :options="statusOptions" />
+      </UFormField>
     </div>
   </UCard>
 </template>
@@ -48,6 +44,19 @@ const statusOptions = [
   { label: 'Open', value: 'open' },
   { label: 'Closed', value: 'closed' },
 ]
+
+const props = withDefaults(
+  defineProps<{
+    stepLabel?: string
+    title?: string
+    subtitle?: string
+  }>(),
+  {
+    stepLabel: 'Step 2',
+    title: 'Job basics',
+    subtitle: '',
+  }
+)
 
 // v-model:form connects to useJobCreate().form
 const form = defineModel<JobCreateForm>('form', { required: true })

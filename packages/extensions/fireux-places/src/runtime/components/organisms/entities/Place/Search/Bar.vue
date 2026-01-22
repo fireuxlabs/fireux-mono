@@ -2,7 +2,7 @@
   <UInput
     v-model="internalValue"
     icon="i-lucide-search"
-    placeholder="Type a place name…"
+    :placeholder="placeholder"
     size="lg"
     autofocus
   />
@@ -13,13 +13,18 @@ import { computed } from 'vue'
 
 interface SearchBarProps {
   modelValue: string
+  placeholder?: string
 }
 
-const props = defineProps<SearchBarProps>()
+const props = withDefaults(defineProps<SearchBarProps>(), {
+  placeholder: 'Type a place name…',
+})
 const emit = defineEmits<(event: 'update:modelValue', value: string) => void>()
 
 const internalValue = computed({
   get: () => props.modelValue,
   set: (value: string) => emit('update:modelValue', value),
 })
+
+const placeholder = computed(() => props.placeholder)
 </script>

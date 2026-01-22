@@ -1,37 +1,35 @@
 <template>
-  <section class="space-y-4">
-    <UCard :ui="{ body: 'space-y-4' }">
-      <!-- Search input -->
-      <PlaceSearchBar v-model="query" />
+  <div class="space-y-4">
+    <!-- Search input -->
+    <PlaceSearchBar v-model="query" :placeholder="searchPlaceholder" />
 
-      <!-- Selected place -->
-      <PlaceSearchSelected
-        v-if="selected"
-        :place="selected"
-        :confirming="isConfirming"
-        :claiming="isClaiming"
-        :confirm-label="confirmLabel"
-        :existing-note="existingNote"
-        @clear="clearSelection"
-        @confirm="onConfirm"
-        @claim="onClaim"
-      />
+    <!-- Selected place -->
+    <PlaceSearchSelected
+      v-if="selected"
+      :place="selected"
+      :confirming="isConfirming"
+      :claiming="isClaiming"
+      :confirm-label="confirmLabel"
+      :existing-note="existingNote"
+      :target-collection="props.targetCollection || props.collection"
+      @clear="clearSelection"
+      @confirm="onConfirm"
+      @claim="onClaim"
+    />
 
-      <!-- Suggestions -->
-      <PlaceSearchDropdown
-        v-else-if="results.length"
-        :cells="results"
-        @select="select"
-      />
+    <!-- Suggestions -->
+    <PlaceSearchDropdown
+      v-else-if="results.length"
+      :cells="results"
+      @select="select"
+    />
 
-      <!-- Status messages -->
-      <p v-if="isSearching" class="text-xs text-muted">Searching…</p>
-      <p v-else-if="showEmpty" class="text-xs text-muted">
-        No results yet—try another name.
-      </p>
-    </UCard>
-
-  </section>
+    <!-- Status messages -->
+    <p v-if="isSearching" class="text-xs text-muted">Searching…</p>
+    <p v-else-if="showEmpty" class="text-xs text-muted">
+      No results yet—try another name.
+    </p>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -49,6 +47,7 @@ import type { BasePlace, PlaceUpsertInput } from '../../../../../models/objects/
 interface Props {
   type?: string | null
   collection?: string
+  targetCollection?: string
   normalizedField?: string
   localFallback?: boolean
   extraCollections?: string[]
@@ -60,6 +59,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   type: null,
   collection: 'places',
+  targetCollection: undefined,
   normalizedField: undefined,
   localFallback: false,
   extraCollections: () => [],
@@ -84,6 +84,19 @@ const { query, results, selected, isSearching, select, clear } =
 
 const confirmLabel = computed(() => props.confirmLabel)
 const existingNote = computed(() => props.existingNote)
+
+const singularize = (value: string) => {
+  if (!value) return 'place'
+  if (value.endsWith('ies')) return `${value.slice(0, -3)}y`
+  if (value.endsWith('s')) return value.slice(0, -1)
+  return value
+}
+
+const searchPlaceholder = computed(() => {
+  const target = props.targetCollection || props.collection || 'places'
+  const label = singularize(String(target)).toLowerCase()
+  return `Type a ${label} name…`
+})
 
 
 const { ensurePlaceExists } = usePlaceSave({ type: props.type })

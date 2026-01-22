@@ -47,6 +47,7 @@ const props = withDefaults(
     showBadges: true,
     link: false,
     action: false,
+    badges: () => [],
   }
 )
 

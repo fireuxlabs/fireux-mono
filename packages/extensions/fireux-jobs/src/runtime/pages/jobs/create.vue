@@ -1,10 +1,3 @@
-// FILE: packages/extensions/fireux-jobs/src/runtime/pages/jobs/create.vue
-// NOTE for Copilot:
-// - This page is the ONLY entry point for creating jobs.
-// - It delegates ALL form state + submission to useJobCreate().
-// - The create flow is fake for now (no Firestore) but the UI and pipeline are real.
-// - When wiring persistence, update useJobCreate.submit() only.
-
 <template>
   <UPage>
     <UPageHeader
@@ -21,32 +14,33 @@
       <OrganismsProfilesAgentCTA v-else-if="!canPostJob" />
 
       <!-- Main create shell: write + preview -->
-      <MoleculesCreateShell
-        v-else
-        :loading="submitting"
-        submit-label="Create"
-        @clear="onReset"
-        @submit="onSubmit"
-      >
-        <template #write>
-          <JobCreateWrite v-model:form="form" />
-        </template>
+      <div v-else class="space-y-3">
+        <MoleculesCreateShell
+          :loading="submitting"
+          submit-label="Create"
+          @clear="onReset"
+          @submit="onSubmit"
+        >
+          <template #write>
+            <JobCreateWrite v-model:form="form" />
+          </template>
 
-        <template #preview>
-          <JobCreatePreview :form="form" />
-        </template>
-      </MoleculesCreateShell>
+          <template #preview>
+            <JobCreatePreview :form="form" />
+          </template>
+        </MoleculesCreateShell>
+      </div>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
 import { useHead, useRouter } from 'nuxt/app'
+import { computed, ref } from 'vue'
+import { useJobCreate } from '../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 import { useJobPermissions } from '../../composables/useJobPermissions.ts'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
-import { useJobCreate } from '../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
 
 definePageMeta({
   layout: 'default',

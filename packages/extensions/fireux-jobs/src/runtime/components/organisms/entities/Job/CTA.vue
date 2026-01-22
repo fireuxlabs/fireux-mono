@@ -30,9 +30,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
+import { computed } from 'vue'
 import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const { appName, ecosystem, isTenant } = useFireUXConfig()
