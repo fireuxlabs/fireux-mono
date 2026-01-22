@@ -1,6 +1,6 @@
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Create/Location.vue -->
 <template>
   <UCard>
-    <p class="text-xs text-gray-500">Hello* 10 Location</p>
     <template #header>
       <div class="space-y-1">
         <p class="text-sm text-gray-500">Step 1 · Location</p>
@@ -26,9 +26,7 @@
         <ClientOnly>
           <PlaceSearchSection
             :collection="selectedCollection"
-            normalized-field="search_term_normalized"
             :local-fallback="true"
-            :extra-collections="[]"
             :allow-google="allowGoogle"
             @confirmed="onPlaceConfirmed"
           />
@@ -39,9 +37,6 @@
         <PlaceCardsCell v-bind="chosenPlaceCard" :show-source="true" />
       </div>
 
-      <UFormField v-show="!chosenPlaceCard" label="Selected place id" required>
-        <UInput v-model="form.place_id" placeholder="Place id" />
-      </UFormField>
     </div>
   </UCard>
 </template>
@@ -74,14 +69,13 @@ const placeCollection = placeCollections[0] || 'places'
 const selectedCollection = ref(placeCollection)
 const collectionOptions = computed(() =>
   placeCollections.map((value: string) => ({
-    label: value === 'kitchens' ? 'Kitchens' : value === 'places' ? 'Places' : value,
+    label: value,
     value,
   }))
 )
 const allowGoogle =
   typeof jobsConfig.allowGoogle === 'boolean' ? jobsConfig.allowGoogle : true
 
-const confirmDebug = ref<Record<string, unknown> | null>(null)
 const chosenPlace = ref<PlaceUpsertInput | null>(null)
 const chosenPlaceId = ref<string | null>(null)
 
@@ -118,24 +112,6 @@ const onPlaceConfirmed = async (payload: {
   const id = payload.placeId
   const place = payload.place
 
-  confirmDebug.value = {
-    stage: 'start',
-    selectedCollection: selectedCollection.value,
-    placeId: id,
-    placeName: place?.name ?? '',
-  }
-
-  if (import.meta.dev) {
-    console.info('[jobs][place-confirm]', {
-      ecosystem,
-      jobsConfig,
-      placeCollections,
-      selectedCollection: selectedCollection.value,
-      placeId: id,
-      placeName: place?.name ?? '',
-    })
-  }
-
   if (selectedCollection.value === 'kitchens') {
     try {
       const existingSnap = await getDoc(doc(db, 'kitchens', id))
@@ -151,13 +127,6 @@ const onPlaceConfirmed = async (payload: {
             search_term_normalized:
               existing.search_term_normalized || searchTermNormalized,
           } as any)
-        }
-        confirmDebug.value = {
-          ...confirmDebug.value,
-          stage: 'kitchen-existing',
-        }
-        if (import.meta.dev) {
-          console.info('[jobs][place-confirm] kitchen exists', { id })
         }
       } else {
         await createKitchen({
@@ -176,20 +145,8 @@ const onPlaceConfirmed = async (payload: {
             `${place.name} ${place.formatted_address ?? ''}`
           ),
         } as any)
-        confirmDebug.value = {
-          ...confirmDebug.value,
-          stage: 'kitchen-created',
-        }
-        if (import.meta.dev) {
-          console.info('[jobs][place-confirm] kitchen created', { id })
-        }
       }
     } catch (err) {
-      confirmDebug.value = {
-        ...confirmDebug.value,
-        stage: 'kitchen-error',
-        error: err instanceof Error ? err.message : String(err),
-      }
       if (import.meta.dev) {
         console.error('[jobs][place-confirm] kitchen error', err)
       }
@@ -199,11 +156,6 @@ const onPlaceConfirmed = async (payload: {
   form.value = {
     ...form.value,
     place_id: id,
-  }
-
-  confirmDebug.value = {
-    ...confirmDebug.value,
-    stage: 'done',
   }
 
   chosenPlace.value = place

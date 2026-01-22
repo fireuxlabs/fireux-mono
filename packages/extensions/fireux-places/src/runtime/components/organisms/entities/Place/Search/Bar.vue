@@ -1,3 +1,4 @@
+<!-- FILE: packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/Bar.vue -->
 <template>
   <UInput
     v-model="internalValue"

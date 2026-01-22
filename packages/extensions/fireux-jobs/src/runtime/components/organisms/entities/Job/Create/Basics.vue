@@ -1,3 +1,4 @@
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Create/Basics.vue -->
 <template>
   <UCard>
     <template #header>

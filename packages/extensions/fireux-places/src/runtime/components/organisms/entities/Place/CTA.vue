@@ -1,3 +1,4 @@
+<!-- FILE: packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/CTA.vue -->
 <template>
   <UPageCTA
     title="Create a place"

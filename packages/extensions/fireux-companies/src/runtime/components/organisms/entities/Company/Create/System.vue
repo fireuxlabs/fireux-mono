@@ -12,9 +12,7 @@
 
       <PlaceSearchSection
         collection="companies"
-        normalized-field="search_term_normalized"
         :local-fallback="true"
-        :extra-collections="['places']"
         :allow-google="true"
         @confirmed="onPlaceConfirmed"
       />
