@@ -9,52 +9,58 @@
   <UCard>
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
+        <div class="space-y-1">
           <p class="text-xs uppercase tracking-wide text-gray-400">Preview</p>
           <h3 class="text-base font-semibold text-gray-900">
             {{ title }}
           </h3>
 
-          <div v-if="agentCard" class="mt-3 space-y-1">
-            <p class="text-xs uppercase tracking-wide text-gray-400">
-              Posted by
-            </p>
-            <component
-              :is="wrapperFor(agentCard)"
-              v-bind="wrapperPropsFor(agentCard)"
-              class="block"
-            >
-              <OrganismsProfilesAgentCardsPill v-bind="agentCard" :show-subtitle="false" />
-            </component>
+          <div class="flex flex-wrap items-center gap-2">
+            <UBadge size="xs" variant="soft" color="primary">{{ statusLabel }}</UBadge>
+            <UBadge v-if="placeId" size="xs" variant="soft" color="neutral">
+              Place: {{ placeId }}
+            </UBadge>
+            <UBadge v-if="companyId" size="xs" variant="soft" color="neutral">
+              Company: {{ companyId }}
+            </UBadge>
           </div>
+        </div>
+
+        <div v-if="agentCard" class="min-w-[220px]">
+          <p class="text-xs uppercase tracking-wide text-gray-400">
+            Posted by
+          </p>
+          <component
+            :is="wrapperFor(agentCard)"
+            v-bind="wrapperPropsFor(agentCard)"
+            class="block"
+          >
+            <OrganismsProfilesAgentCardsPill v-bind="agentCard" :show-subtitle="false" />
+          </component>
         </div>
       </div>
     </template>
 
-    <div class="space-y-3 text-sm text-gray-600">
-      <p>This is how the job will look in a simple pipeline card.</p>
-
-      <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-3">
-        <div class="grid gap-3 md:grid-cols-2">
+    <div class="space-y-4 text-sm text-gray-600">
+      <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
+        <div class="grid gap-4 md:grid-cols-2">
           <div>
             <p class="text-xs uppercase tracking-wide text-gray-400">Place</p>
-            <p class="text-sm text-gray-700">{{ placeId || 'Not selected' }}</p>
+            <p class="text-sm text-gray-700">
+              {{ placeId || 'Not selected' }}
+            </p>
           </div>
           <div>
             <p class="text-xs uppercase tracking-wide text-gray-400">Company</p>
-            <p class="text-sm text-gray-700">{{ companyId || 'Not set' }}</p>
-          </div>
-          <div>
-            <p class="text-xs uppercase tracking-wide text-gray-400">Status</p>
-            <p class="text-sm text-gray-700">{{ statusLabel }}</p>
+            <p class="text-sm text-gray-700">
+              {{ companyId || 'Not set' }}
+            </p>
           </div>
         </div>
       </div>
 
-      <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-3">
-        <p class="text-xs uppercase tracking-wide text-gray-400">
-          Description
-        </p>
+      <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-400">Description</p>
         <p class="whitespace-pre-line text-sm text-gray-700">
           {{ description || 'No description yet.' }}
         </p>

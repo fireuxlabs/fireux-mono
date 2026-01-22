@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref } from 'vue';
 
 type TabValue = 'write' | 'preview'
 
@@ -67,4 +67,5 @@ defineEmits<{
   gap: 0.75rem;
   margin-top: 1rem;
 }
+
 </style>

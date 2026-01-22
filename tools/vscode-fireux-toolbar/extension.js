@@ -710,13 +710,13 @@ function activate(context) {
     )
   }
 
+  // Single Git button (preview contents of files waiting to be confirmed)
   makeBtn(
     '$(git-commit) Git Q',
-    'Show staged file contents',
+    'Show files waiting to be confirmed',
     'fireuxToolbar.gitQPreview',
     91
   )
-}
 
   // When the Git Tree task finishes, open the generated docs/git-tree.md
   const taskWatcher = vscode.tasks.onDidEndTaskProcess(async (e) => {
@@ -742,6 +742,7 @@ function activate(context) {
     }
   })
   context.subscriptions.push(taskWatcher)
+}
 
 function deactivate() {}
 

@@ -24,12 +24,14 @@
 </template>
 
 <script setup lang="ts">
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useJobCreate } from '../../../../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
 
 const router = useRouter()
 const { form, reset, submit } = useJobCreate()
+const { coreUser } = useUser()
 
 const submitting = ref(false)
 
@@ -53,6 +55,7 @@ const showCheck = import.meta.dev
 const check = computed(() => {
   const missing: string[] = []
 
+  if (!String(form.value.place_id ?? '').trim()) missing.push('place_id')
   if (!String(form.value.title ?? '').trim()) missing.push('title')
   if (!String(form.value.description ?? '').trim()) missing.push('description')
 
@@ -62,8 +65,9 @@ const check = computed(() => {
 
   return {
     status: missing.length ? 'incomplete' : 'ready',
+    agentId: coreUser.value?.uid ?? null,
     missing,
-    notCapturedYet: ['company/place/kitchen links', 'schedule fields', 'compensation fields'],
+    notCapturedYet: ['schedule fields', 'compensation fields'],
   }
 })
 </script>

@@ -28,6 +28,7 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     const pub = (rc.public ||= {}) as Record<string, any>
     const fireux = (pub.fireux ||= {}) as Record<string, any>
     const currentPlaces = fireux.places
+    const currentJobs = fireux.jobs
     const miseboxPlacesDefaults = {
       enabled: true,
       types: ['kitchen', 'company'],
@@ -35,10 +36,18 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
         kitchen: ['restaurant', 'cafe', 'food_truck'],
       },
     }
+    const miseboxJobsDefaults = {
+      enabled: true,
+      placeCollections: ['kitchens'],
+    }
 
     fireux.places = currentPlaces && typeof currentPlaces === 'object'
       ? { ...miseboxPlacesDefaults, ...currentPlaces }
       : { ...miseboxPlacesDefaults }
+
+    fireux.jobs = currentJobs && typeof currentJobs === 'object'
+      ? { ...miseboxJobsDefaults, ...currentJobs }
+      : { ...miseboxJobsDefaults }
 
     // Layer runtime pages/layouts/middleware
     configurePages(resolver, nuxt)

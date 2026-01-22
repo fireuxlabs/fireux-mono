@@ -20,7 +20,11 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   defaults: { prefix: 'Fire' },
   async setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    configureRuntime(nuxt, 'jobs')
+    configureRuntime(nuxt, 'jobs', {
+      enabled: true,
+      placeCollections: ['places'],
+      allowGoogle: true,
+    })
     configurePlugins(resolver)
     configureComponents(resolver)
     configureComposables(resolver)

@@ -227,7 +227,7 @@ async function onConfirm(place: BasePlace) {
     }
   } finally {
     isConfirming.value = false
-    selected.value = null
+    clear()
   }
 }
 
