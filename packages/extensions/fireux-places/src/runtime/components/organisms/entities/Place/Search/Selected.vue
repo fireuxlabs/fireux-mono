@@ -119,19 +119,16 @@ const props = defineProps<{
   targetCollection?: string
 }>()
 
-const isBusy = computed(
-  () => !!props.confirming || !!props.claiming || !!props.disabled
-)
+const isBusy = computed(() => !!props.confirming || !!props.claiming || !!props.disabled)
 
-const isExisting = computed(() => props.place.source !== 'google')
-const isClaimed = computed(() => !!props.place.claimed_by)
+// Prefer a `cell` wrapper when callers provide `place.cell`, otherwise use `place` directly.
+const placeRef = computed(() => ((props.place as any)?.cell ?? props.place) as BasePlace)
+
+const isExisting = computed(() => placeRef.value.source !== 'google')
+const isClaimed = computed(() => !!(placeRef.value as any).claimed_by)
 const canClaim = computed(() => isExisting.value && !isClaimed.value && !isBusy.value)
-const sourceCollection = computed(
-  () => (props.place as any)?.collection as string | undefined
-)
-const targetCollection = computed(
-  () => props.targetCollection || sourceCollection.value
-)
+const sourceCollection = computed(() => (placeRef.value as any)?.collection as string | undefined)
+const targetCollection = computed(() => props.targetCollection || sourceCollection.value)
 
 const targetCollectionComputed = computed(() => targetCollection.value || 'record')
 const collectionLabel = computed(() => {
@@ -163,10 +160,7 @@ const existingNote = computed(() => {
   return `Confirm will reuse the existing ${collectionLabel.value} — no duplicate will be created.`
 })
 
-const placeRef = computed(() => props.place)
 const { avatar } = usePlaceLogoState(placeRef)
 
-const resolvedImageUrl = computed(
-  () => props.place.place_image || avatar.value || ''
-)
+const resolvedImageUrl = computed(() => (placeRef.value as any).place_image || avatar.value || '')
 </script>
