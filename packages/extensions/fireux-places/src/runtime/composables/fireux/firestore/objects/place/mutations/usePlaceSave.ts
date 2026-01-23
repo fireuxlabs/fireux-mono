@@ -149,7 +149,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       })
     }
 
-    await setDocument(collectionPath, id, payload)
+    await setDocument(collectionPath, id, payload, { creator: true })
 
     if (import.meta.dev) console.log(`[fireux-places] Created new place: ${id}`)
 
