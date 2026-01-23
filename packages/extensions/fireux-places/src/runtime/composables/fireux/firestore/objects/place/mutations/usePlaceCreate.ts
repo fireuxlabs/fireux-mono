@@ -12,6 +12,7 @@ export const PlacePayload = {
   lat: 0,
   lng: 0,
   place_image: '',
+  image_shade: 'neutral',
   claimed_by: '',
   source: '',
   search_term: '',

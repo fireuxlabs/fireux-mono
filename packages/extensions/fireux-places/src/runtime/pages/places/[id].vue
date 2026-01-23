@@ -38,44 +38,50 @@
         <div v-else class="space-y-4">
           <UCard>
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
-              <div v-if="place.place_image" class="flex flex-col gap-2">
-                <div class="text-xs text-dimmed">Neutral</div>
-                <div
-                  class="flex h-20 w-20 items-center justify-center rounded-md p-3 ring-1 ring-gray-200"
-                  style="background-color: var(--ui-color-neutral-700);"
-                >
-                  <img
-                    :src="place.place_image"
-                    :alt="place.name ?? 'Place image'"
-                    class="h-12 w-12 object-contain"
+              <div class="flex flex-col gap-2">
+                <div class="text-xs font-medium text-dimmed">Image shade</div>
+                <div class="flex flex-wrap gap-2">
+                  <PlaceCardsPill
+                    :avatar-url="place.place_image || ''"
+                    title="Light"
+                    subtitle=""
+                    :badges="[]"
+                    :show-badges="false"
+                    :show-subtitle="false"
+                    :image-shade="'light'"
                   />
-                </div>
-                <div class="text-xs text-dimmed">Light</div>
-                <div
-                  class="flex h-20 w-20 items-center justify-center rounded-md p-3 ring-1 ring-gray-200"
-                  style="background-color: #ffffff;"
-                >
-                  <img
-                    :src="place.place_image"
-                    :alt="place.name ?? 'Place image'"
-                    class="h-12 w-12 object-contain"
+                  <PlaceCardsPill
+                    :avatar-url="place.place_image || ''"
+                    title="Dark"
+                    subtitle=""
+                    :badges="[]"
+                    :show-badges="false"
+                    :show-subtitle="false"
+                    :image-shade="'dark'"
                   />
-                </div>
-                <div class="text-xs text-dimmed">Dark</div>
-                <div
-                  class="flex h-20 w-20 items-center justify-center rounded-md p-3 ring-1 ring-white/20"
-                  style="background-color: #000000;"
-                >
-                  <img
-                    :src="place.place_image"
-                    :alt="place.name ?? 'Place image'"
-                    class="h-12 w-12 object-contain"
+                  <PlaceCardsPill
+                    :avatar-url="place.place_image || ''"
+                    title="Neutral"
+                    subtitle=""
+                    :badges="[]"
+                    :show-badges="false"
+                    :show-subtitle="false"
+                    :image-shade="'neutral'"
+                  />
+                  <PlaceCardsPill
+                    :avatar-url="place.place_image || ''"
+                    title="None"
+                    subtitle=""
+                    :badges="[]"
+                    :show-badges="false"
+                    :show-subtitle="false"
                   />
                 </div>
               </div>
 
               <PlaceCardsPreview
                 :image-url="place.place_image ?? ''"
+                :image-shade="place.image_shade"
                 :name="place.name ?? ''"
                 :formatted-address="place.formatted_address ?? ''"
                 :source="place.source ?? 'fireux'"
@@ -176,7 +182,7 @@ import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import type { Place } from '../../models/objects/place.model'
+import type { Place, PlaceImageShade } from '../../models/objects/place.model'
 
 definePageMeta({
   layout: 'default',
@@ -207,6 +213,10 @@ const pageDescription = computed(
 
 const isExisting = computed(() => place.value?.source !== 'google')
 const isClaimed = computed(() => !!place.value?.claimed_by)
+
+const currentShade = computed<PlaceImageShade>(() =>
+  place.value?.image_shade ?? 'neutral'
+)
 
 const sourceLabel = computed(() => {
   const source = place.value?.source

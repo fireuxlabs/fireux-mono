@@ -129,12 +129,18 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
         ? search_term_raw.trim()
         : `${name} ${formatted}`.toLowerCase().trim()
 
+    const shadeRaw = typeof (place as any)?.image_shade === 'string'
+      ? String((place as any).image_shade).toLowerCase().trim()
+      : ''
+    const image_shade = shadeRaw === 'light' || shadeRaw === 'dark' ? shadeRaw : 'neutral'
+
     const payload = {
       id,
       source: 'fireux',
       name,
       formatted_address: formatted,
       place_image,
+      image_shade,
       lat,
       lng,
       search_term,

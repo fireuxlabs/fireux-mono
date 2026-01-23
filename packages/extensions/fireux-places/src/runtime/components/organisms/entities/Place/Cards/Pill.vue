@@ -5,12 +5,15 @@
     class="fx-card fx-card--pill cursor-pointer"
     @click="onClick"
   >
-    <UAvatar
-      :src="resolvedAvatarUrl || undefined"
-      :alt="title"
-      size="xs"
-      icon="i-lucide-image"
-    />
+    <span :style="avatarShadeStyle" class="fx-pill__avatar">
+      <img
+        v-if="resolvedAvatarUrl"
+        :src="resolvedAvatarUrl"
+        :alt="title"
+        class="h-4 w-4 object-contain"
+      />
+      <i v-else class="i-lucide-image text-xs" />
+    </span>
 
     <div class="min-w-0 flex-1">
       <div class="min-w-0 truncate text-sm font-medium">{{ title }}</div>
@@ -39,7 +42,10 @@ import type { PlaceCard } from '../../../../../composables/fireux/firestore/obje
 
 defineOptions({ inheritAttrs: false })
 
-type PillProps = Pick<PlaceCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
+type PillProps = Pick<
+  PlaceCard.Card,
+  'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges' | 'imageShade'
+> & {
   showSubtitle?: boolean
   showBadges?: boolean
   link?: boolean
@@ -58,6 +64,19 @@ const props = withDefaults(defineProps<PillProps>(), {
 })
 
 const resolvedAvatarUrl = computed(() => props.avatarUrl || '')
+const avatarShadeStyle = computed(() => {
+  const base =
+    'display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9999px;'
+  const shade = props.imageShade
+  if (!shade) return base
+  const bg =
+    shade === 'light'
+      ? '#111827'
+      : shade === 'dark'
+        ? '#ffffff'
+        : '#f5f5f5'
+  return `${base} background-color: ${bg}; border: 1px solid var(--ui-border);`
+})
 
 const onClick = () => {
   if (props.action) emit('action')

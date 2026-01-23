@@ -11,6 +11,7 @@
         :alt="name"
         size="sm"
         icon="i-lucide-image"
+        :class="avatarShadeClass"
       />
 
       <div class="fx-cell__content fx-cell__stack">
@@ -42,7 +43,10 @@ import { computed } from 'vue'
 import { usePlaceLogoState } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
-type Props = Pick<PlaceCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl'> & {
+type Props = Pick<
+  PlaceCard.Card,
+  'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
+> & {
   formatted_address?: string
   source?: 'google' | 'fireux' | 'manual'
   prop?: string
@@ -84,6 +88,14 @@ const { avatar } = usePlaceLogoState(placeRef)
 const resolvedImageUrl = computed(
   () => props.imageUrl || avatar.value || ''
 )
+
+const avatarShadeClass = computed(() => {
+  const shade = props.imageShade
+  if (!shade) return ''
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return 'fx-avatar-shade--neutral'
+})
 
 const sourceLabel = computed(() =>
   props.source === 'fireux'

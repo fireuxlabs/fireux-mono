@@ -4,7 +4,7 @@
       <UAvatar
         :src="resolvedImageUrl || undefined"
         :alt="name"
-        class="bg-black/90 dark:bg-black"
+        :class="avatarShadeClass"
         size="sm"
         icon="i-lucide-image"
       />
@@ -35,9 +35,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { PlaceImageShade } from '../../../../../models/objects/place.model'
 
 type Props = {
   imageUrl: string
+  imageShade?: PlaceImageShade
   name: string
   formattedAddress: string
   source: 'google' | 'fireux' | 'manual'
@@ -52,6 +54,14 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const resolvedImageUrl = computed(() => props.imageUrl || '')
+
+const avatarShadeClass = computed(() => {
+  const shade = props.imageShade
+  if (!shade) return ''
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return 'fx-avatar-shade--neutral'
+})
 
 const sourceLabel = computed(() =>
   props.source === 'fireux'

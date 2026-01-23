@@ -1,0 +1,561 @@
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+:root {
+	--fx-pill-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+
+body {
+	background: var(--ui-bg);
+	color: var(--ui-text);
+}
+
+@layer base {
+	h1 {
+		@apply text-3xl font-semibold tracking-tight;
+	}
+
+	h2 {
+		@apply text-2xl font-semibold tracking-tight;
+	}
+
+	h3 {
+		@apply text-xl font-semibold tracking-tight;
+	}
+
+	p {
+		@apply leading-7;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+}
+
+@layer components {
+	.pagebody {
+		@apply grid gap-6;
+	}
+
+	.fx-section {
+		@apply grid gap-4;
+	}
+
+	.fx-section__header {
+		@apply flex items-center justify-between gap-3;
+	}
+
+	.fx-section__copy {
+		@apply grid gap-1;
+	}
+
+	.fx-section__grid {
+		@apply grid gap-3 text-sm;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	}
+
+	.fx-section__item {
+		@apply grid gap-1;
+	}
+
+	.fx-section__label {
+		@apply text-xs;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	.fx-section__empty {
+		@apply text-sm;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	/* Dashboard panel layout utilities */
+	.fx-panels-stack {
+		@apply grid gap-8 min-w-0;
+	}
+
+	.fx-panels-stack > * {
+		min-width: 0;
+	}
+
+	.fx-panels-narrow {
+		@apply w-full max-w-xl mx-auto min-w-0;
+	}
+
+	.dashboard-item {
+		min-width: 0;
+		width: 100%;
+		display: block;
+		break-inside: avoid;
+		page-break-inside: avoid;
+		-webkit-column-break-inside: avoid;
+	}
+
+	.fx-panels-grid {
+		@apply grid gap-8;
+	}
+
+	.fx-panels-grid > * {
+		min-width: 0;
+	}
+
+	.fx-panels-grid-2 {
+		@apply grid grid-cols-1 gap-8 lg:grid-cols-2;
+	}
+
+	.fx-panels-grid-2 > * {
+		min-width: 0;
+	}
+
+	.fx-panels-grid-3 {
+		@apply grid grid-cols-1 gap-8 lg:grid-cols-3;
+	}
+
+	.fx-panels-grid-3 > * {
+		min-width: 0;
+	}
+
+	.fx-panels-masonry {
+		columns: 1;
+		column-gap: 2.5rem;
+	}
+
+	@media (min-width: 768px) {
+		.fx-panels-masonry {
+			columns: 2;
+		}
+	}
+
+	.fx-panels-masonry__item {
+		break-inside: avoid;
+		margin-bottom: 2.5rem;
+	}
+
+	.fx-panels-masonry > * {
+		min-width: 0;
+		display: block;
+		break-inside: avoid;
+		page-break-inside: avoid;
+		-webkit-column-break-inside: avoid;
+		margin-bottom: 2.5rem;
+	}
+
+	/* Shared field surface (matches SimpleField display blocks) */
+	.fx-field-surface {
+	  border: 1px solid var(--ui-border);
+	  background: var(--ui-bg-muted);
+	}
+
+	/* Card primitives (apps/users/object surfaces) */
+	.fx-card,
+	.fx-cell {
+		min-width: 0;
+	}
+
+	/* Shared look across pill + cell: same surface, different sizing/layout */
+	.fx-card--pill,
+	.fx-card--cell,
+	.fx-cell {
+		border: 1px solid var(--ui-border);
+		background: var(--ui-bg);
+		box-shadow: var(--fx-pill-shadow);
+		transition: background-color 120ms ease, border-color 120ms ease;
+	}
+
+	.fx-cell {
+		display: block;
+		border-radius: 0.75rem;
+		padding: 0.75rem;
+		transform: translateY(0);
+		transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease,
+			box-shadow 120ms ease;
+	}
+
+	.fx-cell:hover {
+		background: var(--ui-bg-muted);
+		border-color: color-mix(in srgb, var(--ui-border) 50%, var(--ui-primary) 50%);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+		transform: translateY(-1px);
+	}
+
+	.fx-cell:active {
+		transform: translateY(0);
+	}
+
+	.fx-cell:focus-visible {
+		outline: 2px solid var(--ui-primary);
+		outline-offset: 2px;
+	}
+
+
+	.fx-card--pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.375rem 0.5rem;
+		min-width: min(12rem, 100%);
+		max-width: 100%;
+		border-radius: 9999px;
+	}
+
+	.fx-card--pill:hover {
+		background: var(--ui-bg-muted);
+	}
+
+	/* Leading avatar/image: neutral by default; shade classes set vars */
+	.fx-card--pill > :first-child,
+	.fx-card__media > :first-child,
+	.fx-cell__media > :first-child,
+	.fx-preview__row > :first-child {
+		background: var(--fx-avatar-bg, transparent);
+		border: var(--fx-avatar-border, none);
+		border-radius: var(--fx-avatar-radius, 0.5rem);
+		padding: var(--fx-avatar-padding, 0);
+	}
+
+	/* Give the leading avatar/image a touch more presence + inset */
+	.fx-card--pill > :first-child {
+		margin-left: 0.125rem;
+		flex-shrink: 0;
+		transform: scale(1.08);
+		transform-origin: left center;
+	}
+
+	.fx-card--cell {
+		display: block;
+		border-radius: 0.75rem;
+		padding: 0.75rem;
+	}
+
+	.fx-card--cell:hover {
+		border-color: color-mix(in srgb, var(--ui-border) 50%, var(--ui-primary) 50%);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+		transform: translateY(-1px);
+	}
+
+	.fx-card--cell:active {
+		transform: translateY(0);
+	}
+
+	.fx-card--cell:hover {
+		background: var(--ui-bg-muted);
+	}
+
+	.fx-card__media {
+		@apply flex items-start gap-3;
+	}
+
+	.fx-cell__media {
+		@apply flex items-center gap-3;
+	}
+
+	.fx-cell__media > :first-child {
+		margin-left: 0.125rem;
+		flex-shrink: 0;
+		transform: scale(1.08);
+		transform-origin: left center;
+	}
+
+	/* Avatar shade helpers (opt-in via props/classes) */
+	.fx-avatar-shade--light {
+		background: var(--ui-color-neutral-900);
+		border: 1px solid var(--ui-border);
+		border-radius: 9999px;
+		overflow: hidden;
+		padding: 0.25rem;
+		--fx-avatar-bg: var(--ui-color-neutral-900);
+		--fx-avatar-border: 1px solid var(--ui-border);
+		--fx-avatar-padding: 0.25rem;
+		--fx-avatar-radius: 9999px;
+	}
+	.fx-avatar-shade--dark {
+		background: #ffffff;
+		border: 1px solid var(--ui-border);
+		border-radius: 9999px;
+		overflow: hidden;
+		padding: 0.25rem;
+		--fx-avatar-border: 1px solid var(--ui-border);
+		--fx-avatar-padding: 0.25rem;
+		--fx-avatar-radius: 9999px;
+	}
+	.fx-avatar-shade--neutral {
+		background: var(--ui-color-neutral-100);
+		border: 1px solid var(--ui-border);
+		border-radius: 9999px;
+		overflow: hidden;
+		padding: 0.25rem;
+		--fx-avatar-bg: var(--ui-color-neutral-100);
+		--fx-avatar-border: 1px solid var(--ui-border);
+		--fx-avatar-padding: 0.25rem;
+		--fx-avatar-radius: 9999px;
+	}
+
+	.fx-card__content {
+		@apply min-w-0 flex-1;
+	}
+
+	.fx-cell__content {
+		@apply min-w-0 flex-1;
+	}
+
+	.fx-card__stack {
+		@apply grid gap-1;
+	}
+
+	.fx-cell__stack {
+		@apply grid gap-1;
+	}
+
+	.fx-card__header {
+		@apply flex items-start justify-between gap-3;
+	}
+
+	.fx-cell__header {
+		@apply flex items-start justify-between gap-3;
+	}
+
+	.fx-card__title {
+		@apply truncate text-sm font-medium;
+	}
+
+	.fx-cell__title {
+		@apply truncate text-sm font-medium;
+	}
+
+	.fx-card__subtitle {
+		@apply truncate text-xs;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	.fx-cell__subtitle {
+		@apply truncate text-xs;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	.fx-card__badges {
+		@apply flex flex-wrap justify-end gap-1;
+	}
+
+	.fx-cell__badges {
+		@apply flex flex-wrap justify-end gap-1;
+	}
+
+	.fx-card__tagline {
+		@apply text-sm;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	.fx-cell__tagline {
+		@apply text-sm;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	.fx-card__meta {
+		@apply flex flex-wrap items-center gap-2;
+	}
+
+	.fx-cell__meta {
+		@apply flex flex-wrap items-center gap-2;
+	}
+
+	/* Preview primitives (used by all *Cards/Preview.vue) */
+	.fx-preview {
+		width: 100%;
+	}
+
+	.fx-preview__row {
+		@apply flex items-start gap-3;
+	}
+
+	.fx-preview__main {
+		@apply min-w-0 flex-1;
+	}
+
+	.fx-preview__top {
+		@apply flex items-start justify-between gap-3;
+	}
+
+	.fx-preview__title {
+		@apply min-w-0 truncate font-semibold;
+		color: var(--ui-text);
+	}
+
+	.fx-preview__badges {
+		@apply flex flex-wrap justify-end gap-1 shrink-0;
+	}
+
+	.fx-preview__subtitle {
+		@apply mt-0.5 truncate text-sm;
+		color: var(--ui-text-muted);
+	}
+
+	.fx-preview__body {
+		@apply mt-2 grid gap-1;
+	}
+
+	.fx-preview__line {
+		@apply text-sm;
+		color: var(--ui-text);
+	}
+
+	.fx-preview__meta {
+		@apply mt-2 flex flex-wrap items-center gap-2;
+	}
+
+	.text-dimmed {
+		color: var(--ui-text-muted);
+	}
+
+	/* Metric badge (icon + number [+ label]) */
+	.fx-metric {
+		@apply inline-flex items-center gap-1;
+	}
+
+	.fx-metric__icon {
+		@apply size-3 shrink-0;
+	}
+
+	.fx-metric__value {
+		@apply truncate;
+	}
+
+	.fx-metric__label {
+		@apply text-xs;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	/* Preview chrome (Edit preview wrappers) */
+	.fx-preview__header {
+		@apply flex flex-wrap items-start justify-between gap-3;
+	}
+
+	.fx-preview__header-content {
+		@apply flex flex-col gap-2;
+	}
+
+	.fx-preview__toggle {
+		@apply self-start;
+	}
+
+	.fx-preview__eyebrow {
+		@apply text-xs uppercase;
+		letter-spacing: 0.08em;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	.fx-preview__copy {
+		@apply text-sm;
+		margin: 0.25rem 0 0;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	.fx-preview__fallback {
+		@apply text-center text-sm uppercase;
+		margin: 0;
+		padding: 1.25rem 0;
+		letter-spacing: 0.08em;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	/* Profile cards (User/App profile surfaces) */
+	.fx-profile {
+		@apply grid gap-5;
+	}
+
+	.fx-profile__header {
+		@apply flex flex-wrap items-start justify-between gap-4;
+	}
+
+	.fx-profile__identity {
+		@apply flex items-center gap-3 min-w-0;
+	}
+
+	.fx-profile__identity > :first-child {
+		margin-left: 0.125rem;
+		flex-shrink: 0;
+		transform: scale(1.06);
+		transform-origin: left center;
+	}
+
+	.fx-profile__titles {
+		@apply grid gap-1 min-w-0;
+	}
+
+	.fx-profile__title {
+		@apply truncate text-base font-semibold;
+		color: var(--ui-text);
+	}
+
+	.fx-profile__subtitle {
+		@apply truncate text-sm;
+		color: var(--ui-text-muted);
+	}
+
+	.fx-profile__badges {
+		@apply flex flex-wrap items-center justify-end gap-1;
+	}
+
+	.fx-profile__wordmark {
+		@apply shrink-0;
+	}
+
+	.fx-profile__mono {
+		@apply font-mono text-xs;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	.fx-profile__body {
+		@apply grid gap-4;
+	}
+
+	.fx-profile__section {
+		@apply grid gap-1;
+	}
+
+	.fx-profile__label {
+		@apply text-xs uppercase;
+		letter-spacing: 0.08em;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	.fx-profile__value {
+		@apply text-sm;
+		color: var(--ui-text);
+	}
+
+	/* When the value is not a simple string (e.g., pills, avatar groups, stacked kv rows) */
+	.fx-profile__value > .fx-profile__kv + .fx-profile__kv {
+		margin-top: 0.5rem;
+	}
+
+	.fx-profile__kv {
+		@apply grid gap-2;
+		padding: 0.125rem 0;
+	}
+
+	@media (min-width: 640px) {
+		.fx-profile__kv {
+			grid-template-columns: 9rem 1fr;
+			align-items: baseline;
+		}
+	}
+
+	.fx-profile__k {
+		@apply text-xs;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+
+	.fx-profile__v {
+		@apply min-w-0 flex flex-wrap items-center gap-2;
+	}
+
+	.fx-profile__adminPreview {
+		@apply flex items-center gap-2;
+	}
+
+	.fx-profile__socials {
+		@apply flex flex-wrap items-center gap-2;
+	}
+}
+
+```

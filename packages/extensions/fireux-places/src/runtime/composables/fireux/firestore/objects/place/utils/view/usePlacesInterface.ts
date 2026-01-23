@@ -1,4 +1,8 @@
-import type { BasePlace, PlaceSource } from '../../../../../../../models/objects/place.model'
+import type {
+    BasePlace,
+    PlaceImageShade,
+    PlaceSource,
+} from '../../../../../../../models/objects/place.model'
 
 export namespace PlaceCard {
   export type Card = {
@@ -20,6 +24,9 @@ export namespace PlaceCard {
 
     // Secondary media (empty string means unset)
     imageUrl: string
+
+    // Image tone metadata
+    imageShade?: PlaceImageShade
 
     // Source metadata
     source?: PlaceSource
@@ -47,6 +54,8 @@ export function usePlacesInterface() {
       formattedAddress: place.formatted_address,
 
       imageUrl: place.place_image,
+
+      imageShade: place.image_shade ?? 'neutral',
 
       source: place.source,
 

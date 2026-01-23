@@ -31,6 +31,7 @@
           <template #preview>
             <PlaceCardsPreview
               :image-url="place.place_image ?? ''"
+              :image-shade="place.image_shade"
               :name="place.name ?? ''"
               :formatted-address="place.formatted_address ?? ''"
               :source="place.source ?? 'fireux'"
