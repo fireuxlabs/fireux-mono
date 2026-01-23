@@ -10,12 +10,8 @@
         </div>
       </template>
 
-      <PlaceSearchSection
-        collection="kitchens"
-        :local-fallback="true"
-        :allow-google="true"
-        @confirmed="onPlaceConfirmed"
-      />
+      <!-- section consumer -->
+      <PlaceSearchSection @confirmed="onPlaceConfirmed" />
 
       <div v-if="successId" class="text-sm text-green-600">
         Kitchen created: {{ successId }}
@@ -69,12 +65,23 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
   try {
     const id = payload.placeId
     const place = payload.place
+    let placeForOverlay = place
+
+    const placeSnap = await getDoc(doc(db, 'places', id))
+    if (placeSnap.exists()) {
+      const stored = placeSnap.data() as Record<string, any>
+      placeForOverlay = {
+        ...place,
+        ...stored,
+        id,
+      }
+    }
 
     const existingSnap = await getDoc(doc(db, 'kitchens', id))
     if (existingSnap.exists()) {
       existingId.value = id
       const existing = existingSnap.data() as Record<string, any>
-      const searchTerm = `${place.name} ${place.formatted_address ?? ''}`
+      const searchTerm = `${placeForOverlay.name} ${placeForOverlay.formatted_address ?? ''}`
         .toLowerCase()
         .trim()
       const searchTermNormalized = normalizeSearchTerm(searchTerm)
@@ -90,18 +97,18 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
 
     const createdId = await createKitchen({
       id,
-      place,
-      name: place.name,
-      formatted_address: place.formatted_address ?? '',
-      lat: place.lat ?? 0,
-      lng: place.lng ?? 0,
-      place_image: place.place_image ?? '',
+      place: placeForOverlay,
+      name: placeForOverlay.name,
+      formatted_address: placeForOverlay.formatted_address ?? '',
+      lat: placeForOverlay.lat ?? 0,
+      lng: placeForOverlay.lng ?? 0,
+      place_image: placeForOverlay.place_image ?? '',
       website: '',
-      search_term: `${place.name} ${place.formatted_address ?? ''}`
+      search_term: `${placeForOverlay.name} ${placeForOverlay.formatted_address ?? ''}`
         .toLowerCase()
         .trim(),
       search_term_normalized: normalizeSearchTerm(
-        `${place.name} ${place.formatted_address ?? ''}`
+        `${placeForOverlay.name} ${placeForOverlay.formatted_address ?? ''}`
       ),
     })
 

@@ -38,6 +38,42 @@
         <div v-else class="space-y-4">
           <UCard>
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+              <div v-if="place.place_image" class="flex flex-col gap-2">
+                <div class="text-xs text-dimmed">Neutral</div>
+                <div
+                  class="flex h-20 w-20 items-center justify-center rounded-md p-3 ring-1 ring-gray-200"
+                  style="background-color: var(--ui-color-neutral-700);"
+                >
+                  <img
+                    :src="place.place_image"
+                    :alt="place.name ?? 'Place image'"
+                    class="h-12 w-12 object-contain"
+                  />
+                </div>
+                <div class="text-xs text-dimmed">Light</div>
+                <div
+                  class="flex h-20 w-20 items-center justify-center rounded-md p-3 ring-1 ring-gray-200"
+                  style="background-color: #ffffff;"
+                >
+                  <img
+                    :src="place.place_image"
+                    :alt="place.name ?? 'Place image'"
+                    class="h-12 w-12 object-contain"
+                  />
+                </div>
+                <div class="text-xs text-dimmed">Dark</div>
+                <div
+                  class="flex h-20 w-20 items-center justify-center rounded-md p-3 ring-1 ring-white/20"
+                  style="background-color: #000000;"
+                >
+                  <img
+                    :src="place.place_image"
+                    :alt="place.name ?? 'Place image'"
+                    class="h-12 w-12 object-contain"
+                  />
+                </div>
+              </div>
+
               <PlaceCardsPreview
                 :image-url="place.place_image ?? ''"
                 :name="place.name ?? ''"

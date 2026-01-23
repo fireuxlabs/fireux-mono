@@ -9,7 +9,6 @@
       <UAvatar
         :src="resolvedImageUrl || undefined"
         :alt="name"
-        :style="resolvedImageUrl ? { backgroundColor: '#ffffff' } : undefined"
         size="sm"
         icon="i-lucide-image"
       />

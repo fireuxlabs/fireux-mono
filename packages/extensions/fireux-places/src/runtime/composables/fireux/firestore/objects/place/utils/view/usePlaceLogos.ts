@@ -311,7 +311,7 @@ export async function loadLogoForPlace(
     placeId,
     priority: !!options.priority,
     forceReload: !!options.forceReload,
-    existingAvatar: sanitizeLogValue(place.imageUrl),
+    existingImage: sanitizeLogValue(place.imageUrl),
   })
 
   if (options.forceReload) {
@@ -321,8 +321,13 @@ export async function loadLogoForPlace(
   }
 
   if (logoResultCache.has(placeId)) {
-    logEvent('load:cache-hit', { placeId })
-    return logoResultCache.get(placeId) ?? null
+    const cached = logoResultCache.get(placeId) ?? null
+    if (cached) {
+      logEvent('load:cache-hit', { placeId })
+      return cached
+    }
+    logEvent('load:cache-empty', { placeId })
+    logoResultCache.delete(placeId)
   }
 
   if (!options.priority) {
@@ -347,7 +352,11 @@ export async function loadLogoForPlace(
         requestId,
         result: sanitizeLogValue(url),
       })
-      logoResultCache.set(placeId, url)
+      if (url) {
+        logoResultCache.set(placeId, url)
+      } else {
+        logoResultCache.delete(placeId)
+      }
       return url
     })
     .catch((error) => {
@@ -386,14 +395,18 @@ export async function loadLogoForPlace(
         new Promise<string | null>((resolve) => {
           timeoutId = setTimeout(() => {
             if (logoAbortControllers.get(placeId) === controller) {
-              const appliedFallback = fallbackAvatar ?? ''
+              const appliedFallback = fallbackAvatar ?? null
               logEvent('fetch:timeout', {
                 placeId,
                 requestId,
                 timeoutMs,
               })
               cancelLogoRequest(placeId, 'timeout')
-              logoResultCache.set(placeId, appliedFallback)
+              if (appliedFallback) {
+                logoResultCache.set(placeId, appliedFallback)
+              } else {
+                logoResultCache.delete(placeId)
+              }
               resolve(appliedFallback)
             } else {
               resolve(fallbackAvatar ?? null)

@@ -33,7 +33,16 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       enabled: true,
       types: ['kitchen', 'company'],
       googleAutocompleteTypeFilters: {
-        kitchen: ['restaurant', 'cafe', 'food_truck'],
+        kitchen: [
+          'restaurant',
+          'cafe',
+          'bar',
+          'bakery',
+          'meal_delivery',
+          'meal_takeaway',
+          'food',
+          'food_truck',
+        ],
       },
     }
     const miseboxJobsDefaults = {

@@ -10,12 +10,8 @@
         </div>
       </template>
 
-      <PlaceSearchSection
-        collection="companies"
-        :local-fallback="true"
-        :allow-google="true"
-        @confirmed="onPlaceConfirmed"
-      />
+      <!-- section consumer -->
+      <PlaceSearchSection @confirmed="onPlaceConfirmed" />
 
       <div v-if="successId" class="text-sm text-green-600">
         Company created: {{ successId }}

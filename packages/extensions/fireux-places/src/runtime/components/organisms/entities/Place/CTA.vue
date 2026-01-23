@@ -5,6 +5,7 @@
     description="Search a place, confirm it, and store the canonical record for this runtime."
     variant="naked"
   >
+    <!-- section consumer -->
     <template #default>
       <PlaceSearchSection
         :type="type"

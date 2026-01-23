@@ -202,6 +202,13 @@ body {
 		background: var(--ui-bg-muted);
 	}
 
+	/* Pill avatar tile: always neutral background (no logo manipulation) */
+	.fx-card--pill > :first-child {
+		background: var(--ui-bg);
+		border: 1px solid var(--ui-border);
+		border-radius: 0.5rem;
+		padding: 0.25rem;
+	}
 	/* Give the leading avatar/image a touch more presence + inset */
 	.fx-card--pill > :first-child {
 		margin-left: 0.125rem;
@@ -243,6 +250,15 @@ body {
 		flex-shrink: 0;
 		transform: scale(1.08);
 		transform-origin: left center;
+	}
+
+	.fx-card__media > :first-child,
+	.fx-cell__media > :first-child,
+	.fx-preview__row > :first-child {
+		background: var(--ui-bg);
+		border: 1px solid var(--ui-border);
+		border-radius: 0.5rem;
+		padding: 0.25rem;
 	}
 
 	.fx-card__content {

@@ -95,8 +95,11 @@ export default defineEventHandler(async (event) => {
     // 2) Collect icon link candidates.
     const iconLinks = extractIconLinks(html).map(makeAbs)
 
-    // 3) Collect social meta images.
-    const socialImgs = extractSocialImages(html).map(makeAbs)
+    // 3) Collect social meta images (only keep if they look like logos).
+    const socialImgsRaw = extractSocialImages(html).map(makeAbs)
+    const socialImgs = socialImgsRaw.filter((url) =>
+      /logo|icon|brand|mark/i.test(url)
+    )
 
     // 4) Collect inline <img> logos (class/id/alt contains logo/brand/mark).
     const inlineImgs = extractInlineLogoImages(html).map(makeAbs)
@@ -129,10 +132,24 @@ export default defineEventHandler(async (event) => {
       inlineImgs: inlineImgs.length,
       commonPaths: commonPaths.length,
       socialImgs: socialImgs.length,
+      socialImgsRaw: socialImgsRaw.length,
       total: allCandidates.length,
     })
 
-    const scored = await probeCandidates(allCandidates)
+    let scored = await probeCandidates(allCandidates)
+
+    if (!scored.length && socialImgsRaw.length) {
+      const fallbackCandidates = dedupe([
+        ...iconLinks,
+        ...inlineImgs,
+        ...commonPaths,
+        ...socialImgsRaw,
+      ])
+      log('fallback to social images', {
+        total: fallbackCandidates.length,
+      })
+      scored = await probeCandidates(fallbackCandidates)
+    }
 
     // 6) Pick best or fallback chain.
     if (scored.length) {

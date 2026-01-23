@@ -22,8 +22,6 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
     configureRuntime(nuxt, 'jobs', {
       enabled: true,
-      placeCollections: ['places'],
-      allowGoogle: true,
     })
     configurePlugins(resolver)
     configureComponents(resolver)

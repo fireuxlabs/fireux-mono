@@ -1,9 +1,11 @@
 import { doc, getDoc } from 'firebase/firestore'
+import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'vuefire'
 import type { PlaceUpsertInput } from '../../../../../../models/objects/place.model'
-import { canonicalPlaceId } from '../fetch/google/usePlacesGoogle'
+import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGoogle'
 import { toPlaceCollectionPath, usePlaceTypesConfig } from '../utils/placeCollections'
+import { sanitizeLogoAvatar } from '../utils/view/usePlaceLogos'
 
 export interface UsePlaceSaveOptions {
   type?: string | null | undefined
@@ -12,6 +14,7 @@ export interface UsePlaceSaveOptions {
 
 export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
   const { setDocument } = useFirestoreManager()
+  const { uploadFromUrl } = useImageStorage()
   const db = useFirestore()
   const configuredTypes = usePlaceTypesConfig()
 
@@ -32,6 +35,43 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       return true
     }
 
+    if (import.meta.dev) {
+      console.log('[fireux-places] ensure:start', {
+        id,
+        incoming_place_image: (place as any)?.place_image ?? '',
+        incoming_image_url: (place as any)?.image_url ?? '',
+        incoming_source: (place as any)?.source ?? '',
+      })
+    }
+
+    const latValueInitial = Number((place as any)?.lat)
+    const lngValueInitial = Number((place as any)?.lng)
+    const hasCoordsInitial = Number.isFinite(latValueInitial) && Number.isFinite(lngValueInitial)
+    const isZeroCoordsInitial = hasCoordsInitial && latValueInitial === 0 && lngValueInitial === 0
+    const shouldHydrate = !hasCoordsInitial || isZeroCoordsInitial
+
+    if (shouldHydrate) {
+      const details = await fetchPlaceDetails(id)
+      if (details?.google) {
+        place = {
+          ...place,
+          name: details.google.name,
+          formatted_address: details.google.formatted_address,
+          lat: details.google.lat,
+          lng: details.google.lng,
+          place_image: (place as any)?.place_image ?? details.google.place_image ?? '',
+          source: (place as any)?.source ?? 'google',
+        }
+        if (import.meta.dev) {
+          console.log('[fireux-places] ensure:hydrated', {
+            id,
+            hydrated_place_image: (place as any)?.place_image ?? '',
+            hydrated_source: (place as any)?.source ?? '',
+          })
+        }
+      }
+    }
+
     const name = typeof (place as any)?.name === 'string' ? String((place as any).name) : ''
     const formatted =
       typeof (place as any)?.formatted_address === 'string'
@@ -39,9 +79,50 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
         : ''
     const placeImageRaw =
       (place as any)?.place_image ?? (place as any)?.image_url
-    const place_image = typeof placeImageRaw === 'string' ? placeImageRaw : ''
-    const lat = Number.isFinite(Number((place as any)?.lat)) ? Number((place as any).lat) : 0
-    const lng = Number.isFinite(Number((place as any)?.lng)) ? Number((place as any).lng) : 0
+    const remoteImageUrl = typeof placeImageRaw === 'string' ? placeImageRaw.trim() : ''
+    if (import.meta.dev) {
+      console.log('[fireux-places] ensure:image-raw', {
+        id,
+        placeImageRaw: placeImageRaw ?? '',
+        remoteImageUrl,
+      })
+    }
+    let place_image = sanitizeLogoAvatar(remoteImageUrl) ?? ''
+    const latValue = Number((place as any)?.lat)
+    const lngValue = Number((place as any)?.lng)
+    const lat = Number.isFinite(latValue) ? latValue : 0
+    const lng = Number.isFinite(lngValue) ? lngValue : 0
+    if (!Number.isFinite(latValue) || !Number.isFinite(lngValue) || (lat === 0 && lng === 0)) {
+      if (import.meta.dev) {
+        console.warn('[fireux-places] Skipping place with missing coords', { id, lat, lng })
+      }
+      return false
+    }
+    if (import.meta.dev) {
+      console.log('[fireux-places] image:pre-upload', {
+        id,
+        place_image,
+        isFirebaseUrl: place_image.includes('firebasestorage.googleapis.com'),
+      })
+    }
+
+    if (place_image && !place_image.includes('firebasestorage.googleapis.com')) {
+      try {
+        const uploaded = await uploadFromUrl(`places/${id}/image`, place_image)
+        if (import.meta.dev) {
+          console.log('[fireux-places] image:uploaded', {
+            id,
+            from: place_image,
+            to: uploaded,
+          })
+        }
+        place_image = uploaded
+      } catch (e) {
+        if (import.meta.dev) console.warn('[fireux-places] avatar upload failed', e)
+        place_image = ''
+      }
+    }
+
     const search_term_raw = (place as any)?.search_term
     const search_term =
       typeof search_term_raw === 'string' && search_term_raw.trim().length
@@ -58,6 +139,15 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       lng,
       search_term,
     } as any as PlaceUpsertInput
+
+    if (import.meta.dev) {
+      console.log('[fireux-places] save:payload', {
+        id,
+        place_image: payload.place_image ?? '',
+        name: payload.name ?? '',
+        formatted_address: payload.formatted_address ?? '',
+      })
+    }
 
     await setDocument(collectionPath, id, payload)
 

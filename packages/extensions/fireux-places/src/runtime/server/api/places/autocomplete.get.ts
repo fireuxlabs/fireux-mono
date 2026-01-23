@@ -1,3 +1,4 @@
+import { useRuntimeConfig } from '#imports'
 import {
   defineEventHandler,
   getQuery,
@@ -5,7 +6,6 @@ import {
   getRequestIP,
   setResponseStatus,
 } from 'h3'
-import { useRuntimeConfig } from '#imports'
 import { resolvePlacesApiKey } from '../../utils/places-api-key'
 
 // Lightweight in-memory rate limiter (per IP). Not production-grade; replace with durable store if needed.
@@ -90,9 +90,15 @@ export default defineEventHandler(async (event: any) => {
   const queryParams = getQuery(event)
   const q = queryParams.q as string | undefined
   const contextType = (queryParams.type as string | undefined)?.trim() || null
-  const DEFAULT_FALLBACK = '46.9480,7.4474'
-  const location = (queryParams.location as string) || DEFAULT_FALLBACK
-  const radius = (queryParams.radius as string) || '30000'
+  const defaults =
+    (runtimeConfig?.public as any)?.fireux?.places
+      ?.googleAutocompleteDefaults || {}
+  const location =
+    (queryParams.location as string) ||
+    (typeof defaults?.location === 'string' ? defaults.location : '')
+  const radius =
+    (queryParams.radius as string) ||
+    (typeof defaults?.radius === 'string' ? defaults.radius : '')
   const query = String(q || '')
   if (!query) {
     if (dev) {
@@ -146,8 +152,8 @@ export default defineEventHandler(async (event: any) => {
       ip,
       query,
       type: contextType,
-      location,
-      radius,
+      location: location || null,
+      radius: radius || null,
     })
   }
 
@@ -156,8 +162,8 @@ export default defineEventHandler(async (event: any) => {
   )
   url.searchParams.set('input', query)
   url.searchParams.set('key', key)
-  url.searchParams.set('location', location)
-  url.searchParams.set('radius', radius)
+  if (location) url.searchParams.set('location', location)
+  if (radius) url.searchParams.set('radius', radius)
 
   try {
     const safeUrl = new URL(url.toString())

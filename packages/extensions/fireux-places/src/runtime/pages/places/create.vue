@@ -5,6 +5,7 @@
       description="Search a place, confirm it, and store the canonical record for this runtime."
     />
 
+    <!-- section consumer -->
     <UPageBody class="pagebody space-y-6">
       <PlaceSearchSection
         :type="placeType"

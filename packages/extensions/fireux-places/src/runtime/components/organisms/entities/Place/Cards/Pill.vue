@@ -8,7 +8,6 @@
     <UAvatar
       :src="resolvedAvatarUrl || undefined"
       :alt="title"
-      :style="resolvedAvatarUrl ? { backgroundColor: '#ffffff' } : undefined"
       size="xs"
       icon="i-lucide-image"
     />

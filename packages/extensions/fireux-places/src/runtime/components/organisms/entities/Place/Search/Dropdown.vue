@@ -1,49 +1,32 @@
 <template>
-  <UCard
-    v-if="visibleCells.length"
-    class="w-full"
-    :ui="{ body: 'p-0' }"
-  >
-    <template #header>
-      <div class="flex items-center gap-2 text-sm font-medium">
-        <UIcon name="i-lucide-list-tree" />
-        <span>Suggestions</span>
-        <UBadge color="primary" variant="soft" size="xs">{{
-          visibleCells.length
-        }}</UBadge>
-      </div>
-    </template>
-
-    <div class="space-y-1 p-2">
-      <PlaceCardsCell
-        v-for="cell in visibleCells"
-        :key="cell.id"
-        v-bind="cell"
-        :show-source="true"
-        :action="true"
-        class="block w-full text-left rounded-[16px] ring-1 ring-transparent transition hover:bg-neutral-100/80 dark:hover:bg-neutral-900/70"
-        @action="emit('select', cell)"
-      />
-    </div>
-  </UCard>
+  <div v-if="cells.length" class="space-y-1">
+    <button
+      v-for="cell in cells"
+      :key="cell.id"
+      type="button"
+      class="block w-full text-left rounded-[16px] ring-1 ring-transparent transition hover:bg-neutral-100/80 dark:hover:bg-neutral-900/70"
+      @click="emit('select', cell)"
+    >
+      <PlaceCardsCell v-bind="cell" :show-source="true" />
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, toRefs } from 'vue';
+import { computed } from 'vue';
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 
-const SHORTLIST_LIMIT = 4
-
-interface Props {
-  cells?: PlaceCard.Card[] | null
-}
-const props = withDefaults(defineProps<Props>(), { cells: () => [] })
-const { cells } = toRefs(props)
-
-const emit = defineEmits<{ (e: 'select', cell: PlaceCard.Card): void }>()
-const visibleCells = computed(() =>
-  (cells.value ?? []).slice(0, SHORTLIST_LIMIT)
+const props = withDefaults(
+  defineProps<{
+    cells?: PlaceCard.Card[] | null
+  }>(),
+  { cells: () => [] }
 )
 
+const emit = defineEmits<{
+  (e: 'select', cell: PlaceCard.Card): void
+}>()
+
+const cells = computed(() => (props.cells ?? []) as PlaceCard.Card[])
 </script>
 
