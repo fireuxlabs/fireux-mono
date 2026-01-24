@@ -1,5 +1,6 @@
 <template>
   <UPageCTA
+    class="fx-cta"
     title="Supplier profile"
     description="Introduce your products to chefs and venues across the FireUX network."
     variant="naked"
@@ -9,14 +10,14 @@
         <OrganismsProfilesSupplierCreateSystem />
       </div>
 
-      <div v-else class="space-y-4">
-        <div class="flex justify-end">
+      <div v-else class="fx-cta__body space-y-4">
+        <div class="fx-cta__toolbar flex justify-end">
           <UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
             {{ showCellView ? 'Show pill' : 'Show cell' }}
           </UButton>
         </div>
 
-        <div class="space-y-4">
+        <div class="fx-cta__panel space-y-4">
           <OrganismsProfilesSupplierCardsCell
             v-if="showCellCard && cell"
             v-bind="cell"
@@ -29,7 +30,7 @@
             :link="Boolean(pill.to)"
             class="block"
           />
-          <p v-else class="text-sm text-slate-500">No supplier profile loaded.</p>
+          <p v-else class="fx-cta__empty text-sm text-slate-500">No supplier profile loaded.</p>
         </div>
       </div>
     </template>
@@ -41,11 +42,13 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { computed, ref, watch } from 'vue'
 import { useSupplier } from '../../../../composables/fireux/firestore/profiles/Supplier/useSupplier.ts'
 
-const { pill, cell } = useSupplier()
+const { card } = useSupplier()
 const { hasProfile } = useUser()
 
 const hasSupplierProfile = computed(() => hasProfile('supplier'))
 
+const cell = computed(() => card())
+const pill = computed(() => card())
 const canToggle = computed(() => Boolean(cell.value))
 const showCellView = ref(false)
 const showCellCard = computed(() => canToggle.value && showCellView.value)

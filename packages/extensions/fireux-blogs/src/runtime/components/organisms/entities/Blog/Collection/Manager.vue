@@ -17,30 +17,11 @@
       No posts published yet.
     </div>
 
-    <div v-else>
-      <div
-        v-if="variant === 'pill'"
-        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        <BlogCardsPill
-          v-for="card in cards"
-          :key="card.id"
-          v-bind="card"
-          :link="Boolean(card.to)"
-          class="block"
-        />
-      </div>
-
-      <div v-else class="grid gap-3 md:grid-cols-2">
-        <BlogCardsCell
-          v-for="card in cards"
-          :key="card.id"
-          v-bind="card"
-          :link="Boolean(card.to)"
-          class="block"
-        />
-      </div>
-    </div>
+    <OrganismsEntitiesBlogCollectionList
+      v-else
+      :cards="cards"
+      :variant="variant"
+    />
 
     <div v-if="showDebug" class="pt-3">
       <DevJson

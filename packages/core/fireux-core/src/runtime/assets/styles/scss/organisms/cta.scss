@@ -1,0 +1,29 @@
+/* FireUX CTA system */
+
+@layer components {
+	.fx-cta {
+		--fx-cta-gap: 0.75rem;
+	}
+
+	.fx-cta__body {
+		display: flex;
+		flex-direction: column;
+		gap: var(--fx-cta-gap);
+	}
+
+	.fx-cta__toolbar {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.fx-cta__panel {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.fx-cta__empty {
+		font-size: 0.875rem;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+}

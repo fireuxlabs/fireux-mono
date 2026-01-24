@@ -1,26 +1,27 @@
 <template>
   <UPageCTA
+    class="fx-cta"
     title="Professional profile"
     description="Add a professional profile to your FireUX portfolio so agents can discover you more easily."
     variant="naked"
   >
     <template #default>
-      <div v-if="!hasProfessionalProfile" class="space-y-2">
+      <div v-if="!hasProfessionalProfile" class="fx-cta__body space-y-2">
         <OrganismsProfilesProfessionalCreateSystem />
       </div>
 
-      <div v-else-if="!profileCard" class="space-y-2">
+      <div v-else-if="!profileCard" class="fx-cta__body space-y-2">
         <OrganismsProfilesProfessionalCreateSystem />
       </div>
 
-      <div v-else class="space-y-4">
-        <div class="flex justify-end">
+      <div v-else class="fx-cta__body space-y-4">
+        <div class="fx-cta__toolbar flex justify-end">
           <UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
             {{ view === 'preview' ? 'Profile' : 'Preview' }}
           </UButton>
         </div>
 
-        <div class="space-y-4">
+        <div class="fx-cta__panel space-y-4">
           <OrganismsProfilesProfessionalCardsPreview
             v-if="view === 'preview' && profileCard"
             :card="profileCard"

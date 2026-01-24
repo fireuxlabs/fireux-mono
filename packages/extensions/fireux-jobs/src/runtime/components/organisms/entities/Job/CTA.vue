@@ -3,18 +3,21 @@
     <!-- Agent can post jobs -->
     <UPageCTA
       v-if="hasAgentProfile"
+      class="fx-cta"
       title="Post a job"
       :description="agentCtaDescription"
       variant="naked"
     >
       <template #default>
-        <JobCreateSystem />
+        <div class="fx-cta__body">
+          <JobCreateSystem />
 
-        <!-- DEV sanity output -->
-        <pre
-          v-if="showCheck"
-          class="text-xs text-slate-500 whitespace-pre-wrap"
-        >{{ JSON.stringify(check, null, 2) }}</pre>
+          <!-- DEV sanity output -->
+          <pre
+            v-if="showCheck"
+            class="text-xs text-slate-500 whitespace-pre-wrap"
+          >{{ JSON.stringify(check, null, 2) }}</pre>
+        </div>
       </template>
     </UPageCTA>
 

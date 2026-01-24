@@ -1,16 +1,19 @@
 <!-- FILE: packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/CTA.vue -->
 <template>
   <UPageCTA
+    class="fx-cta"
     title="Create a place"
     description="Search a place, confirm it, and store the canonical record for this runtime."
     variant="naked"
   >
     <!-- section consumer -->
     <template #default>
-      <PlaceSearchSection
-        :type="type"
-        @confirmed="emit('confirmed')"
-      />
+      <div class="fx-cta__body">
+        <PlaceSearchSection
+          :type="type"
+          @confirmed="emit('confirmed')"
+        />
+      </div>
     </template>
   </UPageCTA>
 </template>

@@ -1,12 +1,10 @@
 <template>
-  <UCard class="section">
+  <UCard :ui="{ body: 'space-y-4' }">
     <template #header>
-      <div class="section__header">
-        <div class="section__copy">
-          <h2 class="text-base font-semibold">Apps</h2>
-          <p class="text-xs text-gray-500">
-            Browse apps available to this runtime.
-          </p>
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="font-medium">Apps</div>
+          <p class="text-xs text-dimmed">Browse apps available to this runtime.</p>
         </div>
 
         <div class="flex items-center gap-2">
@@ -32,7 +30,7 @@
       :variant="variant"
     />
 
-    <p v-else class="section__empty">
+    <p v-else class="text-sm text-dimmed">
       {{ query ? 'No apps match your search.' : 'No apps found.' }}
     </p>
 

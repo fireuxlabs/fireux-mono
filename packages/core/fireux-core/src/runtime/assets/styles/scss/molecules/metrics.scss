@@ -1,0 +1,20 @@
+/* FireUX metric molecule */
+
+@layer components {
+	.fx-metric {
+		@apply inline-flex items-center gap-1;
+	}
+
+	.fx-metric__icon {
+		@apply size-3 shrink-0;
+	}
+
+	.fx-metric__value {
+		@apply truncate;
+	}
+
+	.fx-metric__label {
+		@apply text-xs;
+		color: var(--ui-text-muted, var(--ui-text));
+	}
+}

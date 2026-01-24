@@ -1,5 +1,6 @@
 <template>
   <UPageCTA
+    class="fx-cta"
     v-if="showCTA"
     title="Publish a post"
     :description="ctaDescription"

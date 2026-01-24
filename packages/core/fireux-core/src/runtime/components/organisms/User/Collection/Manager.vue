@@ -1,12 +1,10 @@
 <template>
-  <UCard class="section">
+  <UCard :ui="{ body: 'space-y-4' }">
     <template #header>
-      <div class="section__header">
-        <div class="section__copy">
-          <h2 class="text-base font-semibold">Users</h2>
-          <p class="text-xs text-gray-500">
-            {{ scopeCopy }}
-          </p>
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="font-medium">Users</div>
+          <p class="text-xs text-dimmed">{{ scopeCopy }}</p>
         </div>
 
         <div class="flex items-center gap-2">
@@ -32,7 +30,7 @@
       :variant="variant"
     />
 
-    <p v-else class="section__empty">
+    <p v-else class="text-sm text-dimmed">
       {{ query ? 'No users match your search.' : 'No users found.' }}
     </p>
 

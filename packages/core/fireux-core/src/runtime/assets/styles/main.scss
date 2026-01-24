@@ -1,1 +1,7 @@
-// Custom FireUX SCSS stashed at temp/style-stash/2026-01-23
+// FireUX SCSS entrypoint.
+
+// NOTE: @use statements must come first.
+@use './scss/atoms/tokens';
+@use './scss/molecules/metrics';
+@use './scss/organisms/cards';
+@use './scss/organisms/cta';

@@ -17,64 +17,11 @@
       No places yet.
     </div>
 
-    <div v-else>
-      <div
-        v-if="variant === 'pill'"
-        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        <template v-for="card in cards" :key="card.id">
-          <div class="space-y-2">
-            <div
-              class="rounded-[16px]"
-              :class="highlightClass(card.id)"
-            >
-              <NuxtLink :to="placeLink(card.id, card.to)" class="block">
-                <PlaceCardsPill v-bind="card" :link="false" class="block" />
-              </NuxtLink>
-            </div>
-            <div class="flex justify-end">
-              <UButton
-                size="xs"
-                color="red"
-                variant="soft"
-                :loading="deletingId === card.id"
-                :disabled="deletingId === card.id"
-                @click.stop="deletePlace(card.id)"
-              >
-                Delete
-              </UButton>
-            </div>
-          </div>
-        </template>
-      </div>
-
-      <div v-else class="grid gap-3 md:grid-cols-2">
-        <template v-for="card in cards" :key="card.id">
-          <div class="space-y-2">
-            <div
-              class="rounded-[16px]"
-              :class="highlightClass(card.id)"
-            >
-              <NuxtLink :to="placeLink(card.id, card.to)" class="block">
-                <PlaceCardsCell v-bind="card" :link="false" class="block" />
-              </NuxtLink>
-            </div>
-            <div class="flex justify-end">
-              <UButton
-                size="xs"
-                color="red"
-                variant="soft"
-                :loading="deletingId === card.id"
-                :disabled="deletingId === card.id"
-                @click.stop="deletePlace(card.id)"
-              >
-                Delete
-              </UButton>
-            </div>
-          </div>
-        </template>
-      </div>
-    </div>
+    <OrganismsEntitiesPlaceCollectionList
+      v-else
+      :cards="cards"
+      :variant="variant"
+    />
 
     <div v-if="showDebug" class="pt-3">
       <DevJson
@@ -87,7 +34,6 @@
 </template>
 
 <script setup lang="ts">
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager';
 import { computed, ref } from 'vue';
 import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 import type { BasePlace } from '../../../../../models/objects/place.model';
@@ -101,13 +47,6 @@ const cards = computed(() =>
     .map((place) => makeCard(place))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 )
-const highlightId = 'ChIJo2ga-cKxe0gRgPNUy3HSpxM'
-const highlightClass = (id: string) =>
-  id === highlightId
-    ? 'ring-2 ring-amber-400/80 bg-amber-100/40'
-    : 'ring-1 ring-transparent'
-const placeLink = (id: string, to?: string) =>
-  to && to.length ? to : `/places/${encodeURIComponent(id)}`
 const showDebug = import.meta.dev
 const debugPayload = computed(() => ({
   totalPlaces: collection.value.length,
@@ -118,24 +57,6 @@ type Variant = 'pill' | 'cell'
 const variant = ref<Variant>('cell')
 const toggleVariant = () => {
   variant.value = variant.value === 'pill' ? 'cell' : 'pill'
-}
-
-const { deleteDocument } = useFirestoreManager()
-const deletingId = ref<string | null>(null)
-
-async function deletePlace(id: string) {
-  if (!id || deletingId.value) return
-  const confirmed =
-    typeof window === 'undefined'
-      ? false
-      : window.confirm(`Delete place ${id}?`)
-  if (!confirmed) return
-  deletingId.value = id
-  try {
-    await deleteDocument('places', id)
-  } finally {
-    deletingId.value = null
-  }
 }
 
 </script>

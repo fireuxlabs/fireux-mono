@@ -1,5 +1,5 @@
 <template>
-  <div v-if="variant === 'pill'" class="flex flex-wrap gap-2">
+  <div v-if="variant === 'pill'" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
     <OrganismsAppCardsPill
       v-for="item in cards"
       :key="item.to || item.id"
@@ -9,7 +9,7 @@
     />
   </div>
 
-  <div v-else class="section__grid">
+  <div v-else class="grid gap-3 md:grid-cols-2">
     <OrganismsAppCardsCell
       v-for="item in cards"
       :key="item.to || item.id"

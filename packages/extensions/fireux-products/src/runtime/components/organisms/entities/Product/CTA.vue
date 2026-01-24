@@ -1,5 +1,6 @@
 <template>
   <UPageCTA
+    class="fx-cta"
     v-if="showCTA"
     title="Add a product"
     description="List new offerings or updates for this runtime."
