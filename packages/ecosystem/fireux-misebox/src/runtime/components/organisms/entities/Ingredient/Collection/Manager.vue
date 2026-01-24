@@ -55,7 +55,7 @@ const debugPayload = computed(() => ({
 }))
 
 type Variant = 'pill' | 'cell'
-const variant = ref<Variant>('cell')
+const variant = ref<Variant>('pill')
 const toggleVariant = () => {
   variant.value = variant.value === 'pill' ? 'cell' : 'pill'
 }

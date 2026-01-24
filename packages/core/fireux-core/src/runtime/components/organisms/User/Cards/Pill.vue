@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
 
 type PillProps = Pick<

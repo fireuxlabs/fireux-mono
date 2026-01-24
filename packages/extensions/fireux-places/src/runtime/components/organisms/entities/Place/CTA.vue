@@ -10,8 +10,8 @@
     <template #default>
       <div class="fx-cta__body">
         <PlaceSearchSection
-          :type="type"
-          @confirmed="emit('confirmed')"
+          :type="placeType"
+          @confirmed="onConfirmed"
         />
       </div>
     </template>
@@ -19,16 +19,18 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    type?: string | null
-  }>(),
-  {
-    type: null,
-  }
+import { useRoute, useRouter } from '#imports'
+import { computed } from 'vue'
+import { normalizePlaceType } from '../../../../composables/fireux/firestore/objects/place/utils/placeCollections'
+
+const route = useRoute()
+const router = useRouter()
+
+const placeType = computed<string | null>(() =>
+  normalizePlaceType(route.query.type)
 )
 
-const emit = defineEmits<{
-  (e: 'confirmed'): void
-}>()
+async function onConfirmed() {
+  await router.replace({ query: { ...route.query } })
+}
 </script>

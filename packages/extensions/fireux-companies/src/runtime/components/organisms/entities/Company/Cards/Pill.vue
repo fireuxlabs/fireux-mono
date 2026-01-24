@@ -5,12 +5,7 @@
     class="fx-card fx-card--pill"
     @click="onClick"
   >
-    <UAvatar
-      :src="avatarUrl || undefined"
-      :alt="title"
-      size="xs"
-      :class="avatarUrl ? 'bg-white dark:bg-white' : ''"
-    />
+    <UAvatar :src="avatarUrl || undefined" :alt="title" size="xs" />
 
     <div class="min-w-0 flex-1">
       <div class="min-w-0 truncate text-sm font-medium">{{ title }}</div>

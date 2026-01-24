@@ -21,8 +21,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useProductPermissions } from '../../../../composables/useProductPermissions'
+import { computed } from 'vue';
+import { useProductPermissions } from '../../../../composables/useProductPermissions';
 
 const { canPublishProduct } = useProductPermissions()
 const showCTA = computed(() => canPublishProduct.value)
