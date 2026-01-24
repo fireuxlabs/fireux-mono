@@ -1,13 +1,13 @@
 <template>
   <UCard>
     <template #header>
-      <div>
-        <div>
+      <div class="collection-manager__header">
+        <div class="collection-manager__title">
           <h2>Professionals</h2>
           <p>Browse professionals available to this runtime.</p>
         </div>
 
-        <div>
+        <div class="collection-manager__controls">
           <UInput v-model="query" size="xs" placeholder="Search professionals…" />
 
           <UButton size="xs" variant="ghost" @click="toggleVariant">

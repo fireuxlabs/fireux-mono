@@ -1,5 +1,5 @@
 <template>
-  <div v-if="variant === 'pill'">
+  <div v-if="variant === 'pill'" class="collection-grid">
     <OrganismsProfilesProfessionalCardsPill
       v-for="item in cards"
       :key="item.to || item.id"
@@ -9,7 +9,7 @@
     />
   </div>
 
-  <div v-else-if="variant === 'cell'">
+  <div v-else-if="variant === 'cell'" class="collection-stack">
     <OrganismsProfilesProfessionalCardsCell
       v-for="item in cards"
       :key="item.to || item.id"
@@ -19,7 +19,7 @@
     />
   </div>
 
-  <div v-else-if="variant === 'preview'">
+  <div v-else-if="variant === 'preview'" class="collection-stack">
     <OrganismsProfilesProfessionalCardsPreview
       v-for="item in cards"
       :key="item.to"
@@ -27,7 +27,7 @@
     />
   </div>
 
-  <div v-else>
+  <div v-else class="collection-stack">
     <OrganismsProfilesProfessionalCardsProfile
       v-for="item in cards"
       :key="item.to"

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="variant === 'pill'">
+  <div v-if="variant === 'pill'" class="collection-grid">
     <KitchenCardsPill
       v-for="card in cards"
       :key="card.to || card.id"
@@ -9,7 +9,7 @@
     />
   </div>
 
-  <div v-else>
+  <div v-else class="collection-stack">
     <KitchenCardsCell
       v-for="card in cards"
       :key="card.to || card.id"

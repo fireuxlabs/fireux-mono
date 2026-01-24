@@ -1,13 +1,13 @@
 <template>
   <UCard>
     <template #header>
-      <div>
-        <div>
+      <div class="collection-manager__header">
+        <div class="collection-manager__title">
           <div>Users</div>
           <p>{{ scopeCopy }}</p>
         </div>
 
-        <div>
+        <div class="collection-manager__controls">
           <UInput
             v-model="query"
             size="xs"

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="variant === 'pill' ? 'collection-grid' : 'collection-stack'">
     <component
       :is="componentForVariant"
       v-for="card in cards"
