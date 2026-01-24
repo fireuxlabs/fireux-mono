@@ -1,8 +1,8 @@
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h2 class="text-base font-semibold">Professionals</h2>
           <p class="text-xs text-gray-500">Browse professionals available to this runtime.</p>
         </div>
@@ -25,7 +25,7 @@
       :variant="variant"
     />
 
-    <p v-else class="fx-section__empty">No professionals found.</p>
+    <p v-else class="section__empty">No professionals found.</p>
 
     <div v-if="showDebug" class="pt-3">
       <DevJson

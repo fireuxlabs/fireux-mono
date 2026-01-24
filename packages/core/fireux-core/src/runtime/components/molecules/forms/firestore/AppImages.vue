@@ -1,9 +1,9 @@
 <template>
   <ClientOnly>
-    <UCard class="fx-section">
+    <UCard class="section">
       <template #header>
-        <div class="fx-section__header">
-          <div class="fx-section__copy">
+        <div class="section__header">
+          <div class="section__copy">
             <h3 class="text-base font-semibold">Images</h3>
             <p class="text-xs text-dimmed">
               Firestore URLs are the canonical record values. Public assets are served from
@@ -13,7 +13,7 @@
         </div>
       </template>
 
-      <div class="fx-section__item space-y-5">
+      <div class="section__item space-y-5">
         <div class="space-y-3">
           <div class="text-xs font-medium text-dimmed">Firestore (record)</div>
 

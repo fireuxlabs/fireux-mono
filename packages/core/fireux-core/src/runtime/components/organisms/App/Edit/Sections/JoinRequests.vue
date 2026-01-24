@@ -1,8 +1,8 @@
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">Join Requests</h3>
           <p class="text-xs text-dimmed">
             Approve to add new members or clear pending invites.
@@ -11,7 +11,7 @@
       </div>
     </template>
 
-    <div v-if="items.length" class="fx-section__item">
+    <div v-if="items.length" class="section__item">
       <MoleculesFormsFirestoreListActions
         :items="items"
         :action-approve="onApprove"
@@ -20,7 +20,7 @@
         reject-label="Remove"
       />
     </div>
-    <p v-else class="fx-section__empty">No pending requests.</p>
+    <p v-else class="section__empty">No pending requests.</p>
   </UCard>
 </template>
 

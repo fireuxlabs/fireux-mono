@@ -1,8 +1,8 @@
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">About</h3>
           <p class="text-xs text-dimmed">
             Keep the human-facing description up to date.
@@ -11,7 +11,7 @@
       </div>
     </template>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Tagline"
         :maxlength="120"
@@ -21,7 +21,7 @@
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Description"
         type="textarea"
@@ -33,7 +33,7 @@
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Short bio"
         type="textarea"
@@ -45,7 +45,7 @@
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Long bio"
         type="textarea"

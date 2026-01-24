@@ -1,8 +1,8 @@
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">Social</h3>
           <p class="text-xs text-dimmed">
             Handles for Instagram/Twitter/YouTube (e.g. fireux.app). URLs for everything else.
@@ -11,7 +11,7 @@
       </div>
     </template>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSocialLinks
         :firebase-value="app.social_links"
         :update-function="handleUpdateSocialLinks"

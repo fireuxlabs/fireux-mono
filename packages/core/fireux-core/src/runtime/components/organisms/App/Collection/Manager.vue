@@ -1,8 +1,8 @@
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h2 class="text-base font-semibold">Apps</h2>
           <p class="text-xs text-gray-500">
             Browse apps available to this runtime.
@@ -32,7 +32,7 @@
       :variant="variant"
     />
 
-    <p v-else class="fx-section__empty">
+    <p v-else class="section__empty">
       {{ query ? 'No apps match your search.' : 'No apps found.' }}
     </p>
 

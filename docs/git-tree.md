@@ -12607,10 +12607,10 @@ defineEmits(['start-editing', 'check', 'cancel', 'delete'])
 ```vue
 <template>
   <ClientOnly>
-    <UCard class="fx-section">
+    <UCard class="section">
       <template #header>
-        <div class="fx-section__header">
-          <div class="fx-section__copy">
+        <div class="section__header">
+          <div class="section__copy">
             <h3 class="text-base font-semibold">Images</h3>
             <p class="text-xs text-dimmed">
               Firestore URLs are the canonical record values. Public assets are served from
@@ -12620,7 +12620,7 @@ defineEmits(['start-editing', 'check', 'cancel', 'delete'])
         </div>
       </template>
 
-      <div class="fx-section__item space-y-5">
+      <div class="section__item space-y-5">
         <div class="space-y-3">
           <div class="text-xs font-medium text-dimmed">Firestore (record)</div>
 
@@ -15297,7 +15297,7 @@ import { useSocialLinks, type SocialLinks } from '../../../../composables/fireux
     </component>
   </div>
 
-  <div v-else class="fx-section__grid">
+  <div v-else class="section__grid">
     <component
       :is="wrapperFor(item)"
       v-for="item in cards"
@@ -15333,10 +15333,10 @@ const wrapperPropsFor = (item: AppCard.Card) => (item.to ? { to: item.to } : {})
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h2 class="text-base font-semibold">Apps</h2>
           <p class="text-xs text-gray-500">
             Browse apps available to this runtime.
@@ -15366,7 +15366,7 @@ const wrapperPropsFor = (item: AppCard.Card) => (item.to ? { to: item.to } : {})
       :variant="variant"
     />
 
-    <p v-else class="fx-section__empty">
+    <p v-else class="section__empty">
       {{ query ? 'No apps match your search.' : 'No apps found.' }}
     </p>
 
@@ -15918,10 +15918,10 @@ const fallbackUserCard = (options: {
       <!-- Images -->
       <MoleculesFormsFirestoreAppImages :app="app" />
 
-      <UCard class="fx-section" variant="subtle">
+      <UCard class="section" variant="subtle">
         <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
+          <div class="section__header">
+            <div class="section__copy">
               <h3 class="text-base font-semibold">Binding check (app ↔ users)</h3>
               <p class="text-xs text-dimmed">
                 Compares app users against core user mirrors and app admin lists.
@@ -15931,7 +15931,7 @@ const fallbackUserCard = (options: {
           </div>
         </template>
 
-        <div class="fx-section__item space-y-3">
+        <div class="section__item space-y-3">
           <div class="text-xs text-dimmed">
             <span class="font-mono">appId</span>: {{ driftAppId || 'unknown' }} ·
             <span class="font-mono">app users</span>: {{ appUsersCount }} ·
@@ -15985,10 +15985,10 @@ const fallbackUserCard = (options: {
         </div>
       </UCard>
 
-      <UCard class="fx-section" variant="subtle">
+      <UCard class="section" variant="subtle">
         <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
+          <div class="section__header">
+            <div class="section__copy">
               <h3 class="text-base font-semibold">Field groups (draft)</h3>
               <p class="text-xs text-dimmed">
                 Proposed separation to prevent “locked” values leaking into editable surfaces.
@@ -15998,7 +15998,7 @@ const fallbackUserCard = (options: {
           </div>
         </template>
 
-        <div class="fx-section__item">
+        <div class="section__item">
           <div class="grid gap-4 sm:grid-cols-2">
             <div>
               <div class="text-xs font-medium text-dimmed">Locked (config/system)</div>
@@ -16044,17 +16044,17 @@ const fallbackUserCard = (options: {
         </div>
       </UCard>
 
-      <UCard class="fx-section">
+      <UCard class="section">
         <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
+          <div class="section__header">
+            <div class="section__copy">
               <h3 class="text-base font-semibold">Model</h3>
               <p class="text-xs text-dimmed">Full app document.</p>
             </div>
           </div>
         </template>
 
-        <div class="fx-section__item">
+        <div class="section__item">
           <pre class="text-xs font-mono text-dimmed whitespace-pre-wrap break-words">{{ appModelJson }}</pre>
         </div>
       </UCard>
@@ -16116,10 +16116,10 @@ watch(
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">About</h3>
           <p class="text-xs text-dimmed">
             Keep the human-facing description up to date.
@@ -16128,7 +16128,7 @@ watch(
       </div>
     </template>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Tagline"
         :maxlength="120"
@@ -16138,7 +16138,7 @@ watch(
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Description"
         type="textarea"
@@ -16150,7 +16150,7 @@ watch(
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Short bio"
         type="textarea"
@@ -16162,7 +16162,7 @@ watch(
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Long bio"
         type="textarea"
@@ -16194,17 +16194,17 @@ defineProps<{
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">Admins</h3>
           <p class="text-xs text-dimmed">App administrators.</p>
         </div>
       </div>
     </template>
 
-    <div v-if="rows.length" class="fx-section__item space-y-2">
+    <div v-if="rows.length" class="section__item space-y-2">
       <ul class="space-y-2">
         <li
           v-for="admin in rows"
@@ -16232,7 +16232,7 @@ defineProps<{
         </li>
       </ul>
     </div>
-    <p v-else class="fx-section__empty">No admins yet.</p>
+    <p v-else class="section__empty">No admins yet.</p>
   </UCard>
 </template>
 
@@ -16263,10 +16263,10 @@ const wrapperPropsFor = (card: UserCard.Card) => (card.to ? { to: card.to } : {}
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">Join Requests</h3>
           <p class="text-xs text-dimmed">
             Approve to add new members or clear pending invites.
@@ -16275,7 +16275,7 @@ const wrapperPropsFor = (card: UserCard.Card) => (card.to ? { to: card.to } : {}
       </div>
     </template>
 
-    <div v-if="items.length" class="fx-section__item">
+    <div v-if="items.length" class="section__item">
       <MoleculesFormsFirestoreListActions
         :items="items"
         :action-approve="onApprove"
@@ -16284,7 +16284,7 @@ const wrapperPropsFor = (card: UserCard.Card) => (card.to ? { to: card.to } : {}
         reject-label="Remove"
       />
     </div>
-    <p v-else class="fx-section__empty">No pending requests.</p>
+    <p v-else class="section__empty">No pending requests.</p>
   </UCard>
 </template>
 
@@ -16310,10 +16310,10 @@ defineProps<{
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">locked app config</h3>
         </div>
 
@@ -16329,7 +16329,7 @@ defineProps<{
       </div>
     </template>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="App ID"
         :firebase-value="app.id"
@@ -16340,7 +16340,7 @@ defineProps<{
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Role"
         :firebase-value="app.role"
@@ -16351,7 +16351,7 @@ defineProps<{
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Ecosystem"
         :firebase-value="app.ecosystem"
@@ -16362,7 +16362,7 @@ defineProps<{
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="App name"
         :firebase-value="app.app_name"
@@ -16373,7 +16373,7 @@ defineProps<{
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Short name"
         :firebase-value="app.app_short_name"
@@ -16403,10 +16403,10 @@ defineProps<{
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">Social</h3>
           <p class="text-xs text-dimmed">
             Handles for Instagram/Twitter/YouTube (e.g. fireux.app). URLs for everything else.
@@ -16415,7 +16415,7 @@ defineProps<{
       </div>
     </template>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSocialLinks
         :firebase-value="app.social_links"
         :update-function="handleUpdateSocialLinks"
@@ -16439,10 +16439,10 @@ defineProps<{
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">Surfaces</h3>
           <p class="text-xs text-dimmed">
             Card surfaces derived from the app model.
@@ -16451,7 +16451,7 @@ defineProps<{
       </div>
     </template>
 
-    <div v-if="appCard" class="fx-section__item space-y-4">
+    <div v-if="appCard" class="section__item space-y-4">
       <div>
         <div class="mb-2">
           <UBadge size="xs" variant="soft" color="neutral">Cell</UBadge>
@@ -16473,7 +16473,7 @@ defineProps<{
       </div>
     </div>
 
-    <p v-else class="fx-section__empty">No app card available.</p>
+    <p v-else class="section__empty">No app card available.</p>
   </UCard>
 </template>
 
@@ -16494,10 +16494,10 @@ const wrapperPropsFor = (card: AppCard.Card | null) => (card?.to ? { to: card.to
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">Tenant overrides</h3>
           <p class="text-xs text-dimmed">
             Reserved for per-tenant deltas once app-level controls are defined.
@@ -16506,7 +16506,7 @@ const wrapperPropsFor = (card: AppCard.Card | null) => (card?.to ? { to: card.to
       </div>
     </template>
 
-    <p class="fx-section__empty">
+    <p class="section__empty">
       Nothing to configure yet.
     </p>
   </UCard>
@@ -17514,7 +17514,7 @@ withDefaults(
     </component>
   </div>
 
-  <div v-else class="fx-section__grid">
+  <div v-else class="section__grid">
     <component
       :is="wrapperFor(item)"
       v-for="item in cards"
@@ -17550,10 +17550,10 @@ const wrapperPropsFor = (item: UserCard.Card) => (item.to ? { to: item.to } : {}
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h2 class="text-base font-semibold">Users</h2>
           <p class="text-xs text-gray-500">
             {{ scopeCopy }}
@@ -17583,7 +17583,7 @@ const wrapperPropsFor = (item: UserCard.Card) => (item.to ? { to: item.to } : {}
       :variant="variant"
     />
 
-    <p v-else class="fx-section__empty">
+    <p v-else class="section__empty">
       {{ query ? 'No users match your search.' : 'No users found.' }}
     </p>
 
@@ -33779,10 +33779,10 @@ const cardKey = (card: ChefCard.Card) => card.id || card.to || card.title
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h2 class="text-base font-semibold">Chefs</h2>
           <p class="text-xs text-gray-500">Browse chefs available to this runtime.</p>
         </div>
@@ -33805,7 +33805,7 @@ const cardKey = (card: ChefCard.Card) => card.id || card.to || card.title
       :variant="variant"
     />
 
-    <p v-else class="fx-section__empty">No chefs found.</p>
+    <p v-else class="section__empty">No chefs found.</p>
 
     <div v-if="showDebug" class="pt-3">
       <DevJson
@@ -34724,10 +34724,10 @@ const cardKey = (card: SupplierCard.Card) => card.id || card.to || card.title
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h2 class="text-base font-semibold">Suppliers</h2>
           <p class="text-xs text-gray-500">Browse suppliers available to this runtime.</p>
         </div>
@@ -34750,7 +34750,7 @@ const cardKey = (card: SupplierCard.Card) => card.id || card.to || card.title
       :variant="variant"
     />
 
-    <p v-else class="fx-section__empty">No suppliers found.</p>
+    <p v-else class="section__empty">No suppliers found.</p>
 
     <div v-if="showDebug" class="pt-3">
       <DevJson
@@ -45675,10 +45675,10 @@ const wrapperPropsFor = (item: AgentCard.Card) => (item.to ? { to: item.to } : {
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h2 class="text-base font-semibold">Agents</h2>
           <p class="text-xs text-gray-500">Browse agents available to this runtime.</p>
         </div>
@@ -45701,7 +45701,7 @@ const wrapperPropsFor = (item: AgentCard.Card) => (item.to ? { to: item.to } : {
       :variant="variant"
     />
 
-    <p v-else class="fx-section__empty">No agents found.</p>
+    <p v-else class="section__empty">No agents found.</p>
 
     <div v-if="showDebug" class="pt-3">
       <DevJson
@@ -46717,10 +46717,10 @@ const wrapperPropsFor = (item: ProfessionalCard.Card) => (item.to ? { to: item.t
 
 ```vue
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h2 class="text-base font-semibold">Professionals</h2>
           <p class="text-xs text-gray-500">Browse professionals available to this runtime.</p>
         </div>
@@ -46743,7 +46743,7 @@ const wrapperPropsFor = (item: ProfessionalCard.Card) => (item.to ? { to: item.t
       :variant="variant"
     />
 
-    <p v-else class="fx-section__empty">No professionals found.</p>
+    <p v-else class="section__empty">No professionals found.</p>
 
     <div v-if="showDebug" class="pt-3">
       <DevJson

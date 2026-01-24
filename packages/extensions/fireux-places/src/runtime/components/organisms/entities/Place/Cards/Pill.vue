@@ -15,14 +15,14 @@
       <i v-else class="i-lucide-image text-xs" />
     </span>
 
-    <div class="min-w-0 flex-1">
-      <div class="min-w-0 truncate text-sm font-medium">{{ title }}</div>
-      <div v-if="showSubtitle && subtitle" class="min-w-0 truncate text-xs text-dimmed">
+    <div class="fx-card__content fx-card__stack">
+      <div class="fx-card__title">{{ title }}</div>
+      <div v-if="showSubtitle && subtitle" class="fx-card__subtitle">
         {{ subtitle }}
       </div>
     </div>
 
-    <div v-if="showBadges && badges.length" class="ml-2 flex shrink-0 items-center gap-1">
+    <div v-if="showBadges && badges.length" class="fx-card__badges ml-2 shrink-0">
       <UBadge
         v-for="badge in badges"
         :key="badge"

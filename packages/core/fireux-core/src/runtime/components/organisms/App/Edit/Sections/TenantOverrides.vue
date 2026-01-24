@@ -1,8 +1,8 @@
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">Tenant overrides</h3>
           <p class="text-xs text-dimmed">
             Reserved for per-tenant deltas once app-level controls are defined.
@@ -11,7 +11,7 @@
       </div>
     </template>
 
-    <p class="fx-section__empty">
+    <p class="section__empty">
       Nothing to configure yet.
     </p>
   </UCard>

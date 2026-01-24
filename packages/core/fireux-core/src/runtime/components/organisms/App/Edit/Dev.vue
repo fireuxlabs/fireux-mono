@@ -6,10 +6,10 @@
       <!-- Images -->
       <MoleculesFormsFirestoreAppImages :app="app" />
 
-      <UCard class="fx-section" variant="subtle">
+      <UCard class="section" variant="subtle">
         <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
+          <div class="section__header">
+            <div class="section__copy">
               <h3 class="text-base font-semibold">Binding check (app ↔ users)</h3>
               <p class="text-xs text-dimmed">
                 Compares app users against core user mirrors and app admin lists.
@@ -19,7 +19,7 @@
           </div>
         </template>
 
-        <div class="fx-section__item space-y-3">
+        <div class="section__item space-y-3">
           <div class="text-xs text-dimmed">
             <span class="font-mono">appId</span>: {{ driftAppId || 'unknown' }} ·
             <span class="font-mono">app users</span>: {{ appUsersCount }} ·
@@ -73,10 +73,10 @@
         </div>
       </UCard>
 
-      <UCard class="fx-section" variant="subtle">
+      <UCard class="section" variant="subtle">
         <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
+          <div class="section__header">
+            <div class="section__copy">
               <h3 class="text-base font-semibold">Field groups (draft)</h3>
               <p class="text-xs text-dimmed">
                 Proposed separation to prevent “locked” values leaking into editable surfaces.
@@ -86,7 +86,7 @@
           </div>
         </template>
 
-        <div class="fx-section__item">
+        <div class="section__item">
           <div class="grid gap-4 sm:grid-cols-2">
             <div>
               <div class="text-xs font-medium text-dimmed">Locked (config/system)</div>
@@ -132,17 +132,17 @@
         </div>
       </UCard>
 
-      <UCard class="fx-section">
+      <UCard class="section">
         <template #header>
-          <div class="fx-section__header">
-            <div class="fx-section__copy">
+          <div class="section__header">
+            <div class="section__copy">
               <h3 class="text-base font-semibold">Model</h3>
               <p class="text-xs text-dimmed">Full app document.</p>
             </div>
           </div>
         </template>
 
-        <div class="fx-section__item">
+        <div class="section__item">
           <pre class="text-xs font-mono text-dimmed whitespace-pre-wrap break-words">{{ appModelJson }}</pre>
         </div>
       </UCard>

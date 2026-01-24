@@ -1,8 +1,8 @@
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">locked app config</h3>
         </div>
 
@@ -18,7 +18,7 @@
       </div>
     </template>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="App ID"
         :firebase-value="app.id"
@@ -29,7 +29,7 @@
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Role"
         :firebase-value="app.role"
@@ -40,7 +40,7 @@
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Ecosystem"
         :firebase-value="app.ecosystem"
@@ -51,7 +51,7 @@
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="App name"
         :firebase-value="app.app_name"
@@ -62,7 +62,7 @@
       />
     </div>
 
-    <div class="fx-section__item">
+    <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
         label="Short name"
         :firebase-value="app.app_short_name"

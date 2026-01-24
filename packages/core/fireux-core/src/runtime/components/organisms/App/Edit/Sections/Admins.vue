@@ -1,15 +1,15 @@
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">Admins</h3>
           <p class="text-xs text-dimmed">App administrators.</p>
         </div>
       </div>
     </template>
 
-    <div v-if="rows.length" class="fx-section__item space-y-2">
+    <div v-if="rows.length" class="section__item space-y-2">
       <ul class="space-y-2">
         <li
           v-for="admin in rows"
@@ -35,7 +35,7 @@
         </li>
       </ul>
     </div>
-    <p v-else class="fx-section__empty">No admins yet.</p>
+    <p v-else class="section__empty">No admins yet.</p>
   </UCard>
 </template>
 

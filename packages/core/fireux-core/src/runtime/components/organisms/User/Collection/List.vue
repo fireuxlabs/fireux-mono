@@ -9,7 +9,7 @@
     />
   </div>
 
-  <div v-else class="fx-section__grid">
+  <div v-else class="section__grid">
     <OrganismsUserCardsCell
       v-for="item in cards"
       :key="item.to || item.id"

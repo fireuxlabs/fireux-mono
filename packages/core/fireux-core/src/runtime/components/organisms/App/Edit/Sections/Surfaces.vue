@@ -1,8 +1,8 @@
 <template>
-  <UCard class="fx-section">
+  <UCard class="section">
     <template #header>
-      <div class="fx-section__header">
-        <div class="fx-section__copy">
+      <div class="section__header">
+        <div class="section__copy">
           <h3 class="text-base font-semibold">Surfaces</h3>
           <p class="text-xs text-dimmed">
             Card surfaces derived from the app model.
@@ -11,7 +11,7 @@
       </div>
     </template>
 
-    <div v-if="appCard" class="fx-section__item space-y-4">
+    <div v-if="appCard" class="section__item space-y-4">
       <div>
         <div class="mb-2">
           <UBadge size="xs" variant="soft" color="neutral">Cell</UBadge>
@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <p v-else class="fx-section__empty">No app card available.</p>
+    <p v-else class="section__empty">No app card available.</p>
   </UCard>
 </template>
 

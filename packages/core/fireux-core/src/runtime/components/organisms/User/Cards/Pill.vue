@@ -9,11 +9,8 @@
 
     <div class="min-w-0 flex-1">
       <div class="min-w-0 truncate text-sm font-medium">{{ displayName }}</div>
-      <div v-if="showSubtitle && handle" class="min-w-0 truncate text-xs text-dimmed">
-        {{ handle }}
-      </div>
-      <div v-if="showSubtitle && profiles.length" class="min-w-0 truncate text-xs text-dimmed">
-        {{ profiles.join(', ') }}
+      <div v-if="showSubtitle && subtitleText" class="min-w-0 truncate text-xs text-dimmed">
+        {{ subtitleText }}
       </div>
     </div>
 
@@ -32,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
 
 type PillProps = Pick<
@@ -55,6 +53,13 @@ const props = withDefaults(defineProps<PillProps>(), {
   showBadges: true,
   link: false,
   action: false,
+})
+
+const subtitleText = computed(() => {
+  const parts: string[] = []
+  if (props.handle) parts.push(props.handle)
+  if (props.profiles.length) parts.push(props.profiles.join(', '))
+  return parts.join(' · ')
 })
 
 const onClick = () => {
