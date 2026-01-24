@@ -49,6 +49,8 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
 
+defineOptions({ inheritAttrs: false })
+
 defineProps({
   id: { type: String, default: '' },
   shortName: { type: String, default: '' },

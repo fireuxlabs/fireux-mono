@@ -1,34 +1,25 @@
 <template>
-  <div
-    v-if="variant === 'pill'"
-    class="collection-grid collection-grid--pill"
-  >
+  <div v-if="variant === 'pill'">
     <OrganismsProfilesProfessionalCardsPill
       v-for="item in cards"
       :key="item.to || item.id"
       v-bind="item"
       :link="Boolean(item.to)"
-      class="block"
+      
     />
   </div>
 
-  <div
-    v-else-if="variant === 'cell'"
-    class="collection-grid collection-grid--cell"
-  >
+  <div v-else-if="variant === 'cell'">
     <OrganismsProfilesProfessionalCardsCell
       v-for="item in cards"
       :key="item.to || item.id"
       v-bind="item"
       :link="Boolean(item.to)"
-      class="block"
+      
     />
   </div>
 
-  <div
-    v-else-if="variant === 'preview'"
-    class="collection-grid collection-grid--pill"
-  >
+  <div v-else-if="variant === 'preview'">
     <OrganismsProfilesProfessionalCardsPreview
       v-for="item in cards"
       :key="item.to"
@@ -36,7 +27,7 @@
     />
   </div>
 
-  <div v-else class="space-y-3">
+  <div v-else>
     <OrganismsProfilesProfessionalCardsProfile
       v-for="item in cards"
       :key="item.to"
@@ -46,7 +37,6 @@
 
   <DevJsonPanel
     v-if="devMode"
-    class="mt-3"
     title="Dev · Professional Collection"
     :data="{ variant, count: cards.length, cards }"
   />

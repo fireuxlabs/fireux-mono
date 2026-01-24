@@ -1,21 +1,21 @@
 <template>
-  <div v-if="variant === 'pill'" class="collection-grid collection-grid--pill">
+  <div v-if="variant === 'pill'">
     <PlaceCardsPill
       v-for="card in cards"
       :key="card.to || card.id"
       v-bind="card"
       :link="Boolean(card.to)"
-      class="block"
+      
     />
   </div>
 
-  <div v-else class="collection-grid collection-grid--cell">
+  <div v-else>
     <PlaceCardsCell
       v-for="card in cards"
       :key="card.to || card.id"
       v-bind="card"
       :link="Boolean(card.to)"
-      class="block"
+      
     />
   </div>
 </template>

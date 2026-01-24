@@ -15,12 +15,26 @@
 
         <OrganismsAppCardsPreview
           v-if="app && view === 'preview'"
-          v-bind="card(app)"
+          :id="card(app).id"
+          :short-name="card(app).shortName"
+          :thumbnail-url="card(app).thumbnailUrl"
+          :display-name="card(app).displayName"
+          :ecosystem="card(app).ecosystem"
+          :tagline="card(app).tagline"
+          :user-count="card(app).userCount"
+          :badges="card(app).badges"
         />
 
         <OrganismsAppCardsProfile
           v-else-if="app"
-          v-bind="card(app)"
+          :id="card(app).id"
+          :short-name="card(app).shortName"
+          :thumbnail-url="card(app).thumbnailUrl"
+          :display-name="card(app).displayName"
+          :ecosystem="card(app).ecosystem"
+          :tagline="card(app).tagline"
+          :user-count="card(app).userCount"
+          :badges="card(app).badges"
           :app="app"
         />
         <OrganismsAppCreateSystem v-else />

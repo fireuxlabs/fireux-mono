@@ -3,37 +3,26 @@
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
-    class="fx-card fx-card--pill"
+    class="card card--pill app-pill"
     @click="onClick"
   >
     <UAvatar :src="thumbnailUrl || undefined" :alt="displayName" size="xs" />
 
-    <div class="min-w-0 flex-1">
-      <div class="min-w-0 truncate text-sm font-medium">
+    <div class="app-pill__text">
+      <div class="app-pill__title">
         {{ displayName }}
       </div>
-
-      <div v-if="showSubtitle && ecosystem" class="min-w-0 truncate text-xs text-dimmed">
+      <div v-if="showSubtitle && ecosystem" class="app-pill__subtitle">
         {{ ecosystem }}
       </div>
-    </div>
-
-    <div v-if="showBadges && badges.length" class="ml-2 flex shrink-0 items-center gap-1">
-      <UBadge
-        v-for="badge in badges"
-        :key="badge"
-        variant="soft"
-        color="neutral"
-        size="xs"
-      >
-        {{ badge }}
-      </UBadge>
     </div>
   </component>
 </template>
 
 <script setup lang="ts">
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
+
+defineOptions({ inheritAttrs: false })
 
 const emit = defineEmits<{
   (event: 'action'): void
@@ -49,6 +38,7 @@ const props = withDefaults(
     }
   >(),
   {
+    badges: () => [],
     showSubtitle: true,
     showBadges: true,
     link: false,
@@ -59,4 +49,5 @@ const props = withDefaults(
 const onClick = () => {
   if (props.action) emit('action')
 }
+
 </script>

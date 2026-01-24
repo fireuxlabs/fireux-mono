@@ -1,14 +1,14 @@
 <template>
-  <UCard class="section">
+  <UCard>
     <template #header>
-      <div class="section__header">
-        <div class="section__copy">
-          <h2 class="text-base font-semibold">Chefs</h2>
-          <p class="text-xs text-gray-500">Browse chefs available to this runtime.</p>
+      <div>
+        <div>
+          <h2>Chefs</h2>
+          <p>Browse chefs available to this runtime.</p>
         </div>
 
-        <div class="flex items-center gap-2">
-          <UInput v-model="query" size="xs" placeholder="Search chefs…" class="w-44" />
+        <div>
+          <UInput v-model="query" size="xs" placeholder="Search chefs…" />
 
           <UButton size="xs" variant="ghost" @click="toggleVariant">
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
@@ -25,9 +25,9 @@
       :variant="variant"
     />
 
-    <p v-else class="section__empty">No chefs found.</p>
+    <p v-else>No chefs found.</p>
 
-    <div v-if="isDev" class="pt-3">
+    <div v-if="isDev">
       <DevJson
         :title="'Chefs (JSON)'"
         :data="collection"

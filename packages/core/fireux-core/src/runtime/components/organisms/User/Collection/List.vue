@@ -1,21 +1,21 @@
 <template>
-  <div v-if="variant === 'pill'" class="collection-grid collection-grid--pill">
+  <div v-if="variant === 'pill'">
     <OrganismsUserCardsPill
       v-for="item in cards"
       :key="item.to || item.id"
       v-bind="item"
       :link="Boolean(item.to)"
-      class="block"
+      
     />
   </div>
 
-  <div v-else class="collection-grid collection-grid--cell">
+  <div v-else>
     <OrganismsUserCardsCell
       v-for="item in cards"
       :key="item.to || item.id"
       v-bind="item"
       :link="Boolean(item.to)"
-      class="block"
+      
     />
   </div>
 </template>

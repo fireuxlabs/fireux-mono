@@ -1,5 +1,5 @@
 <template>
-  <div :class="gridClass">
+  <div>
     <component
       :is="componentForVariant"
       v-for="card in cards"
@@ -10,7 +10,6 @@
 
   <DevJsonPanel
     v-if="devMode"
-    class="mt-3"
     title="Dev · Supplier Collection"
     :data="{ variant, count: cards.length, cards }"
   />
@@ -40,11 +39,6 @@ const componentForVariant = computed(() => {
   if (props.variant === 'preview') return resolveComponent('OrganismsProfilesSupplierCardsPreview')
   if (props.variant === 'profile') return resolveComponent('OrganismsProfilesSupplierCardsProfile')
   return resolveComponent('OrganismsProfilesSupplierCardsPill')
-})
-
-const gridClass = computed(() => {
-  if (props.variant === 'pill') return 'collection-grid collection-grid--pill'
-  return 'collection-grid collection-grid--cell'
 })
 
 const cardKey = (card: SupplierCard.Card) => card.id || card.to || card.title

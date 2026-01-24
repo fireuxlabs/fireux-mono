@@ -2,22 +2,22 @@
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
-    class="fx-cell"
+    class="card card--cell"
     @click="onClick"
   >
-    <div class="fx-cell__media">
+    <div class="card__media">
       <UAvatar :src="avatarUrl || undefined" :alt="title" size="sm" />
 
-      <div class="fx-cell__content fx-cell__stack">
-        <div class="fx-cell__header">
+      <div class="card__content card__stack">
+        <div class="card__header">
           <div class="min-w-0">
-            <div class="fx-cell__title">{{ title }}</div>
-            <div v-if="showSubtitle && status" class="fx-cell__subtitle">
+            <div class="card__title">{{ title }}</div>
+            <div v-if="showSubtitle && status" class="card__subtitle">
               {{ status }}
             </div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="fx-cell__badges">
+          <div v-if="showBadges && badges.length" class="card__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <div v-if="showTagline" class="fx-cell__tagline">
+        <div v-if="showTagline" class="card__tagline">
           <span v-if="prop">{{ prop }}</span>
           <span v-else class="italic">missing</span>
         </div>

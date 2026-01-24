@@ -17,7 +17,12 @@
           <UBadge size="xs" variant="soft" color="neutral">Cell</UBadge>
         </div>
         <OrganismsAppCardsCell
-          v-bind="appCard"
+          :to="appCard.to"
+          :thumbnail-url="appCard.thumbnailUrl"
+          :display-name="appCard.displayName"
+          :badges="appCard.badges"
+          :tagline="appCard.tagline"
+          :user-count="appCard.userCount"
           :link="Boolean(appCard.to)"
           class="block"
         />
@@ -27,7 +32,16 @@
         <div class="mb-2">
           <UBadge size="xs" variant="soft" color="neutral">Preview</UBadge>
         </div>
-        <OrganismsAppCardsPreview v-bind="appCard" />
+        <OrganismsAppCardsPreview
+          :id="appCard.id"
+          :short-name="appCard.shortName"
+          :thumbnail-url="appCard.thumbnailUrl"
+          :display-name="appCard.displayName"
+          :ecosystem="appCard.ecosystem"
+          :tagline="appCard.tagline"
+          :user-count="appCard.userCount"
+          :badges="appCard.badges"
+        />
       </div>
     </div>
 

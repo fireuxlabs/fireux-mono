@@ -11,7 +11,11 @@
         <div class="flex flex-wrap items-center gap-2">
           <OrganismsAppCardsPill
             v-if="appCard"
-            v-bind="appCard"
+            :to="appCard.to"
+            :thumbnail-url="appCard.thumbnailUrl"
+            :display-name="appCard.displayName"
+            :ecosystem="appCard.ecosystem"
+            :badges="appCard.badges"
             :show-subtitle="false"
             :link="Boolean(appCard.to)"
             class="block"

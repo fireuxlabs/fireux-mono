@@ -2,7 +2,7 @@
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
-    class="fx-card fx-card--pill"
+    class="card card--pill"
     @click="onClick"
   >
     <UAvatar :src="avatarUrl || undefined" :alt="title" size="xs" />

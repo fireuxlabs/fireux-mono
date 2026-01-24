@@ -1,200 +1,30 @@
-/* FireUX entity card system */
+/* stripped */
 
-@layer components {
-	.fx-card,
-	.fx-cell {
-		border: 1px solid var(--ui-border);
-		background: var(--ui-bg);
-		color: var(--ui-text);
-		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
-		transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease,
-			transform 160ms ease;
-	}
+.app-collection-grid {
+	display: grid;
+	gap: 0.75rem;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
 
-	/* Pill: minimal surface */
-	.fx-card--pill {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.375rem 0.5rem;
-		border-radius: 9999px;
-		min-width: min(12rem, 100%);
-		max-width: 100%;
-	}
+.app-pill {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
 
-	.fx-card--pill:hover {
-		background: var(--ui-bg-muted);
-	}
+.app-pill__text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
 
-	/* Cell: compact row card */
-	.fx-cell {
-		display: block;
-		border-radius: 0.75rem;
-		padding: 0.75rem;
-	}
+.app-pill__title,
+.app-pill__subtitle {
+	min-width: 0;
+}
 
-	.fx-cell:hover {
-		background: var(--ui-bg-muted);
-		border-color: color-mix(in srgb, var(--ui-border) 60%, var(--ui-primary) 40%);
-		box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
-		transform: translateY(-1px);
-	}
-
-	/* Card: full surface */
-	.fx-card--cell {
-		display: block;
-		border-radius: 1rem;
-		padding: 1rem;
-	}
-
-	.fx-card--cell:hover {
-		background: var(--ui-bg-muted);
-		border-color: color-mix(in srgb, var(--ui-border) 60%, var(--ui-primary) 40%);
-		box-shadow: 0 14px 32px rgba(15, 23, 42, 0.18);
-		transform: translateY(-1px);
-	}
-
-	.fx-card__media,
-	.fx-cell__media {
-		@apply flex items-center gap-3;
-	}
-
-	.fx-card__content,
-	.fx-cell__content {
-		@apply min-w-0 flex-1;
-	}
-
-	.fx-card__stack,
-	.fx-cell__stack {
-		@apply grid gap-1;
-	}
-
-	.fx-card__header,
-	.fx-cell__header {
-		@apply flex items-start justify-between gap-3;
-	}
-
-	.fx-card__title,
-	.fx-cell__title {
-		@apply truncate text-sm font-medium;
-	}
-
-	.fx-card__subtitle,
-	.fx-cell__subtitle {
-		@apply truncate text-xs;
-		color: var(--ui-text-muted, var(--ui-text));
-	}
-
-	.fx-card__badges,
-	.fx-cell__badges {
-		@apply flex flex-wrap justify-end gap-1;
-	}
-
-	.fx-card__tagline,
-	.fx-cell__tagline {
-		@apply text-sm;
-		color: var(--ui-text-muted, var(--ui-text));
-	}
-
-	.fx-card__meta,
-	.fx-cell__meta {
-		@apply flex flex-wrap items-center gap-2;
-	}
-
-	/* Preview: detailed card content (UCard wrapper) */
-	.fx-preview {
-		width: 100%;
-	}
-
-	.fx-preview__row {
-		@apply flex items-start gap-3;
-	}
-
-	.fx-preview__main {
-		@apply min-w-0 flex-1;
-	}
-
-	.fx-preview__top {
-		@apply flex items-start justify-between gap-3;
-	}
-
-	.fx-preview__title {
-		@apply min-w-0 truncate font-semibold;
-		color: var(--ui-text);
-	}
-
-	.fx-preview__badges {
-		@apply flex flex-wrap justify-end gap-1 shrink-0;
-	}
-
-	.fx-preview__subtitle {
-		@apply mt-0.5 truncate text-sm;
-		color: var(--ui-text-muted, var(--ui-text));
-	}
-
-	.fx-preview__body {
-		@apply mt-2 grid gap-1;
-	}
-
-	.fx-preview__line {
-		@apply text-sm;
-		color: var(--ui-text);
-	}
-
-	.fx-preview__meta {
-		@apply mt-2 flex flex-wrap items-center gap-2;
-	}
-
-	.fx-preview__header {
-		@apply flex flex-wrap items-start justify-between gap-3;
-	}
-
-	.fx-preview__header-content {
-		@apply flex flex-col gap-2;
-	}
-
-	.fx-preview__toggle {
-		@apply self-start;
-	}
-
-	.fx-preview__eyebrow {
-		@apply text-xs uppercase;
-		letter-spacing: 0.08em;
-		color: var(--ui-text-muted, var(--ui-text));
-	}
-
-	.fx-preview__copy {
-		@apply text-sm;
-		margin: 0.25rem 0 0;
-		color: var(--ui-text-muted, var(--ui-text));
-	}
-
-	.fx-preview__fallback {
-		@apply text-center text-sm uppercase;
-		margin: 0;
-		padding: 1.25rem 0;
-		letter-spacing: 0.08em;
-		color: var(--ui-text-muted, var(--ui-text));
-	}
-
-	.fx-avatar-shade--light,
-	.fx-avatar-shade--dark,
-	.fx-avatar-shade--neutral {
-		border-radius: 9999px;
-		overflow: hidden;
-		padding: 0.25rem;
-		border: 1px solid var(--ui-border);
-	}
-
-	.fx-avatar-shade--light {
-		background: var(--ui-bg);
-	}
-
-	.fx-avatar-shade--dark {
-		background: var(--ui-text);
-	}
-
-	.fx-avatar-shade--neutral {
-		background: var(--ui-bg-muted);
-	}
+.app-collection-grid {
+	display: grid;
+	gap: 0.75rem;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }

@@ -1,18 +1,17 @@
 <template>
-  <UCard :ui="{ body: 'space-y-4' }">
+  <UCard>
     <template #header>
-      <div class="flex items-center justify-between">
+      <div>
         <div>
-          <div class="font-medium">Ingredients</div>
-          <p class="text-xs text-dimmed">Browse ingredients available to this runtime.</p>
+          <div>Ingredients</div>
+          <p>Browse ingredients available to this runtime.</p>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div>
           <UInput
             v-model="query"
             size="xs"
             placeholder="Search ingredients…"
-            class="w-44"
           />
 
           <UButton size="xs" variant="ghost" @click="toggleVariant">
@@ -29,11 +28,11 @@
       :variant="variant"
     />
 
-    <p v-else class="text-sm text-dimmed">
+    <p v-else>
       {{ query ? 'No ingredients match your search.' : 'No ingredients found.' }}
     </p>
 
-    <div v-if="isDev" class="pt-3">
+    <div v-if="isDev">
       <DevJson
         :title="'Ingredients (JSON)'"
         :data="collection"

@@ -1,4 +1,4 @@
-@layer base {
+/* stripped */@layer base {
   :root {
     /* Primary palette (required when ui.colors.primary = 'theme') */
     --ui-color-theme-50: #f2f4ec;

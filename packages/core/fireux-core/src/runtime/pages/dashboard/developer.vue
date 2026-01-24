@@ -24,7 +24,11 @@
             <div v-else class="space-y-6">
               <OrganismsAppCardsPill
                 v-if="previewCard"
-                v-bind="previewCard"
+                :to="previewCard.to"
+                :thumbnail-url="previewCard.thumbnailUrl"
+                :display-name="previewCard.displayName"
+                :ecosystem="previewCard.ecosystem"
+                :badges="previewCard.badges"
                 :link="Boolean(previewCard.to)"
                 class="block"
               />
