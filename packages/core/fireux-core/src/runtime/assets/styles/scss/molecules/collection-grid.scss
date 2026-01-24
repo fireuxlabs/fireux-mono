@@ -1,0 +1,15 @@
+/* Collection grid helpers */
+
+@layer components {
+	.collection-grid {
+		@apply grid gap-3;
+	}
+
+	.collection-grid--pill {
+		@apply sm:grid-cols-2 lg:grid-cols-3;
+	}
+
+	.collection-grid--cell {
+		@apply md:grid-cols-2;
+	}
+}

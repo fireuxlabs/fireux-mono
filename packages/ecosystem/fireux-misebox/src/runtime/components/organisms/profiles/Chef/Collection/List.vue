@@ -43,8 +43,8 @@ const componentForVariant = computed(() => {
 })
 
 const gridClass = computed(() => {
-  if (props.variant === 'pill') return 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3'
-  return 'grid gap-4 md:grid-cols-2'
+  if (props.variant === 'pill') return 'collection-grid collection-grid--pill'
+  return 'collection-grid collection-grid--cell'
 })
 
 const cardKey = (card: ChefCard.Card) => card.id || card.to || card.title

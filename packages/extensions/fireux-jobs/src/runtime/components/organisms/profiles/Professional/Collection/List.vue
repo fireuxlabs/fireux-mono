@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="variant === 'pill'"
-    class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+    class="collection-grid collection-grid--pill"
   >
     <OrganismsProfilesProfessionalCardsPill
       v-for="item in cards"
@@ -14,7 +14,7 @@
 
   <div
     v-else-if="variant === 'cell'"
-    class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+    class="collection-grid collection-grid--cell"
   >
     <OrganismsProfilesProfessionalCardsCell
       v-for="item in cards"
@@ -27,7 +27,7 @@
 
   <div
     v-else-if="variant === 'preview'"
-    class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+    class="collection-grid collection-grid--pill"
   >
     <OrganismsProfilesProfessionalCardsPreview
       v-for="item in cards"

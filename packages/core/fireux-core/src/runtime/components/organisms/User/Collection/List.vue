@@ -1,5 +1,5 @@
 <template>
-  <div v-if="variant === 'pill'" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+  <div v-if="variant === 'pill'" class="collection-grid collection-grid--pill">
     <OrganismsUserCardsPill
       v-for="item in cards"
       :key="item.to || item.id"
@@ -9,7 +9,7 @@
     />
   </div>
 
-  <div v-else class="grid gap-3 md:grid-cols-2">
+  <div v-else class="collection-grid collection-grid--cell">
     <OrganismsUserCardsCell
       v-for="item in cards"
       :key="item.to || item.id"
