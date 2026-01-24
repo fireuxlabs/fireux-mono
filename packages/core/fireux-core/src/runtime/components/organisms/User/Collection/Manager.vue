@@ -34,10 +34,10 @@
       {{ query ? 'No users match your search.' : 'No users found.' }}
     </p>
 
-    <div v-if="showDebug" class="pt-3">
+    <div v-if="isDev" class="pt-3">
       <DevJson
         :title="'Users (JSON)'"
-        :data="debugPayload"
+        :data="collection"
         :default-open="false"
       />
     </div>
@@ -70,9 +70,5 @@ const {
 })
 
 const totalCount = computed(() => collection.value.length)
-const showDebug = import.meta.dev
-const debugPayload = computed(() => ({
-  totalUsers: collection.value.length,
-  users: collection.value,
-}))
+const isDev = import.meta.dev
 </script>

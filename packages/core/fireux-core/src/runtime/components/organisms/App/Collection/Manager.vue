@@ -34,10 +34,10 @@
       {{ query ? 'No apps match your search.' : 'No apps found.' }}
     </p>
 
-    <div v-if="showDebug" class="pt-3">
+    <div v-if="isDev" class="pt-3">
       <DevJson
         :title="'Apps (JSON)'"
-        :data="debugPayload"
+        :data="collection"
         :default-open="false"
       />
     </div>
@@ -67,9 +67,5 @@ const {
 })
 
 const totalCount = computed(() => collection.value.length)
-const showDebug = import.meta.dev
-const debugPayload = computed(() => ({
-  totalApps: collection.value.length,
-  apps: collection.value,
-}))
+const isDev = import.meta.dev
 </script>

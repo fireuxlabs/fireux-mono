@@ -2,29 +2,41 @@
   <UCard :ui="{ body: 'space-y-4' }">
     <template #header>
       <div class="flex items-center justify-between">
-        <div class="font-medium">Jobs</div>
+        <div>
+          <div class="font-medium">Jobs</div>
+          <p class="text-xs text-dimmed">Browse jobs available to this runtime.</p>
+        </div>
 
         <div class="flex items-center gap-2">
+          <UInput
+            v-model="query"
+            size="xs"
+            placeholder="Search jobs…"
+            class="w-44"
+          />
+
           <UButton size="xs" variant="ghost" @click="toggleVariant">
             {{ variant === 'pill' ? 'Cells' : 'Pills' }}
           </UButton>
-          <UBadge variant="soft">{{ cards.length }}</UBadge>
+          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
         </div>
       </div>
     </template>
 
-    <div v-if="!cards.length" class="text-sm text-dimmed">No jobs yet.</div>
-
     <OrganismsEntitiesJobCollectionList
-      v-else
-      :cards="cards"
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
       :variant="variant"
     />
 
-    <div v-if="showDebug" class="pt-3">
+    <p v-else class="text-sm text-dimmed">
+      {{ query ? 'No jobs match your search.' : 'No jobs found.' }}
+    </p>
+
+    <div v-if="isDev" class="pt-3">
       <DevJson
         :title="'Jobs (JSON)'"
-        :data="debugPayload"
+        :data="collection"
         :default-open="false"
       />
     </div>
@@ -32,31 +44,30 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
+import { computed } from 'vue';
 import { useJobInterface } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
 import type { Job } from '../../../../../models/objects/job.model';
 
 const props = defineProps<{ collection?: Job[] }>()
 
 const collection = computed(() => props.collection ?? [])
-const { card: makeCard } = useJobInterface()
-type JobCardShape = NonNullable<ReturnType<typeof makeCard>>
-const cards = computed(() =>
-  collection.value
-    .map((job) => makeCard(job))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c))
-)
-const showDebug = import.meta.dev
-const debugPayload = computed(() => ({
-  totalJobs: collection.value.length,
-  jobs: collection.value,
-}))
+const { card: makeCard, searchText } = useJobInterface()
 
-type Variant = 'pill' | 'cell'
-const variant = ref<Variant>('pill')
-const toggleVariant = () => {
-  variant.value = variant.value === 'pill' ? 'cell' : 'pill'
-}
+const {
+  query,
+  variant,
+  toggleVariant,
+  cards: cardsFiltered,
+  visibleCount,
+} = useCollectionSearch<Job, ReturnType<typeof makeCard>>({
+  items: collection,
+  searchText: (job: Job) => searchText(job),
+  makeCard: (job: Job) => makeCard(job),
+})
+
+const totalCount = computed(() => collection.value.length)
+const isDev = import.meta.dev
 
 </script>
 
