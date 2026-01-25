@@ -40,22 +40,13 @@ import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/plac
 import { ref } from 'vue'
 import { useFirestore } from 'vuefire'
 import { useCompanyCreate } from '../../../../../composables/fireux/firestore/objects/company/mutations/useCompanyCreate'
-import { useCompanyUpdate } from '../../../../../composables/fireux/firestore/objects/company/mutations/useCompanyUpdate'
 
 const { createCompany } = useCompanyCreate()
-const { updateCompany } = useCompanyUpdate()
 const db = useFirestore()
 
 const error = ref<string | null>(null)
 const successId = ref<string | null>(null)
 const existingId = ref<string | null>(null)
-
-const normalizeSearchTerm = (value: string) =>
-  value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
 
 async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput }) {
   error.value = null
@@ -69,35 +60,13 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
     const existingSnap = await getDoc(doc(db, 'companies', id))
     if (existingSnap.exists()) {
       existingId.value = id
-      const existing = existingSnap.data() as Record<string, any>
-      const searchTerm = `${place.name} ${place.formatted_address ?? ''}`
-        .toLowerCase()
-        .trim()
-      const searchTermNormalized = normalizeSearchTerm(searchTerm)
-      if (!existing.search_term || !existing.search_term_normalized) {
-        await updateCompany(id, {
-          search_term: existing.search_term || searchTerm,
-          search_term_normalized: existing.search_term_normalized || searchTermNormalized,
-        } as any)
-      }
       return
     }
 
     const createdId = await createCompany({
       id,
       place,
-      name: place.name,
-      formatted_address: place.formatted_address ?? '',
-      lat: place.lat ?? 0,
-      lng: place.lng ?? 0,
-      place_image: place.place_image ?? '',
       website: '',
-      search_term: `${place.name} ${place.formatted_address ?? ''}`
-        .toLowerCase()
-        .trim(),
-      search_term_normalized: normalizeSearchTerm(
-        `${place.name} ${place.formatted_address ?? ''}`
-      ),
     })
 
     successId.value = createdId

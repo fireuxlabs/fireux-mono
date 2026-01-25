@@ -8,7 +8,12 @@ import { canonicalPlaceId } from '../google/usePlacesGoogle'
 import { normalizeQuery } from './normalizeQuery'
 import { searchFirestorePrimary } from './searchFirestorePrimary'
 import { searchGoogle } from './searchGoogle'
-export function usePlacesSearch() {
+
+type UsePlacesSearchOptions = {
+  debugLabel?: string
+}
+
+export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
   const { prefixSearch } = useFirestoreSearch()
   const db = useFirestore()
   const collectionName = 'places'
@@ -25,6 +30,13 @@ export function usePlacesSearch() {
   async function searchPlaces(q: string) {
     const term = q.trim().toLowerCase()
     const termNormalized = term ? normalizeQuery(term) : ''
+
+    if (import.meta.dev && options.debugLabel) {
+      console.log(`[${options.debugLabel}][search] firestore-term`, {
+        term,
+        termNormalized,
+      })
+    }
 
     if (!term) {
       results.value = []
@@ -49,6 +61,8 @@ export function usePlacesSearch() {
         if (primary) {
           primaryResults = primary.results
           primaryDebug = primary.debug ?? null
+        } else if (import.meta.dev && options.debugLabel) {
+          primaryDebug = { stage: 'firebase', count: 0 }
         }
       } catch (err) {
         if (import.meta.dev) {
@@ -85,6 +99,15 @@ export function usePlacesSearch() {
           primary: primaryDebug,
           google: google.debug ?? null,
         }
+      }
+
+      if (import.meta.dev && options.debugLabel) {
+        console.log(`[${options.debugLabel}][search] stages`, {
+          primary: primaryDebug,
+          primaryCount: primaryResults.length,
+          googleCount: google.results.length,
+          mergedCount: results.value.length,
+        })
       }
     } finally {
       isSearching.value = false

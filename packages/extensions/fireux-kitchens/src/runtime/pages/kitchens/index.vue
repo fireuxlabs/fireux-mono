@@ -56,33 +56,22 @@ const mergedKitchens = computed(() =>
     if (!place) return kitchen
     const name = kitchen.name || place.name || ''
     const formattedAddress = kitchen.formatted_address || place.formatted_address || ''
-    const searchTerm = kitchen.search_term || `${name} ${formattedAddress}`.toLowerCase().trim()
-    const searchTermNormalized =
-      kitchen.search_term_normalized || searchTerm
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .trim()
+    const searchTerm = `${name} ${formattedAddress}`.toLowerCase().trim()
+    const searchTermNormalized = searchTerm
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
     return {
       ...place,
       ...kitchen,
       id: kitchen.id,
       name,
       formatted_address: formattedAddress,
-      lat: Number.isFinite(kitchen.lat)
-        ? kitchen.lat
-        : Number.isFinite(place.lat)
-          ? place.lat
-          : 0,
-      lng: Number.isFinite(kitchen.lng)
-        ? kitchen.lng
-        : Number.isFinite(place.lng)
-          ? place.lng
-          : 0,
+      lat: Number.isFinite(place.lat) ? place.lat : 0,
+      lng: Number.isFinite(place.lng) ? place.lng : 0,
       place_image: kitchen.place_image || place.place_image || '',
       website: kitchen.website || '',
-      search_term: searchTerm,
-      search_term_normalized: searchTermNormalized,
     }
   })
 )

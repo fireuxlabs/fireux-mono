@@ -8,7 +8,7 @@
           {{ chosenPlaceCard ? 'Selected place' : 'Choose a place' }}
         </h2>
         <p class="text-sm text-gray-500">
-          Pick the place for this job. We store the Place id on the job.
+          Type a location name. We store the Place id on the job.
         </p>
       </div>
     </template>

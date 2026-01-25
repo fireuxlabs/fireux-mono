@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import {
@@ -58,7 +58,9 @@ const emit = defineEmits<{
 }>()
 
 const { query, results, selected, isSearching, select: selectPlace, clear } =
-  usePlacesSearch()
+  usePlacesSearch({
+    debugLabel: props.type === 'kitchen' ? 'kitchens' : undefined,
+  })
 
 const selectedPlace = computed(() => selected.value as BasePlace | null)
 
@@ -83,6 +85,23 @@ const { avatar: selectedLogo, hydrate: hydrateLogo } = usePlaceLogoState(
 
 const { ensurePlaceExists } = usePlaceSave({ type: props.type })
 const confirming = ref(false)
+
+if (import.meta.dev && props.type === 'kitchen') {
+  watch(query, (value) => {
+    console.log('[kitchens][search] query', { query: value })
+  })
+
+  watch(isSearching, (value) => {
+    console.log('[kitchens][search] status', { isSearching: value })
+  })
+
+  watch(results, (value) => {
+    console.log('[kitchens][search] results', {
+      count: Array.isArray(value) ? value.length : 0,
+      ids: Array.isArray(value) ? value.map((row) => row.id) : [],
+    })
+  })
+}
 
 function toDraft(
   place: BasePlace,

@@ -2,33 +2,21 @@
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
-    class="card card--pill"
     @click="onClick"
   >
-    <UAvatar :src="avatarUrl || undefined" :alt="title" size="xs" />
-
-    <div class="min-w-0 flex-1">
-      <div class="min-w-0 truncate text-sm font-medium">{{ title }}</div>
-      <div v-if="showSubtitle && subtitle" class="min-w-0 truncate text-xs text-dimmed">
-        {{ subtitle }}
-      </div>
-    </div>
-
-    <div v-if="showBadges && badges.length" class="ml-2 flex shrink-0 items-center gap-1">
-      <UBadge
-        v-for="badge in badges"
-        :key="badge"
-        variant="soft"
-        color="neutral"
-        size="xs"
-      >
-        {{ badge }}
-      </UBadge>
-    </div>
+    <SharedPill
+      :avatar="avatarUrl || null"
+      :title="title"
+      :subtitle="subtitle || null"
+      :badges="badges"
+      :show-subtitle="showSubtitle"
+      :show-badges="showBadges"
+    />
   </component>
 </template>
 
 <script setup lang="ts">
+import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue'
 import type { RecipeCard } from '../../../../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface';
 
 type PillProps = Pick<RecipeCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {

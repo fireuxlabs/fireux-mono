@@ -44,7 +44,7 @@
           />
         </template>
 
-        <KitchenCollectionManager :collection="filteredKitchens" />
+        <KitchenCollectionManager :collection="filteredKitchensResolved" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -53,9 +53,10 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
+import { useKitchenFetch } from '../../composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
 import { useKitchens } from '../../composables/fireux/firestore/objects/kitchen/useKitchens'
-import type { Kitchen } from '../../models/objects/kitchen.model'
-import { Kitchen as KitchenModelRuntime } from '../../models/objects/kitchen.model'
+import type { Kitchen, KitchenOverlay } from '../../models/objects/kitchen.model'
+import { KitchenOverlay as KitchenModelRuntime } from '../../models/objects/kitchen.model'
 
 definePageMeta({
   layout: 'dev',
@@ -71,7 +72,8 @@ definePageMeta({
 
 const kitchenModelRuntime = KitchenModelRuntime
 
-const { collection } = useKitchens<Kitchen>()
+const { collection } = useKitchens<KitchenOverlay>()
+const { kitchens: hydratedKitchens } = useKitchenFetch()
 
 const kitchensCollection = computed(() => collection.value ?? [])
 
@@ -91,6 +93,20 @@ const allKitchensJsonPayload = computed(() => ({
   totalKitchens: kitchensCollection.value.length,
   kitchens: kitchensCollection.value,
 }))
+
+const hydratedById = computed(() => {
+  const map = new Map<string, Kitchen>()
+  for (const kitchen of hydratedKitchens.value ?? []) {
+    if (kitchen?.id) map.set(String(kitchen.id), kitchen)
+  }
+  return map
+})
+
+const filteredKitchensResolved = computed(() =>
+  filteredKitchens.value
+    .map((kitchen) => hydratedById.value.get(String(kitchen.id)))
+    .filter(Boolean) as Kitchen[]
+)
 
 const filteredKitchensDriftPayload = computed(() =>
   filteredKitchens.value.map((kitchen) => {

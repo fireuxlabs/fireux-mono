@@ -8,9 +8,11 @@
   <div class="space-y-6">
     <JobCreateLocation v-model:form="form" />
 
+    <JobCreateCompany v-model:form="form" />
+
     <JobCreateBasics
       v-model:form="form"
-      step-label="Step 2"
+      step-label="Step 3"
       title="Job basics"
       subtitle="Capture the title, description, and status."
     />

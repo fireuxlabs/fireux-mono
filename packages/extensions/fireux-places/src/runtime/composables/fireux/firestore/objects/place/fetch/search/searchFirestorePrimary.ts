@@ -12,17 +12,22 @@ export const searchFirestorePrimary = async (params: {
   fx = await prefixSearch<PlaceSearchDoc>({
     collection: collectionName,
     field: 'search_term',
-    query: term,
+    query: termNormalized || term,
     limit: 5,
   })
 
-  if (!fx.length && termNormalized && termNormalized !== term) {
-    fx = await prefixSearch<PlaceSearchDoc>({
-      collection: collectionName,
-      field: 'search_term_normalized',
-      query: termNormalized,
-      limit: 5,
-    })
+  if (!fx.length && termNormalized && !termNormalized.includes(' ')) {
+    const prefixes = ['restaurant', 'hotel', 'bar', 'cafe', 'bistro', 'pub', 'inn']
+    for (const prefix of prefixes) {
+      const query = `${prefix} ${termNormalized}`
+      fx = await prefixSearch<PlaceSearchDoc>({
+        collection: collectionName,
+        field: 'search_term',
+        query,
+        limit: 5,
+      })
+      if (fx.length) break
+    }
   }
 
   if (!fx.length) return null

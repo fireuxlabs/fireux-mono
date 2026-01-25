@@ -1,19 +1,14 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
-import type { Company, CompanyCreateInput } from '../../../../../../models/objects/company.model'
+import type { CompanyOverlay, CompanyCreateInput } from '../../../../../../models/objects/company.model'
 
 export const CompanyPayload = {
   id: '',
-  name: '',
-  formatted_address: '',
-  lat: 0,
-  lng: 0,
-  place_image: '',
   website: '',
 }
 
 export const CompanyStampOptions = {
-  creator: true,
+  creator: false,
 } as const
 
 export function useCompanyCreate() {
@@ -29,8 +24,8 @@ export function useCompanyCreate() {
     const { place, ...payload } = input
     void place
 
-    await setDocument<Company>('companies', payload.id, payload as Company, {
-      creator: true,
+    await setDocument<CompanyOverlay>('companies', payload.id, payload as CompanyOverlay, {
+      creator: false,
     })
 
     return payload.id

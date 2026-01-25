@@ -1,5 +1,36 @@
 /* stripped */
 
+:where(.collection-grid) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+:where(.collection-stack) {
+	display: grid;
+	gap: 0.5rem;
+}
+
+:where(.collection-manager__header) {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+
+:where(.collection-manager__title) {
+	display: grid;
+	gap: 0.25rem;
+}
+
+:where(.collection-manager__controls) {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
 :where(.panels-stack) {
 	display: grid;
 	gap: 2rem;
@@ -120,6 +151,16 @@
 	color: var(--ui-text);
 	width: 17rem;
 	min-width: 0;
+}
+
+:where(.pill .u-avatar, .pill .u-avatar img) {
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
+:where(.pill .u-avatar) {
+	flex: 0 0 1.5rem;
+	line-height: 1.5rem;
 }
 
 :where(.pill:hover) {

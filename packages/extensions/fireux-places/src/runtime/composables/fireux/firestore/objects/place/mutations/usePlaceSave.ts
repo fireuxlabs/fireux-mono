@@ -128,6 +128,11 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       typeof search_term_raw === 'string' && search_term_raw.trim().length
         ? search_term_raw.trim()
         : `${name} ${formatted}`.toLowerCase().trim()
+    const normalized_search_term = search_term
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
 
     const shadeRaw = typeof (place as any)?.image_shade === 'string'
       ? String((place as any).image_shade).toLowerCase().trim()
@@ -143,7 +148,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       image_shade,
       lat,
       lng,
-      search_term,
+      search_term: normalized_search_term,
     } as any as PlaceUpsertInput
 
     if (import.meta.dev) {

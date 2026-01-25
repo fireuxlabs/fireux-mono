@@ -1,19 +1,14 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
-import type { Kitchen, KitchenCreateInput } from '../../../../../../models/objects/kitchen.model'
+import type { KitchenOverlay, KitchenCreateInput } from '../../../../../../models/objects/kitchen.model'
 
 export const KitchenPayload = {
   id: '',
-  name: '',
-  formatted_address: '',
-  lat: 0,
-  lng: 0,
-  place_image: '',
   website: '',
 }
 
 export const KitchenStampOptions = {
-  creator: true,
+  creator: false,
 } as const
 
 export function useKitchenCreate() {
@@ -29,8 +24,8 @@ export function useKitchenCreate() {
     const { place, ...payload } = input
     void place
 
-    await setDocument<Kitchen>('kitchens', payload.id, payload as Kitchen, {
-      creator: true,
+    await setDocument<KitchenOverlay>('kitchens', payload.id, payload as KitchenOverlay, {
+      creator: false,
     })
 
     return payload.id

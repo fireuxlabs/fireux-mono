@@ -7,7 +7,6 @@
 
 <template>
   <UCard>
-    <p class="text-xs text-gray-500">Hello* 9 Preview</p>
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="space-y-1">
@@ -44,17 +43,27 @@
     <div class="space-y-4 text-sm text-gray-600">
       <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
         <div class="grid gap-4 md:grid-cols-2">
-          <div>
+          <div class="space-y-2">
             <p class="text-xs uppercase tracking-wide text-gray-400">Place</p>
-            <p class="text-sm text-gray-700">
-              {{ placeId || 'Not selected' }}
-            </p>
+            <PlaceCardsPill
+              v-if="placeCard"
+              :avatar-url="placeCard.avatarUrl"
+              :title="placeCard.title"
+              :subtitle="placeCard.subtitle"
+              :badges="placeCard.badges"
+            />
+            <p v-else class="text-sm text-gray-700">Not selected</p>
           </div>
-          <div>
+          <div class="space-y-2">
             <p class="text-xs uppercase tracking-wide text-gray-400">Company</p>
-            <p class="text-sm text-gray-700">
-              {{ companyId || 'Not set' }}
-            </p>
+            <CompanyCardsPill
+              v-if="companyCard"
+              :avatar-url="companyCard.avatarUrl"
+              :title="companyCard.title"
+              :subtitle="companyCard.subtitle"
+              :badges="companyCard.badges"
+            />
+            <p v-else class="text-sm text-gray-700">Not set</p>
           </div>
         </div>
       </div>
@@ -72,6 +81,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
+import { usePlaces } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/usePlaces'
+import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
+import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 
 import type { JobCreateForm } from '../../../../../composables/fireux/firestore/jobs/mutations/useJobCreate';
 
@@ -87,5 +100,26 @@ const description = computed(() => props.form.description.trim())
 const placeId = computed(() => props.form.place_id.trim())
 const companyId = computed(() => props.form.company_id.trim())
 const statusLabel = computed(() => (props.form.status === 'closed' ? 'Closed' : 'Open'))
+
+const { collection: placesCollection } = usePlaces<Record<string, any>>()
+const { card: placeCardFactory } = usePlacesInterface()
+const { companies } = useCompanyFetch()
+const { card: companyCardFactory } = useCompanyInterface()
+
+const selectedPlace = computed(() =>
+  (placesCollection.value ?? []).find((place) => String(place.id) === placeId.value)
+)
+
+const selectedCompany = computed(() =>
+  (companies.value ?? []).find((company) => String(company.id) === companyId.value)
+)
+
+const placeCard = computed(() =>
+  selectedPlace.value ? placeCardFactory(selectedPlace.value as any) : null
+)
+
+const companyCard = computed(() =>
+  selectedCompany.value ? companyCardFactory(selectedCompany.value as any) : null
+)
 
 </script>

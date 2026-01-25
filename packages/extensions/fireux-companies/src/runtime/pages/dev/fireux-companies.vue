@@ -44,7 +44,7 @@
           />
         </template>
 
-        <CompanyCollectionManager :collection="filteredCompanies" />
+        <CompanyCollectionManager :collection="filteredCompaniesResolved" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -54,7 +54,9 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import { Company as CompanyModelRuntime } from '../../models/objects/company.model'
+import { useCompanies } from '../../composables/fireux/firestore/objects/company/useCompanies'
+import type { Company, CompanyOverlay } from '../../models/objects/company.model'
+import { CompanyOverlay as CompanyModelRuntime } from '../../models/objects/company.model'
 
 definePageMeta({
   layout: 'dev',
@@ -70,9 +72,10 @@ definePageMeta({
 
 const companyModelRuntime = CompanyModelRuntime
 
-const { companies } = useCompanyFetch()
+const { collection } = useCompanies<CompanyOverlay>()
+const { companies: hydratedCompanies } = useCompanyFetch()
 
-const companiesCollection = computed(() => companies.value ?? [])
+const companiesCollection = computed(() => collection.value ?? [])
 
 const {
   driftKind: companiesDriftKind,
@@ -90,6 +93,20 @@ const allCompaniesJsonPayload = computed(() => ({
   totalCompanies: companiesCollection.value.length,
   companies: companiesCollection.value,
 }))
+
+const hydratedById = computed(() => {
+  const map = new Map<string, Company>()
+  for (const company of hydratedCompanies.value ?? []) {
+    if (company?.id) map.set(String(company.id), company)
+  }
+  return map
+})
+
+const filteredCompaniesResolved = computed(() =>
+  filteredCompanies.value
+    .map((company) => hydratedById.value.get(String(company.id)))
+    .filter(Boolean) as Company[]
+)
 
 const filteredCompaniesDriftPayload = computed(() =>
   filteredCompanies.value.map((company) => {

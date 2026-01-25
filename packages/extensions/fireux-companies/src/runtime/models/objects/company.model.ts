@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { Place } from 'fireux-places/runtime/models/objects/place.model'
 
 /**
  * Company overlay (Place-bound)
@@ -15,35 +15,36 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Drift is detected by comparing data ↔ model shape
  */
 
-// 🔑 Runtime + canonical shape (source of truth)
-export const Company = {
+// 🔑 Runtime + canonical shape for stored overlays (source of truth)
+export const CompanyOverlay = {
   /** Canonical Place ID (also the Firestore document ID). */
   id: '',
-
-  name: '',
-  formatted_address: '',
-
-  /** Canonical location snapshot */
-  lat: 0,
-  lng: 0,
-  place_image: '',
-
-  /** Search helpers */
-  search_term: '',
-  search_term_normalized: '',
 
   /** Optional company-specific details (empty string means unset) */
   website: '',
 
-  // Authored (FireuxStamped)
-  creator_id: undefined as FireuxStamped['creator_id'],
+  // Authored (timestamps only; no creator_id on thin overlay)
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 } as const
 
-export type Company = {
-  [K in keyof typeof Company]: (typeof Company)[K]
+export type CompanyOverlay = {
+  [K in keyof typeof CompanyOverlay]: (typeof CompanyOverlay)[K]
 }
 
-export type CompanyCreateInput = Omit<Company, 'created_at' | 'updated_at' | 'creator_id'>
+export type Company = CompanyOverlay & Partial<
+  Pick<
+    Place,
+    | 'name'
+    | 'formatted_address'
+    | 'lat'
+    | 'lng'
+    | 'place_image'
+    | 'image_shade'
+    | 'claimed_by'
+    | 'source'
+  >
+>
+
+export type CompanyCreateInput = Omit<CompanyOverlay, 'created_at' | 'updated_at'>
 export type CompanyUpdateInput = Partial<Omit<CompanyCreateInput, 'id'>>

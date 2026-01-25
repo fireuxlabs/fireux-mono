@@ -11,7 +11,7 @@
       </template>
 
       <!-- section consumer -->
-      <PlaceSearchSection @confirmed="onPlaceConfirmed" />
+      <PlaceSearchSection type="kitchen" @confirmed="onPlaceConfirmed" />
 
       <div v-if="successId" class="text-sm text-green-600">
         Kitchen created: {{ successId }}
@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 import { doc, getDoc } from 'firebase/firestore'
+import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { ref } from 'vue'
 import { useFirestore } from 'vuefire'
@@ -44,18 +45,12 @@ import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/ob
 
 const { createKitchen } = useKitchenCreate()
 const { updateKitchen } = useKitchenUpdate()
+const { ensurePlaceExists } = usePlaceSave()
 const db = useFirestore()
 
 const error = ref<string | null>(null)
 const successId = ref<string | null>(null)
 const existingId = ref<string | null>(null)
-
-const normalizeSearchTerm = (value: string) =>
-  value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
 
 async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput }) {
   error.value = null
@@ -66,6 +61,8 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
     const id = payload.placeId
     const place = payload.place
     let placeForOverlay = place
+
+    await ensurePlaceExists(placeForOverlay)
 
     const placeSnap = await getDoc(doc(db, 'places', id))
     if (placeSnap.exists()) {
@@ -80,36 +77,13 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
     const existingSnap = await getDoc(doc(db, 'kitchens', id))
     if (existingSnap.exists()) {
       existingId.value = id
-      const existing = existingSnap.data() as Record<string, any>
-      const searchTerm = `${placeForOverlay.name} ${placeForOverlay.formatted_address ?? ''}`
-        .toLowerCase()
-        .trim()
-      const searchTermNormalized = normalizeSearchTerm(searchTerm)
-      if (!existing.search_term || !existing.search_term_normalized) {
-        await updateKitchen(id, {
-          search_term: existing.search_term || searchTerm,
-          search_term_normalized:
-            existing.search_term_normalized || searchTermNormalized,
-        } as any)
-      }
       return
     }
 
     const createdId = await createKitchen({
       id,
       place: placeForOverlay,
-      name: placeForOverlay.name,
-      formatted_address: placeForOverlay.formatted_address ?? '',
-      lat: placeForOverlay.lat ?? 0,
-      lng: placeForOverlay.lng ?? 0,
-      place_image: placeForOverlay.place_image ?? '',
       website: '',
-      search_term: `${placeForOverlay.name} ${placeForOverlay.formatted_address ?? ''}`
-        .toLowerCase()
-        .trim(),
-      search_term_normalized: normalizeSearchTerm(
-        `${placeForOverlay.name} ${placeForOverlay.formatted_address ?? ''}`
-      ),
     })
 
     successId.value = createdId

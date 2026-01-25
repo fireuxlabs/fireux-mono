@@ -6,6 +6,7 @@
     { "path": "core/fireux-core" },
     { "path": "core/fireux-ecosystem-controller" },
     { "path": "extensions/fireux-blogs" },
+    { "path": "extensions/fireux-companies" },
     { "path": "extensions/fireux-kitchens" },
     { "path": "extensions/fireux-drop" },
     { "path": "extensions/fireux-jobs" },

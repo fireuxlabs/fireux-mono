@@ -28,7 +28,7 @@ export function useCompanyInterface() {
 
       avatarUrl: company.place_image,
       title: company.name,
-      subtitle: company.website,
+      subtitle: company.formatted_address,
 
       name: company.name,
       website: company.website,

@@ -1,5 +1,5 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import type { Company, CompanyUpdateInput } from '../../../../../../models/objects/company.model'
+import type { CompanyOverlay, CompanyUpdateInput } from '../../../../../../models/objects/company.model'
 
 const COLLECTION_PATH = 'companies'
 
@@ -11,12 +11,9 @@ export function useCompanyUpdate() {
     if (!id) throw new Error('[useCompanyUpdate] companyId is required')
 
     const next: CompanyUpdateInput = { ...patch }
-    if (typeof next.name === 'string') next.name = next.name.trim()
     if (typeof next.website === 'string') next.website = next.website.trim()
-    if (typeof (next as any).place_image === 'string') (next as any).place_image = (next as any).place_image.trim()
-    if (typeof (next as any).formatted_address === 'string') (next as any).formatted_address = (next as any).formatted_address.trim()
 
-    await updateDocument<Company>(COLLECTION_PATH, id, next)
+    await updateDocument<CompanyOverlay>(COLLECTION_PATH, id, next)
   }
 
   return { updateCompany }

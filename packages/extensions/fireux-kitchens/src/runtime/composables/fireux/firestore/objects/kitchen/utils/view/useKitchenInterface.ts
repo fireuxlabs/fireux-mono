@@ -28,7 +28,7 @@ export function useKitchenInterface() {
 
       avatarUrl: kitchen.place_image,
       title: kitchen.name,
-      subtitle: kitchen.website,
+      subtitle: kitchen.formatted_address,
 
       name: kitchen.name,
       website: kitchen.website,
