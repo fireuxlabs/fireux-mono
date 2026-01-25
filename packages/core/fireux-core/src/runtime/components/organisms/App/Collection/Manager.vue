@@ -27,7 +27,18 @@
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
-    />
+    >
+      <template #pill="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <OrganismsAppCardsPill v-bind="card" />
+        </component>
+      </template>
+      <template #cell="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <OrganismsAppCardsCell v-bind="card" />
+        </component>
+      </template>
+    </OrganismsAppCollectionList>
 
     <p v-else>
       {{ query ? 'No apps match your search.' : 'No apps found.' }}

@@ -26,7 +26,18 @@
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
-    />
+    >
+      <template #pill="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <CompanyCardsPill v-bind="card" />
+        </component>
+      </template>
+      <template #cell="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <CompanyCardsCell v-bind="card" />
+        </component>
+      </template>
+    </OrganismsEntitiesCompanyCollectionList>
 
     <p v-else>
       {{ query ? 'No companies match your search.' : 'No companies found.' }}

@@ -1,23 +1,16 @@
 <template>
   <div v-if="variant === 'pill'" class="collection-grid">
-    <JobCardsPill
-      v-for="card in cards"
-      :key="card.to || card.id"
-      v-bind="card"
-      :link="Boolean(card.to)"
-      
-    />
+    <template v-for="card in cards" :key="card.to || card.id">
+      <slot name="pill" :card="card" />
+    </template>
   </div>
 
   <div v-else class="collection-stack">
-    <JobCardsCell
-      v-for="card in cards"
-      :key="card.to || card.id"
-      v-bind="card"
-      :link="Boolean(card.to)"
-      
-    />
+    <template v-for="card in cards" :key="card.to || card.id">
+      <slot name="cell" :card="card" />
+    </template>
   </div>
+
 </template>
 
 <script setup lang="ts">

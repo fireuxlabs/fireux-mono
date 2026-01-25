@@ -1,0 +1,30 @@
+{
+  "modelPath": "packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts",
+  "driftKind": "missing",
+  "selectedField": null,
+  "totalJobs": 1,
+  "jobs": [
+    {
+      "id": "k6QWI9hAmhmHFj1Iq9hT",
+      "title": "Koch",
+      "drift": {
+        "missing": [
+          "kitchen_id (string)"
+        ],
+        "extra": [
+          "app_id (string)",
+          "place_id (string)"
+        ]
+      }
+    }
+  ],
+  "migration": {
+    "script": "scripts/migrate.mjs",
+    "ecosystem": "misebox",
+    "app": "misebox-app",
+    "appConfigPath": "projects/misebox/misebox-app/nuxt.config.ts",
+    "firebaseConfigDir": "packages/ecosystem/fireux-misebox/src/config/firebase",
+    "ecosystemConfigPath": "packages/ecosystem/fireux-misebox/src/config/firebase/ecosystem.config.ts",
+    "serviceAccountPath": "packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json"
+  }
+}

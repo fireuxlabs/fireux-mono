@@ -27,7 +27,18 @@
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
-    />
+    >
+      <template #pill="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <OrganismsUserCardsPill v-bind="card" />
+        </component>
+      </template>
+      <template #cell="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <OrganismsUserCardsCell v-bind="card" />
+        </component>
+      </template>
+    </OrganismsUserCollectionList>
 
     <p v-else>
       {{ query ? 'No users match your search.' : 'No users found.' }}

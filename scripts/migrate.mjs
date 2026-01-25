@@ -279,6 +279,10 @@ function resolveDriftTarget(payload) {
     return { collection: 'places', items: payload.places }
   }
 
+  if (Array.isArray(payload.jobs)) {
+    return { collection: 'jobs', items: payload.jobs }
+  }
+
   if (typeof payload.modelPath === 'string') {
     if (payload.modelPath.includes('/fireux-core/') && payload.modelPath.includes('/app.model')) {
       return { collection: 'apps', items: payload.apps || [] }
@@ -288,6 +292,9 @@ function resolveDriftTarget(payload) {
     }
     if (payload.modelPath.includes('/fireux-places/')) {
       return { collection: 'places', items: payload.places || [] }
+    }
+    if (payload.modelPath.includes('/fireux-jobs/')) {
+      return { collection: 'jobs', items: payload.jobs || [] }
     }
   }
 

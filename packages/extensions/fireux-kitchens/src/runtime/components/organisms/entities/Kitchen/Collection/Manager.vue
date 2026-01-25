@@ -26,7 +26,18 @@
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
-    />
+    >
+      <template #pill="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <KitchenCardsPill v-bind="card" />
+        </component>
+      </template>
+      <template #cell="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <KitchenCardsCell v-bind="card" />
+        </component>
+      </template>
+    </OrganismsEntitiesKitchenCollectionList>
 
     <p v-else>
       {{ query ? 'No kitchens match your search.' : 'No kitchens found.' }}

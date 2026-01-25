@@ -23,7 +23,18 @@
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
-    />
+    >
+      <template #pill="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <OrganismsProfilesSupplierCardsPill v-bind="card" />
+        </component>
+      </template>
+      <template #cell="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <OrganismsProfilesSupplierCardsCell v-bind="card" />
+        </component>
+      </template>
+    </OrganismsProfilesSupplierCollectionList>
 
     <p v-else>No suppliers found.</p>
 

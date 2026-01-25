@@ -26,7 +26,18 @@
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
-    />
+    >
+      <template #pill="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <IngredientCardsPill v-bind="card" />
+        </component>
+      </template>
+      <template #cell="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <IngredientCardsCell v-bind="card" />
+        </component>
+      </template>
+    </OrganismsEntitiesIngredientCollectionList>
 
     <p v-else>
       {{ query ? 'No ingredients match your search.' : 'No ingredients found.' }}

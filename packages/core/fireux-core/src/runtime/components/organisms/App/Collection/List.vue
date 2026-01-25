@@ -1,29 +1,14 @@
 <template>
   <div v-if="variant === 'pill'" class="collection-grid">
-    <OrganismsAppCardsPill
-      v-for="item in cards"
-      :key="item.to || item.id"
-      :to="item.to"
-      :thumbnail-url="item.thumbnailUrl"
-      :display-name="item.displayName"
-      :ecosystem="item.ecosystem"
-      :badges="item.badges"
-      :link="Boolean(item.to)"
-    />
+    <template v-for="card in cards" :key="card.to || card.id">
+      <slot name="pill" :card="card" />
+    </template>
   </div>
 
   <div v-else class="collection-stack">
-    <OrganismsAppCardsCell
-      v-for="item in cards"
-      :key="item.to || item.id"
-      :to="item.to"
-      :thumbnail-url="item.thumbnailUrl"
-      :display-name="item.displayName"
-      :badges="item.badges"
-      :tagline="item.tagline"
-      :user-count="item.userCount"
-      :link="Boolean(item.to)"
-    />
+    <template v-for="card in cards" :key="card.to || card.id">
+      <slot name="cell" :card="card" />
+    </template>
   </div>
 </template>
 

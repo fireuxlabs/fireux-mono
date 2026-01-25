@@ -1,6 +1,6 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
-import type { CompanyOverlay, CompanyCreateInput } from '../../../../../../models/objects/company.model'
+import type { CompanyCreateInput, CompanyOverlay } from '../../../../../../models/objects/company.model'
 
 export const CompanyPayload = {
   id: '',

@@ -26,7 +26,18 @@
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
-    />
+    >
+      <template #pill="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <JobCardsPill v-bind="card" />
+        </component>
+      </template>
+      <template #cell="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <JobCardsCell v-bind="card" />
+        </component>
+      </template>
+    </OrganismsEntitiesJobCollectionList>
 
     <p v-else>
       {{ query ? 'No jobs match your search.' : 'No jobs found.' }}

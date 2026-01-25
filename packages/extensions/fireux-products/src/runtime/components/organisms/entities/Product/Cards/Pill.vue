@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue'
+import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue';
 import type { ProductCard } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface';
 
 type PillProps = Pick<ProductCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {

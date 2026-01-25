@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue'
+import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue';
 import type { JobCard } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
 
 type PillProps = Pick<JobCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {

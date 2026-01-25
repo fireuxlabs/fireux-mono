@@ -23,44 +23,126 @@
       />
 
       <template v-else>
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between gap-3">
-              <h3 class="font-semibold">Job overview</h3>
-              <UBadge size="xs" variant="soft" :color="statusColor">
-                {{ job?.status || 'open' }}
-              </UBadge>
-            </div>
-          </template>
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+          <div class="space-y-6">
+            <UCard>
+              <template #header>
+                <div class="flex items-center justify-between gap-3">
+                  <h3 class="font-semibold">Job overview</h3>
+                  <UBadge size="xs" variant="soft" :color="statusColor">
+                    {{ job?.status || 'open' }}
+                  </UBadge>
+                </div>
+              </template>
 
-          <div class="space-y-4 text-sm text-gray-600">
-            <p class="text-base font-semibold text-gray-900">
-              {{ job?.title || 'Untitled job' }}
-            </p>
-            <div class="grid gap-2 sm:grid-cols-2">
-              <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400">Job ID</p>
-                <p class="font-medium">{{ job?.id }}</p>
+              <div class="space-y-4">
+                <div class="flex items-start gap-4">
+                  <UAvatar
+                    :src="job?.kitchen?.place_image || undefined"
+                    :alt="job?.title || 'Job'"
+                    size="lg"
+                  />
+                  <div class="space-y-1">
+                    <p class="text-base font-semibold text-gray-900">
+                      {{ job?.title || 'Untitled job' }}
+                    </p>
+                    <p class="text-sm text-gray-600">
+                      {{ job?.kitchen?.formatted_address || 'Location pending' }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="grid gap-3 sm:grid-cols-2 text-sm text-gray-600">
+                  <div>
+                    <p class="text-xs uppercase tracking-wide text-gray-400">Job ID</p>
+                    <p class="font-medium text-gray-900">{{ job?.id }}</p>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-wide text-gray-400">Created by</p>
+                    <p class="font-medium text-gray-900">
+                      {{ job?.creator_id || '—' }}
+                    </p>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-wide text-gray-400">App</p>
+                    <p class="font-medium text-gray-900">
+                      {{ (job as any)?.app_id || '—' }}
+                    </p>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-wide text-gray-400">Company</p>
+                    <p class="font-medium text-gray-900">
+                      {{ companyCard?.title || job?.company_id || '—' }}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400">
-                  Created by
-                </p>
-                <p class="font-medium">
-                  {{ job?.created_by || '—' }}
-                </p>
+            </UCard>
+
+            <UCard>
+              <template #header>
+                <div class="flex items-center justify-between">
+                  <h3 class="font-semibold">Description</h3>
+                </div>
+              </template>
+              <div class="whitespace-pre-line text-sm text-gray-700">
+                {{ job?.description || 'No description provided.' }}
               </div>
-              <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400">
-                  App
-                </p>
-                <p class="font-medium">
-                  {{ job?.app_id || '—' }}
-                </p>
-              </div>
-            </div>
+            </UCard>
+
+            <UCard>
+              <template #header>
+                <div class="flex items-center justify-between">
+                  <h3 class="font-semibold">Debug JSON</h3>
+                </div>
+              </template>
+              <pre class="max-h-96 overflow-auto rounded-lg bg-gray-900/5 p-4 text-xs text-gray-600">
+                {{ jobJson }}
+              </pre>
+            </UCard>
           </div>
-        </UCard>
+
+          <div class="space-y-6">
+            <UCard>
+              <template #header>
+                <h3 class="font-semibold">Status</h3>
+              </template>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-gray-600">Current</p>
+                  <p class="text-sm font-semibold text-gray-900">
+                    {{ job?.status || 'open' }}
+                  </p>
+                </div>
+                <UBadge size="xs" variant="soft" :color="statusColor">
+                  {{ job?.status || 'open' }}
+                </UBadge>
+              </div>
+            </UCard>
+
+            <UCard>
+              <template #header>
+                <h3 class="font-semibold">Location</h3>
+              </template>
+              <div v-if="kitchenCard" class="space-y-2">
+                <KitchenCardsPill v-bind="kitchenCard" :link="Boolean(kitchenCard.to)" />
+                <p class="text-xs text-gray-500">Kitchen ID: {{ job?.kitchen_id }}</p>
+              </div>
+              <p v-else class="text-sm text-gray-600">No kitchen linked.</p>
+            </UCard>
+
+            <UCard>
+              <template #header>
+                <h3 class="font-semibold">Company</h3>
+              </template>
+              <div v-if="companyCard" class="space-y-2">
+                <CompanyCardsPill v-bind="companyCard" :link="Boolean(companyCard.to)" />
+                <p class="text-xs text-gray-500">Company ID: {{ job?.company_id }}</p>
+              </div>
+              <p v-else class="text-sm text-gray-600">No company linked.</p>
+            </UCard>
+          </div>
+        </div>
       </template>
     </UPageBody>
   </UPage>
@@ -74,6 +156,9 @@ import type { JobStatus } from '../../models/objects/job.model'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useJobFetch } from '../../composables/fireux/firestore/jobs/fetch/useJobFetch'
 import { useJobUpdate } from '../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
+import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
+import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
+import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 
 const route = useRoute()
 const paramId = route.params.id
@@ -86,6 +171,9 @@ const jobId = computed(() =>
 const { job } = useJobFetch(jobId)
 const { updateJob } = useJobUpdate()
 const { withToast } = useToastify()
+const { card: kitchenCardFactory } = useKitchenInterface()
+const { companies } = useCompanyFetch()
+const { card: companyCardFactory } = useCompanyInterface()
 
 const jobTitle = computed(() => job.value?.title || 'Job Details')
 const jobSubtitle = computed(() =>
@@ -103,6 +191,19 @@ const statusOptions = [
 const statusLocal = ref<JobStatus>('open')
 watchEffect(() => {
   statusLocal.value = (job.value?.status as JobStatus) ?? 'open'
+})
+
+const jobJson = computed(() => JSON.stringify(job.value ?? null, null, 2))
+
+const kitchenCard = computed(() =>
+  job.value?.kitchen ? kitchenCardFactory(job.value.kitchen as any) : null
+)
+
+const companyCard = computed(() => {
+  const id = String(job.value?.company_id ?? '').trim()
+  if (!id) return null
+  const found = (companies.value ?? []).find((company) => String(company.id) === id)
+  return found ? companyCardFactory(found) : null
 })
 
 const saving = ref(false)

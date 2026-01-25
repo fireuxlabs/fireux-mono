@@ -1,45 +1,27 @@
 <template>
-  <div :class="variant === 'pill' ? 'collection-grid' : 'collection-stack'">
-    <component
-      :is="componentForVariant"
-      v-for="card in cards"
-      :key="cardKey(card)"
-      v-bind="card"
-    />
+  <div v-if="variant === 'pill'" class="collection-grid">
+    <template v-for="card in cards" :key="card.to || card.id">
+      <slot name="pill" :card="card" />
+    </template>
   </div>
 
-  <DevJsonPanel
-    v-if="devMode"
-    title="Dev · Chef Collection"
-    :data="{ variant, count: cards.length, cards }"
-  />
+  <div v-else class="collection-stack">
+    <template v-for="card in cards" :key="card.to || card.id">
+      <slot name="cell" :card="card" />
+    </template>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
-import { computed } from 'vue';
 import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef';
 
-type Variant = 'pill' | 'cell' | 'preview' | 'profile'
-
-const props = withDefaults(
+withDefaults(
   defineProps<{
     cards: ChefCard.Card[]
-    variant?: Variant
+    variant?: 'pill' | 'cell'
   }>(),
   {
     variant: 'pill',
   }
 )
-
-const { devMode } = useFireUXConfig()
-
-const componentForVariant = computed(() => {
-  if (props.variant === 'cell') return resolveComponent('OrganismsProfilesChefCardsCell')
-  if (props.variant === 'preview') return resolveComponent('OrganismsProfilesChefCardsPreview')
-  if (props.variant === 'profile') return resolveComponent('OrganismsProfilesChefCardsProfile')
-  return resolveComponent('OrganismsProfilesChefCardsPill')
-})
-
-const cardKey = (card: ChefCard.Card) => card.id || card.to || card.title
 </script>

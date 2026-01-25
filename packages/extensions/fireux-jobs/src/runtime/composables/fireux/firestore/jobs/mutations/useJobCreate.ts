@@ -4,7 +4,7 @@ import type { JobStatus } from '../../../../../models/objects/job.model'
 
 export const JobPayload = {
   company_id: '',
-  place_id: '',
+  kitchen_id: '',
   title: '',
   status: 'open' as JobStatus,
   description: '',
@@ -16,7 +16,7 @@ export const JobStampOptions = {
 
 export type JobCreateForm = {
   company_id: string
-  place_id: string
+  kitchen_id: string
   title: string
   status: JobStatus
   description: string
@@ -53,9 +53,9 @@ export function useJobCreate() {
   const submit = async (): Promise<string> => {
     const title = String(form.value.title ?? '').trim()
     const description = String(form.value.description ?? '').trim()
-    const placeId = String(form.value.place_id ?? '').trim()
+    const kitchenId = String(form.value.kitchen_id ?? '').trim()
 
-    if (!placeId) throw new Error('Place is required')
+    if (!kitchenId) throw new Error('Kitchen is required')
     if (!title) throw new Error('Title is required')
     if (!description) throw new Error('Description is required')
 
@@ -63,7 +63,7 @@ export function useJobCreate() {
       ...form.value,
       title,
       description,
-      place_id: placeId,
+      kitchen_id: kitchenId,
       company_id: String(form.value.company_id ?? '').trim(),
       status: form.value.status ?? 'open',
     }

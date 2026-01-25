@@ -29,19 +29,14 @@
       gap="0.5rem"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <PlaceCardsPill
-            :avatar-url="card.avatarUrl"
-            :title="card.title"
-            :subtitle="card.subtitle"
-            :badges="card.badges"
-          />
-        </NuxtLink>
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <PlaceCardsPill v-bind="card" />
+        </component>
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
           <PlaceCardsCell v-bind="card" />
-        </NuxtLink>
+        </component>
       </template>
     </OrganismsEntitiesPlaceCollectionList>
 

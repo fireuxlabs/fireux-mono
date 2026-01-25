@@ -79,7 +79,7 @@ const showCheck = import.meta.dev
 const check = computed(() => {
   const missing: string[] = []
 
-  if (!String(form.value.place_id ?? '').trim()) missing.push('place_id')
+  if (!String(form.value.kitchen_id ?? '').trim()) missing.push('kitchen_id')
   if (!String(form.value.title ?? '').trim()) missing.push('title')
   if (!String(form.value.description ?? '').trim()) missing.push('description')
 
@@ -92,6 +92,13 @@ const check = computed(() => {
     agentId: coreUser.value?.id ?? null,
     missing,
     notCapturedYet: ['schedule fields', 'compensation fields'],
+    form: {
+      kitchen_id: String(form.value.kitchen_id ?? '').trim(),
+      company_id: String(form.value.company_id ?? '').trim(),
+      title: String(form.value.title ?? '').trim(),
+      status: String(form.value.status ?? 'open'),
+      description: String(form.value.description ?? '').trim(),
+    },
   }
 })
 </script>

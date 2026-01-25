@@ -3,21 +3,23 @@
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
+    class="card card--pill pill"
     @click="onClick"
   >
-    <SharedPill
-      :avatar="thumbnailUrl || null"
-      :title="displayName"
-      :subtitle="ecosystem || null"
-      :badges="badges"
-      :show-subtitle="showSubtitle"
-      :show-badges="showBadges"
-    />
+    <UAvatar :src="thumbnailUrl || undefined" :alt="displayName" size="xs" />
+
+    <div class="pill__text">
+      <div class="pill__title">
+        {{ displayName }}
+      </div>
+      <div v-if="showSubtitle && ecosystem" class="pill__subtitle">
+        {{ ecosystem }}
+      </div>
+    </div>
   </component>
 </template>
 
 <script setup lang="ts">
-import SharedPill from '../../../shared/Pill.vue'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
 
 defineOptions({ inheritAttrs: false })

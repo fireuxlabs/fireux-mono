@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue'
+import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue';
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
 
 const emit = defineEmits<{

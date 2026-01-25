@@ -2,6 +2,7 @@
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
 
 /**
  * Job Firestore shape only.
@@ -22,7 +23,7 @@ export const Job = {
 
   /** Phase-1 graph links (horizontal MVP) */
   company_id: '',
-  place_id: '',
+  kitchen_id: '',
 
   /** Pipeline & preview surface */
   title: '',
@@ -38,6 +39,10 @@ export const Job = {
 export type Job = {
   [K in keyof typeof Job]: (typeof Job)[K]
 } & FireuxStamped
+
+export type JobResolved = Job & {
+  kitchen?: Kitchen | null
+}
 
 export type JobCreateInput = Omit<
   Job,

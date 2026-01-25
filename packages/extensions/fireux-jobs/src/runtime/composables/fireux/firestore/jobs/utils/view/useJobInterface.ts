@@ -1,4 +1,4 @@
-import type { Job } from '../../../../../../models/objects/job.model'
+import type { JobResolved } from '../../../../../../models/objects/job.model'
 
 export namespace JobCard {
   export type Card = {
@@ -21,12 +21,12 @@ export namespace JobCard {
 }
 
 export function useJobInterface() {
-  function map(job: Job): JobCard.Card {
+  function map(job: JobResolved): JobCard.Card {
     return {
       id: job.id,
       to: `/jobs/${job.id}`,
 
-      avatarUrl: '',
+      avatarUrl: job.kitchen?.place_image || '',
       subtitle: String(job.status ?? ''),
 
       title: job.title,
@@ -37,11 +37,11 @@ export function useJobInterface() {
     }
   }
 
-  function card(target?: Job | null | undefined): JobCard.Card | null {
+  function card(target?: JobResolved | null | undefined): JobCard.Card | null {
     return target ? map(target) : null
   }
 
-  function searchText(job: Job): string {
+  function searchText(job: JobResolved): string {
     // keep it simple; add company/place names later once jobs are hydrated
     return `${job.title} ${job.status} ${job.id}`.toLowerCase()
   }

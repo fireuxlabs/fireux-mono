@@ -17,8 +17,8 @@
 
           <div class="flex flex-wrap items-center gap-2">
             <UBadge size="xs" variant="soft" color="primary">{{ statusLabel }}</UBadge>
-            <UBadge v-if="placeId" size="xs" variant="soft" color="neutral">
-              Place: {{ placeId }}
+            <UBadge v-if="kitchenId" size="xs" variant="soft" color="neutral">
+              Kitchen: {{ kitchenId }}
             </UBadge>
             <UBadge v-if="companyId" size="xs" variant="soft" color="neutral">
               Company: {{ companyId }}
@@ -44,13 +44,13 @@
       <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
         <div class="grid gap-4 md:grid-cols-2">
           <div class="space-y-2">
-            <p class="text-xs uppercase tracking-wide text-gray-400">Place</p>
-            <PlaceCardsPill
-              v-if="placeCard"
-              :avatar-url="placeCard.avatarUrl"
-              :title="placeCard.title"
-              :subtitle="placeCard.subtitle"
-              :badges="placeCard.badges"
+            <p class="text-xs uppercase tracking-wide text-gray-400">Location</p>
+            <KitchenCardsPill
+              v-if="kitchenCard"
+              :avatar-url="kitchenCard.avatarUrl"
+              :title="kitchenCard.title"
+              :subtitle="kitchenCard.subtitle"
+              :badges="kitchenCard.badges"
             />
             <p v-else class="text-sm text-gray-700">Not selected</p>
           </div>
@@ -81,8 +81,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
-import { usePlaces } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/usePlaces'
-import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
+import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
 import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 
@@ -97,25 +97,25 @@ const agentCard = computed(() => (coreProfile.value ? card(coreProfile.value) : 
 
 const title = computed(() => props.form.title.trim() || 'Untitled job')
 const description = computed(() => props.form.description.trim())
-const placeId = computed(() => props.form.place_id.trim())
+const kitchenId = computed(() => props.form.kitchen_id.trim())
 const companyId = computed(() => props.form.company_id.trim())
 const statusLabel = computed(() => (props.form.status === 'closed' ? 'Closed' : 'Open'))
 
-const { collection: placesCollection } = usePlaces<Record<string, any>>()
-const { card: placeCardFactory } = usePlacesInterface()
+const { kitchens } = useKitchenFetch()
+const { card: kitchenCardFactory } = useKitchenInterface()
 const { companies } = useCompanyFetch()
 const { card: companyCardFactory } = useCompanyInterface()
 
-const selectedPlace = computed(() =>
-  (placesCollection.value ?? []).find((place) => String(place.id) === placeId.value)
+const selectedKitchen = computed(() =>
+  (kitchens.value ?? []).find((kitchen) => String(kitchen.id) === kitchenId.value)
 )
 
 const selectedCompany = computed(() =>
   (companies.value ?? []).find((company) => String(company.id) === companyId.value)
 )
 
-const placeCard = computed(() =>
-  selectedPlace.value ? placeCardFactory(selectedPlace.value as any) : null
+const kitchenCard = computed(() =>
+  selectedKitchen.value ? kitchenCardFactory(selectedKitchen.value as any) : null
 )
 
 const companyCard = computed(() =>

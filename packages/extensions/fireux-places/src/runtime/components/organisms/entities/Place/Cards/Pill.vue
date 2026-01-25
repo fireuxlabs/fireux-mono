@@ -1,12 +1,18 @@
 <template>
-  <SharedPill
-    :avatar="avatarUrl || null"
-    :title="title"
-    :subtitle="subtitle || null"
-    :badges="badges"
-    :show-subtitle="showSubtitle"
-    :show-badges="showBadges"
-  />
+  <component
+    :is="link && to ? 'NuxtLink' : 'div'"
+    :to="link && to ? to : undefined"
+    @click="onClick"
+  >
+    <SharedPill
+      :avatar="avatarUrl || null"
+      :title="title"
+      :subtitle="subtitle || null"
+      :badges="badges"
+      :show-subtitle="showSubtitle"
+      :show-badges="showBadges"
+    />
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -17,14 +23,27 @@ defineOptions({ inheritAttrs: false })
 
 type PillProps = Pick<
   PlaceCard.Card,
-  'avatarUrl' | 'title' | 'subtitle' | 'badges'
+  'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'
 > & {
   showSubtitle?: boolean
   showBadges?: boolean
+  link?: boolean
+  action?: boolean
 }
+
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
 
 const props = withDefaults(defineProps<PillProps>(), {
   showSubtitle: true,
   showBadges: true,
+  link: false,
+  action: false,
 })
+
+const onClick = () => {
+  if (props.action) emit('action')
+}
+
 </script>

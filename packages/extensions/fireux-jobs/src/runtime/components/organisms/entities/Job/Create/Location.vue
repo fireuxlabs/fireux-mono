@@ -5,10 +5,10 @@
       <div class="space-y-1">
         <p class="text-sm text-gray-500">Step 1 · Location</p>
         <h2 class="text-lg font-semibold">
-          {{ chosenPlaceCard ? 'Selected place' : 'Choose a place' }}
+          {{ chosenPlaceCard ? 'Selected location' : 'Choose a location' }}
         </h2>
         <p class="text-sm text-gray-500">
-          Type a location name. We store the Place id on the job.
+          Type a location name. We store the Kitchen id on the job.
         </p>
       </div>
     </template>
@@ -32,10 +32,15 @@
 
 <script setup lang="ts">
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
+import { doc, getDoc } from 'firebase/firestore'
 import { computed, ref } from 'vue'
+import { useFirestore } from 'vuefire'
+import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/mutations/useKitchenCreate'
 import type { JobCreateForm } from '../../../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
 
 const form = defineModel<JobCreateForm>('form', { required: true })
+const db = useFirestore()
+const { createKitchen } = useKitchenCreate()
 
 const chosenPlace = ref<PlaceUpsertInput | null>(null)
 const chosenPlaceId = ref<string | null>(null)
@@ -59,7 +64,16 @@ function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput })
   const id = payload.placeId
   const place = payload.place
 
-  form.value = { ...form.value, place_id: id }
+  void ensureKitchen(id, place)
+}
+
+async function ensureKitchen(id: string, place: PlaceUpsertInput) {
+  const existingSnap = await getDoc(doc(db, 'kitchens', id))
+  if (!existingSnap.exists()) {
+    await createKitchen({ id, place, website: '' })
+  }
+
+  form.value = { ...form.value, kitchen_id: id }
   chosenPlace.value = place
   chosenPlaceId.value = id
 }

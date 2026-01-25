@@ -24,7 +24,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
 import { computed } from 'vue';
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/objects/kitchen/mutations/useKitchenUpdate';
-import type { Kitchen } from '../../../../models/objects/kitchen.model'
+import type { Kitchen } from '../../../../models/objects/kitchen.model';
 
 const props = defineProps<{ kitchen: Kitchen | null }>()
 const kitchen = computed(() => props.kitchen)

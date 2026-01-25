@@ -23,7 +23,18 @@
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
-    />
+    >
+      <template #pill="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <OrganismsProfilesAgentCardsPill v-bind="card" />
+        </component>
+      </template>
+      <template #cell="{ card }">
+        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <OrganismsProfilesAgentCardsCell v-bind="card" />
+        </component>
+      </template>
+    </OrganismsProfilesAgentCollectionList>
 
     <p v-else>No agents found.</p>
 

@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue'
+import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue';
 import type { SupplierCard } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier';
 
 const emit = defineEmits<{

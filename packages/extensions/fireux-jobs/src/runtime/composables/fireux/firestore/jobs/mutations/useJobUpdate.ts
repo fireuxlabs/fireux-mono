@@ -7,7 +7,7 @@ export function useJobUpdate() {
   type JobUpdateInput = Partial<
     Pick<
       Job,
-      'title' | 'status' | 'company_id' | 'place_id' | 'kitchen_id' | 'source'
+      'title' | 'status' | 'company_id' | 'kitchen_id' | 'source'
     >
   >
 
