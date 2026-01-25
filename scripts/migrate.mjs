@@ -42,6 +42,7 @@ if (help) {
   console.log('\nRecipes:')
   console.log('  - app-media-flatten')
   console.log('  - app-social-links-normalize')
+  console.log('  - jobs-backfill-id')
   console.log('  - apply-drift-payload')
   console.log('\nAuth (one required):')
   console.log('  - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)')
@@ -179,6 +180,7 @@ async function runAppMediaFlatten() {
 const recipes = {
   'app-media-flatten': runAppMediaFlatten,
   'app-social-links-normalize': runAppSocialLinksNormalize,
+  'jobs-backfill-id': runJobsBackfillId,
   'apply-drift-payload': runApplyDriftPayload,
 }
 
@@ -189,6 +191,76 @@ if (!runner) {
 }
 
 await runner()
+
+async function runJobsBackfillId() {
+  console.log('[migrate] jobs-backfill-id start', {
+    projectId,
+    commit,
+    pageSize,
+    limit,
+    app: targetAppId,
+  })
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+
+  let lastDoc = null
+
+  while (true) {
+    if (limit && processed >= limit) break
+
+    let q = db.collection('jobs').orderBy(FieldPath.documentId()).limit(pageSize)
+    if (lastDoc) q = q.startAfter(lastDoc)
+    if (targetAppId) q = db.collection('jobs').where('app_id', '==', targetAppId)
+
+    const snap = await q.get()
+    if (snap.empty) break
+
+    let batch = db.batch()
+    let batchOps = 0
+
+    for (const docSnap of snap.docs) {
+      if (limit && processed >= limit) break
+
+      processed += 1
+      const data = docSnap.data() || {}
+      const rawId = typeof data.id === 'string' ? data.id.trim() : ''
+      const hasId = Boolean(rawId) && rawId.toLowerCase() !== 'undefined' && rawId.toLowerCase() !== 'null'
+
+      if (hasId) {
+        skipped += 1
+        continue
+      }
+
+      updated += 1
+      const patch = { id: docSnap.id }
+
+      if (commit) {
+        batch.update(docSnap.ref, patch)
+        batchOps += 1
+      } else {
+        console.log('[dry-run]', docSnap.ref.path, patch)
+      }
+
+      if (commit && batchOps >= 400) {
+        await batch.commit()
+        batch = db.batch()
+        batchOps = 0
+      }
+    }
+
+    if (commit && batchOps > 0) {
+      await batch.commit()
+    }
+
+    lastDoc = snap.docs[snap.docs.length - 1]
+
+    if (targetAppId) break
+  }
+
+  console.log('[migrate] jobs-backfill-id done', { processed, updated, skipped, commit })
+}
 
 async function readPayloadInput() {
   if (payloadFile) {

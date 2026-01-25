@@ -44,12 +44,13 @@ export function useFirestoreCreate() {
     const ref = collection(db, collectionPath)
     const stamped = await stampDoc(data, opts)
     const docRef = await addDoc(ref, stamped as any)
+    await setDoc(docRef, { id: docRef.id } as any, { merge: true })
     return docRef.id
   }
 
   async function setDocument<T>(collectionPath: string, id: string, data: T, opts: StampOpts = {}): Promise<void> {
     const ref = doc(db, collectionPath, id)
-    const stamped = await stampDoc(data, opts)
+    const stamped = await stampDoc({ ...(data as any), id } as T, opts)
     await setDoc(ref, stamped as any)
   }
 

@@ -38,7 +38,13 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
     const map = new Map<string, ModelDrift>()
     for (const doc of params.collection.value) {
       const id = doc?.id
-      if (!id) continue
+      if (!id) {
+        map.set(`missing-id-${map.size + 1}`, {
+          missing: ['id'],
+          extra: [],
+        })
+        continue
+      }
       const drift = resolveDriftFromModel(
         params.runtimeModel,
         doc as unknown as Record<string, unknown>

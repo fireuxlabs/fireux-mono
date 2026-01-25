@@ -1,4 +1,4 @@
-import { addDoc, arrayRemove, arrayUnion, collection } from 'firebase/firestore'
+import { addDoc, arrayRemove, arrayUnion, collection, setDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import type {
     User,
@@ -103,7 +103,8 @@ export function useCoreUserUpdate(user: UserRefs) {
         scope: 'ecosystem',
       })
 
-      await addDoc(collection(db, 'users', id, 'notifications'), notification)
+      const docRef = await addDoc(collection(db, 'users', id, 'notifications'), notification)
+      await setDoc(docRef, { id: docRef.id }, { merge: true })
       return notification
     },
   }

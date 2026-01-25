@@ -32,10 +32,10 @@
 
 <script setup lang="ts">
 import { doc, getDoc } from 'firebase/firestore'
+import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/mutations/useCompanyCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'vuefire'
-import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/mutations/useCompanyCreate'
 import type { JobCreateForm } from '../../../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
 
 const form = defineModel<JobCreateForm>('form', { required: true })

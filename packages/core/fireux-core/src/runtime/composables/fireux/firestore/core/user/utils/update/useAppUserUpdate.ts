@@ -1,11 +1,12 @@
 import {
-    addDoc,
-    arrayRemove,
-    arrayUnion,
-    collection,
-    doc,
-    getDoc,
-    increment,
+  addDoc,
+  arrayRemove,
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  increment,
+  setDoc,
 } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import type { UserNotification } from '../../../../../../../models/core/user.supporting'
@@ -95,7 +96,8 @@ export function useAppUserUpdate(user: UserRefs) {
         appId,
       })
 
-      await addDoc(collection(db, 'users', uid, 'notifications'), notification)
+      const docRef = await addDoc(collection(db, 'users', uid, 'notifications'), notification)
+      await setDoc(docRef, { id: docRef.id }, { merge: true })
 
       return notification
     },

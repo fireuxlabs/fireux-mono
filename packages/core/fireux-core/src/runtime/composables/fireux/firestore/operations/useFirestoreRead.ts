@@ -21,21 +21,6 @@ import { useCollection, useDocument, useFirestore } from 'vuefire'
 export function useFirestoreRead() {
   const db = useFirestore()
 
-  const attachDocId = <T extends Record<string, any>>(
-    record: T | undefined,
-    docId: string,
-    idField = 'id'
-  ): T | undefined => {
-    if (!record || typeof record !== 'object') return record
-    const current = record[idField]
-    const hasId =
-      current !== undefined &&
-      current !== null &&
-      (typeof current !== 'string' || current.trim().length > 0)
-    if (hasId) return record
-    return { ...record, [idField]: docId }
-  }
-
   /** Run any Firestore Query (reactive) */
   const firestoreQuery = <T>(
     q: Query<T>,
@@ -45,8 +30,7 @@ export function useFirestoreRead() {
     const { data } = useCollection<T>(q, {
       ...options,
       transform: (docSnap: QueryDocumentSnapshot<T>) => {
-        const payload = docSnap.data() as T & Record<string, any>
-        return attachDocId(payload, docSnap.id) as T
+        return docSnap.data() as T
       },
     } as any)
     return data as Ref<T[] | undefined>
@@ -69,8 +53,7 @@ export function useFirestoreRead() {
     const { data } = useDocument(ref, {
       ssrKey: `${collectionPath}-${docId}`,
       transform: (docSnap: DocumentSnapshot<T>) => {
-        const payload = docSnap.data() as (T & Record<string, any>) | undefined
-        return attachDocId(payload, docSnap.id) as T | undefined
+        return docSnap.data() as T | undefined
       },
     } as any)
     return data as Ref<T | undefined>

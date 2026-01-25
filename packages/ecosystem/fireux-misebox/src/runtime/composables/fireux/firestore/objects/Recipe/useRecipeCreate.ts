@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { useCurrentUser, useFirestore } from 'vuefire'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, addDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 
 export function useRecipeCreate() {
   const currentUser = useCurrentUser()
@@ -23,6 +23,7 @@ export function useRecipeCreate() {
       }
 
       const docRef = await addDoc(collection(db, 'recipes'), data)
+      await setDoc(docRef, { id: docRef.id }, { merge: true })
       return docRef.id
     } catch (e: any) {
       createError.value =

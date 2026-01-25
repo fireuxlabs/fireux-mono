@@ -191,11 +191,14 @@ const allJobsJsonPayload = computed(() => ({
 }))
 
 const filteredJobsDriftPayload = computed(() =>
-  jobCards.value.map((card) => {
-    const drift = jobsDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+  filteredJobs.value.map((job, index) => {
+    const jobId = String((job as any)?.id ?? '').trim()
+    const drift = jobId
+      ? jobsDriftById.value.get(jobId) ?? { missing: [], extra: [] }
+      : { missing: ['id'], extra: [] }
     return {
-      id: card.id,
-      title: card.title,
+      id: jobId || `missing-id-${index + 1}`,
+      title: (job as any)?.title ?? '',
       drift,
     }
   })

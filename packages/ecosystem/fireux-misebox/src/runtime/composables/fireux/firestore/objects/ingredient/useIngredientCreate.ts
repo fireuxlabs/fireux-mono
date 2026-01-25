@@ -28,6 +28,7 @@ export function useIngredientCreate() {
         .slice(2, 7)}`
 
       const data: any = {
+        id,
         name: name.trim(),
         creator_id: currentUser.value.uid,
         created_at: serverTimestamp(),
