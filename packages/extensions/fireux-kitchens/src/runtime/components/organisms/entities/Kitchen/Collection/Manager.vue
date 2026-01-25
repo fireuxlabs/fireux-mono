@@ -78,4 +78,3 @@ const {
 const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev
 </script>
-        </NuxtLink>
