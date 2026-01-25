@@ -17,11 +17,12 @@ import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.mod
 export type JobStatus = 'open' | 'closed'
 
 /**
- * Phase-1: keep it simple.
- * - 'permanent' covers the Hüttenzauber-style role.
- * - We'll add 'temporary' / 'seasonal' later if needed.
+ * Phase-1: only what we need for the current 2 Hütten Zauber jobs.
+ * - Both are permanent roles.
  */
 export type JobEmploymentType = 'permanent'
+
+export type JobStartLabel = '' | 'asap'
 
 // 🔑 Runtime + canonical shape (source of truth)
 export const Job = {
@@ -37,15 +38,19 @@ export const Job = {
   status: 'open' as JobStatus,
   description: '',
 
-  /** Hüttenzauber: this is a permanent role */
+  /** Both current jobs are permanent */
   employment_type: 'permanent' as JobEmploymentType,
 
   /**
-   * Optional start date.
-   * Use ISO date string: 'YYYY-MM-DD' (empty string means unset)
-   * Examples: '2026-02-01' or '' or 'asap' later (if you decide to support that)
+   * Keep it dead simple for now:
+   * - '' means unset
+   * - 'asap' covers the typical posting language
+   * If/when you need real dates, add starts_on_date: 'YYYY-MM-DD' later.
    */
-  starts_on: '',
+  starts_on: '' as JobStartLabel,
+
+  /** Source trace (optional but useful immediately for these postings) */
+  source_url: '',
 
   // Authored (FireuxStamped)
   app_id: undefined as FireuxStamped['app_id'],
@@ -70,4 +75,5 @@ export type JobCreateInput = Omit<
   Job,
   'app_id' | 'created_at' | 'updated_at' | 'creator_id'
 >
+
 export type JobUpdateInput = Partial<Omit<JobCreateInput, 'id'>>
