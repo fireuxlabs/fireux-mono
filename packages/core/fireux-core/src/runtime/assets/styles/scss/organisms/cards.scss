@@ -1,69 +1,5 @@
 /* stripped */
 
-
-.collection-grid {
-	display: grid;
-	gap: 0.75rem;
-	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-}
-
-.collection-stack {
-	display: grid;
-	gap: 0.75rem;
-}
-
-.collection-manager__header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.75rem;
-	flex-wrap: wrap;
-}
-
-.collection-manager__title {
-	display: grid;
-	gap: 0.25rem;
-}
-
-.collection-manager__controls {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	flex-wrap: wrap;
-}
-/* stripped */
-
-:where(.collection-grid) {
-	display: grid;
-	gap: 0.75rem;
-	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-}
-
-:where(.collection-stack) {
-	display: grid;
-	gap: 0.75rem;
-}
-
-:where(.collection-manager__header) {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.75rem;
-	flex-wrap: wrap;
-}
-
-:where(.collection-manager__title) {
-	display: grid;
-	gap: 0.25rem;
-}
-
-:where(.collection-manager__controls) {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	flex-wrap: wrap;
-}
-
 :where(.panels-stack) {
 	display: grid;
 	gap: 2rem;
@@ -155,48 +91,7 @@
 	margin-bottom: 2.5rem;
 }
 
-:where(.pill) {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-:where(.pill__text) {
-	display: flex;
-	flex-direction: column;
-	min-width: 0;
-}
-
-:where(.pill__title, .pill__subtitle) {
-	min-width: 0;
-}
-
-:where(.pill__subtitle) {
-	font-size: 0.75rem;
-	color: var(--ui-text-muted, var(--ui-text));
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-:where(.card) {
-	background: var(--ui-bg);
-	color: var(--ui-text);
-}
-
-:where(.card.card--pill) {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5rem;
-	padding: 0.375rem 0.5rem;
-	border: 1px solid var(--ui-border);
-	border-radius: 9999px;
-	background: var(--ui-bg);
-}
-
-:where(.card.card--pill:hover) {
-	background: var(--ui-bg-muted);
-}
+/* pill styles moved to shared component */
 
 :where(.card.card--cell) {
 	display: block;
@@ -212,6 +107,23 @@
 	border-color: color-mix(in srgb, var(--ui-border) 60%, var(--ui-primary) 40%);
 	box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
 	transform: translateY(-1px);
+}
+
+:where(.pill) {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.375rem 0.5rem;
+	border: 1px solid var(--ui-border);
+	border-radius: 9999px;
+	background: var(--ui-bg);
+	color: var(--ui-text);
+	width: 17rem;
+	min-width: 0;
+}
+
+:where(.pill:hover) {
+	background: var(--ui-bg-muted);
 }
 
 :where(.card__media) {

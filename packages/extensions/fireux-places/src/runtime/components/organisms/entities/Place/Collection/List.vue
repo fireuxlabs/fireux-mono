@@ -1,22 +1,14 @@
 <template>
-  <div v-if="variant === 'pill'" class="collection-grid">
-    <PlaceCardsPill
-      v-for="card in cards"
-      :key="card.to || card.id"
-      :avatar-url="card.avatarUrl"
-      :title="card.title"
-      :subtitle="card.subtitle"
-      :badges="card.badges"
-    />
+  <div v-if="variant === 'pill'">
+    <template v-for="card in cards" :key="card.to || card.id">
+      <slot name="pill" :card="card" />
+    </template>
   </div>
 
-  <div v-else class="collection-stack">
-    <PlaceCardsCell
-      v-for="card in cards"
-      :key="card.to || card.id"
-      v-bind="card"
-      :link="true"
-    />
+  <div v-else>
+    <template v-for="card in cards" :key="card.to || card.id">
+      <slot name="cell" :card="card" />
+    </template>
   </div>
 </template>
 

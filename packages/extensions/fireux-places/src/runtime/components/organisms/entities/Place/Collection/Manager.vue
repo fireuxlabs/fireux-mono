@@ -1,13 +1,13 @@
 <template>
   <UCard>
     <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
+      <div>
+        <div>
           <div>Places</div>
           <p>Browse places available to this runtime.</p>
         </div>
 
-        <div class="collection-manager__controls">
+        <div>
           <UInput
             v-model="query"
             size="xs"
@@ -26,7 +26,23 @@
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
-    />
+    >
+      <template #pill="{ card }">
+        <NuxtLink :to="card.to">
+          <PlaceCardsPill
+            :avatar-url="card.avatarUrl"
+            :title="card.title"
+            :subtitle="card.subtitle"
+            :badges="card.badges"
+          />
+        </NuxtLink>
+      </template>
+      <template #cell="{ card }">
+        <NuxtLink :to="card.to">
+          <PlaceCardsCell v-bind="card" />
+        </NuxtLink>
+      </template>
+    </OrganismsEntitiesPlaceCollectionList>
 
     <p v-else>
       {{ query ? 'No places match your search.' : 'No places found.' }}

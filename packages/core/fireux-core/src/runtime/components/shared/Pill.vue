@@ -1,5 +1,5 @@
 <template>
-  <div class="card card--pill">
+  <div class="pill">
     <UAvatar
       :src="avatar || undefined"
       :alt="title || ''"
