@@ -108,6 +108,8 @@ type Props = {
 withDefaults(
   defineProps<Props>(),
   {
+    badges: () => [],
+    profiles: () => [],
     showSubtitle: true,
     showBadges: true,
     showDescription: true,

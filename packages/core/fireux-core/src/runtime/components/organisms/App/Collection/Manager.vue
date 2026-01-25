@@ -29,14 +29,29 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
-          <OrganismsAppCardsPill v-bind="card" />
-        </component>
+        <NuxtLink :to="card.to">
+          <OrganismsAppCardsPill
+            :to="card.to"
+            :thumbnail-url="card.thumbnailUrl"
+            :display-name="card.displayName"
+            :ecosystem="card.ecosystem"
+            :badges="card.badges"
+            :link="Boolean(card.to)"
+          />
+        </NuxtLink>
       </template>
       <template #cell="{ card }">
-        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
-          <OrganismsAppCardsCell v-bind="card" />
-        </component>
+        <NuxtLink :to="card.to">
+          <OrganismsAppCardsCell
+            :to="card.to"
+            :thumbnail-url="card.thumbnailUrl"
+            :display-name="card.displayName"
+            :badges="card.badges"
+            :tagline="card.tagline"
+            :user-count="card.userCount"
+            :link="Boolean(card.to)"
+          />
+        </NuxtLink>
       </template>
     </OrganismsAppCollectionList>
 

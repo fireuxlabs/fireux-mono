@@ -28,14 +28,14 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+        <NuxtLink :to="card.to">
           <CompanyCardsPill v-bind="card" />
-        </component>
+        </NuxtLink>
       </template>
       <template #cell="{ card }">
-        <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+        <NuxtLink :to="card.to">
           <CompanyCardsCell v-bind="card" />
-        </component>
+        </NuxtLink>
       </template>
     </OrganismsEntitiesCompanyCollectionList>
 
@@ -75,8 +75,6 @@ const {
   searchText: (company: Company) => searchText(company),
   makeCard: (company: Company) => makeCard(company),
 })
-
 const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev
-
 </script>
