@@ -16,7 +16,10 @@
     <div class="space-y-4">
       <div v-if="!chosenPlaceCard">
         <ClientOnly>
-          <PlaceSearchSection @confirmed="onPlaceConfirmed" />
+          <PlaceSearchSection
+            placeholder="Type a location name…"
+            @confirmed="onPlaceConfirmed"
+          />
         </ClientOnly>
       </div>
 

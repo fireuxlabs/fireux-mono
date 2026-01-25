@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/Section.vue -->
 <template>
   <div class="space-y-4">
-    <PlaceSearchBar v-model="query" />
+    <PlaceSearchBar v-model="query" :placeholder="placeholder" />
 
     <UCard v-if="selectedCell" :ui="{ body: 'space-y-3' }">
       <PlaceCardsCell v-bind="selectedCell" :show-source="true" />
@@ -49,9 +49,12 @@ import type { BasePlace, PlaceSource, PlaceUpsertInput } from '../../../../../mo
 const props = withDefaults(
   defineProps<{
     type?: string | null
+    placeholder?: string | null
   }>(),
-  { type: null }
+  { type: null, placeholder: null }
 )
+
+const placeholder = computed(() => props.placeholder || undefined)
 
 const emit = defineEmits<{
   (e: 'confirmed', payload: { placeId: string; place: PlaceUpsertInput }): void

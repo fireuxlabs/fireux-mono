@@ -16,20 +16,15 @@
     <div class="space-y-4">
       <div v-if="!chosenPlaceCard">
         <ClientOnly>
-          <PlaceSearchSection @confirmed="onPlaceConfirmed" />
+          <PlaceSearchSection
+            placeholder="Type a company name…"
+            @confirmed="onPlaceConfirmed"
+          />
         </ClientOnly>
       </div>
 
       <div v-else class="space-y-2">
-        <PlaceCardsPill
-          :avatar-url="chosenPlaceCard.imageUrl"
-          :title="chosenPlaceCard.name"
-          :subtitle="chosenPlaceCard.formattedAddress"
-          :badges="[]"
-        />
-        <UButton size="xs" variant="soft" color="neutral" @click="clearSelection">
-          Change company
-        </UButton>
+        <PlaceCardsCell v-bind="chosenPlaceCard" :show-source="true" />
       </div>
     </div>
   </UCard>
@@ -57,9 +52,11 @@ const chosenPlaceCard = computed(() => {
 
   return {
     id,
+    to: '',
     name: place.name ?? '',
     formattedAddress: place.formatted_address ?? '',
     imageUrl: place.place_image ?? '',
+    source: (place.source as any) ?? 'fireux',
   }
 })
 
@@ -77,9 +74,6 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
   chosenPlaceId.value = id
 }
 
-const clearSelection = () => {
-  form.value = { ...form.value, company_id: '' }
-  chosenPlace.value = null
-  chosenPlaceId.value = null
-}
+// Selection is cleared by replacing the chosen place in the form;
+// no explicit "Change" button shown here.
 </script>
