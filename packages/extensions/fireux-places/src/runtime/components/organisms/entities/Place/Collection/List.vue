@@ -3,9 +3,10 @@
     <PlaceCardsPill
       v-for="card in cards"
       :key="card.to || card.id"
-      v-bind="card"
-      :link="Boolean(card.to)"
-      
+      :avatar-url="card.avatarUrl"
+      :title="card.title"
+      :subtitle="card.subtitle"
+      :badges="card.badges"
     />
   </div>
 
@@ -14,8 +15,7 @@
       v-for="card in cards"
       :key="card.to || card.id"
       v-bind="card"
-      :link="Boolean(card.to)"
-      
+      :link="true"
     />
   </div>
 </template>

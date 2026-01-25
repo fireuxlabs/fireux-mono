@@ -26,7 +26,7 @@
         description="We could not find this company. Return to the companies list and try again."
       />
 
-      <LayoutsDashboardProfileEdit v-else class="fx-panels-masonry">
+      <LayoutsDashboardProfileEdit v-else class="panels-masonry">
         <template #preview>
           <CompanyCardsPreview
             :avatar-url="company.place_image ?? ''"

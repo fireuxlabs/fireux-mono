@@ -3,16 +3,16 @@
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
-    class="card card--pill app-pill"
+    class="card card--pill pill"
     @click="onClick"
   >
     <UAvatar :src="thumbnailUrl || undefined" :alt="displayName" size="xs" />
 
-    <div class="app-pill__text">
-      <div class="app-pill__title">
+    <div class="pill__text">
+      <div class="pill__title">
         {{ displayName }}
       </div>
-      <div v-if="showSubtitle && ecosystem" class="app-pill__subtitle">
+      <div v-if="showSubtitle && ecosystem" class="pill__subtitle">
         {{ ecosystem }}
       </div>
     </div>

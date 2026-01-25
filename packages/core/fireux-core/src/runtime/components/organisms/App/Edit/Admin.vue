@@ -1,6 +1,6 @@
 <template>
   <template v-if="app">
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsLockedConfig
         :app="app"
         :is-dev="isDev"
@@ -9,7 +9,7 @@
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsAbout
         :app="app"
         :handle-tagline-update="handleTaglineUpdate"
@@ -19,18 +19,18 @@
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsSurfaces :app-card="appCard" />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsSocial
         :app="app"
         :handle-update-social-links="handleUpdateSocialLinks"
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsJoinRequests
         :items="joinRequestItems"
         :on-approve="onApprove"
@@ -38,7 +38,7 @@
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsAdmins
         :rows="adminRows"
         :action-uid="adminActionUid"
@@ -47,7 +47,7 @@
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item dashboard-item mb-10">
       <OrganismsAppEditSectionsTenantOverrides />
     </div>
   </template>

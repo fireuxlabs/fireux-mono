@@ -6,7 +6,7 @@
     </template>
 
     <template #body>
-      <div class="fx-panels-stack">
+      <div class="panels-stack">
         <!-- Header pills -->
         <div class="flex flex-wrap items-center gap-2">
           <OrganismsAppCardsPill
@@ -47,7 +47,7 @@
 
         <!-- Main panels -->
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="fx-panels-masonry">
+          <LayoutsDashboardProfileEdit class="panels-masonry">
             <template #preview>
               <OrganismsUserCardsProfile
                 v-if="resolvedUser"

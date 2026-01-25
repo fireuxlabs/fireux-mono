@@ -1,10 +1,5 @@
 <template>
-  <component
-    :is="link && to ? 'NuxtLink' : 'div'"
-    :to="link && to ? to : undefined"
-    class="card card--pill"
-    @click="onClick"
-  >
+  <div class="card card--pill">
     <UAvatar
       :src="avatar || undefined"
       :alt="title || ''"
@@ -35,11 +30,10 @@
         {{ badge }}
       </UBadge>
     </div>
-  </component>
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { RouteLocationRaw } from 'vue-router'
 import { computed } from 'vue'
 import type { Pill } from '../../models/shared/pill.model'
 
@@ -48,14 +42,7 @@ defineOptions({ inheritAttrs: false })
 type Props = Pill.Props & {
   showSubtitle?: boolean
   showBadges?: boolean
-  link?: boolean
-  action?: boolean
-  to?: RouteLocationRaw | null
 }
-
-const emit = defineEmits<{
-  (event: 'action'): void
-}>()
 
 const props = withDefaults(defineProps<Props>(), {
   avatar: null,
@@ -63,18 +50,12 @@ const props = withDefaults(defineProps<Props>(), {
   subtitle: null,
   tagline: null,
   badges: () => [],
-  to: null,
   showSubtitle: true,
   showBadges: true,
-  link: false,
-  action: false,
 })
 
 const resolvedSubtitle = computed(() => {
   return (props.subtitle ?? props.tagline ?? '').trim()
 })
 
-const onClick = () => {
-  if (props.action) emit('action')
-}
 </script>

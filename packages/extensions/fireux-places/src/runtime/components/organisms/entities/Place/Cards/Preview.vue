@@ -1,6 +1,6 @@
 <template>
-  <UCard class="fx-preview">
-    <div class="fx-preview__row">
+  <UCard class="preview">
+    <div class="preview__row">
       <UAvatar
         :src="resolvedImageUrl || undefined"
         :alt="name"
@@ -9,21 +9,21 @@
         icon="i-lucide-image"
       />
 
-      <div class="fx-preview__main">
-        <div class="fx-preview__top">
-          <div class="fx-preview__title">{{ name }}</div>
+      <div class="preview__main">
+        <div class="preview__top">
+          <div class="preview__title">{{ name }}</div>
 
-          <div v-if="showBadges && sourceLabel" class="fx-preview__badges">
+          <div v-if="showBadges && sourceLabel" class="preview__badges">
             <UBadge variant="soft" color="neutral" size="xs">{{ sourceLabel }}</UBadge>
           </div>
         </div>
 
-        <div v-if="formattedAddress" class="fx-preview__subtitle">
+        <div v-if="formattedAddress" class="preview__subtitle">
           {{ formattedAddress }}
         </div>
 
-        <div v-if="showBody" class="fx-preview__body">
-          <div class="fx-preview__line">
+        <div v-if="showBody" class="preview__body">
+          <div class="preview__line">
             <span v-if="prop">{{ prop }}</span>
             <span v-else class="italic">missing</span>
           </div>

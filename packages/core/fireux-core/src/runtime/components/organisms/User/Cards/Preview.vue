@@ -1,13 +1,13 @@
 <template>
-  <UCard class="fx-preview">
-    <div class="fx-preview__row">
+  <UCard class="preview">
+    <div class="preview__row">
       <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
-      <div class="fx-preview__main">
-        <div class="fx-preview__top">
-          <div class="fx-preview__title">{{ displayName }}</div>
+      <div class="preview__main">
+        <div class="preview__top">
+          <div class="preview__title">{{ displayName }}</div>
 
-          <div v-if="showBadges && badges.length" class="fx-preview__badges">
+          <div v-if="showBadges && badges.length" class="preview__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -20,17 +20,17 @@
           </div>
         </div>
 
-        <div v-if="showSubtitle && handle" class="fx-preview__subtitle">
+        <div v-if="showSubtitle && handle" class="preview__subtitle">
           {{ handle }}
         </div>
 
-        <div v-if="showBody" class="fx-preview__body">
-          <div class="fx-preview__line">
+        <div v-if="showBody" class="preview__body">
+          <div class="preview__line">
             <span v-if="prop || bio">{{ prop || bio }}</span>
             <span v-else class="italic">missing</span>
           </div>
 
-          <div class="fx-preview__line text-dimmed">
+          <div class="preview__line text-dimmed">
             <span v-if="profiles.length">{{ profiles.join(', ') }}</span>
             <span v-else class="italic">missing</span>
             <span v-if="appsLabel"> · {{ appsLabel }}</span>

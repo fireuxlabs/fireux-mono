@@ -3,13 +3,13 @@
     <!-- Agent can post jobs -->
     <UPageCTA
       v-if="hasAgentProfile"
-      class="fx-cta"
+      class="cta"
       title="Post a job"
       :description="agentCtaDescription"
       variant="naked"
     >
       <template #default>
-        <div class="fx-cta__body">
+        <div class="cta__body">
           <JobCreateSystem />
 
           <!-- DEV sanity output -->

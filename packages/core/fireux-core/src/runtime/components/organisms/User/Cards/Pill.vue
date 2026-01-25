@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
-import SharedPill from '../../../shared/Pill.vue'
+import SharedPill from '../../../shared/Pill.vue';
 
 type PillProps = Pick<
   UserCard.Card,

@@ -1,13 +1,13 @@
 <template>
   <UPageCTA
-    class="fx-cta"
+    class="cta"
     title="Current app"
     description="The app currently resolved for this runtime."
     variant="naked"
   >
     <template #default>
-      <div class="fx-cta__body space-y-3">
-        <div v-if="app" class="fx-cta__toolbar flex justify-end">
+      <div class="cta__body space-y-3">
+        <div v-if="app" class="cta__toolbar flex justify-end">
           <UButton size="xs" variant="ghost" @click="toggleView">
             {{ view === 'preview' ? 'Profile' : 'Preview' }}
           </UButton>
@@ -39,7 +39,7 @@
         />
         <OrganismsAppCreateSystem v-else />
 
-        <div class="fx-cta__toolbar flex justify-end">
+        <div class="cta__toolbar flex justify-end">
           <UButton variant="ghost" size="sm" to="/apps/learn-more">Learn more</UButton>
         </div>
       </div>

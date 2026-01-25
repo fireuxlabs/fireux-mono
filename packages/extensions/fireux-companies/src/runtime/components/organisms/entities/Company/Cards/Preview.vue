@@ -1,6 +1,6 @@
 <template>
-  <UCard class="fx-preview">
-    <div class="fx-preview__row">
+  <UCard class="preview">
+    <div class="preview__row">
       <UAvatar
         :src="avatarUrl || undefined"
         :alt="name"
@@ -8,11 +8,11 @@
         :class="avatarUrl ? 'bg-white dark:bg-white' : ''"
       />
 
-      <div class="fx-preview__main">
-        <div class="fx-preview__top">
-          <div class="fx-preview__title">{{ name }}</div>
+      <div class="preview__main">
+        <div class="preview__top">
+          <div class="preview__title">{{ name }}</div>
 
-          <div v-if="showBadges && badges.length" class="fx-preview__badges">
+          <div v-if="showBadges && badges.length" class="preview__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -25,12 +25,12 @@
           </div>
         </div>
 
-        <div v-if="showSubtitle && website" class="fx-preview__subtitle">
+        <div v-if="showSubtitle && website" class="preview__subtitle">
           {{ website }}
         </div>
 
-        <div v-if="showBody" class="fx-preview__body">
-          <div class="fx-preview__line">
+        <div v-if="showBody" class="preview__body">
+          <div class="preview__line">
             <span v-if="prop">{{ prop }}</span>
             <span v-else class="italic">missing</span>
           </div>

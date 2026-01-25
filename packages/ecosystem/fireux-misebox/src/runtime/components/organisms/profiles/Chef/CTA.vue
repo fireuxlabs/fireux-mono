@@ -1,7 +1,7 @@
 <!-- packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Chef/CTA.vue -->
 <template>
 	<UPageCTA
-		class="fx-cta"
+		class="cta"
 		title="Chef profile"
 		description="Showcase your culinary strengths so kitchens can match you to the right stations and menus."
 		variant="naked"
@@ -11,14 +11,14 @@
 				<OrganismsProfilesChefCreateSystem />
 			</div>
 
-			<div v-else class="fx-cta__body space-y-4">
-				<div class="fx-cta__toolbar flex justify-end">
+			<div v-else class="cta__body space-y-4">
+				<div class="cta__toolbar flex justify-end">
 					<UButton v-if="canToggle" size="xs" variant="ghost" @click="toggleView">
 						{{ showCellView ? 'Show pill' : 'Show cell' }}
 					</UButton>
 				</div>
 
-				<div class="fx-cta__panel space-y-4">
+				<div class="cta__panel space-y-4">
 					<OrganismsProfilesChefCardsCell
 						v-if="showCellCard && cell"
 						v-bind="cell"
@@ -31,7 +31,7 @@
 						:link="Boolean(pill.to)"
 						class="block"
 					/>
-					<p v-else class="fx-cta__empty text-sm text-slate-500">No chef profile loaded.</p>
+					<p v-else class="cta__empty text-sm text-slate-500">No chef profile loaded.</p>
 				</div>
 			</div>
 		</template>

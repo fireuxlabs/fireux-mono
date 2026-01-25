@@ -5,14 +5,14 @@
     </template>
 
     <template #body>
-      <div class="fx-panels-stack">
-        <div class="fx-panels-grid-3">
+      <div class="panels-stack">
+        <div class="panels-grid-3">
           <DashboardOverviewCore class="dashboard-item" />
           <DashboardOverviewEcosystem class="dashboard-item" />
           <DashboardOverviewApp class="dashboard-item" />
         </div>
 
-        <div class="fx-panels-grid-2">
+        <div class="panels-grid-2">
           <DashboardOverviewDomainEcosystem class="dashboard-item" />
           <DashboardOverviewDomainApp class="dashboard-item" />
         </div>
@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { definePageMeta } from '#imports'
+import { definePageMeta } from '#imports';
 
 definePageMeta({
   nav: {

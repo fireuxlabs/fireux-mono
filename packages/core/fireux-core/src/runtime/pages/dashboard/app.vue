@@ -6,7 +6,7 @@
     </template>
 
     <template #body>
-      <div class="fx-panels-stack">
+      <div class="panels-stack">
         <!-- Header pills -->
         <div class="flex flex-wrap items-center gap-2">
           <OrganismsAppCardsPill
@@ -46,8 +46,8 @@
         </UPageCard>
 
         <!-- Main panels -->
-        <div v-else class="fx-panels-masonry">
-          <div class="fx-panels-masonry__item mb-10">
+        <div v-else class="panels-masonry">
+          <div class="panels-masonry__item mb-10">
             <OrganismsAppCardsProfile
               v-if="appCard"
               v-bind="appCard"

@@ -3,14 +3,14 @@
   <ClientOnly>
     <section class="space-y-4">
       <UCard v-if="isLoading">
-        <p class="fx-preview__fallback">Loading supplier preview…</p>
+        <p class="preview__fallback">Loading supplier preview…</p>
       </UCard>
 
       <UCard v-else-if="hasPreview" class="space-y-6">
-        <header class="fx-preview__header">
-          <div class="fx-preview__header-content">
-            <p class="fx-preview__eyebrow">Directory preview</p>
-            <p class="fx-preview__copy">
+        <header class="preview__header">
+          <div class="preview__header-content">
+            <p class="preview__eyebrow">Directory preview</p>
+            <p class="preview__copy">
               Supplier listings across Misebox mirror this preview.
             </p>
           </div>
@@ -19,7 +19,7 @@
             v-if="canToggle"
             size="xs"
             variant="ghost"
-            class="fx-preview__toggle"
+            class="preview__toggle"
             @click="toggleView"
           >
             {{ showCellView ? 'Show Pill' : 'Show Cell' }}
@@ -41,7 +41,7 @@
       </UCard>
 
       <UCard v-else>
-        <p class="fx-preview__fallback">Supplier preview unavailable.</p>
+        <p class="preview__fallback">Supplier preview unavailable.</p>
       </UCard>
     </section>
   </ClientOnly>

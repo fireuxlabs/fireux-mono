@@ -1,5 +1,3 @@
-import type { RouteLocationRaw } from 'vue-router'
-
 /** ------------------------------------------------------------------
  *  Pill Protocol
  *  Shared minimal interface for all Pill-like components.
@@ -13,7 +11,6 @@ export namespace Pill {
     subtitle?: string | null
     tagline?: string | null
     badges?: string[]
-    to?: RouteLocationRaw | null
     special?: boolean
     specialIcon?: string
     specialTooltip?: string

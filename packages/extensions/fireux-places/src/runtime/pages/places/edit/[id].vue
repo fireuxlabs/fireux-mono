@@ -27,7 +27,7 @@
           description="We could not find this place. Return to the places list and try again."
         />
 
-        <LayoutsDashboardProfileEdit v-else class="fx-panels-masonry">
+        <LayoutsDashboardProfileEdit v-else class="panels-masonry">
           <template #preview>
             <PlaceCardsPreview
               :image-url="place.place_image ?? ''"

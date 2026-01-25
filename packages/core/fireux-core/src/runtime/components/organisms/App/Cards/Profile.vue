@@ -1,21 +1,21 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Profile.vue -->
 <template>
-  <UCard class="fx-profile">
+  <UCard class="profile">
     <template #header>
-      <div class="fx-profile__header">
-        <div class="fx-profile__identity">
+      <div class="profile__header">
+        <div class="profile__identity">
           <UAvatar :src="thumbnailUrl || undefined" :alt="displayName" size="md" />
-          <div class="fx-profile__titles">
-            <div class="fx-profile__title">{{ displayName }}</div>
-            <div v-if="showSubtitle" class="fx-profile__subtitle">
+          <div class="profile__titles">
+            <div class="profile__title">{{ displayName }}</div>
+            <div v-if="showSubtitle" class="profile__subtitle">
               <span v-if="ecosystem">{{ ecosystem }}</span>
               <span v-else class="italic">missing</span>
             </div>
           </div>
         </div>
 
-        <div class="fx-profile__badges">
-          <div v-if="showWordmark" class="fx-profile__wordmark">
+        <div class="profile__badges">
+          <div v-if="showWordmark" class="profile__wordmark">
             <AppBrandWordmark
               size="small"
               :light-src="wordmarkLight"
@@ -50,55 +50,55 @@
               {{ badge }}
             </UBadge>
 
-            <span v-if="id" class="fx-profile__mono">{{ id }}</span>
+            <span v-if="id" class="profile__mono">{{ id }}</span>
           </template>
         </div>
       </div>
     </template>
-    <div class="fx-profile__body">
-      <section v-if="showTagline && tagline" class="fx-profile__section">
-        <div class="fx-profile__label">Tagline</div>
-        <div class="fx-profile__value">{{ tagline }}</div>
+    <div class="profile__body">
+      <section v-if="showTagline && tagline" class="profile__section">
+        <div class="profile__label">Tagline</div>
+        <div class="profile__value">{{ tagline }}</div>
       </section>
 
-      <section v-if="showDescription" class="fx-profile__section">
-        <div class="fx-profile__label">Description</div>
-        <div class="fx-profile__value">
+      <section v-if="showDescription" class="profile__section">
+        <div class="profile__label">Description</div>
+        <div class="profile__value">
           <span v-if="app?.description">{{ app.description }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </section>
 
-      <section v-if="showDetails" class="fx-profile__section">
-        <div class="fx-profile__label">Details</div>
-        <div class="fx-profile__value">
-          <div class="fx-profile__kv">
-            <div class="fx-profile__k">App ID</div>
-            <div class="fx-profile__v">
-              <span v-if="app?.id" class="fx-profile__mono">{{ app.id }}</span>
+      <section v-if="showDetails" class="profile__section">
+        <div class="profile__label">Details</div>
+        <div class="profile__value">
+          <div class="profile__kv">
+            <div class="profile__k">App ID</div>
+            <div class="profile__v">
+              <span v-if="app?.id" class="profile__mono">{{ app.id }}</span>
               <span v-else class="opacity-70">missing</span>
             </div>
           </div>
 
-          <div class="fx-profile__kv">
-            <div class="fx-profile__k">Role</div>
-            <div class="fx-profile__v">
+          <div class="profile__kv">
+            <div class="profile__k">Role</div>
+            <div class="profile__v">
               <span v-if="app?.role">{{ app.role }}</span>
               <span v-else class="opacity-70">missing</span>
             </div>
           </div>
 
-          <div class="fx-profile__kv">
-            <div class="fx-profile__k">Ecosystem</div>
-            <div class="fx-profile__v">
+          <div class="profile__kv">
+            <div class="profile__k">Ecosystem</div>
+            <div class="profile__v">
               <span v-if="app?.ecosystem">{{ app.ecosystem }}</span>
               <span v-else class="opacity-70">missing</span>
             </div>
           </div>
 
-          <div class="fx-profile__kv">
-            <div class="fx-profile__k">Creator</div>
-            <div class="fx-profile__v">
+          <div class="profile__kv">
+            <div class="profile__k">Creator</div>
+            <div class="profile__v">
               <OrganismsUserCardsPill
                 v-if="creatorCard"
                 v-bind="creatorCard"
@@ -106,17 +106,17 @@
                 :link="Boolean(creatorCard.to)"
                 class="block"
               />
-              <span v-else-if="app?.creator_id" class="fx-profile__mono">
+              <span v-else-if="app?.creator_id" class="profile__mono">
                 {{ app.creator_id }}
               </span>
               <span v-else class="opacity-70">missing</span>
             </div>
           </div>
 
-          <div class="fx-profile__kv">
-            <div class="fx-profile__k">Admins</div>
-            <div class="fx-profile__v">
-              <div v-if="adminAvatarItems.length" class="fx-profile__adminPreview">
+          <div class="profile__kv">
+            <div class="profile__k">Admins</div>
+            <div class="profile__v">
+              <div v-if="adminAvatarItems.length" class="profile__adminPreview">
                 <UAvatarGroup :max="3" size="xs">
                   <UTooltip
                     v-for="item in adminAvatarItems"
@@ -153,18 +153,18 @@
             </div>
           </div>
 
-          <div class="fx-profile__kv">
-            <div class="fx-profile__k">Created</div>
-            <div class="fx-profile__v">
+          <div class="profile__kv">
+            <div class="profile__k">Created</div>
+            <div class="profile__v">
               <span v-if="createdAtText">{{ createdAtText }}</span>
               <span v-else class="opacity-70">missing</span>
             </div>
           </div>
 
-          <div v-if="showSocials" class="fx-profile__kv">
-            <div class="fx-profile__k">Socials</div>
-            <div class="fx-profile__v">
-              <div class="fx-profile__socials">
+          <div v-if="showSocials" class="profile__kv">
+            <div class="profile__k">Socials</div>
+            <div class="profile__v">
+              <div class="profile__socials">
                 <a
                   v-for="item in socialItems"
                   :key="item.platform"

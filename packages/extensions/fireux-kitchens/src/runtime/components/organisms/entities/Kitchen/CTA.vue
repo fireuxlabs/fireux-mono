@@ -1,12 +1,12 @@
 <template>
   <UPageCTA
-    class="fx-cta"
+    class="cta"
     title="Kitchens"
     description="Select a place to view or update its kitchen overlay."
     variant="naked"
   >
     <template #default>
-      <div class="fx-cta__body">
+      <div class="cta__body">
         <KitchenCreateSystem />
       </div>
     </template>
