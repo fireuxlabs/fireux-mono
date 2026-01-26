@@ -102,20 +102,35 @@ function linkNameFromRelPath(relPath) {
     }
   }
 
-  const cleaned = tail
-    .map((seg) => seg.replace(/\.(vue|ts|js|mjs)$/i, (m) => m))
-    .map((seg) => seg.replaceAll(' ', '-'))
-    .map((seg) => seg.replaceAll('_', '-'))
-    .map((seg) => seg.toLowerCase())
-
-  // For model/interface files, just use the cleaned name (no pkgSlug prefix)
-  if (cleaned.length === 1 && (cleaned[0].endsWith('-model.ts') || cleaned[0].endsWith('-interface.ts'))) {
-    return cleaned[0]
+  function titleCase(text) {
+    return text
+      .split(' ')
+      .map((word) => (word ? word[0].toUpperCase() + word.slice(1) : word))
+      .join(' ')
   }
 
-  // Prefer simplified names: drop the package prefix and use the cleaned tail segments.
-  // This produces short, human-friendly names like `kitchens-index.vue` or `companies-create.vue`.
-  return cleaned.join('-')
+  function humanizeSegment(seg) {
+    const ext = path.extname(seg)
+    const base = ext ? seg.slice(0, -ext.length) : seg
+    let text = base
+    text = text.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    text = text.replace(/[_-]+/g, ' ')
+    text = text.replace(/\s+/g, ' ').trim()
+    text = titleCase(text)
+    return ext ? `${text}${ext}` : text
+  }
+
+  const prettyTail = tail.map(humanizeSegment).filter(Boolean)
+  const fileName = prettyTail.at(-1)
+  const context = prettyTail.slice(0, -1).reverse()
+  const segments = fileName ? [fileName, ...context] : context
+
+  if (pkgSlug && pkgSlug !== 'repo') {
+    segments.push(humanizeSegment(pkgSlug))
+  }
+
+  // Human-readable names with the filename first, then context and package.
+  return segments.join(' — ')
 }
 
 function readMirrorList(filePath) {
