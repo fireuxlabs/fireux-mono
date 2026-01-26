@@ -36,14 +36,6 @@
           </div>
         </template>
 
-        <template #footer>
-          <DevJson
-            :title="'Products (JSON)'"
-            :data="allProductsJsonPayload"
-            :default-open="false"
-          />
-        </template>
-
         <ProductCollectionManager :collection="filteredProducts" />
       </UCard>
     </UPageBody>
@@ -86,10 +78,6 @@ const {
   runtimeModel: productModelRuntime,
 })
 
-const allProductsJsonPayload = computed(() => ({
-  totalProducts: productsCollection.value.length,
-  products: productsCollection.value,
-}))
 
 const filteredProductsDriftPayload = computed(() =>
   filteredProducts.value.map((product) => {

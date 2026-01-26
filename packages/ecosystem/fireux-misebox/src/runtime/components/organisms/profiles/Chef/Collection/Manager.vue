@@ -41,6 +41,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Chefs (JSON)'"
+        context="collection manager · chefs"
         :data="collection"
         :default-open="false"
       />

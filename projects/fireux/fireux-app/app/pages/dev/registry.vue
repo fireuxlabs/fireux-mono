@@ -81,6 +81,7 @@
           v-else-if="snapshot"
           class="mt-4"
           title="Registry JSON"
+          context="dev registry"
           :data="snapshot"
           :default-open="true"
         />

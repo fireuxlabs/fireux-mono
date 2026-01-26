@@ -36,14 +36,6 @@
           </div>
         </template>
 
-        <template #footer>
-          <DevJson
-            :title="'Chefs (JSON)'"
-            :data="allChefsJsonPayload"
-            :default-open="false"
-          />
-        </template>
-
         <OrganismsProfilesChefCollectionManager :collection="filteredChefs" />
       </UCard>
 
@@ -75,14 +67,6 @@
               />
             </div>
           </div>
-        </template>
-
-        <template #footer>
-          <DevJson
-            :title="'Suppliers (JSON)'"
-            :data="allSuppliersJsonPayload"
-            :default-open="false"
-          />
         </template>
 
         <OrganismsProfilesSupplierCollectionManager :collection="filteredSuppliers" />
@@ -133,10 +117,6 @@ const {
   runtimeModel: chefModelRuntime,
 })
 
-const allChefsJsonPayload = computed(() => ({
-  totalChefs: chefsCollection.value.length,
-  chefs: chefsCollection.value,
-}))
 
 const filteredChefsDriftPayload = computed(() =>
   filteredChefs.value.map((entry) => {
@@ -176,10 +156,6 @@ const {
   runtimeModel: supplierModelRuntime,
 })
 
-const allSuppliersJsonPayload = computed(() => ({
-  totalSuppliers: suppliersCollection.value.length,
-  suppliers: suppliersCollection.value,
-}))
 
 const filteredSuppliersDriftPayload = computed(() =>
   filteredSuppliers.value.map((entry) => {

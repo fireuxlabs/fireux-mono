@@ -18,6 +18,14 @@
           placeholder="Share a quick intro for listings"
           :update-function="onUpdateBioShort"
         />
+
+        <MoleculesFormsFirestoreSimpleField
+          label="Specialties"
+          :firebase-value="specialties"
+          placeholder="Ex: pastry, fine dining, vegan"
+          :maxlength="200"
+          :update-function="onUpdateSpecialties"
+        />
       </UCard>
 
       <OrganismsProfilesProfessionalFieldsExperienceSection
@@ -43,13 +51,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalUpdate.ts'
+import { computed } from 'vue';
+import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalUpdate.ts';
 import type {
-  ProfessionalCoreProfile,
-  RelevantExperienceItem,
-  OtherExperienceItem,
-} from '../../../../../models/profiles/Professional/Professional.model.ts'
+    OtherExperienceItem,
+    ProfessionalCoreProfile,
+    RelevantExperienceItem,
+} from '../../../../../models/profiles/Professional/Professional.model.ts';
 
 const props = defineProps<{
   professional: ProfessionalCoreProfile | null
@@ -60,6 +68,7 @@ const {
   setOtherExperience,
   updateTagline,
   updateBioShort,
+  updateSpecialties,
 } = useProfessionalUpdate()
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
@@ -73,6 +82,7 @@ const tagline = computed(
 )
 
 const bioShort = computed(() => props.professional?.bio_short ?? '')
+const specialties = computed(() => (props.professional?.specialties ?? []).join(', '))
 
 const onUpdateTagline = async (value: string) => {
   try {
@@ -106,6 +116,26 @@ const onUpdateBioShort = async (value: string) => {
       error instanceof Error ? error.message : 'Please try again.'
     toast?.add({
       title: 'Failed to update short bio',
+      description,
+      color: 'amber',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+    throw error
+  }
+}
+
+const onUpdateSpecialties = async (value: string) => {
+  try {
+    await updateSpecialties(value, { id: props.professional?.id ?? null })
+    toast?.add({
+      title: 'Specialties updated',
+      icon: 'i-heroicons-check-circle',
+    })
+  } catch (error) {
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
+    toast?.add({
+      title: 'Failed to update specialties',
       description,
       color: 'amber',
       icon: 'i-heroicons-exclamation-triangle',

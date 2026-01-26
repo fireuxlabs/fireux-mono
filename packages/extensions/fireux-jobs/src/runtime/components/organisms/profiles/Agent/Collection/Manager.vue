@@ -41,6 +41,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Agents (JSON)'"
+        context="collection manager · agents"
         :data="collection"
         :default-open="false"
       />
@@ -51,14 +52,15 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import { useAgentsInterface, type AgentDirectoryEntry } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentsInterface';
+import type { AgentResolved } from '../../../../../models/profiles/Agent/Agent.model'
+import { useAgentInterface } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 
-const props = defineProps<{ collection?: AgentDirectoryEntry[] }>()
+const props = defineProps<{ collection?: AgentResolved[] }>()
 
 const collection = computed(() => props.collection ?? [])
-const { card: makeCard, searchText } = useAgentsInterface()
+const { card: makeCard, searchText } = useAgentInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
-  useCollectionSearch<AgentDirectoryEntry, ReturnType<typeof makeCard>>({
+  useCollectionSearch<AgentResolved, ReturnType<typeof makeCard>>({
     items: collection,
     searchText: (entry) => searchText(entry),
     makeCard: (entry) => makeCard(entry),

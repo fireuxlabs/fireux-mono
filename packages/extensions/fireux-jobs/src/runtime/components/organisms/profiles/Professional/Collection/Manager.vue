@@ -41,6 +41,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Professionals (JSON)'"
+        context="collection manager · professionals"
         :data="collection"
         :default-open="false"
       />

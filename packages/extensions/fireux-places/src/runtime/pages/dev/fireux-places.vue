@@ -29,14 +29,6 @@
           </div>
         </template>
 
-        <template #footer>
-          <DevJson
-            :title="'Places (JSON)'"
-            :data="allJsonPayload"
-            :default-open="false"
-          />
-        </template>
-
         <PlaceCollectionManager :collection="filteredCollection" />
       </UCard>
     </UPageBody>
@@ -79,10 +71,6 @@ const {
   runtimeModel: placeModelRuntime,
 })
 
-const allJsonPayload = computed(() => ({
-  totalPlaces: places.value.length,
-  places: places.value,
-}))
 
 const filteredDriftPayload = computed(() =>
   filteredCollection.value.map((place) => {

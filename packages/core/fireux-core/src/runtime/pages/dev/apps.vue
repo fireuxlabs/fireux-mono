@@ -47,14 +47,6 @@
           </div>
         </template>
 
-        <template #footer>
-          <DevJson
-            :title="'Apps (JSON)'"
-            :data="allAppsJsonPayload"
-            :default-open="false"
-          />
-        </template>
-
         <OrganismsAppCollectionManager :collection="filteredApps" />
       </UCard>
     </UPageBody>
@@ -113,10 +105,6 @@ const {
   runtimeModel: appModelRuntime,
 })
 
-const allAppsJsonPayload = computed(() => ({
-  totalApps: appCollection.value.length,
-  apps: appCollection.value,
-}))
 
 const filteredAppsDriftPayload = computed(() =>
   filteredApps.value.map((app) => {

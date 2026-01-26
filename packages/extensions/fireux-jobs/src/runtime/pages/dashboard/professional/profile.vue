@@ -52,6 +52,14 @@
               />
             </template>
           </LayoutsDashboardProfileEdit>
+
+          <DevJson
+            v-if="isDev"
+            :title="'Professional Edit (JSON)'"
+            context="dashboard professional profile"
+            :data="devPayload"
+            :default-open="false"
+          />
         </ClientOnly>
       </div>
     </template>
@@ -59,10 +67,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
-import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { computed, ref } from 'vue'
+import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 import { professionalConfig } from '../../../models/profiles/Professional/supporting'
 
 const profileKey = professionalConfig.id ?? 'professional'
@@ -108,6 +116,11 @@ const createProfile = async () => {
 const isProfileLoading = computed(() => coreProfile.value === undefined)
 const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
 const resolvedAppProfile = computed(() => appProfile.value ?? null)
+const isDev = import.meta.dev
+const devPayload = computed(() => ({
+  coreProfile: resolvedCoreProfile.value,
+  appProfile: resolvedAppProfile.value,
+}))
 </script>
 
 <style scoped>

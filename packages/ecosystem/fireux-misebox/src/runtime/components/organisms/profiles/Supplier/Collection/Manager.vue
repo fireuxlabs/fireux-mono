@@ -41,6 +41,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Suppliers (JSON)'"
+        context="collection manager · suppliers"
         :data="collection"
         :default-open="false"
       />

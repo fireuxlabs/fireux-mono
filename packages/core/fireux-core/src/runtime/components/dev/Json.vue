@@ -1,7 +1,10 @@
 <template>
   <div v-if="shouldRender">
     <div class="jsonpanel-header">
-      <h2 class="jsonpanel-title">{{ title }}</h2>
+      <div>
+        <h2 class="jsonpanel-title">{{ title }}</h2>
+        <p class="jsonpanel-context">{{ context }}</p>
+      </div>
       <div class="jsonpanel-actions">
         <UButton
           icon="i-heroicons-clipboard-document"
@@ -34,6 +37,7 @@ defineOptions({ name: 'Json' })
 
 interface JsonPanelProps {
   data: unknown
+  context: string
   title?: string
   defaultOpen?: boolean
   hideWhenEmpty?: boolean
@@ -76,7 +80,7 @@ const { copyJSON, copying } = useDevClipboard()
 
 const onCopy = async () => {
   const ok = await copyJSON(props.data, {
-    label: props.title,
+    label: `${props.title} · ${props.context}`,
   })
 
   lastCopyResult.value = ok ? 'copied' : 'failed'
@@ -96,6 +100,12 @@ const onCopy = async () => {
 
 .jsonpanel-title {
   margin: 0;
+}
+
+.jsonpanel-context {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: rgba(107, 114, 128, 1);
 }
 
 .jsonpanel-actions {

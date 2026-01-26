@@ -1,4 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { computed, unref } from 'vue'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 
 /**
@@ -11,9 +12,26 @@ export function useProfessionalComputed(
   refs: ProfileRefs<ProfessionalCore>,
   pending: unknown
 ) {
-  // Stub: keep args for future use, avoid TS “unused” warnings
-  void refs
-  void pending
+  const profile = computed(() => refs.coreProfile.value ?? null)
+  const computedSummary = computed(() => {
+    const p = profile.value
+    return {
+      pending: Boolean(unref(pending as unknown)),
+      experienceCount:
+        (p?.relevant_experience?.length ?? 0) +
+        (p?.other_experience?.length ?? 0),
+      tagsCount: p?.tags?.length ?? 0,
+      healthCertificationsCount: p?.health_certifications?.length ?? 0,
+      specialtiesCount: p?.specialties?.length ?? 0,
+      locationsCount: p?.locations?.length ?? 0,
+      languagesCount: p?.languages?.length ?? 0,
+      certificationsCount: p?.certifications?.length ?? 0,
+      educationCount: p?.education?.length ?? 0,
+      volunteeringCount: p?.volunteering?.length ?? 0,
+      projectsCount: p?.projects?.length ?? 0,
+      hasBio: Boolean((p?.bio_short ?? '').trim() || (p?.bio_long ?? '').trim()),
+    }
+  })
 
-  return {}
+  return { computed: computedSummary }
 }

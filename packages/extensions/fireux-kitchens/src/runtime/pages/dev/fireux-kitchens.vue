@@ -36,14 +36,6 @@
           </div>
         </template>
 
-        <template #footer>
-          <DevJson
-            :title="'Kitchens (JSON)'"
-            :data="allKitchensJsonPayload"
-            :default-open="false"
-          />
-        </template>
-
         <KitchenCollectionManager :collection="filteredKitchensResolved" />
       </UCard>
     </UPageBody>
@@ -89,10 +81,6 @@ const {
   runtimeModel: kitchenModelRuntime,
 })
 
-const allKitchensJsonPayload = computed(() => ({
-  totalKitchens: kitchensCollection.value.length,
-  kitchens: kitchensCollection.value,
-}))
 
 const hydratedById = computed(() => {
   const map = new Map<string, Kitchen>()

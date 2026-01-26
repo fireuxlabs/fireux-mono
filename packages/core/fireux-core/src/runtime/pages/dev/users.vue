@@ -47,14 +47,6 @@
           </div>
         </template>
 
-        <template #footer>
-          <DevJson
-            :title="'Users (JSON)'"
-            :data="allUsersJsonPayload"
-            :default-open="false"
-          />
-        </template>
-
         <OrganismsUserCollectionManager :collection="filteredUsers" />
       </UCard>
     </UPageBody>
@@ -114,10 +106,6 @@ const {
   runtimeModel: userModelRuntime,
 })
 
-const allUsersJsonPayload = computed(() => ({
-  totalUsers: userCollection.value.length,
-  users: userCollection.value,
-}))
 
 const filteredUsersDriftPayload = computed(() =>
   filteredUsers.value.map((user) => {

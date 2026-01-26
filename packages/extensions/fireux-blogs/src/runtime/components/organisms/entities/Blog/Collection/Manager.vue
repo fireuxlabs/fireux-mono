@@ -46,6 +46,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Blog (JSON)'"
+        context="collection manager · blogs"
         :data="collection"
         :default-open="false"
       />

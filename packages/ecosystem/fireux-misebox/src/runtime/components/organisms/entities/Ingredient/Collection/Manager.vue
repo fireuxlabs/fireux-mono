@@ -46,6 +46,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Ingredients (JSON)'"
+        context="collection manager · ingredients"
         :data="collection"
         :default-open="false"
       />

@@ -29,6 +29,8 @@
           <OrganismsProfilesProfessionalCardsProfile
             v-else-if="profileCard"
             :card="profileCard"
+            :profile="coreProfile"
+            :computed="professionalComputed"
           />
         </div>
       </div>
@@ -44,7 +46,7 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { computed, ref, watch } from 'vue'
 import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
-const { coreProfile, card } = useProfessional()
+const { coreProfile, card, computed: professionalComputed } = useProfessional()
 const { uid } = useAuth()
 const { user, coreUser, hasProfile } = useUser()
 

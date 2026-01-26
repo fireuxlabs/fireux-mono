@@ -219,6 +219,21 @@ export function useProfessionalUpdate(
     await commitUpdate({ bio_short: value }, { ...options, id: uid })
   }
 
+  const updateSpecialties = async (
+    specialties: string | string[],
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const list = Array.isArray(specialties)
+      ? specialties
+      : (specialties ?? '')
+          .split(',')
+          .map((item) => item.trim())
+          .filter((item) => item.length > 0)
+    const unique = Array.from(new Set(list))
+    await commitUpdate({ specialties: unique }, { ...options, id: uid })
+  }
+
   return {
     commitUpdate,
     updateCoreProfile,
@@ -227,5 +242,6 @@ export function useProfessionalUpdate(
     setOtherExperience,
     updateTagline,
     updateBioShort,
+    updateSpecialties,
   }
 }

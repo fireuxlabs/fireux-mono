@@ -49,6 +49,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Users (JSON)'"
+        context="collection manager · users"
         :data="collection"
         :default-open="false"
       />

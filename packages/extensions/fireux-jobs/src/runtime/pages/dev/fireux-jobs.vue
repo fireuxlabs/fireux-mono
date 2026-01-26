@@ -36,14 +36,6 @@
           </div>
         </template>
 
-        <template #footer>
-          <DevJson
-            :title="'Jobs (JSON)'"
-            :data="allJobsJsonPayload"
-            :default-open="false"
-          />
-        </template>
-
         <JobCollectionManager :collection="filteredJobs" />
       </UCard>
 
@@ -77,14 +69,6 @@
           </div>
         </template>
 
-        <template #footer>
-          <DevJson
-            :title="'Professionals (JSON)'"
-            :data="allProfessionalsJsonPayload"
-            :default-open="false"
-          />
-        </template>
-
         <OrganismsProfilesProfessionalCollectionManager :collection="filteredProfessionals" />
       </UCard>
 
@@ -116,14 +100,6 @@
               />
             </div>
           </div>
-        </template>
-
-        <template #footer>
-          <DevJson
-            :title="'Agents (JSON)'"
-            :data="allAgentsJsonPayload"
-            :default-open="false"
-          />
         </template>
 
         <OrganismsProfilesAgentCollectionManager :collection="filteredAgents" />
@@ -188,10 +164,6 @@ const jobCards = computed(() =>
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 )
 
-const allJobsJsonPayload = computed(() => ({
-  totalJobs: jobsCollection.value.length,
-  jobs: jobsCollection.value,
-}))
 
 const filteredJobsDriftPayload = computed(() =>
   filteredJobs.value.map((job, index) => {
@@ -245,10 +217,6 @@ const professionalCards = computed(() => {
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 })
 
-const allProfessionalsJsonPayload = computed(() => ({
-  totalProfessionals: professionalsCollection.value.length,
-  professionals: professionalsCollection.value,
-}))
 
 const filteredProfessionalsDriftPayload = computed(() =>
   filteredProfessionals.value.map((entry, index) => {
@@ -315,10 +283,6 @@ const agentCards = computed(() => {
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 })
 
-const allAgentsJsonPayload = computed(() => ({
-  totalAgents: agentsCollection.value.length,
-  agents: agentsCollection.value,
-}))
 
 const filteredAgentsDriftPayload = computed(() =>
   agentCards.value.map((card) => {

@@ -47,6 +47,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Places (JSON)'"
+        context="collection manager · places"
         :data="collection"
         :default-open="false"
       />

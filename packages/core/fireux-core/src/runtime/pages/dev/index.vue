@@ -207,6 +207,7 @@
       </template>
       <DevJson
         :title="'Runtime (JSON)'"
+        context="dev index · runtime"
         :data="{ runtime: cfg }"
         :default-open="false"
       />

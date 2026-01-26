@@ -46,6 +46,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Companies (JSON)'"
+        context="collection manager · companies"
         :data="collection"
         :default-open="false"
       />

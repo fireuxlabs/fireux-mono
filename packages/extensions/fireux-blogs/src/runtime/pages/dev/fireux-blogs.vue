@@ -36,14 +36,6 @@
           </div>
         </template>
 
-        <template #footer>
-          <DevJson
-            :title="'Blogs (JSON)'"
-            :data="allBlogsJsonPayload"
-            :default-open="false"
-          />
-        </template>
-
         <BlogCollectionManager :collection="filteredBlogs" />
       </UCard>
     </UPageBody>
@@ -89,10 +81,6 @@ const {
   runtimeModel: blogPostModelRuntime,
 })
 
-const allBlogsJsonPayload = computed(() => ({
-  totalBlogs: blogsCollection.value.length,
-  blogs: blogsCollection.value,
-}))
 
 const filteredBlogsDriftPayload = computed(() =>
   filteredBlogs.value.map((post) => {

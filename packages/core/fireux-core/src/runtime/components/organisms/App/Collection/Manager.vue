@@ -62,6 +62,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Apps (JSON)'"
+        context="collection manager · apps"
         :data="collection"
         :default-open="false"
       />

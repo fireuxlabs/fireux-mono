@@ -36,14 +36,6 @@
           </div>
         </template>
 
-        <template #footer>
-          <DevJson
-            :title="'Companies (JSON)'"
-            :data="allCompaniesJsonPayload"
-            :default-open="false"
-          />
-        </template>
-
         <CompanyCollectionManager :collection="filteredCompaniesResolved" />
       </UCard>
     </UPageBody>
@@ -89,10 +81,6 @@ const {
   runtimeModel: companyModelRuntime,
 })
 
-const allCompaniesJsonPayload = computed(() => ({
-  totalCompanies: companiesCollection.value.length,
-  companies: companiesCollection.value,
-}))
 
 const hydratedById = computed(() => {
   const map = new Map<string, Company>()
