@@ -29,14 +29,14 @@
         :variant="variant"
       >
         <template #pill="{ card }">
-          <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <NuxtLink :to="card.to">
             <ProductCardsPill v-bind="card" />
-          </component>
+          </NuxtLink>
         </template>
         <template #cell="{ card }">
-          <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+          <NuxtLink :to="card.to">
             <ProductCardsCell v-bind="card" />
-          </component>
+          </NuxtLink>
         </template>
       </OrganismsEntitiesProductCollectionList>
 
