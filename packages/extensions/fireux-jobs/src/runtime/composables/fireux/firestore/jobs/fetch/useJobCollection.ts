@@ -1,7 +1,7 @@
+import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
-import { computed } from 'vue'
 import type { Job, JobResolved } from '../../../../../models/objects/job.model'
 
 export function useJobCollection() {

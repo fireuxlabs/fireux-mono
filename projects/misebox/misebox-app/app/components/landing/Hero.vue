@@ -34,7 +34,7 @@
     <ul class="grid gap-3 sm:grid-cols-2 pt-4">
       <li class="flex items-center gap-2 text-sm">
         <UIcon name="i-lucide-briefcase" class="shrink-0" />
-        <span>Post jobs and share a single link</span>
+        <span>Post jobs and preview candidates</span>
       </li>
       <li class="flex items-center gap-2 text-sm">
         <UIcon name="i-lucide-user" class="shrink-0" />
@@ -46,7 +46,7 @@
       </li>
       <li class="flex items-center gap-2 text-sm">
         <UIcon name="i-lucide-send" class="shrink-0" />
-        <span>Direct contact — no middlemen</span>
+        <span>Contact candidates directly</span>
       </li>
     </ul>
   </div>

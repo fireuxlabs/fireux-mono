@@ -1,9 +1,9 @@
 import { computed, ref, watch, type ComputedRef } from 'vue'
 import {
-  humanizeDriftPath,
-  resolveDriftFromModel,
-  type DriftKind,
-  type ModelDrift,
+    humanizeDriftPath,
+    resolveDriftFromModel,
+    type DriftKind,
+    type ModelDrift,
 } from './useModelDrift'
 
 type WithOptionalId = { id?: string | null | undefined }

@@ -1,6 +1,6 @@
 <template>
   <UContainer>
-    <UPageSection class="py-16 lg:py-24 space-y-12">
+    <UPageSection>
       <div class="mx-auto max-w-2xl space-y-3 text-center">
         <h2 class="text-3xl font-black">{{ title }}</h2>
         <p
@@ -19,35 +19,26 @@
           class="h-full"
         >
           <template #header>
-            <div class="flex items-start gap-3">
-              <div
-                v-if="item.icon"
-                class="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary"
-              >
-                <UIcon :name="item.icon" />
-              </div>
-              <div class="space-y-1">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <UIcon
+                  v-if="item.icon"
+                  :name="item.icon"
+                  class="text-primary text-lg"
+                />
+                <h3 class="font-semibold">{{ item.title }}</h3>
                 <UBadge v-if="item.badge" variant="soft" color="primary">
                   {{ item.badge }}
                 </UBadge>
-                <h3 class="text-lg font-semibold">{{ item.title }}</h3>
               </div>
+              <UIcon name="i-heroicons-arrow-right" class="text-primary" />
             </div>
           </template>
 
-          <p class="text-sm text-[color:var(--ui-text-muted)]">
+          <p>
             {{ item.description }}
           </p>
 
-          <template #footer>
-            <UButton
-              variant="ghost"
-              size="sm"
-              trailing-icon="i-heroicons-arrow-right"
-            >
-              {{ item.cta ?? 'Learn more' }}
-            </UButton>
-          </template>
         </UCard>
       </div>
     </UPageSection>

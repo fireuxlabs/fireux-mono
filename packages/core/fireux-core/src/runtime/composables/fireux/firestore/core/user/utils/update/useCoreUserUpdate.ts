@@ -1,7 +1,7 @@
 import { addDoc, arrayRemove, arrayUnion, collection, setDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import type {
-  User,
+    User,
 } from '../../../../../../../models/core/user.model'
 import type { UserNotification } from '../../../../../../../models/core/user.supporting'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'

@@ -149,16 +149,16 @@
 </template>
 
 <script setup lang="ts">
-import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
-import { useHead } from 'nuxt/app'
 import { computed, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
+import { useHead } from 'nuxt/app'
+import type { JobStatus } from '../../models/objects/job.model'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useJobFetch } from '../../composables/fireux/firestore/jobs/fetch/useJobFetch'
 import { useJobUpdate } from '../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
-import type { JobStatus } from '../../models/objects/job.model'
+import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
+import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
+import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 
 const route = useRoute()
 const paramId = route.params.id

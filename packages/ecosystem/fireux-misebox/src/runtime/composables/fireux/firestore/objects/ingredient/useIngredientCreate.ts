@@ -1,6 +1,6 @@
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { ref } from 'vue'
 import { useCurrentUser, useFirestore } from 'vuefire'
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
 
 // Enhanced ingredient create composable with supplier support
 export function useIngredientCreate() {

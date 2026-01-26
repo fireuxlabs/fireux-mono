@@ -1,5 +1,5 @@
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import type { Job } from '../../../../../models/objects/job.model'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 export function useJobUpdate() {
   const { updateDocument } = useFirestoreManager()

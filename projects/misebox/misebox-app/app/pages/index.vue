@@ -2,25 +2,35 @@
   <!-- Background effect (Misebox) -->
   <EffectsSteam />
 
-  <div>
-    <LandingShell>
-      <template #left>
-        <LandingHero />
-      </template>
-      <template #right>
-        <div class="space-y-6">
-          <LandingBrandBadge />
-          <LandingQuickPeek />
-        </div>
-      </template>
-    </LandingShell>
+  <LandingShell>
+    <template #left>
+      <LandingHero />
+    </template>
+    <template #right>
+      <div class="space-y-6 lg:pl-4">
+        <LandingBrandBadge />
+        <LandingQuickLinks />
+      </div>
+    </template>
+  </LandingShell>
+  <USeparator
+    :avatar="{
+      src: '/img/app/logo.png',
+    }"
+    color="primary"
+  />
+  <LandingSolutions
+    :title="solutions.title"
+    :subtitle="solutions.subtitle"
+    :items="solutions.items"
+  />
 
-    <LandingSolutions
-      :title="solutions.title"
-      :subtitle="solutions.subtitle"
-      :items="solutions.items"
-    />
-  </div>
+  <USeparator
+    :avatar="{
+      src: '/img/app/logo.png',
+    }"
+    color="primary"
+  />
 </template>
 
 <script setup lang="ts">
@@ -44,45 +54,28 @@ useSeoMeta({
 
 const solutions = {
   title: 'Get started',
-  subtitle: 'Post jobs fast, build profiles, and connect directly.',
+  subtitle: 'Here are your hto ads',
   items: [
     {
-      title: 'Jobs',
-      description: 'Post a role and share a single link.',
+      title: 'Post a job',
+      description: 'Use quick create to get your job posted fast.',
       to: '/jobs',
       cta: 'View jobs',
       icon: 'i-lucide-briefcase',
-      badge: 'Now',
     },
     {
-      title: 'Professionals',
-      description: 'Profiles instead of CVs or PDFs.',
+      title: 'Browse professionals',
+      description: 'Search our database of vetted professionals.',
       to: '/professionals',
       cta: 'Browse professionals',
       icon: 'i-lucide-user',
-      badge: 'Now',
     },
     {
-      title: 'Kitchens',
-      description: 'Clear kitchen pages that attract the right hires.',
+      title: 'Create a kitchen',
+      description: 'Get your kitchen noticed for its menu and culture.',
       to: '/kitchens',
       cta: 'Browse kitchens',
       icon: 'i-lucide-chef-hat',
-      badge: 'Now',
-    },
-    {
-      title: 'How it works',
-      description: 'From profile to application to contact.',
-      to: '/get-started',
-      cta: 'See how',
-      icon: 'i-lucide-route',
-    },
-    {
-      title: 'Sign in',
-      description: 'Manage your profile and job activity.',
-      to: '/auth',
-      cta: 'Sign in',
-      icon: 'i-lucide-log-in',
     },
   ],
 }
