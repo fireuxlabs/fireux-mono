@@ -64,7 +64,7 @@ const footerAction = computed(() =>
 const quickLinks = [
   {
     title: 'Job posts',
-    copy: 'Publish fixed, temporary, or shift-based roles.',
+    copy: 'Publish fixed or temporary roles.',
     icon: 'i-lucide-briefcase',
   },
   {

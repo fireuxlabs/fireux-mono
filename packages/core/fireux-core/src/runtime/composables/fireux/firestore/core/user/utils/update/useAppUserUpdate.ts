@@ -1,12 +1,12 @@
 import {
-  addDoc,
-  arrayRemove,
-  arrayUnion,
-  collection,
-  doc,
-  getDoc,
-  increment,
-  setDoc,
+    addDoc,
+    arrayRemove,
+    arrayUnion,
+    collection,
+    doc,
+    getDoc,
+    increment,
+    setDoc,
 } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import type { UserNotification } from '../../../../../../../models/core/user.supporting'

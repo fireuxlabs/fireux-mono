@@ -38,7 +38,7 @@
       </li>
       <li class="flex items-center gap-2 text-sm">
         <UIcon name="i-lucide-user" class="shrink-0" />
-        <span>Professional profiles instead of CVs</span>
+        <span>Professional profiles built for kitchens</span>
       </li>
       <li class="flex items-center gap-2 text-sm">
         <UIcon name="i-lucide-chef-hat" class="shrink-0" />

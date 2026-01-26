@@ -54,7 +54,7 @@ useSeoMeta({
 
 const solutions = {
   title: 'Get started',
-  subtitle: 'Here are your hto ads',
+  subtitle: 'Post jobs, review professionals, and hire faster.',
   items: [
     {
       title: 'Post a job',
@@ -71,7 +71,7 @@ const solutions = {
       icon: 'i-lucide-user',
     },
     {
-      title: 'Create a kitchen',
+      title: 'Showcase your kitchen',
       description: 'Get your kitchen noticed for its menu and culture.',
       to: '/kitchens',
       cta: 'Browse kitchens',
