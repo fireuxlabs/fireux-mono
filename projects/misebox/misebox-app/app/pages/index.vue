@@ -8,7 +8,10 @@
         <LandingHero />
       </template>
       <template #right>
-        <LandingQuickPeek />
+        <div class="space-y-6">
+          <LandingBrandBadge />
+          <LandingQuickPeek />
+        </div>
       </template>
     </LandingShell>
 
@@ -34,56 +37,52 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Misebox — Digital Mise en Place',
+  title: 'Misebox — Hospitality Jobs',
   description:
-    'Recipes, inventory, suppliers, and kitchen workflows in one connected platform.',
+    'Create jobs, showcase kitchens, and build professional profiles for hospitality.',
 })
 
 const solutions = {
-  title: 'Solutions',
-  subtitle: 'Digitize mise en place with connected kitchen operations.',
+  title: 'Get started',
+  subtitle: 'Post jobs fast, build profiles, and connect directly.',
   items: [
     {
-      title: 'Recipes',
-      description: 'Cards, yields, and scaling math with version history.',
-      to: '/recipes',
-      cta: 'Open recipes',
-      icon: 'i-lucide-book-open',
+      title: 'Jobs',
+      description: 'Post a role and share a single link.',
+      to: '/jobs',
+      cta: 'View jobs',
+      icon: 'i-lucide-briefcase',
+      badge: 'Now',
     },
     {
-      title: 'Inventory',
-      description: 'Stock counts, batch tracking, and wastage control.',
-      to: '/inventory',
-      cta: 'Count stock',
-      icon: 'i-lucide-package',
+      title: 'Professionals',
+      description: 'Profiles instead of CVs or PDFs.',
+      to: '/professionals',
+      cta: 'Browse professionals',
+      icon: 'i-lucide-user',
+      badge: 'Now',
     },
     {
-      title: 'Suppliers',
-      description: 'Price lists, reorder points, and delivery scheduling.',
-      to: '/suppliers',
-      cta: 'Link vendors',
-      icon: 'i-lucide-truck',
+      title: 'Kitchens',
+      description: 'Clear kitchen pages that attract the right hires.',
+      to: '/kitchens',
+      cta: 'Browse kitchens',
+      icon: 'i-lucide-chef-hat',
+      badge: 'Now',
     },
     {
-      title: 'Prep plans',
-      description: 'Station timelines, batch cooking, and checklists.',
-      to: '/prep',
-      cta: 'Schedule',
-      icon: 'i-lucide-clipboard-list',
+      title: 'How it works',
+      description: 'From profile to application to contact.',
+      to: '/get-started',
+      cta: 'See how',
+      icon: 'i-lucide-route',
     },
     {
-      title: 'Costing',
-      description: 'COGS, margins, and menu engineering insights.',
-      to: '/costing',
-      cta: 'Price menu',
-      icon: 'i-lucide-calculator',
-    },
-    {
-      title: 'Insights',
-      description: 'POS ties, trends, and forecast dashboards.',
-      to: '/insights',
-      cta: 'View KPIs',
-      icon: 'i-lucide-chart-line',
+      title: 'Sign in',
+      description: 'Manage your profile and job activity.',
+      to: '/auth',
+      cta: 'Sign in',
+      icon: 'i-lucide-log-in',
     },
   ],
 }

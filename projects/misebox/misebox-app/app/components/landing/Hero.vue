@@ -1,26 +1,20 @@
 <template>
   <div class="space-y-6">
     <div class="space-y-2">
-      <h1 class="hero-title"><strong>Mise</strong> en place</h1>
-      <h1 class="hero-title hero-title--accent">Culinary Excellence</h1>
+      <h1 class="hero-title">Professional recruitment for kitchens</h1>
     </div>
 
     <div class="space-y-4">
       <p class="text-base lg:text-xl leading-relaxed max-w-prose">
-        The complete platform for culinary professionals to manage recipes,
-        inventory, and kitchen operations with
-        <span class="text-primary">precision workflows</span> &amp;
-        <span class="text-primary">ingredient tracking</span>.
+        Recruit
+        <NuxtLink class="text-primary" to="/professionals">
+          professionals
+        </NuxtLink>
+        for your
+        <NuxtLink class="text-primary" to="/kitchens">kitchen</NuxtLink>.
+        <NuxtLink class="text-primary" to="/jobs">Post</NuxtLink> positions,
+        preview candidates, and manage hiring in one place.
       </p>
-
-      <div class="flex items-center gap-6 pt-2">
-        <img
-          :src="brand.wordmarkLight"
-          alt="Misebox wordmark"
-          class="h-10 opacity-80"
-        />
-        <img :src="brand.logo" alt="Misebox emblem" class="h-10 opacity-80" />
-      </div>
 
       <div class="flex flex-col sm:flex-row gap-4 pt-6">
         <UButton variant="solid" size="lg" :to="hero.primary.to">
@@ -39,20 +33,20 @@
 
     <ul class="grid gap-3 sm:grid-cols-2 pt-4">
       <li class="flex items-center gap-2 text-sm">
-        <UIcon name="i-lucide-book-open" class="shrink-0" />
-        <span>Recipe cards with cost &amp; scaling</span>
+        <UIcon name="i-lucide-briefcase" class="shrink-0" />
+        <span>Post jobs and share a single link</span>
       </li>
       <li class="flex items-center gap-2 text-sm">
-        <UIcon name="i-lucide-package" class="shrink-0" />
-        <span>Inventory &amp; supplier connections</span>
+        <UIcon name="i-lucide-user" class="shrink-0" />
+        <span>Professional profiles instead of CVs</span>
       </li>
       <li class="flex items-center gap-2 text-sm">
         <UIcon name="i-lucide-chef-hat" class="shrink-0" />
-        <span>Kitchen prep &amp; workflow tools</span>
+        <span>Kitchen pages that attract the right people</span>
       </li>
       <li class="flex items-center gap-2 text-sm">
-        <UIcon name="i-lucide-credit-card" class="shrink-0" />
-        <span>POS insights &amp; cost control</span>
+        <UIcon name="i-lucide-send" class="shrink-0" />
+        <span>Direct contact — no middlemen</span>
       </li>
     </ul>
   </div>
@@ -60,14 +54,10 @@
 
 <script setup lang="ts">
 const hero = {
-  primary: { label: 'Get Started', to: '/get-started' },
-  secondary: { label: 'Explore Kitchens', to: '/kitchens' },
+  primary: { label: 'Post a job', to: '/jobs' },
+  secondary: { label: 'Browse professionals', to: '/professionals' },
 }
 
-const brand = {
-  wordmarkLight: '/img/app/wordmark-light.svg',
-  logo: '/img/app/logo.png',
-}
 </script>
 
 <style scoped>

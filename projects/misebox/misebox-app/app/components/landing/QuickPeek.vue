@@ -40,20 +40,20 @@
 <script setup lang="ts">
 const quickPeek = [
   {
-    title: 'Recipe scaling',
-    copy: 'Portion control with live cost math.',
-    icon: 'i-lucide-ruler',
+    title: 'Job posts',
+    copy: 'Publish roles and share a public link.',
+    icon: 'i-lucide-briefcase',
   },
   {
-    title: 'Supplier links',
-    copy: 'Track prices and reorder points.',
-    icon: 'i-lucide-truck',
+    title: 'Professional profiles',
+    copy: 'Showcase experience without PDFs.',
+    icon: 'i-lucide-user',
   },
   {
-    title: 'Prep plans',
-    copy: 'Schedule mise en place by station.',
-    icon: 'i-lucide-clipboard-list',
+    title: 'Kitchen profiles',
+    copy: 'Highlight culture, roles, and teams.',
+    icon: 'i-lucide-chef-hat',
   },
 ]
-const footerBadge = 'Recipes · Inventory · Workflow'
+const footerBadge = 'Jobs · Kitchens · Professionals'
 </script>
