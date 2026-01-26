@@ -2,7 +2,7 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import { csv, safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'
-import { professionalConfig, type ProfessionalCore } from '../../../../../../../models/profiles/Professional/Professional.model'
+import { professionalConfig, type ProfessionalCore, type ProfessionalResolved } from '../../../../../../../models/profiles/Professional/Professional.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
   Partial<Pick<User, 'id' | 'handle' | 'email'>>
@@ -33,6 +33,13 @@ export function useProfessionalInterface(
   profile?: ProfileRefs<ProfessionalCore> | null,
   userRef?: Ref<User | null | undefined>
 ) {
+  const resolveUser = (
+    target?: ProfessionalCore | ProfessionalResolved | null
+  ) => {
+    if (target && 'user' in target && target.user) return target.user as UserLike
+    return userRef?.value ?? null
+  }
+
   function map(p: ProfessionalCore, u?: UserLike | null): ProfessionalCard.Card {
     const id = safeString(p.id).trim()
     const title = safeString(p.title)
@@ -57,20 +64,21 @@ export function useProfessionalInterface(
   }
 
   function card(
-    target?: ProfessionalCore | null | undefined,
-    userOverride?: UserLike | null
+    target?: ProfessionalCore | ProfessionalResolved | null | undefined
   ): ProfessionalCard.Card | null {
     const p = target ?? profile?.coreProfile.value ?? null
     if (!p) return null
-    const u = userOverride ?? userRef?.value ?? null
+    const u = resolveUser(target as ProfessionalCore | ProfessionalResolved | null)
     const mapped = map(p, u)
     return mapped.id ? mapped : null
   }
 
-  function searchText(target?: ProfessionalCore | null | undefined, userOverride?: UserLike | null): string {
+  function searchText(
+    target?: ProfessionalCore | ProfessionalResolved | null | undefined
+  ): string {
     const p = target ?? profile?.coreProfile.value ?? null
     if (!p) return ''
-    const u = userOverride ?? userRef?.value ?? null
+    const u = resolveUser(target as ProfessionalCore | ProfessionalResolved | null)
     const displayName = safeString(u?.display_name)
     const title = safeString(p.title)
     const tagline = safeString(p.tagline)

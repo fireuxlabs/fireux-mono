@@ -45,6 +45,55 @@ export interface OtherExperienceItem extends ExperienceBase {
 export type ExperienceItem = RelevantExperienceItem | OtherExperienceItem
 
 /* ---------------------------------- *
+ * Profile detail structures
+ * ---------------------------------- */
+
+type YearValue = string | number | null
+
+export interface LanguageProficiency {
+  language: string
+  proficiency: string
+}
+
+export interface CertificationItem {
+  name: string
+  year: YearValue
+  place_name: string
+  formatted_address: string
+  document_url: string
+  image_url: string
+}
+
+export interface EducationItem {
+  institution: string
+  degree: string
+  start_year: YearValue
+  end_year: YearValue
+  ongoing: boolean
+  formatted_address: string
+  document_url: string
+  image_url: string
+}
+
+export interface VolunteeringItem {
+  organization: string
+  role: string
+  from_year: YearValue
+  to_year: YearValue
+  ongoing: boolean
+  responsibilities: string
+}
+
+export interface ProjectItem {
+  name: string
+  role: string
+  from_year: YearValue
+  to_year: YearValue
+  ongoing: boolean
+  responsibilities: string
+}
+
+/* ---------------------------------- *
  * Professional Profile Config
  * ---------------------------------- */
 

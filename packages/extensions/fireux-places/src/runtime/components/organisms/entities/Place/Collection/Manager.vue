@@ -22,29 +22,27 @@
       </div>
     </template>
 
-    <ClientOnly>
-      <OrganismsEntitiesPlaceCollectionList
-        v-if="cardsFiltered.length"
-        :cards="cardsFiltered"
-        :variant="variant"
-        gap="0.5rem"
-      >
-        <template #pill="{ card }">
-          <NuxtLink :to="card.to">
-            <PlaceCardsPill v-bind="card" />
-          </NuxtLink>
-        </template>
-        <template #cell="{ card }">
-          <NuxtLink :to="card.to">
-            <PlaceCardsCell v-bind="card" />
-          </NuxtLink>
-        </template>
-      </OrganismsEntitiesPlaceCollectionList>
+    <OrganismsEntitiesPlaceCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+      gap="0.5rem"
+    >
+      <template #pill="{ card }">
+        <NuxtLink :to="card.to">
+          <PlaceCardsPill v-bind="card" />
+        </NuxtLink>
+      </template>
+      <template #cell="{ card }">
+        <NuxtLink :to="card.to">
+          <PlaceCardsCell v-bind="card" />
+        </NuxtLink>
+      </template>
+    </OrganismsEntitiesPlaceCollectionList>
 
-      <p v-else>
-        {{ query ? 'No places match your search.' : 'No places found.' }}
-      </p>
-    </ClientOnly>
+    <p v-else>
+      {{ query ? 'No places match your search.' : 'No places found.' }}
+    </p>
 
     <div v-if="isDev">
       <DevJson

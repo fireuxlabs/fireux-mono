@@ -22,28 +22,26 @@
       </div>
     </template>
 
-      <ClientOnly>
-        <OrganismsEntitiesBlogCollectionList
-          v-if="cardsFiltered.length"
-          :cards="cardsFiltered"
-          :variant="variant"
-        >
-          <template #pill="{ card }">
-            <NuxtLink :to="card.to">
-              <BlogCardsPill v-bind="card" />
-            </NuxtLink>
-          </template>
-          <template #cell="{ card }">
-            <NuxtLink :to="card.to">
-              <BlogCardsCell v-bind="card" />
-            </NuxtLink>
-          </template>
-        </OrganismsEntitiesBlogCollectionList>
+    <OrganismsEntitiesBlogCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    >
+      <template #pill="{ card }">
+        <NuxtLink :to="card.to">
+          <BlogCardsPill v-bind="card" />
+        </NuxtLink>
+      </template>
+      <template #cell="{ card }">
+        <NuxtLink :to="card.to">
+          <BlogCardsCell v-bind="card" />
+        </NuxtLink>
+      </template>
+    </OrganismsEntitiesBlogCollectionList>
 
-        <p v-else>
-          {{ query ? 'No posts match your search.' : 'No posts found.' }}
-        </p>
-      </ClientOnly>
+    <p v-else>
+      {{ query ? 'No posts match your search.' : 'No posts found.' }}
+    </p>
 
     <div v-if="isDev">
       <DevJson

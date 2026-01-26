@@ -1,58 +1,35 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex items-start gap-3">
-          <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="md" />
-          <div class="min-w-0">
-            <div class="truncate text-base font-semibold">{{ displayName }}</div>
-            <div class="text-sm text-dimmed">
-              <span v-if="tagline">{{ tagline }}</span>
-              <span v-else class="italic">missing</span>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="badges.length" class="flex flex-wrap justify-end gap-1">
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
-        </div>
-      </div>
+      <OrganismsProfilesProfessionalCardsCell v-bind="card" />
     </template>
 
-    <div class="space-y-4">
-      <div v-if="prop" class="text-sm text-dimmed">
+    <div>
+      <div v-if="prop">
         {{ prop }}
       </div>
 
-      <div class="space-y-1">
-        <div class="text-xs text-dimmed">Bio</div>
-        <div class="text-sm">
+      <div>
+        <div>Bio</div>
+        <div>
           <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
+          <span v-else>missing</span>
         </div>
       </div>
 
-      <div class="space-y-1">
-        <div class="text-xs text-dimmed">Specialties</div>
-        <div class="text-sm">
+      <div>
+        <div>Specialties</div>
+        <div>
           <span v-if="specialties">{{ specialties }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
+          <span v-else>missing</span>
         </div>
       </div>
 
-      <div class="space-y-1">
-        <div class="text-xs text-dimmed">Locations</div>
-        <div class="text-sm">
+      <div>
+        <div>Locations</div>
+        <div>
           <span v-if="locations">{{ locations }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
+          <span v-else>missing</span>
         </div>
       </div>
     </div>
@@ -60,8 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, toRefs, watchEffect } from 'vue'
-import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import { reactive, toRefs, watchEffect } from 'vue';
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional';
 
 const props = defineProps<{ card: ProfessionalCard.Card; prop?: string }>()
 

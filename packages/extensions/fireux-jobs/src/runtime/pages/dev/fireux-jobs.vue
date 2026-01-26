@@ -143,7 +143,6 @@ import { useProfessionalCollection } from '../../composables/fireux/firestore/pr
 import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import { Job as JobModelRuntime } from '../../models/objects/job.model'
 import { AgentCore as AgentCoreRuntime } from '../../models/profiles/Agent/Agent.model'
-import type { ProfessionalCore } from '../../models/profiles/Professional/Professional.model'
 import { ProfessionalCore as ProfessionalCoreRuntime } from '../../models/profiles/Professional/Professional.model'
 
 definePageMeta({
@@ -177,6 +176,10 @@ const {
 } = useDevDriftFilter({
   collection: jobsCollection,
   runtimeModel: jobModelRuntime,
+  prepareForDrift: (entry) => {
+    const { kitchen, ...rest } = (entry as Record<string, unknown>) ?? {}
+    return rest
+  },
 })
 
 const jobCards = computed(() =>
@@ -230,11 +233,15 @@ const {
 } = useDevDriftFilter({
   collection: professionalsCollection,
   runtimeModel: professionalModelRuntime,
+  prepareForDrift: (entry) => {
+    const { user, ...rest } = (entry as Record<string, unknown>) ?? {}
+    return rest
+  },
 })
 
 const professionalCards = computed(() => {
   return filteredProfessionals.value
-    .map((entry) => makeProfessionalCard(entry as ProfessionalCore, (entry as any)?.user ?? null))
+    .map((entry) => makeProfessionalCard(entry as any))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 })
 
@@ -279,7 +286,7 @@ const professionalsDriftCopyPayload = computed(() => ({
 }))
 
 const { globalAgents, localAgents } = useAgentCollection()
-const { cardFromEntry: makeAgentCard } = useAgentInterface()
+const { card: makeAgentCard } = useAgentInterface()
 
 const agentsCollection = computed(() => [
   ...(localAgents?.value ?? []),
@@ -296,6 +303,10 @@ const {
 } = useDevDriftFilter({
   collection: agentsCollection,
   runtimeModel: agentModelRuntime,
+  prepareForDrift: (entry) => {
+    const { user, ...rest } = (entry as Record<string, unknown>) ?? {}
+    return rest
+  },
 })
 
 const agentCards = computed(() => {

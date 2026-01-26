@@ -22,6 +22,7 @@ type DevDriftFilterOption = {
 export function useDevDriftFilter<T extends WithOptionalId>(params: {
   collection: ComputedRef<T[]>
   runtimeModel: Record<string, unknown>
+  prepareForDrift?: (doc: T) => Record<string, unknown>
 }) {
   const driftKind = ref<DriftKind>('missing')
   const selectedField = ref<string>('')
@@ -45,10 +46,10 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
         })
         continue
       }
-      const drift = resolveDriftFromModel(
-        params.runtimeModel,
-        doc as unknown as Record<string, unknown>
-      )
+      const payload = params.prepareForDrift
+        ? params.prepareForDrift(doc)
+        : (doc as unknown as Record<string, unknown>)
+      const drift = resolveDriftFromModel(params.runtimeModel, payload)
       map.set(id, drift)
     }
     return map

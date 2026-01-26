@@ -22,7 +22,6 @@
       </div>
     </template>
 
-      <ClientOnly>
     <OrganismsEntitiesJobCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
@@ -43,7 +42,6 @@
     <p v-else>
       {{ query ? 'No jobs match your search.' : 'No jobs found.' }}
     </p>
-      </ClientOnly>
 
     <div v-if="isDev">
       <DevJson

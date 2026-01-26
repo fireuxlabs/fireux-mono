@@ -41,6 +41,11 @@ export function useProfessionalCreate() {
         locations: [],
         relevant_experience: [],
         other_experience: [],
+        languages: [],
+        certifications: [],
+        education: [],
+        volunteering: [],
+        projects: [],
       } satisfies Omit<ProfessionalCore, 'created_at' | 'updated_at' | 'creator_id'>
 
       await setDocument<ProfessionalCore>(professionalConfig.collectionName, uid, payload as ProfessionalCore, {

@@ -1,0 +1,122 @@
+{
+  "modelPath": "packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts",
+  "driftKind": "missing",
+  "selectedField": null,
+  "totalProfessionals": 7,
+  "professionals": [
+    {
+      "id": "FoPLMYVPirSiMm2eDskwsZja0q42",
+      "displayName": "Joe Dean",
+      "drift": {
+        "missing": [
+          "subtitle (string)",
+          "tagline (string)",
+          "tags (array)",
+          "health_certifications (array)",
+          "specialties (array)",
+          "locations (array)",
+          "other_experience (array)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "OnLDg1ZcGqh30aaopCZggBIyhbS2",
+      "displayName": "Henrique Macedo",
+      "drift": {
+        "missing": [
+          "subtitle (string)",
+          "tagline (string)",
+          "tags (array)",
+          "health_certifications (array)",
+          "specialties (array)",
+          "other_experience (array)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "WShQtlmVVVdqajd9muSHBLnm9kD2",
+      "displayName": "Sebastian Nagel",
+      "drift": {
+        "missing": [
+          "subtitle (string)",
+          "tagline (string)",
+          "tags (array)",
+          "health_certifications (array)",
+          "bio_short (string)",
+          "bio_long (string)",
+          "specialties (array)",
+          "locations (array)",
+          "relevant_experience (array)",
+          "other_experience (array)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
+      "displayName": "Daniel Watson",
+      "drift": {
+        "missing": [
+          "tagline (string)",
+          "tags (array)",
+          "health_certifications (array)",
+          "specialties (array)",
+          "locations (array)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "rEssOnUA8wVHdNKE2JETqWAdwdm1",
+      "displayName": "Richi’s Reinigung",
+      "drift": {
+        "missing": [
+          "subtitle (string)",
+          "tagline (string)",
+          "tags (array)",
+          "health_certifications (array)",
+          "bio_long (string)",
+          "specialties (array)",
+          "locations (array)",
+          "other_experience (array)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "s9hKBxO7mJSFC5vHNOo3mt9Dgi42",
+      "displayName": "David Cook",
+      "drift": {
+        "missing": [
+          "subtitle (string)",
+          "tagline (string)",
+          "tags (array)",
+          "health_certifications (array)",
+          "specialties (array)",
+          "locations (array)",
+          "other_experience (array)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "xdu83J77YeOROlePJdibPekxkDp2",
+      "displayName": "Tahneeq",
+      "drift": {
+        "missing": [
+          "subtitle (string)",
+          "tagline (string)",
+          "tags (array)",
+          "health_certifications (array)",
+          "specialties (array)",
+          "locations (array)",
+          "relevant_experience (array)",
+          "other_experience (array)"
+        ],
+        "extra": []
+      }
+    }
+  ]
+}

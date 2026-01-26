@@ -19,26 +19,24 @@
       </div>
     </template>
 
-    <ClientOnly>
-      <OrganismsProfilesSupplierCollectionList
-        v-if="cardsFiltered.length"
-        :cards="cardsFiltered"
-        :variant="variant"
-      >
-        <template #pill="{ card }">
-          <NuxtLink :to="card.to">
-            <OrganismsProfilesSupplierCardsPill v-bind="card" />
-          </NuxtLink>
-        </template>
-        <template #cell="{ card }">
-          <NuxtLink :to="card.to">
-            <OrganismsProfilesSupplierCardsCell v-bind="card" />
-          </NuxtLink>
-        </template>
-      </OrganismsProfilesSupplierCollectionList>
+    <OrganismsProfilesSupplierCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    >
+      <template #pill="{ card }">
+        <NuxtLink :to="card.to">
+          <OrganismsProfilesSupplierCardsPill v-bind="card" />
+        </NuxtLink>
+      </template>
+      <template #cell="{ card }">
+        <NuxtLink :to="card.to">
+          <OrganismsProfilesSupplierCardsCell v-bind="card" />
+        </NuxtLink>
+      </template>
+    </OrganismsProfilesSupplierCollectionList>
 
-      <p v-else>No suppliers found.</p>
-    </ClientOnly>
+    <p v-else>No suppliers found.</p>
 
     <div v-if="isDev">
       <DevJson

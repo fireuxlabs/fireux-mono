@@ -2,15 +2,10 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'
-import { agentConfig, type AgentCore } from '../../../../../../../models/profiles/Agent/Agent.model'
+import { agentConfig, type AgentCore, type AgentResolved } from '../../../../../../../models/profiles/Agent/Agent.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
   Partial<Pick<User, 'id' | 'handle' | 'email'>>
-
-type UserSummary = Pick<User, 'id' | 'display_name' | 'avatar'> &
-  Partial<Pick<User, 'handle' | 'email'>>
-
-export type AgentDirectoryEntry = AgentCore & { user?: User | UserSummary }
 
 export namespace AgentCard {
   export type Card = {
@@ -41,6 +36,11 @@ export function useAgentInterface(
   profile?: ProfileRefs<AgentCore> | null,
   userRef?: Ref<User | null | undefined>
 ) {
+  const resolveUser = (target?: AgentCore | AgentResolved | null) => {
+    if (target && 'user' in target && target.user) return target.user as UserLike
+    return userRef?.value ?? null
+  }
+
   function map(p: AgentCore, u?: UserLike | null): AgentCard.Card {
     const id = safeString(p.id).trim()
     const title = safeString(p.title)
@@ -69,29 +69,21 @@ export function useAgentInterface(
   }
 
   function card(
-    target?: AgentCore | null | undefined,
-    userOverride?: UserLike | null
+    target?: AgentCore | AgentResolved | null | undefined
   ): AgentCard.Card | null {
     const p = target ?? profile?.coreProfile.value ?? null
     if (!p) return null
-    const u = userOverride ?? userRef?.value ?? null
+    const u = resolveUser(target as AgentCore | AgentResolved | null)
     const mapped = map(p, u)
     return mapped.id ? mapped : null
   }
 
-  function cardFromEntry(entry?: AgentDirectoryEntry | null): AgentCard.Card | null {
-    if (!entry) return null
-    const mapped = map(entry, entry.user ?? null)
-    return mapped.id ? mapped : null
-  }
-
   function searchText(
-    target?: AgentCore | null | undefined,
-    userOverride?: UserLike | null
+    target?: AgentCore | AgentResolved | null | undefined
   ): string {
     const p = target ?? profile?.coreProfile.value ?? null
     if (!p) return ''
-    const u = userOverride ?? userRef?.value ?? null
+    const u = resolveUser(target as AgentCore | AgentResolved | null)
     const displayName = safeString(u?.display_name)
     const title = safeString(p.title)
     const tagline = safeString(p.tagline)
@@ -99,14 +91,5 @@ export function useAgentInterface(
     return `${displayName} ${title} ${tagline} ${id}`.trim().toLowerCase()
   }
 
-  function searchTextFromEntry(entry?: AgentDirectoryEntry | null): string {
-    if (!entry) return ''
-    const displayName = safeString(entry.user?.display_name)
-    const title = safeString(entry.title)
-    const tagline = safeString(entry.tagline)
-    const id = safeString(entry.id)
-    return `${displayName} ${title} ${tagline} ${id}`.trim().toLowerCase()
-  }
-
-  return { card, searchText, cardFromEntry, searchTextFromEntry }
+  return { card, searchText }
 }

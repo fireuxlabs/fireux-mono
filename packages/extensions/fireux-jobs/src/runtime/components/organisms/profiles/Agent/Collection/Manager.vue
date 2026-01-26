@@ -19,26 +19,24 @@
       </div>
     </template>
 
-    <ClientOnly>
-      <OrganismsProfilesAgentCollectionList
-        v-if="cardsFiltered.length"
-        :cards="cardsFiltered"
-        :variant="variant"
-      >
-        <template #pill="{ card }">
-          <NuxtLink :to="card.to">
-            <OrganismsProfilesAgentCardsPill v-bind="card" />
-          </NuxtLink>
-        </template>
-        <template #cell="{ card }">
-          <NuxtLink :to="card.to">
-            <OrganismsProfilesAgentCardsCell v-bind="card" />
-          </NuxtLink>
-        </template>
-      </OrganismsProfilesAgentCollectionList>
+    <OrganismsProfilesAgentCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    >
+      <template #pill="{ card }">
+        <NuxtLink :to="card.to">
+          <OrganismsProfilesAgentCardsPill v-bind="card" />
+        </NuxtLink>
+      </template>
+      <template #cell="{ card }">
+        <NuxtLink :to="card.to">
+          <OrganismsProfilesAgentCardsCell v-bind="card" />
+        </NuxtLink>
+      </template>
+    </OrganismsProfilesAgentCollectionList>
 
-      <p v-else>No agents found.</p>
-    </ClientOnly>
+    <p v-else>No agents found.</p>
 
     <div v-if="isDev">
       <DevJson
@@ -53,16 +51,16 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import { useAgentInterface, type AgentDirectoryEntry } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
+import { useAgentsInterface, type AgentDirectoryEntry } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentsInterface';
 
 const props = defineProps<{ collection?: AgentDirectoryEntry[] }>()
 
 const collection = computed(() => props.collection ?? [])
-const { cardFromEntry: makeCard, searchTextFromEntry } = useAgentInterface()
+const { card: makeCard, searchText } = useAgentsInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<AgentDirectoryEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchTextFromEntry(entry),
+    searchText: (entry) => searchText(entry),
     makeCard: (entry) => makeCard(entry),
   })
 

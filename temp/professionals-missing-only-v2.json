@@ -1,0 +1,99 @@
+{
+  "modelPath": "packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts",
+  "driftKind": "missing",
+  "selectedField": null,
+  "totalProfessionals": 7,
+  "professionals": [
+    {
+      "id": "FoPLMYVPirSiMm2eDskwsZja0q42",
+      "displayName": "Joe Dean",
+      "drift": {
+        "missing": [
+          "languages (array)",
+          "certifications (array)",
+          "education (array)",
+          "volunteering (array)",
+          "projects (array)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "OnLDg1ZcGqh30aaopCZggBIyhbS2",
+      "displayName": "Henrique Macedo",
+      "drift": {
+        "missing": [
+          "certifications (array)",
+          "education (array)",
+          "volunteering (array)",
+          "projects (array)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "WShQtlmVVVdqajd9muSHBLnm9kD2",
+      "displayName": "Sebastian Nagel",
+      "drift": {
+        "missing": [
+          "languages (array)",
+          "certifications (array)",
+          "education (array)",
+          "volunteering (array)",
+          "projects (array)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
+      "displayName": "Daniel Watson",
+      "drift": {
+        "missing": [],
+        "extra": []
+      }
+    },
+    {
+      "id": "rEssOnUA8wVHdNKE2JETqWAdwdm1",
+      "displayName": "Richi’s Reinigung",
+      "drift": {
+        "missing": [
+          "languages (array)",
+          "certifications (array)",
+          "education (array)",
+          "volunteering (array)",
+          "projects (array)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "s9hKBxO7mJSFC5vHNOo3mt9Dgi42",
+      "displayName": "David Cook",
+      "drift": {
+        "missing": [
+          "languages (array)",
+          "certifications (array)",
+          "education (array)",
+          "volunteering (array)",
+          "projects (array)"
+        ],
+        "extra": []
+      }
+    },
+    {
+      "id": "xdu83J77YeOROlePJdibPekxkDp2",
+      "displayName": "Tahneeq",
+      "drift": {
+        "missing": [
+          "languages (array)",
+          "certifications (array)",
+          "education (array)",
+          "volunteering (array)",
+          "projects (array)"
+        ],
+        "extra": []
+      }
+    }
+  ]
+}

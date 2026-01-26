@@ -14,138 +14,211 @@
         </UButton>
       </template>
     </UPageHeader>
-    <UPageBody class="pagebody space-y-6">
-      <div v-if="pending" class="py-10 text-sm opacity-70">Loading profile…</div>
+    <UPageBody>
+      <div v-if="pending">Loading profile…</div>
 
-      <div v-else-if="!professionalProfile" class="space-y-2">
-        <h1 class="text-lg font-semibold">Profile Not Found</h1>
+      <div v-else-if="!professionalProfile">
+        <h1>Profile Not Found</h1>
         <p>The profile you're looking for doesn't exist.</p>
-        <NuxtLink to="/professionals" class="text-primary hover:underline">← Back</NuxtLink>
+        <NuxtLink to="/professionals">← Back</NuxtLink>
       </div>
 
-      <div v-else class="space-y-6">
-        <UCard class="overflow-hidden">
-          <div class="flex flex-col gap-6 sm:flex-row sm:items-center">
-            <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="xl" />
-            <div class="space-y-2">
-              <div class="flex flex-wrap items-center gap-2">
-                <h1 class="text-2xl font-semibold text-gray-900">
-                  {{ displayName || 'Professional' }}
-                </h1>
-                <UBadge size="xs" variant="soft">Professional</UBadge>
+      <div v-else>
+        <OrganismsProfilesProfessionalCardsProfile
+          v-if="professionalCard"
+          :card="professionalCard"
+        />
+
+        <UCard>
+          <template #header>
+            <h3>About</h3>
+          </template>
+          <div>
+            <p v-if="bioShort">{{ bioShort }}</p>
+            <p v-if="bioLong">{{ bioLong }}</p>
+            <p v-if="!bioShort && !bioLong">No bio provided yet.</p>
+          </div>
+        </UCard>
+
+        <UCard v-if="relevantExperience.length || otherExperience.length">
+          <template #header>
+            <h3>Experience</h3>
+          </template>
+          <div>
+            <div v-for="entry in relevantExperienceCards" :key="`relevant-${entry.item.place_id}-${entry.item.role}`">
+              <div>{{ entry.item.role }}</div>
+              <div>{{ formatExperienceDates(entry.item) }}</div>
+              <div>
+                <PlaceCardsPill
+                  v-if="entry.placeCard"
+                  v-bind="entry.placeCard"
+                  :show-badges="false"
+                />
+                <div v-else>Location unavailable</div>
               </div>
-              <p class="text-sm text-gray-600">
-                {{ headline || 'Profile details and availability.' }}
-              </p>
-              <div v-if="tags.length" class="flex flex-wrap gap-2">
-                <UBadge
-                  v-for="tag in tags"
-                  :key="tag"
-                  size="xs"
-                  variant="soft"
-                  color="primary"
-                >
-                  {{ tag }}
-                </UBadge>
+              <p>{{ entry.item.responsibilities }}</p>
+            </div>
+            <div v-for="entry in otherExperienceCards" :key="`other-${entry.item.place_id}-${entry.item.role}`">
+              <div>{{ entry.item.role }}</div>
+              <div>{{ formatExperienceDates(entry.item) }}</div>
+              <div>
+                <PlaceCardsPill
+                  :avatar-url="entry.avatarUrl"
+                  :title="entry.title"
+                  :subtitle="entry.subtitle"
+                  :badges="[]"
+                  :show-badges="false"
+                  :show-subtitle="entry.showSubtitle"
+                />
               </div>
+              <p>{{ entry.item.responsibilities }}</p>
             </div>
           </div>
         </UCard>
 
-        <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-          <div class="space-y-6">
-            <UCard>
-              <template #header>
-                <div class="flex items-center justify-between">
-                  <h3 class="font-semibold">About</h3>
-                </div>
-              </template>
-              <div class="space-y-3 text-sm text-gray-700">
-                <p v-if="bioShort">{{ bioShort }}</p>
-                <p v-if="bioLong" class="whitespace-pre-line">{{ bioLong }}</p>
-                <p v-if="!bioShort && !bioLong" class="text-gray-500">
-                  No bio provided yet.
-                </p>
+        <UCard v-if="projects.length">
+          <template #header>
+            <h3>Projects</h3>
+          </template>
+          <div>
+            <div v-for="project in projects" :key="`${project.name}-${project.role}`">
+              <div>{{ project.name }}</div>
+              <div>
+                {{ project.role }} · {{ formatRange(project.from_year, project.to_year, project.ongoing) }}
               </div>
-            </UCard>
-
-            <UCard v-if="relevantExperience.length || otherExperience.length">
-              <template #header>
-                <h3 class="font-semibold">Experience</h3>
-              </template>
-              <div class="space-y-4">
-                <div v-for="item in relevantExperience" :key="`relevant-${item.place_id}-${item.role}`">
-                  <div class="text-sm font-semibold text-gray-900">{{ item.role }}</div>
-                  <div class="text-xs text-gray-500">
-                    {{ formatExperienceDates(item) }} · {{ item.place_id }}
-                  </div>
-                  <p class="text-sm text-gray-700 whitespace-pre-line">{{ item.responsibilities }}</p>
-                </div>
-                <div v-for="item in otherExperience" :key="`other-${item.place_id}-${item.role}`">
-                  <div class="text-sm font-semibold text-gray-900">{{ item.role }}</div>
-                  <div class="text-xs text-gray-500">
-                    {{ formatExperienceDates(item) }} · {{ item.name || item.short_address || 'External venue' }}
-                  </div>
-                  <p class="text-sm text-gray-700 whitespace-pre-line">{{ item.responsibilities }}</p>
-                </div>
-              </div>
-            </UCard>
+              <p>{{ project.responsibilities }}</p>
+            </div>
           </div>
+        </UCard>
 
-          <div class="space-y-6">
-            <UCard>
-              <template #header>
-                <h3 class="font-semibold">Specialties</h3>
-              </template>
-              <div v-if="specialties.length" class="flex flex-wrap gap-2">
-                <UBadge
-                  v-for="specialty in specialties"
-                  :key="specialty"
-                  size="xs"
-                  variant="soft"
-                  color="neutral"
-                >
-                  {{ specialty }}
-                </UBadge>
+        <UCard v-if="volunteering.length">
+          <template #header>
+            <h3>Volunteering</h3>
+          </template>
+          <div>
+            <div v-for="entry in volunteering" :key="`${entry.organization}-${entry.role}`">
+              <div>{{ entry.organization }}</div>
+              <div>
+                {{ entry.role }} · {{ formatRange(entry.from_year, entry.to_year, entry.ongoing) }}
               </div>
-              <p v-else class="text-sm text-gray-500">No specialties listed.</p>
-            </UCard>
-
-            <UCard>
-              <template #header>
-                <h3 class="font-semibold">Locations</h3>
-              </template>
-              <div v-if="locations.length" class="space-y-2">
-                <div
-                  v-for="location in locations"
-                  :key="location"
-                  class="text-sm text-gray-700"
-                >
-                  {{ location }}
-                </div>
-              </div>
-              <p v-else class="text-sm text-gray-500">No locations listed.</p>
-            </UCard>
-
-            <UCard>
-              <template #header>
-                <h3 class="font-semibold">Certifications</h3>
-              </template>
-              <div v-if="certifications.length" class="flex flex-wrap gap-2">
-                <UBadge
-                  v-for="cert in certifications"
-                  :key="cert"
-                  size="xs"
-                  variant="soft"
-                  color="secondary"
-                >
-                  {{ cert }}
-                </UBadge>
-              </div>
-              <p v-else class="text-sm text-gray-500">No certifications listed.</p>
-            </UCard>
+              <p>{{ entry.responsibilities }}</p>
+            </div>
           </div>
-        </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <h3>Specialties</h3>
+          </template>
+          <div v-if="specialties.length">
+            <UBadge
+              v-for="specialty in specialties"
+              :key="specialty"
+              size="xs"
+              variant="soft"
+              color="neutral"
+            >
+              {{ specialty }}
+            </UBadge>
+          </div>
+          <p v-else>No specialties listed.</p>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <h3>Locations</h3>
+          </template>
+          <div v-if="locations.length">
+            <div v-for="location in locations" :key="location">
+              {{ location }}
+            </div>
+          </div>
+          <p v-else>No locations listed.</p>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <h3>Health Certifications</h3>
+          </template>
+          <div v-if="healthCertifications.length">
+            <UBadge
+              v-for="cert in healthCertifications"
+              :key="cert"
+              size="xs"
+              variant="soft"
+              color="secondary"
+            >
+              {{ cert }}
+            </UBadge>
+          </div>
+          <p v-else>No health certifications listed.</p>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <h3>Languages</h3>
+          </template>
+          <div v-if="languages.length">
+            <UBadge
+              v-for="language in languages"
+              :key="`${language.language}-${language.proficiency}`"
+              size="xs"
+              variant="soft"
+              color="neutral"
+            >
+              {{ language.language }}{{ language.proficiency ? ` · ${language.proficiency}` : '' }}
+            </UBadge>
+          </div>
+          <p v-else>No languages listed.</p>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <h3>Certifications</h3>
+          </template>
+          <div v-if="certifications.length">
+            <div v-for="cert in certifications" :key="`${cert.name}-${cert.year}`">
+              <div>{{ cert.name }}</div>
+              <div>{{ cert.place_name }} · {{ cert.year || 'Year not listed' }}</div>
+              <div>
+                <a
+                  v-if="cert.document_url"
+                  :href="cert.document_url"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View document
+                </a>
+              </div>
+            </div>
+          </div>
+          <p v-else>No certifications listed.</p>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <h3>Education</h3>
+          </template>
+          <div v-if="education.length">
+            <div v-for="entry in education" :key="`${entry.institution}-${entry.degree}`">
+              <div>{{ entry.degree }}</div>
+              <div>
+                {{ entry.institution }} · {{ formatRange(entry.start_year, entry.end_year, entry.ongoing) }}
+              </div>
+              <div>
+                <a
+                  v-if="entry.document_url"
+                  :href="entry.document_url"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View document
+                </a>
+              </div>
+            </div>
+          </div>
+          <p v-else>No education listed.</p>
+        </UCard>
       </div>
     </UPageBody>
   </UPage>
@@ -155,7 +228,13 @@
 import { navigateTo, useHead, useRoute } from '#imports'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
-import { computed } from 'vue'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
+import { mapPlaceToCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToCard'
+import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import type { Place } from 'fireux-places/runtime/models/objects/place.model'
+import type { Ref } from 'vue'
+import { computed, shallowRef, watch } from 'vue'
 import type { ProfessionalProfile } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { professionalConfig } from '../../models/profiles/Professional/Professional.model.ts'
@@ -178,7 +257,7 @@ const { user } = useUserFetch(professionalId)
 
 const { card } = useProfessionalInterface(profile, user)
 const professionalCard = computed(() =>
-  professionalProfile.value ? card(professionalProfile.value, user.value) : null
+  professionalProfile.value ? card(professionalProfile.value) : null
 )
 
 const displayName = computed(() => user.value?.display_name ?? '')
@@ -193,8 +272,23 @@ const headline = computed(
 const tags = computed(() => professionalProfile.value?.tags ?? [])
 const specialties = computed(() => professionalProfile.value?.specialties ?? [])
 const locations = computed(() => professionalProfile.value?.locations ?? [])
-const certifications = computed(
+const healthCertifications = computed(
   () => professionalProfile.value?.health_certifications ?? []
+)
+const certifications = computed(
+  () => professionalProfile.value?.certifications ?? []
+)
+const languages = computed(
+  () => professionalProfile.value?.languages ?? []
+)
+const education = computed(
+  () => professionalProfile.value?.education ?? []
+)
+const volunteering = computed(
+  () => professionalProfile.value?.volunteering ?? []
+)
+const projects = computed(
+  () => professionalProfile.value?.projects ?? []
 )
 const bioShort = computed(() => professionalProfile.value?.bio_short ?? '')
 const bioLong = computed(() => professionalProfile.value?.bio_long ?? '')
@@ -203,6 +297,76 @@ const relevantExperience = computed(
 )
 const otherExperience = computed(
   () => professionalProfile.value?.other_experience ?? []
+)
+const experienceCount = computed(
+  () => relevantExperience.value.length + otherExperience.value.length
+)
+
+const normalizePlaceId = (placeId?: string | null) => {
+  const normalized = canonicalPlaceId(placeId ?? '')
+  if (normalized) return normalized
+  return placeId ? placeId.replace(/^places\//, '') : ''
+}
+
+const { firestoreFetchDoc } = useFirestoreManager()
+const placeDocRefs = shallowRef(new Map<string, Ref<Place | undefined>>())
+
+const relevantPlaceIds = computed(() => {
+  const ids = new Set<string>()
+  for (const item of relevantExperience.value) {
+    const normalized = normalizePlaceId(item.place_id)
+    if (normalized) ids.add(normalized)
+  }
+  return Array.from(ids)
+})
+
+watch(
+  relevantPlaceIds,
+  (ids) => {
+    const next = new Map<string, Ref<Place | undefined>>()
+    for (const id of ids) {
+      const existing = placeDocRefs.value.get(id)
+      next.set(id, existing ?? firestoreFetchDoc<Place>('places', id))
+    }
+    placeDocRefs.value = next
+  },
+  { immediate: true }
+)
+
+const toPlaceCard = mapPlaceToCard()
+
+const placeCardLookup = computed(() => {
+  const map = new Map<string, PlaceCard.Card | null>()
+  for (const [id, docRef] of placeDocRefs.value.entries()) {
+    map.set(id, docRef.value ? toPlaceCard(docRef.value) : null)
+  }
+  return map
+})
+
+const getPlaceCard = (placeId?: string | null) => {
+  const normalized = normalizePlaceId(placeId)
+  if (!normalized) return null
+  return placeCardLookup.value.get(normalized) ?? null
+}
+
+const relevantExperienceCards = computed(() =>
+  relevantExperience.value.map((item) => ({
+    item,
+    placeCard: getPlaceCard(item.place_id),
+  }))
+)
+
+const otherExperienceCards = computed(() =>
+  otherExperience.value.map((item) => {
+    const subtitle = item.short_address || item.formatted_address || ''
+    return {
+      item,
+      title: item.name || 'External venue',
+      subtitle,
+      avatarUrl: item.image_url || '',
+      showSubtitle: Boolean(subtitle),
+    }
+  })
 )
 
 const formatExperienceDates = (item: {
@@ -217,6 +381,20 @@ const formatExperienceDates = (item: {
     ? 'Present'
     : [item.to_month, item.to_year].filter(Boolean).join(' ')
   return [start, end].filter(Boolean).join(' · ')
+}
+
+const formatRange = (
+  from?: string | number | null,
+  to?: string | number | null,
+  ongoing?: boolean
+) => {
+  const start = from != null && String(from).trim() ? String(from) : ''
+  const end = ongoing
+    ? 'Present'
+    : to != null && String(to).trim()
+      ? String(to)
+      : ''
+  return [start, end].filter(Boolean).join(' · ') || 'Dates not listed'
 }
 
 useHead({

@@ -19,26 +19,24 @@
       </div>
     </template>
 
-    <ClientOnly>
-      <OrganismsProfilesChefCollectionList
-        v-if="cardsFiltered.length"
-        :cards="cardsFiltered"
-        :variant="variant"
-      >
-        <template #pill="{ card }">
-          <NuxtLink :to="card.to">
-            <OrganismsProfilesChefCardsPill v-bind="card" />
-          </NuxtLink>
-        </template>
-        <template #cell="{ card }">
-          <NuxtLink :to="card.to">
-            <OrganismsProfilesChefCardsCell v-bind="card" />
-          </NuxtLink>
-        </template>
-      </OrganismsProfilesChefCollectionList>
+    <OrganismsProfilesChefCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    >
+      <template #pill="{ card }">
+        <NuxtLink :to="card.to">
+          <OrganismsProfilesChefCardsPill v-bind="card" />
+        </NuxtLink>
+      </template>
+      <template #cell="{ card }">
+        <NuxtLink :to="card.to">
+          <OrganismsProfilesChefCardsCell v-bind="card" />
+        </NuxtLink>
+      </template>
+    </OrganismsProfilesChefCollectionList>
 
-      <p v-else>No chefs found.</p>
-    </ClientOnly>
+    <p v-else>No chefs found.</p>
 
     <div v-if="isDev">
       <DevJson

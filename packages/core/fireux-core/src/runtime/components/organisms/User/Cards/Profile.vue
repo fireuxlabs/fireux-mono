@@ -1,30 +1,17 @@
 <template>
   <UCard class="profile">
     <template #header>
-      <div class="profile__header">
-        <div class="profile__identity">
-          <UAvatar :src="avatarUrl" :alt="displayName" size="md" />
-          <div class="profile__titles">
-            <div class="profile__title">{{ displayName }}</div>
-            <div v-if="showSubtitle" class="profile__subtitle">
-              <span v-if="handle">{{ handle }}</span>
-              <span v-else class="italic">missing</span>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="showBadges && badges.length" class="profile__badges">
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
-        </div>
-      </div>
+      <OrganismsUserCardsCell
+        :avatar-url="avatarUrl"
+        :display-name="displayName"
+        :handle="handle"
+        :badges="badges"
+        :profiles="profiles"
+        :apps-label="appsLabel"
+        :show-subtitle="showSubtitle"
+        :show-badges="showBadges"
+        :show-tagline="false"
+      />
     </template>
 
     <div class="profile__body">
@@ -79,6 +66,17 @@
         </div>
       </section>
     </div>
+    <template #footer>
+      <OrganismsUserCardsPill
+        :avatar-url="avatarUrl"
+        :display-name="displayName"
+        :handle="handle"
+        :badges="badges"
+        :profiles="profiles"
+        :show-subtitle="showSubtitle"
+        :show-badges="showBadges"
+      />
+    </template>
   </UCard>
 </template>
 
