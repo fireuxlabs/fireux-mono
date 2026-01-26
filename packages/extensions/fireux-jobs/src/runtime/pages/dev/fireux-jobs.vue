@@ -138,7 +138,7 @@ import { computed } from 'vue'
 import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
 import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
-import { useAgentsInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentsInterface'
+import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
 import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import { Job as JobModelRuntime } from '../../models/objects/job.model'
@@ -279,7 +279,7 @@ const professionalsDriftCopyPayload = computed(() => ({
 }))
 
 const { globalAgents, localAgents } = useAgentCollection()
-const { card: makeAgentCard } = useAgentsInterface()
+const { cardFromEntry: makeAgentCard } = useAgentInterface()
 
 const agentsCollection = computed(() => [
   ...(localAgents?.value ?? []),

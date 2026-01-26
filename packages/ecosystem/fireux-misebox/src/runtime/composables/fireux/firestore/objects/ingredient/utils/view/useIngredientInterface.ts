@@ -1,3 +1,4 @@
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ingredient } from '../../../../../../../models/objects/Ingredient.model'
 
 export namespace IngredientCard {
@@ -22,28 +23,36 @@ export namespace IngredientCard {
 
 export function useIngredientInterface() {
   function map(ingredient: Ingredient): IngredientCard.Card {
+    const id = safeString(ingredient.id).trim()
+    const name = safeString(ingredient.name)
+    const category = safeString(ingredient.category)
+
     return {
-      id: ingredient.id,
-      to: `/ingredients/${ingredient.id}`,
+      id,
+      to: id ? `/ingredients/${id}` : '',
 
       avatarUrl: '',
-      title: ingredient.name,
-      subtitle: ingredient.category ?? '',
+      title: name,
+      subtitle: category,
 
-      name: ingredient.name,
-      category: ingredient.category ?? '',
+      name,
+      category,
 
       badges: [],
     }
   }
 
   function card(target?: Ingredient | null | undefined): IngredientCard.Card | null {
-    return target ? map(target) : null
+    if (!target) return null
+    const mapped = map(target)
+    return mapped.id ? mapped : null
   }
 
   function searchText(ingredient: Ingredient): string {
-    return `${ingredient.name} ${ingredient.category ?? ''} ${ingredient.id}`
-      .toLowerCase()
+    const name = safeString(ingredient.name)
+    const category = safeString(ingredient.category)
+    const id = safeString(ingredient.id)
+    return `${name} ${category} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

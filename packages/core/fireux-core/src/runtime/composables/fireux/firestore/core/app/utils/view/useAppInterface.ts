@@ -1,3 +1,4 @@
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import type { AppModel } from '../../../../../../../models/core/app.model'
 import type { AppSocialLinks } from '../../../../../../../models/core/app.supporting'
@@ -64,29 +65,30 @@ export function useAppInterface(appRef?: Ref<AppModel | null | undefined>) {
   function map(app: AppModel): AppCard.Card {
     const media = safeMedia(app)
     const derived = safeDerived(app)
+    const id = safeString(app.id).trim()
 
     return {
-      id: app.id,
-      to: `/apps/${encodeURIComponent(app.id)}`,
+      id,
+      to: id ? `/apps/${encodeURIComponent(id)}` : '',
 
-      thumbnailUrl: media.thumbnail_url,
+      thumbnailUrl: safeString(media.thumbnail_url),
 
-      displayName: app.app_name,
-      ecosystem: app.ecosystem,
+      displayName: safeString(app.app_name),
+      ecosystem: safeString(app.ecosystem),
       badges: [],
 
-      tagline: app.tagline,
-      shortName: app.app_short_name,
+      tagline: safeString(app.tagline),
+      shortName: safeString(app.app_short_name),
       role: app.role != null ? String(app.role) : '',
       userCount: typeof derived.user_count === 'number' ? derived.user_count : 0,
 
-      description: app.description,
-      shortBio: app.short_bio,
-      longBio: app.long_bio,
+      description: safeString(app.description),
+      shortBio: safeString(app.short_bio),
+      longBio: safeString(app.long_bio),
 
-      logoUrl: media.logo_url,
-      wordmarkLightUrl: media.wordmark_light_url,
-      wordmarkDarkUrl: media.wordmark_dark_url,
+      logoUrl: safeString(media.logo_url),
+      wordmarkLightUrl: safeString(media.wordmark_light_url),
+      wordmarkDarkUrl: safeString(media.wordmark_dark_url),
       wordmarkUrl: resolveWordmarkUrl(app),
 
       socialLinks: (app.social_links ?? {}) as AppSocialLinks,
@@ -95,12 +97,17 @@ export function useAppInterface(appRef?: Ref<AppModel | null | undefined>) {
 
   function card(target?: AppModel | null | undefined): AppCard.Card | null {
     const app = target ?? appRef?.value ?? null
-    return app ? map(app) : null
+    if (!app) return null
+    const mapped = map(app)
+    return mapped.id ? mapped : null
   }
 
   function searchText(app: AppModel): string {
-    return `${app.app_name} ${app.app_short_name} ${app.ecosystem} ${app.id}`
-      .toLowerCase()
+    const name = safeString(app.app_name)
+    const shortName = safeString(app.app_short_name)
+    const ecosystem = safeString(app.ecosystem)
+    const id = safeString(app.id)
+    return `${name} ${shortName} ${ecosystem} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

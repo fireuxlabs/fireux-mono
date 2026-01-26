@@ -1,10 +1,16 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'
 import { agentConfig, type AgentCore } from '../../../../../../../models/profiles/Agent/Agent.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
   Partial<Pick<User, 'id' | 'handle' | 'email'>>
+
+type UserSummary = Pick<User, 'id' | 'display_name' | 'avatar'> &
+  Partial<Pick<User, 'handle' | 'email'>>
+
+export type AgentDirectoryEntry = AgentCore & { user?: User | UserSummary }
 
 export namespace AgentCard {
   export type Card = {
@@ -32,33 +38,33 @@ export namespace AgentCard {
 }
 
 export function useAgentInterface(
-  profile: ProfileRefs<AgentCore>,
+  profile?: ProfileRefs<AgentCore> | null,
   userRef?: Ref<User | null | undefined>
 ) {
   function map(p: AgentCore, u?: UserLike | null): AgentCard.Card {
-    const title = p.title
-    const subtitle = p.subtitle
-    const tagline = p.tagline
-    const tags = p.tags
+    const id = safeString(p.id).trim()
+    const title = safeString(p.title)
+    const subtitle = safeString(p.subtitle)
+    const tagline = safeString(p.tagline)
 
     return {
-      id: p.id,
-      to: `/${agentConfig.collectionName}/${p.id}`,
+      id,
+      to: id ? `/${agentConfig.collectionName}/${id}` : '',
 
-      avatarUrl: u?.avatar ?? '',
+      avatarUrl: safeString(u?.avatar),
 
       // Canonical: agent pills are user-hydrated; no profile-title fallback for display name.
-      displayName: u?.display_name ?? '',
+      displayName: safeString(u?.display_name),
 
       // Prefer tagline; fall back to title/subtitle so pills stay useful.
       tagline: tagline || title || subtitle,
-      badges: tags,
+      badges: safeStringArray(p.tags),
 
-      bioShort: p.bio_short,
+      bioShort: safeString(p.bio_short),
 
-      contactEmail: p.contact_email.trim(),
-      contactPhone: p.contact_phone.trim(),
-      websiteUrl: p.website_url,
+      contactEmail: safeString(p.contact_email).trim(),
+      contactPhone: safeString(p.contact_phone).trim(),
+      websiteUrl: safeString(p.website_url),
     }
   }
 
@@ -66,19 +72,41 @@ export function useAgentInterface(
     target?: AgentCore | null | undefined,
     userOverride?: UserLike | null
   ): AgentCard.Card | null {
-    const p = target ?? profile.coreProfile.value ?? null
+    const p = target ?? profile?.coreProfile.value ?? null
     if (!p) return null
     const u = userOverride ?? userRef?.value ?? null
-    return map(p, u)
+    const mapped = map(p, u)
+    return mapped.id ? mapped : null
   }
 
-  function searchText(target?: AgentCore | null | undefined): string {
-    const p = target ?? profile.coreProfile.value ?? null
+  function cardFromEntry(entry?: AgentDirectoryEntry | null): AgentCard.Card | null {
+    if (!entry) return null
+    const mapped = map(entry, entry.user ?? null)
+    return mapped.id ? mapped : null
+  }
+
+  function searchText(
+    target?: AgentCore | null | undefined,
+    userOverride?: UserLike | null
+  ): string {
+    const p = target ?? profile?.coreProfile.value ?? null
     if (!p) return ''
-    const u = userRef?.value ?? null
-    const displayName = u?.display_name ?? ''
-    return `${displayName} ${p.title} ${p.tagline} ${p.id}`.trim().toLowerCase()
+    const u = userOverride ?? userRef?.value ?? null
+    const displayName = safeString(u?.display_name)
+    const title = safeString(p.title)
+    const tagline = safeString(p.tagline)
+    const id = safeString(p.id)
+    return `${displayName} ${title} ${tagline} ${id}`.trim().toLowerCase()
   }
 
-  return { card, searchText }
+  function searchTextFromEntry(entry?: AgentDirectoryEntry | null): string {
+    if (!entry) return ''
+    const displayName = safeString(entry.user?.display_name)
+    const title = safeString(entry.title)
+    const tagline = safeString(entry.tagline)
+    const id = safeString(entry.id)
+    return `${displayName} ${title} ${tagline} ${id}`.trim().toLowerCase()
+  }
+
+  return { card, searchText, cardFromEntry, searchTextFromEntry }
 }

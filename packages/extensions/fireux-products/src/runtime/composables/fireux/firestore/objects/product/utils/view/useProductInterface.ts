@@ -1,3 +1,4 @@
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { FirebaseProduct } from '../../../../../../../models/objects/product.model'
 
 export namespace ProductCard {
@@ -26,20 +27,22 @@ export namespace ProductCard {
 export function useProductInterface() {
   function map(product: FirebaseProduct): ProductCard.Card {
     const imageUrl =
-      product.main_image ||
-      product.images?.[0]?.url ||
-      ''
+      safeString(product.main_image) ||
+      safeString(product.images?.[0]?.url)
+    const id = safeString(product.id).trim()
+    const name = safeString(product.name)
+    const description = safeString(product.description)
 
     return {
-      id: product.id,
-      to: `/products/${product.id}`,
+      id,
+      to: id ? `/products/${id}` : '',
 
       avatarUrl: imageUrl,
-      title: product.name,
-      subtitle: product.description || '',
+      title: name,
+      subtitle: description,
 
-      name: product.name,
-      description: product.description || '',
+      name,
+      description,
 
       imageUrl,
       badges: [],
@@ -47,11 +50,15 @@ export function useProductInterface() {
   }
 
   function card(target?: FirebaseProduct | null | undefined): ProductCard.Card | null {
-    return target ? map(target) : null
+    if (!target) return null
+    const mapped = map(target)
+    return mapped.id ? mapped : null
   }
 
   function searchText(product: FirebaseProduct): string {
-    return `${product.name} ${product.id}`.toLowerCase()
+    const name = safeString(product.name)
+    const id = safeString(product.id)
+    return `${name} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

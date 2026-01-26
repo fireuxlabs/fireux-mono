@@ -53,16 +53,16 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import { useAgentsInterface, type AgentDirectoryEntry } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentsInterface';
+import { useAgentInterface, type AgentDirectoryEntry } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
 
 const props = defineProps<{ collection?: AgentDirectoryEntry[] }>()
 
 const collection = computed(() => props.collection ?? [])
-const { card: makeCard, searchText } = useAgentsInterface()
+const { cardFromEntry: makeCard, searchTextFromEntry } = useAgentInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<AgentDirectoryEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchText(entry),
+    searchText: (entry) => searchTextFromEntry(entry),
     makeCard: (entry) => makeCard(entry),
   })
 

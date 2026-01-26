@@ -1,7 +1,8 @@
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
-    BasePlace,
-    PlaceImageShade,
-    PlaceSource,
+  BasePlace,
+  PlaceImageShade,
+  PlaceSource,
 } from '../../../../../../../models/objects/place.model'
 
 export namespace PlaceCard {
@@ -41,34 +42,44 @@ export namespace PlaceCard {
 
 export function usePlacesInterface() {
   function map(place: BasePlace): PlaceCard.Card {
-    return {
-      id: place.id,
-      to: `/places/${encodeURIComponent(place.id)}`,
+    const id = safeString(place.id).trim()
+    const name = safeString(place.name)
+    const address = safeString((place as any)?.formatted_address)
+    const image = safeString((place as any)?.place_image)
 
-      avatarUrl: place.place_image,
-      title: place.name,
-      subtitle: place.formatted_address,
+    return {
+      id,
+      to: id ? `/places/${encodeURIComponent(id)}` : '',
+
+      avatarUrl: image,
+      title: name,
+      subtitle: address,
       badges: [],
 
-      name: place.name,
-      formattedAddress: place.formatted_address,
+      name,
+      formattedAddress: address,
 
-      imageUrl: place.place_image,
+      imageUrl: image,
 
       imageShade: place.image_shade ?? 'neutral',
 
       source: place.source,
 
-      claimedBy: place.claimed_by || '',
+      claimedBy: safeString((place as any)?.claimed_by),
     }
   }
 
   function card(target?: BasePlace | null | undefined): PlaceCard.Card | null {
-    return target ? map(target) : null
+    if (!target) return null
+    const mapped = map(target)
+    return mapped.id ? mapped : null
   }
 
   function searchText(place: BasePlace): string {
-    return `${place.name} ${place.formatted_address} ${place.id}`.toLowerCase()
+    const name = safeString(place.name)
+    const address = safeString((place as any)?.formatted_address)
+    const id = safeString(place.id)
+    return `${name} ${address} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

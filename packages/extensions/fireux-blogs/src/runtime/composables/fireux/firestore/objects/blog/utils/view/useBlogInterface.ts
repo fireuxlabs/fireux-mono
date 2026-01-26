@@ -1,3 +1,4 @@
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { BlogPost } from '../../../../../../../models/objects/blogPost.model'
 
 export namespace BlogCard {
@@ -33,19 +34,22 @@ function ellipsis(text: string, limit = 180): string {
 
 export function useBlogInterface() {
   function map(post: BlogPost): BlogCard.Card {
-    const excerpt = ellipsis(stripHtml(post.content), 180)
+    const content = safeString(post.content)
+    const excerpt = ellipsis(stripHtml(content), 180)
 
-    const author = post.author.display_name
-    const imageUrl = post.featuredImage || post.socialImage
+    const author = safeString((post.author as any)?.display_name)
+    const imageUrl = safeString(post.featuredImage) || safeString(post.socialImage)
+    const id = safeString(post.slug).trim()
+    const title = safeString(post.title)
 
     return {
-      id: post.slug,
-      to: `/blog/${post.slug}`,
+      id,
+      to: id ? `/blog/${id}` : '',
 
       avatarUrl: imageUrl,
       subtitle: author,
 
-      title: post.title,
+      title,
       excerpt,
       author,
 
@@ -55,11 +59,16 @@ export function useBlogInterface() {
   }
 
   function card(target?: BlogPost | null | undefined): BlogCard.Card | null {
-    return target ? map(target) : null
+    if (!target) return null
+    const mapped = map(target)
+    return mapped.id ? mapped : null
   }
 
   function searchText(post: BlogPost): string {
-    return `${post.title} ${post.slug} ${post.author.display_name}`.toLowerCase()
+    const title = safeString(post.title)
+    const slug = safeString(post.slug)
+    const author = safeString((post.author as any)?.display_name)
+    return `${title} ${slug} ${author}`.trim().toLowerCase()
   }
 
   return { card, searchText }

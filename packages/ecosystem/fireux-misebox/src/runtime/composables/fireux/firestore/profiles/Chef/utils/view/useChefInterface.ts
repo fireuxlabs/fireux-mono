@@ -1,4 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { csv, safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'
 import { chefConfig, type ChefCore } from '../../../../../../../models/profiles/Chef/Chef.model'
@@ -30,35 +31,20 @@ export namespace ChefCard {
 }
 
 export function useChefInterface(
-  profile: ProfileRefs<ChefCore>,
+  profile?: ProfileRefs<ChefCore> | null,
   userRef?: Ref<User | null | undefined>
 ) {
-  function safeArray<T>(input: unknown): T[] {
-    return Array.isArray(input) ? (input as T[]) : []
-  }
-
-  function safeString(input: unknown): string {
-    return typeof input === 'string' ? input : ''
-  }
-
-  function csv(list: unknown): string {
-    return safeArray<string>(list).join(', ')
-  }
-
   function map(p: ChefCore, u?: UserLike | null): ChefCard.Card {
-    const tags = safeArray<string>((p as any)?.tags)
-    const specialties = (p as any)?.specialties
-    const locations = (p as any)?.locations
-
-    const title = safeString((p as any)?.title)
-    const subtitle = safeString((p as any)?.subtitle)
-    const tagline = safeString((p as any)?.tagline)
+    const id = safeString(p.id).trim()
+    const title = safeString(p.title)
+    const subtitle = safeString(p.subtitle)
+    const tagline = safeString(p.tagline)
 
     return {
-      id: p.id,
-      to: `/${chefConfig.collectionName}/${p.id}`,
+      id,
+      to: id ? `/${chefConfig.collectionName}/${id}` : '',
 
-      avatarUrl: u?.avatar ?? '',
+      avatarUrl: safeString(u?.avatar),
 
       // Canonical: chef pills are user-hydrated; no legacy profile-name fallbacks.
       displayName: safeString(u?.display_name),
@@ -66,12 +52,12 @@ export function useChefInterface(
       // Prefer true tagline, else fall back to chef title/subtitle.
       // This makes pills useful even when docs are missing `tagline`.
       tagline: tagline || title || subtitle,
-      badges: tags,
+      badges: safeStringArray(p.tags),
 
-      bioShort: safeString((p as any)?.bio_short),
-      specialtiesCsv: csv(specialties),
-      locationsCsv: csv(locations),
-      organizationName: safeString((p as any)?.organization_name),
+      bioShort: safeString(p.bio_short),
+      specialtiesCsv: csv(p.specialties),
+      locationsCsv: csv(p.locations),
+      organizationName: safeString(p.organization_name),
     }
   }
 
@@ -79,21 +65,23 @@ export function useChefInterface(
     target?: ChefCore | null | undefined,
     userOverride?: UserLike | null
   ): ChefCard.Card | null {
-    const p = target ?? profile.coreProfile.value ?? null
+    const p = target ?? profile?.coreProfile.value ?? null
     if (!p) return null
     const u = userOverride ?? userRef?.value ?? null
-    return map(p, u)
+    const mapped = map(p, u)
+    return mapped.id ? mapped : null
   }
 
-  function searchText(target?: ChefCore | null | undefined): string {
-    const p = target ?? profile.coreProfile.value ?? null
+  function searchText(target?: ChefCore | null | undefined, userOverride?: UserLike | null): string {
+    const p = target ?? profile?.coreProfile.value ?? null
     if (!p) return ''
-    const u = userRef?.value ?? null
-    const displayName = safeString((u as any)?.display_name)
-    const title = safeString((p as any)?.title)
-    const tagline = safeString((p as any)?.tagline)
-    const org = safeString((p as any)?.organization_name)
-    return `${displayName} ${title} ${tagline} ${org} ${p.id}`.toLowerCase()
+    const u = userOverride ?? userRef?.value ?? null
+    const displayName = safeString(u?.display_name)
+    const title = safeString(p.title)
+    const tagline = safeString(p.tagline)
+    const org = safeString(p.organization_name)
+    const id = safeString(p.id)
+    return `${displayName} ${title} ${tagline} ${org} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

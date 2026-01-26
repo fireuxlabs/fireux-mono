@@ -22,27 +22,29 @@
       </div>
     </template>
 
-    <OrganismsEntitiesPlaceCollectionList
-      v-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
-      gap="0.5rem"
-    >
-      <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <PlaceCardsPill v-bind="card" />
-        </NuxtLink>
-      </template>
-      <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <PlaceCardsCell v-bind="card" />
-        </NuxtLink>
-      </template>
-    </OrganismsEntitiesPlaceCollectionList>
+    <ClientOnly>
+      <OrganismsEntitiesPlaceCollectionList
+        v-if="cardsFiltered.length"
+        :cards="cardsFiltered"
+        :variant="variant"
+        gap="0.5rem"
+      >
+        <template #pill="{ card }">
+          <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+            <PlaceCardsPill v-bind="card" />
+          </component>
+        </template>
+        <template #cell="{ card }">
+          <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+            <PlaceCardsCell v-bind="card" />
+          </component>
+        </template>
+      </OrganismsEntitiesPlaceCollectionList>
 
-    <p v-else>
-      {{ query ? 'No places match your search.' : 'No places found.' }}
-    </p>
+      <p v-else>
+        {{ query ? 'No places match your search.' : 'No places found.' }}
+      </p>
+    </ClientOnly>
 
     <div v-if="isDev">
       <DevJson
@@ -69,26 +71,14 @@ const {
   query,
   variant,
   toggleVariant,
-            <ClientOnly>
-              <OrganismsEntitiesPlaceCollectionList
-                v-if="cardsFiltered.length"
-                :cards="cardsFiltered"
-                :variant="variant"
-                gap="0.5rem"
-              >
-                <template #pill="{ card }">
-                  <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
-                    <PlaceCardsPill v-bind="card" />
-                  </component>
-                </template>
-                <template #cell="{ card }">
-                  <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
-                    <PlaceCardsCell v-bind="card" />
-                  </component>
-                </template>
-              </OrganismsEntitiesPlaceCollectionList>
+  cards: cardsFiltered,
+  visibleCount,
+} = useCollectionSearch<BasePlace, ReturnType<typeof makeCard>>({
+  items: collection,
+  searchText: (place: BasePlace) => searchText(place as any),
+  makeCard: (place: BasePlace) => makeCard(place),
+})
 
-              <p v-else>
-                {{ query ? 'No places match your search.' : 'No places found.' }}
-              </p>
-            </ClientOnly>
+const totalCount = computed(() => collection.value.length)
+const isDev = import.meta.dev
+</script>

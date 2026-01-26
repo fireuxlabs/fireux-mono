@@ -1,3 +1,4 @@
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Recipe } from '../../../../../../../models/objects/Recipe.model'
 
 export namespace RecipeCard {
@@ -21,16 +22,18 @@ export namespace RecipeCard {
 
 export function useRecipeInterface() {
   function map(recipe: Recipe): RecipeCard.Card {
-    const status = String(recipe.status ?? '')
+    const status = safeString(recipe.status ?? '')
+    const id = safeString(recipe.slug).trim()
+    const title = safeString(recipe.title)
 
     return {
-      id: recipe.slug,
-      to: `/recipes/${recipe.slug}`,
+      id,
+      to: id ? `/recipes/${id}` : '',
 
       avatarUrl: '',
       subtitle: status,
 
-      title: recipe.title,
+      title,
       status,
 
       badges: [],
@@ -38,11 +41,16 @@ export function useRecipeInterface() {
   }
 
   function card(target?: Recipe | null | undefined): RecipeCard.Card | null {
-    return target ? map(target) : null
+    if (!target) return null
+    const mapped = map(target)
+    return mapped.id ? mapped : null
   }
 
   function searchText(recipe: Recipe): string {
-    return `${recipe.title} ${recipe.status ?? ''} ${recipe.slug}`.toLowerCase()
+    const title = safeString(recipe.title)
+    const status = safeString(recipe.status ?? '')
+    const slug = safeString(recipe.slug)
+    return `${title} ${status} ${slug}`.trim().toLowerCase()
   }
 
   return { card, searchText }

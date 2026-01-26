@@ -1,3 +1,4 @@
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Kitchen } from '../../../../../../../models/objects/kitchen.model'
 
 export namespace KitchenCard {
@@ -22,27 +23,37 @@ export namespace KitchenCard {
 
 export function useKitchenInterface() {
   function map(kitchen: Kitchen): KitchenCard.Card {
+    const id = safeString(kitchen.id).trim()
+    const name = safeString(kitchen.name)
+    const website = safeString(kitchen.website)
+    const address = safeString((kitchen as any)?.formatted_address)
+
     return {
-      id: kitchen.id,
-      to: `/kitchens/${kitchen.id}`,
+      id,
+      to: id ? `/kitchens/${id}` : '',
 
-      avatarUrl: kitchen.place_image,
-      title: kitchen.name,
-      subtitle: kitchen.formatted_address,
+      avatarUrl: safeString((kitchen as any)?.place_image),
+      title: name,
+      subtitle: address,
 
-      name: kitchen.name,
-      website: kitchen.website,
+      name,
+      website,
 
       badges: [],
     }
   }
 
   function card(target?: Kitchen | null | undefined): KitchenCard.Card | null {
-    return target ? map(target) : null
+    if (!target) return null
+    const mapped = map(target)
+    return mapped.id ? mapped : null
   }
 
   function searchText(kitchen: Kitchen): string {
-    return `${kitchen.name} ${kitchen.website} ${kitchen.id}`.toLowerCase()
+    const name = safeString(kitchen.name)
+    const website = safeString(kitchen.website)
+    const id = safeString(kitchen.id)
+    return `${name} ${website} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

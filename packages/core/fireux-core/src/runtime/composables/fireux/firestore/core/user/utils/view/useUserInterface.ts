@@ -1,3 +1,4 @@
+import { safeArray, safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import type { User } from '../../../../../../../models/core/user.model'
 
@@ -25,32 +26,38 @@ export namespace UserCard {
 
 export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   function map(user: User): UserCard.Card {
-    const handle = (user.handle ?? '').trim()
-    const appCount = user.userOf?.length ?? 0
+    const id = safeString(user.id).trim()
+    const handle = safeString(user.handle).trim()
+    const appCount = safeArray(user.userOf).length
 
     return {
-      id: user.id,
-      to: `/users/${user.id}`,
+      id,
+      to: id ? `/users/${id}` : '',
 
-      avatarUrl: user.avatar,
-      displayName: user.display_name,
+      avatarUrl: safeString(user.avatar).trim(),
+      displayName: safeString(user.display_name).trim(),
 
       handle: handle ? `@${handle}` : '',
       badges: [],
 
-      bio: user.bio,
-      profiles: user.profiles ?? [],
+      bio: safeString(user.bio),
+      profiles: safeArray<string>(user.profiles),
       appsLabel: appCount ? `${appCount} apps` : '',
     }
   }
 
   function card(target?: User | null | undefined): UserCard.Card | null {
     const user = target ?? userRef?.value ?? null
-    return user ? map(user) : null
+    if (!user) return null
+    const mapped = map(user)
+    return mapped.id ? mapped : null
   }
 
   function searchText(user: User): string {
-    return `${user.display_name} ${user.handle} ${user.id}`.toLowerCase()
+    const displayName = safeString(user.display_name)
+    const handle = safeString(user.handle)
+    const id = safeString(user.id)
+    return `${displayName} ${handle} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }
