@@ -56,6 +56,7 @@ type Props = {
 }
 
 withDefaults(defineProps<Props>(), {
+  badges: () => [],
   showSubtitle: true,
   showBadges: true,
   showBody: true,

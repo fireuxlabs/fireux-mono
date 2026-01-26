@@ -23,41 +23,28 @@
       </div>
     </template>
 
-    <OrganismsAppCollectionList
-      v-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
-    >
-      <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <OrganismsAppCardsPill
-            :to="card.to"
-            :thumbnail-url="card.thumbnailUrl"
-            :display-name="card.displayName"
-            :ecosystem="card.ecosystem"
-            :badges="card.badges"
-            :link="Boolean(card.to)"
-          />
-        </NuxtLink>
-      </template>
-      <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <OrganismsAppCardsCell
-            :to="card.to"
-            :thumbnail-url="card.thumbnailUrl"
-            :display-name="card.displayName"
-            :badges="card.badges"
-            :tagline="card.tagline"
-            :user-count="card.userCount"
-            :link="Boolean(card.to)"
-          />
-        </NuxtLink>
-      </template>
-    </OrganismsAppCollectionList>
+      <ClientOnly>
+        <OrganismsAppCollectionList
+          v-if="cardsFiltered.length"
+          :cards="cardsFiltered"
+          :variant="variant"
+        >
+          <template #pill="{ card }">
+            <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+              <OrganismsAppCardsPill v-bind="card" />
+            </component>
+          </template>
+          <template #cell="{ card }">
+            <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+              <OrganismsAppCardsCell v-bind="card" />
+            </component>
+          </template>
+        </OrganismsAppCollectionList>
 
-    <p v-else>
-      {{ query ? 'No apps match your search.' : 'No apps found.' }}
-    </p>
+        <p v-else>
+          {{ query ? 'No apps match your search.' : 'No apps found.' }}
+        </p>
+      </ClientOnly>
 
     <div v-if="isDev">
       <DevJson

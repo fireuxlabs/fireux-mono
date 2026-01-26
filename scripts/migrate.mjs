@@ -355,6 +355,10 @@ function resolveDriftTarget(payload) {
     return { collection: 'jobs', items: payload.jobs }
   }
 
+  if (Array.isArray(payload.professionals)) {
+    return { collection: 'professionals', items: payload.professionals }
+  }
+
   if (typeof payload.modelPath === 'string') {
     if (payload.modelPath.includes('/fireux-core/') && payload.modelPath.includes('/app.model')) {
       return { collection: 'apps', items: payload.apps || [] }
@@ -367,6 +371,9 @@ function resolveDriftTarget(payload) {
     }
     if (payload.modelPath.includes('/fireux-jobs/')) {
       return { collection: 'jobs', items: payload.jobs || [] }
+    }
+    if (payload.modelPath.includes('/Professional/Professional.model')) {
+      return { collection: 'professionals', items: payload.professionals || [] }
     }
   }
 

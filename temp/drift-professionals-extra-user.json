@@ -1,0 +1,101 @@
+{
+  "modelPath": "packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts",
+  "driftKind": "extra",
+  "selectedField": null,
+  "totalProfessionals": 7,
+  "professionals": [
+    {
+      "id": "FoPLMYVPirSiMm2eDskwsZja0q42",
+      "drift": {
+        "missing": [],
+        "extra": [
+          "avatar (string)",
+          "display_name (string)",
+          "email (string)",
+          "user (object)"
+        ]
+      }
+    },
+    {
+      "id": "OnLDg1ZcGqh30aaopCZggBIyhbS2",
+      "drift": {
+        "missing": [],
+        "extra": [
+          "avatar (string)",
+          "display_name (string)",
+          "email (string)",
+          "user (object)"
+        ]
+      }
+    },
+    {
+      "id": "WShQtlmVVVdqajd9muSHBLnm9kD2",
+      "drift": {
+        "missing": [],
+        "extra": [
+          "avatar (string)",
+          "display_name (string)",
+          "email (string)",
+          "user (object)"
+        ]
+      }
+    },
+    {
+      "id": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
+      "drift": {
+        "missing": [],
+        "extra": [
+          "avatar (string)",
+          "display_name (string)",
+          "email (string)",
+          "user (object)"
+        ]
+      }
+    },
+    {
+      "id": "rEssOnUA8wVHdNKE2JETqWAdwdm1",
+      "drift": {
+        "missing": [],
+        "extra": [
+          "avatar (string)",
+          "display_name (string)",
+          "email (string)",
+          "user (object)"
+        ]
+      }
+    },
+    {
+      "id": "s9hKBxO7mJSFC5vHNOo3mt9Dgi42",
+      "drift": {
+        "missing": [],
+        "extra": [
+          "avatar (string)",
+          "display_name (string)",
+          "email (string)",
+          "user (object)"
+        ]
+      }
+    },
+    {
+      "id": "xdu83J77YeOROlePJdibPekxkDp2",
+      "drift": {
+        "missing": [],
+        "extra": [
+          "avatar (string)",
+          "display_name (string)",
+          "email (string)",
+          "user (object)"
+        ]
+      }
+    }
+  ],
+  "migration": {
+    "script": "scripts/migrate.mjs",
+    "ecosystem": "misebox",
+    "app": "misebox-app",
+    "appConfigPath": "projects/misebox/misebox-app/nuxt.config.ts",
+    "firebaseConfigDir": "packages/ecosystem/fireux-misebox/src/config/firebase",
+    "ecosystemConfigPath": "packages/ecosystem/fireux-misebox/src/config/firebase/ecosystem.config.ts",
+    "serviceAccountPath": "packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json"
+  }
+}

@@ -50,7 +50,6 @@ export interface LandingSolutionItem {
   title: string
   description: string
   to: string
-  cta?: string
   icon?: string
   badge?: string
 }

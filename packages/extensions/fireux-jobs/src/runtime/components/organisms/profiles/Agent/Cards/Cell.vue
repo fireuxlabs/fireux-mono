@@ -58,6 +58,7 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
+  badges: () => [],
   showSubtitle: true,
   link: false,
   action: false,

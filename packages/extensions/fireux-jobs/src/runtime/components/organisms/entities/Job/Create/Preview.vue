@@ -32,6 +32,7 @@
           </p>
           <OrganismsProfilesAgentCardsPill
             v-bind="agentCard"
+            :badges="agentCard?.badges ?? []"
             :show-subtitle="false"
             :link="Boolean(agentCard.to)"
             class="block"
@@ -50,7 +51,7 @@
               :avatar-url="kitchenCard.avatarUrl"
               :title="kitchenCard.title"
               :subtitle="kitchenCard.subtitle"
-              :badges="kitchenCard.badges"
+              :badges="kitchenCard.badges ?? []"
             />
             <p v-else class="text-sm text-gray-700">Not selected</p>
           </div>
@@ -61,7 +62,7 @@
               :avatar-url="companyCard.avatarUrl"
               :title="companyCard.title"
               :subtitle="companyCard.subtitle"
-              :badges="companyCard.badges"
+              :badges="companyCard.badges ?? []"
             />
             <p v-else class="text-sm text-gray-700">Not set</p>
           </div>
@@ -79,12 +80,12 @@
 </template>
 
 <script setup lang="ts">
+import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch';
+import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
+import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch';
+import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
 import { computed } from 'vue';
 import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
-import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
-import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
-import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 
 import type { JobCreateForm } from '../../../../../composables/fireux/firestore/jobs/mutations/useJobCreate';
 

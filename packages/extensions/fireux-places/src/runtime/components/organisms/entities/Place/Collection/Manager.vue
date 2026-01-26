@@ -69,14 +69,26 @@ const {
   query,
   variant,
   toggleVariant,
-  cards: cardsFiltered,
-  visibleCount,
-} = useCollectionSearch<BasePlace, ReturnType<typeof makeCard>>({
-  items: collection,
-  searchText: (place: BasePlace) => searchText(place as any),
-  makeCard: (place: BasePlace) => makeCard(place),
-})
+            <ClientOnly>
+              <OrganismsEntitiesPlaceCollectionList
+                v-if="cardsFiltered.length"
+                :cards="cardsFiltered"
+                :variant="variant"
+                gap="0.5rem"
+              >
+                <template #pill="{ card }">
+                  <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+                    <PlaceCardsPill v-bind="card" />
+                  </component>
+                </template>
+                <template #cell="{ card }">
+                  <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+                    <PlaceCardsCell v-bind="card" />
+                  </component>
+                </template>
+              </OrganismsEntitiesPlaceCollectionList>
 
-const totalCount = computed(() => collection.value.length)
-const isDev = import.meta.dev
-</script>
+              <p v-else>
+                {{ query ? 'No places match your search.' : 'No places found.' }}
+              </p>
+            </ClientOnly>

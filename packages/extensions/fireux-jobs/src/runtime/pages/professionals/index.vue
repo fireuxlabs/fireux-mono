@@ -5,7 +5,9 @@
 
     <UPageBody class="pagebody">
       <OrganismsProfilesProfessionalCTA />
-      <OrganismsProfilesProfessionalCollectionManager :collection="collection" />
+      <ClientOnly>
+        <OrganismsProfilesProfessionalCollectionManager :collection="collection" />
+      </ClientOnly>
     </UPageBody>
   </UPage>
 </template>

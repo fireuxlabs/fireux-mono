@@ -4,7 +4,9 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <JobCTA />
-      <JobCollectionManager :collection="collection" />
+      <ClientOnly>
+        <JobCollectionManager :collection="collection" />
+      </ClientOnly>
     </UPageBody>
   </UPage>
 </template>

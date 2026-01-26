@@ -244,15 +244,30 @@ const allProfessionalsJsonPayload = computed(() => ({
 }))
 
 const filteredProfessionalsDriftPayload = computed(() =>
-  professionalCards.value.map((card) => {
-    const drift = professionalsDriftById.value.get(card.id) ?? { missing: [], extra: [] }
+  filteredProfessionals.value.map((entry, index) => {
+    const id = String((entry as any)?.id ?? '').trim()
+    const drift = id
+      ? professionalsDriftById.value.get(id) ?? { missing: [], extra: [] }
+      : { missing: ['id'], extra: [] }
     return {
-      id: card.id,
-      displayName: card.displayName,
+      id: id || `missing-id-${index + 1}`,
+      displayName: (entry as any)?.user?.display_name ?? '',
       drift,
     }
   })
 )
+
+const professionalsMissingSummary = computed(() => {
+  const counts = new Map<string, number>()
+  for (const entry of filteredProfessionalsDriftPayload.value) {
+    for (const field of entry.drift?.missing ?? []) {
+      counts.set(field, (counts.get(field) ?? 0) + 1)
+    }
+  }
+  return [...counts.entries()]
+    .map(([field, count]) => ({ field, count }))
+    .sort((a, b) => b.count - a.count)
+})
 
 const professionalsDriftCopyPayload = computed(() => ({
   modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts',
@@ -260,6 +275,7 @@ const professionalsDriftCopyPayload = computed(() => ({
   selectedField: professionalsSelectedField.value || null,
   totalProfessionals: professionalsCollection.value.length,
   professionals: filteredProfessionalsDriftPayload.value,
+  missingSummary: professionalsMissingSummary.value,
 }))
 
 const { globalAgents, localAgents } = useAgentCollection()

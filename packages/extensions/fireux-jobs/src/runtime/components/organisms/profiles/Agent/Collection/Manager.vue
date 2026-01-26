@@ -19,24 +19,26 @@
       </div>
     </template>
 
-    <OrganismsProfilesAgentCollectionList
-      v-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
-    >
-      <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <OrganismsProfilesAgentCardsPill v-bind="card" />
-        </NuxtLink>
-      </template>
-      <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <OrganismsProfilesAgentCardsCell v-bind="card" />
-        </NuxtLink>
-      </template>
-    </OrganismsProfilesAgentCollectionList>
+    <ClientOnly>
+      <OrganismsProfilesAgentCollectionList
+        v-if="cardsFiltered.length"
+        :cards="cardsFiltered"
+        :variant="variant"
+      >
+        <template #pill="{ card }">
+          <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+            <OrganismsProfilesAgentCardsPill v-bind="card" />
+          </component>
+        </template>
+        <template #cell="{ card }">
+          <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+            <OrganismsProfilesAgentCardsCell v-bind="card" />
+          </component>
+        </template>
+      </OrganismsProfilesAgentCollectionList>
 
-    <p v-else>No agents found.</p>
+      <p v-else>No agents found.</p>
+    </ClientOnly>
 
     <div v-if="isDev">
       <DevJson

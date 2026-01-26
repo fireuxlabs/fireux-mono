@@ -22,26 +22,28 @@
       </div>
     </template>
 
-    <OrganismsEntitiesCompanyCollectionList
-      v-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
-    >
-      <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <CompanyCardsPill v-bind="card" />
-        </NuxtLink>
-      </template>
-      <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <CompanyCardsCell v-bind="card" />
-        </NuxtLink>
-      </template>
-    </OrganismsEntitiesCompanyCollectionList>
+    <ClientOnly>
+      <OrganismsEntitiesCompanyCollectionList
+        v-if="cardsFiltered.length"
+        :cards="cardsFiltered"
+        :variant="variant"
+      >
+        <template #pill="{ card }">
+          <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+            <CompanyCardsPill v-bind="card" />
+          </component>
+        </template>
+        <template #cell="{ card }">
+          <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+            <CompanyCardsCell v-bind="card" />
+          </component>
+        </template>
+      </OrganismsEntitiesCompanyCollectionList>
 
-    <p v-else>
-      {{ query ? 'No companies match your search.' : 'No companies found.' }}
-    </p>
+      <p v-else>
+        {{ query ? 'No companies match your search.' : 'No companies found.' }}
+      </p>
+    </ClientOnly>
 
     <div v-if="isDev">
       <DevJson

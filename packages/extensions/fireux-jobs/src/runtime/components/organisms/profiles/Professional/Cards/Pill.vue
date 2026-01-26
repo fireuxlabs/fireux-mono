@@ -33,6 +33,7 @@ const props = withDefaults(
     }
   >(),
   {
+    badges: () => [],
     showSubtitle: true,
     showBadges: true,
     link: false,

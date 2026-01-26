@@ -19,24 +19,26 @@
       </div>
     </template>
 
-    <OrganismsProfilesProfessionalCollectionList
-      v-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
-    >
-      <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <OrganismsProfilesProfessionalCardsPill v-bind="card" />
-        </NuxtLink>
-      </template>
-      <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <OrganismsProfilesProfessionalCardsCell v-bind="card" />
-        </NuxtLink>
-      </template>
-    </OrganismsProfilesProfessionalCollectionList>
+    <ClientOnly>
+      <OrganismsProfilesProfessionalCollectionList
+        v-if="cardsFiltered.length"
+        :cards="cardsFiltered"
+        :variant="variant"
+      >
+        <template #pill="{ card }">
+          <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+            <OrganismsProfilesProfessionalCardsPill v-bind="card" />
+          </component>
+        </template>
+        <template #cell="{ card }">
+          <component :is="card.to ? 'NuxtLink' : 'div'" :to="card.to || undefined">
+            <OrganismsProfilesProfessionalCardsCell v-bind="card" />
+          </component>
+        </template>
+      </OrganismsProfilesProfessionalCollectionList>
 
-    <p v-else>No professionals found.</p>
+      <p v-else>No professionals found.</p>
+    </ClientOnly>
 
     <div v-if="isDev">
       <DevJson
