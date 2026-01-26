@@ -1,15 +1,15 @@
 import {
-    collection,
-    doc,
-    endAt,
-    limit as fslimit,
-    query as fsq,
-    getDocs,
-    orderBy,
-    startAt,
-    type DocumentSnapshot,
-    type Query,
-    type QueryDocumentSnapshot,
+  collection,
+  doc,
+  endAt,
+  limit as fslimit,
+  query as fsq,
+  getDocs,
+  orderBy,
+  startAt,
+  type DocumentSnapshot,
+  type Query,
+  type QueryDocumentSnapshot,
 } from 'firebase/firestore'
 import type { Ref } from 'vue'
 import { useCollection, useDocument, useFirestore } from 'vuefire'

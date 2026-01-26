@@ -1,6 +1,6 @@
+import { addDoc, collection, serverTimestamp, setDoc } from 'firebase/firestore'
 import { ref } from 'vue'
 import { useCurrentUser, useFirestore } from 'vuefire'
-import { collection, addDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 
 export function useRecipeCreate() {
   const currentUser = useCurrentUser()

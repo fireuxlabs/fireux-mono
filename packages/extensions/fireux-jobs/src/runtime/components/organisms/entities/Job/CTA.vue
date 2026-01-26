@@ -9,8 +9,20 @@
       variant="naked"
     >
       <template #default>
-        <div class="cta__body">
-          <JobCreateSystem />
+        <div class="cta__body space-y-4">
+          <div class="flex flex-wrap items-center gap-3">
+            <UButton
+              size="sm"
+              variant="soft"
+              @click="showForm = !showForm"
+            >
+              {{ showForm ? 'Hide job form' : 'Create job' }}
+            </UButton>
+          </div>
+
+          <div v-if="showForm">
+            <JobCreateSystem />
+          </div>
 
           <!-- DEV sanity output -->
           <pre
@@ -35,7 +47,7 @@
 <script setup lang="ts">
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const { appName, ecosystem, isTenant } = useFireUXConfig()
@@ -44,6 +56,7 @@ const { coreProfile } = useAgent()
 
 const hasAgentProfile = computed(() => hasProfile('agent'))
 const hasProfessionalProfile = computed(() => hasProfile('professional'))
+const showForm = ref(false)
 
 const agentCtaScopeLabel = computed(() => (isTenant ? appName : ecosystem))
 const agentCtaDescription = computed(

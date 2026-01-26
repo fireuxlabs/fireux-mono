@@ -21,10 +21,10 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { computed } from 'vue'
-import { useCompanyUpdate } from '../../../../composables/fireux/firestore/objects/company/mutations/useCompanyUpdate'
-import type { Company } from '../../../../models/objects/company.model'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
+import { computed } from 'vue';
+import { useCompanyUpdate } from '../../../../composables/fireux/firestore/objects/company/mutations/useCompanyUpdate';
+import type { Company } from '../../../../models/objects/company.model';
 
 const props = defineProps<{ company: Company | null }>()
 const company = computed(() => props.company)

@@ -1,7 +1,7 @@
 import { doc } from 'firebase/firestore'
+import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
 import { computed, isRef, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'vuefire'
-import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
 import type { Job, JobResolved } from '../../../../../models/objects/job.model'
 
 export function useJobFetch(
