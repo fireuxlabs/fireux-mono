@@ -21,15 +21,12 @@ import {
  */
 
 export const ProfessionalCore = {
-  id: '',
-  title: '',
-  subtitle: '',
-  tagline: '',
-  tags: [] as string[],
+  id: '' as string,
+  title: '' as string,
 
   health_certifications: [] as string[],
-  bio_short: '',
-  bio_long: '',
+  bio_short: '' as string,
+  bio_long: '' as string,
   specialties: [] as string[],
   locations: [] as string[],
   relevant_experience: [] as RelevantExperienceItem[],

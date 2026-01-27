@@ -2,40 +2,57 @@
 <template>
   <UDashboardPanel id="dashboard-professional-profile">
     <template #header>
-      <UDashboardNavbar :title="navTitle">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar :title="navTitle" />
     </template>
 
     <template #body>
-      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6 space-y-6">
-        <UCard v-if="isProfileLoading">
-          <div class="fallback loading">
-            Professional profile data is loading.
-          </div>
-        </UCard>
+      <div class="panels-stack">
+        <div class="flex flex-wrap items-center gap-2">
+          <OrganismsAppCardsPill
+            v-if="appCard"
+            :to="appCard.to"
+            :thumbnail-url="appCard.thumbnailUrl"
+            :display-name="appCard.displayName"
+            :ecosystem="appCard.ecosystem"
+            :badges="appCard.badges"
+            :show-subtitle="false"
+            :link="Boolean(appCard.to)"
+            class="block"
+          />
 
-        <UCard v-else-if="!resolvedCoreProfile">
-          <div class="fallback">
-            <p class="mb-4">Your professional profile hasn’t been created yet.</p>
+          <OrganismsUserCardsPill
+            v-if="userCard"
+            v-bind="userCard"
+            :show-subtitle="false"
+            :link="Boolean(userCard.to)"
+            class="block"
+          />
+        </div>
 
-            <UButton
-              :label="professionalConfig.cta || 'Create Professional profile'"
-              color="neutral"
-              :loading="isCreating"
-              @click="createProfile"
-            />
+        <UPageCard v-if="isProfileLoading" variant="subtle">
+          <p class="text-sm text-dimmed">Loading profile…</p>
+        </UPageCard>
 
-            <p v-if="createError" class="mt-3 text-sm text-dimmed">
-              {{ createError }}
-            </p>
-          </div>
-        </UCard>
+        <UPageCard
+          v-else-if="!resolvedCoreProfile"
+          title="Professional profile not available"
+          description="Your professional profile hasn’t been created yet."
+          variant="subtle"
+        >
+          <UButton
+            :label="professionalConfig.cta || 'Create Professional profile'"
+            color="neutral"
+            :loading="isCreating"
+            @click="createProfile"
+          />
+
+          <p v-if="createError" class="mt-3 text-sm text-dimmed">
+            {{ createError }}
+          </p>
+        </UPageCard>
 
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
+          <LayoutsDashboardProfileEdit class="panels-masonry">
             <template #preview>
               <OrganismsProfilesProfessionalEditPreviewPanel />
             </template>
@@ -68,7 +85,9 @@
 
 <script setup lang="ts">
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
+import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed, ref } from 'vue'
 import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 import { professionalConfig } from '../../../models/profiles/Professional/supporting'
@@ -94,6 +113,8 @@ definePageMeta({
 })
 
 const { coreProfile, appProfile } = useProfessional()
+const { app, card: appToCard } = useApp()
+const { user, card: userToCard } = useUser()
 
 const { ensure } = useProfileEnsure(professionalConfig)
 const isCreating = ref(false)
@@ -121,21 +142,7 @@ const devPayload = computed(() => ({
   coreProfile: resolvedCoreProfile.value,
   appProfile: resolvedAppProfile.value,
 }))
+
+const userCard = computed(() => userToCard(user.value))
+const appCard = computed(() => appToCard(app.value))
 </script>
-
-<style scoped>
-.fallback {
-  margin: 0;
-  padding: 1.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.875rem;
-}
-
-.loading {
-  text-transform: none;
-  letter-spacing: normal;
-  font-size: 0.875rem;
-  opacity: 0.7;
-}
-</style>

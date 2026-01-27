@@ -1,0 +1,77 @@
+[
+  {
+    "id": "PWu17mL3cTX9ia3OlAdI0Rux6Ek2",
+    "specialties": [],
+    "title": "Executive Chef",
+    "name": "Shane Dickinson",
+    "created_at_iso_backup": "2025-02-27T11:23:24.922Z",
+    "created_at": "2025-02-27T11:23:24.922Z",
+    "bio_short": "Award-winning chef specializing in modern Australian cuisine",
+    "updated_at": "2025-09-17T10:14:31.890Z",
+    "display_name": "Shane Dickinson"
+  },
+  {
+    "id": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
+    "gallery": [
+      {
+        "name": "gyoza",
+        "image_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/chefs%2FjMK33p5XlhYS8rBCEf8qUiogfMg2%2Fgallery%2Fgyoza.JPG?alt=media&token=0696abe3-53e2-4dbb-ac66-e5e82ce680a1"
+      },
+      {
+        "image_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/chefs%2FjMK33p5XlhYS8rBCEf8qUiogfMg2%2Fgallery%2Fpulled-pork-poutine.JPG?alt=media&token=4b01c11f-217a-4424-929f-134d0b9eca96",
+        "name": "pulled-pork-poutine"
+      },
+      {
+        "image_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/chefs%2FjMK33p5XlhYS8rBCEf8qUiogfMg2%2Fgallery%2FAmuse%20Bouche%20Lenker%20Blue%20%26%20Roasted%20Fig.jpeg?alt=media&token=7231440e-abae-438f-a3cf-8f743126bc9b",
+        "name": "Amuse Bouche Lenker Blue & Roasted Fig"
+      },
+      {
+        "name": "Smoked Salmon ",
+        "image_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/chefs%2FjMK33p5XlhYS8rBCEf8qUiogfMg2%2Fgallery%2FSmoked%20Salmon.jpeg?alt=media&token=d199c02f-95e7-4682-a4cc-b029f0b7ebde"
+      },
+      {
+        "image_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/chefs%2FjMK33p5XlhYS8rBCEf8qUiogfMg2%2Fgallery%2FMe%20at%20Balmers.jpeg?alt=media&token=bc860d63-3ccd-4cea-96c2-9d1075cb9f72",
+        "name": "Me at Balmers"
+      },
+      {
+        "name": "Short Ribs",
+        "image_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/chefs%2FjMK33p5XlhYS8rBCEf8qUiogfMg2%2Fgallery%2FShort%20Ribs.jpeg?alt=media&token=83ddc0b5-ff20-4c44-8a0c-3eed719d7d91"
+      }
+    ],
+    "specialties": [
+      "Smash Burgers",
+      "Vegan Duck",
+      "Gyoza",
+      "Smoked Pork",
+      "Bao"
+    ],
+    "kitchens": {
+      "fAw7kjlXqTCe7MAa1hqR": {
+        "name": "Misebox Updated",
+        "image_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/kitchens%2FfAw7kjlXqTCe7MAa1hqR%2Fimage_url.jpg?alt=media&token=15b9e6da-0e89-47fa-bc2f-00f1d7395231"
+      }
+    },
+    "title": "Head Chef",
+    "name": "Chef Deano",
+    "created_at_iso_backup": "2025-01-29T19:51:01.345Z",
+    "created_at": "2025-01-29T19:51:01.345Z",
+    "bio_short": "Creative chef known for innovative fusion dishes",
+    "bio_long": "Beyond recipe organization, I use Misebox to store high-quality food images, track seasonal ingredients, and curate menus. It serves as a digital archive for my culinary work, enabling me to maintain consistency, explore new inspirations, and build a strong professional portfolio.",
+    "updated_at": "2025-09-17T10:14:31.890Z",
+    "display_name": "Chef Deano"
+  },
+  {
+    "id": "xdu83J77YeOROlePJdibPekxkDp2",
+    "specialties": [
+      "Pâtissier"
+    ],
+    "title": "Sous Chef",
+    "name": "Tahneeq",
+    "created_at_iso_backup": "2025-02-11T09:13:14.404Z",
+    "created_at": "2025-02-11T09:13:14.404Z",
+    "bio_short": "Rising culinary talent with expertise in Middle Eastern cuisine",
+    "bio_long": "I am passionate about recipe development, food styling, and digital branding, using my skills to create and showcase unique dishes.\\n\\nAt Hardwald Brewhouse, I crafted seasonal menus and elevated dish presentation. My experience at Sorell Hotel Sonnental strengthened my ability to curate dishes for à la carte, banquets, and events while maintaining high quality.\\n\\nIn fast-paced environments like Dorint Resort Blümlisalp, I focused on plating consistency and efficiency. I use Misebox to store recipes, document my food photography, and grow my social media presence, allowing me to share my culinary journey and expand my reach",
+    "updated_at": "2025-09-17T10:14:31.890Z",
+    "display_name": "Tahneeq"
+  }
+]

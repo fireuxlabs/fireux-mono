@@ -9,8 +9,13 @@ import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/plac
 import { useFirestore } from 'vuefire'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 import type {
+    CertificationItem,
+    EducationItem,
+    LanguageProficiency,
     OtherExperienceItem,
+    ProjectItem,
     RelevantExperienceItem,
+    VolunteeringItem,
 } from '../../../../../../models/profiles/Professional/supporting'
 
 const COLLECTION = 'professionals'
@@ -23,6 +28,15 @@ const pruneUndefined = <T extends Record<string, any>>(payload: T) => {
   )
   return Object.fromEntries(entries) as Partial<T>
 }
+
+const normalizeStringArray = (items: string[] = []) =>
+  Array.from(
+    new Set(
+      items
+        .map((item) => (item ?? '').trim())
+        .filter((item) => item.length > 0)
+    )
+  )
 
 export function useProfessionalUpdate(
   profile?: ProfileRefs<ProfessionalCore>
@@ -147,7 +161,9 @@ export function useProfessionalUpdate(
         lat: 0,
         lng: 0,
         place_image: '',
-        source: 'firebase',
+        image_shade: 'neutral',
+        claimed_by: '',
+        source: 'fireux',
         search_term: placeId,
       }
 
@@ -201,15 +217,6 @@ export function useProfessionalUpdate(
     )
   }
 
-  const updateTagline = async (
-    tagline: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const value = (tagline ?? '').trim()
-    await commitUpdate({ tagline: value }, { ...options, id: uid })
-  }
-
   const updateBioShort = async (
     bioShort: string,
     options: UpdateOptions = {}
@@ -217,6 +224,24 @@ export function useProfessionalUpdate(
     const uid = await resolveUid(options.id)
     const value = (bioShort ?? '').trim()
     await commitUpdate({ bio_short: value }, { ...options, id: uid })
+  }
+
+  const updateBioLong = async (
+    bioLong: string,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const value = (bioLong ?? '').trim()
+    await commitUpdate({ bio_long: value }, { ...options, id: uid })
+  }
+
+  const updateTitle = async (
+    title: string,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const value = (title ?? '').trim()
+    await commitUpdate({ title: value }, { ...options, id: uid })
   }
 
   const updateSpecialties = async (
@@ -230,8 +255,82 @@ export function useProfessionalUpdate(
           .split(',')
           .map((item) => item.trim())
           .filter((item) => item.length > 0)
-    const unique = Array.from(new Set(list))
+    const unique = normalizeStringArray(list)
     await commitUpdate({ specialties: unique }, { ...options, id: uid })
+  }
+
+  const updateLocations = async (
+    locations: string[],
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    await commitUpdate(
+      { locations: normalizeStringArray(locations) },
+      { ...options, id: uid }
+    )
+  }
+
+  const updateHealthCertifications = async (
+    healthCertifications: string[],
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    await commitUpdate(
+      { health_certifications: normalizeStringArray(healthCertifications) },
+      { ...options, id: uid }
+    )
+  }
+
+  const updateLanguages = async (
+    languages: LanguageProficiency[],
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const next = (languages ?? [])
+      .map((item) => ({
+        language: (item?.language ?? '').trim(),
+        proficiency: (item?.proficiency ?? '').trim(),
+      }))
+      .filter((item) => item.language.length > 0)
+    await commitUpdate({ languages: next }, { ...options, id: uid })
+  }
+
+  const updateCertifications = async (
+    certifications: CertificationItem[],
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    await commitUpdate(
+      { certifications: certifications ?? [] },
+      { ...options, id: uid }
+    )
+  }
+
+  const updateEducation = async (
+    education: EducationItem[],
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    await commitUpdate({ education: education ?? [] }, { ...options, id: uid })
+  }
+
+  const updateVolunteering = async (
+    volunteering: VolunteeringItem[],
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    await commitUpdate(
+      { volunteering: volunteering ?? [] },
+      { ...options, id: uid }
+    )
+  }
+
+  const updateProjects = async (
+    projects: ProjectItem[],
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    await commitUpdate({ projects: projects ?? [] }, { ...options, id: uid })
   }
 
   return {
@@ -240,8 +339,16 @@ export function useProfessionalUpdate(
     updateAppProfile,
     setRelevantExperience,
     setOtherExperience,
-    updateTagline,
+    updateTitle,
     updateBioShort,
+    updateBioLong,
     updateSpecialties,
+    updateLocations,
+    updateHealthCertifications,
+    updateLanguages,
+    updateCertifications,
+    updateEducation,
+    updateVolunteering,
+    updateProjects,
   }
 }

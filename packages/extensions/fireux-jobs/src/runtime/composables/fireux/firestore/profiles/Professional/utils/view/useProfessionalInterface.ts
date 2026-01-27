@@ -1,5 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { csv, safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import { csv, safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'
 import { professionalConfig, type ProfessionalCore, type ProfessionalResolved } from '../../../../../../../models/profiles/Professional/Professional.model'
@@ -17,10 +17,7 @@ export namespace ProfessionalCard {
 
     // Primary display fields
     displayName: string
-    tagline: string
-
-    // Status/label chips
-    badges: string[]
+    title: string
 
     // Summary fields for list views
     bioShort: string
@@ -43,8 +40,6 @@ export function useProfessionalInterface(
   function map(p: ProfessionalCore, u?: UserLike | null): ProfessionalCard.Card {
     const id = safeString(p.id).trim()
     const title = safeString(p.title)
-    const subtitle = safeString(p.subtitle)
-    const tagline = safeString(p.tagline)
 
     return {
       id,
@@ -54,8 +49,7 @@ export function useProfessionalInterface(
 
       // Canonical: professional pills are user-hydrated; no profile-title fallback for display name.
       displayName: safeString(u?.display_name),
-      tagline: tagline || title || subtitle,
-      badges: safeStringArray(p.tags),
+      title,
 
       bioShort: safeString(p.bio_short),
       specialtiesCsv: csv(p.specialties),
@@ -81,9 +75,8 @@ export function useProfessionalInterface(
     const u = resolveUser(target as ProfessionalCore | ProfessionalResolved | null)
     const displayName = safeString(u?.display_name)
     const title = safeString(p.title)
-    const tagline = safeString(p.tagline)
     const id = safeString(p.id)
-    return `${displayName} ${title} ${tagline} ${id}`.trim().toLowerCase()
+    return `${displayName} ${title} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

@@ -1,0 +1,493 @@
+[
+  {
+    "id": "FoPLMYVPirSiMm2eDskwsZja0q42",
+    "title": "Freelancer",
+    "created_at": "2025-02-10T16:20:53.771Z",
+    "bio_short": "I am an experienced chef with a background in Michelin-recommended restaurants, high-end hotels, and large-scale kitchens. I excel in leading teams, refining menus, and maintaining efficiency under pressure, ensuring a smooth and high-quality service in any kitchen",
+    "bio_long": "With a career spanning fine dining, luxury hotels, and high-volume catering, I have developed a strong ability to lead kitchens, design menus, and optimize operations. My experience ranges from private dining and seasonal resort work to managing large-scale hotel kitchens, allowing me to adapt quickly to different service styles.\\n\\nAt Boen Gard, I oversaw private chalet dining and managed the hot section, ensuring that the restaurant’s estate-sourced ingredients were used to their full potential. At Hovden Resort, I led a 300-cover kitchen, handling menu planning, cost control, and staff training. In high-volume settings like Talbordon, I managed service for over 1,000 covers per day, balancing speed with quality.\\n\\nI thrive in fast-paced, high-pressure environments, bringing a combination of precision, leadership, and adaptability to every kitchen I work in. Whether running a team or fine-tuning a menu, I focus on delivering outstanding food and efficient service.",
+    "updated_at": "2025-10-09T09:17:11.676Z",
+    "relevant_experience": [
+      {
+        "place_id": "ChIJS1kBa_AGOEYRwRaP4kZIjvs",
+        "role": "Chef de Partie",
+        "from_month": "Jun",
+        "from_year": "2021",
+        "to_month": null,
+        "to_year": null,
+        "ongoing": true,
+        "responsibilities": "Managed the hot section and oversaw private chalet dining in a Michelin-recommended restaurant. Led the kitchen in the head chef’s absence, handled ordering, and trained junior staff, ensuring high standards using estate-sourced ingredients"
+      },
+      {
+        "place_id": "ChIJZYHwV2osOUYR6N1qUJ8m0jU",
+        "role": "Sous Chef",
+        "from_month": "Jan",
+        "from_year": "2020",
+        "to_month": "Jun",
+        "to_year": "2021",
+        "ongoing": false,
+        "responsibilities": "Led the 300-cover hotel kitchen, managing menu planning, dish costing, and staff training. Oversaw kitchen operations, ordering, and hygiene compliance, ensuring smooth service in a high-volume environment."
+      },
+      {
+        "place_id": "ChIJy9QERoAFR0YRAnMwI2eEV8Q",
+        "role": "Chef de Partie",
+        "from_month": "May",
+        "from_year": "2020",
+        "to_month": "Dec",
+        "to_year": "2020",
+        "ongoing": false,
+        "responsibilities": "Managed the hot section in a high-volume kitchen serving over 1,000 covers daily. Assisted with ordering, training junior staff, and ensuring efficient service, while maintaining high culinary standards in a fast-paced environment."
+      },
+      {
+        "place_id": "ChIJfQbcFs5C2EcRfPr8IZUWn6g",
+        "role": "Head Chef",
+        "from_month": "May",
+        "from_year": "2014",
+        "to_month": "Jun",
+        "to_year": "2018",
+        "ongoing": false,
+        "responsibilities": "Opened and led the kitchen, growing revenue from £4,000 to £15,000 weekly. Managed menu writing, costing, staff training, and private dining for high-profile clients in the horse racing industry, while overseeing large-scale events for up to 700 guests."
+      }
+    ],
+    "specialties": [],
+    "subtitle": "",
+    "health_certifications": [],
+    "tagline": "",
+    "locations": [],
+    "other_experience": [],
+    "tags": [],
+    "education": [],
+    "projects": [],
+    "languages": [],
+    "volunteering": [],
+    "certifications": []
+  },
+  {
+    "id": "OnLDg1ZcGqh30aaopCZggBIyhbS2",
+    "created_at": "2025-02-09T08:05:53.283Z",
+    "title": "Sous Chef",
+    "languages": [
+      {
+        "proficiency": "C1",
+        "language": "English"
+      },
+      {
+        "language": "Spanish",
+        "proficiency": "B1"
+      },
+      {
+        "language": "French",
+        "proficiency": "B1"
+      },
+      {
+        "language": "German",
+        "proficiency": "B1"
+      }
+    ],
+    "locations": [
+      {
+        "locations": [
+          {
+            "formatted_address": "Feldgässli 110a, 3800 Matten B. Interlaken, Switzerland",
+            "lat": 46.67206856760859,
+            "lng": 7.863753633454755
+          }
+        ],
+        "radius": "15"
+      }
+    ],
+    "bio_short": "I’m a Sous Chef with over 14 years of experience in fine dining, hotels, and mountain lodges across Switzerland and Portugal. I specialize in kitchen management, menu development, and leading teams in fast-paced environments while maintaining high culinary standards",
+    "bio_long": "I started my culinary career at the Ritz Four Seasons in Lisbon, training in Michelin-starred environments and mastering both classical and modern techniques. Over the years, I’ve worked in fine dining restaurants, luxury hotels, and remote mountain lodges, gaining expertise in à la carte service, banqueting, and kitchen operations.\n\nAt Seehotel Bönigen, I manage daily kitchen operations, oversee menu development, and ensure strict hygiene and service standards. My role involves maintaining efficiency, mentoring junior chefs, and creating structured workflows to keep the kitchen running smoothly. I thrive under pressure and enjoy bringing creativity to my dishes while upholding precision and organization.\n\nFluent in Portuguese and English, and can work with Spanish, French, and German, I adapt easily to multicultural teams and diverse kitchen environments. My focus is on delivering high-quality cuisine while fostering a well-organized, collaborative kitchens",
+    "updated_at": "2025-10-09T09:17:11.678Z",
+    "relevant_experience": [
+      {
+        "place_id": "ChIJcUsl4xejj0cRbug8Ds7VHNc",
+        "role": "Sous Chef",
+        "from_month": "Jun",
+        "from_year": "2020",
+        "to_month": null,
+        "to_year": null,
+        "ongoing": true,
+        "responsibilities": "Managing kitchen operations, menu development, hygiene standards, team leadership, and workflow efficiency."
+      },
+      {
+        "place_id": "ChIJQzGAsJCkj0cRJZIIj0XoBqA",
+        "role": "Sous Chef",
+        "from_month": "Apr",
+        "from_year": "2019",
+        "to_month": null,
+        "to_year": null,
+        "ongoing": true,
+        "responsibilities": "Overseeing à la carte and banquet service, kitchen organization, staff training, inventory management, and quality control."
+      },
+      {
+        "place_id": "ChIJGZLquf6bj0cRgf5eaOtK7PY",
+        "role": "Cook",
+        "from_month": "Jun",
+        "from_year": "2017",
+        "to_month": "Oct",
+        "to_year": "2018",
+        "ongoing": false,
+        "responsibilities": "Garde Manger and Entremetier, preparing cold dishes, managing ingredients, maintaining hygiene, and service prep."
+      },
+      {
+        "place_id": "ChIJTeUywPmbj0cR-wT2hmyQaUM",
+        "role": "Chef de Partie",
+        "from_month": "Dec",
+        "from_year": "2015",
+        "to_month": "Mar",
+        "to_year": "2016",
+        "ongoing": false,
+        "responsibilities": "Sous Chef overseeing Swiss cuisine, menu planning, kitchen operations, team supervision, and inventory management."
+      },
+      {
+        "place_id": "ChIJ5_TdZKNFj0cRunmn1AAOhAM",
+        "role": "Chef de Partie",
+        "from_month": "Jun",
+        "from_year": "2006",
+        "to_month": "Aug",
+        "to_year": "2006",
+        "ongoing": false,
+        "responsibilities": "At Hotel Allalin in Saas-Fee, I served as Chef de Partie, specializing in Entremetier, Saucier, and Garde-Manger roles. My responsibilities included preparing hot appetizers, sauces, and cold dishes, managing ingredient inventory, and ensuring adherence to hygiene standards. I also assisted in banquet preparations and collaborated with the kitchen team to maintain high culinary standards."
+      },
+      {
+        "place_id": "ChIJGZLquf6bj0cRgf5eaOtK7PY",
+        "role": null,
+        "from_month": "Dec",
+        "from_year": "2013",
+        "to_month": "Apr",
+        "to_year": "2015",
+        "ongoing": false,
+        "responsibilities": "At Berghaus Männlichen, I served as Chef de Partie, focusing on Garde Manger and Entremetier stations. My responsibilities included preparing cold dishes and hot appetizers, managing ingredient inventory, maintaining hygiene standards, and ensuring timely service preparation. I collaborated closely with the kitchen team to deliver high-quality Swiss and international cuisine to guests."
+      },
+      {
+        "place_id": "ChIJHxvMffqkj0cR7zCUD5KfxXc",
+        "role": "Commis de Cuisine",
+        "from_month": "Jun",
+        "from_year": "2013",
+        "to_month": "Nov",
+        "to_year": "2013",
+        "ongoing": false,
+        "responsibilities": "At Landhotel Golf in Unterseen, I worked as a Commis de Cuisine, handling Garde Manger, Entremetier, and Pâtisserie stations. My duties included preparing cold dishes, hot appetizers, and desserts, managing ingredient inventory, and maintaining hygiene standards. I collaborated with the kitchen team to deliver high-quality Swiss and Italian cuisine to our guests."
+      },
+      {
+        "place_id": "ChIJXdh4fWQzGQ0RMxS3c5Nua04",
+        "role": "Chef de Partie",
+        "from_month": "Jun",
+        "from_year": "2012",
+        "to_month": null,
+        "to_year": null,
+        "ongoing": true,
+        "responsibilities": "At Hotel da Estrela in Lisbon, I served as Chef de Partie, focusing on Entremetier and Saucier roles. My responsibilities included preparing hot appetizers and sauces, managing ingredient inventory, and maintaining strict hygiene standards. I collaborated closely with the kitchen team to deliver high-quality Portuguese and international cuisine to our guests."
+      },
+      {
+        "place_id": "ChIJswCZ5HQzGQ0REazzU1ROadQ",
+        "role": "Chef de Partie (Tournant)",
+        "from_month": "Jul",
+        "from_year": "2007",
+        "to_month": "Jun",
+        "to_year": "2012",
+        "ongoing": false,
+        "responsibilities": "At Hotel Real Palácio in Lisbon, I served as Chef de Partie, focusing on Entremetier and Saucier roles. My responsibilities included preparing hot appetizers and sauces, managing ingredient inventory, and maintaining strict hygiene standards. I collaborated closely with the kitchen team to deliver high-quality Portuguese and international cuisine to our guests."
+      },
+      {
+        "place_id": "ChIJ-x5EtnEzGQ0R8am5BtQUOLs",
+        "role": "Apprentice",
+        "from_month": "Jun",
+        "from_year": "2010",
+        "to_month": "Aug",
+        "to_year": "2010",
+        "ongoing": false,
+        "responsibilities": "At the Four Seasons Hotel Ritz Lisbon, I completed an apprenticeship, focusing on both banquet and à la carte services. My responsibilities included assisting in the preparation of high-quality dishes, learning various cooking techniques, and maintaining strict hygiene standards. This experience provided me with a solid foundation in luxury hospitality and refined my skills in delivering exceptional culinary experiences."
+      }
+    ],
+    "specialties": [],
+    "subtitle": "",
+    "health_certifications": [],
+    "tagline": "",
+    "other_experience": [],
+    "tags": [],
+    "education": [],
+    "projects": [],
+    "volunteering": [],
+    "certifications": []
+  },
+  {
+    "id": "WShQtlmVVVdqajd9muSHBLnm9kD2",
+    "created_at": "2025-03-05T23:24:52.306Z",
+    "title": "Chef Sebastian Nagel",
+    "updated_at": "2025-09-22T18:54:27.248Z",
+    "specialties": [],
+    "bio_short": "",
+    "subtitle": "",
+    "health_certifications": [],
+    "tagline": "",
+    "locations": [],
+    "bio_long": "",
+    "relevant_experience": [],
+    "other_experience": [],
+    "tags": [],
+    "education": [],
+    "projects": [],
+    "languages": [],
+    "volunteering": [],
+    "certifications": []
+  },
+  {
+    "id": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
+    "created_at": "2025-01-10T12:24:46.948Z",
+    "certifications": [
+      {
+        "name": "Level 3 Supervising Food Safety in Catering",
+        "place_name": "High Speed Training",
+        "formatted_address": "Riverside business park, Dansk Way, Ilkley LS29 8JZ, UK",
+        "image_url": "https://www.google.com/s2/favicons?sz=128&domain=highspeedtraining.co.uk",
+        "year": "2019",
+        "document_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/professionals%2FjMK33p5XlhYS8rBCEf8qUiogfMg2%2Fcertifications%2FDaniel%20Watson-Level%203%20Award%20in%20Supervising%20Food%20Safety%20in%20Catering.pdf?alt=media&token=449b552c-e600-4039-8357-4fc52dd3a7d4"
+      }
+    ],
+    "education": [
+      {
+        "start_year": "2011",
+        "institution": "Manchester Metropolitan University",
+        "document_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/professionals%2FjMK33p5XlhYS8rBCEf8qUiogfMg2%2Feducation%2FCertificate%20-%20MMU.pdf?alt=media&token=e05334e6-512d-44ca-b7cb-e1761d525a27",
+        "ongoing": false,
+        "formatted_address": "Ormond, Lower Ormond St, Manchester M15 6BX, UK",
+        "image_url": "https://www.google.com/s2/favicons?sz=128&domain=mmu.ac.uk",
+        "degree": "International Food Management",
+        "end_year": "2012"
+      },
+      {
+        "institution": "University of Chester",
+        "formatted_address": "Parkgate Rd, Chester CH1 4BJ, UK",
+        "image_url": "https://www.google.com/s2/favicons?sz=128&domain=chester.ac.uk",
+        "degree": "Business Information Systems",
+        "start_year": "2003",
+        "end_year": "2006",
+        "ongoing": false,
+        "document_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/professionals%2FjMK33p5XlhYS8rBCEf8qUiogfMg2%2Feducation%2FCertificate%20-%20Chester.pdf?alt=media&token=40726cb8-cd2e-48db-ba5a-41fcb20a7c63"
+      }
+    ],
+    "languages": [
+      {
+        "proficiency": "A1",
+        "language": "French"
+      },
+      {
+        "language": "German",
+        "proficiency": "B1"
+      },
+      {
+        "language": "English",
+        "proficiency": "Native"
+      }
+    ],
+    "volunteering": [
+      {
+        "ongoing": false,
+        "organization": "Marraude Mentality",
+        "role": "Cooking ",
+        "from_year": "2024",
+        "to_year": "2024",
+        "responsibilities": "Cooking for the homeless in Marseille, France. Responsibilities included preparing hundreds of sandwiches daily, coordinating meal distribution, and serving food in the evenings. Ensured efficient food preparation, maintained hygiene standards, and collaborated with volunteers to support those in need."
+      }
+    ],
+    "projects": [
+      {
+        "name": "Misebox",
+        "role": "Application Developer, Cook",
+        "from_year": "2022",
+        "to_year": null,
+        "ongoing": true,
+        "responsibilities": "Developing Misebox, a digital platform revolutionizing chef recruitment. Responsibilities include designing and coding the web app, integrating Firebase for real-time data, refining UX/UI, and networking with industry professionals to enhance functionality. Focused on streamlining hiring and career growth for chefs."
+      }
+    ],
+    "title": "Freelancer, Agent, Developer",
+    "bio_short": "\"Private Chef with experience in fast-paced environments. I take on flexible work to continue developing my own enterprise. I have expertise in food-related technology, business, and management. Native English speaker, proficient in Swiss-German, and French. I’ve worked internationally in Switzerland, Nepal and Norway.\"",
+    "bio_long": "Chef with experience in fast-paced environments, looking for flexible work to continue growing my own enterprise. My expertise extends beyond the kitchen into food-related technology, business, and management.\\n\\nI hold a Postgraduate Degree in International Food Management (Manchester Metropolitan University, UK, 2012) and a Bachelor’s Degree in Business Information Systems (Chester University, UK, 2009). I’m certified in European Food Safety and Hygiene at Levels 1, 2, and 3.\\n\\nOver the years, I’ve worked across different roles, from Head Chef to Sous Chef, but I’m most comfortable as a Chef de Partie, able to handle any station—though patisserie isn’t my strongest area.\\n\\nIn my free time, I work on creative food projects, including catering events and product development for my food-led enterprise, Misebox. I also have skills in graphic design and application development.\"\\n\\n",
+    "other_experience": [
+      {
+        "place_id": "ChIJM3aUezGjj0cRm9qzSb-cUao",
+        "role": "Application Developer",
+        "from_month": "Sep",
+        "from_year": "2022",
+        "to_month": null,
+        "to_year": null,
+        "ongoing": true,
+        "responsibilities": "Leading the development of a culinary and hospitality platform, focusing on chef recruitment, kitchen management, and industry networking. Overseeing app design, business strategy, and user experience, while integrating tools for job postings, supplier connections, and operational efficiency in professional kitchens."
+      }
+    ],
+    "subtitle": "Freelancer",
+    "relevant_experience": [
+      {
+        "ongoing": true,
+        "responsibilities": "Supporting the kitchen during a busy winter season, managing both buffet and à la carte service while ensuring high standards for fresh, locally sourced ingredients. Provided service in Swiss German and French, catering to a diverse customer base in a high-demand Swiss resort setting.",
+        "place_id": "ChIJ0UF6GPmvj0cR__jYKy-J8pE",
+        "to_month": null,
+        "from_year": "2024",
+        "role": "Aushilfe",
+        "from_month": "Nov",
+        "to_year": null
+      },
+      {
+        "responsibilities": "Lead Cook at Restaurant Bären  \nAs the lead cook at a local restaurant, I was responsible for managing stock and supplies, preparing both the à la carte and table d'hôte menus, and creating daily and weekly specials. I played a key role in maintaining kitchen operations and ensuring consistent quality. Even after leaving the position, I regularly returned to support the team during busy periods or when staffing was limited.",
+        "to_year": "2023",
+        "role": "Lead Cook",
+        "from_year": "2023",
+        "from_month": "Apr",
+        "to_month": "Sep",
+        "place_id": "ChIJEbkWR0ijj0cRiHfShuHPLcc",
+        "ongoing": false
+      },
+      {
+        "ongoing": true,
+        "image_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/places%2FChIJWS2cLEkKkEcRPkeZB6EcnLk%2Favatar?alt=media&token=36bcce8f-ad51-4e5e-9abe-b657ebc8350e",
+        "from_month": "November",
+        "from_year": "2019",
+        "responsibilities": "Working with Swiss hospitality venues through Coople, providing flexible kitchen support for hotels, events, and restaurants. Roles vary from Chef de Partie to Sous Chef, adapting quickly to different teams and service styles.",
+        "to_month": null,
+        "place_id": "ChIJWS2cLEkKkEcRPkeZB6EcnLk",
+        "role": "Agent",
+        "short_address": "Albisriederstrasse 253, 8047 Zürich",
+        "name": "Coople (Schweiz) AG",
+        "to_year": null,
+        "formatted_address": "Albisriederstrasse 253, 8047 Zürich, Switzerland"
+      },
+      {
+        "name": "Adia",
+        "role": "Agent",
+        "to_year": null,
+        "from_year": "2023",
+        "formatted_address": "Uetlibergstrasse 134, 8045 Zürich, Switzerland",
+        "to_month": null,
+        "image_url": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/places%2FChIJt0ko0AmgmkcRZJMyt51zAUg%2Favatar?alt=media&token=5714cbe2-6d1f-4d21-b8db-c5dd1c6256f0",
+        "from_month": "April",
+        "ongoing": true,
+        "place_id": "ChIJt0ko0AmgmkcRZJMyt51zAUg",
+        "responsibilities": "Working with Swiss hospitality venues through Coople, providing flexible kitchen support for hotels, events, and restaurants. Roles vary from Chef de Partie to Sous Chef, adapting quickly to different teams and service styles."
+      }
+    ],
+    "health_certifications": [],
+    "locations": [],
+    "tags": [],
+    "specialties": [
+      "a specialiy"
+    ],
+    "updated_at": "2026-01-26T22:24:54.650Z",
+    "tagline": "tagline"
+  },
+  {
+    "id": "rEssOnUA8wVHdNKE2JETqWAdwdm1",
+    "title": "Kitchen Cleaner ",
+    "created_at": "2025-02-11T18:28:27.420Z",
+    "bio_short": "Holiday home kitchen cleaner. ",
+    "updated_at": "2025-10-09T09:17:11.678Z",
+    "relevant_experience": [
+      {
+        "place_id": "ChIJ84hrmh6lj0cRoczGWuTvTtE",
+        "role": "Kitchen Cleaner",
+        "from_month": "Mar",
+        "from_year": "2021",
+        "to_month": "Mar",
+        "to_year": "2022",
+        "ongoing": false,
+        "responsibilities": "A dedicated kitchen and service area cleaner at Balmers, ensuring high hygiene standards through thorough cleaning, dishwashing, and maintenance."
+      }
+    ],
+    "specialties": [],
+    "subtitle": "",
+    "health_certifications": [],
+    "tagline": "",
+    "locations": [],
+    "bio_long": "",
+    "other_experience": [],
+    "tags": [],
+    "education": [],
+    "projects": [],
+    "languages": [],
+    "volunteering": [],
+    "certifications": []
+  },
+  {
+    "id": "s9hKBxO7mJSFC5vHNOo3mt9Dgi42",
+    "title": "Freelancer",
+    "created_at": "2025-02-09T10:38:23.636Z",
+    "bio_short": "I’m a freelance chef with over 20 years of experience in fine dining, luxury hotels, and large-scale event catering. From high-profile private functions to major events like F1 and Ascot, I specialize in creative menu development, kitchen management, and delivering exceptional dining experiences.",
+    "bio_long": "I trained at DeVere’s “Cooking with Verve” Chef Academy and have spent over 20 years working in fine dining, luxury hotels, and large-scale event catering. My career has taken me through 4- and 5-star hotels, ski resorts, Michelin-starred environments, and private events, allowing me to refine my expertise in kitchen management, menu development, and high-volume service.\n\nAs a freelance chef, I’ve worked at F1 at Silverstone, Ascot Racecourse, LIV Golf in America, and private functions for high-profile clients, balancing creativity with efficiency in fast-paced environments. I also held leadership roles at Broome Park Hotel, Grand Hotel Torquay, and DeVere Venues, overseeing teams and launching new menus.\n\nI thrive in dynamic kitchens, adapting to different styles and cuisines while maintaining high culinary standards. My focus is on delivering quality, efficiency, and exceptional dining experiences, no matter the setting.",
+    "updated_at": "2025-10-09T09:17:11.679Z",
+    "relevant_experience": [
+      {
+        "place_id": "ChIJd5U3YbF0iUcR-oLtm9B0M5Y",
+        "role": "HeadChef",
+        "from_month": "Oct",
+        "from_year": "2022",
+        "to_month": "Mar",
+        "to_year": "2023",
+        "ongoing": false,
+        "responsibilities": "Designed and executed a rotating three-course evening menu for 100 guests daily. Led a team of four chefs, managed kitchen operations, ensured high hygiene standards, and maintained efficiency in a busy ski resort environment."
+      },
+      {
+        "place_id": "ChIJ5a7zI4yZb0gREnXFLyK2efw",
+        "role": "Freelance Sous Chef",
+        "from_month": "Mar",
+        "from_year": "2022",
+        "to_month": "Sep",
+        "to_year": "2022",
+        "ongoing": false,
+        "responsibilities": "Worked alongside the Head Chef to develop and implement the summer menu. Managed high-volume service, preparing 400-700 covers daily while ensuring smooth kitchen operations and maintaining quality standards."
+      },
+      {
+        "place_id": "ChIJW24UWZEFR0YRLz8DJUFmfes",
+        "role": "Sous Chef",
+        "from_month": "Jun",
+        "from_year": "2020",
+        "to_month": "Dec",
+        "to_year": "2020",
+        "ongoing": false,
+        "responsibilities": "Led the kitchen in executing a six-course tasting menu, managed a team of six chefs, and oversaw high-end events. Created new dishes, maintained high hygiene standards, and helped the restaurant navigate the challenges of the COVID-19 period while pushing it forward."
+      },
+      {
+        "place_id": "ChIJoVol0XW33kcRzlGVA086YZc",
+        "role": "Head Chef",
+        "from_month": "Mar",
+        "from_year": "2018",
+        "to_month": "Jul",
+        "to_year": "2019",
+        "ongoing": false,
+        "responsibilities": "Launched new fine dining, banqueting, and wedding menus for up to 250 guests. Managed a 60-cover restaurant, 34-room hotel, and lodges, overseeing a team of seven chefs. Rebuilt the kitchen from scratch under new ownership, sourced local ingredients, and maintained a continuous 5-star EHO rating."
+      }
+    ],
+    "specialties": [],
+    "subtitle": "",
+    "health_certifications": [],
+    "tagline": "",
+    "locations": [],
+    "other_experience": [],
+    "tags": [],
+    "education": [],
+    "projects": [],
+    "languages": [],
+    "volunteering": [],
+    "certifications": []
+  },
+  {
+    "id": "xdu83J77YeOROlePJdibPekxkDp2",
+    "title": "Pâtissier",
+    "created_at": "2025-02-11T08:44:55.462Z",
+    "updated_at": "2025-09-22T18:54:27.249Z",
+    "bio_short": "I am a skilled chef with experience in high-end hotels, fine dining, and large-scale catering. Specializing in menu development, food styling, and kitchen management, I ensure efficiency and high-quality service in every kitchen I work in",
+    "bio_long": "With experience in fine dining, high-end hotels, and large-scale catering, I specialize in menu development, food styling, and kitchen management.\\n\\nAt Hardwald Brewhouse, I led menu creation, staff coordination, and kitchen operations, ensuring high standards. At Sorell Hotel Sonnental, I managed à la carte service and banquet preparation, refining my skills in team leadership and plating techniques.\\n\\nIn high-volume environments like Dorint Resort Blümlisalp, I ensured efficiency and consistency under pressure. Beyond kitchen management, I focus on food photography, content creation, and culinary innovation to enhance both presentation and guest experience",
+    "specialties": [],
+    "subtitle": "",
+    "health_certifications": [],
+    "tagline": "",
+    "locations": [],
+    "relevant_experience": [],
+    "other_experience": [],
+    "tags": [],
+    "education": [],
+    "projects": [],
+    "languages": [],
+    "volunteering": [],
+    "certifications": []
+  }
+]

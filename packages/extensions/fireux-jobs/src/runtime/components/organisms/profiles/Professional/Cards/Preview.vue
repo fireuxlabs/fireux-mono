@@ -7,21 +7,10 @@
         <div class="preview__top">
           <div class="preview__title">{{ displayName }}</div>
 
-          <div v-if="showBadges && badges.length" class="preview__badges">
-            <UBadge
-              v-for="badge in badges"
-              :key="badge"
-              variant="soft"
-              color="neutral"
-              size="xs"
-            >
-              {{ badge }}
-            </UBadge>
-          </div>
         </div>
 
-        <div v-if="showSubtitle && tagline" class="preview__subtitle">
-          {{ tagline }}
+        <div v-if="showSubtitle && title" class="preview__subtitle">
+          {{ title }}
         </div>
 
         <div v-if="showBody" class="preview__body">
@@ -44,21 +33,17 @@
 type Props = {
   avatarUrl: string
   displayName: string
-  tagline: string
-  badges: string[]
+  title: string
   bioShort: string
   specialtiesCsv: string
 
   prop?: string
   showSubtitle?: boolean
-  showBadges?: boolean
   showBody?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
-  badges: () => [],
   showSubtitle: true,
-  showBadges: true,
   showBody: true,
 })
 </script>

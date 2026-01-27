@@ -12,21 +12,9 @@
         <div class="card__header">
           <div class="min-w-0">
             <div class="card__title">{{ displayName }}</div>
-            <div v-if="showSubtitle && tagline" class="card__subtitle">
-              {{ tagline }}
+            <div v-if="showSubtitle && title" class="card__subtitle">
+              {{ title }}
             </div>
-          </div>
-
-          <div v-if="showBadges && badges.length" class="card__badges">
-            <UBadge
-              v-for="badge in badges"
-              :key="badge"
-              variant="soft"
-              color="neutral"
-              size="xs"
-            >
-              {{ badge }}
-            </UBadge>
           </div>
         </div>
 
@@ -44,11 +32,10 @@ import type { ProfessionalCard } from '../../../../../composables/fireux/firesto
 
 type Props = Pick<
   ProfessionalCard.Card,
-  'to' | 'avatarUrl' | 'displayName' | 'tagline' | 'badges' | 'bioShort'
+  'to' | 'avatarUrl' | 'displayName' | 'title' | 'bioShort'
 > & {
   prop?: string
   showSubtitle?: boolean
-  showBadges?: boolean
   showTagline?: boolean
   link?: boolean
   action?: boolean
@@ -59,10 +46,8 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
-  badges: () => [],
   prop: '',
   showSubtitle: true,
-  showBadges: true,
   showTagline: true,
   link: false,
   action: false,

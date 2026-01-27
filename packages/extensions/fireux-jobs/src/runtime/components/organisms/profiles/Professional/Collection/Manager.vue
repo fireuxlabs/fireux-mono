@@ -64,8 +64,7 @@ const { card: makeCard } = useProfessional()
 const searchTextFor = (entry: ProfessionalEntry) => {
   const displayName = (entry as any)?.user?.display_name ?? ''
   const title = (entry as any)?.title ?? ''
-  const tagline = (entry as any)?.tagline ?? ''
-  return `${displayName} ${title} ${tagline} ${entry.id ?? ''}`
+  return `${displayName} ${title} ${entry.id ?? ''}`
     .trim()
     .toLowerCase()
 }

@@ -7,10 +7,8 @@
     <SharedPill
       :avatar="avatarUrl || null"
       :title="displayName"
-      :subtitle="tagline || null"
-      :badges="badges"
+      :subtitle="title || null"
       :show-subtitle="showSubtitle"
-      :show-badges="showBadges"
     />
   </component>
 </template>
@@ -25,17 +23,14 @@ const emit = defineEmits<{
 
 const props = withDefaults(
   defineProps<
-    Pick<ProfessionalCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'tagline' | 'badges'> & {
+    Pick<ProfessionalCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'title'> & {
       showSubtitle?: boolean
-      showBadges?: boolean
       link?: boolean
       action?: boolean
     }
   >(),
   {
-    badges: () => [],
     showSubtitle: true,
-    showBadges: true,
     link: false,
     action: false,
   }

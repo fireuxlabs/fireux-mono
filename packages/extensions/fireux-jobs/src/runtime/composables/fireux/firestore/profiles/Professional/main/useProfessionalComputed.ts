@@ -20,7 +20,6 @@ export function useProfessionalComputed(
       experienceCount:
         (p?.relevant_experience?.length ?? 0) +
         (p?.other_experience?.length ?? 0),
-      tagsCount: p?.tags?.length ?? 0,
       healthCertificationsCount: p?.health_certifications?.length ?? 0,
       specialtiesCount: p?.specialties?.length ?? 0,
       locationsCount: p?.locations?.length ?? 0,

@@ -31,9 +31,6 @@ export function useProfessionalCreate() {
       const payload = {
         id: uid,
         title: '',
-        subtitle: '',
-        tagline: '',
-        tags: [],
         health_certifications: [],
         bio_short: '',
         bio_long: '',

@@ -1,0 +1,16 @@
+{
+  "name": "fireux-mcp-firestore",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "fireux-mcp-firestore": "src/index.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.3",
+    "firebase-admin": "^12.7.0"
+  },
+  "engines": {
+    "node": ">=20.11 <23"
+  }
+}

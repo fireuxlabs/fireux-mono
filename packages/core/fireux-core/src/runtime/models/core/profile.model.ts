@@ -15,11 +15,11 @@ export interface CoreProfileBase extends FireuxTimestamps {
   id: string
 
   title: string
-  subtitle: string
+  subtitle?: string
 
-  tagline: string
+  tagline?: string
 
-  tags: string[]
+  tags?: string[]
 }
 
 /**

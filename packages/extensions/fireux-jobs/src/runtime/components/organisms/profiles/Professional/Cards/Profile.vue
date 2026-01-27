@@ -4,18 +4,7 @@
       <div>
         <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
         <div>{{ card.displayName || 'Professional' }}</div>
-        <div v-if="card.tagline">{{ card.tagline }}</div>
-        <div v-if="card.badges.length">
-          <UBadge
-            v-for="badge in card.badges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
-        </div>
+        <div v-if="card.title">{{ card.title }}</div>
       </div>
     </template>
 
@@ -210,7 +199,6 @@
       <ul>
         <li>Relevant Experience: {{ relevantExperience.length }}</li>
         <li>Other Experience: {{ otherExperience.length }}</li>
-        <li>Tags: {{ tags.length }}</li>
         <li>Health Certifications: {{ healthCertifications.length }}</li>
         <li>Specialties: {{ specialties.length }}</li>
         <li>Languages: {{ languages.length }}</li>
@@ -257,7 +245,6 @@ watchEffect(() => {
 const { prop } = toRefs(props)
 const profile = computed(() => props.profile ?? null)
 
-const tags = computed(() => profile.value?.tags ?? [])
 const specialties = computed(() => profile.value?.specialties ?? [])
 const locations = computed(() => profile.value?.locations ?? [])
 const healthCertifications = computed(() => profile.value?.health_certifications ?? [])
@@ -316,12 +303,6 @@ const placeCardLookup = computed(() => {
   }
   return map
 })
-
-const getPlaceCard = (placeId?: string | null) => {
-  const normalized = normalizePlaceId(placeId)
-  if (!normalized) return null
-  return placeCardLookup.value.get(normalized) ?? null
-}
 
 const relevantExperienceCards = computed(() =>
   relevantExperience.value.map((item) => ({
