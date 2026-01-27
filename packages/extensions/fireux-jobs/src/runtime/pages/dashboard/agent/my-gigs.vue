@@ -2,28 +2,26 @@
 <template>
   <UDashboardPanel id="dashboard-agent-my-gigs">
     <template #header>
-      <UDashboardNavbar title="My Gigs">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="My Gigs" />
     </template>
 
     <template #body>
-      <section class="space-y-6 p-6">
-        <UAlert
-          icon="i-lucide-mic-2"
-          color="neutral"
-          title="My Gigs"
-          description="Gig tracking will land here once the data source is wired up."
-        />
-        <UCard>
-          <p class="text-sm text-muted">
-            Placeholder content. Replace with gig pipeline / analytics when
-            ready.
-          </p>
-        </UCard>
-      </section>
+      <div class="panels-stack">
+        <section class="space-y-6">
+          <UAlert
+            icon="i-lucide-mic-2"
+            color="neutral"
+            title="My Gigs"
+            description="Gig tracking will land here once the data source is wired up."
+          />
+          <UCard>
+            <p class="text-sm text-muted">
+              Placeholder content. Replace with gig pipeline / analytics when
+              ready.
+            </p>
+          </UCard>
+        </section>
+      </div>
     </template>
   </UDashboardPanel>
 </template>

@@ -62,12 +62,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useSupplier } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
+import { computed } from 'vue';
 import type {
-  SupplierCard,
-  SupplierProfile,
-} from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
+    SupplierCard,
+    SupplierProfile,
+} from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier';
+import { useSupplier } from '../../../../../composables/fireux/firestore/profiles/Supplier/useSupplier';
 
 const props = defineProps<{
   title?: string

@@ -63,12 +63,12 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
     await updateCoreProfile({ agent_image: normalized ?? '' })
   }
 
-  const updatePlacementTypesCsv = async (csv: string) => {
-    await updateCoreProfile({ agent_placement_types: base.csvToArray(csv) })
+  const updatePlacementTypesCsv = async (value: string | string[]) => {
+    await updateCoreProfile({ agent_placement_types: base.csvToArray(value) })
   }
 
-  const updateCoverageAreasCsv = async (csv: string) => {
-    await updateCoreProfile({ agent_coverage_areas: base.csvToArray(csv) })
+  const updateCoverageAreasCsv = async (value: string | string[]) => {
+    await updateCoreProfile({ agent_coverage_areas: base.csvToArray(value) })
   }
 
   const updateContactEmail = async (value: string) => {

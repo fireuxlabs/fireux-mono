@@ -60,9 +60,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
-import type { ChefCard, ChefCore } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
+import { computed } from 'vue';
+import type { ChefCard, ChefCore } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef';
+import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef';
 
 const props = defineProps<{
   title?: string

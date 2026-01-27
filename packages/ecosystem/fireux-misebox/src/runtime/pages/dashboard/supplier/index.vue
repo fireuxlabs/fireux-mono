@@ -2,19 +2,17 @@
 <template>
   <UDashboardPanel id="dashboard-supplier-home">
     <template #header>
-      <UDashboardNavbar title="Supplier">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="Supplier" />
     </template>
 
     <template #body>
-      <div class="p-6">
-        <p class="text-lg font-semibold">Hello World</p>
-        <p class="text-muted mt-2 text-sm">
-          Placeholder content for the Supplier dashboard landing.
-        </p>
+      <div class="panels-stack">
+        <UPageCard variant="subtle">
+          <p class="text-lg font-semibold">Hello World</p>
+          <p class="text-muted mt-2 text-sm">
+            Placeholder content for the Supplier dashboard landing.
+          </p>
+        </UPageCard>
       </div>
     </template>
   </UDashboardPanel>

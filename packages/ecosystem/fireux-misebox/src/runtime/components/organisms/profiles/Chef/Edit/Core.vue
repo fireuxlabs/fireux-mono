@@ -4,20 +4,47 @@
       <UCard>
         <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
-            label="Tagline"
-            :firebase-value="tagline"
-            placeholder="Ex: Private chef focused on seasonal tasting menus"
-            :update-function="handleTagline"
+            label="Headline"
+            :firebase-value="headline"
+            placeholder="Ex: Head Chef"
+            :maxlength="60"
+            :update-function="handleHeadline"
           />
 
           <MoleculesFormsFirestoreSimpleField
-            label="Short Bio"
+            label="Summary"
             type="textarea"
             :rows="3"
             :maxlength="200"
-            :firebase-value="chef.bio_short || ''"
-            placeholder="Share a quick intro for listings"
-            :update-function="handleShortBio"
+            :firebase-value="summary"
+            placeholder="Short listing summary"
+            :update-function="handleSummary"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Bio"
+            type="textarea"
+            :rows="6"
+            :maxlength="2000"
+            :firebase-value="bio"
+            placeholder="Long-form chef bio"
+            :update-function="handleBio"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Chef Image URL"
+            :firebase-value="imageUrl"
+            placeholder="Optional: image URL for this chef profile"
+            :maxlength="400"
+            :update-function="handleImage"
+          />
+
+          <MoleculesFormsFirestoreArrayOfStrings
+            label="Signature Dishes"
+            :firebase-value="signatureDishes"
+            item-placeholder="Signature dish"
+            new-item-placeholder="Add signature dish"
+            :update-function="handleSignatureDishes"
           />
         </div>
       </UCard>
@@ -28,39 +55,41 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { ChefCoreProfile } from '../../../../../models/profiles/Chef/Chef.model.ts'
-import { useChefUpdate } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefUpdate.ts'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
+import { computed } from 'vue';
+import { useChefUpdate } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefUpdate';
+import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model';
 
-const props = defineProps<{ chef: ChefCoreProfile | null }>()
+const props = defineProps<{ chef: ChefCore | null }>()
 
 const chef = computed(() => props.chef ?? null)
-const { updateTagline, updateBioShort } = useChefUpdate()
+const { updateHeadline, updateSummary, updateBio, updateImage, updateSignatureDishesCsv } =
+  useChefUpdate()
 
-const useToastFn = (globalThis as any).useToast as undefined | (() => any)
-const toast = useToastFn ? useToastFn() : undefined
+const toast = useToastify()
 
-const tagline = computed(
-  () =>
-    chef.value?.tagline ??
-    (chef.value as { subtitle?: string | null } | null)?.subtitle ??
-    ''
-)
+const headline = computed(() => chef.value?.chef_headline ?? chef.value?.title ?? '')
+const summary = computed(() => chef.value?.chef_summary ?? chef.value?.bio_short ?? '')
+const bio = computed(() => chef.value?.chef_bio ?? chef.value?.bio_long ?? '')
+const imageUrl = computed(() => chef.value?.chef_image ?? '')
 
-const handleTagline = async (value: string) => {
-  if (!chef.value) return 'success'
+const signatureDishes = computed(() => {
+  const list =
+    chef.value?.chef_signature_dishes?.length
+      ? chef.value?.chef_signature_dishes
+      : chef.value?.specialties ?? []
+  return Array.isArray(list) ? list : []
+})
+
+const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
   try {
-    await updateTagline(value)
-    toast?.add({
-      title: 'Tagline updated',
-      icon: 'i-heroicons-check-circle',
-    })
+    await fn()
+    toast.add({ title: okTitle, icon: 'i-heroicons-check-circle' })
     return 'success'
   } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
-      title: 'Failed to update tagline',
+    const description = error instanceof Error ? error.message : 'Please try again.'
+    toast.add({
+      title: failTitle,
       description,
       color: 'amber',
       icon: 'i-heroicons-exclamation-triangle',
@@ -69,25 +98,22 @@ const handleTagline = async (value: string) => {
   }
 }
 
-const handleShortBio = async (value: string) => {
-  if (!chef.value) return 'success'
-  try {
-    await updateBioShort(value)
-    toast?.add({
-      title: 'Short bio updated',
-      icon: 'i-heroicons-check-circle',
-    })
-    return 'success'
-  } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
-      title: 'Failed to update short bio',
-      description,
-      color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    throw error
-  }
-}
+const handleHeadline = async (value: string) =>
+  wrap(() => updateHeadline(value), 'Headline updated', 'Failed to update headline')
+
+const handleSummary = async (value: string) =>
+  wrap(() => updateSummary(value), 'Summary updated', 'Failed to update summary')
+
+const handleBio = async (value: string) =>
+  wrap(() => updateBio(value), 'Bio updated', 'Failed to update bio')
+
+const handleImage = async (value: string) =>
+  wrap(() => updateImage(value), 'Chef image updated', 'Failed to update chef image')
+
+const handleSignatureDishes = async (value: string[]) =>
+  wrap(
+    () => updateSignatureDishesCsv(value),
+    'Signature dishes updated',
+    'Failed to update signature dishes'
+  )
 </script>

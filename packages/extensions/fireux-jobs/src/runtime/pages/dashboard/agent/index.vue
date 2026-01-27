@@ -2,15 +2,11 @@
 <template>
   <UDashboardPanel id="dashboard-agent-home">
     <template #header>
-      <UDashboardNavbar title="Agent">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="Agent" />
     </template>
 
     <template #body>
-      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6 space-y-6">
+      <div class="panels-stack">
         <UCard>
           <div class="space-y-4">
             <div class="flex items-start justify-between gap-3">
@@ -66,8 +62,8 @@ Miriam
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { computed } from 'vue'
 import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 definePageMeta({
@@ -102,12 +98,14 @@ const profileComplete = computed<number | null>(() => {
     Array.isArray(value) && value.length > 0
 
   const checks: boolean[] = [
-    isFilledString(profile.title ?? null),
-    isFilledString(profile.tagline ?? null),
-    isFilledString(profile.bio_short ?? null),
-    isFilledString(profile.contact_email ?? null),
-    isFilledString(profile.website_url ?? null),
-    isFilledArray((profile as any).tags ?? (profile as any).badges ?? null),
+    isFilledString(profile.agent_headline ?? profile.title ?? null),
+    isFilledString(profile.agent_summary ?? profile.bio_short ?? null),
+    isFilledString(profile.agent_bio ?? null),
+    isFilledString(profile.agent_contact_email ?? profile.contact_email ?? null),
+    isFilledString(profile.agent_website_url ?? profile.website_url ?? null),
+    isFilledArray(
+      profile.agent_placement_types ?? (profile as any).tags ?? (profile as any).badges ?? null
+    ),
   ]
 
   const complete = checks.filter(Boolean).length

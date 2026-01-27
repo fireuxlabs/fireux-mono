@@ -2,28 +2,26 @@
 <template>
   <UDashboardPanel id="dashboard-chef-my-recipes">
     <template #header>
-      <UDashboardNavbar title="My Recipes">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="My Recipes" />
     </template>
 
     <template #body>
-      <section class="space-y-6 p-6">
-        <UAlert
-          icon="i-lucide-book-open"
-          color="neutral"
-          title="My Recipes"
-          description="Recipe drafts, publication status, and analytics will live here."
-        />
-        <UCard>
-          <p class="text-sm text-muted">
-            Placeholder content. Wire this card to your recipe store when
-            available.
-          </p>
-        </UCard>
-      </section>
+      <div class="panels-stack">
+        <section class="space-y-6">
+          <UAlert
+            icon="i-lucide-book-open"
+            color="neutral"
+            title="My Recipes"
+            description="Recipe drafts, publication status, and analytics will live here."
+          />
+          <UCard>
+            <p class="text-sm text-muted">
+              Placeholder content. Wire this card to your recipe store when
+              available.
+            </p>
+          </UCard>
+        </section>
+      </div>
     </template>
   </UDashboardPanel>
 </template>

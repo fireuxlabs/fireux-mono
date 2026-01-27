@@ -2,28 +2,26 @@
 <template>
   <UDashboardPanel id="dashboard-supplier-my-stock">
     <template #header>
-      <UDashboardNavbar title="My Stock">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="My Stock" />
     </template>
 
     <template #body>
-      <section class="space-y-6 p-6">
-        <UAlert
-          icon="i-lucide-box"
-          color="neutral"
-          title="My Stock"
-          description="Inventory, restock alerts, and analytics will eventually surface here."
-        />
-        <UCard>
-          <p class="text-sm text-muted">
-            Placeholder content. Replace with supply chain data when the API is
-            ready.
-          </p>
-        </UCard>
-      </section>
+      <div class="panels-stack">
+        <section class="space-y-6">
+          <UAlert
+            icon="i-lucide-box"
+            color="neutral"
+            title="My Stock"
+            description="Inventory, restock alerts, and analytics will eventually surface here."
+          />
+          <UCard>
+            <p class="text-sm text-muted">
+              Placeholder content. Replace with supply chain data when the API is
+              ready.
+            </p>
+          </UCard>
+        </section>
+      </div>
     </template>
   </UDashboardPanel>
 </template>

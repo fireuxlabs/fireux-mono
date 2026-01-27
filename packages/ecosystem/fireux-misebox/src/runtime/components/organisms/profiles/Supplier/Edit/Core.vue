@@ -4,68 +4,116 @@
       <UCard>
         <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
-            label="Tagline"
-            :firebase-value="tagline"
-            placeholder="Summarize your business focus"
-            :update-function="handleTagline"
+            label="Headline"
+            :firebase-value="headline"
+            placeholder="Ex: Local Produce Supplier"
+            :maxlength="60"
+            :update-function="handleHeadline"
           />
 
           <MoleculesFormsFirestoreSimpleField
-            label="Short Bio"
+            label="Summary"
             type="textarea"
             :rows="3"
             :maxlength="200"
-            :firebase-value="supplier.bio_short || ''"
-            placeholder="Share a quick intro for listings"
-            :update-function="handleShortBio"
+            :firebase-value="summary"
+            placeholder="Short listing summary"
+            :update-function="handleSummary"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Bio"
+            type="textarea"
+            :rows="6"
+            :maxlength="2000"
+            :firebase-value="bio"
+            placeholder="Long-form supplier bio"
+            :update-function="handleBio"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Supplier Image URL"
+            :firebase-value="imageUrl"
+            placeholder="Optional: image URL for this supplier profile"
+            :maxlength="400"
+            :update-function="handleImage"
+          />
+
+          <MoleculesFormsFirestoreArrayOfStrings
+            label="Product Categories"
+            :firebase-value="categories"
+            item-placeholder="Product category"
+            new-item-placeholder="Add product category"
+            :update-function="handleCategories"
+          />
+
+          <MoleculesFormsFirestoreArrayOfStrings
+            label="Delivery Areas"
+            :firebase-value="deliveryAreas"
+            item-placeholder="Delivery area"
+            new-item-placeholder="Add delivery area"
+            :update-function="handleDeliveryAreas"
           />
         </div>
       </UCard>
     </div>
 
-    <MoleculesStateCard
-      v-else
-      entity="supplier profile"
-      kind="document"
-      loading
-    />
+    <MoleculesStateCard v-else entity="supplier profile" kind="document" loading />
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { SupplierCoreProfile } from '../../../../../models/profiles/Supplier/Supplier.model.ts'
-import { useSupplierUpdate } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierUpdate.ts'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
+import { computed } from 'vue';
+import { useSupplierUpdate } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierUpdate';
+import type { SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model';
 
-const props = defineProps<{ supplier: SupplierCoreProfile | null }>()
+const props = defineProps<{ supplier: SupplierCore | null }>()
 
 const supplier = computed(() => props.supplier ?? null)
-const { updateTagline, updateBioShort } = useSupplierUpdate()
+const {
+  updateHeadline,
+  updateSummary,
+  updateBio,
+  updateImage,
+  updateProductCategoriesCsv,
+  updateDeliveryAreasCsv,
+} = useSupplierUpdate()
 
-const useToastFn = (globalThis as any).useToast as undefined | (() => any)
-const toast = useToastFn ? useToastFn() : undefined
+const toast = useToastify()
 
-const tagline = computed(
-  () =>
-    supplier.value?.tagline ??
-    (supplier.value as { subtitle?: string | null } | null)?.subtitle ??
-    ''
+const headline = computed(
+  () => supplier.value?.supplier_headline ?? supplier.value?.title ?? ''
+)
+const summary = computed(
+  () => supplier.value?.supplier_summary ?? supplier.value?.bio_short ?? ''
+)
+const bio = computed(() => supplier.value?.supplier_bio ?? supplier.value?.bio_long ?? '')
+const imageUrl = computed(() => supplier.value?.supplier_image ?? '')
+
+const categories = computed(() => {
+  const list =
+    supplier.value?.supplier_product_categories?.length
+      ? supplier.value?.supplier_product_categories
+      : supplier.value?.categories ?? []
+  return Array.isArray(list) ? list : []
+})
+
+const deliveryAreas = computed(() =>
+  Array.isArray(supplier.value?.supplier_delivery_areas)
+    ? supplier.value?.supplier_delivery_areas
+    : []
 )
 
-const handleTagline = async (value: string) => {
-  if (!supplier.value) return 'success'
+const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
   try {
-    await updateTagline(value)
-    toast?.add({
-      title: 'Tagline updated',
-      icon: 'i-heroicons-check-circle',
-    })
+    await fn()
+    toast.add({ title: okTitle, icon: 'i-heroicons-check-circle' })
     return 'success'
   } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
-      title: 'Failed to update tagline',
+    const description = error instanceof Error ? error.message : 'Please try again.'
+    toast.add({
+      title: failTitle,
       description,
       color: 'amber',
       icon: 'i-heroicons-exclamation-triangle',
@@ -74,25 +122,29 @@ const handleTagline = async (value: string) => {
   }
 }
 
-const handleShortBio = async (value: string) => {
-  if (!supplier.value) return 'success'
-  try {
-    await updateBioShort(value)
-    toast?.add({
-      title: 'Short bio updated',
-      icon: 'i-heroicons-check-circle',
-    })
-    return 'success'
-  } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast?.add({
-      title: 'Failed to update short bio',
-      description,
-      color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    throw error
-  }
-}
+const handleHeadline = async (value: string) =>
+  wrap(() => updateHeadline(value), 'Headline updated', 'Failed to update headline')
+
+const handleSummary = async (value: string) =>
+  wrap(() => updateSummary(value), 'Summary updated', 'Failed to update summary')
+
+const handleBio = async (value: string) =>
+  wrap(() => updateBio(value), 'Bio updated', 'Failed to update bio')
+
+const handleImage = async (value: string) =>
+  wrap(() => updateImage(value), 'Supplier image updated', 'Failed to update supplier image')
+
+const handleCategories = async (value: string[]) =>
+  wrap(
+    () => updateProductCategoriesCsv(value),
+    'Product categories updated',
+    'Failed to update product categories'
+  )
+
+const handleDeliveryAreas = async (value: string[]) =>
+  wrap(
+    () => updateDeliveryAreasCsv(value),
+    'Delivery areas updated',
+    'Failed to update delivery areas'
+  )
 </script>

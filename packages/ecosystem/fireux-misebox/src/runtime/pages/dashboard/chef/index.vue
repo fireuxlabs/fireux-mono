@@ -2,19 +2,17 @@
 <template>
   <UDashboardPanel id="dashboard-chef-home">
     <template #header>
-      <UDashboardNavbar title="Chef">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <LayoutsDashboardNavbar title="Chef" />
     </template>
 
     <template #body>
-      <div class="p-6">
-        <p class="text-lg font-semibold">Hello World</p>
-        <p class="text-muted mt-2 text-sm">
-          Quick placeholder for the Chef dashboard overview.
-        </p>
+      <div class="panels-stack">
+        <UPageCard variant="subtle">
+          <p class="text-lg font-semibold">Hello World</p>
+          <p class="text-muted mt-2 text-sm">
+            Quick placeholder for the Chef dashboard overview.
+          </p>
+        </UPageCard>
       </div>
     </template>
   </UDashboardPanel>

@@ -4,58 +4,73 @@
       <UCard>
         <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
-            label="Agency Name"
-            :firebase-value="agencyName"
-            placeholder="Agency name"
+            label="Headline"
+            :firebase-value="headline"
+            placeholder="Ex: Hospitality Agent"
             :maxlength="60"
-            :update-function="handleAgencyName"
+            :update-function="handleHeadline"
             :validation-function="DisplayName.validate"
             :formatting-function="DisplayName.format"
           />
 
           <MoleculesFormsFirestoreSimpleField
-            label="Tagline"
-            :firebase-value="tagline"
-            placeholder="Ex: Agency supporting hospitality talent"
-            :update-function="handleTagline"
-          />
-
-          <MoleculesFormsFirestoreSimpleField
-            label="Short Bio"
+            label="Summary"
             type="textarea"
             :rows="3"
             :maxlength="200"
-            :firebase-value="bioShort"
-            placeholder="Summarize your organization in a few sentences"
-            :update-function="handleBioShort"
+            :firebase-value="summary"
+            placeholder="One short paragraph for listings"
+            :update-function="handleSummary"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Bio"
+            type="textarea"
+            :rows="6"
+            :maxlength="2000"
+            :firebase-value="bio"
+            placeholder="Long-form agent bio"
+            :update-function="handleBio"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Agent Image URL"
+            :firebase-value="imageUrl"
+            placeholder="Optional: image URL for this agent profile"
+            :maxlength="400"
+            :update-function="handleImage"
+          />
+
+          <MoleculesFormsFirestoreArrayOfStrings
+            label="Placement Types"
+            :firebase-value="placementTypes"
+            item-placeholder="Placement type"
+            new-item-placeholder="Add placement type"
+            :update-function="handlePlacementTypes"
+          />
+
+          <MoleculesFormsFirestoreArrayOfStrings
+            label="Coverage Areas"
+            :firebase-value="coverageAreas"
+            item-placeholder="Coverage area"
+            new-item-placeholder="Add coverage area"
+            :update-function="handleCoverageAreas"
           />
 
           <MoleculesFormsFirestoreSimpleField
             label="Contact Email"
             :firebase-value="contactEmail"
-            :placeholder="contactEmailFromProfile ? (inheritedEmail || 'missing on profile') : 'Ex: daniel@misebox.app'"
+            placeholder="Ex: daniel@misebox.app"
             :maxlength="120"
-            :update-function="contactEmailFromProfile ? undefined : handleContactEmail"
-          />
-
-          <UCheckbox
-            :model-value="contactEmailFromProfile"
-            label="Same as from profile"
-            @update:model-value="handleContactEmailFromProfile"
+            :update-function="handleContactEmail"
           />
 
           <MoleculesFormsFirestoreSimpleField
             label="Contact Phone"
             :firebase-value="contactPhone"
-            :placeholder="contactPhoneFromProfile ? (inheritedPhone || 'missing on profile') : 'Optional'"
+            placeholder="Optional"
             :maxlength="60"
-            :update-function="contactPhoneFromProfile ? undefined : handleContactPhone"
-          />
-
-          <UCheckbox
-            :model-value="contactPhoneFromProfile"
-            label="Same as from profile"
-            @update:model-value="handleContactPhoneFromProfile"
+            :update-function="handleContactPhone"
           />
 
           <MoleculesFormsFirestoreSimpleField
@@ -64,14 +79,6 @@
             placeholder="Ex: https://misebox.app"
             :maxlength="200"
             :update-function="handleWebsiteUrl"
-          />
-
-          <MoleculesFormsFirestoreSimpleField
-            label="Badges"
-            :firebase-value="badges"
-            placeholder="Ex: hospitality, recruiting, premium"
-            :maxlength="200"
-            :update-function="handleBadges"
           />
         </div>
       </UCard>
@@ -83,7 +90,6 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
 import { computed } from 'vue'
 import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentUpdate'
@@ -92,103 +98,60 @@ import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model
 const props = defineProps<{ agent: AgentCore | null }>()
 
 const agent = computed(() => props.agent ?? null)
+
 const {
-  updateAgencyName,
-  updateTagline,
-  updateBioShort,
+  updateHeadline,
+  updateSummary,
+  updateBio,
+  updateImage,
+  updatePlacementTypesCsv,
+  updateCoverageAreasCsv,
   updateContactEmail,
   updateContactPhone,
-  setContactEmailFromProfile,
-  setContactPhoneFromProfile,
   updateWebsiteUrl,
-  updateBadges,
 } = useAgentUpdate()
+
 const { DisplayName } = useUserFormattingAndValidation()
-
-const { currentUser } = useUser()
-
 const toast = useToastify()
 
-const agencyName = computed(() => agent.value?.title ?? '')
+const headline = computed(() => agent.value?.agent_headline ?? agent.value?.title ?? '')
+const summary = computed(() => agent.value?.agent_summary ?? agent.value?.bio_short ?? '')
+const bio = computed(() => agent.value?.agent_bio ?? '')
+const imageUrl = computed(() => agent.value?.agent_image ?? '')
 
-const bioShort = computed(() => agent.value?.bio_short ?? '')
-
-const tagline = computed(() => agent.value?.tagline ?? '')
-
-const contactEmail = computed(() => agent.value?.contact_email ?? '')
-const contactPhone = computed(() => agent.value?.contact_phone ?? '')
-const websiteUrl = computed(() => agent.value?.website_url ?? '')
-const badges = computed(() => ((agent.value as any)?.tags ?? (agent.value as any)?.badges ?? []).join(', '))
-
-const contactEmailFromProfile = computed(
-  () => Boolean(agent.value?.contact_email_from_profile)
-)
-const contactPhoneFromProfile = computed(
-  () => Boolean(agent.value?.contact_phone_from_profile)
-)
-
-const inheritedEmail = computed(() => currentUser.value?.email?.trim() || '')
-const inheritedPhone = computed(() => {
-  const raw = (currentUser.value as any)?.phone ?? (currentUser.value as any)?.phone_number ?? (currentUser.value as any)?.phoneNumber
-  return typeof raw === 'string' ? raw.trim() : ''
+const placementTypes = computed(() => {
+  const list =
+    agent.value?.agent_placement_types?.length
+      ? agent.value?.agent_placement_types
+      : (agent.value as any)?.tags ?? []
+  return Array.isArray(list) ? list : []
 })
 
-const handleContactEmailFromProfile = async (enabled: boolean) => {
-  if (!agent.value) return
-  try {
-    await setContactEmailFromProfile(enabled)
-    toast.add({
-      title: enabled ? 'Contact email set to profile' : 'Contact email set to custom',
-      icon: 'i-heroicons-check-circle',
-    })
-  } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast.add({
-      title: 'Failed to update contact email mode',
-      description,
-      color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    throw error
-  }
-}
+const coverageAreas = computed(() =>
+  Array.isArray(agent.value?.agent_coverage_areas)
+    ? agent.value?.agent_coverage_areas
+    : []
+)
 
-const handleContactPhoneFromProfile = async (enabled: boolean) => {
-  if (!agent.value) return
-  try {
-    await setContactPhoneFromProfile(enabled)
-    toast.add({
-      title: enabled ? 'Contact phone set to profile' : 'Contact phone set to custom',
-      icon: 'i-heroicons-check-circle',
-    })
-  } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast.add({
-      title: 'Failed to update contact phone mode',
-      description,
-      color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    throw error
-  }
-}
+const contactEmail = computed(
+  () => agent.value?.agent_contact_email ?? agent.value?.contact_email ?? ''
+)
+const contactPhone = computed(
+  () => agent.value?.agent_contact_phone ?? agent.value?.contact_phone ?? ''
+)
+const websiteUrl = computed(
+  () => agent.value?.agent_website_url ?? agent.value?.website_url ?? ''
+)
 
-const handleAgencyName = async (value: string) => {
-  if (!agent.value) return 'success'
+const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
   try {
-    await updateAgencyName(value)
-    toast.add({
-      title: 'Agency name updated',
-      icon: 'i-heroicons-check-circle',
-    })
+    await fn()
+    toast.add({ title: okTitle, icon: 'i-heroicons-check-circle' })
     return 'success'
   } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
+    const description = error instanceof Error ? error.message : 'Please try again.'
     toast.add({
-      title: 'Failed to update agency name',
+      title: failTitle,
       description,
       color: 'amber',
       icon: 'i-heroicons-exclamation-triangle',
@@ -197,135 +160,46 @@ const handleAgencyName = async (value: string) => {
   }
 }
 
-const handleTagline = async (value: string) => {
-  if (!agent.value) return 'success'
-  try {
-    await updateTagline(value)
-    toast.add({
-      title: 'Tagline updated',
-      icon: 'i-heroicons-check-circle',
-    })
-    return 'success'
-  } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast.add({
-      title: 'Failed to update tagline',
-      description,
-      color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    throw error
-  }
-}
+const handleHeadline = async (value: string) =>
+  wrap(() => updateHeadline(value), 'Headline updated', 'Failed to update headline')
 
-const handleBioShort = async (value: string) => {
-  if (!agent.value) return 'success'
-  try {
-    await updateBioShort(value)
-    toast.add({
-      title: 'Short bio updated',
-      icon: 'i-heroicons-check-circle',
-    })
-    return 'success'
-  } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast.add({
-      title: 'Failed to update short bio',
-      description,
-      color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    throw error
-  }
-}
+const handleSummary = async (value: string) =>
+  wrap(() => updateSummary(value), 'Summary updated', 'Failed to update summary')
 
-const handleContactEmail = async (value: string) => {
-  if (!agent.value) return 'success'
-  try {
-    await updateContactEmail(value)
-    toast.add({
-      title: 'Contact email updated',
-      icon: 'i-heroicons-check-circle',
-    })
-    return 'success'
-  } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast.add({
-      title: 'Failed to update contact email',
-      description,
-      color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    throw error
-  }
-}
+const handleBio = async (value: string) =>
+  wrap(() => updateBio(value), 'Bio updated', 'Failed to update bio')
 
-const handleContactPhone = async (value: string) => {
-  if (!agent.value) return 'success'
-  try {
-    await updateContactPhone(value)
-    toast.add({
-      title: 'Contact phone updated',
-      icon: 'i-heroicons-check-circle',
-    })
-    return 'success'
-  } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast.add({
-      title: 'Failed to update contact phone',
-      description,
-      color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    throw error
-  }
-}
+const handleImage = async (value: string) =>
+  wrap(() => updateImage(value), 'Agent image updated', 'Failed to update agent image')
 
-const handleWebsiteUrl = async (value: string) => {
-  if (!agent.value) return 'success'
-  try {
-    await updateWebsiteUrl(value)
-    toast.add({
-      title: 'Website updated',
-      icon: 'i-heroicons-check-circle',
-    })
-    return 'success'
-  } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast.add({
-      title: 'Failed to update website',
-      description,
-      color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    throw error
-  }
-}
+const handlePlacementTypes = async (value: string[]) =>
+  wrap(
+    () => updatePlacementTypesCsv(value),
+    'Placement types updated',
+    'Failed to update placement types'
+  )
 
-const handleBadges = async (value: string) => {
-  if (!agent.value) return 'success'
-  try {
-    await updateBadges(value)
-    toast.add({
-      title: 'Badges updated',
-      icon: 'i-heroicons-check-circle',
-    })
-    return 'success'
-  } catch (error) {
-    const description =
-      error instanceof Error ? error.message : 'Please try again.'
-    toast.add({
-      title: 'Failed to update badges',
-      description,
-      color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    throw error
-  }
-}
+const handleCoverageAreas = async (value: string[]) =>
+  wrap(
+    () => updateCoverageAreasCsv(value),
+    'Coverage areas updated',
+    'Failed to update coverage areas'
+  )
+
+const handleContactEmail = async (value: string) =>
+  wrap(
+    () => updateContactEmail(value),
+    'Contact email updated',
+    'Failed to update contact email'
+  )
+
+const handleContactPhone = async (value: string) =>
+  wrap(
+    () => updateContactPhone(value),
+    'Contact phone updated',
+    'Failed to update contact phone'
+  )
+
+const handleWebsiteUrl = async (value: string) =>
+  wrap(() => updateWebsiteUrl(value), 'Website updated', 'Failed to update website')
 </script>

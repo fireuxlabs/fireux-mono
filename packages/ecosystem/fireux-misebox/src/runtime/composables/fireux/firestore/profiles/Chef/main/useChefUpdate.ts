@@ -47,8 +47,8 @@ export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
     await updateCoreProfile({ chef_image: normalized ?? '' })
   }
 
-  const updateSignatureDishesCsv = async (csv: string) => {
-    await updateCoreProfile({ chef_signature_dishes: base.csvToArray(csv) })
+  const updateSignatureDishesCsv = async (value: string | string[]) => {
+    await updateCoreProfile({ chef_signature_dishes: base.csvToArray(value) })
   }
 
   const updateOrganizationName = async (value: string) => {

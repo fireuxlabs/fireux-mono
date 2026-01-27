@@ -1,6 +1,6 @@
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 
 type Scope = 'core' | 'app'
@@ -13,7 +13,9 @@ export function useProfileUpdateBase<TCore extends { id: string }>(
   const { appId, role } = useFireUXConfig()
   const isTenant = role === 'tenant' && Boolean(appId)
 
-  const pruneUndefined = <T extends Record<string, any>>(payload: T) => {
+  const pruneUndefined = <T extends Record<string, any>>(
+    payload: Partial<T>
+  ) => {
     const entries = Object.entries(payload).filter(
       ([, value]) => value !== undefined
     )
@@ -25,12 +27,11 @@ export function useProfileUpdateBase<TCore extends { id: string }>(
     return normalized.length ? normalized : null
   }
 
-  const csvToArray = (value: string) =>
+  const csvToArray = (value: string | string[]) =>
     Array.from(
       new Set(
-        (value ?? '')
-          .split(',')
-          .map((item) => item.trim())
+        (Array.isArray(value) ? value : (value ?? '').split(','))
+          .map((item) => String(item ?? '').trim())
           .filter(Boolean)
       )
     )
@@ -57,7 +58,7 @@ export function useProfileUpdateBase<TCore extends { id: string }>(
     options: { id?: string | null } = {}
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
-    await updateDocument<TCore>(collectionName, uid, pruneUndefined(patch as any))
+    await updateDocument<TCore>(collectionName, uid, pruneUndefined(patch))
   }
 
   const updateAppProfile = async (
@@ -74,7 +75,7 @@ export function useProfileUpdateBase<TCore extends { id: string }>(
     await updateDocument<TCore>(
       `apps/${appId}/${collectionName}`,
       uid,
-      pruneUndefined(patch as any)
+      pruneUndefined(patch)
     )
   }
 

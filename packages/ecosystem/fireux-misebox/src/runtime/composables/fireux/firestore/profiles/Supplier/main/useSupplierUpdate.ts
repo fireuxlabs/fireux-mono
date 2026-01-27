@@ -49,15 +49,15 @@ export function useSupplierUpdate(
     await updateCoreProfile({ supplier_image: normalized ?? '' })
   }
 
-  const updateProductCategoriesCsv = async (csv: string) => {
+  const updateProductCategoriesCsv = async (value: string | string[]) => {
     await updateCoreProfile({
-      supplier_product_categories: base.csvToArray(csv),
+      supplier_product_categories: base.csvToArray(value),
     })
   }
 
-  const updateDeliveryAreasCsv = async (csv: string) => {
+  const updateDeliveryAreasCsv = async (value: string | string[]) => {
     await updateCoreProfile({
-      supplier_delivery_areas: base.csvToArray(csv),
+      supplier_delivery_areas: base.csvToArray(value),
     })
   }
 

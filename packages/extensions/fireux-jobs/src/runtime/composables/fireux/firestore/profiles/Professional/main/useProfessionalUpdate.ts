@@ -9,13 +9,13 @@ import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/plac
 import { useFirestore } from 'vuefire'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 import type {
-    CertificationItem,
-    EducationItem,
-    LanguageProficiency,
-    OtherExperienceItem,
-    ProjectItem,
-    RelevantExperienceItem,
-    VolunteeringItem,
+  CertificationItem,
+  EducationItem,
+  LanguageProficiency,
+  OtherExperienceItem,
+  ProjectItem,
+  RelevantExperienceItem,
+  VolunteeringItem,
 } from '../../../../../../models/profiles/Professional/supporting'
 
 const COLLECTION = 'professionals'
@@ -298,6 +298,24 @@ export function useProfessionalUpdate(
     )
   }
 
+  const updateWorkAreasCsv = async (
+    csvOrList: string | string[],
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const list = Array.isArray(csvOrList)
+      ? csvOrList
+      : (csvOrList ?? '')
+          .split(',')
+          .map((x) => x.trim())
+          .filter(Boolean)
+    const unique = normalizeStringArray(list)
+    await commitUpdate(
+      { professional_work_areas: unique },
+      { ...options, id: uid }
+    )
+  }
+
   const updateSpecialties = async (
     specialties: string | string[],
     options: UpdateOptions = {}
@@ -398,6 +416,7 @@ export function useProfessionalUpdate(
     updateBio,
     updateImage,
     updateServiceTypes,
+    updateWorkAreasCsv,
     updateTitle,
     updateBioShort,
     updateBioLong,
