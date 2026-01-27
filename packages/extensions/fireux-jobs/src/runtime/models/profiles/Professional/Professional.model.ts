@@ -30,6 +30,7 @@ export const ProfessionalCore = {
   professional_image: '' as string,
 
   // Professional descriptors (scoped)
+  professional_positions: [] as string[],
   professional_service_types: [] as string[],
   professional_work_areas: [] as any[],
 

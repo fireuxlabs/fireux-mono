@@ -47,14 +47,12 @@ export function useProfessionalInterface(
     const secondaryAvatarUrl = profileImage && userAvatar && profileImage !== userAvatar
       ? userAvatar
       : ''
-    const serviceTypes =
-      Array.isArray(p.professional_service_types) && p.professional_service_types.length
-        ? p.professional_service_types
-        : (p.specialties as string[])
-    const workAreas = Array.isArray(p.professional_work_areas) ? p.professional_work_areas : []
-    const workAreasAsStrings = workAreas.every((x) => typeof x === 'string')
-      ? (workAreas as string[])
-      : []
+    const positions =
+      Array.isArray(p.professional_positions) && p.professional_positions.length
+        ? p.professional_positions
+        : Array.isArray(p.professional_service_types) && p.professional_service_types.length
+          ? p.professional_service_types
+          : (p.specialties as string[])
 
     return {
       id,
@@ -68,8 +66,8 @@ export function useProfessionalInterface(
       title: headline,
 
       bioShort: summary,
-      specialtiesCsv: csv(serviceTypes ?? []),
-      locationsCsv: workAreasAsStrings.length ? csv(workAreasAsStrings) : csv(p.locations),
+      specialtiesCsv: csv(positions ?? []),
+      locationsCsv: csv(p.locations),
     }
   }
 

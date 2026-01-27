@@ -2,29 +2,27 @@
 <template>
   <UDashboardPanel id="dashboard-professional-profile">
     <template #header>
-      <LayoutsDashboardNavbar :title="navTitle" />
+      <LayoutsDashboardNavbar :title="navTitle">
+        <template #right>
+          <UButton
+            :icon="viewIcon"
+            size="sm"
+            variant="ghost"
+            color="neutral"
+            :aria-pressed="view === 'profile'"
+            @click="toggleView"
+          />
+        </template>
+      </LayoutsDashboardNavbar>
     </template>
 
     <template #body>
       <div class="panels-stack">
         <div class="flex flex-wrap items-center gap-2">
-          <OrganismsAppCardsPill
-            v-if="appCard"
-            :to="appCard.to"
-            :thumbnail-url="appCard.thumbnailUrl"
-            :display-name="appCard.displayName"
-            :ecosystem="appCard.ecosystem"
-            :badges="appCard.badges"
-            :show-subtitle="false"
-            :link="Boolean(appCard.to)"
-            class="block"
-          />
-
-          <OrganismsUserCardsPill
-            v-if="userCard"
-            v-bind="userCard"
-            :show-subtitle="false"
-            :link="Boolean(userCard.to)"
+          <OrganismsProfilesProfessionalCardsPill
+            v-if="professionalCard"
+            v-bind="professionalCard"
+            :link="Boolean(professionalCard.to)"
             class="block"
           />
         </div>
@@ -52,23 +50,25 @@
         </UPageCard>
 
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="panels-masonry">
-            <template #preview>
-              <OrganismsProfilesProfessionalEditPreviewPanel />
-            </template>
+          <div v-if="view === 'profile'" class="space-y-6">
+            <OrganismsProfilesProfessionalCardsProfile
+              v-if="professionalCard"
+              :card="professionalCard"
+              :profile="resolvedCoreProfile"
+              :computed="professionalComputed"
+            />
+          </div>
 
-            <template #core>
-              <OrganismsProfilesProfessionalEditCore
-                :professional="resolvedCoreProfile"
-              />
-            </template>
+          <div v-else class="space-y-6">
+            <OrganismsProfilesProfessionalEditCore
+              :professional="resolvedCoreProfile"
+            />
 
-            <template v-if="resolvedAppProfile" #app>
-              <OrganismsProfilesProfessionalEditApp
-                :professional="resolvedAppProfile"
-              />
-            </template>
-          </LayoutsDashboardProfileEdit>
+            <OrganismsProfilesProfessionalEditApp
+              v-if="resolvedAppProfile"
+              :professional="resolvedAppProfile"
+            />
+          </div>
 
           <DevJson
             v-if="isDev"
@@ -84,10 +84,8 @@
 </template>
 
 <script setup lang="ts">
-import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
-import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp'
+import { useDashboardProfileView } from 'fireux-core/runtime/composables/fireux/app/ui/useDashboardProfileView'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed, ref } from 'vue'
 import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 import { professionalConfig } from '../../../models/profiles/Professional/supporting'
@@ -112,9 +110,12 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { coreProfile, appProfile } = useProfessional()
-const { app, card: appToCard } = useApp()
-const { user, card: userToCard } = useUser()
+const {
+  coreProfile,
+  appProfile,
+  card: professionalCardFromProfile,
+  computed: professionalComputed,
+} = useProfessional()
 
 const { ensure } = useProfileEnsure(professionalConfig)
 const isCreating = ref(false)
@@ -143,6 +144,7 @@ const devPayload = computed(() => ({
   appProfile: resolvedAppProfile.value,
 }))
 
-const userCard = computed(() => userToCard(user.value))
-const appCard = computed(() => appToCard(app.value))
+const professionalCard = computed(() => professionalCardFromProfile(resolvedCoreProfile.value))
+
+const { view, viewIcon, toggleView } = useDashboardProfileView()
 </script>

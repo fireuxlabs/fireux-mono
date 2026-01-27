@@ -2,29 +2,27 @@
 <template>
   <UDashboardPanel id="dashboard-supplier-profile">
     <template #header>
-      <LayoutsDashboardNavbar :title="navTitle" />
+      <LayoutsDashboardNavbar :title="navTitle">
+        <template #right>
+          <UButton
+            :icon="viewIcon"
+            size="sm"
+            variant="ghost"
+            color="neutral"
+            :aria-pressed="view === 'profile'"
+            @click="toggleView"
+          />
+        </template>
+      </LayoutsDashboardNavbar>
     </template>
 
     <template #body>
       <div class="panels-stack">
         <div class="flex flex-wrap items-center gap-2">
-          <OrganismsAppCardsPill
-            v-if="appCard"
-            :to="appCard.to"
-            :thumbnail-url="appCard.thumbnailUrl"
-            :display-name="appCard.displayName"
-            :ecosystem="appCard.ecosystem"
-            :badges="appCard.badges"
-            :show-subtitle="false"
-            :link="Boolean(appCard.to)"
-            class="block"
-          />
-
-          <OrganismsUserCardsPill
-            v-if="userCard"
-            v-bind="userCard"
-            :show-subtitle="false"
-            :link="Boolean(userCard.to)"
+          <OrganismsProfilesSupplierCardsPill
+            v-if="supplierCard"
+            v-bind="supplierCard"
+            :link="Boolean(supplierCard.to)"
             class="block"
           />
         </div>
@@ -52,23 +50,23 @@
         </UPageCard>
 
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="panels-masonry">
-            <template #preview>
-              <OrganismsProfilesSupplierEditPreviewPanel />
-            </template>
+          <div v-if="view === 'profile'" class="space-y-6">
+            <OrganismsProfilesSupplierCardsProfile
+              v-if="supplierCard"
+              :card="supplierCard"
+            />
+          </div>
 
-            <template #core>
-              <OrganismsProfilesSupplierEditCore
-                :supplier="resolvedCoreProfile"
-              />
-            </template>
+          <div v-else class="space-y-6">
+            <OrganismsProfilesSupplierEditCore
+              :supplier="resolvedCoreProfile"
+            />
 
-            <template v-if="resolvedAppProfile" #app>
-              <OrganismsProfilesSupplierEditApp
-                :supplier="resolvedAppProfile"
-              />
-            </template>
-          </LayoutsDashboardProfileEdit>
+            <OrganismsProfilesSupplierEditApp
+              v-if="resolvedAppProfile"
+              :supplier="resolvedAppProfile"
+            />
+          </div>
         </ClientOnly>
       </div>
     </template>
@@ -76,10 +74,8 @@
 </template>
 
 <script setup lang="ts">
-import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
-import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp'
+import { useDashboardProfileView } from 'fireux-core/runtime/composables/fireux/app/ui/useDashboardProfileView'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed, ref } from 'vue'
 import { useSupplier } from '../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
 import { supplierConfig } from '../../../models/profiles/Supplier/Supplier.model'
@@ -102,9 +98,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { coreProfile, appProfile } = useSupplier()
-const { app, card: appToCard } = useApp()
-const { user, card: userToCard } = useUser()
+const { coreProfile, appProfile, card: supplierCardFromProfile } = useSupplier()
 
 const { ensure } = useProfileEnsure(supplierConfig)
 const isCreating = ref(false)
@@ -127,6 +121,7 @@ const createProfile = async () => {
 const isProfileLoading = computed(() => coreProfile.value === undefined)
 const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
 const resolvedAppProfile = computed(() => appProfile.value ?? null)
-const userCard = computed(() => userToCard(user.value))
-const appCard = computed(() => appToCard(app.value))
+const supplierCard = computed(() => supplierCardFromProfile(resolvedCoreProfile.value))
+
+const { view, viewIcon, toggleView } = useDashboardProfileView()
 </script>

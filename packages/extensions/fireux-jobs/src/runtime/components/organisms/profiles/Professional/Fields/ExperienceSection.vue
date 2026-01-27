@@ -1,10 +1,9 @@
 <template>
-  <UCard>
-    <MoleculesFormsFirestoreObjectArray
-      :label="label"
-      :firebase-value="items"
-      :update-function="onSave"
-    >
+  <MoleculesFormsFirestoreObjectArray
+    :label="label"
+    :firebase-value="items"
+    :update-function="onSave"
+  >
       <template #display="{ item, startEditing, remove }">
         <div class="space-y-2">
           <div class="text-sm font-medium">
@@ -43,19 +42,17 @@
               size="xs"
               variant="soft"
               icon="i-lucide-pencil"
+              aria-label="Edit entry"
               @click="startEditing"
-            >
-              Edit
-            </UButton>
+            />
             <UButton
               size="xs"
               variant="ghost"
               color="error"
               icon="i-lucide-trash-2"
+              aria-label="Remove entry"
               @click="remove"
-            >
-              Remove
-            </UButton>
+            />
           </div>
         </div>
       </template>
@@ -97,8 +94,7 @@
           Add entry
         </UButton>
       </template>
-    </MoleculesFormsFirestoreObjectArray>
-  </UCard>
+  </MoleculesFormsFirestoreObjectArray>
 </template>
 
 <script setup lang="ts">

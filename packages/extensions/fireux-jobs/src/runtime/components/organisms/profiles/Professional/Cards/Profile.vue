@@ -2,13 +2,20 @@
   <UCard>
     <template #header>
       <div>
-        <UAvatarGroup v-if="card.secondaryAvatarUrl" size="md">
-          <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
-          <UAvatar :src="card.secondaryAvatarUrl || undefined" :alt="card.displayName" size="xs" />
-        </UAvatarGroup>
-        <UAvatar v-else :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
+        <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
         <div>{{ card.displayName || 'Professional' }}</div>
-        <div v-if="card.title">{{ card.title }}</div>
+        <div v-if="card.tagline">{{ card.tagline }}</div>
+        <div v-if="card.badges.length">
+          <UBadge
+            v-for="badge in card.badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
       </div>
     </template>
 
@@ -90,12 +97,6 @@
                 <div>{{ formatExperienceDates(entry.item) }}</div>
                 <div>
                   <PlaceCardsPill
-                    v-if="entry.placeCard"
-                    v-bind="entry.placeCard"
-                    :show-badges="false"
-                  />
-                  <PlaceCardsPill
-                    v-else
                     :avatar-url="entry.avatarUrl"
                     :title="entry.title"
                     :subtitle="entry.subtitle"
@@ -203,6 +204,7 @@
       <ul>
         <li>Relevant Experience: {{ relevantExperience.length }}</li>
         <li>Other Experience: {{ otherExperience.length }}</li>
+        <li>Tags: {{ tags.length }}</li>
         <li>Health Certifications: {{ healthCertifications.length }}</li>
         <li>Specialties: {{ specialties.length }}</li>
         <li>Languages: {{ languages.length }}</li>
@@ -229,7 +231,7 @@ import { mapPlaceToCard } from 'fireux-places/runtime/composables/fireux/firesto
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { Place } from 'fireux-places/runtime/models/objects/place.model'
 import type { Ref } from 'vue'
-import { computed, reactive, shallowRef, toRefs, unref, watch, watchEffect } from 'vue'
+import { computed, reactive, shallowRef, toRefs, watch, watchEffect } from 'vue'
 import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model'
 
@@ -249,6 +251,7 @@ watchEffect(() => {
 const { prop } = toRefs(props)
 const profile = computed(() => props.profile ?? null)
 
+const tags = computed(() => profile.value?.tags ?? [])
 const specialties = computed(() => profile.value?.specialties ?? [])
 const locations = computed(() => profile.value?.locations ?? [])
 const healthCertifications = computed(() => profile.value?.health_certifications ?? [])
@@ -274,9 +277,9 @@ const normalizePlaceId = (placeId?: string | null) => {
 const { firestoreFetchDoc } = useFirestoreManager()
 const placeDocRefs = shallowRef(new Map<string, Ref<Place | undefined>>())
 
-const allPlaceIds = computed(() => {
+const relevantPlaceIds = computed(() => {
   const ids = new Set<string>()
-  for (const item of [...relevantExperience.value, ...otherExperience.value]) {
+  for (const item of relevantExperience.value) {
     const normalized = normalizePlaceId(item.place_id)
     if (normalized) ids.add(normalized)
   }
@@ -285,7 +288,7 @@ const allPlaceIds = computed(() => {
 
 if (import.meta.client) {
   watch(
-    allPlaceIds,
+    relevantPlaceIds,
     (ids) => {
       const next = new Map<string, Ref<Place | undefined>>()
       for (const id of ids) {
@@ -308,6 +311,12 @@ const placeCardLookup = computed(() => {
   return map
 })
 
+const getPlaceCard = (placeId?: string | null) => {
+  const normalized = normalizePlaceId(placeId)
+  if (!normalized) return null
+  return placeCardLookup.value.get(normalized) ?? null
+}
+
 const relevantExperienceCards = computed(() =>
   relevantExperience.value.map((item) => ({
     item,
@@ -320,8 +329,7 @@ const otherExperienceCards = computed(() =>
     const subtitle = item.short_address || item.formatted_address || ''
     return {
       item,
-      placeCard: getPlaceCard(item.place_id),
-      title: item.name || item.place_name || 'External venue',
+      title: item.name || 'External venue',
       subtitle,
       avatarUrl: item.image_url || '',
       showSubtitle: Boolean(subtitle),
@@ -330,7 +338,7 @@ const otherExperienceCards = computed(() =>
 )
 
 const computedEntries = computed(() => {
-  const values = unref(props.computed) ?? {}
+  const values = props.computed ?? {}
   return Object.entries(values).map(([key, value]) => ({
     key,
     label: key,

@@ -2,29 +2,27 @@
 <template>
   <UDashboardPanel id="dashboard-chef-profile">
     <template #header>
-      <LayoutsDashboardNavbar title="Chef Profile" />
+      <LayoutsDashboardNavbar :title="navTitle">
+        <template #right>
+          <UButton
+            :icon="viewIcon"
+            size="sm"
+            variant="ghost"
+            color="neutral"
+            :aria-pressed="view === 'profile'"
+            @click="toggleView"
+          />
+        </template>
+      </LayoutsDashboardNavbar>
     </template>
 
     <template #body>
       <div class="panels-stack">
         <div class="flex flex-wrap items-center gap-2">
-          <OrganismsAppCardsPill
-            v-if="appCard"
-            :to="appCard.to"
-            :thumbnail-url="appCard.thumbnailUrl"
-            :display-name="appCard.displayName"
-            :ecosystem="appCard.ecosystem"
-            :badges="appCard.badges"
-            :show-subtitle="false"
-            :link="Boolean(appCard.to)"
-            class="block"
-          />
-
-          <OrganismsUserCardsPill
-            v-if="userCard"
-            v-bind="userCard"
-            :show-subtitle="false"
-            :link="Boolean(userCard.to)"
+          <OrganismsProfilesChefCardsPill
+            v-if="chefCard"
+            v-bind="chefCard"
+            :link="Boolean(chefCard.to)"
             class="block"
           />
         </div>
@@ -52,19 +50,21 @@
         </UPageCard>
 
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="panels-masonry">
-            <template #preview>
-              <OrganismsProfilesChefEditPreviewPanel />
-            </template>
+          <div v-if="view === 'profile'" class="space-y-6">
+            <OrganismsProfilesChefCardsProfile
+              v-if="chefCard"
+              :card="chefCard"
+            />
+          </div>
 
-            <template #core>
-              <OrganismsProfilesChefEditCore :chef="resolvedCoreProfile" />
-            </template>
+          <div v-else class="space-y-6">
+            <OrganismsProfilesChefEditCore :chef="resolvedCoreProfile" />
 
-            <template v-if="resolvedAppProfile" #app>
-              <OrganismsProfilesChefEditApp :chef="resolvedAppProfile" />
-            </template>
-          </LayoutsDashboardProfileEdit>
+            <OrganismsProfilesChefEditApp
+              v-if="resolvedAppProfile"
+              :chef="resolvedAppProfile"
+            />
+          </div>
         </ClientOnly>
       </div>
     </template>
@@ -72,31 +72,32 @@
 </template>
 
 <script setup lang="ts">
-import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
-import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp'
+import { useDashboardProfileView } from 'fireux-core/runtime/composables/fireux/app/ui/useDashboardProfileView'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed, ref } from 'vue'
 import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 import { chefConfig } from '../../../models/profiles/Chef/Chef.model'
+
+const profileKey = chefConfig.id ?? 'chef'
+const navLabel = chefConfig.navLabel ?? `${chefConfig.profileType} Profile`
+const navIcon = chefConfig.navIcon ?? 'i-lucide-chef-hat'
+const navTitle = navLabel
 
 definePageMeta({
   layout: 'dashboard',
   nav: {
     key: 'dashboard-chef-profile',
-    label: 'Chef Profile',
-    icon: 'i-lucide-chef-hat',
+    label: navLabel,
+    icon: navIcon,
     desktop: true,
     layouts: ['dashboard'],
     group: 'profiles',
-    profileId: 'chef',
+    profileId: profileKey,
   },
   requiresAuth: true,
 })
 
-const { coreProfile, appProfile } = useChef()
-const { app, card: appToCard } = useApp()
-const { user, card: userToCard } = useUser()
+const { coreProfile, appProfile, card: chefCardFromProfile } = useChef()
 
 const { ensure } = useProfileEnsure(chefConfig)
 const isCreating = ref(false)
@@ -120,6 +121,7 @@ const isProfileLoading = computed(() => coreProfile.value === undefined)
 const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
 const resolvedAppProfile = computed(() => appProfile.value ?? null)
 
-const userCard = computed(() => userToCard(user.value))
-const appCard = computed(() => appToCard(app.value))
+const chefCard = computed(() => chefCardFromProfile(resolvedCoreProfile.value))
+
+const { view, viewIcon, toggleView } = useDashboardProfileView()
 </script>

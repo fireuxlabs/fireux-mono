@@ -1,12 +1,15 @@
 <template>
-  <div>
-    <div>
-      <h3 v-if="label">{{ label }}</h3>
+  <div class="object-array">
+    <div class="object-array__header">
+      <h3 v-if="label" class="object-array__title">{{ label }}</h3>
+      <div v-if="editingIndex === null" class="object-array__actions">
+        <slot name="create" :push="push" />
+      </div>
     </div>
 
     <div>
       <div v-if="!items || items.length === 0">No items yet.</div>
-      <ul v-else>
+      <ul v-else class="object-array__list">
         <li v-for="(item, index) in items" :key="index">
           <UCard>
             <div class="relative group">
@@ -90,11 +93,7 @@
       </ul>
     </div>
 
-    <div v-if="editingIndex === null">
-      <slot name="create" :push="push" />
-    </div>
-
-    <div v-else-if="editingIndex === items.length">
+    <div v-if="editingIndex === items.length">
       <UCard>
         <div class="relative group">
           <div class="mt-3 flex gap-2">
@@ -159,7 +158,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue';
 
 const props = defineProps<{
   label?: string

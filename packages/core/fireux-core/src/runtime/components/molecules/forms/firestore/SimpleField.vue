@@ -1,6 +1,6 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/molecules/forms/Firestore/SimpleField.vue -->
 <template>
-  <div class="flex w-full flex-col gap-1.5">
+  <div class="flex w-full flex-col">
     <MoleculesFormsTop
       :label="label"
       :is-editing="isEditing"
@@ -14,10 +14,10 @@
       @delete="clear"
     />
 
-    <div v-if="!isEditing" class="flex min-h-9 items-center">
+    <div v-if="!isEditing" class="flex">
       <div
-        class="w-full rounded-md fx-field-surface px-3 py-2 text-sm"
-        :class="disabled ? 'text-dimmed' : 'text-default'"
+        class="w-full rounded-md fx-field-surface px-3 text-sm"
+        :class="disabled ? 'text-muted' : 'text-dimmed'"
       >
         <span class="break-words">{{ displayValue }}</span>
       </div>
@@ -53,11 +53,11 @@
 
 <script setup lang="ts">
 import {
-  useEditableStringField,
-  type FormattingFn,
-  type UpdateFn,
-  type ValidationFn,
-} from '../../../../composables/fireux/app/forms/useEditableStringField'
+    useEditableStringField,
+    type FormattingFn,
+    type UpdateFn,
+    type ValidationFn,
+} from '../../../../composables/fireux/app/forms/useEditableStringField';
 
 const props = withDefaults(
   defineProps<{

@@ -294,6 +294,24 @@ export function useProfessionalUpdate(
     )
   }
 
+  const updatePositions = async (
+    csvOrList: string | string[],
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const list = Array.isArray(csvOrList)
+      ? csvOrList
+      : (csvOrList ?? '')
+          .split(',')
+          .map((x) => x.trim())
+          .filter(Boolean)
+    const unique = normalizeStringArray(list)
+    await commitUpdate(
+      { professional_positions: unique },
+      { ...options, id: uid }
+    )
+  }
+
   const updateServiceTypes = async (
     csvOrList: string | string[],
     options: UpdateOptions = {}
@@ -429,6 +447,7 @@ export function useProfessionalUpdate(
     updateSummary,
     updateBio,
     updateImage,
+    updatePositions,
     updateServiceTypes,
     updateWorkAreas,
     updateTitle,

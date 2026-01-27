@@ -49,7 +49,7 @@
               />
               <UButton
                 to="/dashboard/professional/profile"
-                label="Add service types"
+                label="Add positions"
                 variant="soft"
                 color="neutral"
                 block
@@ -72,7 +72,7 @@
             </li>
             <li class="flex items-center gap-2">
               <UIcon name="i-lucide-check-circle" class="text-primary" />
-              List service types and work areas.
+              List positions you’re open to.
             </li>
             <li class="flex items-center gap-2">
               <UIcon name="i-lucide-check-circle" class="text-primary" />

@@ -172,13 +172,11 @@
         <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ multiFieldDoc }}</pre>
       </UCard>
 
-      <UCard class="space-y-4">
-        <template #header>
-          <div class="flex items-center justify-between gap-3">
-            <h2 class="text-base font-semibold">ObjectArray</h2>
-            <span class="text-xs text-gray-500 font-mono">test/objectarray</span>
-          </div>
-        </template>
+      <div class="space-y-4">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-base font-semibold">ObjectArray</h2>
+          <span class="text-xs text-gray-500 font-mono">test/objectarray</span>
+        </div>
 
         <MoleculesFormsFirestoreObjectArray
           label="Links"
@@ -242,7 +240,7 @@
         </MoleculesFormsFirestoreObjectArray>
 
         <pre class="text-xs rounded-lg border bg-background-2 p-3 overflow-x-auto">{{ objectArrayDoc }}</pre>
-      </UCard>
+      </div>
 
       <UCard class="space-y-4">
         <template #header>

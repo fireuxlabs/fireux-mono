@@ -1,14 +1,12 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="flex items-center gap-2 text-sm font-semibold">
-        <UIcon name="i-lucide-graduation-cap" />
-        Education
-      </div>
-    </template>
+  <div class="profile-edit__section">
+    <div class="profile-edit__section-header">
+      <UIcon name="i-lucide-graduation-cap" />
+      Education
+    </div>
 
     <MoleculesFormsFirestoreObjectArray
-      label="Education"
+      :label="label"
       :firebase-value="items"
       :update-function="onSave"
     >
@@ -20,12 +18,21 @@
             {{ item.start_year || 'Start' }}–{{ item.ongoing ? 'Present' : (item.end_year || 'End') }}
           </div>
           <div class="flex gap-2">
-            <UButton size="xs" variant="soft" icon="i-lucide-pencil" @click="startEditing">
-              Edit
-            </UButton>
-            <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove">
-              Remove
-            </UButton>
+            <UButton
+              size="xs"
+              variant="soft"
+              icon="i-lucide-pencil"
+              aria-label="Edit education"
+              @click="startEditing"
+            />
+            <UButton
+              size="xs"
+              variant="ghost"
+              color="error"
+              icon="i-lucide-trash-2"
+              aria-label="Remove education"
+              @click="remove"
+            />
           </div>
         </div>
       </template>
@@ -71,7 +78,7 @@
         </UButton>
       </template>
     </MoleculesFormsFirestoreObjectArray>
-  </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">

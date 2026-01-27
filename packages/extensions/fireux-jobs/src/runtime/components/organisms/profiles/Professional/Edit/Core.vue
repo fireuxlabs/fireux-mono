@@ -1,17 +1,17 @@
 <template>
   <ClientOnly>
-    <div v-if="professional" class="space-y-6">
+    <div v-if="professional" class="profile-edit">
       <UCard>
         <template #header>
-          <div class="flex items-center gap-2 text-sm font-semibold">
+          <div class="profile-edit__section-header">
             <UIcon name="i-lucide-id-card" />
             Identity
           </div>
         </template>
 
-        <div class="space-y-4">
+        <div class="profile-edit__fields">
           <MoleculesFormsFirestoreSimpleField
-            label="Headline"
+            label="Job title"
             :firebase-value="headline"
             placeholder="Ex: Freelance Chef"
             :maxlength="60"
@@ -50,40 +50,32 @@
 
       <UCard>
         <template #header>
-          <div class="flex items-center gap-2 text-sm font-semibold">
+          <div class="profile-edit__section-header">
             <UIcon name="i-lucide-target" />
             Matching
           </div>
         </template>
 
-        <div class="space-y-4">
+        <div class="profile-edit__stack">
           <MoleculesFormsFirestoreArrayOfStrings
-            label="Service Types"
-            :firebase-value="serviceTypes"
-            item-placeholder="Service type"
-            new-item-placeholder="Add service type"
-            :update-function="handleServiceTypes"
-          />
-
-          <MoleculesFormsFirestoreArrayOfStrings
-            label="Work Areas"
-            :firebase-value="workAreas"
-            item-placeholder="Work area"
-            new-item-placeholder="Add work area"
-            :update-function="handleWorkAreas"
+            label="Positions"
+            :firebase-value="positions"
+            item-placeholder="Position"
+            new-item-placeholder="Add position"
+            :update-function="handlePositions"
           />
         </div>
       </UCard>
 
       <UCard>
         <template #header>
-          <div class="flex items-center gap-2 text-sm font-semibold">
+          <div class="profile-edit__section-header">
             <UIcon name="i-lucide-shield-check" />
             Compliance & certifications
           </div>
         </template>
 
-        <div class="space-y-4">
+        <div class="profile-edit__stack">
           <MoleculesFormsFirestoreArrayOfStrings
             label="Health Certifications"
             :firebase-value="healthCertifications"
@@ -160,8 +152,7 @@ const {
   updateSummary,
   updateBio,
   updateImage,
-  updateServiceTypes,
-  updateWorkAreas,
+  updatePositions,
   setRelevantExperience,
   setOtherExperience,
   updateHealthCertifications,
@@ -185,20 +176,13 @@ const bio = computed(
 )
 const imageUrl = computed(() => professional.value?.professional_image ?? '')
 
-const serviceTypes = computed(() => {
+const positions = computed(() => {
   const list =
-    professional.value?.professional_service_types?.length
-      ? professional.value?.professional_service_types
-      : professional.value?.specialties ?? []
-  return Array.isArray(list) ? list : []
-})
-
-const workAreas = computed(() => {
-  const list =
-    Array.isArray(professional.value?.professional_work_areas) &&
-    professional.value?.professional_work_areas.every((x) => typeof x === 'string')
-      ? (professional.value?.professional_work_areas as string[])
-      : professional.value?.locations ?? []
+    professional.value?.professional_positions?.length
+      ? professional.value?.professional_positions
+      : professional.value?.professional_service_types?.length
+        ? professional.value?.professional_service_types
+        : professional.value?.specialties ?? []
   return Array.isArray(list) ? list : []
 })
 
@@ -229,8 +213,8 @@ const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string)
 const handleHeadline = async (value: string) =>
   wrap(
     () => updateHeadline(value, { id: professional.value?.id ?? null }),
-    'Headline updated',
-    'Failed to update headline'
+    'Job title updated',
+    'Failed to update job title'
   )
 
 const handleSummary = async (value: string) =>
@@ -254,18 +238,11 @@ const handleImage = async (value: string) =>
     'Failed to update professional image'
   )
 
-const handleServiceTypes = async (value: string[]) =>
+const handlePositions = async (value: string[]) =>
   wrap(
-    () => updateServiceTypes(value, { id: professional.value?.id ?? null }),
-    'Service types updated',
-    'Failed to update service types'
-  )
-
-const handleWorkAreas = async (value: string[]) =>
-  wrap(
-    () => updateWorkAreas(value, { id: professional.value?.id ?? null }),
-    'Work areas updated',
-    'Failed to update work areas'
+    () => updatePositions(value, { id: professional.value?.id ?? null }),
+    'Positions updated',
+    'Failed to update positions'
   )
 
 const handleHealthCertifications = async (value: string[]) =>
