@@ -5,9 +5,9 @@
         <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
         <div>{{ card.displayName || 'Professional' }}</div>
         <div v-if="card.tagline">{{ card.tagline }}</div>
-        <div v-if="card.badges.length">
+        <div v-if="badges.length">
           <UBadge
-            v-for="badge in card.badges"
+            v-for="badge in badges"
             :key="badge"
             variant="soft"
             color="neutral"
@@ -53,21 +53,6 @@
           <div v-else-if="item.value === 'bio_long'">
             <p v-if="bioLong">{{ bioLong }}</p>
             <p v-else>No bio long listed.</p>
-          </div>
-
-          <div v-else-if="item.value === 'health_certifications'">
-            <div v-if="healthCertifications.length">
-              <UBadge
-                v-for="cert in healthCertifications"
-                :key="cert"
-                variant="soft"
-                color="secondary"
-                size="xs"
-              >
-                {{ cert }}
-              </UBadge>
-            </div>
-            <p v-else>No health certifications listed.</p>
           </div>
 
           <div v-else-if="item.value === 'relevant_experience'">
@@ -242,19 +227,19 @@ const props = defineProps<{
   prop?: string
 }>()
 
-const card = reactive({ ...props.card })
+const card = reactive({ badges: [] as string[], ...props.card })
 
 watchEffect(() => {
-  Object.assign(card, props.card)
+  Object.assign(card, { badges: [] as string[], ...props.card })
 })
 
 const { prop } = toRefs(props)
 const profile = computed(() => props.profile ?? null)
+const badges = computed(() => card.badges ?? [])
 
 const tags = computed(() => profile.value?.tags ?? [])
 const specialties = computed(() => profile.value?.specialties ?? [])
 const locations = computed(() => profile.value?.locations ?? [])
-const healthCertifications = computed(() => profile.value?.health_certifications ?? [])
 const certifications = computed(() => profile.value?.certifications ?? [])
 const languages = computed(() => profile.value?.languages ?? [])
 const education = computed(() => profile.value?.education ?? [])
@@ -350,7 +335,6 @@ const accordionItems = computed(() => {
   const items = [
     { label: 'Bio Short', value: 'bio_short' },
     { label: 'Bio Long', value: 'bio_long' },
-    { label: 'Health Certifications', value: 'health_certifications' },
     { label: 'Relevant Experience', value: 'relevant_experience' },
     { label: 'Languages', value: 'languages' },
     { label: 'Certifications', value: 'certifications' },

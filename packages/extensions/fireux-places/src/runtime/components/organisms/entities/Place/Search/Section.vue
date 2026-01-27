@@ -39,9 +39,9 @@ import { computed, ref, watch } from 'vue'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import {
-  loadLogoForPlace,
-  sanitizeLogoAvatar,
-  usePlaceLogoState,
+    loadLogoForPlace,
+    sanitizeLogoAvatar,
+    usePlaceLogoState,
 } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { BasePlace, PlaceSource, PlaceUpsertInput } from '../../../../../models/objects/place.model'
@@ -63,6 +63,7 @@ const emit = defineEmits<{
 const { query, results, selected, isSearching, select: selectPlace, clear } =
   usePlacesSearch({
     debugLabel: props.type === 'kitchen' ? 'kitchens' : undefined,
+    type: props.type ?? null,
   })
 
 const selectedPlace = computed(() => selected.value as BasePlace | null)

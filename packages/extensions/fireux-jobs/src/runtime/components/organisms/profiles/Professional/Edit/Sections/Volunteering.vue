@@ -4,34 +4,10 @@
       label="Volunteering"
       :firebase-value="items"
       :update-function="onSave"
-      :item-title="(item) => item.organization || 'Organization'"
-      :item-date="(item) => `${item.from_year || 'Start'}–${item.ongoing ? 'Present' : (item.to_year || 'End')}`"
+      :item-title="itemTitle"
+      :item-date="itemDate"
+      :item-subtitle="itemSubtitle"
     >
-      <template #display="{ item, startEditing, remove }">
-        <div class="space-y-2">
-          <div class="text-xs text-gray-500">
-            {{ item.role || 'Role' }}
-          </div>
-          <div class="object-array__item-actions">
-            <UButton
-              size="xs"
-              variant="soft"
-              icon="i-lucide-pencil"
-              aria-label="Edit volunteering"
-              @click="startEditing"
-            />
-            <UButton
-              size="xs"
-              variant="ghost"
-              color="error"
-              icon="i-lucide-trash-2"
-              aria-label="Remove volunteering"
-              @click="remove"
-            />
-          </div>
-        </div>
-      </template>
-
       <template #edit="{ item, save, cancel }">
         <div class="space-y-2">
           <UInput v-model="item.organization" placeholder="Organization" />
@@ -74,8 +50,13 @@
 <script setup lang="ts">
 import type { VolunteeringItem } from '../../../../../../models/profiles/Professional/supporting';
 
-defineProps<{
+const props = defineProps<{
   items: VolunteeringItem[]
   onSave: (items: VolunteeringItem[]) => Promise<void>
 }>()
+
+const itemTitle = (item: VolunteeringItem) => item.organization || 'Organization'
+const itemDate = (item: VolunteeringItem) =>
+  `${item.from_year || 'Start'}–${item.ongoing ? 'Present' : (item.to_year || 'End')}`
+const itemSubtitle = (item: VolunteeringItem) => item.role || 'Role'
 </script>

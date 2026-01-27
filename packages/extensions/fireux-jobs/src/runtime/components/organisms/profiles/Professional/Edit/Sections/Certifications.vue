@@ -4,40 +4,15 @@
       label="Certifications"
       :firebase-value="items"
       :update-function="onSave"
-      :item-title="(item) => item.name || 'Certification'"
-      :item-date="(item) => item.year || 'Year not set'"
+      :item-title="itemTitle"
+      :item-date="itemDate"
+      :item-subtitle="itemSubtitle"
     >
-      <template #display="{ item, startEditing, remove }">
-        <div class="space-y-2">
-          <div class="text-xs text-gray-500">
-            {{ item.place_name || 'Organization' }}
-          </div>
-          <div class="object-array__item-actions">
-            <UButton
-              size="xs"
-              variant="soft"
-              icon="i-lucide-pencil"
-              aria-label="Edit certification"
-              @click="startEditing"
-            />
-            <UButton
-              size="xs"
-              variant="ghost"
-              color="error"
-              icon="i-lucide-trash-2"
-              aria-label="Remove certification"
-              @click="remove"
-            />
-          </div>
-        </div>
-      </template>
-
       <template #edit="{ item, save, cancel }">
         <div class="space-y-2">
           <UInput v-model="item.name" placeholder="Certification name" />
           <UInput v-model="item.place_name" placeholder="Organization" />
           <UInput v-model="item.year" placeholder="Year" />
-          <UInput v-model="item.formatted_address" placeholder="Address" />
           <UInput v-model="item.document_url" placeholder="Document URL" />
           <UInput v-model="item.image_url" placeholder="Image URL" />
           <div class="flex gap-2">
@@ -74,8 +49,12 @@
 <script setup lang="ts">
 import type { CertificationItem } from '../../../../../../models/profiles/Professional/supporting';
 
-defineProps<{
+const props = defineProps<{
   items: CertificationItem[]
   onSave: (items: CertificationItem[]) => Promise<void>
 }>()
+
+const itemTitle = (item: CertificationItem) => item.name || 'Certification'
+const itemDate = (item: CertificationItem) => item.year || 'Year not set'
+const itemSubtitle = (item: CertificationItem) => item.place_name || 'Organization'
 </script>

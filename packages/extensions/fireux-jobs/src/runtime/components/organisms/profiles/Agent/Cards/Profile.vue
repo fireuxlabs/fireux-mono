@@ -17,9 +17,9 @@
           </div>
         </div>
 
-        <div v-if="card.badges.length" class="flex flex-wrap justify-end gap-1">
+        <div v-if="badges.length" class="flex flex-wrap justify-end gap-1">
           <UBadge
-            v-for="badge in card.badges"
+            v-for="badge in badges"
             :key="badge"
             variant="soft"
             color="neutral"
@@ -64,9 +64,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     card: AgentCard.Card
     prop?: string
@@ -76,4 +77,6 @@ withDefaults(
     showSubtitle: true,
   }
 )
+
+const badges = computed(() => props.card.badges ?? [])
 </script>

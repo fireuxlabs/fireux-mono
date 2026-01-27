@@ -3,10 +3,10 @@
     :label="label"
     :firebase-value="items"
     :update-function="onSave"
-    :item-title="(item) => item.role || 'Role'"
-    :item-date="(item) => formatRange(item)"
+    :item-title="itemTitle"
+    :item-date="itemDate"
   >
-    <template #display="{ item, startEditing, remove }">
+    <template #display="{ item }">
         <div class="space-y-2">
             <div class="space-y-1">
               <div class="flex flex-wrap items-center gap-2">
@@ -32,51 +32,38 @@
           <p v-if="item.responsibilities" class="text-sm text-gray-600">
             {{ item.responsibilities }}
           </p>
-          <div class="object-array__item-actions">
-            <UButton
-              size="xs"
-              variant="soft"
-              icon="i-lucide-pencil"
-              aria-label="Edit entry"
-              @click="startEditing"
-            />
-            <UButton
-              size="xs"
-              variant="ghost"
-              color="error"
-              icon="i-lucide-trash-2"
-              aria-label="Remove entry"
-              @click="remove"
-            />
-          </div>
+          <p class="text-xs text-dimmed italic">
+            To change the place, delete this entry and create a new one.
+          </p>
         </div>
       </template>
 
     <template #edit="{ item, save, cancel }">
       <div class="space-y-2">
-          <UInput v-model="item.role" placeholder="Role" />
-          <UInput v-model="item.place_id" placeholder="Place ID" />
-          <UInput v-model="item.name" placeholder="Place name (optional)" />
-          <UInput v-model="item.formatted_address" placeholder="Formatted address" />
-          <UInput v-model="item.short_address" placeholder="Short address" />
-          <UInput v-model="item.image_url" placeholder="Image URL" />
-          <div class="grid gap-2 sm:grid-cols-2">
-            <UInput v-model="item.from_month" placeholder="From month" />
-            <UInput v-model="item.from_year" placeholder="From year" />
-            <UInput v-model="item.to_month" placeholder="To month" />
-            <UInput v-model="item.to_year" placeholder="To year" />
-          </div>
-          <UCheckbox v-model="item.ongoing" label="Ongoing" />
-          <UTextarea v-model="item.responsibilities" :rows="3" placeholder="Responsibilities" />
-          <div class="flex gap-2">
-            <UButton size="xs" variant="solid" icon="i-lucide-check" @click="save">
-              Save
-            </UButton>
-            <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel">
-              Cancel
-            </UButton>
-          </div>
+        <OrganismsEntitiesPlaceSearchSection
+          v-if="!item.place_id"
+          :type="placeType"
+          placeholder="Search places"
+          @confirmed="onApplyPlaceConfirmed($event, item)"
+        />
+        <UInput v-model="item.role" placeholder="Role" />
+        <div class="grid gap-2 sm:grid-cols-2">
+          <UInput v-model="item.from_month" placeholder="From month" />
+          <UInput v-model="item.from_year" placeholder="From year" />
+          <UInput v-model="item.to_month" placeholder="To month" />
+          <UInput v-model="item.to_year" placeholder="To year" />
         </div>
+        <UCheckbox v-model="item.ongoing" label="Ongoing" />
+        <UTextarea v-model="item.responsibilities" :rows="3" placeholder="Responsibilities" />
+        <div class="flex gap-2">
+          <UButton size="xs" variant="solid" icon="i-lucide-check" @click="save">
+            Save
+          </UButton>
+          <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel">
+            Cancel
+          </UButton>
+        </div>
+      </div>
     </template>
 
     <template #create="{ push }">
@@ -96,6 +83,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
 import { mapPlaceToCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToCard'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { computed, ref, watch } from 'vue'
 import { useFirestore } from 'vuefire'
 import type { ExperienceItem } from '../../../../../models/profiles/Professional/supporting'
@@ -112,9 +100,13 @@ const props = defineProps<{
   label: string
   items: ExperienceEntry[]
   onSave: (items: ExperienceEntry[]) => Promise<void>
+  placeType?: string | null
+  includeSnapshot?: boolean
 }>()
 
 const createLabel = computed(() => `Add ${props.label.toLowerCase()}`)
+const itemTitle = (item: ExperienceEntry) => item.role || 'Role'
+const itemDate = (item: ExperienceEntry) => formatRange(item)
 
 const db = useFirestore()
 const placeCache = ref<Record<string, Record<string, any>>>({})
@@ -198,4 +190,21 @@ const newExperienceItem = (): ExperienceEntry => ({
   ongoing: false,
   responsibilities: '',
 })
+
+const onApplyPlaceConfirmed = (
+  payload: { placeId: string; place: PlaceUpsertInput },
+  target: ExperienceEntry
+) => {
+  const placeId = canonicalPlaceId(payload.placeId) || payload.placeId
+  target.place_id = placeId || ''
+
+  if (props.includeSnapshot) {
+    const place = payload.place as PlaceUpsertInput & { place_image?: string }
+    target.name = String(place.name ?? '')
+    target.place_name = String((place as any).name ?? '')
+    target.formatted_address = String(place.formatted_address ?? '')
+    target.short_address = String((place as any).short_address ?? '')
+    target.image_url = String((place as any).place_image ?? '')
+  }
+}
 </script>

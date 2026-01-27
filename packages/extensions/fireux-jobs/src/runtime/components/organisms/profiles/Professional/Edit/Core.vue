@@ -45,18 +45,7 @@
             :maxlength="400"
             :update-function="handleImage"
           />
-        </div>
-      </UCard>
 
-      <UCard>
-        <template #header>
-          <div class="profile-edit__section-header">
-            <UIcon name="i-lucide-target" />
-            Matching
-          </div>
-        </template>
-
-        <div class="profile-edit__stack">
           <div class="profile-edit__field">
             <MoleculesFormsFirestoreArrayOfStrings
               label="Positions"
@@ -68,6 +57,35 @@
           </div>
         </div>
       </UCard>
+
+      <OrganismsProfilesProfessionalFieldsExperienceSection
+        label="Relevant Experience"
+        :items="professional.relevant_experience || []"
+        :onSave="handleRelevantExperience"
+        :place-type="relevantPlaceType"
+      />
+
+      <OrganismsProfilesProfessionalFieldsExperienceSection
+        label="Other Experience"
+        :items="professional.other_experience || []"
+        :onSave="handleOtherExperience"
+        :include-snapshot="true"
+      />
+
+      <OrganismsProfilesProfessionalEditSectionsLanguages
+        :items="languages"
+        :onSave="handleLanguages"
+      />
+
+      <OrganismsProfilesProfessionalEditSectionsCertifications
+        :items="certifications"
+        :onSave="handleCertifications"
+      />
+
+      <OrganismsProfilesProfessionalEditSectionsEducation
+        :items="education"
+        :onSave="handleEducation"
+      />
 
       <UCard>
         <template #header>
@@ -88,33 +106,6 @@
         </div>
       </UCard>
 
-      <OrganismsProfilesProfessionalFieldsExperienceSection
-        label="Relevant Experience"
-        :items="professional.relevant_experience || []"
-        :onSave="handleRelevantExperience"
-      />
-
-      <OrganismsProfilesProfessionalFieldsExperienceSection
-        label="Other Experience"
-        :items="professional.other_experience || []"
-        :onSave="handleOtherExperience"
-      />
-
-      <OrganismsProfilesProfessionalEditSectionsLanguages
-        :items="languages"
-        :onSave="handleLanguages"
-      />
-
-      <OrganismsProfilesProfessionalEditSectionsCertifications
-        :items="certifications"
-        :onSave="handleCertifications"
-      />
-
-      <OrganismsProfilesProfessionalEditSectionsEducation
-        :items="education"
-        :onSave="handleEducation"
-      />
-
       <OrganismsProfilesProfessionalEditSectionsVolunteering
         :items="volunteering"
         :onSave="handleVolunteering"
@@ -133,6 +124,7 @@
 <script setup lang="ts">
 import { computed } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useJobsConfig } from '../../../../../composables/fireux/app/useJobsConfig'
 import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalUpdate'
 import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model'
 import type {
@@ -165,6 +157,9 @@ const {
   updateProjects,
 } = useProfessionalUpdate()
 
+const { placeCollections } = useJobsConfig()
+const relevantPlaceType = computed(() => placeCollections[0] ?? null)
+
 const professional = computed(() => props.professional ?? null)
 
 const headline = computed(
@@ -188,17 +183,19 @@ const positions = computed(() => {
   return Array.isArray(list) ? list : []
 })
 
-const healthCertifications = computed(() => professional.value?.health_certifications ?? [])
 const languages = computed(() => professional.value?.languages ?? [])
 const certifications = computed(() => professional.value?.certifications ?? [])
 const education = computed(() => professional.value?.education ?? [])
 const volunteering = computed(() => professional.value?.volunteering ?? [])
 const projects = computed(() => professional.value?.projects ?? [])
+const healthCertifications = computed(
+  () => professional.value?.health_certifications ?? []
+)
 
 const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
   try {
     await fn()
-    toast.add({ title: okTitle, icon: 'i-heroicons-check-circle' })
+    toast.add({ title: okTitle })
     return 'success'
   } catch (error) {
     const description = error instanceof Error ? error.message : 'Please try again.'
@@ -206,7 +203,6 @@ const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string)
       title: failTitle,
       description,
       color: 'amber',
-      icon: 'i-heroicons-exclamation-triangle',
     })
     throw error
   }

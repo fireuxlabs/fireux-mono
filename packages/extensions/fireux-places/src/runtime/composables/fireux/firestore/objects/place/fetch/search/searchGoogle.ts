@@ -9,8 +9,9 @@ export const searchGoogle = async (params: {
   collectionName: string
   db: Firestore
   mapToCard: MapToCard
+  type?: string | null
 }): Promise<SearchStage> => {
-  const { term, allowGoogle, collectionName, db, mapToCard } = params
+  const { term, allowGoogle, collectionName, db, mapToCard, type } = params
 
   if (!allowGoogle) {
     return { results: [], stage: 'skip-google', debug: { stage: 'skip-google' } }
@@ -24,7 +25,7 @@ export const searchGoogle = async (params: {
     }
   }
 
-  const googleCells = await fetchGoogle(term, new Set(), 4)
+  const googleCells = await fetchGoogle(term, new Set(), 4, { type })
   const resolved = await Promise.all(
     googleCells.map(async (cell) =>
       (await resolveExistingPlace(db, collectionName, cell.id, mapToCard)) ?? cell

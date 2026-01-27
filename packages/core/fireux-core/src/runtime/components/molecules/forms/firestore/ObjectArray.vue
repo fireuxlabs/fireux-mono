@@ -9,14 +9,17 @@
     </div>
 
     <div>
-      <div v-if="!items || items.length === 0">No items yet.</div>
+      <div v-if="!items || items.length === 0">{{ emptyText }}</div>
       <ul v-else class="object-array__list">
         <li v-for="(item, index) in items" :key="index">
           <UCard>
             <div class="relative group">
               <div class="object-array__item-body space-y-2">
                 <div v-if="editingIndex !== index">
-                  <div v-if="itemTitle || itemDate" class="object-array__item-heading">
+                  <div
+                    v-if="getItemTitle(item, index) || getItemDate(item, index)"
+                    class="object-array__item-heading"
+                  >
                     <h3 v-if="getItemTitle(item, index)">{{ getItemTitle(item, index) }}</h3>
                     <span
                       v-if="getItemDate(item, index)"
@@ -26,6 +29,7 @@
                     </span>
                   </div>
                   <slot
+                    v-if="hasDisplaySlot"
                     name="display"
                     :item="item"
                     :index="index"
@@ -33,32 +37,27 @@
                     :is-editing="false"
                     :start-editing="() => startItemEditing(index)"
                     :remove="() => remove(index)"
-                  >
-                    <div
-                      class="p-4 border border-dashed border-gray-300 rounded"
-                    >
-                      Default display rendering for index {{ index }}
-                      <div class="object-array__item-actions">
-                        <UButton
-                          size="xs"
-                          variant="soft"
-                          icon="i-lucide-pencil"
-                          @click="startItemEditing(index)"
-                        >
-                          Edit
-                        </UButton>
-                        <UButton
-                          size="xs"
-                          variant="ghost"
-                          color="error"
-                          icon="i-lucide-trash-2"
-                          @click="remove(index)"
-                        >
-                          Remove
-                        </UButton>
-                      </div>
+                  />
+                  <div v-else>
+                    <div v-if="getItemSubtitle(item, index)" class="object-array__item-subtitle">
+                      {{ getItemSubtitle(item, index) }}
                     </div>
-                  </slot>
+                  </div>
+                  <div v-if="showActions" class="object-array__item-actions">
+                    <UButton
+                      size="xs"
+                      variant="soft"
+                      icon="i-lucide-pencil"
+                      @click="startItemEditing(index)"
+                    />
+                    <UButton
+                      size="xs"
+                      variant="ghost"
+                      color="error"
+                      icon="i-lucide-trash-2"
+                      @click="remove(index)"
+                    />
+                  </div>
                 </div>
                 <div v-else>
                   <slot
@@ -71,9 +70,7 @@
                     :save="saveItemEditing"
                     :cancel="cancelItemEditing"
                   >
-                    <div
-                      class="p-4 border border-dashed border-primary-300 rounded bg-primary-50"
-                    >
+                    <div class="p-4 border border-dashed border-primary-300 rounded bg-primary-50">
                       Default edit rendering for index {{ index }}
                       <div class="mt-3 flex gap-2">
                         <UButton
@@ -168,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, useSlots } from 'vue';
 
 const props = defineProps<{
   label?: string
@@ -176,17 +173,28 @@ const props = defineProps<{
   updateFunction: (value: any[]) => Promise<void> | void
   itemTitle?: (item: any, index: number) => string
   itemDate?: (item: any, index: number) => string
+  itemSubtitle?: (item: any, index: number) => string
+  emptyText?: string
+  showActions?: boolean
 }>()
+
+const slots = useSlots()
 
 const items = computed(() => props.firebaseValue || [])
 const editingIndex = ref<number | null>(null)
 const draftItem = ref<any | null>(null)
+const emptyText = computed(() => props.emptyText ?? 'No items yet.')
+const hasDisplaySlot = computed(() => Boolean(slots.display))
+const showActions = computed(() => props.showActions ?? !hasDisplaySlot.value)
 
 const getItemTitle = (item: any, index: number) =>
   props.itemTitle ? props.itemTitle(item, index) : ''
 
 const getItemDate = (item: any, index: number) =>
   props.itemDate ? props.itemDate(item, index) : ''
+
+const getItemSubtitle = (item: any, index: number) =>
+  props.itemSubtitle ? props.itemSubtitle(item, index) : ''
 
 function shallowClone<T>(v: T): T {
   if (Array.isArray(v)) return v.slice() as unknown as T
@@ -264,13 +272,13 @@ defineExpose({
   gap: 0.75rem;
 }
 
-:deep(.object-array__item-actions) {
+.object-array__item-actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 0.25rem;
+  right: 0.25rem;
   z-index: 2;
 }
 
@@ -285,6 +293,11 @@ defineExpose({
 }
 
 .object-array__item-date {
+  font-size: 0.75rem;
+  color: var(--ui-text-muted, var(--ui-text));
+}
+
+.object-array__item-subtitle {
   font-size: 0.75rem;
   color: var(--ui-text-muted, var(--ui-text));
 }

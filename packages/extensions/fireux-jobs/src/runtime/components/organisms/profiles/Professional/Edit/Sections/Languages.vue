@@ -4,31 +4,9 @@
       label="Languages"
       :firebase-value="items"
       :update-function="onSave"
-      :item-title="(item) => item.language || 'Language'"
-      :item-date="(item) => item.proficiency || 'Proficiency not set'"
+      :item-title="itemTitle"
+      :item-date="itemDate"
     >
-      <template #display="{ item, startEditing, remove }">
-        <div class="space-y-2">
-          <div class="object-array__item-actions">
-            <UButton
-              size="xs"
-              variant="soft"
-              icon="i-lucide-pencil"
-              aria-label="Edit language"
-              @click="startEditing"
-            />
-            <UButton
-              size="xs"
-              variant="ghost"
-              color="error"
-              icon="i-lucide-trash-2"
-              aria-label="Remove language"
-              @click="remove"
-            />
-          </div>
-        </div>
-      </template>
-
       <template #edit="{ item, save, cancel }">
         <div class="space-y-2">
           <UInput v-model="item.language" placeholder="Language" />
@@ -60,8 +38,11 @@
 <script setup lang="ts">
 import type { LanguageProficiency } from '../../../../../../models/profiles/Professional/supporting';
 
-defineProps<{
+const props = defineProps<{
   items: LanguageProficiency[]
   onSave: (items: LanguageProficiency[]) => Promise<void>
 }>()
+
+const itemTitle = (item: LanguageProficiency) => item.language || 'Language'
+const itemDate = (item: LanguageProficiency) => item.proficiency || 'Proficiency not set'
 </script>

@@ -11,6 +11,7 @@ import { searchGoogle } from './searchGoogle'
 
 type UsePlacesSearchOptions = {
   debugLabel?: string
+  type?: string | null
 }
 
 export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
@@ -80,6 +81,7 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
         collectionName,
         db,
         mapToCard,
+        type: options.type ?? null,
       })
 
       if (primaryResults.length) {
