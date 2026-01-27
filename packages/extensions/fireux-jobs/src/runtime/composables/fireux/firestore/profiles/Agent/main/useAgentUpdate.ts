@@ -8,9 +8,7 @@ import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.mo
  *   - updateCoreProfile: global Agent profile
  *   - updateAppProfile: tenant-scoped Agent profile
  *
- * For now:
- * - accepts only refs (no user cascading)
- * - both implementations are stubs until Firestore integration
+ * Shared update surface for v1 scoped fields.
  */
 export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
   const base = useProfileUpdateBase<AgentCore>('agents', profile)
@@ -45,58 +43,54 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
 
   const updateHeadline = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ agent_headline: normalized ?? '' })
+    await updateCoreProfile({ agent_headline: normalized ?? undefined })
   }
 
   const updateSummary = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ agent_summary: normalized ?? '' })
+    await updateCoreProfile({ agent_summary: normalized ?? undefined })
   }
 
   const updateBio = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ agent_bio: normalized ?? '' })
+    await updateCoreProfile({ agent_bio: normalized ?? undefined })
   }
 
   const updateImage = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ agent_image: normalized ?? '' })
+    await updateCoreProfile({ agent_image: normalized ?? undefined })
   }
 
-  const updatePlacementTypesCsv = async (value: string | string[]) => {
-    await updateCoreProfile({ agent_placement_types: base.csvToArray(value) })
+  const updatePlacementTypes = async (value: string | string[]) => {
+    await updateCoreProfile({ agent_placement_types: base.toStringArray(value) })
   }
 
-  const updateCoverageAreasCsv = async (value: string | string[]) => {
-    await updateCoreProfile({ agent_coverage_areas: base.csvToArray(value) })
+  const updateCoverageAreas = async (value: string | string[]) => {
+    await updateCoreProfile({ agent_coverage_areas: base.toStringArray(value) })
   }
 
   const updateContactEmail = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ agent_contact_email: normalized ?? '' })
+    await updateCoreProfile({ agent_contact_email: normalized ?? undefined })
   }
 
   const updateContactPhone = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ agent_contact_phone: normalized ?? '' })
+    await updateCoreProfile({ agent_contact_phone: normalized ?? undefined })
   }
 
   const updateWebsiteUrl = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ agent_website_url: normalized ?? '' })
+    await updateCoreProfile({ agent_website_url: normalized ?? undefined })
   }
 
   const updateAgencyName = async (value: string) => updateHeadline(value)
-
-  const updateDisplayName = async (value: string) => {
-    console.warn('[useAgentUpdate] updateDisplayName stub called with:', value)
-  }
 
   const updateTagline = async (value: string) => updateHeadline(value)
 
   const updateBioShort = async (value: string) => updateSummary(value)
 
-  const updateBadges = async (value: string) => updatePlacementTypesCsv(value)
+  const updateBadges = async (value: string) => updatePlacementTypes(value)
 
   return {
     updateCoreProfile,
@@ -104,14 +98,13 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
     commitUpdate: base.commitUpdate,
     updateCore,
     updateApp,
-    updateDisplayName,
     updateAgencyName,
     updateHeadline,
     updateSummary,
     updateBio,
     updateImage,
-    updatePlacementTypesCsv,
-    updateCoverageAreasCsv,
+    updatePlacementTypes,
+    updateCoverageAreas,
     updateTagline,
     updateBioShort,
     updateContactEmail,

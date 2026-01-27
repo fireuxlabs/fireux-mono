@@ -2,6 +2,13 @@
   <ClientOnly>
     <div v-if="professional" class="space-y-6">
       <UCard>
+        <template #header>
+          <div class="flex items-center gap-2 text-sm font-semibold">
+            <UIcon name="i-lucide-id-card" />
+            Identity
+          </div>
+        </template>
+
         <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
             label="Headline"
@@ -38,7 +45,18 @@
             :maxlength="400"
             :update-function="handleImage"
           />
+        </div>
+      </UCard>
 
+      <UCard>
+        <template #header>
+          <div class="flex items-center gap-2 text-sm font-semibold">
+            <UIcon name="i-lucide-target" />
+            Matching
+          </div>
+        </template>
+
+        <div class="space-y-4">
           <MoleculesFormsFirestoreArrayOfStrings
             label="Service Types"
             :firebase-value="serviceTypes"
@@ -56,6 +74,62 @@
           />
         </div>
       </UCard>
+
+      <UCard>
+        <template #header>
+          <div class="flex items-center gap-2 text-sm font-semibold">
+            <UIcon name="i-lucide-shield-check" />
+            Compliance & certifications
+          </div>
+        </template>
+
+        <div class="space-y-4">
+          <MoleculesFormsFirestoreArrayOfStrings
+            label="Health Certifications"
+            :firebase-value="healthCertifications"
+            item-placeholder="Certification"
+            new-item-placeholder="Add certification"
+            :update-function="handleHealthCertifications"
+          />
+        </div>
+      </UCard>
+
+      <OrganismsProfilesProfessionalFieldsExperienceSection
+        label="Relevant Experience"
+        :items="professional.relevant_experience || []"
+        :onSave="handleRelevantExperience"
+      />
+
+      <OrganismsProfilesProfessionalFieldsExperienceSection
+        label="Other Experience"
+        :items="professional.other_experience || []"
+        :onSave="handleOtherExperience"
+      />
+
+      <OrganismsProfilesProfessionalEditSectionsLanguages
+        :items="languages"
+        :onSave="handleLanguages"
+      />
+
+      <OrganismsProfilesProfessionalEditSectionsCertifications
+        :items="certifications"
+        :onSave="handleCertifications"
+      />
+
+      <OrganismsProfilesProfessionalEditSectionsEducation
+        :items="education"
+        :onSave="handleEducation"
+      />
+
+      <OrganismsProfilesProfessionalEditSectionsVolunteering
+        :items="volunteering"
+        :onSave="handleVolunteering"
+      />
+
+      <OrganismsProfilesProfessionalEditSectionsProjects
+        :items="projects"
+        :onSave="handleProjects"
+      />
     </div>
 
     <MoleculesStateCard v-else entity="professional profile" kind="document" loading />
@@ -63,10 +137,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from '#imports';
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
-import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalUpdate';
-import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model';
+import { computed } from '#imports'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalUpdate'
+import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model'
+import type {
+  CertificationItem,
+  EducationItem,
+  LanguageProficiency,
+  OtherExperienceItem,
+  ProjectItem,
+  RelevantExperienceItem,
+  VolunteeringItem,
+} from '../../../../../models/profiles/Professional/supporting'
 
 const props = defineProps<{ professional: ProfessionalCore | null }>()
 
@@ -78,7 +161,15 @@ const {
   updateBio,
   updateImage,
   updateServiceTypes,
-  updateWorkAreasCsv,
+  updateWorkAreas,
+  setRelevantExperience,
+  setOtherExperience,
+  updateHealthCertifications,
+  updateLanguages,
+  updateCertifications,
+  updateEducation,
+  updateVolunteering,
+  updateProjects,
 } = useProfessionalUpdate()
 
 const professional = computed(() => props.professional ?? null)
@@ -110,6 +201,13 @@ const workAreas = computed(() => {
       : professional.value?.locations ?? []
   return Array.isArray(list) ? list : []
 })
+
+const healthCertifications = computed(() => professional.value?.health_certifications ?? [])
+const languages = computed(() => professional.value?.languages ?? [])
+const certifications = computed(() => professional.value?.certifications ?? [])
+const education = computed(() => professional.value?.education ?? [])
+const volunteering = computed(() => professional.value?.volunteering ?? [])
+const projects = computed(() => professional.value?.projects ?? [])
 
 const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
   try {
@@ -165,8 +263,64 @@ const handleServiceTypes = async (value: string[]) =>
 
 const handleWorkAreas = async (value: string[]) =>
   wrap(
-    () => updateWorkAreasCsv(value, { id: professional.value?.id ?? null }),
+    () => updateWorkAreas(value, { id: professional.value?.id ?? null }),
     'Work areas updated',
     'Failed to update work areas'
+  )
+
+const handleHealthCertifications = async (value: string[]) =>
+  wrap(
+    () => updateHealthCertifications(value, { id: professional.value?.id ?? null }),
+    'Health certifications updated',
+    'Failed to update health certifications'
+  )
+
+const handleLanguages = async (value: LanguageProficiency[]) =>
+  wrap(
+    () => updateLanguages(value, { id: professional.value?.id ?? null }),
+    'Languages updated',
+    'Failed to update languages'
+  )
+
+const handleCertifications = async (value: CertificationItem[]) =>
+  wrap(
+    () => updateCertifications(value, { id: professional.value?.id ?? null }),
+    'Certifications updated',
+    'Failed to update certifications'
+  )
+
+const handleEducation = async (value: EducationItem[]) =>
+  wrap(
+    () => updateEducation(value, { id: professional.value?.id ?? null }),
+    'Education updated',
+    'Failed to update education'
+  )
+
+const handleVolunteering = async (value: VolunteeringItem[]) =>
+  wrap(
+    () => updateVolunteering(value, { id: professional.value?.id ?? null }),
+    'Volunteering updated',
+    'Failed to update volunteering'
+  )
+
+const handleProjects = async (value: ProjectItem[]) =>
+  wrap(
+    () => updateProjects(value, { id: professional.value?.id ?? null }),
+    'Projects updated',
+    'Failed to update projects'
+  )
+
+const handleRelevantExperience = async (items: RelevantExperienceItem[]) =>
+  wrap(
+    () => setRelevantExperience(items, { id: professional.value?.id ?? null }),
+    'Relevant experience updated',
+    'Failed to update relevant experience'
+  )
+
+const handleOtherExperience = async (items: OtherExperienceItem[]) =>
+  wrap(
+    () => setOtherExperience(items, { id: professional.value?.id ?? null }),
+    'Other experience updated',
+    'Failed to update other experience'
   )
 </script>

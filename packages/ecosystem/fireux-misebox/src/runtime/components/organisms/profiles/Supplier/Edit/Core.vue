@@ -76,8 +76,8 @@ const {
   updateSummary,
   updateBio,
   updateImage,
-  updateProductCategoriesCsv,
-  updateDeliveryAreasCsv,
+  updateProductCategories,
+  updateDeliveryAreas,
 } = useSupplierUpdate()
 
 const toast = useToastify()
@@ -136,14 +136,14 @@ const handleImage = async (value: string) =>
 
 const handleCategories = async (value: string[]) =>
   wrap(
-    () => updateProductCategoriesCsv(value),
+    () => updateProductCategories(value),
     'Product categories updated',
     'Failed to update product categories'
   )
 
 const handleDeliveryAreas = async (value: string[]) =>
   wrap(
-    () => updateDeliveryAreasCsv(value),
+    () => updateDeliveryAreas(value),
     'Delivery areas updated',
     'Failed to update delivery areas'
   )

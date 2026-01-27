@@ -15,8 +15,8 @@
             description="Track saved, drafted, and published jobs here."
           />
 
-          <div class="grid gap-4 lg:grid-cols-2">
-            <UCard>
+          <div class="grid gap-4 lg:grid-cols-3">
+            <UCard class="lg:col-span-2">
               <template #header>
                 <div
                   class="flex items-center gap-2 text-sm uppercase tracking-wide text-dimmed"
@@ -35,15 +35,41 @@
                 <div
                   class="flex items-center gap-2 text-sm uppercase tracking-wide text-dimmed"
                 >
-                  <UIcon name="i-lucide-send" />
-                  Published
+                  <UIcon name="i-lucide-sparkles" />
+                  Quick actions
                 </div>
               </template>
-              <p class="text-sm text-muted">
-                Published jobs will display here after integration.
-              </p>
+              <div class="space-y-2">
+                <UButton
+                  to="/dashboard/professional/profile"
+                  label="Update profile"
+                  color="neutral"
+                  block
+                />
+                <UButton
+                  to="/dashboard/professional"
+                  label="Back to overview"
+                  variant="soft"
+                  color="neutral"
+                  block
+                />
+              </div>
             </UCard>
           </div>
+
+          <UCard>
+            <template #header>
+              <div
+                class="flex items-center gap-2 text-sm uppercase tracking-wide text-dimmed"
+              >
+                <UIcon name="i-lucide-send" />
+                Published
+              </div>
+            </template>
+            <p class="text-sm text-muted">
+              Published jobs will display here after integration.
+            </p>
+          </UCard>
         </section>
       </div>
     </template>

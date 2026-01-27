@@ -10,9 +10,31 @@
           <div class="text-sm font-medium">
             {{ item.role || 'Role' }}
           </div>
-          <div class="text-xs text-gray-500">
-            {{ item.name || item.place_name || item.place_id || 'Place' }} · {{ formatRange(item) }}
-          </div>
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <PlaceCardsPill
+                  v-if="resolvePlaceCard(item)"
+                  v-bind="resolvePlaceCard(item)"
+                  :show-badges="false"
+                  :link="false"
+                  class="max-w-full"
+                />
+                <UBadge
+                  v-else
+                  variant="soft"
+                  color="neutral"
+                  size="xs"
+                  class="gap-1"
+                >
+                  <UIcon name="i-lucide-map-pin" class="h-3.5 w-3.5" />
+                  <span>{{ formatPlace(item) }}</span>
+                </UBadge>
+              </div>
+              <UBadge variant="soft" color="neutral" size="xs" class="gap-1">
+                <UIcon name="i-lucide-calendar" class="h-3.5 w-3.5" />
+                <span>{{ formatRange(item) }}</span>
+              </UBadge>
+            </div>
           <p v-if="item.responsibilities" class="text-sm text-gray-600">
             {{ item.responsibilities }}
           </p>
@@ -80,6 +102,12 @@
 </template>
 
 <script setup lang="ts">
+import { doc, getDoc } from 'firebase/firestore'
+import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
+import { mapPlaceToCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToCard'
+import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import { computed, ref, watch } from 'vue'
+import { useFirestore } from 'vuefire'
 import type { ExperienceItem } from '../../../../../models/profiles/Professional/supporting'
 
 type ExperienceEntry = ExperienceItem & {
@@ -96,6 +124,42 @@ const props = defineProps<{
   onSave: (items: ExperienceEntry[]) => Promise<void>
 }>()
 
+const db = useFirestore()
+const placeCache = ref<Record<string, Record<string, any>>>({})
+const toPlaceCard = mapPlaceToCard()
+
+const placeIds = computed(() => {
+  const ids = new Set<string>()
+  for (const item of props.items ?? []) {
+    const id = canonicalPlaceId(item?.place_id ?? undefined)
+    if (id) ids.add(id)
+  }
+  return [...ids]
+})
+
+const hydratePlace = async (placeId: string) => {
+  if (!placeId || placeCache.value[placeId]) return
+  try {
+    const snap = await getDoc(doc(db, 'places', placeId))
+    if (!snap.exists()) {
+      placeCache.value[placeId] = {}
+      return
+    }
+    const data = snap.data() as Record<string, any>
+    placeCache.value[placeId] = data
+  } catch {
+    placeCache.value[placeId] = {}
+  }
+}
+
+watch(
+  placeIds,
+  (ids) => {
+    ids.forEach((id) => void hydratePlace(id))
+  },
+  { immediate: true }
+)
+
 const formatRange = (item: ExperienceEntry) => {
   const start = [item.from_month, item.from_year].filter(Boolean).join(' ')
   const end = item.ongoing
@@ -104,6 +168,30 @@ const formatRange = (item: ExperienceEntry) => {
   return [start, end].filter(Boolean).join(' · ') || 'Dates not listed'
 }
 
+const formatPlace = (item: ExperienceEntry) => {
+  const primary = item.name || item.place_name || ''
+  if (primary.trim().length) return primary
+  const placeId = canonicalPlaceId(item?.place_id ?? undefined)
+  if (placeId && placeCache.value[placeId]) {
+    const cached = placeCache.value[placeId]
+    return (
+      cached.name ||
+      cached.short_address ||
+      cached.formatted_address ||
+      'Place'
+    )
+  }
+  if (placeId) return 'Place loading…'
+  return 'Place'
+}
+
+const resolvePlaceCard = (item: ExperienceEntry): PlaceCard.Card | null => {
+  const placeId = canonicalPlaceId(item?.place_id ?? undefined)
+  if (!placeId) return null
+  const cached = placeCache.value[placeId]
+  if (!cached) return null
+  return toPlaceCard({ ...cached, id: placeId })
+}
 const newExperienceItem = (): ExperienceEntry => ({
   role: '',
   place_id: '',

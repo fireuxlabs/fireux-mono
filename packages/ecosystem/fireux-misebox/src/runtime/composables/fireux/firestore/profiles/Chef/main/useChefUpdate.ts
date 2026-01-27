@@ -8,9 +8,7 @@ import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model
  *   - updateCoreProfile: global Chef profile
  *   - updateAppProfile: tenant-scoped Chef profile
  *
- * For now:
- * - accepts only refs (no user cascading)
- * - both implementations are stubs until Firestore integration
+ * Shared update surface for v1 scoped fields.
  */
 export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
   const base = useProfileUpdateBase<ChefCore>('chefs', profile)
@@ -29,31 +27,31 @@ export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
 
   const updateHeadline = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ chef_headline: normalized ?? '' })
+    await updateCoreProfile({ chef_headline: normalized ?? undefined })
   }
 
   const updateSummary = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ chef_summary: normalized ?? '' })
+    await updateCoreProfile({ chef_summary: normalized ?? undefined })
   }
 
   const updateBio = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ chef_bio: normalized ?? '' })
+    await updateCoreProfile({ chef_bio: normalized ?? undefined })
   }
 
   const updateImage = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ chef_image: normalized ?? '' })
+    await updateCoreProfile({ chef_image: normalized ?? undefined })
   }
 
-  const updateSignatureDishesCsv = async (value: string | string[]) => {
-    await updateCoreProfile({ chef_signature_dishes: base.csvToArray(value) })
+  const updateSignatureDishes = async (value: string | string[]) => {
+    await updateCoreProfile({ chef_signature_dishes: base.toStringArray(value) })
   }
 
   const updateOrganizationName = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ chef_organization_name: normalized ?? '' })
+    await updateCoreProfile({ chef_organization_name: normalized ?? undefined })
   }
 
   const updateTagline = async (value: string) => updateHeadline(value)
@@ -68,7 +66,7 @@ export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
     updateSummary,
     updateBio,
     updateImage,
-    updateSignatureDishesCsv,
+    updateSignatureDishes,
     updateOrganizationName,
     updateTagline,
     updateBioShort,

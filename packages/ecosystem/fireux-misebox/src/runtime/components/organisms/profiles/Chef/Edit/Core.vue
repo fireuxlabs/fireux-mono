@@ -63,7 +63,7 @@ import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model';
 const props = defineProps<{ chef: ChefCore | null }>()
 
 const chef = computed(() => props.chef ?? null)
-const { updateHeadline, updateSummary, updateBio, updateImage, updateSignatureDishesCsv } =
+const { updateHeadline, updateSummary, updateBio, updateImage, updateSignatureDishes } =
   useChefUpdate()
 
 const toast = useToastify()
@@ -112,7 +112,7 @@ const handleImage = async (value: string) =>
 
 const handleSignatureDishes = async (value: string[]) =>
   wrap(
-    () => updateSignatureDishesCsv(value),
+    () => updateSignatureDishes(value),
     'Signature dishes updated',
     'Failed to update signature dishes'
   )

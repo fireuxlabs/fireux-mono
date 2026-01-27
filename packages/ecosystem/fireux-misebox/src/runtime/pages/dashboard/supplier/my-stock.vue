@@ -14,12 +14,45 @@
             title="My Stock"
             description="Inventory, restock alerts, and analytics will eventually surface here."
           />
-          <UCard>
-            <p class="text-sm text-muted">
-              Placeholder content. Replace with supply chain data when the API is
-              ready.
-            </p>
-          </UCard>
+
+          <div class="grid gap-4 lg:grid-cols-3">
+            <UCard class="lg:col-span-2">
+              <template #header>
+                <div class="flex items-center gap-2 text-sm font-semibold">
+                  <UIcon name="i-lucide-activity" />
+                  Stock overview
+                </div>
+              </template>
+              <p class="text-sm text-muted">
+                Placeholder content. Replace with supply chain data when the API is
+                ready.
+              </p>
+            </UCard>
+
+            <UCard>
+              <template #header>
+                <div class="flex items-center gap-2 text-sm font-semibold">
+                  <UIcon name="i-lucide-sparkles" />
+                  Quick actions
+                </div>
+              </template>
+              <div class="space-y-2">
+                <UButton
+                  to="/dashboard/supplier/profile"
+                  label="Update profile"
+                  color="neutral"
+                  block
+                />
+                <UButton
+                  to="/dashboard/supplier"
+                  label="Back to overview"
+                  variant="soft"
+                  color="neutral"
+                  block
+                />
+              </div>
+            </UCard>
+          </div>
         </section>
       </div>
     </template>

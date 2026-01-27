@@ -27,7 +27,7 @@ export function useProfileUpdateBase<TCore extends { id: string }>(
     return normalized.length ? normalized : null
   }
 
-  const csvToArray = (value: string | string[]) =>
+  const toStringArray = (value: string | string[]) =>
     Array.from(
       new Set(
         (Array.isArray(value) ? value : (value ?? '').split(','))
@@ -95,7 +95,7 @@ export function useProfileUpdateBase<TCore extends { id: string }>(
 
     pruneUndefined,
     cleanString,
-    csvToArray,
+    toStringArray,
     resolveUid,
 
     commitUpdate,

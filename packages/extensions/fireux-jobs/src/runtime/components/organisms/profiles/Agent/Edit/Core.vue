@@ -104,8 +104,8 @@ const {
   updateSummary,
   updateBio,
   updateImage,
-  updatePlacementTypesCsv,
-  updateCoverageAreasCsv,
+  updatePlacementTypes,
+  updateCoverageAreas,
   updateContactEmail,
   updateContactPhone,
   updateWebsiteUrl,
@@ -174,14 +174,14 @@ const handleImage = async (value: string) =>
 
 const handlePlacementTypes = async (value: string[]) =>
   wrap(
-    () => updatePlacementTypesCsv(value),
+    () => updatePlacementTypes(value),
     'Placement types updated',
     'Failed to update placement types'
   )
 
 const handleCoverageAreas = async (value: string[]) =>
   wrap(
-    () => updateCoverageAreasCsv(value),
+    () => updateCoverageAreas(value),
     'Coverage areas updated',
     'Failed to update coverage areas'
   )

@@ -22,7 +22,9 @@ const COLLECTION = 'professionals'
 
 type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
-const pruneUndefined = <T extends Record<string, any>>(payload: T) => {
+const pruneUndefined = <T extends Record<string, any>>(
+  payload: Partial<T>
+) => {
   const entries = Object.entries(payload).filter(
     ([, value]) => value !== undefined
   )
@@ -250,7 +252,10 @@ export function useProfessionalUpdate(
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
     const next = (value ?? '').trim()
-    await commitUpdate({ professional_headline: next }, { ...options, id: uid })
+    await commitUpdate(
+      { professional_headline: next || undefined },
+      { ...options, id: uid }
+    )
   }
 
   const updateSummary = async (
@@ -259,7 +264,10 @@ export function useProfessionalUpdate(
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
     const next = (value ?? '').trim()
-    await commitUpdate({ professional_summary: next }, { ...options, id: uid })
+    await commitUpdate(
+      { professional_summary: next || undefined },
+      { ...options, id: uid }
+    )
   }
 
   const updateBio = async (
@@ -268,7 +276,10 @@ export function useProfessionalUpdate(
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
     const next = (value ?? '').trim()
-    await commitUpdate({ professional_bio: next }, { ...options, id: uid })
+    await commitUpdate(
+      { professional_bio: next || undefined },
+      { ...options, id: uid }
+    )
   }
 
   const updateImage = async (
@@ -277,7 +288,10 @@ export function useProfessionalUpdate(
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
     const next = (value ?? '').trim()
-    await commitUpdate({ professional_image: next }, { ...options, id: uid })
+    await commitUpdate(
+      { professional_image: next || undefined },
+      { ...options, id: uid }
+    )
   }
 
   const updateServiceTypes = async (
@@ -298,7 +312,7 @@ export function useProfessionalUpdate(
     )
   }
 
-  const updateWorkAreasCsv = async (
+  const updateWorkAreas = async (
     csvOrList: string | string[],
     options: UpdateOptions = {}
   ): Promise<void> => {
@@ -416,7 +430,7 @@ export function useProfessionalUpdate(
     updateBio,
     updateImage,
     updateServiceTypes,
-    updateWorkAreasCsv,
+    updateWorkAreas,
     updateTitle,
     updateBioShort,
     updateBioLong,

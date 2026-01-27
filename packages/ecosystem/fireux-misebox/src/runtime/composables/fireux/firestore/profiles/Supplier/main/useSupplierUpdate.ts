@@ -8,9 +8,7 @@ import type { SupplierCore } from '../../../../../../models/profiles/Supplier/Su
  *   - updateCoreProfile: global Supplier profile
  *   - updateAppProfile: tenant-scoped Supplier profile
  *
- * For now:
- * - accepts only refs (no user cascading)
- * - both implementations are stubs until Firestore integration
+ * Shared update surface for v1 scoped fields.
  */
 export function useSupplierUpdate(
   profile?: ProfileRefs<SupplierCore> | null
@@ -31,46 +29,39 @@ export function useSupplierUpdate(
 
   const updateHeadline = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ supplier_headline: normalized ?? '' })
+    await updateCoreProfile({ supplier_headline: normalized ?? undefined })
   }
 
   const updateSummary = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ supplier_summary: normalized ?? '' })
+    await updateCoreProfile({ supplier_summary: normalized ?? undefined })
   }
 
   const updateBio = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ supplier_bio: normalized ?? '' })
+    await updateCoreProfile({ supplier_bio: normalized ?? undefined })
   }
 
   const updateImage = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ supplier_image: normalized ?? '' })
+    await updateCoreProfile({ supplier_image: normalized ?? undefined })
   }
 
-  const updateProductCategoriesCsv = async (value: string | string[]) => {
+  const updateProductCategories = async (value: string | string[]) => {
     await updateCoreProfile({
-      supplier_product_categories: base.csvToArray(value),
+      supplier_product_categories: base.toStringArray(value),
     })
   }
 
-  const updateDeliveryAreasCsv = async (value: string | string[]) => {
+  const updateDeliveryAreas = async (value: string | string[]) => {
     await updateCoreProfile({
-      supplier_delivery_areas: base.csvToArray(value),
+      supplier_delivery_areas: base.toStringArray(value),
     })
   }
 
   const updateOrganizationName = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ supplier_organization_name: normalized ?? '' })
-  }
-
-  const updateDisplayName = async (value: string) => {
-    console.warn(
-      '[useSupplierUpdate] updateDisplayName stub called with:',
-      value
-    )
+    await updateCoreProfile({ supplier_organization_name: normalized ?? undefined })
   }
 
   const updateTagline = async (value: string) => updateHeadline(value)
@@ -85,10 +76,9 @@ export function useSupplierUpdate(
     updateSummary,
     updateBio,
     updateImage,
-    updateProductCategoriesCsv,
-    updateDeliveryAreasCsv,
+    updateProductCategories,
+    updateDeliveryAreas,
     updateOrganizationName,
-    updateDisplayName,
     updateTagline,
     updateBioShort,
   }

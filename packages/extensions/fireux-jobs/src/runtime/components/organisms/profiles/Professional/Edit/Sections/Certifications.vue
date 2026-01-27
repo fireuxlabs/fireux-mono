@@ -1,0 +1,79 @@
+<template>
+  <UCard>
+    <template #header>
+      <div class="flex items-center gap-2 text-sm font-semibold">
+        <UIcon name="i-lucide-award" />
+        Certifications
+      </div>
+    </template>
+
+    <MoleculesFormsFirestoreObjectArray
+      label="Certifications"
+      :firebase-value="items"
+      :update-function="onSave"
+    >
+      <template #display="{ item, startEditing, remove }">
+        <div class="space-y-2">
+          <div class="text-sm font-medium">{{ item.name || 'Certification' }}</div>
+          <div class="text-xs text-gray-500">
+            {{ item.place_name || 'Organization' }} · {{ item.year || 'Year not set' }}
+          </div>
+          <div class="flex gap-2">
+            <UButton size="xs" variant="soft" icon="i-lucide-pencil" @click="startEditing">
+              Edit
+            </UButton>
+            <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove">
+              Remove
+            </UButton>
+          </div>
+        </div>
+      </template>
+
+      <template #edit="{ item, save, cancel }">
+        <div class="space-y-2">
+          <UInput v-model="item.name" placeholder="Certification name" />
+          <UInput v-model="item.place_name" placeholder="Organization" />
+          <UInput v-model="item.year" placeholder="Year" />
+          <UInput v-model="item.formatted_address" placeholder="Address" />
+          <UInput v-model="item.document_url" placeholder="Document URL" />
+          <UInput v-model="item.image_url" placeholder="Image URL" />
+          <div class="flex gap-2">
+            <UButton size="xs" variant="solid" icon="i-lucide-check" @click="save">
+              Save
+            </UButton>
+            <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel">
+              Cancel
+            </UButton>
+          </div>
+        </div>
+      </template>
+
+      <template #create="{ push }">
+        <UButton
+          size="xs"
+          variant="soft"
+          icon="i-lucide-plus"
+          @click="push({
+            name: '',
+            year: '',
+            place_name: '',
+            formatted_address: '',
+            document_url: '',
+            image_url: '',
+          })"
+        >
+          Add certification
+        </UButton>
+      </template>
+    </MoleculesFormsFirestoreObjectArray>
+  </UCard>
+</template>
+
+<script setup lang="ts">
+import type { CertificationItem } from '../../../../../../models/profiles/Professional/supporting';
+
+defineProps<{
+  items: CertificationItem[]
+  onSave: (items: CertificationItem[]) => Promise<void>
+}>()
+</script>
