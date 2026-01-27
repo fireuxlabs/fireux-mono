@@ -1,24 +1,15 @@
 <template>
   <div class="profile-edit__section">
-    <div class="profile-edit__section-header">
-      <UIcon name="i-lucide-languages" />
-      Languages
-    </div>
-
     <MoleculesFormsFirestoreObjectArray
       label="Languages"
       :firebase-value="items"
       :update-function="onSave"
+      :item-title="(item) => item.language || 'Language'"
+      :item-date="(item) => item.proficiency || 'Proficiency not set'"
     >
       <template #display="{ item, startEditing, remove }">
         <div class="space-y-2">
-          <div class="text-sm font-medium">
-            {{ item.language || 'Language' }}
-          </div>
-          <div class="text-xs text-gray-500">
-            {{ item.proficiency || 'Proficiency not set' }}
-          </div>
-          <div class="flex gap-2">
+          <div class="object-array__item-actions">
             <UButton
               size="xs"
               variant="soft"
@@ -57,7 +48,6 @@
         <UButton
           size="xs"
           variant="soft"
-          icon="i-lucide-plus"
           @click="push({ language: '', proficiency: '' })"
         >
           Add language

@@ -1,22 +1,18 @@
 <template>
   <div class="profile-edit__section">
-    <div class="profile-edit__section-header">
-      <UIcon name="i-lucide-award" />
-      Certifications
-    </div>
-
     <MoleculesFormsFirestoreObjectArray
       label="Certifications"
       :firebase-value="items"
       :update-function="onSave"
+      :item-title="(item) => item.name || 'Certification'"
+      :item-date="(item) => item.year || 'Year not set'"
     >
       <template #display="{ item, startEditing, remove }">
         <div class="space-y-2">
-          <div class="text-sm font-medium">{{ item.name || 'Certification' }}</div>
           <div class="text-xs text-gray-500">
-            {{ item.place_name || 'Organization' }} · {{ item.year || 'Year not set' }}
+            {{ item.place_name || 'Organization' }}
           </div>
-          <div class="flex gap-2">
+          <div class="object-array__item-actions">
             <UButton
               size="xs"
               variant="soft"
@@ -59,7 +55,6 @@
         <UButton
           size="xs"
           variant="soft"
-          icon="i-lucide-plus"
           @click="push({
             name: '',
             year: '',

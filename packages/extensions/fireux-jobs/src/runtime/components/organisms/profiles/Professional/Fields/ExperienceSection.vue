@@ -3,12 +3,11 @@
     :label="label"
     :firebase-value="items"
     :update-function="onSave"
+    :item-title="(item) => item.role || 'Role'"
+    :item-date="(item) => formatRange(item)"
   >
-      <template #display="{ item, startEditing, remove }">
+    <template #display="{ item, startEditing, remove }">
         <div class="space-y-2">
-          <div class="text-sm font-medium">
-            {{ item.role || 'Role' }}
-          </div>
             <div class="space-y-1">
               <div class="flex flex-wrap items-center gap-2">
                 <PlaceCardsPill
@@ -29,15 +28,11 @@
                   <span>{{ formatPlace(item) }}</span>
                 </UBadge>
               </div>
-              <UBadge variant="soft" color="neutral" size="xs" class="gap-1">
-                <UIcon name="i-lucide-calendar" class="h-3.5 w-3.5" />
-                <span>{{ formatRange(item) }}</span>
-              </UBadge>
             </div>
           <p v-if="item.responsibilities" class="text-sm text-gray-600">
             {{ item.responsibilities }}
           </p>
-          <div class="flex gap-2">
+          <div class="object-array__item-actions">
             <UButton
               size="xs"
               variant="soft"
@@ -57,8 +52,8 @@
         </div>
       </template>
 
-      <template #edit="{ item, save, cancel }">
-        <div class="space-y-2">
+    <template #edit="{ item, save, cancel }">
+      <div class="space-y-2">
           <UInput v-model="item.role" placeholder="Role" />
           <UInput v-model="item.place_id" placeholder="Place ID" />
           <UInput v-model="item.name" placeholder="Place name (optional)" />
@@ -82,18 +77,17 @@
             </UButton>
           </div>
         </div>
-      </template>
+    </template>
 
-      <template #create="{ push }">
-        <UButton
-          size="xs"
-          variant="soft"
-          icon="i-lucide-plus"
-          @click="push(newExperienceItem())"
-        >
-          Add entry
-        </UButton>
-      </template>
+    <template #create="{ push }">
+      <UButton
+        size="xs"
+        variant="soft"
+        @click="push(newExperienceItem())"
+      >
+        {{ createLabel }}
+      </UButton>
+    </template>
   </MoleculesFormsFirestoreObjectArray>
 </template>
 
@@ -119,6 +113,8 @@ const props = defineProps<{
   items: ExperienceEntry[]
   onSave: (items: ExperienceEntry[]) => Promise<void>
 }>()
+
+const createLabel = computed(() => `Add ${props.label.toLowerCase()}`)
 
 const db = useFirestore()
 const placeCache = ref<Record<string, Record<string, any>>>({})

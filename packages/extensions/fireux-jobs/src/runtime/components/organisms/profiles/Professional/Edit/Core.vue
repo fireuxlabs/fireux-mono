@@ -57,13 +57,15 @@
         </template>
 
         <div class="profile-edit__stack">
-          <MoleculesFormsFirestoreArrayOfStrings
-            label="Positions"
-            :firebase-value="positions"
-            item-placeholder="Position"
-            new-item-placeholder="Add position"
-            :update-function="handlePositions"
-          />
+          <div class="profile-edit__field">
+            <MoleculesFormsFirestoreArrayOfStrings
+              label="Positions"
+              :firebase-value="positions"
+              item-placeholder="Position"
+              new-item-placeholder="Add position"
+              :update-function="handlePositions"
+            />
+          </div>
         </div>
       </UCard>
 

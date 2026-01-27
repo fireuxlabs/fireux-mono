@@ -1,22 +1,18 @@
 <template>
   <div class="profile-edit__section">
-    <div class="profile-edit__section-header">
-      <UIcon name="i-lucide-folder-kanban" />
-      Projects
-    </div>
-
     <MoleculesFormsFirestoreObjectArray
       label="Projects"
       :firebase-value="items"
       :update-function="onSave"
+      :item-title="(item) => item.name || 'Project'"
+      :item-date="(item) => `${item.from_year || 'Start'}–${item.ongoing ? 'Present' : (item.to_year || 'End')}`"
     >
       <template #display="{ item, startEditing, remove }">
         <div class="space-y-2">
-          <div class="text-sm font-medium">{{ item.name || 'Project' }}</div>
           <div class="text-xs text-gray-500">
-            {{ item.role || 'Role' }} · {{ item.from_year || 'Start' }}–{{ item.ongoing ? 'Present' : (item.to_year || 'End') }}
+            {{ item.role || 'Role' }}
           </div>
-          <div class="flex gap-2">
+          <div class="object-array__item-actions">
             <UButton
               size="xs"
               variant="soft"
@@ -59,7 +55,6 @@
         <UButton
           size="xs"
           variant="soft"
-          icon="i-lucide-plus"
           @click="push({
             name: '',
             role: '',

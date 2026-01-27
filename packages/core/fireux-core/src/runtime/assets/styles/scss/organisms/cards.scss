@@ -396,28 +396,12 @@
 	gap: 1rem;
 }
 
+:where(.profile-edit__field) {
+	padding-top: 0.25rem;
+}
+
 :where(.profile-edit__section) {
 	display: grid;
 	gap: 0.75rem;
 }
 
-:where(.object-array) {
-	display: grid;
-	gap: 0.75rem;
-}
-
-:where(.object-array__header) {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.75rem;
-}
-
-:where(.object-array__title) {
-	padding-left: 0.5rem;
-}
-
-:where(.object-array__list) {
-	display: grid;
-	gap: 0.75rem;
-}

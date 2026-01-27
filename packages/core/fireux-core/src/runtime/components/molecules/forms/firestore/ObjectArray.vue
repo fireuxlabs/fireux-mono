@@ -1,7 +1,8 @@
 <template>
   <div class="object-array">
+    <USeparator />
     <div class="object-array__header">
-      <h3 v-if="label" class="object-array__title">{{ label }}</h3>
+      <h3 v-if="label">{{ label }}</h3>
       <div v-if="editingIndex === null" class="object-array__actions">
         <slot name="create" :push="push" />
       </div>
@@ -13,8 +14,17 @@
         <li v-for="(item, index) in items" :key="index">
           <UCard>
             <div class="relative group">
-              <div class="space-y-2">
+              <div class="object-array__item-body space-y-2">
                 <div v-if="editingIndex !== index">
+                  <div v-if="itemTitle || itemDate" class="object-array__item-heading">
+                    <h3 v-if="getItemTitle(item, index)">{{ getItemTitle(item, index) }}</h3>
+                    <span
+                      v-if="getItemDate(item, index)"
+                      class="object-array__item-date"
+                    >
+                      {{ getItemDate(item, index) }}
+                    </span>
+                  </div>
                   <slot
                     name="display"
                     :item="item"
@@ -28,7 +38,7 @@
                       class="p-4 border border-dashed border-gray-300 rounded"
                     >
                       Default display rendering for index {{ index }}
-                      <div class="mt-3 flex gap-2">
+                      <div class="object-array__item-actions">
                         <UButton
                           size="xs"
                           variant="soft"
@@ -164,11 +174,19 @@ const props = defineProps<{
   label?: string
   firebaseValue: any[] | undefined
   updateFunction: (value: any[]) => Promise<void> | void
+  itemTitle?: (item: any, index: number) => string
+  itemDate?: (item: any, index: number) => string
 }>()
 
 const items = computed(() => props.firebaseValue || [])
 const editingIndex = ref<number | null>(null)
 const draftItem = ref<any | null>(null)
+
+const getItemTitle = (item: any, index: number) =>
+  props.itemTitle ? props.itemTitle(item, index) : ''
+
+const getItemDate = (item: any, index: number) =>
+  props.itemDate ? props.itemDate(item, index) : ''
 
 function shallowClone<T>(v: T): T {
   if (Array.isArray(v)) return v.slice() as unknown as T
@@ -226,3 +244,53 @@ defineExpose({
   editingIndex,
 })
 </script>
+
+<style scoped>
+.object-array {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.object-array__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+
+.object-array__list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+:deep(.object-array__item-actions) {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.object-array__item-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.object-array__item-heading h3 {
+  margin: 0;
+}
+
+.object-array__item-date {
+  font-size: 0.75rem;
+  color: var(--ui-text-muted, var(--ui-text));
+}
+
+.object-array__item-body {
+  position: relative;
+  padding-right: 3rem;
+}
+</style>
