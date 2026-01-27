@@ -6,7 +6,11 @@
     @click="onClick"
   >
     <div class="card__media">
-      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatarGroup v-if="secondaryAvatarUrl" size="sm">
+        <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+        <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName" size="2xs" />
+      </UAvatarGroup>
+      <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="card__content card__stack">
         <div class="card__header">
@@ -32,7 +36,7 @@ import type { ProfessionalCard } from '../../../../../composables/fireux/firesto
 
 type Props = Pick<
   ProfessionalCard.Card,
-  'to' | 'avatarUrl' | 'displayName' | 'title' | 'bioShort'
+  'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'bioShort'
 > & {
   prop?: string
   showSubtitle?: boolean

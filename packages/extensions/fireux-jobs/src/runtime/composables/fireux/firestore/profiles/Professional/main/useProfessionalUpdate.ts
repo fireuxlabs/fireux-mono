@@ -244,6 +244,60 @@ export function useProfessionalUpdate(
     await commitUpdate({ title: value }, { ...options, id: uid })
   }
 
+  const updateHeadline = async (
+    value: string,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const next = (value ?? '').trim()
+    await commitUpdate({ professional_headline: next }, { ...options, id: uid })
+  }
+
+  const updateSummary = async (
+    value: string,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const next = (value ?? '').trim()
+    await commitUpdate({ professional_summary: next }, { ...options, id: uid })
+  }
+
+  const updateBio = async (
+    value: string,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const next = (value ?? '').trim()
+    await commitUpdate({ professional_bio: next }, { ...options, id: uid })
+  }
+
+  const updateImage = async (
+    value: string,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const next = (value ?? '').trim()
+    await commitUpdate({ professional_image: next }, { ...options, id: uid })
+  }
+
+  const updateServiceTypes = async (
+    csvOrList: string | string[],
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const list = Array.isArray(csvOrList)
+      ? csvOrList
+      : (csvOrList ?? '')
+          .split(',')
+          .map((x) => x.trim())
+          .filter(Boolean)
+    const unique = normalizeStringArray(list)
+    await commitUpdate(
+      { professional_service_types: unique },
+      { ...options, id: uid }
+    )
+  }
+
   const updateSpecialties = async (
     specialties: string | string[],
     options: UpdateOptions = {}
@@ -339,6 +393,11 @@ export function useProfessionalUpdate(
     updateAppProfile,
     setRelevantExperience,
     setOtherExperience,
+    updateHeadline,
+    updateSummary,
+    updateBio,
+    updateImage,
+    updateServiceTypes,
     updateTitle,
     updateBioShort,
     updateBioLong,

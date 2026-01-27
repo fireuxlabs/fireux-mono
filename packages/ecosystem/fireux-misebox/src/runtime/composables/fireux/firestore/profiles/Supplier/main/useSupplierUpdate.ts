@@ -1,4 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import type { SupplierCore } from '../../../../../../models/profiles/Supplier/Supplier.model'
 
 /**
@@ -14,42 +15,55 @@ import type { SupplierCore } from '../../../../../../models/profiles/Supplier/Su
 export function useSupplierUpdate(
   profile?: ProfileRefs<SupplierCore> | null
 ) {
-  const coreProfile = () => profile?.coreProfile?.value ?? null
-  const appProfile = () => profile?.appProfile?.value ?? null
+  const base = useProfileUpdateBase<SupplierCore>('suppliers', profile)
 
   /**
    * Update the CORE Supplier profile
    * - global document (e.g. suppliers/{uid})
    */
-  const updateCoreProfile = async (
-    patch: Partial<SupplierCore>
-  ): Promise<void> => {
-    console.warn(
-      '[useSupplierUpdate] updateCoreProfile stub called with:',
-      patch,
-      'current coreProfile:',
-      coreProfile()
-    )
-  }
+  const updateCoreProfile = base.updateCoreProfile
 
   /**
    * Update the APP (tenant) Supplier profile
    * - app-specific document (e.g. apps/{appId}/suppliers/{uid})
    */
-  const updateAppProfile = async (
-    patch: Partial<SupplierCore>
-  ): Promise<void> => {
-    console.warn(
-      '[useSupplierUpdate] updateAppProfile stub called with:',
-      patch,
-      'current appProfile:',
-      appProfile()
-    )
+  const updateAppProfile = base.updateAppProfile
+
+  const updateHeadline = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ supplier_headline: normalized ?? '' })
   }
 
-  const cleanString = (value: string | null | undefined) => {
-    const normalized = typeof value === 'string' ? value.trim() : ''
-    return normalized
+  const updateSummary = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ supplier_summary: normalized ?? '' })
+  }
+
+  const updateBio = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ supplier_bio: normalized ?? '' })
+  }
+
+  const updateImage = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ supplier_image: normalized ?? '' })
+  }
+
+  const updateProductCategoriesCsv = async (csv: string) => {
+    await updateCoreProfile({
+      supplier_product_categories: base.csvToArray(csv),
+    })
+  }
+
+  const updateDeliveryAreasCsv = async (csv: string) => {
+    await updateCoreProfile({
+      supplier_delivery_areas: base.csvToArray(csv),
+    })
+  }
+
+  const updateOrganizationName = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ supplier_organization_name: normalized ?? '' })
   }
 
   const updateDisplayName = async (value: string) => {
@@ -59,17 +73,21 @@ export function useSupplierUpdate(
     )
   }
 
-  const updateTagline = async (value: string) => {
-    await updateCoreProfile({ tagline: cleanString(value) })
-  }
+  const updateTagline = async (value: string) => updateHeadline(value)
 
-  const updateBioShort = async (value: string) => {
-    await updateCoreProfile({ bio_short: cleanString(value) })
-  }
+  const updateBioShort = async (value: string) => updateSummary(value)
 
   return {
+    commitUpdate: base.commitUpdate,
     updateCoreProfile,
     updateAppProfile,
+    updateHeadline,
+    updateSummary,
+    updateBio,
+    updateImage,
+    updateProductCategoriesCsv,
+    updateDeliveryAreasCsv,
+    updateOrganizationName,
     updateDisplayName,
     updateTagline,
     updateBioShort,

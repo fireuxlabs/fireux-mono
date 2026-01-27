@@ -1,7 +1,11 @@
 <template>
   <UCard class="preview">
     <div class="preview__row">
-      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatarGroup v-if="secondaryAvatarUrl" size="sm">
+        <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+        <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName" size="2xs" />
+      </UAvatarGroup>
+      <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="preview__main">
         <div class="preview__top">
@@ -43,6 +47,7 @@
 <script setup lang="ts">
 type Props = {
   avatarUrl: string
+  secondaryAvatarUrl?: string
   displayName: string
   tagline: string
   badges: string[]

@@ -12,17 +12,30 @@ import { supplierConfig } from './supporting';
 
 export const SupplierCore = {
   id: '',
+
+  // Supplier (scoped, v1)
+  supplier_headline: '',
+  supplier_summary: '',
+  supplier_bio: '',
+  supplier_image: '',
+
+  // Supplier descriptors (scoped)
+  supplier_product_categories: [] as string[],
+  supplier_delivery_areas: [] as string[],
+
+  // Optional org label (scoped)
+  supplier_organization_name: '',
+
+  // Legacy (deprecated) — kept temporarily for non-breaking migration
   title: '',
   subtitle: '',
   tagline: '',
   tags: [] as string[],
-
   bio_short: '',
   bio_long: '',
   specialties: [] as string[],
   categories: [] as string[],
   organization_name: '',
-
   business_type: '',
   locations: [] as Array<{ city: string; country: string }>,
   years_in_business: 0,

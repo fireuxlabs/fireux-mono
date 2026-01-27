@@ -2,7 +2,11 @@
   <UCard>
     <template #header>
       <div>
-        <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
+        <UAvatarGroup v-if="card.secondaryAvatarUrl" size="md">
+          <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
+          <UAvatar :src="card.secondaryAvatarUrl || undefined" :alt="card.displayName" size="xs" />
+        </UAvatarGroup>
+        <UAvatar v-else :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
         <div>{{ card.displayName || 'Professional' }}</div>
         <div v-if="card.title">{{ card.title }}</div>
       </div>

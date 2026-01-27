@@ -1,7 +1,5 @@
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
 
 /**
@@ -15,60 +13,19 @@ import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.mo
  * - both implementations are stubs until Firestore integration
  */
 export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
-  const { updateDocument } = useFirestoreUpdate()
-  const { appId, role } = useFireUXConfig()
-  const isTenant = role === 'tenant' && Boolean(appId)
-
-  const resolveUid = async (): Promise<string> => {
-    const fromRefs =
-      profile?.coreProfile?.value?.id ?? profile?.appProfile?.value?.id ?? null
-    if (fromRefs?.trim()) return fromRefs.trim()
-
-    const user = await useRequireUser()
-    if (!user?.uid) {
-      throw new Error('[useAgentUpdate] Unable to resolve agent id')
-    }
-    return user.uid
-  }
-
-  const pruneUndefined = <T extends Record<string, any>>(payload: T) => {
-    const entries = Object.entries(payload).filter(
-      ([, value]) => value !== undefined
-    )
-    return Object.fromEntries(entries) as Partial<T>
-  }
+  const base = useProfileUpdateBase<AgentCore>('agents', profile)
 
   /**
    * Update the CORE Agent profile
    * - global document (e.g. agents/{uid})
    */
-  const updateCoreProfile = async (
-    patch: Partial<AgentCore>
-  ): Promise<void> => {
-    const uid = await resolveUid()
-    await updateDocument<AgentCore>('agents', uid, pruneUndefined(patch))
-  }
+  const updateCoreProfile = base.updateCoreProfile
 
   /**
    * Update the APP (tenant) Agent profile
    * - app-specific document (e.g. apps/{appId}/agents/{uid})
    */
-  const updateAppProfile = async (
-    patch: Partial<AgentCore>
-  ): Promise<void> => {
-    if (!isTenant || !appId) {
-      throw new Error(
-        '[useAgentUpdate] Tenant context required for app profile updates'
-      )
-    }
-
-    const uid = await resolveUid()
-    await updateDocument<AgentCore>(
-      `apps/${appId}/agents`,
-      uid,
-      pruneUndefined(patch)
-    )
-  }
+  const updateAppProfile = base.updateAppProfile
 
   const updateCore = async (
     patch: Partial<AgentCore>,
@@ -86,100 +43,79 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
     return 'success'
   }
 
-  const cleanString = (value: string | null | undefined) => {
-    const normalized = typeof value === 'string' ? value.trim() : ''
-    return normalized.length ? normalized : null
+  const updateHeadline = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ agent_headline: normalized ?? '' })
   }
 
-  const updateAgencyName = async (value: string) => {
-    const normalized = cleanString(value)
-    if (!normalized) {
-      console.warn('[useAgentUpdate] Empty agency name ignored')
-      return
-    }
-
-    await updateCoreProfile({
-      title: normalized,
-    })
+  const updateSummary = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ agent_summary: normalized ?? '' })
   }
+
+  const updateBio = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ agent_bio: normalized ?? '' })
+  }
+
+  const updateImage = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ agent_image: normalized ?? '' })
+  }
+
+  const updatePlacementTypesCsv = async (csv: string) => {
+    await updateCoreProfile({ agent_placement_types: base.csvToArray(csv) })
+  }
+
+  const updateCoverageAreasCsv = async (csv: string) => {
+    await updateCoreProfile({ agent_coverage_areas: base.csvToArray(csv) })
+  }
+
+  const updateContactEmail = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ agent_contact_email: normalized ?? '' })
+  }
+
+  const updateContactPhone = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ agent_contact_phone: normalized ?? '' })
+  }
+
+  const updateWebsiteUrl = async (value: string) => {
+    const normalized = base.cleanString(value)
+    await updateCoreProfile({ agent_website_url: normalized ?? '' })
+  }
+
+  const updateAgencyName = async (value: string) => updateHeadline(value)
 
   const updateDisplayName = async (value: string) => {
     console.warn('[useAgentUpdate] updateDisplayName stub called with:', value)
   }
 
-  const updateTagline = async (value: string) => {
-    const normalized = cleanString(value)
-    await updateCoreProfile({ tagline: normalized ?? undefined })
-  }
+  const updateTagline = async (value: string) => updateHeadline(value)
 
-  const updateBioShort = async (value: string) => {
-    const normalized = cleanString(value)
-    await updateCoreProfile({ bio_short: normalized ?? undefined })
-  }
+  const updateBioShort = async (value: string) => updateSummary(value)
 
-  const updateContactEmail = async (value: string) => {
-    const normalized = cleanString(value)
-    await updateCoreProfile({ contact_email: normalized ?? undefined })
-  }
-
-  const updateContactPhone = async (value: string) => {
-    const normalized = cleanString(value)
-    await updateCoreProfile({ contact_phone: normalized ?? undefined })
-  }
-
-  const setContactEmailFromProfile = async (enabled: boolean) => {
-    // TODO: cascade update info
-    // If enabled and the user's profile email changes, propagate it to any
-    // derived/contact surfaces that rely on this agent contact.
-    await updateCoreProfile({
-      ...(enabled ? { contact_email: '' } : {}),
-    })
-  }
-
-  const setContactPhoneFromProfile = async (enabled: boolean) => {
-    // TODO: cascade update info
-    await updateCoreProfile({
-      ...(enabled ? { contact_phone: '' } : {}),
-    })
-  }
-
-  const updateWebsiteUrl = async (value: string) => {
-    const normalized = cleanString(value)
-    await updateCoreProfile({ website_url: normalized ?? undefined })
-  }
-
-  const updateBadges = async (value: string) => {
-    const normalized = (value || '').trim()
-    if (!normalized.length) {
-      await updateCoreProfile({ tags: [] })
-      return
-    }
-
-    const badges = Array.from(
-      new Set(
-        normalized
-          .split(',')
-          .map((item) => item.trim())
-          .filter(Boolean)
-      )
-    )
-
-    await updateCoreProfile({ tags: badges })
-  }
+  const updateBadges = async (value: string) => updatePlacementTypesCsv(value)
 
   return {
     updateCoreProfile,
     updateAppProfile,
+    commitUpdate: base.commitUpdate,
     updateCore,
     updateApp,
     updateDisplayName,
     updateAgencyName,
+    updateHeadline,
+    updateSummary,
+    updateBio,
+    updateImage,
+    updatePlacementTypesCsv,
+    updateCoverageAreasCsv,
     updateTagline,
     updateBioShort,
     updateContactEmail,
     updateContactPhone,
-    setContactEmailFromProfile,
-    setContactPhoneFromProfile,
     updateWebsiteUrl,
     updateBadges,
   }

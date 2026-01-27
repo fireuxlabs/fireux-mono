@@ -3,7 +3,11 @@
     <template #header>
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-start gap-3">
-          <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
+          <UAvatarGroup v-if="card.secondaryAvatarUrl" size="md">
+            <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
+            <UAvatar :src="card.secondaryAvatarUrl || undefined" :alt="card.displayName" size="xs" />
+          </UAvatarGroup>
+          <UAvatar v-else :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
           <div class="min-w-0">
             <div class="truncate text-base font-semibold">{{ card.displayName }}</div>
             <div class="text-sm text-dimmed">

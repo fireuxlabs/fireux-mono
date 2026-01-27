@@ -14,6 +14,7 @@ export namespace AgentCard {
 
     // Media (empty string means unset)
     avatarUrl: string
+    secondaryAvatarUrl?: string
 
     // Primary display fields
     displayName: string
@@ -43,28 +44,37 @@ export function useAgentInterface(
 
   function map(p: AgentCore, u?: UserLike | null): AgentCard.Card {
     const id = safeString(p.id).trim()
-    const title = safeString(p.title)
-    const subtitle = safeString(p.subtitle)
-    const tagline = safeString(p.tagline)
+    const headline = safeString(p.agent_headline) || safeString(p.title)
+    const summary = safeString(p.agent_summary) || safeString(p.bio_short)
+    const placementTypes =
+      safeStringArray(p.agent_placement_types).length
+        ? safeStringArray(p.agent_placement_types)
+        : safeStringArray(p.tags)
+    const profileImage = safeString(p.agent_image)
+    const userAvatar = safeString(u?.avatar)
+    const secondaryAvatarUrl = profileImage && userAvatar && profileImage !== userAvatar
+      ? userAvatar
+      : ''
 
     return {
       id,
       to: id ? `/${agentConfig.collectionName}/${id}` : '',
 
-      avatarUrl: safeString(u?.avatar),
+      avatarUrl: profileImage || userAvatar,
+      secondaryAvatarUrl,
 
       // Canonical: agent pills are user-hydrated; no profile-title fallback for display name.
       displayName: safeString(u?.display_name),
 
       // Prefer tagline; fall back to title/subtitle so pills stay useful.
-      tagline: tagline || title || subtitle,
-      badges: safeStringArray(p.tags),
+      tagline: headline,
+      badges: placementTypes,
 
-      bioShort: safeString(p.bio_short),
+      bioShort: summary,
 
-      contactEmail: safeString(p.contact_email).trim(),
-      contactPhone: safeString(p.contact_phone).trim(),
-      websiteUrl: safeString(p.website_url),
+      contactEmail: safeString(p.agent_contact_email || p.contact_email).trim(),
+      contactPhone: safeString(p.agent_contact_phone || p.contact_phone).trim(),
+      websiteUrl: safeString(p.agent_website_url || p.website_url),
     }
   }
 
@@ -85,10 +95,10 @@ export function useAgentInterface(
     if (!p) return ''
     const u = resolveUser(target as AgentCore | AgentResolved | null)
     const displayName = safeString(u?.display_name)
-    const title = safeString(p.title)
-    const tagline = safeString(p.tagline)
+    const headline = safeString(p.agent_headline) || safeString(p.title)
+    const summary = safeString(p.agent_summary) || safeString(p.bio_short)
     const id = safeString(p.id)
-    return `${displayName} ${title} ${tagline} ${id}`.trim().toLowerCase()
+    return `${displayName} ${headline} ${summary} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

@@ -6,6 +6,7 @@
   >
     <SharedPill
       :avatar="avatarUrl || null"
+      :avatar-secondary="secondaryAvatarUrl || null"
       :title="displayName"
       :subtitle="tagline || null"
       :badges="badges"
@@ -25,7 +26,7 @@ const emit = defineEmits<{
 
 const props = withDefaults(
   defineProps<
-    Pick<ChefCard.Card, 'to' | 'avatarUrl' | 'displayName' | 'tagline' | 'badges'> & {
+    Pick<ChefCard.Card, 'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'tagline' | 'badges'> & {
       showSubtitle?: boolean
       showBadges?: boolean
       link?: boolean

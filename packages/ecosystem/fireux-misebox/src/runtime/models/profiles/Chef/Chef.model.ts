@@ -12,11 +12,24 @@ import { chefConfig } from './supporting'
 
 export const ChefCore = {
   id: '',
+
+  // Chef (scoped, v1)
+  chef_headline: '',
+  chef_summary: '',
+  chef_bio: '',
+  chef_image: '',
+
+  // Chef descriptors (scoped)
+  chef_signature_dishes: [] as string[],
+
+  // Optional org label (scoped)
+  chef_organization_name: '',
+
+  // Legacy (deprecated) — kept temporarily for non-breaking migration
   title: '',
   subtitle: '',
   tagline: '',
   tags: [] as string[],
-
   bio_short: '',
   bio_long: '',
   specialties: [] as string[],

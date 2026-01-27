@@ -14,6 +14,7 @@ export namespace ProfessionalCard {
 
     // Media (empty string means unset)
     avatarUrl: string
+    secondaryAvatarUrl?: string
 
     // Primary display fields
     displayName: string
@@ -39,21 +40,36 @@ export function useProfessionalInterface(
 
   function map(p: ProfessionalCore, u?: UserLike | null): ProfessionalCard.Card {
     const id = safeString(p.id).trim()
-    const title = safeString(p.title)
+    const headline = safeString(p.professional_headline) || safeString(p.title)
+    const summary = safeString(p.professional_summary) || safeString(p.bio_short)
+    const profileImage = safeString(p.professional_image)
+    const userAvatar = safeString(u?.avatar)
+    const secondaryAvatarUrl = profileImage && userAvatar && profileImage !== userAvatar
+      ? userAvatar
+      : ''
+    const serviceTypes =
+      Array.isArray(p.professional_service_types) && p.professional_service_types.length
+        ? p.professional_service_types
+        : (p.specialties as string[])
+    const workAreas = Array.isArray(p.professional_work_areas) ? p.professional_work_areas : []
+    const workAreasAsStrings = workAreas.every((x) => typeof x === 'string')
+      ? (workAreas as string[])
+      : []
 
     return {
       id,
       to: id ? `/${professionalConfig.collectionName}/${id}` : '',
 
-      avatarUrl: safeString(u?.avatar),
+      avatarUrl: profileImage || userAvatar,
+      secondaryAvatarUrl,
 
       // Canonical: professional pills are user-hydrated; no profile-title fallback for display name.
       displayName: safeString(u?.display_name),
-      title,
+      title: headline,
 
-      bioShort: safeString(p.bio_short),
-      specialtiesCsv: csv(p.specialties),
-      locationsCsv: csv(p.locations),
+      bioShort: summary,
+      specialtiesCsv: csv(serviceTypes ?? []),
+      locationsCsv: workAreasAsStrings.length ? csv(workAreasAsStrings) : csv(p.locations),
     }
   }
 
@@ -74,9 +90,10 @@ export function useProfessionalInterface(
     if (!p) return ''
     const u = resolveUser(target as ProfessionalCore | ProfessionalResolved | null)
     const displayName = safeString(u?.display_name)
-    const title = safeString(p.title)
+    const headline = safeString(p.professional_headline) || safeString(p.title)
+    const summary = safeString(p.professional_summary) || safeString(p.bio_short)
     const id = safeString(p.id)
-    return `${displayName} ${title} ${id}`.trim().toLowerCase()
+    return `${displayName} ${headline} ${summary} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

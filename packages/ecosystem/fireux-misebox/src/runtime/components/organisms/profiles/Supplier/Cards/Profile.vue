@@ -1,7 +1,11 @@
 <template>
   <UCard class="space-y-6">
     <div class="flex items-start gap-4">
-      <UAvatar :src="vm.avatar || undefined" :alt="vm.title" size="lg" />
+      <UAvatarGroup v-if="vm.avatarSecondary" size="lg">
+        <UAvatar :src="vm.avatar || undefined" :alt="vm.title" size="lg" />
+        <UAvatar :src="vm.avatarSecondary || undefined" :alt="vm.title" size="sm" />
+      </UAvatarGroup>
+      <UAvatar v-else :src="vm.avatar || undefined" :alt="vm.title" size="lg" />
 
       <div class="min-w-0 flex-1 space-y-2">
         <div class="flex items-start justify-between gap-4">
@@ -69,6 +73,7 @@ const props = defineProps<{
   title?: string
   subtitle?: string
   avatar?: string | null
+  avatarSecondary?: string | null
   supplier?: SupplierProfile | SupplierCard.Card | null
   card?: SupplierCard.Card | null
   prop?: string
@@ -97,7 +102,8 @@ const vm = computed(() => {
 
   const title = props.title ?? card?.title ?? 'Supplier'
   const subtitle = props.subtitle ?? (card?.subtitle || undefined)
-  const avatar = props.avatar ?? (card?.avatar || null)
+  const avatar = props.avatar ?? (card?.avatarUrl || null)
+  const avatarSecondary = props.avatarSecondary ?? (card?.secondaryAvatarUrl || null)
   const badges = card?.badges ?? []
 
   const prop = typeof props.prop === 'string' ? props.prop : ''
@@ -106,6 +112,6 @@ const vm = computed(() => {
   const line2 = String(card?.line2 ?? '').trim()
   const line3 = String(card?.line3 ?? '').trim()
 
-  return { title, subtitle, avatar, badges, prop, line1, line2, line3 }
+  return { title, subtitle, avatar, avatarSecondary, badges, prop, line1, line2, line3 }
 })
 </script>

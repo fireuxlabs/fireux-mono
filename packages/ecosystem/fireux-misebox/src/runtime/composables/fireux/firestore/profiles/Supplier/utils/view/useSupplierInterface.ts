@@ -14,6 +14,7 @@ export namespace SupplierCard {
 
     // Media (empty string means unset)
     avatarUrl: string
+    secondaryAvatarUrl?: string
 
     // Primary display fields
     displayName: string
@@ -37,23 +38,42 @@ export function useSupplierInterface(
 ) {
   function map(p: SupplierCore, u?: UserLike | null): SupplierCard.Card {
     const id = safeString(p.id).trim()
+    const headline = safeString(p.supplier_headline) || safeString(p.title)
+    const summary = safeString(p.supplier_summary) || safeString(p.bio_short)
+    const profileImage = safeString(p.supplier_image)
+    const userAvatar = safeString(u?.avatar)
+    const secondaryAvatarUrl = profileImage && userAvatar && profileImage !== userAvatar
+      ? userAvatar
+      : ''
+    const productCategories =
+      safeStringArray(p.supplier_product_categories).length
+        ? safeStringArray(p.supplier_product_categories)
+        : safeStringArray(p.categories)
+    const deliveryAreas =
+      safeStringArray(p.supplier_delivery_areas).length
+        ? safeStringArray(p.supplier_delivery_areas)
+        : []
+    const org = safeString(p.supplier_organization_name) || safeString(p.organization_name)
 
     return {
       id,
       to: id ? `/${supplierConfig.collectionName}/${id}` : '',
 
-      avatarUrl: safeString(u?.avatar),
+      avatarUrl: profileImage || userAvatar,
+      secondaryAvatarUrl,
 
       // Canonical: supplier pills are user-hydrated; no profile-title fallback for display name.
       displayName: safeString(u?.display_name),
-      tagline: safeString(p.tagline),
-      badges: safeStringArray(p.tags),
+      tagline: headline,
+      badges: productCategories.length ? productCategories : safeStringArray(p.tags),
 
-      bioShort: safeString(p.bio_short),
-      specialtiesCsv: csv(p.specialties),
-      categoriesCsv: csv(p.categories),
-      organizationName: safeString(p.organization_name),
-      locationsLabel: locationLabel(p.locations),
+      bioShort: summary,
+      specialtiesCsv: csv(productCategories),
+      categoriesCsv: csv(productCategories),
+      organizationName: org,
+      locationsLabel: deliveryAreas.length
+        ? deliveryAreas.join(', ')
+        : locationLabel(p.locations),
     }
   }
 
@@ -73,11 +93,11 @@ export function useSupplierInterface(
     if (!p) return ''
     const u = userOverride ?? userRef?.value ?? null
     const displayName = safeString(u?.display_name)
-    const title = safeString(p.title)
-    const tagline = safeString(p.tagline)
-    const org = safeString(p.organization_name)
+    const headline = safeString(p.supplier_headline) || safeString(p.title)
+    const summary = safeString(p.supplier_summary) || safeString(p.bio_short)
+    const org = safeString(p.supplier_organization_name) || safeString(p.organization_name)
     const id = safeString(p.id)
-    return `${displayName} ${title} ${tagline} ${org} ${id}`.trim().toLowerCase()
+    return `${displayName} ${headline} ${summary} ${org} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

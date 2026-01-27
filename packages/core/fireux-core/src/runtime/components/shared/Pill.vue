@@ -1,6 +1,20 @@
 <template>
   <div class="pill">
+    <UAvatarGroup v-if="avatar && avatarSecondary" size="xs">
+      <UAvatar
+        :src="avatar || undefined"
+        :alt="title || ''"
+        size="xs"
+      />
+      <UAvatar
+        :src="avatarSecondary || undefined"
+        :alt="title || ''"
+        size="2xs"
+      />
+    </UAvatarGroup>
+
     <UAvatar
+      v-else
       :src="avatar || undefined"
       :alt="title || ''"
       size="xs"
@@ -46,6 +60,7 @@ type Props = Pill.Props & {
 
 const props = withDefaults(defineProps<Props>(), {
   avatar: null,
+  avatarSecondary: null,
   title: '',
   subtitle: null,
   tagline: null,

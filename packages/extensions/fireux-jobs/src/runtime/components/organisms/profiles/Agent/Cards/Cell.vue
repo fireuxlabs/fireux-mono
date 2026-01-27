@@ -6,7 +6,11 @@
     @click="onClick"
   >
     <div class="card__media">
-      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatarGroup v-if="secondaryAvatarUrl" size="sm">
+        <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+        <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName" size="2xs" />
+      </UAvatarGroup>
+      <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="card__content card__stack">
         <div class="card__header">
@@ -45,7 +49,13 @@ import type { AgentCard } from '../../../../../composables/fireux/firestore/prof
 
 type Props = Pick<
   AgentCard.Card,
-  'to' | 'avatarUrl' | 'displayName' | 'tagline' | 'badges' | 'bioShort'
+  'to'
+  | 'avatarUrl'
+  | 'secondaryAvatarUrl'
+  | 'displayName'
+  | 'tagline'
+  | 'badges'
+  | 'bioShort'
 > & {
   prop?: string
   showSubtitle?: boolean

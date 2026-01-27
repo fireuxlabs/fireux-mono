@@ -14,6 +14,7 @@ export namespace ChefCard {
 
     // Media (empty string means unset)
     avatarUrl: string
+    secondaryAvatarUrl?: string
 
     // Primary display fields
     displayName: string
@@ -36,28 +37,38 @@ export function useChefInterface(
 ) {
   function map(p: ChefCore, u?: UserLike | null): ChefCard.Card {
     const id = safeString(p.id).trim()
-    const title = safeString(p.title)
-    const subtitle = safeString(p.subtitle)
-    const tagline = safeString(p.tagline)
+    const headline = safeString(p.chef_headline) || safeString(p.title)
+    const summary = safeString(p.chef_summary) || safeString(p.bio_short)
+    const signatureDishes =
+      safeStringArray(p.chef_signature_dishes).length
+        ? safeStringArray(p.chef_signature_dishes)
+        : safeStringArray(p.specialties)
+    const org = safeString(p.chef_organization_name) || safeString(p.organization_name)
+    const profileImage = safeString(p.chef_image)
+    const userAvatar = safeString(u?.avatar)
+    const secondaryAvatarUrl = profileImage && userAvatar && profileImage !== userAvatar
+      ? userAvatar
+      : ''
 
     return {
       id,
       to: id ? `/${chefConfig.collectionName}/${id}` : '',
 
-      avatarUrl: safeString(u?.avatar),
+      avatarUrl: profileImage || userAvatar,
+      secondaryAvatarUrl,
 
       // Canonical: chef pills are user-hydrated; no legacy profile-name fallbacks.
       displayName: safeString(u?.display_name),
 
       // Prefer true tagline, else fall back to chef title/subtitle.
       // This makes pills useful even when docs are missing `tagline`.
-      tagline: tagline || title || subtitle,
-      badges: safeStringArray(p.tags),
+      tagline: headline,
+      badges: signatureDishes,
 
-      bioShort: safeString(p.bio_short),
-      specialtiesCsv: csv(p.specialties),
+      bioShort: summary,
+      specialtiesCsv: csv(signatureDishes),
       locationsCsv: csv(p.locations),
-      organizationName: safeString(p.organization_name),
+      organizationName: org,
     }
   }
 
@@ -77,11 +88,11 @@ export function useChefInterface(
     if (!p) return ''
     const u = userOverride ?? userRef?.value ?? null
     const displayName = safeString(u?.display_name)
-    const title = safeString(p.title)
-    const tagline = safeString(p.tagline)
-    const org = safeString(p.organization_name)
+    const headline = safeString(p.chef_headline) || safeString(p.title)
+    const summary = safeString(p.chef_summary) || safeString(p.bio_short)
+    const org = safeString(p.chef_organization_name) || safeString(p.organization_name)
     const id = safeString(p.id)
-    return `${displayName} ${title} ${tagline} ${org} ${id}`.trim().toLowerCase()
+    return `${displayName} ${headline} ${summary} ${org} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

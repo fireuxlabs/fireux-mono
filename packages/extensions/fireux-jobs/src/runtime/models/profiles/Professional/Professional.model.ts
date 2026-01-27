@@ -22,13 +22,19 @@ import {
 
 export const ProfessionalCore = {
   id: '' as string,
-  title: '' as string,
 
+  // Professional (scoped, v1)
+  professional_headline: '' as string,
+  professional_summary: '' as string,
+  professional_bio: '' as string,
+  professional_image: '' as string,
+
+  // Professional descriptors (scoped)
+  professional_service_types: [] as string[],
+  professional_work_areas: [] as any[],
+
+  // Existing deeper professional fields (keep — real data)
   health_certifications: [] as string[],
-  bio_short: '' as string,
-  bio_long: '' as string,
-  specialties: [] as string[],
-  locations: [] as string[],
   relevant_experience: [] as RelevantExperienceItem[],
   other_experience: [] as OtherExperienceItem[],
 
@@ -37,6 +43,16 @@ export const ProfessionalCore = {
   education: [] as EducationItem[],
   volunteering: [] as VolunteeringItem[],
   projects: [] as ProjectItem[],
+
+  // Legacy (deprecated) — kept temporarily for non-breaking migration
+  title: '' as string,
+  bio_short: '' as string,
+  bio_long: '' as string,
+  specialties: [] as string[],
+  locations: [] as any[],
+  subtitle: '' as string,
+  tagline: '' as string,
+  tags: [] as string[],
 
   // Stamps
   creator_id: undefined as FireuxStamped['creator_id'],

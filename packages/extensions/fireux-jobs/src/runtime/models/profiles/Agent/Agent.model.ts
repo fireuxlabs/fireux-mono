@@ -13,11 +13,27 @@ import { agentConfig } from './supporting'
 
 export const AgentCore = {
   id: '',
+
+  // Agent (scoped, v1)
+  agent_headline: '',
+  agent_summary: '',
+  agent_bio: '',
+  agent_image: '',
+
+  // Agent descriptors (scoped)
+  agent_placement_types: [] as string[],
+  agent_coverage_areas: [] as string[],
+
+  // Agent contact (scoped)
+  agent_contact_email: '',
+  agent_contact_phone: '',
+  agent_website_url: '',
+
+  // Legacy (deprecated) — kept temporarily for non-breaking migration
   title: '',
   subtitle: '',
   tagline: '',
   tags: [] as string[],
-
   bio_short: '',
   contact_email: '',
   contact_phone: '',

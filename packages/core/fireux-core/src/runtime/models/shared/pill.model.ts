@@ -5,6 +5,7 @@
 export namespace Pill {
   export interface Props {
     avatar?: string | null
+    avatarSecondary?: string | null
     initials?: string
     title?: string | null
     /** Prefer tagline when available. */
