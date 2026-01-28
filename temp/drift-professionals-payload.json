@@ -1,0 +1,209 @@
+{
+  "modelPath": "packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts",
+  "driftKind": "missing",
+  "selectedField": null,
+  "totalProfessionals": 7,
+  "professionals": [
+    {
+      "id": "FoPLMYVPirSiMm2eDskwsZja0q42",
+      "displayName": "Joe Dean",
+      "drift": {
+        "missing": [
+          "job_title (string)",
+          "summary (string)",
+          "bio (string)",
+          "image (string)",
+          "positions (array)"
+        ],
+        "extra": [
+          "tagline (string)",
+          "subtitle (string)",
+          "tags (array)",
+          "bio_short (string)",
+          "specialties (array)",
+          "health_certifications (array)",
+          "title (string)",
+          "bio_long (string)",
+          "locations (array)"
+        ]
+      }
+    },
+    {
+      "id": "OnLDg1ZcGqh30aaopCZggBIyhbS2",
+      "displayName": "Henrique Macedo",
+      "drift": {
+        "missing": [
+          "job_title (string)",
+          "summary (string)",
+          "bio (string)",
+          "image (string)",
+          "positions (array)"
+        ],
+        "extra": [
+          "specialties (array)",
+          "subtitle (string)",
+          "tags (array)",
+          "bio_short (string)",
+          "locations (array)",
+          "bio_long (string)",
+          "health_certifications (array)",
+          "title (string)",
+          "tagline (string)"
+        ]
+      }
+    },
+    {
+      "id": "WShQtlmVVVdqajd9muSHBLnm9kD2",
+      "displayName": "Sebastian Nagel",
+      "drift": {
+        "missing": [
+          "job_title (string)",
+          "summary (string)",
+          "bio (string)",
+          "image (string)",
+          "positions (array)"
+        ],
+        "extra": [
+          "title (string)",
+          "bio_long (string)",
+          "locations (array)",
+          "tags (array)",
+          "subtitle (string)",
+          "bio_short (string)",
+          "tagline (string)",
+          "health_certifications (array)",
+          "specialties (array)"
+        ]
+      }
+    },
+    {
+      "id": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
+      "displayName": "Daniel Watson",
+      "drift": {
+        "missing": [
+          "job_title (string)",
+          "summary (string)",
+          "bio (string)",
+          "image (string)",
+          "positions (array)"
+        ],
+        "extra": [
+          "professional_headline (string)",
+          "tagline (string)",
+          "locations (array)",
+          "subtitle (string)",
+          "professional_positions (array)",
+          "title (string)",
+          "health_certifications (array)",
+          "tags (array)",
+          "bio_short (string)",
+          "bio_long (string)",
+          "specialties (array)"
+        ]
+      }
+    },
+    {
+      "id": "rEssOnUA8wVHdNKE2JETqWAdwdm1",
+      "displayName": "Richi’s Reinigung",
+      "drift": {
+        "missing": [
+          "job_title (string)",
+          "summary (string)",
+          "bio (string)",
+          "image (string)",
+          "positions (array)"
+        ],
+        "extra": [
+          "specialties (array)",
+          "subtitle (string)",
+          "locations (array)",
+          "bio_short (string)",
+          "tags (array)",
+          "title (string)",
+          "health_certifications (array)",
+          "bio_long (string)",
+          "tagline (string)"
+        ]
+      }
+    },
+    {
+      "id": "s9hKBxO7mJSFC5vHNOo3mt9Dgi42",
+      "displayName": "David Cook",
+      "drift": {
+        "missing": [
+          "job_title (string)",
+          "summary (string)",
+          "bio (string)",
+          "image (string)",
+          "positions (array)"
+        ],
+        "extra": [
+          "bio_short (string)",
+          "health_certifications (array)",
+          "title (string)",
+          "bio_long (string)",
+          "specialties (array)",
+          "locations (array)",
+          "tagline (string)",
+          "subtitle (string)",
+          "tags (array)"
+        ]
+      }
+    },
+    {
+      "id": "xdu83J77YeOROlePJdibPekxkDp2",
+      "displayName": "Tahneeq",
+      "drift": {
+        "missing": [
+          "job_title (string)",
+          "summary (string)",
+          "bio (string)",
+          "image (string)",
+          "positions (array)"
+        ],
+        "extra": [
+          "tags (array)",
+          "specialties (array)",
+          "title (string)",
+          "health_certifications (array)",
+          "locations (array)",
+          "bio_short (string)",
+          "subtitle (string)",
+          "bio_long (string)",
+          "tagline (string)"
+        ]
+      }
+    }
+  ],
+  "missingSummary": [
+    {
+      "field": "job_title (string)",
+      "count": 7
+    },
+    {
+      "field": "summary (string)",
+      "count": 7
+    },
+    {
+      "field": "bio (string)",
+      "count": 7
+    },
+    {
+      "field": "image (string)",
+      "count": 7
+    },
+    {
+      "field": "positions (array)",
+      "count": 7
+    }
+  ],
+  "migration": {
+    "script": "scripts/migrate.mjs",
+    "ecosystem": "misebox",
+    "app": "misebox-app",
+    "appConfigPath": "projects/misebox/misebox-app/nuxt.config.ts",
+    "firebaseConfigDir": "packages/ecosystem/fireux-misebox/src/config/firebase",
+    "ecosystemConfigPath": "packages/ecosystem/fireux-misebox/src/config/firebase/ecosystem.config.ts",
+    "serviceAccountPath": "packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json"
+  }
+}

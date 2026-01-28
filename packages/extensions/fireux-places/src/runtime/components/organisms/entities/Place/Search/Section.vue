@@ -73,8 +73,16 @@ const selectedSource = computed<PlaceSource>(() => {
   return src === 'google' || src === 'manual' || src === 'fireux' ? src : 'fireux'
 })
 
+const typeLabel = computed(() => {
+  const raw = (props.type ?? '').trim()
+  if (!raw) return 'place'
+  return raw.charAt(0).toUpperCase() + raw.slice(1)
+})
+
 const confirmLabel = computed(() =>
-  selectedSource.value === 'google' ? 'Add place' : 'Use place'
+  selectedSource.value === 'google'
+    ? `Add ${typeLabel.value}`
+    : `Use ${typeLabel.value}`
 )
 
 const { card } = usePlacesInterface()

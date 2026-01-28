@@ -128,27 +128,19 @@
 </template>
 
 <script setup lang="ts">
+import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
 import type { RadioGroupItem } from '@nuxt/ui'
 import { doc, getDoc } from 'firebase/firestore'
-import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/mutations/useCompanyCreate'
-import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/mutations/useKitchenCreate'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import { mapPlaceToCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToCard'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
-import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
 import { computed, ref, watch } from 'vue'
 import { useFirestore } from 'vuefire'
 import type { ExperienceItem } from '../../../../../models/profiles/Professional/supporting'
 
-type ExperienceEntry = ExperienceItem & {
-  name?: string
-  place_name?: string
-  formatted_address?: string
-  short_address?: string
-  image_url?: string
-}
+type ExperienceEntry = ExperienceItem
 
 type DateRangeValue = {
   start?: CalendarDate | null
@@ -160,7 +152,6 @@ const props = defineProps<{
   items: ExperienceEntry[]
   onSave: (items: ExperienceEntry[]) => Promise<void>
   placeType?: string | null
-  includeSnapshot?: boolean
   placeCollections?: string[]
 }>()
 
@@ -171,8 +162,6 @@ const itemDate = (item: ExperienceEntry) => formatRange(item)
 const db = useFirestore()
 const placeCache = ref<Record<string, Record<string, any>>>({})
 const toPlaceCard = mapPlaceToCard()
-const { createKitchen } = useKitchenCreate()
-const { createCompany } = useCompanyCreate()
 const { ensurePlaceExists } = usePlaceSave()
 
 const dateFormatter = new DateFormatter('en-US', { dateStyle: 'medium' })
@@ -341,23 +330,14 @@ const onSaveClick = (save: () => void, item: ExperienceEntry) => {
 }
 
 const formatPlace = (item: ExperienceEntry) => {
-  const primary = item.name || item.place_name || ''
-  if (primary.trim().length) return primary
   const placeId = canonicalPlaceId(item?.place_id ?? undefined)
-  if (placeId && placeCache.value[placeId]) {
-    const cached = placeCache.value[placeId]
-    return (
-      cached.name ||
-      cached.short_address ||
-      cached.formatted_address ||
-      'Place'
-    )
+  if (!placeId) return 'Place'
+  const cached = placeCache.value[placeId]
+  if (cached && Object.keys(cached).length) {
+    return cached.name || cached.short_address || cached.formatted_address || 'Place'
   }
-  if (placeId) {
-    void hydratePlace(placeId)
-    return 'Place loading…'
-  }
-  return 'Place'
+  void hydratePlace(placeId)
+  return 'Place loading…'
 }
 
 const resolvePlaceCard = (item: ExperienceEntry): PlaceCard.Card | null => {
@@ -372,63 +352,26 @@ const resolvePlaceCard = (item: ExperienceEntry): PlaceCard.Card | null => {
 }
 const hasPlace = (item: ExperienceEntry) => Boolean(canonicalPlaceId(item?.place_id ?? undefined))
 const newExperienceItem = (): ExperienceEntry => ({
-  role: 'boss',
-  place_id: 'ChIJJRK8XSeue0gRAvddTH8ORtQ',
-  name: '',
-  formatted_address: '',
-  short_address: '',
-  image_url: '',
-  from_month: 'May',
-  from_year: '2015',
-  to_month: 'May',
-  to_year: '2017',
+  role: '',
+  place_id: '',
+  from_month: '',
+  from_year: '',
+  to_month: '',
+  to_year: '',
   ongoing: false,
-  responsibilities: 'manageing the place',
+  responsibilities: '',
 })
-
-const ensureCollectionEntry = async (
-  collection: string | null,
-  placeId: string,
-  place: PlaceUpsertInput
-) => {
-  if (!collection) return
-  const ref = doc(db, collection, placeId)
-  const existing = await getDoc(ref)
-  if (existing.exists()) return
-
-  if (collection === 'kitchens') {
-    await createKitchen({ id: placeId, place, website: '' } as any)
-    return
-  }
-
-  if (collection === 'companies') {
-    await createCompany({ id: placeId, place, website: '' } as any)
-  }
-}
 
 const onApplyPlaceConfirmed = async (
   payload: { placeId: string; place: PlaceUpsertInput },
   target: ExperienceEntry
 ) => {
   const placeId = canonicalPlaceId(payload.placeId) || payload.placeId
-  const collection = selectedCollection.value
-
   if (placeId) {
     const placePayload = { ...payload.place, id: placeId }
     placeCache.value[placeId] = { ...placePayload }
     await ensurePlaceExists(placePayload)
   }
-
-  await ensureCollectionEntry(collection, placeId || '', payload.place)
   target.place_id = placeId || ''
-
-  if (props.includeSnapshot) {
-    const place = payload.place as PlaceUpsertInput & { place_image?: string }
-    target.name = String(place.name ?? '')
-    target.place_name = String((place as any).name ?? '')
-    target.formatted_address = String(place.formatted_address ?? '')
-    target.short_address = String((place as any).short_address ?? '')
-    target.image_url = String((place as any).place_image ?? '')
-  }
 }
 </script>

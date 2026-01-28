@@ -45,18 +45,18 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
         ],
       },
     }
-    const miseboxJobsDefaults = {
+    const getMiseboxJobsDefaults = () => ({
       enabled: true,
       placeCollections: ['kitchens'],
-    }
+    })
 
     fireux.places = currentPlaces && typeof currentPlaces === 'object'
       ? { ...miseboxPlacesDefaults, ...currentPlaces }
       : { ...miseboxPlacesDefaults }
 
     fireux.jobs = currentJobs && typeof currentJobs === 'object'
-      ? { ...miseboxJobsDefaults, ...currentJobs }
-      : { ...miseboxJobsDefaults }
+      ? { ...getMiseboxJobsDefaults(), ...currentJobs }
+      : { ...getMiseboxJobsDefaults() }
 
     // Layer runtime pages/layouts/middleware
     configurePages(resolver, nuxt)

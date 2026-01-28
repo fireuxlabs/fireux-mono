@@ -219,55 +219,13 @@ export function useProfessionalUpdate(
     )
   }
 
-  const updateBioShort = async (
-    bioShort: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const value = (bioShort ?? '').trim()
-    await commitUpdate({ bio_short: value }, { ...options, id: uid })
-  }
-
-  const updateBioLong = async (
-    bioLong: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const value = (bioLong ?? '').trim()
-    await commitUpdate({ bio_long: value }, { ...options, id: uid })
-  }
-
-  const updateTitle = async (
-    title: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const value = (title ?? '').trim()
-    await commitUpdate({ title: value }, { ...options, id: uid })
-  }
-
-  const updateHeadline = async (
-    value: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const next = (value ?? '').trim()
-    await commitUpdate(
-      { professional_headline: next || undefined },
-      { ...options, id: uid }
-    )
-  }
-
   const updateSummary = async (
     value: string,
     options: UpdateOptions = {}
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
     const next = (value ?? '').trim()
-    await commitUpdate(
-      { professional_summary: next || undefined },
-      { ...options, id: uid }
-    )
+    await commitUpdate({ summary: next }, { ...options, id: uid })
   }
 
   const updateBio = async (
@@ -276,10 +234,7 @@ export function useProfessionalUpdate(
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
     const next = (value ?? '').trim()
-    await commitUpdate(
-      { professional_bio: next || undefined },
-      { ...options, id: uid }
-    )
+    await commitUpdate({ bio: next }, { ...options, id: uid })
   }
 
   const updateImage = async (
@@ -288,10 +243,7 @@ export function useProfessionalUpdate(
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
     const next = (value ?? '').trim()
-    await commitUpdate(
-      { professional_image: next || undefined },
-      { ...options, id: uid }
-    )
+    await commitUpdate({ image: next }, { ...options, id: uid })
   }
 
   const updatePositions = async (
@@ -306,13 +258,46 @@ export function useProfessionalUpdate(
           .map((x) => x.trim())
           .filter(Boolean)
     const unique = normalizeStringArray(list)
-    await commitUpdate(
-      { professional_positions: unique },
-      { ...options, id: uid }
-    )
+    await commitUpdate({ positions: unique }, { ...options, id: uid })
   }
 
-  const updateServiceTypes = async (
+  const updateJobTitle = async (
+    value: string,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const next = (value ?? '').trim()
+    await commitUpdate({ job_title: next }, { ...options, id: uid })
+  }
+
+  const updateSummary = async (
+    value: string,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const next = (value ?? '').trim()
+    await commitUpdate({ summary: next }, { ...options, id: uid })
+  }
+
+  const updateBio = async (
+    value: string,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const next = (value ?? '').trim()
+    await commitUpdate({ bio: next }, { ...options, id: uid })
+  }
+
+  const updateImage = async (
+    value: string,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const uid = await resolveUid(options.id)
+    const next = (value ?? '').trim()
+    await commitUpdate({ image: next }, { ...options, id: uid })
+  }
+
+  const updatePositions = async (
     csvOrList: string | string[],
     options: UpdateOptions = {}
   ): Promise<void> => {
@@ -324,54 +309,7 @@ export function useProfessionalUpdate(
           .map((x) => x.trim())
           .filter(Boolean)
     const unique = normalizeStringArray(list)
-    await commitUpdate(
-      { professional_service_types: unique },
-      { ...options, id: uid }
-    )
-  }
-
-  const updateWorkAreas = async (
-    csvOrList: string | string[],
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const list = Array.isArray(csvOrList)
-      ? csvOrList
-      : (csvOrList ?? '')
-          .split(',')
-          .map((x) => x.trim())
-          .filter(Boolean)
-    const unique = normalizeStringArray(list)
-    await commitUpdate(
-      { professional_work_areas: unique },
-      { ...options, id: uid }
-    )
-  }
-
-  const updateSpecialties = async (
-    specialties: string | string[],
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const list = Array.isArray(specialties)
-      ? specialties
-      : (specialties ?? '')
-          .split(',')
-          .map((item) => item.trim())
-          .filter((item) => item.length > 0)
-    const unique = normalizeStringArray(list)
-    await commitUpdate({ specialties: unique }, { ...options, id: uid })
-  }
-
-  const updateLocations = async (
-    locations: string[],
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    await commitUpdate(
-      { locations: normalizeStringArray(locations) },
-      { ...options, id: uid }
-    )
+    await commitUpdate({ positions: unique }, { ...options, id: uid })
   }
 
   const updateLanguages = async (
@@ -432,18 +370,11 @@ export function useProfessionalUpdate(
     updateAppProfile,
     setRelevantExperience,
     setOtherExperience,
-    updateHeadline,
+    updateJobTitle,
     updateSummary,
     updateBio,
     updateImage,
     updatePositions,
-    updateServiceTypes,
-    updateWorkAreas,
-    updateTitle,
-    updateBioShort,
-    updateBioLong,
-    updateSpecialties,
-    updateLocations,
     updateLanguages,
     updateCertifications,
     updateEducation,

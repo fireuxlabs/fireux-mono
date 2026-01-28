@@ -37,6 +37,12 @@
         </template>
 
         <JobCollectionManager :collection="filteredJobs" />
+        <DevJson
+          :title="'Jobs (JSON · raw)'"
+          context="collection manager · jobs · raw"
+          :data="jobsCollection"
+          :default-open="false"
+        />
       </UCard>
 
       <UCard>
@@ -70,6 +76,12 @@
         </template>
 
         <OrganismsProfilesProfessionalCollectionManager :collection="filteredProfessionals" />
+        <DevJson
+          :title="'Professionals (JSON · raw)'"
+          context="collection manager · professionals · raw"
+          :data="rawProfessionalsCollection"
+          :default-open="false"
+        />
       </UCard>
 
       <UCard>
@@ -103,6 +115,12 @@
         </template>
 
         <OrganismsProfilesAgentCollectionManager :collection="filteredAgents" />
+        <DevJson
+          :title="'Agents (JSON · raw)'"
+          context="collection manager · agents · raw"
+          :data="rawAgentsCollection"
+          :default-open="false"
+        />
       </UCard>
     </UPageBody>
   </UPage>
@@ -187,12 +205,22 @@ const jobsDriftCopyPayload = computed(() => ({
   jobs: filteredJobsDriftPayload.value,
 }))
 
-const { globalProfessionals, localProfessionals } = useProfessionalCollection()
+const {
+  globalProfessionals,
+  localProfessionals,
+  rawGlobalProfessionals,
+  rawLocalProfessionals,
+} = useProfessionalCollection()
 const { card: makeProfessionalCard } = useProfessional()
 
 const professionalsCollection = computed(() => [
   ...(localProfessionals?.value ?? []),
   ...(globalProfessionals.value ?? []),
+])
+
+const rawProfessionalsCollection = computed(() => [
+  ...(rawLocalProfessionals?.value ?? []),
+  ...(rawGlobalProfessionals.value ?? []),
 ])
 
 const {
@@ -253,12 +281,22 @@ const professionalsDriftCopyPayload = computed(() => ({
   missingSummary: professionalsMissingSummary.value,
 }))
 
-const { globalAgents, localAgents } = useAgentCollection()
+const {
+  globalAgents,
+  localAgents,
+  rawGlobalAgents,
+  rawLocalAgents,
+} = useAgentCollection()
 const { card: makeAgentCard } = useAgentInterface()
 
 const agentsCollection = computed(() => [
   ...(localAgents?.value ?? []),
   ...(globalAgents.value ?? []),
+])
+
+const rawAgentsCollection = computed(() => [
+  ...(rawLocalAgents?.value ?? []),
+  ...(rawGlobalAgents.value ?? []),
 ])
 
 const {

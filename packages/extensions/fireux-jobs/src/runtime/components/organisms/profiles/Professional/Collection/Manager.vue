@@ -41,7 +41,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Professionals (JSON)'"
-        context="collection manager · professionals"
+        context="collection manager · professionals · hydrated"
         :data="collection"
         :default-open="false"
       />
@@ -63,9 +63,13 @@ const collection = computed(() => props.collection ?? [])
 const { card: makeCard } = useProfessional()
 const searchTextFor = (entry: ProfessionalEntry) => {
   const displayName = (entry as any)?.user?.display_name ?? ''
-  const title = (entry as any)?.title ?? ''
-  const tagline = (entry as any)?.tagline ?? ''
-  return `${displayName} ${title} ${tagline} ${entry.id ?? ''}`
+  const jobTitle = (entry as any)?.job_title ?? ''
+  const summary = (entry as any)?.summary ?? ''
+  const positions = Array.isArray((entry as any)?.positions)
+    ? (entry as any).positions.join(' ')
+    : ''
+  const id = entry?.id ?? ''
+  return `${displayName} ${jobTitle} ${summary} ${positions} ${id}`
     .trim()
     .toLowerCase()
 }

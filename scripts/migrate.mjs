@@ -333,6 +333,16 @@ function getDriftDefaults(collection) {
     }
   }
 
+  if (collection === 'professionals') {
+    return {
+      job_title: '',
+      summary: '',
+      bio: '',
+      image: '',
+      positions: [],
+    }
+  }
+
   return {}
 }
 

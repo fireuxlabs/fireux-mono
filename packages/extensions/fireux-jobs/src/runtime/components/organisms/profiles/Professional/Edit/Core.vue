@@ -59,7 +59,7 @@
       </UCard>
 
       <OrganismsProfilesProfessionalFieldsExperienceSection
-        label="Relevant Experience"
+        :label="relevantExperienceLabel"
         :items="professional.relevant_experience || []"
         :onSave="handleRelevantExperience"
         :place-type="relevantPlaceType"
@@ -70,7 +70,6 @@
         label="Other Experience"
         :items="professional.other_experience || []"
         :onSave="handleOtherExperience"
-        :include-snapshot="true"
       />
 
       <OrganismsProfilesProfessionalEditSectionsLanguages
@@ -124,7 +123,7 @@ const props = defineProps<{ professional: ProfessionalCore | null }>()
 const toast = useToastify()
 
 const {
-  updateHeadline,
+  updateJobTitle,
   updateSummary,
   updateBio,
   updateImage,
@@ -140,29 +139,29 @@ const {
 
 const { placeCollections } = useJobsConfig()
 const relevantPlaceType = computed(() => placeCollections[0] ?? null)
+const relevantExperienceLabel = computed(() => {
+  const collections = Array.isArray(placeCollections) ? placeCollections : []
+  if (!collections.length) return 'Relevant Experience'
+
+  const labels = collections.map((value) => {
+    const collection = String(value ?? '').trim()
+    if (!collection) return ''
+    const base = collection.endsWith('s') ? collection.slice(0, -1) : collection
+    return base.charAt(0).toUpperCase() + base.slice(1)
+  }).filter(Boolean)
+
+  if (!labels.length) return 'Relevant Experience'
+  const prefix = labels.length === 1 ? labels[0] : labels.join(' / ')
+  return `${prefix} Experience`
+})
 
 const professional = computed(() => props.professional ?? null)
 
-const headline = computed(
-  () => professional.value?.professional_headline ?? professional.value?.title ?? ''
-)
-const summary = computed(
-  () => professional.value?.professional_summary ?? professional.value?.bio_short ?? ''
-)
-const bio = computed(
-  () => professional.value?.professional_bio ?? professional.value?.bio_long ?? ''
-)
-const imageUrl = computed(() => professional.value?.professional_image ?? '')
-
-const positions = computed(() => {
-  const list =
-    professional.value?.professional_positions?.length
-      ? professional.value?.professional_positions
-      : professional.value?.professional_service_types?.length
-        ? professional.value?.professional_service_types
-        : professional.value?.specialties ?? []
-  return Array.isArray(list) ? list : []
-})
+const headline = computed(() => professional.value?.job_title ?? '')
+const summary = computed(() => professional.value?.summary ?? '')
+const bio = computed(() => professional.value?.bio ?? '')
+const imageUrl = computed(() => professional.value?.image ?? '')
+const positions = computed(() => professional.value?.positions ?? [])
 
 const languages = computed(() => professional.value?.languages ?? [])
 const certifications = computed(() => professional.value?.certifications ?? [])
@@ -188,7 +187,7 @@ const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string)
 
 const handleHeadline = async (value: string) =>
   wrap(
-    () => updateHeadline(value, { id: professional.value?.id ?? null }),
+    () => updateJobTitle(value, { id: professional.value?.id ?? null }),
     'Job title updated',
     'Failed to update job title'
   )
@@ -210,8 +209,8 @@ const handleBio = async (value: string) =>
 const handleImage = async (value: string) =>
   wrap(
     () => updateImage(value, { id: professional.value?.id ?? null }),
-    'Professional image updated',
-    'Failed to update professional image'
+    'Image updated',
+    'Failed to update image'
   )
 
 const handlePositions = async (value: string[]) =>
