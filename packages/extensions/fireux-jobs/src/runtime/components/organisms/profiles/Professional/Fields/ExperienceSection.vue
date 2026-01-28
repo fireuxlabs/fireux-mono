@@ -33,9 +33,6 @@
           <p v-if="item.responsibilities" class="text-sm text-gray-600">
             {{ item.responsibilities }}
           </p>
-          <p class="text-xs text-dimmed italic">
-            To change the place, delete this entry and create a new one.
-          </p>
         </div>
       </template>
 

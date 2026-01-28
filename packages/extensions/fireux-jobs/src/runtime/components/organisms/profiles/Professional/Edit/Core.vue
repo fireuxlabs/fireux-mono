@@ -109,13 +109,13 @@ import { useJobsConfig } from '../../../../../composables/fireux/app/useJobsConf
 import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalUpdate'
 import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model'
 import type {
-  CertificationItem,
-  EducationItem,
-  LanguageProficiency,
-  OtherExperienceItem,
-  ProjectItem,
-  RelevantExperienceItem,
-  VolunteeringItem,
+    CertificationItem,
+    EducationItem,
+    LanguageProficiency,
+    OtherExperienceItem,
+    ProjectItem,
+    RelevantExperienceItem,
+    VolunteeringItem,
 } from '../../../../../models/profiles/Professional/supporting'
 
 const props = defineProps<{ professional: ProfessionalCore | null }>()

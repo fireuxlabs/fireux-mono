@@ -20,20 +20,17 @@
       size="xs"
     />
 
-    <div class="min-w-0 flex-1">
-      <div class="min-w-0 truncate text-sm font-medium">
+    <div class="pill__body">
+      <div class="pill__title">
         {{ title }}
       </div>
 
-      <div
-        v-if="showSubtitle && resolvedSubtitle"
-        class="min-w-0 truncate text-xs text-dimmed"
-      >
-        {{ resolvedSubtitle }}
+      <div v-if="showSubtitle" class="pill__subtitle">
+        {{ subtitle || tagline }}
       </div>
     </div>
 
-    <div v-if="showBadges && (badges?.length ?? 0)" class="ml-2 flex shrink-0 items-center gap-1">
+    <div v-if="showBadges && (badges?.length ?? 0)" class="pill__badges">
       <UBadge
         v-for="badge in (badges ?? [])"
         :key="badge"
@@ -48,7 +45,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { Pill } from '../../models/shared/pill.model'
 
 defineOptions({ inheritAttrs: false })
@@ -69,8 +65,66 @@ const props = withDefaults(defineProps<Props>(), {
   showBadges: true,
 })
 
-const resolvedSubtitle = computed(() => {
-  return (props.subtitle ?? props.tagline ?? '').trim()
-})
-
 </script>
+
+<style scoped>
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 9999px;
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  min-width: 0;
+}
+
+.pill__body {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.pill__title {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1rem;
+}
+
+.pill__subtitle {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  color: var(--ui-text-muted, var(--ui-text));
+}
+
+.pill__badges {
+  margin-left: 0.5rem;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pill :deep(.u-avatar),
+.pill :deep(.u-avatar img) {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.pill :deep(.u-avatar) {
+  flex: 0 0 1.5rem;
+  line-height: 1.5rem;
+}
+
+.pill:hover {
+  background: var(--ui-bg-muted);
+}
+</style>

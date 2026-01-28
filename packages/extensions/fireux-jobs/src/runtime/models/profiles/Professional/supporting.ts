@@ -24,25 +24,18 @@ export interface ExperienceBase {
 /**
  * Experience linked to a canonical Place in Firestore.
  * places/{place_id}
+ *
+ * RULE:
+ * - Anything using the Places API stores ONLY place_id.
+ * - Display data is hydrated from places/{place_id}.
  */
-export interface RelevantExperienceItem extends ExperienceBase {
+export interface ExperienceItem extends ExperienceBase {
   place_id: string
 }
 
-/**
- * Experience referencing an external place snapshot.
- * Self-contained. Useful when the place isn't in Firestore yet.
- */
-export interface OtherExperienceItem extends ExperienceBase {
-  place_id: string
-  name: string
-  formatted_address: string
-  short_address: string
-  image_url: string
-}
-
-/** Combined union if needed elsewhere */
-export type ExperienceItem = RelevantExperienceItem | OtherExperienceItem
+/** Separate aliases for UI sections (same shape). */
+export type RelevantExperienceItem = ExperienceItem
+export type OtherExperienceItem = ExperienceItem
 
 /* ---------------------------------- *
  * Profile detail structures

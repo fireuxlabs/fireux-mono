@@ -3,7 +3,6 @@
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
-    class="block"
     @click="onClick"
   >
     <SharedPill

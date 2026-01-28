@@ -85,12 +85,14 @@
                     class="object-array__item-heading"
                   >
                     <h3 v-if="getItemTitle(item, index)">{{ getItemTitle(item, index) }}</h3>
-                    <span
+                    <UBadge
                       v-if="getItemDate(item, index)"
-                      class="object-array__item-date"
+                      size="md"
+                      color="secondary"
+                      variant="subtle"
                     >
                       {{ getItemDate(item, index) }}
-                    </span>
+                    </UBadge>
                   </div>
                   <slot
                     v-if="hasDisplaySlot"
@@ -290,15 +292,13 @@ defineExpose({
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  justify-content: space-between;
+  padding-right: 2.5rem;
 }
 
 .object-array__item-heading h3 {
   margin: 0;
-}
-
-.object-array__item-date {
-  font-size: 0.75rem;
-  color: var(--ui-text-muted, var(--ui-text));
 }
 
 .object-array__item-subtitle {

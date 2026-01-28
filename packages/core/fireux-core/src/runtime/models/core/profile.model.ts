@@ -14,7 +14,7 @@ import type { FireuxStamped, FireuxTimestamps } from './meta.model'
 export interface CoreProfileBase extends FireuxTimestamps {
   id: string
 
-  title: string
+  title?: string
   subtitle?: string
 
   tagline?: string

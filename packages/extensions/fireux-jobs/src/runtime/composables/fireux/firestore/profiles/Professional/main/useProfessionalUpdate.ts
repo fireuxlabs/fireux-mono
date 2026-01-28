@@ -19,15 +19,10 @@ import type {
 } from '../../../../../../models/profiles/Professional/supporting'
 
 const COLLECTION = 'professionals'
-
 type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
-const pruneUndefined = <T extends Record<string, any>>(
-  payload: Partial<T>
-) => {
-  const entries = Object.entries(payload).filter(
-    ([, value]) => value !== undefined
-  )
+const pruneUndefined = <T extends Record<string, any>>(payload: Partial<T>) => {
+  const entries = Object.entries(payload).filter(([, value]) => value !== undefined)
   return Object.fromEntries(entries) as Partial<T>
 }
 
@@ -40,28 +35,12 @@ const normalizeStringArray = (items: string[] = []) =>
     )
   )
 
-export function useProfessionalUpdate(
-  profile?: ProfileRefs<ProfessionalCore>
-) {
+export function useProfessionalUpdate(profile?: ProfileRefs) {
   const { updateDocument } = useFirestoreUpdate()
   const { ensurePlaceExists } = usePlaceSave()
   const db = useFirestore()
   const { appId, role } = useFireUXConfig()
   const isTenant = role === 'tenant' && Boolean(appId)
-
-  const commitUpdate = async (
-    patch: Partial<ProfessionalCore>,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const scope = options.scope ?? 'core'
-
-    if (scope === 'app') {
-      await updateAppProfile(patch, options)
-      return
-    }
-
-    await updateCoreProfile(patch, options)
-  }
 
   const resolveUid = async (explicit?: string | null): Promise<string> => {
     const trimmed = explicit?.trim()
@@ -72,11 +51,7 @@ export function useProfessionalUpdate(
     if (fromRefs?.trim()) return fromRefs.trim()
 
     const user = await useRequireUser()
-    if (!user?.uid) {
-      throw new Error(
-        '[useProfessionalUpdate] Unable to resolve professional id'
-      )
-    }
+    if (!user?.uid) throw new Error('[useProfessionalUpdate] Unable to resolve professional id')
     return user.uid
   }
 
@@ -85,11 +60,7 @@ export function useProfessionalUpdate(
     options: UpdateOptions = {}
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
-    await updateDocument<ProfessionalCore>(
-      COLLECTION,
-      uid,
-      pruneUndefined(patch)
-    )
+    await updateDocument<ProfessionalCore>(COLLECTION, uid, pruneUndefined(patch))
   }
 
   const updateAppProfile = async (
@@ -97,17 +68,33 @@ export function useProfessionalUpdate(
     options: UpdateOptions = {}
   ): Promise<void> => {
     if (!isTenant || !appId) {
-      throw new Error(
-        '[useProfessionalUpdate] Tenant context required for app profile updates'
-      )
+      throw new Error('[useProfessionalUpdate] Tenant context required for app profile updates')
     }
-
     const uid = await resolveUid(options.id)
-    await updateDocument<ProfessionalCore>(
-      `apps/${appId}/${COLLECTION}`,
-      uid,
-      pruneUndefined(patch)
-    )
+    await updateDocument<ProfessionalCore>(`apps/${appId}/${COLLECTION}`, uid, pruneUndefined(patch))
+  }
+
+  const commitUpdate = async (
+    patch: Partial<ProfessionalCore>,
+    options: UpdateOptions = {}
+  ): Promise<void> => {
+    const scope = options.scope ?? 'core'
+    if (scope === 'app') return updateAppProfile(patch, options)
+    return updateCoreProfile(patch, options)
+  }
+
+  const sanitizeExperienceItems = <T extends { place_id: string; ongoing?: boolean }>(items: T[]) => {
+    const sanitized: T[] = []
+    for (const item of items ?? []) {
+      const placeId = canonicalPlaceId(item?.place_id ?? undefined)
+      if (!placeId) continue
+      sanitized.push({
+        ...item,
+        place_id: placeId,
+        ongoing: item?.ongoing === true,
+      })
+    }
+    return sanitized
   }
 
   const setRelevantExperience = async (
@@ -118,6 +105,7 @@ export function useProfessionalUpdate(
 
     const professionalRef = doc(db, COLLECTION, uid)
     const snapshot = await getDoc(professionalRef)
+
     const previousItems = Array.isArray(snapshot.data()?.relevant_experience)
       ? (snapshot.data()?.relevant_experience as RelevantExperienceItem[])
       : []
@@ -128,30 +116,16 @@ export function useProfessionalUpdate(
         .filter((id): id is string => typeof id === 'string' && id.length > 0)
     )
 
-    const sanitized: RelevantExperienceItem[] = []
+    const sanitized = sanitizeExperienceItems<RelevantExperienceItem>(items)
+
     const roster = new Map<string, boolean>()
-
-    for (const item of items) {
-      const placeId = canonicalPlaceId(item?.place_id ?? undefined)
-      if (!placeId) continue
-
-      const normalized: RelevantExperienceItem = {
-        ...item,
-        place_id: placeId,
-        ongoing: item?.ongoing === true,
-      }
-
-      sanitized.push(normalized)
-
-      if (roster.get(placeId) === true) continue
-      roster.set(placeId, normalized.ongoing === true)
+    for (const item of sanitized) {
+      if (roster.has(item.place_id)) continue
+      roster.set(item.place_id, item.ongoing === true)
     }
 
     const newPlaceIds = new Set(roster.keys())
-
-    const removalTargets = [...previousPlaceIds].filter(
-      (placeId) => !newPlaceIds.has(placeId)
-    )
+    const removalTargets = [...previousPlaceIds].filter((placeId) => !newPlaceIds.has(placeId))
 
     const placeTasks: Promise<void>[] = []
 
@@ -190,12 +164,7 @@ export function useProfessionalUpdate(
 
     await Promise.all(placeTasks)
 
-    await commitUpdate(
-      {
-        relevant_experience: sanitized,
-      },
-      { ...options, id: uid }
-    )
+    await commitUpdate({ relevant_experience: sanitized }, { ...options, id: uid })
   }
 
   const setOtherExperience = async (
@@ -203,119 +172,39 @@ export function useProfessionalUpdate(
     options: UpdateOptions = {}
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
-
-    const normalized: OtherExperienceItem[] = items
-      .map((item) => {
-        const placeId = canonicalPlaceId(item.place_id) ?? ''
-        return { ...item, place_id: placeId }
-      })
-      .filter((item) => Boolean(item.place_id))
-
-    await commitUpdate(
-      {
-        other_experience: normalized,
-      },
-      { ...options, id: uid }
-    )
+    const sanitized = sanitizeExperienceItems<OtherExperienceItem>(items)
+    await commitUpdate({ other_experience: sanitized }, { ...options, id: uid })
   }
 
-  const updateSummary = async (
-    value: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
+  const updateJobTitle = async (value: string, options: UpdateOptions = {}) => {
     const uid = await resolveUid(options.id)
-    const next = (value ?? '').trim()
-    await commitUpdate({ summary: next }, { ...options, id: uid })
+    await commitUpdate({ job_title: (value ?? '').trim() }, { ...options, id: uid })
   }
 
-  const updateBio = async (
-    value: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
+  const updateSummary = async (value: string, options: UpdateOptions = {}) => {
     const uid = await resolveUid(options.id)
-    const next = (value ?? '').trim()
-    await commitUpdate({ bio: next }, { ...options, id: uid })
+    await commitUpdate({ summary: (value ?? '').trim() }, { ...options, id: uid })
   }
 
-  const updateImage = async (
-    value: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
+  const updateBio = async (value: string, options: UpdateOptions = {}) => {
     const uid = await resolveUid(options.id)
-    const next = (value ?? '').trim()
-    await commitUpdate({ image: next }, { ...options, id: uid })
+    await commitUpdate({ bio: (value ?? '').trim() }, { ...options, id: uid })
   }
 
-  const updatePositions = async (
-    csvOrList: string | string[],
-    options: UpdateOptions = {}
-  ): Promise<void> => {
+  const updateImage = async (value: string, options: UpdateOptions = {}) => {
+    const uid = await resolveUid(options.id)
+    await commitUpdate({ image: (value ?? '').trim() }, { ...options, id: uid })
+  }
+
+  const updatePositions = async (csvOrList: string | string[], options: UpdateOptions = {}) => {
     const uid = await resolveUid(options.id)
     const list = Array.isArray(csvOrList)
       ? csvOrList
-      : (csvOrList ?? '')
-          .split(',')
-          .map((x) => x.trim())
-          .filter(Boolean)
-    const unique = normalizeStringArray(list)
-    await commitUpdate({ positions: unique }, { ...options, id: uid })
+      : (csvOrList ?? '').split(',').map((x) => x.trim()).filter(Boolean)
+    await commitUpdate({ positions: normalizeStringArray(list) }, { ...options, id: uid })
   }
 
-  const updateJobTitle = async (
-    value: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const next = (value ?? '').trim()
-    await commitUpdate({ job_title: next }, { ...options, id: uid })
-  }
-
-  const updateSummary = async (
-    value: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const next = (value ?? '').trim()
-    await commitUpdate({ summary: next }, { ...options, id: uid })
-  }
-
-  const updateBio = async (
-    value: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const next = (value ?? '').trim()
-    await commitUpdate({ bio: next }, { ...options, id: uid })
-  }
-
-  const updateImage = async (
-    value: string,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const next = (value ?? '').trim()
-    await commitUpdate({ image: next }, { ...options, id: uid })
-  }
-
-  const updatePositions = async (
-    csvOrList: string | string[],
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    const list = Array.isArray(csvOrList)
-      ? csvOrList
-      : (csvOrList ?? '')
-          .split(',')
-          .map((x) => x.trim())
-          .filter(Boolean)
-    const unique = normalizeStringArray(list)
-    await commitUpdate({ positions: unique }, { ...options, id: uid })
-  }
-
-  const updateLanguages = async (
-    languages: LanguageProficiency[],
-    options: UpdateOptions = {}
-  ): Promise<void> => {
+  const updateLanguages = async (languages: LanguageProficiency[], options: UpdateOptions = {}) => {
     const uid = await resolveUid(options.id)
     const next = (languages ?? [])
       .map((item) => ({
@@ -326,40 +215,22 @@ export function useProfessionalUpdate(
     await commitUpdate({ languages: next }, { ...options, id: uid })
   }
 
-  const updateCertifications = async (
-    certifications: CertificationItem[],
-    options: UpdateOptions = {}
-  ): Promise<void> => {
+  const updateCertifications = async (certifications: CertificationItem[], options: UpdateOptions = {}) => {
     const uid = await resolveUid(options.id)
-    await commitUpdate(
-      { certifications: certifications ?? [] },
-      { ...options, id: uid }
-    )
+    await commitUpdate({ certifications: certifications ?? [] }, { ...options, id: uid })
   }
 
-  const updateEducation = async (
-    education: EducationItem[],
-    options: UpdateOptions = {}
-  ): Promise<void> => {
+  const updateEducation = async (education: EducationItem[], options: UpdateOptions = {}) => {
     const uid = await resolveUid(options.id)
     await commitUpdate({ education: education ?? [] }, { ...options, id: uid })
   }
 
-  const updateVolunteering = async (
-    volunteering: VolunteeringItem[],
-    options: UpdateOptions = {}
-  ): Promise<void> => {
+  const updateVolunteering = async (volunteering: VolunteeringItem[], options: UpdateOptions = {}) => {
     const uid = await resolveUid(options.id)
-    await commitUpdate(
-      { volunteering: volunteering ?? [] },
-      { ...options, id: uid }
-    )
+    await commitUpdate({ volunteering: volunteering ?? [] }, { ...options, id: uid })
   }
 
-  const updateProjects = async (
-    projects: ProjectItem[],
-    options: UpdateOptions = {}
-  ): Promise<void> => {
+  const updateProjects = async (projects: ProjectItem[], options: UpdateOptions = {}) => {
     const uid = await resolveUid(options.id)
     await commitUpdate({ projects: projects ?? [] }, { ...options, id: uid })
   }
