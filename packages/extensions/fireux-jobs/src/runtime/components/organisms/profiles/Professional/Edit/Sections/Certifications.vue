@@ -7,6 +7,7 @@
       :item-title="itemTitle"
       :item-date="itemDate"
       :item-subtitle="itemSubtitle"
+      :show-actions="true"
     >
       <template #edit="{ item, save, cancel }">
         <div class="space-y-2">
@@ -47,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CertificationItem } from '../../../../../../models/profiles/Professional/supporting';
+import type { CertificationItem } from '../../../../../../models/profiles/Professional/supporting'
 
 const props = defineProps<{
   items: CertificationItem[]

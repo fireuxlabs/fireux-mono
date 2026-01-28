@@ -6,6 +6,7 @@
       :update-function="onSave"
       :item-title="itemTitle"
       :item-date="itemDate"
+      :show-actions="true"
     >
       <template #edit="{ item, save, cancel }">
         <div class="space-y-2">

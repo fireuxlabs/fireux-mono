@@ -63,6 +63,7 @@
         :items="professional.relevant_experience || []"
         :onSave="handleRelevantExperience"
         :place-type="relevantPlaceType"
+        :place-collections="placeCollections"
       />
 
       <OrganismsProfilesProfessionalFieldsExperienceSection
@@ -86,25 +87,6 @@
         :items="education"
         :onSave="handleEducation"
       />
-
-      <UCard>
-        <template #header>
-          <div class="profile-edit__section-header">
-            <UIcon name="i-lucide-shield-check" />
-            Compliance & certifications
-          </div>
-        </template>
-
-        <div class="profile-edit__stack">
-          <MoleculesFormsFirestoreArrayOfStrings
-            label="Health Certifications"
-            :firebase-value="healthCertifications"
-            item-placeholder="Certification"
-            new-item-placeholder="Add certification"
-            :update-function="handleHealthCertifications"
-          />
-        </div>
-      </UCard>
 
       <OrganismsProfilesProfessionalEditSectionsVolunteering
         :items="volunteering"
@@ -149,7 +131,6 @@ const {
   updatePositions,
   setRelevantExperience,
   setOtherExperience,
-  updateHealthCertifications,
   updateLanguages,
   updateCertifications,
   updateEducation,
@@ -188,9 +169,6 @@ const certifications = computed(() => professional.value?.certifications ?? [])
 const education = computed(() => professional.value?.education ?? [])
 const volunteering = computed(() => professional.value?.volunteering ?? [])
 const projects = computed(() => professional.value?.projects ?? [])
-const healthCertifications = computed(
-  () => professional.value?.health_certifications ?? []
-)
 
 const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
   try {
@@ -241,13 +219,6 @@ const handlePositions = async (value: string[]) =>
     () => updatePositions(value, { id: professional.value?.id ?? null }),
     'Positions updated',
     'Failed to update positions'
-  )
-
-const handleHealthCertifications = async (value: string[]) =>
-  wrap(
-    () => updateHealthCertifications(value, { id: professional.value?.id ?? null }),
-    'Health certifications updated',
-    'Failed to update health certifications'
   )
 
 const handleLanguages = async (value: LanguageProficiency[]) =>

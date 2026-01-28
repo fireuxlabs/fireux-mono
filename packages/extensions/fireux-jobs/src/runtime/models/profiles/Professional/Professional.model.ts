@@ -35,7 +35,6 @@ export const ProfessionalCore = {
   professional_work_areas: [] as any[],
 
   // Existing deeper professional fields (keep — real data)
-  health_certifications: [] as string[],
   relevant_experience: [] as RelevantExperienceItem[],
   other_experience: [] as OtherExperienceItem[],
 

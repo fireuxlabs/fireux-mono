@@ -374,17 +374,6 @@ export function useProfessionalUpdate(
     )
   }
 
-  const updateHealthCertifications = async (
-    healthCertifications: string[],
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    await commitUpdate(
-      { health_certifications: normalizeStringArray(healthCertifications) },
-      { ...options, id: uid }
-    )
-  }
-
   const updateLanguages = async (
     languages: LanguageProficiency[],
     options: UpdateOptions = {}
@@ -455,7 +444,6 @@ export function useProfessionalUpdate(
     updateBioLong,
     updateSpecialties,
     updateLocations,
-    updateHealthCertifications,
     updateLanguages,
     updateCertifications,
     updateEducation,

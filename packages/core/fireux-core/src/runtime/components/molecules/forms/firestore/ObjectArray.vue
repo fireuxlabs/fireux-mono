@@ -9,6 +9,70 @@
     </div>
 
     <div>
+      <div v-if="editingIndex === items.length">
+        <UCard>
+          <div class="relative group">
+            <div v-if="!hasEditSlot" class="mt-3 flex gap-2">
+              <UButton
+                size="xs"
+                variant="solid"
+                icon="i-lucide-check"
+                @click="saveItemEditing"
+              >
+                Save
+              </UButton>
+              <UButton
+                size="xs"
+                variant="soft"
+                icon="i-lucide-x"
+                @click="cancelItemEditing"
+              >
+                Cancel
+              </UButton>
+            </div>
+            <slot
+              name="edit"
+              :item="draftItem"
+              :index="editingIndex"
+              :remove="cancelItemEditing"
+              :mode="'edit'"
+              :is-editing="true"
+              :save="saveItemEditing"
+              :cancel="cancelItemEditing"
+            >
+              <div
+                class="p-4 border border-dashed border-primary-300 rounded bg-primary-50 mt-2"
+              >
+                Default create/edit rendering for index {{ editingIndex }}
+              </div>
+            </slot>
+
+            <div
+              v-if="!hasEditSlot"
+              class="absolute top-2 left-2 z-10 flex gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition"
+            >
+              <UButton
+                size="xs"
+                variant="solid"
+                icon="i-lucide-check"
+                aria-label="Save new item"
+                @click="saveItemEditing"
+              >
+                Save
+              </UButton>
+              <UButton
+                size="xs"
+                variant="soft"
+                icon="i-lucide-x"
+                aria-label="Cancel create"
+                @click="cancelItemEditing"
+              >
+                Cancel
+              </UButton>
+            </div>
+          </div>
+        </UCard>
+      </div>
       <div v-if="!items || items.length === 0">{{ emptyText }}</div>
       <ul v-else class="object-array__list">
         <li v-for="(item, index) in items" :key="index">
@@ -100,67 +164,6 @@
       </ul>
     </div>
 
-    <div v-if="editingIndex === items.length">
-      <UCard>
-        <div class="relative group">
-          <div class="mt-3 flex gap-2">
-            <UButton
-              size="xs"
-              variant="solid"
-              icon="i-lucide-check"
-              @click="saveItemEditing"
-            >
-              Save
-            </UButton>
-            <UButton
-              size="xs"
-              variant="soft"
-              icon="i-lucide-x"
-              @click="cancelItemEditing"
-            >
-              Cancel
-            </UButton>
-          </div>
-          <slot
-            name="edit"
-            :item="draftItem"
-            :index="editingIndex"
-            :remove="cancelItemEditing"
-            :mode="'edit'"
-            :is-editing="true"
-          >
-            <div
-              class="p-4 border border-dashed border-primary-300 rounded bg-primary-50 mt-2"
-            >
-              Default create/edit rendering for index {{ editingIndex }}
-            </div>
-          </slot>
-
-          <div
-            class="absolute top-2 left-2 z-10 flex gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition"
-          >
-            <UButton
-              size="xs"
-              variant="solid"
-              icon="i-lucide-check"
-              aria-label="Save new item"
-              @click="saveItemEditing"
-            >
-              Save
-            </UButton>
-            <UButton
-              size="xs"
-              variant="soft"
-              icon="i-lucide-x"
-              aria-label="Cancel create"
-              @click="cancelItemEditing"
-            >
-              Cancel
-            </UButton>
-          </div>
-        </div>
-      </UCard>
-    </div>
   </div>
 </template>
 
@@ -185,6 +188,7 @@ const editingIndex = ref<number | null>(null)
 const draftItem = ref<any | null>(null)
 const emptyText = computed(() => props.emptyText ?? 'No items yet.')
 const hasDisplaySlot = computed(() => Boolean(slots.display))
+const hasEditSlot = computed(() => Boolean(slots.edit))
 const showActions = computed(() => props.showActions ?? !hasDisplaySlot.value)
 
 const getItemTitle = (item: any, index: number) =>

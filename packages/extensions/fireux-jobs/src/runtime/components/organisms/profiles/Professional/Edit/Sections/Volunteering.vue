@@ -7,6 +7,7 @@
       :item-title="itemTitle"
       :item-date="itemDate"
       :item-subtitle="itemSubtitle"
+      :show-actions="true"
     >
       <template #edit="{ item, save, cancel }">
         <div class="space-y-2">
