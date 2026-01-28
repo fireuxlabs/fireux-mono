@@ -1,9 +1,7 @@
 import { arrayRemove, arrayUnion, doc, getDoc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { useFirestore } from 'vuefire'
@@ -18,80 +16,61 @@ import type {
   VolunteeringItem,
 } from '../../../../../../models/profiles/Professional/supporting'
 
-const COLLECTION = 'professionals'
 type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
-const pruneUndefined = <T extends Record<string, any>>(payload: Partial<T>) => {
-  const entries = Object.entries(payload).filter(([, value]) => value !== undefined)
-  return Object.fromEntries(entries) as Partial<T>
-}
+const normalizePlaceId = (value?: unknown) => (typeof value === 'string' ? value.trim() : '')
 
-const normalizeStringArray = (items: string[] = []) =>
-  Array.from(
-    new Set(
-      items
-        .map((item) => (item ?? '').trim())
-        .filter((item) => item.length > 0)
-    )
-  )
-
-export function useProfessionalUpdate(profile?: ProfileRefs) {
+export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | null) {
+  const base = useProfileUpdateBase<ProfessionalCore>('professionals', profile)
   const { updateDocument } = useFirestoreUpdate()
   const { ensurePlaceExists } = usePlaceSave()
   const db = useFirestore()
-  const { appId, role } = useFireUXConfig()
-  const isTenant = role === 'tenant' && Boolean(appId)
+  const updateCoreProfile = base.updateCoreProfile
+  const updateAppProfile = base.updateAppProfile
+  const commitUpdate = base.commitUpdate
 
-  const resolveUid = async (explicit?: string | null): Promise<string> => {
-    const trimmed = explicit?.trim()
-    if (trimmed) return trimmed
-
-    const fromRefs =
-      profile?.coreProfile?.value?.id ?? profile?.appProfile?.value?.id ?? null
-    if (fromRefs?.trim()) return fromRefs.trim()
-
-    const user = await useRequireUser()
-    if (!user?.uid) throw new Error('[useProfessionalUpdate] Unable to resolve professional id')
-    return user.uid
+  const updateStringField = async <K extends keyof ProfessionalCore>(
+    key: K,
+    value: string,
+    options: UpdateOptions = {}
+  ) => {
+    await commitUpdate(
+      { [key]: base.cleanString(value) ?? '' } as unknown as Partial<ProfessionalCore>,
+      options
+    )
   }
 
-  const updateCoreProfile = async (
-    patch: Partial<ProfessionalCore>,
+  const updateStringArrayField = async <K extends keyof ProfessionalCore>(
+    key: K,
+    csvOrList: string | string[],
     options: UpdateOptions = {}
-  ): Promise<void> => {
-    const uid = await resolveUid(options.id)
-    await updateDocument<ProfessionalCore>(COLLECTION, uid, pruneUndefined(patch))
+  ) => {
+    await commitUpdate(
+      { [key]: base.toStringArray(csvOrList) } as unknown as Partial<ProfessionalCore>,
+      options
+    )
   }
 
-  const updateAppProfile = async (
-    patch: Partial<ProfessionalCore>,
+  const updateTypedArrayField = async <K extends keyof ProfessionalCore, T>(
+    key: K,
+    items: T[],
     options: UpdateOptions = {}
-  ): Promise<void> => {
-    if (!isTenant || !appId) {
-      throw new Error('[useProfessionalUpdate] Tenant context required for app profile updates')
-    }
-    const uid = await resolveUid(options.id)
-    await updateDocument<ProfessionalCore>(`apps/${appId}/${COLLECTION}`, uid, pruneUndefined(patch))
-  }
-
-  const commitUpdate = async (
-    patch: Partial<ProfessionalCore>,
-    options: UpdateOptions = {}
-  ): Promise<void> => {
-    const scope = options.scope ?? 'core'
-    if (scope === 'app') return updateAppProfile(patch, options)
-    return updateCoreProfile(patch, options)
+  ) => {
+    await commitUpdate(
+      { [key]: items ?? [] } as unknown as Partial<ProfessionalCore>,
+      options
+    )
   }
 
   const sanitizeExperienceItems = <T extends { place_id: string; ongoing?: boolean }>(items: T[]) => {
     const sanitized: T[] = []
     for (const item of items ?? []) {
-      const placeId = canonicalPlaceId(item?.place_id ?? undefined)
+      const placeId = normalizePlaceId((item as any)?.place_id)
       if (!placeId) continue
       sanitized.push({
         ...item,
         place_id: placeId,
-        ongoing: item?.ongoing === true,
+        ongoing: (item as any)?.ongoing === true,
       })
     }
     return sanitized
@@ -101,9 +80,9 @@ export function useProfessionalUpdate(profile?: ProfileRefs) {
     items: RelevantExperienceItem[] = [],
     options: UpdateOptions = {}
   ): Promise<void> => {
-    const uid = await resolveUid(options.id)
+    const uid = await base.resolveUid(options.id)
 
-    const professionalRef = doc(db, COLLECTION, uid)
+    const professionalRef = doc(db, 'professionals', uid)
     const snapshot = await getDoc(professionalRef)
 
     const previousItems = Array.isArray(snapshot.data()?.relevant_experience)
@@ -111,9 +90,7 @@ export function useProfessionalUpdate(profile?: ProfileRefs) {
       : []
 
     const previousPlaceIds = new Set(
-      previousItems
-        .map((item) => canonicalPlaceId(item?.place_id ?? undefined))
-        .filter((id): id is string => typeof id === 'string' && id.length > 0)
+      previousItems.map((item) => normalizePlaceId((item as any)?.place_id)).filter(Boolean)
     )
 
     const sanitized = sanitizeExperienceItems<RelevantExperienceItem>(items)
@@ -163,77 +140,54 @@ export function useProfessionalUpdate(profile?: ProfileRefs) {
     }
 
     await Promise.all(placeTasks)
-
-    await commitUpdate({ relevant_experience: sanitized }, { ...options, id: uid })
+    await commitUpdate({ relevant_experience: sanitized }, options)
   }
 
   const setOtherExperience = async (
     items: OtherExperienceItem[] = [],
     options: UpdateOptions = {}
   ): Promise<void> => {
-    const uid = await resolveUid(options.id)
     const sanitized = sanitizeExperienceItems<OtherExperienceItem>(items)
-    await commitUpdate({ other_experience: sanitized }, { ...options, id: uid })
+    await commitUpdate({ other_experience: sanitized }, options)
   }
 
-  const updateJobTitle = async (value: string, options: UpdateOptions = {}) => {
-    const uid = await resolveUid(options.id)
-    await commitUpdate({ job_title: (value ?? '').trim() }, { ...options, id: uid })
-  }
+  const updateJobTitle = (value: string, options: UpdateOptions = {}) =>
+    updateStringField('job_title', value, options)
 
-  const updateSummary = async (value: string, options: UpdateOptions = {}) => {
-    const uid = await resolveUid(options.id)
-    await commitUpdate({ summary: (value ?? '').trim() }, { ...options, id: uid })
-  }
+  const updateSummary = (value: string, options: UpdateOptions = {}) =>
+    updateStringField('summary', value, options)
 
-  const updateBio = async (value: string, options: UpdateOptions = {}) => {
-    const uid = await resolveUid(options.id)
-    await commitUpdate({ bio: (value ?? '').trim() }, { ...options, id: uid })
-  }
+  const updateBio = (value: string, options: UpdateOptions = {}) =>
+    updateStringField('bio', value, options)
 
-  const updateImage = async (value: string, options: UpdateOptions = {}) => {
-    const uid = await resolveUid(options.id)
-    await commitUpdate({ image: (value ?? '').trim() }, { ...options, id: uid })
-  }
+  const updateImage = (value: string, options: UpdateOptions = {}) =>
+    updateStringField('image', value, options)
 
-  const updatePositions = async (csvOrList: string | string[], options: UpdateOptions = {}) => {
-    const uid = await resolveUid(options.id)
-    const list = Array.isArray(csvOrList)
-      ? csvOrList
-      : (csvOrList ?? '').split(',').map((x) => x.trim()).filter(Boolean)
-    await commitUpdate({ positions: normalizeStringArray(list) }, { ...options, id: uid })
-  }
+  const updatePositions = (value: string | string[], options: UpdateOptions = {}) =>
+    updateStringArrayField('positions', value, options)
 
   const updateLanguages = async (languages: LanguageProficiency[], options: UpdateOptions = {}) => {
-    const uid = await resolveUid(options.id)
     const next = (languages ?? [])
       .map((item) => ({
-        language: (item?.language ?? '').trim(),
-        proficiency: (item?.proficiency ?? '').trim(),
+        language: base.cleanString(item?.language),
+        proficiency: base.cleanString(item?.proficiency),
       }))
-      .filter((item) => item.language.length > 0)
-    await commitUpdate({ languages: next }, { ...options, id: uid })
+      .filter((item) => (item.language ?? '').length > 0)
+
+    await updateTypedArrayField('languages', next, options)
   }
 
-  const updateCertifications = async (certifications: CertificationItem[], options: UpdateOptions = {}) => {
-    const uid = await resolveUid(options.id)
-    await commitUpdate({ certifications: certifications ?? [] }, { ...options, id: uid })
-  }
+  const updateCertifications = (items: CertificationItem[], options: UpdateOptions = {}) =>
+    updateTypedArrayField('certifications', items ?? [], options)
 
-  const updateEducation = async (education: EducationItem[], options: UpdateOptions = {}) => {
-    const uid = await resolveUid(options.id)
-    await commitUpdate({ education: education ?? [] }, { ...options, id: uid })
-  }
+  const updateEducation = (items: EducationItem[], options: UpdateOptions = {}) =>
+    updateTypedArrayField('education', items ?? [], options)
 
-  const updateVolunteering = async (volunteering: VolunteeringItem[], options: UpdateOptions = {}) => {
-    const uid = await resolveUid(options.id)
-    await commitUpdate({ volunteering: volunteering ?? [] }, { ...options, id: uid })
-  }
+  const updateVolunteering = (items: VolunteeringItem[], options: UpdateOptions = {}) =>
+    updateTypedArrayField('volunteering', items ?? [], options)
 
-  const updateProjects = async (projects: ProjectItem[], options: UpdateOptions = {}) => {
-    const uid = await resolveUid(options.id)
-    await commitUpdate({ projects: projects ?? [] }, { ...options, id: uid })
-  }
+  const updateProjects = (items: ProjectItem[], options: UpdateOptions = {}) =>
+    updateTypedArrayField('projects', items ?? [], options)
 
   return {
     commitUpdate,

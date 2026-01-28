@@ -23,8 +23,8 @@ export const Place = {
 
 	name: '' as string,
 	formatted_address: '' as string,
-	lat: 0,
-	lng: 0,
+	lat: 0 as number,
+	lng: 0 as number,
 
 	place_image: '' as string,
 	image_shade: 'neutral' as PlaceImageShade,

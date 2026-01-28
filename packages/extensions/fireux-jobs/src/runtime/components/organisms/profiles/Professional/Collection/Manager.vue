@@ -77,7 +77,7 @@ const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<ProfessionalEntry, ReturnType<typeof makeCard>>({
     items: collection,
     searchText: (entry) => searchTextFor(entry),
-    makeCard: (entry) => makeCard(entry as ProfessionalCore, (entry as any)?.user ?? null),
+    makeCard: (entry) => makeCard(entry as ProfessionalCore),
   })
 
 const totalCount = computed(() => collection.value.length)

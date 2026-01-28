@@ -2,10 +2,11 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import type { CoreProfileBase } from 'fireux-core/runtime/models/core/profile.model'
 
 type Scope = 'core' | 'app'
 
-export function useProfileUpdateBase<TCore extends { id: string }>(
+export function useProfileUpdateBase<TCore extends CoreProfileBase>(
   collectionName: string,
   profile?: ProfileRefs<TCore> | null
 ) {

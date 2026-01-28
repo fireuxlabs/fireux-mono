@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
 
 const props = withDefaults(
