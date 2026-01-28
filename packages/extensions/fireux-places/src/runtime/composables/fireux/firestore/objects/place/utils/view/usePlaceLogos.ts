@@ -210,8 +210,11 @@ function defaultShouldHydrate(
 function toLogoCard(place: PlaceLogoTarget): PlaceCard.Card {
   const id = (place as any).id ?? (place as any).place_id ?? ''
   const name = (place as any).name ?? ''
+  const shortName = (place as any).shortName ?? (place as any).short_name ?? ''
   const formattedAddress =
     (place as any).formattedAddress ?? (place as any).formatted_address ?? ''
+  const shortAddress =
+    (place as any).shortAddress ?? (place as any).short_address ?? ''
   const imageUrl = (place as any).imageUrl ?? (place as any).place_image ?? ''
 
   return {
@@ -224,7 +227,9 @@ function toLogoCard(place: PlaceLogoTarget): PlaceCard.Card {
     badges: (place as any).badges ?? [],
 
     name,
+    shortName,
     formattedAddress,
+    shortAddress,
 
     imageUrl,
     source: (place as any).source,

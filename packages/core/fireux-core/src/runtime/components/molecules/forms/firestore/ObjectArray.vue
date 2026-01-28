@@ -74,15 +74,15 @@
         </UCard>
       </div>
       <div v-if="!items || items.length === 0">{{ emptyText }}</div>
-      <ul v-else class="object-array__list">
+      <ul v-else class="object-array__list form-stack-sm">
         <li v-for="(item, index) in items" :key="index">
           <UCard>
             <div class="relative group">
-              <div class="object-array__item-body space-y-2">
+              <div class="object-array__item-body form-stack-sm">
                 <div v-if="editingIndex !== index">
                   <div
                     v-if="getItemTitle(item, index) || getItemDate(item, index)"
-                    class="object-array__item-heading"
+                    class="object-array__item-heading form-item-heading"
                   >
                     <h3 v-if="getItemTitle(item, index)">{{ getItemTitle(item, index) }}</h3>
                     <UBadge
@@ -105,11 +105,11 @@
                     :remove="() => remove(index)"
                   />
                   <div v-else>
-                    <div v-if="getItemSubtitle(item, index)" class="object-array__item-subtitle">
+                    <div v-if="getItemSubtitle(item, index)" class="object-array__item-subtitle form-text">
                       {{ getItemSubtitle(item, index) }}
                     </div>
                   </div>
-                  <div v-if="showActions" class="object-array__item-actions">
+                  <div v-if="showActions" class="object-array__item-actions form-item-actions">
                     <UButton
                       size="xs"
                       variant="soft"
@@ -273,36 +273,8 @@ defineExpose({
 }
 
 
-.object-array__list {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.object-array__item-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  z-index: 2;
-}
-
-.object-array__item-heading {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
-  justify-content: space-between;
-  padding-right: 2.5rem;
-}
-
-.object-array__item-heading h3 {
-  margin: 0;
-}
 
 .object-array__item-subtitle {
-  font-size: 0.75rem;
   color: var(--ui-text-muted, var(--ui-text));
 }
 

@@ -46,8 +46,8 @@
 							<div class="mt-2">
 								<PlaceCardsPill
 									:avatar-url="place.place_image || ''"
-									:title="place.name || 'Place'"
-									:subtitle="place.formatted_address || ''"
+									:title="place.short_name || place.name || 'Place'"
+									:subtitle="place.short_address || place.formatted_address || ''"
 									:badges="[]"
 									:show-badges="false"
 								/>
@@ -83,6 +83,16 @@
 						placeholder="e.g. Yellow Velo"
 						:maxlength="120"
 						:update-function="handleManualName"
+					/>
+				</UCard>
+
+				<UCard>
+					<MoleculesFormsFirestoreSimpleField
+						label="Short name"
+						:firebase-value="place.short_name"
+						placeholder="Optional (e.g. Yellow Velo)"
+						:maxlength="80"
+						:update-function="handleShortName"
 					/>
 				</UCard>
 
@@ -299,6 +309,20 @@ async function handleManualName(value: string) {
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'
 		toast.error(`Failed to update name: ${msg}`)
+		throw error
+	}
+}
+
+async function handleShortName(value: string) {
+	if (!placeId.value) return
+	try {
+		await updateDocument<Place>('places', placeId.value, {
+			short_name: sanitize(value),
+		})
+		toast.success('Short name updated')
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : 'Please try again.'
+		toast.error(`Failed to update short name: ${msg}`)
 		throw error
 	}
 }

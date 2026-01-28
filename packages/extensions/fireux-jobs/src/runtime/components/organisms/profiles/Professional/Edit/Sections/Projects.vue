@@ -11,10 +11,10 @@
     >
       <template #edit="{ item, save, cancel }">
         <div class="space-y-2">
-          <UInput v-model="item.name" placeholder="Project name" />
+          <UInput v-model="item.name" placeholder="Project" />
           <UInput v-model="item.role" placeholder="Role" />
-          <UInput v-model="item.from_year" placeholder="Start year" />
-          <UInput v-model="item.to_year" placeholder="End year" />
+          <UInput v-model="item.from_year" placeholder="From year" />
+          <UInput v-model="item.to_year" placeholder="To year" />
           <UCheckbox v-model="item.ongoing" label="Ongoing" />
           <UTextarea v-model="item.responsibilities" :rows="3" placeholder="Responsibilities" />
           <div class="flex gap-2">

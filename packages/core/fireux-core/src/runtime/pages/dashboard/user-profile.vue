@@ -6,9 +6,9 @@
     </template>
 
     <template #body>
-      <div class="panels-stack">
+      <div class="dashboard-profile">
         <!-- Header pills -->
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="dashboard-profile__pills">
           <OrganismsAppCardsPill
             v-if="appCard"
             :to="appCard.to"

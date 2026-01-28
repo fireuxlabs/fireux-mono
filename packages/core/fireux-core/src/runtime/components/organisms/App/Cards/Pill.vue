@@ -4,21 +4,33 @@
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
     @click="onClick"
+    class="pill"
   >
-    <SharedPill
-      :avatar="thumbnailUrl || null"
-      :title="displayName"
-      :subtitle="showSubtitle ? (ecosystem || null) : null"
-      :badges="badges"
-      :show-subtitle="showSubtitle"
-      :show-badges="showBadges"
-    />
+    <UUser
+      :name="displayName"
+      :description="showSubtitle ? (ecosystem || undefined) : undefined"
+      :avatar="thumbnailUrl ? { src: thumbnailUrl || undefined, alt: displayName || '' } : undefined"
+      size="sm"
+    >
+      <template #default>
+        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
+      </template>
+    </UUser>
   </component>
 </template>
 
 <script setup lang="ts">
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
-import SharedPill from '../../../shared/Pill.vue';
 
 defineOptions({ inheritAttrs: false })
 

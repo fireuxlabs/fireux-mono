@@ -17,8 +17,8 @@
     </template>
 
     <template #body>
-      <div class="panels-stack">
-        <div class="flex flex-wrap items-center gap-2">
+      <div class="dashboard-profile">
+        <div class="dashboard-profile__pills">
           <OrganismsProfilesSupplierCardsPill
             v-if="supplierCard"
             v-bind="supplierCard"
@@ -50,14 +50,14 @@
         </UPageCard>
 
         <ClientOnly v-else>
-          <div v-if="view === 'profile'" class="space-y-6">
+          <div v-if="view === 'profile'" class="dashboard-profile__section">
             <OrganismsProfilesSupplierCardsProfile
               v-if="supplierCard"
               :card="supplierCard"
             />
           </div>
 
-          <div v-else class="space-y-6">
+          <div v-else class="dashboard-profile__section">
             <OrganismsProfilesSupplierEditCore
               :supplier="resolvedCoreProfile"
             />

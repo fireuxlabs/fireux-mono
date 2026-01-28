@@ -33,6 +33,8 @@ export function useKitchenFetch() {
         ...overlay,
         id: overlay.id,
         name: place?.name || '',
+        short_name: place?.short_name || '',
+        short_address: place?.short_address || '',
         formatted_address: place?.formatted_address || '',
         lat: place?.lat ?? 0,
         lng: place?.lng ?? 0,
@@ -54,6 +56,8 @@ export function useKitchenFetch() {
       if (!kitchenData && !placeData) return undefined
 
       const name = placeData?.name || ''
+      const short_address = placeData?.short_address || ''
+      const short_name = placeData?.short_name || ''
       const formatted_address = placeData?.formatted_address || ''
       const image_shade = placeData?.image_shade || 'neutral'
 
@@ -62,6 +66,8 @@ export function useKitchenFetch() {
         ...kitchenData,
         id,
         name,
+        short_name,
+        short_address,
         formatted_address,
         place_image: placeData?.place_image || '',
         image_shade,

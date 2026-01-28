@@ -1,4 +1,5 @@
 import type { GooglePlace, PlaceUpsertInput } from '../../../../../../../models/objects/place.model'
+import { toShortAddress } from '../../utils/view/formatPlaceAddress'
 import type { PlaceCard } from '../../utils/view/usePlacesInterface'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
@@ -141,7 +142,9 @@ export async function fetchGoogle(
           badges: [],
 
           name: main || desc || 'Unknown place',
+          shortName: '',
           formattedAddress,
+          shortAddress: toShortAddress(formattedAddress),
 
           imageUrl: '',
           source: 'google',
@@ -197,7 +200,9 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
   return {
     id: g.id,
     name: g.name,
+    short_name: '',
     formatted_address: g.formatted_address,
+    short_address: toShortAddress(g.formatted_address),
     lat: g.lat,
     lng: g.lng,
     source: 'fireux',
@@ -223,8 +228,12 @@ export function mapDetailsToGooglePlace(
   return {
     id,
     name: result?.name ?? 'Unknown place',
+    short_name: '',
     formatted_address:
       result?.formatted_address ?? result?.vicinity ?? 'Unknown address',
+    short_address: toShortAddress(
+      result?.formatted_address ?? result?.vicinity ?? 'Unknown address'
+    ),
     lat: Number(location?.lat ?? 0),
     lng: Number(location?.lng ?? 0),
     source: 'google',

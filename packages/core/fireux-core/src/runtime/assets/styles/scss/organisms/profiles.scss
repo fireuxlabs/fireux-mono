@@ -1,1 +1,22 @@
+.dashboard-profile {
+	display: grid;
+	gap: var(--space-6);
+	min-width: 0;
+}
+
+.dashboard-profile > * {
+	min-width: 0;
+}
+
+.dashboard-profile__pills {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+.dashboard-profile__section {
+	display: grid;
+	gap: var(--space-6);
+}
 

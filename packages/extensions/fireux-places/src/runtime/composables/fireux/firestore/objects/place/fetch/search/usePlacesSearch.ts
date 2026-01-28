@@ -127,7 +127,9 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
     selected.value = {
       id,
       name: cell.name,
+      short_name: (cell as any).shortName || (cell as any).short_name || '',
       formatted_address: cell.formattedAddress || '',
+      short_address: cell.shortAddress || '',
       ...(typeof lat === 'number' ? { lat } : {}),
       ...(typeof lng === 'number' ? { lng } : {}),
       source: cell.source as any,

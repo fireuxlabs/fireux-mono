@@ -1,11 +1,12 @@
 <template>
-  <UCard>
+  <UCard class="profile-card">
     <template #header>
-      <div>
+      <div class="profile-card__header">
         <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
-        <div>{{ card.displayName || 'Professional' }}</div>
-        <div v-if="card.tagline">{{ card.tagline }}</div>
-        <div v-if="badges.length">
+        <div class="profile-card__identity">
+          <div class="profile-card__name">{{ card.displayName || 'Professional' }}</div>
+          <div v-if="card.tagline" class="profile-card__tagline">{{ card.tagline }}</div>
+          <div v-if="badges.length" class="profile-card__badges">
           <UBadge
             v-for="badge in badges"
             :key="badge"
@@ -16,11 +17,12 @@
             {{ badge }}
           </UBadge>
         </div>
+        </div>
       </div>
     </template>
 
-    <div>
-      <h3>Specialties</h3>
+    <div class="profile-card__section">
+      <h3 class="profile-card__section-title">Specialties</h3>
       <div v-if="specialties.length">
         <UBadge
           v-for="specialty in specialties"
@@ -32,7 +34,7 @@
           {{ specialty }}
         </UBadge>
       </div>
-      <p v-else>No specialties listed.</p>
+      <p v-else class="profile-card__empty form-text">No specialties listed.</p>
     </div>
 
     <ClientOnly>
@@ -46,13 +48,13 @@
         <template #body="{ item }">
           <div v-if="item.value === 'bio_short'">
             <div v-if="prop">{{ prop }}</div>
-            <p v-if="bioShort">{{ bioShort }}</p>
-            <p v-else>No bio short listed.</p>
+            <p v-if="bioShort" class="form-text form-text-muted">{{ bioShort }}</p>
+            <p v-else class="form-text form-text-muted">No bio short listed.</p>
           </div>
 
           <div v-else-if="item.value === 'bio_long'">
-            <p v-if="bioLong">{{ bioLong }}</p>
-            <p v-else>No bio long listed.</p>
+            <p v-if="bioLong" class="form-text form-text-muted">{{ bioLong }}</p>
+            <p v-else class="form-text form-text-muted">No bio long listed.</p>
           </div>
 
           <div v-else-if="item.value === 'relevant_experience'">
@@ -71,7 +73,9 @@
                   />
                   <div v-else>Location unavailable</div>
                 </div>
-                <p v-if="entry.item.responsibilities">{{ entry.item.responsibilities }}</p>
+                <p v-if="entry.item.responsibilities" class="form-text form-text-muted">
+                  {{ entry.item.responsibilities }}
+                </p>
               </div>
 
               <div
@@ -89,7 +93,9 @@
                     :show-subtitle="entry.showSubtitle"
                   />
                 </div>
-                <p v-if="entry.item.responsibilities">{{ entry.item.responsibilities }}</p>
+                <p v-if="entry.item.responsibilities" class="form-text form-text-muted">
+                  {{ entry.item.responsibilities }}
+                </p>
               </div>
             </div>
             <p v-else>No experience listed.</p>
@@ -154,7 +160,9 @@
               <div v-for="entry in volunteering" :key="`${entry.organization}-${entry.role}`">
                 <div>{{ entry.organization }}</div>
                 <div>{{ entry.role }} · {{ formatRange(entry.from_year, entry.to_year, entry.ongoing) }}</div>
-                <p v-if="entry.responsibilities">{{ entry.responsibilities }}</p>
+                <p v-if="entry.responsibilities" class="form-text form-text-muted">
+                  {{ entry.responsibilities }}
+                </p>
               </div>
             </div>
             <p v-else>No volunteering listed.</p>
@@ -165,7 +173,9 @@
               <div v-for="project in projects" :key="`${project.name}-${project.role}`">
                 <div>{{ project.name }}</div>
                 <div>{{ project.role }} · {{ formatRange(project.from_year, project.to_year, project.ongoing) }}</div>
-                <p v-if="project.responsibilities">{{ project.responsibilities }}</p>
+                <p v-if="project.responsibilities" class="form-text form-text-muted">
+                  {{ project.responsibilities }}
+                </p>
               </div>
             </div>
             <p v-else>No projects listed.</p>
@@ -190,7 +200,6 @@
         <li>Relevant Experience: {{ relevantExperience.length }}</li>
         <li>Other Experience: {{ otherExperience.length }}</li>
         <li>Tags: {{ tags.length }}</li>
-        <li>Health Certifications: {{ healthCertifications.length }}</li>
         <li>Specialties: {{ specialties.length }}</li>
         <li>Languages: {{ languages.length }}</li>
         <li>Certifications: {{ certifications.length }}</li>

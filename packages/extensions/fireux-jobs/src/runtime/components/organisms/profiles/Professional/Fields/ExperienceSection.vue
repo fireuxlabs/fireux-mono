@@ -8,107 +8,18 @@
     :show-actions="true"
   >
     <template #display="{ item }">
-        <div class="space-y-2">
-            <div class="space-y-1">
-              <div class="flex flex-wrap items-center gap-2">
-                <PlaceCardsPill
-                  v-if="resolvePlaceCard(item)"
-                  v-bind="resolvePlaceCard(item)"
-                  :show-badges="false"
-                  :link="false"
-                  class="max-w-full"
-                />
-                <UBadge
-                  v-else
-                  variant="soft"
-                  color="neutral"
-                  size="xs"
-                  class="gap-1"
-                >
-                  <UIcon name="i-lucide-map-pin" class="h-3.5 w-3.5" />
-                  <span>{{ formatPlace(item) }}</span>
-                </UBadge>
-              </div>
-            </div>
-          <p v-if="item.responsibilities" class="text-sm text-gray-600">
-            {{ item.responsibilities }}
-          </p>
-        </div>
-      </template>
-
-    <template #edit="{ item, save, cancel }">
       <div class="space-y-2">
-        <OrganismsEntitiesPlaceSearchSection
-          v-if="!item.place_id"
-          :type="resolvedPlaceType"
-          placeholder="Search places"
-          @confirmed="onApplyPlaceConfirmed($event, item)"
+        <PlaceCardsPill
+          v-if="resolvePlaceCard(item)"
+          v-bind="resolvePlaceCard(item)"
+          :show-badges="false"
+          :link="false"
+          class="max-w-full"
         />
-        <div v-else class="flex flex-wrap items-center gap-2">
-          <PlaceCardsPill
-            v-if="resolvePlaceCard(item)"
-            v-bind="resolvePlaceCard(item)"
-            :show-badges="false"
-            :link="false"
-            class="max-w-full"
-          />
-          <UBadge
-            v-else
-            variant="soft"
-            color="neutral"
-            size="xs"
-            class="gap-1"
-          >
-            <UIcon name="i-lucide-map-pin" class="h-3.5 w-3.5" />
-            <span>{{ formatPlace(item) }}</span>
-          </UBadge>
-        </div>
-        <URadioGroup
-          v-if="!item.place_id && collectionOptions.length > 1"
-          v-model="selectedCollection"
-          :items="collectionOptions"
-        />
-        <p v-if="!hasPlace(item)" class="text-xs text-dimmed">
-          Select a place before saving.
+        <span v-else class="text-sm text-dimmed">{{ formatPlace(item) }}</span>
+        <p v-if="item.responsibilities" class="form-text form-text-muted">
+          {{ item.responsibilities }}
         </p>
-        <UInput v-model="item.role" placeholder="Role" />
-        <div class="space-y-2">
-          <p class="text-xs text-dimmed">Dates</p>
-          <UPopover>
-            <UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-              {{ formatRangeLabel(item) }}
-            </UButton>
-
-            <template #content>
-              <UCalendar
-                :model-value="rangeForItem(item)"
-                range
-                :number-of-months="2"
-                class="p-2"
-                @update:modelValue="applyRange(item, $event)"
-              />
-            </template>
-          </UPopover>
-        </div>
-        <UCheckbox
-          v-model="item.ongoing"
-          label="Ongoing"
-          @update:modelValue="onToggleOngoing(item, $event)"
-        />
-        <UTextarea v-model="item.responsibilities" :rows="3" placeholder="Responsibilities" />
-        <div class="flex gap-2">
-          <UButton
-            size="xs"
-            variant="solid"
-            icon="i-lucide-check"
-            @click="onSaveClick(save, item)"
-          >
-            Save
-          </UButton>
-          <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel">
-            Cancel
-          </UButton>
-        </div>
       </div>
     </template>
 

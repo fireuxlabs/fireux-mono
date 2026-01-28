@@ -36,6 +36,8 @@ export type Kitchen = KitchenOverlay & Partial<
   Pick<
     Place,
     | 'name'
+    | 'short_name'
+    | 'short_address'
     | 'formatted_address'
     | 'lat'
     | 'lng'

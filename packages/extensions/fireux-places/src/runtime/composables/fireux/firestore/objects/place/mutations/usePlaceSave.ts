@@ -5,6 +5,7 @@ import { useFirestore } from 'vuefire'
 import type { PlaceUpsertInput } from '../../../../../../models/objects/place.model'
 import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGoogle'
 import { toPlaceCollectionPath, usePlaceTypesConfig } from '../utils/placeCollections'
+import { toShortAddress } from '../utils/view/formatPlaceAddress'
 import { sanitizeLogoAvatar } from '../utils/view/usePlaceLogos'
 
 export interface UsePlaceSaveOptions {
@@ -57,6 +58,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
           ...place,
           name: details.google.name,
           formatted_address: details.google.formatted_address,
+          short_address: toShortAddress(details.google.formatted_address),
           lat: details.google.lat,
           lng: details.google.lng,
           place_image: (place as any)?.place_image ?? details.google.place_image ?? '',
@@ -73,10 +75,19 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
     }
 
     const name = typeof (place as any)?.name === 'string' ? String((place as any).name) : ''
+    const shortName =
+      typeof (place as any)?.short_name === 'string'
+        ? String((place as any).short_name).trim()
+        : ''
     const formatted =
       typeof (place as any)?.formatted_address === 'string'
         ? String((place as any).formatted_address)
         : ''
+    const shortAddress = toShortAddress(
+      typeof (place as any)?.short_address === 'string'
+        ? String((place as any).short_address)
+        : formatted
+    )
     const placeImageRaw =
       (place as any)?.place_image ?? (place as any)?.image_url
     const remoteImageUrl = typeof placeImageRaw === 'string' ? placeImageRaw.trim() : ''
@@ -143,7 +154,9 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       id,
       source: 'fireux',
       name,
+      short_name: shortName,
       formatted_address: formatted,
+      short_address: shortAddress,
       place_image,
       image_shade,
       lat,

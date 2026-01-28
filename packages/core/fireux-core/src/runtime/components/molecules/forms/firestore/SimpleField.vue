@@ -16,7 +16,7 @@
 
     <div v-if="!isEditing" class="flex">
       <div
-        class="w-full rounded-md fx-field-surface px-3 text-sm"
+        class="w-full rounded-md fx-field-surface px-3 form-text"
         :class="disabled ? 'text-muted' : 'text-dimmed'"
       >
         <span class="break-words">{{ displayValue }}</span>

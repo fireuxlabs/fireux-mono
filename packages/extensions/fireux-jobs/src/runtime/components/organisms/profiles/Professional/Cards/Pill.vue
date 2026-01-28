@@ -3,19 +3,25 @@
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
     @click="onClick"
+    class="pill"
   >
-    <SharedPill
-      :avatar="avatarUrl || null"
-      :avatar-secondary="secondaryAvatarUrl || null"
-      :title="displayName"
-      :subtitle="title || null"
-      :show-subtitle="showSubtitle"
-    />
+    <UUser
+      :name="displayName"
+      :description="showSubtitle ? (title || undefined) : undefined"
+      size="sm"
+    >
+      <template #avatar>
+        <UAvatarGroup v-if="avatarUrl && secondaryAvatarUrl" size="xs">
+          <UAvatar :src="avatarUrl || undefined" :alt="displayName || ''" size="xs" />
+          <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName || ''" size="2xs" />
+        </UAvatarGroup>
+        <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName || ''" size="xs" />
+      </template>
+    </UUser>
   </component>
 </template>
 
 <script setup lang="ts">
-import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue';
 import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional';
 
 const emit = defineEmits<{

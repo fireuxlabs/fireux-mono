@@ -3,21 +3,39 @@
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
     @click="onClick"
+    class="pill"
   >
-    <SharedPill
-      :avatar="avatarUrl || null"
-      :avatar-secondary="secondaryAvatarUrl || null"
-      :title="displayName"
-      :subtitle="tagline || null"
-      :badges="badges"
-      :show-subtitle="showSubtitle"
-      :show-badges="showBadges"
-    />
+    <UUser
+      :name="displayName"
+      :description="showSubtitle ? (tagline || undefined) : undefined"
+      size="sm"
+    >
+      <template #avatar>
+        <UAvatarGroup v-if="avatarUrl && secondaryAvatarUrl" size="xs">
+          <UAvatar :src="avatarUrl || undefined" :alt="displayName || ''" size="xs" />
+          <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName || ''" size="2xs" />
+        </UAvatarGroup>
+        <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName || ''" size="xs" />
+      </template>
+
+      <template #default>
+        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
+      </template>
+    </UUser>
   </component>
 </template>
 
 <script setup lang="ts">
-import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue';
 import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
 
 const emit = defineEmits<{

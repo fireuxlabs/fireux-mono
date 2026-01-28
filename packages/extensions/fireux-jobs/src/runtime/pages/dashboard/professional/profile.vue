@@ -17,8 +17,8 @@
     </template>
 
     <template #body>
-      <div class="panels-stack">
-        <div class="flex flex-wrap items-center gap-2">
+      <div class="dashboard-profile">
+        <div class="dashboard-profile__pills">
           <OrganismsProfilesProfessionalCardsPill
             v-if="professionalCard"
             v-bind="professionalCard"
@@ -50,7 +50,7 @@
         </UPageCard>
 
         <ClientOnly v-else>
-          <div v-if="view === 'profile'" class="space-y-6">
+          <div v-if="view === 'profile'" class="dashboard-profile__section">
             <OrganismsProfilesProfessionalCardsProfile
               v-if="professionalCard"
               :card="professionalCard"
@@ -59,7 +59,7 @@
             />
           </div>
 
-          <div v-else class="space-y-6">
+          <div v-else class="dashboard-profile__section">
             <OrganismsProfilesProfessionalEditCore
               :professional="resolvedCoreProfile"
             />

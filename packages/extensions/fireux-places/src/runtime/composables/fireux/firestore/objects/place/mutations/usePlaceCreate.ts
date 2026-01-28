@@ -8,7 +8,9 @@ import { toPlaceCollectionPath, usePlaceTypesConfig } from '../utils/placeCollec
 export const PlacePayload = {
   id: '',
   name: '',
+  short_name: '',
   formatted_address: '',
+  short_address: '',
   lat: 0,
   lng: 0,
   place_image: '',

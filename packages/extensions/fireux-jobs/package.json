@@ -24,6 +24,7 @@
     "pnpm": ">=10"
   },
   "dependencies": {
+    "@internationalized/date": "^3.5.0",
     "fireux-core": "workspace:*",
     "fireux-kitchens": "workspace:*",
     "fireux-companies": "workspace:*",

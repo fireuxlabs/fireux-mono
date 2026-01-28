@@ -25,15 +25,18 @@ export function useCompanyInterface() {
   function map(company: Company): CompanyCard.Card {
     const id = safeString(company.id).trim()
     const name = safeString(company.name)
+    const shortName = safeString((company as any)?.short_name)
     const website = safeString(company.website)
-    const address = safeString((company as any)?.formatted_address)
+    const shortAddress = safeString((company as any)?.short_address)
+    const formattedAddress = safeString((company as any)?.formatted_address)
+    const address = shortAddress || formattedAddress
 
     return {
       id,
       to: id ? `/companies/${id}` : '',
 
       avatarUrl: safeString((company as any)?.place_image),
-      title: name,
+      title: shortName || name,
       subtitle: address,
 
       name,

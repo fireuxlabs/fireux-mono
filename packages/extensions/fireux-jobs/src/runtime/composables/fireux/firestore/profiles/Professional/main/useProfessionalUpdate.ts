@@ -110,7 +110,9 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
       const placeholder: PlaceUpsertInput = {
         id: placeId,
         name: '(unknown)',
+        short_name: '',
         formatted_address: '',
+        short_address: '',
         lat: 0,
         lng: 0,
         place_image: '',

@@ -58,4 +58,5 @@ const props = defineProps<{
 const itemTitle = (item: CertificationItem) => item.name || 'Certification'
 const itemDate = (item: CertificationItem) => item.year || 'Year not set'
 const itemSubtitle = (item: CertificationItem) => item.place_name || 'Organization'
+
 </script>

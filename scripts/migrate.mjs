@@ -43,6 +43,8 @@ if (help) {
   console.log('  - app-media-flatten')
   console.log('  - app-social-links-normalize')
   console.log('  - jobs-backfill-id')
+  console.log('  - places-backfill-short-address')
+  console.log('  - places-backfill-short-name')
   console.log('  - apply-drift-payload')
   console.log('\nAuth (one required):')
   console.log('  - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)')
@@ -177,20 +179,128 @@ async function runAppMediaFlatten() {
   console.log('[migrate] app-media-flatten done', { processed, updated, skipped, commit })
 }
 
-const recipes = {
-  'app-media-flatten': runAppMediaFlatten,
-  'app-social-links-normalize': runAppSocialLinksNormalize,
-  'jobs-backfill-id': runJobsBackfillId,
-  'apply-drift-payload': runApplyDriftPayload,
+function toShortAddress(value) {
+  if (typeof value !== 'string') return ''
+  const raw = value.trim()
+  if (!raw) return ''
+
+  const parts = raw
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean)
+
+  if (parts.length <= 1) return raw
+
+  const stripPostal = (part) =>
+    part
+      .replace(/^\d{4,5}-\d{2,5}\s*/g, '')
+      .replace(/\b\d{3,5}\b\s*/g, '')
+      .replace(/\b\d{4}\b\s*/g, '')
+      .replace(/\b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b/gi, '')
+      .replace(/\b\d{3,5}\s*[A-Za-z]{1,2}\b/g, '')
+      .replace(/^[^\p{L}\p{N}]+/gu, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim()
+
+  const normalize = (part) => stripPostal(part.replace(/^\d+\s+/, '').trim())
+
+  const selected = parts.length === 2 ? parts : parts.slice(-2)
+  const cleaned = selected.map(normalize).filter(Boolean)
+
+  if (!cleaned.length) return raw
+
+  return cleaned
+    .join(', ')
+    .replace(/^[^\p{L}\p{N}]+/gu, '')
+    .trim()
 }
 
-const runner = recipes[recipe]
-if (!runner) {
-  console.error(`Unknown recipe: ${recipe}. Use --help to list recipes.`)
-  process.exit(1)
-}
+const PLACE_SHORT_NAMES = new Map([
+  ['ChIJ3w_c1MA5jkcRxgKHq51MuHg', 'Migros Marktgasse'],
+  ['ChIJ4WdXoJIZjkcRFH_M6dS5EPo', 'DISPO'],
+  ['ChIJ5_TdZKNFj0cRunmn1AAOhAM', 'Hotel Allalin'],
+  ['ChIJ84hrmh6lj0cRoczGWuTvTtE', 'Balmers Backyard'],
+  ['ChIJEbkWR0ijj0cRiHfShuHPLcc', 'Bären'],
+  ['ChIJGR6JR805jkcREU0bp-9yfRI', 'Dählhölzli'],
+  ['ChIJHxvMffqkj0cR7zCUD5KfxXc', 'Salzano'],
+  ['ChIJJRK8XSeue0gRAvddTH8ORtQ', 'Old Pint Pot'],
+  ['ChIJM3aUezGjj0cRm9qzSb-cUao', 'misebox'],
+  ['ChIJO1deUZqkj0cR4rc4Wz6VbOM', 'Velo Cafe'],
+  ['ChIJQzGAsJCkj0cRJZIIj0XoBqA', 'Goldener Anker'],
+  ['ChIJS1kBa_AGOEYRwRaP4kZIjvs', 'Boen Gård'],
+  ['ChIJWS2cLEkKkEcRPkeZB6EcnLk', 'Coople'],
+  ['ChIJWfJ_ovw5jkcRbC19phRjokk', "McDonald's"],
+  ['ChIJXdh4fWQzGQ0Rv0Q55pCtVb4', 'Cantina da Estrela'],
+  ['ChIJYfJCOagukEcRrSRZachhhlg', 'Coop Ryfflihof'],
+  ['ChIJZYHwV2osOUYR6N1qUJ8m0jU', 'Hovden Lodge'],
+  ['ChIJeX7lv9S_hEcRsNrcSBiCGa8', 'Rothorngipfel'],
+  ['ChIJgZS5zY_8jkcRG3KbHXxkrlw', 'Hüttenzauber'],
+  ['ChIJs8c-DUQ5jkcRXXVaFn1g_yw', 'Bar Roma'],
+  ['ChIJswCZ5HQzGQ0REazzU1ROadQ', 'Real Palácio'],
+  ['ChIJt0ko0AmgmkcRZJMyt51zAUg', 'Adia'],
+  ['ChIJt1LkPOKlj0cRlu3-_x8jj90', 'Yellow Velo'],
+  ['ChIJwedNwIulj0cRoVNhqVhc_mQ', 'Runft Cafe'],
+  ['ChIJy9QERoAFR0YRAnMwI2eEV8Q', 'Tollboden'],
+])
 
-await runner()
+async function runPlacesBackfillShortName() {
+  console.log('[migrate] places-backfill-short-name start', {
+    projectId,
+    commit,
+    count: PLACE_SHORT_NAMES.size,
+  })
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+  let missing = 0
+
+  let batch = db.batch()
+  let batchOps = 0
+
+  for (const [placeId, shortName] of PLACE_SHORT_NAMES.entries()) {
+    processed += 1
+    const ref = db.collection('places').doc(placeId)
+    const snap = await ref.get()
+    if (!snap.exists) {
+      missing += 1
+      continue
+    }
+
+    const data = snap.data() || {}
+    const current = asString(data.short_name, '')
+    if (current === shortName) {
+      skipped += 1
+      continue
+    }
+
+    updated += 1
+    if (commit) {
+      batch.update(ref, { short_name: shortName })
+      batchOps += 1
+    } else {
+      console.log('[dry-run]', ref.path, { short_name: shortName })
+    }
+
+    if (commit && batchOps >= 400) {
+      await batch.commit()
+      batch = db.batch()
+      batchOps = 0
+    }
+  }
+
+  if (commit && batchOps > 0) {
+    await batch.commit()
+  }
+
+  console.log('[migrate] places-backfill-short-name done', {
+    processed,
+    updated,
+    skipped,
+    missing,
+    commit,
+  })
+}
 
 async function runJobsBackfillId() {
   console.log('[migrate] jobs-backfill-id start', {
@@ -260,6 +370,82 @@ async function runJobsBackfillId() {
   }
 
   console.log('[migrate] jobs-backfill-id done', { processed, updated, skipped, commit })
+}
+
+async function runPlacesBackfillShortAddress() {
+  const collectionName = typeof args.collection === 'string' ? args.collection : 'places'
+
+  console.log('[migrate] places-backfill-short-address start', {
+    projectId,
+    commit,
+    pageSize,
+    limit,
+    collection: collectionName,
+  })
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+
+  let lastDoc = null
+
+  while (true) {
+    if (limit && processed >= limit) break
+
+    let q = db.collection(collectionName).orderBy(FieldPath.documentId()).limit(pageSize)
+    if (lastDoc) q = q.startAfter(lastDoc)
+
+    const snap = await q.get()
+    if (snap.empty) break
+
+    let batch = db.batch()
+    let batchOps = 0
+
+    for (const docSnap of snap.docs) {
+      if (limit && processed >= limit) break
+
+      processed += 1
+      const data = docSnap.data() || {}
+
+      const formatted = asString(data.formatted_address, '')
+      const existing = asString(data.short_address, '')
+      const next = toShortAddress(formatted) || existing
+
+      if (!next || next === existing) {
+        skipped += 1
+        continue
+      }
+
+      updated += 1
+      const patch = { short_address: next }
+
+      if (commit) {
+        batch.update(docSnap.ref, patch)
+        batchOps += 1
+      } else {
+        console.log('[dry-run]', docSnap.ref.path, patch)
+      }
+
+      if (commit && batchOps >= 400) {
+        await batch.commit()
+        batch = db.batch()
+        batchOps = 0
+      }
+    }
+
+    if (commit && batchOps > 0) {
+      await batch.commit()
+    }
+
+    lastDoc = snap.docs[snap.docs.length - 1]
+  }
+
+  console.log('[migrate] places-backfill-short-address done', {
+    processed,
+    updated,
+    skipped,
+    commit,
+  })
 }
 
 async function readPayloadInput() {
@@ -572,3 +758,20 @@ async function runAppSocialLinksNormalize() {
 
   console.log('[migrate] app-social-links-normalize done', { processed, updated, skipped, commit })
 }
+
+const recipes = {
+  'app-media-flatten': runAppMediaFlatten,
+  'app-social-links-normalize': runAppSocialLinksNormalize,
+  'jobs-backfill-id': runJobsBackfillId,
+  'places-backfill-short-address': runPlacesBackfillShortAddress,
+  'places-backfill-short-name': runPlacesBackfillShortName,
+  'apply-drift-payload': runApplyDriftPayload,
+}
+
+const runner = recipes[recipe]
+if (!runner) {
+  console.error(`Unknown recipe: ${recipe}. Use --help to list recipes.`)
+  process.exit(1)
+}
+
+await runner()

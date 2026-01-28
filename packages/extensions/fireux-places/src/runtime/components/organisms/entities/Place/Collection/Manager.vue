@@ -29,8 +29,12 @@
       gap="0.5rem"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <PlaceCardsPill v-bind="card" />
+        <NuxtLink :to="card.to" class="block max-w-full">
+          <PlaceCardsPill
+            v-bind="card"
+            :show-badges="false"
+            :show-subtitle="true"
+          />
         </NuxtLink>
       </template>
       <template #cell="{ card }">

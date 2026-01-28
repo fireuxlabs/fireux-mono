@@ -37,6 +37,9 @@ importers:
       '@iconify-json/vscode-icons':
         specifier: ^1.2.37
         version: 1.2.37
+      '@internationalized/date':
+        specifier: ^3.5.0
+        version: 3.10.1
       '@nuxt/eslint':
         specifier: ^1.12.1
         version: 1.12.1(@typescript-eslint/utils@8.50.0(eslint@9.35.0(jiti@2.6.1))(typescript@5.9.2))(@vue/compiler-sfc@3.5.21)(eslint@9.35.0(jiti@2.6.1))(magicast@0.3.5)(typescript@5.9.2)(vite@6.4.1(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.1))
@@ -319,6 +322,9 @@ importers:
 
   packages/extensions/fireux-jobs:
     dependencies:
+      '@internationalized/date':
+        specifier: ^3.5.0
+        version: 3.10.1
       fireux-companies:
         specifier: workspace:*
         version: link:../fireux-companies
@@ -17576,7 +17582,7 @@ snapshots:
     dependencies:
       '@floating-ui/dom': 1.7.4
       '@floating-ui/vue': 1.1.9(vue@3.5.20(typescript@5.9.2))
-      '@internationalized/date': 3.9.0
+      '@internationalized/date': 3.10.1
       '@internationalized/number': 3.6.5
       '@tanstack/vue-virtual': 3.13.12(vue@3.5.20(typescript@5.9.2))
       '@vueuse/core': 12.8.2(typescript@5.9.2)

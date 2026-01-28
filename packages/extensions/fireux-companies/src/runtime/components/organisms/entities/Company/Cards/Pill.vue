@@ -3,20 +3,33 @@
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
     @click="onClick"
+    class="pill"
+
   >
-    <SharedPill
-      :avatar="avatarUrl || null"
-      :title="title"
-      :subtitle="subtitle || null"
-      :badges="badges"
-      :show-subtitle="showSubtitle"
-      :show-badges="showBadges"
-    />
+    <UUser
+      :name="title"
+      :description="showSubtitle ? (subtitle || undefined) : undefined"
+      :avatar="avatarUrl ? { src: avatarUrl || undefined, alt: title || '' } : undefined"
+      size="sm"
+    >
+      <template #default>
+        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
+      </template>
+    </UUser>
   </component>
 </template>
 
 <script setup lang="ts">
-import SharedPill from 'fireux-core/runtime/components/shared/Pill.vue';
 import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
 
 type PillProps = Pick<CompanyCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {

@@ -22,7 +22,9 @@ export const Place = {
 	id: '' as string,
 
 	name: '' as string,
+	short_name: '' as string,
 	formatted_address: '' as string,
+	short_address: '' as string,
 	lat: 0 as number,
 	lng: 0 as number,
 
@@ -52,7 +54,9 @@ export type BasePlace = Pick<
 	Place,
 	'id'
 	| 'name'
+	| 'short_name'
 	| 'formatted_address'
+	| 'short_address'
 	| 'lat'
 	| 'lng'
 	| 'place_image'

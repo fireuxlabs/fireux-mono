@@ -20,8 +20,12 @@ export const mapPlaceToCard = (): MapToCard => {
     const base: BasePlace = {
       id,
       name: String(p?.name ?? ''),
+      short_name:
+        typeof p?.short_name === 'string' ? p.short_name : '',
       formatted_address:
         typeof p?.formatted_address === 'string' ? p.formatted_address : '',
+      short_address:
+        typeof p?.short_address === 'string' ? p.short_address : '',
       lat: 0,
       lng: 0,
       place_image:
@@ -29,6 +33,8 @@ export const mapPlaceToCard = (): MapToCard => {
           ? (p?.place_image ?? p?.image_url)
           : '',
       claimed_by: typeof p?.claimed_by === 'string' ? p.claimed_by : '',
+      image_shade:
+        typeof p?.image_shade === 'string' ? p.image_shade : 'neutral',
       source: source as any,
     }
 
