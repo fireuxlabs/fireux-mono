@@ -87,21 +87,13 @@
 				</UCard>
 
 				<UCard>
-					<div class="space-y-2">
-						<div>
-							<p class="text-sm font-medium">Short name</p>
-							<p class="text-xs text-gray-500">
-								Optional. Used in pills and compact views.
-							</p>
-						</div>
-						<MoleculesFormsFirestoreSimpleField
-							label=""
-							:firebase-value="place.short_name"
-							placeholder="e.g. Yellow Velo"
-							:maxlength="80"
-							:update-function="handleShortName"
-						/>
-					</div>
+					<MoleculesFormsFirestoreSimpleField
+						label="Short name"
+						:firebase-value="place.short_name"
+						placeholder="Optional (e.g. Yellow Velo)"
+						:maxlength="80"
+						:update-function="handleShortName"
+					/>
 				</UCard>
 
 				<UCard v-if="isManual">

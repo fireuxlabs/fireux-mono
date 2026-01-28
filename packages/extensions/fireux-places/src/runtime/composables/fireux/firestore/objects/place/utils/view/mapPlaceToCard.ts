@@ -34,7 +34,7 @@ export const mapPlaceToCard = (): MapToCard => {
           : '',
       claimed_by: typeof p?.claimed_by === 'string' ? p.claimed_by : '',
       image_shade:
-        typeof p?.image_shade === 'string' ? p.image_shade : 'neutral',
+        typeof p?.image_shade === 'string' ? p.image_shade : 'none',
       source: source as any,
     }
 

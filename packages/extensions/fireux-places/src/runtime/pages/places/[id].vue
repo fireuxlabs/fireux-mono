@@ -41,41 +41,23 @@
               <div class="flex flex-col gap-2">
                 <div class="text-xs font-medium text-dimmed">Image shade</div>
                 <div class="flex flex-wrap gap-2">
-                  <PlaceCardsPill
-                    :avatar-url="place.place_image || ''"
-                    title="Light"
-                    subtitle=""
-                    :badges="[]"
-                    :show-badges="false"
-                    :show-subtitle="false"
-                    :image-shade="'light'"
-                  />
-                  <PlaceCardsPill
-                    :avatar-url="place.place_image || ''"
-                    title="Dark"
-                    subtitle=""
-                    :badges="[]"
-                    :show-badges="false"
-                    :show-subtitle="false"
-                    :image-shade="'dark'"
-                  />
-                  <PlaceCardsPill
-                    :avatar-url="place.place_image || ''"
-                    title="Neutral"
-                    subtitle=""
-                    :badges="[]"
-                    :show-badges="false"
-                    :show-subtitle="false"
-                    :image-shade="'neutral'"
-                  />
-                  <PlaceCardsPill
-                    :avatar-url="place.place_image || ''"
-                    title="None"
-                    subtitle=""
-                    :badges="[]"
-                    :show-badges="false"
-                    :show-subtitle="false"
-                  />
+                  <div
+                    v-for="option in shadeOptions"
+                    :key="option.value"
+                    class="rounded-xl ring-1 ring-transparent transition"
+                    :class="currentShade === option.value ? 'ring-primary/50' : 'hover:ring-primary/30'"
+                  >
+                    <PlaceCardsPill
+                      :avatar-url="place.place_image || ''"
+                      :title="option.label"
+                      subtitle=""
+                      :badges="[]"
+                      :show-badges="false"
+                      :show-subtitle="false"
+                      :action="true"
+                      @action="onSelectShade(option.value)"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -181,8 +163,9 @@
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { computed } from 'vue'
-import type { Place, PlaceImageShade } from '../../models/objects/place.model'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { computed, ref } from 'vue'
+import type { Place } from '../../models/objects/place.model'
 
 definePageMeta({
   layout: 'default',
@@ -199,6 +182,7 @@ const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
 
 const { firestoreFetchDoc } = useFirestoreRead()
+const { updateDocument } = useFirestoreUpdate()
 const rawDoc = docId ? await firestoreFetchDoc<Place>('places', docId) : null
 
 const place = computed<Place | null>(() => (rawDoc as any)?.value ?? rawDoc ?? null)
@@ -214,9 +198,31 @@ const pageDescription = computed(
 const isExisting = computed(() => place.value?.source !== 'google')
 const isClaimed = computed(() => !!place.value?.claimed_by)
 
-const currentShade = computed<PlaceImageShade>(() =>
-  place.value?.image_shade ?? 'neutral'
-)
+const currentShade = computed<'light' | 'dark' | 'neutral' | 'none'>(() => {
+  const shade = place.value?.image_shade
+  if (shade === 'light' || shade === 'dark' || shade === 'neutral') return shade
+  return 'none'
+})
+
+const shadeOptions = [
+  { label: 'Light', value: 'light' },
+  { label: 'Dark', value: 'dark' },
+  { label: 'Neutral', value: 'neutral' },
+  { label: 'None', value: 'none' },
+] as const
+
+const isUpdatingShade = ref(false)
+
+const onSelectShade = async (shade: (typeof shadeOptions)[number]['value']) => {
+  if (!docId || isUpdatingShade.value) return
+  isUpdatingShade.value = true
+  try {
+    const next = shade === 'none' ? '' : shade
+    await updateDocument<Place>('places', docId, { image_shade: next } as Partial<Place>)
+  } finally {
+    isUpdatingShade.value = false
+  }
+}
 
 const sourceLabel = computed(() => {
   const source = place.value?.source

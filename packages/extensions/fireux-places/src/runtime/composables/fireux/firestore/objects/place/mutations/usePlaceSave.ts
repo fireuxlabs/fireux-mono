@@ -148,7 +148,13 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
     const shadeRaw = typeof (place as any)?.image_shade === 'string'
       ? String((place as any).image_shade).toLowerCase().trim()
       : ''
-    const image_shade = shadeRaw === 'light' || shadeRaw === 'dark' ? shadeRaw : 'neutral'
+    const image_shade =
+      shadeRaw === 'light' ||
+      shadeRaw === 'dark' ||
+      shadeRaw === 'neutral' ||
+      shadeRaw === 'none'
+        ? shadeRaw
+        : 'none'
 
     const payload = {
       id,

@@ -103,7 +103,7 @@ export function usePlacesInterface() {
 
       imageUrl: image,
 
-      imageShade: place.image_shade ?? 'neutral',
+      imageShade: place.image_shade ?? 'none',
 
       source: place.source,
 

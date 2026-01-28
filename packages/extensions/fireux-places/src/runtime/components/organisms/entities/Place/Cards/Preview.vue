@@ -60,7 +60,8 @@ const avatarShadeClass = computed(() => {
   if (!shade) return ''
   if (shade === 'light') return 'fx-avatar-shade--light'
   if (shade === 'dark') return 'fx-avatar-shade--dark'
-  return 'fx-avatar-shade--neutral'
+  if (shade === 'neutral') return 'fx-avatar-shade--neutral'
+  return ''
 })
 
 const sourceLabel = computed(() =>

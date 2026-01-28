@@ -15,7 +15,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /** Canonical sources: google (provider), fireux (stored), manual (user-entered). */
 export type PlaceSource = 'google' | 'fireux' | 'manual'
 
-export type PlaceImageShade = 'light' | 'dark' | 'neutral'
+export type PlaceImageShade = 'light' | 'dark' | 'neutral' | 'none'
 
 // 🔑 Runtime + canonical shape for the STORED Firestore Place
 export const Place = {
@@ -29,7 +29,7 @@ export const Place = {
 	lng: 0 as number,
 
 	place_image: '' as string,
-	image_shade: 'neutral' as PlaceImageShade,
+	image_shade: 'none' as PlaceImageShade,
 
 	/** Claimed owner (uid); empty string means unclaimed. */
 	claimed_by: '' as string,

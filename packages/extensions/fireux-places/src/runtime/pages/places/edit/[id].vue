@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <UPage>
+    <UPage class="page edit-page">
       <UPageHeader :title="pageTitle" :description="pageSubtitle">
         <template #ctas>
           <UButton

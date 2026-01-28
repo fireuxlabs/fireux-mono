@@ -122,6 +122,42 @@
 	margin-bottom: 2.5rem;
 }
 
+/* Avatar shade helpers (opt-in via props/classes) */
+:where(.fx-avatar-shade--light) {
+	background: var(--ui-color-neutral-900);
+	border: 1px solid var(--ui-border);
+	border-radius: 9999px;
+	overflow: hidden;
+	padding: 0.25rem;
+	--fx-avatar-bg: var(--ui-color-neutral-900);
+	--fx-avatar-border: 1px solid var(--ui-border);
+	--fx-avatar-padding: 0.25rem;
+	--fx-avatar-radius: 9999px;
+}
+
+:where(.fx-avatar-shade--dark) {
+	background: #ffffff;
+	border: 1px solid var(--ui-border);
+	border-radius: 9999px;
+	overflow: hidden;
+	padding: 0.25rem;
+	--fx-avatar-border: 1px solid var(--ui-border);
+	--fx-avatar-padding: 0.25rem;
+	--fx-avatar-radius: 9999px;
+}
+
+:where(.fx-avatar-shade--neutral) {
+	background: var(--ui-color-neutral-100);
+	border: 1px solid var(--ui-border);
+	border-radius: 9999px;
+	overflow: hidden;
+	padding: 0.25rem;
+	--fx-avatar-bg: var(--ui-color-neutral-100);
+	--fx-avatar-border: 1px solid var(--ui-border);
+	--fx-avatar-padding: 0.25rem;
+	--fx-avatar-radius: 9999px;
+}
+
 /* pill styles moved to shared component */
 
 :where(.card.card--cell) {

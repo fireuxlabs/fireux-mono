@@ -1,5 +1,5 @@
 <template>
-  <UPage>
+  <UPage class="page edit-page">
     <UPageHeader :title="pageTitle" :description="pageSubtitle">
       <template #ctas>
         <UButton
@@ -62,13 +62,13 @@
 </template>
 
 <script setup lang="ts">
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useHead } from 'nuxt/app'
 import { computed, reactive, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { useHead } from 'nuxt/app'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import type { Job, JobStatus } from '../../../models/objects/job.model'
 import { useJobFetch } from '../../../composables/fireux/firestore/jobs/fetch/useJobFetch'
 import { useJobUpdate } from '../../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
+import type { Job, JobStatus } from '../../../models/objects/job.model'
 
 definePageMeta({
   layout: 'default',
