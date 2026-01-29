@@ -39,13 +39,16 @@
           <UCard>
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
               <div class="flex flex-col gap-2">
-                <div class="text-xs font-medium text-dimmed">Image shade</div>
+                <div>
+                  <div class="text-xs font-medium text-dimmed">Image shade</div>
+                  <div class="text-xs text-gray-500">Pick the best background for this logo.</div>
+                </div>
                 <div class="flex flex-wrap gap-2">
                   <div
                     v-for="option in shadeOptions"
                     :key="option.value"
                     class="rounded-xl ring-1 ring-transparent transition"
-                    :class="currentShade === option.value ? 'ring-primary/50' : 'hover:ring-primary/30'"
+                    :class="currentShade === option.value ? 'ring-2 ring-primary' : 'hover:ring-primary/30'"
                   >
                     <PlaceCardsPill
                       :avatar-url="place.place_image || ''"
@@ -55,6 +58,7 @@
                       :show-badges="false"
                       :show-subtitle="false"
                       :action="true"
+                      :image-shade="option.value"
                       @action="onSelectShade(option.value)"
                     />
                   </div>
@@ -198,17 +202,15 @@ const pageDescription = computed(
 const isExisting = computed(() => place.value?.source !== 'google')
 const isClaimed = computed(() => !!place.value?.claimed_by)
 
-const currentShade = computed<'light' | 'dark' | 'neutral' | 'none'>(() => {
+const currentShade = computed<'light' | 'dark' | 'none'>(() => {
   const shade = place.value?.image_shade
-  if (shade === 'light' || shade === 'dark' || shade === 'neutral') return shade
-  return 'none'
+  return shade === 'light' || shade === 'dark' ? shade : 'none'
 })
 
 const shadeOptions = [
   { label: 'Light', value: 'light' },
   { label: 'Dark', value: 'dark' },
-  { label: 'Neutral', value: 'neutral' },
-  { label: 'None', value: 'none' },
+  { label: 'Default', value: 'none' },
 ] as const
 
 const isUpdatingShade = ref(false)
@@ -217,8 +219,7 @@ const onSelectShade = async (shade: (typeof shadeOptions)[number]['value']) => {
   if (!docId || isUpdatingShade.value) return
   isUpdatingShade.value = true
   try {
-    const next = shade === 'none' ? '' : shade
-    await updateDocument<Place>('places', docId, { image_shade: next } as Partial<Place>)
+    await updateDocument<Place>('places', docId, { image_shade: shade } as Partial<Place>)
   } finally {
     isUpdatingShade.value = false
   }

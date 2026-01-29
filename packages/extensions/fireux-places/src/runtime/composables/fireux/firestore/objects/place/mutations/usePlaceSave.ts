@@ -149,10 +149,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       ? String((place as any).image_shade).toLowerCase().trim()
       : ''
     const image_shade =
-      shadeRaw === 'light' ||
-      shadeRaw === 'dark' ||
-      shadeRaw === 'neutral' ||
-      shadeRaw === 'none'
+      shadeRaw === 'light' || shadeRaw === 'dark' || shadeRaw === 'none'
         ? shadeRaw
         : 'none'
 

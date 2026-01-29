@@ -43,6 +43,7 @@ if (help) {
   console.log('  - app-media-flatten')
   console.log('  - app-social-links-normalize')
   console.log('  - jobs-backfill-id')
+  console.log('  - places-normalize-image-shade')
   console.log('  - places-backfill-short-address')
   console.log('  - places-backfill-short-name')
   console.log('  - apply-drift-payload')
@@ -448,6 +449,79 @@ async function runPlacesBackfillShortAddress() {
   })
 }
 
+async function runPlacesNormalizeImageShade() {
+  const collectionName = typeof args.collection === 'string' ? args.collection : 'places'
+
+  console.log('[migrate] places-normalize-image-shade start', {
+    projectId,
+    commit,
+    pageSize,
+    limit,
+    collection: collectionName,
+  })
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+
+  let lastDoc = null
+
+  while (true) {
+    if (limit && processed >= limit) break
+
+    let q = db.collection(collectionName).orderBy(FieldPath.documentId()).limit(pageSize)
+    if (lastDoc) q = q.startAfter(lastDoc)
+
+    const snap = await q.get()
+    if (snap.empty) break
+
+    let batch = db.batch()
+    let batchOps = 0
+
+    for (const docSnap of snap.docs) {
+      if (limit && processed >= limit) break
+
+      processed += 1
+      const data = docSnap.data() || {}
+      const shade = asString(data.image_shade, '')
+
+      if (!shade || shade !== 'neutral') {
+        skipped += 1
+        continue
+      }
+
+      updated += 1
+      const patch = { image_shade: 'none' }
+
+      if (commit) {
+        batch.update(docSnap.ref, patch)
+        batchOps += 1
+      } else {
+        console.log('[dry-run]', docSnap.ref.path, patch)
+      }
+
+      if (commit && batchOps >= 400) {
+        await batch.commit()
+        batch = db.batch()
+        batchOps = 0
+      }
+    }
+
+    if (commit && batchOps > 0) {
+      await batch.commit()
+    }
+
+    lastDoc = snap.docs[snap.docs.length - 1]
+  }
+
+  console.log('[migrate] places-normalize-image-shade done', {
+    processed,
+    updated,
+    skipped,
+    commit,
+  })
+}
+
 async function readPayloadInput() {
   if (payloadFile) {
     return JSON.parse(await readFile(payloadFile, 'utf8'))
@@ -763,6 +837,7 @@ const recipes = {
   'app-media-flatten': runAppMediaFlatten,
   'app-social-links-normalize': runAppSocialLinksNormalize,
   'jobs-backfill-id': runJobsBackfillId,
+  'places-normalize-image-shade': runPlacesNormalizeImageShade,
   'places-backfill-short-address': runPlacesBackfillShortAddress,
   'places-backfill-short-name': runPlacesBackfillShortName,
   'apply-drift-payload': runApplyDriftPayload,
