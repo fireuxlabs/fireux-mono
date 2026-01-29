@@ -1,3 +1,4 @@
+<!-- flag -->
 <template>
   <div class="profile-edit__section">
     <MoleculesFormsFirestoreObjectArray
@@ -7,27 +8,9 @@
       :item-title="itemTitle"
       :item-date="itemDate"
       :item-subtitle="itemSubtitle"
+      :fields="fields"
       :show-actions="true"
     >
-      <template #edit="{ item, save, cancel }">
-        <div class="space-y-2">
-          <UInput v-model="item.organization" placeholder="Organization" />
-          <UInput v-model="item.role" placeholder="Role" />
-          <UInput v-model="item.from_year" placeholder="From year" />
-          <UInput v-model="item.to_year" placeholder="To year" />
-          <UCheckbox v-model="item.ongoing" label="Ongoing" />
-          <UTextarea v-model="item.responsibilities" :rows="3" placeholder="Responsibilities" />
-          <div class="flex gap-2">
-            <UButton size="xs" variant="solid" icon="i-lucide-check" @click="save">
-              Save
-            </UButton>
-            <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel">
-              Cancel
-            </UButton>
-          </div>
-        </div>
-      </template>
-
       <template #create="{ push }">
         <UButton
           size="xs"
@@ -60,4 +43,13 @@ const itemTitle = (item: VolunteeringItem) => item.organization || 'Organization
 const itemDate = (item: VolunteeringItem) =>
   `${item.from_year || 'Start'}–${item.ongoing ? 'Present' : (item.to_year || 'End')}`
 const itemSubtitle = (item: VolunteeringItem) => item.role || 'Role'
+
+const fields = [
+  { key: 'organization', type: 'text', label: 'Organization', placeholder: 'Organization' },
+  { key: 'role', type: 'text', label: 'Role', placeholder: 'Role' },
+  { key: 'from_year', type: 'text', label: 'From year', placeholder: 'From year' },
+  { key: 'to_year', type: 'text', label: 'To year', placeholder: 'To year' },
+  { key: 'ongoing', type: 'checkbox', label: 'Ongoing' },
+  { key: 'responsibilities', type: 'textarea', label: 'Responsibilities', placeholder: 'Responsibilities', rows: 3 },
+]
 </script>

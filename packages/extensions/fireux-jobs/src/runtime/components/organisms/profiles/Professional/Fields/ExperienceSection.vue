@@ -1,3 +1,5 @@
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Professional/Fields/ExperienceSection.vue -->
+<!-- flag -->
 <template>
   <MoleculesFormsFirestoreObjectArray
     :label="label"
@@ -7,6 +9,7 @@
     :item-date="itemDate"
     :show-actions="true"
   >
+    <!-- Display (read-only place, plus responsibilities) -->
     <template #display="{ item }">
       <div class="space-y-2">
         <PlaceCardsPill
@@ -17,18 +20,120 @@
           class="max-w-full"
         />
         <span v-else class="text-sm text-dimmed">{{ formatPlace(item) }}</span>
-        <p v-if="item.responsibilities" class="form-text form-text-muted">
+
+        <p v-if="item.responsibilities" class="form-text-body">
           {{ item.responsibilities }}
         </p>
       </div>
     </template>
 
+    <!-- Edit (place uses Places API) -->
+    <template #edit="{ item, save, cancel }">
+      <div class="space-y-3">
+        <div class="space-y-2">
+          <div class="text-xs font-medium text-dimmed">Place</div>
+
+          <PlaceCardsPill
+            v-if="item.place_id && resolvePlaceCard(item)"
+            v-bind="resolvePlaceCard(item)"
+            :show-badges="false"
+            :link="false"
+            class="max-w-full"
+          />
+
+          <span
+            v-else-if="item.place_id"
+            class="text-sm text-dimmed"
+          >
+            {{ formatPlace(item) }}
+          </span>
+
+          <PlaceSearchSection
+            v-else
+            :type="effectivePlaceType"
+            :placeholder="searchPlaceholder"
+            @confirmed="(payload: PlaceConfirmedPayload) => onPlaceConfirmedPayload(item, payload)"
+          />
+        </div>
+
+        <UInput v-model="item.role" placeholder="Role (e.g. Chef de Partie)" />
+
+        <div class="grid gap-2 sm:grid-cols-3">
+          <div class="space-y-1">
+            <div class="text-xs font-medium text-dimmed">From</div>
+            <UPopover>
+              <UButton
+                color="neutral"
+                variant="subtle"
+                icon="i-lucide-calendar"
+                class="w-full justify-start"
+              >
+                {{ formatDateLabel(getStartDate(item)) || 'Select start date' }}
+              </UButton>
+
+              <template #content>
+                <UCalendar
+                  class="p-2"
+                  :model-value="getStartDate(item)"
+                  @update:model-value="(value: DateValue | null) => onStartDateChange(item, value)"
+                />
+              </template>
+            </UPopover>
+          </div>
+
+          <div class="space-y-1">
+            <div class="text-xs font-medium text-dimmed">Ongoing</div>
+            <UCheckbox
+              :model-value="Boolean(item.ongoing)"
+              label="Currently"
+              @update:model-value="(v: boolean) => onToggleOngoing(item, Boolean(v))"
+            />
+          </div>
+
+          <div v-if="!item.ongoing" class="space-y-1">
+            <div class="text-xs font-medium text-dimmed">To</div>
+            <UPopover>
+              <UButton
+                color="neutral"
+                variant="subtle"
+                icon="i-lucide-calendar"
+                class="w-full justify-start"
+              >
+                {{ formatDateLabel(getEndDate(item)) || 'Select end date' }}
+              </UButton>
+
+              <template #content>
+                <UCalendar
+                  class="p-2"
+                  :model-value="getRangeValue(item)"
+                  range
+                  @update:model-value="(value: { start?: DateValue | null; end?: DateValue | null } | null) => onRangeDateChange(item, value)"
+                />
+              </template>
+            </UPopover>
+          </div>
+        </div>
+
+        <UTextarea
+          v-model="item.responsibilities"
+          :rows="3"
+          placeholder="Responsibilities"
+        />
+
+        <div class="flex gap-2">
+          <UButton size="xs" variant="solid" icon="i-lucide-check" @click="save">
+            Save
+          </UButton>
+          <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel">
+            Cancel
+          </UButton>
+        </div>
+      </div>
+    </template>
+
+    <!-- Create -->
     <template #create="{ push }">
-      <UButton
-        size="xs"
-        variant="soft"
-        @click="push(newExperienceItem())"
-      >
+      <UButton size="xs" variant="soft" @click="push(newExperienceItem())">
         {{ createLabel }}
       </UButton>
     </template>
@@ -36,95 +141,49 @@
 </template>
 
 <script setup lang="ts">
-import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
-import type { RadioGroupItem } from '@nuxt/ui'
+import { CalendarDate, DateFormatter, getLocalTimeZone, type DateValue } from '@internationalized/date'
 import { doc, getDoc } from 'firebase/firestore'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
-import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import { mapPlaceToCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToCard'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { computed, ref, watch } from 'vue'
 import { useFirestore } from 'vuefire'
 import type { ExperienceItem } from '../../../../../models/profiles/Professional/supporting'
 
 type ExperienceEntry = ExperienceItem
 
-type DateRangeValue = {
-  start?: CalendarDate | null
-  end?: CalendarDate | null
+type PlaceConfirmedPayload = {
+  placeId: string
+  place: Record<string, any>
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   label: string
   items: ExperienceEntry[]
   onSave: (items: ExperienceEntry[]) => Promise<void>
   placeType?: string | null
   placeCollections?: string[]
-}>()
+}>(), {
+  placeType: null,
+  placeCollections: () => [],
+})
 
 const createLabel = computed(() => `Add ${props.label.toLowerCase()}`)
+const effectivePlaceType = computed(() => props.placeType ?? 'place')
+const searchPlaceholder = computed(() =>
+  effectivePlaceType.value === 'place'
+    ? 'Search places...'
+    : `Search ${effectivePlaceType.value}...`
+)
 const itemTitle = (item: ExperienceEntry) => item.role || 'Role'
 const itemDate = (item: ExperienceEntry) => formatRange(item)
 
-const db = useFirestore()
-const placeCache = ref<Record<string, Record<string, any>>>({})
-const toPlaceCard = mapPlaceToCard()
-const { ensurePlaceExists } = usePlaceSave()
-
 const dateFormatter = new DateFormatter('en-US', { dateStyle: 'medium' })
 
-const monthLabels = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-]
-
-const monthLookup = new Map(
-  monthLabels.map((label, index) => [label.toLowerCase(), index + 1])
-)
-
-const collections = computed(() => props.placeCollections ?? [])
-const selectedCollection = ref<string | null>(collections.value[0] ?? null)
-
-const collectionOptions = computed<RadioGroupItem[]>(() =>
-  collections.value.map((value) => ({
-    label: value.replace(/\b\w/g, (c) => c.toUpperCase()),
-    value,
-  }))
-)
-
-const resolvedPlaceType = computed(() => {
-  const collection = selectedCollection.value
-  if (collection === 'kitchens') return 'kitchen'
-  if (collection === 'companies') return 'company'
-  if (collection === 'places') return null
-  if (collection && collection.endsWith('s')) return collection.slice(0, -1)
-  return props.placeType ?? null
-})
-
-watch(
-  collections,
-  (next) => {
-    if (!next.length) {
-      selectedCollection.value = null
-      return
-    }
-    if (!selectedCollection.value || !next.includes(selectedCollection.value)) {
-      selectedCollection.value = next[0]
-    }
-  },
-  { immediate: true }
-)
+const db = useFirestore()
+const placeCache = ref<Record<string, Record<string, any>>>({})
+const placeRequests = ref<Set<string>>(new Set())
+const toPlaceCard = mapPlaceToCard()
 
 const placeIds = computed(() => {
   const ids = new Set<string>()
@@ -137,16 +196,19 @@ const placeIds = computed(() => {
 
 const hydratePlace = async (placeId: string) => {
   if (!placeId || placeCache.value[placeId]) return
+  if (placeRequests.value.has(placeId)) return
+  placeRequests.value.add(placeId)
   try {
     const snap = await getDoc(doc(db, 'places', placeId))
     if (!snap.exists()) {
       placeCache.value[placeId] = {}
       return
     }
-    const data = snap.data() as Record<string, any>
-    placeCache.value[placeId] = data
+    placeCache.value[placeId] = snap.data() as Record<string, any>
   } catch {
     placeCache.value[placeId] = {}
+  } finally {
+    placeRequests.value.delete(placeId)
   }
 }
 
@@ -166,53 +228,6 @@ const formatRange = (item: ExperienceEntry) => {
   return [start, end].filter(Boolean).join(' · ') || 'Dates not listed'
 }
 
-const normalizeMonth = (value?: string | null) => {
-  if (!value) return null
-  const key = value.trim().slice(0, 3).toLowerCase()
-  return monthLookup.get(key) ?? null
-}
-
-const toCalendarDate = (month?: string | null, year?: string | null) => {
-  const monthIndex = normalizeMonth(month)
-  const yearValue = year ? Number.parseInt(String(year), 10) : Number.NaN
-  if (!monthIndex || Number.isNaN(yearValue)) return null
-  return new CalendarDate(yearValue, monthIndex, 1)
-}
-
-const toMonthLabel = (monthNumber: number) => monthLabels[monthNumber - 1] || ''
-
-const rangeForItem = (item: ExperienceEntry): DateRangeValue => {
-  const start = toCalendarDate(item.from_month, item.from_year)
-  const end = item.ongoing ? null : toCalendarDate(item.to_month, item.to_year)
-  return { start: start ?? null, end: end ?? null }
-}
-
-const applyRange = (item: ExperienceEntry, range: DateRangeValue) => {
-  if (!range || !range.start) {
-    item.from_month = ''
-    item.from_year = ''
-    item.to_month = ''
-    item.to_year = ''
-    item.ongoing = false
-    return
-  }
-
-  if (range.start) {
-    item.from_month = toMonthLabel(range.start.month)
-    item.from_year = String(range.start.year)
-  }
-
-  if (!range.end) {
-    item.to_month = ''
-    item.to_year = ''
-    item.ongoing = true
-  } else {
-    item.to_month = toMonthLabel(range.end.month)
-    item.to_year = String(range.end.year)
-    item.ongoing = false
-  }
-}
-
 const onToggleOngoing = (item: ExperienceEntry, value: boolean) => {
   item.ongoing = value
   if (value) {
@@ -221,20 +236,70 @@ const onToggleOngoing = (item: ExperienceEntry, value: boolean) => {
   }
 }
 
-const formatRangeLabel = (item: ExperienceEntry) => {
-  const range = rangeForItem(item)
-  if (!range?.start) return 'Pick a date'
-  const start = dateFormatter.format(range.start.toDate(getLocalTimeZone()))
-  if (!range.end) return start
-  const end = dateFormatter.format(range.end.toDate(getLocalTimeZone()))
-  return `${start} - ${end}`
+const monthToNumber = (value: string | undefined) => {
+  if (!value) return null
+  const raw = String(value).trim().toLowerCase()
+  if (!raw) return null
+  const numeric = Number(raw)
+  if (Number.isFinite(numeric) && numeric >= 1 && numeric <= 12) return numeric
+  const short = raw.slice(0, 3)
+  const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+  const idx = months.indexOf(short)
+  return idx >= 0 ? idx + 1 : null
 }
 
-const onSaveClick = (save: () => void, item: ExperienceEntry) => {
-  console.log('[ExperienceSection] Save clicked', {
-    item: { ...item },
-  })
-  save()
+const toCalendarDate = (month?: string, year?: string): CalendarDate | null => {
+  const monthNum = monthToNumber(month)
+  const yearNum = Number(String(year ?? '').trim())
+  if (!monthNum || !Number.isFinite(yearNum)) return null
+  return new CalendarDate(yearNum, monthNum, 1)
+}
+
+const formatDateLabel = (value: DateValue | null | undefined) => {
+  if (!value) return ''
+  return dateFormatter.format(value.toDate(getLocalTimeZone()))
+}
+
+const updateFromDate = (item: ExperienceEntry, value: DateValue) => {
+  const date = value.toDate(getLocalTimeZone())
+  item.from_month = new DateFormatter('en-US', { month: 'short' }).format(date)
+  item.from_year = String(value.year)
+}
+
+const updateToDate = (item: ExperienceEntry, value: DateValue) => {
+  const date = value.toDate(getLocalTimeZone())
+  item.to_month = new DateFormatter('en-US', { month: 'short' }).format(date)
+  item.to_year = String(value.year)
+}
+
+const getStartDate = (item: ExperienceEntry) =>
+  toCalendarDate(item.from_month, item.from_year)
+
+const getEndDate = (item: ExperienceEntry) =>
+  toCalendarDate(item.to_month, item.to_year)
+
+const getRangeValue = (item: ExperienceEntry) => ({
+  start: getStartDate(item) ?? undefined,
+  end: getEndDate(item) ?? undefined,
+})
+
+const onStartDateChange = (item: ExperienceEntry, value: DateValue | null) => {
+  if (!value) return
+  updateFromDate(item, value)
+}
+
+const onRangeDateChange = (
+  item: ExperienceEntry,
+  value: { start?: DateValue | null; end?: DateValue | null } | null
+) => {
+  if (!value) return
+  if (value.start) updateFromDate(item, value.start)
+  if (value.end) {
+    updateToDate(item, value.end)
+  } else {
+    item.to_month = ''
+    item.to_year = ''
+  }
 }
 
 const formatPlace = (item: ExperienceEntry) => {
@@ -258,7 +323,25 @@ const resolvePlaceCard = (item: ExperienceEntry): PlaceCard.Card | null => {
   }
   return toPlaceCard({ ...cached, id: placeId })
 }
-const hasPlace = (item: ExperienceEntry) => Boolean(canonicalPlaceId(item?.place_id ?? undefined))
+
+const onPlaceConfirmed = (
+  item: ExperienceEntry,
+  placeId: string,
+  place?: Record<string, any>
+) => {
+  item.place_id = placeId
+  if (placeId && place) {
+    placeCache.value[placeId] = { ...place, id: placeId }
+  }
+}
+
+const onPlaceConfirmedPayload = (
+  item: ExperienceEntry,
+  payload: PlaceConfirmedPayload
+) => {
+  onPlaceConfirmed(item, payload.placeId, payload.place)
+}
+
 const newExperienceItem = (): ExperienceEntry => ({
   role: '',
   place_id: '',
@@ -269,17 +352,4 @@ const newExperienceItem = (): ExperienceEntry => ({
   ongoing: false,
   responsibilities: '',
 })
-
-const onApplyPlaceConfirmed = async (
-  payload: { placeId: string; place: PlaceUpsertInput },
-  target: ExperienceEntry
-) => {
-  const placeId = canonicalPlaceId(payload.placeId) || payload.placeId
-  if (placeId) {
-    const placePayload = { ...payload.place, id: placeId }
-    placeCache.value[placeId] = { ...placePayload }
-    await ensurePlaceExists(placePayload)
-  }
-  target.place_id = placeId || ''
-}
 </script>

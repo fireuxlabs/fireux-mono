@@ -1,4 +1,5 @@
 <!-- FILE: packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/Section.vue -->
+<!-- flag -->
 <template>
   <div class="space-y-4">
     <PlaceSearchBar v-model="query" :placeholder="placeholder" />
@@ -39,12 +40,17 @@ import { computed, ref, watch } from 'vue'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import {
-    loadLogoForPlace,
-    sanitizeLogoAvatar,
-    usePlaceLogoState,
+  loadLogoForPlace,
+  sanitizeLogoAvatar,
+  usePlaceLogoState,
 } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
-import type { BasePlace, PlaceSource, PlaceUpsertInput } from '../../../../../models/objects/place.model'
+import type {
+  BasePlace,
+  PlaceSource,
+  PlaceUpsertInput,
+  PlaceImageShade,
+} from '../../../../../models/objects/place.model'
 
 const props = withDefaults(
   defineProps<{
@@ -70,7 +76,9 @@ const selectedPlace = computed(() => selected.value as BasePlace | null)
 
 const selectedSource = computed<PlaceSource>(() => {
   const src = (selectedPlace.value as any)?.source
-  return src === 'google' || src === 'manual' || src === 'fireux' ? src : 'fireux'
+  return src === 'google' || src === 'manual' || src === 'fireux'
+    ? src
+    : 'fireux'
 })
 
 const typeLabel = computed(() => {
@@ -80,9 +88,7 @@ const typeLabel = computed(() => {
 })
 
 const confirmLabel = computed(() =>
-  selectedSource.value === 'google'
-    ? `Add ${typeLabel.value}`
-    : `Use ${typeLabel.value}`
+  selectedSource.value === 'google' ? `Add ${typeLabel.value}` : `Use ${typeLabel.value}`
 )
 
 const { card } = usePlacesInterface()
@@ -90,7 +96,9 @@ const selectedCell = computed(() =>
   selectedPlace.value ? card(selectedPlace.value as any) : null
 )
 
-const selectedLogoTarget = computed(() => selectedCell.value ?? selectedPlace.value ?? null)
+const selectedLogoTarget = computed(
+  () => selectedCell.value ?? selectedPlace.value ?? null
+)
 const { avatar: selectedLogo, hydrate: hydrateLogo } = usePlaceLogoState(
   selectedLogoTarget
 )
@@ -115,6 +123,12 @@ if (import.meta.dev && props.type === 'kitchen') {
   })
 }
 
+function toShade(value: unknown): PlaceImageShade {
+  const v = String(value ?? 'none').toLowerCase().trim()
+  if (v === 'light' || v === 'dark' || v === 'none') return v
+  return 'none'
+}
+
 function toDraft(
   place: BasePlace,
   placeId: string,
@@ -123,11 +137,18 @@ function toDraft(
   const name = String((place as any)?.name ?? '')
   const formatted = String((place as any)?.formatted_address ?? '')
   const existingSearchTerm = String((place as any)?.search_term ?? '').trim()
+
   const sanitizedPlaceImage =
     sanitizeLogoAvatar(String((place as any)?.place_image ?? '')) ?? ''
-  const resolvedLogo = typeof logoOverride === 'string'
-    ? logoOverride
-    : sanitizedPlaceImage
+
+  // Prefer override; else fall back to sanitized stored image
+  let resolvedLogo =
+    typeof logoOverride === 'string' ? logoOverride : sanitizedPlaceImage
+
+  // For google sources: if we didn’t find a real logo, store empty string (so UI can hydrate later).
+  if (selectedSource.value === 'google' && !resolvedLogo) {
+    resolvedLogo = ''
+  }
 
   return {
     id: placeId,
@@ -138,6 +159,10 @@ function toDraft(
     short_address: String((place as any)?.short_address ?? ''),
     lat: Number((place as any)?.lat ?? 0),
     lng: Number((place as any)?.lng ?? 0),
+
+    // ✅ required by PlaceUpsertInput
+    image_shade: toShade((place as any)?.image_shade),
+
     place_image: resolvedLogo,
     claimed_by: String((place as any)?.claimed_by ?? ''),
     search_term: existingSearchTerm || `${name} ${formatted}`.toLowerCase().trim(),
@@ -162,14 +187,13 @@ async function onConfirmClick() {
         selected_cell_image: selectedCell.value?.imageUrl ?? '',
       })
     }
+
     let logoOverride = selectedLogo.value
+
     if (selectedSource.value === 'google') {
       const cardForLogo = selectedCell.value ?? card(place as any)
       const cachedLogo = cardForLogo
-        ? await loadLogoForPlace(cardForLogo, {
-            timeoutMs: 2000,
-            priority: true,
-          })
+        ? await loadLogoForPlace(cardForLogo, { timeoutMs: 2000, priority: true })
         : null
 
       if (import.meta.dev) {
@@ -191,6 +215,7 @@ async function onConfirmClick() {
               priority: true,
             })
           : null
+
         if (import.meta.dev) {
           console.log('[places][confirm] hydrated-logo', {
             placeId,
@@ -198,6 +223,7 @@ async function onConfirmClick() {
             resolved_logo: resolved ?? '',
           })
         }
+
         logoOverride =
           sanitizeLogoAvatar(resolved ?? hydrated ?? selectedLogo.value) ?? null
       }
@@ -221,6 +247,7 @@ async function onConfirmClick() {
         placeId,
         source: draft.source,
         draft_image: draft.place_image,
+        draft_shade: draft.image_shade,
       })
     }
 

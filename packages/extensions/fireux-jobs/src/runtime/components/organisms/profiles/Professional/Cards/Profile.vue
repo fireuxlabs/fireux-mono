@@ -48,13 +48,13 @@
         <template #body="{ item }">
           <div v-if="item.value === 'bio_short'">
             <div v-if="prop">{{ prop }}</div>
-            <p v-if="bioShort" class="form-text form-text-muted">{{ bioShort }}</p>
-            <p v-else class="form-text form-text-muted">No bio short listed.</p>
+            <p v-if="bioShort" class="form-text-body">{{ bioShort }}</p>
+            <p v-else class="form-text-body">No bio short listed.</p>
           </div>
 
           <div v-else-if="item.value === 'bio_long'">
-            <p v-if="bioLong" class="form-text form-text-muted">{{ bioLong }}</p>
-            <p v-else class="form-text form-text-muted">No bio long listed.</p>
+            <p v-if="bioLong" class="form-text-body">{{ bioLong }}</p>
+            <p v-else class="form-text-body">No bio long listed.</p>
           </div>
 
           <div v-else-if="item.value === 'relevant_experience'">
@@ -73,7 +73,7 @@
                   />
                   <div v-else>Location unavailable</div>
                 </div>
-                <p v-if="entry.item.responsibilities" class="form-text form-text-muted">
+                <p v-if="entry.item.responsibilities" class="form-text-body">
                   {{ entry.item.responsibilities }}
                 </p>
               </div>
@@ -93,7 +93,7 @@
                     :show-subtitle="entry.showSubtitle"
                   />
                 </div>
-                <p v-if="entry.item.responsibilities" class="form-text form-text-muted">
+                <p v-if="entry.item.responsibilities" class="form-text-body">
                   {{ entry.item.responsibilities }}
                 </p>
               </div>

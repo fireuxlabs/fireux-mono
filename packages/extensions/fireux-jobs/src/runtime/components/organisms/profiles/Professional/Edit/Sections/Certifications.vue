@@ -1,3 +1,4 @@
+<!-- flag -->
 <template>
   <div class="profile-edit__section">
     <MoleculesFormsFirestoreObjectArray
@@ -7,26 +8,9 @@
       :item-title="itemTitle"
       :item-date="itemDate"
       :item-subtitle="itemSubtitle"
+      :fields="fields"
       :show-actions="true"
     >
-      <template #edit="{ item, save, cancel }">
-        <div class="space-y-2">
-          <UInput v-model="item.name" placeholder="Certification name" />
-          <UInput v-model="item.place_name" placeholder="Organization" />
-          <UInput v-model="item.year" placeholder="Year" />
-          <UInput v-model="item.document_url" placeholder="Document URL" />
-          <UInput v-model="item.image_url" placeholder="Image URL" />
-          <div class="flex gap-2">
-            <UButton size="xs" variant="solid" icon="i-lucide-check" @click="save">
-              Save
-            </UButton>
-            <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel">
-              Cancel
-            </UButton>
-          </div>
-        </div>
-      </template>
-
       <template #create="{ push }">
         <UButton
           size="xs"
@@ -58,5 +42,13 @@ const props = defineProps<{
 const itemTitle = (item: CertificationItem) => item.name || 'Certification'
 const itemDate = (item: CertificationItem) => item.year || 'Year not set'
 const itemSubtitle = (item: CertificationItem) => item.place_name || 'Organization'
+
+const fields = [
+  { key: 'name', type: 'text', label: 'Certification name', placeholder: 'Certification name' },
+  { key: 'place_name', type: 'text', label: 'Organization', placeholder: 'Organization' },
+  { key: 'year', type: 'text', label: 'Year', placeholder: 'Year' },
+  { key: 'document_url', type: 'text', label: 'Document URL', placeholder: 'Document URL' },
+  { key: 'image_url', type: 'text', label: 'Image URL', placeholder: 'Image URL' },
+]
 
 </script>

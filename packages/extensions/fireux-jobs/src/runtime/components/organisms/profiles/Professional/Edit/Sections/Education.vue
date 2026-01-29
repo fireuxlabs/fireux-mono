@@ -1,3 +1,4 @@
+<!-- flag -->
 <template>
   <div class="profile-edit__section">
     <MoleculesFormsFirestoreObjectArray
@@ -7,28 +8,9 @@
       :item-title="itemTitle"
       :item-date="itemDate"
       :item-subtitle="itemSubtitle"
+      :fields="fields"
       :show-actions="true"
     >
-      <template #edit="{ item, save, cancel }">
-        <div class="space-y-2">
-          <UInput v-model="item.institution" placeholder="Institution" />
-          <UInput v-model="item.degree" placeholder="Degree" />
-          <UInput v-model="item.start_year" placeholder="Start year" />
-          <UInput v-model="item.end_year" placeholder="End year" />
-          <UCheckbox v-model="item.ongoing" label="Ongoing" />
-          <UInput v-model="item.document_url" placeholder="Document URL" />
-          <UInput v-model="item.image_url" placeholder="Image URL" />
-          <div class="flex gap-2">
-            <UButton size="xs" variant="solid" icon="i-lucide-check" @click="save">
-              Save
-            </UButton>
-            <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel">
-              Cancel
-            </UButton>
-          </div>
-        </div>
-      </template>
-
       <template #create="{ push }">
         <UButton
           size="xs"
@@ -63,4 +45,14 @@ const itemTitle = (item: EducationItem) => item.degree || 'Degree'
 const itemDate = (item: EducationItem) =>
   `${item.start_year || 'Start'}–${item.ongoing ? 'Present' : (item.end_year || 'End')}`
 const itemSubtitle = (item: EducationItem) => item.institution || 'Institution'
+
+const fields = [
+  { key: 'institution', type: 'text', label: 'Institution', placeholder: 'Institution' },
+  { key: 'degree', type: 'text', label: 'Degree', placeholder: 'Degree' },
+  { key: 'start_year', type: 'text', label: 'Start year', placeholder: 'Start year' },
+  { key: 'end_year', type: 'text', label: 'End year', placeholder: 'End year' },
+  { key: 'ongoing', type: 'checkbox', label: 'Ongoing' },
+  { key: 'document_url', type: 'text', label: 'Document URL', placeholder: 'Document URL' },
+  { key: 'image_url', type: 'text', label: 'Image URL', placeholder: 'Image URL' },
+]
 </script>

@@ -1,6 +1,9 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/profile.vue -->
 <template>
-  <UDashboardPanel id="dashboard-professional-profile">
+  <UDashboardPanel
+    id="dashboard-professional-profile"
+    :ui="{ body: 'flex flex-col gap-4 flex-1 overflow-y-auto p-2 sm:p-4' }"
+  >
     <template #header>
       <LayoutsDashboardNavbar :title="navTitle">
         <template #right>
