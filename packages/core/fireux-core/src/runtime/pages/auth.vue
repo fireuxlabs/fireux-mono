@@ -11,7 +11,7 @@
           <AppBrandWordmark
             size="large"
             class="tenant-brand__wordmark"
-            light-src="/img/app/wordmark-light.png"
+            light-src="/img/app/wordmark-light.svg"
             dark-src="/img/app/wordmark-dark.png"
           />
         </div>
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, definePageMeta } from '#imports'
+import { definePageMeta } from '#imports'
 import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
 
 definePageMeta({

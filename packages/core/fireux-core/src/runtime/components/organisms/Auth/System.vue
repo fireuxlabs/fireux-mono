@@ -5,7 +5,7 @@
       <AppBrandWordmark
         size="large"
         class="auth-logo__img"
-        light-src="/img/app/wordmark-light.png"
+        light-src="/img/app/wordmark-light.svg"
         dark-src="/img/app/wordmark-dark.png"
       />
     </div>

@@ -76,3 +76,7 @@ export const App = {
 }
 
 export type AppModel = typeof App
+
+export { createEmptyAppSocialLinks } from './app.supporting'
+export type { AppSocialLinks } from './app.supporting'
+

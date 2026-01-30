@@ -11,7 +11,7 @@
         <NuxtLink to="/" aria-label="Home">
           <AppBrandWordmark
             size="large"
-            light-src="/img/app/wordmark-light.png"
+            light-src="/img/app/wordmark-light.svg"
             dark-src="/img/app/wordmark-dark.png"
           />
         </NuxtLink>
@@ -76,8 +76,8 @@
 
 <script setup lang="ts">
 import { computed, onErrorCaptured, ref } from '#imports'
-import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useDefaultNav } from '../../../composables/fireux/app/routing/presets'
+import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 

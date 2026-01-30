@@ -65,7 +65,6 @@ const adminCards = computed(() =>
     const enriched: UserCard.Card = {
       ...payload,
       displayName,
-      badges: ['Admin'],
     }
 
     return { key: record.id || `${index}`, card: enriched }

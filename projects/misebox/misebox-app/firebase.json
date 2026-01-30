@@ -1,12 +1,9 @@
 {
-  "functions": [
-    {
-      "source": ".output/server",
-      "codebase": "misebox-ssr",
-      "runtime": "nodejs22",
-      "entryPoint": "miseboxServer"
-    }
-  ],
+  "functions": {
+    "source": ".output/server",
+    "codebase": "misebox-ssr",
+    "runtime": "nodejs22"
+  },
   "hosting": {
     "site": "misebox-78f9c",
     "public": ".output/public",
@@ -16,9 +13,8 @@
       {
         "source": "**",
         "function": {
-          "functionId": "miseboxServer",
-          "codebase": "misebox-ssr",
-          "region": "europe-west6"
+          "functionId": "miseboxApp",
+          "region": "us-central1"
         }
       }
     ]

@@ -4,7 +4,6 @@
       <div class="collection-manager__header">
         <div class="collection-manager__title">
           <h2>Professionals</h2>
-          <p>Browse professionals available to this runtime.</p>
         </div>
 
         <div class="collection-manager__controls">
