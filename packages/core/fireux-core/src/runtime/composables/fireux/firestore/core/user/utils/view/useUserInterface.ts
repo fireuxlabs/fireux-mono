@@ -29,6 +29,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
     const id = safeString(user.id).trim()
     const handle = safeString(user.handle).trim()
     const appCount = safeArray(user.userOf).length
+    const profiles = safeArray<string>(user.profiles)
 
     return {
       id,
@@ -38,10 +39,10 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
       displayName: safeString(user.display_name).trim(),
 
       handle: handle ? `@${handle}` : '',
-      badges: [],
+      badges: profiles,
 
       bio: safeString(user.bio),
-      profiles: safeArray<string>(user.profiles),
+      profiles,
       appsLabel: appCount ? `${appCount} apps` : '',
     }
   }

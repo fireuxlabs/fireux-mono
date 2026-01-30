@@ -22,20 +22,21 @@
     </template>
 
     <div class="profile-card__section">
-      <h3 class="profile-card__section-title">Specialties</h3>
-      <div v-if="specialties.length">
+      <h3 class="profile-card__section-title">Positions</h3>
+      <div v-if="positions.length">
         <UBadge
-          v-for="specialty in specialties"
-          :key="specialty"
+          v-for="position in positions"
+          :key="position"
           variant="soft"
           color="neutral"
           size="xs"
         >
-          {{ specialty }}
+          {{ position }}
         </UBadge>
       </div>
-      <p v-else class="profile-card__empty form-text">No specialties listed.</p>
+      <p v-else class="profile-card__empty form-text">No positions listed.</p>
     </div>
+
 
     <ClientOnly>
       <UAccordion
@@ -46,15 +47,15 @@
         size="sm"
       >
         <template #body="{ item }">
-          <div v-if="item.value === 'bio_short'">
+          <div v-if="item.value === 'summary'">
             <div v-if="prop">{{ prop }}</div>
-            <p v-if="bioShort" class="form-text-body">{{ bioShort }}</p>
-            <p v-else class="form-text-body">No bio short listed.</p>
+            <p v-if="summary" class="form-text-body">{{ summary }}</p>
+            <p v-else class="form-text-body">No summary listed.</p>
           </div>
 
-          <div v-else-if="item.value === 'bio_long'">
-            <p v-if="bioLong" class="form-text-body">{{ bioLong }}</p>
-            <p v-else class="form-text-body">No bio long listed.</p>
+          <div v-else-if="item.value === 'bio'">
+            <p v-if="bio" class="form-text-body">{{ bio }}</p>
+            <p v-else class="form-text-body">No bio listed.</p>
           </div>
 
           <div v-else-if="item.value === 'relevant_experience'">
@@ -180,13 +181,6 @@
             </div>
             <p v-else>No projects listed.</p>
           </div>
-
-          <div v-else-if="item.value === 'locations'">
-            <div v-if="locations.length">
-              <div v-for="location in locations" :key="location">{{ location }}</div>
-            </div>
-            <p v-else>No locations listed.</p>
-          </div>
         </template>
       </UAccordion>
       <template #fallback>
@@ -199,8 +193,6 @@
       <ul>
         <li>Relevant Experience: {{ relevantExperience.length }}</li>
         <li>Other Experience: {{ otherExperience.length }}</li>
-        <li>Tags: {{ tags.length }}</li>
-        <li>Specialties: {{ specialties.length }}</li>
         <li>Languages: {{ languages.length }}</li>
         <li>Certifications: {{ certifications.length }}</li>
         <li>Education: {{ education.length }}</li>
@@ -246,16 +238,15 @@ const { prop } = toRefs(props)
 const profile = computed(() => props.profile ?? null)
 const badges = computed(() => card.badges ?? [])
 
-const tags = computed(() => profile.value?.tags ?? [])
+const positions = computed(() => profile.value?.positions ?? [])
 const specialties = computed(() => profile.value?.specialties ?? [])
-const locations = computed(() => profile.value?.locations ?? [])
 const certifications = computed(() => profile.value?.certifications ?? [])
 const languages = computed(() => profile.value?.languages ?? [])
 const education = computed(() => profile.value?.education ?? [])
 const volunteering = computed(() => profile.value?.volunteering ?? [])
 const projects = computed(() => profile.value?.projects ?? [])
-const bioShort = computed(() => profile.value?.bio_short ?? '')
-const bioLong = computed(() => profile.value?.bio_long ?? '')
+const summary = computed(() => profile.value?.summary ?? '')
+const bio = computed(() => profile.value?.bio ?? '')
 const relevantExperience = computed(() => profile.value?.relevant_experience ?? [])
 const otherExperience = computed(() => profile.value?.other_experience ?? [])
 const experienceCount = computed(
@@ -342,15 +333,14 @@ const computedEntries = computed(() => {
 
 const accordionItems = computed(() => {
   const items = [
-    { label: 'Bio Short', value: 'bio_short' },
-    { label: 'Bio Long', value: 'bio_long' },
+    { label: 'Summary', value: 'summary' },
+    { label: 'Bio', value: 'bio' },
     { label: 'Relevant Experience', value: 'relevant_experience' },
     { label: 'Languages', value: 'languages' },
     { label: 'Certifications', value: 'certifications' },
     { label: 'Education', value: 'education' },
     { label: 'Volunteering', value: 'volunteering' },
     { label: 'Projects', value: 'projects' },
-    { label: 'Locations', value: 'locations' },
   ]
 
   return items

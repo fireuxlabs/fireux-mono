@@ -21,8 +21,8 @@
             <UBadge
               v-for="badge in badges"
               :key="badge"
-              variant="soft"
-              color="neutral"
+              variant="subtle"
+              color="secondary"
               size="xs"
             >
               {{ badge }}

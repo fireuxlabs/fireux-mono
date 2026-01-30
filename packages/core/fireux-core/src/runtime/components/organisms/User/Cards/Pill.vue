@@ -7,21 +7,23 @@
   >
     <UUser
       :name="displayName"
-      :description="showSubtitle ? (subtitleText || undefined) : undefined"
       :avatar="avatarUrl ? { src: avatarUrl || undefined, alt: displayName || '' } : undefined"
-      size="sm"
+      size="md"
     >
-      <template #default>
-        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
+      <template #description>
+        <div class="flex flex-col gap-1">
+          <span v-if="showSubtitle">{{ handle }}</span>
+          <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
+            <UBadge
+              v-for="badge in badges"
+              :key="badge"
+              variant="subtle"
+              color="secondary"
+              size="xs"
+            >
+              {{ badge }}
+            </UBadge>
+          </div>
         </div>
       </template>
     </UUser>
@@ -29,7 +31,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
 
 type PillProps = Pick<
@@ -53,13 +54,6 @@ const props = withDefaults(defineProps<PillProps>(), {
   showBadges: true,
   link: false,
   action: false,
-})
-
-const subtitleText = computed(() => {
-  const parts: string[] = []
-  if (props.handle) parts.push(props.handle)
-  if (props.profiles.length) parts.push(props.profiles.join(', '))
-  return parts.join(' · ')
 })
 
 const onClick = () => {

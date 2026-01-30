@@ -17,9 +17,9 @@
           v-bind="resolvePlaceCard(item)"
           :show-badges="false"
           :link="false"
-          class="max-w-full"
+          class="pill"
         />
-        <span v-else class="text-sm text-dimmed">{{ formatPlace(item) }}</span>
+        <span v-else class="text-sm text-dimmed mt-2">{{ formatPlace(item) }}</span>
 
         <p v-if="item.responsibilities" class="form-text-body">
           {{ item.responsibilities }}
@@ -31,8 +31,6 @@
     <template #edit="{ item, save, cancel }">
       <div class="space-y-3">
         <div class="space-y-2">
-          <div class="text-xs font-medium text-dimmed">Place</div>
-
           <PlaceCardsPill
             v-if="item.place_id && resolvePlaceCard(item)"
             v-bind="resolvePlaceCard(item)"
@@ -85,7 +83,7 @@
             <div class="text-xs font-medium text-dimmed">Ongoing</div>
             <UCheckbox
               :model-value="Boolean(item.ongoing)"
-              label="Currently"
+              label=""
               @update:model-value="(v: boolean) => onToggleOngoing(item, Boolean(v))"
             />
           </div>
@@ -221,11 +219,19 @@ watch(
 )
 
 const formatRange = (item: ExperienceEntry) => {
-  const start = [item.from_month, item.from_year].filter(Boolean).join(' ')
-  const end = item.ongoing
+  const startYear = String(item.from_year || '').trim()
+  const endYear = item.ongoing
     ? 'Present'
-    : [item.to_month, item.to_year].filter(Boolean).join(' ')
-  return [start, end].filter(Boolean).join(' · ') || 'Dates not listed'
+    : String(item.to_year || '').trim()
+
+  if (startYear && endYear && endYear !== 'Present' && startYear === endYear) {
+    return startYear
+  }
+
+  if (startYear && endYear) return `${startYear} - ${endYear}`
+  if (startYear) return startYear
+  if (endYear) return endYear
+  return 'Dates not listed'
 }
 
 const onToggleOngoing = (item: ExperienceEntry, value: boolean) => {

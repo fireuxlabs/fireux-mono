@@ -4,8 +4,8 @@
 
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'vuefire'
 import type { ProfessionalApp, ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'

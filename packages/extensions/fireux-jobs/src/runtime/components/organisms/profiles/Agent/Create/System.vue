@@ -49,9 +49,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAgentCreate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentCreate'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAgentCreate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentCreate';
 
 const props = defineProps<{ create?: () => Promise<unknown> }>()
 

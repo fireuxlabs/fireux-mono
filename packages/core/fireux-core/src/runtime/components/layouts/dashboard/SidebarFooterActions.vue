@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-2 w-full">
+  <div class="flex flex-col gap-2 w-full h-full">
     <UNavigationMenu
       :collapsed="collapsed"
       :items="actionItems"
@@ -9,7 +9,7 @@
     <NuxtLink
       v-if="compactProfile && collapsed && pillUser"
       to="/dashboard/user-profile"
-      class="w-full flex justify-center"
+      class="w-full flex justify-center mt-auto"
       aria-label="View profile"
     >
       <UAvatar
@@ -24,7 +24,8 @@
       v-else-if="pillUser"
       v-bind="pillUser"
       :link="Boolean(pillUser.to)"
-      class="w-full"
+      :show-badges="false"
+      class="w-full mt-auto"
     />
   </div>
 </template>

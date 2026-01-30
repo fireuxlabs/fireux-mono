@@ -172,7 +172,6 @@ const projects = computed(() => professional.value?.projects ?? [])
 const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
   try {
     await fn()
-    toast.add({ title: okTitle })
     return 'success'
   } catch (error) {
     const description = error instanceof Error ? error.message : 'Please try again.'

@@ -4,3 +4,14 @@
 @use './scss/molecules/pill';
 @use './scss/organisms/cards';
 @use './scss/organisms/profiles';
+
+/* Global scrollbar hide (keep scrolling functional) */
+* {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+}

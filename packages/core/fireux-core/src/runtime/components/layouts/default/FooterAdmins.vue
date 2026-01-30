@@ -1,14 +1,11 @@
 <template>
   <section
-    v-if="shouldRender"
+    v-if="isLoading || adminCards.length"
     class="footer-admins"
     aria-labelledby="footer-admins-title"
   >
     <div class="footer-admins__header">
       <p id="footer-admins-title" class="footer-admins__label">Admin team</p>
-      <p v-if="appName || app?.app_name" class="footer-admins__context">
-        Managing {{ appName || app?.app_name }}
-      </p>
     </div>
 
     <div v-if="isLoading" class="footer-admins__loading">
@@ -21,6 +18,7 @@
         :key="admin.key"
         v-bind="admin.card"
         :link="Boolean(admin.card.to)"
+        :show-badges="false"
         class="block"
       />
     </div>
@@ -31,26 +29,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useAppUsers } from '../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
-import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
 import { useUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-
-const { app } = useApp()
-const { users, pending } = useAppUsers()
+const { pending } = useAppUsers()
 const { fulfilled } = useUserCollection()
 const { card } = useUserInterface()
-const { appName } = useFireUXConfig()
-
-const adminMemberships = computed(() =>
-  (users.value ?? []).filter(
-    (record) =>
-      typeof record?.role === 'string' &&
-      record.role.trim().toLowerCase() === 'admin'
-  )
-)
 
 const adminEntries = computed(() =>
   (fulfilled?.value ?? []).filter(
@@ -58,26 +43,29 @@ const adminEntries = computed(() =>
   )
 )
 
-const adminCards = computed(() =>
-  adminEntries.value.map((record, index) => {
+const adminCards = computed(() => {
+  const entries = adminEntries.value
+  const result: Array<{ key: string; card: UserCard.Card }> = []
+
+  entries.forEach((record, index) => {
     const payload = card(record as any)
-    const displayName = payload.displayName
-    const enriched: UserCard.Card = {
-      ...payload,
-      displayName,
-    }
+    if (!payload) return
 
-    return { key: record.id || `${index}`, card: enriched }
+    result.push({
+      key: record.id || `${index}`,
+      card: {
+        ...payload,
+        displayName: payload.displayName,
+        badges: [],
+        profiles: [],
+      },
+    })
   })
-)
 
-const isLoading = computed(
-  () => Boolean(pending.value) && Boolean(adminMemberships.value.length)
-)
+  return result
+})
 
-const shouldRender = computed(
-  () => isLoading.value || Boolean(adminCards.value.length)
-)
+const isLoading = computed(() => Boolean(pending.value))
 
 </script>
 

@@ -13,23 +13,24 @@
 
       <img
         class="brand-wordmark"
-        src="/img/app/wordmark-light.svg"
+        src="/img/app/wordmark-light.png"
+        srcset="/img/app/wordmark-light.png 1x, /img/app/wordmark-light-2x.png 2x"
         alt="Richies Reinigung wordmark"
         width="320"
         height="80"
       />
 
       <p id="richies-brand" class="lede">
-        Boutique cleaning loops across Zürich. Same cleaner, photo receipts,
-        quick replies.
+        Richie’s Reinigung provides reliable, professional cleaning services for homes and businesses in Interlaken, Lauterbrunnen, and Wengen.
       </p>
 
       <div class="cta-actions">
         <NuxtLink class="btn primary" to="mailto:hello@richiesreinigung.ch">
           Hire Richie
         </NuxtLink>
-        <NuxtLink class="btn outline" to="tel:+41791234567">
-          Text / Call +41 79 123 45 67
+        <NuxtLink class="btn outline" to="tel:+41789520500">
+          <Icon name="i-lucide-phone" class="w-5 h-5" />
+          +41 78 952 05 00
         </NuxtLink>
       </div>
     </section>
@@ -59,17 +60,8 @@ useSeoMeta({
 <style scoped>
 .brand-landing {
   position: relative;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: clamp(2rem, 6vw, 5rem);
-  background: radial-gradient(
-      circle at top,
-      rgba(37, 99, 235, 0.35),
-      transparent 55%
-    ),
-    linear-gradient(135deg, #020617, #0f172a 60%, #1e1b4b);
+  min-height: 100%;
+  padding: 4rem clamp(2rem, 6vw, 5rem);
 }
 
 .brand-card {
@@ -99,6 +91,7 @@ useSeoMeta({
 .brand-wordmark {
   width: min(360px, 80vw);
   margin: 0 auto;
+  display: block;
 }
 
 .lede {
@@ -126,14 +119,14 @@ useSeoMeta({
 }
 
 .btn.primary {
-  background: #5b21b6;
-  border-color: #7c3aed;
+  background: #2563eb;
+  border-color: #3b82f6;
   color: white;
-  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
 }
 
 .btn.primary:hover {
-  background: #7c3aed;
+  background: #3b82f6;
 }
 
 .btn.outline {
@@ -154,5 +147,16 @@ useSeoMeta({
   .brand-wordmark {
     width: min(260px, 90vw);
   }
+}
+</style>
+
+<style global>
+body {
+  background: radial-gradient(
+      circle at top,
+      rgba(37, 99, 235, 0.35),
+      transparent 55%
+    ),
+    linear-gradient(135deg, #020617, #0f172a 60%, #1e1b4b);
 }
 </style>

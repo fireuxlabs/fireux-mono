@@ -448,6 +448,11 @@ defineExpose({
   position: relative;
 }
 
+.object-array__item-body :deep(.pill) {
+  margin-top: 0.5rem;
+  max-width: 100%;
+}
+
 .object-array__item-header {
   display: flex;
   align-items: center;

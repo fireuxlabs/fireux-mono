@@ -4,7 +4,7 @@
     <UContainer>
       <div class="flex w-full flex-col items-center gap-6">
         <ClientOnly>
-          <LayoutsDefaultFooterAdmins class="w-full max-w-4xl" />
+          <LayoutsDefaultFooterAdmins class="w-full max-w-4xl" :show-badges="false" />
         </ClientOnly>
 
         <div class="flex flex-col items-center gap-4 text-center">
