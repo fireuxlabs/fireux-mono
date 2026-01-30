@@ -1,223 +1,173 @@
 <template>
-  <div class="chef-create-form">
-    <div class="form-header">
-      <h2>Create Your Chef Profile</h2>
-      <p>Share your culinary expertise and connect with opportunities</p>
-    </div>
-
-    <form @submit.prevent="handleSubmit" class="chef-form">
-      <!-- Basic Information -->
-      <div class="form-section">
-        <h3>Basic Information</h3>
-
-        <div class="form-field">
-          <label for="chef_name">Chef Name *</label>
-          <input
-            id="chef_name"
-            v-model="formData.chef_name"
-            type="text"
-            placeholder="e.g., Chef Marco, Chef Deano"
-            required
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="title">Chef Title</label>
-          <input
-            id="title"
-            v-model="formData.title"
-            type="text"
-            placeholder="e.g., Executive Chef, Pastry Chef"
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="years_experience">Years of Experience</label>
-          <input
-            id="years_experience"
-            v-model.number="formData.years_experience"
-            type="number"
-            placeholder="Total years as a chef"
-            min="0"
-          />
-        </div>
-      </div>
-
-      <!-- Biography -->
-      <div class="form-section">
-        <h3>About You</h3>
-
-        <div class="form-field">
-          <label for="bio_short">Short Bio</label>
-          <textarea
-            id="bio_short"
-            v-model="formData.bio_short"
-            rows="3"
-            placeholder="Brief chef introduction"
-          ></textarea>
-        </div>
-
-        <div class="form-field">
-          <label for="bio_long">Detailed Bio</label>
-          <textarea
-            id="bio_long"
-            v-model="formData.bio_long"
-            rows="6"
-            placeholder="Detailed chef biography and culinary journey"
-          ></textarea>
-        </div>
-      </div>
-
-      <!-- Specialties & Expertise -->
-      <div class="form-section">
-        <h3>Culinary Expertise</h3>
-
-        <div class="form-field">
-          <label for="specialties">Specialties</label>
-          <input
-            id="specialties"
-            v-model="specialtiesInput"
-            type="text"
-            placeholder="e.g., Italian, French, Pastry (comma separated)"
-            @blur="updateSpecialties"
-          />
-          <div v-if="formData.specialties?.length" class="tags-preview">
-            <span
-              v-for="specialty in formData.specialties"
-              :key="specialty"
-              class="tag"
-            >
-              {{ specialty }}
-              <button type="button" @click="removeSpecialty(specialty)">
-                ×
-              </button>
-            </span>
+  <section class="profile-create-system">
+    <UCard class="create-card">
+      <template #header>
+        <div class="header">
+          <div>
+            <p class="eyebrow">Chef profile</p>
+            <h2>Create your profile</h2>
           </div>
+          <p class="lede">
+            Set up a chef profile with your specialties and experience. You can
+            edit everything right after creating it.
+          </p>
         </div>
+      </template>
 
-        <div class="form-field">
-          <label for="cuisine_expertise">Cuisine Expertise</label>
-          <input
-            id="cuisine_expertise"
-            v-model="cuisineInput"
-            type="text"
-            placeholder="e.g., Mediterranean, Asian Fusion (comma separated)"
-            @blur="updateCuisineExpertise"
-          />
-          <div v-if="formData.cuisine_expertise?.length" class="tags-preview">
-            <span
-              v-for="cuisine in formData.cuisine_expertise"
-              :key="cuisine"
-              class="tag"
-            >
-              {{ cuisine }}
-              <button type="button" @click="removeCuisineExpertise(cuisine)">
-                ×
-              </button>
-            </span>
-          </div>
-        </div>
-      </div>
+      <div class="body">
+        <ul class="benefits">
+          <li>
+            <UIcon name="i-lucide-badge-check" />
+            <span>Listed in the FireUX directory</span>
+          </li>
+          <li>
+            <UIcon name="i-lucide-briefcase" />
+            <span>Add specialties, experience, and projects</span>
+          </li>
+          <li>
+            <UIcon name="i-lucide-sparkles" />
+            <span>Receive invites from kitchens and teams</span>
+          </li>
+        </ul>
 
-      <!-- Availability -->
-      <div class="form-section">
-        <h3>Availability</h3>
-
-        <div class="form-field checkbox-field">
-          <label>
-            <input v-model="formData.available_for_hire" type="checkbox" />
-            Available for hire
-          </label>
-        </div>
-
-        <div v-if="formData.available_for_hire" class="form-field">
-          <label for="hourly_rate">Hourly Rate (CHF)</label>
-          <input
-            id="hourly_rate"
-            v-model.number="formData.hourly_rate"
-            type="number"
-            placeholder="Your hourly rate"
-            min="0"
-          />
+        <div class="actions">
+          <UButton
+            color="primary"
+            size="lg"
+            class="create-button"
+            :loading="isCreating"
+            :disabled="isCreating"
+            @click="handleCreate"
+          >
+            {{ isCreating ? 'Creating…' : 'Create profile' }}
+          </UButton>
+          <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
         </div>
       </div>
-
-      <!-- Actions -->
-      <div class="form-actions">
-        <button type="button" class="btn-secondary" @click="$emit('cancel')">
-          Cancel
-        </button>
-        <button
-          type="submit"
-          class="btn-primary"
-          :disabled="!canSubmit || isSubmitting"
-        >
-          {{ isSubmitting ? 'Creating...' : 'Create Profile' }}
-        </button>
-      </div>
-    </form>
-  </div>
+    </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useChefCreate } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefCreate'
 
-const emit = defineEmits(['submit', 'cancel'])
+const props = defineProps<{ create?: () => Promise<unknown> }>()
 
-const isSubmitting = ref(false)
-const specialtiesInput = ref('')
-const cuisineInput = ref('')
+const emit = defineEmits<{
+  (e: 'created', payload: unknown): void
+  (e: 'error', error: unknown): void
+}>()
 
-const formData = ref({
-  chef_name: '',
-  title: '',
-  years_experience: null,
-  bio_short: '',
-  bio_long: '',
-  specialties: [] as string[],
-  cuisine_expertise: [] as string[],
-  available_for_hire: false,
-  hourly_rate: null,
-})
+const router = useRouter()
+const { ensureChef } = useChefCreate()
 
-const canSubmit = computed(() => {
-  return formData.value.chef_name.trim().length > 0
-})
+const isCreating = ref(false)
+const errorMessage = ref<string | null>(null)
 
-const updateSpecialties = () => {
-  if (specialtiesInput.value.trim()) {
-    const newSpecialties = specialtiesInput.value
-      .split(',')
-      .map((s: string) => s.trim())
-      .filter((s: string) => s.length > 0)
-      .filter((s: string) => !formData.value.specialties.includes(s))
+const handleCreate = async () => {
+  if (isCreating.value) return
 
-    formData.value.specialties.push(...newSpecialties)
-    specialtiesInput.value = ''
+  const create = props.create ?? ensureChef
+  isCreating.value = true
+  errorMessage.value = null
+
+  try {
+    const result = await create()
+    emit('created', result)
+    await router.push('/dashboard/chef/profile')
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Unable to create a chef profile right now.'
+    errorMessage.value = message
+    emit('error', error)
+  } finally {
+    isCreating.value = false
   }
 }
+</script>
 
-const removeSpecialty = (specialty: string) => {
-  const index = formData.value.specialties.indexOf(specialty)
-  if (index > -1) {
-    formData.value.specialties.splice(index, 1)
-  }
+<style scoped>
+.profile-create-system {
+  display: flex;
+  justify-content: center;
 }
 
-const updateCuisineExpertise = () => {
-  if (cuisineInput.value.trim()) {
-    const newCuisines = cuisineInput.value
-      .split(',')
-      .map((c: string) => c.trim())
-      .filter((c: string) => c.length > 0)
-      .filter((c: string) => !formData.value.cuisine_expertise.includes(c))
-
-    formData.value.cuisine_expertise.push(...newCuisines)
-    cuisineInput.value = ''
-  }
+.create-card {
+  max-width: 720px;
+  width: 100%;
 }
 
-const removeCuisineExpertise = (cuisine: string) => {
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ui-text-400, #94a3b8);
+  margin: 0;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.lede {
+  margin: 0;
+  color: var(--ui-text-500, #64748b);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.benefits li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--ui-text-600, #475569);
+}
+
+.benefits li :deep(svg) {
+  color: var(--ui-primary-500, #2563eb);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.create-button {
+  min-width: 240px;
+}
+
+.error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+</style>
   const index = formData.value.cuisine_expertise.indexOf(cuisine)
   if (index > -1) {
     formData.value.cuisine_expertise.splice(index, 1)

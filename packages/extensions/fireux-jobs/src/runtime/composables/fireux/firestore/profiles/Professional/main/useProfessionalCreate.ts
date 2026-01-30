@@ -5,6 +5,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'vuefire'
 import type { ProfessionalApp, ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
@@ -13,12 +14,14 @@ import { professionalConfig } from '../../../../../../models/profiles/Profession
 export function useProfessionalCreate() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
+  const { ensureUser } = useUserEnsure()
 
   async function ensureProfessional(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
   }> {
+    await ensureUser()
     const { uid } = await requireUid()
     const { appId, isTenant } = useFireUXConfig()
 

@@ -3,19 +3,17 @@
 	<UPageCTA
 		class="cta"
 		title="Chef profile"
-		description="Showcase your culinary strengths so kitchens can match you to the right stations and menus."
+		description="Create your chef profile so venues can find you."
 		variant="subtle"
 		orientation="horizontal"
 	>
-		<template #default>
-			<div v-if="card()" class="cta__body space-y-4">
-				<OrganismsProfilesChefCardsPreview v-bind="card()" />
-			</div>
+		<div v-if="card()" class="cta__body space-y-4">
+			<OrganismsProfilesChefCardsPreview v-bind="card()" :link="true" />
+		</div>
 
-			<div v-else class="cta__body space-y-2">
-				<OrganismsProfilesChefCreateSystem />
-			</div>
-		</template>
+		<div v-else class="cta__body space-y-2">
+			<OrganismsProfilesChefCreateSystem />
+		</div>
 	</UPageCTA>
 </template>
 

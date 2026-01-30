@@ -184,7 +184,7 @@ async function onConfirmClick() {
         source: selectedSource.value,
         place_image: (place as any)?.place_image ?? '',
         selected_logo_state: selectedLogo.value ?? '',
-        selected_cell_image: selectedCell.value?.imageUrl ?? '',
+        selected_cell_image: selectedCell.value?.avatarUrl ?? '',
       })
     }
 

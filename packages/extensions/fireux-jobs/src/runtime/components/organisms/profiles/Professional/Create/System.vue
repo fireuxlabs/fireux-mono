@@ -5,11 +5,11 @@
         <div class="header">
           <div>
             <p class="eyebrow">Professional profile</p>
-            <h2>Create your showcase</h2>
+            <h2>Create your profile</h2>
           </div>
           <p class="lede">
-            Launch a discoverable profile with your experience, credentials, and
-            specialties. You can edit the details right after creating it.
+            Set up a professional profile with your headline, specialties, and
+            experience. You can edit everything right after creating it.
           </p>
         </div>
       </template>
@@ -18,15 +18,15 @@
         <ul class="benefits">
           <li>
             <UIcon name="i-lucide-badge-check" />
-            <span>Verified listing used across FireUX apps</span>
+            <span>Listed in the FireUX directory</span>
           </li>
           <li>
             <UIcon name="i-lucide-briefcase" />
-            <span>Attach curated experience, certifications, and projects</span>
+            <span>Add experience, certifications, and projects</span>
           </li>
           <li>
             <UIcon name="i-lucide-sparkles" />
-            <span>Unlock invites from agents and chefs in the marketplace</span>
+            <span>Receive invites from agents and teams</span>
           </li>
         </ul>
 
@@ -40,7 +40,7 @@
             @click="handleCreate"
           >
             {{
-              isCreating ? 'Creating profile…' : 'Create professional profile'
+              isCreating ? 'Creating…' : 'Create profile'
             }}
           </UButton>
           <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
@@ -52,6 +52,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useProfessionalCreate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCreate'
 
 const props = defineProps<{ create?: () => Promise<unknown> }>()
@@ -61,6 +62,7 @@ const emit = defineEmits<{
   (e: 'error', error: unknown): void
 }>()
 
+const router = useRouter()
 const { createProfessional } = useProfessionalCreate()
 
 const isCreating = ref(false)
@@ -76,6 +78,7 @@ const handleCreate = async () => {
   try {
     const result = await create()
     emit('created', result)
+    await router.push('/dashboard/professional/profile')
   } catch (error) {
     const message =
       error instanceof Error

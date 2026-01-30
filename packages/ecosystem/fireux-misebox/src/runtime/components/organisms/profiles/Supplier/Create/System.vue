@@ -1,223 +1,173 @@
 <template>
-  <div class="supplier full-create profile-create">
-    <div class="form-header">
-      <h2>🚛 Create Your Full Supplier Profile</h2>
-      <p>
-        Join the marketplace as a verified supplier to manage your own profile
-        and sell excess production
-      </p>
-
-      <div class="track-info">
-        <div class="track-note">
-          <strong>💡 Two ways to work with suppliers:</strong>
-          <ul>
-            <li>
-              <strong>Quick Track:</strong> Chefs can quickly create supplier
-              names when adding ingredients
-            </li>
-            <li>
-              <strong>Full Track:</strong> Suppliers create rich profiles to
-              manage their own presence and ingredients
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <form @submit.prevent="handleSubmit" class="profile-form">
-      <!-- Essential Information -->
-      <div class="form-section">
-        <h3>Essential Business Information</h3>
-
-        <div class="form-field">
-          <label for="business_name">Business Name *</label>
-          <input
-            id="business_name"
-            v-model="formData.business_name"
-            type="text"
-            placeholder="e.g., Fresh Valley Farm"
-            required
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="business_type">Business Type *</label>
-          <select id="business_type" v-model="formData.business_type" required>
-            <option value="">Select your business type</option>
-            <option value="farm">Farm</option>
-            <option value="distributor">Distributor</option>
-            <option value="manufacturer">Manufacturer</option>
-            <option value="wholesaler">Wholesaler</option>
-            <option value="producer">Producer</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-
-        <div class="form-field tags-input">
-          <label for="specialties">What do you supply? *</label>
-          <input
-            id="specialties"
-            v-model="specialtiesInput"
-            type="text"
-            placeholder="e.g., Organic Vegetables, Dairy Products, Fresh Herbs"
-            @blur="updateSpecialties"
-            @keydown.enter.prevent="updateSpecialties"
-          />
-          <small>Press Enter or click away to add each specialty</small>
-          <div v-if="formData.specialties?.length" class="tags-preview">
-            <span
-              v-for="specialty in formData.specialties"
-              :key="specialty"
-              class="tag"
-            >
-              {{ specialty }}
-              <button type="button" @click="removeSpecialty(specialty)">
-                ×
-              </button>
-            </span>
+  <section class="profile-create-system">
+    <UCard class="create-card">
+      <template #header>
+        <div class="header">
+          <div>
+            <p class="eyebrow">Supplier profile</p>
+            <h2>Create your profile</h2>
           </div>
+          <p class="lede">
+            Set up a supplier profile with your products and capabilities. You
+            can edit everything right after creating it.
+          </p>
+        </div>
+      </template>
+
+      <div class="body">
+        <ul class="benefits">
+          <li>
+            <UIcon name="i-lucide-badge-check" />
+            <span>Listed in the FireUX directory</span>
+          </li>
+          <li>
+            <UIcon name="i-lucide-briefcase" />
+            <span>Add products, certifications, and details</span>
+          </li>
+          <li>
+            <UIcon name="i-lucide-sparkles" />
+            <span>Receive invites from chefs and teams</span>
+          </li>
+        </ul>
+
+        <div class="actions">
+          <UButton
+            color="primary"
+            size="lg"
+            class="create-button"
+            :loading="isCreating"
+            :disabled="isCreating"
+            @click="handleCreate"
+          >
+            {{ isCreating ? 'Creating…' : 'Create profile' }}
+          </UButton>
+          <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
         </div>
       </div>
-
-      <!-- Contact Information -->
-      <div class="form-section">
-        <h3>Contact Information</h3>
-
-        <div class="form-field">
-          <label for="email">Business Email *</label>
-          <input
-            id="email"
-            v-model="formData.email"
-            type="email"
-            placeholder="business@example.com"
-            required
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="contact_person">Contact Person</label>
-          <input
-            id="contact_person"
-            v-model="formData.contact_person"
-            type="text"
-            placeholder="Primary contact name"
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="phone">Phone Number</label>
-          <input
-            id="phone"
-            v-model="formData.phone"
-            type="tel"
-            placeholder="Business phone"
-          />
-        </div>
-      </div>
-
-      <!-- Optional Details -->
-      <div class="form-section">
-        <h3>Additional Details (Optional)</h3>
-
-        <div class="form-field">
-          <label for="bio_short">Business Description</label>
-          <textarea
-            id="bio_short"
-            v-model="formData.bio_short"
-            rows="3"
-            placeholder="Brief description of your business and what makes you unique"
-          ></textarea>
-        </div>
-
-        <div class="form-field">
-          <label for="years_in_business">Years in Business</label>
-          <input
-            id="years_in_business"
-            v-model.number="formData.years_in_business"
-            type="number"
-            placeholder="How long have you been operating?"
-            min="0"
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="website">Website</label>
-          <input
-            id="website"
-            v-model="formData.website"
-            type="url"
-            placeholder="https://your-website.com"
-          />
-        </div>
-      </div>
-
-      <!-- Actions -->
-      <div class="form-actions">
-        <button type="button" class="btn-secondary" @click="$emit('cancel')">
-          Cancel
-        </button>
-        <button
-          type="submit"
-          class="btn-primary"
-          :disabled="!canSubmit || isSubmitting"
-        >
-          {{ isSubmitting ? 'Creating Profile...' : 'Create Supplier Profile' }}
-        </button>
-      </div>
-
-      <div v-if="error" class="error-message">
-        {{ error }}
-      </div>
-    </form>
-  </div>
+    </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useCurrentUser, useFirestore } from 'vuefire'
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useSupplierCreate } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCreate'
 
-const emit = defineEmits(['submit', 'cancel', 'success'])
+const props = defineProps<{ create?: () => Promise<unknown> }>()
 
-const currentUser = useCurrentUser()
-const isSubmitting = ref(false)
-const error = ref('')
-const specialtiesInput = ref('')
+const emit = defineEmits<{
+  (e: 'created', payload: unknown): void
+  (e: 'error', error: unknown): void
+}>()
 
-// Simplified form data matching our new Supplier model
-const formData = ref({
-  business_name: '',
-  business_type: '',
-  specialties: [],
-  email: '',
-  contact_person: '',
-  phone: '',
-  bio_short: '',
-  years_in_business: null,
-  website: '',
+const router = useRouter()
+const { ensureSupplier } = useSupplierCreate()
 
-  // Default values
-  total_ingredients: 0,
-  active_ingredients: [],
-  verified: false,
-  featured: false,
-})
+const isCreating = ref(false)
+const errorMessage = ref<string | null>(null)
 
-const canSubmit = computed(() => {
-  return (
-    formData.value.business_name.trim().length > 0 &&
-    formData.value.business_type.length > 0 &&
-    formData.value.specialties.length > 0 &&
-    formData.value.email.trim().length > 0
-  )
-})
+const handleCreate = async () => {
+  if (isCreating.value) return
 
-// Specialties management
-const updateSpecialties = () => {
-  if (specialtiesInput.value.trim()) {
-    const newSpecialties = specialtiesInput.value
-      .split(',')
-      .map((s: string) => s.trim())
+  const create = props.create ?? ensureSupplier
+  isCreating.value = true
+  errorMessage.value = null
+
+  try {
+    const result = await create()
+    emit('created', result)
+    await router.push('/dashboard/supplier/profile')
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Unable to create a supplier profile right now.'
+    errorMessage.value = message
+    emit('error', error)
+  } finally {
+    isCreating.value = false
+  }
+}
+</script>
+
+<style scoped>
+.profile-create-system {
+  display: flex;
+  justify-content: center;
+}
+
+.create-card {
+  max-width: 720px;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ui-text-400, #94a3b8);
+  margin: 0;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.lede {
+  margin: 0;
+  color: var(--ui-text-500, #64748b);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.benefits li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--ui-text-600, #475569);
+}
+
+.benefits li :deep(svg) {
+  color: var(--ui-primary-500, #2563eb);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.create-button {
+  min-width: 240px;
+}
+
+.error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+</style>
       .filter((s: string) => s.length > 0)
       .filter((s: string) => !formData.value.specialties.includes(s))
 

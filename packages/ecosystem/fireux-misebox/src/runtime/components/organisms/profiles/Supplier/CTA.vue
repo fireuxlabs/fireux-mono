@@ -2,24 +2,22 @@
   <UPageCTA
     class="cta"
     title="Supplier profile"
-    description="Introduce your products to chefs and venues across the FireUX network."
+    description="Create your supplier profile so chefs can discover you."
     variant="subtle"
     orientation="horizontal"
   >
-    <template #default>
-      <div v-if="card()" class="cta__body space-y-4">
-        <OrganismsProfilesSupplierCardsPreview v-bind="card()" />
-      </div>
+    <div v-if="card()" class="cta__body space-y-4">
+      <OrganismsProfilesSupplierCardsPreview v-bind="card()" :link="true" />
+    </div>
 
-      <div v-else class="cta__body space-y-2">
-        <OrganismsProfilesSupplierCreateSystem />
-      </div>
-    </template>
+    <div v-else class="cta__body space-y-2">
+      <OrganismsProfilesSupplierCreateSystem />
+    </div>
   </UPageCTA>
 </template>
 
 <script setup lang="ts">
-import { useSupplier } from '../../../../composables/fireux/firestore/profiles/Supplier/useSupplier.ts';
+import { useSupplier } from '../../../../composables/fireux/firestore/profiles/Supplier/useSupplier';
 
 const { card } = useSupplier()
 

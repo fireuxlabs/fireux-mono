@@ -1,305 +1,170 @@
 <template>
-  <div class="agent-create-container">
-    <UCard class="agent-create-card">
+  <section class="profile-create-system">
+    <UCard class="create-card">
       <template #header>
-        <div class="create-header">
-          <h2 class="create-title">Create Agent Profile</h2>
-          <p class="create-description">
-            Set up your company profile to start posting jobs and connecting
-            with professionals
+        <div class="header">
+          <div>
+            <p class="eyebrow">Agent profile</p>
+            <h2>Create your profile</h2>
+          </div>
+          <p class="lede">
+            Set up an agent profile with your agency details and experience. You
+            can edit everything right after creating it.
           </p>
         </div>
       </template>
 
-      <div class="create-content">
-        <div class="user-info-section">
-          <h3 class="section-title">Your Information</h3>
-          <div class="user-details" v-if="appUser">
-            <div class="user-field">
-              <span class="field-label">Name:</span>
-              <span class="field-value">{{ accountDisplayName }}</span>
-            </div>
-          </div>
-        </div>
+      <div class="body">
+        <ul class="benefits">
+          <li>
+            <UIcon name="i-lucide-badge-check" />
+            <span>Listed in the FireUX directory</span>
+          </li>
+          <li>
+            <UIcon name="i-lucide-briefcase" />
+            <span>Add roles, contact info, and details</span>
+          </li>
+          <li>
+            <UIcon name="i-lucide-sparkles" />
+            <span>Receive inquiries from professionals</span>
+          </li>
+        </ul>
 
-        <div class="form-section">
-          <h3 class="section-title">Agency Information</h3>
-          <form @submit.prevent="onCreateAgent" class="create-form">
-            <div class="form-grid">
-              <div class="form-group full-width">
-                <p class="form-label">
-                  Agency Name <span class="form-required">*</span>
-                </p>
-                <UInput
-                  v-model="formData.companyName"
-                  placeholder="Enter your agency name"
-                  required
-                />
-              </div>
-
-              <div class="form-group">
-                <p class="form-label">Contact Email</p>
-                <UInput
-                  v-model="formData.contactEmail"
-                  type="email"
-                  placeholder="Company contact email"
-                />
-              </div>
-
-              <div class="form-group">
-                <p class="form-label">Website</p>
-                <UInput
-                  v-model="formData.website"
-                  placeholder="yourcompany.com"
-                />
-              </div>
-
-              <div class="form-group full-width">
-                <p class="form-label">Agency Description</p>
-                <UTextarea
-                  v-model="formData.description"
-                  placeholder="Tell us about your agency..."
-                  :rows="4"
-                />
-              </div>
-            </div>
-
-            <div class="form-actions">
-              <UButton
-                type="submit"
-                :loading="isSubmitting"
-                :disabled="!isFormValid || isSubmitting"
-                size="lg"
-                color="primary"
-                class="create-button"
-              >
-                Create Agent Profile
-              </UButton>
-            </div>
-          </form>
+        <div class="actions">
+          <UButton
+            color="primary"
+            size="lg"
+            class="create-button"
+            :loading="isCreating"
+            :disabled="isCreating"
+            @click="handleCreate"
+          >
+            {{ isCreating ? 'Creating…' : 'Create profile' }}
+          </UButton>
+          <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
         </div>
       </div>
     </UCard>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAgentCreate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentCreate'
 
-type AccountUser = {
-  full_name?: string | null
-  displayName?: string | null
-  handle?: string | null
-  uid?: string | null
-  id?: string | null
-  email?: string | null
-}
+const props = defineProps<{ create?: () => Promise<unknown> }>()
 
-// Get current user data
-const { currentUser } = useAuth()
-const appUser = currentUser as Ref<AccountUser | null | undefined>
+const emit = defineEmits<{
+  (e: 'created', payload: unknown): void
+  (e: 'error', error: unknown): void
+}>()
 
-const accountDisplayName = computed(() => {
-  const user = appUser.value
-  if (!user) return 'Your account'
+const router = useRouter()
+const { ensureAgent } = useAgentCreate()
 
-  return (
-    user.full_name ||
-    user.displayName ||
-    user.handle ||
-    user.uid ||
-    user.id ||
-    'Your account'
-  )
-})
+const isCreating = ref(false)
+const errorMessage = ref<string | null>(null)
 
-// Initialize agent composable helpers
-const { createAgent } = useAgent()
+const handleCreate = async () => {
+  if (isCreating.value) return
 
-// Form state
-const formData = ref({
-  companyName: '',
-  contactEmail: '',
-  website: '',
-  description: '',
-})
-
-// Form validation
-const isFormValid = computed(() => {
-  return formData.value.companyName.trim()
-})
-
-const isSubmitting = ref(false)
-
-async function onCreateAgent() {
-  if (!isFormValid.value || isSubmitting.value) return
+  const create = props.create ?? ensureAgent
+  isCreating.value = true
+  errorMessage.value = null
 
   try {
-    isSubmitting.value = true
-    await createAgent()
-
-    // Success feedback
-    console.log('Agent profile created successfully!')
-
-    // The page should automatically refresh to show the new profile
-    // thanks to the reactivity in the parent component
-  } catch (err) {
-    console.error('Failed to create agent profile:', err)
-    // You might want to show a toast or error message here
+    const result = await create()
+    emit('created', result)
+    await router.push('/dashboard/agent/profile')
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Unable to create an agent profile right now.'
+    errorMessage.value = message
+    emit('error', error)
   } finally {
-    isSubmitting.value = false
+    isCreating.value = false
   }
 }
-
-// Initialize form with user data
-onMounted(() => {
-  if (appUser.value) {
-    formData.value.contactEmail = appUser.value.email || ''
-  }
-})
 </script>
 
 <style scoped>
-/* FireUX Pattern-Compliant Agent Create System */
-
-.agent-create-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: var(--space-6);
+.profile-create-system {
+  display: flex;
+  justify-content: center;
 }
 
-.agent-create-card {
-  border-radius: var(--radius-lg);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+.create-card {
+  max-width: 720px;
+  width: 100%;
 }
 
-.create-header {
-  text-align: center;
-  padding: var(--space-4);
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.create-title {
-  font-size: var(--text-2xl);
-  font-weight: 600;
-  margin-bottom: var(--space-2);
-  color: var(--text-primary);
-}
-
-.create-description {
-  font-size: var(--text-base);
-  color: var(--text-secondary);
+.eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ui-text-400, #94a3b8);
   margin: 0;
 }
 
-.create-content {
-  padding: var(--space-6);
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.lede {
+  margin: 0;
+  color: var(--ui-text-500, #64748b);
+}
+
+.body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: 1.5rem;
 }
 
-.section-title {
-  font-size: var(--text-lg);
-  font-weight: 600;
-  margin-bottom: var(--space-4);
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--ui-border);
-  padding-bottom: var(--space-2);
-}
-
-.user-info-section {
-  padding: var(--space-4);
-  background-color: var(--ui-bg-elevated);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--ui-border);
-}
-
-.user-details {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.user-field {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.field-label {
-  font-weight: 500;
-  min-width: 60px;
-  color: var(--text-secondary);
-}
-
-.field-value {
-  color: var(--text-primary);
-}
-
-.form-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.create-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-}
-
-.form-grid {
+.benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
+  gap: 0.75rem;
 }
 
-.form-group {
+.benefits li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--ui-text-600, #475569);
+}
+
+.benefits li :deep(svg) {
+  color: var(--ui-primary-500, #2563eb);
+}
+
+.actions {
   display: flex;
   flex-direction: column;
-}
-
-.form-group.full-width {
-  grid-column: 1 / -1;
-}
-
-.form-label {
-  font-weight: 600;
-  margin-bottom: var(--space-1);
-}
-
-.form-required {
-  color: var(--error, #ef4444);
-}
-
-.form-actions {
-  display: flex;
-  justify-content: center;
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--ui-border);
+  gap: 0.5rem;
+  align-items: flex-start;
 }
 
 .create-button {
-  min-width: 200px;
+  min-width: 240px;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .agent-create-container {
-    padding: var(--space-4);
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-3);
-  }
-
-  .create-title {
-    font-size: var(--text-xl);
-  }
-
-  .create-description {
-    font-size: var(--text-sm);
-  }
+.error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.875rem;
 }
 </style>

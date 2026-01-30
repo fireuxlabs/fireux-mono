@@ -14,9 +14,13 @@
             placeholder="Search products…"
           />
 
-          <UButton size="xs" variant="ghost" @click="toggleVariant">
-            {{ variant === 'pill' ? 'Cells' : 'Pills' }}
-          </UButton>
+          <UButton
+            size="xs"
+            variant="ghost"
+            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+            @click="toggleVariant"
+          />
           <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
         </div>
       </div>
