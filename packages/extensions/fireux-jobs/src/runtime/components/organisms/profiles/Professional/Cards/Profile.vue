@@ -392,9 +392,9 @@ const isComplexValue = (value: unknown) => {
 }
 
 const formatValue = (value: unknown) => {
-  if (value == null || value === '') return 'missing'
+  if (value == null || value === '') return '—'
   if (Array.isArray(value)) {
-    if (!value.length) return 'missing'
+    if (!value.length) return '—'
     if (value.every((entry) => ['string', 'number', 'boolean'].includes(typeof entry))) {
       return value.join(', ')
     }

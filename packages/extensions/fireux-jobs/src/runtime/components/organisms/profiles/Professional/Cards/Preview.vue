@@ -1,54 +1,79 @@
 <template>
-  <UCard class="preview">
-    <div class="preview__row">
+  <component
+    :is="link && to ? 'NuxtLink' : 'div'"
+    :to="link && to ? to : undefined"
+    class="card card--cell"
+    @click="onClick"
+  >
+    <div class="card__media">
       <UAvatarGroup v-if="secondaryAvatarUrl" size="sm">
         <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
         <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName" size="2xs" />
       </UAvatarGroup>
       <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName" size="sm" />
 
-      <div class="preview__main">
-        <div class="preview__top">
-          <div class="preview__title">{{ displayName }}</div>
-
+      <div class="card__content card__stack">
+        <div class="card__header">
+          <div class="min-w-0">
+            <div class="card__title">{{ displayName }}</div>
+            <div v-if="showSubtitle && title" class="card__subtitle">
+              {{ title }}
+            </div>
+          </div>
         </div>
 
-        <div v-if="showSubtitle && title" class="preview__subtitle">
-          {{ title }}
-        </div>
-
-        <div v-if="showBody" class="preview__body">
-          <div class="preview__line">
-            <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
-            <span v-else class="italic">missing</span>
+        <div v-if="showBody" class="card__tagline">
+          <div v-if="prop || bioShort">
+            {{ prop || bioShort }}
           </div>
 
-          <div class="preview__line text-dimmed">
-            <span v-if="specialtiesCsv">{{ specialtiesCsv }}</span>
-            <span v-else class="italic">missing</span>
+          <div v-if="specialtiesCsv" class="text-dimmed">
+            {{ specialtiesCsv }}
+          </div>
+
+          <div v-if="locationsCsv" class="text-dimmed">
+            {{ locationsCsv }}
           </div>
         </div>
       </div>
     </div>
-  </UCard>
+  </component>
 </template>
 
 <script setup lang="ts">
-type Props = {
-  avatarUrl: string
-  secondaryAvatarUrl?: string
-  displayName: string
-  title: string
-  bioShort: string
-  specialtiesCsv: string
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 
+type Props = Pick<
+  ProfessionalCard.Card,
+  | 'to'
+  | 'avatarUrl'
+  | 'secondaryAvatarUrl'
+  | 'displayName'
+  | 'title'
+  | 'bioShort'
+  | 'specialtiesCsv'
+  | 'locationsCsv'
+> & {
   prop?: string
   showSubtitle?: boolean
   showBody?: boolean
+  link?: boolean
+  action?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
+
+const props = withDefaults(defineProps<Props>(), {
+  prop: '',
   showSubtitle: true,
   showBody: true,
+  link: false,
+  action: false,
 })
+
+const onClick = () => {
+  if (props.action) emit('action')
+}
 </script>

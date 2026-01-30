@@ -40,16 +40,16 @@ import { computed, ref, watch } from 'vue'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import {
-  loadLogoForPlace,
-  sanitizeLogoAvatar,
-  usePlaceLogoState,
+    loadLogoForPlace,
+    sanitizeLogoAvatar,
+    usePlaceLogoState,
 } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type {
-  BasePlace,
-  PlaceSource,
-  PlaceUpsertInput,
-  PlaceImageShade,
+    BasePlace,
+    PlaceImageShade,
+    PlaceSource,
+    PlaceUpsertInput,
 } from '../../../../../models/objects/place.model'
 
 const props = withDefaults(

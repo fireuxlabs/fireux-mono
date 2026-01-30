@@ -34,7 +34,7 @@ export function useProfessional() {
   const { coreUser } = useUser()
 
   const computed = useProfessionalComputed(refs, pending)
-  const ui = useProfessionalInterface(refs, coreUser)
+  const professional = useProfessionalInterface(refs, coreUser)
   const update = useProfessionalUpdate(refs)
   const create = useProfessionalCreate()
 
@@ -45,7 +45,7 @@ export function useProfessional() {
     pending,
 
     ...computed,
-    ...ui,
+    ...professional,
     ...update,
     ...create,
   }

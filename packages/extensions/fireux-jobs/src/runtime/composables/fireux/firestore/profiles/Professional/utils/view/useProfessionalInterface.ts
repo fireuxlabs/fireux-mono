@@ -40,19 +40,21 @@ export function useProfessionalInterface(
 
   function map(p: ProfessionalCore, u?: UserLike | null): ProfessionalCard.Card {
     const id = safeString(p.id).trim()
-    const headline = safeString(p.professional_headline) || safeString(p.title)
-    const summary = safeString(p.professional_summary) || safeString(p.bio_short)
-    const profileImage = safeString(p.professional_image)
+    const headline = safeString((p as any).professional_headline) || safeString(p.job_title)
+    const summary = safeString((p as any).professional_summary) || safeString(p.summary) || safeString(p.bio)
+    const profileImage = safeString((p as any).professional_image) || safeString(p.image)
     const userAvatar = safeString(u?.avatar)
     const secondaryAvatarUrl = profileImage && userAvatar && profileImage !== userAvatar
       ? userAvatar
       : ''
     const positions =
-      Array.isArray(p.professional_positions) && p.professional_positions.length
-        ? p.professional_positions
-        : Array.isArray(p.professional_service_types) && p.professional_service_types.length
-          ? p.professional_service_types
-          : (p.specialties as string[])
+      Array.isArray((p as any).professional_positions) && (p as any).professional_positions.length
+        ? (p as any).professional_positions
+        : Array.isArray(p.positions) && p.positions.length
+          ? p.positions
+          : Array.isArray((p as any).professional_service_types) && (p as any).professional_service_types.length
+            ? (p as any).professional_service_types
+            : ((p as any).specialties as string[])
 
     return {
       id,
@@ -67,7 +69,7 @@ export function useProfessionalInterface(
 
       bioShort: summary,
       specialtiesCsv: csv(positions ?? []),
-      locationsCsv: csv(p.locations),
+      locationsCsv: csv((p as any).locations),
     }
   }
 
@@ -88,8 +90,8 @@ export function useProfessionalInterface(
     if (!p) return ''
     const u = resolveUser(target as ProfessionalCore | ProfessionalResolved | null)
     const displayName = safeString(u?.display_name)
-    const headline = safeString(p.professional_headline) || safeString(p.title)
-    const summary = safeString(p.professional_summary) || safeString(p.bio_short)
+    const headline = safeString((p as any).professional_headline) || safeString(p.job_title)
+    const summary = safeString((p as any).professional_summary) || safeString(p.summary) || safeString(p.bio)
     const id = safeString(p.id)
     return `${displayName} ${headline} ${summary} ${id}`.trim().toLowerCase()
   }

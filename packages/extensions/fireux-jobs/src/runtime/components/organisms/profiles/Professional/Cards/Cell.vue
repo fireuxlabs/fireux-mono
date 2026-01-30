@@ -24,7 +24,6 @@
 
         <div v-if="showTagline" class="card__tagline">
           <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
-          <span v-else class="italic">missing</span>
         </div>
       </div>
     </div>
