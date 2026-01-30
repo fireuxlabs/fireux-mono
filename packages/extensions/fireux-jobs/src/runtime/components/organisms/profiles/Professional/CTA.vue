@@ -6,11 +6,11 @@
 		variant="subtle"
 		orientation="horizontal"
 	>
-		<div v-if="false" class="cta__body space-y-4">
+		<div v-if="hasProfile" class="cta__body space-y-4">
 			<OrganismsProfilesProfessionalCardsPreview v-bind="card()" :link="true" />
 		</div>
 
-		<div class="cta__body space-y-2">
+		<div v-else class="cta__body space-y-2">
 			<OrganismsProfilesProfessionalCreateSystem @created="handleCreated" />
 		</div>
 	</UPageCTA>
@@ -26,10 +26,13 @@ const router = useRouter()
 const { card } = useProfessional()
 const { appName } = useFireUXConfig()
 
+
+const forceCreate = true
+const hasProfile = computed(() => !forceCreate && Boolean(card()))
 const ctaDescription = computed(() =>
-	false
-		? `Your professional profile is live on ${appName}.`
-		: 'Create your profile so agents can find and invite you.'
+  hasProfile.value
+    ? `Your professional profile is live on ${appName}.`
+    : 'Create your profile so agents can find and invite you.'
 )
 
 const handleCreated = () => {

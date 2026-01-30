@@ -33,29 +33,25 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <OrganismsAppCardsPill
-            :to="card.to"
-            :thumbnail-url="card.thumbnailUrl"
-            :display-name="card.displayName"
-            :ecosystem="card.ecosystem"
-            :badges="card.badges"
-            :link="Boolean(card.to)"
-          />
-        </NuxtLink>
+        <OrganismsAppCardsPill
+          :to="card.to"
+          :thumbnail-url="card.thumbnailUrl"
+          :display-name="card.displayName"
+          :ecosystem="card.ecosystem"
+          :badges="card.badges"
+          :link="Boolean(card.to)"
+        />
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <OrganismsAppCardsCell
-            :to="card.to"
-            :thumbnail-url="card.thumbnailUrl"
-            :display-name="card.displayName"
-            :badges="card.badges"
-            :tagline="card.tagline"
-            :user-count="card.userCount"
-            :link="Boolean(card.to)"
-          />
-        </NuxtLink>
+        <OrganismsAppCardsCell
+          :to="card.to"
+          :thumbnail-url="card.thumbnailUrl"
+          :display-name="card.displayName"
+          :badges="card.badges"
+          :tagline="card.tagline"
+          :user-count="card.userCount"
+          :link="Boolean(card.to)"
+        />
       </template>
     </OrganismsAppCollectionList>
 
