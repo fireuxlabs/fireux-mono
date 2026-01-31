@@ -12,12 +12,11 @@
     <template v-if="isAuthenticated">
       <div class="signed-in">
         <p class="status">You're signed in.</p>
-        <OrganismsUserCardsPill
-          v-if="currentUserPill"
-          v-bind="currentUserPill"
-          :link="Boolean(currentUserPill.to)"
-          class="user-pill"
-        />
+     <OrganismsUserCardsPill
+        v-bind="currentUserPill"
+        :link="Boolean(currentUserPill && currentUserPill.to)"
+        :show-badges="false"
+      />
         <div class="auth-actions">
           <UButton block color="primary" @click="goToDashboard">
             Go to dashboard
@@ -61,6 +60,7 @@ import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useColorMode } from '../../../composables/fireux/app/useColorMode'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
+import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const router = useRouter()
 const { authState, signOutUser, signInWithGoogle, isReady } = useAuth()
@@ -79,7 +79,8 @@ const googleLogo = computed(() =>
     : '/img/core/auth/sign-in-light.svg'
 )
 
-const { currentUser, card } = useUser()
+const { currentUser } = useUser()
+const { card } = useUserInterface()
 const currentUserPill = computed(() =>
   currentUser.value ? card(currentUser.value) : null
 )
@@ -136,7 +137,6 @@ const handleGoogle = async () => {
   border: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.35));
   background: var(--ui-bg, #fff);
   padding: 1.25rem;
-  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -176,9 +176,6 @@ const handleGoogle = async () => {
   font-weight: 600;
 }
 
-.user-pill {
-  margin: 0 auto;
-}
 
 .auth-actions {
   width: 100%;
@@ -227,3 +224,4 @@ const handleGoogle = async () => {
   white-space: nowrap;
 }
 </style>
+

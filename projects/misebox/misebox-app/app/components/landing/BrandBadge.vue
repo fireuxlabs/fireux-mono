@@ -1,7 +1,8 @@
 <template>
   <div class="flex flex-col items-center gap-3">
     <img
-      :src="brand.wordmarkLight"
+      src="/img/app/wordmark-light.png"
+      srcset="/img/app/wordmark-light.png 1x, /img/app/wordmark-light@2x.png 2x, /img/app/wordmark-light@3x.png 3x"
       alt="Misebox wordmark"
       class="opacity-85"
       style="height: 4.25rem"
@@ -17,7 +18,6 @@
 
 <script setup lang="ts">
 const brand = {
-  wordmarkLight: '/img/app/wordmark-light.svg',
   logo: '/img/app/logo.png',
 }
 </script>
