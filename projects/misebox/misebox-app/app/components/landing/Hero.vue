@@ -8,25 +8,27 @@
       <p class="text-base lg:text-xl leading-relaxed max-w-prose">
         Recruit
         <NuxtLink class="text-primary" to="/professionals">
-          professionals
+          <strong>professionals</strong>
         </NuxtLink>
         for your
-        <NuxtLink class="text-primary" to="/kitchens">kitchen</NuxtLink>.
-        <NuxtLink class="text-primary" to="/jobs">Post</NuxtLink> positions,
+        <NuxtLink class="text-primary" to="/kitchens"><strong>kitchen</strong></NuxtLink>.
+        Post <NuxtLink class="text-primary" to="/jobs"><strong>positions</strong></NuxtLink>,
         preview candidates, and manage hiring in one place.
       </p>
 
       <div class="flex flex-col sm:flex-row gap-4 pt-6">
-        <UButton variant="solid" size="lg" :to="hero.primary.to">
-          {{ hero.primary.label }}
+        <UButton variant="solid" size="lg" :to="hero.primary.to" class="flex justify-between items-center w-full sm:w-auto">
+          <span class="text-left flex-1">{{ hero.primary.label }}</span>
+          <UIcon name="i-lucide-briefcase" class="ml-3" />
         </UButton>
         <UButton
           variant="outline"
           size="lg"
           :to="hero.secondary.to"
-          trailing-icon="i-heroicons-arrow-right"
+          class="flex justify-between items-center w-full sm:w-auto"
         >
-          {{ hero.secondary.label }}
+          <span class="text-left flex-1">{{ hero.secondary.label }}</span>
+          <UIcon name="i-heroicons-arrow-right" class="ml-3" />
         </UButton>
       </div>
     </div>
@@ -38,7 +40,7 @@
       </li>
       <li class="flex items-center gap-2 text-sm">
         <UIcon name="i-lucide-user" class="shrink-0" />
-        <span>Professional profiles built for kitchens</span>
+        <span>Professional profiles instead of CVs</span>
       </li>
       <li class="flex items-center gap-2 text-sm">
         <UIcon name="i-lucide-chef-hat" class="shrink-0" />
