@@ -1,13 +1,12 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-/// <reference types="@nuxt/content" />
 import { defineNuxtConfig } from 'nuxt/config'
 
 const fireuxConfig = defineFireuxConfig({
-  ecosystem: 'misebox',
+  ecosystem: 'misebox', 
   id: 'misebox-app',
   name: 'Misebox',
   shortName: 'Misebox',
-  role: 'global',
+  role: 'global', 
   modules: [
     'fireux-places',
     'fireux-companies',
@@ -18,19 +17,7 @@ const fireuxConfig = defineFireuxConfig({
   ],
 })
 
-  ...(fireuxConfig as any),
-  nitro: {
-    preset: './preset',
-  },
-  content: {
-    _localDatabase: {
-      type: 'sqlite',
-      filename: '/tmp/fireux-misebox-content-local.sqlite',
-    },
-    database: {
-      type: 'sqlite',
-      filename: '/tmp/fireux-misebox-content.sqlite',
-    },
-  },
+export default defineNuxtConfig({
+  ...fireuxConfig,
   css: [...(fireuxConfig.css ?? []), '@/assets/styles/main.css'],
-} as any)
+})

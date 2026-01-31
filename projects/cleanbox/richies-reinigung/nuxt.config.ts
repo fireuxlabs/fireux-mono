@@ -11,6 +11,5 @@ export default defineNuxtConfig(
     modules: [
       // tenant stays lean
     ],
-    nitro: { preset: './preset' },
   })
 )

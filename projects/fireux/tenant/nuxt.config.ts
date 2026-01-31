@@ -9,6 +9,5 @@ export default defineNuxtConfig(
     shortName: 'Tenant',
     role: 'tenant',
     modules: [],
-    nitro: { preset: './preset' },
   })
 )

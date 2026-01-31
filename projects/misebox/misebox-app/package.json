@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "nuxi prepare && nuxi dev --port 3001",
     "build": "nuxi build",
+    "postbuild": "node scripts/patch-firebase-dir-imports.mjs",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
     "check:env": "node ../../../scripts/check-env.mjs",
