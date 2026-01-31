@@ -512,6 +512,861 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
+  projects/cleanbox/richies-reinigung/.output/server:
+    dependencies:
+      '@babel/parser':
+        specifier: 7.28.4
+        version: 7.28.4
+      '@fastify/busboy':
+        specifier: 3.2.0
+        version: 3.2.0
+      '@firebase/app':
+        specifier: 0.13.2
+        version: 0.13.2
+      '@firebase/app-check':
+        specifier: 0.10.1
+        version: 0.10.1(@firebase/app@0.13.2)
+      '@firebase/auth':
+        specifier: 1.10.8
+        version: 1.10.8(@firebase/app@0.13.2)
+      '@firebase/component':
+        specifier: 0.6.18
+        version: 0.6.18
+      '@firebase/database':
+        specifier: 1.0.20
+        version: 1.0.20
+      '@firebase/database-compat':
+        specifier: 1.0.8
+        version: 1.0.8
+      '@firebase/firestore':
+        specifier: 4.8.0
+        version: 4.8.0(@firebase/app@0.13.2)
+      '@firebase/logger':
+        specifier: 0.4.4
+        version: 0.4.4
+      '@firebase/storage':
+        specifier: 0.13.14
+        version: 0.13.14(@firebase/app@0.13.2)
+      '@firebase/util':
+        specifier: 1.12.1
+        version: 1.12.1
+      '@firebase/webchannel-wrapper':
+        specifier: 1.0.3
+        version: 1.0.3
+      '@google-cloud/firestore':
+        specifier: 7.11.3
+        version: 7.11.3(supports-color@8.1.1)
+      '@google-cloud/paginator':
+        specifier: 5.0.2
+        version: 5.0.2
+      '@google-cloud/projectify':
+        specifier: 4.0.0
+        version: 4.0.0
+      '@google-cloud/promisify':
+        specifier: 4.0.0
+        version: 4.0.0
+      '@google-cloud/storage':
+        specifier: 7.17.0
+        version: 7.17.0(supports-color@8.1.1)
+      '@grpc/grpc-js':
+        specifier: 1.13.4
+        version: 1.13.4
+      '@grpc/proto-loader':
+        specifier: 0.7.15
+        version: 0.7.15
+      '@iconify/utils':
+        specifier: 3.0.1
+        version: 3.0.1(supports-color@8.1.1)
+      '@js-sdsl/ordered-map':
+        specifier: 4.4.2
+        version: 4.4.2
+      '@opentelemetry/api':
+        specifier: 1.9.0
+        version: 1.9.0
+      '@protobufjs/aspromise':
+        specifier: 1.1.2
+        version: 1.1.2
+      '@protobufjs/base64':
+        specifier: 1.1.2
+        version: 1.1.2
+      '@protobufjs/codegen':
+        specifier: 2.0.4
+        version: 2.0.4
+      '@protobufjs/eventemitter':
+        specifier: 1.1.0
+        version: 1.1.0
+      '@protobufjs/fetch':
+        specifier: 1.1.0
+        version: 1.1.0
+      '@protobufjs/float':
+        specifier: 1.0.2
+        version: 1.0.2
+      '@protobufjs/inquire':
+        specifier: 1.1.0
+        version: 1.1.0
+      '@protobufjs/path':
+        specifier: 1.1.2
+        version: 1.1.2
+      '@protobufjs/pool':
+        specifier: 1.1.0
+        version: 1.1.0
+      '@protobufjs/utf8':
+        specifier: 1.1.0
+        version: 1.1.0
+      '@shikijs/core':
+        specifier: 3.12.2
+        version: 3.12.2
+      '@shikijs/engine-javascript':
+        specifier: 3.12.2
+        version: 3.12.2
+      '@shikijs/engine-oniguruma':
+        specifier: 3.12.2
+        version: 3.12.2
+      '@shikijs/langs':
+        specifier: 3.12.2
+        version: 3.12.2
+      '@shikijs/themes':
+        specifier: 3.12.2
+        version: 3.12.2
+      '@shikijs/transformers':
+        specifier: 3.12.2
+        version: 3.12.2
+      '@shikijs/types':
+        specifier: 3.12.2
+        version: 3.12.2
+      '@shikijs/vscode-textmate':
+        specifier: 10.0.2
+        version: 10.0.2
+      '@sindresorhus/is':
+        specifier: 4.6.0
+        version: 4.6.0
+      '@tootallnate/once':
+        specifier: 2.0.0
+        version: 2.0.0
+      '@ungap/structured-clone':
+        specifier: 1.3.0
+        version: 1.3.0
+      '@vue/compiler-core':
+        specifier: 3.5.20
+        version: 3.5.20
+      '@vue/compiler-dom':
+        specifier: 3.5.20
+        version: 3.5.20
+      '@vue/compiler-ssr':
+        specifier: 3.5.20
+        version: 3.5.20
+      '@vue/devtools-api':
+        specifier: 6.6.4
+        version: 6.6.4
+      '@vue/reactivity':
+        specifier: 3.5.20
+        version: 3.5.20
+      '@vue/runtime-core':
+        specifier: 3.5.20
+        version: 3.5.20
+      '@vue/runtime-dom':
+        specifier: 3.5.20
+        version: 3.5.20
+      '@vue/server-renderer':
+        specifier: 3.5.20
+        version: 3.5.20(vue@3.5.20)
+      '@vue/shared':
+        specifier: 3.5.21
+        version: 3.5.21
+      '@vueuse/core':
+        specifier: 13.9.0
+        version: 13.9.0(vue@3.5.20)
+      '@vueuse/shared':
+        specifier: 13.9.0
+        version: 13.9.0(vue@3.5.20)
+      abort-controller:
+        specifier: 3.0.0
+        version: 3.0.0
+      agent-base:
+        specifier: 7.1.4
+        version: 7.1.4
+      arrify:
+        specifier: 2.0.1
+        version: 2.0.1
+      async-retry:
+        specifier: 1.3.3
+        version: 1.3.3
+      bail:
+        specifier: 2.0.2
+        version: 2.0.2
+      base64-js:
+        specifier: 1.5.1
+        version: 1.5.1
+      bignumber.js:
+        specifier: 9.3.1
+        version: 9.3.1
+      buffer-equal-constant-time:
+        specifier: 1.0.1
+        version: 1.0.1
+      ccount:
+        specifier: 2.0.1
+        version: 2.0.1
+      char-regex:
+        specifier: 1.0.2
+        version: 1.0.2
+      character-entities:
+        specifier: 2.0.2
+        version: 2.0.2
+      character-entities-html4:
+        specifier: 2.1.0
+        version: 2.1.0
+      character-entities-legacy:
+        specifier: 3.0.0
+        version: 3.0.0
+      character-reference-invalid:
+        specifier: 2.0.1
+        version: 2.0.1
+      comma-separated-tokens:
+        specifier: 2.0.3
+        version: 2.0.3
+      consola:
+        specifier: 3.4.2
+        version: 3.4.2
+      cors:
+        specifier: 2.8.5
+        version: 2.8.5
+      debug:
+        specifier: 4.4.3
+        version: 4.4.3(supports-color@8.1.1)
+      decode-named-character-reference:
+        specifier: 1.2.0
+        version: 1.2.0
+      detab:
+        specifier: 3.0.2
+        version: 3.0.2
+      devalue:
+        specifier: 5.3.2
+        version: 5.3.2
+      devlop:
+        specifier: 1.1.0
+        version: 1.1.0
+      duplexify:
+        specifier: 4.1.3
+        version: 4.1.3
+      ecdsa-sig-formatter:
+        specifier: 1.0.11
+        version: 1.0.11
+      emojilib:
+        specifier: 2.4.0
+        version: 2.4.0
+      emoticon:
+        specifier: 4.1.0
+        version: 4.1.0
+      end-of-stream:
+        specifier: 1.4.5
+        version: 1.4.5
+      entities:
+        specifier: 6.0.1
+        version: 6.0.1
+      escape-string-regexp:
+        specifier: 5.0.0
+        version: 5.0.0
+      estree-walker:
+        specifier: 2.0.2
+        version: 2.0.2
+      event-target-shim:
+        specifier: 5.0.1
+        version: 5.0.1
+      extend:
+        specifier: 3.0.2
+        version: 3.0.2
+      farmhash-modern:
+        specifier: 1.1.0
+        version: 1.1.0
+      fast-deep-equal:
+        specifier: 3.1.3
+        version: 3.1.3
+      fast-xml-parser:
+        specifier: 4.5.3
+        version: 4.5.3
+      faye-websocket:
+        specifier: 0.11.4
+        version: 0.11.4
+      firebase:
+        specifier: 11.10.0
+        version: 11.10.0
+      firebase-admin:
+        specifier: 12.7.0
+        version: 12.7.0(supports-color@8.1.1)
+      firebase-functions:
+        specifier: 6.6.0
+        version: 6.6.0(firebase-admin@12.7.0(supports-color@8.1.1))(supports-color@8.1.1)
+      flat:
+        specifier: 6.0.1
+        version: 6.0.1
+      functional-red-black-tree:
+        specifier: 1.0.1
+        version: 1.0.1
+      gaxios:
+        specifier: 6.7.1
+        version: 6.7.1(supports-color@8.1.1)
+      gcp-metadata:
+        specifier: 6.1.1
+        version: 6.1.1(supports-color@8.1.1)
+      github-slugger:
+        specifier: 2.0.0
+        version: 2.0.0
+      google-auth-library:
+        specifier: 9.15.1
+        version: 9.15.1(supports-color@8.1.1)
+      google-gax:
+        specifier: 4.6.1
+        version: 4.6.1(supports-color@8.1.1)
+      google-logging-utils:
+        specifier: 0.0.2
+        version: 0.0.2
+      gtoken:
+        specifier: 7.1.0
+        version: 7.1.0(supports-color@8.1.1)
+      has-flag:
+        specifier: 4.0.0
+        version: 4.0.0
+      hast-util-embedded:
+        specifier: 3.0.0
+        version: 3.0.0
+      hast-util-format:
+        specifier: 1.1.0
+        version: 1.1.0
+      hast-util-from-parse5:
+        specifier: 8.0.3
+        version: 8.0.3
+      hast-util-has-property:
+        specifier: 3.0.0
+        version: 3.0.0
+      hast-util-is-body-ok-link:
+        specifier: 3.0.1
+        version: 3.0.1
+      hast-util-is-element:
+        specifier: 3.0.0
+        version: 3.0.0
+      hast-util-minify-whitespace:
+        specifier: 1.0.1
+        version: 1.0.1
+      hast-util-parse-selector:
+        specifier: 4.0.0
+        version: 4.0.0
+      hast-util-phrasing:
+        specifier: 3.0.1
+        version: 3.0.1
+      hast-util-raw:
+        specifier: 9.1.0
+        version: 9.1.0
+      hast-util-to-html:
+        specifier: 9.0.5
+        version: 9.0.5
+      hast-util-to-mdast:
+        specifier: 10.1.2
+        version: 10.1.2
+      hast-util-to-parse5:
+        specifier: 8.0.0
+        version: 8.0.0
+      hast-util-to-string:
+        specifier: 3.0.1
+        version: 3.0.1
+      hast-util-to-text:
+        specifier: 4.0.2
+        version: 4.0.2
+      hast-util-whitespace:
+        specifier: 3.0.0
+        version: 3.0.0
+      hastscript:
+        specifier: 9.0.1
+        version: 9.0.1
+      hookable:
+        specifier: 5.5.3
+        version: 5.5.3
+      html-entities:
+        specifier: 2.6.0
+        version: 2.6.0
+      html-void-elements:
+        specifier: 3.0.0
+        version: 3.0.0
+      html-whitespace-sensitive-tag-names:
+        specifier: 3.0.1
+        version: 3.0.1
+      http-parser-js:
+        specifier: 0.5.10
+        version: 0.5.10
+      http-proxy-agent:
+        specifier: 5.0.0
+        version: 5.0.0(supports-color@8.1.1)
+      https-proxy-agent:
+        specifier: 5.0.1
+        version: 5.0.1(supports-color@8.1.1)
+      idb:
+        specifier: 7.1.1
+        version: 7.1.1
+      image-size:
+        specifier: 2.0.2
+        version: 2.0.2
+      inherits:
+        specifier: 2.0.4
+        version: 2.0.4
+      is-absolute-url:
+        specifier: 4.0.1
+        version: 4.0.1
+      is-alphabetical:
+        specifier: 2.0.1
+        version: 2.0.1
+      is-alphanumerical:
+        specifier: 2.0.1
+        version: 2.0.1
+      is-decimal:
+        specifier: 2.0.1
+        version: 2.0.1
+      is-hexadecimal:
+        specifier: 2.0.1
+        version: 2.0.1
+      is-plain-obj:
+        specifier: 4.1.0
+        version: 4.1.0
+      is-stream:
+        specifier: 2.0.1
+        version: 2.0.1
+      jose:
+        specifier: 4.15.9
+        version: 4.15.9
+      json-bigint:
+        specifier: 1.0.0
+        version: 1.0.0
+      jsonwebtoken:
+        specifier: 9.0.2
+        version: 9.0.2
+      jwa:
+        specifier: 1.4.2
+        version: 1.4.2
+      jwks-rsa:
+        specifier: 3.2.0
+        version: 3.2.0(supports-color@8.1.1)
+      jws:
+        specifier: 3.2.2
+        version: 3.2.2
+      limiter:
+        specifier: 1.1.5
+        version: 1.1.5
+      lodash.camelcase:
+        specifier: 4.3.0
+        version: 4.3.0
+      lodash.clonedeep:
+        specifier: 4.5.0
+        version: 4.5.0
+      lodash.includes:
+        specifier: 4.3.0
+        version: 4.3.0
+      lodash.isboolean:
+        specifier: 3.0.3
+        version: 3.0.3
+      lodash.isinteger:
+        specifier: 4.0.4
+        version: 4.0.4
+      lodash.isnumber:
+        specifier: 3.0.3
+        version: 3.0.3
+      lodash.isplainobject:
+        specifier: 4.0.6
+        version: 4.0.6
+      lodash.isstring:
+        specifier: 4.0.1
+        version: 4.0.1
+      lodash.once:
+        specifier: 4.1.1
+        version: 4.1.1
+      long:
+        specifier: 5.3.2
+        version: 5.3.2
+      longest-streak:
+        specifier: 3.1.0
+        version: 3.1.0
+      lru-cache:
+        specifier: 6.0.0
+        version: 6.0.0
+      lru-memoizer:
+        specifier: 2.3.0
+        version: 2.3.0
+      markdown-table:
+        specifier: 3.0.4
+        version: 3.0.4
+      mdast-util-find-and-replace:
+        specifier: 3.0.2
+        version: 3.0.2
+      mdast-util-from-markdown:
+        specifier: 2.0.2
+        version: 2.0.2(supports-color@8.1.1)
+      mdast-util-gfm:
+        specifier: 3.1.0
+        version: 3.1.0(supports-color@8.1.1)
+      mdast-util-gfm-autolink-literal:
+        specifier: 2.0.1
+        version: 2.0.1
+      mdast-util-gfm-footnote:
+        specifier: 2.1.0
+        version: 2.1.0(supports-color@8.1.1)
+      mdast-util-gfm-strikethrough:
+        specifier: 2.0.0
+        version: 2.0.0(supports-color@8.1.1)
+      mdast-util-gfm-table:
+        specifier: 2.0.0
+        version: 2.0.0(supports-color@8.1.1)
+      mdast-util-gfm-task-list-item:
+        specifier: 2.0.0
+        version: 2.0.0(supports-color@8.1.1)
+      mdast-util-phrasing:
+        specifier: 4.1.0
+        version: 4.1.0
+      mdast-util-to-hast:
+        specifier: 13.2.0
+        version: 13.2.0
+      mdast-util-to-markdown:
+        specifier: 2.1.2
+        version: 2.1.2
+      mdast-util-to-string:
+        specifier: 4.0.0
+        version: 4.0.0
+      micromark:
+        specifier: 4.0.2
+        version: 4.0.2(supports-color@8.1.1)
+      micromark-core-commonmark:
+        specifier: 2.0.3
+        version: 2.0.3
+      micromark-extension-gfm:
+        specifier: 3.0.0
+        version: 3.0.0
+      micromark-extension-gfm-autolink-literal:
+        specifier: 2.1.0
+        version: 2.1.0
+      micromark-extension-gfm-footnote:
+        specifier: 2.1.0
+        version: 2.1.0
+      micromark-extension-gfm-strikethrough:
+        specifier: 2.1.0
+        version: 2.1.0
+      micromark-extension-gfm-table:
+        specifier: 2.1.1
+        version: 2.1.1
+      micromark-extension-gfm-tagfilter:
+        specifier: 2.0.0
+        version: 2.0.0
+      micromark-extension-gfm-task-list-item:
+        specifier: 2.1.0
+        version: 2.1.0
+      micromark-factory-destination:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-factory-label:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-factory-space:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-factory-title:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-factory-whitespace:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-util-character:
+        specifier: 2.1.1
+        version: 2.1.1
+      micromark-util-chunked:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-util-classify-character:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-util-combine-extensions:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-util-decode-numeric-character-reference:
+        specifier: 2.0.2
+        version: 2.0.2
+      micromark-util-decode-string:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-util-encode:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-util-html-tag-name:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-util-normalize-identifier:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-util-resolve-all:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-util-sanitize-uri:
+        specifier: 2.0.1
+        version: 2.0.1
+      micromark-util-subtokenize:
+        specifier: 2.1.0
+        version: 2.1.0
+      mime:
+        specifier: 3.0.0
+        version: 3.0.0
+      minimark:
+        specifier: 0.2.0
+        version: 0.2.0
+      ms:
+        specifier: 2.1.3
+        version: 2.1.3
+      node-emoji:
+        specifier: 2.2.0
+        version: 2.2.0
+      node-fetch:
+        specifier: 2.7.0
+        version: 2.7.0
+      node-forge:
+        specifier: 1.3.1
+        version: 1.3.1
+      object-assign:
+        specifier: 4.1.1
+        version: 4.1.1
+      object-hash:
+        specifier: 3.0.0
+        version: 3.0.0
+      once:
+        specifier: 1.4.0
+        version: 1.4.0
+      oniguruma-parser:
+        specifier: 0.12.1
+        version: 0.12.1
+      oniguruma-to-es:
+        specifier: 4.3.3
+        version: 4.3.3
+      p-limit:
+        specifier: 3.1.0
+        version: 3.1.0
+      parse-entities:
+        specifier: 4.0.2
+        version: 4.0.2
+      parse5:
+        specifier: 7.3.0
+        version: 7.3.0
+      perfect-debounce:
+        specifier: 2.0.0
+        version: 2.0.0
+      property-information:
+        specifier: 7.1.0
+        version: 7.1.0
+      proto3-json-serializer:
+        specifier: 2.0.2
+        version: 2.0.2
+      protobufjs:
+        specifier: 7.5.4
+        version: 7.5.4
+      readable-stream:
+        specifier: 3.6.2
+        version: 3.6.2
+      regex:
+        specifier: 6.0.1
+        version: 6.0.1
+      regex-recursion:
+        specifier: 6.0.2
+        version: 6.0.2
+      regex-utilities:
+        specifier: 2.3.0
+        version: 2.3.0
+      rehype-external-links:
+        specifier: 3.0.0
+        version: 3.0.0
+      rehype-minify-whitespace:
+        specifier: 6.0.2
+        version: 6.0.2
+      rehype-raw:
+        specifier: 7.0.0
+        version: 7.0.0
+      rehype-sort-attribute-values:
+        specifier: 5.0.1
+        version: 5.0.1
+      rehype-sort-attributes:
+        specifier: 5.0.1
+        version: 5.0.1
+      remark-emoji:
+        specifier: 5.0.2
+        version: 5.0.2
+      remark-gfm:
+        specifier: 4.0.1
+        version: 4.0.1(supports-color@8.1.1)
+      remark-mdc:
+        specifier: 3.6.0
+        version: 3.6.0(supports-color@8.1.1)
+      remark-parse:
+        specifier: 11.0.0
+        version: 11.0.0(supports-color@8.1.1)
+      remark-rehype:
+        specifier: 11.1.2
+        version: 11.1.2
+      remark-stringify:
+        specifier: 11.0.0
+        version: 11.0.0
+      retry:
+        specifier: 0.13.1
+        version: 0.13.1
+      retry-request:
+        specifier: 7.0.2
+        version: 7.0.2(supports-color@8.1.1)
+      safe-buffer:
+        specifier: 5.2.1
+        version: 5.2.1
+      scule:
+        specifier: 1.3.0
+        version: 1.3.0
+      semver:
+        specifier: 7.7.3
+        version: 7.7.3
+      shiki:
+        specifier: 3.12.2
+        version: 3.12.2
+      skin-tone:
+        specifier: 2.0.0
+        version: 2.0.0
+      source-map-js:
+        specifier: 1.2.1
+        version: 1.2.1
+      space-separated-tokens:
+        specifier: 2.0.2
+        version: 2.0.2
+      stream-events:
+        specifier: 1.0.5
+        version: 1.0.5
+      stream-shift:
+        specifier: 1.0.3
+        version: 1.0.3
+      string_decoder:
+        specifier: 1.3.0
+        version: 1.3.0
+      stringify-entities:
+        specifier: 4.0.4
+        version: 4.0.4
+      strnum:
+        specifier: 1.1.2
+        version: 1.1.2
+      stubs:
+        specifier: 3.0.0
+        version: 3.0.0
+      supports-color:
+        specifier: 8.1.1
+        version: 8.1.1
+      tailwindcss:
+        specifier: 4.1.18
+        version: 4.1.18
+      teeny-request:
+        specifier: 9.0.0
+        version: 9.0.0(supports-color@8.1.1)
+      tr46:
+        specifier: 0.0.3
+        version: 0.0.3
+      trim-lines:
+        specifier: 3.0.1
+        version: 3.0.1
+      trim-trailing-lines:
+        specifier: 2.1.0
+        version: 2.1.0
+      trough:
+        specifier: 2.2.0
+        version: 2.2.0
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+      ufo:
+        specifier: 1.6.1
+        version: 1.6.1
+      unhead:
+        specifier: 2.0.19
+        version: 2.0.19
+      unicode-emoji-modifier-base:
+        specifier: 1.0.0
+        version: 1.0.0
+      unified:
+        specifier: 11.0.5
+        version: 11.0.5
+      unist-util-find-after:
+        specifier: 5.0.0
+        version: 5.0.0
+      unist-util-is:
+        specifier: 6.0.0
+        version: 6.0.0
+      unist-util-position:
+        specifier: 5.0.0
+        version: 5.0.0
+      unist-util-stringify-position:
+        specifier: 4.0.0
+        version: 4.0.0
+      unist-util-visit:
+        specifier: 5.0.0
+        version: 5.0.0
+      unist-util-visit-parents:
+        specifier: 6.0.1
+        version: 6.0.1
+      util-deprecate:
+        specifier: 1.0.2
+        version: 1.0.2
+      uuid:
+        specifier: 9.0.1
+        version: 9.0.1
+      vary:
+        specifier: 1.1.2
+        version: 1.1.2
+      vfile:
+        specifier: 6.0.3
+        version: 6.0.3
+      vfile-location:
+        specifier: 5.0.3
+        version: 5.0.3
+      vfile-message:
+        specifier: 4.0.3
+        version: 4.0.3
+      vue:
+        specifier: 3.5.20
+        version: 3.5.20
+      vue-bundle-renderer:
+        specifier: 2.1.2
+        version: 2.1.2
+      vue-demi:
+        specifier: 0.14.10
+        version: 0.14.10(vue@3.5.20)
+      vue-router:
+        specifier: 4.5.1
+        version: 4.5.1(vue@3.5.20)
+      vuefire:
+        specifier: 3.2.2
+        version: 3.2.2(consola@3.4.2)(firebase@11.10.0)(vue@3.5.20)
+      web-namespaces:
+        specifier: 2.0.1
+        version: 2.0.1
+      webidl-conversions:
+        specifier: 3.0.1
+        version: 3.0.1
+      websocket-driver:
+        specifier: 0.7.4
+        version: 0.7.4
+      websocket-extensions:
+        specifier: 0.1.4
+        version: 0.1.4
+      whatwg-url:
+        specifier: 5.0.0
+        version: 5.0.0
+      wrappy:
+        specifier: 1.0.2
+        version: 1.0.2
+      yallist:
+        specifier: 4.0.0
+        version: 4.0.0
+      yaml:
+        specifier: 2.8.1
+        version: 2.8.1
+      yocto-queue:
+        specifier: 0.1.0
+        version: 0.1.0
+      zwitch:
+        specifier: 2.0.4
+        version: 2.0.4
+
   projects/fireux/fireux-app:
     dependencies:
       '@nuxt/content':
@@ -9789,7 +10644,7 @@ snapshots:
   '@babel/types@7.28.4':
     dependencies:
       '@babel/helper-string-parser': 7.27.1
-      '@babel/helper-validator-identifier': 7.27.1
+      '@babel/helper-validator-identifier': 7.28.5
 
   '@capsizecss/metrics@3.5.0': {}
 
@@ -10691,17 +11546,25 @@ snapshots:
       - supports-color
     optional: true
 
+  '@google-cloud/firestore@7.11.3(supports-color@8.1.1)':
+    dependencies:
+      '@opentelemetry/api': 1.9.0
+      fast-deep-equal: 3.1.3
+      functional-red-black-tree: 1.0.1
+      google-gax: 4.6.1(supports-color@8.1.1)
+      protobufjs: 7.5.4
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
   '@google-cloud/paginator@5.0.2':
     dependencies:
       arrify: 2.0.1
       extend: 3.0.2
-    optional: true
 
-  '@google-cloud/projectify@4.0.0':
-    optional: true
+  '@google-cloud/projectify@4.0.0': {}
 
-  '@google-cloud/promisify@4.0.0':
-    optional: true
+  '@google-cloud/promisify@4.0.0': {}
 
   '@google-cloud/storage@7.17.0':
     dependencies:
@@ -10725,11 +11588,31 @@ snapshots:
       - supports-color
     optional: true
 
+  '@google-cloud/storage@7.17.0(supports-color@8.1.1)':
+    dependencies:
+      '@google-cloud/paginator': 5.0.2
+      '@google-cloud/projectify': 4.0.0
+      '@google-cloud/promisify': 4.0.0
+      abort-controller: 3.0.0
+      async-retry: 1.3.3
+      duplexify: 4.1.3
+      fast-xml-parser: 4.5.3
+      gaxios: 6.7.1(supports-color@8.1.1)
+      google-auth-library: 9.15.1(supports-color@8.1.1)
+      html-entities: 2.6.0
+      mime: 3.0.0
+      p-limit: 3.1.0
+      retry-request: 7.0.2(supports-color@8.1.1)
+      teeny-request: 9.0.0(supports-color@8.1.1)
+      uuid: 8.3.2
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
   '@grpc/grpc-js@1.13.4':
     dependencies:
       '@grpc/proto-loader': 0.7.15
       '@js-sdsl/ordered-map': 4.4.2
-    optional: true
 
   '@grpc/grpc-js@1.9.15':
     dependencies:
@@ -10799,6 +11682,19 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@iconify/utils@3.0.1(supports-color@8.1.1)':
+    dependencies:
+      '@antfu/install-pkg': 1.1.0
+      '@antfu/utils': 9.2.0
+      '@iconify/types': 2.0.0
+      debug: 4.4.3(supports-color@8.1.1)
+      globals: 15.15.0
+      kolorist: 1.8.0
+      local-pkg: 1.1.2
+      mlly: 1.8.0
+    transitivePeerDependencies:
+      - supports-color
+
   '@iconify/vue@5.0.0(vue@3.5.20(typescript@5.9.2))':
     dependencies:
       '@iconify/types': 2.0.0
@@ -10861,8 +11757,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@js-sdsl/ordered-map@4.4.2':
-    optional: true
+  '@js-sdsl/ordered-map@4.4.2': {}
 
   '@jsdevtools/ono@7.1.3': {}
 
@@ -12526,8 +13421,7 @@ snapshots:
       '@tiptap/pm': 2.27.1
       vue: 3.5.20(typescript@5.9.2)
 
-  '@tootallnate/once@2.0.0':
-    optional: true
+  '@tootallnate/once@2.0.0': {}
 
   '@tybys/wasm-util@0.10.0':
     dependencies:
@@ -12539,8 +13433,7 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/node': 22.18.1
 
-  '@types/caseless@0.12.5':
-    optional: true
+  '@types/caseless@0.12.5': {}
 
   '@types/connect@3.4.38':
     dependencies:
@@ -12589,8 +13482,7 @@ snapshots:
 
   '@types/lodash@4.17.20': {}
 
-  '@types/long@4.0.2':
-    optional: true
+  '@types/long@4.0.2': {}
 
   '@types/markdown-it@14.1.2':
     dependencies:
@@ -12625,7 +13517,6 @@ snapshots:
       '@types/node': 22.18.1
       '@types/tough-cookie': 4.0.5
       form-data: 2.5.5
-    optional: true
 
   '@types/resolve@1.20.2': {}
 
@@ -12640,8 +13531,7 @@ snapshots:
       '@types/node': 22.18.1
       '@types/send': 0.17.5
 
-  '@types/tough-cookie@4.0.5':
-    optional: true
+  '@types/tough-cookie@4.0.5': {}
 
   '@types/trusted-types@2.0.7': {}
 
@@ -13057,6 +13947,12 @@ snapshots:
       '@vue/shared': 3.5.20
       vue: 3.5.20(typescript@5.9.2)
 
+  '@vue/server-renderer@3.5.20(vue@3.5.20)':
+    dependencies:
+      '@vue/compiler-ssr': 3.5.20
+      '@vue/shared': 3.5.20
+      vue: 3.5.20
+
   '@vue/shared@3.5.20': {}
 
   '@vue/shared@3.5.21': {}
@@ -13086,6 +13982,13 @@ snapshots:
       '@vueuse/metadata': 13.9.0
       '@vueuse/shared': 13.9.0(vue@3.5.20(typescript@5.9.2))
       vue: 3.5.20(typescript@5.9.2)
+
+  '@vueuse/core@13.9.0(vue@3.5.20)':
+    dependencies:
+      '@types/web-bluetooth': 0.0.21
+      '@vueuse/metadata': 13.9.0
+      '@vueuse/shared': 13.9.0(vue@3.5.20)
+      vue: 3.5.20
 
   '@vueuse/integrations@13.9.0(change-case@5.4.4)(fuse.js@7.1.0)(vue@3.5.20(typescript@5.9.2))':
     dependencies:
@@ -13118,6 +14021,10 @@ snapshots:
   '@vueuse/shared@13.9.0(vue@3.5.20(typescript@5.9.2))':
     dependencies:
       vue: 3.5.20(typescript@5.9.2)
+
+  '@vueuse/shared@13.9.0(vue@3.5.20)':
+    dependencies:
+      vue: 3.5.20
 
   '@webcontainer/env@1.1.1': {}
 
@@ -13153,6 +14060,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
     optional: true
+
+  agent-base@6.0.2(supports-color@8.1.1):
+    dependencies:
+      debug: 4.4.3(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - supports-color
 
   agent-base@7.1.4: {}
 
@@ -13246,8 +14159,7 @@ snapshots:
       get-intrinsic: 1.3.0
       is-array-buffer: 3.0.5
 
-  arrify@2.0.1:
-    optional: true
+  arrify@2.0.1: {}
 
   ast-kit@2.1.2:
     dependencies:
@@ -13264,14 +14176,12 @@ snapshots:
   async-retry@1.3.3:
     dependencies:
       retry: 0.13.1
-    optional: true
 
   async-sema@3.1.1: {}
 
   async@3.2.6: {}
 
-  asynckit@0.4.0:
-    optional: true
+  asynckit@0.4.0: {}
 
   at-least-node@1.0.0: {}
 
@@ -13331,8 +14241,7 @@ snapshots:
       bindings: 1.5.0
       prebuild-install: 7.1.3
 
-  bignumber.js@9.3.1:
-    optional: true
+  bignumber.js@9.3.1: {}
 
   binary-extensions@2.3.0: {}
 
@@ -13355,6 +14264,23 @@ snapshots:
       bytes: 3.1.2
       content-type: 1.0.5
       debug: 2.6.9
+      depd: 2.0.0
+      destroy: 1.2.0
+      http-errors: 2.0.0
+      iconv-lite: 0.4.24
+      on-finished: 2.4.1
+      qs: 6.13.0
+      raw-body: 2.5.2
+      type-is: 1.6.18
+      unpipe: 1.0.0
+    transitivePeerDependencies:
+      - supports-color
+
+  body-parser@1.20.3(supports-color@8.1.1):
+    dependencies:
+      bytes: 3.1.2
+      content-type: 1.0.5
+      debug: 2.6.9(supports-color@8.1.1)
       depd: 2.0.0
       destroy: 1.2.0
       http-errors: 2.0.0
@@ -13577,7 +14503,6 @@ snapshots:
   combined-stream@1.0.8:
     dependencies:
       delayed-stream: 1.0.0
-    optional: true
 
   comma-separated-tokens@2.0.3: {}
 
@@ -13792,6 +14717,12 @@ snapshots:
     dependencies:
       ms: 2.0.0
 
+  debug@2.6.9(supports-color@8.1.1):
+    dependencies:
+      ms: 2.0.0
+    optionalDependencies:
+      supports-color: 8.1.1
+
   debug@4.3.7:
     dependencies:
       ms: 2.1.3
@@ -13807,6 +14738,12 @@ snapshots:
   debug@4.4.3:
     dependencies:
       ms: 2.1.3
+
+  debug@4.4.3(supports-color@8.1.1):
+    dependencies:
+      ms: 2.1.3
+    optionalDependencies:
+      supports-color: 8.1.1
 
   decode-named-character-reference@1.2.0:
     dependencies:
@@ -13847,8 +14784,7 @@ snapshots:
 
   defu@6.1.4: {}
 
-  delayed-stream@1.0.0:
-    optional: true
+  delayed-stream@1.0.0: {}
 
   denque@2.1.0: {}
 
@@ -13928,7 +14864,6 @@ snapshots:
       inherits: 2.0.4
       readable-stream: 3.6.2
       stream-shift: 1.0.3
-    optional: true
 
   eastasianwidth@0.2.0: {}
 
@@ -14521,6 +15456,42 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  express@4.21.2(supports-color@8.1.1):
+    dependencies:
+      accepts: 1.3.8
+      array-flatten: 1.1.1
+      body-parser: 1.20.3(supports-color@8.1.1)
+      content-disposition: 0.5.4
+      content-type: 1.0.5
+      cookie: 0.7.1
+      cookie-signature: 1.0.6
+      debug: 2.6.9(supports-color@8.1.1)
+      depd: 2.0.0
+      encodeurl: 2.0.0
+      escape-html: 1.0.3
+      etag: 1.8.1
+      finalhandler: 1.3.1(supports-color@8.1.1)
+      fresh: 0.5.2
+      http-errors: 2.0.0
+      merge-descriptors: 1.0.3
+      methods: 1.1.2
+      on-finished: 2.4.1
+      parseurl: 1.3.3
+      path-to-regexp: 0.1.12
+      proxy-addr: 2.0.7
+      qs: 6.13.0
+      range-parser: 1.2.1
+      safe-buffer: 5.2.1
+      send: 0.19.0(supports-color@8.1.1)
+      serve-static: 1.16.2(supports-color@8.1.1)
+      setprototypeof: 1.2.0
+      statuses: 2.0.1
+      type-is: 1.6.18
+      utils-merge: 1.0.1
+      vary: 1.1.2
+    transitivePeerDependencies:
+      - supports-color
+
   express@5.2.1:
     dependencies:
       accepts: 2.0.0
@@ -14583,7 +15554,6 @@ snapshots:
   fast-xml-parser@4.5.3:
     dependencies:
       strnum: 1.1.2
-    optional: true
 
   fastq@1.19.1:
     dependencies:
@@ -14614,6 +15584,18 @@ snapshots:
   finalhandler@1.3.1:
     dependencies:
       debug: 2.6.9
+      encodeurl: 2.0.0
+      escape-html: 1.0.3
+      on-finished: 2.4.1
+      parseurl: 1.3.3
+      statuses: 2.0.1
+      unpipe: 1.0.0
+    transitivePeerDependencies:
+      - supports-color
+
+  finalhandler@1.3.1(supports-color@8.1.1):
+    dependencies:
+      debug: 2.6.9(supports-color@8.1.1)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -14662,6 +15644,35 @@ snapshots:
       '@google-cloud/storage': 7.17.0
     transitivePeerDependencies:
       - encoding
+      - supports-color
+
+  firebase-admin@12.7.0(supports-color@8.1.1):
+    dependencies:
+      '@fastify/busboy': 3.2.0
+      '@firebase/database-compat': 1.0.8
+      '@firebase/database-types': 1.0.5
+      '@types/node': 22.18.1
+      farmhash-modern: 1.1.0
+      jsonwebtoken: 9.0.2
+      jwks-rsa: 3.2.0(supports-color@8.1.1)
+      node-forge: 1.3.1
+      uuid: 10.0.0
+    optionalDependencies:
+      '@google-cloud/firestore': 7.11.3(supports-color@8.1.1)
+      '@google-cloud/storage': 7.17.0(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
+  firebase-functions@6.6.0(firebase-admin@12.7.0(supports-color@8.1.1))(supports-color@8.1.1):
+    dependencies:
+      '@types/cors': 2.8.19
+      '@types/express': 4.17.23
+      cors: 2.8.5
+      express: 4.21.2(supports-color@8.1.1)
+      firebase-admin: 12.7.0(supports-color@8.1.1)
+      protobufjs: 7.5.4
+    transitivePeerDependencies:
       - supports-color
 
   firebase-functions@6.6.0(firebase-admin@12.7.0):
@@ -14759,7 +15770,6 @@ snapshots:
       hasown: 2.0.2
       mime-types: 2.1.35
       safe-buffer: 5.2.1
-    optional: true
 
   forwarded@0.2.0: {}
 
@@ -14800,8 +15810,7 @@ snapshots:
       hasown: 2.0.2
       is-callable: 1.2.7
 
-  functional-red-black-tree@1.0.1:
-    optional: true
+  functional-red-black-tree@1.0.1: {}
 
   functions-have-names@1.2.3: {}
 
@@ -14819,6 +15828,17 @@ snapshots:
       - supports-color
     optional: true
 
+  gaxios@6.7.1(supports-color@8.1.1):
+    dependencies:
+      extend: 3.0.2
+      https-proxy-agent: 7.0.6(supports-color@8.1.1)
+      is-stream: 2.0.1
+      node-fetch: 2.7.0
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
   gcp-metadata@6.1.1:
     dependencies:
       gaxios: 6.7.1
@@ -14828,6 +15848,15 @@ snapshots:
       - encoding
       - supports-color
     optional: true
+
+  gcp-metadata@6.1.1(supports-color@8.1.1):
+    dependencies:
+      gaxios: 6.7.1(supports-color@8.1.1)
+      google-logging-utils: 0.0.2
+      json-bigint: 1.0.0
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
 
   gensync@1.0.0-beta.2: {}
 
@@ -14977,6 +16006,18 @@ snapshots:
       - supports-color
     optional: true
 
+  google-auth-library@9.15.1(supports-color@8.1.1):
+    dependencies:
+      base64-js: 1.5.1
+      ecdsa-sig-formatter: 1.0.11
+      gaxios: 6.7.1(supports-color@8.1.1)
+      gcp-metadata: 6.1.1(supports-color@8.1.1)
+      gtoken: 7.1.0(supports-color@8.1.1)
+      jws: 4.0.0
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
   google-gax@4.6.1:
     dependencies:
       '@grpc/grpc-js': 1.13.4
@@ -14996,8 +16037,25 @@ snapshots:
       - supports-color
     optional: true
 
-  google-logging-utils@0.0.2:
-    optional: true
+  google-gax@4.6.1(supports-color@8.1.1):
+    dependencies:
+      '@grpc/grpc-js': 1.13.4
+      '@grpc/proto-loader': 0.7.15
+      '@types/long': 4.0.2
+      abort-controller: 3.0.0
+      duplexify: 4.1.3
+      google-auth-library: 9.15.1(supports-color@8.1.1)
+      node-fetch: 2.7.0
+      object-hash: 3.0.0
+      proto3-json-serializer: 2.0.2
+      protobufjs: 7.5.4
+      retry-request: 7.0.2(supports-color@8.1.1)
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
+  google-logging-utils@0.0.2: {}
 
   gopd@1.2.0: {}
 
@@ -15011,6 +16069,14 @@ snapshots:
       - encoding
       - supports-color
     optional: true
+
+  gtoken@7.1.0(supports-color@8.1.1):
+    dependencies:
+      gaxios: 6.7.1(supports-color@8.1.1)
+      jws: 4.0.0
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
 
   gzip-size@7.0.0:
     dependencies:
@@ -15231,6 +16297,14 @@ snapshots:
       - supports-color
     optional: true
 
+  http-proxy-agent@5.0.0(supports-color@8.1.1):
+    dependencies:
+      '@tootallnate/once': 2.0.0
+      agent-base: 6.0.2(supports-color@8.1.1)
+      debug: 4.4.3(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - supports-color
+
   http-shutdown@1.2.2: {}
 
   https-proxy-agent@5.0.1:
@@ -15241,10 +16315,24 @@ snapshots:
       - supports-color
     optional: true
 
+  https-proxy-agent@5.0.1(supports-color@8.1.1):
+    dependencies:
+      agent-base: 6.0.2(supports-color@8.1.1)
+      debug: 4.4.3(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - supports-color
+
   https-proxy-agent@7.0.6:
     dependencies:
       agent-base: 7.1.4
       debug: 4.4.3
+    transitivePeerDependencies:
+      - supports-color
+
+  https-proxy-agent@7.0.6(supports-color@8.1.1):
+    dependencies:
+      agent-base: 7.1.4
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -15560,7 +16648,6 @@ snapshots:
   json-bigint@1.0.0:
     dependencies:
       bignumber.js: 9.3.1
-    optional: true
 
   json-buffer@3.0.1: {}
 
@@ -15627,13 +16714,23 @@ snapshots:
       buffer-equal-constant-time: 1.0.1
       ecdsa-sig-formatter: 1.0.11
       safe-buffer: 5.2.1
-    optional: true
 
   jwks-rsa@3.2.0:
     dependencies:
       '@types/express': 4.17.23
       '@types/jsonwebtoken': 9.0.10
       debug: 4.4.3
+      jose: 4.15.9
+      limiter: 1.1.5
+      lru-memoizer: 2.3.0
+    transitivePeerDependencies:
+      - supports-color
+
+  jwks-rsa@3.2.0(supports-color@8.1.1):
+    dependencies:
+      '@types/express': 4.17.23
+      '@types/jsonwebtoken': 9.0.10
+      debug: 4.4.3(supports-color@8.1.1)
       jose: 4.15.9
       limiter: 1.1.5
       lru-memoizer: 2.3.0
@@ -15649,7 +16746,6 @@ snapshots:
     dependencies:
       jwa: 2.0.1
       safe-buffer: 5.2.1
-    optional: true
 
   keyv@4.5.4:
     dependencies:
@@ -15899,6 +16995,23 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  mdast-util-from-markdown@2.0.2(supports-color@8.1.1):
+    dependencies:
+      '@types/mdast': 4.0.4
+      '@types/unist': 3.0.3
+      decode-named-character-reference: 1.2.0
+      devlop: 1.1.0
+      mdast-util-to-string: 4.0.0
+      micromark: 4.0.2(supports-color@8.1.1)
+      micromark-util-decode-numeric-character-reference: 2.0.2
+      micromark-util-decode-string: 2.0.1
+      micromark-util-normalize-identifier: 2.0.1
+      micromark-util-symbol: 2.0.1
+      micromark-util-types: 2.0.2
+      unist-util-stringify-position: 4.0.0
+    transitivePeerDependencies:
+      - supports-color
+
   mdast-util-gfm-autolink-literal@2.0.1:
     dependencies:
       '@types/mdast': 4.0.4
@@ -15917,10 +17030,28 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  mdast-util-gfm-footnote@2.1.0(supports-color@8.1.1):
+    dependencies:
+      '@types/mdast': 4.0.4
+      devlop: 1.1.0
+      mdast-util-from-markdown: 2.0.2(supports-color@8.1.1)
+      mdast-util-to-markdown: 2.1.2
+      micromark-util-normalize-identifier: 2.0.1
+    transitivePeerDependencies:
+      - supports-color
+
   mdast-util-gfm-strikethrough@2.0.0:
     dependencies:
       '@types/mdast': 4.0.4
       mdast-util-from-markdown: 2.0.2
+      mdast-util-to-markdown: 2.1.2
+    transitivePeerDependencies:
+      - supports-color
+
+  mdast-util-gfm-strikethrough@2.0.0(supports-color@8.1.1):
+    dependencies:
+      '@types/mdast': 4.0.4
+      mdast-util-from-markdown: 2.0.2(supports-color@8.1.1)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
@@ -15935,11 +17066,30 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  mdast-util-gfm-table@2.0.0(supports-color@8.1.1):
+    dependencies:
+      '@types/mdast': 4.0.4
+      devlop: 1.1.0
+      markdown-table: 3.0.4
+      mdast-util-from-markdown: 2.0.2(supports-color@8.1.1)
+      mdast-util-to-markdown: 2.1.2
+    transitivePeerDependencies:
+      - supports-color
+
   mdast-util-gfm-task-list-item@2.0.0:
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
       mdast-util-from-markdown: 2.0.2
+      mdast-util-to-markdown: 2.1.2
+    transitivePeerDependencies:
+      - supports-color
+
+  mdast-util-gfm-task-list-item@2.0.0(supports-color@8.1.1):
+    dependencies:
+      '@types/mdast': 4.0.4
+      devlop: 1.1.0
+      mdast-util-from-markdown: 2.0.2(supports-color@8.1.1)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
@@ -15952,6 +17102,18 @@ snapshots:
       mdast-util-gfm-strikethrough: 2.0.0
       mdast-util-gfm-table: 2.0.0
       mdast-util-gfm-task-list-item: 2.0.0
+      mdast-util-to-markdown: 2.1.2
+    transitivePeerDependencies:
+      - supports-color
+
+  mdast-util-gfm@3.1.0(supports-color@8.1.1):
+    dependencies:
+      mdast-util-from-markdown: 2.0.2(supports-color@8.1.1)
+      mdast-util-gfm-autolink-literal: 2.0.1
+      mdast-util-gfm-footnote: 2.1.0(supports-color@8.1.1)
+      mdast-util-gfm-strikethrough: 2.0.0(supports-color@8.1.1)
+      mdast-util-gfm-table: 2.0.0(supports-color@8.1.1)
+      mdast-util-gfm-task-list-item: 2.0.0(supports-color@8.1.1)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
@@ -16182,6 +17344,28 @@ snapshots:
     dependencies:
       '@types/debug': 4.1.12
       debug: 4.4.3
+      decode-named-character-reference: 1.2.0
+      devlop: 1.1.0
+      micromark-core-commonmark: 2.0.3
+      micromark-factory-space: 2.0.1
+      micromark-util-character: 2.1.1
+      micromark-util-chunked: 2.0.1
+      micromark-util-combine-extensions: 2.0.1
+      micromark-util-decode-numeric-character-reference: 2.0.2
+      micromark-util-encode: 2.0.1
+      micromark-util-normalize-identifier: 2.0.1
+      micromark-util-resolve-all: 2.0.1
+      micromark-util-sanitize-uri: 2.0.1
+      micromark-util-subtokenize: 2.1.0
+      micromark-util-symbol: 2.0.1
+      micromark-util-types: 2.0.2
+    transitivePeerDependencies:
+      - supports-color
+
+  micromark@4.0.2(supports-color@8.1.1):
+    dependencies:
+      '@types/debug': 4.1.12
+      debug: 4.4.3(supports-color@8.1.1)
       decode-named-character-reference: 1.2.0
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.3
@@ -16766,8 +17950,7 @@ snapshots:
 
   object-deep-merge@2.0.0: {}
 
-  object-hash@3.0.0:
-    optional: true
+  object-hash@3.0.0: {}
 
   object-inspect@1.13.4: {}
 
@@ -17344,7 +18527,6 @@ snapshots:
   proto3-json-serializer@2.0.2:
     dependencies:
       protobufjs: 7.5.4
-    optional: true
 
   protobufjs@7.5.4:
     dependencies:
@@ -17631,6 +18813,17 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  remark-gfm@4.0.1(supports-color@8.1.1):
+    dependencies:
+      '@types/mdast': 4.0.4
+      mdast-util-gfm: 3.1.0(supports-color@8.1.1)
+      micromark-extension-gfm: 3.0.0
+      remark-parse: 11.0.0(supports-color@8.1.1)
+      remark-stringify: 11.0.0
+      unified: 11.0.5
+    transitivePeerDependencies:
+      - supports-color
+
   remark-mdc@3.6.0:
     dependencies:
       '@types/mdast': 4.0.4
@@ -17654,10 +18847,42 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  remark-mdc@3.6.0(supports-color@8.1.1):
+    dependencies:
+      '@types/mdast': 4.0.4
+      '@types/unist': 3.0.3
+      flat: 6.0.1
+      mdast-util-from-markdown: 2.0.2(supports-color@8.1.1)
+      mdast-util-to-markdown: 2.1.2
+      micromark: 4.0.2(supports-color@8.1.1)
+      micromark-core-commonmark: 2.0.3
+      micromark-factory-space: 2.0.1
+      micromark-factory-whitespace: 2.0.1
+      micromark-util-character: 2.1.1
+      micromark-util-types: 2.0.2
+      parse-entities: 4.0.2
+      scule: 1.3.0
+      stringify-entities: 4.0.4
+      unified: 11.0.5
+      unist-util-visit: 5.0.0
+      unist-util-visit-parents: 6.0.1
+      yaml: 2.8.1
+    transitivePeerDependencies:
+      - supports-color
+
   remark-parse@11.0.0:
     dependencies:
       '@types/mdast': 4.0.4
       mdast-util-from-markdown: 2.0.2
+      micromark-util-types: 2.0.2
+      unified: 11.0.5
+    transitivePeerDependencies:
+      - supports-color
+
+  remark-parse@11.0.0(supports-color@8.1.1):
+    dependencies:
+      '@types/mdast': 4.0.4
+      mdast-util-from-markdown: 2.0.2(supports-color@8.1.1)
       micromark-util-types: 2.0.2
       unified: 11.0.5
     transitivePeerDependencies:
@@ -17707,8 +18932,16 @@ snapshots:
       - supports-color
     optional: true
 
-  retry@0.13.1:
-    optional: true
+  retry-request@7.0.2(supports-color@8.1.1):
+    dependencies:
+      '@types/request': 2.48.13
+      extend: 3.0.2
+      teeny-request: 9.0.0(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
+  retry@0.13.1: {}
 
   reusify@1.1.0: {}
 
@@ -17860,6 +19093,24 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  send@0.19.0(supports-color@8.1.1):
+    dependencies:
+      debug: 2.6.9(supports-color@8.1.1)
+      depd: 2.0.0
+      destroy: 1.2.0
+      encodeurl: 1.0.2
+      escape-html: 1.0.3
+      etag: 1.8.1
+      fresh: 0.5.2
+      http-errors: 2.0.0
+      mime: 1.6.0
+      ms: 2.1.3
+      on-finished: 2.4.1
+      range-parser: 1.2.1
+      statuses: 2.0.1
+    transitivePeerDependencies:
+      - supports-color
+
   send@1.2.0:
     dependencies:
       debug: 4.4.3
@@ -17890,6 +19141,15 @@ snapshots:
       escape-html: 1.0.3
       parseurl: 1.3.3
       send: 0.19.0
+    transitivePeerDependencies:
+      - supports-color
+
+  serve-static@1.16.2(supports-color@8.1.1):
+    dependencies:
+      encodeurl: 2.0.0
+      escape-html: 1.0.3
+      parseurl: 1.3.3
+      send: 0.19.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -18079,10 +19339,8 @@ snapshots:
   stream-events@1.0.5:
     dependencies:
       stubs: 3.0.0
-    optional: true
 
-  stream-shift@1.0.3:
-    optional: true
+  stream-shift@1.0.3: {}
 
   streamx@2.22.1:
     dependencies:
@@ -18185,13 +19443,11 @@ snapshots:
     dependencies:
       js-tokens: 9.0.1
 
-  strnum@1.1.2:
-    optional: true
+  strnum@1.1.2: {}
 
   structured-clone-es@1.0.0: {}
 
-  stubs@3.0.0:
-    optional: true
+  stubs@3.0.0: {}
 
   stylehacks@7.0.6(postcss@8.5.6):
     dependencies:
@@ -18286,6 +19542,17 @@ snapshots:
       - encoding
       - supports-color
     optional: true
+
+  teeny-request@9.0.0(supports-color@8.1.1):
+    dependencies:
+      http-proxy-agent: 5.0.0(supports-color@8.1.1)
+      https-proxy-agent: 5.0.1(supports-color@8.1.1)
+      node-fetch: 2.7.0
+      stream-events: 1.0.5
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
 
   temp-dir@2.0.0: {}
 
@@ -18790,11 +20057,9 @@ snapshots:
 
   uuid@10.0.0: {}
 
-  uuid@8.3.2:
-    optional: true
+  uuid@8.3.2: {}
 
-  uuid@9.0.1:
-    optional: true
+  uuid@9.0.1: {}
 
   vary@1.1.2: {}
 
@@ -19002,6 +20267,10 @@ snapshots:
     dependencies:
       vue: 3.5.20(typescript@5.9.2)
 
+  vue-demi@0.14.10(vue@3.5.20):
+    dependencies:
+      vue: 3.5.20
+
   vue-devtools-stub@0.1.0: {}
 
   vue-eslint-parser@10.2.0(eslint@9.35.0(jiti@2.6.1)):
@@ -19021,6 +20290,19 @@ snapshots:
       '@vue/devtools-api': 6.6.4
       vue: 3.5.20(typescript@5.9.2)
 
+  vue-router@4.5.1(vue@3.5.20):
+    dependencies:
+      '@vue/devtools-api': 6.6.4
+      vue: 3.5.20
+
+  vue@3.5.20:
+    dependencies:
+      '@vue/compiler-dom': 3.5.20
+      '@vue/compiler-sfc': 3.5.20
+      '@vue/runtime-dom': 3.5.20
+      '@vue/server-renderer': 3.5.20(vue@3.5.20)
+      '@vue/shared': 3.5.20
+
   vue@3.5.20(typescript@5.9.2):
     dependencies:
       '@vue/compiler-dom': 3.5.20
@@ -19035,6 +20317,14 @@ snapshots:
     dependencies:
       vue: 3.5.20(typescript@5.9.2)
       vue-demi: 0.14.10(vue@3.5.20(typescript@5.9.2))
+    optionalDependencies:
+      consola: 3.4.2
+      firebase: 11.10.0
+
+  vuefire@3.2.2(consola@3.4.2)(firebase@11.10.0)(vue@3.5.20):
+    dependencies:
+      vue: 3.5.20
+      vue-demi: 0.14.10(vue@3.5.20)
     optionalDependencies:
       consola: 3.4.2
       firebase: 11.10.0

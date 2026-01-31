@@ -12,4 +12,5 @@ export const ecosystemConfig = {
     storageBucket: 'fireux-2005.firebasestorage.app',
     messagingSenderId: '549102750204',
   },
+  ssrRegion: 'europe-west1',
 } as const satisfies FireuxEcosystemConfig

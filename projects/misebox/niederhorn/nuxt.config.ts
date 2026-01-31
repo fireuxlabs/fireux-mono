@@ -12,5 +12,6 @@ export default defineNuxtConfig(
       // tenants are intentionally slim
       // domain-specific modules live on the global app
     ],
+    nitro: { preset: './preset' },
   })
 )

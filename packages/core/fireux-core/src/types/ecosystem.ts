@@ -10,4 +10,9 @@ export type FireuxEcosystemConfig = {
     storageBucket: string
     messagingSenderId: string
   }
+
+  /**
+   * Standard SSR region for all apps in this ecosystem (e.g., 'europe-west1')
+   */
+  ssrRegion?: string
 }

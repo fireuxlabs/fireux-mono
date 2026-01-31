@@ -18,8 +18,10 @@ const fireuxConfig = defineFireuxConfig({
   ],
 })
 
-export default defineNuxtConfig({
   ...(fireuxConfig as any),
+  nitro: {
+    preset: './preset',
+  },
   content: {
     _localDatabase: {
       type: 'sqlite',

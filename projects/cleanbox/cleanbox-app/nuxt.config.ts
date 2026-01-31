@@ -12,5 +12,6 @@ export default defineNuxtConfig(
       'fireux-products',
       'fireux-blogs',
     ],
+    nitro: { preset: './preset' },
   })
 )
