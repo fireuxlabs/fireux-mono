@@ -51,14 +51,11 @@
                     :class="currentShade === option.value ? 'ring-2 ring-primary' : 'hover:ring-primary/30'"
                   >
                     <PlaceCardsPill
-                      :avatar-url="place.place_image || ''"
-                      :title="option.label"
-                      subtitle=""
-                      :badges="[]"
+                      v-if="shadePills.length"
+                      v-bind="shadePillsByValue[option.value]"
                       :show-badges="false"
                       :show-subtitle="false"
                       :action="true"
-                      :image-shade="option.value"
                       @action="onSelectShade(option.value)"
                     />
                   </div>
@@ -169,6 +166,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, ref } from 'vue'
+import { usePlacesInterface } from '../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { Place } from '../../models/objects/place.model'
 
 definePageMeta({
@@ -202,6 +200,9 @@ const pageDescription = computed(
 const isExisting = computed(() => place.value?.source !== 'google')
 const isClaimed = computed(() => !!place.value?.claimed_by)
 
+const { pill } = usePlacesInterface()
+const baseShadePill = computed(() => pill(place.value))
+
 const currentShade = computed<'light' | 'dark' | 'none'>(() => {
   const shade = place.value?.image_shade
   return shade === 'light' || shade === 'dark' ? shade : 'none'
@@ -212,6 +213,23 @@ const shadeOptions = [
   { label: 'Dark', value: 'dark' },
   { label: 'Default', value: 'none' },
 ] as const
+
+const shadePills = computed(() => {
+  const base = baseShadePill.value
+  if (!base) return []
+  return shadeOptions.map((option) => ({
+    ...base,
+    title: option.label,
+    subtitle: '',
+    imageShade: option.value,
+  }))
+})
+
+const shadePillsByValue = computed(() => {
+  const map: Record<string, (typeof shadePills.value)[number]> = {}
+  for (const pill of shadePills.value) map[pill.imageShade ?? 'none'] = pill
+  return map
+})
 
 const isUpdatingShade = ref(false)
 

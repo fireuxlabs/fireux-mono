@@ -45,10 +45,8 @@
 							<p class="text-xs text-gray-500">Preview pill</p>
 							<div class="mt-2">
 								<PlaceCardsPill
-									:avatar-url="place.place_image || ''"
-									:title="place.short_name || place.name || 'Place'"
-									:subtitle="place.short_address || place.formatted_address || ''"
-									:badges="[]"
+									v-if="placePill"
+									v-bind="placePill"
 									:show-badges="false"
 								/>
 							</div>
@@ -149,6 +147,7 @@ import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, ref } from 'vue'
 import { usePlaceClaim } from '../../../../composables/fireux/firestore/objects/place/mutations/usePlaceClaim'
+import { usePlacesInterface } from '../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { Place } from '../../../../models/objects/place.model'
 
 const props = defineProps<{ place: Place | null }>()
@@ -156,6 +155,8 @@ const place = computed(() => props.place)
 const placeId = computed(() => place.value?.id ?? '')
 const { currentUser, isAdmin } = useUser()
 const isManual = computed(() => place.value?.source === 'manual')
+const { pill } = usePlacesInterface()
+const placePill = computed(() => pill(place.value))
 
 const claimedUserId = computed(() => place.value?.claimed_by || '')
 const { user: claimedUser } = useUserFetch(claimedUserId)

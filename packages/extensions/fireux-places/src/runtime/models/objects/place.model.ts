@@ -15,24 +15,88 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /** Canonical sources: google (provider), fireux (stored), manual (user-entered). */
 export type PlaceSource = 'google' | 'fireux' | 'manual'
 
+/** For logo legibility on UI backgrounds. */
 export type PlaceImageShade = 'light' | 'dark' | 'none'
 
-// 🔑 Runtime + canonical shape for the STORED Firestore Place
+export type PlaceSocialLinks = {
+	website: string
+	instagram: string
+	facebook: string
+	tiktok: string
+	linkedin: string
+	youtube: string
+}
+
+export type PlaceAddress = {
+	street: string
+	city: string
+	region: string
+	postal_code: string
+	country_code: string
+}
+
+/**
+ * 🔑 Runtime + canonical shape for the STORED Firestore Place
+ * Keep everything defaulted so migrations are painless.
+ */
 export const Place = {
 	id: '' as string,
 
+	// Primary identity
 	name: '' as string,
 	short_name: '' as string,
+	brand_tagline: '' as string,
+	about: '' as string,
+
+	// Address + geo
 	formatted_address: '' as string,
 	short_address: '' as string,
+	address: {
+		street: '',
+		city: '',
+		region: '',
+		postal_code: '',
+		country_code: '',
+	} as PlaceAddress,
 	lat: 0 as number,
 	lng: 0 as number,
+	timezone: '' as string,
 
-	place_image: '' as string,
+	// Media
+	place_image: '' as string, // logo / primary
+	cover_image: '' as string, // hero banner (optional)
+	gallery_images: [] as string[],
 	image_shade: 'none' as PlaceImageShade,
+
+	// Contact + presence
+	phone: '' as string,
+	email: '' as string,
+	website: '' as string,
+	google_maps_url: '' as string,
+	social_links: {
+		website: '',
+		instagram: '',
+		facebook: '',
+		tiktok: '',
+		linkedin: '',
+		youtube: '',
+	} as PlaceSocialLinks,
+
+	// Classification
+	types: [] as string[], // e.g. ['restaurant','cafe']
+	tags: [] as string[], // FireUX UX tags
+
+	// Simple “signals” (nice for UI; optional data can remain empty)
+	rating: 0 as number,
+	rating_count: 0 as number,
+	price_level: '' as string, // e.g. 'cheap' | 'mid' | 'premium' (keep free-form)
+
+	// Hours (MVP-friendly)
+	hours_text: [] as string[], // e.g. ['Mon–Fri 09:00–18:00', 'Sat 10:00–16:00']
 
 	/** Claimed owner (uid); empty string means unclaimed. */
 	claimed_by: '' as string,
+	verified: false as boolean,
 
 	source: 'enum:google|fireux|manual' as unknown as PlaceSource,
 
@@ -52,7 +116,7 @@ export type Place = {
 /** Base (shared by Google & Firestore). */
 export type BasePlace = Pick<
 	Place,
-	'id'
+	| 'id'
 	| 'name'
 	| 'short_name'
 	| 'formatted_address'

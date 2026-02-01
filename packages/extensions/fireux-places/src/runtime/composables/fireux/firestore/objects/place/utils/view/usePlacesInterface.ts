@@ -2,6 +2,8 @@ import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceU
 import type {
   BasePlace,
   PlaceImageShade,
+  Place as PlaceModel,
+  PlaceSocialLinks,
   PlaceSource,
 } from '../../../../../../../models/objects/place.model'
 
@@ -40,6 +42,57 @@ export namespace PlaceCard {
     // Ownership
     claimedBy?: string
   }
+}
+
+type PlaceExtras = Partial<PlaceModel>
+
+type PlacePill = PlaceCard.Card & {
+  showBadges?: boolean
+  showSubtitle?: boolean
+}
+
+type PlaceCell = Pick<
+  PlaceCard.Card,
+  'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
+> & {
+  formatted_address?: string
+  source?: PlaceSource
+  prop?: string
+  showSubtitle?: boolean
+  showSource?: boolean
+  showTagline?: boolean
+}
+
+type PlacePreview = {
+  imageUrl: string
+  imageShade?: PlaceImageShade
+  name: string
+  formattedAddress: string
+  source: PlaceSource
+  prop?: string
+  showBadges?: boolean
+  showBody?: boolean
+}
+
+type PlaceProfile = {
+  card: PlaceCard.Card
+  imageUrl?: string
+  prop?: string
+  rating?: number
+  ratingCount?: number
+  priceLevel?: string
+  tags?: string[]
+  types?: string[]
+  hoursText?: string[]
+  phone?: string
+  email?: string
+  website?: string
+  socialLinks?: Partial<PlaceSocialLinks>
+  coverImage?: string
+  galleryImages?: string[]
+  about?: string
+  verified?: boolean
+  source?: PlaceSource
 }
 
 export function usePlacesInterface() {
@@ -117,6 +170,77 @@ export function usePlacesInterface() {
     return mapped.id ? mapped : null
   }
 
+  function pill(target?: BasePlace | null | undefined): PlacePill | null {
+    const base = card(target)
+    if (!base) return null
+    return {
+      ...base,
+      title: base.title || base.name,
+      subtitle: base.subtitle || base.shortAddress || base.formattedAddress || '',
+      showBadges: false,
+      showSubtitle: true,
+    }
+  }
+
+  function cell(target?: (BasePlace & PlaceExtras) | null | undefined): PlaceCell | null {
+    const base = card(target)
+    if (!base || !target) return null
+    return {
+      id: base.id,
+      to: base.to,
+      name: base.name,
+      formattedAddress: base.formattedAddress,
+      imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
+      formatted_address: (target as any)?.formatted_address,
+      source: (target as any)?.source,
+      prop: (target as any)?.brand_tagline,
+      showSubtitle: true,
+      showSource: true,
+      showTagline: true,
+    }
+  }
+
+  function preview(target?: (BasePlace & PlaceExtras) | null | undefined): PlacePreview | null {
+    const base = card(target)
+    if (!base || !target) return null
+    return {
+      imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
+      name: base.name,
+      formattedAddress: base.formattedAddress,
+      source: ((target as any)?.source as PlaceSource) ?? 'fireux',
+      prop: (target as any)?.brand_tagline,
+      showBadges: true,
+      showBody: true,
+    }
+  }
+
+  function profile(target?: (BasePlace & PlaceExtras) | null | undefined): PlaceProfile | null {
+    const base = card(target)
+    if (!base || !target) return null
+    return {
+      card: base,
+      imageUrl: (target as any)?.place_image,
+      prop: (target as any)?.brand_tagline,
+      coverImage: (target as any)?.cover_image,
+      galleryImages: (target as any)?.gallery_images,
+      about: (target as any)?.about,
+      rating: (target as any)?.rating,
+      ratingCount: (target as any)?.rating_count,
+      priceLevel: (target as any)?.price_level,
+      tags: (target as any)?.tags,
+      types: (target as any)?.types,
+      hoursText: (target as any)?.hours_text,
+      phone: (target as any)?.phone,
+      email: (target as any)?.email,
+      website: (target as any)?.website,
+      socialLinks: (target as any)?.social_links,
+      verified: (target as any)?.verified,
+      source: (target as any)?.source,
+    }
+  }
+
   function searchText(place: BasePlace): string {
     const name = safeString(place.name)
     const shortName = safeString((place as any)?.short_name)
@@ -126,5 +250,5 @@ export function usePlacesInterface() {
     return `${name} ${shortName} ${shortAddress || address} ${id}`.trim().toLowerCase()
   }
 
-  return { card, searchText }
+  return { card, pill, cell, preview, profile, searchText }
 }

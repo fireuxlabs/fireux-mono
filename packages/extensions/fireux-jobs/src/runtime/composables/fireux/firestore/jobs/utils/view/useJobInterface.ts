@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { JobResolved } from '../../../../../../models/objects/job.model'
+import type { Job, JobResolved } from '../../../../../../models/objects/job.model'
 
 export namespace JobCard {
   export type Card = {
@@ -18,6 +18,10 @@ export namespace JobCard {
 
     // Status/label chips
     badges: string[]
+
+    // IDs for fetching related entities
+    kitchenId: string
+    companyId: string
   }
 }
 
@@ -37,6 +41,9 @@ export function useJobInterface() {
       description: safeString(job.description),
 
       badges: [],
+
+      kitchenId: safeString(job.kitchen_id),
+      companyId: safeString(job.company_id),
     }
   }
 

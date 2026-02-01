@@ -23,12 +23,13 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
   collection: ComputedRef<T[]>
   runtimeModel: Record<string, unknown>
   prepareForDrift?: (doc: T) => Record<string, unknown>
+  driftMode?: 'all' | 'extras-only'
 }) {
-  const driftKind = ref<DriftKind>('missing')
+  const driftKind = ref<DriftKind>(params.driftMode === 'extras-only' ? 'extra' : 'missing')
   const selectedField = ref<string>('')
 
   const setDriftKind = (kind: DriftKind) => {
-    driftKind.value = kind
+    driftKind.value = params.driftMode === 'extras-only' ? 'extra' : kind
   }
 
   watch(driftKind, () => {
@@ -50,7 +51,7 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
         ? params.prepareForDrift(doc)
         : (doc as unknown as Record<string, unknown>)
       const drift = resolveDriftFromModel(params.runtimeModel, payload)
-      map.set(id, drift)
+      map.set(id, params.driftMode === 'extras-only' ? { ...drift, missing: [] } : drift)
     }
     return map
   })

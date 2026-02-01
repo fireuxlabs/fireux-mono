@@ -33,7 +33,7 @@
     >
       <template #pill="{ card }">
         <NuxtLink :to="card.to">
-          <JobCardsPill v-bind="card" />
+          <JobCardsPill v-bind="card" :show-badges="false" />
         </NuxtLink>
       </template>
       <template #cell="{ card }">

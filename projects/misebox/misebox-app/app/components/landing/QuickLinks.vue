@@ -1,5 +1,5 @@
 <template>
-  <UCard>
+  <UCard class="max-w-none px-0">
     <template #header>
       <div class="flex items-center justify-between">
         <span class="uppercase tracking-wide text-xs text-[color:var(--ui-text-muted)]">
@@ -10,13 +10,11 @@
     </template>
 
     <ul class="space-y-4">
-      <li class="flex items-start gap-3" v-for="item in quickLinks" :key="item.title">
-        <div
-          class="mt-0.5 grid place-items-center rounded-lg w-10 h-10 bg-primary/15 text-primary"
-        >
-          <UIcon :name="item.icon" />
+      <li class="flex items-start gap-4" v-for="item in quickLinks" :key="item.title">
+        <div class="flex-shrink-0 grid place-items-center rounded-lg w-12 h-12 bg-primary/15 text-primary">
+          <UIcon :name="item.icon" class="text-2xl" />
         </div>
-        <div>
+        <div class="min-w-0">
           <h3 class="font-medium">{{ item.title }}</h3>
           <p class="text-sm text-[color:var(--ui-text-muted)]">
             {{ item.copy }}

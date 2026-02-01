@@ -5,8 +5,8 @@ import { configureComposables } from './config/module/composables-config'
 import { configureLayouts } from './config/module/layouts-config'
 import { configureModels } from './config/module/models-config'
 import { configurePages } from './config/module/pages-config'
+import { configurePlaces } from './config/module/places-config'
 import { configurePlugins } from './config/module/plugins-config'
-import { configureRuntime } from './config/module/runtime-config'
 import { configureServer } from './config/module/server-config'
 
 export interface ModuleOptions {
@@ -32,8 +32,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    configureRuntime(nuxt, 'places', {
-      enabled: true,
+    configurePlaces(nuxt, {
       types: options.types || [],
       googleAutocompleteTypeFilters: options.googleAutocompleteTypeFilters || {},
     })

@@ -72,8 +72,6 @@ const isLoading = computed(() => Boolean(pending.value))
 <style scoped>
 .footer-admins {
   width: 100%;
-  border-top: 1px solid var(--ui-border-200, rgba(148, 163, 184, 0.3));
-  padding-top: 1.5rem;
 }
 
 .footer-admins__header {

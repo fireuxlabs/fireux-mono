@@ -6,6 +6,8 @@
     />
 
     <UPageBody class="space-y-10">
+      <DevPlaceDummy @ready="setDummyPlace" />
+
       <UCard>
         <template #header>
           <div class="flex items-start justify-between gap-3">
@@ -37,7 +39,7 @@
 
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
 import type { Place } from '../../models/objects/place.model'
 import { Place as PlaceModelRuntime } from '../../models/objects/place.model'
@@ -55,7 +57,18 @@ definePageMeta({
 })
 
 const { collection } = usePlaces<Place>()
-const places = computed(() => collection.value ?? [])
+const dummyPlace = ref<Place | null>(null)
+const setDummyPlace = (place: Place) => {
+  dummyPlace.value = place
+}
+
+const places = computed(() => {
+  const list = collection.value ?? []
+  const fallback = dummyPlace.value
+  if (!fallback) return list
+  const hasDummy = list.some((place) => place.id === fallback.id)
+  return hasDummy ? list : [fallback, ...list]
+})
 
 const placeModelRuntime = PlaceModelRuntime
 
@@ -69,6 +82,7 @@ const {
 } = useDevDriftFilter({
   collection: places,
   runtimeModel: placeModelRuntime,
+  driftMode: 'extras-only',
 })
 
 

@@ -72,7 +72,7 @@ import type { BasePlace } from '../../../../../models/objects/place.model';
 const props = defineProps<{ collection?: BasePlace[] }>()
 
 const collection = computed(() => props.collection ?? [])
-const { card: makeCard, searchText } = usePlacesInterface()
+const { pill, searchText } = usePlacesInterface()
 
 const {
   query,
@@ -80,10 +80,10 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<BasePlace, ReturnType<typeof makeCard>>({
+} = useCollectionSearch<BasePlace, ReturnType<typeof pill>>({
   items: collection,
   searchText: (place: BasePlace) => searchText(place as any),
-  makeCard: (place: BasePlace) => makeCard(place),
+  makeCard: (place: BasePlace) => pill(place),
 })
 
 const totalCount = computed(() => collection.value.length)

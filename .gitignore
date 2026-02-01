@@ -22,6 +22,10 @@ pids/
 *.seed
 *.pid.lock
 
+# Dummy data fixtures (local only)
+temp/dummy-data/
+temp/dummy-data/**
+
 # Coverage directory
 coverage/
 .nyc_output/

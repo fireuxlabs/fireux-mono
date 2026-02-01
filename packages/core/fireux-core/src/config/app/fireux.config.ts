@@ -152,6 +152,17 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const envPin = optEnv('DEVELOPER_PIN')
   const envFirebaseAppId = reqEnv('NUXT_FIREBASE_APP_ID')
   const envFirebaseMeasurementId = optEnv('NUXT_FIREBASE_MEASUREMENT_ID')
+  const envPlacesApiKey =
+    optEnv('GOOGLE_PLACES_API_KEY') ||
+    optEnv('NUXT_GOOGLE_PLACES_API_KEY') ||
+    optEnv('NUXT_PUBLIC_GOOGLE_PLACES_API_KEY')
+
+  if (envPlacesApiKey) {
+    const rc = ((nuxt as any).runtimeConfig ||= {}) as Record<string, any>
+    const pub = (rc.public ||= {}) as Record<string, any>
+    rc.googlePlacesApiKey ||= envPlacesApiKey
+    pub.googlePlacesApiKey ||= envPlacesApiKey
+  }
   setRuntime(nuxt, {
     app: {
       id: app.id,

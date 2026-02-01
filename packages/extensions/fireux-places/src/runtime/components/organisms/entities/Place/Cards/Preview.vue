@@ -1,6 +1,6 @@
 <template>
-  <UCard class="preview">
-    <div class="preview__row">
+  <UCard>
+    <div class="flex items-start gap-3">
       <UAvatar
         :src="resolvedImageUrl || undefined"
         :alt="name"
@@ -9,24 +9,28 @@
         icon="i-lucide-image"
       />
 
-      <div class="preview__main">
-        <div class="preview__top">
-          <div class="preview__title">{{ name }}</div>
+      <div class="min-w-0 flex-1 space-y-2">
+        <div class="flex items-start justify-between gap-2">
+          <div class="truncate text-sm font-semibold">{{ name }}</div>
 
-          <div v-if="showBadges && sourceLabel" class="preview__badges">
-            <UBadge variant="soft" color="neutral" size="xs">{{ sourceLabel }}</UBadge>
-          </div>
+          <UBadge
+            v-if="showBadges && sourceLabel"
+            variant="soft"
+            color="neutral"
+            size="xs"
+            class="shrink-0"
+          >
+            {{ sourceLabel }}
+          </UBadge>
         </div>
 
-        <div v-if="formattedAddress" class="preview__subtitle">
+        <div v-if="formattedAddress" class="truncate text-xs text-dimmed">
           {{ formattedAddress }}
         </div>
 
-        <div v-if="showBody" class="preview__body">
-          <div class="preview__line">
-            <span v-if="prop">{{ prop }}</span>
-            <span v-else class="italic">missing</span>
-          </div>
+        <div v-if="showBody" class="text-xs text-dimmed">
+          <span v-if="prop">{{ prop }}</span>
+          <span v-else class="italic">missing</span>
         </div>
       </div>
     </div>

@@ -1,10 +1,10 @@
 import { useRuntimeConfig } from '#imports'
 import {
-  defineEventHandler,
-  getQuery,
-  getRequestHeader,
-  getRequestIP,
-  setResponseStatus,
+    defineEventHandler,
+    getQuery,
+    getRequestHeader,
+    getRequestIP,
+    setResponseStatus,
 } from 'h3'
 import { resolvePlacesApiKey } from '../../utils/places-api-key'
 
@@ -133,14 +133,33 @@ export default defineEventHandler(async (event: any) => {
 
   const key = resolvePlacesApiKey(event)
   if (!key) {
-    if (dev) {
-      console.error('[places][autocomplete]', {
-        reqId,
-        stage: 'missing_api_key',
-        ip,
-        query,
-      })
+    const host =
+      getRequestHeader(event, 'x-forwarded-host') ||
+      getRequestHeader(event, 'host') ||
+      null
+    const envs = {
+      GOOGLE_PLACES_API_KEY: !!process.env.GOOGLE_PLACES_API_KEY,
+      NUXT_GOOGLE_PLACES_API_KEY: !!process.env.NUXT_GOOGLE_PLACES_API_KEY,
+      NUXT_PUBLIC_GOOGLE_PLACES_API_KEY:
+        !!process.env.NUXT_PUBLIC_GOOGLE_PLACES_API_KEY,
     }
+    const rcFlags = {
+      runtime_googlePlacesApiKey: !!runtimeConfig?.googlePlacesApiKey,
+      runtime_fireux_googlePlacesApiKey:
+        !!runtimeConfig?.fireux?.googlePlacesApiKey,
+      public_googlePlacesApiKey: !!runtimeConfig?.public?.googlePlacesApiKey,
+      public_fireux_googlePlacesApiKey:
+        !!runtimeConfig?.public?.fireux?.googlePlacesApiKey,
+    }
+    console.error('[places][autocomplete]', {
+      reqId,
+      stage: 'missing_api_key',
+      ip,
+      host,
+      query,
+      envs,
+      runtimeConfig: rcFlags,
+    })
     setResponseStatus(event, 500)
     return { predictions: [], error: 'missing_api_key' }
   }
@@ -184,14 +203,12 @@ export default defineEventHandler(async (event: any) => {
       })
     }
     if (data.status !== 'OK') {
-      if (dev) {
-        console.warn('[places][autocomplete]', {
-          reqId,
-          stage: 'upstream_not_ok',
-          upstreamStatus: data?.status ?? null,
-          errorMessage: data?.error_message ?? null,
-        })
-      }
+      console.warn('[places][autocomplete]', {
+        reqId,
+        stage: 'upstream_not_ok',
+        upstreamStatus: data?.status ?? null,
+        errorMessage: data?.error_message ?? null,
+      })
       return {
         predictions: [],
         error: 'upstream_not_ok',

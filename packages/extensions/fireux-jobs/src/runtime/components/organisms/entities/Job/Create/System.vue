@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-3">
-    <p class="text-xs text-gray-500">Hello* 1 System</p>
+    
     <ClientOnly>
-      <p class="text-xs text-gray-500">Hello* 2 ClientOnly</p>
+      
       <UCard v-if="agentCard">
         <template #header>
           <div class="space-y-1">
@@ -12,11 +12,11 @@
           </div>
         </template>
 
-        <p class="text-xs text-gray-500">Hello* 3 AgentCard</p>
+        
         <OrganismsProfilesAgentCardsPill v-bind="agentCard" :show-subtitle="false" :link="true" />
       </UCard>
 
-      <p class="text-xs text-gray-500">Hello* 4 CreateShell</p>
+      
       <MoleculesCreateShell
         :loading="submitting"
         submit-label="Create"
@@ -24,21 +24,16 @@
         @submit="onSubmit"
       >
         <template #write>
-          <p class="text-xs text-gray-500">Hello* 5 WriteSlot</p>
+          
           <JobCreateWrite v-model:form="form" />
         </template>
 
         <template #preview>
-          <p class="text-xs text-gray-500">Hello* 6 PreviewSlot</p>
+          
           <JobCreatePreview :form="form" />
         </template>
       </MoleculesCreateShell>
 
-      <!-- DEV scaffold check (temporary) -->
-      <pre
-        v-if="showCheck"
-        class="text-xs text-slate-500 whitespace-pre-wrap"
-      >{{ JSON.stringify(check, null, 2) }}</pre>
     </ClientOnly>
   </div>
 </template>
@@ -75,7 +70,6 @@ async function onSubmit() {
   }
 }
 
-const showCheck = import.meta.dev
 const check = computed(() => {
   const missing: string[] = []
 

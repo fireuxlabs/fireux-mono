@@ -1,4 +1,11 @@
-import { defineEventHandler, getQuery, setResponseStatus } from 'h3'
+import { useRuntimeConfig } from '#imports'
+import {
+    defineEventHandler,
+    getQuery,
+    getRequestHeader,
+    getRequestIP,
+    setResponseStatus,
+} from 'h3'
 import { resolvePlacesApiKey } from '../../utils/places-api-key'
 
 export default defineEventHandler(async (event: any) => {
@@ -17,15 +24,41 @@ export default defineEventHandler(async (event: any) => {
     console.info('[places][details]', { reqId, stage: 'request', placeId })
   }
 
+  const runtimeConfig = useRuntimeConfig(event) as any
+  const ip =
+    getRequestHeader(event, 'x-forwarded-for')?.split(',')[0]?.trim() ||
+    getRequestIP(event) ||
+    'anon'
+  const host =
+    getRequestHeader(event, 'x-forwarded-host') ||
+    getRequestHeader(event, 'host') ||
+    null
+
   const key = resolvePlacesApiKey(event)
   if (!key) {
-    if (dev) {
-      console.error('[places][details]', {
-        reqId,
-        stage: 'missing_api_key',
-        placeId,
-      })
+    const envs = {
+      GOOGLE_PLACES_API_KEY: !!process.env.GOOGLE_PLACES_API_KEY,
+      NUXT_GOOGLE_PLACES_API_KEY: !!process.env.NUXT_GOOGLE_PLACES_API_KEY,
+      NUXT_PUBLIC_GOOGLE_PLACES_API_KEY:
+        !!process.env.NUXT_PUBLIC_GOOGLE_PLACES_API_KEY,
     }
+    const rcFlags = {
+      runtime_googlePlacesApiKey: !!runtimeConfig?.googlePlacesApiKey,
+      runtime_fireux_googlePlacesApiKey:
+        !!runtimeConfig?.fireux?.googlePlacesApiKey,
+      public_googlePlacesApiKey: !!runtimeConfig?.public?.googlePlacesApiKey,
+      public_fireux_googlePlacesApiKey:
+        !!runtimeConfig?.public?.fireux?.googlePlacesApiKey,
+    }
+    console.error('[places][details]', {
+      reqId,
+      stage: 'missing_api_key',
+      placeId,
+      ip,
+      host,
+      envs,
+      runtimeConfig: rcFlags,
+    })
     setResponseStatus(event, 500)
     return { result: null, error: 'missing_api_key' }
   }
@@ -53,15 +86,13 @@ export default defineEventHandler(async (event: any) => {
       })
     }
     if (data.status !== 'OK') {
-      if (dev) {
-        console.warn('[places][details]', {
-          reqId,
-          stage: 'upstream_not_ok',
-          placeId,
-          upstreamStatus: data?.status ?? null,
-          errorMessage: data?.error_message ?? null,
-        })
-      }
+      console.warn('[places][details]', {
+        reqId,
+        stage: 'upstream_not_ok',
+        placeId,
+        upstreamStatus: data?.status ?? null,
+        errorMessage: data?.error_message ?? null,
+      })
       return {
         result: null,
         error: 'upstream_not_ok',

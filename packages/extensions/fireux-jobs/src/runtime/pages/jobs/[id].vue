@@ -25,81 +25,7 @@
       <template v-else>
         <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <div class="space-y-6">
-            <UCard>
-              <template #header>
-                <div class="flex items-center justify-between gap-3">
-                  <h3 class="font-semibold">Job overview</h3>
-                  <UBadge size="xs" variant="soft" :color="statusColor">
-                    {{ job?.status || 'open' }}
-                  </UBadge>
-                </div>
-              </template>
-
-              <div class="space-y-4">
-                <div class="flex items-start gap-4">
-                  <UAvatar
-                    :src="job?.kitchen?.place_image || undefined"
-                    :alt="job?.title || 'Job'"
-                    size="lg"
-                  />
-                  <div class="space-y-1">
-                    <p class="text-base font-semibold text-gray-900">
-                      {{ job?.title || 'Untitled job' }}
-                    </p>
-                    <p class="text-sm text-gray-600">
-                      {{ job?.kitchen?.formatted_address || 'Location pending' }}
-                    </p>
-                  </div>
-                </div>
-
-                <div class="grid gap-3 sm:grid-cols-2 text-sm text-gray-600">
-                  <div>
-                    <p class="text-xs uppercase tracking-wide text-gray-400">Job ID</p>
-                    <p class="font-medium text-gray-900">{{ job?.id }}</p>
-                  </div>
-                  <div>
-                    <p class="text-xs uppercase tracking-wide text-gray-400">Created by</p>
-                    <p class="font-medium text-gray-900">
-                      {{ job?.creator_id || '—' }}
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs uppercase tracking-wide text-gray-400">App</p>
-                    <p class="font-medium text-gray-900">
-                      {{ (job as any)?.app_id || '—' }}
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs uppercase tracking-wide text-gray-400">Company</p>
-                    <p class="font-medium text-gray-900">
-                      {{ companyCard?.title || job?.company_id || '—' }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </UCard>
-
-            <UCard>
-              <template #header>
-                <div class="flex items-center justify-between">
-                  <h3 class="font-semibold">Description</h3>
-                </div>
-              </template>
-              <div class="whitespace-pre-line text-sm text-gray-700">
-                {{ job?.description || 'No description provided.' }}
-              </div>
-            </UCard>
-
-            <UCard>
-              <template #header>
-                <div class="flex items-center justify-between">
-                  <h3 class="font-semibold">Debug JSON</h3>
-                </div>
-              </template>
-              <pre class="max-h-96 overflow-auto rounded-lg bg-gray-900/5 p-4 text-xs text-gray-600">
-                {{ jobJson }}
-              </pre>
-            </UCard>
+            <JobCardsProfile v-if="jobCard" :card="jobCard" />
           </div>
 
           <div class="space-y-6">
@@ -124,8 +50,8 @@
               <template #header>
                 <h3 class="font-semibold">Location</h3>
               </template>
-              <div v-if="kitchenCard" class="space-y-2">
-                <KitchenCardsPill v-bind="kitchenCard" :link="Boolean(kitchenCard.to)" />
+              <div v-if="job?.kitchen_id" class="space-y-2">
+                <KitchenPill :id="job.kitchen_id" />
                 <p class="text-xs text-gray-500">Kitchen ID: {{ job?.kitchen_id }}</p>
               </div>
               <p v-else class="text-sm text-gray-600">No kitchen linked.</p>
@@ -135,8 +61,8 @@
               <template #header>
                 <h3 class="font-semibold">Company</h3>
               </template>
-              <div v-if="companyCard" class="space-y-2">
-                <CompanyCardsPill v-bind="companyCard" :link="Boolean(companyCard.to)" />
+              <div v-if="job?.company_id" class="space-y-2">
+                <CompanyPill :id="job.company_id" />
                 <p class="text-xs text-gray-500">Company ID: {{ job?.company_id }}</p>
               </div>
               <p v-else class="text-sm text-gray-600">No company linked.</p>
@@ -152,12 +78,15 @@
 import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
 import { useHead } from 'nuxt/app'
-import { computed, ref, watchEffect } from 'vue'
+import { computed, defineComponent, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
+import JobCardsProfile from '../../components/organisms/entities/Job/Cards/Profile.vue'
 import { useJobFetch } from '../../composables/fireux/firestore/jobs/fetch/useJobFetch'
 import { useJobUpdate } from '../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
+import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 import type { JobStatus } from '../../models/objects/job.model'
 
 const route = useRoute()
@@ -171,9 +100,50 @@ const jobId = computed(() =>
 const { job } = useJobFetch(jobId)
 const { updateJob } = useJobUpdate()
 const { withToast } = useToastify()
-const { card: kitchenCardFactory } = useKitchenInterface()
-const { companies } = useCompanyFetch()
-const { card: companyCardFactory } = useCompanyInterface()
+const { card: jobCardFactory } = useJobInterface()
+
+// Local components for Kitchen and Company pills
+const KitchenPill = defineComponent({
+  props: { id: String },
+  setup(props) {
+    const { kitchen } = useKitchenFetch();
+    const kitchenData = computed(() => props.id ? kitchen(props.id).value : null);
+    const kitchenInterface = useKitchenInterface();
+    const kitchenCard = computed(() => kitchenInterface.card(kitchenData.value));
+    return { kitchenCard };
+  },
+  template: `
+    <div v-if="kitchenCard" class="pill">
+      <UUser
+        :name="kitchenCard.title"
+        :description="kitchenCard.subtitle"
+        :avatar="{ src: kitchenCard.avatarUrl, alt: kitchenCard.title }"
+        size="sm"
+      />
+    </div>
+  `
+});
+
+const CompanyPill = defineComponent({
+  props: { id: String },
+  setup(props) {
+    const { company } = useCompanyFetch();
+    const companyData = computed(() => props.id ? company(props.id).value : null);
+    const companyInterface = useCompanyInterface();
+    const companyCard = computed(() => companyInterface.card(companyData.value));
+    return { companyCard };
+  },
+  template: `
+    <div v-if="companyCard" class="pill">
+      <UUser
+        :name="companyCard.title"
+        :description="companyCard.subtitle"
+        :avatar="{ src: companyCard.avatarUrl, alt: companyCard.title }"
+        size="sm"
+      />
+    </div>
+  `
+});
 
 const jobTitle = computed(() => job.value?.title || 'Job Details')
 const jobSubtitle = computed(() =>
@@ -193,18 +163,7 @@ watchEffect(() => {
   statusLocal.value = (job.value?.status as JobStatus) ?? 'open'
 })
 
-const jobJson = computed(() => JSON.stringify(job.value ?? null, null, 2))
-
-const kitchenCard = computed(() =>
-  job.value?.kitchen ? kitchenCardFactory(job.value.kitchen as any) : null
-)
-
-const companyCard = computed(() => {
-  const id = String(job.value?.company_id ?? '').trim()
-  if (!id) return null
-  const found = (companies.value ?? []).find((company) => String(company.id) === id)
-  return found ? companyCardFactory(found) : null
-})
+const jobCard = computed(() => job.value ? jobCardFactory(job.value) : null)
 
 const saving = ref(false)
 const saveStatus = withToast(

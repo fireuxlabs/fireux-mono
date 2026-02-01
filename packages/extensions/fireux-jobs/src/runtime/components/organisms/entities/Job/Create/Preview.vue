@@ -46,24 +46,12 @@
         <div class="grid gap-4 md:grid-cols-2">
           <div class="space-y-2">
             <p class="text-xs uppercase tracking-wide text-gray-400">Location</p>
-            <KitchenCardsPill
-              v-if="kitchenCard"
-              :avatar-url="kitchenCard.avatarUrl"
-              :title="kitchenCard.title"
-              :subtitle="kitchenCard.subtitle"
-              :badges="kitchenCard.badges ?? []"
-            />
+            <KitchenPill v-if="kitchenId" :id="kitchenId" />
             <p v-else class="text-sm text-gray-700">Not selected</p>
           </div>
           <div class="space-y-2">
             <p class="text-xs uppercase tracking-wide text-gray-400">Company</p>
-            <CompanyCardsPill
-              v-if="companyCard"
-              :avatar-url="companyCard.avatarUrl"
-              :title="companyCard.title"
-              :subtitle="companyCard.subtitle"
-              :badges="companyCard.badges ?? []"
-            />
+            <CompanyPill v-if="companyId" :id="companyId" />
             <p v-else class="text-sm text-gray-700">Not set</p>
           </div>
         </div>
@@ -84,10 +72,53 @@ import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/fir
 import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
 import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch';
 import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
-import { computed } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
 
 import type { JobCreateForm } from '../../../../../composables/fireux/firestore/jobs/mutations/useJobCreate';
+
+// Local components for Kitchen and Company pills
+const KitchenPill = defineComponent({
+  props: { id: String },
+  setup(props) {
+    const { kitchen } = useKitchenFetch();
+    const kitchenData = computed(() => props.id ? kitchen(props.id).value : null);
+    const kitchenInterface = useKitchenInterface();
+    const kitchenCard = computed(() => kitchenInterface.card(kitchenData.value));
+    return { kitchenCard };
+  },
+  template: `
+    <div v-if="kitchenCard" class="pill">
+      <UUser
+        :name="kitchenCard.title"
+        :description="kitchenCard.subtitle"
+        :avatar="{ src: kitchenCard.avatarUrl, alt: kitchenCard.title }"
+        size="sm"
+      />
+    </div>
+  `
+});
+
+const CompanyPill = defineComponent({
+  props: { id: String },
+  setup(props) {
+    const { company } = useCompanyFetch();
+    const companyData = computed(() => props.id ? company(props.id).value : null);
+    const companyInterface = useCompanyInterface();
+    const companyCard = computed(() => companyInterface.card(companyData.value));
+    return { companyCard };
+  },
+  template: `
+    <div v-if="companyCard" class="pill">
+      <UUser
+        :name="companyCard.title"
+        :description="companyCard.subtitle"
+        :avatar="{ src: companyCard.avatarUrl, alt: companyCard.title }"
+        size="sm"
+      />
+    </div>
+  `
+});
 
 const props = defineProps<{
   form: JobCreateForm
@@ -103,9 +134,7 @@ const companyId = computed(() => props.form.company_id.trim())
 const statusLabel = computed(() => (props.form.status === 'closed' ? 'Closed' : 'Open'))
 
 const { kitchens } = useKitchenFetch()
-const { card: kitchenCardFactory } = useKitchenInterface()
 const { companies } = useCompanyFetch()
-const { card: companyCardFactory } = useCompanyInterface()
 
 const selectedKitchen = computed(() =>
   (kitchens.value ?? []).find((kitchen) => String(kitchen.id) === kitchenId.value)
@@ -113,14 +142,6 @@ const selectedKitchen = computed(() =>
 
 const selectedCompany = computed(() =>
   (companies.value ?? []).find((company) => String(company.id) === companyId.value)
-)
-
-const kitchenCard = computed(() =>
-  selectedKitchen.value ? kitchenCardFactory(selectedKitchen.value as any) : null
-)
-
-const companyCard = computed(() =>
-  selectedCompany.value ? companyCardFactory(selectedCompany.value as any) : null
 )
 
 </script>

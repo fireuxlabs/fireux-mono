@@ -24,7 +24,6 @@
     :subtitle="solutions.subtitle"
     :items="solutions.items"
   />
-
   <USeparator
     :avatar="{
       src: '/img/app/logo.png',

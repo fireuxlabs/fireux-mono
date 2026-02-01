@@ -23,6 +23,10 @@ export const KitchenOverlay = {
   /** Optional kitchen-specific details (empty string means unset) */
   website: '',
 
+  /** Professional relationships (experience associations). */
+  professionals_current: [] as string[],
+  professionals_alumni: [] as string[],
+
   // Authored (timestamps only; no creator_id on thin overlay)
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,

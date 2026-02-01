@@ -2,37 +2,41 @@
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
-    class="card card--cell"
+    class="flex w-full items-start gap-3"
     @click="onClick"
   >
-    <div class="card__media">
-      <UAvatar
-        :src="resolvedImageUrl || undefined"
-        :alt="name"
-        size="sm"
-        icon="i-lucide-image"
-        :class="avatarShadeClass"
-      />
+    <UAvatar
+      :src="resolvedImageUrl || undefined"
+      :alt="name"
+      size="sm"
+      icon="i-lucide-image"
+      :class="avatarShadeClass"
+    />
 
-      <div class="card__content card__stack">
-        <div class="card__header">
-          <div class="min-w-0">
-            <div class="card__title">{{ name }}</div>
+    <div class="min-w-0 flex-1 space-y-1">
+      <div class="flex items-start justify-between gap-2">
+        <div class="min-w-0">
+          <div class="truncate text-sm font-semibold">{{ name }}</div>
 
-            <div v-if="showSubtitle && resolvedAddress" class="card__subtitle">
-              {{ resolvedAddress }}
-            </div>
-          </div>
-
-          <div v-if="showSource && sourceLabel" class="card__badges">
-            <UBadge variant="soft" color="neutral" size="xs">{{ sourceLabel }}</UBadge>
+          <div v-if="showSubtitle && resolvedAddress" class="truncate text-xs text-dimmed">
+            {{ resolvedAddress }}
           </div>
         </div>
 
-        <div v-if="showTagline" class="card__tagline">
-          <span v-if="prop">{{ prop }}</span>
-          <span v-else class="italic">missing</span>
-        </div>
+        <UBadge
+          v-if="showSource && sourceLabel"
+          variant="soft"
+          color="neutral"
+          size="xs"
+          class="shrink-0"
+        >
+          {{ sourceLabel }}
+        </UBadge>
+      </div>
+
+      <div v-if="showTagline" class="truncate text-xs text-dimmed">
+        <span v-if="prop">{{ prop }}</span>
+        <span v-else class="italic">missing</span>
       </div>
     </div>
   </component>
