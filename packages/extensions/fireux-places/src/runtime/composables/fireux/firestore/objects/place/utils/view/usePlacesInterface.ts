@@ -12,9 +12,6 @@ export namespace PlaceCard {
     id: string
     to: string
 
-    // Media (empty string means unset)
-    avatarUrl: string
-
     // Primary display fields
     title: string
     subtitle: string
@@ -27,7 +24,7 @@ export namespace PlaceCard {
     formattedAddress: string
     shortAddress: string
 
-    // Secondary media (empty string means unset)
+    // Media (empty string means unset)
     imageUrl: string
 
     // Image tone metadata
@@ -46,21 +43,14 @@ export namespace PlaceCard {
 
 type PlaceExtras = Partial<PlaceModel>
 
-type PlacePill = PlaceCard.Card & {
-  showBadges?: boolean
-  showSubtitle?: boolean
-}
+type PlacePill = PlaceCard.Card
 
 type PlaceCell = Pick<
   PlaceCard.Card,
   'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
 > & {
-  formatted_address?: string
   source?: PlaceSource
   prop?: string
-  showSubtitle?: boolean
-  showSource?: boolean
-  showTagline?: boolean
 }
 
 type PlacePreview = {
@@ -70,12 +60,12 @@ type PlacePreview = {
   formattedAddress: string
   source: PlaceSource
   prop?: string
-  showBadges?: boolean
-  showBody?: boolean
 }
 
-type PlaceProfile = {
+export type PlaceProfile = {
   card: PlaceCard.Card
+  title: string
+  subtitle: string
   imageUrl?: string
   prop?: string
   rating?: number
@@ -138,13 +128,12 @@ export function usePlacesInterface() {
     const address = safeString((place as any)?.formatted_address)
     const shortAddress = sanitizeShortAddress((place as any)?.short_address)
     const displayTitle = shortName || stripLocationFromTitle(name, shortAddress || address)
-    const image = safeString((place as any)?.place_image)
+    const image = safeString((place as any)?.image_url || (place as any)?.place_image)
 
     return {
       id,
       to: id ? `/places/${encodeURIComponent(id)}` : '',
 
-      avatarUrl: image,
       title: displayTitle || name,
       subtitle: shortAddress || address,
       badges: [],
@@ -177,8 +166,6 @@ export function usePlacesInterface() {
       ...base,
       title: base.title || base.name,
       subtitle: base.subtitle || base.shortAddress || base.formattedAddress || '',
-      showBadges: false,
-      showSubtitle: true,
     }
   }
 
@@ -192,12 +179,8 @@ export function usePlacesInterface() {
       formattedAddress: base.formattedAddress,
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
-      formatted_address: (target as any)?.formatted_address,
       source: (target as any)?.source,
       prop: (target as any)?.brand_tagline,
-      showSubtitle: true,
-      showSource: true,
-      showTagline: true,
     }
   }
 
@@ -211,33 +194,42 @@ export function usePlacesInterface() {
       formattedAddress: base.formattedAddress,
       source: ((target as any)?.source as PlaceSource) ?? 'fireux',
       prop: (target as any)?.brand_tagline,
-      showBadges: true,
-      showBody: true,
     }
   }
 
   function profile(target?: (BasePlace & PlaceExtras) | null | undefined): PlaceProfile | null {
     const base = card(target)
     if (!base || !target) return null
+    const source = (target as any)?.source as PlaceSource | undefined
+    const rating = (target as any)?.rating as number | undefined
+    const ratingCount = (target as any)?.rating_count as number | undefined
+    const tags = (target as any)?.tags as string[] | undefined
+    const types = (target as any)?.types as string[] | undefined
+    const phone = (target as any)?.phone as string | undefined
+    const email = (target as any)?.email as string | undefined
+    const website = (target as any)?.website as string | undefined
+    const socialLinks = (target as any)?.social_links as Partial<PlaceSocialLinks> | undefined
     return {
       card: base,
-      imageUrl: (target as any)?.place_image,
+      title: base.title,
+      subtitle: base.subtitle,
+      imageUrl: (target as any)?.image_url || (target as any)?.place_image,
       prop: (target as any)?.brand_tagline,
       coverImage: (target as any)?.cover_image,
-      galleryImages: (target as any)?.gallery_images,
+      galleryImages: ((target as any)?.gallery_images as string[] | undefined)?.slice(0, 3),
       about: (target as any)?.about,
-      rating: (target as any)?.rating,
-      ratingCount: (target as any)?.rating_count,
+      rating,
+      ratingCount,
       priceLevel: (target as any)?.price_level,
-      tags: (target as any)?.tags,
-      types: (target as any)?.types,
+      tags,
+      types,
       hoursText: (target as any)?.hours_text,
-      phone: (target as any)?.phone,
-      email: (target as any)?.email,
-      website: (target as any)?.website,
-      socialLinks: (target as any)?.social_links,
+      phone,
+      email,
+      website,
+      socialLinks,
       verified: (target as any)?.verified,
-      source: (target as any)?.source,
+      source,
     }
   }
 

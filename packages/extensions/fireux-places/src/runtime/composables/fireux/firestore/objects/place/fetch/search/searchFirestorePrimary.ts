@@ -1,11 +1,11 @@
-import type { MapToCard, PlaceSearchDoc, PrefixSearch, SearchStage } from './types'
+import type { MapToBasePlace, PlaceSearchDoc, PrefixSearch, SearchStage } from './types'
 
 export const searchFirestorePrimary = async (params: {
   prefixSearch: PrefixSearch
   collectionName: string
   term: string
   termNormalized: string
-  mapToCard: MapToCard
+  mapToCard: MapToBasePlace
 }): Promise<SearchStage | null> => {
   const { prefixSearch, collectionName, term, termNormalized, mapToCard } = params
   let fx: PlaceSearchDoc[] = []

@@ -7,7 +7,7 @@
             Dummy place surfaces
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Preview Pill, Cell, Preview, and Profile surfaces using the rich dummy place.
+            Preview Pill, Cell, Preview, and Profile surfaces using a rich dummy place.
           </p>
         </div>
       </div>
@@ -15,7 +15,7 @@
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <div class="space-y-2">
-        <div class="text-xs font-medium text-dimmed">Main pill</div>
+        <div class="text-xs font-medium text-dimmed">Pill</div>
         <PlaceCardsPill
           v-if="dummyPill"
           v-bind="dummyPill"
@@ -42,7 +42,7 @@
         <div class="text-xs font-medium text-dimmed">Profile</div>
         <PlaceCardsProfile
           v-if="dummyProfile"
-          v-bind="dummyProfile"
+          :model="dummyProfile"
         />
       </div>
     </div>
@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { usePlacesInterface } from '../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 import type { Place } from '../../../models/objects/place.model';
 import { Place as PlaceModelRuntime } from '../../../models/objects/place.model';
@@ -61,14 +61,12 @@ const emit = defineEmits<{
 
 const { pill, cell, preview, profile } = usePlacesInterface()
 
-const dummyPlace: Place = {
+const dummyPlaceStored: Place = {
   ...PlaceModelRuntime,
   id: 'dev-place-misebox-001',
   name: 'Maison Lumen',
   short_name: 'Lumen',
   brand_tagline: 'Morning light, all day warmth.',
-  about:
-    'A sunlit neighborhood café and patisserie focused on seasonal bakes, slow coffee, and small plates. Designed for long mornings, quick lunches, and golden-hour meetups.',
   formatted_address: '12 Rue des Lilas, 75010 Paris, France',
   short_address: 'Rue des Lilas, Paris',
   address: {
@@ -81,7 +79,7 @@ const dummyPlace: Place = {
   lat: 48.8723,
   lng: 2.3651,
   timezone: 'Europe/Paris',
-  place_image:
+  image_url:
     'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=240&h=240&auto=format&fit=crop',
   cover_image:
     'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1800&auto=format&fit=crop',
@@ -91,6 +89,14 @@ const dummyPlace: Place = {
     'https://images.unsplash.com/photo-1481833761820-0509d3217039?q=80&w=1400&auto=format&fit=crop',
   ],
   image_shade: 'light',
+  verified: true,
+  source: 'fireux',
+  search_term: 'Maison Lumen Paris',
+}
+
+const dummyPlaceGoogle: Partial<Place> = {
+  about:
+    'A sunlit neighborhood café and patisserie focused on seasonal bakes, slow coffee, and small plates. Designed for long mornings, quick lunches, and golden-hour meetups.',
   phone: '+33 1 45 67 89 10',
   email: 'bonjour@maisonlumen.fr',
   website: 'https://maisonlumen.fr',
@@ -113,15 +119,20 @@ const dummyPlace: Place = {
     'Sat 09:00–20:00',
     'Sun 09:00–17:00',
   ],
-  verified: true,
-  source: 'fireux',
-  search_term: 'Maison Lumen Paris',
 }
 
-const dummyPill = computed(() => pill(dummyPlace))
-const dummyCell = computed(() => cell(dummyPlace))
-const dummyPreview = computed(() => preview(dummyPlace))
-const dummyProfile = computed(() => profile(dummyPlace))
+const dummyPlaceHydrated: Place = {
+  ...dummyPlaceStored,
+  ...dummyPlaceGoogle,
+  source: 'google',
+}
 
-emit('ready', dummyPlace)
+const dummyPill = computed(() => pill(dummyPlaceStored))
+const dummyCell = computed(() => cell(dummyPlaceStored))
+const dummyPreview = computed(() => preview(dummyPlaceHydrated))
+const dummyProfile = computed(() => profile(dummyPlaceHydrated))
+
+onMounted(() => {
+  emit('ready', dummyPlaceStored)
+})
 </script>

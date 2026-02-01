@@ -2,8 +2,9 @@ import { useFirestoreSearch } from 'fireux-core/runtime/composables/fireux/fires
 import { ref, watch } from 'vue'
 import { useFirestore } from 'vuefire'
 import type { BasePlace } from '../../../../../../../models/objects/place.model'
-import { mapPlaceToCard } from '../../utils/view/mapPlaceToCard'
+import { mapPlaceToBasePlace } from '../../utils/view/mapPlaceToBasePlace'
 import type { PlaceCard } from '../../utils/view/usePlacesInterface'
+import { usePlacesInterface } from '../../utils/view/usePlacesInterface'
 import { canonicalPlaceId } from '../google/usePlacesGoogle'
 import { normalizeQuery } from './normalizeQuery'
 import { searchFirestorePrimary } from './searchFirestorePrimary'
@@ -26,7 +27,21 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
 
   const debug = ref<Record<string, unknown> | null>(null)
 
-  const mapToCard = mapPlaceToCard()
+  const mapToBasePlace = mapPlaceToBasePlace()
+  const { card: toCard } = usePlacesInterface()
+
+  const toCardWithExtras = (base: any): PlaceCard.Card | null => {
+    const mapped = toCard(base)
+    if (!mapped) return null
+    const lat = Number((base as any)?.lat)
+    const lng = Number((base as any)?.lng)
+    return {
+      ...mapped,
+      collection: (base as any)?.collection ?? mapped.collection,
+      ...(Number.isFinite(lat) ? { lat } : {}),
+      ...(Number.isFinite(lng) ? { lng } : {}),
+    }
+  }
 
   async function searchPlaces(q: string) {
     const term = q.trim().toLowerCase()
@@ -57,10 +72,12 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
           collectionName,
           term,
           termNormalized,
-          mapToCard,
+          mapToCard: mapToBasePlace,
         })
         if (primary) {
           primaryResults = primary.results
+            .map((row) => toCardWithExtras(row))
+            .filter(Boolean) as PlaceCard.Card[]
           primaryDebug = primary.debug ?? null
         } else if (import.meta.dev && options.debugLabel) {
           primaryDebug = { stage: 'firebase', count: 0 }
@@ -80,20 +97,24 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
         allowGoogle: true,
         collectionName,
         db,
-        mapToCard,
+        mapToCard: mapToBasePlace,
         type: options.type ?? null,
       })
+
+      const googleCards = google.results
+        .map((row) => toCardWithExtras(row))
+        .filter(Boolean) as PlaceCard.Card[]
 
       if (primaryResults.length) {
         const existingIds = new Set(
           primaryResults.map((r) => canonicalPlaceId(r.id) || r.id)
         )
-        const additions = google.results.filter(
+        const additions = googleCards.filter(
           (r) => !existingIds.has(canonicalPlaceId(r.id) || r.id)
         )
         results.value = [...primaryResults, ...additions]
       } else {
-        results.value = google.results
+        results.value = googleCards
       }
 
       if (import.meta.dev) {
@@ -133,7 +154,7 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
       ...(typeof lat === 'number' ? { lat } : {}),
       ...(typeof lng === 'number' ? { lng } : {}),
       source: cell.source as any,
-      place_image: cell.imageUrl || '',
+      image_url: cell.imageUrl || '',
       claimed_by: cell.claimedBy || '',
       collection: cell.collection,
     } as any

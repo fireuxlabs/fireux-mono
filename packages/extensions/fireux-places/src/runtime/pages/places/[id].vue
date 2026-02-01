@@ -63,7 +63,7 @@
               </div>
 
               <PlaceCardsPreview
-                :image-url="place.place_image ?? ''"
+                :image-url="place.image_url ?? (place as any).place_image ?? ''"
                 :image-shade="place.image_shade"
                 :name="place.name ?? ''"
                 :formatted-address="place.formatted_address ?? ''"

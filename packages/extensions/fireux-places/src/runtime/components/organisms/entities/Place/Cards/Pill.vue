@@ -8,7 +8,7 @@
     <UUser
       :name="title"
       :description="showSubtitle ? (subtitle || undefined) : undefined"
-      :avatar="avatarUrl ? { src: avatarUrl || undefined, alt: title || '', class: avatarClass } : undefined"
+      :avatar="imageUrl ? { src: imageUrl || undefined, alt: title || '', class: avatarClass } : undefined"
       size="sm"
     >
       <template #default>
@@ -37,7 +37,7 @@ defineOptions({ inheritAttrs: false })
 
 type PillProps = Pick<
   PlaceCard.Card,
-  'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'
+  'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges'
 > & {
   imageShade?: PlaceImageShade
   showSubtitle?: boolean

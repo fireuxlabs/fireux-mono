@@ -13,7 +13,7 @@ export const PlacePayload = {
   short_address: '',
   lat: 0,
   lng: 0,
-  place_image: '',
+  image_url: '',
   image_shade: 'none',
   claimed_by: '',
   source: '',

@@ -93,7 +93,12 @@ export function usePlaceLogoState(
       requestToken += 1
       isLoading.value = false
       error.value = null
-      const sanitized = sanitizeLogoAvatar((next as any)?.place_image ?? null)
+      const logoCandidate =
+        (next as any)?.image_url ??
+        (next as any)?.place_image ??
+        (next as any)?.imageUrl ??
+        null
+      const sanitized = sanitizeLogoAvatar(logoCandidate)
       avatar.value = sanitized
       hasAttempted.value = !!sanitized
       if (!next) return
@@ -215,13 +220,16 @@ function toLogoCard(place: PlaceLogoTarget): PlaceCard.Card {
     (place as any).formattedAddress ?? (place as any).formatted_address ?? ''
   const shortAddress =
     (place as any).shortAddress ?? (place as any).short_address ?? ''
-  const imageUrl = (place as any).imageUrl ?? (place as any).place_image ?? ''
+  const imageUrl =
+    (place as any).imageUrl ??
+    (place as any).image_url ??
+    (place as any).place_image ??
+    ''
 
   return {
     id,
     to: `/places/${encodeURIComponent(id)}`,
 
-    avatarUrl: imageUrl,
     title: (place as any).title ?? name,
     subtitle: (place as any).subtitle ?? formattedAddress,
     badges: (place as any).badges ?? [],

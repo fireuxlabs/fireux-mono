@@ -91,8 +91,8 @@ export function usePlaceUpdate() {
    */
   async function updatePlaceImage(value: string, ctx: UpdateCtx) {
     const id = reqId(ctx)
-    const place_image = sanitizeNullable(value)
-    await updateDocument<Place>('places', id, { place_image } as Partial<Place>)
+    const image_url = sanitizeNullable(value)
+    await updateDocument<Place>('places', id, { image_url } as Partial<Place>)
   }
 
   async function updateImageShade(value: PlaceImageShade | string, ctx: UpdateCtx) {

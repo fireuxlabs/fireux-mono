@@ -63,7 +63,7 @@ export const Place = {
 	timezone: '' as string,
 
 	// Media
-	place_image: '' as string, // logo / primary
+	image_url: '' as string, // logo / primary
 	cover_image: '' as string, // hero banner (optional)
 	gallery_images: [] as string[],
 	image_shade: 'none' as PlaceImageShade,
@@ -123,7 +123,7 @@ export type BasePlace = Pick<
 	| 'short_address'
 	| 'lat'
 	| 'lng'
-	| 'place_image'
+	| 'image_url'
 	| 'image_shade'
 	| 'claimed_by'
 	| 'source'

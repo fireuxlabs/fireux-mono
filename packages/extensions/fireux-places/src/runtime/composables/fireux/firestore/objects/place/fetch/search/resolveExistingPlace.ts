@@ -1,12 +1,12 @@
 import type { Firestore } from 'firebase/firestore'
 import { doc, getDoc } from 'firebase/firestore'
-import type { MapToCard } from './types'
+import type { MapToBasePlace } from './types'
 
 export const resolveExistingPlace = async (
   db: Firestore,
   collection: string,
   id: string,
-  mapToCard: MapToCard
+  mapToCard: MapToBasePlace
 ) => {
   try {
     const ref = doc(db, collection, id)

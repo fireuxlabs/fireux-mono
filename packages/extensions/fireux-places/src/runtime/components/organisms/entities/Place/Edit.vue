@@ -36,7 +36,7 @@
 				<UCard>
 					<div class="flex flex-col items-center gap-2">
 						<MoleculesFormsFirestoreImagePicker
-							:src="place.place_image"
+								:src="imageUrl"
 							:alt="place.name || 'Place'"
 							:initials="avatarInitials"
 							:update-function="canEditImage ? handleAvatarUpload : undefined"
@@ -164,7 +164,8 @@ const { card: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 
 
-const hasImage = computed(() => !!place.value?.place_image)
+const imageUrl = computed(() => place.value?.image_url || (place.value as any)?.place_image || '')
+const hasImage = computed(() => !!imageUrl.value)
 const isClaimedByUser = computed(() => {
 	const claimedBy = place.value?.claimed_by
 	if (!claimedBy) return false
@@ -210,7 +211,7 @@ async function handleAvatarUpload(file: File) {
 	try {
 		const url = await uploadImage(`places/${placeId.value}/avatar`, file)
 		await updateDocument<Place>('places', placeId.value, {
-			place_image: url,
+			image_url: url,
 		})
 		toast.success('Image updated')
 	} catch (error) {
@@ -239,10 +240,10 @@ function loadImageFromBlob(blob: Blob): Promise<HTMLImageElement> {
 }
 
 async function onNormalizeImage() {
-	if (!placeId.value || !place.value?.place_image || isNormalizingImage.value) return
+	if (!placeId.value || !imageUrl.value || isNormalizingImage.value) return
 	isNormalizingImage.value = true
 	try {
-		const originalUrl = place.value.place_image
+		const originalUrl = imageUrl.value
 		const fetchUrl = originalUrl.startsWith('/')
 			? originalUrl
 			: `/api/proxy/image?url=${encodeURIComponent(originalUrl)}`
@@ -273,7 +274,7 @@ async function onNormalizeImage() {
 		const file = new File([normalizedBlob], 'avatar.png', { type: 'image/png' })
 		const url = await uploadImage(`places/${placeId.value}/avatar`, file)
 		await updateDocument<Place>('places', placeId.value, {
-			place_image: url,
+			image_url: url,
 		})
 		toast.success('Image normalized')
 	} catch (error) {

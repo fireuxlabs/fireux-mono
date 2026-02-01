@@ -1,14 +1,14 @@
 import type { Firestore } from 'firebase/firestore'
 import { fetchGoogle, getLastPlacesAutocompleteDebug } from '../google/usePlacesGoogle'
 import { resolveExistingPlace } from './resolveExistingPlace'
-import type { MapToCard, SearchStage } from './types'
+import type { MapToBasePlace, SearchStage } from './types'
 
 export const searchGoogle = async (params: {
   term: string
   allowGoogle: boolean
   collectionName: string
   db: Firestore
-  mapToCard: MapToCard
+  mapToCard: MapToBasePlace
   type?: string | null
 }): Promise<SearchStage> => {
   const { term, allowGoogle, collectionName, db, mapToCard, type } = params

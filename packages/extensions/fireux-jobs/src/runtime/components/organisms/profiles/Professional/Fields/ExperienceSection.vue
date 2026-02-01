@@ -142,7 +142,8 @@
 import { CalendarDate, DateFormatter, getLocalTimeZone, type DateValue } from '@internationalized/date'
 import { doc, getDoc } from 'firebase/firestore'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
-import { mapPlaceToCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToCard'
+import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToBasePlace'
+import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import { computed, ref, watch } from 'vue'
 import { useFirestore } from 'vuefire'
@@ -181,7 +182,8 @@ const dateFormatter = new DateFormatter('en-US', { dateStyle: 'medium' })
 const db = useFirestore()
 const placeCache = ref<Record<string, Record<string, any>>>({})
 const placeRequests = ref<Set<string>>(new Set())
-const toPlaceCard = mapPlaceToCard()
+const toPlaceBase = mapPlaceToBasePlace()
+const { card: toPlaceCard } = usePlacesInterface()
 
 const placeIds = computed(() => {
   const ids = new Set<string>()
@@ -327,7 +329,8 @@ const resolvePlaceCard = (item: ExperienceEntry): PlaceCard.Card | null => {
     void hydratePlace(placeId)
     return null
   }
-  return toPlaceCard({ ...cached, id: placeId })
+  const base = toPlaceBase({ ...cached, id: placeId })
+  return toPlaceCard(base)
 }
 
 const onPlaceConfirmed = (

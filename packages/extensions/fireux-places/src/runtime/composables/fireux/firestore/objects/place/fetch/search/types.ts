@@ -1,5 +1,5 @@
 import type { FirestorePrefixSearchOptions } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreSearch'
-import type { PlaceCard } from '../../utils/view/usePlacesInterface'
+import type { BasePlace } from '../../../../../../../models/objects/place.model'
 
 export type PlaceSearchDoc = {
   id?: string
@@ -16,13 +16,15 @@ export type PlaceSearchDoc = {
   claimed_by?: string
 }
 
+export type BasePlaceRecord = BasePlace & { collection?: string }
+
 export type SearchStage = {
-  results: PlaceCard.Card[]
+  results: BasePlaceRecord[]
   stage: string
   debug?: Record<string, unknown>
 }
 
-export type MapToCard = (p: any, collectionOverride?: string) => PlaceCard.Card
+export type MapToBasePlace = (p: any, collectionOverride?: string) => BasePlaceRecord
 
 export type PrefixSearch = <T>(
   options: FirestorePrefixSearchOptions<T>

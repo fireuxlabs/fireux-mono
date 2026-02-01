@@ -51,7 +51,6 @@ type Props = Pick<
   PlaceCard.Card,
   'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
 > & {
-  formatted_address?: string
   source?: 'google' | 'fireux' | 'manual'
   prop?: string
   showSubtitle?: boolean
@@ -75,9 +74,7 @@ const props = withDefaults(defineProps<Props>(), {
   action: false,
 })
 
-const resolvedAddress = computed(
-  () => props.formattedAddress || props.formatted_address || ''
-)
+const resolvedAddress = computed(() => props.formattedAddress || '')
 
 const placeRef = computed(() => ({
   id: props.id,

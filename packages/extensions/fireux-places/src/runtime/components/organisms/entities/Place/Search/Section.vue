@@ -139,7 +139,7 @@ function toDraft(
   const existingSearchTerm = String((place as any)?.search_term ?? '').trim()
 
   const sanitizedPlaceImage =
-    sanitizeLogoAvatar(String((place as any)?.place_image ?? '')) ?? ''
+    sanitizeLogoAvatar(String((place as any)?.image_url ?? (place as any)?.place_image ?? '')) ?? ''
 
   // Prefer override; else fall back to sanitized stored image
   let resolvedLogo =
@@ -163,7 +163,7 @@ function toDraft(
     // ✅ required by PlaceUpsertInput
     image_shade: toShade((place as any)?.image_shade),
 
-    place_image: resolvedLogo,
+    image_url: resolvedLogo,
     claimed_by: String((place as any)?.claimed_by ?? ''),
     search_term: existingSearchTerm || `${name} ${formatted}`.toLowerCase().trim(),
   }
@@ -182,9 +182,9 @@ async function onConfirmClick() {
       console.log('[places][confirm] start', {
         placeId,
         source: selectedSource.value,
-        place_image: (place as any)?.place_image ?? '',
+        image_url: (place as any)?.image_url ?? (place as any)?.place_image ?? '',
         selected_logo_state: selectedLogo.value ?? '',
-        selected_cell_image: selectedCell.value?.avatarUrl ?? '',
+        selected_cell_image: selectedCell.value?.imageUrl ?? '',
       })
     }
 
@@ -246,7 +246,7 @@ async function onConfirmClick() {
       console.log('[places][confirm] draft', {
         placeId,
         source: draft.source,
-        draft_image: draft.place_image,
+        draft_image: draft.image_url,
         draft_shade: draft.image_shade,
       })
     }
@@ -257,7 +257,7 @@ async function onConfirmClick() {
         console.log('[places][confirm] ensurePlaceExists', {
           placeId,
           ok,
-          draft_image: draft.place_image,
+          draft_image: draft.image_url,
         })
       }
       if (!ok) return

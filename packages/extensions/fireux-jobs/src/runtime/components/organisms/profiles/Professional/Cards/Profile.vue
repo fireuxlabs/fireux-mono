@@ -86,8 +86,8 @@
                 <div>{{ entry.item.role }}</div>
                 <div>{{ formatExperienceDates(entry.item) }}</div>
                 <div>
-                  <PlaceCardsPill
-                    :avatar-url="entry.avatarUrl"
+                    <PlaceCardsPill
+                      :image-url="entry.imageUrl"
                     :title="entry.title"
                     :subtitle="entry.subtitle"
                     :show-badges="false"
@@ -213,7 +213,8 @@
 <script setup lang="ts">
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
-import { mapPlaceToCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToCard'
+import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToBasePlace'
+import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { Place } from 'fireux-places/runtime/models/objects/place.model'
 import type { Ref } from 'vue'
@@ -286,12 +287,14 @@ if (import.meta.client) {
   )
 }
 
-const toPlaceCard = mapPlaceToCard()
+const toPlaceBase = mapPlaceToBasePlace()
+const { card: toPlaceCard } = usePlacesInterface()
 
 const placeCardLookup = computed(() => {
   const map = new Map<string, PlaceCard.Card | null>()
   for (const [id, docRef] of placeDocRefs.value.entries()) {
-    map.set(id, docRef.value ? toPlaceCard(docRef.value) : null)
+    const base = docRef.value ? toPlaceBase(docRef.value) : null
+    map.set(id, base ? toPlaceCard(base) : null)
   }
   return map
 })
@@ -316,7 +319,7 @@ const otherExperienceCards = computed(() =>
       item,
       title: item.name || 'External venue',
       subtitle,
-      avatarUrl: item.image_url || '',
+      imageUrl: item.image_url || '',
       showSubtitle: Boolean(subtitle),
     }
   })

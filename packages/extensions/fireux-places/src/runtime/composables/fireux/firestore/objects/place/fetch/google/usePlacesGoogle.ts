@@ -1,6 +1,5 @@
-import type { GooglePlace, PlaceUpsertInput } from '../../../../../../../models/objects/place.model'
+import type { BasePlace, GooglePlace, PlaceUpsertInput } from '../../../../../../../models/objects/place.model'
 import { toShortAddress } from '../../utils/view/formatPlaceAddress'
-import type { PlaceCard } from '../../utils/view/usePlacesInterface'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
 
@@ -61,7 +60,7 @@ export async function fetchGoogle(
   excludeIds: Set<string>,
   limit: number,
   options?: { type?: string | null }
-): Promise<PlaceCard.Card[]> {
+): Promise<BasePlace[]> {
   if (limit <= 0 || typeof window === 'undefined') return []
 
   const start = Date.now()
@@ -120,13 +119,13 @@ export async function fetchGoogle(
       ? json.predictions
       : []
 
-    const cells: PlaceCard.Card[] = preds
+    const places: BasePlace[] = preds
       .filter((p) => {
         const id = canonicalPlaceId(p?.place_id)
         return id && !excludeIds.has(id)
       })
       .slice(0, limit)
-      .map((p): PlaceCard.Card => {
+      .map((p): BasePlace => {
         const id = canonicalPlaceId(p.place_id) as string
         const main = p.structured_formatting?.main_text
         const secondary = p.structured_formatting?.secondary_text
@@ -134,42 +133,38 @@ export async function fetchGoogle(
         const formattedAddress = secondary || desc || ''
         return {
           id,
-          to: `/places/${encodeURIComponent(id)}`,
-
-          avatarUrl: '',
-          title: main || desc || 'Unknown place',
-          subtitle: formattedAddress,
-          badges: [],
-
           name: main || desc || 'Unknown place',
-          shortName: '',
-          formattedAddress,
-          shortAddress: toShortAddress(formattedAddress),
-
-          imageUrl: '',
+          short_name: '',
+          formatted_address: formattedAddress,
+          short_address: toShortAddress(formattedAddress),
+          lat: 0,
+          lng: 0,
+          image_url: '',
+          image_shade: 'none',
+          claimed_by: '',
           source: 'google',
         }
       })
 
     log('autocomplete cells resolved', {
       query,
-      total: cells.length,
-      immediateLogoIds: cells
-        .filter((cell) => Boolean(cell.imageUrl))
-        .map((cell) => cell.id),
-      pendingCount: cells.filter((cell) => !cell.imageUrl).length,
+      total: places.length,
+      immediateLogoIds: places
+        .filter((place) => Boolean(place.image_url))
+        .map((place) => place.id),
+      pendingCount: places.filter((place) => !place.image_url).length,
     })
 
     if (import.meta.dev) {
       console.log('[places] google supplement results', {
         query,
         requested: limit,
-        count: cells.length,
-        ids: cells.map((c) => c.id),
+        count: places.length,
+        ids: places.map((c) => c.id),
       })
     }
 
-    return cells
+    return places
   } catch (err) {
     if (import.meta.dev) {
       try {
@@ -206,7 +201,7 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
     lat: g.lat,
     lng: g.lng,
     source: 'fireux',
-    place_image: g.place_image ?? '',
+    image_url: g.image_url ?? (g as any).place_image ?? '',
     search_term,
   }
 }
@@ -237,7 +232,7 @@ export function mapDetailsToGooglePlace(
     lat: Number(location?.lat ?? 0),
     lng: Number(location?.lng ?? 0),
     source: 'google',
-    place_image: typeof result?.icon === 'string' ? result.icon : '',
+    image_url: typeof result?.icon === 'string' ? result.icon : '',
     website: typeof result?.website === 'string' ? result.website : '',
     phone,
     rating: typeof result?.rating === 'number' ? result.rating : 0,
