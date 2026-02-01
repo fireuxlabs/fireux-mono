@@ -11,6 +11,15 @@
           >
             Back to details
           </UButton>
+          <UButton
+            size="xs"
+            variant="ghost"
+            color="neutral"
+            icon="i-lucide-copy"
+            :disabled="!placeId"
+            aria-label="Copy place id"
+            @click="onCopyPlaceId"
+          />
         </template>
       </UPageHeader>
 
@@ -29,6 +38,14 @@
 
         <LayoutsDashboardProfileEdit v-else class="panels-masonry">
           <template #preview>
+            <PlaceCardsPreview
+              v-if="placePreview"
+              v-bind="placePreview"
+              :show-badges="false"
+              :show-body="false"
+              :details="placePreviewDetails"
+              :map-url="placePreviewMapUrl"
+            />
             <UAlert
               v-if="!canEdit"
               color="warning"
@@ -82,9 +99,11 @@
 import { useHead, useRoute } from '#imports'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
+import { usePlacesInterface } from '../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { Place } from '../../../models/objects/place.model'
 
 definePageMeta({
@@ -115,8 +134,65 @@ const canEdit = computed(() =>
   Boolean(isAdmin.value || (claimedBy.value && currentUser.value?.id === claimedBy.value))
 )
 
+const { preview } = usePlacesInterface()
+const placePreview = computed(() => preview(place.value))
+const placePreviewDetails = computed(() => {
+  const v = place.value
+  if (!v) return []
+  const details = [
+    { label: 'Short name', value: v.short_name ?? '' },
+    { label: 'Short address', value: v.short_address ?? '' },
+    { label: 'Search term', value: v.search_term ?? '' },
+    { label: 'Brand tagline', value: v.brand_tagline ?? '' },
+    { label: 'About', value: v.about ?? '' },
+    { label: 'Phone', value: v.phone ?? '' },
+    { label: 'Email', value: v.email ?? '' },
+    { label: 'Website', value: v.website ?? '' },
+    { label: 'Price level', value: v.price_level ?? '' },
+    { label: 'Rating', value: v.rating ? String(v.rating) : '' },
+    { label: 'Rating count', value: v.rating_count ? String(v.rating_count) : '' },
+    { label: 'Tags', value: Array.isArray(v.tags) ? v.tags.filter(Boolean).join(', ') : '' },
+    { label: 'Types', value: Array.isArray(v.types) ? v.types.filter(Boolean).join(', ') : '' },
+    { label: 'Hours', value: Array.isArray(v.hours_text) ? v.hours_text.filter(Boolean).join(' · ') : '' },
+    { label: 'Claimed by', value: v.claimed_by ?? '' },
+    { label: 'Verified', value: v.verified ? 'Yes' : '' },
+  ]
+
+  return details.filter((item) => String(item.value ?? '').trim().length > 0)
+})
+const placePreviewMapUrl = computed(() => {
+  const v = place.value
+  if (!v) return ''
+  if (v.google_maps_url) return v.google_maps_url
+  return ''
+})
+
+const toast = useToastify()
+
+async function onCopyPlaceId() {
+  if (!placeId) return
+  try {
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(placeId)
+    } else if (typeof document !== 'undefined') {
+      const textarea = document.createElement('textarea')
+      textarea.value = placeId
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+    }
+    toast.success('Place ID copied')
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Failed to copy place ID: ${msg}`)
+  }
+}
+
 const pageTitle = computed(() => place.value?.name || 'Edit place')
-const pageSubtitle = computed(() => (placeId ? `Place: ${placeId}` : 'Edit a place'))
+const pageSubtitle = computed(() => (placeId ? `Place ID: ${placeId}` : 'Edit a place'))
 
 const editableFields = computed(() => {
   const v = place.value

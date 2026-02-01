@@ -49,7 +49,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePlaceLogoState } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 
 type Props = Pick<
@@ -81,19 +80,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const resolvedAddress = computed(() => props.formattedAddress || '')
 
-const placeRef = computed(() => ({
-  id: props.id,
-  name: props.name,
-  formatted_address: resolvedAddress.value,
-  imageUrl: props.imageUrl,
-  source: props.source,
-}))
-
-const { avatar } = usePlaceLogoState(placeRef)
-
-const resolvedImageUrl = computed(
-  () => props.imageUrl || avatar.value || ''
-)
+const resolvedImageUrl = computed(() => props.imageUrl || '')
 
 const avatarShadeClass = computed(() => {
   const shade = props.imageShade

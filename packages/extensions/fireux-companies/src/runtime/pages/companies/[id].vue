@@ -38,44 +38,67 @@
         </div>
 
         <div v-else class="space-y-4">
+          <CompanyCardsProfile
+            v-if="companyProfile"
+            :card="companyProfile.card"
+            :avatar="companyProfile.avatarUrl"
+            :prop="companyProfile.prop"
+          />
+
           <UCard>
             <template #header>
-              <div class="flex items-center justify-between gap-3">
-                <div class="text-sm font-semibold">Overview</div>
-                <UBadge size="xs" variant="soft" color="primary">
-                  {{ company.id }}
-                </UBadge>
-              </div>
+              <div class="text-sm font-semibold">Claim</div>
             </template>
 
-            <div class="space-y-2 text-sm">
-              <div>
-                <div class="text-xs uppercase tracking-wide text-gray-400">
-                  Name
-                </div>
-                <div class="font-medium">
-                  {{ company.name || '—' }}
-                </div>
-              </div>
-
-              <div>
-                <div class="text-xs uppercase tracking-wide text-gray-400">
-                  Website
-                </div>
-                <div class="font-medium">
-                  {{ company.website || '—' }}
-                </div>
-              </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs text-gray-500">Claimed by</span>
+              <OrganismsUserCardsPill
+                v-if="claimedUserPill"
+                v-bind="claimedUserPill"
+                :show-subtitle="false"
+                :link="Boolean(claimedUserPill.to)"
+              />
+              <span v-else class="text-xs text-gray-500">—</span>
             </div>
           </UCard>
 
           <UCard>
             <template #header>
-              <div class="text-sm font-semibold">Raw</div>
+              <div class="text-sm font-semibold">Details</div>
             </template>
 
-            <pre class="max-h-[420px] overflow-auto text-xs">{{ json }}</pre>
+            <div class="space-y-2 text-sm">
+              <div v-for="item in details" :key="item.label">
+                <div class="text-xs uppercase tracking-wide text-gray-400">
+                  {{ item.label }}
+                </div>
+                <div class="font-medium">
+                  {{ item.value }}
+                </div>
+              </div>
+
+              <div v-if="mapUrl" class="pt-2">
+                <UButton
+                  size="xs"
+                  variant="soft"
+                  color="primary"
+                  icon="i-lucide-map-pin"
+                  :to="mapUrl"
+                  target="_blank"
+                >
+                  View map
+                </UButton>
+              </div>
+            </div>
           </UCard>
+
+          <DevJson
+            v-if="isDev && company"
+            :title="'Company (Doc)'"
+            context="companies/[id]"
+            :data="company"
+            :default-open="false"
+          />
         </div>
       </UPageBody>
     </UPage>
@@ -89,7 +112,10 @@
 <script setup lang="ts">
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { computed } from 'vue'
+import { useCompanyInterface } from '../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
 import type { Company } from '../../models/objects/company.model'
 
@@ -120,13 +146,61 @@ const company = computed<Company | null>(
 const loading = computed(() => !rawDoc && !!docId)
 
 const pageTitle = computed(() => company.value?.name || 'Company')
-const pageDescription = computed(
-  () => company.value?.website || 'Saved company details.'
-)
+const pageDescription = computed(() => company.value?.website || 'Company details.')
+const isDev = import.meta.dev
+
+const { profile } = useCompanyInterface()
+const companyProfile = computed(() => profile(company.value))
+
+const claimedBy = computed(() => String(company.value?.claimed_by ?? '').trim())
+const { user: claimedUser } = useUserFetch(claimedBy)
+const { card: userCard } = useUserInterface(claimedUser)
+const claimedUserPill = computed(() => userCard(claimedUser.value))
+
+const formatValue = (value: unknown) => {
+  if (value == null) return ''
+  if (Array.isArray(value)) return value.filter(Boolean).join(', ')
+  if (typeof value === 'object') return JSON.stringify(value)
+  return String(value).trim()
+}
+
+const details = computed(() => {
+  const v = company.value
+  if (!v) return [] as Array<{ label: string; value: string }>
+
+  const lat = Number(v.lat)
+  const lng = Number(v.lng)
+  const coords =
+    Number.isFinite(lat) && Number.isFinite(lng) ? `${lat.toFixed(6)}, ${lng.toFixed(6)}` : ''
+
+  const items = [
+    { label: 'Short name', value: formatValue(v.short_name) },
+    { label: 'Formatted address', value: formatValue(v.formatted_address) },
+    { label: 'Short address', value: formatValue(v.short_address) },
+    { label: 'Search term', value: formatValue((v as any).search_term) },
+    { label: 'Source', value: formatValue(v.source) },
+    { label: 'Coordinates', value: coords },
+    { label: 'Website', value: formatValue(v.website) },
+    { label: 'Image URL', value: formatValue((v as any).image_url || (v as any).place_image) },
+    { label: 'Image shade', value: formatValue(v.image_shade) },
+    { label: 'Created', value: formatValue((v as any).created_at) },
+    { label: 'Updated', value: formatValue((v as any).updated_at) },
+  ]
+
+  return items.filter((item) => item.value)
+})
+
+const mapUrl = computed(() => {
+  const v = company.value
+  if (!v) return ''
+  const lat = Number(v.lat)
+  const lng = Number(v.lng)
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return ''
+  return `https://maps.google.com/?q=${lat},${lng}`
+})
 
 useHead({
   title: computed(() => `${appName} | ${pageTitle.value}`),
 })
 
-const json = computed(() => JSON.stringify(company.value, null, 2))
 </script>

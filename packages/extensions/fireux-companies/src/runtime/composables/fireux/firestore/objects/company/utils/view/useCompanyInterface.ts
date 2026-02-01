@@ -22,6 +22,31 @@ export namespace CompanyCard {
 }
 
 export function useCompanyInterface() {
+  type CompanyPill = CompanyCard.Card
+
+  type CompanyCell = Pick<CompanyCard.Card, 'to' | 'name' | 'website' | 'badges'> & {
+    avatarUrl: string
+    prop?: string
+  }
+
+  type CompanyPreview = {
+    avatarUrl: string
+    name: string
+    website: string
+    badges: string[]
+    prop?: string
+  }
+
+  type CompanyProfile = {
+    card: CompanyCard.Card
+    title: string
+    subtitle: string
+    avatarUrl?: string
+    prop?: string
+    website?: string
+    address?: string
+  }
+
   function map(company: Company): CompanyCard.Card {
     const id = safeString(company.id).trim()
     const name = safeString(company.name)
@@ -33,9 +58,9 @@ export function useCompanyInterface() {
 
     return {
       id,
-      to: id ? `/companies/${id}` : '',
+      to: id ? `/companies/${encodeURIComponent(id)}` : '',
 
-      avatarUrl: safeString((company as any)?.place_image),
+      avatarUrl: safeString((company as any)?.image_url || (company as any)?.place_image),
       title: shortName || name,
       subtitle: address,
 
@@ -52,6 +77,58 @@ export function useCompanyInterface() {
     return mapped.id ? mapped : null
   }
 
+  function pill(target?: Company | null | undefined): CompanyPill | null {
+    const base = card(target)
+    if (!base) return null
+    return {
+      ...base,
+      title: base.title || base.name,
+      subtitle: base.subtitle || '',
+    }
+  }
+
+  function cell(target?: Company | null | undefined): CompanyCell | null {
+    const base = card(target)
+    if (!base || !target) return null
+    const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
+    return {
+      to: base.to,
+      name: base.name,
+      website: base.website,
+      badges: base.badges,
+      avatarUrl: base.avatarUrl,
+      prop: address,
+    }
+  }
+
+  function preview(target?: Company | null | undefined): CompanyPreview | null {
+    const base = card(target)
+    if (!base || !target) return null
+    const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
+    return {
+      avatarUrl: base.avatarUrl,
+      name: base.name,
+      website: base.website,
+      badges: base.badges,
+      prop: address,
+    }
+  }
+
+  function profile(target?: Company | null | undefined): CompanyProfile | null {
+    const base = card(target)
+    if (!base || !target) return null
+    const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
+    return {
+      card: base,
+      title: base.title,
+      subtitle: base.subtitle,
+      avatarUrl: base.avatarUrl,
+      prop: base.website,
+      website: base.website,
+      address,
+    }
+  }
+
   function searchText(company: Company): string {
     const name = safeString(company.name)
     const website = safeString(company.website)
@@ -59,5 +136,5 @@ export function useCompanyInterface() {
     return `${name} ${website} ${id}`.trim().toLowerCase()
   }
 
-  return { card, searchText }
+  return { card, pill, cell, preview, profile, searchText }
 }

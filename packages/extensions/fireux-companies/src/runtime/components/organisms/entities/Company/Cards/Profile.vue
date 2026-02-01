@@ -22,7 +22,7 @@
 import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
 
 const { card, avatar: avatarProp, prop } = defineProps<{
-  card: CompanyCard.Pill
+  card: CompanyCard.Card
   avatar?: string | null
   prop?: string
 }>()

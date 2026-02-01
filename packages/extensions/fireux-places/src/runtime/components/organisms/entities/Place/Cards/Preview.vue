@@ -1,41 +1,69 @@
 <template>
   <UCard class="overflow-hidden">
     <div class="space-y-3">
-      <div class="relative h-10 w-full overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800">
-        <img
-          v-if="resolvedImageUrl"
-          :src="resolvedImageUrl"
+      <div class="flex items-center gap-3">
+        <UAvatar
+          :src="resolvedImageUrl || undefined"
           :alt="name"
-          class="h-full w-full object-cover"
+          size="xl"
+          icon="i-lucide-image"
+          :class="avatarShadeClass"
         />
-        <div v-else class="flex h-full w-full items-center justify-center text-xs text-dimmed">
-          <UIcon name="i-lucide-image" class="h-5 w-5" />
-        </div>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-        <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-2 text-white">
-          <div class="truncate text-sm font-semibold">{{ name }}</div>
-          <UBadge
-            v-if="showBadges && sourceLabel"
-            variant="soft"
-            color="neutral"
-            size="xs"
-            class="shrink-0 bg-white/20 text-white"
-          >
-            {{ sourceLabel }}
-          </UBadge>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <div class="truncate text-base font-semibold">{{ name }}</div>
+              <div v-if="formattedAddress" class="truncate text-xs text-dimmed">
+                {{ formattedAddress }}
+              </div>
+            </div>
+            <UBadge
+              v-if="showBadges && sourceLabel"
+              variant="soft"
+              color="neutral"
+              size="xs"
+              class="shrink-0"
+            >
+              {{ sourceLabel }}
+            </UBadge>
+          </div>
+          <div v-if="showBody" class="mt-1 line-clamp-2 text-xs text-dimmed">
+            <span v-if="prop">{{ prop }}</span>
+            <span v-else class="italic">missing</span>
+          </div>
         </div>
       </div>
 
-      <div class="space-y-1 text-xs text-dimmed">
-        <div v-if="formattedAddress" class="flex items-center gap-1">
-          <UIcon name="i-lucide-map-pin" class="h-3 w-3" />
-          <span class="truncate">{{ formattedAddress }}</span>
-        </div>
+      <div v-if="mapUrl" class="flex items-center gap-2">
+        <UButton
+          size="xs"
+          variant="soft"
+          color="neutral"
+          icon="i-lucide-map-pin"
+          :to="mapUrl"
+          target="_blank"
+        >
+          Open map
+        </UButton>
+      </div>
 
-        <div v-if="showBody" class="line-clamp-2">
-          <span v-if="prop">{{ prop }}</span>
-          <span v-else class="italic">missing</span>
+      <div v-if="details?.length" class="space-y-2 text-xs text-dimmed">
+        <div
+          v-for="item in details"
+          :key="item.label"
+          class="grid gap-0.5"
+        >
+          <div class="text-[11px] font-medium uppercase tracking-wide text-muted">
+            {{ item.label }}
+          </div>
+          <div class="truncate">
+            {{ formatValue(item.value) }}
+          </div>
         </div>
+      </div>
+
+      <div v-if="$slots.actions" class="pt-1">
+        <slot name="actions" />
       </div>
     </div>
   </UCard>
@@ -44,6 +72,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { PlaceImageShade } from '../../../../../models/objects/place.model'
+
+type PlacePreviewDetail = {
+  label: string
+  value?: string | number | null
+}
 
 type Props = {
   imageUrl: string
@@ -54,6 +87,8 @@ type Props = {
   prop?: string
   showBadges?: boolean
   showBody?: boolean
+  details?: PlacePreviewDetail[]
+  mapUrl?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -62,6 +97,14 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const resolvedImageUrl = computed(() => props.imageUrl || '')
+
+const avatarShadeClass = computed(() => {
+  const shade = props.imageShade
+  if (!shade) return ''
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
+})
 
 const sourceLabel = computed(() =>
   props.source === 'fireux'
@@ -72,4 +115,10 @@ const sourceLabel = computed(() =>
         ? 'Google'
         : ''
 )
+
+const formatValue = (value?: string | number | null) => {
+  if (value == null) return '—'
+  const str = String(value).trim()
+  return str ? str : '—'
+}
 </script>

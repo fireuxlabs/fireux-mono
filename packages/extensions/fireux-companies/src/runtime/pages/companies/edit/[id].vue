@@ -29,7 +29,7 @@
       <LayoutsDashboardProfileEdit v-else class="panels-masonry">
         <template #preview>
           <CompanyCardsPreview
-            :avatar-url="company.place_image ?? ''"
+            :avatar-url="company.image_url ?? company.place_image ?? ''"
             :name="company.name ?? ''"
             :website="company.website ?? ''"
             :badges="[]"

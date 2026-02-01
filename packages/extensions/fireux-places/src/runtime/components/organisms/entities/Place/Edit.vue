@@ -8,28 +8,43 @@
 
 			<div v-else class="space-y-6">
 				<UCard>
-					<div class="flex items-center justify-between gap-3">
-						<div class="flex items-center gap-3">
-							<span class="text-xs text-gray-600">Claimed:</span>
-							<OrganismsUserCardsPill
-								v-if="claimedUserPill"
-								v-bind="claimedUserPill"
-								:show-subtitle="false"
-								:link="Boolean(claimedUserPill.to)"
-							/>
-							<span v-else class="text-xs text-gray-500">—</span>
+					<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+						<div class="space-y-1">
+							<p class="text-xs uppercase tracking-wide text-dimmed">Claim status</p>
+							<div class="flex items-center gap-2">
+								<OrganismsUserCardsPill
+									v-if="claimedUserPill"
+									v-bind="claimedUserPill"
+									:show-subtitle="false"
+									:link="Boolean(claimedUserPill.to)"
+								/>
+								<span v-else class="text-xs text-gray-500">Unclaimed</span>
+							</div>
 						</div>
-						<UButton
-							v-if="canClaim"
-							size="xs"
-							color="amber"
-							variant="soft"
-							:disabled="isClaiming"
-							:loading="isClaiming"
-							@click="onClaim"
-						>
-							Claim
-						</UButton>
+						<div class="flex flex-wrap gap-2">
+							<UButton
+								v-if="canClaim"
+								size="xs"
+								color="amber"
+								variant="soft"
+								:disabled="isClaiming"
+								:loading="isClaiming"
+								@click="onClaim"
+							>
+								Claim business
+							</UButton>
+							<UButton
+								v-if="canDropClaim"
+								size="xs"
+								color="neutral"
+								variant="soft"
+								:disabled="isDropping"
+								:loading="isDropping"
+								@click="onDropClaim"
+							>
+								Drop claim
+							</UButton>
+						</div>
 					</div>
 				</UCard>
 
@@ -193,6 +208,7 @@ const isClaimedByUser = computed(() => {
 const canEditImage = computed(
 	() => !hasImage.value || isAdmin.value || isClaimedByUser.value
 )
+const canDropClaim = computed(() => isClaimedByUser.value)
 
 const avatarInitials = computed(() => {
 	const name = place.value?.name || 'P'
@@ -209,6 +225,7 @@ const avatarInitials = computed(() => {
 const avatarUploading = ref(false)
 const isUpdatingShade = ref(false)
 const isClaiming = ref(false)
+const isDropping = ref(false)
 const { uploadImage } = useImageStorage()
 const { updateDocument } = useFirestoreUpdate()
 const toast = useToastify()
@@ -269,6 +286,23 @@ async function onClaim() {
 		throw error
 	} finally {
 		isClaiming.value = false
+	}
+}
+
+async function onDropClaim() {
+	if (!placeId.value || !canDropClaim.value || isDropping.value) return
+	isDropping.value = true
+	try {
+		await updateDocument<Place>('places', placeId.value, {
+			claimed_by: '',
+		})
+		toast.success('Claim removed')
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : 'Please try again.'
+		toast.error(`Failed to remove claim: ${msg}`)
+		throw error
+	} finally {
+		isDropping.value = false
 	}
 }
 

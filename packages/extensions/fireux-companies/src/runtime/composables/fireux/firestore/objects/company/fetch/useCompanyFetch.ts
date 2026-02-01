@@ -38,8 +38,9 @@ export function useCompanyFetch() {
         formatted_address: place?.formatted_address || '',
         lat: place?.lat ?? 0,
         lng: place?.lng ?? 0,
+        image_url: place?.image_url || place?.place_image || '',
         place_image: place?.place_image || '',
-        image_shade: place?.image_shade || 'neutral',
+        image_shade: place?.image_shade || 'none',
         website: overlay?.website || '',
       } as Company
     })
@@ -65,8 +66,9 @@ export function useCompanyFetch() {
         formatted_address: place?.formatted_address || '',
         lat: place?.lat ?? 0,
         lng: place?.lng ?? 0,
+        image_url: place?.image_url || place?.place_image || '',
         place_image: place?.place_image || '',
-        image_shade: place?.image_shade || 'neutral',
+        image_shade: place?.image_shade || 'none',
         website: overlay?.website || '',
       } as Company
     })
