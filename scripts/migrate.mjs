@@ -44,6 +44,7 @@ if (help) {
   console.log('  - app-social-links-normalize')
   console.log('  - jobs-backfill-id')
   console.log('  - places-normalize-image-shade')
+  console.log('  - places-migrate-image-url')
   console.log('  - places-backfill-short-address')
   console.log('  - places-backfill-short-name')
   console.log('  - apply-drift-payload')
@@ -522,6 +523,114 @@ async function runPlacesNormalizeImageShade() {
   })
 }
 
+async function runPlacesMigrateImageUrl() {
+  const collectionName = typeof args.collection === 'string' ? args.collection : 'places'
+
+  console.log('[migrate] places-migrate-image-url start', {
+    projectId,
+    commit,
+    pageSize,
+    limit,
+    collection: collectionName,
+  })
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+
+  let lastDoc = null
+
+  while (true) {
+    if (limit && processed >= limit) break
+
+    let q = db.collection(collectionName).orderBy(FieldPath.documentId()).limit(pageSize)
+    if (lastDoc) q = q.startAfter(lastDoc)
+
+    const snap = await q.get()
+    if (snap.empty) break
+
+    let batch = db.batch()
+    let batchOps = 0
+
+    for (const docSnap of snap.docs) {
+      if (limit && processed >= limit) break
+
+      processed += 1
+      const data = docSnap.data() || {}
+
+      const patch = {}
+      let needs = false
+
+      const imageUrl = asString(data.image_url, '')
+      const placeImage = asString(data.place_image, '')
+
+      if (!imageUrl && placeImage) {
+        patch.image_url = placeImage
+        needs = true
+      }
+
+      if (typeof data.place_image !== 'undefined') {
+        patch.place_image = FieldValue.delete()
+        needs = true
+      }
+
+      if (typeof data.professionals_current !== 'undefined') {
+        patch.professionals_current = FieldValue.delete()
+        needs = true
+      }
+
+      if (typeof data.professionals_alumni !== 'undefined') {
+        patch.professionals_alumni = FieldValue.delete()
+        needs = true
+      }
+
+      if (typeof data.claimed_by !== 'string') {
+        patch.claimed_by = ''
+        needs = true
+      }
+
+      const shade = asString(data.image_shade, '').toLowerCase().trim()
+      if (!shade || (shade !== 'light' && shade !== 'dark' && shade !== 'none')) {
+        patch.image_shade = 'none'
+        needs = true
+      }
+
+      if (!needs) {
+        skipped += 1
+        continue
+      }
+
+      updated += 1
+
+      if (commit) {
+        batch.update(docSnap.ref, patch)
+        batchOps += 1
+      } else {
+        console.log('[dry-run]', docSnap.ref.path, patch)
+      }
+
+      if (commit && batchOps >= 400) {
+        await batch.commit()
+        batch = db.batch()
+        batchOps = 0
+      }
+    }
+
+    if (commit && batchOps > 0) {
+      await batch.commit()
+    }
+
+    lastDoc = snap.docs[snap.docs.length - 1]
+  }
+
+  console.log('[migrate] places-migrate-image-url done', {
+    processed,
+    updated,
+    skipped,
+    commit,
+  })
+}
+
 async function readPayloadInput() {
   if (payloadFile) {
     return JSON.parse(await readFile(payloadFile, 'utf8'))
@@ -838,6 +947,7 @@ const recipes = {
   'app-social-links-normalize': runAppSocialLinksNormalize,
   'jobs-backfill-id': runJobsBackfillId,
   'places-normalize-image-shade': runPlacesNormalizeImageShade,
+  'places-migrate-image-url': runPlacesMigrateImageUrl,
   'places-backfill-short-address': runPlacesBackfillShortAddress,
   'places-backfill-short-name': runPlacesBackfillShortName,
   'apply-drift-payload': runApplyDriftPayload,

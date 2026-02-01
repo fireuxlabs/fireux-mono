@@ -61,56 +61,28 @@ const emit = defineEmits<{
 
 const { pill, cell, preview, profile } = usePlacesInterface()
 
-const dummyPlaceStored: Place = {
-  ...PlaceModelRuntime,
+const dummyPlaceDocData: Partial<Place> = {
   id: 'dev-place-misebox-001',
   name: 'Maison Lumen',
   short_name: 'Lumen',
-  brand_tagline: 'Morning light, all day warmth.',
   formatted_address: '12 Rue des Lilas, 75010 Paris, France',
   short_address: 'Rue des Lilas, Paris',
-  address: {
-    street: '12 Rue des Lilas',
-    city: 'Paris',
-    region: 'Île-de-France',
-    postal_code: '75010',
-    country_code: 'FR',
-  },
   lat: 48.8723,
   lng: 2.3651,
-  timezone: 'Europe/Paris',
   image_url:
     'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=240&h=240&auto=format&fit=crop',
-  cover_image:
-    'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1800&auto=format&fit=crop',
-  gallery_images: [
-    'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1400&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?q=80&w=1400&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1481833761820-0509d3217039?q=80&w=1400&auto=format&fit=crop',
-  ],
   image_shade: 'light',
-  verified: true,
   source: 'fireux',
   search_term: 'Maison Lumen Paris',
 }
 
-const dummyPlaceGoogle: Partial<Place> = {
+const dummyPlaceGoogleData: Partial<Place> = {
   about:
     'A sunlit neighborhood café and patisserie focused on seasonal bakes, slow coffee, and small plates. Designed for long mornings, quick lunches, and golden-hour meetups.',
   phone: '+33 1 45 67 89 10',
-  email: 'bonjour@maisonlumen.fr',
   website: 'https://maisonlumen.fr',
   google_maps_url: 'https://maps.google.com/?q=Maison%20Lumen%20Paris',
-  social_links: {
-    website: 'https://maisonlumen.fr',
-    instagram: 'https://instagram.com/maisonlumen',
-    facebook: 'https://facebook.com/maisonlumen',
-    tiktok: 'https://tiktok.com/@maisonlumen',
-    linkedin: 'https://linkedin.com/company/maisonlumen',
-    youtube: 'https://youtube.com/@maisonlumen',
-  },
   types: ['cafe', 'bakery', 'restaurant'],
-  tags: ['Brunch', 'Patisserie', 'Seasonal Menu'],
   rating: 4.7,
   rating_count: 1280,
   price_level: 'mid',
@@ -121,15 +93,19 @@ const dummyPlaceGoogle: Partial<Place> = {
   ],
 }
 
+const dummyPlaceStored: Place = {
+  ...PlaceModelRuntime,
+  ...dummyPlaceDocData,
+}
+
 const dummyPlaceHydrated: Place = {
   ...dummyPlaceStored,
-  ...dummyPlaceGoogle,
-  source: 'google',
+  ...dummyPlaceGoogleData,
 }
 
 const dummyPill = computed(() => pill(dummyPlaceStored))
 const dummyCell = computed(() => cell(dummyPlaceStored))
-const dummyPreview = computed(() => preview(dummyPlaceHydrated))
+const dummyPreview = computed(() => preview(dummyPlaceStored))
 const dummyProfile = computed(() => profile(dummyPlaceHydrated))
 
 onMounted(() => {

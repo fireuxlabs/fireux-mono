@@ -103,6 +103,24 @@
             <span class="font-medium">Status</span>
           </div>
           <div class="mt-1 text-sm font-semibold">{{ claimedStatus }}</div>
+          <OrganismsUserCardsPill
+            v-if="claimedUserPill"
+            v-bind="claimedUserPill"
+            :link="Boolean(claimedUserPill.to)"
+            class="mt-2"
+          />
+          <UButton
+            v-if="showClaimButton"
+            size="xs"
+            variant="soft"
+            color="primary"
+            class="mt-2"
+            :loading="isClaiming"
+            :disabled="isClaiming"
+            @click="onClaim"
+          >
+            Claim this business
+          </UButton>
         </div>
       </div>
 
@@ -165,20 +183,20 @@
           </div>
           <div class="space-y-1">
             <div><span class="font-medium">Name:</span> {{ model.card.name }}</div>
-            <div><span class="font-medium">Short name:</span> {{ model.card.shortName }}</div>
-            <div><span class="font-medium">Short address:</span> {{ model.card.shortAddress }}</div>
-            <div><span class="font-medium">Formatted address:</span> {{ model.card.formattedAddress }}</div>
+            <div v-if="model.card.shortName"><span class="font-medium">Short name:</span> {{ model.card.shortName }}</div>
+            <div v-if="model.card.shortAddress"><span class="font-medium">Short address:</span> {{ model.card.shortAddress }}</div>
+            <div v-if="model.card.formattedAddress"><span class="font-medium">Formatted address:</span> {{ model.card.formattedAddress }}</div>
           </div>
         </div>
-        <div class="space-y-2">
+        <div v-if="hasContactDetails" class="space-y-2">
           <div class="flex items-center gap-2 text-sm font-medium">
             <UIcon name="i-lucide-phone" class="h-4 w-4" />
             Contact
           </div>
           <div class="space-y-1">
-            <div><span class="font-medium">Phone:</span> {{ model.phone }}</div>
-            <div><span class="font-medium">Email:</span> {{ model.email }}</div>
-            <div>
+            <div v-if="model.phone"><span class="font-medium">Phone:</span> {{ model.phone }}</div>
+            <div v-if="model.email"><span class="font-medium">Email:</span> {{ model.email }}</div>
+            <div v-if="model.website">
               <span class="font-medium">Website:</span>
               <span>{{ model.website }}</span>
             </div>
@@ -186,26 +204,13 @@
         </div>
       </div>
 
-      <div class="grid gap-4 text-xs text-dimmed sm:grid-cols-2">
-        <div class="space-y-2">
-          <div class="flex items-center gap-2 text-sm font-medium">
-            <UIcon name="i-lucide-shield" class="h-4 w-4" />
-            Status
-          </div>
-          <div class="space-y-1">
-            <div><span class="font-medium">Claimed by:</span> {{ model.card.claimedBy }}</div>
-            <div>
-              <span class="font-medium">Badges:</span>
-              <span v-if="model.card.badges?.length">{{ model.card.badges.join(', ') }}</span>
-            </div>
-          </div>
-        </div>
+      <div v-if="model.hoursText?.length" class="grid gap-4 text-xs text-dimmed sm:grid-cols-2">
         <div class="space-y-2">
           <div class="flex items-center gap-2 text-sm font-medium">
             <UIcon name="i-lucide-clock" class="h-4 w-4" />
             Hours
           </div>
-          <div v-if="model.hoursText?.length" class="space-y-0.5">
+          <div class="space-y-0.5">
             <div v-for="line in model.hoursText" :key="line">{{ line }}</div>
           </div>
         </div>
@@ -215,47 +220,85 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { PlaceProfile } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
+import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch';
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser';
+import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface';
+import { computed, ref, toRefs } from 'vue';
+import { usePlaceClaim } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceClaim';
+import type { PlaceProfile } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 
 const props = defineProps<{ model: PlaceProfile }>()
-const { model } = props
+const { model } = toRefs(props)
 
-const ratingText = computed(() => (model.rating ? model.rating.toFixed(1) : ''))
+const ratingText = computed(() => (model.value.rating ? model.value.rating.toFixed(1) : ''))
 const ratingCountText = computed(() =>
-  model.ratingCount ? model.ratingCount.toLocaleString() : ''
+  model.value.ratingCount ? model.value.ratingCount.toLocaleString() : ''
 )
 
 const tagChips = computed(() =>
-  [...(model.tags ?? []), ...(model.types ?? [])].filter(Boolean).slice(0, 6)
+  [...(model.value.tags ?? []), ...(model.value.types ?? [])].filter(Boolean).slice(0, 6)
 )
 
 const socialItems = computed(() =>
   [
-    { key: 'website', label: 'Website', icon: 'i-lucide-globe', url: model.socialLinks?.website ?? '' },
-    { key: 'instagram', label: 'Instagram', icon: 'i-logos-instagram', url: model.socialLinks?.instagram ?? '' },
-    { key: 'facebook', label: 'Facebook', icon: 'i-logos-facebook', url: model.socialLinks?.facebook ?? '' },
-    { key: 'tiktok', label: 'TikTok', icon: 'i-logos-tiktok-icon', url: model.socialLinks?.tiktok ?? '' },
-    { key: 'linkedin', label: 'LinkedIn', icon: 'i-logos-linkedin-icon', url: model.socialLinks?.linkedin ?? '' },
-    { key: 'youtube', label: 'YouTube', icon: 'i-logos-youtube-icon', url: model.socialLinks?.youtube ?? '' },
+    { key: 'website', label: 'Website', icon: 'i-lucide-globe', url: model.value.socialLinks?.website ?? '' },
+    { key: 'instagram', label: 'Instagram', icon: 'i-logos-instagram', url: model.value.socialLinks?.instagram ?? '' },
+    { key: 'facebook', label: 'Facebook', icon: 'i-logos-facebook', url: model.value.socialLinks?.facebook ?? '' },
+    { key: 'tiktok', label: 'TikTok', icon: 'i-logos-tiktok-icon', url: model.value.socialLinks?.tiktok ?? '' },
+    { key: 'linkedin', label: 'LinkedIn', icon: 'i-logos-linkedin-icon', url: model.value.socialLinks?.linkedin ?? '' },
+    { key: 'youtube', label: 'YouTube', icon: 'i-logos-youtube-icon', url: model.value.socialLinks?.youtube ?? '' },
   ].filter((item) => item.url)
 )
 
 const contactItems = computed(() =>
   [
-    model.phone ? { key: 'phone', label: 'Call', icon: 'i-lucide-phone', href: `tel:${model.phone}` } : null,
-    model.email ? { key: 'email', label: 'Email', icon: 'i-lucide-mail', href: `mailto:${model.email}` } : null,
-    model.website ? { key: 'website', label: 'Website', icon: 'i-lucide-globe', href: model.website } : null,
+    model.value.phone ? { key: 'phone', label: 'Call', icon: 'i-lucide-phone', href: `tel:${model.value.phone}` } : null,
+    model.value.email ? { key: 'email', label: 'Email', icon: 'i-lucide-mail', href: `mailto:${model.value.email}` } : null,
+    model.value.website ? { key: 'website', label: 'Website', icon: 'i-lucide-globe', href: model.value.website } : null,
   ].filter(Boolean) as { key: string; label: string; icon: string; href: string }[]
 )
 
+const hasContactDetails = computed(() =>
+  Boolean(model.value.phone || model.value.email || model.value.website)
+)
+
+const claimedUserId = computed(() => model.value.card.claimedBy || '')
+const { user: claimedUser } = useUserFetch(claimedUserId)
+const { card: userCard } = useUserInterface(claimedUser)
+const claimedUserPill = computed(() => userCard(claimedUser.value))
+
 const sourceLabel = computed(() => {
-  const source = model.source
+  const source = model.value.source
   if (source === 'fireux') return 'FireUX'
   if (source === 'manual') return 'Manual'
   if (source === 'google') return 'Google'
   return ''
 })
 
-const claimedStatus = computed(() => (model.card.claimedBy ? 'Claimed' : 'Unclaimed'))
+const claimedStatus = computed(() => (model.value.card.claimedBy ? 'Claimed' : 'Unclaimed'))
+const { currentUser, isAdmin } = useUser()
+const isVerifiedUser = computed(() => Boolean((currentUser.value as any)?.verified || isAdmin.value))
+const showClaimButton = computed(() =>
+  !String(model.value.card.claimedBy ?? '').trim() && isVerifiedUser.value
+)
+const isClaiming = ref(false)
+const { claimPlace } = usePlaceClaim()
+const toast = useToastify()
+
+async function onClaim() {
+  if (isClaiming.value) return
+  const placeId = model.value.card.id
+  if (!placeId || !showClaimButton.value) return
+  isClaiming.value = true
+  try {
+    await claimPlace(placeId)
+    toast.success('Place claimed')
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Failed to claim place: ${msg}`)
+  } finally {
+    isClaiming.value = false
+  }
+}
 </script>

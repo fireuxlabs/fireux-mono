@@ -42,7 +42,6 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed, ref } from 'vue'
 import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
 import type { Place } from '../../models/objects/place.model'
-import { Place as PlaceModelRuntime } from '../../models/objects/place.model'
 
 definePageMeta({
   layout: 'dev',
@@ -70,7 +69,24 @@ const places = computed(() => {
   return hasDummy ? list : [fallback, ...list]
 })
 
-const placeModelRuntime = PlaceModelRuntime
+const placeStoredModel = {
+  id: '',
+  name: '',
+  short_name: '',
+  formatted_address: '',
+  short_address: '',
+  lat: 0,
+  lng: 0,
+  image_url: '',
+  image_shade: 'none',
+  source: 'fireux',
+  search_term: '',
+  claimed_by: '',
+  created_at: {},
+  updated_at: {},
+}
+
+const placeModelRuntime = placeStoredModel
 
 const {
   driftKind,
@@ -82,7 +98,7 @@ const {
 } = useDevDriftFilter({
   collection: places,
   runtimeModel: placeModelRuntime,
-  driftMode: 'extras-only',
+  driftMode: 'all',
 })
 
 

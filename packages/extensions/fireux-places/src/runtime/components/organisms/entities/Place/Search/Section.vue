@@ -5,7 +5,16 @@
     <PlaceSearchBar v-model="query" :placeholder="placeholder" />
 
     <UCard v-if="selectedCell" :ui="{ body: 'space-y-3' }">
-      <PlaceCardsCell v-bind="selectedCell" :show-source="true" />
+      <PlaceCardsDropdownItem
+        v-if="selectedCell.source === 'google'"
+        v-bind="selectedCell"
+        :show-source="true"
+      />
+      <PlaceCardsCell
+        v-else
+        v-bind="selectedCell"
+        :show-source="true"
+      />
 
       <div class="flex items-center justify-end gap-2">
         <UButton size="sm" color="neutral" variant="soft" @click="clear">
@@ -40,16 +49,16 @@ import { computed, ref, watch } from 'vue'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import {
-    loadLogoForPlace,
-    sanitizeLogoAvatar,
-    usePlaceLogoState,
+  loadLogoForPlace,
+  sanitizeLogoAvatar,
+  usePlaceLogoState,
 } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type {
-    BasePlace,
-    PlaceImageShade,
-    PlaceSource,
-    PlaceUpsertInput,
+  BasePlace,
+  PlaceImageShade,
+  PlaceSource,
+  PlaceUpsertInput,
 } from '../../../../../models/objects/place.model'
 
 const props = withDefaults(

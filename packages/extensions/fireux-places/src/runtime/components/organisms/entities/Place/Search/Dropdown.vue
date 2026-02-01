@@ -1,14 +1,12 @@
 <template>
   <div v-if="cells.length" class="space-y-1">
-    <button
+    <PlaceCardsDropdownItem
       v-for="cell in cells"
       :key="cell.id"
-      type="button"
-      class="block w-full text-left rounded-[16px] ring-1 ring-transparent transition hover:bg-neutral-100/80 dark:hover:bg-neutral-900/70"
-      @click="emit('select', cell)"
-    >
-      <PlaceCardsCell v-bind="cell" :show-source="true" />
-    </button>
+      v-bind="cell"
+      :show-source="true"
+      @select="emit('select', cell)"
+    />
   </div>
 </template>
 

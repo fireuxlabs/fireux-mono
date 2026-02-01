@@ -1,43 +1,51 @@
-import type { BasePlace } from '../../../../../../../models/objects/place.model'
+import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../../../models/objects/place.model'
 import { canonicalPlaceId } from '../../fetch/google/usePlacesGoogle'
 import type { BasePlaceRecord, MapToBasePlace } from '../../fetch/search/types'
 
+function toSource(value: unknown): PlaceSource {
+  const v = String(value ?? '').toLowerCase().trim()
+  if (v === 'google' || v === 'manual' || v === 'fireux') return v
+  return 'fireux'
+}
+
+function toShade(value: unknown): PlaceImageShade {
+  const v = String(value ?? 'none').toLowerCase().trim()
+  if (v === 'light' || v === 'dark' || v === 'none') return v
+  return 'none'
+}
+
+function toNumber(value: unknown): number {
+  const n = typeof value === 'number' ? value : Number(String(value ?? '').trim())
+  return Number.isFinite(n) ? n : 0
+}
+
+function toString(value: unknown): string {
+  return typeof value === 'string' ? value : String(value ?? '')
+}
+
 export const mapPlaceToBasePlace = (): MapToBasePlace => {
   return (p: any, collectionOverride?: string): BasePlaceRecord => {
-    const id = canonicalPlaceId(p?.place_id ?? p?.id) ?? ''
-    const sourceRaw = typeof p?.source === 'string' ? p.source : 'fireux'
-    const source =
-      sourceRaw === 'google'
-        ? 'google'
-        : sourceRaw === 'manual'
-          ? 'manual'
-          : 'fireux'
-
-    const latRaw = Number(p?.lat)
-    const lngRaw = Number(p?.lng)
+    const id = canonicalPlaceId(toString(p?.place_id ?? p?.id)) ?? ''
+    const source = toSource(p?.source)
 
     const base: BasePlace = {
       id,
-      name: String(p?.name ?? ''),
-      short_name: typeof p?.short_name === 'string' ? p.short_name : '',
-      formatted_address:
-        typeof p?.formatted_address === 'string' ? p.formatted_address : '',
-      short_address:
-        typeof p?.short_address === 'string' ? p.short_address : '',
-      lat: Number.isFinite(latRaw) ? latRaw : 0,
-      lng: Number.isFinite(lngRaw) ? lngRaw : 0,
-      image_url:
-        typeof (p?.image_url ?? p?.place_image) === 'string'
-          ? (p?.image_url ?? p?.place_image)
-          : '',
-      claimed_by: typeof p?.claimed_by === 'string' ? p.claimed_by : '',
-      image_shade: typeof p?.image_shade === 'string' ? p.image_shade : 'none',
-      source: source as any,
+      name: toString(p?.name).trim(),
+      short_name: toString(p?.short_name).trim(),
+      formatted_address: toString(p?.formatted_address).trim(),
+      short_address: toString(p?.short_address).trim(),
+      lat: toNumber(p?.lat),
+      lng: toNumber(p?.lng),
+      image_url: toString(p?.image_url ?? p?.place_image).trim(),
+      claimed_by: toString(p?.claimed_by).trim(),
+      image_shade: toShade(p?.image_shade),
+      source,
     }
 
     return {
       ...base,
-      collection: collectionOverride ?? p?.collection ?? undefined,
+      collection:
+        collectionOverride ?? (typeof p?.collection === 'string' ? p.collection : undefined),
     }
   }
 }

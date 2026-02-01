@@ -29,31 +29,46 @@
 
         <LayoutsDashboardProfileEdit v-else class="panels-masonry">
           <template #preview>
-            <PlaceCardsPreview
-              :image-url="place.image_url ?? (place as any).place_image ?? ''"
-              :image-shade="place.image_shade"
-              :name="place.name ?? ''"
-              :formatted-address="place.formatted_address ?? ''"
-              :source="place.source ?? 'fireux'"
-              :show-body="false"
-            />
+            <UAlert
+              v-if="!canEdit"
+              color="warning"
+              variant="soft"
+              title="Claim required"
+              description="You can only edit places you’ve claimed. Ask an admin or claim this business first."
+              class="mt-4"
+            >
+              <template #actions>
+                <UButton
+                  size="xs"
+                  variant="soft"
+                  color="primary"
+                  :to="placeId ? `/places/${encodeURIComponent(placeId)}` : '/places'"
+                >
+                  Go to details
+                </UButton>
+              </template>
+            </UAlert>
           </template>
 
           <template #core>
-            <OrganismsEntitiesPlaceEdit :place="place" />
+            <OrganismsEntitiesPlaceEdit v-if="canEdit" :place="place" />
+            <UAlert
+              v-else
+              color="warning"
+              variant="soft"
+              title="Editing locked"
+              description="Only the claiming user or an admin can edit this place."
+            />
           </template>
         </LayoutsDashboardProfileEdit>
 
-        <UCard v-if="showDebug && place">
-          <template #header>
-            <div class="text-sm font-semibold">Raw JSON</div>
-          </template>
-
-          <details class="p-4">
-            <summary class="cursor-pointer text-sm text-dimmed">Show raw JSON</summary>
-            <pre class="mt-2 max-h-[420px] overflow-auto text-xs">{{ json }}</pre>
-          </details>
-        </UCard>
+        <DevJson
+          v-if="showDebug && editableFields"
+          :title="'Place (Editable)'"
+          context="places/edit/[id]"
+          :data="editableFields"
+          :default-open="false"
+        />
       </UPageBody>
     </UPage>
 
@@ -67,6 +82,7 @@
 import { useHead, useRoute } from '#imports'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
 import type { Place } from '../../../models/objects/place.model'
@@ -93,30 +109,37 @@ const docRef = placeId ? firestoreFetchDoc<Place>('places', placeId) : null
 const place = computed<Place | null>(() => docRef?.value ?? null)
 const loading = computed(() => Boolean(placeId) && docRef?.value === undefined)
 const showDebug = import.meta.dev
+const { currentUser, isAdmin } = useUser()
+const claimedBy = computed(() => place.value?.claimed_by ?? '')
+const canEdit = computed(() =>
+  Boolean(isAdmin.value || (claimedBy.value && currentUser.value?.id === claimedBy.value))
+)
 
 const pageTitle = computed(() => place.value?.name || 'Edit place')
 const pageSubtitle = computed(() => (placeId ? `Place: ${placeId}` : 'Edit a place'))
 
-const json = computed(() => {
+const editableFields = computed(() => {
   const v = place.value
-  if (!v) return ''
-  const seen = new WeakSet()
-  try {
-    return JSON.stringify(v, function (_, value) {
-      if (typeof value === 'object' && value !== null) {
-        if (seen.has(value)) return '[Circular]'
-        seen.add(value)
-      }
-      return value
-    }, 2)
-  } catch (e) {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { toRaw } = require('vue')
-      return JSON.stringify(toRaw(v), null, 2)
-    } catch (e2) {
-      return String(e)
+  if (!v) return null
+  const base = {
+    id: v.id ?? '',
+    image_url: v.image_url ?? (v as any).place_image ?? '',
+    image_shade: v.image_shade ?? 'none',
+    short_name: v.short_name ?? '',
+    claimed_by: v.claimed_by ?? '',
+  }
+
+  if (v.source === 'manual') {
+    return {
+      ...base,
+      name: v.name ?? '',
+      formatted_address: v.formatted_address ?? '',
+      search_term: v.search_term ?? '',
+      lat: v.lat ?? 0,
+      lng: v.lng ?? 0,
     }
   }
+
+  return base
 })
 </script>

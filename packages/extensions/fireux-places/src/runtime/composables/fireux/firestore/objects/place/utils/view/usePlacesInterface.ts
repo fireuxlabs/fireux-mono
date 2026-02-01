@@ -1,10 +1,10 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
-  BasePlace,
-  PlaceImageShade,
-  Place as PlaceModel,
-  PlaceSocialLinks,
-  PlaceSource,
+    BasePlace,
+    PlaceImageShade,
+    Place as PlaceModel,
+    PlaceSocialLinks,
+    PlaceSource,
 } from '../../../../../../../models/objects/place.model'
 
 export namespace PlaceCard {
@@ -193,7 +193,7 @@ export function usePlacesInterface() {
       name: base.name,
       formattedAddress: base.formattedAddress,
       source: ((target as any)?.source as PlaceSource) ?? 'fireux',
-      prop: (target as any)?.brand_tagline,
+      prop: (target as any)?.brand_tagline || (target as any)?.short_name || '',
     }
   }
 

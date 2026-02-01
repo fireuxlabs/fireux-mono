@@ -41,6 +41,35 @@
 							:initials="avatarInitials"
 							:update-function="canEditImage ? handleAvatarUpload : undefined"
 						/>
+						<div class="w-full space-y-2">
+							<p class="text-xs text-gray-500">Image shade</p>
+							<div class="flex flex-wrap gap-2">
+								<UButton
+									size="xs"
+									:variant="imageShade === 'none' ? 'solid' : 'soft'"
+									color="neutral"
+									@click="updateImageShade('none')"
+								>
+									None
+								</UButton>
+								<UButton
+									size="xs"
+									:variant="imageShade === 'light' ? 'solid' : 'soft'"
+									color="neutral"
+									@click="updateImageShade('light')"
+								>
+									Light
+								</UButton>
+								<UButton
+									size="xs"
+									:variant="imageShade === 'dark' ? 'solid' : 'soft'"
+									color="neutral"
+									@click="updateImageShade('dark')"
+								>
+									Dark
+								</UButton>
+							</div>
+						</div>
 						<div class="w-full">
 							<p class="text-xs text-gray-500">Preview pill</p>
 							<div class="mt-2">
@@ -51,17 +80,6 @@
 								/>
 							</div>
 						</div>
-						<UButton
-							v-if="canNormalizeImage"
-							size="xs"
-							variant="soft"
-							color="neutral"
-							:loading="isNormalizingImage"
-							:disabled="isNormalizingImage"
-							@click="onNormalizeImage"
-						>
-							Normalize background
-						</UButton>
 						<p v-if="avatarUploading" class="text-xs text-gray-500">
 							Uploading image…
 						</p>
@@ -148,7 +166,7 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import { computed, ref } from 'vue'
 import { usePlaceClaim } from '../../../../composables/fireux/firestore/objects/place/mutations/usePlaceClaim'
 import { usePlacesInterface } from '../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
-import type { Place } from '../../../../models/objects/place.model'
+import type { Place, PlaceImageShade } from '../../../../models/objects/place.model'
 
 const props = defineProps<{ place: Place | null }>()
 const place = computed(() => props.place)
@@ -165,6 +183,7 @@ const claimedUserPill = computed(() => userCard(claimedUser.value))
 
 
 const imageUrl = computed(() => place.value?.image_url || (place.value as any)?.place_image || '')
+const imageShade = computed(() => (place.value?.image_shade || 'none') as PlaceImageShade)
 const hasImage = computed(() => !!imageUrl.value)
 const isClaimedByUser = computed(() => {
 	const claimedBy = place.value?.claimed_by
@@ -173,9 +192,6 @@ const isClaimedByUser = computed(() => {
 })
 const canEditImage = computed(
 	() => !hasImage.value || isAdmin.value || isClaimedByUser.value
-)
-const canNormalizeImage = computed(
-	() => hasImage.value && canEditImage.value
 )
 
 const avatarInitials = computed(() => {
@@ -191,7 +207,7 @@ const avatarInitials = computed(() => {
 })
 
 const avatarUploading = ref(false)
-const isNormalizingImage = ref(false)
+const isUpdatingShade = ref(false)
 const isClaiming = ref(false)
 const { uploadImage } = useImageStorage()
 const { updateDocument } = useFirestoreUpdate()
@@ -223,68 +239,23 @@ async function handleAvatarUpload(file: File) {
 	}
 }
 
-function loadImageFromBlob(blob: Blob): Promise<HTMLImageElement> {
-	return new Promise((resolve, reject) => {
-		const url = URL.createObjectURL(blob)
-		const img = new Image()
-		img.onload = () => {
-			URL.revokeObjectURL(url)
-			resolve(img)
-		}
-		img.onerror = () => {
-			URL.revokeObjectURL(url)
-			reject(new Error('Unable to load image'))
-		}
-		img.src = url
-	})
-}
-
-async function onNormalizeImage() {
-	if (!placeId.value || !imageUrl.value || isNormalizingImage.value) return
-	isNormalizingImage.value = true
+async function updateImageShade(shade: PlaceImageShade) {
+	if (!placeId.value || !canEditImage.value || isUpdatingShade.value) return
+	isUpdatingShade.value = true
 	try {
-		const originalUrl = imageUrl.value
-		const fetchUrl = originalUrl.startsWith('/')
-			? originalUrl
-			: `/api/proxy/image?url=${encodeURIComponent(originalUrl)}`
-		const response = await fetch(fetchUrl, { cache: 'no-store' })
-		if (!response.ok) {
-			throw new Error(`Unable to download image (${response.status})`)
-		}
-		const blob = await response.blob()
-		const img = await loadImageFromBlob(blob)
-		const width = img.naturalWidth || img.width
-		const height = img.naturalHeight || img.height
-		const canvas = document.createElement('canvas')
-		canvas.width = width
-		canvas.height = height
-		const ctx = canvas.getContext('2d')
-		if (!ctx) {
-			throw new Error('Unable to process image')
-		}
-		ctx.fillStyle = '#ffffff'
-		ctx.fillRect(0, 0, width, height)
-		ctx.drawImage(img, 0, 0, width, height)
-		const normalizedBlob = await new Promise<Blob>((resolve, reject) => {
-			canvas.toBlob((result) => {
-				if (result) resolve(result)
-				else reject(new Error('Unable to export image'))
-			}, 'image/png')
-		})
-		const file = new File([normalizedBlob], 'avatar.png', { type: 'image/png' })
-		const url = await uploadImage(`places/${placeId.value}/avatar`, file)
 		await updateDocument<Place>('places', placeId.value, {
-			image_url: url,
+			image_shade: shade,
 		})
-		toast.success('Image normalized')
+		toast.success('Image shade updated')
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'
-		toast.error(`Failed to normalize image: ${msg}`)
+		toast.error(`Failed to update image shade: ${msg}`)
 		throw error
 	} finally {
-		isNormalizingImage.value = false
+		isUpdatingShade.value = false
 	}
 }
+
 
 async function onClaim() {
 	if (!placeId.value || !canClaim.value || isClaiming.value) return
