@@ -22,7 +22,7 @@
 import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
 
 const { card, avatar: avatarProp, prop } = defineProps<{
-  card: KitchenCard.Pill
+  card: KitchenCard.Card
   avatar?: string | null
   prop?: string
 }>()

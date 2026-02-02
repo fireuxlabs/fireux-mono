@@ -11,7 +11,6 @@
           >
             Back
           </UButton>
-
           <UButton
             size="xs"
             color="primary"
@@ -23,12 +22,10 @@
           </UButton>
         </template>
       </UPageHeader>
-
       <UPageBody class="pagebody">
         <div v-if="loading" class="py-10 text-sm opacity-70">
           Loading company…
         </div>
-
         <div v-else-if="!company" class="space-y-2">
           <h1 class="text-lg font-semibold">Company Not Found</h1>
           <p>The company you’re looking for doesn’t exist.</p>
@@ -36,7 +33,6 @@
             ← Back
           </NuxtLink>
         </div>
-
         <div v-else class="space-y-4">
           <CompanyCardsProfile
             v-if="companyProfile"
@@ -44,12 +40,10 @@
             :avatar="companyProfile.avatarUrl"
             :prop="companyProfile.prop"
           />
-
           <UCard>
             <template #header>
               <div class="text-sm font-semibold">Claim</div>
             </template>
-
             <div class="flex items-center gap-3">
               <span class="text-xs text-gray-500">Claimed by</span>
               <OrganismsUserCardsPill
@@ -61,12 +55,10 @@
               <span v-else class="text-xs text-gray-500">—</span>
             </div>
           </UCard>
-
           <UCard>
             <template #header>
               <div class="text-sm font-semibold">Details</div>
             </template>
-
             <div class="space-y-2 text-sm">
               <div v-for="item in details" :key="item.label">
                 <div class="text-xs uppercase tracking-wide text-gray-400">
@@ -76,7 +68,6 @@
                   {{ item.value }}
                 </div>
               </div>
-
               <div v-if="mapUrl" class="pt-2">
                 <UButton
                   size="xs"
@@ -91,7 +82,6 @@
               </div>
             </div>
           </UCard>
-
           <DevJson
             v-if="isDev && company"
             :title="'Company (Doc)'"
@@ -102,7 +92,7 @@
         </div>
       </UPageBody>
     </UPage>
-
+    <!-- fallback slot must be a direct child of ClientOnly -->
     <template #fallback>
       <div class="py-10 text-sm opacity-70">Loading company…</div>
     </template>
@@ -115,9 +105,9 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { computed } from 'vue'
-import { useCompanyInterface } from '../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import type { Company } from '../../models/objects/company.model'
+import { useCompanyInterface } from '../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
+import type { CompanyView } from '../../models/objects/company.model'
 
 definePageMeta({
   layout: 'default',
@@ -139,7 +129,7 @@ const editTo = computed(() =>
 const { company: fetchCompany } = useCompanyFetch()
 const rawDoc = docId ? await fetchCompany(docId) : null
 
-const company = computed<Company | null>(
+const company = computed<CompanyView | null>(
   () => (rawDoc as any)?.value ?? rawDoc ?? null
 )
 
@@ -181,7 +171,7 @@ const details = computed(() => {
     { label: 'Source', value: formatValue(v.source) },
     { label: 'Coordinates', value: coords },
     { label: 'Website', value: formatValue(v.website) },
-    { label: 'Image URL', value: formatValue((v as any).image_url || (v as any).place_image) },
+    { label: 'Image URL', value: formatValue((v as any).image_url) },
     { label: 'Image shade', value: formatValue(v.image_shade) },
     { label: 'Created', value: formatValue((v as any).created_at) },
     { label: 'Updated', value: formatValue((v as any).updated_at) },

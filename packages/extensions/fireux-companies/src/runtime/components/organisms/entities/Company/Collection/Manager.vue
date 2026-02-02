@@ -62,9 +62,9 @@
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import { useCompanyInterface } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
-import type { Company } from '../../../../../models/objects/company.model';
+import type { CompanyView } from '../../../../../models/objects/company.model';
 
-const props = defineProps<{ collection?: Company[] }>()
+const props = defineProps<{ collection?: CompanyView[] }>()
 
 const collection = computed(() => props.collection ?? [])
 const { card: makeCard, searchText } = useCompanyInterface()
@@ -75,10 +75,10 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<Company, ReturnType<typeof makeCard>>({
+} = useCollectionSearch<CompanyView, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (company: Company) => searchText(company),
-  makeCard: (company: Company) => makeCard(company),
+  searchText: (company: CompanyView) => searchText(company),
+  makeCard: (company: CompanyView) => makeCard(company),
 })
 const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev

@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Company } from '../../../../../../../models/objects/company.model'
+import type { CompanyView } from '../../../../../../../models/objects/company.model'
 
 export namespace CompanyCard {
   export type Card = {
@@ -47,7 +47,7 @@ export function useCompanyInterface() {
     address?: string
   }
 
-  function map(company: Company): CompanyCard.Card {
+  function map(company: CompanyView): CompanyCard.Card {
     const id = safeString(company.id).trim()
     const name = safeString(company.name)
     const shortName = safeString((company as any)?.short_name)
@@ -60,7 +60,7 @@ export function useCompanyInterface() {
       id,
       to: id ? `/companies/${encodeURIComponent(id)}` : '',
 
-      avatarUrl: safeString((company as any)?.image_url || (company as any)?.place_image),
+      avatarUrl: safeString((company as any)?.image_url),
       title: shortName || name,
       subtitle: address,
 
@@ -71,13 +71,13 @@ export function useCompanyInterface() {
     }
   }
 
-  function card(target?: Company | null | undefined): CompanyCard.Card | null {
+  function card(target?: CompanyView | null | undefined): CompanyCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: Company | null | undefined): CompanyPill | null {
+  function pill(target?: CompanyView | null | undefined): CompanyPill | null {
     const base = card(target)
     if (!base) return null
     return {
@@ -87,7 +87,7 @@ export function useCompanyInterface() {
     }
   }
 
-  function cell(target?: Company | null | undefined): CompanyCell | null {
+  function cell(target?: CompanyView | null | undefined): CompanyCell | null {
     const base = card(target)
     if (!base || !target) return null
     const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
@@ -101,7 +101,7 @@ export function useCompanyInterface() {
     }
   }
 
-  function preview(target?: Company | null | undefined): CompanyPreview | null {
+  function preview(target?: CompanyView | null | undefined): CompanyPreview | null {
     const base = card(target)
     if (!base || !target) return null
     const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
@@ -114,7 +114,7 @@ export function useCompanyInterface() {
     }
   }
 
-  function profile(target?: Company | null | undefined): CompanyProfile | null {
+  function profile(target?: CompanyView | null | undefined): CompanyProfile | null {
     const base = card(target)
     if (!base || !target) return null
     const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
@@ -129,7 +129,7 @@ export function useCompanyInterface() {
     }
   }
 
-  function searchText(company: Company): string {
+  function searchText(company: CompanyView): string {
     const name = safeString(company.name)
     const website = safeString(company.website)
     const id = safeString(company.id)

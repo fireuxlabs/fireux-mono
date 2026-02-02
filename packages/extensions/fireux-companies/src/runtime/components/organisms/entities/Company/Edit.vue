@@ -6,44 +6,34 @@
       </UCard>
 
       <div v-else class="space-y-6">
-        <UCard>
-          <MoleculesFormsFirestoreSimpleField
-            label="Website"
-            :firebase-value="company.website"
-            placeholder="https://…"
-            :maxlength="200"
-            :update-function="handleUpdateWebsite"
-          />
-        </UCard>
+        <OrganismsEntitiesPlaceEdit v-if="canEdit" :place="placeForEdit" />
+        <UAlert
+          v-else
+          color="warning"
+          variant="soft"
+          title="Editing locked"
+          description="Only the claiming user or an admin can edit this place."
+        />
       </div>
     </ClientOnly>
   </section>
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser';
+import type { Place } from 'fireux-places/runtime/models/objects/place.model';
 import { computed } from 'vue';
-import { useCompanyUpdate } from '../../../../composables/fireux/firestore/objects/company/mutations/useCompanyUpdate';
-import type { Company } from '../../../../models/objects/company.model';
+import type { CompanyView } from '../../../../models/objects/company.model';
 
-const props = defineProps<{ company: Company | null }>()
+const props = defineProps<{ company: CompanyView | null }>()
 const company = computed(() => props.company)
-const companyId = computed(() => company.value?.id ?? '')
-
-const { updateCompany } = useCompanyUpdate()
-const toast = useToastify()
-
-const sanitize = (value: string) => value.trim()
-
-async function handleUpdateWebsite(value: string) {
-  if (!companyId.value) return
-  try {
-    await updateCompany(companyId.value, { website: sanitize(value) })
-    toast.success('Website updated')
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Failed to update website: ${msg}`)
-    throw error
-  }
-}
+const { currentUser, isAdmin } = useUser()
+const claimedBy = computed(() => String(company.value?.claimed_by ?? '').trim())
+const canEdit = computed(() => {
+  if (!claimedBy.value) return Boolean(isAdmin.value)
+  return Boolean(isAdmin.value || currentUser.value?.id === claimedBy.value)
+})
+const placeForEdit = computed<Place | null>(() =>
+  company.value ? ({ ...company.value } as Place) : null
+)
 </script>
