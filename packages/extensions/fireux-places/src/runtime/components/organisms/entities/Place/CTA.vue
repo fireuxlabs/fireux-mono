@@ -3,7 +3,7 @@
   <UPageCTA
     class="cta"
     title="Create a place"
-    description="Search a place, confirm it, and store the canonical record for this runtime."
+    description="Create a place from Google if it is not in our database."
     variant="naked"
   >
     <!-- section consumer -->

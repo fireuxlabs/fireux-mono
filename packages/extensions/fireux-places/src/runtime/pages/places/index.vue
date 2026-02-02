@@ -32,8 +32,7 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Places'
-const pageDescription =
-  'Create a place and browse canonical places available to this runtime.'
+const pageDescription = ''
 
 useHead({ title: `${appName} | ${pageTitle}` })
 

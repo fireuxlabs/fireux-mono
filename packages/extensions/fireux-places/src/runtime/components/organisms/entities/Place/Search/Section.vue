@@ -5,14 +5,22 @@
     <PlaceSearchBar v-model="query" :placeholder="placeholder" />
 
     <UCard v-if="selectedCell" :ui="{ body: 'space-y-3' }">
-      <PlaceCardsDropdownItem
+      <PlaceCardsDropdownItemGoogle
         v-if="selectedCell.source === 'google'"
-        v-bind="selectedCell"
+        :title="selectedCell.title"
+        :subtitle="selectedCell.subtitle"
+        :name="selectedCell.name"
+        :image-url="selectedCell.imageUrl"
         :show-source="true"
       />
-      <PlaceCardsCell
+      <PlaceCardsDropdownItemFireux
         v-else
-        v-bind="selectedCell"
+        :title="selectedCell.title"
+        :subtitle="selectedCell.subtitle"
+        :name="selectedCell.name"
+        :image-url="selectedCell.imageUrl"
+        :image-shade="selectedCell.imageShade"
+        :source="selectedCell.source"
         :show-source="true"
       />
 
@@ -60,6 +68,8 @@ import type {
   PlaceSource,
   PlaceUpsertInput,
 } from '../../../../../models/objects/place.model'
+import PlaceCardsDropdownItemFireux from '../Cards/Dropdown/Fireux.vue'
+import PlaceCardsDropdownItemGoogle from '../Cards/Dropdown/Google.vue'
 
 const props = withDefaults(
   defineProps<{

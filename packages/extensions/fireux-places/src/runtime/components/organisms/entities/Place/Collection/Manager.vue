@@ -4,7 +4,7 @@
       <div class="collection-manager__header">
         <div class="collection-manager__title">
           <div>Places</div>
-          <p>Browse places available to this runtime.</p>
+          <p>Our places database.</p>
         </div>
 
         <div class="collection-manager__controls">

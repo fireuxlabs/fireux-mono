@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="Create Place"
-      description="Search a place, confirm it, and store the canonical record for this runtime."
+      description="Create a place from Google if it is not in our database."
     />
 
     <!-- section consumer -->

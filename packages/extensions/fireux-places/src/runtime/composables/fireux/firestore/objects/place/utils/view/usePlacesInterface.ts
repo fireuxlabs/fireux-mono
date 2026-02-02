@@ -1,10 +1,10 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
-    BasePlace,
-    PlaceImageShade,
-    Place as PlaceModel,
-    PlaceSocialLinks,
-    PlaceSource,
+  BasePlace,
+  PlaceImageShade,
+  Place as PlaceModel,
+  PlaceSocialLinks,
+  PlaceSource,
 } from '../../../../../../../models/objects/place.model'
 
 export namespace PlaceCard {
@@ -123,22 +123,17 @@ export function usePlacesInterface() {
 
   function map(place: BasePlace): PlaceCard.Card {
     const id = safeString(place.id).trim()
-    const rawName =
-      safeString(place.name) ||
-      safeString((place as any)?.title) ||
-      safeString((place as any)?.description)
-    const name = rawName
+    const name = safeString(place.name)
     const shortName = safeString((place as any)?.short_name)
     const address = safeString((place as any)?.formatted_address)
     const shortAddress = sanitizeShortAddress((place as any)?.short_address)
-    const displayTitle = shortName || stripLocationFromTitle(name, shortAddress || address)
     const image = safeString((place as any)?.image_url)
 
     return {
       id,
       to: id ? `/places/${encodeURIComponent(id)}` : '',
 
-      title: displayTitle || name,
+      title: name,
       subtitle: shortAddress || address,
       badges: [],
 

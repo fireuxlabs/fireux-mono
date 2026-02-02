@@ -1,46 +1,45 @@
 <template>
   <div v-if="cells.length" class="space-y-1">
     <template v-for="cell in cells" :key="cell.id">
-      <button
+      <PlaceCardsDropdownGoogle
         v-if="cell.source === 'google'"
-        type="button"
-        class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-gray-100 dark:hover:bg-gray-800"
-        @click="emit('select', cell)"
-      >
-        <UAvatar
-          :src="cell.imageUrl || undefined"
-          :alt="cell.title || cell.name"
-          size="sm"
-          icon="i-lucide-map-pin"
-        />
-        <div class="min-w-0 flex-1">
-          <div class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
-            {{ cell.title || cell.name }}
-          </div>
-          <div v-if="cell.subtitle" class="truncate text-xs text-dimmed">
-            {{ cell.subtitle }}
-          </div>
-        </div>
-        <UBadge size="xs" variant="soft" color="neutral" class="shrink-0">Google</UBadge>
-      </button>
-      <PlaceCardsDropdownItem
-        v-else
-        :title="cell.title"
-        :subtitle="cell.subtitle"
         :name="cell.name"
+        :address="cell.subtitle"
+        :image-url="cell.imageUrl"
+        @select="onSelect(cell)"
+      />
+      <PlaceCardsDropdownFireux
+        v-else
+        :name="cell.name"
+        :short-name="cell.shortName"
+        :address="cell.subtitle"
         :image-url="cell.imageUrl"
         :image-shade="cell.imageShade"
         :source="cell.source"
         :show-source="true"
-        @select="emit('select', cell)"
+        @select="onSelect(cell)"
       />
     </template>
+  </div>
+  <div v-if="cells.length" class="pt-3">
+    <div class="max-w-2xl">
+      <DevJson
+        :title="'Places (Dropdown Debug)'"
+        context="Places search dropdown · live cells"
+        :data="cells"
+        :default-open="false"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
+import { computed, watch } from 'vue'
+import { loadLogoForPlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../models/objects/place.model'
+import PlaceCardsDropdownFireux from '../Cards/Dropdown/fireux.vue'
+import PlaceCardsDropdownGoogle from '../Cards/Dropdown/google.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -50,9 +49,54 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  (e: 'select', cell: PlaceCard.Card): void
+  (e: 'select', cell: BasePlace): void
 }>()
 
 const cells = computed(() => (props.cells ?? []) as PlaceCard.Card[])
+
+const logoLoading = new Set<string>()
+
+watch(
+  cells,
+  (next) => {
+    if (!Array.isArray(next)) return
+    for (const card of next) {
+      if (!card || card.source !== 'google') continue
+      if (card.imageUrl) continue
+      if (logoLoading.has(card.id)) continue
+      logoLoading.add(card.id)
+      void loadLogoForPlace(card, { timeoutMs: 6000, priority: false })
+        .then((url) => {
+          if (url) {
+            card.imageUrl = url
+          }
+        })
+        .finally(() => {
+          logoLoading.delete(card.id)
+        })
+    }
+  },
+  { immediate: true }
+)
+
+function toBasePlace(card: PlaceCard.Card): BasePlace {
+  return {
+    id: card.id,
+    name: card.name || card.title || '',
+    short_name: card.shortName || '',
+    formatted_address: card.formattedAddress || card.subtitle || '',
+    short_address: card.shortAddress || '',
+    lat: (card as any).lat ?? 0,
+    lng: (card as any).lng ?? 0,
+    image_url: card.imageUrl || '',
+    image_shade: (card.imageShade as PlaceImageShade) ?? 'none',
+    claimed_by: (card.claimedBy as string) ?? '',
+    source: (card.source as PlaceSource) ?? 'fireux',
+  }
+}
+
+function onSelect(card: PlaceCard.Card) {
+  emit('select', toBasePlace(card))
+}
 </script>
 
