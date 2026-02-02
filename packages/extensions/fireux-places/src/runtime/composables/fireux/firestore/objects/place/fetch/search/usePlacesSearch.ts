@@ -1,10 +1,8 @@
 import { useFirestoreSearch } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreSearch'
 import { ref, watch } from 'vue'
 import { useFirestore } from 'vuefire'
-import type { BasePlace } from '../../../../../../../models/objects/place.model'
+import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../../../models/objects/place.model'
 import { mapPlaceToBasePlace } from '../../utils/view/mapPlaceToBasePlace'
-import type { PlaceCard } from '../../utils/view/usePlacesInterface'
-import { usePlacesInterface } from '../../utils/view/usePlacesInterface'
 import { canonicalPlaceId } from '../google/usePlacesGoogle'
 import { normalizeQuery } from './normalizeQuery'
 import { searchFirestorePrimary } from './searchFirestorePrimary'
@@ -21,23 +19,42 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
   const collectionName = 'places'
 
   const query = ref('')
-  const results = ref<PlaceCard.Card[]>([])
+  const results = ref<PlaceSearchCell[]>([])
   const selected = ref<BasePlace | null>(null)
   const isSearching = ref(false)
 
   const debug = ref<Record<string, unknown> | null>(null)
 
   const mapToBasePlace = mapPlaceToBasePlace()
-  const { card: toCard } = usePlacesInterface()
 
-  const toCardWithExtras = (base: any): PlaceCard.Card | null => {
-    const mapped = toCard(base)
-    if (!mapped) return null
+  const toSearchCell = (base: any): PlaceSearchCell | null => {
+    if (!base) return null
+    const id = String((base as any)?.id ?? '').trim()
+    if (!id) return null
+    const name = String((base as any)?.name ?? '').trim()
+    const shortName = String((base as any)?.short_name ?? '').trim()
+    const formattedAddress = String((base as any)?.formatted_address ?? '').trim()
+    const shortAddress = String((base as any)?.short_address ?? '').trim()
+    const subtitle = shortAddress || formattedAddress
+    const imageUrl = String((base as any)?.image_url ?? '').trim()
+    const imageShade = (base as any)?.image_shade as PlaceImageShade | undefined
+    const source = (base as any)?.source as PlaceSource | undefined
+    const claimedBy = String((base as any)?.claimed_by ?? '').trim()
+    const collection = String((base as any)?.collection ?? '').trim() || undefined
     const lat = Number((base as any)?.lat)
     const lng = Number((base as any)?.lng)
     return {
-      ...mapped,
-      collection: (base as any)?.collection ?? mapped.collection,
+      id,
+      name,
+      shortName,
+      subtitle,
+      formattedAddress,
+      shortAddress,
+      imageUrl,
+      imageShade,
+      source,
+      claimedBy,
+      collection,
       ...(Number.isFinite(lat) ? { lat } : {}),
       ...(Number.isFinite(lng) ? { lng } : {}),
     }
@@ -62,7 +79,7 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
 
     isSearching.value = true
     try {
-      let primaryResults: PlaceCard.Card[] = []
+      let primaryResults: PlaceSearchCell[] = []
       let primaryDebug: Record<string, unknown> | null = null
 
       // 1) Firestore (primary)
@@ -76,8 +93,8 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
         })
         if (primary) {
           primaryResults = primary.results
-            .map((row) => toCardWithExtras(row))
-            .filter(Boolean) as PlaceCard.Card[]
+            .map((row) => toSearchCell(row))
+            .filter(Boolean) as PlaceSearchCell[]
           primaryDebug = primary.debug ?? null
         } else if (import.meta.dev && options.debugLabel) {
           primaryDebug = { stage: 'firebase', count: 0 }
@@ -102,8 +119,8 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
       })
 
       const googleCards = google.results
-        .map((row) => toCardWithExtras(row))
-        .filter(Boolean) as PlaceCard.Card[]
+        .map((row) => toSearchCell(row))
+        .filter(Boolean) as PlaceSearchCell[]
 
       if (primaryResults.length) {
         const existingIds = new Set(
@@ -139,24 +156,22 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
 
   watch(query, (q: string) => void searchPlaces(q))
 
-  function select(cell: PlaceCard.Card) {
-    const id = canonicalPlaceId(cell.id) || cell.id
-    const cellLat = Number((cell as any)?.lat)
-    const cellLng = Number((cell as any)?.lng)
-    const lat = Number.isFinite(cellLat) ? cellLat : undefined
-    const lng = Number.isFinite(cellLng) ? cellLng : undefined
+  function select(place: BasePlace) {
+    const id = canonicalPlaceId(place.id) || place.id
+    const lat = Number((place as any)?.lat)
+    const lng = Number((place as any)?.lng)
     selected.value = {
       id,
-      name: cell.name,
-      short_name: (cell as any).shortName || (cell as any).short_name || '',
-      formatted_address: cell.formattedAddress || '',
-      short_address: cell.shortAddress || '',
-      ...(typeof lat === 'number' ? { lat } : {}),
-      ...(typeof lng === 'number' ? { lng } : {}),
-      source: cell.source as any,
-      image_url: cell.imageUrl || '',
-      claimed_by: cell.claimedBy || '',
-      collection: cell.collection,
+      name: String((place as any)?.name ?? ''),
+      short_name: String((place as any)?.short_name ?? ''),
+      formatted_address: String((place as any)?.formatted_address ?? ''),
+      short_address: String((place as any)?.short_address ?? ''),
+      ...(Number.isFinite(lat) ? { lat } : {}),
+      ...(Number.isFinite(lng) ? { lng } : {}),
+      source: (place as any)?.source as any,
+      image_url: String((place as any)?.image_url ?? ''),
+      claimed_by: String((place as any)?.claimed_by ?? ''),
+      collection: (place as any)?.collection,
     } as any
   }
 
@@ -167,5 +182,21 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
   }
 
   return { query, results, selected, isSearching, select, clear, debug }
+}
+
+export type PlaceSearchCell = {
+  id: string
+  name: string
+  shortName: string
+  subtitle: string
+  formattedAddress: string
+  shortAddress: string
+  imageUrl: string
+  imageShade?: PlaceImageShade
+  source?: PlaceSource
+  claimedBy?: string
+  collection?: string
+  lat?: number
+  lng?: number
 }
 

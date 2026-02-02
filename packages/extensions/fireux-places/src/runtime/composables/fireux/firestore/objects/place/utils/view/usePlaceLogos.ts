@@ -312,19 +312,20 @@ interface LoadLogoOptions {
 }
 
 export async function loadLogoForPlace(
-  place: PlaceCard.Card,
+  place: PlaceCard.Card | BasePlace,
   options: LoadLogoOptions = {}
 ): Promise<string | null> {
-  if (typeof window === 'undefined') return place.imageUrl ?? null
-  const placeId = canonicalPlaceId((place as any).id ?? (place as any).place_id)
-  if (!placeId) return place.imageUrl ?? null
+  const logoCard = toLogoCard(place)
+  if (typeof window === 'undefined') return logoCard.imageUrl ?? null
+  const placeId = canonicalPlaceId((logoCard as any).id ?? (logoCard as any).place_id)
+  if (!placeId) return logoCard.imageUrl ?? null
 
   const start = performanceNow()
   logEvent('load:start', {
     placeId,
     priority: !!options.priority,
     forceReload: !!options.forceReload,
-    existingImage: sanitizeLogValue(place.imageUrl),
+    existingImage: sanitizeLogValue(logoCard.imageUrl),
   })
 
   if (options.forceReload) {
@@ -358,7 +359,7 @@ export async function loadLogoForPlace(
   const requestId = ++logoRequestSeq
   logEvent('fetch:start', { placeId, requestId })
 
-  const promise = fetchLogo(place, placeId, controller.signal)
+  const promise = fetchLogo(logoCard, placeId, controller.signal)
     .then((url) => {
       logEvent('fetch:resolve', {
         placeId,

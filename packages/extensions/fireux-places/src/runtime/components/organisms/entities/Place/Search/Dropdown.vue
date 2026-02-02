@@ -15,7 +15,7 @@
         :address="cell.subtitle"
         :image-url="cell.imageUrl"
         :image-shade="cell.imageShade"
-        :source="cell.source"
+        :source="cell.source || 'fireux'"
         :show-source="true"
         @select="onSelect(cell)"
       />
@@ -35,15 +35,15 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue'
+import type { PlaceSearchCell } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import { loadLogoForPlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
-import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../models/objects/place.model'
-import PlaceCardsDropdownFireux from '../Cards/Dropdown/fireux.vue'
-import PlaceCardsDropdownGoogle from '../Cards/Dropdown/google.vue'
+import PlaceCardsDropdownFireux from '../Cards/Dropdown/Fireux.vue'
+import PlaceCardsDropdownGoogle from '../Cards/Dropdown/Google.vue'
 
 const props = withDefaults(
   defineProps<{
-    cells?: PlaceCard.Card[] | null
+    cells?: PlaceSearchCell[] | null
   }>(),
   { cells: () => [] }
 )
@@ -52,7 +52,7 @@ const emit = defineEmits<{
   (e: 'select', cell: BasePlace): void
 }>()
 
-const cells = computed(() => (props.cells ?? []) as PlaceCard.Card[])
+const cells = computed(() => (props.cells ?? []) as PlaceSearchCell[])
 
 const logoLoading = new Set<string>()
 
@@ -65,7 +65,8 @@ watch(
       if (card.imageUrl) continue
       if (logoLoading.has(card.id)) continue
       logoLoading.add(card.id)
-      void loadLogoForPlace(card, { timeoutMs: 6000, priority: false })
+      const base = toBasePlace(card)
+      void loadLogoForPlace(base, { timeoutMs: 6000, priority: false })
         .then((url) => {
           if (url) {
             card.imageUrl = url
@@ -79,10 +80,10 @@ watch(
   { immediate: true }
 )
 
-function toBasePlace(card: PlaceCard.Card): BasePlace {
+function toBasePlace(card: PlaceSearchCell): BasePlace {
   return {
     id: card.id,
-    name: card.name || card.title || '',
+    name: card.name || '',
     short_name: card.shortName || '',
     formatted_address: card.formattedAddress || card.subtitle || '',
     short_address: card.shortAddress || '',
@@ -95,7 +96,7 @@ function toBasePlace(card: PlaceCard.Card): BasePlace {
   }
 }
 
-function onSelect(card: PlaceCard.Card) {
+function onSelect(card: PlaceSearchCell) {
   emit('select', toBasePlace(card))
 }
 </script>
