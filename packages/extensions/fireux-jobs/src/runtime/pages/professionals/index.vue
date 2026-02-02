@@ -16,7 +16,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
+import { useProfessionalFetch } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalFetch'
 
 definePageMeta({
   nav: {
@@ -42,10 +42,10 @@ const pageDescription =
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { globalProfessionals, localProfessionals } = useProfessionalCollection()
+const { coreProfessionals, appProfessionals } = useProfessionalFetch()
 const collection = computed(() => [
-  ...(localProfessionals?.value ?? []),
-  ...(globalProfessionals.value ?? []),
+  ...(appProfessionals?.value ?? []),
+  ...(coreProfessionals.value ?? []),
 ])
 
 </script>

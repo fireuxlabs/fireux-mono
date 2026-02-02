@@ -98,11 +98,11 @@ definePageMeta({
 const chefModelRuntime = ChefCoreRuntime
 const supplierModelRuntime = SupplierCoreRuntime
 
-const { globalChefs, localChefs } = useChefCollection()
+const { coreChefs, appChefs } = useChefCollection()
 
 const chefsCollection = computed(() => [
-  ...(localChefs?.value ?? []),
-  ...(globalChefs.value ?? []),
+  ...(appChefs?.value ?? []),
+  ...(coreChefs.value ?? []),
 ])
 
 const {
@@ -137,11 +137,11 @@ const chefsDriftCopyPayload = computed(() => ({
   chefs: filteredChefsDriftPayload.value,
 }))
 
-const { globalSuppliers, localSuppliers } = useSupplierCollection()
+const { coreSuppliers, appSuppliers } = useSupplierCollection()
 
 const suppliersCollection = computed(() => [
-  ...(localSuppliers?.value ?? []),
-  ...(globalSuppliers.value ?? []),
+  ...(appSuppliers?.value ?? []),
+  ...(coreSuppliers.value ?? []),
 ])
 
 const {

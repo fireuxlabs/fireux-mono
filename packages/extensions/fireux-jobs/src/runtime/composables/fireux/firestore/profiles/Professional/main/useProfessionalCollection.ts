@@ -10,14 +10,10 @@ export function useProfessionalCollection() {
   const {
     globalProfiles,
     localProfiles,
-    globalProfilesWithUser,
-    localProfilesWithUser,
   } = useProfileCollection<ProfessionalCore>(professionalConfig)
 
   return {
-    globalProfessionals: globalProfilesWithUser,
-    localProfessionals: localProfilesWithUser,
-    rawGlobalProfessionals: globalProfiles,
-    rawLocalProfessionals: localProfiles,
+    coreProfessionals: globalProfiles,
+    appProfessionals: localProfiles,
   }
 }

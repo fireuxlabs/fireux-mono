@@ -14,7 +14,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useChefCollection } from '../../composables/fireux/firestore/profiles/Chef/main/useChefCollection'
+import { useChefFetch } from '../../composables/fireux/firestore/profiles/Chef/main/useChefFetch'
 
 definePageMeta({
   nav: {
@@ -39,10 +39,10 @@ const pageDescription =
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { globalChefs, localChefs } = useChefCollection()
+const { coreChefs, appChefs } = useChefFetch()
 const collection = computed(() => [
-  ...(localChefs?.value ?? []),
-  ...(globalChefs.value ?? []),
+  ...(appChefs?.value ?? []),
+  ...(coreChefs.value ?? []),
 ])
 
 </script>

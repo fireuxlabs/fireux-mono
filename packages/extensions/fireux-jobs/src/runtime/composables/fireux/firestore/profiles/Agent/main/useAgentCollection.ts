@@ -8,14 +8,10 @@ export function useAgentCollection() {
   const {
     globalProfiles,
     localProfiles,
-    globalProfilesWithUser,
-    localProfilesWithUser,
   } = useProfileCollection<AgentCore>(agentConfig)
 
   return {
-    globalAgents: globalProfilesWithUser,
-    localAgents: localProfilesWithUser,
-    rawGlobalAgents: globalProfiles,
-    rawLocalAgents: localProfiles,
+    globalAgents: globalProfiles,
+    localAgents: localProfiles,
   }
 }

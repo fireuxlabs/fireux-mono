@@ -14,7 +14,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useSupplierCollection } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection'
+import { useSupplierFetch } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierFetch'
 
 definePageMeta({
   nav: {
@@ -39,10 +39,10 @@ const pageDescription =
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { globalSuppliers, localSuppliers } = useSupplierCollection()
+const { coreSuppliers, appSuppliers } = useSupplierFetch()
 const collection = computed(() => [
-  ...(localSuppliers?.value ?? []),
-  ...(globalSuppliers.value ?? []),
+  ...(appSuppliers?.value ?? []),
+  ...(coreSuppliers.value ?? []),
 ])
 
 </script>

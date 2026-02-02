@@ -8,14 +8,10 @@ export function useSupplierCollection() {
   const {
     globalProfiles,
     localProfiles,
-    globalProfilesWithUser,
-    localProfilesWithUser,
   } = useProfileCollection<SupplierCore>(supplierConfig)
 
   return {
-    globalSuppliers: globalProfilesWithUser,
-    localSuppliers: localProfilesWithUser,
-    rawGlobalSuppliers: globalProfiles,
-    rawLocalSuppliers: localProfiles,
+    coreSuppliers: globalProfiles,
+    appSuppliers: localProfiles,
   }
 }

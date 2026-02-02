@@ -8,14 +8,10 @@ export function useChefCollection() {
   const {
     globalProfiles,
     localProfiles,
-    globalProfilesWithUser,
-    localProfilesWithUser,
   } = useProfileCollection<ChefCore>(chefConfig)
 
   return {
-    globalChefs: globalProfilesWithUser,
-    localChefs: localProfilesWithUser,
-    rawGlobalChefs: globalProfiles,
-    rawLocalChefs: localProfiles,
+    coreChefs: globalProfiles,
+    appChefs: localProfiles,
   }
 }

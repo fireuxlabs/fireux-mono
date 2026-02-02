@@ -132,8 +132,10 @@ import { computed } from 'vue'
 import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/useJobCollection'
 import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
+import { useAgentFetch } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentFetch'
 import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
+import { useProfessionalFetch } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalFetch'
 import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import { Job as JobModelRuntime } from '../../models/objects/job.model'
 import { AgentCore as AgentCoreRuntime } from '../../models/profiles/Agent/Agent.model'
@@ -205,22 +207,18 @@ const jobsDriftCopyPayload = computed(() => ({
   jobs: filteredJobsDriftPayload.value,
 }))
 
-const {
-  globalProfessionals,
-  localProfessionals,
-  rawGlobalProfessionals,
-  rawLocalProfessionals,
-} = useProfessionalCollection()
+const { coreProfessionals, appProfessionals } = useProfessionalFetch()
+const { coreProfessionals: rawCoreProfessionals, appProfessionals: rawAppProfessionals } = useProfessionalCollection()
 const { card: makeProfessionalCard } = useProfessional()
 
 const professionalsCollection = computed(() => [
-  ...(localProfessionals?.value ?? []),
-  ...(globalProfessionals.value ?? []),
+  ...(rawAppProfessionals?.value ?? []),
+  ...(rawCoreProfessionals.value ?? []),
 ])
 
 const rawProfessionalsCollection = computed(() => [
-  ...(rawLocalProfessionals?.value ?? []),
-  ...(rawGlobalProfessionals.value ?? []),
+  ...(rawAppProfessionals?.value ?? []),
+  ...(rawCoreProfessionals.value ?? []),
 ])
 
 const {
@@ -239,9 +237,24 @@ const {
   },
 })
 
+const hydratedProfessionalById = computed(() => {
+  const map = new Map<string, any>()
+  for (const entry of appProfessionals?.value ?? []) {
+    if (entry?.id) map.set(String(entry.id), entry)
+  }
+  for (const entry of coreProfessionals.value ?? []) {
+    if (entry?.id) map.set(String(entry.id), entry)
+  }
+  return map
+})
+
 const professionalCards = computed(() => {
   return filteredProfessionals.value
-    .map((entry) => makeProfessionalCard(entry as any))
+    .map((entry) => {
+      const id = String((entry as any)?.id ?? '').trim()
+      const hydrated = id ? hydratedProfessionalById.value.get(id) : null
+      return makeProfessionalCard((hydrated ?? entry) as any)
+    })
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 })
 
@@ -281,17 +294,13 @@ const professionalsDriftCopyPayload = computed(() => ({
   missingSummary: professionalsMissingSummary.value,
 }))
 
-const {
-  globalAgents,
-  localAgents,
-  rawGlobalAgents,
-  rawLocalAgents,
-} = useAgentCollection()
+const { globalAgents, localAgents } = useAgentFetch()
+const { globalAgents: rawGlobalAgents, localAgents: rawLocalAgents } = useAgentCollection()
 const { card: makeAgentCard } = useAgentInterface()
 
 const agentsCollection = computed(() => [
-  ...(localAgents?.value ?? []),
-  ...(globalAgents.value ?? []),
+  ...(rawLocalAgents?.value ?? []),
+  ...(rawGlobalAgents.value ?? []),
 ])
 
 const rawAgentsCollection = computed(() => [
@@ -315,9 +324,24 @@ const {
   },
 })
 
+const hydratedAgentById = computed(() => {
+  const map = new Map<string, any>()
+  for (const entry of localAgents?.value ?? []) {
+    if (entry?.id) map.set(String(entry.id), entry)
+  }
+  for (const entry of globalAgents.value ?? []) {
+    if (entry?.id) map.set(String(entry.id), entry)
+  }
+  return map
+})
+
 const agentCards = computed(() => {
   return filteredAgents.value
-    .map((entry) => makeAgentCard(entry as any))
+    .map((entry) => {
+      const id = String((entry as any)?.id ?? '').trim()
+      const hydrated = id ? hydratedAgentById.value.get(id) : null
+      return makeAgentCard((hydrated ?? entry) as any)
+    })
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 })
 

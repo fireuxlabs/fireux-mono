@@ -13,7 +13,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useAgentCollection } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
+import { useAgentFetch } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentFetch'
 
 definePageMeta({
   nav: {
@@ -39,7 +39,7 @@ const pageDescription =
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { globalAgents, localAgents } = useAgentCollection()
+const { globalAgents, localAgents } = useAgentFetch()
 const collection = computed(() => [
   ...(localAgents?.value ?? []),
   ...(globalAgents.value ?? []),
