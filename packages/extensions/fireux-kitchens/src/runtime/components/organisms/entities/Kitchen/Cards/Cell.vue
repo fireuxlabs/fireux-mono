@@ -2,40 +2,43 @@
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
-    class="card card--cell"
+    class="block w-full"
     @click="onClick"
   >
-    <div class="card__media">
+    <div
+      class="flex w-full items-center gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
+    >
       <UAvatar
-        :src="avatarUrl || undefined"
+        :src="resolvedImageUrl || undefined"
         :alt="name"
-        size="sm"
-        :class="avatarUrl ? 'bg-white dark:bg-white' : ''"
+        size="md"
+        icon="i-lucide-image"
+        :class="avatarShadeClass"
       />
 
-      <div class="card__content card__stack">
-        <div class="card__header">
+      <div class="min-w-0 flex-1 space-y-1">
+        <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
-            <div class="card__title">{{ name }}</div>
-            <div v-if="showSubtitle && website" class="card__subtitle">
-              {{ website }}
+            <div class="truncate text-sm font-semibold">{{ name }}</div>
+
+            <div v-if="showSubtitle && resolvedAddress" class="flex items-center gap-1 truncate text-xs text-dimmed">
+              <UIcon name="i-lucide-map-pin" class="h-3 w-3" />
+              <span class="truncate">{{ resolvedAddress }}</span>
             </div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="card__badges">
-            <UBadge
-              v-for="badge in badges"
-              :key="badge"
-              variant="soft"
-              color="neutral"
-              size="xs"
-            >
-              {{ badge }}
-            </UBadge>
-          </div>
+          <UBadge
+            v-if="showSource && sourceLabel"
+            variant="soft"
+            color="neutral"
+            size="xs"
+            class="shrink-0"
+          >
+            {{ sourceLabel }}
+          </UBadge>
         </div>
 
-        <div v-if="showTagline" class="card__tagline">
+        <div v-if="showTagline" class="truncate text-xs text-dimmed">
           <span v-if="prop">{{ prop }}</span>
           <span v-else class="italic">missing</span>
         </div>
@@ -45,20 +48,17 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
 
-type Props = Pick<KitchenCard.Card, 'to' | 'name' | 'website' | 'badges'> & {
+type Props = Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'> & {
+  source?: 'google' | 'fireux' | 'manual'
   prop?: string
-  avatarUrl?: string
   showSubtitle?: boolean
-  showBadges?: boolean
+  showSource?: boolean
   showTagline?: boolean
   link?: boolean
   action?: boolean
-
-  // Back-compat with older callsites
-  card?: Partial<KitchenCard.Card> | null
-  avatar?: string | null
 }
 
 const emit = defineEmits<{
@@ -66,24 +66,36 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
-  avatarUrl: '',
+  imageUrl: '',
   prop: '',
   showSubtitle: true,
-  showBadges: true,
+  showSource: false,
   showTagline: true,
   link: false,
   action: false,
-
-  card: null,
-  avatar: null,
 })
 
-// Allow passing either structured props or a legacy `card` object.
-const to = props.to || props.card?.to || ''
-const name = props.name || props.card?.name || ''
-const website = props.website || props.card?.website || ''
-const badges = props.badges.length ? props.badges : props.card?.badges || []
-const avatarUrl = props.avatarUrl || props.card?.avatarUrl || props.avatar || ''
+const resolvedAddress = computed(() => props.formattedAddress || '')
+
+const resolvedImageUrl = computed(() => props.imageUrl || '')
+
+const avatarShadeClass = computed(() => {
+  const shade = props.imageShade
+  if (!shade) return ''
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
+})
+
+const sourceLabel = computed(() =>
+  props.source === 'fireux'
+    ? 'FireUX'
+    : props.source === 'manual'
+      ? 'Manual'
+      : props.source === 'google'
+        ? 'Google'
+        : ''
+)
 
 const onClick = () => {
   if (props.action) emit('action')

@@ -4,12 +4,11 @@
     :to="link && to ? to : undefined"
     @click="onClick"
     class="pill"
-
   >
     <UUser
       :name="title"
       :description="showSubtitle ? (subtitle || undefined) : undefined"
-      :avatar="avatarUrl ? { src: avatarUrl || undefined, alt: title || '' } : undefined"
+      :avatar="imageUrl ? { src: imageUrl || undefined, alt: title || '', class: avatarClass } : undefined"
       size="sm"
     >
       <template #default>
@@ -30,9 +29,12 @@
 </template>
 
 <script setup lang="ts">
-import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
+import { computed } from 'vue'
+import type { PlaceImageShade } from 'fireux-places/runtime/models/objects/place.model'
+import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 
-type PillProps = Pick<CompanyCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
+type PillProps = Pick<CompanyCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges'> & {
+  imageShade?: PlaceImageShade
   showSubtitle?: boolean
   showBadges?: boolean
   link?: boolean
@@ -48,6 +50,14 @@ const props = withDefaults(defineProps<PillProps>(), {
   showBadges: true,
   link: false,
   action: false,
+})
+
+const avatarClass = computed(() => {
+  const shade = props.imageShade
+  if (!shade) return ''
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
 })
 
 const onClick = () => {

@@ -1,4 +1,9 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import type {
+    PlaceImageShade,
+    PlaceSocialLinks,
+    PlaceSource,
+} from 'fireux-places/runtime/models/objects/place.model'
 import type { Kitchen } from '../../../../../../../models/objects/kitchen.model'
 
 export namespace KitchenCard {
@@ -6,68 +11,139 @@ export namespace KitchenCard {
     id: string
     to: string
 
-    // Media (empty string means unset)
-    avatarUrl: string
-
     // Primary display fields
     title: string
     subtitle: string
 
-    name: string
-    website: string
-
     // Status/label chips
     badges: string[]
+
+    name: string
+    shortName: string
+    formattedAddress: string
+    shortAddress: string
+
+    // Media (empty string means unset)
+    imageUrl: string
+
+    // Image tone metadata
+    imageShade?: PlaceImageShade
+
+    // Source metadata
+    source?: PlaceSource
+
+    // Search collection (optional)
+    collection?: string
+
+    // Ownership
+    claimedBy?: string
   }
+}
+
+export type KitchenProfile = {
+  card: KitchenCard.Card
+  title: string
+  subtitle: string
+  imageUrl?: string
+  imageShade?: PlaceImageShade
+  prop?: string
+  website?: string
+  address?: string
+  phone?: string
+  email?: string
+  socialLinks?: Partial<PlaceSocialLinks>
+  coverImage?: string
+  galleryImages?: string[]
+  about?: string
+  verified?: boolean
+  source?: PlaceSource
 }
 
 export function useKitchenInterface() {
   type KitchenPill = KitchenCard.Card
 
-  type KitchenCell = Pick<KitchenCard.Card, 'to' | 'name' | 'website' | 'badges'> & {
-    avatarUrl: string
+  type KitchenCell = Pick<
+    KitchenCard.Card,
+    'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
+  > & {
+    source?: PlaceSource
     prop?: string
   }
 
   type KitchenPreview = {
-    avatarUrl: string
+    imageUrl: string
+    imageShade?: PlaceImageShade
     name: string
-    website: string
-    badges: string[]
+    formattedAddress: string
+    source: PlaceSource
     prop?: string
   }
 
-  type KitchenProfile = {
-    card: KitchenCard.Card
-    title: string
-    subtitle: string
-    avatarUrl?: string
-    prop?: string
-    website?: string
-    address?: string
+  const sanitizeShortAddress = (value: string) =>
+    safeString(value).replace(/^[^\p{L}\p{N}]+/gu, '').trim()
+
+  const escapeRegExp = (value: string) =>
+    value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+  const stripLocationFromTitle = (title: string, shortAddress: string) => {
+    const cleanedTitle = safeString(title)
+    const cleanedShort = sanitizeShortAddress(shortAddress)
+    if (!cleanedTitle || !cleanedShort) return cleanedTitle
+
+    const parts = cleanedShort
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean)
+
+    if (!parts.length) return cleanedTitle
+
+    let next = cleanedTitle
+    for (const part of parts) {
+      if (part.length < 3) continue
+      const pattern = new RegExp(`\\b${escapeRegExp(part)}\\b`, 'gi')
+      next = next.replace(pattern, '').trim()
+    }
+
+    next = next
+      .replace(/\s{2,}/g, ' ')
+      .replace(/\s*[-–—|/]\s*(?=[-–—|/]|$)/g, ' ')
+      .replace(/^[-–—|/\s]+/, '')
+      .replace(/[-–—|/\s]+$/, '')
+      .trim()
+
+    return next || cleanedTitle
   }
 
   function map(kitchen: Kitchen): KitchenCard.Card {
     const id = safeString(kitchen.id).trim()
     const name = safeString(kitchen.name)
     const shortName = safeString((kitchen as any)?.short_name)
-    const website = safeString(kitchen.website)
-    const shortAddress = safeString((kitchen as any)?.short_address)
+    const shortAddress = sanitizeShortAddress((kitchen as any)?.short_address)
     const formattedAddress = safeString((kitchen as any)?.formatted_address)
-    const address = shortAddress || formattedAddress
+    const displayTitle = shortName || stripLocationFromTitle(name, shortAddress || formattedAddress)
+    const imageUrl = safeString((kitchen as any)?.image_url)
 
     return {
       id,
       to: id ? `/kitchens/${encodeURIComponent(id)}` : '',
 
-      avatarUrl: safeString((kitchen as any)?.image_url),
-      title: shortName || name,
-      subtitle: address,
+      title: displayTitle || name,
+      subtitle: shortAddress || formattedAddress,
 
       name,
-      website,
-
       badges: [],
+
+      shortName,
+      formattedAddress,
+      shortAddress,
+
+      imageUrl,
+
+      imageShade: (kitchen as any)?.image_shade ?? 'none',
+
+      source: (kitchen as any)?.source,
+
+      claimedBy: safeString((kitchen as any)?.claimed_by),
     }
   }
 
@@ -83,57 +159,69 @@ export function useKitchenInterface() {
     return {
       ...base,
       title: base.title || base.name,
-      subtitle: base.subtitle || '',
+      subtitle: base.subtitle || base.shortAddress || base.formattedAddress || '',
     }
   }
 
   function cell(target?: Kitchen | null | undefined): KitchenCell | null {
     const base = card(target)
     if (!base || !target) return null
-    const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
     return {
+      id: base.id,
       to: base.to,
       name: base.name,
-      website: base.website,
-      badges: base.badges,
-      avatarUrl: base.avatarUrl,
-      prop: address,
+      formattedAddress: base.formattedAddress,
+      imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
+      source: (target as any)?.source,
+      prop: (target as any)?.brand_tagline || (target as any)?.website || base.shortName,
     }
   }
 
   function preview(target?: Kitchen | null | undefined): KitchenPreview | null {
     const base = card(target)
     if (!base || !target) return null
-    const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
     return {
-      avatarUrl: base.avatarUrl,
+      imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
       name: base.name,
-      website: base.website,
-      badges: base.badges,
-      prop: address,
+      formattedAddress: base.formattedAddress,
+      source: ((target as any)?.source as PlaceSource) ?? 'fireux',
+      prop: (target as any)?.brand_tagline || (target as any)?.website || base.shortName,
     }
   }
 
   function profile(target?: Kitchen | null | undefined): KitchenProfile | null {
     const base = card(target)
     if (!base || !target) return null
-    const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
+    const address = base.shortAddress || base.formattedAddress
     return {
       card: base,
       title: base.title,
       subtitle: base.subtitle,
-      avatarUrl: base.avatarUrl,
-      prop: base.website,
-      website: base.website,
+      imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
+      prop: (target as any)?.brand_tagline || (target as any)?.website || base.shortName,
+      website: (target as any)?.website,
       address,
+      phone: (target as any)?.phone,
+      email: (target as any)?.email,
+      socialLinks: (target as any)?.social_links as Partial<PlaceSocialLinks> | undefined,
+      coverImage: (target as any)?.cover_image,
+      galleryImages: ((target as any)?.gallery_images as string[] | undefined)?.slice(0, 3),
+      about: (target as any)?.about,
+      verified: (target as any)?.verified,
+      source: (target as any)?.source as PlaceSource | undefined,
     }
   }
 
   function searchText(kitchen: Kitchen): string {
     const name = safeString(kitchen.name)
-    const website = safeString(kitchen.website)
+    const website = safeString((kitchen as any)?.website)
+    const shortAddress = sanitizeShortAddress((kitchen as any)?.short_address)
+    const formattedAddress = safeString((kitchen as any)?.formatted_address)
     const id = safeString(kitchen.id)
-    return `${name} ${website} ${id}`.trim().toLowerCase()
+    return `${name} ${website} ${shortAddress || formattedAddress} ${id}`.trim().toLowerCase()
   }
 
   return { card, pill, cell, preview, profile, searchText }

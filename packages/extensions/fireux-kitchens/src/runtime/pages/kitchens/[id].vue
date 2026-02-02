@@ -40,9 +40,7 @@
         <div v-else class="space-y-4">
           <KitchenCardsProfile
             v-if="kitchenProfile"
-            :card="kitchenProfile.card"
-            :avatar="kitchenProfile.avatarUrl"
-            :prop="kitchenProfile.prop"
+            :model="kitchenProfile"
           />
 
           <UCard>

@@ -36,9 +36,7 @@
         <div v-else class="space-y-4">
           <CompanyCardsProfile
             v-if="companyProfile"
-            :card="companyProfile.card"
-            :avatar="companyProfile.avatarUrl"
-            :prop="companyProfile.prop"
+            :model="companyProfile"
           />
           <UCard>
             <template #header>

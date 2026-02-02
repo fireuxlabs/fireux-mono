@@ -1,4 +1,9 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import type {
+    PlaceImageShade,
+    PlaceSocialLinks,
+    PlaceSource,
+} from 'fireux-places/runtime/models/objects/place.model'
 import type { CompanyView } from '../../../../../../../models/objects/company.model'
 
 export namespace CompanyCard {
@@ -6,68 +11,139 @@ export namespace CompanyCard {
     id: string
     to: string
 
-    // Media (empty string means unset)
-    avatarUrl: string
-
     // Primary display fields
     title: string
     subtitle: string
 
-    name: string
-    website: string
-
     // Status/label chips
     badges: string[]
+
+    name: string
+    shortName: string
+    formattedAddress: string
+    shortAddress: string
+
+    // Media (empty string means unset)
+    imageUrl: string
+
+    // Image tone metadata
+    imageShade?: PlaceImageShade
+
+    // Source metadata
+    source?: PlaceSource
+
+    // Search collection (optional)
+    collection?: string
+
+    // Ownership
+    claimedBy?: string
   }
+}
+
+export type CompanyProfile = {
+  card: CompanyCard.Card
+  title: string
+  subtitle: string
+  imageUrl?: string
+  imageShade?: PlaceImageShade
+  prop?: string
+  website?: string
+  address?: string
+  phone?: string
+  email?: string
+  socialLinks?: Partial<PlaceSocialLinks>
+  coverImage?: string
+  galleryImages?: string[]
+  about?: string
+  verified?: boolean
+  source?: PlaceSource
 }
 
 export function useCompanyInterface() {
   type CompanyPill = CompanyCard.Card
 
-  type CompanyCell = Pick<CompanyCard.Card, 'to' | 'name' | 'website' | 'badges'> & {
-    avatarUrl: string
+  type CompanyCell = Pick<
+    CompanyCard.Card,
+    'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
+  > & {
+    source?: PlaceSource
     prop?: string
   }
 
   type CompanyPreview = {
-    avatarUrl: string
+    imageUrl: string
+    imageShade?: PlaceImageShade
     name: string
-    website: string
-    badges: string[]
+    formattedAddress: string
+    source: PlaceSource
     prop?: string
   }
 
-  type CompanyProfile = {
-    card: CompanyCard.Card
-    title: string
-    subtitle: string
-    avatarUrl?: string
-    prop?: string
-    website?: string
-    address?: string
+  const sanitizeShortAddress = (value: string) =>
+    safeString(value).replace(/^[^\p{L}\p{N}]+/gu, '').trim()
+
+  const escapeRegExp = (value: string) =>
+    value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+  const stripLocationFromTitle = (title: string, shortAddress: string) => {
+    const cleanedTitle = safeString(title)
+    const cleanedShort = sanitizeShortAddress(shortAddress)
+    if (!cleanedTitle || !cleanedShort) return cleanedTitle
+
+    const parts = cleanedShort
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean)
+
+    if (!parts.length) return cleanedTitle
+
+    let next = cleanedTitle
+    for (const part of parts) {
+      if (part.length < 3) continue
+      const pattern = new RegExp(`\\b${escapeRegExp(part)}\\b`, 'gi')
+      next = next.replace(pattern, '').trim()
+    }
+
+    next = next
+      .replace(/\s{2,}/g, ' ')
+      .replace(/\s*[-–—|/]\s*(?=[-–—|/]|$)/g, ' ')
+      .replace(/^[-–—|/\s]+/, '')
+      .replace(/[-–—|/\s]+$/, '')
+      .trim()
+
+    return next || cleanedTitle
   }
 
   function map(company: CompanyView): CompanyCard.Card {
     const id = safeString(company.id).trim()
     const name = safeString(company.name)
     const shortName = safeString((company as any)?.short_name)
-    const website = safeString(company.website)
-    const shortAddress = safeString((company as any)?.short_address)
+    const shortAddress = sanitizeShortAddress((company as any)?.short_address)
     const formattedAddress = safeString((company as any)?.formatted_address)
-    const address = shortAddress || formattedAddress
+    const displayTitle = shortName || stripLocationFromTitle(name, shortAddress || formattedAddress)
+    const imageUrl = safeString((company as any)?.image_url)
 
     return {
       id,
       to: id ? `/companies/${encodeURIComponent(id)}` : '',
 
-      avatarUrl: safeString((company as any)?.image_url),
-      title: shortName || name,
-      subtitle: address,
+      title: displayTitle || name,
+      subtitle: shortAddress || formattedAddress,
 
       name,
-      website,
-
       badges: [],
+
+      shortName,
+      formattedAddress,
+      shortAddress,
+
+      imageUrl,
+
+      imageShade: (company as any)?.image_shade ?? 'none',
+
+      source: (company as any)?.source,
+
+      claimedBy: safeString((company as any)?.claimed_by),
     }
   }
 
@@ -83,57 +159,69 @@ export function useCompanyInterface() {
     return {
       ...base,
       title: base.title || base.name,
-      subtitle: base.subtitle || '',
+      subtitle: base.subtitle || base.shortAddress || base.formattedAddress || '',
     }
   }
 
   function cell(target?: CompanyView | null | undefined): CompanyCell | null {
     const base = card(target)
     if (!base || !target) return null
-    const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
     return {
+      id: base.id,
       to: base.to,
       name: base.name,
-      website: base.website,
-      badges: base.badges,
-      avatarUrl: base.avatarUrl,
-      prop: address,
+      formattedAddress: base.formattedAddress,
+      imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
+      source: (target as any)?.source,
+      prop: (target as any)?.brand_tagline || (target as any)?.website || base.shortName,
     }
   }
 
   function preview(target?: CompanyView | null | undefined): CompanyPreview | null {
     const base = card(target)
     if (!base || !target) return null
-    const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
     return {
-      avatarUrl: base.avatarUrl,
+      imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
       name: base.name,
-      website: base.website,
-      badges: base.badges,
-      prop: address,
+      formattedAddress: base.formattedAddress,
+      source: ((target as any)?.source as PlaceSource) ?? 'fireux',
+      prop: (target as any)?.brand_tagline || (target as any)?.website || base.shortName,
     }
   }
 
   function profile(target?: CompanyView | null | undefined): CompanyProfile | null {
     const base = card(target)
     if (!base || !target) return null
-    const address = safeString((target as any)?.short_address || (target as any)?.formatted_address)
+    const address = base.shortAddress || base.formattedAddress
     return {
       card: base,
       title: base.title,
       subtitle: base.subtitle,
-      avatarUrl: base.avatarUrl,
-      prop: base.website,
-      website: base.website,
+      imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
+      prop: (target as any)?.brand_tagline || (target as any)?.website || base.shortName,
+      website: (target as any)?.website,
       address,
+      phone: (target as any)?.phone,
+      email: (target as any)?.email,
+      socialLinks: (target as any)?.social_links as Partial<PlaceSocialLinks> | undefined,
+      coverImage: (target as any)?.cover_image,
+      galleryImages: ((target as any)?.gallery_images as string[] | undefined)?.slice(0, 3),
+      about: (target as any)?.about,
+      verified: (target as any)?.verified,
+      source: (target as any)?.source as PlaceSource | undefined,
     }
   }
 
   function searchText(company: CompanyView): string {
     const name = safeString(company.name)
-    const website = safeString(company.website)
+    const website = safeString((company as any)?.website)
+    const shortAddress = sanitizeShortAddress((company as any)?.short_address)
+    const formattedAddress = safeString((company as any)?.formatted_address)
     const id = safeString(company.id)
-    return `${name} ${website} ${id}`.trim().toLowerCase()
+    return `${name} ${website} ${shortAddress || formattedAddress} ${id}`.trim().toLowerCase()
   }
 
   return { card, pill, cell, preview, profile, searchText }

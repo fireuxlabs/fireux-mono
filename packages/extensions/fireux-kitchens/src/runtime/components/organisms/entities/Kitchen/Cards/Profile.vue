@@ -2,31 +2,50 @@
   <UCard>
     <div class="flex items-start gap-3">
       <UAvatar
-        :src="avatar || undefined"
-        :alt="title"
-        size="sm"
-        :class="avatar ? 'bg-white dark:bg-white' : ''"
+        :src="model.imageUrl || undefined"
+        :alt="model.title"
+        size="md"
+        icon="i-lucide-image"
+        :class="avatarShadeClass"
       />
-      <div class="min-w-0 flex-1">
-        <div class="truncate font-medium">{{ title }}</div>
-        <div v-if="subtitle" class="truncate text-sm text-dimmed">
-          {{ subtitle }}
+      <div class="min-w-0 flex-1 space-y-2">
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <div class="truncate text-base font-semibold">{{ model.title }}</div>
+            <div v-if="model.subtitle" class="truncate text-xs text-dimmed">{{ model.subtitle }}</div>
+            <div v-if="model.prop" class="truncate text-xs text-dimmed">{{ model.prop }}</div>
+          </div>
+          <div class="flex flex-wrap items-center gap-1">
+            <UBadge v-if="model.verified" size="xs" variant="soft" color="emerald">Verified</UBadge>
+            <UBadge v-if="sourceLabel" size="xs" variant="soft" color="neutral">{{ sourceLabel }}</UBadge>
+          </div>
         </div>
-        <div v-if="prop" class="truncate text-sm text-dimmed">{{ prop }}</div>
       </div>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
+import { computed } from 'vue'
+import type { KitchenProfile } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
 
-const { card, avatar: avatarProp, prop } = defineProps<{
-  card: KitchenCard.Card
-  avatar?: string | null
-  prop?: string
-}>()
+const props = defineProps<{ model: KitchenProfile }>()
 
-const { title, subtitle } = card
-const avatar = avatarProp ?? null
+const avatarShadeClass = computed(() => {
+  const shade = props.model.imageShade
+  if (!shade) return ''
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
+})
+
+const sourceLabel = computed(() =>
+  props.model.source === 'fireux'
+    ? 'FireUX'
+    : props.model.source === 'manual'
+      ? 'Manual'
+      : props.model.source === 'google'
+        ? 'Google'
+        : ''
+)
 </script>
