@@ -13,30 +13,37 @@ const COLLECTION_PATH = 'companies'
 export function useCompanyFetch() {
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
 
-  const overlays = firestoreFetchCollection<Company>(COLLECTION_PATH)
-  const places = firestoreFetchCollection<Place>('places')
+  // ✅ raw Firestore sources
+  const companiesCollection = firestoreFetchCollection<Company>(COLLECTION_PATH)
+  const placesCollection = firestoreFetchCollection<Place>('places')
 
-  const companies = hydratePlaceOverlayCollection(
-    computed(() => overlays.value ?? []),
-    computed(() => places.value ?? []),
-    (overlay, place): CompanyView => ({
+  // ✅ canonical hydration helpers (rename at call-site)
+  const hydrate = hydratePlaceOverlayCollection
+  const hydrateDoc = hydratePlaceOverlayDoc
+
+  // ✅ hydrated collection (UI-ready)
+  const companies = hydrate(
+    computed(() => companiesCollection.value ?? []),
+    computed(() => placesCollection.value ?? []),
+    (company, place): CompanyView => ({
       ...(place ?? {}),
-      ...overlay,
-      id: overlay.id,
+      ...company,
+      id: company.id,
     })
   )
 
+  // ✅ hydrated single doc (UI-ready)
   const company = (id: string) => {
     const companyDoc = firestoreFetchDoc<Company>(COLLECTION_PATH, id)
     const placeDoc = firestoreFetchDoc<Place>('places', id)
 
-    return hydratePlaceOverlayDoc(
+    return hydrateDoc(
       computed(() => companyDoc.value),
       computed(() => placeDoc.value),
       computed(() => id),
-      (overlay, place, docId): CompanyView => ({
-        ...(place ?? {}),
-        ...(overlay ?? {}),
+      (companyValue, placeValue, docId): CompanyView => ({
+        ...(placeValue ?? {}),
+        ...(companyValue ?? {}),
         id: docId,
       })
     )

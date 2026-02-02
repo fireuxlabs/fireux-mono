@@ -50,7 +50,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Companies (JSON)'"
-        context="collection manager · companies"
+        context="Companies collection manager · companies list · runtime-resolved"
         :data="collection"
         :default-open="false"
       />

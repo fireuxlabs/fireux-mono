@@ -85,7 +85,7 @@
           <DevJson
             v-if="isDev && company"
             :title="'Company (Doc)'"
-            context="companies/[id]"
+            context="Company detail page · companies/[id] · hydrated company doc"
             :data="company"
             :default-open="false"
           />

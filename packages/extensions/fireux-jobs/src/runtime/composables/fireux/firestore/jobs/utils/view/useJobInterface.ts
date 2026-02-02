@@ -33,7 +33,7 @@ export function useJobInterface() {
       id,
       to: id ? `/jobs/${id}` : '',
 
-      avatarUrl: safeString(job.kitchen?.place_image),
+      avatarUrl: safeString((job as any)?.kitchen?.image_url),
       subtitle: status,
 
       title: safeString(job.title),

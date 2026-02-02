@@ -35,6 +35,7 @@ import { useDevClipboard } from '../../composables/dev/useDevClipboard'
 
 defineOptions({ name: 'Json' })
 
+// TODO: Enforce strong, descriptive context strings for all DevJson usages.
 interface JsonPanelProps {
   data: unknown
   context: string
@@ -76,10 +77,11 @@ const copyLabel = computed(() => {
   return 'Copy JSON'
 })
 
-const { copyJSON, copying } = useDevClipboard()
+const { copyText, copying } = useDevClipboard()
 
 const onCopy = async () => {
-  const ok = await copyJSON(props.data, {
+  const payload = `${props.title}\n${props.context}\n${jsonString.value}`
+  const ok = await copyText(payload, {
     label: `${props.title} · ${props.context}`,
   })
 

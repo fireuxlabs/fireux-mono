@@ -94,7 +94,7 @@
           <DevJson
             v-if="isDev && kitchen"
             :title="'Kitchen (Doc)'"
-            context="kitchens/[id]"
+            context="Kitchen detail page · kitchens/[id] · hydrated kitchen doc"
             :data="kitchen"
             :default-open="false"
           />

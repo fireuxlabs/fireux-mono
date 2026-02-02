@@ -128,7 +128,7 @@ export function usePlacesInterface() {
     const address = safeString((place as any)?.formatted_address)
     const shortAddress = sanitizeShortAddress((place as any)?.short_address)
     const displayTitle = shortName || stripLocationFromTitle(name, shortAddress || address)
-    const image = safeString((place as any)?.image_url || (place as any)?.place_image)
+    const image = safeString((place as any)?.image_url)
 
     return {
       id,
@@ -213,7 +213,7 @@ export function usePlacesInterface() {
       card: base,
       title: base.title,
       subtitle: base.subtitle,
-      imageUrl: (target as any)?.image_url || (target as any)?.place_image,
+      imageUrl: (target as any)?.image_url,
       prop: (target as any)?.brand_tagline,
       coverImage: (target as any)?.cover_image,
       galleryImages: ((target as any)?.gallery_images as string[] | undefined)?.slice(0, 3),

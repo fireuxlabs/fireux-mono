@@ -270,7 +270,7 @@ const filteredProfessionalsDriftPayload = computed(() =>
       displayName:
         (entry as any)?.display_name ??
         (entry as any)?.handle ??
-        id || '',
+        id ?? '',
       drift,
     }
   })

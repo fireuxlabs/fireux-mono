@@ -82,7 +82,7 @@
         <DevJson
           v-if="showDebug && editableFields"
           :title="'Place (Editable)'"
-          context="places/edit/[id]"
+          context="Place edit page · places/edit/[id] · editable fields"
           :data="editableFields"
           :default-open="false"
         />

@@ -50,7 +50,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Kitchens (JSON)'"
-        context="collection manager · kitchens"
+        context="Kitchens collection manager · kitchens list · runtime-resolved"
         :data="collection"
         :default-open="false"
       />
