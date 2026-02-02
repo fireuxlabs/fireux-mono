@@ -35,7 +35,7 @@ function toShade(value: unknown): PlaceImageShade {
 
 /**
  * usePlaceUpdate
- * Centralized update functions for Place (core-only; no app overlay)
+ * Centralized update functions for Place (core-only; no app collection)
  * Firestore: places/{id}
  */
 export function usePlaceUpdate() {

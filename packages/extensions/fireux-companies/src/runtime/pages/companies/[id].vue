@@ -52,6 +52,18 @@
               />
               <span v-else class="text-xs text-gray-500">—</span>
             </div>
+            <div v-if="showClaimButton" class="pt-3">
+              <UButton
+                size="xs"
+                variant="soft"
+                color="primary"
+                :loading="isClaiming"
+                :disabled="isClaiming"
+                @click="onClaim"
+              >
+                Claim this business
+              </UButton>
+            </div>
           </UCard>
           <UCard>
             <template #header>
@@ -100,9 +112,12 @@
 <script setup lang="ts">
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { computed } from 'vue'
+import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceClaim'
+import { computed, ref } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from '../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
 import type { CompanyView } from '../../models/objects/company.model'
@@ -144,6 +159,12 @@ const claimedBy = computed(() => String(company.value?.claimed_by ?? '').trim())
 const { user: claimedUser } = useUserFetch(claimedBy)
 const { card: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
+const { currentUser, isAdmin } = useUser()
+const isVerifiedUser = computed(() => Boolean((currentUser.value as any)?.verified || isAdmin.value))
+const showClaimButton = computed(() => !claimedBy.value && isVerifiedUser.value)
+const { claimPlace } = usePlaceClaim()
+const toast = useToastify()
+const isClaiming = ref(false)
 
 const formatValue = (value: unknown) => {
   if (value == null) return ''
@@ -186,6 +207,21 @@ const mapUrl = computed(() => {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return ''
   return `https://maps.google.com/?q=${lat},${lng}`
 })
+
+const onClaim = async () => {
+  if (isClaiming.value) return
+  if (!docId || !showClaimButton.value) return
+  isClaiming.value = true
+  try {
+    await claimPlace(docId)
+    toast.success('Place claimed')
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Failed to claim place: ${msg}`)
+  } finally {
+    isClaiming.value = false
+  }
+}
 
 useHead({
   title: computed(() => `${appName} | ${pageTitle.value}`),

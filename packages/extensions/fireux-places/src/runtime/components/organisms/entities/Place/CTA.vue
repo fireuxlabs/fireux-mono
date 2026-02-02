@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
 import { computed } from 'vue'
-import { normalizePlaceType } from '../../../../composables/fireux/firestore/objects/place/utils/placeCollections'
+import { normalizePlaceType } from '../../../../composables/fireux/firestore/objects/place/utils/useNormalizePlace'
 
 const route = useRoute()
 const router = useRouter()

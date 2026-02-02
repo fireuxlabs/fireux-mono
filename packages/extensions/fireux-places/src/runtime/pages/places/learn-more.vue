@@ -10,7 +10,7 @@
         <h2 class="text-lg font-semibold">Why Places exists</h2>
         <p class="text-sm text-gray-600">
           Places is a shared, canonical location layer. A Place represents a real-world
-          location (often backed by a Google Place ID) that other overlays (companies,
+          location (often backed by a Google Place ID) that other records (companies,
           kitchens, etc.) can attach to.
         </p>
       </section>
@@ -27,7 +27,7 @@
             &nbsp;— place documents are keyed by a stable ID.
           </li>
           <li>
-            <strong class="font-medium text-gray-900">Overlay-friendly</strong>
+            <strong class="font-medium text-gray-900">Record-friendly</strong>
             &nbsp;— other domains can bind to a place without duplicating location data.
           </li>
         </ul>

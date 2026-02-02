@@ -29,8 +29,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { PlaceImageShade } from 'fireux-places/runtime/models/objects/place.model'
+import { computed } from 'vue'
 import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
 
 type PillProps = Pick<KitchenCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges'> & {

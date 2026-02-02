@@ -16,7 +16,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 definePageMeta({
   layout: 'default',
   title: 'Create Kitchen',
-  description: 'Create a kitchen overlay.',
+  description: 'Create a kitchen record.',
   nav: {
     key: 'kitchens-create',
     label: 'Create kitchen',

@@ -8,7 +8,7 @@
           {{ chosenPlaceCard ? 'Selected company' : 'Choose a company' }}
         </h2>
         <p class="text-sm text-gray-500">
-          Type a company name. We create the company overlay if it doesn’t exist.
+          Type a company name. We create the company record if it doesn’t exist.
         </p>
       </div>
     </template>

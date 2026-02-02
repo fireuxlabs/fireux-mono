@@ -2,14 +2,14 @@
   <UPage>
     <UPageHeader
       title="FireUX Companies"
-      description="How Company overlays attach to Places."
+      description="How Company records attach to Places."
     />
 
     <UPageBody class="space-y-8">
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">Why Companies exists</h2>
         <p class="text-sm text-gray-600">
-          Companies are overlays bound to canonical Places. This keeps location data
+          Companies are records bound to canonical Places. This keeps location data
           consistent while allowing company-specific metadata (name, website)
           to live in its own document.
         </p>
@@ -19,7 +19,7 @@
         <h3 class="text-base font-semibold">Core capabilities today</h3>
         <ul class="space-y-2 text-sm text-gray-600">
           <li>
-            <strong class="font-medium text-gray-900">Place-bound overlays</strong>
+            <strong class="font-medium text-gray-900">Place-bound records</strong>
             &nbsp;— create a company from a confirmed place.
           </li>
           <li>

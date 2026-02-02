@@ -5,7 +5,7 @@
         <div class="space-y-1">
           <div class="font-medium">Select a place</div>
           <div class="text-sm text-dimmed">
-            We’ll use the existing kitchen if it exists, or create the overlay if it doesn’t.
+            We’ll use the existing kitchen if it exists, or create the record if it doesn’t.
           </div>
         </div>
       </template>
@@ -60,14 +60,14 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
   try {
     const id = payload.placeId
     const place = payload.place
-    let placeForOverlay = place
+    let placeForRecord = place
 
-    await ensurePlaceExists(placeForOverlay)
+    await ensurePlaceExists(placeForRecord)
 
     const placeSnap = await getDoc(doc(db, 'places', id))
     if (placeSnap.exists()) {
       const stored = placeSnap.data() as Record<string, any>
-      placeForOverlay = {
+      placeForRecord = {
         ...place,
         ...stored,
         id,
@@ -82,7 +82,7 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
 
     const createdId = await createKitchen({
       id,
-      place: placeForOverlay,
+      place: placeForRecord,
       website: '',
     })
 

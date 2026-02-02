@@ -1,2 +1,3 @@
-export { mapPlaceToBasePlace as mapPlaceToCard } from './mapPlaceToBasePlace';
+// Deprecated: use `mapPlaceToBasePlace` directly.
+export { };
 

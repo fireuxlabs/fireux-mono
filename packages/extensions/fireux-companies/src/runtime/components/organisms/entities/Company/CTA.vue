@@ -2,7 +2,7 @@
   <UPageCTA
     class="cta"
     title="Companies"
-    description="Select a place to view or update its company overlay."
+    description="Select a place to view or update its company record."
     variant="naked"
   >
     <template #default>

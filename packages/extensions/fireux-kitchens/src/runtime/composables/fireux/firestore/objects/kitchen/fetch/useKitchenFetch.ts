@@ -1,42 +1,49 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { hydratePlaceOverlayCollection, hydratePlaceOverlayDoc } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlaceOverlayHydration'
+import { hydratePlaceCollection, hydratePlaceDoc } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlaceHydration'
 import type { Place } from 'fireux-places/runtime/models/objects/place.model'
 import { computed } from 'vue'
-import type { Kitchen, KitchenOverlay } from '../../../../../../models/objects/kitchen.model'
+import type { Kitchen, KitchenCollection } from '../../../../../../models/objects/kitchen.model'
 
 const COLLECTION_PATH = 'kitchens'
 
 /**
  * Canon fetch helpers for Kitchen (collection + single doc).
- * Canon: overlay collection `kitchens/{placeId}`.
+ * Canon: collection `kitchens/{placeId}`.
  */
 export function useKitchenFetch() {
   const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
 
-  const overlays = firestoreFetchCollection<KitchenOverlay>(COLLECTION_PATH)
-  const places = firestoreFetchCollection<Place>('places')
+  // ✅ raw Firestore sources
+  const kitchensCollection = firestoreFetchCollection<KitchenCollection>(COLLECTION_PATH)
+  const placesCollection = firestoreFetchCollection<Place>('places')
 
-  const kitchens = hydratePlaceOverlayCollection(
-    computed(() => overlays.value ?? []),
-    computed(() => places.value ?? []),
-    (overlay, place): Kitchen => ({
+  // ✅ canonical hydration helpers (rename at call-site)
+  const hydrate = hydratePlaceCollection
+  const hydrateDoc = hydratePlaceDoc
+
+  // ✅ hydrated collection (UI-ready)
+  const kitchens = hydrate(
+    computed(() => kitchensCollection.value ?? []),
+    computed(() => placesCollection.value ?? []),
+    (entry, place): Kitchen => ({
       ...(place ?? {}),
-      ...overlay,
-      id: overlay.id,
+      ...entry,
+      id: entry.id,
     })
   )
 
+  // ✅ hydrated single doc (UI-ready)
   const kitchen = (id: string) => {
-    const kitchenDoc = firestoreFetchDoc<KitchenOverlay>(COLLECTION_PATH, id)
+    const kitchenDoc = firestoreFetchDoc<KitchenCollection>(COLLECTION_PATH, id)
     const placeDoc = firestoreFetchDoc<Place>('places', id)
 
-    return hydratePlaceOverlayDoc(
+    return hydrateDoc(
       computed(() => kitchenDoc.value),
       computed(() => placeDoc.value),
       computed(() => id),
-      (overlay, place, docId): Kitchen => ({
+      (entry, place, docId): Kitchen => ({
         ...(place ?? {}),
-        ...(overlay ?? {}),
+        ...(entry ?? {}),
         id: docId,
       })
     )

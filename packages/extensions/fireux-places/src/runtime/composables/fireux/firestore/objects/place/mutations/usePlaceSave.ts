@@ -4,7 +4,6 @@ import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/fire
 import { useFirestore } from 'vuefire'
 import type { PlaceUpsertInput } from '../../../../../../models/objects/place.model'
 import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGoogle'
-import { toPlaceCollectionPath, usePlaceTypesConfig } from '../utils/placeCollections'
 import { toShortAddress } from '../utils/view/formatPlaceAddress'
 import { sanitizeLogoAvatar } from '../utils/view/usePlaceLogos'
 
@@ -17,15 +16,13 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
   const { setDocument } = useFirestoreManager()
   const { uploadFromUrl } = useImageStorage()
   const db = useFirestore()
-  const configuredTypes = usePlaceTypesConfig()
 
   /** Ensure a place document exists in Firestore. */
   async function ensurePlaceExists(place: Partial<PlaceUpsertInput> & { id?: string }): Promise<boolean> {
     const id = canonicalPlaceId((place as any)?.id ?? (place as any)?.place_id)
     if (!id) return false
 
-    const types = options.types ?? configuredTypes
-    const collectionPath = toPlaceCollectionPath(options.type, types)
+    const collectionPath = 'places'
 
     const ref = doc(db, collectionPath, id)
     const snapshot = await getDoc(ref)

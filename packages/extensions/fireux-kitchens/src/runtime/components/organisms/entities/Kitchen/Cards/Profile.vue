@@ -26,8 +26,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { KitchenProfile } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
+import { computed } from 'vue';
+import type { KitchenProfile } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
 
 const props = defineProps<{ model: KitchenProfile }>()
 

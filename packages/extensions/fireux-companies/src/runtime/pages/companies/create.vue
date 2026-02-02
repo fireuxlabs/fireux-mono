@@ -16,7 +16,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 definePageMeta({
   layout: 'default',
   title: 'Create Company',
-  description: 'Create a company overlay.',
+  description: 'Create a company record.',
   nav: {
     key: 'companies-create',
     label: 'Create company',

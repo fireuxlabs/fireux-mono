@@ -2,14 +2,14 @@
   <UPage>
     <UPageHeader
       title="FireUX Kitchens"
-      description="How Kitchen overlays attach to Places."
+      description="How Kitchen records attach to Places."
     />
 
     <UPageBody class="space-y-8">
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">Why Kitchens exists</h2>
         <p class="text-sm text-gray-600">
-          Kitchens are overlays bound to canonical Places. This keeps location data
+          Kitchens are records bound to canonical Places. This keeps location data
           consistent while allowing kitchen-specific metadata (name, website)
           to live in its own document.
         </p>
@@ -19,7 +19,7 @@
         <h3 class="text-base font-semibold">Core capabilities today</h3>
         <ul class="space-y-2 text-sm text-gray-600">
           <li>
-            <strong class="font-medium text-gray-900">Place-bound overlays</strong>
+            <strong class="font-medium text-gray-900">Place-bound records</strong>
             &nbsp;— create a kitchen from a confirmed place.
           </li>
           <li>

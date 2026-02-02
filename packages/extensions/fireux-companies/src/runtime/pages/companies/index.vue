@@ -18,7 +18,7 @@ import { useCompanyFetch } from '../../composables/fireux/firestore/objects/comp
 definePageMeta({
   layout: 'default',
   title: 'Companies',
-  description: 'Company overlays resolved for this runtime.',
+  description: 'Company collection records resolved for this runtime.',
   nav: {
     key: 'companies',
     label: 'Companies',

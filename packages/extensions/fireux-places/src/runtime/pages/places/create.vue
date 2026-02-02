@@ -27,7 +27,7 @@
 import { useHead, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { normalizePlaceType } from '../../composables/fireux/firestore/objects/place/utils/placeCollections'
+import { normalizePlaceType } from '../../composables/fireux/firestore/objects/place/utils/useNormalizePlace'
 
 definePageMeta({
   layout: 'default',

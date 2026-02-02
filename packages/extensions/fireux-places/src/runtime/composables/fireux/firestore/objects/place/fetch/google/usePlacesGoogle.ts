@@ -1,4 +1,4 @@
-import type { BasePlace, GooglePlace, PlaceUpsertInput } from '../../../../../../../models/objects/place.model'
+import { Place, type BasePlace, type GooglePlace, type PlaceUpsertInput } from '../../../../../../../models/objects/place.model'
 import { toShortAddress } from '../../utils/view/formatPlaceAddress'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
@@ -193,6 +193,7 @@ export async function fetchGoogle(
 function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
   const search_term = `${g.name} ${g.formatted_address}`.toLowerCase()
   return {
+    ...Place,
     id: g.id,
     name: g.name,
     short_name: '',
@@ -201,9 +202,9 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
     lat: g.lat,
     lng: g.lng,
     source: 'fireux',
-    image_url: g.image_url ?? (g as any).place_image ?? '',
+    image_url: '',
     search_term,
-  }
+  } as PlaceUpsertInput
 }
 
 
@@ -232,7 +233,9 @@ export function mapDetailsToGooglePlace(
     lat: Number(location?.lat ?? 0),
     lng: Number(location?.lng ?? 0),
     source: 'google',
-    image_url: typeof result?.icon === 'string' ? result.icon : '',
+    image_url: '',
+    image_shade: 'none',
+    claimed_by: '',
     website: typeof result?.website === 'string' ? result.website : '',
     phone,
     rating: typeof result?.rating === 'number' ? result.rating : 0,

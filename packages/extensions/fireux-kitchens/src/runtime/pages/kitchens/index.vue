@@ -26,7 +26,7 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Kitchens',
-  description: 'Kitchen overlays resolved for this runtime.',
+  description: 'Kitchen collection records resolved for this runtime.',
   layout: 'default',
   name: 'KitchensIndexPage',
 })

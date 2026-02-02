@@ -2,7 +2,7 @@
   <UPageCTA
     class="cta"
     title="Kitchens"
-    description="Select a place to view or update its kitchen overlay."
+    description="Select a place to view or update its kitchen record."
     variant="naked"
   >
     <template #default>

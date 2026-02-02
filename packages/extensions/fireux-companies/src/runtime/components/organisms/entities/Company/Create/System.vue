@@ -5,7 +5,7 @@
         <div class="space-y-1">
           <div class="font-medium">Select a place</div>
           <div class="text-sm text-dimmed">
-            We’ll use the existing company if it exists, or create the overlay if it doesn’t.
+            We’ll use the existing company if it exists, or create the record if it doesn’t.
           </div>
         </div>
       </template>

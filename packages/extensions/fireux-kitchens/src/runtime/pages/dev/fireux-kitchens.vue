@@ -47,8 +47,8 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useKitchenFetch } from '../../composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
 import { useKitchens } from '../../composables/fireux/firestore/objects/kitchen/useKitchens'
-import type { Kitchen, KitchenOverlay } from '../../models/objects/kitchen.model'
-import { KitchenOverlay as KitchenModelRuntime } from '../../models/objects/kitchen.model'
+import type { Kitchen, KitchenCollection } from '../../models/objects/kitchen.model'
+import { KitchenCollection as KitchenModelRuntime } from '../../models/objects/kitchen.model'
 
 definePageMeta({
   layout: 'dev',
@@ -64,7 +64,7 @@ definePageMeta({
 
 const kitchenModelRuntime = KitchenModelRuntime
 
-const { collection } = useKitchens<KitchenOverlay>()
+const { collection } = useKitchens<KitchenCollection>()
 const { kitchens: hydratedKitchens } = useKitchenFetch()
 
 const kitchensCollection = computed(() => collection.value ?? [])
