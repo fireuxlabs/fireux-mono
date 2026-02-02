@@ -1,14 +1,14 @@
-import { computed, type Ref } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts'
+import { computed, type Ref } from 'vue'
 import type { BlogPost } from '../../../../../../models/objects/blogPost.model'
+import { useBlogCollection } from './useBlogCollection'
 
 /**
  * Fetch helpers for blog posts (list + single).
  */
 export function useBlogFetch() {
-  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
-
-  const collection = firestoreFetchCollection<BlogPost>('blogs')
+  const { firestoreFetchDoc } = useFirestoreRead()
+  const { collection } = useBlogCollection()
 
   const items = computed(() => {
     const posts = collection.value

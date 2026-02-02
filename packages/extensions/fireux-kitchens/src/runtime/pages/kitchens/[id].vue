@@ -175,7 +175,7 @@ const details = computed(() => {
     { label: 'Source', value: formatValue(v.source) },
     { label: 'Coordinates', value: coords },
     { label: 'Website', value: formatValue(v.website) },
-    { label: 'Image URL', value: formatValue((v as any).image_url || v.place_image) },
+    { label: 'Image URL', value: formatValue((v as any).image_url) },
     { label: 'Image shade', value: formatValue(v.image_shade) },
     { label: 'Created', value: formatValue((v as any).created_at) },
     { label: 'Updated', value: formatValue((v as any).updated_at) },
@@ -196,9 +196,7 @@ const mapUrl = computed(() => {
 const loading = computed(() => !rawDoc && !!docId)
 
 const pageTitle = computed(() => kitchen.value?.name || 'Kitchen')
-const pageDescription = computed(
-  () => kitchen.value?.website || 'Saved kitchen details.'
-)
+const pageDescription = computed(() => kitchen.value?.website || 'Kitchen details.')
 
 useHead({
   title: computed(() => `${appName} | ${pageTitle.value}`),

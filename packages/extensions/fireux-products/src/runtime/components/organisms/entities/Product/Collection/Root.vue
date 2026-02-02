@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProductCollection } from '../../../../../composables/fireux/firestore/objects/product/fetch/useProductCollection';
+import { useProductFetch } from '../../../../../composables/fireux/firestore/objects/product/fetch/useProductFetch';
 
-const { products } = useProductCollection()
+const { products } = useProductFetch()
 </script>

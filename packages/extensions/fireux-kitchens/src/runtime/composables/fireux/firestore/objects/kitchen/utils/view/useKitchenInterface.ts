@@ -60,7 +60,7 @@ export function useKitchenInterface() {
       id,
       to: id ? `/kitchens/${encodeURIComponent(id)}` : '',
 
-      avatarUrl: safeString((kitchen as any)?.place_image),
+      avatarUrl: safeString((kitchen as any)?.image_url),
       title: shortName || name,
       subtitle: address,
 

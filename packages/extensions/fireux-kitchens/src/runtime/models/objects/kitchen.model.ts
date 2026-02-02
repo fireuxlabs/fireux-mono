@@ -45,7 +45,7 @@ export type Kitchen = KitchenOverlay & Partial<
     | 'formatted_address'
     | 'lat'
     | 'lng'
-    | 'place_image'
+    | 'image_url'
     | 'image_shade'
     | 'claimed_by'
     | 'source'

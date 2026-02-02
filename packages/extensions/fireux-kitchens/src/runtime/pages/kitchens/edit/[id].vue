@@ -117,11 +117,11 @@ const placeObject = computed(() => {
   if (!kitchen.value) return null
   const {
     id, name, short_name, short_address, formatted_address, lat, lng,
-    place_image, image_shade, claimed_by, source
+    image_url, image_shade, claimed_by, source
   } = kitchen.value
   return {
     id, name, short_name, short_address, formatted_address, lat, lng,
-    place_image, image_shade, claimed_by, source
+    image_url, image_shade, claimed_by, source
   }
 })
 

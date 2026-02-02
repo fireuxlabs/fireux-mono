@@ -14,7 +14,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useProductCollection } from '../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
+import { useProductFetch } from '../../composables/fireux/firestore/objects/product/fetch/useProductFetch'
 
 const { appName } = useFireUXConfig()
 
@@ -39,7 +39,7 @@ definePageMeta({
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { products } = useProductCollection()
+const { products } = useProductFetch()
 const collection = computed(() => products.value ?? [])
 </script>
 

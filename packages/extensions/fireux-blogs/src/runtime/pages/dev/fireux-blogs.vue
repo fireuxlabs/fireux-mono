@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useBlogFetch } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogFetch'
+import { useBlogCollection } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogCollection'
 import type { BlogPost } from '../../models/objects/blogPost.model'
 import { BlogPost as BlogPostModelRuntime } from '../../models/objects/blogPost.model'
 
@@ -63,10 +63,10 @@ definePageMeta({
 
 const blogPostModelRuntime = BlogPostModelRuntime
 
-const { items } = useBlogFetch()
+const { collection } = useBlogCollection()
 
 const blogsCollection = computed<Array<BlogPost & { id: string }>>(() =>
-  (items.value ?? []).map((post) => ({ ...post, id: post.slug }))
+  (collection.value ?? []).map((post) => ({ ...post, id: post.slug }))
 )
 
 const {
