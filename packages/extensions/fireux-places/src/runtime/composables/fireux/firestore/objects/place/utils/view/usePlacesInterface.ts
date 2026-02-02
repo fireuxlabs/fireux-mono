@@ -123,7 +123,11 @@ export function usePlacesInterface() {
 
   function map(place: BasePlace): PlaceCard.Card {
     const id = safeString(place.id).trim()
-    const name = safeString(place.name)
+    const rawName =
+      safeString(place.name) ||
+      safeString((place as any)?.title) ||
+      safeString((place as any)?.description)
+    const name = rawName
     const shortName = safeString((place as any)?.short_name)
     const address = safeString((place as any)?.formatted_address)
     const shortAddress = sanitizeShortAddress((place as any)?.short_address)

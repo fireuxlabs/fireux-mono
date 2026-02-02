@@ -11,7 +11,11 @@
           >
             Back
           </UButton>
+        </template>
+      </UPageHeader>
 
+      <UPageBody class="pagebody">
+        <div v-if="canEditAsAdmin || canEditAsClaimer" class="flex flex-wrap gap-2">
           <UButton
             size="xs"
             color="primary"
@@ -21,10 +25,7 @@
           >
             Edit
           </UButton>
-        </template>
-      </UPageHeader>
-
-      <UPageBody class="pagebody">
+        </div>
         <div v-if="loading" class="py-10 text-sm opacity-70">
           Loading place…
         </div>
@@ -91,6 +92,34 @@
             :data="place"
             :default-open="false"
           />
+          <DevJson
+            v-if="isDev && currentUser"
+            :title="'User (Current)'"
+            context="Place detail page · places/[id] · current user"
+            :data="currentUser"
+            :default-open="false"
+          />
+          <DevJson
+            v-if="isDev && claimedUser"
+            :title="'User (Claimed By)'"
+            context="Place detail page · places/[id] · claimed-by user"
+            :data="claimedUser"
+            :default-open="false"
+          />
+          <DevJson
+            v-if="isDev"
+            :title="'User (Computed)'"
+            context="Place detail page · places/[id] · useUserComputed outputs"
+            :data="userComputedDebug"
+            :default-open="false"
+          />
+          <DevJson
+            v-if="isDev"
+            :title="'Edit (Debug)'"
+            context="Place detail page · places/[id] · edit gating"
+            :data="editDebug"
+            :default-open="false"
+          />
         </div>
       </UPageBody>
     </UPage>
@@ -105,6 +134,7 @@
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
@@ -144,6 +174,25 @@ const claimedBy = computed(() => String(place.value?.claimed_by ?? '').trim())
 const { user: claimedUser } = useUserFetch(claimedBy)
 const { card: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
+const { currentUser, isAdmin, isLoading, isResolved, isInitialized, cta } = useUser()
+const canEditAsAdmin = computed(() => Boolean(isAdmin.value))
+const canEditAsClaimer = computed(() =>
+  Boolean(currentUser.value?.id && currentUser.value.id === claimedBy.value)
+)
+const editDebug = computed(() => ({
+  docId,
+  claimedBy: claimedBy.value,
+  currentUserId: currentUser.value?.id ?? null,
+  canEditAsAdmin: canEditAsAdmin.value,
+  canEditAsClaimer: canEditAsClaimer.value,
+}))
+const userComputedDebug = computed(() => ({
+  isLoading: isLoading.value,
+  isResolved: isResolved.value,
+  isInitialized: isInitialized.value,
+  isAdmin: isAdmin.value,
+  cta: cta.value,
+}))
 
 const formatValue = (value: unknown) => {
   if (value == null) return ''

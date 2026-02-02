@@ -131,9 +131,10 @@ export async function fetchGoogle(
         const secondary = p.structured_formatting?.secondary_text
         const desc = p.description
         const formattedAddress = secondary || desc || ''
+        const name = String(main || desc || '').trim()
         return {
           id,
-          name: main || desc || 'Unknown place',
+          name,
           short_name: '',
           formatted_address: formattedAddress,
           short_address: toShortAddress(formattedAddress),

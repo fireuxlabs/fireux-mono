@@ -12,13 +12,25 @@
             Back
           </UButton>
           <UButton
+            v-if="canEditAsAdmin"
             size="xs"
             color="primary"
             icon="i-lucide-pencil"
             :disabled="!docId"
             :to="editTo"
           >
-            Edit
+            You are admin of this app. You can edit this company
+          </UButton>
+          <UButton
+            v-if="canEditAsClaimer"
+            size="xs"
+            variant="soft"
+            color="primary"
+            icon="i-lucide-pencil"
+            :disabled="!docId"
+            :to="editTo"
+          >
+            You have claimed this company. You can edit it
           </UButton>
         </template>
       </UPageHeader>
@@ -155,13 +167,23 @@ const isDev = import.meta.dev
 const { profile } = useCompanyInterface()
 const companyProfile = computed(() => profile(company.value))
 
-const claimedBy = computed(() => String(company.value?.claimed_by ?? '').trim())
+const claimedBy = computed(() =>
+  String(
+    (company.value as any)?.claimed_by ??
+    (company.value as any)?.card?.claimedBy ??
+    ''
+  ).trim()
+)
 const { user: claimedUser } = useUserFetch(claimedBy)
 const { card: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 const { currentUser, isAdmin } = useUser()
 const isVerifiedUser = computed(() => Boolean((currentUser.value as any)?.verified || isAdmin.value))
 const showClaimButton = computed(() => !claimedBy.value && isVerifiedUser.value)
+const canEditAsAdmin = computed(() => Boolean(isAdmin.value))
+const canEditAsClaimer = computed(() =>
+  Boolean(currentUser.value?.id && currentUser.value.id === claimedBy.value)
+)
 const { claimPlace } = usePlaceClaim()
 const toast = useToastify()
 const isClaiming = ref(false)

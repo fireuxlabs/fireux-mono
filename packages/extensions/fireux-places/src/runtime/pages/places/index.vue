@@ -22,9 +22,9 @@ definePageMeta({
     label: 'Places',
     icon: 'i-lucide-map-pin',
     order: 25,
-    desktop: false,
-    mobile: false,
-    layouts: ['default'],
+    desktop: true,
+    mobile: true,
+    layouts: ['default', 'landing'],
   },
   name: 'PlacesIndexPage',
 })

@@ -11,6 +11,15 @@
           >
             Back to details
           </UButton>
+          <UButton
+            size="xs"
+            variant="ghost"
+            color="neutral"
+            icon="i-lucide-copy"
+            :disabled="!companyId"
+            aria-label="Copy company id"
+            @click="onCopyCompanyId"
+          />
         </template>
       </UPageHeader>
 
@@ -33,6 +42,8 @@
             v-bind="placePreview"
             :show-badges="false"
             :show-body="false"
+            :details="placePreviewDetails"
+            :map-url="placePreviewMapUrl"
           />
 
           <UAlert
@@ -54,7 +65,14 @@
             </template>
           </UAlert>
 
-          <OrganismsEntitiesCompanyEdit :company="company" />
+          <OrganismsEntitiesPlaceEdit v-if="canEdit" :place="placeObject" />
+          <UAlert
+            v-else
+            color="warning"
+            variant="soft"
+            title="Editing locked"
+            description="Only the claiming user or an admin can edit this place."
+          />
         </div>
       </UPageBody>
     </UPage>
@@ -68,6 +86,7 @@
 <script setup lang="ts">
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import { computed } from 'vue'
@@ -104,9 +123,75 @@ const canEdit = computed(() => {
 
 const { preview } = usePlacesInterface()
 const placePreview = computed(() => preview(company.value as any))
+const placePreviewDetails = computed(() => {
+  const v = company.value
+  if (!v) return []
+  const details = [
+    { label: 'Short name', value: (v as any).short_name ?? '' },
+    { label: 'Short address', value: (v as any).short_address ?? '' },
+    { label: 'Search term', value: (v as any).search_term ?? '' },
+    { label: 'Brand tagline', value: (v as any).brand_tagline ?? '' },
+    { label: 'About', value: (v as any).about ?? '' },
+    { label: 'Phone', value: (v as any).phone ?? '' },
+    { label: 'Email', value: (v as any).email ?? '' },
+    { label: 'Website', value: (v as any).website ?? '' },
+    { label: 'Price level', value: (v as any).price_level ?? '' },
+    { label: 'Rating', value: (v as any).rating ? String((v as any).rating) : '' },
+    { label: 'Rating count', value: (v as any).rating_count ? String((v as any).rating_count) : '' },
+    { label: 'Tags', value: Array.isArray((v as any).tags) ? (v as any).tags.filter(Boolean).join(', ') : '' },
+    { label: 'Types', value: Array.isArray((v as any).types) ? (v as any).types.filter(Boolean).join(', ') : '' },
+    { label: 'Hours', value: Array.isArray((v as any).hours_text) ? (v as any).hours_text.filter(Boolean).join(' · ') : '' },
+    { label: 'Claimed by', value: (v as any).claimed_by ?? '' },
+    { label: 'Verified', value: (v as any).verified ? 'Yes' : '' },
+  ]
+
+  return details.filter((item) => String(item.value ?? '').trim().length > 0)
+})
+const placePreviewMapUrl = computed(() => {
+  const v = company.value as any
+  if (!v) return ''
+  if (v.google_maps_url) return v.google_maps_url
+  return ''
+})
+
+const placeObject = computed(() => {
+  if (!company.value) return null
+  const {
+    id, name, short_name, short_address, formatted_address, lat, lng,
+    image_url, image_shade, claimed_by, source
+  } = company.value as any
+  return {
+    id, name, short_name, short_address, formatted_address, lat, lng,
+    image_url, image_shade, claimed_by, source
+  }
+})
 
 const pageTitle = computed(() => company.value?.name || 'Edit company')
 const pageSubtitle = computed(() =>
   companyId ? `Company: ${companyId}` : 'Edit a company'
 )
+
+const toast = useToastify()
+
+async function onCopyCompanyId() {
+  if (!companyId) return
+  try {
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(companyId)
+    } else if (typeof document !== 'undefined') {
+      const textarea = document.createElement('textarea')
+      textarea.value = companyId
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+    }
+    toast.success('Company ID copied')
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Failed to copy company ID: ${msg}`)
+  }
+}
 </script>

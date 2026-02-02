@@ -16,7 +16,7 @@
       <div class="flex items-start justify-between gap-2">
         <div class="min-w-0">
           <div class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
-            {{ title || 'Unknown place' }}
+            {{ displayTitle }}
           </div>
           <div v-if="subtitle" class="truncate text-xs text-dimmed">
             {{ subtitle }}
@@ -44,7 +44,7 @@ import type { PlaceImageShade } from '../../../../../models/objects/place.model'
 
 type Props = Pick<
   PlaceCard.Card,
-  'title' | 'subtitle' | 'imageUrl' | 'imageShade' | 'source'
+  'title' | 'subtitle' | 'imageUrl' | 'imageShade' | 'source' | 'name'
 > & {
   showSource?: boolean
 }
@@ -64,6 +64,8 @@ const avatarShadeClass = computed(() => {
   if (shade === 'dark') return 'fx-avatar-shade--dark'
   return ''
 })
+
+const displayTitle = computed(() => props.title || props.name || '')
 
 const sourceLabel = computed(() =>
   props.source === 'fireux'

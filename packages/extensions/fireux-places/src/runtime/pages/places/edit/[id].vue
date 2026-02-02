@@ -36,48 +36,43 @@
           description="We could not find this place. Return to the places list and try again."
         />
 
-        <LayoutsDashboardProfileEdit v-else class="panels-masonry">
-          <template #preview>
-            <PlaceCardsPreview
-              v-if="placePreview"
-              v-bind="placePreview"
-              :show-badges="false"
-              :show-body="false"
-              :details="placePreviewDetails"
-              :map-url="placePreviewMapUrl"
-            />
-            <UAlert
-              v-if="!canEdit"
-              color="warning"
-              variant="soft"
-              title="Claim required"
-              description="You can only edit places you’ve claimed. Ask an admin or claim this business first."
-              class="mt-4"
-            >
-              <template #actions>
-                <UButton
-                  size="xs"
-                  variant="soft"
-                  color="primary"
-                  :to="placeId ? `/places/${encodeURIComponent(placeId)}` : '/places'"
-                >
-                  Go to details
-                </UButton>
-              </template>
-            </UAlert>
-          </template>
+        <div v-else class="space-y-4">
+          <PlaceCardsPreview
+            v-if="placePreview"
+            v-bind="placePreview"
+            :show-badges="false"
+            :show-body="false"
+            :details="placePreviewDetails"
+            :map-url="placePreviewMapUrl"
+          />
+          <UAlert
+            v-if="!canEdit"
+            color="warning"
+            variant="soft"
+            title="Claim required"
+            description="You can only edit places you’ve claimed. Ask an admin or claim this business first."
+          >
+            <template #actions>
+              <UButton
+                size="xs"
+                variant="soft"
+                color="primary"
+                :to="placeId ? `/places/${encodeURIComponent(placeId)}` : '/places'"
+              >
+                Go to details
+              </UButton>
+            </template>
+          </UAlert>
 
-          <template #core>
-            <OrganismsEntitiesPlaceEdit v-if="canEdit" :place="place" />
-            <UAlert
-              v-else
-              color="warning"
-              variant="soft"
-              title="Editing locked"
-              description="Only the claiming user or an admin can edit this place."
-            />
-          </template>
-        </LayoutsDashboardProfileEdit>
+          <OrganismsEntitiesPlaceEdit v-if="canEdit" :place="place" />
+          <UAlert
+            v-else
+            color="warning"
+            variant="soft"
+            title="Editing locked"
+            description="Only the claiming user or an admin can edit this place."
+          />
+        </div>
 
         <DevJson
           v-if="showDebug && editableFields"
@@ -97,7 +92,6 @@
 
 <script setup lang="ts">
 import { useHead, useRoute } from '#imports'
-import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
