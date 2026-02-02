@@ -11,7 +11,7 @@ export function useAgentCollection() {
   } = useProfileCollection<AgentCore>(agentConfig)
 
   return {
-    globalAgents: globalProfiles,
-    localAgents: localProfiles,
+    coreAgents: globalProfiles,
+    appAgents: localProfiles,
   }
 }

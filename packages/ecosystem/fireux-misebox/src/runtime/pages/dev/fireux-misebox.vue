@@ -123,7 +123,10 @@ const filteredChefsDriftPayload = computed(() =>
     const drift = chefsDriftById.value.get(entry.id) ?? { missing: [], extra: [] }
     return {
       id: entry.id,
-      displayName: (entry as any)?.user?.display_name ?? '',
+      displayName:
+        (entry as any)?.display_name ??
+        (entry as any)?.handle ??
+        entry.id ?? '',
       drift,
     }
   })
@@ -162,7 +165,10 @@ const filteredSuppliersDriftPayload = computed(() =>
     const drift = suppliersDriftById.value.get(entry.id) ?? { missing: [], extra: [] }
     return {
       id: entry.id,
-      displayName: (entry as any)?.user?.display_name ?? '',
+      displayName:
+        (entry as any)?.display_name ??
+        (entry as any)?.handle ??
+        entry.id ?? '',
       drift,
     }
   })

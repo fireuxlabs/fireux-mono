@@ -39,10 +39,10 @@ const pageDescription =
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { globalAgents, localAgents } = useAgentFetch()
+const { coreAgents, appAgents } = useAgentFetch()
 const collection = computed(() => [
-  ...(localAgents?.value ?? []),
-  ...(globalAgents.value ?? []),
+  ...(appAgents?.value ?? []),
+  ...(coreAgents.value ?? []),
 ])
 
 </script>

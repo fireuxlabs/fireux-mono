@@ -10,20 +10,20 @@ export function useAgentFetch() {
   const { globalProfilesWithUser, localProfilesWithUser } =
     useProfileCollection<AgentCore>(agentConfig)
 
-  const globalProfilesHydrated = globalProfilesWithUser
-  const localProfilesHydrated = localProfilesWithUser
+  const coreAgentsHydrated = globalProfilesWithUser
+  const appAgentsHydrated = localProfilesWithUser
 
-  const globalAgents = computed(() => globalProfilesHydrated.value ?? [])
-  const localAgents = computed(() => localProfilesHydrated?.value ?? [])
+  const coreAgents = computed(() => coreAgentsHydrated.value ?? [])
+  const appAgents = computed(() => appAgentsHydrated?.value ?? [])
 
   const pending = computed(() =>
-    globalProfilesHydrated.value === undefined ||
-    localProfilesHydrated?.value === undefined
+    coreAgentsHydrated.value === undefined ||
+    appAgentsHydrated?.value === undefined
   )
 
   return {
-    globalAgents,
-    localAgents,
+    coreAgents,
+    appAgents,
     pending,
   }
 }

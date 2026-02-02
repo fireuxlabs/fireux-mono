@@ -267,7 +267,10 @@ const filteredProfessionalsDriftPayload = computed(() =>
       : { missing: ['id'], extra: [] }
     return {
       id: id || `missing-id-${index + 1}`,
-      displayName: (entry as any)?.user?.display_name ?? '',
+      displayName:
+        (entry as any)?.display_name ??
+        (entry as any)?.handle ??
+        id || '',
       drift,
     }
   })
@@ -294,18 +297,18 @@ const professionalsDriftCopyPayload = computed(() => ({
   missingSummary: professionalsMissingSummary.value,
 }))
 
-const { globalAgents, localAgents } = useAgentFetch()
-const { globalAgents: rawGlobalAgents, localAgents: rawLocalAgents } = useAgentCollection()
+const { coreAgents, appAgents } = useAgentFetch()
+const { coreAgents: rawCoreAgents, appAgents: rawAppAgents } = useAgentCollection()
 const { card: makeAgentCard } = useAgentInterface()
 
 const agentsCollection = computed(() => [
-  ...(rawLocalAgents?.value ?? []),
-  ...(rawGlobalAgents.value ?? []),
+  ...(rawAppAgents?.value ?? []),
+  ...(rawCoreAgents.value ?? []),
 ])
 
 const rawAgentsCollection = computed(() => [
-  ...(rawLocalAgents?.value ?? []),
-  ...(rawGlobalAgents.value ?? []),
+  ...(rawAppAgents?.value ?? []),
+  ...(rawCoreAgents.value ?? []),
 ])
 
 const {
@@ -326,10 +329,10 @@ const {
 
 const hydratedAgentById = computed(() => {
   const map = new Map<string, any>()
-  for (const entry of localAgents?.value ?? []) {
+  for (const entry of appAgents?.value ?? []) {
     if (entry?.id) map.set(String(entry.id), entry)
   }
-  for (const entry of globalAgents.value ?? []) {
+  for (const entry of coreAgents.value ?? []) {
     if (entry?.id) map.set(String(entry.id), entry)
   }
   return map
