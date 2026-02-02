@@ -11,7 +11,6 @@
         :subtitle="selectedCell.subtitle"
         :name="selectedCell.name"
         :image-url="selectedCell.imageUrl"
-        :show-source="true"
       />
       <PlaceCardsDropdownItemFireux
         v-else
@@ -21,7 +20,6 @@
         :image-url="selectedCell.imageUrl"
         :image-shade="selectedCell.imageShade"
         :source="selectedCell.source"
-        :show-source="true"
       />
 
       <div class="flex items-center justify-end gap-2">

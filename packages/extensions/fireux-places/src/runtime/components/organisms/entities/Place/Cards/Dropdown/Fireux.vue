@@ -40,7 +40,7 @@ const props = withDefaults(defineProps<Props>(), {
   shortName: '',
   imageUrl: '',
   imageShade: 'none',
-  showSource: true,
+  showSource: false,
 })
 
 const emit = defineEmits<{

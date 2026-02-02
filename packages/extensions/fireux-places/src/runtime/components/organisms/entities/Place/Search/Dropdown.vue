@@ -4,19 +4,19 @@
       <PlaceCardsDropdownGoogle
         v-if="cell.source === 'google'"
         :name="cell.name"
-        :address="cell.subtitle"
+        :address="getAddress(cell)"
         :image-url="cell.imageUrl"
+        :loading="isLogoLoading(cell)"
         @select="onSelect(cell)"
       />
       <PlaceCardsDropdownFireux
         v-else
         :name="cell.name"
         :short-name="cell.shortName"
-        :address="cell.subtitle"
+        :address="getAddress(cell)"
         :image-url="cell.imageUrl"
         :image-shade="cell.imageShade"
         :source="cell.source || 'fireux'"
-        :show-source="true"
         @select="onSelect(cell)"
       />
     </template>
@@ -37,6 +37,7 @@
 import { computed, watch } from 'vue'
 import type { PlaceSearchCell } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import { loadLogoForPlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
+import { toShortAddress } from '../../../../../composables/fireux/firestore/objects/place/utils/view/formatPlaceAddress'
 import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../models/objects/place.model'
 import PlaceCardsDropdownFireux from '../Cards/Dropdown/Fireux.vue'
 import PlaceCardsDropdownGoogle from '../Cards/Dropdown/Google.vue'
@@ -81,12 +82,13 @@ watch(
 )
 
 function toBasePlace(card: PlaceSearchCell): BasePlace {
+  const formatted = card.formattedAddress || ''
   return {
     id: card.id,
     name: card.name || '',
     short_name: card.shortName || '',
-    formatted_address: card.formattedAddress || card.subtitle || '',
-    short_address: card.shortAddress || '',
+    formatted_address: formatted,
+    short_address: toShortAddress(formatted),
     lat: (card as any).lat ?? 0,
     lng: (card as any).lng ?? 0,
     image_url: card.imageUrl || '',
@@ -98,6 +100,17 @@ function toBasePlace(card: PlaceSearchCell): BasePlace {
 
 function onSelect(card: PlaceSearchCell) {
   emit('select', toBasePlace(card))
+}
+
+function getAddress(card: PlaceSearchCell) {
+  if (card.source === 'google') {
+    return card.formattedAddress || ''
+  }
+  return card.shortAddress || toShortAddress(card.formattedAddress) || ''
+}
+
+function isLogoLoading(card: PlaceSearchCell) {
+  return logoLoading.has(card.id)
 }
 </script>
 

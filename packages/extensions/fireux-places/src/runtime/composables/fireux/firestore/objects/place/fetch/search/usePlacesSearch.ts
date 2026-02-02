@@ -35,7 +35,6 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
     const shortName = String((base as any)?.short_name ?? '').trim()
     const formattedAddress = String((base as any)?.formatted_address ?? '').trim()
     const shortAddress = String((base as any)?.short_address ?? '').trim()
-    const subtitle = shortAddress || formattedAddress
     const imageUrl = String((base as any)?.image_url ?? '').trim()
     const imageShade = (base as any)?.image_shade as PlaceImageShade | undefined
     const source = (base as any)?.source as PlaceSource | undefined
@@ -47,7 +46,6 @@ export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
       id,
       name,
       shortName,
-      subtitle,
       formattedAddress,
       shortAddress,
       imageUrl,
@@ -188,7 +186,6 @@ export type PlaceSearchCell = {
   id: string
   name: string
   shortName: string
-  subtitle: string
   formattedAddress: string
   shortAddress: string
   imageUrl: string
