@@ -56,7 +56,7 @@
         />
 
         <PlaceCardsDropdownSelected
-          v-if="item.place_draft"
+          v-if="showDraftCard(item)"
           :name="item.place_draft.name || ''"
           :address="item.place_draft.formatted_address || item.place_draft.short_address || ''"
           :image-url="item.place_draft.image_url || ''"
@@ -65,11 +65,9 @@
         />
 
         <PlaceCardsPill
-          v-if="item.place_id"
-          :place-id="item.place_id"
-          :link="false"
+          v-else-if="getPlaceCard(item.place_id)"
+          v-bind="getPlaceCard(item.place_id)"
           :show-badges="false"
-          class="pill"
         />
 
         <!-- Role -->
@@ -169,11 +167,16 @@
 
 <script setup lang="ts">
 import { CalendarDate, DateFormatter, getLocalTimeZone, type DateValue } from '@internationalized/date'
+import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { useFirestore } from 'vuefire'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
 import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToBasePlace'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceSave'
+import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/mutations/useCompanyCreate'
+import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/mutations/useKitchenCreate'
 import type { Place, PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
 import type { ExperienceItem } from '../../../../../models/profiles/Professional/supporting'
@@ -206,6 +209,11 @@ const effectivePlaceType = computed(() => {
   const raw = String(selectedCollection.value ?? '').trim()
   return raw || null
 })
+
+const db = useFirestore()
+const { ensurePlaceExists } = usePlaceSave()
+const { createKitchen } = useKitchenCreate()
+const { createCompany } = useCompanyCreate()
 
 const normalizePlaceId = (placeId?: string | null) => {
   const normalized = canonicalPlaceId(placeId ?? '')
@@ -273,10 +281,56 @@ function formatCollectionLabel(value: string) {
     .replace(/\b\w/g, (char) => char.toUpperCase())
 }
 
-function onPlaceSelected(item: ExperienceItem, payload: PlaceSelectedPayload) {
-  item.place_id = payload.placeId
+async function onPlaceSelected(item: ExperienceItem, payload: PlaceSelectedPayload) {
+  const normalizedId = normalizePlaceId(payload.placeId) || payload.placeId
+  item.place_id = normalizedId
   item.place_collection = selectedCollection.value || item.place_collection || ''
   ;(item as any).place_draft = payload.place
+
+  const ok = await ensurePlaceExists({ ...payload.place, id: normalizedId })
+  if (!ok) return
+
+  await ensureCollectionRecord(item.place_collection, normalizedId, payload.place)
+}
+
+async function ensureCollectionRecord(
+  collection: string,
+  placeId: string,
+  place: PlaceUpsertInput
+) {
+  if (collection === 'kitchens') {
+    const ref = doc(db, 'kitchens', placeId)
+    const snap = await getDoc(ref)
+    if (!snap.exists()) {
+      await createKitchen({
+        id: placeId,
+        website: '',
+        professionals_current: [],
+        professionals_alumni: [],
+        place,
+      })
+    }
+    return
+  }
+
+  if (collection === 'companies') {
+    const ref = doc(db, 'companies', placeId)
+    const snap = await getDoc(ref)
+    if (!snap.exists()) {
+      await createCompany({ id: placeId, place })
+    }
+  }
+}
+
+function showDraftCard(item: ExperienceItem) {
+  const draft = (item as any)?.place_draft as Partial<PlaceUpsertInput> | undefined
+  if (!draft) return false
+  return Boolean(
+    draft.name ||
+    draft.formatted_address ||
+    draft.short_address ||
+    draft.image_url
+  )
 }
 
 /** Dates */
@@ -284,11 +338,9 @@ const dateFormatter = new DateFormatter('en-US', { dateStyle: 'medium' })
 
 function monthToNumber(value: string | undefined) {
   if (!value) return null
-  const raw = String(value).trim().toLowerCase()
-  if (!raw) return null
-  const numeric = Number(raw)
-  if (Number.isFinite(numeric) && numeric >= 1 && numeric <= 12) return numeric
-  const short = raw.slice(0, 3)
+  const raw = String(value).trim()
+  if (raw.length !== 3) return null
+  const short = raw.toLowerCase()
   const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
   const idx = months.indexOf(short)
   return idx >= 0 ? idx + 1 : null

@@ -1,44 +1,13 @@
 <template>
-  <UCard class="profile-card">
-    <template #header>
-      <div class="profile-card__header">
-        <UAvatar :src="card.avatarUrl || undefined" :alt="card.displayName" size="md" />
-        <div class="profile-card__identity">
-          <div class="profile-card__name">{{ card.displayName || 'Professional' }}</div>
-          <div v-if="card.tagline" class="profile-card__tagline">{{ card.tagline }}</div>
-          <div v-if="badges.length" class="profile-card__badges">
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
-        </div>
-        </div>
-      </div>
-    </template>
+  <div class="space-y-3">
+    <OrganismsProfilesProfessionalCardsCell
+      v-bind="card"
+      :show-tagline="true"
+      :show-subtitle="true"
+    />
 
-    <div class="profile-card__section mt-6">
-      <h3 class="profile-card__section-title">Positions</h3>
-      <div v-if="positions.length">
-        <UBadge
-          v-for="position in positions"
-          :key="position"
-          variant="soft"
-          color="neutral"
-          size="xs"
-        >
-          {{ position }}
-        </UBadge>
-      </div>
-      <p v-else class="profile-card__empty form-text">No positions listed.</p>
-    </div>
-
-
-    <ClientOnly>
+    <UCard class="profile-card">
+      <ClientOnly>
       <UAccordion
         :items="accordionItems"
         :default-value="['summary', 'bio', 'relevant_experience']"
@@ -47,7 +16,7 @@
         size="sm"
       >
         <template #body="{ item }">
-          <div v-if="item.value === 'summary'">
+          <div v-if="item.value === 'summary'" class="-mt-2">
             <div v-if="prop">{{ prop }}</div>
             <p v-if="summary" class="form-text-body">{{ summary }}</p>
             <p v-else class="form-text-body">No summary listed.</p>
@@ -65,8 +34,12 @@
                 :key="`relevant-${entry.item.place_id}-${entry.item.role}`"
                 class="space-y-1"
               >
-                <div>{{ entry.item.role }}</div>
-                <div class="text-xs text-gray-500">{{ formatExperienceDates(entry.item) }}</div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <UBadge size="xs" variant="soft" color="neutral">
+                    {{ entry.item.role }}
+                  </UBadge>
+                  <span class="text-xs text-gray-500">{{ formatExperienceDates(entry.item) }}</span>
+                </div>
                 <div>
                   <PlaceCardsPill
                     v-if="entry.placeCard"
@@ -85,8 +58,12 @@
                 :key="`other-${entry.item.place_id}-${entry.item.role}`"
                 class="space-y-1"
               >
-                <div>{{ entry.item.role }}</div>
-                <div class="text-xs text-gray-500">{{ formatExperienceDates(entry.item) }}</div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <UBadge size="xs" variant="soft" color="neutral">
+                    {{ entry.item.role }}
+                  </UBadge>
+                  <span class="text-xs text-gray-500">{{ formatExperienceDates(entry.item) }}</span>
+                </div>
                 <div>
                     <PlaceCardsPill
                       :image-url="entry.imageUrl"
@@ -190,26 +167,27 @@
       </template>
     </ClientOnly>
 
-    <div class="mt-6">
-      <h3>Summary</h3>
-      <ul>
-        <li>Relevant Experience: {{ relevantExperience.length }}</li>
-        <li>Other Experience: {{ otherExperience.length }}</li>
-        <li>Languages: {{ languages.length }}</li>
-        <li>Certifications: {{ certifications.length }}</li>
-        <li>Education: {{ education.length }}</li>
-        <li>Volunteering: {{ volunteering.length }}</li>
-        <li>Projects: {{ projects.length }}</li>
-      </ul>
-      <div v-if="computedEntries.length">
-        <div v-for="field in computedEntries" :key="field.key">
-          <div>{{ field.label }}</div>
-          <pre v-if="isComplexValue(field.value)">{{ formatValue(field.value) }}</pre>
-          <div v-else>{{ formatValue(field.value) }}</div>
+      <div class="mt-6">
+        <h3>Summary</h3>
+        <ul>
+          <li>Relevant Experience: {{ relevantExperience.length }}</li>
+          <li>Other Experience: {{ otherExperience.length }}</li>
+          <li>Languages: {{ languages.length }}</li>
+          <li>Certifications: {{ certifications.length }}</li>
+          <li>Education: {{ education.length }}</li>
+          <li>Volunteering: {{ volunteering.length }}</li>
+          <li>Projects: {{ projects.length }}</li>
+        </ul>
+        <div v-if="computedEntries.length">
+          <div v-for="field in computedEntries" :key="field.key">
+            <div>{{ field.label }}</div>
+            <pre v-if="isComplexValue(field.value)">{{ formatValue(field.value) }}</pre>
+            <div v-else>{{ formatValue(field.value) }}</div>
+          </div>
         </div>
       </div>
-    </div>
-  </UCard>
+    </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -337,18 +315,25 @@ const computedEntries = computed(() => {
 })
 
 const accordionItems = computed(() => {
-  const items = [
-    { label: 'Summary', value: 'summary' },
-    { label: 'Bio', value: 'bio' },
-    { label: 'Relevant Experience', value: 'relevant_experience' },
-    { label: 'Languages', value: 'languages' },
-    { label: 'Certifications', value: 'certifications' },
-    { label: 'Education', value: 'education' },
-    { label: 'Volunteering', value: 'volunteering' },
-    { label: 'Projects', value: 'projects' },
-  ]
+  const hasSummary = Boolean(summary.value?.trim())
+  const hasBio = Boolean(bio.value?.trim())
+  const hasExperience = Boolean(relevantExperience.value.length || otherExperience.value.length)
+  const hasLanguages = Boolean(languages.value.length)
+  const hasCertifications = Boolean(certifications.value.length)
+  const hasEducation = Boolean(education.value.length)
+  const hasVolunteering = Boolean(volunteering.value.length)
+  const hasProjects = Boolean(projects.value.length)
 
-  return items
+  return [
+    hasSummary ? { label: 'Summary', value: 'summary' } : null,
+    hasBio ? { label: 'Bio', value: 'bio' } : null,
+    hasExperience ? { label: 'Relevant Experience', value: 'relevant_experience' } : null,
+    hasLanguages ? { label: 'Languages', value: 'languages' } : null,
+    hasCertifications ? { label: 'Certifications', value: 'certifications' } : null,
+    hasEducation ? { label: 'Education', value: 'education' } : null,
+    hasVolunteering ? { label: 'Volunteering', value: 'volunteering' } : null,
+    hasProjects ? { label: 'Projects', value: 'projects' } : null,
+  ].filter(Boolean)
 })
 
 const formatExperienceDates = (item: {

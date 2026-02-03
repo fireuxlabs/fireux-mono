@@ -1,6 +1,8 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { csv, safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
+import { computed } from 'vue'
 import { professionalConfig, type ProfessionalCore, type ProfessionalResolved } from '../../../../../../../models/profiles/Professional/Professional.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
@@ -29,10 +31,16 @@ export namespace ProfessionalCard {
 export function useProfessionalInterface(
   profile?: ProfileRefs<ProfessionalCore> | null
 ) {
+  const profileUser = profile
+    ? useUserFetch(computed(() => profile.coreProfile.value?.id ?? null))
+    : null
+  const hydratedUser = computed(() => profileUser?.user.value ?? null)
+
   const resolveUser = (
     target?: ProfessionalCore | ProfessionalResolved | null
   ) => {
     if (target && 'user' in target && target.user) return target.user as UserLike
+    if (!target || target === profile?.coreProfile.value) return hydratedUser.value as UserLike
     return null
   }
 

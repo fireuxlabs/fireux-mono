@@ -154,7 +154,10 @@ definePageMeta({
 })
 
 const jobModelRuntime = JobModelRuntime
-const professionalModelRuntime = ProfessionalCoreRuntime
+const professionalModelRuntime = {
+  ...ProfessionalCoreRuntime,
+  experience_month_format: 'enum:short',
+}
 const agentModelRuntime = AgentCoreRuntime
 
 const { appJobs } = useJobCollection()
@@ -233,9 +236,36 @@ const {
   runtimeModel: professionalModelRuntime,
   prepareForDrift: (entry) => {
     const { user, ...rest } = (entry as Record<string, unknown>) ?? {}
-    return rest
+    return {
+      ...rest,
+      experience_month_format: resolveExperienceMonthFormat(entry),
+    }
   },
 })
+
+const SHORT_MONTHS = new Set(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+
+const isShortMonth = (value?: unknown) => {
+  if (value == null) return true
+  const raw = String(value).trim()
+  if (!raw) return true
+  return SHORT_MONTHS.has(raw)
+}
+
+const resolveExperienceMonthFormat = (entry: unknown) => {
+  const doc = (entry as Record<string, unknown>) ?? {}
+  const lists = [doc.relevant_experience, doc.other_experience]
+  for (const list of lists) {
+    if (!Array.isArray(list)) continue
+    for (const item of list) {
+      const exp = item as Record<string, unknown>
+      if (!isShortMonth(exp?.from_month) || !isShortMonth(exp?.to_month)) {
+        return 'invalid'
+      }
+    }
+  }
+  return 'short'
+}
 
 const hydratedProfessionalById = computed(() => {
   const map = new Map<string, any>()

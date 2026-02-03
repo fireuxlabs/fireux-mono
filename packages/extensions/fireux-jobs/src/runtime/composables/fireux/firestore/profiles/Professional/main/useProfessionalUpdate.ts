@@ -3,6 +3,7 @@
 
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
+import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 import type {
   CertificationItem,
@@ -16,6 +17,16 @@ import type {
 
 type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
+type DateSortFields = {
+  ongoingKey?: string
+  fromYearKey?: string
+  fromMonthKey?: string
+  toYearKey?: string
+  toMonthKey?: string
+  startYearKey?: string
+  endYearKey?: string
+}
+
 const normalizePlaceId = (value?: unknown) => {
   const raw = typeof value === 'string' ? value.trim() : ''
   return raw.replace(/^places\//, '') // tolerate legacy "places/<id>"
@@ -23,6 +34,7 @@ const normalizePlaceId = (value?: unknown) => {
 
 export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | null) {
   const base = useProfileUpdateBase<ProfessionalCore>('professionals', profile)
+  const { uploadImage } = useImageStorage()
 
   const updateCoreProfile = base.updateCoreProfile
   const updateAppProfile = base.updateAppProfile
@@ -61,6 +73,68 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
     )
   }
 
+  const defaultDateFields: Required<DateSortFields> = {
+    ongoingKey: 'ongoing',
+    fromYearKey: 'from_year',
+    fromMonthKey: 'from_month',
+    toYearKey: 'to_year',
+    toMonthKey: 'to_month',
+    startYearKey: 'start_year',
+    endYearKey: 'end_year',
+  }
+
+  const monthToNumber = (value: unknown): number | null => {
+    if (value == null) return null
+    const raw = String(value).trim()
+    if (raw.length !== 3) return null
+    const short = raw.toLowerCase()
+    const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+    const idx = months.indexOf(short)
+    return idx >= 0 ? idx + 1 : null
+  }
+
+  const toNumber = (value: unknown): number | null => {
+    const raw = typeof value === 'number' ? value : Number(String(value ?? '').trim())
+    return Number.isFinite(raw) ? raw : null
+  }
+
+  const resolveDateParts = (item: any, fields: Required<DateSortFields>) => {
+    const ongoing = Boolean(item?.[fields.ongoingKey])
+    const fromYear = toNumber(item?.[fields.fromYearKey] ?? item?.[fields.startYearKey])
+    const fromMonth = monthToNumber(item?.[fields.fromMonthKey])
+    const toYear = toNumber(item?.[fields.toYearKey] ?? item?.[fields.endYearKey])
+    const toMonth = monthToNumber(item?.[fields.toMonthKey])
+
+    const startValue = fromYear ? (fromYear * 12 + (fromMonth ?? 1)) : null
+    const endValue = ongoing
+      ? Number.POSITIVE_INFINITY
+      : toYear
+        ? (toYear * 12 + (toMonth ?? 1))
+        : null
+
+    return { ongoing, startValue, endValue }
+  }
+
+  const sortItemsByDate = <T>(list: T[], fields?: DateSortFields): T[] => {
+    const merged = { ...defaultDateFields, ...(fields ?? {}) }
+    return list
+      .map((item, index) => ({ item, index, ...resolveDateParts(item, merged) }))
+      .sort((a, b) => {
+        if (a.ongoing !== b.ongoing) return a.ongoing ? -1 : 1
+
+        const endA = a.endValue ?? -Infinity
+        const endB = b.endValue ?? -Infinity
+        if (endA !== endB) return endB - endA
+
+        const startA = a.startValue ?? -Infinity
+        const startB = b.startValue ?? -Infinity
+        if (startA !== startB) return startB - startA
+
+        return a.index - b.index
+      })
+      .map((row) => row.item)
+  }
+
   // Canon: experience stores ONLY place_id (+ experience fields). No place snapshot fields.
   const sanitizeExperienceItems = <T extends { place_id: string; ongoing?: boolean }>(
     items: T[]
@@ -84,7 +158,8 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
     options: UpdateOptions = {}
   ): Promise<void> => {
     const sanitized = sanitizeExperienceItems<RelevantExperienceItem>(items)
-    await commitUpdate({ relevant_experience: sanitized }, options)
+    const sorted = sortItemsByDate(sanitized)
+    await commitUpdate({ relevant_experience: sorted }, options)
   }
 
   const setOtherExperience = async (
@@ -92,7 +167,8 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
     options: UpdateOptions = {}
   ): Promise<void> => {
     const sanitized = sanitizeExperienceItems<OtherExperienceItem>(items)
-    await commitUpdate({ other_experience: sanitized }, options)
+    const sorted = sortItemsByDate(sanitized)
+    await commitUpdate({ other_experience: sorted }, options)
   }
 
   const updateJobTitle = (value: string, options: UpdateOptions = {}) =>
@@ -106,6 +182,20 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
 
   const updateImage = (value: string, options: UpdateOptions = {}) =>
     updateStringField('image', value, options)
+
+  const cacheBust = (url: string) => {
+    const stamp = Date.now().toString(36)
+    return url.includes('?') ? `${url}&v=${stamp}` : `${url}?v=${stamp}`
+  }
+
+  const uploadProfileImage = async (source: File | Blob, options: UpdateOptions = {}) => {
+    const id = await base.resolveUid(options.id)
+    const path = `professionals/${id}/image/current`
+    const url = await uploadImage(path, source)
+    const next = cacheBust(url)
+    await commitUpdate({ image: next }, options)
+    return next
+  }
 
   const updatePositions = (value: string | string[], options: UpdateOptions = {}) =>
     updateStringArrayField('positions', value, options)
@@ -124,14 +214,23 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
   const updateCertifications = (items: CertificationItem[], options: UpdateOptions = {}) =>
     updateTypedArrayField('certifications', items ?? [], options)
 
-  const updateEducation = (items: EducationItem[], options: UpdateOptions = {}) =>
-    updateTypedArrayField('education', items ?? [], options)
+  const updateEducation = (items: EducationItem[], options: UpdateOptions = {}) => {
+    const sorted = sortItemsByDate(items ?? [], {
+      startYearKey: 'start_year',
+      endYearKey: 'end_year',
+    })
+    return updateTypedArrayField('education', sorted, options)
+  }
 
-  const updateVolunteering = (items: VolunteeringItem[], options: UpdateOptions = {}) =>
-    updateTypedArrayField('volunteering', items ?? [], options)
+  const updateVolunteering = (items: VolunteeringItem[], options: UpdateOptions = {}) => {
+    const sorted = sortItemsByDate(items ?? [])
+    return updateTypedArrayField('volunteering', sorted, options)
+  }
 
-  const updateProjects = (items: ProjectItem[], options: UpdateOptions = {}) =>
-    updateTypedArrayField('projects', items ?? [], options)
+  const updateProjects = (items: ProjectItem[], options: UpdateOptions = {}) => {
+    const sorted = sortItemsByDate(items ?? [])
+    return updateTypedArrayField('projects', sorted, options)
+  }
 
   return {
     commitUpdate,
@@ -145,6 +244,7 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
     updateSummary,
     updateBio,
     updateImage,
+    uploadProfileImage,
     updatePositions,
     updateLanguages,
     updateCertifications,

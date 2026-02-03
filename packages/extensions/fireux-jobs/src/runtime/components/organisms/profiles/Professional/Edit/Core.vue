@@ -38,13 +38,19 @@
             :update-function="handleBio"
           />
 
-          <MoleculesFormsFirestoreSimpleField
-            label="Professional Image URL"
-            :firebase-value="imageUrl"
-            placeholder="Optional: image URL for this professional profile"
-            :maxlength="400"
-            :update-function="handleImage"
-          />
+          <div class="profile-edit__field">
+            <div class="flex flex-col items-center gap-2">
+              <MoleculesFormsFirestoreImagePicker
+                :src="imageUrl"
+                :alt="headline || 'Professional'"
+                :initials="imageInitials"
+                :update-function="handleImageUpload"
+              />
+              <p v-if="imageUploading" class="text-xs text-gray-500">
+                Uploading image…
+              </p>
+            </div>
+          </div>
 
           <div class="profile-edit__field">
             <MoleculesFormsFirestoreArrayOfStrings
@@ -103,7 +109,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from '#imports'
+import { computed, ref } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useJobsConfig } from '../../../../../composables/fireux/app/useJobsConfig'
 import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalUpdate'
@@ -126,7 +132,7 @@ const {
   updateJobTitle,
   updateSummary,
   updateBio,
-  updateImage,
+  uploadProfileImage,
   updatePositions,
   setRelevantExperience,
   setOtherExperience,
@@ -147,6 +153,13 @@ const headline = computed(() => professional.value?.job_title ?? '')
 const summary = computed(() => professional.value?.summary ?? '')
 const bio = computed(() => professional.value?.bio ?? '')
 const imageUrl = computed(() => professional.value?.image ?? '')
+const imageInitials = computed(() => {
+  const text = String(headline.value ?? '').trim()
+  if (!text) return 'P'
+  const parts = text.split(/\s+/).filter(Boolean)
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase()
+})
 const positions = computed(() => professional.value?.positions ?? [])
 
 const languages = computed(() => professional.value?.languages ?? [])
@@ -191,12 +204,23 @@ const handleBio = async (value: string) =>
     'Failed to update bio'
   )
 
-const handleImage = async (value: string) =>
-  wrap(
-    () => updateImage(value, { id: professional.value?.id ?? null }),
-    'Image updated',
-    'Failed to update image'
-  )
+const imageUploading = ref(false)
+const handleImageUpload = async (file: File) => {
+  imageUploading.value = true
+  try {
+    await uploadProfileImage(file, { id: professional.value?.id ?? null })
+  } catch (error) {
+    const description = error instanceof Error ? error.message : 'Please try again.'
+    toast.add({
+      title: 'Failed to update image',
+      description,
+      color: 'amber',
+    })
+    throw error
+  } finally {
+    imageUploading.value = false
+  }
+}
 
 const handlePositions = async (value: string[]) =>
   wrap(

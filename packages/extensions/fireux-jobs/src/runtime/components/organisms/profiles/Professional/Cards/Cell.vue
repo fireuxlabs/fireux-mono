@@ -6,24 +6,29 @@
     @click="onClick"
   >
     <div class="card__media">
-      <UAvatarGroup v-if="secondaryAvatarUrl" size="sm">
-        <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
-        <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName" size="2xs" />
-      </UAvatarGroup>
-      <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UUser
+        :name="displayName"
+        :description="showSubtitle ? (title || undefined) : undefined"
+        size="sm"
+      >
+        <template #avatar>
+          <UAvatarGroup v-if="avatarUrl && secondaryAvatarUrl" size="xs">
+            <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="xs" />
+            <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName" size="2xs" />
+          </UAvatarGroup>
+          <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName" size="xs" />
+        </template>
+      </UUser>
 
       <div class="card__content card__stack">
-        <div class="card__header">
-          <div class="min-w-0">
-            <div class="card__title">{{ displayName }}</div>
-            <div v-if="showSubtitle && title" class="card__subtitle">
-              {{ title }}
-            </div>
-          </div>
+        <div v-if="showTagline && (prop || bioShort)" class="card__tagline">
+          <span>{{ prop || bioShort }}</span>
         </div>
-
-        <div v-if="showTagline" class="card__tagline">
-          <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
+        <div v-if="specialtiesCsv" class="text-xs text-muted">
+          Specialties · {{ specialtiesCsv }}
+        </div>
+        <div v-if="locationsCsv" class="text-xs text-muted">
+          Locations · {{ locationsCsv }}
         </div>
       </div>
     </div>
@@ -35,7 +40,7 @@ import type { ProfessionalCard } from '../../../../../composables/fireux/firesto
 
 type Props = Pick<
   ProfessionalCard.Card,
-  'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'bioShort'
+  'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'bioShort' | 'specialtiesCsv' | 'locationsCsv'
 > & {
   prop?: string
   showSubtitle?: boolean
