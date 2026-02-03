@@ -109,13 +109,13 @@ import { useJobsConfig } from '../../../../../composables/fireux/app/useJobsConf
 import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalUpdate'
 import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model'
 import type {
-    CertificationItem,
-    EducationItem,
-    LanguageProficiency,
-    OtherExperienceItem,
-    ProjectItem,
-    RelevantExperienceItem,
-    VolunteeringItem,
+  CertificationItem,
+  EducationItem,
+  LanguageProficiency,
+  OtherExperienceItem,
+  ProjectItem,
+  RelevantExperienceItem,
+  VolunteeringItem,
 } from '../../../../../models/profiles/Professional/supporting'
 
 const props = defineProps<{ professional: ProfessionalCore | null }>()
@@ -139,21 +139,7 @@ const {
 
 const { placeCollections } = useJobsConfig()
 const relevantPlaceType = computed(() => placeCollections[0] ?? null)
-const relevantExperienceLabel = computed(() => {
-  const collections = Array.isArray(placeCollections) ? placeCollections : []
-  if (!collections.length) return 'Relevant Experience'
-
-  const labels = collections.map((value) => {
-    const collection = String(value ?? '').trim()
-    if (!collection) return ''
-    const base = collection.endsWith('s') ? collection.slice(0, -1) : collection
-    return base.charAt(0).toUpperCase() + base.slice(1)
-  }).filter(Boolean)
-
-  if (!labels.length) return 'Relevant Experience'
-  const prefix = labels.length === 1 ? labels[0] : labels.join(' / ')
-  return `${prefix} Experience`
-})
+const relevantExperienceLabel = computed(() => 'Relevant Experience')
 
 const professional = computed(() => props.professional ?? null)
 

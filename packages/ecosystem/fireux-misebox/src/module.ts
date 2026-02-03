@@ -1,10 +1,12 @@
-import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
-import { configurePages } from 'fireux-core/config/module/pages-config'
-import { existsSync } from 'fs'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
+import { configureImports } from './config/module/imports-config'
+import { configureModulePages } from './config/module/pages-config'
+import { configurePublicAssets } from './config/module/public-assets-config'
+import { configureRuntimeConfig } from './config/module/runtime-config'
 
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   meta: {
@@ -24,86 +26,22 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       firebase: ecosystemConfig.firebase,
     })
 
-    const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
-    const pub = (rc.public ||= {}) as Record<string, any>
-    const fireux = (pub.fireux ||= {}) as Record<string, any>
-    const currentPlaces = fireux.places
-    const currentJobs = fireux.jobs
-    const miseboxPlacesDefaults = {
-      enabled: true,
-      types: ['kitchen', 'company'],
-      googleAutocompleteTypeFilters: {
-        kitchen: [
-          'restaurant',
-          'cafe',
-          'bar',
-          'bakery',
-          'meal_delivery',
-          'meal_takeaway',
-          'food',
-          'food_truck',
-        ],
-      },
-    }
-    const getMiseboxJobsDefaults = () => ({
-      enabled: true,
-      placeCollections: ['kitchens', 'companies'],
-    })
-
-    fireux.places = currentPlaces && typeof currentPlaces === 'object'
-      ? { ...miseboxPlacesDefaults, ...currentPlaces }
-      : { ...miseboxPlacesDefaults }
-
-    fireux.jobs = currentJobs && typeof currentJobs === 'object'
-      ? { ...getMiseboxJobsDefaults(), ...currentJobs }
-      : { ...getMiseboxJobsDefaults() }
+    configureRuntimeConfig(nuxt)
 
     // Layer runtime pages/layouts/middleware
-    configurePages(resolver, nuxt)
-
-    nuxt.hook('pages:extend', (pages: any[]) => {
-      for (let i = pages.length - 1; i >= 0; i -= 1) {
-        const page = pages[i]
-        const file = typeof page?.file === 'string' ? page.file : ''
-        if (file.includes('/fireux-misebox/src/runtime/pages/companies')) {
-          pages.splice(i, 1)
-        }
-      }
-    })
+    configureModulePages(resolver, nuxt)
 
     configureComponents(resolver, nuxt)
 
-    // Auto-import composables and models if present
-    const composablesDir = resolver.resolve('./runtime/composables')
-    if (existsSync(composablesDir)) {
-      addImportsDir(composablesDir)
-    }
+    // Auto-import composables if present
+    configureImports(resolver, nuxt)
 
     // NOTE: Do NOT auto-import models.
     // - It creates collisions for common type names (e.g. Pill/Cell/Profile)
     // - Models should be imported explicitly by consumers
 
     // Serve runtime public assets via Nitro
-    const publicDir = resolver.resolve('./runtime/public')
-    if (existsSync(publicDir)) {
-      const nitro = ((nuxt.options as any).nitro ||= {}) as Record<string, any>
-      const publicAssets = (nitro.publicAssets ||= []) as Array<
-        string | { baseURL?: string; dir: string; maxAge?: number }
-      >
-
-      const already = publicAssets.some((entry) =>
-        typeof entry === 'string' ? entry === publicDir : entry?.dir === publicDir
-      )
-      if (!already) publicAssets.push({ dir: publicDir })
-    }
-
-    // Dev tooling: expose ecosystem public dirs for /dev/images scanning
-    const fireuxDev = (rc.fireuxDev ||= {}) as Record<string, any>
-    const ecoDirs = (fireuxDev.ecosystemPublicDirs ||= []) as Array<any>
-    const alreadyDev = ecoDirs.some((e) => e?.dir === publicDir)
-    if (!alreadyDev) {
-      ecoDirs.push({ key: 'misebox', title: 'Misebox ecosystem images', dir: publicDir })
-    }
+    configurePublicAssets(resolver, nuxt)
 
     nuxt.hook('ready', () => {
       if (process.env.FIREUX_DEBUG_LAYERS) {

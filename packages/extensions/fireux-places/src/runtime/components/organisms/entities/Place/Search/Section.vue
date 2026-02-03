@@ -15,11 +15,18 @@
       />
 
       <div class="flex items-center justify-end gap-2">
-        <UButton size="sm" color="neutral" variant="soft" @click="clear">
+        <UButton
+          v-if="showClearButton"
+          size="sm"
+          color="neutral"
+          variant="soft"
+          @click="clear"
+        >
           Clear
         </UButton>
 
         <UButton
+          v-if="showConfirmButton"
           size="sm"
           color="primary"
           variant="soft"
@@ -35,7 +42,7 @@
     <PlaceSearchDropdown
       v-else-if="results.length"
       :cells="results"
-      @select="selectPlace"
+      @select="handleSelectPlace"
     />
 
     <p v-if="isSearching" class="text-xs text-muted">Searching…</p>
@@ -43,20 +50,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import {
-    loadLogoForPlace,
-    sanitizeLogoAvatar,
-    usePlaceLogoState,
+  loadLogoForPlace,
+  sanitizeLogoAvatar,
+  usePlaceLogoState,
 } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type {
-    BasePlace,
-    PlaceImageShade,
-    PlaceSource,
-    PlaceUpsertInput,
+  BasePlace,
+  PlaceImageShade,
+  PlaceSource,
+  PlaceUpsertInput,
 } from '../../../../../models/objects/place.model'
 import PlaceCardsDropdownSelected from '../Cards/Dropdown/Selected.vue'
 
@@ -64,15 +71,21 @@ const props = withDefaults(
   defineProps<{
     type?: string | null
     placeholder?: string | null
+    showConfirmButton?: boolean
+    showClearButton?: boolean
   }>(),
-  { type: null, placeholder: null }
+  { type: null, placeholder: null, showConfirmButton: true, showClearButton: true }
 )
 
 const placeholder = computed(() => props.placeholder || undefined)
 
 const emit = defineEmits<{
+  (e: 'selected', payload: { placeId: string; place: PlaceUpsertInput }): void
   (e: 'confirmed', payload: { placeId: string; place: PlaceUpsertInput }): void
 }>()
+
+const showConfirmButton = computed(() => props.showConfirmButton ?? true)
+const showClearButton = computed(() => props.showClearButton ?? true)
 
 const { query, results, selected, isSearching, select: selectPlace, clear } =
   usePlacesSearch({
@@ -117,6 +130,19 @@ const selectedImageUrl = computed(
 
 const { ensurePlaceExists } = usePlaceSave({ type: props.type })
 const confirming = ref(false)
+
+function handleSelectPlace(place: BasePlace) {
+  selectPlace(place)
+
+  nextTick(() => {
+    const selectedDraft = selectedPlace.value
+    const placeId = String((selectedDraft as any)?.id ?? (selectedDraft as any)?.place_id ?? '').trim()
+    if (!selectedDraft || !placeId) return
+
+    const draft = toDraft(selectedDraft, placeId, selectedLogo.value)
+    emit('selected', { placeId, place: draft })
+  })
+}
 
 if (import.meta.dev && props.type === 'kitchen') {
   watch(query, (value) => {
