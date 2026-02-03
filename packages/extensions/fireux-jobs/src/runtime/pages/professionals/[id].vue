@@ -123,7 +123,7 @@ useHead({
 const pageTitle = computed(() => displayName.value || 'Professional Profile')
 const pageDescription = computed(() =>
   displayName.value
-    ? `Inspect ${displayName.value} and their positions.`
+    ? `Inspect ${displayName.value}.`
     : 'Inspect the selected professional profile.'
 )
 

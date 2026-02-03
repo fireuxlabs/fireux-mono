@@ -109,7 +109,7 @@ const displayName = computed(() => (agentProfile.value ? resolveName(agentProfil
 const pageTitle = computed(() => displayName.value ?? 'Agent Profile')
 const pageDescription = computed(() =>
   displayName.value
-    ? `Inspect ${displayName.value} and their positions.`
+    ? `Inspect ${displayName.value}.`
     : 'Inspect the selected agent profile.'
 )
 
