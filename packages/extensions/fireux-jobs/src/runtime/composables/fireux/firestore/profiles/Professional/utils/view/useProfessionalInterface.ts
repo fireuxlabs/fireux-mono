@@ -23,7 +23,6 @@ export namespace ProfessionalCard {
 
     // Summary fields for list views
     bioShort: string
-    specialtiesCsv: string
     locationsCsv: string
   }
 }
@@ -54,6 +53,7 @@ export function useProfessionalInterface(
       ? userAvatar
       : ''
     const positions = Array.isArray(p.positions) ? p.positions : []
+    const positionsCsv = csv(positions ?? [])
 
     return {
       id,
@@ -64,10 +64,9 @@ export function useProfessionalInterface(
 
       // Canonical: professional pills are user-hydrated; no profile-title fallback for display name.
       displayName: safeString(u?.display_name),
-      title: headline,
+      title: positionsCsv || headline,
 
       bioShort: summary,
-      specialtiesCsv: csv(positions ?? []),
       locationsCsv: '',
     }
   }

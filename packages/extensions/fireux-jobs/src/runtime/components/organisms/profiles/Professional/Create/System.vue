@@ -8,8 +8,8 @@
             <h2>Create your profile</h2>
           </div>
           <p class="lede">
-            Set up a professional profile with your headline, specialties, and
-            experience. You can edit everything right after creating it.
+            Set up a professional profile with your headline and experience.
+            You can edit everything right after creating it.
           </p>
         </div>
       </template>

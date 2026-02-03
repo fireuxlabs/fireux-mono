@@ -68,7 +68,7 @@
           <ul class="space-y-2 text-sm text-dimmed">
             <li class="flex items-center gap-2">
               <UIcon name="i-lucide-check-circle" class="text-primary" />
-              Add a summary that explains your specialties.
+              Add a summary that explains your focus.
             </li>
             <li class="flex items-center gap-2">
               <UIcon name="i-lucide-check-circle" class="text-primary" />

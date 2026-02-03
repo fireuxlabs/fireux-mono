@@ -27,10 +27,6 @@
             {{ prop || bioShort }}
           </div>
 
-          <div v-if="specialtiesCsv" class="text-dimmed">
-            {{ specialtiesCsv }}
-          </div>
-
           <div v-if="locationsCsv" class="text-dimmed">
             {{ locationsCsv }}
           </div>
@@ -51,7 +47,6 @@ type Props = Pick<
   | 'displayName'
   | 'title'
   | 'bioShort'
-  | 'specialtiesCsv'
   | 'locationsCsv'
 > & {
   prop?: string

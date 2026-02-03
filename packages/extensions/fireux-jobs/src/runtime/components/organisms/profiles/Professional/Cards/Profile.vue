@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3">
+  <div class="mx-auto w-full max-w-3xl space-y-3">
     <OrganismsProfilesProfessionalCardsCell
       v-bind="card"
       :show-tagline="true"
@@ -34,13 +34,15 @@
                 :key="`relevant-${entry.item.place_id}-${entry.item.role}`"
                 class="space-y-1"
               >
-                <div class="flex flex-wrap items-center gap-2">
-                  <UBadge size="xs" variant="soft" color="neutral">
-                    {{ entry.item.role }}
-                  </UBadge>
-                  <span class="text-xs text-gray-500">{{ formatExperienceDates(entry.item) }}</span>
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <span class="text-sm font-semibold text-gray-100">
+                    {{ entry.item.role || 'Role' }}
+                  </span>
+                  <span class="ml-auto text-xs text-gray-300">
+                    {{ formatExperienceDates(entry.item) }}
+                  </span>
                 </div>
-                <div>
+                <div class="mt-2">
                   <PlaceCardsPill
                     v-if="entry.placeCard"
                     v-bind="entry.placeCard"
@@ -167,25 +169,6 @@
       </template>
     </ClientOnly>
 
-      <div class="mt-6">
-        <h3>Summary</h3>
-        <ul>
-          <li>Relevant Experience: {{ relevantExperience.length }}</li>
-          <li>Other Experience: {{ otherExperience.length }}</li>
-          <li>Languages: {{ languages.length }}</li>
-          <li>Certifications: {{ certifications.length }}</li>
-          <li>Education: {{ education.length }}</li>
-          <li>Volunteering: {{ volunteering.length }}</li>
-          <li>Projects: {{ projects.length }}</li>
-        </ul>
-        <div v-if="computedEntries.length">
-          <div v-for="field in computedEntries" :key="field.key">
-            <div>{{ field.label }}</div>
-            <pre v-if="isComplexValue(field.value)">{{ formatValue(field.value) }}</pre>
-            <div v-else>{{ formatValue(field.value) }}</div>
-          </div>
-        </div>
-      </div>
     </UCard>
   </div>
 </template>
@@ -220,7 +203,6 @@ const profile = computed(() => props.profile ?? null)
 const badges = computed(() => card.badges ?? [])
 
 const positions = computed(() => profile.value?.positions ?? [])
-const specialties = computed(() => profile.value?.specialties ?? [])
 const certifications = computed(() => profile.value?.certifications ?? [])
 const languages = computed(() => profile.value?.languages ?? [])
 const education = computed(() => profile.value?.education ?? [])

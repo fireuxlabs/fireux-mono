@@ -20,14 +20,12 @@ export function useProfessionalComputed(
       experienceCount:
         (p?.relevant_experience?.length ?? 0) +
         (p?.other_experience?.length ?? 0),
-      specialtiesCount: p?.specialties?.length ?? 0,
-      locationsCount: p?.locations?.length ?? 0,
       languagesCount: p?.languages?.length ?? 0,
       certificationsCount: p?.certifications?.length ?? 0,
       educationCount: p?.education?.length ?? 0,
       volunteeringCount: p?.volunteering?.length ?? 0,
       projectsCount: p?.projects?.length ?? 0,
-      hasBio: Boolean((p?.bio_short ?? '').trim() || (p?.bio_long ?? '').trim()),
+      hasBio: Boolean((p?.bio ?? '').trim()),
     }
   })
 

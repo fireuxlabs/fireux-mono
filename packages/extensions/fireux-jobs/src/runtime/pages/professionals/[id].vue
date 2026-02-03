@@ -2,12 +2,6 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody>
-      <div v-if="isAdminUser" class="mb-3 text-xs text-gray-500">
-        You are viewing as admin.
-      </div>
-      <div v-if="isDev" class="mb-3 text-[10px] text-gray-500">
-        admin={{ isAdminUser }} profile={{ Boolean(professionalProfile) }}
-      </div>
       <div class="mb-4 flex flex-wrap gap-2">
         <UButton
           v-if="professionalProfile && isAdminUser && professionalId"
@@ -121,11 +115,11 @@ useHead({
 })
 
 const pageTitle = computed(() => displayName.value || 'Professional Profile')
-const pageDescription = computed(() =>
-  displayName.value
-    ? `Inspect ${displayName.value}.`
-    : 'Inspect the selected professional profile.'
-)
+const pageDescription = computed(() => {
+  const positions = professionalProfile.value?.positions ?? []
+  const label = positions.filter(Boolean).join(' · ')
+  return label || 'Professional profile.'
+})
 
 const isSelf = computed(() =>
   Boolean(professionalId.value && sessionUser.value?.id === professionalId.value)

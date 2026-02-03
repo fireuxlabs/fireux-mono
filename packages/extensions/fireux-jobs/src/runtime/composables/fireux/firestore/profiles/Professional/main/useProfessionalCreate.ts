@@ -33,11 +33,11 @@ export function useProfessionalCreate() {
     if (!coreSnap.exists()) {
       const payload = {
         id: uid,
-        title: '',
-        bio_short: '',
-        bio_long: '',
-        specialties: [],
-        locations: [],
+        job_title: '',
+        summary: '',
+        bio: '',
+        image: '',
+        positions: [],
         relevant_experience: [],
         other_experience: [],
         languages: [],

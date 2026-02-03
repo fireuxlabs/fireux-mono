@@ -21,12 +21,6 @@
       </UUser>
 
       <div class="card__content card__stack">
-        <div v-if="showTagline && (prop || bioShort)" class="card__tagline">
-          <span>{{ prop || bioShort }}</span>
-        </div>
-        <div v-if="specialtiesCsv" class="text-xs text-muted">
-          Specialties · {{ specialtiesCsv }}
-        </div>
         <div v-if="locationsCsv" class="text-xs text-muted">
           Locations · {{ locationsCsv }}
         </div>
@@ -40,7 +34,7 @@ import type { ProfessionalCard } from '../../../../../composables/fireux/firesto
 
 type Props = Pick<
   ProfessionalCard.Card,
-  'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'bioShort' | 'specialtiesCsv' | 'locationsCsv'
+  'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'locationsCsv'
 > & {
   prop?: string
   showSubtitle?: boolean
