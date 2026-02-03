@@ -26,9 +26,7 @@ const router = useRouter()
 const { card } = useProfessional()
 const { appName } = useFireUXConfig()
 
-
-const forceCreate = true
-const hasProfile = computed(() => !forceCreate && Boolean(card()))
+const hasProfile = computed(() => Boolean(card()))
 const ctaDescription = computed(() =>
   hasProfile.value
     ? `Your professional profile is live on ${appName}.`

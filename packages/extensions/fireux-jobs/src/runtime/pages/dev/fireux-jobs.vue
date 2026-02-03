@@ -212,8 +212,8 @@ const { coreProfessionals: rawCoreProfessionals, appProfessionals: rawAppProfess
 const { card: makeProfessionalCard } = useProfessional()
 
 const professionalsCollection = computed(() => [
-  ...(rawAppProfessionals?.value ?? []),
-  ...(rawCoreProfessionals.value ?? []),
+  ...(appProfessionals?.value ?? []),
+  ...(coreProfessionals.value ?? []),
 ])
 
 const rawProfessionalsCollection = computed(() => [
@@ -265,9 +265,13 @@ const filteredProfessionalsDriftPayload = computed(() =>
     const drift = id
       ? professionalsDriftById.value.get(id) ?? { missing: [], extra: [] }
       : { missing: ['id'], extra: [] }
+    const userDisplayName = (entry as any)?.user?.display_name
+    const userHandle = (entry as any)?.user?.handle
     return {
       id: id || `missing-id-${index + 1}`,
       displayName:
+        userDisplayName ??
+        userHandle ??
         (entry as any)?.display_name ??
         (entry as any)?.handle ??
         id ?? '',

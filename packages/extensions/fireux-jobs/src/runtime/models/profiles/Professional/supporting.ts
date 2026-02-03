@@ -31,6 +31,7 @@ export interface ExperienceBase {
  */
 export interface ExperienceItem extends ExperienceBase {
   place_id: string
+  place_collection: string
 }
 
 /** Separate aliases for UI sections (same shape). */

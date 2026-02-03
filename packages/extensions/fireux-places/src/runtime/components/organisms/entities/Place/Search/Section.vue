@@ -5,21 +5,13 @@
     <PlaceSearchBar v-model="query" :placeholder="placeholder" />
 
     <UCard v-if="selectedCell" :ui="{ body: 'space-y-3' }">
-      <PlaceCardsDropdownItemGoogle
-        v-if="selectedCell.source === 'google'"
-        :title="selectedCell.title"
-        :subtitle="selectedCell.subtitle"
+      <PlaceCardsDropdownSelected
         :name="selectedCell.name"
-        :image-url="selectedCell.imageUrl"
-      />
-      <PlaceCardsDropdownItemFireux
-        v-else
-        :title="selectedCell.title"
-        :subtitle="selectedCell.subtitle"
-        :name="selectedCell.name"
-        :image-url="selectedCell.imageUrl"
+        :address="selectedCell.subtitle"
+        :image-url="selectedImageUrl"
         :image-shade="selectedCell.imageShade"
         :source="selectedCell.source"
+        :loading="selectedLogoLoading"
       />
 
       <div class="flex items-center justify-end gap-2">
@@ -55,19 +47,18 @@ import { computed, ref, watch } from 'vue'
 import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
 import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import {
-  loadLogoForPlace,
-  sanitizeLogoAvatar,
-  usePlaceLogoState,
+    loadLogoForPlace,
+    sanitizeLogoAvatar,
+    usePlaceLogoState,
 } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type {
-  BasePlace,
-  PlaceImageShade,
-  PlaceSource,
-  PlaceUpsertInput,
+    BasePlace,
+    PlaceImageShade,
+    PlaceSource,
+    PlaceUpsertInput,
 } from '../../../../../models/objects/place.model'
-import PlaceCardsDropdownItemFireux from '../Cards/Dropdown/Fireux.vue'
-import PlaceCardsDropdownItemGoogle from '../Cards/Dropdown/Google.vue'
+import PlaceCardsDropdownSelected from '../Cards/Dropdown/Selected.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -116,8 +107,12 @@ const selectedCell = computed(() =>
 const selectedLogoTarget = computed(
   () => selectedCell.value ?? selectedPlace.value ?? null
 )
-const { avatar: selectedLogo, hydrate: hydrateLogo } = usePlaceLogoState(
+const { avatar: selectedLogo, hydrate: hydrateLogo, isLoading: selectedLogoLoading } = usePlaceLogoState(
   selectedLogoTarget
+)
+
+const selectedImageUrl = computed(
+  () => selectedLogo.value || selectedCell.value?.imageUrl || ''
 )
 
 const { ensurePlaceExists } = usePlaceSave({ type: props.type })

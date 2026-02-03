@@ -1,13 +1,48 @@
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader :title="pageTitle" :description="pageDescription">
+      <template #ctas>
+        <UButton
+          v-if="agentProfile && isAdminUser && agentId"
+          icon="i-lucide-shield"
+          size="xs"
+          color="primary"
+          variant="solid"
+          :to="`/agents/admin/${agentId}`"
+        >
+          Admin
+        </UButton>
+        <UButton
+          v-if="agentProfile && isSelf"
+          icon="i-lucide-pencil"
+          size="xs"
+          color="neutral"
+          variant="soft"
+          @click="navigateTo('/dashboard/agent/profile')"
+        >
+          Edit
+        </UButton>
+      </template>
+    </UPageHeader>
     <UPageBody class="pagebody">
       <div v-if="pending" class="py-10 text-sm opacity-70">Loading profile…</div>
 
       <div v-else-if="!agentProfile" class="space-y-2">
-        <h1 class="text-lg font-semibold">Profile Not Found</h1>
-        <p>The profile you're looking for doesn't exist.</p>
-        <NuxtLink to="/agents" class="text-primary hover:underline">← Back</NuxtLink>
+        <MoleculesProfilesAdminCreateCard
+          v-if="isAdminUser"
+          title="Agent profile not available"
+          description="Create an agent profile for this user."
+          :button-label="agentConfig.cta || 'Create Agent profile'"
+          :loading="isCreating"
+          :error="createError"
+          @create="createProfile"
+        />
+
+        <div v-else>
+          <h1 class="text-lg font-semibold">Profile Not Found</h1>
+          <p>The profile you're looking for doesn't exist.</p>
+          <NuxtLink to="/agents" class="text-primary hover:underline">← Back</NuxtLink>
+        </div>
       </div>
 
       <div v-else class="space-y-4">
@@ -30,13 +65,14 @@
 </template>
 
 <script setup lang="ts">
-import { agentConfig } from '../../models/profiles/Agent/Agent.model'
-import { computed } from 'vue'
 import { navigateTo, useHead, useRoute } from '#imports'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { computed, ref } from 'vue'
 import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { AgentCore } from '../../models/profiles/Agent/Agent.model'
+import { agentConfig } from '../../models/profiles/Agent/Agent.model'
 
 const route = useRoute()
 const agentId = computed(() => {
@@ -47,7 +83,7 @@ const agentId = computed(() => {
 const { profile, pending } = useProfileFetch<AgentCore>(agentId, agentConfig)
 const agentProfile = computed(() => profile.coreProfile.value ?? null)
 
-const { coreUser, appUser } = useUser()
+const { coreUser, appUser, user: sessionUser } = useUser()
 const { card } = useAgentInterface(profile, coreUser)
 const agentCard = computed(() => card())
 
@@ -77,12 +113,30 @@ const pageDescription = computed(() =>
     : 'Inspect the selected agent profile.'
 )
 
-const canEdit = computed(
-  () =>
-    !!(
-      appUser.value?.id &&
-      agentProfile.value?.id &&
-      appUser.value.id === agentProfile.value.id
-    )
+const isSelf = computed(() =>
+  Boolean(agentId.value && sessionUser.value?.id === agentId.value)
 )
+
+const isAdminUser = computed(() =>
+  appUser.value?.role === 'admin' ||
+  Boolean(coreUser.value?.adminOf?.length)
+)
+
+const { ensure } = useProfileEnsure(agentConfig)
+const isCreating = ref(false)
+const createError = ref<string | null>(null)
+
+const createProfile = async () => {
+  if (isCreating.value || !agentId.value) return
+  isCreating.value = true
+  createError.value = null
+
+  try {
+    await ensure(agentId.value)
+  } catch (error) {
+    createError.value = (error as Error)?.message || 'Failed to create profile.'
+  } finally {
+    isCreating.value = false
+  }
+}
 </script>

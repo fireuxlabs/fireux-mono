@@ -20,8 +20,9 @@ export function useProfileEnsure(config: ProfileConfig) {
   const { setDocument, updateDocument } = useFirestoreManager()
   const { isTenant, appId } = useFireUXConfig()
 
-  const ensure = async (): Promise<EnsureResult> => {
-    const { uid } = await requireUid()
+  const ensure = async (overrideUid?: string | null): Promise<EnsureResult> => {
+    const { uid: authedUid } = await requireUid()
+    const uid = (overrideUid ?? authedUid).trim()
 
     let createdCore = false
     let createdApp = false

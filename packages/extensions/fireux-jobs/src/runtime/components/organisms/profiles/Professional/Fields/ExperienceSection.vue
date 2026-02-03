@@ -31,6 +31,16 @@
     <template #edit="{ item, save, cancel }">
       <div class="space-y-3">
         <div class="space-y-2">
+          <div v-if="placeCollectionOptions.length > 1" class="space-y-1">
+            <div class="text-xs font-medium text-dimmed">Experience type</div>
+            <USelect
+              v-model="item.place_collection"
+              :options="placeCollectionOptions"
+              placeholder="Select collection"
+              size="sm"
+            />
+          </div>
+
           <PlaceCardsPill
             v-if="item.place_id && resolvePlaceCard(item)"
             v-bind="resolvePlaceCard(item)"
@@ -46,12 +56,17 @@
             {{ formatPlace(item) }}
           </span>
 
-          <PlaceSearchSection
-            v-else
-            :type="effectivePlaceType"
-            :placeholder="searchPlaceholder"
-            @confirmed="(payload: PlaceConfirmedPayload) => onPlaceConfirmedPayload(item, payload)"
-          />
+          <div v-else-if="canSearchPlace(item)">
+            <PlaceSearchSection
+              :type="resolvePlaceType(item)"
+              :placeholder="searchPlaceholder"
+              @confirmed="(payload: PlaceConfirmedPayload) => onPlaceConfirmedPayload(item, payload)"
+            />
+          </div>
+
+          <div v-else class="text-xs text-dimmed">
+            Select an experience type to search for a place.
+          </div>
         </div>
 
         <UInput v-model="item.role" placeholder="Role (e.g. Chef de Partie)" />
@@ -141,10 +156,13 @@
 <script setup lang="ts">
 import { CalendarDate, DateFormatter, getLocalTimeZone, type DateValue } from '@internationalized/date'
 import { doc, getDoc } from 'firebase/firestore'
+import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/mutations/useKitchenCreate'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
+import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceSave'
 import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToBasePlace'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { computed, ref, watch } from 'vue'
 import { useFirestore } from 'vuefire'
 import type { ExperienceItem } from '../../../../../models/profiles/Professional/supporting'
@@ -168,18 +186,18 @@ const props = withDefaults(defineProps<{
 })
 
 const createLabel = computed(() => `Add ${props.label.toLowerCase()}`)
-const effectivePlaceType = computed(() => props.placeType ?? 'place')
-const searchPlaceholder = computed(() =>
-  effectivePlaceType.value === 'place'
-    ? 'Search places...'
-    : `Search ${effectivePlaceType.value}...`
-)
+const searchPlaceholder = computed(() => {
+  const base = props.placeType ? String(props.placeType) : 'place'
+  return base === 'place' ? 'Search places...' : `Search ${base}...`
+})
 const itemTitle = (item: ExperienceEntry) => item.role || 'Role'
 const itemDate = (item: ExperienceEntry) => formatRange(item)
 
 const dateFormatter = new DateFormatter('en-US', { dateStyle: 'medium' })
 
 const db = useFirestore()
+const { ensurePlaceExists } = usePlaceSave()
+const { createKitchen } = useKitchenCreate()
 const placeCache = ref<Record<string, Record<string, any>>>({})
 const placeRequests = ref<Set<string>>(new Set())
 const toPlaceBase = mapPlaceToBasePlace()
@@ -348,12 +366,74 @@ const onPlaceConfirmedPayload = (
   item: ExperienceEntry,
   payload: PlaceConfirmedPayload
 ) => {
+  void handleConfirmedPlace(item, payload)
+}
+
+const placeCollectionOptions = computed(() =>
+  (props.placeCollections ?? [])
+    .map((value) => String(value ?? '').trim())
+    .filter(Boolean)
+    .map((value) => ({ label: value, value }))
+)
+
+const resolvePlaceCollection = (item: ExperienceEntry) => {
+  const current = String((item as any)?.place_collection ?? '').trim()
+  if (current) return current
+  const collections = placeCollectionOptions.value
+  if (collections.length === 1) return collections[0].value
+  return ''
+}
+
+const resolvePlaceType = (item: ExperienceEntry) =>
+  resolvePlaceCollection(item) || props.placeType || 'place'
+
+const canSearchPlace = (item: ExperienceEntry) => {
+  if (placeCollectionOptions.value.length <= 1) return true
+  return Boolean(resolvePlaceCollection(item))
+}
+
+const ensurePlaceCollection = async (
+  collection: string,
+  placeId: string,
+  place?: PlaceUpsertInput
+) => {
+  if (!collection || !placeId) return
+
+  const normalized = canonicalPlaceId(placeId) || placeId
+
+  if (place) {
+    await ensurePlaceExists({ ...place, id: normalized })
+  } else {
+    await ensurePlaceExists({ id: normalized })
+  }
+
+  if (collection === 'kitchens') {
+    const existingSnap = await getDoc(doc(db, 'kitchens', normalized))
+    if (!existingSnap.exists()) {
+      await createKitchen({ id: normalized, website: '' })
+    }
+  }
+}
+
+const handleConfirmedPlace = async (
+  item: ExperienceEntry,
+  payload: PlaceConfirmedPayload
+) => {
+  const collection = resolvePlaceCollection(item)
+  if (!collection && placeCollectionOptions.value.length > 1) return
+
+  item.place_collection = collection
   onPlaceConfirmed(item, payload.placeId, payload.place)
+
+  await ensurePlaceCollection(collection, payload.placeId, payload.place as PlaceUpsertInput)
 }
 
 const newExperienceItem = (): ExperienceEntry => ({
   role: '',
   place_id: '',
+  place_collection: placeCollectionOptions.value.length === 1
+    ? placeCollectionOptions.value[0].value
+    : '',
   from_month: '',
   from_year: '',
   to_month: '',

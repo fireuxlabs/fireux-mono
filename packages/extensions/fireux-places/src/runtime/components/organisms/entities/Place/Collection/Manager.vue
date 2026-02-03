@@ -36,6 +36,7 @@
         <NuxtLink :to="card.to" class="block max-w-full">
           <PlaceCardsPill
             v-bind="card"
+            :title="card.shortName || card.title"
             :show-badges="false"
             :show-subtitle="true"
           />

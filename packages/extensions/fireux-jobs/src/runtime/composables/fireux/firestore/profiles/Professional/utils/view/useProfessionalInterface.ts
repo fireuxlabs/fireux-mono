@@ -1,7 +1,6 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { csv, safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
-import type { Ref } from 'vue'
 import { professionalConfig, type ProfessionalCore, type ProfessionalResolved } from '../../../../../../../models/profiles/Professional/Professional.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
@@ -28,33 +27,25 @@ export namespace ProfessionalCard {
 }
 
 export function useProfessionalInterface(
-  profile?: ProfileRefs<ProfessionalCore> | null,
-  userRef?: Ref<User | null | undefined>
+  profile?: ProfileRefs<ProfessionalCore> | null
 ) {
   const resolveUser = (
     target?: ProfessionalCore | ProfessionalResolved | null
   ) => {
     if (target && 'user' in target && target.user) return target.user as UserLike
-    return userRef?.value ?? null
+    return null
   }
 
   function map(p: ProfessionalCore, u?: UserLike | null): ProfessionalCard.Card {
     const id = safeString(p.id).trim()
-    const headline = safeString((p as any).professional_headline) || safeString(p.job_title)
-    const summary = safeString((p as any).professional_summary) || safeString(p.summary) || safeString(p.bio)
-    const profileImage = safeString((p as any).professional_image) || safeString(p.image)
+    const headline = safeString(p.job_title)
+    const summary = safeString(p.summary)
+    const profileImage = safeString(p.image)
     const userAvatar = safeString(u?.avatar)
     const secondaryAvatarUrl = profileImage && userAvatar && profileImage !== userAvatar
       ? userAvatar
       : ''
-    const positions =
-      Array.isArray((p as any).professional_positions) && (p as any).professional_positions.length
-        ? (p as any).professional_positions
-        : Array.isArray(p.positions) && p.positions.length
-          ? p.positions
-          : Array.isArray((p as any).professional_service_types) && (p as any).professional_service_types.length
-            ? (p as any).professional_service_types
-            : ((p as any).specialties as string[])
+    const positions = Array.isArray(p.positions) ? p.positions : []
 
     return {
       id,
@@ -69,7 +60,7 @@ export function useProfessionalInterface(
 
       bioShort: summary,
       specialtiesCsv: csv(positions ?? []),
-      locationsCsv: csv((p as any).locations),
+      locationsCsv: '',
     }
   }
 
@@ -90,8 +81,8 @@ export function useProfessionalInterface(
     if (!p) return ''
     const u = resolveUser(target as ProfessionalCore | ProfessionalResolved | null)
     const displayName = safeString(u?.display_name)
-    const headline = safeString((p as any).professional_headline) || safeString(p.job_title)
-    const summary = safeString((p as any).professional_summary) || safeString(p.summary) || safeString(p.bio)
+    const headline = safeString(p.job_title)
+    const summary = safeString(p.summary)
     const id = safeString(p.id)
     return `${displayName} ${headline} ${summary} ${id}`.trim().toLowerCase()
   }

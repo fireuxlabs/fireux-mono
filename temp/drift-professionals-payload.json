@@ -2,199 +2,134 @@
   "modelPath": "packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts",
   "driftKind": "missing",
   "selectedField": null,
-  "totalProfessionals": 7,
+  "totalProfessionals": 8,
   "professionals": [
     {
       "id": "FoPLMYVPirSiMm2eDskwsZja0q42",
-      "displayName": "Joe Dean",
+      "displayName": "FoPLMYVPirSiMm2eDskwsZja0q42",
       "drift": {
-        "missing": [
-          "job_title (string)",
-          "summary (string)",
-          "bio (string)",
-          "image (string)",
-          "positions (array)"
-        ],
-        "extra": [
-          "tagline (string)",
-          "subtitle (string)",
-          "tags (array)",
-          "bio_short (string)",
-          "specialties (array)",
-          "health_certifications (array)",
-          "title (string)",
-          "bio_long (string)",
-          "locations (array)"
-        ]
+        "missing": [],
+        "extra": []
       }
     },
     {
       "id": "OnLDg1ZcGqh30aaopCZggBIyhbS2",
-      "displayName": "Henrique Macedo",
+      "displayName": "OnLDg1ZcGqh30aaopCZggBIyhbS2",
       "drift": {
-        "missing": [
-          "job_title (string)",
-          "summary (string)",
-          "bio (string)",
-          "image (string)",
-          "positions (array)"
-        ],
-        "extra": [
-          "specialties (array)",
-          "subtitle (string)",
-          "tags (array)",
-          "bio_short (string)",
-          "locations (array)",
-          "bio_long (string)",
-          "health_certifications (array)",
-          "title (string)",
-          "tagline (string)"
-        ]
+        "missing": [],
+        "extra": []
       }
     },
     {
       "id": "WShQtlmVVVdqajd9muSHBLnm9kD2",
-      "displayName": "Sebastian Nagel",
+      "displayName": "WShQtlmVVVdqajd9muSHBLnm9kD2",
       "drift": {
-        "missing": [
-          "job_title (string)",
-          "summary (string)",
-          "bio (string)",
-          "image (string)",
-          "positions (array)"
-        ],
-        "extra": [
-          "title (string)",
-          "bio_long (string)",
-          "locations (array)",
-          "tags (array)",
-          "subtitle (string)",
-          "bio_short (string)",
-          "tagline (string)",
-          "health_certifications (array)",
-          "specialties (array)"
-        ]
+        "missing": [],
+        "extra": []
       }
     },
     {
-      "id": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
-      "displayName": "Daniel Watson",
+      "id": "WjqzWuxCtOQ2gRALFAzzOscUHTV2",
+      "displayName": "WjqzWuxCtOQ2gRALFAzzOscUHTV2",
       "drift": {
         "missing": [
           "job_title (string)",
           "summary (string)",
           "bio (string)",
           "image (string)",
-          "positions (array)"
+          "positions (array)",
+          "other_experience (array)",
+          "languages (array)",
+          "certifications (array)",
+          "education (array)",
+          "volunteering (array)",
+          "projects (array)"
         ],
         "extra": [
-          "professional_headline (string)",
+          "subtitle (string)",
+          "title (string)",
           "tagline (string)",
-          "locations (array)",
-          "subtitle (string)",
-          "professional_positions (array)",
-          "title (string)",
-          "health_certifications (array)",
-          "tags (array)",
-          "bio_short (string)",
-          "bio_long (string)",
-          "specialties (array)"
-        ]
-      }
-    },
-    {
-      "id": "rEssOnUA8wVHdNKE2JETqWAdwdm1",
-      "displayName": "Richi’s Reinigung",
-      "drift": {
-        "missing": [
-          "job_title (string)",
-          "summary (string)",
-          "bio (string)",
-          "image (string)",
-          "positions (array)"
-        ],
-        "extra": [
-          "specialties (array)",
-          "subtitle (string)",
-          "locations (array)",
-          "bio_short (string)",
-          "tags (array)",
-          "title (string)",
-          "health_certifications (array)",
-          "bio_long (string)",
-          "tagline (string)"
-        ]
-      }
-    },
-    {
-      "id": "s9hKBxO7mJSFC5vHNOo3mt9Dgi42",
-      "displayName": "David Cook",
-      "drift": {
-        "missing": [
-          "job_title (string)",
-          "summary (string)",
-          "bio (string)",
-          "image (string)",
-          "positions (array)"
-        ],
-        "extra": [
-          "bio_short (string)",
-          "health_certifications (array)",
-          "title (string)",
-          "bio_long (string)",
-          "specialties (array)",
-          "locations (array)",
-          "tagline (string)",
-          "subtitle (string)",
           "tags (array)"
         ]
       }
     },
     {
-      "id": "xdu83J77YeOROlePJdibPekxkDp2",
-      "displayName": "Tahneeq",
+      "id": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
+      "displayName": "jMK33p5XlhYS8rBCEf8qUiogfMg2",
       "drift": {
-        "missing": [
-          "job_title (string)",
-          "summary (string)",
-          "bio (string)",
-          "image (string)",
-          "positions (array)"
-        ],
-        "extra": [
-          "tags (array)",
-          "specialties (array)",
-          "title (string)",
-          "health_certifications (array)",
-          "locations (array)",
-          "bio_short (string)",
-          "subtitle (string)",
-          "bio_long (string)",
-          "tagline (string)"
-        ]
+        "missing": [],
+        "extra": []
+      }
+    },
+    {
+      "id": "rEssOnUA8wVHdNKE2JETqWAdwdm1",
+      "displayName": "rEssOnUA8wVHdNKE2JETqWAdwdm1",
+      "drift": {
+        "missing": [],
+        "extra": []
+      }
+    },
+    {
+      "id": "s9hKBxO7mJSFC5vHNOo3mt9Dgi42",
+      "displayName": "s9hKBxO7mJSFC5vHNOo3mt9Dgi42",
+      "drift": {
+        "missing": [],
+        "extra": []
+      }
+    },
+    {
+      "id": "xdu83J77YeOROlePJdibPekxkDp2",
+      "displayName": "xdu83J77YeOROlePJdibPekxkDp2",
+      "drift": {
+        "missing": [],
+        "extra": []
       }
     }
   ],
   "missingSummary": [
     {
       "field": "job_title (string)",
-      "count": 7
+      "count": 1
     },
     {
       "field": "summary (string)",
-      "count": 7
+      "count": 1
     },
     {
       "field": "bio (string)",
-      "count": 7
+      "count": 1
     },
     {
       "field": "image (string)",
-      "count": 7
+      "count": 1
     },
     {
       "field": "positions (array)",
-      "count": 7
+      "count": 1
+    },
+    {
+      "field": "other_experience (array)",
+      "count": 1
+    },
+    {
+      "field": "languages (array)",
+      "count": 1
+    },
+    {
+      "field": "certifications (array)",
+      "count": 1
+    },
+    {
+      "field": "education (array)",
+      "count": 1
+    },
+    {
+      "field": "volunteering (array)",
+      "count": 1
+    },
+    {
+      "field": "projects (array)",
+      "count": 1
     }
   ],
   "migration": {

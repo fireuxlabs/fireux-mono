@@ -47,7 +47,7 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     }
     const getMiseboxJobsDefaults = () => ({
       enabled: true,
-      placeCollections: ['kitchens'],
+      placeCollections: ['kitchens', 'companies'],
     })
 
     fireux.places = currentPlaces && typeof currentPlaces === 'object'

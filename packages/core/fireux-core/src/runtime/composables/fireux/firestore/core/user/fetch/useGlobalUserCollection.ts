@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import type { User } from '../../../../../../models/core/user.model'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 /**
  * Streams the canonical `/users` collection.

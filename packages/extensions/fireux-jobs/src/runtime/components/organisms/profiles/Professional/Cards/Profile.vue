@@ -21,7 +21,7 @@
       </div>
     </template>
 
-    <div class="profile-card__section">
+    <div class="profile-card__section mt-6">
       <h3 class="profile-card__section-title">Positions</h3>
       <div v-if="positions.length">
         <UBadge
@@ -41,7 +41,7 @@
     <ClientOnly>
       <UAccordion
         :items="accordionItems"
-        :default-value="['bio_short']"
+        :default-value="['summary', 'bio', 'relevant_experience']"
         type="multiple"
         variant="soft"
         size="sm"
@@ -59,20 +59,21 @@
           </div>
 
           <div v-else-if="item.value === 'relevant_experience'">
-            <div v-if="relevantExperienceCards.length || otherExperienceCards.length">
+            <div v-if="relevantExperienceCards.length || otherExperienceCards.length" class="space-y-4">
               <div
                 v-for="entry in relevantExperienceCards"
                 :key="`relevant-${entry.item.place_id}-${entry.item.role}`"
+                class="space-y-1"
               >
                 <div>{{ entry.item.role }}</div>
-                <div>{{ formatExperienceDates(entry.item) }}</div>
+                <div class="text-xs text-gray-500">{{ formatExperienceDates(entry.item) }}</div>
                 <div>
                   <PlaceCardsPill
                     v-if="entry.placeCard"
                     v-bind="entry.placeCard"
                     :show-badges="false"
                   />
-                  <div v-else>Location unavailable</div>
+                  <div v-else class="text-xs text-gray-500">Location unavailable</div>
                 </div>
                 <p v-if="entry.item.responsibilities" class="form-text-body">
                   {{ entry.item.responsibilities }}
@@ -82,9 +83,10 @@
               <div
                 v-for="entry in otherExperienceCards"
                 :key="`other-${entry.item.place_id}-${entry.item.role}`"
+                class="space-y-1"
               >
                 <div>{{ entry.item.role }}</div>
-                <div>{{ formatExperienceDates(entry.item) }}</div>
+                <div class="text-xs text-gray-500">{{ formatExperienceDates(entry.item) }}</div>
                 <div>
                     <PlaceCardsPill
                       :image-url="entry.imageUrl"
@@ -188,7 +190,7 @@
       </template>
     </ClientOnly>
 
-    <div>
+    <div class="mt-6">
       <h3>Summary</h3>
       <ul>
         <li>Relevant Experience: {{ relevantExperience.length }}</li>

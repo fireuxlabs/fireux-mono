@@ -34,10 +34,14 @@
         :variant="variant"
       >
         <template #pill="{ card }">
-          <OrganismsUserCardsPill v-bind="card" :link="Boolean(card.to)" />
+          <NuxtLink :to="card.to || `/users/${card.id}`">
+            <OrganismsUserCardsPill v-bind="card" />
+          </NuxtLink>
         </template>
         <template #cell="{ card }">
-          <OrganismsUserCardsCell v-bind="card" :link="Boolean(card.to)" />
+          <NuxtLink :to="card.to || `/users/${card.id}`">
+            <OrganismsUserCardsCell v-bind="card" />
+          </NuxtLink>
         </template>
       </OrganismsUserCollectionList>
 

@@ -36,8 +36,8 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import type { PlaceSearchCell } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
-import { loadLogoForPlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import { toShortAddress } from '../../../../../composables/fireux/firestore/objects/place/utils/view/formatPlaceAddress'
+import { loadLogoForPlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../models/objects/place.model'
 import PlaceCardsDropdownFireux from '../Cards/Dropdown/Fireux.vue'
 import PlaceCardsDropdownGoogle from '../Cards/Dropdown/Google.vue'

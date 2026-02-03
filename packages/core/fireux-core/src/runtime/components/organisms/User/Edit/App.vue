@@ -31,7 +31,6 @@
 
             <div class="flex items-center justify-between gap-3">
               <div class="text-xs text-gray-600 space-y-1">
-                <p>app admins: {{ appAdmins.join(', ') || 'none' }}</p>
                 <p>appUser.role: {{ appUserRole }}</p>
                 <p>
                   core adminOf: {{ props.user?.adminOf?.join(', ') || 'none' }}
@@ -75,16 +74,19 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { User } from '../../../../models/core/user.model'
-import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
 import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
+import type { UserRefs } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
+import type { User } from '../../../../models/core/user.model'
 
-const props = defineProps<{ user: User | null }>()
+const props = defineProps<{ user: User | null; userRefs?: UserRefs }>()
 
 const { appUser } = useUser()
 const { app, setAppUserAdmin } = useApp()
 
-const overlay = computed(() => appUser.value ?? null)
+const overlay = computed(() =>
+  props.userRefs?.appUser?.value ?? appUser.value ?? null
+)
 const rolePreview = ref<'hello' | 'world'>('hello')
 const toggleRolePreview = () => {
   rolePreview.value = rolePreview.value === 'hello' ? 'world' : 'hello'
@@ -98,7 +100,7 @@ const appAdmins = computed(() =>
     : []
 )
 
-const appUserRole = computed(() => appUser.value?.role ?? 'user')
+const appUserRole = computed(() => overlay.value?.role ?? 'user')
 const isAppAdmin = computed(() => appUserRole.value === 'admin')
 const togglingAdmin = ref(false)
 

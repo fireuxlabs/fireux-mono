@@ -10,7 +10,6 @@
         <UCard>
           <div class="flex items-center justify-between gap-3">
             <div class="text-xs text-gray-600 space-y-1">
-              <p>app admins: {{ appAdmins.join(', ') || 'none' }}</p>
               <p>appUser.role: {{ appUserRole }}</p>
               <p>core adminOf: {{ user?.adminOf?.join(', ') || 'none' }}</p>
             </div>
@@ -101,11 +100,16 @@ import { useUser } from '../../../../composables/fireux/firestore/core/user/useU
 import { useUserFormattingAndValidation } from '../../../../composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
 import type { User } from '../../../../models/core/user.model'
 
-const props = defineProps<{ user: User | null }>()
+import type { UserRefs } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUserUpdate } from '../../../../composables/fireux/firestore/core/user/mutations/useUserUpdate'
+
+const props = defineProps<{ user: User | null; userRefs?: UserRefs }>()
 
 const toast = useToastify()
 const userApi = useUser()
-const coreProfile = userApi.core.profile
+const resolvedRefs = (props.userRefs ?? (userApi as unknown as UserRefs))
+const userUpdate = useUserUpdate(resolvedRefs, 'OrganismsUserEditCore')
+const coreProfile = userUpdate.core.profile
 const { app, setAppUserAdmin } = useApp()
 
 const appAdmins = computed(() =>
@@ -116,7 +120,10 @@ const appAdmins = computed(() =>
     : []
 )
 
-const appUserRole = computed(() => userApi.appUser?.value?.role ?? 'user')
+const resolvedAppUser = computed(() =>
+  props.userRefs?.appUser?.value ?? userApi.appUser?.value ?? null
+)
+const appUserRole = computed(() => resolvedAppUser.value?.role ?? 'user')
 const isAppAdmin = computed(() => appUserRole.value === 'admin')
 const isOnlyAdmin = computed(
   () => isAppAdmin.value && appAdmins.value.length <= 1

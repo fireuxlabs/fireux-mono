@@ -3,19 +3,47 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsUserCardsProfile v-bind="userCard" />
+      <p v-if="isMounted" class="mb-2 text-xs text-muted">Page loaded.</p>
+      <div class="mb-3 flex flex-wrap gap-2">
+        <UButton
+          v-if="isAdmin && userId"
+          size="xs"
+          color="primary"
+          icon="i-lucide-shield"
+          :to="`/users/admin/${userId}`"
+        >
+          Admin
+        </UButton>
+        <UButton
+          v-if="isSelf"
+          size="xs"
+          variant="soft"
+          color="neutral"
+          icon="i-lucide-pencil"
+          to="/dashboard/user-profile"
+        >
+          Edit
+        </UButton>
+      </div>
+      <OrganismsUserCardsProfile v-if="userCard" v-bind="userCard" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useHead } from '#imports'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserFetch } from '../../composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const route = useRoute()
+const isMounted = ref(false)
+
+onMounted(() => {
+  isMounted.value = true
+})
 
 const userId = computed(() => {
   const raw = Array.isArray(route.params.id)
@@ -25,9 +53,13 @@ const userId = computed(() => {
 })
 
 const { user: currentUser } = useUserFetch(userId)
+const { isAdmin, user: sessionUser } = useUser()
 
 const { card } = useUserInterface(currentUser)
 const userCard = computed(() => (currentUser.value ? card(currentUser.value) : null))
+const isSelf = computed(() =>
+  Boolean(userId.value && sessionUser.value?.id === userId.value)
+)
 
 const displayName = computed(() => currentUser.value?.display_name ?? null)
 const pageTitle = computed(() => displayName.value ?? 'User Details')

@@ -1,15 +1,15 @@
 import {
-    collection,
-    doc,
-    endAt,
-    limit as fslimit,
-    query as fsq,
-    getDocs,
-    orderBy,
-    startAt,
-    type DocumentSnapshot,
-    type Query,
-    type QueryDocumentSnapshot,
+  collection,
+  doc,
+  endAt,
+  limit as fslimit,
+  query as fsq,
+  getDocs,
+  orderBy,
+  startAt,
+  type DocumentSnapshot,
+  type Query,
+  type QueryDocumentSnapshot,
 } from 'firebase/firestore'
 import type { Ref } from 'vue'
 import { useCollection, useDocument, useFirestore } from 'vuefire'
@@ -30,7 +30,7 @@ export function useFirestoreRead() {
     const { data } = useCollection<T>(q, {
       ...options,
       transform: (docSnap: QueryDocumentSnapshot<T>) => {
-        return docSnap.data() as T
+        return { ...(docSnap.data() as T), id: docSnap.id } as T
       },
     } as any)
     return data as Ref<T[] | undefined>
