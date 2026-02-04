@@ -2,7 +2,7 @@
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { Place } from 'fireux-places/runtime/models/objects/place.model'
+import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
 
 /**
  * Job (canonical Firestore shape)
@@ -38,21 +38,28 @@ export const Job = {
   /** Firestore document ID */
   id: '' as string,
 
-  /** Employer reference */
+  /**
+   * Employer reference (billing / ownership)
+   * One company can own many kitchens.
+   */
   company_id: '' as string,
 
   /**
-   * Work location (optional)
-   * - place_id: Google Place / canonical Place id when known
+   * Work site reference (value optional)
+   * - kitchen_id: fixed site identity (safe to fetch + hydrate)
    * - location_label: fallback for mobile/variable locations (ships, food trucks)
+   *
+   * Rules:
+   * - kitchen_id is always present as a field
+   * - '' means "no fixed kitchen"
    */
-  place_id: '' as string,
+  kitchen_id: '' as string,
   location_label: '' as string,
 
   /** Type (product layer) */
   job_type: 'permanent' as JobType,
 
-  /** Hiring intent (crew size) */
+  /** Hiring intent (crew size / openings) */
   openings_count: 1 as number,
 
   /** Pay (simple + filterable) */
@@ -61,12 +68,12 @@ export const Job = {
   pay_unit: 'hour' as JobPayUnit,
 
   /**
-   * Time window (optional)
+   * Time window (value optional)
    * - For einsatz/fixed you can set start/end
    * - For permanent, leave as {}
    *
-   * NOTE: If you later need multi-shift selection, that should be a separate
-   * collection keyed by job_id (not nested arrays on Job).
+   * NOTE: Multi-shift selection should be a separate collection keyed by job_id
+   * (not nested arrays on Job).
    */
   start_at: {} as FirebaseTimestamp,
   end_at: {} as FirebaseTimestamp,
@@ -91,9 +98,10 @@ export type Job = {
 
 /**
  * Read-time enrichment only (never stored)
+ * Kitchen can hydrate Place internally using its id.
  */
 export type JobResolved = Job & {
-  place?: Place | null
+  kitchen?: Kitchen | null
 }
 
 /**

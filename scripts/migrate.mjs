@@ -47,6 +47,7 @@ if (help) {
   console.log('  - places-migrate-image-url')
   console.log('  - places-backfill-short-address')
   console.log('  - places-backfill-short-name')
+  console.log('  - places-backfill-place-type')
   console.log('  - apply-drift-payload')
   console.log('\nAuth (one required):')
   console.log('  - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)')
@@ -302,6 +303,72 @@ async function runPlacesBackfillShortName() {
     missing,
     commit,
   })
+}
+
+async function runPlacesBackfillPlaceType() {
+  console.log('[migrate] places-backfill-place-type start', {
+    projectId,
+    commit,
+    pageSize,
+    limit,
+  })
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+
+  let lastDoc = null
+
+  while (true) {
+    if (limit && processed >= limit) break
+
+    let q = db.collection('places').orderBy(FieldPath.documentId()).limit(pageSize)
+    if (lastDoc) q = q.startAfter(lastDoc)
+
+    const snap = await q.get()
+    if (snap.empty) break
+
+    let batch = db.batch()
+    let batchOps = 0
+
+    for (const docSnap of snap.docs) {
+      if (limit && processed >= limit) break
+
+      processed += 1
+      const data = docSnap.data() || {}
+      const current = asString(data.place_type, '')
+
+      if (current === 'physical') {
+        skipped += 1
+        continue
+      }
+
+      updated += 1
+
+      const patch = { place_type: 'physical' }
+
+      if (commit) {
+        batch.update(docSnap.ref, patch)
+        batchOps += 1
+      } else {
+        console.log('[dry-run]', docSnap.ref.path, patch)
+      }
+
+      if (commit && batchOps >= 400) {
+        await batch.commit()
+        batch = db.batch()
+        batchOps = 0
+      }
+    }
+
+    if (commit && batchOps > 0) {
+      await batch.commit()
+    }
+
+    lastDoc = snap.docs[snap.docs.length - 1]
+  }
+
+  console.log('[migrate] places-backfill-place-type done', { processed, updated, skipped, commit })
 }
 
 async function runJobsBackfillId() {
@@ -950,6 +1017,7 @@ const recipes = {
   'places-migrate-image-url': runPlacesMigrateImageUrl,
   'places-backfill-short-address': runPlacesBackfillShortAddress,
   'places-backfill-short-name': runPlacesBackfillShortName,
+  'places-backfill-place-type': runPlacesBackfillPlaceType,
   'apply-drift-payload': runApplyDriftPayload,
 }
 

@@ -18,43 +18,9 @@
 <script setup lang="ts">
 defineOptions({ name: 'DevAgentDummy' })
 
-const base = {
-  to: '',
-  avatarUrl: 'https://images.unsplash.com/photo-1528892952291-009c663ce843?auto=format&fit=crop&w=240&q=80',
-  secondaryAvatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=160&q=80',
-  displayName: 'Mila Ortiz',
-  tagline: 'Hospitality placements · Alpine & coastal',
-  badges: ['Alpine', 'Executive'],
-  bioShort: 'Matchmaking kitchens with talent across Europe and the U.S.',
-  contactEmail: 'mila@misebox.app',
-}
+import { dummyAgentCell, dummyAgentPill, dummyAgentPreview } from '../../../../../../../../dummy/agent.dummy'
 
-const pill = {
-  to: base.to,
-  avatarUrl: base.avatarUrl,
-  secondaryAvatarUrl: base.secondaryAvatarUrl,
-  displayName: base.displayName,
-  tagline: base.tagline,
-  badges: base.badges,
-}
-
-const cell = {
-  to: base.to,
-  avatarUrl: base.avatarUrl,
-  secondaryAvatarUrl: base.secondaryAvatarUrl,
-  displayName: base.displayName,
-  tagline: base.tagline,
-  badges: base.badges,
-  bioShort: base.bioShort,
-}
-
-const preview = {
-  avatarUrl: base.avatarUrl,
-  secondaryAvatarUrl: base.secondaryAvatarUrl,
-  displayName: base.displayName,
-  tagline: base.tagline,
-  badges: base.badges,
-  bioShort: base.bioShort,
-  contactEmail: base.contactEmail,
-}
+const pill = dummyAgentPill
+const cell = dummyAgentCell
+const preview = dummyAgentPreview
 </script>

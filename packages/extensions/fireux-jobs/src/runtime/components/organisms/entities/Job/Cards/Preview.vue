@@ -1,7 +1,7 @@
 <template>
   <UCard class="preview">
     <div class="preview__row">
-      <UAvatar :src="avatarUrl || undefined" :alt="title" size="sm" icon="i-lucide-briefcase" />
+      <UAvatar :src="imageUrl || undefined" :alt="title" size="sm" icon="i-lucide-briefcase" />
 
       <div class="preview__main">
         <div class="preview__top">
@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 type Props = {
-  avatarUrl: string
+  imageUrl: string
   title: string
   subtitle: string
   badges: string[]

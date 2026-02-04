@@ -24,8 +24,10 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
   runtimeModel: Record<string, unknown>
   prepareForDrift?: (doc: T) => Record<string, unknown>
   driftMode?: 'all' | 'extras-only'
+  requiredPaths?: string[]
 }) {
-  const forcedExtraOnly = params.driftMode === 'extras-only'
+  const forcedExtraOnly = params.driftMode !== 'all'
+  const hasRequiredPaths = (params.requiredPaths?.length ?? 0) > 0
   const driftKind = ref<DriftKind>(forcedExtraOnly ? 'extra' : 'missing')
   const selectedField = ref<string>('')
 
@@ -57,10 +59,29 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
     const payload = params.prepareForDrift
       ? params.prepareForDrift(doc)
       : (doc as unknown as Record<string, unknown>)
-    const drift = resolveDriftFromModel(params.runtimeModel, payload)
+    const drift = resolveDriftFromModel(params.runtimeModel, payload, '', {
+      includeMissing: !forcedExtraOnly,
+      requiredPaths: new Set(params.requiredPaths ?? []),
+    })
+    if (forcedExtraOnly) {
+      if (hasRequiredPaths) {
+        return {
+          id,
+          drift: {
+            missing: [],
+            extra: [...drift.extra, ...drift.missing],
+          },
+        }
+      }
+      return {
+        id,
+        drift: { ...drift, missing: [] },
+      }
+    }
+
     return {
       id,
-      drift: forcedExtraOnly ? { ...drift, missing: [] } : drift,
+      drift,
     }
   }
 

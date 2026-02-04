@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
+import { dummyPlaceDocData, dummyPlaceGoogleData } from '../../../../../../../../dummy/place.dummy';
 import { usePlacesInterface } from '../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
 import type { Place } from '../../../models/objects/place.model';
 import { Place as PlaceModelRuntime } from '../../../models/objects/place.model';
@@ -61,46 +62,17 @@ const emit = defineEmits<{
 
 const { pill, cell, preview, profile } = usePlacesInterface()
 
-const dummyPlaceDocData: Partial<Place> = {
-  id: 'dev-place-misebox-001',
-  name: 'Maison Lumen',
-  short_name: 'Lumen',
-  formatted_address: '12 Rue des Lilas, 75010 Paris, France',
-  short_address: 'Rue des Lilas, Paris',
-  lat: 48.8723,
-  lng: 2.3651,
-  image_url:
-    'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=240&h=240&auto=format&fit=crop',
-  image_shade: 'light',
-  source: 'fireux',
-  search_term: 'Maison Lumen Paris',
-}
-
-const dummyPlaceGoogleData: Partial<Place> = {
-  about:
-    'A sunlit neighborhood café and patisserie focused on seasonal bakes, slow coffee, and small plates. Designed for long mornings, quick lunches, and golden-hour meetups.',
-  phone: '+33 1 45 67 89 10',
-  website: 'https://maisonlumen.fr',
-  google_maps_url: 'https://maps.google.com/?q=Maison%20Lumen%20Paris',
-  types: ['cafe', 'bakery', 'restaurant'],
-  rating: 4.7,
-  rating_count: 1280,
-  price_level: 'mid',
-  hours_text: [
-    'Mon–Fri 08:00–19:00',
-    'Sat 09:00–20:00',
-    'Sun 09:00–17:00',
-  ],
-}
+const dummyPlaceDoc = dummyPlaceDocData as Partial<Place>
+const dummyPlaceGoogle = dummyPlaceGoogleData as Partial<Place>
 
 const dummyPlaceStored: Place = {
   ...PlaceModelRuntime,
-  ...dummyPlaceDocData,
+  ...dummyPlaceDoc,
 }
 
 const dummyPlaceHydrated: Place = {
   ...dummyPlaceStored,
-  ...dummyPlaceGoogleData,
+  ...dummyPlaceGoogle,
 }
 
 const dummyPill = computed(() => pill(dummyPlaceStored))

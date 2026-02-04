@@ -60,7 +60,8 @@ const {
 } = useDevDriftFilter({
   collection: places,
   runtimeModel: placeModelRuntime,
-  driftMode: 'all',
+  driftMode: 'extras-only',
+  requiredPaths: ['place_type'],
 })
 
 const filteredDriftPayload = buildDriftPayload({

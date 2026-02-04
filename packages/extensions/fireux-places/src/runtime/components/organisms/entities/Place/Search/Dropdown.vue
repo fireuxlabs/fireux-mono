@@ -38,8 +38,7 @@ import { computed, watch } from 'vue'
 import { loadLogoForPlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
 import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../models/objects/place.model'
-import PlaceCardsDropdownFireux from '../Cards/Dropdown/fireux.vue'
-import PlaceCardsDropdownGoogle from '../Cards/Dropdown/google.vue'
+
 
 const props = withDefaults(
   defineProps<{
@@ -84,6 +83,7 @@ function toBasePlace(card: PlaceCard.Card): BasePlace {
     id: card.id,
     name: card.name || card.title || '',
     short_name: card.shortName || '',
+    place_type: 'physical',
     formatted_address: card.formattedAddress || card.subtitle || '',
     short_address: card.shortAddress || '',
     lat: (card as any).lat ?? 0,

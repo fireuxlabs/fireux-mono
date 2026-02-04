@@ -9,7 +9,7 @@
   >
     <div class="flex items-start gap-3">
       <UAvatar
-        :src="avatarUrl || undefined"
+        :src="imageUrl || undefined"
         :alt="title"
         size="sm"
         icon="i-lucide-briefcase"
@@ -69,7 +69,7 @@ import { computed } from 'vue'
 import type { JobCard } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
 type Props = Pick<JobCard.Card, 'to' | 'title' | 'description' | 'badges'> & {
-  avatarUrl?: string
+  imageUrl?: string
   subtitle?: string
   prop?: string
 
@@ -88,7 +88,7 @@ type Props = Pick<JobCard.Card, 'to' | 'title' | 'description' | 'badges'> & {
 const emit = defineEmits<{ (event: 'action'): void }>()
 
 const props = withDefaults(defineProps<Props>(), {
-  avatarUrl: '',
+  imageUrl: '',
   badges: () => [],
   subtitle: '',
   prop: '',

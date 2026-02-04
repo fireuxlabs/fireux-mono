@@ -161,6 +161,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       image_shade,
       lat,
       lng,
+      place_type: 'physical',
       search_term: normalized_search_term,
     } as any as PlaceUpsertInput
 

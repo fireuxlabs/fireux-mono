@@ -7,12 +7,11 @@ export namespace JobCard {
     to: string
 
     // Media (empty string means unset)
-    avatarUrl: string
+    imageUrl: string
 
     // Primary display fields
-    subtitle: string
-
     title: string
+    subtitle: string
     status: Job['status']
     description: string
 
@@ -26,17 +25,27 @@ export namespace JobCard {
 }
 
 export function useJobInterface() {
+  function resolveSubtitle(job: JobResolved): string {
+    const k = (job as any)?.kitchen as any | null | undefined
+    const kitchenLabel =
+      safeString(k?.short_address).trim() ||
+      safeString(k?.formatted_address).trim() ||
+      safeString(k?.name).trim()
+
+    const fallback = safeString((job as any)?.location_label).trim()
+    const status = safeString(job.status ?? '').trim()
+    return kitchenLabel || fallback || status
+  }
+
   function map(job: JobResolved): JobCard.Card {
     const id = safeString(job.id).trim()
-    const status = safeString(job.status ?? '')
     return {
       id,
       to: id ? `/jobs/${id}` : '',
 
-      avatarUrl: safeString((job as any)?.kitchen?.image_url),
-      subtitle: status,
-
+      imageUrl: safeString((job as any)?.kitchen?.image_url),
       title: safeString(job.title),
+      subtitle: resolveSubtitle(job),
       status: job.status,
       description: safeString(job.description),
 
@@ -57,8 +66,9 @@ export function useJobInterface() {
     // keep it simple; add company/place names later once jobs are hydrated
     const title = safeString(job.title)
     const status = safeString(job.status ?? '')
+    const location = safeString((job as any)?.location_label ?? '')
     const id = safeString(job.id)
-    return `${title} ${status} ${id}`.trim().toLowerCase()
+    return `${title} ${status} ${location} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }

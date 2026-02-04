@@ -9,78 +9,34 @@
   >
     <UUser
       :name="title"
-      :description="showSubtitle ? (resolvedSubtitle || undefined) : undefined"
-      :avatar="avatarUrl ? { src: avatarUrl || undefined, alt: title || '' } : undefined"
+      :description="kitchenName || undefined"
+      :avatar="imageUrl ? { src: imageUrl, alt: title } : undefined"
       size="sm"
-    >
-      <template #default>
-        <div
-          v-if="showBadges && (badges?.length ?? 0)"
-          class="flex flex-wrap items-center gap-1"
-        >
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
-        </div>
-      </template>
-    </UUser>
+    />
   </component>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { JobCard } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
-type PillProps = Pick<JobCard.Card, 'to' | 'avatarUrl' | 'title' | 'badges'> & {
-  // Allow passing a location subtitle (preferred over status).
-  subtitle?: string
+type Props = Pick<JobCard.Card, 'to' | 'title'> & {
+  /** Kitchen image (usually place image) */
+  imageUrl?: string
 
-  // Optional: if callers pass kitchen data, we can derive a nice subtitle.
-  kitchen?: {
-    short_address?: string
-    formatted_address?: string
-    name?: string
-  } | null
+  /** Kitchen display name */
+  kitchenName?: string
 
-  showSubtitle?: boolean
-  showBadges?: boolean
   link?: boolean
   action?: boolean
 }
 
-const emit = defineEmits<{
-  (event: 'action'): void
-}>()
+const emit = defineEmits<{ (event: 'action'): void }>()
 
-const props = withDefaults(defineProps<PillProps>(), {
-  subtitle: '',
-  kitchen: null,
-  badges: () => [],
-  showSubtitle: true,
-  showBadges: true,
+const props = withDefaults(defineProps<Props>(), {
+  imageUrl: '',
+  kitchenName: '',
   link: false,
   action: false,
-})
-
-const resolvedSubtitle = computed(() => {
-  // 1) explicit subtitle wins
-  const explicit = String(props.subtitle ?? '').trim()
-  if (explicit) return explicit
-
-  // 2) kitchen location fallback (useful default)
-  const k = props.kitchen
-  if (!k) return ''
-  return (
-    String(k.short_address ?? '').trim() ||
-    String(k.formatted_address ?? '').trim() ||
-    ''
-  )
 })
 
 const onClick = () => {

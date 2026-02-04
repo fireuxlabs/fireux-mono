@@ -15,6 +15,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /** Canonical sources: google (provider), fireux (stored), manual (user-entered). */
 export type PlaceSource = 'google' | 'fireux' | 'manual'
 
+/**
+ * Physical vs future non-physical workplaces.
+ * - physical: real-world locations (typically Google-derived)
+ * - non_physical: future manual workplaces (boats, trucks, festivals)
+ */
+export type PlaceType = 'physical' | 'non_physical'
+
 /** For logo legibility on UI backgrounds. */
 export type PlaceImageShade = 'light' | 'dark' | 'none'
 
@@ -83,6 +90,11 @@ export const Place = {
 	} as PlaceSocialLinks,
 
 	// Classification
+	/**
+	 * Place type discriminator.
+	 * TODO: backfill existing docs with place_type = 'physical'.
+	 */
+	place_type: 'physical' as PlaceType,
 	types: [] as string[], // e.g. ['restaurant','cafe']
 	tags: [] as string[], // FireUX UX tags
 
@@ -98,7 +110,7 @@ export const Place = {
 	claimed_by: '' as string,
 	verified: false as boolean,
 
-	source: 'enum:google|fireux|manual' as unknown as PlaceSource,
+	source: 'fireux' as PlaceSource,
 
 	/** “How we found this place” (kept for UX + duplicate avoidance). */
 	search_term: '' as string,
@@ -119,6 +131,7 @@ export type BasePlace = Pick<
 	| 'id'
 	| 'name'
 	| 'short_name'
+	| 'place_type'
 	| 'formatted_address'
 	| 'short_address'
 	| 'lat'

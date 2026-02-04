@@ -39,10 +39,17 @@ export const isMissingValue = (modelValue: unknown, dataValue: unknown): boolean
 export const resolveDriftFromModel = (
   model: Record<string, unknown>,
   data: Record<string, unknown> | undefined,
-  basePath = ''
+  basePath = '',
+  options: { includeMissing?: boolean; requiredPaths?: Set<string> } = {}
 ): ModelDrift => {
   const missing: string[] = []
   const extra: string[] = []
+  const includeMissing = options.includeMissing !== false
+  const requiredPaths = options.requiredPaths ?? new Set<string>()
+
+  const addTypeMismatch = (path: string, expected: string, actual: string) => {
+    extra.push(`${path} (type-mismatch: expected ${expected}; got ${actual})`)
+  }
 
   const dataObj = isPlainObject(data) ? data : {}
 
@@ -55,7 +62,11 @@ export const resolveDriftFromModel = (
     if (enumValues) {
       if (typeof dataValue !== 'string' || !enumValues.includes(dataValue)) {
         const actual = typeof dataValue === 'string' ? dataValue : kindOf(dataValue)
-        missing.push(`${path} (enum:${enumValues.join('|')}; got ${actual})`)
+        if (includeMissing) {
+          missing.push(`${path} (enum:${enumValues.join('|')}; got ${actual})`)
+        } else if (dataValue !== undefined) {
+          addTypeMismatch(path, `enum:${enumValues.join('|')}`, actual)
+        }
       }
       continue
     }
@@ -66,17 +77,29 @@ export const resolveDriftFromModel = (
       // where we want to validate presence but ignore internal keys.
       if (Object.keys(modelValue).length === 0) {
         if (isMissingValue(modelValue, dataValue)) {
-          missing.push(`${path} (${kindOf(modelValue)})`)
+          if (includeMissing || requiredPaths.has(path)) {
+            missing.push(`${path} (${kindOf(modelValue)})`)
+          } else if (dataValue !== undefined) {
+            addTypeMismatch(path, kindOf(modelValue), kindOf(dataValue))
+          }
         }
         continue
+      }
+
+      if (dataValue !== undefined && !isPlainObject(dataValue)) {
+        if (!includeMissing) {
+          addTypeMismatch(path, kindOf(modelValue), kindOf(dataValue))
+          continue
+        }
       }
 
       const nested = resolveDriftFromModel(
         modelValue,
         isPlainObject(dataValue) ? (dataValue as Record<string, unknown>) : undefined,
-        path
+        path,
+        options
       )
-      missing.push(...nested.missing)
+      if (includeMissing || requiredPaths.has(path)) missing.push(...nested.missing)
       extra.push(...nested.extra)
       continue
     }
@@ -100,7 +123,11 @@ export const resolveDriftFromModel = (
         continue
       }
 
-      missing.push(`${path} (${kindOf(modelValue)})`)
+      if (includeMissing || requiredPaths.has(path)) {
+        missing.push(`${path} (${kindOf(modelValue)})`)
+      } else if (dataValue !== undefined) {
+        addTypeMismatch(path, kindOf(modelValue), kindOf(dataValue))
+      }
     }
   }
 

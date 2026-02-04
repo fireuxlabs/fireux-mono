@@ -136,6 +136,7 @@ export async function fetchGoogle(
           id,
           name,
           short_name: '',
+          place_type: 'physical',
           formatted_address: formattedAddress,
           short_address: toShortAddress(formattedAddress),
           lat: 0,
@@ -202,6 +203,7 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
     short_address: toShortAddress(g.formatted_address),
     lat: g.lat,
     lng: g.lng,
+    place_type: 'physical',
     source: 'fireux',
     image_url: '',
     search_term,
@@ -226,6 +228,7 @@ export function mapDetailsToGooglePlace(
     id,
     name: result?.name ?? 'Unknown place',
     short_name: '',
+    place_type: 'physical',
     formatted_address:
       result?.formatted_address ?? result?.vicinity ?? 'Unknown address',
     short_address: toShortAddress(
