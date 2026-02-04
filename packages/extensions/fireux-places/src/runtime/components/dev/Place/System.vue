@@ -1,0 +1,80 @@
+<template>
+  <section class="space-y-10">
+    <DevPlaceDummy />
+
+    <UCard>
+      <DevModel
+        :title="'Places · Model'"
+        :model="placeModelRuntime"
+      />
+    </UCard>
+
+    <UCard>
+      <template #header>
+        <div class="flex items-start justify-between gap-3">
+          <div class="space-y-3">
+            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Places collection
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Browse places resolved for this runtime and filter by model drift.
+            </p>
+            <DevDriftToolbar
+              :drift-kind="driftKind"
+              :selected-field="selectedField"
+              :filter-options="filterOptions"
+              :copy-label="'Copy drift · Places'"
+              :copy-payload="driftCopyPayload"
+              @update:drift-kind="setDriftKind"
+              @update:selected-field="setSelectedField"
+            />
+          </div>
+        </div>
+      </template>
+
+      <PlaceCollectionManager :collection="filteredCollection" />
+    </UCard>
+  </section>
+</template>
+
+<script setup lang="ts">
+import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
+import { usePlaces } from '../../../composables/fireux/firestore/objects/place/usePlaces'
+import { Place as PlaceModelRuntime, type Place as PlaceType } from '../../../models/objects/place.model'
+
+defineOptions({ name: 'DevPlaceSystem' })
+
+const placeModelRuntime = PlaceModelRuntime
+
+const { collection: places } = usePlaces<PlaceType>()
+
+const {
+  driftKind,
+  setDriftKind,
+  selectedField,
+  setSelectedField,
+  filterOptions,
+  filteredCollection,
+  buildDriftPayload,
+  buildCopyPayload,
+} = useDevDriftFilter({
+  collection: places,
+  runtimeModel: placeModelRuntime,
+  driftMode: 'all',
+})
+
+const filteredDriftPayload = buildDriftPayload({
+  map: ({ doc, id, drift }) => ({
+    id,
+    name: doc.name,
+    formattedAddress: doc.formatted_address,
+    drift,
+  }),
+})
+
+const driftCopyPayload = buildCopyPayload({
+  modelPath: 'packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts',
+  itemsKey: 'places',
+  items: filteredDriftPayload,
+})
+</script>

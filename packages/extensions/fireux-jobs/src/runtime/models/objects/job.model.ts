@@ -5,54 +5,35 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
 
 /**
- * Job Firestore shape only.
+ * Job (canonical Firestore shape)
  * Firestore: jobs/{id}
  *
- * Canon strategy:
- * - Runtime object is the single source of truth
- * - TypeScript derives types from it
- * - Drift is detected by comparing data ↔ model shape
+ * Principles:
+ * - Stored shape only (no UI / no future theory)
+ * - No optional nested objects
+ * - Empty string = unset
+ * - Small on purpose
  */
 
 export type JobStatus = 'open' | 'closed'
 
-/**
- * Phase-1: only what we need for the current 2 Hütten Zauber jobs.
- * - Both are permanent roles.
- */
-export type JobEmploymentType = 'permanent'
-
-export type JobStartLabel = '' | 'asap'
-
-// 🔑 Runtime + canonical shape (source of truth)
+// 🔑 Runtime canonical Job (source of truth)
 export const Job = {
   /** Firestore document ID */
-  id: '',
+  id: '' as string,
 
-  /** Phase-1 graph links (horizontal MVP) */
-  company_id: '',
-  kitchen_id: '',
+  /** Ownership / graph */
+  company_id: '' as string,
+  kitchen_id: '' as string,
 
-  /** Pipeline & preview surface */
-  title: '',
+  /** Core job content */
+  title: '' as string,
+  description: '' as string,
+
+  /** Lifecycle */
   status: 'open' as JobStatus,
-  description: '',
 
-  /** Both current jobs are permanent */
-  employment_type: 'permanent' as JobEmploymentType,
-
-  /**
-   * Keep it dead simple for now:
-   * - '' means unset
-   * - 'asap' covers the typical posting language
-   * If/when you need real dates, add starts_on_date: 'YYYY-MM-DD' later.
-   */
-  starts_on: '' as JobStartLabel,
-
-  /** Source trace (optional but useful immediately for these postings) */
-  source_url: '',
-
-  // Authored (FireuxStamped)
+  /** Authored (FireuxStamped) */
   app_id: undefined as FireuxStamped['app_id'],
   creator_id: undefined as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
@@ -64,16 +45,18 @@ export type Job = {
 } & FireuxStamped
 
 /**
- * View layer enrichment (NOT the stored Firestore job shape).
- * Keep this while you embed kitchen snapshots in reads.
+ * Read-time enrichment only (never stored)
  */
 export type JobResolved = Job & {
   kitchen?: Kitchen | null
 }
 
+/**
+ * Create / update helpers
+ */
 export type JobCreateInput = Omit<
   Job,
-  'app_id' | 'created_at' | 'updated_at' | 'creator_id'
+  'app_id' | 'creator_id' | 'created_at' | 'updated_at'
 >
 
 export type JobUpdateInput = Partial<Omit<JobCreateInput, 'id'>>

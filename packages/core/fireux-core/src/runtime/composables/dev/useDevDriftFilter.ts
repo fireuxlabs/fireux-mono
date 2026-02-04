@@ -1,9 +1,9 @@
 import { computed, ref, watch, type ComputedRef } from 'vue'
 import {
-    humanizeDriftPath,
-    resolveDriftFromModel,
-    type DriftKind,
-    type ModelDrift,
+  humanizeDriftPath,
+  resolveDriftFromModel,
+  type DriftKind,
+  type ModelDrift,
 } from './useModelDrift'
 
 type WithOptionalId = { id?: string | null | undefined }
@@ -25,33 +25,50 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
   prepareForDrift?: (doc: T) => Record<string, unknown>
   driftMode?: 'all' | 'extras-only'
 }) {
-  const driftKind = ref<DriftKind>(params.driftMode === 'extras-only' ? 'extra' : 'missing')
+  const forcedExtraOnly = params.driftMode === 'extras-only'
+  const driftKind = ref<DriftKind>(forcedExtraOnly ? 'extra' : 'missing')
   const selectedField = ref<string>('')
 
   const setDriftKind = (kind: DriftKind) => {
-    driftKind.value = params.driftMode === 'extras-only' ? 'extra' : kind
+    driftKind.value = forcedExtraOnly ? 'extra' : kind
+  }
+
+  const setSelectedField = (value: string) => {
+    selectedField.value = value
   }
 
   watch(driftKind, () => {
     selectedField.value = ''
   })
 
+  const normalizeId = (value: unknown, fallback: string) => {
+    const raw = String(value ?? '').trim()
+    return raw || fallback
+  }
+
+  const buildDriftForDoc = (doc: T, fallbackId: string) => {
+    const id = normalizeId(doc?.id, fallbackId)
+    if (!doc?.id) {
+      return {
+        id,
+        drift: forcedExtraOnly ? { missing: [], extra: [] } : { missing: ['id'], extra: [] },
+      }
+    }
+    const payload = params.prepareForDrift
+      ? params.prepareForDrift(doc)
+      : (doc as unknown as Record<string, unknown>)
+    const drift = resolveDriftFromModel(params.runtimeModel, payload)
+    return {
+      id,
+      drift: forcedExtraOnly ? { ...drift, missing: [] } : drift,
+    }
+  }
+
   const driftById = computed(() => {
     const map = new Map<string, ModelDrift>()
     for (const doc of params.collection.value) {
-      const id = doc?.id
-      if (!id) {
-        map.set(`missing-id-${map.size + 1}`, {
-          missing: ['id'],
-          extra: [],
-        })
-        continue
-      }
-      const payload = params.prepareForDrift
-        ? params.prepareForDrift(doc)
-        : (doc as unknown as Record<string, unknown>)
-      const drift = resolveDriftFromModel(params.runtimeModel, payload)
-      map.set(id, params.driftMode === 'extras-only' ? { ...drift, missing: [] } : drift)
+      const { id, drift } = buildDriftForDoc(doc, `missing-id-${map.size + 1}`)
+      map.set(id, drift)
     }
     return map
   })
@@ -90,13 +107,51 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
     })
   })
 
+  const buildDriftPayload = <R>(options: {
+    collection?: ComputedRef<T[]>
+    map: (args: { doc: T; id: string; drift: ModelDrift; index: number }) => R
+  }) => {
+    const source = options.collection ?? filteredCollection
+    return computed<R[]>(() =>
+      source.value.map((doc, index) => {
+        const { id, drift } = buildDriftForDoc(doc, `missing-id-${index + 1}`)
+        return options.map({ doc, id, drift, index })
+      })
+    )
+  }
+
+  const buildCopyPayload = <R>(options: {
+    modelPath: string
+    itemsKey: string
+    items: ComputedRef<R[]>
+    total?: ComputedRef<number>
+    selectedFieldOverride?: ComputedRef<string | null>
+  }) => {
+    const { modelPath, itemsKey, items } = options
+    return computed<Record<string, unknown>>(() => {
+      const total = options.total?.value ?? items.value.length
+      const selected =
+        options.selectedFieldOverride?.value ?? (selectedField.value || null)
+      return {
+        modelPath,
+        driftKind: driftKind.value,
+        selectedField: selected,
+        total,
+        [itemsKey]: items.value,
+      }
+    })
+  }
+
   return {
     driftKind,
     setDriftKind,
     selectedField,
+    setSelectedField,
     driftById,
     fieldOptions,
     filterOptions,
     filteredCollection,
+    buildDriftPayload,
+    buildCopyPayload,
   }
 }
