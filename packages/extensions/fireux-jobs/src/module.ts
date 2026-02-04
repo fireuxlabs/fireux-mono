@@ -1,5 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
+import { defaultFireuxJobsConfig } from './config/jobs.config'
 import { configureComponents } from './config/module/components-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureLayouts } from './config/module/layouts-config'
@@ -9,6 +10,7 @@ import { configureRuntime } from './config/module/runtime-config'
 
 export interface ModuleOptions {
   prefix?: string
+  workplaces?: string[]
 }
 
 const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
@@ -18,10 +20,14 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     configKey: 'fireuxJobs',
   },
   defaults: { prefix: 'Fire' },
-  async setup(_options, nuxt) {
+  async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    const workplaces = Array.isArray(options?.workplaces)
+      ? options.workplaces
+      : defaultFireuxJobsConfig.workplaces
     configureRuntime(nuxt, 'jobs', {
       enabled: true,
+      workplaces,
     })
     configurePlugins(resolver)
     configureComponents(resolver)

@@ -1,10 +1,13 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { ref } from 'vue'
 import type { JobStatus } from '../../../../../models/objects/job.model'
+import { useFireuxJobsConfig } from '../../../../config/useFireuxJobsConfig'
 
 export const JobPayload = {
   company_id: '',
-  kitchen_id: '',
+  workplace_type: '',
+  workplace_id: '',
+  workplace_label: '',
   title: '',
   status: 'open' as JobStatus,
   description: '',
@@ -16,7 +19,9 @@ export const JobStampOptions = {
 
 export type JobCreateForm = {
   company_id: string
-  kitchen_id: string
+  workplace_type: string
+  workplace_id: string
+  workplace_label: string
   title: string
   status: JobStatus
   description: string
@@ -30,6 +35,7 @@ const DEFAULT_FORM: JobCreateForm = {
 
 export function useJobCreate() {
   const { createDocument } = useFirestoreCreate()
+  const jobsConfig = useFireuxJobsConfig()
   const form = ref<JobCreateForm>({ ...DEFAULT_FORM })
 
   const reset = () => {
@@ -53,9 +59,17 @@ export function useJobCreate() {
   const submit = async (): Promise<string> => {
     const title = String(form.value.title ?? '').trim()
     const description = String(form.value.description ?? '').trim()
-    const kitchenId = String(form.value.kitchen_id ?? '').trim()
+    const workplaceId = String(form.value.workplace_id ?? '').trim()
+    const workplaceType = String(form.value.workplace_type ?? '').trim()
 
-    if (!kitchenId) throw new Error('Kitchen is required')
+    if (!workplaceId) throw new Error('Workplace is required')
+    if (!workplaceType) throw new Error('Workplace type is required')
+    if (
+      jobsConfig.workplaces.length > 0 &&
+      !jobsConfig.workplaces.includes(workplaceType)
+    ) {
+      throw new Error('Invalid workplace type')
+    }
     if (!title) throw new Error('Title is required')
     if (!description) throw new Error('Description is required')
 
@@ -63,7 +77,9 @@ export function useJobCreate() {
       ...form.value,
       title,
       description,
-      kitchen_id: kitchenId,
+      workplace_id: workplaceId,
+      workplace_type: workplaceType,
+      workplace_label: String(form.value.workplace_label ?? '').trim(),
       company_id: String(form.value.company_id ?? '').trim(),
       status: form.value.status ?? 'open',
     }

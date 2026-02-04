@@ -8,7 +8,7 @@
           {{ chosenPlaceCard ? 'Selected location' : 'Choose a location' }}
         </h2>
         <p class="text-sm text-gray-500">
-          Type a location name. We store the Kitchen id on the job.
+          Type a location name. We store the workplace reference on the job.
         </p>
       </div>
     </template>
@@ -31,11 +31,11 @@
 </template>
 
 <script setup lang="ts">
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { doc, getDoc } from 'firebase/firestore'
+import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/mutations/useKitchenCreate'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'vuefire'
-import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/mutations/useKitchenCreate'
 import type { JobCreateForm } from '../../../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
 
 const form = defineModel<JobCreateForm>('form', { required: true })
@@ -73,7 +73,18 @@ async function ensureKitchen(id: string, place: PlaceUpsertInput) {
     await createKitchen({ id, place, website: '' })
   }
 
-  form.value = { ...form.value, kitchen_id: id }
+  const label =
+    typeof place.formatted_address === 'string'
+      ? place.formatted_address
+      : typeof place.name === 'string'
+        ? place.name
+        : ''
+  form.value = {
+    ...form.value,
+    workplace_type: 'kitchen',
+    workplace_id: id,
+    workplace_label: label,
+  }
   chosenPlace.value = place
   chosenPlaceId.value = id
 }

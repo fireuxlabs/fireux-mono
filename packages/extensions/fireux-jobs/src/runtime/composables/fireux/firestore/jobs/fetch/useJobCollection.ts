@@ -1,8 +1,14 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
+import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
 import { computed } from 'vue'
-import type { Job, JobResolved } from '../../../../../models/objects/job.model'
+import type { Job } from '../../../../../models/objects/job.model'
+import { resolveWorkplace, resolveWorkplaceMeta } from '../../../../../workplace/resolveWorkplace'
+
+type MiseboxJobResolved = Job & {
+  kitchen?: Kitchen | null
+}
 
 export function useJobCollection() {
   const fireUXConfig = useFireUXConfig()
@@ -20,15 +26,19 @@ export function useJobCollection() {
     return map
   })
 
-  const resolvedJobs = computed<JobResolved[]>(() => {
+  const resolvedJobs = computed<MiseboxJobResolved[]>(() => {
     const allJobs = jobs.value ?? []
     return allJobs.map((job) => ({
       ...job,
-      kitchen: job.kitchen_id ? kitchenById.value.get(String(job.kitchen_id)) : null,
+      kitchen: (() => {
+        const { workplaceType } = resolveWorkplaceMeta(job)
+        const workplace = resolveWorkplace(job, { kitchens: kitchenById.value })
+        return workplaceType === 'kitchen' ? ((workplace as Kitchen) ?? null) : null
+      })(),
     }))
   })
 
-  const appJobs = computed<JobResolved[]>(() => {
+  const appJobs = computed<MiseboxJobResolved[]>(() => {
     const allJobs = resolvedJobs.value ?? []
     if (!fireUXConfig.isTenant || !fireUXConfig.appId) {
       return allJobs

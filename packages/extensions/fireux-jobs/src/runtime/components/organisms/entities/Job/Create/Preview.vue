@@ -17,8 +17,8 @@
 
           <div class="flex flex-wrap items-center gap-2">
             <UBadge size="xs" variant="soft" color="primary">{{ statusLabel }}</UBadge>
-            <UBadge v-if="kitchenId" size="xs" variant="soft" color="neutral">
-              Kitchen: {{ kitchenId }}
+            <UBadge v-if="workplaceId" size="xs" variant="soft" color="neutral">
+              Workplace: {{ workplaceId }}
             </UBadge>
             <UBadge v-if="companyId" size="xs" variant="soft" color="neutral">
               Company: {{ companyId }}
@@ -45,8 +45,9 @@
       <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
         <div class="grid gap-4 md:grid-cols-2">
           <div class="space-y-2">
-            <p class="text-xs uppercase tracking-wide text-gray-400">Location</p>
-            <KitchenPill v-if="kitchenId" :id="kitchenId" />
+            <p class="text-xs uppercase tracking-wide text-gray-400">Workplace</p>
+            <KitchenPill v-if="workplaceType === 'kitchen' && workplaceId" :id="workplaceId" />
+            <p v-else-if="workplaceLabel" class="text-sm text-gray-700">{{ workplaceLabel }}</p>
             <p v-else class="text-sm text-gray-700">Not selected</p>
           </div>
           <div class="space-y-2">
@@ -129,7 +130,9 @@ const agentCard = computed(() => (coreProfile.value ? card(coreProfile.value) : 
 
 const title = computed(() => props.form.title.trim() || 'Untitled job')
 const description = computed(() => props.form.description.trim())
-const kitchenId = computed(() => props.form.kitchen_id.trim())
+const workplaceId = computed(() => props.form.workplace_id.trim())
+const workplaceType = computed(() => props.form.workplace_type.trim())
+const workplaceLabel = computed(() => props.form.workplace_label.trim())
 const companyId = computed(() => props.form.company_id.trim())
 const statusLabel = computed(() => (props.form.status === 'closed' ? 'Closed' : 'Open'))
 
@@ -137,7 +140,7 @@ const { kitchens } = useKitchenFetch()
 const { companies } = useCompanyFetch()
 
 const selectedKitchen = computed(() =>
-  (kitchens.value ?? []).find((kitchen) => String(kitchen.id) === kitchenId.value)
+  (kitchens.value ?? []).find((kitchen) => String(kitchen.id) === workplaceId.value)
 )
 
 const selectedCompany = computed(() =>

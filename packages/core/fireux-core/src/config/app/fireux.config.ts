@@ -186,6 +186,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     },
   })
 
+
   configPwa(nuxt, {
     name: app.name,
     shortName: app.shortName,

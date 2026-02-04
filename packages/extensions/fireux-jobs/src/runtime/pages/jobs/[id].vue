@@ -48,13 +48,16 @@
 
             <UCard>
               <template #header>
-                <h3 class="font-semibold">Location</h3>
+                <h3 class="font-semibold">Workplace</h3>
               </template>
-              <div v-if="job?.kitchen_id" class="space-y-2">
-                <KitchenPill :id="job.kitchen_id" />
-                <p class="text-xs text-gray-500">Kitchen ID: {{ job?.kitchen_id }}</p>
+              <div v-if="job?.workplace_id" class="space-y-2">
+                <KitchenPill v-if="job?.workplace_type === 'kitchen'" :id="job.workplace_id" />
+                <p class="text-xs text-gray-500">Workplace ID: {{ job?.workplace_id }}</p>
+                <p v-if="job?.workplace_label" class="text-xs text-gray-500">
+                  {{ job.workplace_label }}
+                </p>
               </div>
-              <p v-else class="text-sm text-gray-600">No kitchen linked.</p>
+              <p v-else class="text-sm text-gray-600">No workplace linked.</p>
             </UCard>
 
             <UCard>

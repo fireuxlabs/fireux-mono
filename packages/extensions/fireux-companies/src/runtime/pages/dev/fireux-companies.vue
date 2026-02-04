@@ -6,6 +6,8 @@
     />
 
     <UPageBody class="space-y-6">
+      <DevCompanyDummy />
+
       <UCard>
         <DevModel
           :title="'Companies · Model'"

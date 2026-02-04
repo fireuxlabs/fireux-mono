@@ -73,7 +73,8 @@ async function onSubmit() {
 const check = computed(() => {
   const missing: string[] = []
 
-  if (!String(form.value.kitchen_id ?? '').trim()) missing.push('kitchen_id')
+  if (!String(form.value.workplace_id ?? '').trim()) missing.push('workplace_id')
+  if (!String(form.value.workplace_type ?? '').trim()) missing.push('workplace_type')
   if (!String(form.value.title ?? '').trim()) missing.push('title')
   if (!String(form.value.description ?? '').trim()) missing.push('description')
 
@@ -87,7 +88,9 @@ const check = computed(() => {
     missing,
     notCapturedYet: ['schedule fields', 'compensation fields'],
     form: {
-      kitchen_id: String(form.value.kitchen_id ?? '').trim(),
+      workplace_type: String(form.value.workplace_type ?? '').trim(),
+      workplace_id: String(form.value.workplace_id ?? '').trim(),
+      workplace_label: String(form.value.workplace_label ?? '').trim(),
       company_id: String(form.value.company_id ?? '').trim(),
       title: String(form.value.title ?? '').trim(),
       status: String(form.value.status ?? 'open'),

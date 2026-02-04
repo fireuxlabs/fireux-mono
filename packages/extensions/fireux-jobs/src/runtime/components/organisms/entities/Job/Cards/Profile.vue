@@ -2,7 +2,11 @@
   <UCard v-if="card">
     <div class="flex items-start gap-4">
       <!-- KitchenPill and CompanyPill replace avatar, fetched by IDs -->
-      <KitchenPill v-if="card.kitchenId" :id="card.kitchenId" class="shrink-0" />
+      <KitchenPill
+        v-if="card.workplaceType === 'kitchen' && card.workplaceId"
+        :id="card.workplaceId"
+        class="shrink-0"
+      />
       <CompanyPill v-if="card.companyId" :id="card.companyId" class="shrink-0" />
       <div class="min-w-0 flex-1 space-y-1">
         <div class="flex items-center gap-2">

@@ -2,7 +2,6 @@
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
 
 /**
  * Job (canonical Firestore shape)
@@ -33,6 +32,17 @@ export type JobType = 'einsatz' | 'misebox' | 'fixed' | 'permanent'
  */
 export type JobPayUnit = 'hour' | 'shift' | 'day'
 
+/**
+ * Workplace type (ecosystem-configured)
+ * Keep flexible: each app/ecosystem declares allowed workplace types.
+ *
+ * Examples:
+ * - misebox: 'kitchen'
+ * - cleanbox: 'house' | 'office' | 'school'
+ * - logistics: 'truck' | 'warehouse' | 'ship'
+ */
+export type WorkplaceType = string
+
 // 🔑 Runtime canonical Job (source of truth)
 export const Job = {
   /** Firestore document ID */
@@ -40,21 +50,24 @@ export const Job = {
 
   /**
    * Employer reference (billing / ownership)
-   * One company can own many kitchens.
+    * One company can own many workplaces.
    */
   company_id: '' as string,
 
   /**
    * Work site reference (value optional)
-   * - kitchen_id: fixed site identity (safe to fetch + hydrate)
-   * - location_label: fallback for mobile/variable locations (ships, food trucks)
+   *
+   * - workplace_type: string discriminator (configured by the app)
+   * - workplace_id: fixed site identity (safe to fetch + hydrate)
+   * - workplace_label: fallback for mobile/variable locations (ships, food trucks)
    *
    * Rules:
-   * - kitchen_id is always present as a field
-   * - '' means "no fixed kitchen"
+   * - workplace_type is always present as a field ('' means unset/unknown)
+   * - workplace_id is always present as a field ('' means "no fixed workplace")
    */
-  kitchen_id: '' as string,
-  location_label: '' as string,
+  workplace_type: '' as WorkplaceType,
+  workplace_id: '' as string,
+  workplace_label: '' as string,
 
   /** Type (product layer) */
   job_type: 'permanent' as JobType,
@@ -98,10 +111,10 @@ export type Job = {
 
 /**
  * Read-time enrichment only (never stored)
- * Kitchen can hydrate Place internally using its id.
+ * Ecosystems can hydrate workplace_id to a concrete entity (kitchen, ship, truck).
  */
 export type JobResolved = Job & {
-  kitchen?: Kitchen | null
+  workplace?: unknown | null
 }
 
 /**

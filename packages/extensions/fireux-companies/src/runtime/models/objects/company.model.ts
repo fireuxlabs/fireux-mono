@@ -29,8 +29,26 @@ export type Company = {
   [K in keyof typeof Company]: (typeof Company)[K]
 }
 
-/** Hydrated runtime view (record + place snapshot). */
-export type CompanyView = Company & Partial<Place>
+/**
+ * Read-time enrichment only (never stored)
+ * Company is a thin record that can be hydrated from Place.
+ */
+export type CompanyView = Company &
+  Partial<
+    Pick<
+      Place,
+      | 'name'
+      | 'short_name'
+      | 'short_address'
+      | 'formatted_address'
+      | 'lat'
+      | 'lng'
+      | 'image_url'
+      | 'image_shade'
+      | 'claimed_by'
+      | 'source'
+    >
+  >
 
 export type CompanyCreateInput = Omit<Company, 'created_at' | 'updated_at'>
 export type CompanyUpdateInput = Partial<Omit<CompanyCreateInput, 'id'>>
