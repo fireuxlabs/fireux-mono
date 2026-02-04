@@ -14,18 +14,13 @@
     </template>
 
     <div class="flex flex-wrap gap-2">
-      <button
-        v-for="kitchen in dummyKitchenHydratedList"
-        :key="kitchen.id"
-        type="button"
-        class="rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary"
-        @click="selectKitchen(kitchen)"
-      >
-        <KitchenCardsPill
-          v-if="pill(kitchen as Kitchen)"
-          v-bind="pill(kitchen as Kitchen)"
-        />
-      </button>
+      <KitchenCardsPill
+        v-for="item in pillItems"
+        :key="item.kitchen.id"
+        v-bind="item.card"
+        action
+        @action="selectKitchen(item.kitchen)"
+      />
     </div>
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -88,6 +83,15 @@ const dummyKitchen = computed(() => {
 const selectKitchen = (kitchen: Kitchen) => {
   selectedId.value = String(kitchen.id)
 }
+
+const pillItems = computed(() =>
+  dummyKitchenHydratedList
+    .map((kitchen) => ({
+      kitchen,
+      card: pill(kitchen) as ReturnType<typeof pill>,
+    }))
+    .filter((item) => Boolean(item.card))
+)
 
 const dummyPill = computed(() => pill(dummyKitchen.value))
 const dummyCell = computed(() => cell(dummyKitchen.value))

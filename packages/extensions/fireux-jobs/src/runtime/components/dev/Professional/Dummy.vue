@@ -13,7 +13,7 @@
           v-for="(pillItem, index) in pillList"
           :key="pillItem.displayName"
           type="button"
-          class="rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary"
+          class="rounded-full text-left outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary"
           @click="selectedIndex = index"
         >
           <OrganismsProfilesProfessionalCardsPill v-bind="pillItem" />

@@ -11,15 +11,13 @@
 
     <div class="space-y-4">
       <div class="flex flex-wrap gap-2">
-        <button
+        <JobCardsPill
           v-for="(surface, index) in jobSurfaces"
           :key="surface.job.id"
-          type="button"
-          class="rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary"
-          @click="selectedIndex = index"
-        >
-          <JobCardsPill v-bind="surface.pill" />
-        </button>
+          v-bind="surface.pill"
+          action
+          @action="selectedIndex = index"
+        />
       </div>
 
       <JobCardsPreview

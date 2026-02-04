@@ -14,18 +14,13 @@
     </template>
 
     <div class="flex flex-wrap gap-2">
-      <button
-        v-for="place in dummyPlaceList"
-        :key="String(place.id)"
-        type="button"
-        class="rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary"
-        @click="selectPlace(place)"
-      >
-        <PlaceCardsPill
-          v-if="pill(buildStoredPlace(place))"
-          v-bind="pill(buildStoredPlace(place))"
-        />
-      </button>
+      <PlaceCardsPill
+        v-for="item in pillItems"
+        :key="item.placeId"
+        v-bind="item.card"
+        action
+        @action="selectPlace(item.place)"
+      />
     </div>
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -99,6 +94,20 @@ const dummyPlaceHydrated = computed<Place>(() => ({
   ...dummyPlaceStored.value,
   ...dummyPlaceGoogle,
 }))
+
+const pillItems = computed(() =>
+  dummyPlaceList
+    .map((place) => {
+      const stored = buildStoredPlace(place)
+      const card = pill(stored)
+      return {
+        place,
+        placeId: String(place.id ?? ''),
+        card,
+      }
+    })
+    .filter((item) => Boolean(item.card))
+)
 
 const dummyPill = computed(() => pill(dummyPlaceStored.value))
 const dummyCell = computed(() => cell(dummyPlaceStored.value))
