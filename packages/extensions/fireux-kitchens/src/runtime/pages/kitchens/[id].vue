@@ -11,27 +11,13 @@
           >
             Back
           </UButton>
-
           <UButton
-            v-if="canEditAsAdmin"
             size="xs"
             color="primary"
-            icon="i-lucide-pencil"
-            :disabled="!docId"
-            :to="editTo"
+            icon="i-lucide-layout-dashboard"
+            :to="dashboardTo"
           >
-            You are admin of this app. You can edit this kitchen
-          </UButton>
-          <UButton
-            v-if="canEditAsClaimer"
-            size="xs"
-            variant="soft"
-            color="primary"
-            icon="i-lucide-pencil"
-            :disabled="!docId"
-            :to="editTo"
-          >
-            You have claimed this kitchen. You can edit it
+            Open Kitchen Dashboard
           </UButton>
         </template>
       </UPageHeader>
@@ -57,35 +43,24 @@
 
           <UCard>
             <template #header>
-              <div class="text-sm font-semibold">Claim</div>
+              <div class="text-sm font-semibold">Kitchen Dashboard</div>
             </template>
-            <div class="flex items-center gap-3">
-              <span class="text-xs text-gray-500">Claimed by</span>
-              <OrganismsUserCardsPill
-                v-if="claimedUserPill"
-                v-bind="claimedUserPill"
-                :show-subtitle="false"
-                :link="Boolean(claimedUserPill.to)"
-              />
-              <span v-else class="text-xs text-gray-500">—</span>
-            </div>
-            <div v-if="showClaimButton" class="pt-3">
+            <div class="space-y-2 text-sm text-dimmed">
+              <p>Upgrade to unlock team, inventory, and operational tools.</p>
               <UButton
                 size="xs"
                 variant="soft"
                 color="primary"
-                :loading="isClaiming"
-                :disabled="isClaiming"
-                @click="onClaim"
+                :to="dashboardTo"
               >
-                Claim this business
+                Upgrade to Kitchen Dashboard
               </UButton>
             </div>
           </UCard>
 
           <UCard>
             <template #header>
-              <div class="text-sm font-semibold">Details</div>
+              <div class="text-sm font-semibold">Location</div>
             </template>
 
             <div class="space-y-2 text-sm">
@@ -113,13 +88,12 @@
             </div>
           </UCard>
 
-          <DevJson
-            v-if="isDev && kitchen"
-            :title="'Kitchen (Doc)'"
-            context="Kitchen detail page · kitchens/[id] · hydrated kitchen doc"
-            :data="kitchen"
-            :default-open="false"
-          />
+          <UCard>
+            <template #header>
+              <div class="text-sm font-semibold">Active jobs</div>
+            </template>
+            <p class="text-sm text-dimmed">No active jobs listed yet.</p>
+          </UCard>
         </div>
       </UPageBody>
     </UPage>
@@ -133,12 +107,7 @@
 <script setup lang="ts">
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceClaim'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useKitchenFetch } from '../../composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from '../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../models/objects/kitchen.model'
@@ -156,8 +125,8 @@ const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const editTo = computed(() =>
-  docId ? `/kitchens/edit/${encodeURIComponent(docId)}` : '/kitchens'
+const dashboardTo = computed(() =>
+  docId ? `/kitchens/dashboard/${encodeURIComponent(docId)}` : '/kitchens'
 )
 
 const { kitchen: fetchKitchen } = useKitchenFetch()
@@ -169,29 +138,6 @@ const kitchen = computed<Kitchen | null>(
 
 const { profile } = useKitchenInterface()
 const kitchenProfile = computed(() => profile(kitchen.value))
-const isDev = import.meta.dev
-
-const claimedBy = computed(() =>
-  String(
-    (kitchen.value as any)?.claimed_by ??
-    (kitchen.value as any)?.card?.claimedBy ??
-    ''
-  ).trim()
-)
-const { user: claimedUser } = useUserFetch(claimedBy)
-const { card: userCard } = useUserInterface(claimedUser)
-const claimedUserPill = computed(() => userCard(claimedUser.value))
-const { currentUser, isAdmin } = useUser()
-const isVerifiedUser = computed(() => Boolean((currentUser.value as any)?.verified || isAdmin.value))
-const showClaimButton = computed(() => !claimedBy.value && isVerifiedUser.value)
-const canEditAsAdmin = computed(() => Boolean(isAdmin.value))
-const canEditAsClaimer = computed(() =>
-  Boolean(currentUser.value?.id && currentUser.value.id === claimedBy.value)
-)
-const { claimPlace } = usePlaceClaim()
-const toast = useToastify()
-const isClaiming = ref(false)
-
 const formatValue = (value: unknown) => {
   if (value == null) return ''
   if (Array.isArray(value)) return value.filter(Boolean).join(', ')
@@ -203,23 +149,12 @@ const details = computed(() => {
   const v = kitchen.value
   if (!v) return [] as Array<{ label: string; value: string }>
 
-  const lat = Number(v.lat)
-  const lng = Number(v.lng)
-  const coords =
-    Number.isFinite(lat) && Number.isFinite(lng) ? `${lat.toFixed(6)}, ${lng.toFixed(6)}` : ''
-
   const items = [
-    { label: 'Short name', value: formatValue(v.short_name) },
-    { label: 'Formatted address', value: formatValue(v.formatted_address) },
-    { label: 'Short address', value: formatValue(v.short_address) },
-    { label: 'Search term', value: formatValue((v as any).search_term) },
-    { label: 'Source', value: formatValue(v.source) },
-    { label: 'Coordinates', value: coords },
+    {
+      label: 'Address',
+      value: formatValue(v.formatted_address || v.short_address),
+    },
     { label: 'Website', value: formatValue(v.website) },
-    { label: 'Image URL', value: formatValue((v as any).image_url) },
-    { label: 'Image shade', value: formatValue(v.image_shade) },
-    { label: 'Created', value: formatValue((v as any).created_at) },
-    { label: 'Updated', value: formatValue((v as any).updated_at) },
   ]
 
   return items.filter((item) => item.value)
@@ -234,25 +169,12 @@ const mapUrl = computed(() => {
   return `https://maps.google.com/?q=${lat},${lng}`
 })
 
-const onClaim = async () => {
-  if (isClaiming.value) return
-  if (!docId || !showClaimButton.value) return
-  isClaiming.value = true
-  try {
-    await claimPlace(docId)
-    toast.success('Place claimed')
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Failed to claim place: ${msg}`)
-  } finally {
-    isClaiming.value = false
-  }
-}
-
 const loading = computed(() => !rawDoc && !!docId)
 
 const pageTitle = computed(() => kitchen.value?.name || 'Kitchen')
-const pageDescription = computed(() => kitchen.value?.website || 'Kitchen details.')
+const pageDescription = computed(
+  () => kitchen.value?.short_address || kitchen.value?.formatted_address || 'Kitchen details.'
+)
 
 useHead({
   title: computed(() => `${appName} | ${pageTitle.value}`),

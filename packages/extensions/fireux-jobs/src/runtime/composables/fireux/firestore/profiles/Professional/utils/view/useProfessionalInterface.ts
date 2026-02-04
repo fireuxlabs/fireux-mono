@@ -1,6 +1,6 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
-import { csv, safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { computed } from 'vue'
 import { professionalConfig, type ProfessionalCore, type ProfessionalResolved } from '../../../../../../../models/profiles/Professional/Professional.model'
@@ -53,7 +53,6 @@ export function useProfessionalInterface(
       ? userAvatar
       : ''
     const positions = Array.isArray(p.positions) ? p.positions : []
-    const positionsCsv = csv(positions ?? [])
 
     return {
       id,
@@ -64,7 +63,7 @@ export function useProfessionalInterface(
 
       // Canonical: professional pills are user-hydrated; no profile-title fallback for display name.
       displayName: safeString(u?.display_name),
-      title: positionsCsv || headline,
+      title: headline,
 
       bioShort: summary,
       locationsCsv: '',

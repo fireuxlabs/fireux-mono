@@ -1,6 +1,17 @@
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader :title="pageTitle" :description="pageDescription">
+      <template #ctas>
+        <UButton
+          v-if="canShowQr"
+          size="xs"
+          variant="ghost"
+          color="neutral"
+          icon="i-lucide-qr-code"
+          @click="showBusinessCard = true"
+        />
+      </template>
+    </UPageHeader>
     <UPageBody>
       <div class="mb-4 flex flex-wrap gap-2">
         <UButton
@@ -62,6 +73,18 @@
         />
       </div>
     </UPageBody>
+
+    <UModal v-model="showBusinessCard">
+      <div class="p-4 space-y-3">
+        <div class="text-sm font-semibold">Professional card</div>
+        <OrganismsProfilesProfessionalCardsCell
+          v-if="professionalCard"
+          v-bind="professionalCard"
+          :link="Boolean(professionalCard.to)"
+        />
+        <p v-else class="text-sm text-dimmed">Professional card unavailable.</p>
+      </div>
+    </UModal>
   </UPage>
 </template>
 
@@ -134,6 +157,8 @@ const { ensure } = useProfileEnsure(professionalConfig)
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
 const isDev = import.meta.dev
+const showBusinessCard = ref(false)
+const canShowQr = computed(() => Boolean(sessionUser.value?.id))
 
 const createProfile = async () => {
   if (isCreating.value || !professionalId.value) return

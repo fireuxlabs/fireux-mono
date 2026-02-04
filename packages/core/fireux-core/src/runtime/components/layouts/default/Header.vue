@@ -32,6 +32,16 @@
           data-fireux-header-right
           class="flex items-center justify-end gap-1.5"
         >
+          <UButton
+            v-if="canShowQr"
+            size="sm"
+            variant="ghost"
+            color="neutral"
+            icon="i-lucide-qr-code"
+            aria-label="Show professional card"
+            class="sm:hidden"
+            @click="showBusinessCard = !showBusinessCard"
+          />
           <!-- Signed out => Sign in -->
           <UButton
             v-if="!isAuthenticated"
@@ -71,14 +81,31 @@
         />
       </template>
     </UHeader>
+
+    <UModal
+      v-model="showBusinessCard"
+      :ui="{ overlay: 'bg-black/80' }"
+    >
+      <div class="h-[calc(100vh-4rem)] w-full max-w-none p-4">
+        <OrganismsProfilesProfessionalCardsBusiness
+          :card="professionalCard"
+          :profile-url="professionalUrl"
+          @press="handleBusinessCardPress"
+        />
+      </div>
+    </UModal>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
-import { computed, onErrorCaptured, ref } from '#imports'
+import { computed, navigateTo, onErrorCaptured, ref, useRequestURL } from '#imports'
+import { useProfessionalInterface } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
+import type { ProfessionalApp, ProfessionalCore } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model'
+import { professionalConfig } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model'
 import { useDefaultNav } from '../../../composables/fireux/app/routing/presets'
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useProfileFetch } from '../../../composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 defineOptions({ name: 'LayoutsDefaultHeader' })
@@ -119,6 +146,45 @@ const { getProxiedAvatarUrl } = useAvatarProxy()
 // Guard user access to client only to avoid pulling Firebase on SSR.
 const userApi = import.meta.client ? useUser() : null
 const userRef = userApi?.user ?? computed(() => null)
+const showBusinessCard = ref(false)
+const canShowQr = computed(() => Boolean(professionalUrl.value))
+const requestUrl = useRequestURL()
+
+const professionalId = computed(() => userRef.value?.id ?? null)
+const professionalFetch = import.meta.client
+  ? useProfileFetch<ProfessionalCore, ProfessionalApp>(
+      professionalId,
+      professionalConfig
+    )
+  : null
+const professionalProfile = computed(
+  () => professionalFetch?.profile.coreProfile.value ?? null
+)
+const professionalInterface = professionalFetch
+  ? useProfessionalInterface(professionalFetch.profile)
+  : null
+const professionalCard = computed(() => {
+  if (!professionalInterface || !professionalProfile.value) return null
+  const resolved = {
+    ...professionalProfile.value,
+    user: userRef.value ?? undefined,
+  }
+  return professionalInterface.card(resolved)
+})
+const professionalUrl = computed(() => {
+  const to = professionalCard.value?.to
+  if (!to) return ''
+  const origin = requestUrl?.origin ?? ''
+  if (!origin) return to
+  return new URL(to, origin).toString()
+})
+
+const handleBusinessCardPress = async () => {
+  showBusinessCard.value = false
+  const id = professionalId.value
+  if (!id) return
+  await navigateTo(`/professionals/${id}`)
+}
 
 const avatarSrc = computed(() => {
   const raw = userRef.value?.avatar

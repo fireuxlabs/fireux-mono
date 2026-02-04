@@ -1,11 +1,11 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Dev · Jobs"
-      description="Model shapes for Jobs, Professionals, and Agents."
+      title="Dev · Jobs (Ext)"
+      description="Collection-first view; filter by missing or extra fields (against the runtime Job model)."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="space-y-10">
       <UCard>
         <DevModel
           :title="'Jobs · Model'"
@@ -163,7 +163,33 @@ const agentModelRuntime = AgentCoreRuntime
 const { appJobs } = useJobCollection()
 const { card: makeJobCard } = useJobInterface()
 
-const jobsCollection = computed(() => appJobs.value ?? [])
+const dummyJob = {
+  id: 'dev-job-1',
+  company_id: 'dev-company-1',
+  kitchen_id: 'dev-kitchen-1',
+  title: 'Chef de Partie · Alpine Kitchen',
+  status: 'open',
+  description: 'Seasonal alpine kitchen role with a tight, experienced brigade. Housing included.',
+  employment_type: 'permanent',
+  starts_on: 'asap',
+  source_url: 'https://misebox.app',
+  app_id: undefined,
+  creator_id: undefined,
+  created_at: {},
+  updated_at: {},
+  kitchen: {
+    name: 'Hütten Zauber',
+    short_address: 'St. Moritz, CH',
+    formatted_address: 'St. Moritz, Switzerland',
+    image_url: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=240&q=80',
+  },
+} as const
+
+const jobsCollection = computed(() => {
+  const list = appJobs.value ?? []
+  const hasDummy = list.some((job) => String((job as any)?.id) === dummyJob.id)
+  return hasDummy ? list : [dummyJob as any, ...list]
+})
 
 const {
   driftKind: jobsDriftKind,

@@ -20,4 +20,12 @@ const fireuxConfig = defineFireuxConfig({
 export default defineNuxtConfig({
   ...fireuxConfig,
   css: [...(fireuxConfig.css ?? []), '@/assets/styles/main.css'],
+  pwa: {
+    registerType: 'autoUpdate',
+    workbox: {
+      cleanupOutdatedCaches: true,
+      clientsClaim: true,
+      skipWaiting: true,
+    },
+  },
 })

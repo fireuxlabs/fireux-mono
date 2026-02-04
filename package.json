@@ -67,6 +67,7 @@
     "@nuxt/schema": "4.1.2",
     "@nuxt/ui": "^4.0.0-alpha.2",
     "@types/node": "^22.0.0",
+    "@types/qrcode": "^1.5.6",
     "@typescript-eslint/parser": "^8.50.0",
     "@vueuse/core": "13.9.0",
     "concurrently": "^9.2.0",
@@ -103,6 +104,7 @@
   },
   "packageManager": "pnpm@10.12.1",
   "dependencies": {
-    "image-size": "^2.0.2"
+    "image-size": "^2.0.2",
+    "qrcode": "^1.5.4"
   }
 }
