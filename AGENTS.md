@@ -8,24 +8,24 @@ Repository: fireux-mono
 
 Primary knowledge bases for agents:
 
-- `./copilot-documentation/` — handbook for repo-wide conventions, workflows, and historical context.
+- `./docs/copilot-documentation/` — handbook for repo-wide conventions, workflows, and historical context.
 - `.specify/` and `.github/prompts/` — Spec Kit workspace for live specs, plans, prompts, and task flows.
-  Imported human-oriented docs live under `./copilot-documentation/imported/` and mirror their former locations.
+  Imported human-oriented docs live under `./docs/copilot-documentation/imported/` and mirror their former locations.
 
 Guidance for all agents
 
 - Alignment
 
-  - This is a mono-repo for FireUX projects (core packages, extensions, tenants, apps).
+  - This is a mono-repo for FireUX projects (core packages, extensions, ecosystems, apps).
   - Prefer automation, repeatability, and minimal changes per commit.
-  - Treat `copilot-documentation` as the handbook for conventions and decisions, and `.specify/` as the source for active spec-driven work. Keep both in sync when workflows overlap.
+  - Treat `docs/copilot-documentation` as the handbook for conventions and decisions, and `.specify/` as the source for active spec-driven work. Keep both in sync when workflows overlap.
 
 - Where to look first
 
   1. `.specify/memory/constitution.md` once drafted for current Spec Kit principles and guardrails.
-  2. `copilot-documentation/copilot-00-toc.md` for the handbook table of contents.
-  3. `copilot-documentation/copilot-01-orientation.md` for mission and structure, followed by relevant chapters.
-  4. `copilot-documentation/` subfolders:
+  2. `docs/copilot-documentation/copilot-00-toc.md` for the handbook table of contents.
+  3. `docs/copilot-documentation/copilot-01-orientation.md` for mission and structure, followed by relevant chapters.
+  4. `docs/copilot-documentation/` subfolders:
      - `copilot-adr/` Architectural decisions
      - `copilot-instructions/` Agent operating guides
      - `copilot-appendices/` References and troubleshooting
@@ -34,16 +34,16 @@ Guidance for all agents
 - Routing and decision tree
 
   - For Spec Kit-driven specs, plans, tasks, and implementations: work in `.specify/` using the prompts in `.github/prompts/` as the authoritative workflow.
-  - For repo conventions, workflows, or historical decisions: start in `copilot-documentation/` (not `imported/`).
-  - If the task references a filename that used to exist outside `copilot-documentation`, search `copilot-documentation/imported/<former path>`.
-  - If you need tenant- or app-specific info, search imported docs under `imported/packages/` or `imported/projects/` before asking for clarification.
+  - For repo conventions, workflows, or historical decisions: start in `docs/copilot-documentation/` (not `imported/`).
+  - If the task references a filename that used to exist outside `docs/copilot-documentation`, search `docs/copilot-documentation/imported/<former path>`.
+  - If you need ecosystem- or app-specific info, search imported docs under `imported/packages/` or `imported/projects/` before asking for clarification.
   - Prefer up-to-date ADRs, Spec Kit artifacts, and instructions over legacy reports in `imported/`.
 
 - Authoring conventions for agents
 
-  - Keep changes small and localized; update or add docs under `copilot-documentation` or `.specify/` where appropriate.
-  - Markdown is allowed in `.specify/`, `.github/prompts/`, `copilot-documentation/`, and repo root (`README.md`, `AGENTS.md`). Avoid introducing Markdown elsewhere without approval.
-  - When importing new human docs, place them under `copilot-documentation/imported/` with an agent header indicating the source path and date.
+  - Keep changes small and localized; update or add docs under `docs/copilot-documentation` or `.specify/` where appropriate.
+  - Markdown is allowed in `.specify/`, `.github/prompts/`, `docs/copilot-documentation/`, and repo root (`README.md`, `AGENTS.md`). Avoid introducing Markdown elsewhere without approval.
+  - When importing new human docs, place them under `docs/copilot-documentation/imported/` with an agent header indicating the source path and date.
 
 - Output style
 
@@ -58,29 +58,29 @@ Index and shortcuts
 
 - Core references
 
-  - `copilot-documentation/copilot-01-orientation.md`
-  - `copilot-documentation/copilot-02-architecture.md`
-  - `copilot-documentation/copilot-03-configuration.md`
-  - `copilot-documentation/copilot-04-platform-services.md`
-  - `copilot-documentation/copilot-05-development-workflow.md`
-  - `copilot-documentation/copilot-06-ci-cd.md`
-  - `copilot-documentation/copilot-07-ux-conventions.md`
-  - `copilot-documentation/copilot-08-operations.md`
+  - `docs/copilot-documentation/copilot-01-orientation.md`
+  - `docs/copilot-documentation/copilot-02-architecture.md`
+  - `docs/copilot-documentation/copilot-03-configuration.md`
+  - `docs/copilot-documentation/copilot-04-platform-services.md`
+  - `docs/copilot-documentation/copilot-05-development-workflow.md`
+  - `docs/copilot-documentation/copilot-06-ci-cd.md`
+  - `docs/copilot-documentation/copilot-07-ux-conventions.md`
+  - `docs/copilot-documentation/copilot-08-operations.md`
 
 - ADRs
 
-  - `copilot-documentation/copilot-adr/`
+  - `docs/copilot-documentation/copilot-adr/`
 
 - Appendices
 
-  - `copilot-documentation/copilot-appendices/`
+  - `docs/copilot-documentation/copilot-appendices/`
 
 - Imported human docs
-  - `copilot-documentation/imported/` (mirrors prior paths). Use these as context when referenced by name.
+  - `docs/copilot-documentation/imported/` (mirrors prior paths). Use these as context when referenced by name.
 
 Operating policy
 
-- Agents may edit and create files under `copilot-documentation` as needed (except ADR history edits; add new ADRs instead).
+- Agents may edit and create files under `docs/copilot-documentation` as needed (except ADR history edits; add new ADRs instead).
 - Agents may author Spec Kit artifacts under `.specify/` and maintain associated prompts under `.github/prompts/`.
 - Agents should ensure that only approved Markdown exists outside those directories (repo root `README.md`, `AGENTS.md`, Spec Kit folders, `.github/prompts/`).
 

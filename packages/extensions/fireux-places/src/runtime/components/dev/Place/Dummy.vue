@@ -13,6 +13,21 @@
       </div>
     </template>
 
+    <div class="flex flex-wrap gap-2">
+      <button
+        v-for="place in dummyPlaceList"
+        :key="String(place.id)"
+        type="button"
+        class="rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary"
+        @click="selectPlace(place)"
+      >
+        <PlaceCardsPill
+          v-if="pill(buildStoredPlace(place))"
+          v-bind="pill(buildStoredPlace(place))"
+        />
+      </button>
+    </div>
+
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Pill</div>
@@ -50,11 +65,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
-import { dummyPlaceDocData, dummyPlaceGoogleData } from '../../../../../../../../dummy/place.dummy';
-import { usePlacesInterface } from '../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
-import type { Place } from '../../../models/objects/place.model';
-import { Place as PlaceModelRuntime } from '../../../models/objects/place.model';
+import { computed, onMounted, ref, watch } from 'vue'
+import { dummyPlaceDocDataList, dummyPlaceGoogleData } from '../../../../../../../../dummy/place.dummy'
+import { usePlacesInterface } from '../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import type { Place } from '../../../models/objects/place.model'
+import { Place as PlaceModelRuntime } from '../../../models/objects/place.model'
 
 const emit = defineEmits<{
   (event: 'ready', place: Place): void
@@ -62,25 +77,43 @@ const emit = defineEmits<{
 
 const { pill, cell, preview, profile } = usePlacesInterface()
 
-const dummyPlaceDoc = dummyPlaceDocData as Partial<Place>
+const dummyPlaceList = dummyPlaceDocDataList as Partial<Place>[]
+
+const selectedId = ref(String(dummyPlaceList[0]?.id ?? ''))
+
+const buildStoredPlace = (place: Partial<Place>): Place => ({
+  ...PlaceModelRuntime,
+  ...place,
+})
+
+const selectedPlaceDoc = computed(() =>
+  dummyPlaceList.find((place) => String(place.id) === selectedId.value)
+)
+
+const dummyPlaceDoc = computed(() => selectedPlaceDoc.value ?? dummyPlaceList[0])
 const dummyPlaceGoogle = dummyPlaceGoogleData as Partial<Place>
 
-const dummyPlaceStored: Place = {
-  ...PlaceModelRuntime,
-  ...dummyPlaceDoc,
-}
+const dummyPlaceStored = computed(() => buildStoredPlace(dummyPlaceDoc.value ?? {}))
 
-const dummyPlaceHydrated: Place = {
-  ...dummyPlaceStored,
+const dummyPlaceHydrated = computed<Place>(() => ({
+  ...dummyPlaceStored.value,
   ...dummyPlaceGoogle,
-}
+}))
 
-const dummyPill = computed(() => pill(dummyPlaceStored))
-const dummyCell = computed(() => cell(dummyPlaceStored))
-const dummyPreview = computed(() => preview(dummyPlaceStored))
-const dummyProfile = computed(() => profile(dummyPlaceHydrated))
+const dummyPill = computed(() => pill(dummyPlaceStored.value))
+const dummyCell = computed(() => cell(dummyPlaceStored.value))
+const dummyPreview = computed(() => preview(dummyPlaceStored.value))
+const dummyProfile = computed(() => profile(dummyPlaceHydrated.value))
+
+const selectPlace = (place: Partial<Place>) => {
+  selectedId.value = String(place.id)
+}
 
 onMounted(() => {
-  emit('ready', dummyPlaceStored)
+  emit('ready', dummyPlaceStored.value)
+})
+
+watch(dummyPlaceStored, (next) => {
+  emit('ready', next)
 })
 </script>

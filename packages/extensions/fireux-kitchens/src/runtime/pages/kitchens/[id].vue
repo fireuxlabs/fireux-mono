@@ -154,7 +154,6 @@ const details = computed(() => {
       label: 'Address',
       value: formatValue(v.formatted_address || v.short_address),
     },
-    { label: 'Website', value: formatValue(v.website) },
   ]
 
   return items.filter((item) => item.value)

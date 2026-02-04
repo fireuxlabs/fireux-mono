@@ -25,5 +25,5 @@ navigation: false
 ## What’s inside
 
 - Core pillars: identity, composables canon, data shapes.
-- Task-based guides for building tenants and experiences.
+- Task-based guides for building ecosystems, branded apps, and experiences.
 - Auto-generated navigation from the markdown files in `/docs`.

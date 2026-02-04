@@ -1,0 +1,104 @@
+<template>
+  <UCard>
+    <template #header>
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="space-y-2">
+          <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            Dummy kitchen surfaces
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Preview Pill, Cell, Preview, and Profile surfaces using a hydrated dummy kitchen.
+          </p>
+        </div>
+      </div>
+    </template>
+
+    <div class="flex flex-wrap gap-2">
+      <button
+        v-for="kitchen in dummyKitchenHydratedList"
+        :key="kitchen.id"
+        type="button"
+        class="rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary"
+        @click="selectKitchen(kitchen)"
+      >
+        <KitchenCardsPill
+          v-if="pill(kitchen as Kitchen)"
+          v-bind="pill(kitchen as Kitchen)"
+        />
+      </button>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Pill</div>
+        <KitchenCardsPill
+          v-if="dummyPill"
+          v-bind="dummyPill"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Cell</div>
+        <KitchenCardsCell
+          v-if="dummyCell"
+          v-bind="dummyCell"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Preview</div>
+        <KitchenCardsPreview
+          v-if="dummyPreview"
+          v-bind="dummyPreview"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Profile</div>
+        <KitchenCardsProfile
+          v-if="dummyProfile"
+          :model="dummyProfile"
+        />
+      </div>
+    </div>
+  </UCard>
+</template>
+
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
+import { dummyKitchenHydratedList } from '../../../../../../../../dummy/kitchen.dummy';
+import { useKitchenInterface } from '../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
+import type { Kitchen } from '../../../models/objects/kitchen.model';
+
+const emit = defineEmits<{
+  (event: 'ready', kitchen: Kitchen): void
+}>()
+
+const { pill, cell, preview, profile } = useKitchenInterface()
+
+const selectedId = ref(String(dummyKitchenHydratedList[0]?.id ?? ''))
+
+const dummyKitchen = computed(() => {
+  const selected = dummyKitchenHydratedList.find(
+    (kitchen) => String(kitchen.id) === selectedId.value
+  )
+  return (selected ?? dummyKitchenHydratedList[0]) as Kitchen
+})
+
+const selectKitchen = (kitchen: Kitchen) => {
+  selectedId.value = String(kitchen.id)
+}
+
+const dummyPill = computed(() => pill(dummyKitchen.value))
+const dummyCell = computed(() => cell(dummyKitchen.value))
+const dummyPreview = computed(() => preview(dummyKitchen.value))
+const dummyProfile = computed(() => profile(dummyKitchen.value))
+
+onMounted(() => {
+  emit('ready', dummyKitchen.value)
+})
+
+watch(dummyKitchen, (next) => {
+  emit('ready', next)
+})
+</script>

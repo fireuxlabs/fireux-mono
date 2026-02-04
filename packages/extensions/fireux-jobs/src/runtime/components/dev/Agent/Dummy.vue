@@ -8,9 +8,21 @@
     </template>
 
     <div class="space-y-4">
-      <OrganismsProfilesAgentCardsPill v-bind="pill" />
-      <OrganismsProfilesAgentCardsCell v-bind="cell" />
-      <OrganismsProfilesAgentCardsPreview v-bind="preview" />
+      <div class="flex flex-wrap gap-2">
+        <button
+          v-for="(pillItem, index) in pillList"
+          :key="pillItem.displayName"
+          type="button"
+          class="rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary"
+          @click="selectedIndex = index"
+        >
+          <OrganismsProfilesAgentCardsPill v-bind="pillItem" />
+        </button>
+      </div>
+
+      <OrganismsProfilesAgentCardsPill v-bind="current.pill" />
+      <OrganismsProfilesAgentCardsCell v-bind="current.cell" />
+      <OrganismsProfilesAgentCardsPreview v-bind="current.preview" />
     </div>
   </UCard>
 </template>
@@ -18,9 +30,22 @@
 <script setup lang="ts">
 defineOptions({ name: 'DevAgentDummy' })
 
-import { dummyAgentCell, dummyAgentPill, dummyAgentPreview } from '../../../../../../../../dummy/agent.dummy'
+import { computed, ref } from 'vue'
+import {
+  dummyAgentCellList,
+  dummyAgentPillList,
+  dummyAgentPreviewList,
+} from '../../../../../../../../dummy/agent.dummy'
 
-const pill = dummyAgentPill
-const cell = dummyAgentCell
-const preview = dummyAgentPreview
+const pillList = dummyAgentPillList
+const cellList = dummyAgentCellList
+const previewList = dummyAgentPreviewList
+
+const selectedIndex = ref(0)
+
+const current = computed(() => ({
+  pill: pillList[selectedIndex.value] ?? pillList[0],
+  cell: cellList[selectedIndex.value] ?? cellList[0],
+  preview: previewList[selectedIndex.value] ?? previewList[0],
+}))
 </script>

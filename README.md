@@ -1,5 +1,5 @@
 FireUX Monorepo
 
 - Canonical docs: `docs/`
-- Agent/internal handbook: `copilot-documentation/`
+- Agent/internal handbook: `docs/copilot-documentation/`
 - Prompts: `.github/prompts/`

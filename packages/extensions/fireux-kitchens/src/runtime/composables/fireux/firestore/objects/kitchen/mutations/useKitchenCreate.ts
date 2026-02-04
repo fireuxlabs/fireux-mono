@@ -4,7 +4,6 @@ import type { KitchenCollection, KitchenCreateInput } from '../../../../../../mo
 
 export const KitchenPayload = {
   id: '',
-  website: '',
 }
 
 export const KitchenStampOptions = {

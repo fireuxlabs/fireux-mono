@@ -6,7 +6,9 @@ created: 2025-10-15
 
 # Orientation & Mission
 
-FireUX is an opinionated layer on top of Nuxt 4 + Firebase. Drop in a few env vars, add your branding assets, and you have a working web app with profiles, dashboards, and common objects ready to extend.
+FireUX is an opinionated layer on top of Nuxt 4 + Firebase. Drop in a few env vars, add your branding assets, and you have a working app with profiles, dashboards, and shared objects ready to extend.
+
+FireUX is positioned as a multi-tenant modular SaaS platform. The goal is to launch and operate multiple branded apps per ecosystem from one shared platform core.
 
 We are indie and unknown by default, so this chapter explains what FireUX is, why it exists, and how the repo is laid out so you can get moving fast.
 
@@ -14,7 +16,8 @@ This handbook pairs with the GitHub Spec Kit workspace (`.specify/`, `.github/pr
 
 ## Mission & Pillars
 
-- **Unified experiences**: ship consistent UX across tenants while allowing each ecosystem to extend or theme the surface area it owns.
+- **Unified experiences**: ship consistent UX across branded apps while allowing each ecosystem to extend or theme the surface area it owns.
+- **Ecosystem network effects**: shared professionals and jobs can flow across apps within the same ecosystem to help fill staffing gaps.
 - **Source-first delivery**: every package exports `src/` only; builds happen at publish/deploy time so code review always sees the real source.
 - **Single configuration path**: one way to compose Nuxt apps (`createFireuxConfig`) and one Firebase entry point (VueFire module) keeps behaviour predictable.
 - **Accessible documentation**: humans and agents share this handbook for enduring guidance while Spec Kit tracks active specs and implementation plans.
@@ -25,10 +28,10 @@ This handbook pairs with the GitHub Spec Kit workspace (`.specify/`, `.github/pr
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `packages/core/fireux-core`         | Shared components, composables, config helpers, auto-registered UI primitives.                             |
 | `packages/extensions/*`             | Optional feature slices (for example `fireux-places`, `fireux-jobs`) that layer on top of the core module. |
-| `packages/ecosystem/*`              | Ecosystem bundles that select extensions and contribute tenant-specific pages/configuration.               |
-| `projects/<ecosystem>/<app>`        | Deployable Nuxt apps that wrap tenant modules through `createFireuxConfig`.                                |
+| `packages/ecosystem/*`              | Ecosystem bundles that select extensions and define cross-app behavior (branding defaults, sharing rules, capabilities). |
+| `projects/<ecosystem>/<app>`        | Deployable Nuxt apps that wrap ecosystem modules through `createFireuxConfig`.                              |
 | `scripts/`, `tools/`, `migrations/` | Automation, data backfills, and guard scripts for repo maintenance.                                        |
-| `copilot-documentation/`            | This handbook, appendices, ADRs, and links into package-level docs.                                        |
+| `docs/copilot-documentation/`       | This handbook, appendices, ADRs, and links into package-level docs.                                         |
 
 For historical context, refer to the migration notes in repo history; the previous documentation set was retired on 2025-10-15.
 

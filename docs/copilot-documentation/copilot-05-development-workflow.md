@@ -20,7 +20,7 @@ This chapter describes the standard local workflow, branching expectations, and 
 
 ## Dev env panel
 
-- Location: `http://localhost:<port>/dev` (dev layout landing page). Works across ecosystems; Misebox/Cleanbox keep it job-agnostic.
+- Location: `http://localhost:<port>/dev` (dev layout landing page). Works across ecosystems; branded apps (Misebox, Cleanbox, Niederhorn, etc.) keep it job-agnostic.
 - Backed by `/api/app/env-check`: validates required client/server env vars, Firebase Admin credentials (JSON, split keys, or service-account file), and brand assets dimensions.
 - Panel sections: runtime summary (ecosystem/role/appId/modules), admin SDK status with notes, and optional runtime JSON toggle.
 - If status shows `missing`, add the required env keys or provide Firebase Admin credentials using one of these patterns:
@@ -52,7 +52,7 @@ This chapter describes the standard local workflow, branching expectations, and 
 - Branch naming: `feature/<topic>`, `fix/<issue>`, or `chore/<task>`.
 - Target PRs at `main`. Rebase frequently to keep CI stable.
 - Include check results in the PR description (lint, type-check, targeted tests).
-- If a change affects shared behaviour or workflow, reference the handbook section updated in the same PR.
+- If a change affects shared behavior or workflow, reference the handbook section updated in the same PR.
 
 ## Automation Toolkit
 

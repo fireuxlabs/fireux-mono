@@ -31,8 +31,8 @@ export default defineNuxtConfig(
 `createFireuxConfig`:
 
 - Installs shared modules (Nuxt UI, Nuxt Icon, VueFire, PWA).
-- Deduplicates the module list (extensions can be safely registered by tenants).
-- Mirrors ecosystem metadata into `runtimeConfig.public`.
+- Deduplicates the module list (extensions can be safely registered by ecosystems).
+- Mirrors ecosystem and app metadata into `runtimeConfig.public` so shared modules can resolve scope at runtime.
 - Applies standard Vite, Nitro, and runtime defaults (FS allow list, auto-imports, color config).
 - Accepts `includeCore: false` for exceptional cases where `fireux-core` must be omitted (avoid unless migrating legacy projects).
 
@@ -70,12 +70,14 @@ Notes:
 
 - App env template lives at `templates/.env.app.template` and defines the canonical required keys for every app.
 - Ecosystem config type is defined in `fireux-core/config/ecosystem` (public, shared, committed).
+- App-level branding and role selection live in project configs under `projects/<ecosystem>/<app>/` and are intentionally independent from extension enablement.
+- Cross-app sharing behavior (for example shared professionals/jobs within an ecosystem) should be modeled as explicit ecosystem config/feature flags, not ad-hoc app logic.
 - Firebase credentials can be supplied as JSON (`FIREBASE_SERVICE_ACCOUNT`) or split fields (`FIREBASE_PROJECT_ID`, etc.). `createFireuxConfig` normalizes private keys with newline handling.
 - Service-account file convention (local dev): each ecosystem keeps an uncommitted service account JSON at:
   - `packages/ecosystem/fireux-<ecosystem>/src/config/firebase/service-account.json`
   - Point `GOOGLE_APPLICATION_CREDENTIALS` at this file to enable Firebase Admin scripts and `/api/app/env-check`.
 - Places API access uses `GOOGLE_PLACES_API_KEY`. The helper exposes it via `runtimeConfig.public.googlePlacesApiKey` for both client composables and server handlers.
-- Add new env vars through `copilot-documentation/copilot-appendices/README.md` once populated so they remain discoverable.
+- Add new env vars through `docs/copilot-documentation/copilot-appendices/README.md` once populated so they remain discoverable.
 
 ## Tooling Quick Reference
 

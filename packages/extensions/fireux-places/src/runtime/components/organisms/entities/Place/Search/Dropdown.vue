@@ -34,10 +34,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
-import { loadLogoForPlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
-import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
-import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../models/objects/place.model'
+import { computed, watch } from 'vue';
+import { loadLogoForPlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos';
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
+import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../models/objects/place.model';
 
 
 const props = withDefaults(

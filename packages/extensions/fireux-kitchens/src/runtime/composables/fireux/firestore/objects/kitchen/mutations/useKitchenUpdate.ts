@@ -7,10 +7,7 @@ export function useKitchenUpdate() {
   const base = useDocumentUpdateBase<KitchenCollection>(COLLECTION_PATH, { resolvePath: false })
 
   const updateKitchen = async (kitchenId: string, patch: KitchenUpdateInput) => {
-    const next: KitchenUpdateInput = { ...patch }
-    if (typeof next.website === 'string') next.website = base.cleanString(next.website)
-
-    await base.updateById(kitchenId, next)
+    await base.updateById(kitchenId, patch)
   }
 
   return { updateKitchen }

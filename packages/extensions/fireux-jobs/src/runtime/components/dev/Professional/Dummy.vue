@@ -8,9 +8,21 @@
     </template>
 
     <div class="space-y-4">
-      <OrganismsProfilesProfessionalCardsPill v-bind="pill" />
-      <OrganismsProfilesProfessionalCardsCell v-bind="cell" />
-      <OrganismsProfilesProfessionalCardsPreview v-bind="preview" />
+      <div class="flex flex-wrap gap-2">
+        <button
+          v-for="(pillItem, index) in pillList"
+          :key="pillItem.displayName"
+          type="button"
+          class="rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary"
+          @click="selectedIndex = index"
+        >
+          <OrganismsProfilesProfessionalCardsPill v-bind="pillItem" />
+        </button>
+      </div>
+
+      <OrganismsProfilesProfessionalCardsPill v-bind="current.pill" />
+      <OrganismsProfilesProfessionalCardsCell v-bind="current.cell" />
+      <OrganismsProfilesProfessionalCardsPreview v-bind="current.preview" />
     </div>
   </UCard>
 </template>
@@ -18,12 +30,22 @@
 <script setup lang="ts">
 defineOptions({ name: 'DevProfessionalDummy' })
 
+import { computed, ref } from 'vue'
 import {
-  dummyProfessionalCell,
-  dummyProfessionalPill,
-  dummyProfessionalPreview,
+  dummyProfessionalCellList,
+  dummyProfessionalPillList,
+  dummyProfessionalPreviewList,
 } from '../../../../../../../../dummy/professional.dummy'
-const pill = dummyProfessionalPill
-const cell = dummyProfessionalCell
-const preview = dummyProfessionalPreview
+
+const pillList = dummyProfessionalPillList
+const cellList = dummyProfessionalCellList
+const previewList = dummyProfessionalPreviewList
+
+const selectedIndex = ref(0)
+
+const current = computed(() => ({
+  pill: pillList[selectedIndex.value] ?? pillList[0],
+  cell: cellList[selectedIndex.value] ?? cellList[0],
+  preview: previewList[selectedIndex.value] ?? previewList[0],
+}))
 </script>

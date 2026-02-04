@@ -6,36 +6,37 @@ created: 2025-10-15
 
 # Architecture Snapshot
 
-This chapter summarizes the runtime layers, data flow, and ownership boundaries that define the FireUX platform. Understanding these relationships is essential before modifying modules, tenants, or Nuxt apps.
+This chapter summarizes the runtime layers, data flow, and ownership boundaries that define the FireUX platform. Understanding these relationships is essential before modifying modules, ecosystems, or Nuxt apps.
 
 ## Layered Structure
 
 - **Core (`packages/core/fireux-core`)** provides shared UX primitives, runtime composables, configuration helpers, and auto-registered components.
 - **Extensions (`packages/extensions/*`)** add domain-specific capability (Jobs, Places, etc.). Each extension depends on `fireux-core`, exports its own Nuxt module, and owns the routes, stores, and assets for that feature slice.
-- **Tenants (`packages/ecosystem/*`)** compose extensions for an ecosystem (e.g. Misebox). They configure routing, theming, and tenant-specific pages while delegating shared logic to core/extensions.
-- **Apps (`projects/<ecosystem>/<app>`)** are Nuxt shells that call `createFireuxConfig` to install tenant modules, provide branding, and host deployment-specific configuration.
+- **Ecosystems (`packages/ecosystem/*`)** compose extensions for a domain network (for example hospitality or cleaning). They configure routing, theming, capability flags, and cross-app rules while delegating shared logic to core/extensions.
+- **Apps (`projects/<ecosystem>/<app>`)** are branded Nuxt shells that call `createFireuxConfig` to install ecosystem modules, provide app-specific branding, and host deployment-specific configuration.
 
 ## Data & Auth Flow
 
 - Client Firebase is initialised once via the VueFire module bundled inside `createFireuxConfig`. No package should call `initializeApp` directly.
 - Server-side Firebase Admin usage is restricted to Nitro handlers and utilities; credentials come from `FIREBASE_SERVICE_ACCOUNT` (JSON) or split env vars.
-- Collections follow the `core` vs `apps/<appId>` pattern. Core modules read/write to global collections; tenants default to app-scoped collections unless a scope override is supplied.
+- Collections follow the `core` vs `apps/<appId>` pattern. Core modules read/write to global collections; apps default to app-scoped collections unless a scope override is supplied.
 - Composables expose scoped helpers (e.g. `useUser`, `useFireUXConfig`) that pick the right collection automatically based on the app role.
+- In ecosystems that enable labor sharing, professionals and jobs can be discovered/fulfilled across multiple branded apps under controlled rules (visibility, permissions, and assignment constraints).
 
 ## Module Install Graph
 
 1. Nuxt apps call `createFireuxConfig({ modules: [...] })`.
 2. The helper installs `fireux-core` and shared Nuxt modules (Nuxt UI, VueFire, PWA) and deduplicates additional modules.
-3. Tenants register their own module plus extensions they own; they never install `fireux-core` directly.
-4. Extensions install `fireux-core` and register their own runtime assets to guarantee availability regardless of which tenant consumes them.
+3. Ecosystems register their own module plus extensions they own; they never install `fireux-core` directly.
+4. Extensions install `fireux-core` and register their own runtime assets to guarantee availability regardless of which ecosystem/app consumes them.
 
-Keep module lists single-sourced: if a tenant installs an extension, the app should not list it again.
+Keep module lists single-sourced: if an ecosystem installs an extension, the app should not list it again.
 
 ## Routing Ownership
 
 - Extensions expose their pages through `src/config/pages-config.ts` (see `fireux-places` and `fireux-jobs`).
-- Tenants aggregate routes from installed extensions and add tenant-only screens.
-- Apps own shell-level routes (marketing, auth). Avoid re-declaring routes that belong to an extension or tenant.
+- Ecosystems aggregate routes from installed extensions and add ecosystem-only screens.
+- Apps own shell-level routes (marketing, auth, app-specific onboarding). Avoid re-declaring routes that belong to an extension or ecosystem.
 - Navigation metadata (`definePageMeta({ nav: ... })`) drives the dev layout and should live with the page that exports the route.
 
 ## Documentation Boundaries

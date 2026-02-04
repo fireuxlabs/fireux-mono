@@ -41,10 +41,8 @@ import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/plac
 import { ref } from 'vue'
 import { useFirestore } from 'vuefire'
 import { useKitchenCreate } from '../../../../../composables/fireux/firestore/objects/kitchen/mutations/useKitchenCreate'
-import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/objects/kitchen/mutations/useKitchenUpdate'
 
 const { createKitchen } = useKitchenCreate()
-const { updateKitchen } = useKitchenUpdate()
 const { ensurePlaceExists } = usePlaceSave()
 const db = useFirestore()
 
@@ -83,7 +81,6 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
     const createdId = await createKitchen({
       id,
       place: placeForRecord,
-      website: '',
     })
 
     successId.value = createdId
