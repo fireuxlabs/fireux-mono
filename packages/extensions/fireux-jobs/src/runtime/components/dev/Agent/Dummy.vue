@@ -9,15 +9,13 @@
 
     <div class="space-y-4">
       <div class="flex flex-wrap gap-2">
-        <button
+        <OrganismsProfilesAgentCardsPill
           v-for="(pillItem, index) in pillList"
           :key="pillItem.displayName"
-          type="button"
-          class="rounded-full text-left outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary"
-          @click="selectedIndex = index"
-        >
-          <OrganismsProfilesAgentCardsPill v-bind="pillItem" />
-        </button>
+          v-bind="pillItem"
+          action
+          @action="selectedIndex = index"
+        />
       </div>
 
       <OrganismsProfilesAgentCardsPill v-bind="current.pill" />
