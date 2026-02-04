@@ -4,19 +4,19 @@
       <PlaceCardsDropdownGoogle
         v-if="cell.source === 'google'"
         :name="cell.name"
-        :address="getAddress(cell)"
+        :address="cell.subtitle"
         :image-url="cell.imageUrl"
-        :loading="isLogoLoading(cell)"
         @select="onSelect(cell)"
       />
       <PlaceCardsDropdownFireux
         v-else
         :name="cell.name"
         :short-name="cell.shortName"
-        :address="getAddress(cell)"
+        :address="cell.subtitle"
         :image-url="cell.imageUrl"
         :image-shade="cell.imageShade"
-        :source="cell.source || 'fireux'"
+        :source="cell.source"
+        :show-source="true"
         @select="onSelect(cell)"
       />
     </template>
@@ -35,16 +35,15 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import type { PlaceSearchCell } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
-import { toShortAddress } from '../../../../../composables/fireux/firestore/objects/place/utils/view/formatPlaceAddress'
 import { loadLogoForPlace } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
 import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../models/objects/place.model'
-import PlaceCardsDropdownFireux from '../Cards/Dropdown/Fireux.vue'
-import PlaceCardsDropdownGoogle from '../Cards/Dropdown/Google.vue'
+import PlaceCardsDropdownFireux from '../Cards/Dropdown/fireux.vue'
+import PlaceCardsDropdownGoogle from '../Cards/Dropdown/google.vue'
 
 const props = withDefaults(
   defineProps<{
-    cells?: PlaceSearchCell[] | null
+    cells?: PlaceCard.Card[] | null
   }>(),
   { cells: () => [] }
 )
@@ -53,7 +52,7 @@ const emit = defineEmits<{
   (e: 'select', cell: BasePlace): void
 }>()
 
-const cells = computed(() => (props.cells ?? []) as PlaceSearchCell[])
+const cells = computed(() => (props.cells ?? []) as PlaceCard.Card[])
 
 const logoLoading = new Set<string>()
 
@@ -66,8 +65,7 @@ watch(
       if (card.imageUrl) continue
       if (logoLoading.has(card.id)) continue
       logoLoading.add(card.id)
-      const base = toBasePlace(card)
-      void loadLogoForPlace(base, { timeoutMs: 6000, priority: false })
+      void loadLogoForPlace(card, { timeoutMs: 6000, priority: false })
         .then((url) => {
           if (url) {
             card.imageUrl = url
@@ -81,14 +79,13 @@ watch(
   { immediate: true }
 )
 
-function toBasePlace(card: PlaceSearchCell): BasePlace {
-  const formatted = card.formattedAddress || ''
+function toBasePlace(card: PlaceCard.Card): BasePlace {
   return {
     id: card.id,
-    name: card.name || '',
+    name: card.name || card.title || '',
     short_name: card.shortName || '',
-    formatted_address: formatted,
-    short_address: toShortAddress(formatted),
+    formatted_address: card.formattedAddress || card.subtitle || '',
+    short_address: card.shortAddress || '',
     lat: (card as any).lat ?? 0,
     lng: (card as any).lng ?? 0,
     image_url: card.imageUrl || '',
@@ -98,19 +95,8 @@ function toBasePlace(card: PlaceSearchCell): BasePlace {
   }
 }
 
-function onSelect(card: PlaceSearchCell) {
+function onSelect(card: PlaceCard.Card) {
   emit('select', toBasePlace(card))
-}
-
-function getAddress(card: PlaceSearchCell) {
-  if (card.source === 'google') {
-    return card.formattedAddress || ''
-  }
-  return card.shortAddress || toShortAddress(card.formattedAddress) || ''
-}
-
-function isLogoLoading(card: PlaceSearchCell) {
-  return logoLoading.has(card.id)
 }
 </script>
 
