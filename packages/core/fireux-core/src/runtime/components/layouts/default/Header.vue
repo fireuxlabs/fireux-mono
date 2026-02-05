@@ -83,6 +83,7 @@
     </UHeader>
 
     <UModal
+      v-if="canShowQr && showBusinessCard"
       v-model="showBusinessCard"
       :ui="{ overlay: 'bg-black/80' }"
     >
@@ -98,7 +99,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, navigateTo, onErrorCaptured, onMounted, ref, useRequestURL, watch } from '#imports'
+import { computed, navigateTo, onErrorCaptured, ref, useRequestURL, watch } from '#imports'
+import { onMounted } from 'vue'
 import { useProfessionalInterface } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import type { ProfessionalApp, ProfessionalCore } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model'
 import { professionalConfig } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model'
@@ -147,15 +149,10 @@ const { getProxiedAvatarUrl } = useAvatarProxy()
 const userApi = import.meta.client ? useUser() : null
 const userRef = userApi?.user ?? computed(() => null)
 const showBusinessCard = ref(false)
-const canShowQr = computed(() => Boolean(professionalUrl.value))
 const requestUrl = useRequestURL()
 
 onMounted(() => {
   showBusinessCard.value = false
-})
-
-watch(canShowQr, (enabled) => {
-  if (!enabled) showBusinessCard.value = false
 })
 
 const professionalId = computed(() => userRef.value?.id ?? null)
@@ -185,6 +182,11 @@ const professionalUrl = computed(() => {
   const origin = requestUrl?.origin ?? ''
   if (!origin) return to
   return new URL(to, origin).toString()
+})
+const canShowQr = computed(() => Boolean(professionalCard.value && professionalUrl.value))
+
+watch(canShowQr, (enabled: boolean) => {
+  if (!enabled) showBusinessCard.value = false
 })
 
 const handleBusinessCardPress = async () => {

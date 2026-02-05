@@ -133,15 +133,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     ...(app.modules || []),
   ]
 
-  // Prefer Node's built-in SQLite (Node >= 22.5) to avoid native addon deps.
-  // Nuxt Content will otherwise default to better-sqlite3 in Node.
-  ;(nuxt as any).content = {
-    ...((nuxt as any).content || {}),
-    experimental: {
-      ...(((nuxt as any).content || {}).experimental || {}),
-      sqliteConnector: 'native',
-    },
-  }
+
 
   nuxt.css = [
     'fireux-core/runtime/assets/styles/main.css',
