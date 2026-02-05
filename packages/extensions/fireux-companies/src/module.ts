@@ -1,9 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import type { Nuxt, NuxtModule } from '@nuxt/schema'
-import {
-  ensureRuntimeConfigBuckets,
-  exposeRuntimeAlias,
-} from 'fireux-core/config/module/runtime-layer'
+import type { Nuxt } from '@nuxt/schema'
+import { exposeRuntimeAlias } from 'fireux-core/config/module/runtime-layer'
 import { configureComponents } from './config/module/components-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureLayouts } from './config/module/layouts-config'
@@ -17,18 +14,27 @@ export interface ModuleOptions {
   prefix?: string
 }
 
-const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
+declare module '@nuxt/schema' {
+  interface NuxtConfig {
+    fireuxCompanies?: Partial<ModuleOptions>
+  }
+  interface NuxtOptions {
+    fireuxCompanies?: Partial<ModuleOptions>
+  }
+}
+
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-companies',
     version: '2.0.0',
     configKey: 'fireuxCompanies',
+    compatibility: { nuxt: '^4.1.0' },
   },
   defaults: { prefix: 'Fire' },
   async setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
     const runtimeDir = resolver.resolve('./runtime')
 
-    ensureRuntimeConfigBuckets(nuxt, 'companies')
     configureRuntime(nuxt, 'companies')
     configurePlugins(resolver)
     configureComposables(resolver)
@@ -41,14 +47,8 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
 
     exposeRuntimeAlias(nuxt, '#fireux-companies', runtimeDir)
     registerCompanyPages(nuxt, resolver)
-
-    nuxt.hook('ready', () => {
-      console.log('fireux-companies: module configured')
-    })
   },
 })
-
-export default module
 
 function registerCompanyPages(nuxt: Nuxt, resolver: any) {
   const pagesToInject = [

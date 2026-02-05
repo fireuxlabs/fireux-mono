@@ -13,23 +13,23 @@
     "./config/app/*": "./src/config/app/*.ts",
     "./config/app/runtime": {
       "types": "./src/config/app/runtime.ts",
-      "default": "./src/config/app/runtime.mjs"
+      "default": "./src/config/app/runtime.ts"
     },
     "./config/module/module-helpers": {
       "types": "./src/config/module/module-helpers.ts",
-      "default": "./src/config/module/module-helpers.mjs"
+      "default": "./src/config/module/module-helpers.ts"
     },
     "./config/module/runtime-config": {
       "types": "./src/config/module/runtime-config.ts",
-      "default": "./src/config/module/runtime-config.mjs"
+      "default": "./src/config/module/runtime-config.ts"
     },
     "./config/module/runtime-layer": {
       "types": "./src/config/module/runtime-layer.ts",
-      "default": "./src/config/module/runtime-layer.mjs"
+      "default": "./src/config/module/runtime-layer.ts"
     },
     "./config/module/pages-config": {
       "types": "./src/config/module/pages-config.ts",
-      "default": "./src/config/module/pages-config.mjs"
+      "default": "./src/config/module/pages-config.ts"
     },
     "./config/module/*": "./src/config/module/*.ts",
     "./config/nuxt/*": "./src/config/nuxt/*.ts",
@@ -42,6 +42,7 @@
       "types/*": ["src/types/*.ts"],
       "types/app/*": ["src/types/app/*.ts"],
       "config/app/*": ["src/config/app/*.ts"],
+      "config/app/runtime": ["src/config/app/runtime.ts"],
       "config/module/*": ["src/config/module/*.ts"],
       "config/nuxt/*": ["src/config/nuxt/*.ts"],
       "runtime/*": ["src/runtime/*"]

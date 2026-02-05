@@ -124,7 +124,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     '@nuxt/eslint',
     '@nuxt/ui',
     '@nuxt/icon',
-    '@nuxt/content',
     `fireux-${app.ecosystem}`,
     // VueFire/Firebase wiring lives in fireux-nuxtfire.
     'fireux-nuxtfire',

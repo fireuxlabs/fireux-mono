@@ -1,7 +1,4 @@
-import {
-  ensureRuntimeConfigBuckets,
-  exposeRuntimeAlias,
-} from 'fireux-core/config/module/runtime-layer'
+import { exposeRuntimeAlias } from 'fireux-core/config/module/runtime-layer'
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import { configureComponents } from './config/module/components-config'
@@ -42,7 +39,6 @@ export default defineNuxtModule({
     const resolver = createResolver(import.meta.url)
     const runtimeDir = resolver.resolve('./runtime')
 
-    ensureRuntimeConfigBuckets(nuxt, 'products')
     configureRuntime(nuxt, 'products')
     configurePlugins(resolver)
     configureComposables(resolver)

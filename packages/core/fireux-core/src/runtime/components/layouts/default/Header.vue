@@ -100,10 +100,10 @@
 
 <script setup lang="ts">
 import { computed, navigateTo, onErrorCaptured, ref, useRequestURL, watch } from '#imports'
-import { onMounted } from 'vue'
 import { useProfessionalInterface } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import type { ProfessionalApp, ProfessionalCore } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model'
 import { professionalConfig } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model'
+import { onMounted } from 'vue'
 import { useDefaultNav } from '../../../composables/fireux/app/routing/presets'
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'

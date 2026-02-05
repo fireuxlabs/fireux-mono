@@ -12,7 +12,6 @@
     "clean": "rimraf .nuxt dist"
   },
   "dependencies": {
-    "@nuxt/content": "^3.6.3",
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
     "firebase-admin": "^12.7.0",

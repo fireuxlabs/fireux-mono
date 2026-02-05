@@ -22,6 +22,21 @@ Conventions for `packages/extensions/*` Nuxt modules so they stay predictable an
 - `src/config/module/*-config.ts` (runtime, pages, models, server, etc.)
 - `src/runtime/{components,composables,models,pages,server}`
 
+## Canonical `module.ts` Flow
+
+- `createResolver(import.meta.url)` once.
+- Compute `runtimeDir` and call `exposeRuntimeAlias(...)`.
+- Configure in this order:
+  1) runtime defaults
+  2) plugins
+  3) composables
+  4) components
+  5) layouts
+  6) models
+  7) pages (ensures runtime layer)
+  8) server (no-op is fine)
+- Avoid `nuxt.hook('ready')` logs in modules.
+
 ## Runtime Layer + Pages
 
 - Ensure the runtime layer **once** (via `ensureRuntimeLayer(resolver, nuxt)` or `ensureRuntimeLayerFromPath(nuxt, runtimeDir)`).

@@ -1,7 +1,4 @@
-import {
-  ensureRuntimeConfigBuckets,
-  exposeRuntimeAlias,
-} from 'fireux-core/config/module/runtime-layer'
+import { exposeRuntimeAlias } from 'fireux-core/config/module/runtime-layer'
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import { configureComponents } from './config/module/components-config'
@@ -11,6 +8,7 @@ import { configureModels } from './config/module/models-config'
 import { configurePages } from './config/module/pages-config'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureRuntime } from './config/module/runtime-config'
+import { configureServer } from './config/module/server-config'
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
@@ -41,7 +39,6 @@ export default defineNuxtModule({
     const resolver = createResolver(import.meta.url)
     const runtimeDir = resolver.resolve('./runtime')
 
-    ensureRuntimeConfigBuckets(nuxt, 'blogs')
     configureRuntime(nuxt, 'blogs')
     configurePlugins(resolver)
     configureComposables(resolver)
@@ -50,6 +47,7 @@ export default defineNuxtModule({
     configureLayouts(resolver, nuxt)
     configureModels(resolver)
     configurePages(resolver, nuxt)
+    configureServer(resolver)
 
     exposeRuntimeAlias(nuxt, '#fireux-blogs', runtimeDir)
 
