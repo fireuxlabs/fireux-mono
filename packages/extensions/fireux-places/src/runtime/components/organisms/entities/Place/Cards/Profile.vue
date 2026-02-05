@@ -1,28 +1,28 @@
 <template>
-  <UCard>
-    <div class="space-y-4">
-      <div v-if="model.coverImage" class="relative overflow-hidden rounded-lg">
-        <img :src="model.coverImage" :alt="model.title" class="h-40 w-full object-cover" />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        <div class="absolute bottom-3 left-3 right-3 flex items-end gap-3">
+  <UCard class="fx-card fx-card--profile">
+    <div class="fx-card__stack fx-card__stack--loose">
+      <div v-if="model.coverImage" class="fx-card__cover">
+        <img :src="model.coverImage" :alt="model.title" class="fx-card__cover-image" />
+        <div class="fx-card__cover-gradient" />
+        <div class="fx-card__cover-content">
           <UAvatar
             :src="model.imageUrl || undefined"
             :alt="model.title"
-            class="bg-white dark:bg-white ring-2 ring-white/80"
+            class="fx-card__cover-avatar"
             size="md"
           />
-          <div class="min-w-0">
-            <div class="truncate text-lg font-semibold text-white">{{ model.title }}</div>
-            <div v-if="model.prop" class="truncate text-xs text-white/80">{{ model.prop }}</div>
-            <div v-if="model.subtitle" class="truncate text-xs text-white/70">{{ model.subtitle }}</div>
+          <div class="fx-card__content">
+            <div class="fx-card__cover-title fx-truncate">{{ model.title }}</div>
+            <div v-if="model.prop" class="fx-card__cover-meta fx-truncate">{{ model.prop }}</div>
+            <div v-if="model.subtitle" class="fx-card__cover-meta fx-truncate">{{ model.subtitle }}</div>
           </div>
-          <div class="ml-auto flex flex-wrap items-center gap-1">
+          <div class="fx-card__cover-badges">
             <UBadge
               v-if="model.verified"
               size="xs"
               variant="soft"
               color="neutral"
-              class="bg-white/20 text-white"
+              class="fx-card__badge fx-card__badge--overlay"
             >
               Verified
             </UBadge>
@@ -31,7 +31,7 @@
               size="xs"
               variant="soft"
               color="neutral"
-              class="bg-white/20 text-white"
+              class="fx-card__badge fx-card__badge--overlay"
             >
               {{ sourceLabel }}
             </UBadge>
@@ -39,21 +39,21 @@
         </div>
       </div>
 
-      <div v-else class="flex items-start gap-3">
+      <div v-else class="fx-card__media fx-card__media--start">
         <UAvatar
           :src="model.imageUrl || undefined"
           :alt="model.title"
-          class="bg-white dark:bg-white"
+          class="fx-card__avatar"
           size="md"
         />
-        <div class="min-w-0 flex-1 space-y-2">
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <div class="truncate text-base font-semibold">{{ model.title }}</div>
-              <div v-if="model.subtitle" class="truncate text-xs text-dimmed">{{ model.subtitle }}</div>
-              <div v-if="model.prop" class="truncate text-xs text-dimmed">{{ model.prop }}</div>
+        <div class="fx-card__content fx-card__stack fx-card__stack--tight">
+          <div class="fx-card__header">
+            <div class="fx-card__content">
+              <div class="fx-card__title fx-card__title--lg">{{ model.title }}</div>
+              <div v-if="model.subtitle" class="fx-card__subtitle">{{ model.subtitle }}</div>
+              <div v-if="model.prop" class="fx-card__subtitle">{{ model.prop }}</div>
             </div>
-            <div class="flex flex-wrap items-center gap-1">
+            <div class="fx-card__badges">
               <UBadge v-if="model.verified" size="xs" variant="soft" color="emerald">Verified</UBadge>
               <UBadge v-if="sourceLabel" size="xs" variant="soft" color="neutral">{{ sourceLabel }}</UBadge>
             </div>
@@ -61,74 +61,74 @@
         </div>
       </div>
 
-      <div class="rounded-md border border-gray-200/60 p-3 text-xs text-dimmed dark:border-gray-800/60">
-        <div class="text-sm font-medium">Basics</div>
-        <div class="mt-1 truncate text-base font-semibold">
+      <div class="fx-card__panel">
+        <div class="fx-card__panel-title">Basics</div>
+        <div class="fx-card__panel-value fx-truncate">
           {{ model.card.name }}
         </div>
-        <div v-if="model.card.shortName" class="truncate text-xs text-dimmed">
+        <div v-if="model.card.shortName" class="fx-card__panel-subtitle fx-truncate">
           {{ model.card.shortName }}
         </div>
-        <div class="mt-1 flex flex-wrap items-center gap-2">
-          <div v-if="model.card.shortAddress" class="truncate">
+        <div class="fx-card__panel-row">
+          <div v-if="model.card.shortAddress" class="fx-truncate">
             {{ model.card.shortAddress }}
           </div>
-          <div v-if="model.card.formattedAddress" class="truncate">
+          <div v-if="model.card.formattedAddress" class="fx-truncate">
             {{ model.card.formattedAddress }}
           </div>
         </div>
       </div>
 
-      <div class="grid gap-2 text-xs text-dimmed sm:grid-cols-3">
-        <div v-if="ratingText" class="rounded-md border border-gray-200/60 p-2 dark:border-gray-800/60">
-          <div class="flex items-center gap-1">
-            <UIcon name="i-lucide-star" class="h-3 w-3" />
-            <span class="font-medium">Rating</span>
+      <div class="fx-card__section-grid fx-card__section-grid--cols">
+        <div v-if="ratingText" class="fx-card__panel fx-card__panel--compact">
+          <div class="fx-card__panel-heading">
+            <UIcon name="i-lucide-star" class="fx-card__icon" />
+            <span>Rating</span>
           </div>
-          <div class="mt-1 text-sm font-semibold">
+          <div class="fx-card__panel-value">
             {{ ratingText }}
-            <span v-if="ratingCountText" class="text-xs font-normal text-dimmed">({{ ratingCountText }})</span>
+            <span v-if="ratingCountText" class="fx-card__panel-subtitle">({{ ratingCountText }})</span>
           </div>
         </div>
-        <div v-if="model.priceLevel" class="rounded-md border border-gray-200/60 p-2 dark:border-gray-800/60">
-          <div class="flex items-center gap-1">
-            <UIcon name="i-lucide-banknote" class="h-3 w-3" />
-            <span class="font-medium">Price</span>
+        <div v-if="model.priceLevel" class="fx-card__panel fx-card__panel--compact">
+          <div class="fx-card__panel-heading">
+            <UIcon name="i-lucide-banknote" class="fx-card__icon" />
+            <span>Price</span>
           </div>
-          <div class="mt-1 text-sm font-semibold">{{ model.priceLevel }}</div>
+          <div class="fx-card__panel-value">{{ model.priceLevel }}</div>
         </div>
-        <div class="rounded-md border border-gray-200/60 p-2 dark:border-gray-800/60">
-          <div class="flex items-center gap-1">
-            <UIcon name="i-lucide-shield" class="h-3 w-3" />
-            <span class="font-medium">Status</span>
+        <div class="fx-card__panel fx-card__panel--compact">
+          <div class="fx-card__panel-heading">
+            <UIcon name="i-lucide-shield" class="fx-card__icon" />
+            <span>Status</span>
           </div>
-          <div class="mt-1 text-sm font-semibold">{{ claimedStatus }}</div>
-          <OrganismsUserCardsPill
-            v-if="claimedUserPill"
-            v-bind="claimedUserPill"
-            :link="Boolean(claimedUserPill.to)"
-            class="mt-2"
-          />
-          <UButton
-            v-if="showClaimButton"
-            size="xs"
-            variant="soft"
-            color="primary"
-            class="mt-2"
-            :loading="isClaiming"
-            :disabled="isClaiming"
-            @click="onClaim"
-          >
-            Claim this business
-          </UButton>
+          <div class="fx-card__panel-value">{{ claimedStatus }}</div>
+          <div class="fx-card__panel-actions">
+            <OrganismsUserCardsPill
+              v-if="claimedUserPill"
+              v-bind="claimedUserPill"
+              :link="Boolean(claimedUserPill.to)"
+            />
+            <UButton
+              v-if="showClaimButton"
+              size="xs"
+              variant="soft"
+              color="primary"
+              :loading="isClaiming"
+              :disabled="isClaiming"
+              @click="onClaim"
+            >
+              Claim this business
+            </UButton>
+          </div>
         </div>
       </div>
 
-      <div v-if="model.about" class="text-sm text-dimmed">
+      <div v-if="model.about" class="fx-card__copy">
         {{ model.about }}
       </div>
 
-      <div v-if="contactItems.length" class="flex flex-wrap gap-2">
+      <div v-if="contactItems.length" class="fx-card__actions">
         <UButton
           v-for="item in contactItems"
           :key="item.key"
@@ -143,7 +143,7 @@
         </UButton>
       </div>
 
-      <div v-if="socialItems.length" class="flex flex-wrap items-center gap-1">
+      <div v-if="socialItems.length" class="fx-card__actions fx-card__actions--tight">
         <UButton
           v-for="item in socialItems"
           :key="item.key"
@@ -157,60 +157,60 @@
         />
       </div>
 
-      <div v-if="tagChips.length" class="flex flex-wrap gap-1">
+      <div v-if="tagChips.length" class="fx-card__chips">
         <UBadge v-for="chip in tagChips" :key="chip" size="xs" variant="soft" color="neutral">
           {{ chip }}
         </UBadge>
       </div>
 
-      <div v-if="model.galleryImages?.length" class="grid grid-cols-3 gap-2">
+      <div v-if="model.galleryImages?.length" class="fx-card__gallery">
         <img
           v-for="image in model.galleryImages"
           :key="image"
           :src="image"
           :alt="model.title"
-          class="h-20 w-full rounded-md object-cover"
+          class="fx-card__gallery-image"
         />
       </div>
 
       <UDivider />
 
-      <div class="grid gap-4 text-xs text-dimmed sm:grid-cols-2">
-        <div class="space-y-2">
-          <div class="flex items-center gap-2 text-sm font-medium">
-            <UIcon name="i-lucide-map-pin" class="h-4 w-4" />
+      <div class="fx-card__detail-grid">
+        <div class="fx-card__stack fx-card__stack--tight">
+          <div class="fx-card__panel-heading">
+            <UIcon name="i-lucide-map-pin" class="fx-card__icon" />
             Details
           </div>
-          <div class="space-y-1">
-            <div><span class="font-medium">Name:</span> {{ model.card.name }}</div>
-            <div v-if="model.card.shortName"><span class="font-medium">Short name:</span> {{ model.card.shortName }}</div>
-            <div v-if="model.card.shortAddress"><span class="font-medium">Short address:</span> {{ model.card.shortAddress }}</div>
-            <div v-if="model.card.formattedAddress"><span class="font-medium">Formatted address:</span> {{ model.card.formattedAddress }}</div>
+          <div class="fx-card__stack">
+            <div><span class="fx-card__detail-label">Name:</span> {{ model.card.name }}</div>
+            <div v-if="model.card.shortName"><span class="fx-card__detail-label">Short name:</span> {{ model.card.shortName }}</div>
+            <div v-if="model.card.shortAddress"><span class="fx-card__detail-label">Short address:</span> {{ model.card.shortAddress }}</div>
+            <div v-if="model.card.formattedAddress"><span class="fx-card__detail-label">Formatted address:</span> {{ model.card.formattedAddress }}</div>
           </div>
         </div>
-        <div v-if="hasContactDetails" class="space-y-2">
-          <div class="flex items-center gap-2 text-sm font-medium">
-            <UIcon name="i-lucide-phone" class="h-4 w-4" />
+        <div v-if="hasContactDetails" class="fx-card__stack fx-card__stack--tight">
+          <div class="fx-card__panel-heading">
+            <UIcon name="i-lucide-phone" class="fx-card__icon" />
             Contact
           </div>
-          <div class="space-y-1">
-            <div v-if="model.phone"><span class="font-medium">Phone:</span> {{ model.phone }}</div>
-            <div v-if="model.email"><span class="font-medium">Email:</span> {{ model.email }}</div>
+          <div class="fx-card__stack">
+            <div v-if="model.phone"><span class="fx-card__detail-label">Phone:</span> {{ model.phone }}</div>
+            <div v-if="model.email"><span class="fx-card__detail-label">Email:</span> {{ model.email }}</div>
             <div v-if="model.website">
-              <span class="font-medium">Website:</span>
+              <span class="fx-card__detail-label">Website:</span>
               <span>{{ model.website }}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div v-if="model.hoursText?.length" class="grid gap-4 text-xs text-dimmed sm:grid-cols-2">
-        <div class="space-y-2">
-          <div class="flex items-center gap-2 text-sm font-medium">
-            <UIcon name="i-lucide-clock" class="h-4 w-4" />
+      <div v-if="model.hoursText?.length" class="fx-card__detail-grid">
+        <div class="fx-card__stack fx-card__stack--tight">
+          <div class="fx-card__panel-heading">
+            <UIcon name="i-lucide-clock" class="fx-card__icon" />
             Hours
           </div>
-          <div class="space-y-0.5">
+          <div class="fx-card__stack">
             <div v-for="line in model.hoursText" :key="line">{{ line }}</div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 <template>
-  <UCard class="overflow-hidden">
-    <div class="space-y-3">
-      <div class="flex items-center gap-3">
+  <UCard class="fx-card fx-card--preview">
+    <div class="fx-card__stack fx-card__stack--spaced">
+      <div class="fx-card__media">
         <UAvatar
           :src="resolvedImageUrl || undefined"
           :alt="name"
@@ -9,11 +9,11 @@
           icon="i-lucide-image"
           :class="avatarShadeClass"
         />
-        <div class="min-w-0 flex-1">
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <div class="truncate text-base font-semibold">{{ name }}</div>
-              <div v-if="formattedAddress" class="truncate text-xs text-dimmed">
+        <div class="fx-card__content">
+          <div class="fx-card__header">
+            <div class="fx-card__content">
+              <div class="fx-card__title fx-card__title--lg">{{ name }}</div>
+              <div v-if="formattedAddress" class="fx-card__subtitle">
                 {{ formattedAddress }}
               </div>
             </div>
@@ -22,19 +22,19 @@
               variant="soft"
               color="neutral"
               size="xs"
-              class="shrink-0"
+              class="fx-card__badge"
             >
               {{ sourceLabel }}
             </UBadge>
           </div>
-          <div v-if="showBody" class="mt-1 line-clamp-2 text-xs text-dimmed">
+          <div v-if="showBody" class="fx-card__body">
             <span v-if="prop">{{ prop }}</span>
-            <span v-else class="italic">missing</span>
+            <span v-else class="fx-card__tagline--empty">missing</span>
           </div>
         </div>
       </div>
 
-      <div v-if="mapUrl" class="flex items-center gap-2">
+      <div v-if="mapUrl" class="fx-card__actions">
         <UButton
           size="xs"
           variant="soft"
@@ -47,22 +47,22 @@
         </UButton>
       </div>
 
-      <div v-if="details?.length" class="space-y-2 text-xs text-dimmed">
+      <div v-if="details?.length" class="fx-card__stack fx-card__stack--tight">
         <div
           v-for="item in details"
           :key="item.label"
-          class="grid gap-0.5"
+          class="fx-card__stack"
         >
-          <div class="text-[11px] font-medium uppercase tracking-wide text-muted">
+          <div class="fx-card__label">
             {{ item.label }}
           </div>
-          <div class="truncate">
+          <div class="fx-truncate">
             {{ formatValue(item.value) }}
           </div>
         </div>
       </div>
 
-      <div v-if="$slots.actions" class="pt-1">
+      <div v-if="$slots.actions">
         <slot name="actions" />
       </div>
     </div>

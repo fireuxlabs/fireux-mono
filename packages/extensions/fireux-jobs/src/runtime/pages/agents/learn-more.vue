@@ -5,7 +5,7 @@
       description="Present your business to the talent you want to hire."
     />
 
-    <UPageBody class="space-y-4 text-sm">
+    <UPageBody class="pagebody">
       <p>
         An Agent Profile represents the business, kitchen, or venue that is
         hiring. It gives professionals a clear sense of who you are before they

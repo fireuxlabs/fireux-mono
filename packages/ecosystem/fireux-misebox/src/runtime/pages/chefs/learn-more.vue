@@ -5,7 +5,7 @@
       description="Highlight your craft for kitchens that need the right talent."
     />
 
-    <UPageBody class="space-y-4 text-sm">
+    <UPageBody class="pagebody">
       <p>
         A Chef Profile shines a light on your station experience, cuisine focus,
         and strengths on the line. It layers on top of your Professional Profile

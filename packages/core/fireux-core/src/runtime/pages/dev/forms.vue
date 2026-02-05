@@ -1,7 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/dev/forms.vue -->
 <template>
   <UPage>
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <UCard class="space-y-2">
         <template #header>
           <div class="flex items-center justify-between gap-3">
@@ -410,7 +410,7 @@ const ensure = async <T extends Record<string, unknown>>(id: string, initial: T)
   const ref = doc(db, 'test', id)
   const snap = await getDoc(ref)
   if (snap.exists()) return
-  await setDocument('test', id, initial, { raw: true })
+  await setDocument('test', id, initial, { stamp: false })
 }
 
 const patch = async <T extends Record<string, unknown>>(
@@ -418,7 +418,7 @@ const patch = async <T extends Record<string, unknown>>(
   current: T | undefined,
   next: Partial<T>
 ) => {
-  await setDocument('test', id, { ...(current ?? {}), ...(next as any) }, { raw: true })
+  await setDocument('test', id, { ...(current ?? {}), ...(next as any) }, { stamp: false })
 }
 
 watchEffect(() => {
@@ -440,7 +440,7 @@ watchEffect(() => {
 })
 
 const updateSingle = async (value: string) =>
-  setDocument('test', 'singlefield', { value }, { raw: true })
+  setDocument('test', 'singlefield', { value }, { stamp: false })
 
 const updateFieldText = async (value: string) =>
   patch<FieldDoc>('field', fieldRef.value, { text: value })
@@ -452,7 +452,7 @@ const updateFieldEmail = async (value: string) =>
   patch<FieldDoc>('field', fieldRef.value, { email: value })
 
 const updateCheckbox = async (value: boolean | null) =>
-  setDocument('test', 'checkbox', { value: Boolean(value) }, { raw: true })
+  setDocument('test', 'checkbox', { value: Boolean(value) }, { stamp: false })
 
 const selectOptions = [
   { label: 'alpha', value: 'alpha' },
@@ -460,10 +460,10 @@ const selectOptions = [
   { label: 'gamma', value: 'gamma' },
 ]
 const updateSelect = async (value: string) =>
-  setDocument('test', 'select', { value }, { raw: true })
+  setDocument('test', 'select', { value }, { stamp: false })
 
 const updateArrayOfStrings = async (items: string[]) =>
-  setDocument('test', 'arrayofstrings', { items }, { raw: true })
+  setDocument('test', 'arrayofstrings', { items }, { stamp: false })
 
 const multiFieldPlaceholders: Record<string, string> = {
   first: 'First name',
@@ -471,13 +471,13 @@ const multiFieldPlaceholders: Record<string, string> = {
   city: 'City',
 }
 const updateMultiField = async (value: Record<string, string>) =>
-  setDocument('test', 'multifield', { value }, { raw: true })
+  setDocument('test', 'multifield', { value }, { stamp: false })
 
 const updateObjectArray = async (items: ObjectArrayItem[]) =>
-  setDocument('test', 'objectarray', { items }, { raw: true })
+  setDocument('test', 'objectarray', { items }, { stamp: false })
 
 const updateSocialLinks = async (links: Record<string, string>) =>
-  setDocument('test', 'sociallinks', { links }, { raw: true })
+  setDocument('test', 'sociallinks', { links }, { stamp: false })
 
 const approveListItem = async (id: string) => {
   const items = listActionsRef.value?.items ?? []
@@ -485,7 +485,7 @@ const approveListItem = async (id: string) => {
     'test',
     'listactions',
     { items: items.filter((x) => x.id !== id) },
-    { raw: true }
+    { stamp: false }
   )
 }
 const rejectListItem = async (id: string) => {
@@ -494,7 +494,7 @@ const rejectListItem = async (id: string) => {
     'test',
     'listactions',
     { items: items.filter((x) => x.id !== id) },
-    { raw: true }
+    { stamp: false }
   )
 }
 
@@ -523,7 +523,7 @@ const updateAvatar = async (file: File) => {
         lastModified: file.lastModified,
       },
     },
-    { raw: true }
+    { stamp: false }
   )
 }
 

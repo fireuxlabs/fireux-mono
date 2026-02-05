@@ -6,7 +6,7 @@
       description="How FireUX collects, uses, and protects your information across every FireUX-powered app."
     />
 
-    <UPageBody class="space-y-8">
+    <UPageBody class="pagebody">
       <p class="text-sm text-gray-500">Last updated: November 29, 2025</p>
 
       <section class="space-y-3">

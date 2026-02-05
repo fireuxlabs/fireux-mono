@@ -5,7 +5,7 @@
       description="How Kitchen records attach to Places."
     />
 
-    <UPageBody class="space-y-8">
+    <UPageBody class="pagebody">
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">Why Kitchens exists</h2>
         <p class="text-sm text-gray-600">

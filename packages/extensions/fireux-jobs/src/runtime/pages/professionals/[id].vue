@@ -12,7 +12,7 @@
         />
       </template>
     </UPageHeader>
-    <UPageBody>
+    <UPageBody class="pagebody">
       <div class="mb-4 flex flex-wrap gap-2">
         <UButton
           v-if="professionalProfile && isAdminUser && professionalId"

@@ -16,7 +16,7 @@
       </template>
     </UPageHeader>
 
-    <UPageBody>
+    <UPageBody class="pagebody">
       <ContentRenderer v-if="page" :value="page" />
 
       <USeparator v-if="surround?.length" />

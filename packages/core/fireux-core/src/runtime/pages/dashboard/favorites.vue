@@ -6,7 +6,7 @@
 
     <template #body>
       <UPage>
-        <UPageBody>
+        <UPageBody class="pagebody">
           <UPageHeader description="Saved items appear as you use the app." />
           <UPageCard variant="subtle" title="No favorites yet">
             <p class="text-sm text-dimmed">You haven’t saved anything yet.</p>

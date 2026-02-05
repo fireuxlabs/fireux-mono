@@ -13,7 +13,7 @@
       </template>
 
       <!-- Main: current docs page -->
-      <UPageBody class="pagebody min-w-0">
+      <UPageBody class="pagebody">
         <header
           class="flex flex-wrap items-start justify-between gap-3 border-b border-gray-200 pb-4 dark:border-gray-800"
         >

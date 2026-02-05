@@ -7,7 +7,7 @@
     <template #body>
       <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
         <UPage>
-          <UPageBody>
+          <UPageBody class="pagebody">
             <UPageCard v-if="pending" variant="subtle">
               <p class="text-sm text-dimmed">Loading app…</p>
             </UPageCard>

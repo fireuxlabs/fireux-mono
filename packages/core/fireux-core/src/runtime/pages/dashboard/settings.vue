@@ -53,7 +53,7 @@ const savePreferences = async () => {
 
     <template #body>
       <UPage>
-        <UPageBody>
+        <UPageBody class="pagebody">
           <UPageHeader
             description="Private account controls. Edit public identity in Profile."
           />

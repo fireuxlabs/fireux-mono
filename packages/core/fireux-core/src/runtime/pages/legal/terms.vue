@@ -6,7 +6,7 @@
       description="These terms govern your use of FireUX and all apps built on the FireUX platform."
     />
 
-    <UPageBody class="space-y-8">
+    <UPageBody class="pagebody">
       <p class="text-sm text-gray-500">Last updated: November 29, 2025</p>
 
       <section class="space-y-3">

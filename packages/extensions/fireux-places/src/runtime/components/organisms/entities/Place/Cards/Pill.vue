@@ -3,7 +3,7 @@
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
     @click="onClick"
-    class="pill"
+    class="fx-card fx-card--pill"
   >
     <UUser
       :name="title"
@@ -12,7 +12,7 @@
       size="sm"
     >
       <template #default>
-        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
+        <div v-if="showBadges && (badges?.length ?? 0)" class="fx-card__badges">
           <UBadge
             v-for="badge in badges"
             :key="badge"

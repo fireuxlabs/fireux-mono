@@ -6,7 +6,7 @@
     />
 
     <!-- section consumer -->
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <PlaceSearchSection
         :type="placeType"
         @confirmed="onConfirmed"

@@ -5,7 +5,7 @@
       description="Model shapes for Chefs and Suppliers."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
         <DevModel
           :title="'Chefs · Model'"

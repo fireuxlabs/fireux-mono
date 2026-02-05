@@ -4,7 +4,6 @@ import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.mod
 import { computed, isRef, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'vuefire'
 import type { Job } from '../../../../../models/objects/job.model'
-import { resolveWorkplace, resolveWorkplaceMeta } from '../../../../../workplace/resolveWorkplace'
 
 type MiseboxJobResolved = Job & {
   kitchen?: Kitchen | null
@@ -35,11 +34,16 @@ export function useJobFetch(
   const job = computed<MiseboxJobResolved | null>(() => {
     const current = data.value ?? null
     if (!current) return null
-    const { workplaceType } = resolveWorkplaceMeta(current)
-    const workplace = resolveWorkplace(current, { kitchens: kitchenById.value })
+    const legacyKitchenId = String((current as any)?.kitchen_id ?? '')
+    const workplaceId = String((current as any)?.workplace_id ?? '') || legacyKitchenId
+    const workplaceType = String((current as any)?.workplace_type ?? '') ||
+      (legacyKitchenId ? 'kitchen' : '')
     return {
       ...current,
-      kitchen: workplaceType === 'kitchen' ? ((workplace as Kitchen) ?? null) : null,
+      kitchen:
+        workplaceType === 'kitchen' && workplaceId
+          ? kitchenById.value.get(String(workplaceId)) ?? null
+          : null,
     }
   })
   const isPending = computed(() => Boolean(pending.value))

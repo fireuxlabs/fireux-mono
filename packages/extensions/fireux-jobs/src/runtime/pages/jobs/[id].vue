@@ -25,7 +25,7 @@
       <template v-else>
         <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <div class="space-y-6">
-            <JobCardsProfile v-if="jobCard" :card="jobCard" />
+            <JobCardsProfile v-if="job" :card="jobCard" :job="job" />
           </div>
 
           <div class="space-y-6">

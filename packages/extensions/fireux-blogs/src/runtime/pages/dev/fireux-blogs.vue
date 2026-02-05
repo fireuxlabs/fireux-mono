@@ -5,7 +5,7 @@
       description="Model shape for Blogs collection."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
         <DevModel
           :title="'Blogs · Model'"

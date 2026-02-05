@@ -5,7 +5,7 @@
       description="Model shape for Companies collection."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <DevCompanyDummy />
 
       <UCard>

@@ -4,7 +4,6 @@ import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/fire
 import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
 import { computed } from 'vue'
 import type { Job } from '../../../../../models/objects/job.model'
-import { resolveWorkplace, resolveWorkplaceMeta } from '../../../../../workplace/resolveWorkplace'
 
 type MiseboxJobResolved = Job & {
   kitchen?: Kitchen | null
@@ -31,9 +30,12 @@ export function useJobCollection() {
     return allJobs.map((job) => ({
       ...job,
       kitchen: (() => {
-        const { workplaceType } = resolveWorkplaceMeta(job)
-        const workplace = resolveWorkplace(job, { kitchens: kitchenById.value })
-        return workplaceType === 'kitchen' ? ((workplace as Kitchen) ?? null) : null
+        const legacyKitchenId = String((job as any)?.kitchen_id ?? '')
+        const workplaceId = String((job as any)?.workplace_id ?? '') || legacyKitchenId
+        const workplaceType = String((job as any)?.workplace_type ?? '') ||
+          (legacyKitchenId ? 'kitchen' : '')
+        if (workplaceType !== 'kitchen' || !workplaceId) return null
+        return kitchenById.value.get(String(workplaceId)) ?? null
       })(),
     }))
   })

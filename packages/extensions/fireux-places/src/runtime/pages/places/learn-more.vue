@@ -5,7 +5,7 @@
       description="How Places help tenants share canonical locations."
     />
 
-    <UPageBody class="space-y-8">
+    <UPageBody class="pagebody">
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">Why Places exists</h2>
         <p class="text-sm text-gray-600">

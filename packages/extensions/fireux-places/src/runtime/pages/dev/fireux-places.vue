@@ -5,7 +5,7 @@
       description="Collection-first view; filter by missing or extra fields (against the runtime Place model)."
     />
 
-    <UPageBody class="space-y-10">
+    <UPageBody class="pagebody">
       <DevPlaceSystem />
     </UPageBody>
   </UPage>

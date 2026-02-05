@@ -5,7 +5,7 @@
       description="Introduce your products to kitchens and venues that need them."
     />
 
-    <UPageBody class="space-y-4 text-sm">
+    <UPageBody class="pagebody">
       <p>
         A Supplier Profile connects your business with chefs, kitchens, and
         hospitality teams looking for trusted partners. It builds on your

@@ -6,7 +6,7 @@
       description="How apps work inside the FireUX runtime."
     />
 
-    <UPageBody class="space-y-4 text-sm">
+    <UPageBody class="pagebody">
       <p>
         Apps are the top-level workspaces that power each FireUX tenant and
         ecosystem. An app defines its identity (name, avatar, wordmarks) and the

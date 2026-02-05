@@ -11,6 +11,7 @@ This folder stores task-specific playbooks for AI agents (for example, how to tr
 Suggested topics:
 
 - [Documentation style (Nuxt UI inspired)](./documentation-style.md)
+- [No hidden fallbacks](./no-fallbacks.md)
 - Documentation maintenance workflow
 - Markdown placement guard usage
 - Navigation metadata updates

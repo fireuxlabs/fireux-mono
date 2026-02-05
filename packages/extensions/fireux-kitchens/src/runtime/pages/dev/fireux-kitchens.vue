@@ -4,7 +4,7 @@
       title="Dev · Kitchens (Ext)"
       description="Model shape for Kitchens collection."
     />
-    <UPageBody class="space-y-10">
+    <UPageBody class="pagebody">
       <DevKitchenSystem />
     </UPageBody>
   </UPage>

@@ -6,7 +6,7 @@
 
     <template #body>
       <UPage>
-        <UPageBody>
+        <UPageBody class="pagebody">
           <UPageHeader
             description="Billing and subscriptions appear when modules enable commerce."
           />

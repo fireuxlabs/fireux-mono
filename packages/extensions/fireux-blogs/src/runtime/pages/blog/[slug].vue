@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageBody>
+    <UPageBody class="pagebody">
       <div v-if="pending" class="space-y-3">
         <USkeleton class="h-6 w-40" />
         <USkeleton class="h-10" />

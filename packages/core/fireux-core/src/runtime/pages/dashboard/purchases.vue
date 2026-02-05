@@ -23,7 +23,7 @@ definePageMeta({
 
     <template #body>
       <UPage>
-        <UPageBody>
+        <UPageBody class="pagebody">
           <UPageHeader
             description="Products you have bought."
           />

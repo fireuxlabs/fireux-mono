@@ -26,6 +26,7 @@ export function resolveWorkplace(
   registries: WorkplaceRegistries = {}
 ): Kitchen | unknown | null {
   const { workplaceId, workplaceType } = resolveWorkplaceMeta(job)
+  const fallbackWorkplace = (job as any)?.workplace ?? null
 
   if (workplaceType === 'kitchen') {
     if (registries.kitchens && workplaceId) {
@@ -33,8 +34,8 @@ export function resolveWorkplace(
     }
 
     const kitchen = (job as any)?.kitchen
-    return kitchen ?? null
+    return kitchen ?? fallbackWorkplace
   }
 
-  return null
+  return fallbackWorkplace
 }

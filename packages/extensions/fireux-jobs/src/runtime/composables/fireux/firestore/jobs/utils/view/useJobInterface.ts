@@ -1,9 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Job, JobResolved } from '../../../../../../models/objects/job.model'
-import {
-  resolveWorkplace,
-  resolveWorkplaceMeta,
-} from '../../../../../workplace/resolveWorkplace'
 
 export namespace JobCard {
   export type Card = {
@@ -31,28 +27,21 @@ export namespace JobCard {
 
 export function useJobInterface() {
   function resolveSubtitle(job: JobResolved): string {
-    const workplace = resolveWorkplace(job)
-    const workplaceLabel =
-      safeString((workplace as any)?.short_address).trim() ||
-      safeString((workplace as any)?.formatted_address).trim() ||
-      safeString((workplace as any)?.name).trim()
-
-    const { workplaceLabel: fallbackLabel } = resolveWorkplaceMeta(job)
-    const fallback = safeString(fallbackLabel).trim() || safeString((job as any)?.location_label).trim()
-    const status = safeString(job.status ?? '').trim()
-    return workplaceLabel || fallback || status
+    const workplace = (job as any)?.workplace as any | null | undefined
+    return safeString(workplace?.short_address).trim()
   }
 
   function map(job: JobResolved): JobCard.Card {
     const id = safeString(job.id).trim()
-    const { workplaceId, workplaceType } = resolveWorkplaceMeta(job)
-    const workplace = resolveWorkplace(job)
+    const workplace = (job as any)?.workplace as any | null | undefined
+    const workplaceId = safeString((job as any)?.workplace_id)
+    const workplaceType = safeString((job as any)?.workplace_type)
 
     return {
       id,
       to: id ? `/jobs/${id}` : '',
 
-      imageUrl: safeString((workplace as any)?.image_url),
+      imageUrl: safeString(workplace?.image_url),
       title: safeString(job.title),
       subtitle: resolveSubtitle(job),
       status: job.status,
@@ -75,10 +64,8 @@ export function useJobInterface() {
   function searchText(job: JobResolved): string {
     // keep it simple; add company/place names later once jobs are hydrated
     const title = safeString(job.title)
-    const status = safeString(job.status ?? '')
-    const location = safeString(
-      (job as any)?.workplace_label ?? (job as any)?.location_label ?? ''
-    )
+    const status = safeString(job.status)
+    const location = safeString((job as any)?.workplace_label)
     const id = safeString(job.id)
     return `${title} ${status} ${location} ${id}`.trim().toLowerCase()
   }

@@ -24,7 +24,7 @@ definePageMeta({
 
     <template #body>
       <UPage>
-        <UPageBody>
+        <UPageBody class="pagebody">
           <UPageHeader
             description="People who follow your updates."
           />

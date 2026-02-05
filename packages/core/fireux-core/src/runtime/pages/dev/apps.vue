@@ -5,7 +5,7 @@
       description="Model shape for Apps collection."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody class="pagebody">
       <UCard variant="subtle">
         <div class="text-xs text-gray-500 dark:text-gray-400">
           Mode:
