@@ -191,6 +191,22 @@ Purpose:
 Planned companion context file:
 - `AI/gpt-chats/fireux-tennat.md` (planned; filename spelling TBD)
 
+### 3.2 Ecosystem baseline (Canon)
+
+Locked decisions:
+- Core modules are internal-only plumbing (never marketed): `fireux-core`, `fireux-ecosystem-controller`, `fireux-nuxtfire`.
+- Ecosystems are mandatory: every app resolves `fireux-${ecosystem}` (no ecosystem-less mode).
+- `fireux-fireux` is the neutral default ecosystem. Its standard domain baseline is:
+  - `fireux-products`
+  - `fireux-blogs`
+- Not standard in `fireux-fireux` (opt-in per ecosystem/app):
+  - `fireux-places` (physical-world bias; not required for purely digital products)
+  - `fireux-companies` (opinionated; promote to baseline only when mature)
+  - Domain-heavy extensions (`fireux-jobs`, `fireux-kitchens`, `fireux-drop`, etc.)
+
+Implementation note (current repo reality):
+- This baseline is currently expressed at the app level via `modules: [...]` in `nuxt.config.ts` (not auto-installed by the ecosystem module).
+
 ---
 
 ## 4. Ruthless Focus Cut (Next 3–6 Months)

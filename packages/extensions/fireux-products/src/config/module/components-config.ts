@@ -1,7 +1,7 @@
 import type { Resolver } from '@nuxt/kit'
 import {
-    registerComponentAliases,
-    registerComponentsDir,
+  registerComponentAliases,
+  registerComponentsDir,
 } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {

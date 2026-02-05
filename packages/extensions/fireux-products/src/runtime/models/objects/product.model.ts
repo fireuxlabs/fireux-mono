@@ -1,12 +1,13 @@
 // FILE: packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts
 
 /**
- * Product models (Firestore-shape oriented).
- * Firestore (typical): products/{id} (implementation may vary by tenant/app)
+ * Product (canonical Firestore shape)
+ * Firestore: apps/{appId}/products/{id}
  *
- * Notes:
- * - Keep this file free of UI/view models.
- * - Some input/helper shapes here are used by services and admin surfaces.
+ * Principles:
+ * - Stored shape only (no UI / view models)
+ * - Default values keep migrations painless
+ * - Empty string = unset
  */
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
@@ -24,30 +25,36 @@ export interface ProductImage {
   order?: number
 }
 
+export type PriceInterval = 'day' | 'week' | 'month' | 'year'
+
+export type PriceType = 'one_time' | 'recurring'
+
+export type BillingScheme = 'per_unit' | 'tiered'
+
 export interface Price {
   id?: string
   currency: string
   unit_amount: number
-  interval?: 'day' | 'week' | 'month' | 'year'
+  interval?: PriceInterval
   interval_count?: number
-  type?: 'one_time' | 'recurring'
-  billing_scheme?: 'per_unit' | 'tiered'
+  type?: PriceType
+  billing_scheme?: BillingScheme
   metadata?: Record<string, any>
 }
 
 export interface DefaultPrice {
   id: string
   unit_amount: number
-  interval?: 'day' | 'week' | 'month' | 'year'
+  interval?: PriceInterval
 }
 
 export interface StripePriceInput {
   currency: string
   unit_amount: number
-  type?: 'one_time' | 'recurring'
-  interval?: 'day' | 'week' | 'month' | 'year'
+  type?: PriceType
+  interval?: PriceInterval
   interval_count?: number
-  billing_scheme?: 'per_unit' | 'tiered'
+  billing_scheme?: BillingScheme
   metadata?: Record<string, any>
 }
 
@@ -58,41 +65,41 @@ export type ProductType = 'physical' | 'digital' | 'service' | 'subscription'
  * (This is what UI + dev drift should target.)
  */
 export const FirebaseProduct = {
-  id: '',
+  id: '' as string,
 
-  name: '',
-  description: '',
-  content: '',
+  name: '' as string,
+  description: '' as string,
+  content: '' as string,
 
-  slug: '',
-  active: false,
+  slug: '' as string,
+  active: true as boolean,
 
   // Media
-  main_image: '',
+  main_image: '' as string,
   images: [] as ProductImage[],
 
   // Optional structured content
   features: [] as ProductFeature[],
 
-  // Commerce
+  // Commerce (prices can be hydrated at read-time; stored shape may keep this empty)
   prices: [] as Price[],
   default_price: {
-    id: '',
-    unit_amount: 0,
-    interval: 'enum:day|week|month|year' as unknown as DefaultPrice['interval'],
+    id: '' as string,
+    unit_amount: 0 as number,
+    interval: 'month' as DefaultPrice['interval'],
   } as DefaultPrice,
-  product_type: 'enum:physical|digital|service|subscription' as unknown as ProductType,
-  track_stock: false,
-  stock: 0 as number | null,
+  product_type: 'service' as ProductType,
+  track_stock: false as boolean,
+  stock: null as number | null,
 
   // Scope
-  appId: '',
+  appId: '' as string,
 
   // Meta bag
   metadata: {} as Record<string, any>,
 
   // Stamps
-  creator_id: undefined as FireuxStamped['creator_id'],
+  creator_id: '' as FireuxStamped['creator_id'],
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
 } as const
@@ -107,3 +114,7 @@ export type ProductCreationInput = Omit<
 >
 
 export type ProductUpdateInput = Partial<Omit<ProductCreationInput, 'appId'>>
+
+// Optional alias for consistency with other runtime models.
+export const Product = FirebaseProduct
+export type Product = FirebaseProduct

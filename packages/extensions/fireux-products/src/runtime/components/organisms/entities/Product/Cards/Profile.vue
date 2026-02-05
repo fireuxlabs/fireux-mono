@@ -12,15 +12,15 @@
 </template>
 
 <script setup lang="ts">
-import type { ProductCardProps } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
+import type { ProductCard } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
 
 const { card, avatar: avatarProp, prop } = defineProps<{
-  card: ProductCardProps
+  card: ProductCard.Card
   avatar?: string | null
   prop?: string
 }>()
 
-const { title, description, priceLabel } = card
-const subtitle = priceLabel ?? description
-const avatar = avatarProp ?? null
+const title = card.title || card.name
+const subtitle = card.subtitle || card.description
+const avatar = avatarProp ?? card.avatarUrl ?? card.imageUrl ?? null
 </script>

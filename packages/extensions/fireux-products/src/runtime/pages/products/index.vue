@@ -1,8 +1,8 @@
 <!-- FILE: packages/extensions/fireux-products/src/runtime/pages/products/index.vue -->
-<!-- FILE: packages/extensions/fireux-products/src/runtime/pages/products/index.vue -->
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
+
     <UPageBody class="pagebody">
       <ProductCTA />
       <ProductCollectionManager :collection="collection" />
@@ -19,19 +19,20 @@ import { useProductFetch } from '../../composables/fireux/firestore/objects/prod
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Products'
-const pageDescription = 'Products catalog.'
+const pageDescription =
+  'Create a product and browse all products available to this runtime.'
 
 definePageMeta({
   layout: 'default',
   title: 'Products',
-  description: 'Products catalog.',
+  description: 'Create and browse products for this runtime.',
   nav: {
     key: 'products',
     label: 'Products',
     icon: 'i-lucide-box',
     order: 20,
-    desktop: false,
-    mobile: false,
+    desktop: true,
+    mobile: true,
     layouts: ['default'],
   },
   name: 'ProductsIndexPage',
@@ -42,4 +43,3 @@ useHead({ title: `${appName} | ${pageTitle}` })
 const { products } = useProductFetch()
 const collection = computed(() => products.value ?? [])
 </script>
-
