@@ -49,52 +49,16 @@
 defineOptions({ name: 'DevProductDummy' })
 
 import { computed, ref } from 'vue'
-import {
-  FirebaseProduct as ProductModelRuntime,
-  type FirebaseProduct,
-} from '../../../models/objects/product.model'
-import { useProductInterface } from '../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
+import { dummyProductSurfaceList } from '../../../../../../../../dummy/product.dummy'
 
-const buildProduct = (product: Partial<FirebaseProduct>): FirebaseProduct => ({
-  ...ProductModelRuntime,
-  ...product,
-})
-
-const dummyProducts: FirebaseProduct[] = [
-  buildProduct({
-    id: 'cleanbox-basic',
-    slug: 'cleanbox-basic',
-    name: 'Cleanbox Basic',
-    description: 'Landing + contact funnel for a single business.',
-    product_type: 'service',
-    default_price: { id: '', unit_amount: 4900, interval: 'month' },
-  }),
-  buildProduct({
-    id: 'cleanbox-pro',
-    slug: 'cleanbox-pro',
-    name: 'Cleanbox Pro',
-    description: 'Branded tenant app + small ongoing improvements.',
-    product_type: 'subscription',
-    default_price: { id: '', unit_amount: 9900, interval: 'month' },
-  }),
-  buildProduct({
-    id: 'misebox-lead',
-    slug: 'misebox-lead',
-    name: 'Misebox Lead',
-    description: 'Visibility + jobs surface for kitchens and venues.',
-    product_type: 'subscription',
-    default_price: { id: '', unit_amount: 14900, interval: 'month' },
-  }),
-]
+const productSurfaces = dummyProductSurfaceList
 
 const selectedIndex = ref(0)
-const currentProduct = computed(
-  () => dummyProducts[selectedIndex.value] ?? dummyProducts[0]
+const current = computed(
+  () => productSurfaces[selectedIndex.value] ?? productSurfaces[0] ?? null
 )
-
-const { card: makeCard } = useProductInterface()
-
-const currentCard = computed(() => makeCard(currentProduct.value))
+const currentProduct = computed(() => current.value?.product ?? null)
+const currentCard = computed(() => current.value?.card ?? null)
 
 const formatMoney = (unitAmount: number, interval?: string) => {
   const amount = Number(unitAmount ?? 0)
@@ -108,6 +72,7 @@ const formatMoney = (unitAmount: number, interval?: string) => {
 
 const currentProp = computed(() => {
   const product = currentProduct.value
+  if (!product) return ''
   const price = formatMoney(
     product.default_price?.unit_amount ?? 0,
     product.default_price?.interval
@@ -117,11 +82,10 @@ const currentProp = computed(() => {
 })
 
 const pillItems = computed(() =>
-  dummyProducts
-    .map((product, index) => {
-      const card = makeCard(product)
-      if (!card) return null
-
+  productSurfaces
+    .map((surface, index) => {
+      const product = surface.product
+      const card = surface.card
       const price = formatMoney(
         product.default_price?.unit_amount ?? 0,
         product.default_price?.interval
@@ -146,9 +110,9 @@ const pillItems = computed(() =>
 
 const currentCell = computed(() => {
   const card = currentCard.value
-  if (!card) return null
-
   const product = currentProduct.value
+  if (!card || !product) return null
+
   const price = formatMoney(
     product.default_price?.unit_amount ?? 0,
     product.default_price?.interval
@@ -167,9 +131,9 @@ const currentCell = computed(() => {
 
 const currentPreview = computed(() => {
   const card = currentCard.value
-  if (!card) return null
-
   const product = currentProduct.value
+  if (!card || !product) return null
+
   const price = formatMoney(
     product.default_price?.unit_amount ?? 0,
     product.default_price?.interval
