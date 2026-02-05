@@ -3,7 +3,6 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 
 import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
-import { DEFAULT_PRODUCT_BILLING_INTERVALS } from 'fireux-core/config/app/products-defaults'
 import { existsSync } from 'fs'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
@@ -41,10 +40,7 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     const pub = (rc.public ||= {}) as Record<string, any>
     const fireux = (pub.fireux ||= {}) as Record<string, any>
     if (!fireux.products || typeof fireux.products !== 'object') {
-      fireux.products = {
-        enabled: true,
-        billingIntervals: [...DEFAULT_PRODUCT_BILLING_INTERVALS],
-      }
+      fireux.products = { enabled: true }
     }
     if (!fireux.blogs || typeof fireux.blogs !== 'object') {
       fireux.blogs = { enabled: true }

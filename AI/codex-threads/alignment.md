@@ -77,7 +77,6 @@ Scope: `use*Interface` siblings across core + extensions, with emphasis on `useP
 
 ## Ecosystem vs App (locked)
 Products (and blogs) are ecosystem defaults, resolved at app initialization, and configurable per app.
-Default billing intervals live in `fireux-core` (`DEFAULT_PRODUCT_BILLING_INTERVALS`) and are referenced by ecosystems + product create UI.
 
 Internal rule:
 - Core enables.

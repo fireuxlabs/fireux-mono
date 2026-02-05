@@ -10,7 +10,6 @@ import { configureServer } from './config/module/server-config'
 
 export type FireuxProductsModuleOptions = {
   productKinds?: string[]
-  billingIntervals?: string[]
   enabled?: boolean
 }
 
@@ -41,9 +40,6 @@ export default defineNuxtModule({
           enabled: options.enabled ?? true,
           ...(Array.isArray(options.productKinds)
             ? { productKinds: options.productKinds }
-            : {}),
-          ...(Array.isArray(options.billingIntervals)
-            ? { billingIntervals: options.billingIntervals }
             : {}),
         }),
       plugins: configurePlugins,

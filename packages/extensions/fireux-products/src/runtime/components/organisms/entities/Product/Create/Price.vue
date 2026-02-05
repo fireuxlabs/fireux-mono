@@ -50,8 +50,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimeConfig } from '#imports'
-import { DEFAULT_PRODUCT_BILLING_INTERVALS } from 'fireux-core/config/app/products-defaults'
 import type { RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
 import { useCreatePricesState } from '../../../../../composables/fireux/firestore/objects/product/Prices/useCreatePricesState'
 import { useCreateProductState } from '../../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
@@ -106,11 +104,7 @@ const price = computed(() => {
   return base
 })
 
-const runtimeBillingIntervals = computed(() => {
-  const cfg = (useRuntimeConfig().public as any)?.fireux?.products ?? {}
-  const intervals = Array.isArray(cfg.billingIntervals) ? cfg.billingIntervals : []
-  return intervals.length ? intervals : [...DEFAULT_PRODUCT_BILLING_INTERVALS]
-})
+const runtimeBillingIntervals = computed(() => ['month', 'year'])
 
 const billingFrequencyOptions = computed<RadioGroupItem[]>(() => {
   const labels: Record<string, string> = {
