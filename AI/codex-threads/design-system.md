@@ -1,8 +1,9 @@
 # FireUX Design System — Codex Thread
 
 Status: **Draft**
-Version: **v1**
+Version: **v2**
 Updated: 2026-02-05
+Previous: v1 (2026-02-05)
 
 This file is a Codex-owned working thread. It is **not canon** and should remain lean.
 Promote decisions into GPT chat canon files once stabilized.
@@ -88,10 +89,18 @@ Promote decisions into GPT chat canon files once stabilized.
 - CTA buttons include direct actions (e.g., `tel:` for phone).
 - Dates formatted using `@internationalized/date` for consistency.
 - Keep global styling centralized and reuse Nuxt UI patterns.
+- Use `UPageBody` with `class="pagebody"` instead of local `space-y-*` spacing hacks.
 
 ---
 
-## 11. Card System (fx-card utilities)
+## 11. Recent Changes (Since v1)
+
+- Added global section styles: `packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/sections.scss` is imported in `packages/core/fireux-core/src/runtime/assets/styles/main.scss`.
+- Introduced `.pagebody` as the standard UPage body layout: flex column, `gap: 1.5rem`, `min-width: 0`.
+
+---
+
+## 12. Card System (fx-card utilities)
 
 Card styling is moving to shared utility classes in `scss/organisms/cards.scss`.
 
@@ -137,7 +146,7 @@ Guidelines:
 
 ---
 
-## 12. Open Items
+## 13. Open Items
 
 - Formalize token naming (colors, spacing, radii) once stabilized.
 - Document canonical component recipes (CTA blocks, hero layouts, testimonials).

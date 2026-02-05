@@ -1,0 +1,289 @@
+# FireUX — Products & Revenue (Codex Thread)
+
+Status: **Active**
+Version: **v1**
+Updated: 2026-02-05
+
+This file is a Codex-owned working thread for “what we can sell” decisions.
+It should stay practical and sale-driven (no platform-theory).
+
+Primary context docs:
+- `AI/gpt-chats/fireux-app.md` (FireUX main company app)
+- `AI/gpt-chats/fireux-fireux.md` (FireUX ecosystem)
+- `AI/gpt-chats/misebox-app.md` (strategic product, slower)
+- `AI/gpt-chats/cleanbox-app.md` (Cleanbox main app)
+- `AI/gpt-chats/richies.md` (real client anchor)
+
+Automation:
+- This file lives under `AI/` and will be picked up by the daily 3 AM scan/versioning.
+
+---
+
+## 1. Current Reality
+
+- Cash constraint is the driver: we need revenue soon.
+- We sell **working apps**, not FireUX as an abstract platform.
+- FireUX exists to let us ship/sell repeatable apps without burning out.
+
+---
+
+## 2. Sanity Check (From Today’s Brainstorm)
+
+These are the key “keep forever” statements:
+
+- Sell working apps, not promises.
+- Ecosystems beat custom work (a known starting point + known cost).
+- White-label is leverage later, not a day-one requirement.
+- FireUX stays lean; it sells indirectly by making apps feel real/legit.
+
+### 2.1 What FireUX Can Sell (Simple Menu)
+
+1. **Branded Business Apps (Primary Product)**
+
+A ready-made app/website for a business.
+- Based on an existing ecosystem (Cleanbox, Misebox)
+- Branded for one company
+- Hosted, maintained, updated
+- Sold as:
+  - One-time setup fee
+  - Monthly subscription
+
+This is the core, easiest sell.
+
+2. **Ecosystem Memberships**
+
+Access to a shared industry network.
+
+Examples:
+- Cleaning companies on Cleanbox
+- Hospitality professionals or kitchens on Misebox
+
+Includes:
+- Public profile/listing
+- Visibility in search
+- Jobs (post or apply)
+
+Sold as:
+- Low monthly fee
+- No dedicated app required
+
+3. **Dedicated Apps Inside an Ecosystem**
+
+A step up from membership.
+- Same ecosystem benefits
+- Plus a private branded app
+- Faster, cheaper than custom development
+- Shares SEO and infrastructure
+
+Sold as:
+- Higher setup fee
+- Higher monthly subscription
+
+4. **White-Label Apps**
+
+Same app, different brand.
+- Re-skinned versions of proven apps
+- Hosted by you
+- “Powered by FireUX” (optional)
+
+Sold as:
+- Monthly license
+- Optional setup fee
+
+Lower volume, higher leverage.
+
+5. **Custom Client Apps**
+
+Bespoke work, but on FireUX.
+- Framed as “built on the FireUX platform”
+- Uses existing systems and rules
+- Not pure freelancing
+
+Sold as:
+- Project fee
+- Optional ongoing subscription
+
+Low volume, high trust.
+
+6. **Paid Add-Ons**
+
+Extras inside existing apps.
+
+Examples:
+- Extra team members
+- Extra profiles
+- Bookings
+- Payments
+- Advanced analytics
+- Push notifications
+
+Sold as:
+- Monthly upgrades
+
+7. **Setup & Onboarding Services**
+
+One-time services.
+
+Examples:
+- App setup
+- Branding
+- Data import
+- Domain & PWA setup
+
+Sold as:
+- Fixed one-off fees
+
+8. **Support & Maintenance Plans**
+
+Peace of mind.
+- Priority support
+- Small changes included
+- Ongoing updates
+
+Sold as:
+- Monthly add-on
+
+9. **Digital Products (Later)**
+
+Developer-facing.
+
+Examples:
+- Boilerplates
+- UI kits
+- Firebase schemas
+- Documentation
+
+Sold as:
+- One-time purchase
+
+Focus (cash-first):
+- Sell **#1** now (Cleanbox tenants), bundling **#7/#8** into setup + subscription.
+- Treat **#2–#6** and **#9** as menu items we only activate after cloning + pricing is stable.
+
+---
+
+## 3. Where `fireux-app` Fits (Important)
+
+`fireux-app` is not the thing customers buy directly.
+
+Role:
+- First-party brand surface (“Built on FireUX”).
+- Host neutral modules (currently: `fireux-products`, `fireux-blogs`).
+- Provide legitimacy for ecosystem apps and client apps.
+
+Constraints (keep it boring on purpose):
+- No pricing page (yet) unless a real sale forces it.
+- No customer onboarding flows unless a real sale forces it.
+- No customer dashboards unless demanded by real usage.
+- No “platform” features unless forced by real sales.
+
+Repo truth:
+- `projects/fireux/fireux-app/nuxt.config.ts` defines `id: fireux-app`, role `global`, modules `fireux-products` + `fireux-blogs`.
+
+### 3.1 FireUX tenant sandbox (future)
+
+Repo:
+- `projects/fireux/tenant`
+
+Purpose:
+- Safe sandbox to test modules + tenant wiring without polluting real ecosystems
+
+Planned companion context file:
+- `AI/gpt-chats/fireux-tennat.md` (planned; filename spelling TBD)
+
+---
+
+## 4. Ruthless Focus Cut (Next 3–6 Months)
+
+### 4.1 One Paying App (Anchor)
+
+Primary anchor:
+- Richie’s (`projects/cleanbox/richies-reinigung`)
+
+Rule:
+- Any feature Richie doesn’t need is suspicious.
+
+### 4.2 One Ecosystem To Push (Revenue Bias)
+
+Near-term push:
+- Cleanbox (fewer roles, fewer legal edges, clearer buyer: business owner)
+
+Long-term strategic:
+- Misebox (bigger vision, heavier operational/legal surface area)
+
+Working split:
+- Cleanbox pays sooner.
+- Misebox matures slower.
+
+### 4.3 Pricing Model (For Now)
+
+Keep it simple:
+- One setup fee.
+- One monthly subscription.
+- No add-ons, no tiers, no options menu (yet).
+
+---
+
+## 5. Product Ladder (Easiest → Hardest)
+
+Order of attack:
+
+1. A real client app (Richie’s) with a boring, stable value proposition.
+2. A reusable ecosystem app (Cleanbox) that can be cloned into tenants fast.
+3. White-label packaging of proven apps (only after (1) + (2) feel repeatable).
+4. Marketplace complexity (Misebox jobs/applications, etc.) only when usage forces it.
+
+Also intentionally defer:
+- Add-ons / support plans / digital products (pricing + support overhead)
+
+---
+
+## 6. What “Cloneable” Means (Technical Definition)
+
+Goal:
+- “Richie’s → new tenant” in under an hour without special-case logic.
+
+Minimum bar:
+- Tenant app can ship with lean modules and branded landing.
+- Global app carries the heavier modules.
+- Config-driven identity: `ecosystem`, `id`, `role`, and `modules` live in `nuxt.config.ts`.
+
+Repo facts observed today:
+- `projects/cleanbox/cleanbox-app` is landing-first today (see `projects/cleanbox/cleanbox-app/app/pages/index.vue` + `projects/cleanbox/cleanbox-app/docs/gap.md`).
+- `projects/cleanbox/richies-reinigung` is tenant + lean modules today (see `projects/cleanbox/richies-reinigung/nuxt.config.ts`).
+
+---
+
+## 7. Language / Legal Safety (Sales Copy Constraint)
+
+We need to keep wording legally safe, but also not self-sabotage conversion.
+
+Watch-outs:
+- “Hire Richie” exists in Richie’s landing today (`projects/cleanbox/richies-reinigung/app/pages/index.vue`).
+- Decide whether that wording is acceptable for a single-company service app.
+
+---
+
+## 8. Next Concrete Steps
+
+1. Define “first paying offer” for Richie’s:
+   - Setup fee amount
+   - Monthly amount
+   - What is included (bullet list)
+   - Subscription boundary: what counts as “small improvements” per month (hard limits)
+2. Make Cleanbox tenant cloning boring:
+   - Tenant template checklist
+   - Branding inputs required (logo/wordmark/cover, colors, contact CTAs)
+3. Reduce promise surface:
+   - Ensure landing CTAs don’t route to non-existent pages (or add placeholders).
+4. Decide FireUX-app’s minimal sales role:
+   - What it must contain to support credibility (and nothing else).
+
+---
+
+## 9. Open Questions (Answer When Ready)
+
+- What is Richie’s actual paid “unit”?
+  - Just a marketing site + contact funnel, or operational tooling soon?
+- Who is the first 10 Cleanbox buyers (profile)?
+- What’s the minimum scope that can be delivered repeatedly without support hell?
