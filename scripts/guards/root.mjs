@@ -28,6 +28,7 @@ const ALLOWED_ROOT_DIRS = new Set([
   // Local-only (ignored, but tolerated)
   'node_modules',
   'dummy',
+  'AI',
 ])
 
 const ALLOWED_ROOT_FILES = new Set([
