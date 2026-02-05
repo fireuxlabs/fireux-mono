@@ -12,6 +12,7 @@ Suggested topics:
 
 - [Documentation style (Nuxt UI inspired)](./documentation-style.md)
 - [No hidden fallbacks](./no-fallbacks.md)
+- [Extensions (Nuxt modules)](./extensions.md)
 - Documentation maintenance workflow
 - Markdown placement guard usage
 - Navigation metadata updates

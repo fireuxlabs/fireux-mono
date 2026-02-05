@@ -2,7 +2,7 @@
 import { existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { NuxtConfig } from 'nuxt/schema'
+import type { NuxtConfig } from '@nuxt/schema'
 
 export function configViteWorkspace(nuxt: NuxtConfig) {
   const currentDir = dirname(fileURLToPath(import.meta.url))

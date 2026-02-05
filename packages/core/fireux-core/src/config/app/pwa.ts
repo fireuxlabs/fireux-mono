@@ -1,5 +1,5 @@
 // packages/core/fireux-core/src/config/pwa.ts
-import type { NuxtConfig } from 'nuxt/schema'
+import type { NuxtConfig } from '@nuxt/schema'
 
 export type FireUXPwaConfig = {
   name: string

@@ -1,7 +1,7 @@
 {
   "name": "fireux-products",
   "version": "0.1.0",
-  "description": "TODO: update description",
+  "description": "Products/catalog module for FireUX apps (Firestore model + pages + optional Stripe integration)",
   "private": true,
   "main": "./src/module.ts",
   "types": "./src/module.ts",

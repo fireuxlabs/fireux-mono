@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/config/app/fireux.config.ts
-import type { NuxtConfig } from 'nuxt/schema'
+import type { NuxtConfig } from '@nuxt/schema'
 
 import { configNitroFirebase } from './nitro'
 import { configPwa } from './pwa'

@@ -1,19 +1,41 @@
-# Blogs
+# fireux-blogs
 
-Owned by fireux.
+Owned by `fireux`.
 
-Describe what this module ships, its guardrails, and how consumers should enable it.
+Blog/posts module for FireUX apps.
+
+---
+
+## What it ships
+
+- **Firestore model**: `BlogPost` (`src/runtime/models/objects/blogPost.model.ts`)
+- **Runtime pages**:
+  - `/blog` (index)
+  - `/blog/:slug` (public post page)
+  - `/blog/create` (admin create surface)
+  - `/dev/fireux-blogs` (dev surface)
+- **Composables**: `useBlogPermissions` (`src/runtime/composables/useBlogPermissions.ts`)
+- **Editor/runtime deps**: TipTap + DOMPurify
+
+---
+
+## Guardrails (what it is not)
+
+- Not a full CMS (no workflows/approvals)
+- Not a marketing site generator
+- Not responsible for publishing pipelines or analytics
+
+---
 
 ## Quick start
 
-1. Enable in your Nuxt app:
-   ```ts
-   export default defineNuxtConfig({
-     modules: ['fireux-blogs'],
-   })
-   ```
-2. Update `registry.json` before committing (name, team, runtime notes).
-3. Publish to FireUX registry:
-   ```bash
-   pnpm registry:register packages/extensions/fireux-blogs/registry.json
-   ```
+Enable in a Nuxt app:
+
+```ts
+export default defineNuxtConfig({
+  modules: ['fireux-blogs'],
+})
+```
+
+Registry metadata:
+- `registry.json`

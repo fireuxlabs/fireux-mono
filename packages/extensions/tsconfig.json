@@ -3,6 +3,7 @@
   "files": [],
   "references": [
     { "path": "fireux-blogs" },
+    { "path": "fireux-companies" },
     { "path": "fireux-kitchens" },
     { "path": "fireux-drop" },
     { "path": "fireux-jobs" },

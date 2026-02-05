@@ -1,4 +1,4 @@
-import type { Nuxt } from 'nuxt/schema'
+import type { Nuxt } from '@nuxt/schema'
 import {
   ensureRuntimeConfigBuckets,
   ensureRuntimeLayerFromPath,

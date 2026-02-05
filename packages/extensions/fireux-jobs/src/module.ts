@@ -16,7 +16,7 @@ export interface ModuleOptions {
 const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-jobs',
-    version: '1.0.0',
+    version: '0.1.0',
     configKey: 'fireuxJobs',
   },
   defaults: { prefix: 'Fire' },

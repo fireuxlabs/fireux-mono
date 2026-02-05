@@ -1,7 +1,7 @@
 {
   "name": "fireux-drop",
   "version": "0.1.0",
-  "description": "TODO: update description",
+  "description": "Scaffold extension for FireUX drop features (placeholder)",
   "private": true,
   "main": "./src/module.ts",
   "types": "./src/module.ts",

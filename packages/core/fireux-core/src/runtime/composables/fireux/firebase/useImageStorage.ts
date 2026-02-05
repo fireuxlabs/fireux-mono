@@ -5,7 +5,7 @@ import {
   ref as storageRef,
   uploadBytes,
 } from 'firebase/storage'
-import type { RuntimeConfig } from 'nuxt/schema'
+import type { RuntimeConfig } from '@nuxt/schema'
 import { useFirebaseStorage } from 'vuefire'
 
 function getDefaultImageUrl(

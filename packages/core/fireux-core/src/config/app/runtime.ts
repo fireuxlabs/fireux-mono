@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/config/app/runtime.ts
-import type { NuxtConfig } from 'nuxt/schema'
+import type { NuxtConfig } from '@nuxt/schema'
 
 export type RuntimeApp = {
   id: string

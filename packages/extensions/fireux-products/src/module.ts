@@ -1,14 +1,9 @@
 import {
-    ensureRuntimeConfigBuckets,
-    ensureRuntimeLayerFromPath,
-    exposeRuntimeAlias,
+  ensureRuntimeConfigBuckets,
+  exposeRuntimeAlias,
 } from 'fireux-core/config/module/runtime-layer'
-import {
-    addImportsDir,
-    createResolver,
-    defineNuxtModule,
-} from 'nuxt/kit'
-import type { Nuxt } from 'nuxt/schema'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
+import type { Nuxt } from '@nuxt/schema'
 import { configureComponents } from './config/module/components-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureLayouts } from './config/module/layouts-config'
@@ -18,12 +13,16 @@ import { configurePlugins } from './config/module/plugins-config'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureServer } from './config/module/server-config'
 
-declare module 'nuxt/schema' {
+declare module '@nuxt/schema' {
   interface NuxtConfig {
+    /** @deprecated Use `fireuxProducts` */
     products?: Partial<typeof defaults>
+    fireuxProducts?: Partial<typeof defaults>
   }
   interface NuxtOptions {
+    /** @deprecated Use `fireuxProducts` */
     products?: Partial<typeof defaults>
+    fireuxProducts?: Partial<typeof defaults>
   }
 }
 
@@ -34,8 +33,9 @@ const defaults = {
 export default defineNuxtModule({
   meta: {
     name: 'fireux-products',
-    configKey: 'products',
-    compatibility: { nuxt: '^4.0.0' },
+    version: '0.1.0',
+    configKey: 'fireuxProducts',
+    compatibility: { nuxt: '^4.1.0' },
   },
   defaults,
   setup(_options, nuxt) {
@@ -47,9 +47,6 @@ export default defineNuxtModule({
     configurePlugins(resolver)
     configureComposables(resolver)
 
-    // Auto-import runtime composables directory (create files as needed)
-    addImportsDir(resolver.resolve('./runtime/composables'))
-
     configureComponents(resolver)
     configureLayouts(resolver, nuxt)
     configureModels(resolver)
@@ -58,13 +55,11 @@ export default defineNuxtModule({
     exposeRuntimeAlias(nuxt, '#fireux-products', runtimeDir)
 
     configureServer(resolver)
-    registerProductPages(nuxt, resolver, runtimeDir)
+    registerProductPages(nuxt, resolver)
   },
 })
 
-function registerProductPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
-  ensureRuntimeLayerFromPath(nuxt, runtimeDir)
-
+function registerProductPages(nuxt: Nuxt, resolver: any) {
   const pagesToInject = [
     {
       name: 'fireux-products-index',

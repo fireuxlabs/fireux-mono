@@ -1,19 +1,24 @@
-# Drop
+# fireux-drop
 
-Owned by fireux.
+Owned by `fireux`.
 
-Describe what this module ships, its guardrails, and how consumers should enable it.
+Scaffold extension for future drop features.
+
+Today it only:
+- Ensures runtime config buckets under `runtimeConfig.public.fireux.drop`
+- Exposes `#fireux-drop` → `src/runtime` (for future runtime code)
+
+No pages/components/server routes are shipped yet.
 
 ## Quick start
 
-1. Enable in your Nuxt app:
-   ```ts
-   export default defineNuxtConfig({
-     modules: ['fireux-drop'],
-   })
-   ```
-2. Update `registry.json` before committing (name, team, runtime notes).
-3. Publish to FireUX registry:
-   ```bash
-   pnpm registry:register packages/extensions/fireux-drop/registry.json
-   ```
+Enable in a Nuxt app:
+
+```ts
+export default defineNuxtConfig({
+  modules: ['fireux-drop'],
+})
+```
+
+Registry metadata:
+- `registry.json`

@@ -1,14 +1,9 @@
 import {
-    ensureRuntimeConfigBuckets,
-    ensureRuntimeLayerFromPath,
-    exposeRuntimeAlias,
+  ensureRuntimeConfigBuckets,
+  exposeRuntimeAlias,
 } from 'fireux-core/config/module/runtime-layer'
-import {
-    addImportsDir,
-    createResolver,
-    defineNuxtModule,
-} from 'nuxt/kit'
-import type { Nuxt } from 'nuxt/schema'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
+import type { Nuxt } from '@nuxt/schema'
 import { configureComponents } from './config/module/components-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureLayouts } from './config/module/layouts-config'
@@ -17,12 +12,16 @@ import { configurePages } from './config/module/pages-config'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureRuntime } from './config/module/runtime-config'
 
-declare module 'nuxt/schema' {
+declare module '@nuxt/schema' {
   interface NuxtConfig {
+    /** @deprecated Use `fireuxBlogs` */
     blogs?: Partial<typeof defaults>
+    fireuxBlogs?: Partial<typeof defaults>
   }
   interface NuxtOptions {
+    /** @deprecated Use `fireuxBlogs` */
     blogs?: Partial<typeof defaults>
+    fireuxBlogs?: Partial<typeof defaults>
   }
 }
 
@@ -33,8 +32,9 @@ const defaults = {
 export default defineNuxtModule({
   meta: {
     name: 'fireux-blogs',
-    configKey: 'blogs',
-    compatibility: { nuxt: '^4.0.0' },
+    version: '0.1.0',
+    configKey: 'fireuxBlogs',
+    compatibility: { nuxt: '^4.1.0' },
   },
   defaults,
   setup(_options, nuxt) {
@@ -46,9 +46,6 @@ export default defineNuxtModule({
     configurePlugins(resolver)
     configureComposables(resolver)
 
-    // Auto-import runtime composables directory (create files as needed)
-    addImportsDir(resolver.resolve('./runtime/composables'))
-
     configureComponents(resolver)
     configureLayouts(resolver, nuxt)
     configureModels(resolver)
@@ -56,13 +53,11 @@ export default defineNuxtModule({
 
     exposeRuntimeAlias(nuxt, '#fireux-blogs', runtimeDir)
 
-    registerBlogPages(nuxt, resolver, runtimeDir)
+    registerBlogPages(nuxt, resolver)
   },
 })
 
-function registerBlogPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
-  ensureRuntimeLayerFromPath(nuxt, runtimeDir)
-
+function registerBlogPages(nuxt: Nuxt, resolver: any) {
   const pagesToInject = [
     {
       name: 'fireux-blog-index',

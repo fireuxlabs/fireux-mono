@@ -1,9 +1,8 @@
-import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import {
-    ensureRuntimeConfigBuckets,
-    ensureRuntimeLayerFromPath,
-    exposeRuntimeAlias,
+  ensureRuntimeConfigBuckets,
+  exposeRuntimeAlias,
 } from 'fireux-core/config/module/runtime-layer'
 import { configureComponents } from './config/module/components-config'
 import { configureComposables } from './config/module/composables-config'
@@ -34,8 +33,6 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     configurePlugins(resolver)
     configureComposables(resolver)
 
-    addImportsDir(resolver.resolve('./runtime/composables'))
-
     configureComponents(resolver)
     configureLayouts(resolver, nuxt)
     configureModels(resolver)
@@ -43,7 +40,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
     configureServer(resolver)
 
     exposeRuntimeAlias(nuxt, '#fireux-companies', runtimeDir)
-    registerCompanyPages(nuxt, resolver, runtimeDir)
+    registerCompanyPages(nuxt, resolver)
 
     nuxt.hook('ready', () => {
       console.log('fireux-companies: module configured')
@@ -53,9 +50,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
 
 export default module
 
-function registerCompanyPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
-  ensureRuntimeLayerFromPath(nuxt, runtimeDir)
-
+function registerCompanyPages(nuxt: Nuxt, resolver: any) {
   const pagesToInject = [
     {
       name: 'fireux-companies-index',

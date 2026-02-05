@@ -1,7 +1,7 @@
 {
   "name": "fireux-blogs",
   "version": "0.1.0",
-  "description": "TODO: update description",
+  "description": "Blog posts extension for FireUX apps (TipTap editor + Firestore models + pages)",
   "private": true,
   "main": "./src/module.ts",
   "types": "./src/module.ts",
