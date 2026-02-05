@@ -1,13 +1,13 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureComponents } from './config/module/components-config'
+import { configurePlaces } from './config/module/places-config'
+import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
+import { configureComponents } from './config/module/components-config'
 import { configureLayouts } from './config/module/layouts-config'
 import { configureModels } from './config/module/models-config'
 import { configurePages } from './config/module/pages-config'
-import { configurePlaces } from './config/module/places-config'
-import { configurePlugins } from './config/module/plugins-config'
 import { configureServer } from './config/module/server-config'
-import { exposeRuntimeAlias } from 'fireux-core/config/module/runtime-layer'
 
 export interface ModuleOptions {
   prefix?: string
@@ -41,20 +41,21 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    const runtimeDir = resolver.resolve('./runtime')
 
-    configurePlaces(nuxt, {
-      types: options.types || [],
-      googleAutocompleteTypeFilters: options.googleAutocompleteTypeFilters || {},
+    configureFireuxModule(resolver, nuxt, {
+      runtime: (nuxt) =>
+        configurePlaces(nuxt, {
+          types: options.types || [],
+          googleAutocompleteTypeFilters:
+            options.googleAutocompleteTypeFilters || {},
+        }),
+      plugins: configurePlugins,
+      composables: (resolver) => configureComposables(resolver, options),
+      components: configureComponents,
+      layouts: configureLayouts,
+      models: configureModels,
+      pages: configurePages,
+      server: configureServer,
     })
-    configurePlugins(resolver)
-    configureComposables(resolver, options)
-    configureComponents(resolver)
-    configureLayouts(resolver, nuxt)
-    configureModels(resolver)
-    configurePages(resolver, nuxt)
-    configureServer(resolver)
-
-    exposeRuntimeAlias(nuxt, '#fireux-places', runtimeDir)
   },
 })

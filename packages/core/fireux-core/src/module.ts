@@ -1,12 +1,12 @@
 // FILE: packages/core/fireux-core/src/module.ts
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
+import { configureFireuxModule } from './config/module/module-wiring'
 import { configurePlugins } from './config/module/plugins-config'
-import { configurePages } from './config/module/pages-config'
-import { configureLayouts } from './config/module/layouts-config'
-import { configureComponents } from './config/module/components-config'
 import { configureComposables } from './config/module/composables-config'
+import { configureComponents } from './config/module/components-config'
+import { configureLayouts } from './config/module/layouts-config'
+import { configurePages } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
-import { configureAliases } from './config/module/aliases-config'
 
 export default defineNuxtModule({
   meta: {
@@ -17,19 +17,13 @@ export default defineNuxtModule({
   setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // runtime alias
-    nuxt.options.alias = nuxt.options.alias || {}
-    nuxt.options.alias['fireux-core/runtime'] = resolver.resolve('./runtime')
-
-    // ✅ inject runtime plugins into consuming apps
-    configurePlugins(resolver)
-
-    // ✅ expose fireux-core runtime as a Nuxt layer (pages/layouts/middleware)
-    configurePages(resolver, nuxt as any)
-    configureLayouts(resolver)
-    configureComponents(resolver)
-    configureComposables(resolver)
-    configureAssets(resolver, nuxt as any)
-    configureAliases(resolver, nuxt as any)
+    configureFireuxModule(resolver, nuxt, {
+      plugins: configurePlugins,
+      composables: configureComposables,
+      components: configureComponents,
+      layouts: configureLayouts,
+      pages: configurePages,
+      assets: configureAssets,
+    })
   },
 })

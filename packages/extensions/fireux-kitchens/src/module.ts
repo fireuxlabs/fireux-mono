@@ -1,13 +1,13 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureComponents } from './config/module/components-config'
+import { configureRuntime } from './config/module/runtime-config'
+import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
+import { configureComponents } from './config/module/components-config'
 import { configureLayouts } from './config/module/layouts-config'
 import { configureModels } from './config/module/models-config'
 import { configurePages } from './config/module/pages-config'
-import { configurePlugins } from './config/module/plugins-config'
-import { configureRuntime } from './config/module/runtime-config'
 import { configureServer } from './config/module/server-config'
-import { exposeRuntimeAlias } from 'fireux-core/config/module/runtime-layer'
 
 export interface ModuleOptions {
   prefix?: string
@@ -34,17 +34,16 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    const runtimeDir = resolver.resolve('./runtime')
 
-    configureRuntime(nuxt, 'kitchens')
-    configurePlugins(resolver)
-    configureComposables(resolver)
-    configureComponents(resolver)
-    configureLayouts(resolver, nuxt)
-    configureModels(resolver)
-    configurePages(resolver, nuxt)
-    configureServer(resolver)
-
-    exposeRuntimeAlias(nuxt, '#fireux-kitchens', runtimeDir)
+    configureFireuxModule(resolver, nuxt, {
+      runtime: (nuxt) => configureRuntime(nuxt, 'kitchens'),
+      plugins: configurePlugins,
+      composables: configureComposables,
+      components: configureComponents,
+      layouts: configureLayouts,
+      models: configureModels,
+      pages: configurePages,
+      server: configureServer,
+    })
   },
 })

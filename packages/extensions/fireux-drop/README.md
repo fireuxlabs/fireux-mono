@@ -6,7 +6,7 @@ Scaffold extension for future drop features.
 
 Today it only:
 - Ensures runtime config buckets under `runtimeConfig.public.fireux.drop`
-- Exposes `#fireux-drop` → `src/runtime` (for future runtime code)
+- Exposes runtime exports under `fireux-drop/runtime/*` (for future runtime code)
 
 No pages/components/server routes are shipped yet.
 

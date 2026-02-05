@@ -1,23 +1,13 @@
-import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
-import { exposeRuntimeAlias } from 'fireux-core/config/module/runtime-layer'
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-
-declare module '@nuxt/schema' {
-  interface NuxtConfig {
-    /** @deprecated Use `fireuxDrop` */
-    drop?: Partial<typeof defaults>
-    fireuxDrop?: Partial<typeof defaults>
-  }
-  interface NuxtOptions {
-    /** @deprecated Use `fireuxDrop` */
-    drop?: Partial<typeof defaults>
-    fireuxDrop?: Partial<typeof defaults>
-  }
-}
-
-const defaults = {
-  enabled: true,
-}
+import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { configureRuntime } from './config/module/runtime-config'
+import { configurePlugins } from './config/module/plugins-config'
+import { configureComposables } from './config/module/composables-config'
+import { configureComponents } from './config/module/components-config'
+import { configureLayouts } from './config/module/layouts-config'
+import { configureModels } from './config/module/models-config'
+import { configurePages } from './config/module/pages-config'
+import { configureServer } from './config/module/server-config'
 
 export default defineNuxtModule({
   meta: {
@@ -26,13 +16,18 @@ export default defineNuxtModule({
     configKey: 'fireuxDrop',
     compatibility: { nuxt: '^4.1.0' },
   },
-  defaults,
   setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    const runtimeDir = resolver.resolve('./runtime')
 
-    configureRuntimeDefaults(nuxt, 'drop', { enabled: true }, { merge: true })
-
-    exposeRuntimeAlias(nuxt as any, '#fireux-drop', runtimeDir)
+    configureFireuxModule(resolver, nuxt, {
+      runtime: (nuxt) => configureRuntime(nuxt, 'drop'),
+      plugins: configurePlugins,
+      composables: configureComposables,
+      components: configureComponents,
+      layouts: configureLayouts,
+      models: configureModels,
+      pages: configurePages,
+      server: configureServer,
+    })
   },
 })

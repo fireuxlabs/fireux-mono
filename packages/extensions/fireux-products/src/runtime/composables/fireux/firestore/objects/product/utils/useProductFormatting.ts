@@ -1,7 +1,7 @@
 import type {
   FirebaseProduct,
   Price,
-} from '#fireux-products/models/objects/product.model'
+} from 'fireux-products/runtime/models/objects/product.model'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 

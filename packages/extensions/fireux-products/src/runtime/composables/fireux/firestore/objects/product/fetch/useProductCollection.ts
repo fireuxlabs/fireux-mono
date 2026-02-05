@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { FirebaseProduct } from '#fireux-products/models/objects/product.model'
+import type { FirebaseProduct } from 'fireux-products/runtime/models/objects/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 /** Fetches the products collection for the current runtime scope. */

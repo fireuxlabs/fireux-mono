@@ -1,13 +1,13 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { defaultFireuxJobsConfig } from './config/jobs.config'
-import { configureComponents } from './config/module/components-config'
+import { configureRuntime } from './config/module/runtime-config'
+import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
+import { configureComponents } from './config/module/components-config'
 import { configureLayouts } from './config/module/layouts-config'
 import { configurePages } from './config/module/pages-config'
-import { configurePlugins } from './config/module/plugins-config'
-import { configureRuntime } from './config/module/runtime-config'
 import { configureServer } from './config/module/server-config'
-import { exposeRuntimeAlias } from 'fireux-core/config/module/runtime-layer'
 
 export interface ModuleOptions {
   prefix?: string
@@ -33,21 +33,21 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: { prefix: 'Fire' },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    const runtimeDir = resolver.resolve('./runtime')
     const workplaces = Array.isArray(options?.workplaces)
       ? options.workplaces
       : defaultFireuxJobsConfig.workplaces
-    configureRuntime(nuxt, 'jobs', {
-      enabled: true,
-      workplaces,
+    configureFireuxModule(resolver, nuxt, {
+      runtime: (nuxt) =>
+        configureRuntime(nuxt, 'jobs', {
+          enabled: true,
+          workplaces,
+        }),
+      plugins: configurePlugins,
+      composables: configureComposables,
+      components: configureComponents,
+      layouts: configureLayouts,
+      pages: configurePages,
+      server: configureServer,
     })
-    configurePlugins(resolver)
-    configureComposables(resolver)
-    configureComponents(resolver)
-    configureLayouts(resolver, nuxt)
-    configurePages(resolver, nuxt)
-    configureServer(resolver)
-
-    exposeRuntimeAlias(nuxt, '#fireux-jobs', runtimeDir)
   },
 })

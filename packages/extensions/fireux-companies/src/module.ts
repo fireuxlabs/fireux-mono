@@ -1,13 +1,12 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import type { Nuxt } from '@nuxt/schema'
-import { exposeRuntimeAlias } from 'fireux-core/config/module/runtime-layer'
-import { configureComponents } from './config/module/components-config'
+import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { configureRuntime } from './config/module/runtime-config'
+import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
+import { configureComponents } from './config/module/components-config'
 import { configureLayouts } from './config/module/layouts-config'
 import { configureModels } from './config/module/models-config'
 import { configurePages } from './config/module/pages-config'
-import { configurePlugins } from './config/module/plugins-config'
-import { configureRuntime } from './config/module/runtime-config'
 import { configureServer } from './config/module/server-config'
 
 export interface ModuleOptions {
@@ -33,61 +32,16 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: { prefix: 'Fire' },
   async setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    const runtimeDir = resolver.resolve('./runtime')
 
-    configureRuntime(nuxt, 'companies')
-    configurePlugins(resolver)
-    configureComposables(resolver)
-
-    configureComponents(resolver)
-    configureLayouts(resolver, nuxt)
-    configureModels(resolver)
-    configurePages(resolver, nuxt)
-    configureServer(resolver)
-
-    exposeRuntimeAlias(nuxt, '#fireux-companies', runtimeDir)
-    registerCompanyPages(nuxt, resolver)
+    configureFireuxModule(resolver, nuxt, {
+      runtime: (nuxt) => configureRuntime(nuxt, 'companies'),
+      plugins: configurePlugins,
+      composables: configureComposables,
+      components: configureComponents,
+      layouts: configureLayouts,
+      models: configureModels,
+      pages: configurePages,
+      server: configureServer,
+    })
   },
 })
-
-function registerCompanyPages(nuxt: Nuxt, resolver: any) {
-  const pagesToInject = [
-    {
-      name: 'fireux-companies-index',
-      path: '/companies',
-      file: resolver.resolve('./runtime/pages/companies/index.vue'),
-    },
-    {
-      name: 'fireux-companies-create',
-      path: '/companies/create',
-      file: resolver.resolve('./runtime/pages/companies/create.vue'),
-    },
-    {
-      name: 'fireux-companies-edit',
-      path: '/companies/edit/:id',
-      file: resolver.resolve('./runtime/pages/companies/edit/[id].vue'),
-    },
-    {
-      name: 'fireux-companies-learn-more',
-      path: '/companies/learn-more',
-      file: resolver.resolve('./runtime/pages/companies/learn-more.vue'),
-    },
-    {
-      name: 'fireux-companies-id',
-      path: '/companies/:id',
-      file: resolver.resolve('./runtime/pages/companies/[id].vue'),
-    },
-    {
-      name: 'dev-fireux-companies',
-      path: '/dev/fireux-companies',
-      file: resolver.resolve('./runtime/pages/dev/fireux-companies.vue'),
-    },
-  ]
-
-  nuxt.hook('pages:extend', (pages: any[]) => {
-    for (const entry of pagesToInject) {
-      const exists = pages.some((page) => page.path === entry.path)
-      if (!exists) pages.push(entry)
-    }
-  })
-}

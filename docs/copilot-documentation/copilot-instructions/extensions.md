@@ -13,7 +13,7 @@ Conventions for `packages/extensions/*` Nuxt modules so they stay predictable an
 - **Nuxt kit imports:** use `@nuxt/kit` and `@nuxt/schema` (avoid `nuxt/kit` and `nuxt/schema`).
 - **Config key (nuxt.config):** `fireux<PascalDomain>` (example: `fireuxProducts`, `fireuxPlaces`).
 - **Runtime config namespace:** `runtimeConfig.public.fireux.<domain>` (example: `public.fireux.products`).
-- **Runtime alias:** expose `#fireux-<domain>` → `src/runtime` (example: `#fireux-products`).
+- **Runtime imports:** use package exports (`fireux-<domain>/runtime/*`); avoid `#fireux-` aliases.
 
 ## Module Shape (Recommended)
 
@@ -25,7 +25,8 @@ Conventions for `packages/extensions/*` Nuxt modules so they stay predictable an
 ## Canonical `module.ts` Flow
 
 - `createResolver(import.meta.url)` once.
-- Compute `runtimeDir` and call `exposeRuntimeAlias(...)`.
+- No runtime aliases; rely on package exports for runtime imports.
+- Prefer `configureFireuxModule(...)` from `fireux-core/config/module/module-wiring` to enforce the standard order.
 - Configure in this order:
   1) runtime defaults
   2) plugins
