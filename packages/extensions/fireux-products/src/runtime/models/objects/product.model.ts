@@ -58,7 +58,7 @@ export interface StripePriceInput {
   metadata?: Record<string, any>
 }
 
-export type ProductType = 'physical' | 'digital' | 'service' | 'subscription'
+export type ProductType = string
 
 /**
  * Canon Firestore Product doc for FireUX apps.
@@ -68,6 +68,9 @@ export const FirebaseProduct = {
   id: '' as string,
 
   name: '' as string,
+  tagline: '' as string,
+  Q: '' as string,
+  A: '' as string,
   description: '' as string,
   content: '' as string,
 

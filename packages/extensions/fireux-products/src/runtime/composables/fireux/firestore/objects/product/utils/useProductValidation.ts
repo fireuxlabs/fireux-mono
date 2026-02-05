@@ -1,3 +1,4 @@
+import { useRuntimeConfig } from '#imports'
 import type { FirebaseProduct } from 'fireux-products/runtime/models/objects/product.model'
 
 export function useProductValidation() {
@@ -77,8 +78,11 @@ export function useProductValidation() {
   }
 
   function isValidProductType(type: string): boolean {
-    const validTypes = ['physical', 'digital', 'service', 'subscription']
-    return validTypes.includes(type)
+    const cfg = (useRuntimeConfig().public as any)?.fireux?.products ?? {}
+    const allowed = Array.isArray(cfg.productKinds) ? cfg.productKinds : []
+    if (allowed.length) return allowed.includes(type)
+    const fallback = ['physical', 'digital', 'service', 'subscription']
+    return fallback.includes(type)
   }
 
   return {

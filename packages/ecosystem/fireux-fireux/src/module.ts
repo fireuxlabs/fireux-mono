@@ -3,6 +3,7 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 
 import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
+import { DEFAULT_PRODUCT_BILLING_INTERVALS } from 'fireux-core/config/app/products-defaults'
 import { existsSync } from 'fs'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
@@ -34,6 +35,20 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       description: ecosystemConfig.description,
       firebase: ecosystemConfig.firebase,
     })
+
+    // Ecosystem defaults for feature modules (app can override later).
+    const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+    const pub = (rc.public ||= {}) as Record<string, any>
+    const fireux = (pub.fireux ||= {}) as Record<string, any>
+    if (!fireux.products || typeof fireux.products !== 'object') {
+      fireux.products = {
+        enabled: true,
+        billingIntervals: [...DEFAULT_PRODUCT_BILLING_INTERVALS],
+      }
+    }
+    if (!fireux.blogs || typeof fireux.blogs !== 'object') {
+      fireux.blogs = { enabled: true }
+    }
 
     // 🔎 Confirm it actually landed where we expect
     const pub = (nuxt.options.runtimeConfig as any)?.public

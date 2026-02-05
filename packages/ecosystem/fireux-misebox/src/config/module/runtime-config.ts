@@ -1,4 +1,5 @@
 import type { Nuxt } from '@nuxt/schema'
+import { DEFAULT_PRODUCT_BILLING_INTERVALS } from 'fireux-core/config/app/products-defaults'
 import { getPlacesConfig } from './places-config'
 
 const getJobsConfig = () => ({
@@ -13,9 +14,16 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
 
   const currentPlaces = fireux.places
   const currentJobs = fireux.jobs
+  const currentProducts = fireux.products
+  const currentBlogs = fireux.blogs
 
   const placeDefaults = getPlacesConfig()
   const jobDefaults = getJobsConfig()
+  const productDefaults = {
+    enabled: true,
+    billingIntervals: [...DEFAULT_PRODUCT_BILLING_INTERVALS],
+  }
+  const blogDefaults = { enabled: true }
 
   fireux.places = currentPlaces && typeof currentPlaces === 'object'
     ? { ...placeDefaults, ...currentPlaces }
@@ -24,4 +32,12 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
   fireux.jobs = currentJobs && typeof currentJobs === 'object'
     ? { ...jobDefaults, ...currentJobs }
     : { ...jobDefaults }
+
+  fireux.products = currentProducts && typeof currentProducts === 'object'
+    ? { ...productDefaults, ...currentProducts }
+    : { ...productDefaults }
+
+  fireux.blogs = currentBlogs && typeof currentBlogs === 'object'
+    ? { ...blogDefaults, ...currentBlogs }
+    : { ...blogDefaults }
 }

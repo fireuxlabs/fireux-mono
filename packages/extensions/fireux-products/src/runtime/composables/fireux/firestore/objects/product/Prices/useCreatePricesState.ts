@@ -10,14 +10,14 @@ export function useCreatePricesState() {
 	const prices = useStorage<Partial<Price>[]>('createProductPrices', [
 		{
 			unit_amount: 0,
-			currency: 'eur',
+			currency: 'CHF',
 		},
 	])
 
 	function addPrice() {
 		prices.value.push({
 			unit_amount: 0,
-			currency: 'eur',
+			currency: 'CHF',
 		})
 	}
 
@@ -29,7 +29,7 @@ export function useCreatePricesState() {
 		prices.value = [
 			{
 				unit_amount: 0,
-				currency: 'eur',
+				currency: 'CHF',
 			},
 		]
 	}
@@ -88,4 +88,3 @@ export function useCreatePricesState() {
 		defaultPrice,
 	}
 }
-

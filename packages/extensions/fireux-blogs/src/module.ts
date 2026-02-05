@@ -1,6 +1,5 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
-import { configureRuntime } from './config/module/runtime-config'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
@@ -9,6 +8,21 @@ import { configureModels } from './config/module/models-config'
 import { configurePages } from './config/module/pages-config'
 import { configureServer } from './config/module/server-config'
 
+export type FireuxBlogsModuleOptions = {
+  enabled?: boolean
+}
+
+function setBlogsRuntime(nuxt: any, overrides: Record<string, any>) {
+  const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+  const pub = (rc.public ||= {}) as Record<string, any>
+  const fireux = (pub.fireux ||= {}) as Record<string, any>
+  const current =
+    fireux.blogs && typeof fireux.blogs === 'object' && !Array.isArray(fireux.blogs)
+      ? fireux.blogs
+      : {}
+  fireux.blogs = { ...current, ...overrides }
+}
+
 export default defineNuxtModule({
   meta: {
     name: 'fireux-blogs',
@@ -16,11 +30,14 @@ export default defineNuxtModule({
     configKey: 'fireuxBlogs',
     compatibility: { nuxt: '^4.1.0' },
   },
-  setup(_options, nuxt) {
+  setup(options: FireuxBlogsModuleOptions = {}, nuxt) {
     const resolver = createResolver(import.meta.url)
 
     configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) => configureRuntime(nuxt, 'blogs'),
+      runtime: (nuxt) =>
+        setBlogsRuntime(nuxt, {
+          enabled: options.enabled ?? true,
+        }),
       plugins: configurePlugins,
       composables: configureComposables,
       components: configureComponents,

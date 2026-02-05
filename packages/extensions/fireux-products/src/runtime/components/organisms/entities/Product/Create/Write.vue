@@ -14,27 +14,12 @@
           <UTooltip :popper="{ placement: 'right' }">
             <template #text>
               <div class="tooltip-content">
-                <div class="tooltip-section">
-                  <strong>📦 Physical:</strong> Tangible goods requiring
-                  shipping & inventory
-                </div>
-                <div class="tooltip-section">
-                  <strong>💾 Digital:</strong> Downloads, software, eBooks -
-                  instant delivery
-                </div>
-                <div class="tooltip-section">
-                  <strong>🤝 Service:</strong> Professional services,
-                  consulting, one-time work
-                </div>
-                <div class="tooltip-section">
-                  <strong>🔄 Subscription:</strong> Recurring access, SaaS,
-                  memberships
-                </div>
-                <hr class="my-2 border-gray-600" />
-                <div class="text-xs text-gray-400">
-                  <div>• Physical/Digital: One-time payments</div>
-                  <div>• Service: One-time or recurring</div>
-                  <div>• Subscription: Always recurring</div>
+                <div
+                  v-for="option in productTypeOptions"
+                  :key="option.value"
+                  class="tooltip-section"
+                >
+                  <strong>{{ option.label }}:</strong> {{ option.tooltip }}
                 </div>
               </div>
             </template>
@@ -59,12 +44,7 @@
             :color="
               product.product_type === option.value ? 'primary' : 'neutral'
             "
-            @click="
-              product.product_type = option.value as
-                | 'physical'
-                | 'digital'
-                | 'service'
-            "
+            @click="product.product_type = option.value as string"
             class="product-type-button"
           >
             <Icon :name="option.icon" class="w-5 h-5 mr-2" />
@@ -94,40 +74,66 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRuntimeConfig } from '#imports'
 import { useCreateProductState } from '../../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
 
 const { product } = await useCreateProductState()
 
-const productTypeOptions = [
-  {
-    label: 'Physical',
-    value: 'physical',
-    icon: 'i-lucide-package',
-    tooltip:
-      'Physical goods that need to be shipped. Includes inventory tracking, shipping calculations, and stock management.',
-  },
-  {
-    label: 'Digital',
-    value: 'digital',
-    icon: 'i-lucide-download',
-    tooltip:
-      'Digital products like eBooks, software, or downloadable content. Instant delivery, no shipping required.',
-  },
-  {
-    label: 'Service',
-    value: 'service',
-    icon: 'i-lucide-handshake',
-    tooltip:
-      'One-time services like consulting, design work, or professional services. Can be billed once or recurring.',
-  },
-  {
-    label: 'Subscription',
-    value: 'subscription',
-    icon: 'i-lucide-refresh-cw',
-    tooltip:
-      'Recurring access to products/services. Automatically billed monthly or yearly (SaaS, memberships, etc.).',
-  },
-]
+const runtimeKinds = computed(() => {
+  const cfg = (useRuntimeConfig().public as any)?.fireux?.products ?? {}
+  const kinds = Array.isArray(cfg.productKinds) ? cfg.productKinds : []
+  return kinds.length
+    ? kinds
+    : ['physical', 'digital', 'service', 'subscription']
+})
+
+const iconForKind = (kind: string) => {
+  const map: Record<string, string> = {
+    physical: 'i-lucide-package',
+    digital: 'i-lucide-download',
+    service: 'i-lucide-handshake',
+    subscription: 'i-lucide-refresh-cw',
+    saas_app: 'i-lucide-monitor',
+    industry_app: 'i-lucide-building-2',
+    white_label_app: 'i-lucide-paintbrush',
+    ecosystem_white_label: 'i-lucide-network',
+    template: 'i-lucide-layout-template',
+    modules_pass: 'i-lucide-box',
+  }
+  return map[kind] || 'i-lucide-tag'
+}
+
+const tooltipForKind = (kind: string) => {
+  const map: Record<string, string> = {
+    physical: 'Tangible goods requiring shipping and inventory.',
+    digital: 'Downloads, software, or files delivered instantly.',
+    service: 'Professional services or delivery-based work.',
+    subscription: 'Recurring access or membership.',
+    saas_app: 'Hosted app sold directly to a business.',
+    industry_app: 'Hosted app tailored to a specific industry.',
+    white_label_app: 'Single-client hosted app under client branding.',
+    ecosystem_white_label: 'Hosted platform for many clients (per tenant).',
+    template: 'One-time developer starter you host yourself.',
+    modules_pass: 'Optional add-on modules over time.',
+  }
+  return map[kind] || 'Configured product kind.'
+}
+
+const labelForKind = (kind: string) =>
+  kind
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+
+const productTypeOptions = computed(() =>
+  runtimeKinds.value.map((kind) => ({
+    label: labelForKind(kind),
+    value: kind,
+    icon: iconForKind(kind),
+    tooltip: tooltipForKind(kind),
+  }))
+)
 </script>
 
 <style scoped>

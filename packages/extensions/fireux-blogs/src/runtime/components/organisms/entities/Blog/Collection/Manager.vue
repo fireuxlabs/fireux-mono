@@ -4,7 +4,7 @@
       <div class="collection-manager__header">
         <div class="collection-manager__title">
           <div>Blog</div>
-          <p>Browse posts available to this runtime.</p>
+          <p>Browse {{ appName }} posts.</p>
         </div>
 
         <div class="collection-manager__controls">
@@ -60,11 +60,13 @@
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
 import { computed } from 'vue';
 import { useBlogInterface } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface';
 import type { BlogPost } from '../../../../../models/objects/blogPost.model';
 
 const props = defineProps<{ collection?: BlogPost[] }>()
+const { appName } = useFireUXConfig()
 
 const collection = computed(() => props.collection ?? [])
 const { card: makeCard, searchText } = useBlogInterface()

@@ -25,12 +25,54 @@ export namespace ProductCard {
 }
 
 export function useProductInterface() {
+  const currencySymbols: Record<string, string> = {
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
+    CHF: 'CHF ',
+    JPY: '¥',
+    CAD: 'C$',
+    AUD: 'A$',
+  }
+
+  const formatMoney = (unitAmount: number, currency: string) => {
+    const value = unitAmount / 100
+    const rounded =
+      Math.abs(value - Math.round(value)) < 0.00001
+        ? String(Math.round(value))
+        : value.toFixed(2)
+    const iso = currency?.toUpperCase() || 'USD'
+    const symbol = currencySymbols[iso] || `${iso} `
+    return `${symbol}${rounded}`
+  }
+
+  const buildBadges = (product: FirebaseProduct): string[] => {
+    const prices = Array.isArray(product.prices) ? product.prices : []
+    const setup = prices.find(
+      (price) =>
+        price?.metadata?.kind === 'setup_fee' || price?.type === 'one_time'
+    )
+    const monthly = prices.find(
+      (price) => price?.type === 'recurring' && price?.interval === 'month'
+    )
+
+    const badges: string[] = []
+    if (setup?.unit_amount && setup.currency) {
+      badges.push(`Setup ${formatMoney(setup.unit_amount, setup.currency)}`)
+    }
+    if (monthly?.unit_amount && monthly.currency) {
+      badges.push(`${formatMoney(monthly.unit_amount, monthly.currency)}/mo`)
+    }
+    return badges
+  }
+
   function map(product: FirebaseProduct): ProductCard.Card {
     const imageUrl =
       safeString(product.main_image) ||
       safeString(product.images?.[0]?.url)
     const id = safeString(product.id).trim()
     const name = safeString(product.name)
+    const tagline = safeString(product.tagline)
     const description = safeString(product.description)
 
     return {
@@ -39,13 +81,13 @@ export function useProductInterface() {
 
       avatarUrl: imageUrl,
       title: name,
-      subtitle: description,
+      subtitle: tagline || description,
 
       name,
       description,
 
       imageUrl,
-      badges: [],
+      badges: buildBadges(product),
     }
   }
 

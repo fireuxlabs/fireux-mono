@@ -5,6 +5,7 @@
       ⚠️ That name is already used for another product in this workspace. Please
       choose a more unique name.
     </p>
+    <UInput v-model="product.tagline" placeholder="Tagline (short)" />
     <UTextarea
       v-model="product.description"
       autoresize

@@ -1,6 +1,5 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
-import { configureRuntime } from './config/module/runtime-config'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
@@ -9,6 +8,23 @@ import { configureModels } from './config/module/models-config'
 import { configurePages } from './config/module/pages-config'
 import { configureServer } from './config/module/server-config'
 
+export type FireuxProductsModuleOptions = {
+  productKinds?: string[]
+  billingIntervals?: string[]
+  enabled?: boolean
+}
+
+function setProductsRuntime(nuxt: any, overrides: Record<string, any>) {
+  const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+  const pub = (rc.public ||= {}) as Record<string, any>
+  const fireux = (pub.fireux ||= {}) as Record<string, any>
+  const current =
+    fireux.products && typeof fireux.products === 'object' && !Array.isArray(fireux.products)
+      ? fireux.products
+      : {}
+  fireux.products = { ...current, ...overrides }
+}
+
 export default defineNuxtModule({
   meta: {
     name: 'fireux-products',
@@ -16,11 +32,20 @@ export default defineNuxtModule({
     configKey: 'fireuxProducts',
     compatibility: { nuxt: '^4.1.0' },
   },
-  setup(_options, nuxt) {
+  setup(options: FireuxProductsModuleOptions = {}, nuxt) {
     const resolver = createResolver(import.meta.url)
 
     configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) => configureRuntime(nuxt, 'products'),
+      runtime: (nuxt) =>
+        setProductsRuntime(nuxt, {
+          enabled: options.enabled ?? true,
+          ...(Array.isArray(options.productKinds)
+            ? { productKinds: options.productKinds }
+            : {}),
+          ...(Array.isArray(options.billingIntervals)
+            ? { billingIntervals: options.billingIntervals }
+            : {}),
+        }),
       plugins: configurePlugins,
       composables: configureComposables,
       components: configureComponents,

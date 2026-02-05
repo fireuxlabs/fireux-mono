@@ -66,7 +66,9 @@ export default defineEventHandler(async (event: H3Event) => {
         const stripePrice = await stripe.prices.create({
           product: stripeProduct.id,
           unit_amount: price.unit_amount,
-          currency: price.currency || 'eur',
+          currency: String(price.currency || 'eur').toLowerCase(),
+          billing_scheme: price.billing_scheme || 'per_unit',
+          metadata: price.metadata || {},
           recurring:
             price.type === 'recurring'
               ? {

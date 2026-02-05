@@ -4,7 +4,7 @@
       <div class="collection-manager__header">
         <div class="collection-manager__title">
           <div>Kitchens</div>
-          <p>Browse kitchens available to this runtime.</p>
+          <p>Browse {{ appName }} kitchens.</p>
         </div>
 
         <div class="collection-manager__controls">
@@ -60,11 +60,13 @@
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
 import { computed } from 'vue';
 import { useKitchenInterface } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
 import type { Kitchen } from '../../../../../models/objects/kitchen.model';
 
 const props = defineProps<{ collection?: Kitchen[] }>()
+const { appName } = useFireUXConfig()
 
 const collection = computed(() => props.collection ?? [])
 const { card: makeCard, searchText } = useKitchenInterface()

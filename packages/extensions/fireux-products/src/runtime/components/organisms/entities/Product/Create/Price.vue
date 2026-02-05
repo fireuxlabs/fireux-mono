@@ -3,7 +3,7 @@
     <div class="input-row">
       <UInput v-model="price.currency" readonly class="currency-display w-20" />
       <UInputNumber
-        v-model="price.unit_amount"
+        v-model="displayAmount"
         :format-options="{
           style: 'decimal',
           minimumFractionDigits: 2,
@@ -50,10 +50,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRuntimeConfig } from '#imports'
+import { DEFAULT_PRODUCT_BILLING_INTERVALS } from 'fireux-core/config/app/products-defaults'
 import type { RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
 import { useCreatePricesState } from '../../../../../composables/fireux/firestore/objects/product/Prices/useCreatePricesState'
 import { useCreateProductState } from '../../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
-import { useProducts } from '../../../../../composables/fireux/firestore/objects/product/useProducts'
 
 const props = defineProps<{
   index: number
@@ -73,10 +74,13 @@ function movePriceToTop(index: number) {
 
 const { prices } = useCreatePricesState()
 const { product } = await useCreateProductState()
-const defaultCurrency = 'EUR'
+const defaultCurrency = 'CHF'
 
-const isService = computed(() => product.value.product_type === 'service')
-const showBillingFrequency = computed(() => isService.value)
+const productType = computed(() => String(product.value.product_type || '').trim())
+const isOneTimeOnly = computed(() =>
+  productType.value === 'physical' || productType.value === 'digital'
+)
+const showBillingFrequency = computed(() => !isOneTimeOnly.value)
 
 const price = computed(() => {
   const base = prices.value[props.index]
@@ -90,31 +94,43 @@ const price = computed(() => {
     }
   }
 
-  // Enforce one_time for non-service and non-subscription
-  if (!isService.value) {
+  // Physical/digital products are always one-time.
+  if (isOneTimeOnly.value) {
     base.type = 'one_time'
     base.interval = undefined
     base.interval_count = undefined
   }
 
-  // Services can be recurring; leave as-is unless explicitly set elsewhere
+  // Services/subscriptions can be one-time or recurring per price entry.
 
   return base
 })
 
-// UI options for billing frequency
-const billingFrequencyOptions: RadioGroupItem[] = [
-  { label: 'Once', value: 'once' },
-  { label: 'Monthly', value: 'monthly' },
-  { label: 'Yearly', value: 'yearly' },
-]
+const runtimeBillingIntervals = computed(() => {
+  const cfg = (useRuntimeConfig().public as any)?.fireux?.products ?? {}
+  const intervals = Array.isArray(cfg.billingIntervals) ? cfg.billingIntervals : []
+  return intervals.length ? intervals : [...DEFAULT_PRODUCT_BILLING_INTERVALS]
+})
+
+const billingFrequencyOptions = computed<RadioGroupItem[]>(() => {
+  const labels: Record<string, string> = {
+    month: 'Monthly',
+    year: 'Yearly',
+  }
+  return [
+    { label: 'Once', value: 'once' },
+    ...runtimeBillingIntervals.value.map((interval) => ({
+      label: labels[interval] || interval,
+      value: interval,
+    })),
+  ]
+})
 
 // Computed value that maps to Stripe fields
 const uiFrequency = computed<RadioGroupValue>({
   get: () => {
     if (price.value.type === 'one_time') return 'once'
-    if (price.value.interval === 'month') return 'monthly'
-    if (price.value.interval === 'year') return 'yearly'
+    if (price.value.interval) return price.value.interval
     return 'once'
   },
   set: (val) => {
@@ -124,9 +140,20 @@ const uiFrequency = computed<RadioGroupValue>({
       price.value.interval_count = undefined
     } else {
       price.value.type = 'recurring'
-      price.value.interval = val === 'monthly' ? 'month' : 'year'
+      price.value.interval = String(val)
       price.value.interval_count = 1
     }
+  },
+})
+
+// Store `unit_amount` as minor units (e.g., cents) while showing a user-friendly major value.
+const displayAmount = computed<number>({
+  get: () => Number(price.value.unit_amount ?? 0) / 100,
+  set: (val) => {
+    const next = Number(val ?? 0)
+    price.value.unit_amount = Number.isFinite(next)
+      ? Math.round(next * 100)
+      : 0
   },
 })
 </script>

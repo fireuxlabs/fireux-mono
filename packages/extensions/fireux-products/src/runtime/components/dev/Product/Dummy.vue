@@ -24,22 +24,22 @@
 
       <ProductCardsPreview
         v-if="currentPreview"
-        :image-url="currentPreview.imageUrl"
-        :name="currentPreview.name"
-        :subtitle="currentPreview.subtitle"
-        :badges="currentPreview.badges"
+        :card="currentPreview.card"
         :prop="currentPreview.prop"
+        :product="currentPreview.product"
       />
 
       <ProductCardsCell
         v-if="currentCell"
-        v-bind="currentCell"
+        :card="currentCell.card"
+        :prop="currentCell.prop"
       />
 
       <ProductCardsProfile
         v-if="currentCard"
         :card="currentCard"
         :prop="currentProp"
+        :product="currentProduct"
       />
     </div>
   </UCard>
@@ -86,10 +86,6 @@ const pillItems = computed(() =>
     .map((surface, index) => {
       const product = surface.product
       const card = surface.card
-      const price = formatMoney(
-        product.default_price?.unit_amount ?? 0,
-        product.default_price?.interval
-      )
 
       return {
         key: product.id || String(index),
@@ -98,7 +94,7 @@ const pillItems = computed(() =>
           avatarUrl: card.avatarUrl,
           title: card.title,
           subtitle: card.subtitle,
-          badges: [price].filter(Boolean),
+          badges: card.badges,
         },
       }
     })
@@ -113,18 +109,8 @@ const currentCell = computed(() => {
   const product = currentProduct.value
   if (!card || !product) return null
 
-  const price = formatMoney(
-    product.default_price?.unit_amount ?? 0,
-    product.default_price?.interval
-  )
-  const type = String(product.product_type ?? '').trim()
-
   return {
-    to: card.to,
-    name: card.name,
-    description: card.description,
-    imageUrl: card.imageUrl,
-    badges: [type, price].filter(Boolean),
+    card,
     prop: product.active ? 'Active' : 'Inactive',
   }
 })
@@ -134,18 +120,10 @@ const currentPreview = computed(() => {
   const product = currentProduct.value
   if (!card || !product) return null
 
-  const price = formatMoney(
-    product.default_price?.unit_amount ?? 0,
-    product.default_price?.interval
-  )
-  const type = String(product.product_type ?? '').trim()
-
   return {
-    imageUrl: card.imageUrl,
-    name: card.name,
-    subtitle: card.description,
-    badges: [type].filter(Boolean),
-    prop: price,
+    card,
+    prop: currentProp.value,
+    product,
   }
 })
 </script>

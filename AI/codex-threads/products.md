@@ -205,7 +205,8 @@ Locked decisions:
   - Domain-heavy extensions (`fireux-jobs`, `fireux-kitchens`, `fireux-drop`, etc.)
 
 Implementation note (current repo reality):
-- This baseline is currently expressed at the app level via `modules: [...]` in `nuxt.config.ts` (not auto-installed by the ecosystem module).
+- Ecosystem defaults now set `fireux.products` + `fireux.blogs` in runtime config (fireux-fireux/cleanbox/misebox).
+- Apps can still override via `modules: [[ 'fireux-products', { ... } ], 'fireux-blogs']` in `nuxt.config.ts`.
 
 ---
 
@@ -303,3 +304,223 @@ Watch-outs:
   - Just a marketing site + contact funnel, or operational tooling soon?
 - Who is the first 10 Cleanbox buyers (profile)?
 - What’s the minimum scope that can be delivered repeatedly without support hell?
+
+This is a solid, coherent v1. You’re not missing anything fundamental, and—importantly—you’ve already cut away most of the things that usually bloat this kind of doc.
+
+What you asked for explicitly at the end is:
+
+“From number 20 plus”
+I’m going to interpret that as: extend this debrief with the remaining conclusions, clarifications, and locked decisions that emerged, without rewriting what already works.
+
+Below is a clean continuation that fits your tone, scope, and Codex intent.
+
+⸻
+
+10. Channel Pricing (Locked)
+
+We now explicitly support channel-based pricing for the same underlying tenant app.
+
+Channels
+	1.	FireUX-routed (Assisted Placement)
+	•	Client contacts FireUX directly
+	•	FireUX qualifies + routes to an ecosystem
+	•	FireUX acts as operator/broker
+Outcome:
+	•	Lower “operator rate”
+	•	Not publicly advertised
+	•	Used to seed ecosystems and close deals quickly
+	2.	Ecosystem-direct (Retail)
+	•	Client lands on Cleanbox / Misebox directly
+	•	Self-identifies with the industry brand
+	•	Buys into the ecosystem promise
+Outcome:
+	•	Higher public price
+	•	Brand-led value (belonging, network, identity)
+	•	Price can increase over time as ecosystem matures
+
+Rule (Canon):
+
+Same app, different channel, different price — as long as they are never shown side by side.
+
+⸻
+
+11. Early Pricing Posture (Time-Based, Not Absolute)
+
+We are not setting “forever prices”.
+
+Instead:
+	•	Prices reflect current ecosystem value
+	•	Early adopters are grandfathered
+	•	New tenants pay the current public rate
+
+Misebox example (illustrative, not final):
+	•	Launch phase: CHF 25 / month
+	•	Growth phase: CHF 35 / month
+	•	Mature phase: CHF 50 / month
+
+FireUX-routed placements can remain at operator rate even as public pricing increases.
+
+⸻
+
+12. Ecosystem User vs Tenant (Important Structural Split)
+
+Ecosystems are not just “apps for businesses”.
+
+Each ecosystem has two participation layers:
+
+1. Ecosystem Users (Non-App)
+	•	Individuals / professionals
+	•	No dedicated app
+	•	Participate via profiles, search, jobs, visibility
+
+Purpose:
+	•	Seed demand
+	•	Create network value
+	•	Increase tenant ROI
+
+Pricing:
+	•	Free (initially)
+	•	Optional low-cost tier later if commitment is needed
+
+2. Ecosystem Tenants (Businesses)
+	•	Kitchens, cleaning companies, etc.
+	•	Pay to access users + visibility
+	•	May or may not have a dedicated app
+
+This separation is non-negotiable for long-term value.
+
+⸻
+
+13. Product Routing (Canon, Final)
+
+All sales conversations resolve to one of these outcomes:
+	1.	FireUX App
+Generic, neutral, hosted app.
+	2.	Industry App (Tenant)
+Business routed into an existing ecosystem (Cleanbox, Misebox).
+	3.	White-Label App
+Single client, rebranded, hosted.
+	4.	Ecosystem White-Label
+Operator runs a branded ecosystem (existing or new).
+	5.	Template + Modules
+Developer, self-hosted, no SaaS.
+
+Everything else (setup, support, add-ons) is secondary and only activated when needed.
+
+⸻
+
+14. Ecosystem Bias (Intentional)
+
+We explicitly prefer:
+	•	Existing ecosystems
+	•	Known domains
+	•	Shared infrastructure
+
+Reasons:
+	•	Faster delivery
+	•	Lower support cost
+	•	Shared marketing upside
+	•	Revenue share alignment
+
+New ecosystems are supported, but:
+	•	More expensive
+	•	Slower to launch
+	•	Treated as exceptions, not defaults
+
+⸻
+
+15. FireUX Core Positioning (Internal Only)
+
+FireUX is not sold as a platform today.
+
+Externally:
+	•	FireUX = “Built with FireUX”
+	•	Credibility + consistency signal
+
+Internally:
+	•	FireUX = leverage engine
+	•	Prevents burnout
+	•	Makes cloning boring
+
+Any feature not required to:
+	•	close sales
+	•	support tenants
+	•	maintain credibility
+
+…is deferred.
+
+⸻
+
+16. Clone Speed Is the North Star
+
+Every product decision is evaluated against:
+
+“Can we ship a new tenant in under 1 hour?”
+
+If not:
+	•	Feature is suspect
+	•	Scope is too wide
+	•	Or belongs in ecosystem/global app, not tenant
+
+⸻
+
+17. Language Discipline (Sales Safety)
+
+We avoid:
+	•	“Platform”
+	•	“Ecosystem-first framework”
+	•	“Modular architecture”
+
+We prefer:
+	•	“Professional app”
+	•	“Hosted and maintained”
+	•	“Built for your industry”
+	•	“We handle the technical side”
+
+Legal + clarity beats cleverness.
+
+⸻
+
+18. What We Are Not Doing (Explicit Non-Goals)
+
+For the next phase, we are not:
+	•	Building complex pricing tiers
+	•	Selling add-ons aggressively
+	•	Opening marketplaces prematurely
+	•	Supporting arbitrary custom workflows
+	•	Chasing “power users” at the cost of simplicity
+
+⸻
+
+19. Success Metric (Very Simple)
+
+Short-term success is not:
+	•	GitHub stars
+	•	Feature count
+	•	Perfect abstractions
+
+It is:
+	•	Paying tenants
+	•	Low support load
+	•	Repeatable onboarding
+	•	Calm development pace
+
+⸻
+
+20. Final Canon Summary (One Page)
+	•	FireUX sells apps, not a platform.
+	•	Ecosystems are the default delivery vehicle.
+	•	Cleanbox pays sooner; Misebox compounds later.
+	•	Channel pricing is intentional and allowed.
+	•	Users create value; tenants pay for access.
+	•	Clone speed beats flexibility.
+	•	If Richie doesn’t need it, we don’t build it.
+
+⸻
+
+If you want, next logical Codex threads would be:
+	•	“First Paid Offer: Richie’s (Exact Scope + Price)”
+	•	“Cleanbox Tenant Onboarding Checklist (1-hour rule)”
+	•	“Pricing & Grandfathering Policy (Internal)”
+
+But as a products & revenue debrief, this is coherent, defensible, and executable.

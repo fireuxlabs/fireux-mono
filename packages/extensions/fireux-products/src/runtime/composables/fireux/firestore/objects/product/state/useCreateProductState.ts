@@ -1,5 +1,6 @@
 import { useStorage } from '@vueuse/core'
 import { onMounted, ref, watch } from 'vue'
+import { useRuntimeConfig } from '#imports'
 import { useCurrentUser } from 'vuefire'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
@@ -16,13 +17,22 @@ export function useCreateProductState() {
   const currentUser = useCurrentUser()
   const { appId: tenantId } = useFireUXConfig()
   const { checkUnique } = useFirestoreManager()
+  const cfg = (useRuntimeConfig().public as any)?.fireux?.products ?? {}
+  const defaultKind =
+    Array.isArray(cfg.productKinds) && cfg.productKinds.length
+      ? String(cfg.productKinds[0])
+      : 'service'
 
   const product = useStorage<ProductDraft>(STORAGE_KEY, {
     id: '',
     name: '',
+    tagline: '',
+    Q: '',
+    A: '',
     description: '',
     active: true,
     slug: '',
+    product_type: defaultKind,
     appId: tenantId,
     creator_id: currentUser.value?.uid || '',
     created_at: new Date().toISOString(),
@@ -71,9 +81,13 @@ export function useCreateProductState() {
     product.value = {
       id: '',
       name: '',
+      tagline: '',
+      Q: '',
+      A: '',
       description: '',
       active: true,
       slug: '',
+      product_type: defaultKind,
       appId: tenantId,
       creator_id: currentUser.value?.uid || '',
       created_at: new Date().toISOString(),

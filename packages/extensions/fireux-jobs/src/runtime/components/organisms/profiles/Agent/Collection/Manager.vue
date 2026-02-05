@@ -4,7 +4,7 @@
       <div class="collection-manager__header">
         <div class="collection-manager__title">
           <h2>Agents</h2>
-          <p>Browse agents available to this runtime.</p>
+          <p>Browse {{ appName }} agents.</p>
         </div>
 
         <div class="collection-manager__controls">
@@ -55,11 +55,13 @@
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
 import { computed } from 'vue';
 import { useAgentInterface } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
 import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model';
 
 const props = defineProps<{ collection?: AgentCore[] }>()
+const { appName } = useFireUXConfig()
 
 const collection = computed(() => props.collection ?? [])
 const { card: makeCard, searchText } = useAgentInterface()

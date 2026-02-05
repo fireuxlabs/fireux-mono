@@ -11,17 +11,20 @@
       :avatar="avatarUrl ? { src: avatarUrl || undefined, alt: title || '' } : undefined"
       size="sm"
     >
-      <template #default>
-        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
+      <template v-if="showBadges && (badges?.length ?? 0)" #description>
+        <div class="flex flex-col gap-1">
+          <span v-if="showSubtitle && subtitle">{{ subtitle }}</span>
+          <div class="flex flex-wrap items-center gap-1 justify-between">
+            <UBadge
+              v-for="badge in badges"
+              :key="badge"
+              variant="soft"
+              color="neutral"
+              size="xs"
+            >
+              {{ badge }}
+            </UBadge>
+          </div>
         </div>
       </template>
     </UUser>

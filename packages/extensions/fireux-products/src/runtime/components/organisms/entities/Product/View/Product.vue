@@ -14,10 +14,7 @@
         <div class="cell-text">
           <p class="cell-description">{{ display(product?.description) }}</p>
           <p v-if="product?.default_price" class="cell-price">
-            €{{ product.default_price.unit_amount
-            }}<span v-if="product.default_price.interval"
-              >/{{ product.default_price.interval }}</span
-            >
+            {{ formatDefaultPrice(product) }}
           </p>
           <div class="purchace-buttons">
             <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
@@ -31,7 +28,7 @@
           <strong>{{ display(product?.name) }}</strong>
         </p>
         <p>{{ display(product?.description) }}</p>
-        <p v-if="product?.default_price">€{{ product.default_price.unit_amount }}</p>
+        <p v-if="product?.default_price">{{ formatDefaultPrice(product) }}</p>
         <div class="purchace-buttons">
           <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
           <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
@@ -101,6 +98,23 @@ const props = defineProps<{
 
 function display(value: unknown): string {
   return typeof value === 'string' && value.trim() !== '' ? value : '!'
+}
+
+function formatMoney(unitAmount: number, currency?: string): string {
+  const iso = (currency || 'EUR').toUpperCase()
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: iso,
+  }).format(Number(unitAmount ?? 0) / 100)
+}
+
+function formatDefaultPrice(product?: Partial<FirebaseProduct>): string {
+  if (!product?.default_price) return ''
+  const currency = product.prices?.[0]?.currency
+  const base = formatMoney(product.default_price.unit_amount, currency)
+  return product.default_price.interval
+    ? `${base}/${product.default_price.interval}`
+    : base
 }
 </script>
 
